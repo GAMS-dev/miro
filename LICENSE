@@ -29,7 +29,7 @@ in a sepeare LICENSE filed located in src/LICENSE or online at: https://gams.com
 "@types/minimatch@3.0.4","MIT","https://github.com/DefinitelyTyped/DefinitelyTyped","https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE","com.gams.miro"
 "@types/node@14.14.37","MIT","https://github.com/DefinitelyTyped/DefinitelyTyped","https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE","com.gams.miro"
 "@types/yargs-parser@20.2.0","MIT","https://github.com/DefinitelyTyped/DefinitelyTyped","https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE","com.gams.miro"
-"@types/yargs@15.0.13","MIT","https://github.com/DefinitelyTyped/DefinitelyTyped","https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE","com.gams.miro"
+"@types/yargs@15.0.14","MIT","https://github.com/DefinitelyTyped/DefinitelyTyped","https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE","com.gams.miro"
 "acorn-jsx@5.3.1","MIT","https://github.com/acornjs/acorn-jsx","https://github.com/acornjs/acorn-jsx/raw/master/LICENSE","com.gams.miro"
 "acorn@7.4.1","MIT","https://github.com/acornjs/acorn","https://github.com/acornjs/acorn/raw/master/LICENSE","com.gams.miro"
 "ajv-formats@1.6.1","MIT","https://github.com/ajv-validator/ajv-formats","https://github.com/ajv-validator/ajv-formats/raw/master/LICENSE","conf:com.gams.miro"
