@@ -468,13 +468,21 @@ output$hot_preview <- renderRHandsontable({
   colsReadonly <- colsReadonly[!is.na(colsReadonly)]
   fixedColumnsLeft <- isolate(rv$tableWidgetConfig$fixedColumnsLeft)
   if(is.null(fixedColumnsLeft)) fixedColumnsLeft <- 0
-
+  
+  readOnlyTable <- identical(input$table_readonly, TRUE)
+  if(any(duplicated(colHeaders))){
+    if(readOnlyTable){
+      stop("readOnly is currently not supported for identical column headers. Please make sure that the column headers are unique by changing the column aliases in the General section.", call. = FALSE)
+    }
+    readOnlyTable <- NULL
+  }
   ht <- rhandsontable(data = data,
                       rowHeaders = if(isTRUE(input$table_hideIndexCol)) NULL else rownames(data),
                       colHeaders = colHeaders,
-                      readOnly = input$table_readonly,
+                      readOnly = readOnlyTable,
                       digits = NA,
                       naAsNull = pivotTable)
+  
   if(!pivotTable){
     for(colName in names(rv$tableWidgetConfig$colFormat)){
       ht <- hot_col(ht, match(colName, headersUnnamed),
