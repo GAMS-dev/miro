@@ -451,18 +451,7 @@ observeEvent(input$dbInput, {
   names(scenInputData)         <- inputDsNames
   newInputCount                <- 0L
   
-  if(scalarsFileName %in% inputDsNames && 
-     length(scenInputData[[length(scenInputData)]]) && 
-     nrow(scenInputData[[length(scenInputData)]])){
-    configScalars <<- scenInputData[[length(scenInputData)]]
-  }else{
-    configScalars <<- tibble()
-  }
-  idxScalarOut <- match(scalarsOutName, names(modelOut))
-  if(!is.na(idxScalarOut) && length(modelOutputData[[idxScalarOut]]) && 
-     nrow(modelOutputData[[idxScalarOut]])){
-    configScalars <<- bind_rows(configScalars, modelOutputData[[idxScalarOut]])
-  }
+  configScalars <<- scenData$getScalars("sb")
   
   errMsg    <-  NULL
   loadMode  <-  "scen"
