@@ -19,6 +19,8 @@ for(modelToTest in c("pickstock", "transport", "sudoku", "farming",
   Sys.setenv(GMSMODELNAME = modelToTest)
   if(modelToTest %in% c("pickstock", "kport")){
     extraClArgs <- c(additionalGamsClArgs, "MIP=CBC")
+  }else if(modelToTest %in% c("indus89")){
+    extraClArgs <- c(additionalGamsClArgs, "LP=CBC")
   }else{
     extraClArgs <- c()
   }
