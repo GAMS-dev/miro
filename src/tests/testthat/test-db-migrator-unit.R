@@ -7,26 +7,6 @@ source("../../components/db_schema.R")
 source("../../components/db.R")
 source("../../components/db_migrator.R")
 
-miroAppPath <- file.path(getwd(), "..", "..")
-
-populateDb <- function(procEnv, modelName){
-  procEnv$MIRO_POPULATE_DB <- "true"
-  modelPath <- file.path(miroAppPath, "model", modelName)
-  procEnv$MIRO_MODEL_PATH <- file.path(modelPath, paste0(modelName, ".gms"))
-  procEnv$MIRO_DATA_DIR <- file.path(modelPath, paste0("data_", modelName),
-                                     "default.gdx")
-  procEnv$MIRO_OVERWRITE_SCEN_IMPORT <- "true"
-  
-  miroProc <- processx::run(file.path(R.home("bin"), "R"),
-                            c("-e", 
-                              paste0("shiny::runApp('", miroAppPath, "',port=3839,host='0.0.0.0')")),
-                            env = unlist(procEnv), wd = miroAppPath, error_on_status = FALSE)
-  if(miroProc$status != 0L){
-    print(miroProc$stdout)
-    print(miroProc$stderr)
-  }
-}
-
 modelName <- "transport"
 
 skipPostgres <- TRUE
