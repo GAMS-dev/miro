@@ -179,6 +179,14 @@ export function scrollDown(id, delay = 500) {
   }, delay);
 }
 
+export function debounce(fn, ms = 0) {
+  let timeoutId;
+  return function (...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn.apply(this, args), ms);
+  };
+}
+
 export const colorPickerBinding = new Shiny.InputBinding();
 $.extend(colorPickerBinding, {
   find(scope) {

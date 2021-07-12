@@ -1023,6 +1023,27 @@
                       "description":"Whether pivoted columns should be sorted alphabetically",
                         "type":"boolean"
                     },
+                    "colFormat":{
+                      "description":"Column specific formatting options",
+                      "type":"object",
+                       "additionalProperties":{
+                          "type":"object",
+                          "properties":{
+                            "format":{
+                              "description": "Characer specifying column format. Numeric columns are formatted using Numbro.js.",
+                              "type":"string"
+                            },
+                            "language":{
+                              "description": "locale passed to Numbro.js; default is 'en-US'.",
+                              "type":"string"
+                            }
+                          },
+                          "required":[
+                            "format"
+                          ],
+                          "additionalProperties": false
+                       }
+                    },
                     "dropdownCols":{
                       "description":"Columns where only certain values are allowed to be selected (only supported for default tables)",
                       "type":"object",

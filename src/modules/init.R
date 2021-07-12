@@ -485,10 +485,28 @@ if(is.null(errMsg)){
             modelIn[[i]]$headers[[col]]$readonly <- TRUE
           }else{
             errMsg <- paste(errMsg, sprintf("The column: '%s' of table: '%s' was set to be readonly. However, such a column does not exist in the table.", 
-                                            names(modelIn)[[i]], names(modelIn[[i]]$headers)[[j]]))
+                                            names(modelIn[[i]]$headers)[[j]], names(modelIn)[[i]], ))
             break
           }
         }
+      }
+      if(length(widgetConfig$colFormat)){
+        if(length(modelIn[[i]]$pivotCols)){
+          errMsg <- paste(errMsg, sprintf("colFormat is not supported when pivotCols are active (table: %s).",
+                                          names(modelIn)[[i]]))
+          break
+        }
+        colIds <- match(names(widgetConfig$colFormat), names(modelIn[[i]]$headers))
+        if(any(is.na(colIds))){
+          errMsg <- paste(errMsg, sprintf("The column(s): '%s' of table: '%s' specified in colFormat does not exist.",
+                                          paste(names(widgetConfig$colFormat)[is.na(colIds)], collapse = ", "), names(modelIn)[[i]]))
+          break
+        }
+        modelIn[[i]]$colFormat <- lapply(seq_along(widgetConfig$colFormat), function(i){
+          formatTmp <- widgetConfig$colFormat[[i]]
+          formatTmp$colId <- colIds[i]
+          return(formatTmp)
+        })
       }
     }
   }
