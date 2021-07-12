@@ -1,6 +1,5 @@
 import InputArrayFactory from './input_array';
-
-import { colorPickerBinding } from './util';
+import { debounce, colorPickerBinding } from './util';
 
 export { confirmModalShow, slideToggleEl, resetDropdownFilter } from './miro';
 
@@ -729,5 +728,9 @@ $(document).ready(() => {
   Shiny.addCustomMessageHandler('gms-setInputValue', (data) => {
     $(data.id).val(data.value).change();
   });
+  $(document).on('input', '.miro-dynamic-input-id', debounce(function () {
+    Shiny.setInputValue(this.dataset.bindingId,
+      { id: this.dataset.inputId, val: $(this).val() }, { priority: 'event' });
+  }, 300));
   Shiny.inputBindings.register(colorPickerBinding);
 });
