@@ -37,6 +37,7 @@ these components are included below):
 - cpp11, https://github.com/r-lib/cpp11 or https://cran.rstudio.com/web/packages/cpp11/index.html
 - R6, https://github.com/r-lib/R6/ or https://cran.r-project.org/web/packages/R6/index.html
 - processx https://github.com/r-lib/processx or https://cran.r-project.org/web/packages/processx/index.html
+- generics https://generics.r-lib.org or https://cran.r-project.org/web/packages/generics/index.html
 - dplyr https://github.com/tidyverse/dplyr or https://cran.r-project.org/web/packages/dplyr/index.html
 - readxl https://github.com/tidyverse/readxl or https://cran.r-project.org/web/packages/readxl/index.html
 - writexl https://github.com/ropensci/writexl or https://cran.r-project.org/web/packages/writexl/index.html
@@ -648,6 +649,7 @@ Section 8 -- Interpretation.
         - processx, Copyright (c) 2016-2019 Mango Solutions, RStudio, Gábor Csárdi
         - askpass, Copyright (c) 2018 Jeroen Ooms
         - timevis, Copyright (c) 2016 Dean Attali [aut, cre] (R interface), Almende B.V. [aut, cph] (vis.js library, http://visjs.org, http://www.almende.com/home)
+        - generics, Copyright (c) 2020 Hadley Wickham [aut, cre], Max Kuhn [aut], Davis Vaughan [aut], RStudio [cph]
         - dplyr, Copyright (c) 2013-2020 Hadley Wickham [aut, cre], Romain François [aut], Lionel Henry [aut], Kirill Müller [aut], RStudio [cph, fnd]
         - cpp11, Copyright (c) 2020 RStudio
         - rhandsontable , Copyright (c) 2015-2018 Marcin Warpechowski, Handsoncode sp. z o.o., 
