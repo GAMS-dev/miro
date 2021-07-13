@@ -176,3 +176,43 @@ getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE){
                style = "display:block;",
                lang$adminMode$graphs$miroPivotOptions$infoMsg))
 }
+parseFunctionBody <- function(textToParse, functionName){
+  # this is neither robust nor efficient, but seems good enough for our purposes
+  # We don't want to use eval-deparse as this will remove comments/whitespace
+  functionBodyTmp <- strsplit(textToParse, functionName, fixed = TRUE)[[1]]
+  if(length(functionBodyTmp) < 2L){
+    stop(sprintf("Could not find function: %s", functionName), call. = FALSE)
+  }
+  functionBodyTmp <- paste(functionBodyTmp[-1], collapse = functionName)
+  functionBodyTmp <- paste(strsplit(functionBodyTmp, "{", fixed = TRUE)[[1]][-1], collapse = "{")
+  functionBodyTmp <- strsplit(functionBodyTmp, "", fixed = TRUE)[[1]]
+  openingBracketCtr <- 1L
+  isInComment <- FALSE
+  for (i in seq_along(functionBodyTmp)){
+    chr <- functionBodyTmp[[i]]
+    if(isInComment){
+      if(identical(chr, "\n")){
+        isInComment <- FALSE
+      }
+      next
+    }
+    if(identical(chr, "#")){
+      isInComment <- TRUE
+      next
+    }else if(identical(chr, "{")){
+      openingBracketCtr <- openingBracketCtr + 1L
+    }else if(identical(chr, "}")){
+      openingBracketCtr <- openingBracketCtr - 1L
+    }
+    if(identical(openingBracketCtr, 0L)){
+      break
+    }
+  }
+  functionBodyTmp <- trimws(paste(functionBodyTmp[seq_len(i - 1L)], collapse = ""),
+                            which = "right")
+  functionBodyTmp <- stri_split_lines(functionBodyTmp)[[1]]
+  if(identical(nchar(trimws(functionBodyTmp[1])), 0L)){
+    functionBodyTmp <- functionBodyTmp[-1]
+  }
+  return(functionBodyTmp)
+}

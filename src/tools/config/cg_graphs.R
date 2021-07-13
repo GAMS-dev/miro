@@ -1989,6 +1989,7 @@ observeEvent(input$customExternalSymbol, {
     }
   }
   rv$graphConfig$outType <- rendererFunctionName
+  rendererFunctions <- list(output = "", renderer = "")
   tryCatch({
     rendererFunctions <- getRendererFunctions(rendererToLoad)
     updateAceEditor(session, "customOutputFunction", value = rendererFunctions$output)
@@ -3561,6 +3562,7 @@ getCustomOptions <- reactive({
           rendererFromExternalSymbol <<- TRUE
         }
       }
+      rendererFunctions <- list(output = "", renderer = "")
       tryCatch({
         rendererFunctions <- getRendererFunctions(rendererNameTmp)
       }, error = function(e){
@@ -3724,32 +3726,19 @@ getRendererFunctions <- function(rendererName){
   if(!file.exists(rendererPath)){
     return(list(output = "", renderer = ""))
   }
-  local({
-    source(rendererPath, local = TRUE)
-    
-    # Need to detect the functions by looking for ^*Output <- * and ^render* <-
-    funOutputStr <- paste0(tolower(rendererName), "Output")
-    funRenderStr <- paste0("render", toupper(substr(rendererName, 1, 1)),
-                           substr(tolower(rendererName), 2, nchar(rendererName)))
-    
-    # This command is super confusing. It gets the body of the function and puts it
-    # into a string without adding the curly braces {}.
-    funOutputBody <- deparse(body(eval(parse(text = funOutputStr), envir = customRendererEvalEnv)))
-    if(length(funOutputBody) > 3L){
-      funOutputBody <- paste0(funOutputBody[seq(3L, length(funOutputBody) - 1)],
-                              collapse = "\n")
-    }else{
-      funOutputBody <- ""
-    }
-    funRenderBody <- deparse(body(eval(parse(text = funRenderStr), envir = customRendererEvalEnv)))
-    if(length(funRenderBody) > 2L){
-      funRenderBody <- paste0(funRenderBody[seq(2L, length(funRenderBody) - 1)],
-                              collapse = "\n")
-    }else{
-      funRenderBody <- ""
-    }
-    return(list(output = funOutputBody, renderer = funRenderBody))
-  })
+  rendererContentRaw <- read_file(rendererPath)
+  
+  # Need to detect the functions by looking for ^*Output <- * and ^render* <-
+  funOutputStr <- paste0(tolower(rendererName), "Output")
+  funOutputBody <- parseFunctionBody(rendererContentRaw, funOutputStr)
+  if(length(funOutputBody) && startsWith(trimws(funOutputBody[1]), "ns")){
+    funOutputBody <- funOutputBody[-1]
+  }
+  
+  funRenderStr <- paste0("render", toupper(substr(rendererName, 1, 1)),
+                         substr(tolower(rendererName), 2, nchar(rendererName)))
+  funRenderBody <- parseFunctionBody(rendererContentRaw, funRenderStr)
+  return(list(output = funOutputBody, renderer = funRenderBody))
 }
 output$customOutputBoilerplate <- renderText({
   paste0(

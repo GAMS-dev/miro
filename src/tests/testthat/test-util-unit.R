@@ -227,3 +227,13 @@ test_that("getTabs works", {
                         tabTitles = list("Scalars", c("Group 1", "B"), c("Group 2", "C", "D")),
                         tabSheetMap = list(NULL, c(2L, 1L), c(3L, 1L), c(3L, 2L))))
 })
+source("../../tools/config/util.R")
+
+test_that("Parsing function bodies with parseFunctionBody works", {
+  expect_identical(parseFunctionBody("mirorenderer_tOutput <- function(id, height = NULL, options = NULL, path = NULL){}\n \n renderMirorenderer_t <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){\n    # asd\n}\n", "mirorenderer_tOutput"),
+                   character())
+  expect_identical(parseFunctionBody("mirorenderer_tOutput <- function(id, height = NULL, options = NULL, path = NULL){}\n \n renderMirorenderer_t <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){   \t  \n    # asd\n}\n", "renderMirorenderer_t"),
+                   "    # asd")
+  expect_identical(parseFunctionBody("mirorenderer_tOutput <- function(id, height = NULL, options = NULL, path = NULL){\n    # { { { \n    test123  \n    }\n \n    ", "mirorenderer_tOutput"), c("    # { { { ", "    test123"))
+  expect_identical(parseFunctionBody("mirorenderer_tOutput <- function(id, height = NULL, options = NULL, path = NULL){\r\n    # { { { \r\n    test123  \r\n    }\r\n \r\n    ", "mirorenderer_tOutput"), c("    # { { { ", "    test123"))
+})
