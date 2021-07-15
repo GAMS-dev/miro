@@ -59,10 +59,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
   }
   
   indices <- getIndexLists(unassignedSetIndices, options)
-  
-  aggregationFunctions <- if((length(options[["_metadata_"]]$symname) &&
-                             options[["_metadata_"]]$symname %in% c(scalarsFileName, scalarsOutName)) ||
-                             identical(options[["_metadata_"]]$symtype, "set"))
+  aggregationFunctions <- if(identical(options[["_metadata_"]]$symtype, "set"))
     setNames(c("count", "min"),
              c(lang$renderers$miroPivot$aggregationFunctions$count,
                lang$renderers$miroPivot$aggregationFunctions$min))
@@ -422,7 +419,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       indices <- character(0L)
       # we need to update aggregation functions in case the symbol type is not available when rendering the UI
       # (e.g. in Configuration Mode)
-      aggregationFunctions <- if(isScalarTable || identical(options[["_metadata_"]]$symtype, "set"))
+      aggregationFunctions <- if(identical(options[["_metadata_"]]$symtype, "set"))
         setNames(c("count", "min"),
                  c(lang$renderers$miroPivot$aggregationFunctions$count,
                    lang$renderers$miroPivot$aggregationFunctions$min))

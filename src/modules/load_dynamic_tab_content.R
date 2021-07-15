@@ -47,7 +47,7 @@ getPivotCompGraphConfig <- function(sheetName){
                                                            headers = c(list("_scenName" = list(alias = lang$nav$scen$pivot$scenColName,
                                                                                                type = "string")),
                                                                        ioConfig$modelOut[[sheetName]]$headers),
-                                                           symtype = ioConfig$modelOut[[sheetName]]$symtype)))
+                                                           symtype = if(identical(sheetName, scalarsOutName)) "parameter" else ioConfig$modelOut[[sheetName]]$symtype)))
   }else if(!sheetName %in% names(ioConfig$modelIn[[sheetName]]) && identical(sheetName, scalarsFileName)){
     graphConfig <- list(outType = "miroPivot",
                         options = list(resetOnInit = isFALSE(isInRefreshMode),
@@ -60,7 +60,7 @@ getPivotCompGraphConfig <- function(sheetName){
                                                                                                type = "string"),
                                                                             value = list(alias = lang$nav$scalarAliases$cols$value,
                                                                                          type = "string"))),
-                                                           symtype = "set")))
+                                                           symtype = "parameter")))
   }else{
     graphConfig <- list(outType = "miroPivot",
                         options = list(resetOnInit = isFALSE(isInRefreshMode),
