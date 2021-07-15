@@ -292,3 +292,30 @@ test_that("Loading scenario with no view config and one that does have views wor
   expect_identical(views$getConf("4"), tibble())
   expect_identical(views$getConf("5"), testViewData[, -1])
 })
+
+test_that("View IDs should be stripped of spaces", {
+  fakeSessionIn1 <- FakeSession$new("in_1")
+  expect_error(views$add(fakeSessionIn1, "\n view1 \t", list(cols = list("a", "b"))), NA)
+  expect_identical(views$getConf(),
+                   tibble(symName = "in1", id = "view1",
+                          data = "{\"cols\":[\"a\",\"b\"]}"))
+  expect_error(views$remove(fakeSessionIn1, " view1 "), NA)
+  expect_error(views$addConf(list(out2 = list(` new1  \t` = list(a = "b"),
+                                              `  new2` = list(a = "c")))), NA)
+  expect_identical(views$getConf(),
+                   tibble(symName = c("out2", "out2"),
+                          id = c("new1", "new2"),
+                          data = c("{\"a\":\"b\"}",
+                                   "{\"a\":\"c\"}")))
+  testViewData <- tibble("_sid" = c(1, 1), 
+                         symName = c("in1", "out2"),
+                         id = c("view1 ", " view6\t"),
+                         data = c('{"rows":["bla","blubb"]}',
+                                  '{"filter":["bla","blubb"]}'))
+  expect_error(views$loadConf(testViewData), NA)
+  expect_identical(views$getConf(),
+                   tibble(symName = c("in1", "out2"),
+                          id = c("view1", "view6"),
+                          data = c('{"rows":["bla","blubb"]}',
+                                   '{"filter":["bla","blubb"]}')))
+})

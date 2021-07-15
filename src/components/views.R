@@ -30,6 +30,7 @@ Views <- R6Class("Views",
                      }
                      private$duplicatedViews <- list()
                      for(symbolName in names(cleanViewConf)){
+                       names(cleanViewConf[[symbolName]]) <- private$makeIds(names(cleanViewConf[[symbolName]]))
                        if(length(names(cleanViewConf[[symbolName]])) != length(cleanViewConf[[symbolName]])){
                          flog.info("Not all views for symbol: %s have names.", symbolName)
                          cleanViewConf[[symbolName]] <- NULL
@@ -89,7 +90,7 @@ Views <- R6Class("Views",
                        uniqueSymNames <- unique(symNames)
                        retTmp <- lapply(uniqueSymNames, function(symName){
                          dataset <- datasetSid[symNames == symName, ]
-                         viewIds <- dataset$id
+                         viewIds <- private$makeIds(dataset$id)
                          viewData <- lapply(dataset$data, function(data){
                            fromJSON(data, simplifyDataFrame = FALSE, simplifyVector = FALSE)
                          })
@@ -237,7 +238,6 @@ Views <- R6Class("Views",
                      return(invisible(self))
                    },
                    add = function(session, id, viewConf){
-                     id <- as.character(id)
                      symName <- private$getSymbolName(session)
                      if(length(symName) == 2){
                        if(!identical(symName[[2]], "1")){
@@ -249,7 +249,7 @@ Views <- R6Class("Views",
                      if(!symName %in% names(private$scenViewConf[["1"]])){
                        private$scenViewConf[["1"]][[symName]] <- list()
                      }
-                     private$scenViewConf[["1"]][[symName]][[id]] <- viewConf
+                     private$scenViewConf[["1"]][[symName]][[private$makeIds(id)]] <- viewConf
                      return(invisible(self))
                    },
                    getIds = function(session){
@@ -266,7 +266,7 @@ Views <- R6Class("Views",
                    },
                    get = function(session, id = NULL){
                      if(length(id)){
-                       id <- as.character(id)
+                       id <- private$makeIds(id)
                      }
                      symName <- private$getSymbolName(session)
                      viewConfTmp <- NULL
@@ -292,7 +292,7 @@ Views <- R6Class("Views",
                      return(viewConfTmp)
                    },
                    remove = function(session, id){
-                     id <- as.character(id)
+                     id <- private$makeIds(id)
                      symName <- private$getSymbolName(session)
                      if(length(symName) == 2){
                        if(!identical(symName[[2]], "1")){
@@ -334,6 +334,13 @@ Views <- R6Class("Views",
                      }
                      private$scenViewConf[[scenId]][[symName]][[id]] <- NULL
                      return(invisible(self))
+                   },
+                   makeIds = function(idsRaw){
+                     idsTmp <- trimws(as.character(idsRaw))
+                     if(any(nchar(idsTmp) == 0L)){
+                       stop_custom("bad_id", "View ids must not be empty", call. = FALSE)
+                     }
+                     return(idsTmp)
                    }
                  )
 )
