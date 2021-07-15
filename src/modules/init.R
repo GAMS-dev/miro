@@ -1497,10 +1497,11 @@ if(is.null(errMsg)){
     if(!identical(graphConfig$outType, "miroPivot")){
       return(TRUE)
     }
+    errMsgTmp <- NULL
     if(length(graphConfig$options$aggregationFunction) &&
-       !identical(graphConfig$options$aggregationFunction, "count") &&
+       graphConfig$options$aggregationFunction %in% c("count", "min") &&
        identical(graphConfig$options[["_metadata_"]]$symtype, "set")){
-      return("Sets can only have 'count' as aggregation function.")
+      errMsgTmp <- "Sets can only have 'count' or 'min' as aggregation function."
     }
     noNumericHeaders <- sum(vapply(graphConfig$options[["_metadata_"]]$headers, 
                                    function(header){
@@ -1520,21 +1521,28 @@ if(is.null(errMsg)){
         }else if(identical(id, "domainFilter")){
           indices <- graphConfig$options$domainFilter$domains
         }else{
-          indices <- names(graphConfig$options$filter)
+          indices <- names(graphConfig$options[[id]])
         }
         invalidIndices <- !indices %in% validHeaders
         if(any(invalidIndices)){
-          return(paste0("Invalid ", id, ": ", paste(indices[invalidIndices], 
-                                                    collapse = ", ")))
+          errMsgTmp <- paste(errMsgTmp,
+                             paste0("\nInvalid ", id, ": ",
+                                    paste(indices[invalidIndices],
+                                          collapse = ", ")))
         }
       }
     }
     if(length(graphConfig$options$domainFilter$default) && 
        !graphConfig$options$domainFilter$default %in% graphConfig$options$domainFilter$domains){
-      return(paste0("Default domain filter: ", graphConfig$options$domainFilter$default, 
-                    " must be among the list of domains."))
+      errMsgTmp <- paste(errMsgTmp,
+                         paste0("\nDefault domain filter: ",
+                                graphConfig$options$domainFilter$default, 
+                                " must be among the list of domains."))
     }
-    return(TRUE)
+    if(is.null(errMsgTmp)){
+      return(TRUE)
+    }
+    return(errMsgTmp)
   }
   
   invalidGraphsToRender <- character(0L)
