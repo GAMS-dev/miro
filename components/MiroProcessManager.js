@@ -189,11 +189,11 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       if (onErrorLater) {
         await onErrorLater(appData.id, e);
       }
-    }).then(async () => {
+    }).then(async (e) => {
       if (!this.miroProcesses[internalPid]) {
         return;
       }
-      log.debug(`Process of MIRO app with pid: ${internalPid} ended.`);
+      log.debug(`Process of MIRO app with pid: ${internalPid} ended.\nStdout: ${e.stdout}.\nStderr: ${e.stderr}`);
       this.miroProcesses[internalPid] = null;
       delete this.pidPortMap[internalPid.toString()];
       if (appData.allowMultiple !== true) {
