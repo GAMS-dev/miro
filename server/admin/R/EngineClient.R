@@ -72,7 +72,7 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
                   add_headers(Authorization = private$getAuthHeader(), 
                               Timestamp = as.character(Sys.time(), 
                                 usetz = TRUE)),
-                  timeout(10))
+                  timeout(600))
     if(status_code(ret) != 201){
         stop(sprintf("Unexpected return code: %s from GAMS Engine when trying to register model. Error: %s",
             status_code(ret), private$getErrorMessage(ret)), call. = FALSE)
