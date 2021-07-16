@@ -64,10 +64,30 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
         warning(sprintf("Problems creating directory for custom packages: '%s'. Do you miss write permissions?",
                         customLibPath))
       }else{
+        flog.info("Installing custom packages: %s", paste(newPackages, collapse = ", "))
         for(customPackage in newPackages){
           print(paste0("Installing: ", customPackage))
-          install.packages(customPackage, lib = customLibPath, 
-                           repos = CRANMirror, dependencies = c("Depends", "Imports", "LinkingTo"))
+          install.packages(customPackage, lib = customLibPath,
+                           repos = CRANMirror,
+                           dependencies = c("Depends", "Imports", "LinkingTo"))
+        }
+        if(identical(getOS(), "osx")){
+          # make sure so files are using correct R library
+          for(sharedObjectFile in list.files(customLibPath, pattern = "\\.so$",
+                                             recursive = TRUE, full.names = TRUE)){
+            soDependencies <- trimws(stringi::stri_split_lines(
+              processx::run("otool", args = c("-L", sharedObjectFile))$stdout)[[1]])
+            depIsRLib <- grepl("^\\/Library\\/Frameworks\\/R\\.framework\\/Versions\\/[^\\/]+\\/Resources\\/lib\\/libR\\.dylib", soDependencies)
+            if(any(depIsRLib)){
+              processx::run("install_name_tool",
+                            args = c("-change", paste0(strsplit(
+                              soDependencies[which(depIsRLib)[1]],
+                              "libR.dylib",
+                              fixed = TRUE)[[1]][1], "libR.dylib"),
+                              file.path(R.home(), "lib", "libR.dylib"),
+                              sharedObjectFile))
+            }
+          }
         }
       }
     }
