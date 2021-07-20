@@ -6,7 +6,7 @@ glue, 1.4.2
 fansi, 0.4.1
 cli, 2.5.0
 utf8, 1.1.4
-Rcpp, 1.0.5
+Rcpp, 1.0.7
 R6, 2.4.1
 BH, 1.72.0-3
 magrittr, 1.5
