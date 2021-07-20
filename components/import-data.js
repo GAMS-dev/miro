@@ -25,6 +25,7 @@ async function addModelData(miroProcessManager, paths, modelName,
       usetmpdir,
       dbpath: paths.dbpath,
       allowMultiple: true,
+      timeout: 3600, // ~1 hour maximum time for installing packages/importing data
       customEnv: {
         MIRO_NO_DEBUG: 'true',
         MIRO_FORCE_SCEN_IMPORT: 'true',
@@ -108,7 +109,7 @@ async function addModelData(miroProcessManager, paths, modelName,
             throw new Error('suppress');
           }
         } else if (error[1] === '426') {
-          log.info('MIRO signalled that custom packages need to be installed: ' + error[3]);
+          log.info(`MIRO signalled that custom packages need to be installed: ${error[3]}`);
           if (dialog.showMessageBoxSync(windowObj, {
             type: 'info',
             title: global.lang.main.ErrorCustomPackagesHdr,
@@ -156,6 +157,7 @@ async function addModelData(miroProcessManager, paths, modelName,
   let restartCount = 0;
   do {
     restartRProc = false;
+    // eslint-disable-next-line no-await-in-loop
     await runRProc();
     restartCount += 1;
   } while (restartRProc && restartCount < 3);

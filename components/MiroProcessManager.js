@@ -63,7 +63,7 @@ class MiroProcessManager {
       await progressCallback({ internalPid, code: 'start' });
       await waitFor(1500);
       await this.waitForResponse(appData.id, appData.allowMultiple,
-        internalPid, progressCallback, onErrorStartup, onSuccess);
+        internalPid, progressCallback, onErrorStartup, onSuccess, appData.timeout);
     }
   }
 
@@ -207,14 +207,15 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
   }
 
   async waitForResponse(appId, allowMultiple, internalPid,
-    progressCallback, onError, onSuccess) {
+    progressCallback, onError, onSuccess, timeout) {
     const shinyPort = this.pidPortMap[internalPid.toString()];
     if (!shinyPort) {
       return;
     }
     const url = `http://127.0.0.1:${shinyPort}`;
+    const maxIter = timeout == null ? 100 : timeout;
     /* eslint-disable no-await-in-loop */
-    for (let i = 0; i <= 100; i += 1) {
+    for (let i = 0; i <= maxIter; i += 1) {
       if (!this.miroProcesses[internalPid]) {
         return;
       }
