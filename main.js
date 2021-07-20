@@ -859,6 +859,10 @@ ${requiredAPIVersion}.`);
   const onErrorStartup = async (appID, e) => {
     log.warn(`Error during startup of MIRO app with ID: ${appID}. Eror message: ${e}`);
 
+    if (miroAppWindows[appID]) {
+      miroAppWindows[appID].destroy();
+    }
+
     if (mainWindow && !miroDevelopMode) {
       mainWindow.send('hide-loading-screen', appID);
       showErrorMsg({
@@ -876,6 +880,10 @@ ${requiredAPIVersion}.`);
   const onErrorLater = async (appID, e) => {
     log.warn(`App: ${appID} crashed during startup. \
 Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
+
+    if (miroAppWindows[appID]) {
+      miroAppWindows[appID].destroy();
+    }
 
     if (miroBuildMode || miroDevelopMode) {
       log.debug(`Exiting with error code: ${e.exitCode}.`);
