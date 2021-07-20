@@ -308,6 +308,14 @@ const schema = {
           type: 'string',
           minLength: 1,
         },
+        ErrorCustomPackagesHdr: {
+          type: 'string',
+          minLength: 1,
+        },
+        ErrorCustomPackagesMsg: {
+          type: 'string',
+          minLength: 1,
+        },
       },
       required: ['ErrorUnexpectedHdr', 'ErrorUnexpectedMsg', 'ErrorUnexpectedMsg2', 'BtnCancel', 'BtnOk', 'BtnRemove', 'ErrorInvalidHdr',
         'ErrorInvalidMsg', 'ErrorInvalidTwoMsg', 'ErrorInvalidThreeMsg', 'ErrorAPIHdr', 'ErrorAPIMsg', 'ErrorVersionMsg', 'ErrorReadMsg',
@@ -318,7 +326,7 @@ const schema = {
         'ErrorInvalidPathHdr', 'ErrorInvalidPathMsg', 'ErrorInvalidPathMsgMac', 'ErrorInvalidPathMsg2', 'ErrorNewScenHdr', 'ErrorNewScenMsg',
         'ErrorNewScenNoApp', 'ErrorMessage', 'SuccessUpdateHdr', 'SuccessUpdateMsg', 'ErrorUnexpectedWriteMsg', 'DeleteMsg', 'DeleteDataMsg',
         'ErrorInit', 'ErrorRInstallHdr', 'ErrorRInstallMsg', 'ErrorModelPathHdr', 'ErrorModelPathMsg', 'ErrorRNotFoundHdr', 'ErrorRNotFoundMsg', 'ErrorInconsistentDbTablesHdr', 'ErrorInconsistentDbTablesMsg',
-        'ErrorDataImportHdr', 'ErrorDataImportMsg', 'BtnOverwrite'],
+        'ErrorDataImportHdr', 'ErrorDataImportMsg', 'ErrorCustomPackagesHdr', 'ErrorCustomPackagesMsg', 'BtnOverwrite'],
     },
     general: {
       type: 'object',
@@ -958,6 +966,8 @@ const en = {
     ErrorInconsistentDbTablesMsg: "Your database contains records that are inconsistent with the new version of the MIRO application you want to add. Do you want to remove all inconsistent data? The records to be removed are: '%s'.",
     ErrorDataImportHdr: 'Scenario exists',
     ErrorDataImportMsg: "A scenario: '%s' already exists. Do you want to overwrite it?",
+    ErrorCustomPackagesHdr: 'New packages must be installed',
+    ErrorCustomPackagesMsg: "Your app contains packages that are not yet installed: '%s'. Do you want to download and install them now from CRAN mirror: '%s'?",
     BtnOverwrite: 'Overwrite',
   },
   general: {
@@ -1172,6 +1182,8 @@ const de = {
     ErrorInconsistentDbTablesMsg: "Ihre Datenbank enthält Datensätze, die mit der neuen Version der MIRO-Anwendung, die Sie hinzufügen möchten, nicht konsistent sind. Möchten Sie alle inkonsistenten Daten entfernen? Die zu entfernenden Datensätze sind: '%s'.",
     ErrorDataImportHdr: 'Szenario existiert bereits',
     ErrorDataImportMsg: "Ein Szenario: '%s' existiert bereits. Möchten Sie es überschreiben?",
+    ErrorCustomPackagesHdr: 'Neue Pakete müssen installiert werden',
+    ErrorCustomPackagesMsg: "Ihre App enthält Pakete, die noch nicht installiert sind: '%s'. Möchten Sie sie jetzt vom CRAN-Mirror: '%s' herunterladen und installieren?",
     BtnOverwrite: 'Überschreiben',
   },
   general: {
@@ -1385,6 +1397,8 @@ const cn = {
     ErrorInconsistentDbTablesMsg: "您的数据库中包含的记录与您要添加的MIRO应用程序的新版本不一致。你想删除所有不一致的数据吗？需要删除的记录有： '%s'.",
     ErrorDataImportHdr: '情景已经存在',
     ErrorDataImportMsg: "一种情景：'%s'已经存在。你想覆盖它吗？",
+    ErrorCustomPackagesHdr: '必须安装新软件包',
+    ErrorCustomPackagesMsg: "您的应用程序包含尚未安装的软件包：'%s'。您现在想从CRAN镜像下载并安装它们：'%s'？",
     BtnOverwrite: '覆写',
   },
   general: {

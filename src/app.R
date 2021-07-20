@@ -703,12 +703,23 @@ if(is.null(errMsg)){
   }
   errMsg <- installAndRequirePackages(unique(requiredPackages), installedPackages, RLibPath, CRANMirror, miroWorkspace)
   
-  if(!is.null(requiredPackagesCR) && !miroStoreDataOnly && !miroBuildOnly){
+  if(!is.null(requiredPackagesCR) && !isShinyProxy && !miroBuildOnly){
     # add custom library path to libPaths
     .libPaths(c(.libPaths(), file.path(miroWorkspace, "custom_packages")))
     installedPackages <<- installed.packages()[, "Package"]
+    if(!identical(Sys.getenv("MIRO_AGREE_INSTALL_PACKAGES"), "true")){
+      newPackages <- requiredPackagesCR[!requiredPackagesCR %in% installedPackages]
+      if(length(newPackages)){
+        if(interactive())
+          stop(sprintf("New packages: '%s' need to be installed. Please set MIRO_AGREE_INSTALL_PACKAGES to 'true'.",
+                       paste(newPackages, collapse = ", ")))
+        write("\n", stderr())
+        write(paste0("merr:::426:::", CRANMirror, ":::", paste(newPackages, collapse = ", ")), stderr())
+        quit("no", 0L)
+      }
+    }
     installAndRequirePackages(requiredPackagesCR, installedPackages,
-                              RLibPath, CRANMirror, miroWorkspace,
+                              RLibPath, Sys.getenv("MIRO_CRAN_MIRROR", CRANMirror), miroWorkspace,
                               attachPackages = FALSE)
     rm(requiredPackagesCR)
   }

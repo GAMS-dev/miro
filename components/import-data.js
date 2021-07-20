@@ -10,6 +10,7 @@ async function addModelData(miroProcessManager, paths, modelName,
   windowObj, dataDir, progressEvent = 'add-app-progress') {
   let restartRProc;
   let overwriteData = false;
+  let confirmInstallPackages = false;
   let migrationWizardWindow;
   if (progressEvent === 'add-app-progress') {
     overwriteData = true;
@@ -30,6 +31,7 @@ async function addModelData(miroProcessManager, paths, modelName,
         MIRO_BUILD: 'false',
         MIRO_BUILD_ARCHIVE: 'false',
         MIRO_OVERWRITE_SCEN_IMPORT: overwriteData,
+        MIRO_AGREE_INSTALL_PACKAGES: confirmInstallPackages,
         MIRO_POPULATE_DB: 'true',
         LAUNCHINBROWSER: 'false',
         MIRO_REMOTE_EXEC: 'false',
@@ -105,6 +107,20 @@ async function addModelData(miroProcessManager, paths, modelName,
           } else {
             throw new Error('suppress');
           }
+        } else if (error[1] === '426') {
+          log.info('MIRO signalled that custom packages need to be installed: ' + error[3]);
+          if (dialog.showMessageBoxSync(windowObj, {
+            type: 'info',
+            title: global.lang.main.ErrorCustomPackagesHdr,
+            message: format(global.lang.main.ErrorCustomPackagesMsg, error[3], error[2]),
+            buttons: [global.lang.main.BtnCancel, global.lang.main.BtnOk],
+          }) === 1) {
+            log.debug('Installing custom packages');
+            confirmInstallPackages = true;
+            restartRProc = true;
+          } else {
+            throw new Error('suppress');
+          }
         } else {
           throw new Error(msg);
         }
@@ -137,9 +153,11 @@ async function addModelData(miroProcessManager, paths, modelName,
       }
     }
   };
-  await runRProc();
-  if (restartRProc) {
+  let restartCount = 0;
+  do {
+    restartRProc = false;
     await runRProc();
-  }
+    restartCount += 1;
+  } while (restartRProc && restartCount < 3);
 }
 module.exports = addModelData;
