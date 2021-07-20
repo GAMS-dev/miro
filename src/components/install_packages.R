@@ -65,6 +65,8 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
                         customLibPath))
       }else{
         flog.info("Installing custom packages: %s", paste(newPackages, collapse = ", "))
+        compileSourceDefault <- getOption("install.packages.compile.from.source")
+        options(install.packages.compile.from.source = "never")
         for(customPackage in newPackages){
           print(paste0("Installing: ", customPackage))
           install.packages(customPackage, lib = customLibPath,
@@ -89,6 +91,7 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
             }
           }
         }
+        options(install.packages.compile.from.source = compileSourceDefault)
       }
     }
 
