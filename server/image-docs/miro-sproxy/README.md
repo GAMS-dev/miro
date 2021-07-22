@@ -8,9 +8,9 @@
 
 # Supported tags
 
--  [`latest`](./tags)
+-  [`latest`, `2.1.3`, `2.1.2`, `2.1.1`, `2.1.0`, `2.0.1`, `2.0.0`](./tags)
 
-# What is miro-dockerproxy?
+# What is miro-sproxy?
 
 Docker socket proxy for GAMS MIRO server. It is based on [Docker Socket Proxy](https://github.com/Tecnativa/docker-socket-proxy).
 
