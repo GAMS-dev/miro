@@ -1,8 +1,9 @@
 const path = require('path');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const RemovePlugin = require('remove-files-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 const plugins = [
    new MiniCssExtractPlugin({
     // Options similar to the same options in webpackOptions.output
@@ -10,6 +11,9 @@ const plugins = [
     filename: '[name].css',
     chunkFilename: '[id].css',
     ignoreOrder: false, // Enable to remove warnings about conflicting order
+  }),
+  new ESLintPlugin({
+    fix: true
   })]
 module.exports = (env, argv) => ({
     mode: 'development',
@@ -17,12 +21,12 @@ module.exports = (env, argv) => ({
       skin_browser: './less/skins/browser.js',
       skin_light: './less/skins/light.js',
       skin_dark: './less/skins/dark.js',
-      miro: ['babel-polyfill', './srcjs/miro.js'],
-      miro_admin: ['babel-polyfill', './srcjs/miro_admin.js']
+      miro: ['./srcjs/miro.js'],
+      miro_admin: ['./srcjs/miro_admin.js']
     },
     optimization: {
       minimize: true,
-      minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
+      minimizer: [new TerserJSPlugin({}), new CssMinimizerPlugin({})],
     },
     devtool: 'source-map',
     output: {
@@ -71,7 +75,7 @@ module.exports = (env, argv) => ({
                     '@babel/preset-env',
                     {
                         "useBuiltIns": "entry",
-                        "corejs": "3"
+                        "corejs": "3.15"
                     }
                 ]]
               }

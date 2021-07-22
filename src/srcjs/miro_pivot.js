@@ -9,7 +9,8 @@ const domainConfig = { indexList: {}, indexHTML: {} };
 function updatePivotPresentationData(id) {
   const types = ['row', 'filter', 'col', 'aggregation'];
   types.forEach((item) => {
-    domainConfig.indexList[item] = Shiny.shinyapp.$inputValues[`${id}${item}IndexList:sortablejs.rank_list`];
+    domainConfig.indexList[item] = Shiny.shinyapp
+      .$inputValues[`${id}${item}IndexList:sortablejs.rank_list`];
     if (item === 'row') {
       domainConfig.indexList[item] = domainConfig.indexList[item]
         .filter((indexName) => $(`#${id}${item}IndexList [data-rank-id='${indexName}']`)[0].dataset.colHidden !== 'true');

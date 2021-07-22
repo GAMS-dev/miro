@@ -315,7 +315,9 @@ class InputArray {
               },
             });
           } else {
-            const selectizeOptions = $(`#${k + htmlID}`).parent().find(`script[data-for="${k + htmlID}"]`);
+            const selectizeOptions = $(`#${k + htmlID}`)
+              .parent()
+              .find(`script[data-for="${k + htmlID}"]`);
             const addOptions = selectizeOptions.length ? JSON.parse(selectizeOptions.text()) : {};
             $(`#${k}${htmlID}`).selectize($.extend({
               onChange(value) {
@@ -328,7 +330,8 @@ class InputArray {
             [, altElements[k]] = v;
             altElements[k] = altElements[k].slice(1);
 
-            this.registerChangeHandlers(altElements, rAddID, elID, options, `_alt${elID}`, idx !== 0);
+            this.registerChangeHandlers(altElements, rAddID, elID,
+              options, `_alt${elID}`, idx !== 0);
           }
         } else if (v[0] === 'checkbox') {
           if (!notFirstIdx && idx === 0) {

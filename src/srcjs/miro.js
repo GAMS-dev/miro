@@ -1,5 +1,6 @@
 /* global $:false Shiny: false Selectize:false */
 
+import 'core-js/stable';
 import AutoNumeric from 'autonumeric';
 
 import {
@@ -38,13 +39,15 @@ export function slideToggleEl(data) {
   $(data.id).slideToggle(duration);
 }
 
-export function confirmModalShow(title, desc, cancelTxt, confirmTxt = null, confirmCall = null) {
-  const btDataDismiss = `<button type="button" class="btn btn-default" data-dismiss="modal">${cancelTxt}</button>`;
+export function confirmModalShow(title, desc, cancelTxt,
+  confirmTxt = null, confirmCall = null) {
+  const btDataDismiss = `<button type="button" class="btn btn-default" data-dismiss="modal">\
+${cancelTxt}</button>`;
   let btDataConfirm = '';
 
   if (confirmCall !== null) {
-    btDataConfirm = '<button type="button" class="btn btn-default bt-highlight-1 bt-gms-confirm" '
-      + `id="" onclick="${confirmCall}" data-dismiss="modal">${confirmTxt}</button>`;
+    btDataConfirm = `<button type="button" class="btn btn-default bt-highlight-1 bt-gms-confirm" \
+id="" onclick="${confirmCall}" data-dismiss="modal">${confirmTxt}</button>`;
   }
 
   const cModal = $('#confirmModal');
@@ -73,7 +76,8 @@ export function changeDDButtonEvent(elText, DDBtnID, actionID,
   actionVal = null, btnIsClickable = true) {
   if (btnIsClickable) {
     $(DDBtnID).attr('onclick',
-      `Shiny.setInputValue('${actionID}',${actionVal == null ? 1 : actionVal},{priority: 'event'});`);
+      `Shiny.setInputValue('${actionID}',${actionVal == null
+        ? 1 : actionVal},{priority: 'event'});`);
   }
   $(DDBtnID).text(elText);
   if (!btnIsClickable || $(DDBtnID).is(':enabled')) {
@@ -192,18 +196,21 @@ export function filterMiroDropdown(that) {
 export function modal(msg, okButton, cancelButton,
   value, callback, ...callbackArgs) {
   Shiny.modal.show({
-    html: `<div id="shiny-modal" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    html: `<div id="shiny-modal" class="modal fade" 
+    tabindex="-1" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-body">
-         ${value == null ? `<label>${msg}</label>` : `<div class="form-group shiny-input-container">
+         ${value == null ? `<label>${msg}</label>`
+    : `<div class="form-group shiny-input-container">
             <label class="control-label" for="miroPromptInput">${msg}</label>
             <input id="miroPromptInput" type="text" class="form-control" value="${value}"/>
           </div>`}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">${cancelButton}</button>
-        <button id="miroModalConfirmButton" type="button" class="btn btn-default bt-highlight-1 bt-gms-confirm">${okButton}</button>
+        <button id="miroModalConfirmButton" type="button" 
+        class="btn btn-default bt-highlight-1 bt-gms-confirm">${okButton}</button>
       </div>
     </div>
   </div>
@@ -444,8 +451,9 @@ $(document).ready(() => {
     }
     const scriptOutputContainerIframe = scriptOutputContainer[0].contentWindow.document;
     scriptOutputContainerIframe.open();
-    scriptOutputContainerIframe.write(data.isError === true ? `<div style='margin:5px;color:#F39619;font-weight:bold;font-size:15pt;text-align:center;'>\
-${data.data}</div>` : data.data);
+    scriptOutputContainerIframe.write(data.isError === true
+      ? `<div style='margin:5px;color:#F39619;font-weight:bold;\
+font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
     scriptOutputContainerIframe.close();
     scriptOutputContainer.show();
   });
@@ -596,7 +604,18 @@ ${data.data}</div>` : data.data);
     for (let i = 0; i < id.length; i += 1) {
       let checkBoxHTML = '';
       if (el.allowExec) {
-        checkBoxHTML = `<div class="col-sm-6"><div class="form-group shiny-input-container"><div class="checkbox"><label><input type="checkbox" onchange="Shiny.setInputValue('execPermAttachment_${id[i]}', $(this).is(':checked'));" checked="checked"><span>${el.labelCb}</span></label></div></div></div>`;
+        checkBoxHTML = `<div class="col-sm-6">
+        <div class="form-group shiny-input-container">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" \
+onchange="Shiny.setInputValue('execPermAttachment_${id[i]}', $(this).is(':checked'));" \
+checked="checked">
+              <span>${el.labelCb}</span>
+            </label>
+          </div>
+        </div>
+      </div>`;
       }
 
       $(`<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_${id[i]}" type="button" onclick="Miro.removeAttachment(${id[i]})"><i class="fa fa-times-circle" role="presentation" aria-label="Remove attachment"></i></button><a href="#" onclick="Miro.downloadAttachment(${id[i]})"> ${name[i]}</a></div>${checkBoxHTML}</div>`).insertBefore('#endAttachList');

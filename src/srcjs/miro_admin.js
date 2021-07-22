@@ -1,3 +1,4 @@
+import 'core-js/stable';
 import InputArrayFactory from './input_array';
 import { debounce, colorPickerBinding } from './util';
 
