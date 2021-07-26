@@ -386,43 +386,45 @@ if (fixSchemaProc$status != 0L) {
   ))
 }
 # build MIRO example apps
-examplesPath <- file.path(getwd(), "src", "examples")
-if (dir.exists(examplesPath)) {
-  unlink(examplesPath, force = TRUE, recursive = TRUE)
-}
-if (length(RlibPathDevel)) {
-  Sys.setenv(R_LIBS = file.path(getwd(), RlibPathDevel))
-}
-print(sessionInfo())
-Sys.setenv(MIRO_BUILD = "true")
-for (modelName in c(
-  "pickstock", "transport", "sudoku", "tsp", "farming",
-  "inscribedsquare", "cpack", "cutstock"
-)) {
-  print(sprintf("Building example app: %s", modelName))
-  Sys.setenv(MIRO_MODE = "base")
-  if (!dir.exists(file.path(examplesPath, modelName)) &&
-    !dir.create(file.path(examplesPath, modelName), recursive = TRUE)) {
-    stop(sprintf("Could not create path: %s", examplesPath))
+if (!identical(Sys.getenv("BUILD_DOCKER"), "true")) {
+  examplesPath <- file.path(getwd(), "src", "examples")
+  if (dir.exists(examplesPath)) {
+    unlink(examplesPath, force = TRUE, recursive = TRUE)
   }
-  modelPath <- file.path(
-    getwd(), "src", "model",
-    modelName
-  )
-  miroAppPath <- file.path(modelPath, paste0(modelName, ".miroapp"))
-
-  Sys.setenv(MIRO_MODEL_PATH = file.path(modelPath, paste0(modelName, ".gms")))
-
-  buildProc <- processx::run(file.path(R.home(), "bin", "Rscript"),
-    c("--vanilla", "./app.R"),
-    error_on_status = FALSE,
-    wd = file.path(getwd(), "src")
-  )
-  if (buildProc$status != 0L) {
-    stop(sprintf(
-      "Something went wrong while creating MIRO app for model: %s.\n\nStdout: %s\n\nStderr: %s",
-      modelName, buildProc$stdout, buildProc$stderr
-    ))
+  if (length(RlibPathDevel)) {
+    Sys.setenv(R_LIBS = file.path(getwd(), RlibPathDevel))
   }
-  zip::unzip(miroAppPath, exdir = file.path(examplesPath, modelName))
+  print(sessionInfo())
+  Sys.setenv(MIRO_BUILD = "true")
+  for (modelName in c(
+    "pickstock", "transport", "sudoku", "tsp", "farming",
+    "inscribedsquare", "cpack", "cutstock"
+  )) {
+    print(sprintf("Building example app: %s", modelName))
+    Sys.setenv(MIRO_MODE = "base")
+    if (!dir.exists(file.path(examplesPath, modelName)) &&
+      !dir.create(file.path(examplesPath, modelName), recursive = TRUE)) {
+      stop(sprintf("Could not create path: %s", examplesPath))
+    }
+    modelPath <- file.path(
+      getwd(), "src", "model",
+      modelName
+    )
+    miroAppPath <- file.path(modelPath, paste0(modelName, ".miroapp"))
+
+    Sys.setenv(MIRO_MODEL_PATH = file.path(modelPath, paste0(modelName, ".gms")))
+
+    buildProc <- processx::run(file.path(R.home(), "bin", "Rscript"),
+      c("--vanilla", "./app.R"),
+      error_on_status = FALSE,
+      wd = file.path(getwd(), "src")
+    )
+    if (buildProc$status != 0L) {
+      stop(sprintf(
+        "Something went wrong while creating MIRO app for model: %s.\n\nStdout: %s\n\nStderr: %s",
+        modelName, buildProc$stdout, buildProc$stderr
+      ))
+    }
+    zip::unzip(miroAppPath, exdir = file.path(examplesPath, modelName))
+  }
 }
