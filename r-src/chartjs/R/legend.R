@@ -1,4 +1,4 @@
-#' Add legends
+#' Legend options (legend is displayed by default)
 #'
 #' @param chartjs a \code{\link{chartjs}} object
 #' @param position "top" or "bottom", defaults to "top"
@@ -11,12 +11,13 @@
 #'  \item fontSize an integer, defaults to 12
 #'  \item fontStyle a character, defaults to "normal"
 #'  \item padding a integer, defaults to 10 (in pixels)
+#'  \item display a boolean, defaults to TRUE
 #' }
 #'
 #'
 #' @export
 
-cjsLegend <- function(chartjs, position = NULL, onClick = NULL, fullWidth = NULL, labels = NULL){
-  chartjs$x$options$legend <- c(list(display = TRUE), createOptions())
+cjsLegend <- function(chartjs, position = NULL, onClick = NULL, fullWidth = NULL, labels = NULL, display = TRUE){
+  chartjs$x$options$plugins$legend <- c(list(display = display), createOptions())
   chartjs
 }
