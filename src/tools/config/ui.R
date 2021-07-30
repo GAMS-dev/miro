@@ -958,24 +958,6 @@ font-size: 12px;
                                                                                 configJSON$activateModules$downloadTempFiles else config$activateModules$downloadTempFiles, 
                                                                               label = NULL)
                                                      )),
-                                                   tags$div(
-                                                     tags$label(class = "cb-label", "for" = "general_save_trace", 
-                                                                lang$adminMode$general$saveTrace$label, 
-                                                                tags$a("", title = paste0(lang$adminMode$general$saveTrace$title, " - ", 
-                                                                                          tolower(lang$adminMode$general$ui$tooltipDocs)), 
-                                                                       class="info-wrapper", 
-                                                                       href="https://gams.com/miro/start.html#save-trace-file", 
-                                                                       tags$span(class="fas fa-info-circle", class="info-icon",
-                                                                                 role = "presentation",
-                                                                                 `aria-label` = "More information"), target="_blank")),
-                                                     tags$div(
-                                                       tags$label(class = "checkbox-material", 
-                                                                  checkboxInput("general_save_trace", 
-                                                                                value = if(length(configJSON$saveTraceFile)) 
-                                                                                  configJSON$saveTraceFile else config$saveTraceFile, 
-                                                                                label = NULL)
-                                                       ))
-                                                   ),
                                                    tags$div(class="option-wrapper",
                                                             tags$div(id = "invalidClArgsError",
                                                                      class = "err-msg",

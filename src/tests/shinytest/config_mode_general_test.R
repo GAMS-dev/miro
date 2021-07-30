@@ -45,7 +45,6 @@ expect_identical(configRaw$outputAttachments[[2]]$throwError, configNew$outputAt
 
 #modules tab (II)
 expect_identical(configRaw$activateModules$downloadTempFiles, configNew$activateModules$downloadTempFiles)
-expect_identical(configRaw$saveTraceFile, configNew$saveTraceFile)
 expect_identical(configRaw$extraClArgs, configNew$extraClArgs)
 
 #symbol configuration tab (I: Naming)

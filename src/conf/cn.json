@@ -1283,10 +1283,6 @@
       "downloadTempFiles":{
         "label": "允许访问临时目录？"
       },
-      "saveTrace":{
-        "title": "对于使用集成分析工具PAVER进行性能分析，需要激活此选项。",
-        "label": "每次运行GAMS时保存跟踪文件（仅适用于Hypercube模式）"
-      },
       "hcubeModule":{
         "label": "激活 Hypercube 模块？"
       },

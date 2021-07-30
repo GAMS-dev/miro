@@ -1284,10 +1284,6 @@
       "downloadTempFiles":{
         "label": "Allow access to the temporary directory?"
       },
-      "saveTrace":{
-        "title": "For performance analysis with the integrated analysis tool PAVER, this option needs to be activated.",
-        "label": "Save trace file with each GAMS run (Hypercube Mode)"
-      },
       "hcubeModule":{
         "label": "Activate Hypercube module?"
       },

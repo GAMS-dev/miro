@@ -339,9 +339,6 @@ lapply(c(names(modelInRaw), names(modelOut)), function(name){
 observeEvent(input$general_downloadTempFiles, {
   rv$generalConfig$activateModules$downloadTempFiles <<- input$general_downloadTempFiles
 })
-observeEvent(input$general_save_trace, {
-  rv$generalConfig$saveTraceFile <<- input$general_save_trace
-})
 
 observeEvent(input$general_hidden, ignoreNULL = FALSE, {
   if(!length(input$general_hidden)){

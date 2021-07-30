@@ -4982,21 +4982,6 @@
               },
               "minProperties": 1
             },
-            "saveTrace": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "title": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "label": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "minProperties": 2
-            },
             "hcubeModule": {
               "type": "object",
               "additionalProperties": false,
@@ -5020,7 +5005,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 39
+          "minProperties": 38
         },
         "tables": {
           "type": "object",
