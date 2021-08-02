@@ -1037,22 +1037,12 @@ showBatchLoadDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver 
                               tags$ul(class = "dropdown-menu", role = "menu", style = "margin-left: 5px;",
                                       tags$li(
                                         tags$a(href = "#",
-                                               onclick = paste0("Miro.changeDDButtonEvent('", 
-                                                                htmltools::htmlEscape(lang$nav$dialogBatchLoad$interactiveButtonTab), 
-                                                                "', '#btBatchCompare', 'btBatchCompare', 'tab');"),
-                                               lang$nav$dialogBatchLoad$interactiveButtonTab)),
-                                      tags$li(
-                                        tags$a(href = "#",
-                                               onclick = paste0("Miro.changeDDButtonEvent('", 
-                                                                htmltools::htmlEscape(lang$nav$dialogBatchLoad$interactiveButtonPivot), 
-                                                                "', '#btBatchCompare', 'btBatchCompare', 'pivot');"),
+                                               onclick = "Shiny.setInputValue('btBatchCompare','pivot',{priority:'event'});",
                                                lang$nav$dialogBatchLoad$interactiveButtonPivot)),
                                       if(length(sidsToLoad) <= 2L){
                                         tags$li(
                                           tags$a(href = "#",
-                                                 onclick = paste0("Miro.changeDDButtonEvent('", 
-                                                                  htmltools::htmlEscape(lang$nav$dialogBatchLoad$interactiveButtonSplit), 
-                                                                  "', '#btBatchCompare', 'btBatchCompare', 'split');"),
+                                                 onclick = "Shiny.setInputValue('btBatchCompare','split',{priority:'event'});",
                                                  lang$nav$dialogBatchLoad$interactiveButtonSplit))
                                       }))}))),
       tags$script("$('#shiny-modal').modal().focus();")))
