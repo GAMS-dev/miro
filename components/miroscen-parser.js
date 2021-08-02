@@ -3,7 +3,7 @@ const path = require('path');
 const { format } = require('util');
 const { dialog } = require('electron');
 const log = require('electron-log');
-const addModelData = require('./import-data.js');
+const addModelData = require('./import-data');
 
 function miroscenGetModelName(scenFilePath, successCallback, errCallback) {
   yauzl.open(scenFilePath, { lazyEntries: true }, (err, zipfile) => {

@@ -8,14 +8,14 @@ const fs = require('fs-extra');
 const yauzl = require('yauzl');
 const util = require('util');
 const log = require('electron-log');
-const menu = require('./components/menu.js');
-const installRPackages = require('./components/install-r.js');
+const menu = require('./components/menu');
+const installRPackages = require('./components/install-r');
 
 const requiredAPIVersion = 1;
 const miroVersion = '2.0.1';
 const miroRelease = 'Jun 29 2021';
 const libVersion = '1.3';
-const exampleAppsData = require('./components/example-apps.js')(miroVersion, requiredAPIVersion);
+const exampleAppsData = require('./components/example-apps')(miroVersion, requiredAPIVersion);
 const LangParser = require('./components/LangParser');
 const addModelData = require('./components/import-data');
 const addMiroscen = require('./components/miroscen-parser');
