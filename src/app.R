@@ -718,9 +718,9 @@ if(is.null(errMsg)){
         quit("no", 0L)
       }
     }
-    installAndRequirePackages(requiredPackagesCR, installedPackages,
-                              RLibPath, Sys.getenv("MIRO_CRAN_MIRROR", CRANMirror), miroWorkspace,
-                              attachPackages = FALSE)
+    errMsg <- installAndRequirePackages(requiredPackagesCR, installedPackages,
+                                        RLibPath, Sys.getenv("MIRO_CRAN_MIRROR", CRANMirror), miroWorkspace,
+                                        attachPackages = FALSE)
     rm(requiredPackagesCR)
   }
   options("DT.TOJSON_ARGS" = list(na = "string", na_as_null = TRUE))
