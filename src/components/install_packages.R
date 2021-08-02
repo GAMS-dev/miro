@@ -69,9 +69,29 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
         options(install.packages.compile.from.source = "never")
         for(customPackage in newPackages){
           print(paste0("Installing: ", customPackage))
-          install.packages(customPackage, lib = customLibPath,
-                           repos = CRANMirror,
-                           dependencies = c("Depends", "Imports", "LinkingTo"))
+          tryCatch(
+            install.packages(customPackage, lib = customLibPath,
+                             repos = CRANMirror,
+                             dependencies = c("Depends", "Imports", "LinkingTo")),
+            warning = function(e){
+              errMsgTmp <- sprintf("Problems installing required custom R package: %s. Error message: %s.",
+                                   customPackage, conditionMessage(e))
+              print(errMsgTmp)
+              if(exists("flog.fatal")){
+                flog.fatal(errMsgTmp)
+              }
+              errMsg <<- errMsgTmp
+            },
+            error = function(e){
+              errMsgTmp <- sprintf("Problems installing required custom R package: %s. Error message: %s.",
+                                   customPackage, conditionMessage(e))
+              print(errMsgTmp)
+              if(exists("flog.fatal")){
+                flog.fatal(errMsgTmp)
+              }
+              errMsg <<- errMsgTmp
+            }
+          )
         }
         if(identical(getOS(), "osx")){
           # make sure so files are using correct R library
