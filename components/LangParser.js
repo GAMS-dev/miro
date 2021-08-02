@@ -967,7 +967,7 @@ const en = {
     ErrorDataImportHdr: 'Scenario exists',
     ErrorDataImportMsg: "A scenario: '%s' already exists. Do you want to overwrite it?",
     ErrorCustomPackagesHdr: 'New packages must be installed',
-    ErrorCustomPackagesMsg: "Your app contains packages that are not yet installed: '%s'. Do you want to download and install them now from CRAN mirror: '%s'?",
+    ErrorCustomPackagesMsg: "Your app contains packages that are not yet installed: '%s'. Do you want to download and install them now from CRAN mirror: '%s'? Note the license agreements of the new packages.",
     BtnOverwrite: 'Overwrite',
   },
   general: {
@@ -1183,7 +1183,7 @@ const de = {
     ErrorDataImportHdr: 'Szenario existiert bereits',
     ErrorDataImportMsg: "Ein Szenario: '%s' existiert bereits. Möchten Sie es überschreiben?",
     ErrorCustomPackagesHdr: 'Neue Pakete müssen installiert werden',
-    ErrorCustomPackagesMsg: "Ihre App enthält Pakete, die noch nicht installiert sind: '%s'. Möchten Sie sie jetzt vom CRAN-Mirror: '%s' herunterladen und installieren?",
+    ErrorCustomPackagesMsg: "Ihre App enthält Pakete, die noch nicht installiert sind: '%s'. Möchten Sie diese jetzt vom CRAN-Mirror: '%s' herunterladen und installieren? Beachten Sie die Lizenzvereinbarungen der neuen Pakete.",
     BtnOverwrite: 'Überschreiben',
   },
   general: {
@@ -1398,7 +1398,7 @@ const cn = {
     ErrorDataImportHdr: '情景已经存在',
     ErrorDataImportMsg: "一种情景：'%s'已经存在。你想覆盖它吗？",
     ErrorCustomPackagesHdr: '必须安装新软件包',
-    ErrorCustomPackagesMsg: "您的应用程序包含尚未安装的软件包：'%s'。您现在想从CRAN镜像下载并安装它们：'%s'？",
+    ErrorCustomPackagesMsg: "您的应用程序包含尚未安装的软件包：'%s'。您现在想从CRAN镜像下载并安装它们：'%s'？请注意新包的许可协议。",
     BtnOverwrite: '覆写',
   },
   general: {
