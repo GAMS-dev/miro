@@ -718,9 +718,12 @@ if(is.null(errMsg)){
         quit("no", 0L)
       }
     }
-    errMsg <- installAndRequirePackages(requiredPackagesCR, installedPackages,
-                                        RLibPath, Sys.getenv("MIRO_CRAN_MIRROR", CRANMirror), miroWorkspace,
-                                        attachPackages = FALSE)
+    errMsgTmp <- installAndRequirePackages(requiredPackagesCR, installedPackages,
+                                           RLibPath, Sys.getenv("MIRO_CRAN_MIRROR", CRANMirror), miroWorkspace,
+                                           attachPackages = FALSE)
+    if(length(errMsgTmp)){
+      errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
+    }
     rm(requiredPackagesCR)
   }
   options("DT.TOJSON_ARGS" = list(na = "string", na_as_null = TRUE))
@@ -735,7 +738,11 @@ if(is.null(errMsg)){
   }else{
     requiredPackages <- c("DBI", "RPostgres")
   }
-  errMsg <- installAndRequirePackages(requiredPackages, installedPackages, RLibPath, CRANMirror, miroWorkspace)
+  errMsgTmp <- installAndRequirePackages(requiredPackages, installedPackages,
+                                         RLibPath, CRANMirror, miroWorkspace)
+  if(length(errMsgTmp)){
+    errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
+  }
   
   source("./components/db_schema.R")
   source("./components/db.R")
@@ -758,19 +765,23 @@ if(is.null(errMsg)){
                          db = db)
   }, error = function(e) {
     flog.error("Problems initialising dataio class. Error message: %s", conditionMessage(e))
-    errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
+    errMsg <<- paste(errMsg, conditionMessage(e), sep = "\n")
   })
   
   if(LAUNCHHCUBEMODE){
     hcubeDirName <<- file.path(miroWorkspace, hcubeDirName, modelName)
     if(!dir.exists(hcubeDirName) && 
        !dir.create(hcubeDirName, showWarnings = TRUE, recursive = TRUE)){
-      msg <- sprintf("Problems creating Hypercube jobs directory: '%s'. Do you miss write permissions?",
-                     hcubeDirName)
+      errMsgTmp <- sprintf("Problems creating Hypercube jobs directory: '%s'. Do you miss write permissions?",
+                           hcubeDirName)
       flog.error(errMsgTmp)
-      errMsg <- paste(msg, errMsgTmp, sep = '\n')
+      errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
     }
-    errMsg <- installAndRequirePackages(c("digest"), installedPackages, RLibPath, CRANMirror, miroWorkspace)
+    errMsgTmp <- installAndRequirePackages(c("digest"), installedPackages, RLibPath,
+                                           CRANMirror, miroWorkspace)
+    if(length(errMsgTmp)){
+      errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
+    }
     source("./components/db_hcubeimport.R")
   }
 }
@@ -787,8 +798,8 @@ if(is.null(errMsg)){
                           dropdownAliases, config$textOnlySymbols)
     }
   }, error = function(e){
-    flog.error(e)
-    errMsg <<- paste(errMsg, e, sep = '\n')
+    flog.error(conditionMessage(e))
+    errMsg <<- conditionMessage(e)
   })
   remoteUser <- uid
   rememberMeFileName <- paste0(miroWorkspace, .Platform$file.sep, ".cred_", 
@@ -834,8 +845,9 @@ if(is.null(errMsg)){
            !all(vapply(credConfigTmp[1:4], is.character, 
                        logical(1L), USE.NAMES = FALSE)) ||
            !is.logical(credConfigTmp[[5L]])){
-          errMsg <<- "Malformatted credential file. Looks like someone tried to tamper with the app!"
-          flog.error(errMsg)
+          errMsgTmp <- "Malformatted credential file. Looks like someone tried to tamper with the app!"
+          flog.error(errMsgTmp)
+          errMsg <<- paste(errMsg, errMsgTmp, sep = "\n")
           return(NULL)
         }
         credConfig <- list(url = credConfigTmp$url, 
@@ -846,8 +858,9 @@ if(is.null(errMsg)){
                            refreshToken = TRUE)
       }
     }, error = function(e){
-      errMsg <<- "Problems reading JSON file: '%s'. Please make sure you have sufficient access permissions."
-      flog.error(errMsg)
+      errMsgTmp <- "Problems reading JSON file: '%s'. Please make sure you have sufficient access permissions."
+      flog.error(errMsgTmp)
+      errMsg <<- paste(errMsg, errMsgTmp, sep = "\n")
     }, finally = rm(credConfigTmp))
   }
 }
