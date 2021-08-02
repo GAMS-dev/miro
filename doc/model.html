@@ -610,7 +610,7 @@ $offExternalInput
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Tip:</b>
-                                            <p>In the scenario selection module of the <a href="./hypercube.html#scenario-selection">Hypercube Mode</a> you can search for scalar data of a scenario, making it easy to find scenarios.</p>
+                                            <p>In the <a href="./start.html#scenario-loading">batch load module</a> you can search for scalar data of a scenario, making it easy to find scenarios.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                     </div><!--//section-block-->
@@ -653,8 +653,7 @@ $offExternalInput
                                           <p>Both the element label and the element text of a Singleton Set can be migrated to compile time variables using the Dollar Control Options 
                                           <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset" target = "__blank">eval.Set</a>, 
                                           <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalglobalset" target = "__blank">evalGlobal.Set</a>, 
-                                          and <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevallocalset" target = "__blank">evalLocal.Set</a>. We recommend this approach instead of double-dash parameters 
-                                           and GAMS options configured via the Configuration Mode. For more information see <a href = "#command-line" class="scrollto">here</a>.</p>
+                                          and <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevallocalset" target = "__blank">evalLocal.Set</a>. For more information see <a href = "#command-line" class="scrollto">here</a>.</p>
                                       </div><!--//content-->
                                     </div><!--//callout-block--> 
                                 </div><!--//section-block-->
@@ -713,12 +712,12 @@ $offExternalInput
                                       While sets, parameters, scalars etc. are declared directly in the GAMS code and can therefore be tagged with <code class="language-gams">$onExternalInput
                                      </code> / <code class="language-gams">$offExternalInput
                                      </code> (i.e. be part of the GAMS/MIRO data contract), command line parameters lack such a formal declaration. To be able to set them from MIRO, you can specify them in the <a href="./customize.html#configure-widgets">Configuration Mode</a> (or in the <a href="./customize.html#widgets-commandLine"><i>&lt;modelname&gt;.json</i></a> file). If a GAMS option or a double dash parameter is set via MIRO, your GAMS model will automatically be called with these command line parameters.</p>
-                                     <p><b>Note:</b><br>GAMS options and double-dash parameters associated with a scenario are stored in MIRO's internal database. However, the information about them is lost when a scenario is exported as a GDX file. This is also relevant in Hypercube Mode, because the data exchange there is done via GDX files. Double-dash parameters and GAMS options can only be communicated in Hypercube Mode using the (recommended) second approach:</p></li>
+                                     <p><b>Note:</b><br>The information about GAMS options and double-dash parameters associated with a scenario is lost when a scenario is exported in the form of GDX, xlsx or CSV files. When exporting a <a href = "./start.html#miroscen" style = "display:inline;">miroscen file</a>, however, the information is not lost.</p></li>
                                       <li id = "singleton-compile"><b>Singleton Sets:</b><br>
                                       Both the element label and the element text of a set can be migrated to compile time variables using the Dollar Control Options 
                                       <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset" target = "__blank">eval.Set</a>, 
                                       <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalglobalset" target = "__blank">evalGlobal.Set</a>, 
-                                      and <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevallocalset" target = "__blank">evalLocal.Set</a>. Since Singleton Sets are handled, communicated and stored like any other GAMS symbol, this approach has the significant advantage (in contrast to the method above) that the information about command line parameters is not lost at any point, e.g. during GDX export.</p>
+                                      and <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevallocalset" target = "__blank">evalLocal.Set</a>. Since Singleton Sets are handled, communicated and stored like any other GAMS symbol, this approach has the advantage (in contrast to the method above) that the information about command line parameters is not lost during GDX, xlsx or CSV export.</p>
 <pre><code class="language-gams">$onExternalInput
 Singleton Set i 'set description'    / 'label' elementtext /;
 $offExternalInput

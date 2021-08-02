@@ -150,30 +150,20 @@ $(document).ready(function(){
                                            <i class="fas fa-thumbs-up"></i>
                                        </div><!--//icon-holder-->
                                        <div class="content">
-                                            <p>The minimum step size defines the minimum interval that can be used for scenario creation in Hypercube Mode for a range slider. </p>
+                                            <p>The minimum step size is only relevant when submitting a Hypercube job. It defines the minimum interval that can be used for a range slider when submitting a Hypercube job. </p>
                                             <div class="section-block">
                                         <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_sliderrange_minstep_example_marked.png" alt="Sliderrange with step size of 5 and minimum step size of 1"/>
                                     </div>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
-                                    <p>In Hypercube Mode, when a slider range is used, scenarios are generated depending on the specified step size. Example: We configure a single slider with a lower bound of 70, an upper bound of 100 and a step size of 5. In the Hypercube Mode this single slider becomes a slider range with the same limits and the same step size. In the image below the selected limits of 75 to 90 and a step size of 5 result in 4 different variants (75, 80, 85, 90), i.e. 4 scenarios to be calculated.<p>
+                                    <p>When submitting a <a href = "./hc-module.html">Hypercube job</a> and a slider range is used, scenarios are generated depending on the specified step size. Example: We configure a single slider with a lower bound of 70, an upper bound of 100 and a step size of 5. When submitting a Hypercube job, this single slider becomes a slider range with the same limits and the same step size. In the image below the selected limits of 75 to 90 and a step size of 5 result in 4 different variants (75, 80, 85, 90), i.e. 4 scenarios to be calculated.<p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_sliderrange_step_example.png" alt="Sliderrange with step size of 5"/>
                                     </div>
-                                    <p>The <i>minimum step size</i> sets the minimum value the user can specify as step size in Hypercube Mode. The value may be lower than the regular step size. For example, if the slider above is configured with a regular step size of 5, the limits of the slider can be set in increments of 5. However, the step size for scenario generation on the right side can differ, e.g. be set in smaller intervals. If set to 1, this would result in 16 scenarios (75, 76, 77, ..., 89, 90).</p>
+                                    <p>The <i>minimum step size</i> sets the minimum value the user can specify as step size when submitting a Hypercube job. The value may be lower than the regular step size. For example, if the slider above is configured with a regular step size of 5, the limits of the slider can be set in increments of 5. However, the step size for scenario generation on the right side can differ, e.g. be set in smaller intervals. If set to 1, this would result in 16 scenarios (75, 76, 77, ..., 89, 90).</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_sliderrange_minstep_example.png" alt="Sliderrange with step size of 5 and minimum step size of 1"/>
                                     </div>
-                                    
-                                    <div class="callout-block callout-warning">
-                                      <div class="icon-holder">
-                                          <i class="fas fa-info-circle"></i>
-                                      </div><!--//icon-holder-->
-                                      <div class="content">
-                                          <b class="callout-title">Note:</b>
-                                          <p>The minimum step size is only relevant in Hypercube Mode.</p>
-                                      </div><!--//content-->
-                                    </div><!--//callout-block-->
                                     </div>
                                     <h6 id="slider-option-tick" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Show tick marks?</h6>
                                     <div class="expanded"><p>Tick marks are displayed below the sliders and help to visually divide the entire slider width. </p>
@@ -186,11 +176,11 @@ $(document).ready(function(){
                                         <img class="img-fluid" style= "max-height:60pt;" src="assets/images/configuration_mode/widget_slider_tick.png" alt="Slider with tick marks"/>
                                     </div>
                                     </div>
-                                    <h6 id="slider-option-expand" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Should element be expanded automatically in Hypercube Mode?</h6>
-                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube Mode. 
+                                    <h6 id="slider-option-expand" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Should element be expanded automatically when submitting a Hypercube job?</h6>
+                                    <div class="expanded"><p>As explained in detail in the <a href = "./hc-module.html#hcube-config">corresponding chapter</a>, widgets will be expanded when submitting a Hypercube job. 
                                     With the option available here, the automatic extension of a widget can be switched off. The picture below shows extended widgets.</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/batch_img/regular_batch.png" alt="Expand in Hypercube Mode"/>
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/batch_img/regular_batch.png" alt="Expand for Hypercube job"/>
                                     </div>
                                     </div>
                                 </div><!--//section-block-->
@@ -227,10 +217,10 @@ $(document).ready(function(){
                                     <p>In the GAMS model we can access the selected range with
                                     <code class="language-gams">%RANGE_LO%</code> for the lower value and <code class="language-gams">%RANGE_UP%</code> for the upper value.</p>
                                     <p>More on widgets with ranges can be found <a href="./customize.html#widgets-ranges">here</a>.</p>
-                                    <h6 class="block-title">Range sliders in Hypercube Mode</h6>
-                                    <p>A range slider in Base Mode becomes a range slider in Hypercube Mode with an additional checkbox:</p>
+                                    <h6 class="block-title">Range sliders for Hypercube jobs</h6>
+                                    <p>A range slider in Base Mode becomes a range slider with an additional checkbox when submitting a Hypercube job:</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_sliderrange_hypercube.png" alt="Sliderrange in Hypercube Mode"/>
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_sliderrange_hypercube.png" alt="Sliderrange with checkbox"/>
                                     </div>
                                     <p>With this checkbox you can determine if the selected range of the slider should result in a single scenario (<i>All combinations?</i> unchecked) or if all possible combinations within this range should be used (<i>All combinations?</i> checked). In the example above - <i>All combinations?</i> is checked - the selected step size determines which scenarios are generated for the Hypercube job. With a step size of 5 this would result in 10 different symbol ranges / scenarios:</p>
                                     <ul>
@@ -302,9 +292,9 @@ $offExternalInput
                                     <h6 id="checkbox-option-default" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Default value</h6>
                                     <div class="expanded"><p>The default value specifies the initial state of the checkbox (checked or unchecked).</p>
                                     </div>
-                                    <h6 id="checkbox-option-expand" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Should element be expanded automatically in Hypercube Mode?</h6>
-                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube Mode. 
-                                    In Hypercube Mode a checkbox becomes a multi dropdwon menu with the entries <i>yes</i> and <i>no</i>. With the option available here, the automatic expansion of a widget can be switched off.</p>
+                                    <h6 id="checkbox-option-expand" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Should element be expanded automatically when submitting a Hypercube job?</h6>
+                                    <div class="expanded"><p>As explained in detail in the <a href = "./hc-module.html#hcube-config">corresponding chapter</a>, widgets will be expanded when submitting a Hypercube job. 
+                                    When submitting a Hypercube job, a checkbox becomes a multi dropdwon menu with the entries <i>yes</i> and <i>no</i>. With the option available here, the automatic expansion of a widget can be switched off.</p>
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widget-checkbox-json">
@@ -335,7 +325,7 @@ $offExternalInput
                                     <div class="section-block">
                                         <img class="img-fluid" src="assets/images/configuration_mode/widget_dropdown_config.png" alt="Dropdown menu configuration"/>
                                     </div>
-                                    <p>The <i>model type</i> for which the dropdown menu is configured, is a GAMS Singleton Set (symbol name: <i>typeSelect</i>). The configuration of a GAMS option has been avoided because the information about such a command-line parameter is lost when a scenario is exported as a GDX file or used in Hypercube Mode. By using a singleton set instead, this information is saved:</p>
+                                    <p>The <i>model type</i> for which the dropdown menu is configured, is a GAMS Singleton Set (symbol name: <i>typeSelect</i>):</p>
                                     <pre><code class="language-gams">
 Set t      'Available model types' / lp, mip, minlp /;
 
@@ -496,17 +486,14 @@ $offExternalInput
                                        </div><!--//icon-holder-->
                                        <div class="content">
                                            <b class="callout-title">Tip:</b>
-                                            <p>This option is intended for the use of singleton sets to define compile-time variables in the GAMS model. Using singleton sets instead of command line parameters has the advantage that their information is not lost at any time, e.g. during GDX export. Read more about this topic <a href="./model.html#command-line">here</a>.</p>
+                                            <p>This option is intended for the use of singleton sets to define compile-time variables in the GAMS model. Using singleton sets instead of command line parameters has the advantage that their information is not lost during GDX, xlsx or CSV export. Read more about this topic <a href="./model.html#command-line">here</a>.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
-                                    <p>Singleton sets can have an element label and an element text. If the set is configured as a dropdown menu, both components will be communicated with GAMS by default.</p>
-                                    <p>If this option is activated, the choice of the dropdown menu will become the element text of the set, whereas the label will be set to the empty string. This allows for the communication of strings between MIRO and GAMS while preserving the UEL order.</p> 
-									<p>Migrating a singleton set into a compile time variable can be done using the <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset">$eval.set</a> method. Since the variable should be filled by the element text, the attribute <i>TE</i> has to be used: <code class = "language-gams">$eval.Set VARNAME SETID.TE</code>.</p> 
-                                    <p>Note that aliases for the dropdown menu choices must be configured to use this option!</p>
+                                    <p>Singleton sets can have an element label and an element text. If the set is configured as a dropdown menu, both components will be communicated with GAMS by default. If this option is activated, the choice of the dropdown menu will become the element text of the set, whereas the label will be set to the empty string. This allows for the communication of strings between MIRO and GAMS while preserving the UEL order.</p> 
+									<p>Migrating a singleton set into a compile time variable can be done using the <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset">$eval.set</a> method. Since the variable should be filled by the element text, the attribute <i>TE</i> has to be used: <code class = "language-gams">$eval.Set VARNAME SETID.TE</code>. Note that aliases for the dropdown menu choices must be configured to use this option!</p>
                                     </div>
-                                    <h6 id="dropdown-option-expand" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Should element be expanded automatically in Hypercube Mode?</h6>
-                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube Mode. 
-                                    In Hypercube Mode a dropdown menu becomes a multi dropdwon menu. With the option available here, the automatic expansion of a widget can be switched off.</p>
+                                    <h6 id="dropdown-option-expand" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Should element be expanded automatically when submitting a Hypercube job?</h6>
+                                    <div class="expanded"><p>As explained in detail in the <a href = "./hc-module.html#hcube-config">corresponding chapter</a>, widgets will be expanded when submitting a Hypercube job (a dropdown menu becomes a multi dropdown menu). With the option available here, the automatic expansion of a widget can be switched off.</p>
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widget-dropdown-json">
@@ -690,11 +677,11 @@ $offExternalInput
                                     <div class="expanded"><p>If active, the date overview of the widget will be closed as soon as a date is clicked. 
                                     Otherwise, the widget remains open and closes only when you click outside the datepicker.</p>
                                     </div>
-                                    <h6 id="date-option-expand" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Should element be expanded automatically in Hypercube Mode?</h6>
-                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube Mode. A date selector in Base Mode will become a date range selector in Hypercube Mode.
+                                    <h6 id="date-option-expand" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Should element be expanded automatically when submitting a Hypercube job?</h6>
+                                    <div class="expanded"><p>As explained in detail in the <a href = "./hc-module.html#hcube-config">corresponding chapter</a>, widgets will be expanded when submitting a Hypercube job. 
                                     With the option available here, the automatic extension of a widget can be switched off.</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/batch_img/regular_batch.png" alt="Expand in Hypercube Mode"/>
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/batch_img/regular_batch.png" alt="Expand for submitting a Hypercube job"/>
                                     </div>
                                     </div>
                                 </div><!--//section-block-->

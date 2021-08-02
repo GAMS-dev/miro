@@ -112,20 +112,6 @@
                                     </div>
                                 </div>
                             </section><!--//doc-section-->
-                            <section id="studio-hypercube-mode" class="doc-section">
-                                <h2 class="section-title">Run Hypercube Mode<a title="Go to chapter" class=" info-wrapper" href="./hypercube.html#hypercube-overview"><i class="icon fa fa-external-link-alt info-icon"></i></a></h2>
-                                <div class="section-block">
-                                    <div class="section-block" style="display:block; margin:auto;">
-                                        <img class="img-fluid" style="max-height: 150pt;" src="assets/images/studio/hcube_studio.png" alt="Launch MIRO Hypercube Mode" />
-                                    </div>
-                                    <p>This option starts the MIRO Hypercube Mode. In this mode, you can automatically solve scenarios with several different parameterizations at once.
-                                    </p>
-                                    <div class="section-block" style="display:block; margin:auto;">
-                                        <img class="img-fluid" style="margin-bottom:15px;" src="assets/images/batch_img/hcube_workflow.png" alt="Hypercube Mode workflow" />
-                                    </div>
-                                    <p>Before using the Hypercube Mode, MIRO has to know which files belong to the GAMS model. Read more on how you can tell MIRO which files belong to your model via the <a href="#studio-create-assembly" class="scrollto">model assembly file</a>.</p>
-                                </div>
-                            </section><!--//doc-section-->
                             <section id="studio-configuration-mode" class="doc-section">
                                 <h2 class="section-title">Run Configuration Mode<a title="Go to chapter" class=" info-wrapper" href="./customize.html#configurationMode"><i class="icon fa fa-external-link-alt info-icon"></i></a></h2>
                                 <div class="section-block">
@@ -153,7 +139,7 @@
                             <section id="studio-create-assembly" class="doc-section">
                                 <h2 class="section-title">Create model assembly<a title="Go to chapter" class=" info-wrapper" href="./deployment.html#sbs-create-app"><i class="icon fa fa-external-link-alt info-icon"></i></a></h2>
                                 <div class="section-block">
-                                    <p>If you use the Hypercube Mode or want to <a href="#studio-deploy" class="scrollto">deploy</a> a fully configured app, MIRO needs to know about the files that belong to your model. This is primarily the main model file, but also all files necessary to calculate all inputs and outputs, e.g. files that are included in the model. To tell MIRO about these files, go to <i>Assembly and Deploy</i>. In the <i>Assembly File</i> section select those folders and files which are needed. If you select a folder, all files in it will be included. If you want to use only single files of a folder, you have to expand the folder and select the corresponding file(s). When you are finished, click on <i>create</i>.</p>
+                                    <p>If you want to <a href="#studio-deploy" class="scrollto">deploy</a> a fully configured app, MIRO needs to know about the files that belong to your model. This is primarily the main model file, but also all files necessary to calculate all inputs and outputs, e.g. files that are included in the model. To tell MIRO about these files, go to <i>Assembly and Deploy</i>. In the <i>Assembly File</i> section select those folders and files which are needed. If you select a folder, all files in it will be included. If you want to use only single files of a folder, you have to expand the folder and select the corresponding file(s). When you are finished, click on <i>create</i>.</p>
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:350pt" src="assets/images/deployment/model-assembly.png" alt="create model assembly file" />
                                     </div>
@@ -182,6 +168,15 @@
                                             <li> Local multi-user (uses <i>idir</i>): With this third option, your model is again executed from a random location, but this time no model data is extracted here. Instead, GAMS is executed with an <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir" target="_blank">input directory</a> pointing to the path where your model files are located. Choose this option ONLY if you have many large files that belong to your model and extracting them would take a long time. Be aware that due to the fact that <span class="code">idir</span> is used, your model might break! For example, if you use <code class="language-gams">$call</code> or the execution-time equivalent <code class="language-gams">execute</code> (or related functions), the relative paths used in these calls will no longer exist (since the <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOcurdir">curdir</a> is now a random location). The solution is to prefix all these relative paths with <code class="language-gams">%gams.idir1%</code>. For example, in order to import an Excel file <span class="code">test.xlsx</span>, GDXXRW needs to be called like this: <kbd>$call gdxxrw i=%gams.idir1%test.xlsx</kbd>. Alternatively, you can also use absolute paths (e.g. via <code class="language-gams">$setNames "%gams.input%" fp fn fe</code> (see <a href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARsetnames" target="_blank">here</a>). 
                                             <br>Adjusting all affected paths is potentially a lot of work, so we strongly advise against using this option unless you know what you are doing!</li>
                                         </ol>
+                                        <div class="callout-block callout-warning">
+                                            <div class="icon-holder">
+                                                <i class="fas fa-info-circle"></i>
+                                            </div><!--//icon-holder-->
+                                            <div class="content">
+                                                <b class="callout-title">Note</b>
+                                                <p>With MIRO version 2.1, the Hypercube Mode is deprecated and and no longer exists as a separate mode. You can now submit Hypercube jobs from the Base Mode if you are using GAMS MIRO with a <a href = "./server.html">GAMS Engine backend</a> (GAMS MIRO Server or GAMS MIRO Desktop - boosted by GAMS Engine). You can find the most recent documentation <a href = "./hc-module.html">here</a>.</p>
+                                            </div><!--//content-->
+                                        </div><!--//callout-block-->
                                     <div class="callout-block callout-warning">
                                           <div class="icon-holder">
                                               <i class="fas fa-info-circle"></i>
@@ -207,7 +202,6 @@
                                       <a class="nav-link scrollto" href="#studio-miro-interaction">MIRO interaction</a>
                                     </nav>
                                     <a class="nav-link scrollto" href="#studio-base-mode">Run Base Mode</a>
-                                    <a class="nav-link scrollto" href="#studio-hypercube-mode">Run Hypercube Mode</a>
                                     <a class="nav-link scrollto" href="#studio-configuration-mode">Run Configuration Mode</a>
                                     <a class="nav-link scrollto" href="#studio-skip-execution">Skip model execution</a>
                                     <a class="nav-link scrollto" href="#studio-create-assembly">Create model assembly</a>

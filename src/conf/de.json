@@ -1485,7 +1485,7 @@
         "minStep": "Minimale Schrittweite",
         "minStepTooltip": "Nur relevant im Hypercube-Modus. Wenn leer, wird die Schrittweite genommen. - Dokumentation öffnen",
         "ticks": "Markierungen Anzeigen?",
-        "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
+        "hcube": "Soll das Element für das lösen von Hypercube jobs automatisch erweitert werden?"
       },
       "sliderrange":{
         "label": "Wählen Sie eine Widget-Beschriftung",

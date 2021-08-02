@@ -64,6 +64,15 @@
                             <section id="hypercube-introduction" class="doc-section">
                                 <h2 class="section-title">Introduction</h2>
                                 <div class="section-block">
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p>With MIRO version 2.1, the Hypercube Mode is deprecated and and no longer exists as a separate mode. You can now submit Hypercube jobs from the Base Mode if you are using GAMS MIRO with a <a href = "./server.html">GAMS Engine backend</a> (GAMS MIRO Server or GAMS MIRO Desktop - boosted by GAMS Engine). You can find the most recent documentation <a href = "./hc-module.html">here</a>.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
                                     <p>MIRO allows the user to load input data, manipulate it, start & stop the GAMS optimization run, inspect the results as well as save, manage and compare different scenarios.</p>
                                     <p>Beside this <i>Base Mode</i>, there is another mode which allows to configure and evaluate so-called <a href="./faqs.html#def-hypercube-job">Hypercube jobs</a>. A Hypercube job describes the automated execution of a certain number of automatically generated scenarios that differ with regard to their parameterization.</p>
                                     <p>Let's get back to our <i>transport</i> example: In the MIRO <i>Base Mode</i>, among other things, we saw that we can determine the freight costs for the transportation of goods from suppliers to markets. We also learned that MIRO allows us to submit this particular scenario and fetch the results once its done.</p>
@@ -577,7 +586,21 @@ $offExternalInput
                                               <p>You can search for empty entries (<i>NA</i>) by leaving the field empty if it is a numeric field, or by using the <kbd>exists</kbd> and <kbd>doesn't exist</kbd> operators for character fields!</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
-                                        <p>Once you have set all the filters you are interested in, you can execute your query by clicking on the <i>Query database</i> button. After the results have been retrieved, the page will be updated and you will see a table with the scenarios that correspond to your query. In the resulting table, you again have the option of selecting the scenarios that really interest you. If you want to load a scenario that was part of a Hypercube job into the Base Mode, you can get its hash value by clicking <i>Show Hash</i> in the lower right corner. Note that you can only show the hash of one scenario at a time, so don't select more than one row before clicking this button. To learn more about how to import a Hypercube scenario using its hash, read <a href="./start.html#import-data">here</a>.</p>
+                                        <p>Once you have set all the filters you are interested in, you can execute your query by clicking on the <i>Query database</i> button. After the results have been retrieved, the page will be updated and you will see a table with the scenarios that correspond to your query. In the resulting table, you again have the option of selecting the scenarios that really interest you.</p> 
+                                        <div class="callout-block callout-success">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-thumbs-up"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <b class="callout-title">Tip:</b>
+                                              <p>If you want to load a scenario that was part of a Hypercube job into the Base Mode, you can get its hash value by clicking <i>Show Hash</i> in the lower right corner. Note that you can only show the hash of one scenario at a time, so don't select more than one row before clicking this button. </p>
+                                              <p>To load the scenario in Base mode, switch to that mode, click on <i>Load data</i> and go to tab <i>Hypercube</i>. 
+                                              </p>
+                                              <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                                  <img class="img-fluid" style="max-height:225pt;" src="assets/images/import-hypercube.png" alt="Import scenario via hash value" />
+                                              </div>
+                                          </div><!--//content-->
+                                        </div><!--//callout-block-->                                        
                                         <p>Whenever you have chosen the scenarios you want to compare, you will be asked to choose a comparison/analysis method:</p>
                                         <div class="section-block" style="text-align:center;">
                                               <img class="img-fluid" style="display:block; margin:auto; max-height:150px;" src="assets/images/batch_img/comparison_method.png" alt="Choose method for analyses" />

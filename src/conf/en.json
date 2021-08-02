@@ -1485,7 +1485,7 @@
         "minStep": "Minimum step size",
         "minStepTooltip": "Only relevant in Hypercube Mode. If empty, the step size is used. - Open documentation",
         "ticks": "Show tick marks?",
-        "hcube": "Should element be expanded automatically in Hypercube Mode?"
+        "hcube": "Should element be expanded automatically when submitting Hypercube jobs?"
       },
       "sliderrange":{
         "label": "Choose a label",

@@ -1484,7 +1484,7 @@
         "minStep": "最小步长",
         "minStepTooltip": "仅在Hypercube模式下相关。 如果该值为空，则默认使用步长的值。更多信息，请查看文档",
         "ticks": "显示刻度线？",
-        "hcube": "是否允许元素在Hypercube模式下自动扩展？"
+        "hcube": "在提交Hypercube作业时，元素是否应该自动展开？"
       },
       "sliderrange":{
         "label": "选择一个标签",

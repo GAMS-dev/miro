@@ -64,9 +64,7 @@
                             <section id="introduction-section" class="doc-section">
                                 <h2 class="section-title">Introduction</h2>
                                 <div id="step1"  class="section-block">
-                                    <p>This chapter guides you through the first steps of using GAMS MIRO and shows you how to deploy your own GAMS models.</p>
-                                    <p>In this as well as the subsequent sections we will mainly deal with the GAMS MIRO Base Mode. In the Base Mode, you can supply your models with input data, generate, display and save the results of your optimization as well as compare different scenarios with each other, everything visually supported by various plotting tools.
-                                    The Hypercube Mode will be the subject of an extra section, see <a href="./hypercube.html">here</a>.</p>
+                                    <p>This chapter guides you through the first steps of using GAMS MIRO and shows you how to deploy your own GAMS models. You will learn how you can supply your models with input data, generate, display and save the results of your optimization as well as compare different scenarios with each other, everything visually supported by various plotting tools.</p>
                                 </div><!--//section-block-->
                                 <div id="gams-connection"  class="section-block">
                                     <h3 class="block-title">GAMS connection</h3>
@@ -237,7 +235,7 @@
                                     <p>In addition, the buttons for loading input data and for starting a GAMS run are located here:</p>
                                     <ol class="fa-ul">
                                       <li><span class="fa-li"><i class="fas fa-square"></i></span><b>Load data:</b><br/>
-                                        Load input data for a model run. This can be a local file, existing data from the database or scenarios coming from the <a href="./hypercube.html">Hypercube Mode</a>.
+                                        Load input data for a model run. This can be a local file or existing data from the database.
                                       </li>
                                       <li><span style="color: #F39619;" class="fa-li"><i class="fas fa-square"></i></span><b>Solve model:</b><br/>
                                         Solve the GAMS model with the current set of input data. This will run your GAMS model and collect the results when it finished executing.
@@ -293,7 +291,7 @@
                                     <div id="import-data"  class="section-block">
                                         <h3 class="block-title">Import data</h3>
                                         <p>A GAMS MIRO app is quite useful if there is data to be visualized, e.g. in the form of tables, diagrams or other charts. This applies to output data as well as input data.
-                                        Input data that is to be visualized in MIRO can be imported either from existing scenarios in the database or via a local file (currently, this can be a MIROSCEN file, a GDX container, an Excel spreadsheet, or CSV files). A MIROSCEN file is a special file format used by MIRO to export and import a complete MIRO scenario. In contrast to other supported file formats like GDX, Excel or CSV, a MIROSCEN file includes <a href = "#scenario-metadata" class = "scrollto">metadata</a> such as tags, <a href="#metadata-views" class="scrollto">views</a>, <a href="#file-attachments" class="scrollto">attachments</a> etc.</p>
+                                        Input data that is to be visualized in MIRO can be imported either from existing scenarios in the database or via a local file (currently, this can be a MIROSCEN file, a GDX container, an Excel spreadsheet, or CSV files). <span id="miroscen">A MIROSCEN file</span> is a special file format used by MIRO to export and import a complete MIRO scenario. In contrast to other supported file formats like GDX, Excel or CSV, a MIROSCEN file includes <a href = "#scenario-metadata" class = "scrollto">metadata</a> such as tags, <a href="#metadata-views" class="scrollto">views</a>, <a href="#file-attachments" class="scrollto">attachments</a> etc.</p>
                                         <p>To import such data, click on the <i>Load data</i> button in the navigation bar. The following dialog pops up:</p>
                                             <div class="row">
                                                 <div class="col-md-6">
@@ -475,14 +473,6 @@
                                             </div>
                                         </div>
                                         <p>Instead of importing all the datasets for your model, you can also select the symbols to import manually. To do so, click on <i>Manually choose datasets</i> and choose those symbols to be imported from the uploaded spreadsheet. This will cause MIRO to ignore other datasets.</p>
-                                        <p>Besides the local and the database import there is a third option: <i>Hypercube</i>. This tab allows you to import scenarios that have been generated and saved in the <a href="./hypercube.html">Hypercube Mode</a>.
-                                        Such a scenario that is generated in Hypercube Mode corresponds to a scenario from the Base Mode, except that the former additionally contains a <a href = "https://www.gams.com/latest/docs/UG_SolverUsage.html#UG_SolverUsage_TraceFile" target = "_blank">trace file</a>. 
-                                        Since those scenarios are identified by their hash value (read more about this <a href="./hypercube.html">here</a>) and not by a user-defined name like in Base Mode, you need to import them differently.
-                                        </p>
-                                        <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                            <img class="img-fluid" style="max-height:225pt;" src="assets/images/import-hypercube.png" alt="Import scenario via hash value" />
-                                        </div>
-                                        <p>Please refer to the chapter about <a href="./hypercube.html#scenario-selection">scenario selection</a> in Hypercube Mode to learn how to retrieve the hash value of a Hypercube scenario.</p>
                                         <p id = "startup-import"><b>Import multiple scenarios on startup</b>
                                         <br>In addition to the options mentioned above, which can be accessed directly from MIRO, (multiple) scenarios can also be imported automatically when starting an application. To do this, the scenarios to be imported (MIROSCEN, GDX, CSV or Excel files) must be put in the folder <span class="code">data_&lt;modelname&gt;</span> (located in the model directory). With the next start of MIRO, those scenarios are imported automatically. Note that in development mode MIRO skips the import of files that have not changed since the last start.</p>
                                         <p>In addition to scenario data, <a href="#metadata-views" class="scrollto">views</a> can also be imported together with the scenario data. Simply place the JSON file with the view data here as well. The file has to be named <span class="code">&lt;scenarioName&gt;_views.json</span>. For example if you want to provide data in the form of a GDX file and views for a scenario with the name <span class="code">my_scenario</span>, you have to place both <span class="code">my_scenario.gdx</span> and <span class="code">my_scenario_views.json</span> into the <span class="code">data_&lt;modelname&gt;</span> directory.</p>
@@ -574,9 +564,6 @@
                                         <h3 class="block-title">Finding and loading scenarios</h3>
                                         <p>To help you find and load exactly the scenarios you are interested in, MIRO has a powerful <i>Batch Load</i> module that graphically assists you create and execute complex database queries.</p>
                                         <p>Filters can be applied to scenario metadata such as the creation time, scenario name, or optional tags you have assigned to a scenario. You can also filter by any input and output scalars defined in your model as well as any Double-dash parameters and GAMS options. You can combine any of these filters with the logical operators AND and OR:</p>
-                                         <div class="section-block" style="text-align:center;">
-                                              <img class="img-fluid" src="assets/images/db_query.png" alt="Results of database search by Batch Load module" />
-                                        </div>
                                         <div class="callout-block callout-success">
                                           <div class="icon-holder">
                                               <i class="fas fa-thumbs-up"></i>
@@ -586,13 +573,26 @@
                                               <p>You can search for empty entries (<i>NA</i>) by leaving the field empty if it is a numeric field, or by using the <kbd>exists</kbd> and <kbd>doesn't exist</kbd> operators for character fields!</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
+                                        <p>You can execute your query by clicking on the <i>Fetch results</i> button. After the results have been retrieved, the page will be updated and you will see a table with the scenarios that correspond to your query.</p>
+                                         <div class="section-block" style="text-align:center;">
+                                              <img class="img-fluid" src="assets/images/db_query.png" alt="Results of database search by Batch Load module" />
+                                        </div>
+                                        <div class="callout-block callout-success">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-thumbs-up"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <b class="callout-title">Tip:</b>
+                                              <p>You can change the name and/or job tag(s) of a scenario by double-clicking the corresponding cell in the table. This can be especially useful for scenarios that were generated via a Hypercube Job and have a (SHA-256) hash as name by default.</p>
+                                          </div><!--//content-->
+                                        </div><!--//callout-block-->
                                         <p>Once you have found the scenarios you were looking for, you can do one of the following:</p>
                                         <ul>
                                             <li><b>Delete scenarios:</b><br/>
                                             Remove the selected scenarios.
                                             </li>
                                             <li><b>Download data:</b><br/>
-                                            Download scenario data for external analysis.
+                                            Download scenario data for external analysis. <a href="https://nbviewer.jupyter.org/urls/www.gams.com/external/jupyter_examples/PickStockAnalysisR.ipynb" target="_blank">Here</a> you can find an example of such an external analysis. The data of selected scenarios were analyzed using R in combination with Jupyter Notebook.
                                             </li>
                                             <li><b>Analyze:</b><br/>
                                             Run one of your <a href="./customize.html#batch-analysis-scripts">customized batch analysis scripts</a> (only visible if you have custom analysis scripts set up).
@@ -845,9 +845,7 @@
                                 <h2 class="section-title">Additional Features </h2>
                                 <div id="multiple-scenarios" class="section-block">
                                   <h6>Manage multiple scenarios</h6>
-                                  <p>The mode of GAMS MIRO that you learned about in this chapter is designed to configure and solve one scenario at a time. But what if we want to solve a multitude of such scenarios with different parameterizations one after the other? To avoid having to configure and solve each scenario individually, there is another mode built into MIRO that we call the <a href="./hypercube.html"><i>Hypercube Mode</i></a>. In this mode, you can automatically solve scenarios with several different parameterizations.</p>
-                                  <p>We developed this mode to efficiently generate, store and analyze a multitude of scenarios. Look at the chapter about the <a href="./hypercube.html">Hypercube Mode</a> to learn more.
-
+                                  <p>In this chapter we learned how to configure and solve one scenario at a time. But what if we want to efficiently solve a large number of such scenarios with different parameterizations? To avoid having to configure and solve each scenario individually, there is an option to submit so-called <a href="./hc-module.html"><i>Hypercube jobs</i></a>. Hypercube jobs allow you to efficiently and automatically create, store and analyze a variety of scenarios. Learn more <a href="./hc-module.html">here</a>.</p>
                                 </div>
                                 <div id="miro-server" class="section-block">
                                   <h6>GAMS MIRO Server</h6>

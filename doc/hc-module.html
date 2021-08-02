@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
+<head>
+    <title>GAMS MIRO - Hypercube Jobs</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GAMS MIRO documentation">
+    <meta name="author" content="GAMS Development Corp.">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <!-- FontAwesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <!--#include virtual="/wheader.html" -->
+</head>
+
+<body class="body-orange">
+    <!--#include virtual="/wbody.html" -->
+    <div class="page-wrapper">
+    <!--#include virtual="/mirover.html" -->
+
+        <!-- ******Header****** -->
+        <header id="header" class="sub-header">
+            <div class="container">
+                <div class="branding">
+                    <h1 class="logo">
+                        <a href="index.html">
+                          <img class="img-fluid" style="height:75px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
+                        </a>
+                    </h1>
+                </div><!--//branding-->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">Hypercube Jobs</li>
+                </ol>
+            </div><!--//container-->
+        </header><!--//header-->
+        <div class="doc-wrapper">
+            <div class="container">
+                <div class="row justify-content-end search-box-wrapper">
+                    <div class="float-right">
+                        <input class="form-control search-box" id="miroSearch" type="text" placeholder="Search" aria-label="Search">
+                        <ul id="miroSearchResults" class="list-group">
+                        </ul>
+                    </div>
+                </div>
+                <div id="doc-header" class="doc-header text-center">
+                    <h1 class="doc-title"><i class="icon fas fa-cube"></i> Hypercube Job</h1>
+                </div><!--//doc-header-->
+                <div class="doc-body row">
+                    <div class="doc-content col-md-9 col-12 order-1">
+                        <div class="content-inner">
+                            <section id="hypercube-introduction" class="doc-section">
+                                <h2 class="section-title">Introduction</h2>
+                                <div class="section-block">
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p>With MIRO version 2.1, the Hypercube Mode is deprecated and and no longer exists as a separate mode. You can now submit Hypercube jobs from the Base Mode if you are using GAMS MIRO with a <a href = "./server.html">GAMS Engine backend</a> (GAMS MIRO Server or GAMS MIRO Desktop - boosted by GAMS Engine).</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    <p>If MIRO is connected to <a href="https://gams.com/engine">GAMS Engine</a>, it is also possibile to configure and evaluate so-called <i>Hypercube jobs</i>. A Hypercube job describes the automated execution of a certain number of automatically generated scenarios that differ with regard to their parameterization.</p>
+                                    <p>Let's get back to our <i>transport</i> example: Among other things, we have seen that we can determine the freight costs for transporting goods from suppliers to markets. We also learned that MIRO allows us to submit this particular scenario and fetch the results once its done. But what if we want to solve a multitude of such scenarios with different parameterizations? Say, we are interested in finding out how our model behaves with regard to a change in freight costs as well as other input parameters? To avoid having to configure and solve each scenario individually, we can configure a <i>Hypercube job</i>. A Hypercube job allows us to automatically solve and examine a subset of the parameter space of our model. This is done by varying scalar model parameters (zero-dimensional GAMS parameters) within a given range. As a consequence, a large number of scenarios can be configured and analyzed at once.</p>
+                                    <div class="section-block" style="text-align:center;">
+                                        <img class="img-fluid" src="assets/images/batch_img/hcube_steps_schema.png" alt="Automated scenario generation" />
+                                    </div>
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+                            <section id="hypercube-scengen" class="doc-section">
+                                <h2 class="section-title" id = "hcube-submit">Submission of a Hypercube job</h2>
+                                <div class="section-block">
+                                    <p>A <a href="./faqs.html#def-scenario">scenario</a> is characterized by a particular set of model input 
+                                    (and output) parameters. If, for example, for a run of the <i>transport</i> model, the freight cost is set 
+                                    to 90 and the minimum shipment of goods is set to 100, then this parameterization characterizes the scenario 
+                                    (together with the other input parameters as well as attachments). The Hypercube configuration 
+                                    discussed here makes it possible to automatically submit several of those scenarios at once. </p>
+                                    <div  id="hcube-config"  class="section-block">
+                                        <h3 class="block-title">Job configuration</h3>
+                                        <p>If MIRO runs with GAMS Engine backend, you can submit jobs via "Solve model" (synchronous execution) and "Submit job" (asynchronous execution) by default. If the <a href = "./customize.html#activate-hcube">Activate Hypercube module</a> option is set, there is a third option: "Submit Hypercube".</p>
+                                        <div class="section-block" style="text-align:center;">
+                                            <img class="img-fluid" style="margin-bottom:15px; max-height:300pt" src="assets/images/batch_img/submit_options.png" alt="Job submission" />
+                                        </div>
+                                        <p>A modal dialog opens when you click on it. In this dialog all scalar input widgets (sliders, dropdown menus, checkboxes, etc.) configured for the MIRO app are displayed. However, the display of some widgets has changed. They have been automatically transformed:</p>
+                                        <div class="section-block" style="text-align:center;">
+                                            <img class="img-fluid" style="margin-bottom:15px;" src="assets/images/batch_img/regular_batch.png" alt="cartesian product of configured parameters" />
+                                        </div>
+                                        <p>When we submit a normal job, we can specify the freight cost as well as the minimum amount of goods to ship. Those are zero dimensional values. The same scalars can now be specified within a given range: 
+                                        The sliders have now become slider ranges. In addition, we can set a <i>step size</i> for each slider range.
+                                        Furthermore, the single dropdown menu for selecting the problem type has been replaced by a multi dropdown menu.</p>
+                                        <div class="callout-block callout-success">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-thumbs-up"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <b class="callout-title">Tip:</b>
+                                              <p>Input widgets you defined for your scalars in the Base Mode are automatically expanded when submitting a Hypercube job.</p>
+                                          </div><!--//content-->
+                                        </div><!--//callout-block-->
+                                        <div  class="section-block">
+                                            <p>The table below gives an overview of the scalar input widgets and their different appearance when submitting a Hypercube job.</p>
+                                            <div class="table-responsive">
+                                              <table class="table table-striped" style="margin: 0px auto; margin-bottom:15px;">
+                                                  <thead>
+                                                      <tr>
+                                                        <th>Single job</th>
+                                                        <th>Hypercube job</th>
+                                                      </tr>
+                                                  </thead>
+                                                  <tbody>
+                                                      <tr>
+                                                        <td>Single slider</td>
+                                                        <td>Slider range with step size selection</td>
+                                                      </tr>
+                                                      <tr>
+                                                        <td>Slider range</td>
+                                                        <td>Slider range with step size and combination-type selection</td>
+                                                      </tr>
+                                                      <tr>
+                                                        <td>Single dropdown menu</td>
+                                                        <td>Multi dropdown menu</td>
+                                                      </tr>
+                                                      <tr>
+                                                        <td>Multi dropdown menu</td>
+                                                        <td>Not supported yet</td>
+                                                      </tr>
+                                                      <tr>
+                                                        <td>Checkbox</td>
+                                                        <td>Multi dropdown menu with options <i>yes</i> and <i>no</i></td>
+                                                      </tr>
+                                                      <tr>
+                                                        <td>Date selector</td>
+                                                        <td>Date selector</td>
+                                                      </tr>
+                                                      <tr>
+                                                        <td>Date range selector</td>
+                                                        <td>Date range selector</td>
+                                                      </tr>
+                                                      <tr>
+                                                        <td>Text input</td>
+                                                        <td>Text input</td>
+                                                      </tr>
+                                                      <tr>
+                                                        <td>Numeric input</td>
+                                                        <td>Numeric input</td>
+                                                      </tr>
+                                                      <tr>
+                                                        <td>Parameter table</td>
+                                                        <td>Parameter table</td>
+                                                      </tr>
+                                                  </tbody>
+                                              </table>
+                                            </div><!--//table-responsive-->
+                                            <p>The transformation of input widgets has the following implication for the submission of Hypercube jobs: <a href="#nobatch" class="scrollto">Unless explicitly specified</a> in the MIRO configuration of the model, each scalar input widget is expanded and the cartesian product over all scalars set by the user defines a Hypercube job.</p>
+                                            <div id = "hcube-dialog" class="section-block" style="text-align:center;">
+                                                <img id = "job-configuration" class="img-fluid" style="margin-bottom:15px; max-height:325pt" src="assets/images/batch_img/trnsport_batch.png" alt="regular transport parameterization" />
+                                            </div>
+                                            <p id="hcube-example">In this example, the slider for <i>freight in dollars per case per thousand miles</i> was set by us to a range from 75 to 150 with a step size of 5.
+                                            The slider configured in this way leads to 16 different variants.</p>
+                                            <ul>
+                                            <li>Variant 1: <i>freight</i> = 75</li>
+                                            <li>Variant 2: <i>freight</i> = 80</li>
+                                            <li>Variant 3: <i>freight</i> = 85</li>
+                                            [...]
+                                            <li>Variant 16: <i>freight</i> = 150</li>
+                                            </ul>
+                                            <P id="stepsize">For the scalar <i>minimum shipment</i> the slider was set to a range between 20 and 200 with a step size of 20. The resulting variants would therefore be:</P>
+                                            <ul>
+                                            <li>Variant 1: <i>number of days for training</i> = 20</li>
+                                            <li>Variant 2: <i>number of days for training</i> = 40</li>
+                                            <li>Variant 3: <i>number of days for training</i> = 60</li>
+                                            [...]
+                                            <li>Variant 10: <i>number of days for training</i> = 200</li>
+                                            </ul>
+                                            <p>The third slider for the scalar parameter <span class="code">beta</span> is not set to a range but to a single value. Due to the non-existent variation of the scalar, only one variant results from it. The same is true for the last widget, a multi dropdown menu where we specify to only consider the <span class="code">MIP</span> version of our model.</p>
+                                            <p>The cartesian product that results from the combination of all variations is now calculated: It is created from the different variants of the symbols <i>freight in dollars per case per thousand miles</i> (16), <i>minimum shipment</i> (10), <i>beta</i> (1) and <i>Select model type</i> (1) resulting in 16 x 10 x 1 x 1 = 160 individual scenarios. </p>
+                                            <div class="section-block" style="text-align:center;">
+                                                <img class="img-fluid" style="margin-bottom:15px; max-height:250pt" src="assets/images/batch_img/cart_prod.png" alt="cartesian product of configured parameters" />
+                                            </div>
+                                            <p id="nobatch">It becomes clear that the number of scenarios resulting from a particular Hypercube job configuration can increase rapidly with the number of scalar that are expanded. Depending on how computationally intensive the underlying GAMS model is, the scenarios should be carefully configured.
+                                            <div class="callout-block callout-warning">
+                                                <div class="icon-holder">
+                                                    <i class="fas fa-info-circle"></i>
+                                                </div><!--//icon-holder-->
+                                                <div class="content">
+                                                    <b class="callout-title">Note:</b>
+                                                    <p>The maximum number of scenarios that can be submitted in one job is limited to 10&thinsp;000.</p>
+                                                </div><!--//content-->
+                                            </div><!--//callout-block-->
+                                            <br>You may want to restrict certain input widgets to be transformed: This can be done in the MIRO <a href="./customize.html#configurationMode">Configuration Mode</a> by unchecking the widget-specific option <a href = "./widgets.html#slider-option-expand"><i>Should element be expanded automatically when submitting Hypercube jobs?</i></a>. If this option is disabled, the widget will not be displayed in the "Submit Hypercube" dialog, but can still be set as usual in the input section.</p>
+                                            <div id="multi-dim-symbols" class="callout-block callout-success">
+                                              <div class="icon-holder">
+                                                  <i class="fas fa-thumbs-up"></i>
+                                              </div><!--//icon-holder-->
+                                              <div class="content">
+                                                  <b class="callout-title">Multidimensional Symbols:</b>
+                                                  <p>Unlike scalar values, multidimensional symbols such as sets, parameters and multidimensional singleton sets cannot be varied within a Hypercube job configuration. The data remains fixed in every created scenario of a job. However, this does not mean that Hypercube jobs can only be used for zero dimensional symbols. In order to be able to vary data of multidimensional symbols using a Hypercube job, this can be implemented in the GAMS model itself. For example, you can use a scalar in the model and assign different data to a multidimensional parameter in the model depending on the value of that scalar. If this scalar value is now varied in a Hypercube job, this also affects the multidimensional parameter.</p>
+                                              </div><!--//content-->
+                                            </div><!--//callout-block-->
+                                        </div><!--//section-block-->
+                                    </div><!--//section-block-->
+                                    <div  id="job-submission"  class="section-block">
+                                        <h3 class="block-title">Job submission</h3>
+                                        <p>In the <a href = "#hcube-dialog" class = "scrollto">modal dialog</a> for submitting a Hypercube job you can see two more things besides the actual job configuration:</p>
+                                        <p id="job-tag">Job tags: </br>
+                                        When submitting a Hypercube job, you can optionally specify job tags which are an identifier attached to all scenarios of a Hypercube job. They can help you identify scenarios of a certain job or a group of jobs with similar attributes. This means that you can use those tags as part of your <a href = "./start.html#scenario-loading">database queries</a> in order to easily find certain scenarios that you are interested in.</p>
+                                        <p>Scenarios that have already been solved: </br>
+                                        MIRO looks into the database where your scenarios are stored and checks whether a subset of the scenarios you want to commit have already been saved. If it finds results from previous runs, MIRO asks if it should commit only the scenarios that have not yet been executed, or if it should submit all of them again.<br>
+                                        There are a number of reasons why you might want to re-submit certain scenarios. We will elaborate on these reasons in the next section that discusses the technical details of how MIRO sets up a Hypercube job. If you are reading this documentation for the first time, you might want to skip this next advanced (sub)section. 
+                                        If you are interested, just click on the headline.</p>
+                                        <div class="expandable-box-outline" style = "margin-bottom:15pt;">
+                                            <h3 id="hash-generation" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Advanced: How MIRO identifies Hypercube jobs</h3>
+                                            <div  class="section-block" style="display:none">
+                                              <p>
+                                                You might be wondering how MIRO knows whether a job has already been submitted or rather how a job is identified. Each scenario is characterized by the set of all input datasets that are populated by MIRO. This means that when you change something in your model or your execution environment that is not known to MIRO, it will not be detected as a different scenario. Let's consider the case where you want to run a certain set of scenarios on on different compute clusters in order to perform some performance analyses. Since all of the input datasets that come from MIRO remain the same, MIRO thinks that the scenarios are identical. No attribute "compute environment" is known to MIRO.<br>
+                                                A scenario is identified by a 256-bit <a href="https://en.wikipedia.org/wiki/SHA-2" target="_blank">SHA-2</a> hash value that MIRO computes from all inputs (scalar, command line parameters, tabular data, attachments) that the model receives from MIRO. An example of such a hash could be the following:</p>
+                                              <span class="code">7f14dcce0c726d215adae54daa2690b6a86b540cf4e3efaf9f97e8f4f3ab90a5</span>.
+                                              <p>We end up with a (relatively) compact identifier of a scenario while also making sure that we have a valid file/directory name without any reserved characters. The obvious disadvantage is that there is no way to derive the input parameters from the hash.
+                                              </p>
+                                            </div>
+                                        </div>
+                                        
+                                        <p>Once you are happy with the set up of your Hypercube job, you can submit it. This triggers the expansion of all scenarios resulting from your configuration and sets up your Hypercube job. When a Hypercube job has been submitted, it is shown in the <a href = "./server.html#job-list">Job list</a> in the GAMS interaction section.</p>                                            
+                                    </div>
+                                </div>
+                            </section><!--//doc-section-->
+                        </div><!--//content-inner-->
+                    </div><!--//doc-content-->
+                    <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+                        <div id="doc-nav" class="doc-nav">
+
+	                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+	                                <a class="nav-link scrollto" href="#hypercube-introduction">Introduction</a>
+	                                <a class="nav-link scrollto" href="#hypercube-scengen">Submission of a Hypercube job</a>
+                                    <nav class="doc-sub-menu nav flex-column">
+                                      <a class="nav-link scrollto" href="#hcube-config">Job configuration</a>
+                                      <a class="nav-link scrollto" href="#job-submission">Job submission</a>
+                                    </nav><!--//nav-->
+	                            </nav><!--//doc-menu-->
+
+                        </div>
+                    </div><!--//doc-sidebar-->
+                </div><!--//doc-body-->
+            </div><!--//container-->
+        </div><!--//doc-wrapper-->
+    </div><!--//page-wrapper-->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <!--#include virtual="/footer_miro.html" -->
+
+    <!-- Main Javascript -->
+    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/markjs/jquery.mark.min.js"></script>
+    <script type="text/javascript" src="assets/js/main.js"></script>
+
+</body>
+</html>

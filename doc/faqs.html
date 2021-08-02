@@ -151,24 +151,6 @@
                                     </div><!--//section-block-->
 
                                     <div class="section-block">
-                                        <h3 class="question"><i class="fas fa-question-circle"></i> How can I start the MIRO Hypercube Mode?</h3>
-                                        <div class="answer">
-                                          <p>Just like the Base Mode, the Hypercube Mode can be started directly from GAMS Studio or the command line. 
-                                          For the latter, the environment variable <span class="code">MIRO_MODE=hcube</span> needs to 
-                                          be set instead of <span class="code">MIRO_MODE=base</span>. The other steps (see <a href = "./start.html#start-via-command-line">here</a>) 
-                                          remain the same. MIRO automatically processes and adjusts your Base Mode configuration so that it will work in Hypercube Mode.</p>
-                                        </div>
-                                    </div><!--//section-block-->
-
-                                    <div class="section-block">
-                                        <h3 class="question"><i class="fas fa-question-circle"></i> Why does my model not work in Hypercube Mode?</h3>
-                                        <div class="answer">
-                                            <p>Currently, when executing Hypercube jobs locally (without <a href="https://gams.com/engine">GAMS Engine</a>), your model must be prepared to work with <span class="code"><a href="./deployment.html#local-multi-user">idir</a></span>. MIRO creates a local working directory for each scenario and executes your model from this directory, while referring to the main <span class="code">gms</span> file via <span class="code">idir1</span>.</p>
-                                            <p>You can debug your model by submitting a Hypercube job, navigating to the directory of your Hypercube job (<span class="code">C:\Users\&lt;username&gt;\.miro\hcube_jobs\&lt;modelname&gt;\1</span> on Windows, <span class="code">~/.miro/hcube_jobs/&lt;modelname&gt;/1</span> on macOS/Linux) and executing the file <span class="code">jobsubmission.gms</span> file from GAMS Studio.</p>
-                                        </div>
-                                    </div><!--//section-block-->
-
-                                    <div class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What happens when using input data which results in infeasible or unbounded results?</h3>
                                         <div class="answer">
                                           In GAMS MIRO both the log and the lst file of the current GAMS model run can be displayed. Any information about infeasibilities and unboundness is also visible here. 
@@ -237,24 +219,17 @@
                                             <p>A <i>Job</i> describes the submission of one or more GAMS runs.</p>
                                             </div>
                                     </div><!--//section-block-->
-                                    <div id="def-hypercube" class="section-block">
-                                        <h3 class="question"><i class="fas fa-question-circle"></i> What does <b>Hypercube</b> mean in the context of GAMS MIRO?</h3>
-                                        <div class="answer">
-                                            <p><i>Hypercube</i> Mode is a mode in GAMS MIRO that automatically generates scenarios. Input widgets you defined for your scalars in the Base Mode are automatically expanded in the Hypercube Mode (e.g. a slider is expanded to a slider range and a single-dropdown menu is expanded to a multi-dropdown menu etc.). This now lets you configure multiple scenarios at once. MIRO will now automatically compute the cartesian product (or, as we call it, the Hypercube) over scalars you expanded. The results can then be filtered, analyzed, downloaded etc. For more information see the section about the MIRO <a href="./hypercube.html#hcube-example">Hypercube Mode</a>.
-                                            </div>
-                                    </div><!--//section-block-->
                                     <div id="def-hypercube-job" class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What does <b>Hypercube Job</b> mean in the context of GAMS MIRO?</h3>
                                         <div class="answer">
-                                            <p>A <i>Hypercube Job</i> describes a set of scenarios for a particular model which MIRO generated automatically by expanding the cartesian product over all selected scalars. For more information see the section about the MIRO <a href="./hypercube.html#hcube-example">Hypercube Mode</a>.</p>
+                                            <p>A <i>Hypercube job</i> describes a set of scenarios for a particular model which MIRO generated automatically by expanding the cartesian product over all selected scalars. Input widgets are automatically expanded when a Hypercube job is created (e.g. a slider becomes a slider range, a single dropdown becomes a multi-dropdown, etc.). This way you can configure multiple scenarios at once. For more information see the section about <a href="./hc-module.html">Hypercube jobs</a>.</p>
                                             </div>
                                     </div><!--//section-block-->
                                     <div id="def-job-tag" class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What is a (Hypercube) <b>job tag</b>?</h3>
                                         <div class="answer">
                                             <p>A Hypercube <i>job tag</i> is an identifier attached to all scenarios of a <a href="#def-hypercube-job" class="scrollto">Hypercube job</a>. Job tags can help you find scenarios of a particular Hypercube job. They can also be useful for scenario analysis.
-                                                In case a model run is characterized by data that is not part of the input data specified via MIRO, job tags are important to distinguish different runs with the same input data. Suppose you are interested in finding out how sensitive your model is with regard to computing power. Thus, you run the same set of scenarios once on a high performance computing cluster and once on your local machine. As both times you used the exact same set of scenarios, MIRO can't distinguish both runs. However, you can attach different tags to the two jobs. This lets you discriminate a scenario that ran on the cluster from one that ran on your local machine.
-                                                The same can be applied in case you use different <a href="https://www.gams.com/latest/docs/UG_SolverUsage.html#BASIC_USAGE_SOLVER_OPTION_FILE" target="_blank">solver option files</a>.</p>
+</p>
                                             </div>
                                     </div><!--//section-block-->
                                     <div id="def-development-mode" class="section-block">
