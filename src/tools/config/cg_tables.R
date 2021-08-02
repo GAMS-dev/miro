@@ -702,11 +702,33 @@ refreshTableType <- function(refreshSameSymbol = FALSE){
     pivotOptions$input <- TRUE
     pivotOptions$enableHideEmptyCols <- TRUE
     pivotOptions$emptyUEL <- rv$tableWidgetConfig$options$emptyUEL
+    
+    metadata <- list(headers = modelIn[[currentTableSymbolName]]$headers,
+                     symtype = modelIn[[currentTableSymbolName]]$symtype,
+                     symname = currentTableSymbolName)
+    aggregationFunctions <- if(identical(metadata$symtype, "set"))
+      setNames(c("count", "min"),
+               c(lang$renderers$miroPivot$aggregationFunctions$count,
+                 lang$renderers$miroPivot$aggregationFunctions$min))
+    else
+      setNames(c("sum", "count", "mean", "median", "min", "max"), 
+               c(lang$renderers$miroPivot$aggregationFunctions$sum,
+                 lang$renderers$miroPivot$aggregationFunctions$count,
+                 lang$renderers$miroPivot$aggregationFunctions$mean,
+                 lang$renderers$miroPivot$aggregationFunctions$median,
+                 lang$renderers$miroPivot$aggregationFunctions$min,
+                 lang$renderers$miroPivot$aggregationFunctions$max))
+    selectedAggregationFuction <- pivotOptions[["aggregationFunction"]]
+    if(!length(selectedAggregationFuction) ||
+       !selectedAggregationFuction %in% aggregationFunctions){
+      selectedAggregationFuction <- aggregationFunctions[1]
+    }
+    updateSelectInput(session, "inputTable_pivot-miroPivot-aggregationFunction",
+                      choices = aggregationFunctions,
+                      selected = selectedAggregationFuction)
     callModule(renderData, "inputTable_pivot", type = "miropivot", 
                data = createTableData(currentTableSymbolName, createColNames = TRUE)$data, rendererEnv = inputPivotRendererEnv,
-               customOptions = c(list("_metadata_" = list(headers = modelIn[[currentTableSymbolName]]$headers,
-                                                          symtype = modelIn[[currentTableSymbolName]]$symtype,
-                                                          symname = currentTableSymbolName), 
+               customOptions = c(list("_metadata_" = metadata, 
                                       resetOnInit = TRUE), 
                                  pivotOptions),
                roundPrecision = 2, modelDir = modelDir)

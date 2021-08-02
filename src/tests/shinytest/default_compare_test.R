@@ -17,6 +17,7 @@ expect_error(app$findElements(".scenSplit-button-load")[[2]]$click(), NA)
 Sys.sleep(2L)
 expect_true(app$waitFor("$('#cmpScenTitle_2').text()==='New Scenario (Sandbox)';", timeout = 50))
 app$snapshot(items = list(output = c("inputDataTitle")), screenshot = TRUE)
+Sys.sleep(2L)
 app$stop()
 
 # default = tab view
@@ -26,6 +27,7 @@ app <- ShinyDriver$new("../../", loadTimeout = 20000)
 
 app$findElement('a[data-value="scenarios"]')$click()
 expect_error(app$findElement("#scenTabset #btLoadScen")$click(), NA)
+Sys.sleep(2L)
 app$stop()
 
 # default = pivot view
@@ -35,4 +37,5 @@ app <- ShinyDriver$new("../../", loadTimeout = 20000)
 
 app$findElement('a[data-value="scenarios"]')$click()
 expect_error(app$findElement("#pivotCompBtWrapper button")$click(), NA)
+Sys.sleep(2L)
 app$stop()

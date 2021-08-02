@@ -3841,16 +3841,36 @@ observe({
           customRendererEnv[[el]]$destroy()
         }
       }
+      aggregationFunctions <- if(identical(metadata$symtype, "set"))
+        setNames(c("count", "min"),
+                 c(lang$renderers$miroPivot$aggregationFunctions$count,
+                   lang$renderers$miroPivot$aggregationFunctions$min))
+      else
+        setNames(c("sum", "count", "mean", "median", "min", "max"), 
+                 c(lang$renderers$miroPivot$aggregationFunctions$sum,
+                   lang$renderers$miroPivot$aggregationFunctions$count,
+                   lang$renderers$miroPivot$aggregationFunctions$mean,
+                   lang$renderers$miroPivot$aggregationFunctions$median,
+                   lang$renderers$miroPivot$aggregationFunctions$min,
+                   lang$renderers$miroPivot$aggregationFunctions$max))
+      selectedAggregationFuction <- currentGraphConfig$options[["aggregationFunction"]]
+      if(!length(selectedAggregationFuction) ||
+         !selectedAggregationFuction %in% aggregationFunctions){
+        selectedAggregationFuction <- aggregationFunctions[1]
+      }
+      updateSelectInput(session, "preview_output_miropivot-miroPivot-aggregationFunction",
+                        choices = aggregationFunctions,
+                        selected = selectedAggregationFuction)
       miropivotOptions <- currentGraphConfig$options
       miropivotOptions$emptyUEL <- rv$graphConfig$graph$options$emptyUEL
       miropivotOptions$enableHideEmptyCols <- TRUE
       miropivotOptions$hidepivotcontrols <- rv$graphConfig$graph$options$hidepivotcontrols
-      callModule(renderData, "preview_output_miropivot", type = "miropivot", 
-                 data = data, rendererEnv = customRendererEnv,
-                 customOptions = c(list("_metadata_" = metadata, 
-                                        resetOnInit = TRUE), 
-                                   miropivotOptions),
-                 roundPrecision = 2, modelDir = modelDir)
+      isolate(callModule(renderData, "preview_output_miropivot", type = "miropivot", 
+                         data = data, rendererEnv = customRendererEnv,
+                         customOptions = c(list("_metadata_" = metadata, 
+                                                resetOnInit = TRUE), 
+                                           miropivotOptions),
+                         roundPrecision = 2, modelDir = modelDir))
       showEl(session, "#preview-content-miropivot")
       hideEl(session, "#preview-content-pivot")
       hideEl(session, "#preview-content-dygraphs")
