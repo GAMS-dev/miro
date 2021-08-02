@@ -679,7 +679,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           views$remove(session, viewId)
           removeUI(paste0("#", ns("savedViews"), "_", htmlIdEnc(viewId)))
         }
-        addNewView <- function(overwrite = FALSE){
+        addNewView <- function(viewName, overwrite = FALSE){
           isolate({
             newViewConfig <- list(aggregationFunction = input$aggregationFunction,
                                   pivotRenderer = input$pivotRenderer,
@@ -742,23 +742,23 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               }
             }
             if(overwrite){
-              views$add(session, input$newViewName, newViewConfig)
+              views$add(session, viewName, newViewConfig)
             }else{
               insertUI(paste0("#", ns("savedViewsDD")), 
-                       createBootstrapDropdownChoices(list(id = htmlIdEnc(input$newViewName), 
-                                                           alias = input$newViewName), 
+                       createBootstrapDropdownChoices(list(id = htmlIdEnc(viewName), 
+                                                           alias = viewName), 
                                                       ns("savedViews"), ns("editView"), ns("deleteView")), 
                        where = "beforeEnd")
-              views$add(session, input$newViewName, newViewConfig)
+              views$add(session, viewName, newViewConfig)
             }
             if(miroPivotState$editView &&
-               !identical(input$newViewName, currentView$name)){
+               !identical(viewName, currentView$name)){
               # view was renamed
               deleteView(currentView$name)
             }
             if(refreshRequired){
               currentView <<- newViewConfig
-              currentView$name <<- input$newViewName
+              currentView$name <<- viewName
               newVal <- updateRenderer() + 1L
               updateRenderer(newVal)
             }
@@ -772,12 +772,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
              input$saveViewConfirm == 0L || readonlyViews){
             return()
           }
-          
-          if(identical(isolate(input$newViewName), "")){
+          newViewNameTrimmed <- trimws(isolate(input$newViewName))
+          if(identical(newViewNameTrimmed, "")){
             return()
           }
-          overwriteView <- miroPivotState$editView && identical(isolate(input$newViewName), currentView$name)
-          if(isolate(input$newViewName) %in% c("default", views$getIds(session)) &&
+          overwriteView <- miroPivotState$editView && identical(newViewNameTrimmed, currentView$name)
+          if(newViewNameTrimmed %in% c("default", views$getIds(session)) &&
              !overwriteView){
             hideEl(session, paste0("#", ns("newViewName")))
             hideEl(session, paste0("#", ns("saveViewButtonsWrapper")))
@@ -786,7 +786,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             showEl(session, paste0("#", ns("saveViewOverwriteButtonsWrapper")))
             return()
           }
-          addNewView(overwrite = overwriteView)
+          addNewView(newViewNameTrimmed, overwrite = overwriteView)
           removeModal(session)
         })
         rendererEnv[[ns("saveViewOverwriteConfirm")]] <- observe({
@@ -794,12 +794,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
              input$saveViewOverwrite == 0L || readonlyViews){
             return()
           }
-          
-          if(identical(input$newViewName, "")){
+          newViewNameTrimmed <- trimws(isolate(input$newViewName))
+          if(identical(newViewNameTrimmed, "")){
             flog.error("New view name is empty. Should never happen!")
             return()
           }
-          addNewView(overwrite = TRUE)
+          addNewView(newViewNameTrimmed, overwrite = TRUE)
           removeModal(session)
         })
         rendererEnv[[ns("saveViewCancelOverwrite")]] <- observe({
