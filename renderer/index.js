@@ -739,6 +739,7 @@ ipcRenderer.on('activate-edit-mode', (e, openNewAppForm, scrollToBottom = false)
 });
 ipcRenderer.on('app-closed', (e, appID) => {
   $(`#iconActive_${appID}`).fadeOut(200);
+  $(`#appLoadingScreen_${appID}`).hide();
   runningProcesses.pop(appID);
   if (!runningProcesses.length) {
     btEditWrapper.removeClass('bt-disabled');
