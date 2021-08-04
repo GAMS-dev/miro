@@ -94,12 +94,11 @@ if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
 }else{
   dbPath <- file.path(testDir, "testdb",
                       "pickstock.sqlite3")
-  unlink(dbPath)
   procEnv$MIRO_DB_PATH <- dirname(dbPath)
   dbConfig <- list(type = "sqlite",
                    name = dbPath)
 }
-
+createTestDb()
 db <- Db$new(uid = "te_de\\%d", 
              dbConf = dbConfig,
              slocktimeLimit = slocktimeLimit, modelName = "pickstock",
@@ -138,12 +137,11 @@ test_that("Getting all scalars works with data", {
 if(!identical(procEnv$MIRO_DB_TYPE, "postgres")){
   dbPath <- file.path(testDir, "testdb",
                       "indus89.sqlite3")
-  unlink(dbPath)
   procEnv$MIRO_DB_PATH <- dirname(dbPath)
   dbConfig <- list(type = "sqlite",
                    name = dbPath)
 }
-
+createTestDb()
 populateDb(procEnv, "indus89", modelPath = file.path(getwd(), "..", "model", "indus89"))
 
 ioConfig <<- list(modelOut = list(x = list()),
