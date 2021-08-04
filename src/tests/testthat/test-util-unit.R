@@ -236,4 +236,7 @@ test_that("Parsing function bodies with parseFunctionBody works", {
                    "    # asd")
   expect_identical(parseFunctionBody("mirorenderer_tOutput <- function(id, height = NULL, options = NULL, path = NULL){\n    # { { { \n    test123  \n    }\n \n    ", "mirorenderer_tOutput"), c("    # { { { ", "    test123"))
   expect_identical(parseFunctionBody("mirorenderer_tOutput <- function(id, height = NULL, options = NULL, path = NULL){\r\n    # { { { \r\n    test123  \r\n    }\r\n \r\n    ", "mirorenderer_tOutput"), c("    # { { { ", "    test123"))
+  expect_identical(parseFunctionBody("mirorenderer_tOutput <- function(id, height = NULL, options = NULL, path = NULL){\r\n    a <- \"# { { { \r\n    \"\r\n    test123  \r\n    }\r\n \r\n    ", "mirorenderer_tOutput"), c("    a <- \"# { { { ", "    \"", "    test123"))
+  expect_identical(parseFunctionBody("mirorenderer_tOutput <- function(id, height = NULL, options = NULL, path = NULL){\r\n    a <- ' { { { \r\n    '\r\n    test123  \r\n    }\r\n \r\n    ", "mirorenderer_tOutput"), c("    a <- ' { { { ", "    '", "    test123"))
+  expect_identical(parseFunctionBody("mirorenderer_tOutput <- function(id, height = NULL, options = NULL, path = NULL){\r\n    a <- `# \"'{ { { \r\n    `\r\n    test123  \r\n    }\r\n \r\n    ", "mirorenderer_tOutput"), c("    a <- `# \"'{ { { ", "    `", "    test123"))
 })

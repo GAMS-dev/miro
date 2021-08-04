@@ -188,6 +188,8 @@ parseFunctionBody <- function(textToParse, functionName){
   functionBodyTmp <- strsplit(functionBodyTmp, "", fixed = TRUE)[[1]]
   openingBracketCtr <- 1L
   isInComment <- FALSE
+  isInString <- FALSE
+  currentQuote <- NULL
   for (i in seq_along(functionBodyTmp)){
     chr <- functionBodyTmp[[i]]
     if(isInComment){
@@ -196,8 +198,18 @@ parseFunctionBody <- function(textToParse, functionName){
       }
       next
     }
+    if(isInString){
+      if(identical(chr, currentQuote)){
+        isInString <- FALSE
+      }
+      next
+    }
     if(identical(chr, "#")){
       isInComment <- TRUE
+      next
+    }else if(chr %in% c("'", '"', '`')){
+      isInString <- TRUE
+      currentQuote <- chr
       next
     }else if(identical(chr, "{")){
       openingBracketCtr <- openingBracketCtr + 1L
