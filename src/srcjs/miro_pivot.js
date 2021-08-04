@@ -79,6 +79,7 @@ export function activateMiroPivotPresentation(id) {
       $(`#${id}container .row.row-agg-filter`).find('.presentation-hide').hide();
       $(`#${id}container .row.row-agg-filter`).children('.col-sm-2')[0].setAttribute('style', 'padding: 0px');
       $(`#${id}container .row.row-agg-filter`).find('.dropdown.presentation')[0].setAttribute('style', 'margin-top: 0px');
+      $(`#${id}container .dropdown.presentation .miro-pivot-view-button`).css('display', 'none');
       $(`#${id}container .row.row-agg-filter`).find('.presentation-show').show(0, () => {
         $(`#${id}container .row.row-agg-filter`).slideDown(500, () => {
           if (document.getElementById(`${id}pivotTable`).getElementsByClassName('dataTable').length > 0) {
@@ -102,6 +103,7 @@ export function deactivateMiroPivotPresentation(id) {
         $(`#${id}container .row.table-chart`).children('.col-sm-12').css('margin-top', '');
       });
     }
+    $(`#${id}container .dropdown.presentation .miro-pivot-view-button`).css('display', '');
     $(`#${id}container .row.row-agg-filter`).find('.dropdown.presentation')[0].setAttribute('style', 'margin-top: 10px');
     $(`#${id}container .row.row-agg-filter`).children('.col-sm-2')[0].setAttribute('style', 'padding: 1em');
     $(`#${id}container .row.row-agg-filter`).find('.presentation-hide').show();
