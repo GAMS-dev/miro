@@ -116,7 +116,7 @@ ScenData <- R6Class("ScenData", public = list(
                                                  meta = metaData,
                                                  timestamp = metaData[["_stime"]][1],
                                                  inDataSid = NA_integer_)
-        if(metaData[["_scode"]] > (SCODEMAP[["scen"]] + 10000L)){
+        if(length(metaData[["_scode"]]) && metaData[["_scode"]] > (SCODEMAP[["scen"]] + 10000L)){
           # Hcube scenario, load input data from job config
           private$cachedData[[scenIdChar]][["inDataSid"]] <- metaData[["_scode"]] - 10000L
         }
