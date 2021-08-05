@@ -171,3 +171,14 @@ test_that("Download multiple attachments works", {
   expect_true(file.exists(file.path(workDir, c("_scalars.csv"))))
   unlink(file.path(workDir, c("_scalars.csv", "scalars.csv")))
 })
+
+test_that("Download multiple attachments works", {
+  expect_identical(length(attachments$download(workDir, fileNames = c("_scalars.csv", "scalars.csv"))), 2L)
+  expect_true(file.exists(file.path(workDir, c("_scalars.csv"))))
+  unlink(file.path(workDir, c("_scalars.csv", "scalars.csv")))
+})
+
+test_that("Saving already deleted attachment should result in warning in log", {
+  expect_output(opQueue <- attachments$flushOpQueue(), regexp = "Problems reading file:.* No such file or directory")
+  expect_identical(opQueue$save$fileContent, blob::as_blob(raw(0)))
+})

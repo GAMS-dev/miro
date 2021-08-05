@@ -624,7 +624,20 @@ Attachments <- R6Class("Attachments",
                            execPerm  <- private$localAttachments$execPerm
                            
                            content <- blob::new_blob(lapply(seq_along(filePaths), 
-                                                            function(i) readBin(filePaths[[i]], "raw", n = fileSize[[i]])))
+                                                            function(i){
+                                                              tryCatch(
+                                                                readBin(filePaths[[i]], "raw", n = fileSize[[i]])
+                                                                , error = function(e){
+                                                                  flog.warn("Problems reading file: '%s'. Error message: %s",
+                                                                            filePaths[[i]],
+                                                                            conditionMessage(e))
+                                                                  return(raw(0))
+                                                                }, warning = function(w){
+                                                                  flog.warn("Problems reading file: '%s'. Warning message: %s",
+                                                                            filePaths[[i]],
+                                                                            conditionMessage(w))
+                                                                  return(raw(0))
+                                                                })}))
                            return(tibble(fileName = fileNames,
                                          fileExt = tools::file_ext(filePaths),
                                          execPerm = execPerm,
