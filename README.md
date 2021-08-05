@@ -17,7 +17,6 @@ The source code of the R/Shiny-based MIRO core application is located in the sub
 * Quick & automated deployment of GAMS models
 * Data visualization with wide range of different diagrams and charts
 * Generation, processing, evaluation & storing of scenario data
-* Creation & analysis of performance statistics
 * Intuitive use of a model without GAMS knowledge
 * Easy to use & comfortable working environment
 * Highly customizable
