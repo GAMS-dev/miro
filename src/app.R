@@ -1400,6 +1400,47 @@ if(!is.null(errMsg)){
                                          isNewScen = TRUE, views = views, attachments = attachments)
       exportFileType     <- if(useGdx) "miroscen" else "csv"
       
+      # This code will be run after the client has disconnected
+      session$onSessionEnded(function() {
+        # remove temporary files and folders
+        if(useTempDir){
+          unlink(workDir, recursive=TRUE)
+        }
+        suppressWarnings(rm(activeScen))
+        try(flog.info("Session ended (model: '%s', user: '%s').", modelName, uid), 
+            silent = TRUE)
+        if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")){
+          # clean up
+          try(db$deleteRows("_scenMeta", "_uid", uid), silent = TRUE)
+          
+        }
+        if(config$activateModules$attachments &&
+           config$storeLogFilesDuration > 0L){
+          tryCatch(
+            attachments$removeExpired(paste0(modelNameRaw, c(".log", ".lst")), 
+                                      config$storeLogFilesDuration)
+            , error = function(e){
+              flog.error("Problems removing expired attachments. Error message: '%s'.", 
+                         conditionMessage(e))
+            })
+        }
+        activeScen$finalize()
+        if(!interactive() && !isShinyProxy){
+          tryCatch({
+            if(length(unzipModelFilesProcess) && 
+               !length(unzipModelFilesProcess$get_exit_status())){
+              unzipModelFilesProcess$kill()
+            }
+          }, error = function(e){
+            flog.error("Problems killing process to extract model files. Error message: '%s'.", 
+                       conditionMessage(e))
+          }, finally = {
+            unzipModelFilesProcess <- NULL
+          })
+          stopApp()
+        }
+      })
+      
       # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
       sidCompOrder     <- NULL
       
@@ -1985,47 +2026,6 @@ if(!is.null(errMsg)){
                flog.warn("Unknown export file type: '%s'.", input$exportFileType))
       })
       hideEl(session, "#loading-screen")
-      
-      # This code will be run after the client has disconnected
-      session$onSessionEnded(function() {
-        # remove temporary files and folders
-        if(useTempDir){
-          unlink(workDir, recursive=TRUE)
-        }
-        suppressWarnings(rm(activeScen))
-        try(flog.info("Session ended (model: '%s', user: '%s').", modelName, uid), 
-            silent = TRUE)
-        if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")){
-          # clean up
-          try(db$deleteRows("_scenMeta", "_uid", uid), silent = TRUE)
-          
-        }
-        if(config$activateModules$attachments &&
-           config$storeLogFilesDuration > 0L){
-          tryCatch(
-            attachments$removeExpired(paste0(modelNameRaw, c(".log", ".lst")), 
-                                      config$storeLogFilesDuration)
-            , error = function(e){
-              flog.error("Problems removing expired attachments. Error message: '%s'.", 
-                         conditionMessage(e))
-            })
-        }
-        activeScen$finalize()
-        if(!interactive() && !isShinyProxy){
-          tryCatch({
-            if(length(unzipModelFilesProcess) && 
-               !length(unzipModelFilesProcess$get_exit_status())){
-              unzipModelFilesProcess$kill()
-            }
-          }, error = function(e){
-            flog.error("Problems killing process to extract model files. Error message: '%s'.", 
-                       conditionMessage(e))
-          }, finally = {
-            unzipModelFilesProcess <- NULL
-          })
-          stopApp()
-        }
-      })
     }
     
     #______________________________________________________
