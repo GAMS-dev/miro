@@ -210,7 +210,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
     if(dirtyFlag){
       activeScen$setScenHash(character(0L))
     }
-    activeScen$save(scenData$get("sb"), msgProgress = lang$progressBar$saveScenDb)
+    activeScen$save(scenData$get("sb", includeHiddenScalars = TRUE), msgProgress = lang$progressBar$saveScenDb)
     if(saveOutput){
       if(config$saveTraceFile && length(traceData)){
         activeScen$saveTraceData(traceData)

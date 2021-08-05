@@ -31,6 +31,15 @@ ioConfig <<- list(modelOut = list(stock_weight = list(),
                   modelInRaw = list(`_scalars` = list(symnames = inScalarNames, symtext = inScalarDesc)),
                   inputDsNames = c("price", "_scalars"))
 
+outScalarDataVisible <- tibble(scalar = outScalarNames[1:3],
+                               description = outScalarDesc[1:3],
+                               value = c("79.6135736013082", "951.166205306451",
+                                         "11.9472869044886"))
+outScalarDataFull <- tibble(scalar = outScalarNames,
+                            description = outScalarDesc,
+                            value = c("79.6135736013082", "951.166205306451",
+                                      "11.9472869044886", "2016-01-04", "2016-05-24"))
+
 dbSchema <<- DbSchema$new(list(schema = list(stock_weight = list(tabName = "stock_weight", 
                                                                  colNames = c("symbol", "value"),
                                                                  colTypes = "cd"),
@@ -132,6 +141,32 @@ test_that("Getting all scalars works with data", {
                           description = c(inScalarDesc, outScalarDesc),
                           value = c("2", "99", "CPLEX", "79.6135736013082", "951.166205306451",
                                     "11.9472869044886", "2016-01-04", "2016-05-24")))
+})
+
+test_that("includeHiddenScalars argument works when calling ScenData$get", {
+  dataTmp <- scenData$get("sb")
+  expect_identical(names(dataTmp), c(names(ioConfig$modelOut), ioConfig$inputDsNames))
+  expect_identical(dataTmp[[scalarsOutName]], outScalarDataVisible)
+  
+  dataTmp <- scenData$get("sb", includeHiddenScalars = TRUE)
+  expect_identical(names(dataTmp), c(names(ioConfig$modelOut), ioConfig$inputDsNames))
+  expect_identical(dataTmp[[scalarsOutName]], outScalarDataFull)
+  
+  dataTmp <- scenData$get("sb", c(ioConfig$inputDsNames, scalarsOutName))
+  expect_identical(names(dataTmp), c(ioConfig$inputDsNames, scalarsOutName))
+  expect_identical(dataTmp[[scalarsOutName]], outScalarDataVisible)
+  
+  dataTmp <- scenData$get("sb", c(ioConfig$inputDsNames, scalarsOutName),
+                          includeHiddenScalars = TRUE)
+  expect_identical(names(dataTmp), c(ioConfig$inputDsNames, scalarsOutName))
+  expect_identical(dataTmp[[scalarsOutName]], outScalarDataFull)
+  
+  expect_identical(scenData$get("sb", scalarsOutName, includeHiddenScalars = TRUE)[[1]],
+                   outScalarDataFull)
+  expect_identical(scenData$get("sb", scalarsOutName)[[1]], outScalarDataVisible)
+  expect_identical(scenData$get("sb", scalarsOutName, includeHiddenScalars = TRUE, drop = TRUE),
+                   outScalarDataFull)
+  expect_identical(scenData$get("sb", scalarsOutName, drop = TRUE), outScalarDataVisible)
 })
 
 if(!identical(procEnv$MIRO_DB_TYPE, "postgres")){

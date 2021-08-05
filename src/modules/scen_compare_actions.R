@@ -160,7 +160,7 @@ output[["scenExportHandler"]] <- downloadHandler(
     if(identical(refId, "cmpPivot")){
       stop("not implemented", call. = FALSE)
     }
-    data <- scenData$get(refId)
+    data <- scenData$get(refId, includeHiddenScalars = TRUE)
     suppressRemoveModal <- FALSE
     if(identical(scenData$getById("dirty", refId = refId, drop = TRUE), TRUE)){
       showElReplaceTxt(session, "#scenExportError", lang$errMsg$loadScen$inconsistentDataWarning)
@@ -305,7 +305,7 @@ observeEvent(input[["scenRemoteExportHandler"]], {
       stop("not implemented", call. = FALSE)
     }
     suppressRemoveModal <- FALSE
-    data <- scenData$get(refId)
+    data <- scenData$get(refId, includeHiddenScalars = TRUE)
     if(identical(scenData$getById("dirty", refId = refId, drop = TRUE), TRUE)){
       showElReplaceTxt(session, "#scenExportError", lang$errMsg$loadScen$inconsistentDataWarning)
       suppressRemoveModal <- TRUE

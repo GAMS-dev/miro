@@ -60,7 +60,7 @@ if(length(config$scripts$base)){
       scenData$loadSandbox(getInputDataFromSandbox(),
                            if(length(modelInFileNames)) modelInFileNames else character())
       gdxio$wgdx(file.path(workDir, paste0("scripts_", modelName), "data.gdx"), 
-                 scenData$get("sb"), squeezeZeros = 'n')
+                 scenData$get("sb", includeHiddenScalars = TRUE), squeezeZeros = 'n')
     }, error = function(e){
       flog.error("Problems writing gdx file for script: '%s'. Error message: '%s'.", 
                  scriptId, conditionMessage(e))

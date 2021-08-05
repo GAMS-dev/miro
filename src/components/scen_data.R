@@ -199,7 +199,7 @@ ScenData <- R6Class("ScenData", public = list(
     }))
   },
   get = function(refId, symNames = NULL, sheetIds = NULL, showProgress = TRUE,
-                 drop = FALSE){
+                 drop = FALSE, includeHiddenScalars = FALSE){
     if(identical(refId, "sb")){
       scenId <- "sb"
     }else{
@@ -215,11 +215,29 @@ ScenData <- R6Class("ScenData", public = list(
       self$load(scenId, symNames = symNames, showProgress = showProgress,
                 refId = refId, registerRef = FALSE)
     }
+    if(includeHiddenScalars && length(private$hiddenOutputScalars)){
+      outScalarsFull <- private$cachedData[[as.character(scenId)]][["scalar"]]
+    }else{
+      outScalarsFull <- NULL
+    }
     if(is.null(symNames)){
+      if(length(outScalarsFull)){
+        dataTmp <- private$cachedData[[as.character(scenId)]][["data"]]
+        dataTmp[[scalarsOutName]] <- outScalarsFull
+        return(dataTmp)
+      }
       return(private$cachedData[[as.character(scenId)]][["data"]])
     }
     if(length(symNames) > 1L || !drop){
+      if(length(outScalarsFull) && scalarsOutName %in% symNames){
+        dataTmp <- private$cachedData[[as.character(scenId)]][["data"]][symNames]
+        dataTmp[[scalarsOutName]] <- outScalarsFull
+        return(dataTmp)
+      }
       return(private$cachedData[[as.character(scenId)]][["data"]][symNames])
+    }
+    if(length(outScalarsFull) && identical(scalarsOutName, symNames)){
+      return(outScalarsFull)
     }
     return(private$cachedData[[as.character(scenId)]][["data"]][[symNames]])
   },
