@@ -55,6 +55,9 @@ InputDataInstance <- R6Class("InputDataInstance", public = list(
     return(invisible(self))
   },
   getClArgs = function(){
+    if(!length(private$dataHashes)){
+      return(character())
+    }
     clArgsTmp <- unlist(private$dataHashes[startsWith(names(private$dataHashes), "__cl_")],
                         use.names = FALSE)
     return(clArgsTmp[!is.na(clArgsTmp)])
