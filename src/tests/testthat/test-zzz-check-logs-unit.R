@@ -1,7 +1,9 @@
 context("Unit tests - check log files")
 
 validFatals <- c("GAMS symbol: 'd': Invalid column name(s): 'bla' in configuration for dropdown columns",
-                 "The column: 'i' of the GAMS symbol: 'd': cannot be declared both as a pivot column and a drop-down column")
+                 "The column: 'i' of the GAMS symbol: 'd': cannot be declared both as a pivot column and a drop-down column",
+                 "The column(s): 'value2' of table: 'd' specified in colFormat does not exist.",
+                 "colFormat is not supported when pivotCols are active (table: d).")
 validErrors <- c("Confirm download of temporary files button clicked without any files specified.")
 validWarnings <- c()
 
