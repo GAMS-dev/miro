@@ -22,7 +22,7 @@ for(logFile in logFiles){
     return(logContent[[which(fatalsInLog)[lineIdx] + 1L]])
   }, FUN.VALUE = character(1L), USE.NAMES = FALSE)
   for(i in seq_along(validFatals)){
-    falsePositives <- startsWith(errorMsg, validFatals[i])
+    falsePositives <- startsWith(trimws(errorMsg,"left"), validFatals[i])
     errorMsg <- errorMsg[!falsePositives]
     if(any(falsePositives)){
       validFatals <- validFatals[-i]
@@ -43,7 +43,7 @@ for(logFile in logFiles){
     return(logContent[[which(errorsInLog)[lineIdx] + 1L]])
   }, FUN.VALUE = character(1L), USE.NAMES = FALSE)
   for(i in seq_along(validErrors)){
-    falsePositives <- startsWith(errorMsg, validErrors[i])
+    falsePositives <- startsWith(trimws(errorMsg,"left"), validErrors[i])
     errorMsg <- errorMsg[!falsePositives]
     if(any(falsePositives)){
       validErrors <- validErrors[-i]
@@ -64,7 +64,7 @@ for(logFile in logFiles){
     return(logContent[[which(warningsInLog)[lineIdx] + 1L]])
   }, FUN.VALUE = character(1L), USE.NAMES = FALSE)
   for(i in seq_along(validWarnings)){
-    falsePositives <- startsWith(errorMsg, validWarnings[i])
+    falsePositives <- startsWith(trimws(errorMsg,"left"), validWarnings[i])
     errorMsg <- errorMsg[!falsePositives]
     if(any(falsePositives)){
       validWarnings <- validWarnings[-i]
