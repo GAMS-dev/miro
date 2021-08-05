@@ -300,6 +300,12 @@ if(is.null(errMsg)){
                                   }), c(GMSOpt, DDPar)))
         dbSchemaModel$views[[scalarsFileName]] <- c(dbSchemaModel$views[[scalarsFileName]], c(GMSOpt, DDPar))
       }
+      if(length(dbSchemaModel$views) &&
+         scalarsFileName %in% names(dbSchemaModel$views) &&
+         length(modelInTemplate) && is.null(modelInTemplate[[length(modelInTemplate)]])){
+        modelInTemplate[[length(modelInTemplate)]] <- scalarsInTemplate
+        scenDataTemplate <- c(scenDataTemplate, list(scalarsInTemplate))
+      }
       rm(dbSchema)
     }
     suppressWarnings(rm(lang))
