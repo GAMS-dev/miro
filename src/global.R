@@ -125,6 +125,7 @@ JOBSTATUSMAP <- c(
 GAMSRCMAP <- c(
   '-500' = "Internal error",
   '-404' = "Host could not be reached",
+  '-403' = "Forbidden",
   '-401' = "Access denied",
   '-400' = "License expired",
   '-100' = "Model execution timed out",
