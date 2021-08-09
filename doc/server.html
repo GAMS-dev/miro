@@ -336,7 +336,8 @@
                                     <h5 class="block-title">Start / Stop / Update / Uninstall</h5> 
 									<p>This section assumes a Linux operating system. On Windows, <kbd>./miro-server</kbd> must be replaced by <kbd>miro-server.cmd</kbd> in the commands, e,g,  <kbd>miro-server.cmd start</kbd>.</p>
 									<b>Start</b> 
-                                    <p>Once you have GAMS MIRO Server installed, you can launch it via <div class = "console-box"><span class="console-content">&gt; ./miro-server start</span>.</div>GAMS MIRO Server will now listen on port 8080. You can log in with any GAMS Engine user that has at least execute permissions on the namespace provided. To directly access a MIRO application that has been added to MIRO Server, go to <kbd>/app_direct/&lt;appId&gt;</kbd>, where <kbd>appId</kbd> is the lowercase name of your main gms file per default.</p> 
+                                    <p>Once you have GAMS MIRO Server installed, you can launch it via <div class = "console-box"><span class="console-content">&gt; ./miro-server start</span>.</div>GAMS MIRO Server will now listen on port 8080. You can log in with any GAMS Engine user who either has some permission or can see models in the specified namespace. Users without permissions in the namespace can see a model if they can see a user group associated with that model.</p>
+                                    <p>To directly access a MIRO application that has been added to MIRO Server, go to <kbd>/app_direct/&lt;appId&gt;</kbd>, where <kbd>appId</kbd> is the lowercase name of your main gms file per default.</p> 
 									<b>Stop</b> 
 									<p>To stop a running instance of GAMS MIRO Server, run <div class = "console-box"><span class="console-content">&gt; ./miro-server stop</span></div></p> 
 									<b>Restart</b> 

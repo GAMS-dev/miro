@@ -58,19 +58,29 @@ async def login(auth_request: AuthRequest, response: Response):
             f"{settings.engine_url}/namespaces/{settings.engine_ns}/permissions",
             params={"username": auth_request.username},
             auth=(auth_request.username, auth_request.password))
-        if r.status_code != 200:
-            logger.info("Invalid return code (%s) when requesting permissions for namespace: %s",
-                        str(r.status_code), settings.engine_ns)
-            response.status_code = r.status_code
-            return r.json()
+        if r.status_code == 200:
+            namespace_permissions = r.json()["permission"]
+        else:
+            namespace_permissions = 0
 
-        namespace_permissions = r.json()["permission"]
-
-        if namespace_permissions & 1 != 1:
-            logger.info("User '%s' has no execute permissions on namespace: %s",
+        if namespace_permissions == 0:
+            logger.info("User '%s' has no permissions on namespace: %s",
                         auth_request.username, settings.engine_ns)
-            response.status_code = status.HTTP_403_FORBIDDEN
-            return {"message": "Unauthorized access"}
+            # if user can see models in namespace, she is still authenticated
+            r = requests.get(
+                f"{settings.engine_url}/namespaces/{settings.engine_ns}",
+                auth=(auth_request.username, auth_request.password),
+                headers={'X-Fields': 'name'})
+            if r.status_code != 200:
+                logger.info("Invalid return code (%s) when requesting models in namespace: %s",
+                            str(r.status_code), settings.engine_ns)
+                response.status_code = r.status_code
+                return r.json()
+
+            models = r.json()
+            if not models:
+                response.status_code = status.HTTP_403_FORBIDDEN
+                return {"message": "Unauthorized access"}
 
         is_admin = namespace_permissions == 7
     except requests.exceptions.ConnectionError:
