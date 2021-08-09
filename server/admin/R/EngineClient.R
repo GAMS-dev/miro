@@ -1,5 +1,11 @@
 EngineClient <- R6::R6Class("EngineClient", public = list(
   initialize = function(){
+    ret <- httr::GET(paste0(ENGINE_URL, "/version"))
+    private$apiInfo <- content(ret, type = "application/json", 
+                                 encoding = "utf-8")
+    private$apiInfo$apiVersionInt <- suppressWarnings(
+      as.integer(gsub(".", "", private$apiInfo$version, fixed = TRUE)))[1]
+    return(invisible(self))
   },
   setAuthHeader = function(authToken){
     private$authHeader <- paste0("Bearer ", authToken)
@@ -56,19 +62,24 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
         return(modelObj[["name"]])
       }, character(1L), USE.NAMES = FALSE))
   },
-  registerModel = function(appId, modelId, mainGMSName, modelPath, overwrite = FALSE){
+  registerModel = function(appId, modelId, mainGMSName, modelPath, userGroups, overwrite = FALSE){
     flog.trace("Registering app: %s at Engine", appId)
     if(overwrite && (appId %in% private$appIdsNotOnMIRO)){
         # model already exists, so first deregister it
         self$deregisterModel(appId)
     }
     modelDataPath <- file.path(MIRO_MODEL_DIR, appId, paste0(modelId, ".zip"))
+    requestData <- list(data = upload_file(modelDataPath, 
+                          type = 'application/zip'),
+                        run = mainGMSName)
+    if(length(userGroups) &&
+      (is.na(private$apiInfo$apiVersionInt) || private$apiInfo$apiVersionInt > 210809L)){
+      requestData <- c(requestData, private$getGroupLabelsEngine(userGroups))
+    }
     ret <- httr::POST(paste0(ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/models/",
-                          URLencode(appId)), 
-                  encode = "multipart", 
-                  body = list(data = upload_file(modelDataPath, 
-                    type = 'application/zip'),
-                  run = mainGMSName),
+                          URLencode(appId)),
+                  encode = "multipart",
+                  body = requestData,
                   add_headers(Authorization = private$getAuthHeader(), 
                               Timestamp = as.character(Sys.time(), 
                                 usetz = TRUE)),
@@ -80,8 +91,40 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
     flog.trace("App: %s successfully registered at Engine", appId)
     return(invisible(self))
   },
+  updateModel = function(appId, userGroups = NULL){
+    if(appId %in% private$appIdsNotOnEngine){
+      flog.info("Can't update app: %s as it does not exist on Engine.", appId)
+      return(invisible(self))
+    }
+    if(!is.na(private$apiInfo$apiVersionInt) && private$apiInfo$apiVersionInt <= 210809L){
+      flog.info("Can't update app: %s as your Engine version does not support assigning user groups to models.",
+        appId)
+      return(invisible(self))
+    }
+    flog.trace("Updating app: %s at Engine", appId)
+    if(length(userGroups)){
+      requestData <- private$getGroupLabelsEngine(userGroups)
+    }else{
+      requestData <- list(delete_user_groups = TRUE)
+    }
+    ret <- httr::PATCH(paste0(ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/models/",
+                            URLencode(appId)),
+                  encode = "multipart",
+                  body = requestData,
+                  add_headers(Authorization = private$getAuthHeader(), 
+                                    Timestamp = as.character(Sys.time(), 
+                                      usetz = TRUE)),
+                  timeout(4))
+    if(status_code(ret) != 200){
+        stop(sprintf("Unexpected return code: %s from GAMS Engine when trying to update model. Error: %s",
+            status_code(ret), private$getErrorMessage(ret)), call. = FALSE)
+    }
+    flog.trace("App: %s successfully updated at Engine", appId)
+    return(invisible(self))
+  },
   deregisterModel = function(appId){
     if(appId %in% private$appIdsNotOnEngine){
+      flog.info("Can't deregister app: %s as it does not exist on Engine.", appId)
       return(invisible(self))
     }
     flog.trace("Deregistering app: %s at Engine", appId)
@@ -112,6 +155,8 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
   getAppsNotOnMIRO = function(){
     return(private$appIdsNotOnMIRO)
   }), private = list(
+  apiInfo = NULL,
+  labelsEngine = NULL,
   authHeader = NULL,
   appIdsNotOnEngine = character(0L),
   appIdsNotOnMIRO = character(0L),
@@ -123,5 +168,32 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
         error = function(e){
         return(conditionMessage(e))
     }))
+  },
+  fetchGroupLabels = function(){
+    ret <- httr::GET(paste0(ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/user-groups"),
+      add_headers(Authorization = private$getAuthHeader(), 
+                                  Timestamp = as.character(Sys.time(), 
+                                    usetz = TRUE)))
+    if(status_code(ret) != 200){
+        stop(sprintf("Unexpected return code: %s from GAMS Engine when trying to fetch user groups. Error: %s",
+            status_code(ret), private$getErrorMessage(ret)), call. = FALSE)
+    }
+    groupLabelsEngine <- content(ret, type = "application/json", 
+                                 encoding = "utf-8")
+    private$labelsEngine <- vapply(groupLabelsEngine, "[[", character(1L),
+      "label", USE.NAMES = FALSE)
+    return(invisible(self))
+  },
+  getGroupLabelsEngine = function(groupLabels){
+    if(is.null(private$labelsEngine)){
+      private$fetchGroupLabels()
+    }
+    labelIdx <- match(tolower(groupLabels), tolower(private$labelsEngine))
+    if(any(is.na(labelIdx))){
+      stop(sprintf("Invalid group(s): '%s'. This error occurs when you have been removed from these groups.",
+            paste(groupLabels[is.na(labelIdx)], collapse = ",")), call. = FALSE)
+    }
+    groupLabelsTmp <- private$labelsEngine[labelIdx]
+    return(setNames(as.list(groupLabelsTmp), rep.int("user_groups", length(groupLabelsTmp))))
   })
 )

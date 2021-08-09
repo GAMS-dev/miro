@@ -210,7 +210,7 @@ server <- function(input, output, session){
                     launchDbMigrationManager = launchDbMigrationManager, function(){
                         flog.trace("Data for app: %s added successfully", appId)
                     tryCatch({
-                        engineClient$registerModel(appId, modelId, modelName, appDir, overwrite = TRUE)
+                        engineClient$registerModel(appId, modelId, modelName, appDir, newGroups, overwrite = TRUE)
                         flog.debug("New MIRO app: %s registered at Engine.", appId)
 
                         modelConfig$add(newAppConfig)
@@ -307,12 +307,13 @@ server <- function(input, output, session){
                     }
                 }
             }
-            
+            newGroups <- csv2Vector(input$updateApp$groups)
+            engineClient$updateModel(appId, userGroups = newGroups)
             modelConfig$update(appIndex, list(displayName = input$updateApp$title,
                 logoURL = newLogoName, 
                 containerEnv = newAppEnv,
                 description = input$updateApp$desc,
-                accessGroups = csv2Vector(input$updateApp$groups)))
+                accessGroups = newGroups))
 
             flog.info("MIRO app: %s updated successfully.", appId)
             session$sendCustomMessage("onSuccess", 
