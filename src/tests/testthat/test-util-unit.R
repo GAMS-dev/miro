@@ -240,3 +240,41 @@ test_that("Parsing function bodies with parseFunctionBody works", {
   expect_identical(parseFunctionBody("mirorenderer_tOutput <- function(id, height = NULL, options = NULL, path = NULL){\r\n    a <- ' { { { \r\n    '\r\n    test123  \r\n    }\r\n \r\n    ", "mirorenderer_tOutput"), c("    a <- ' { { { ", "    '", "    test123"))
   expect_identical(parseFunctionBody("mirorenderer_tOutput <- function(id, height = NULL, options = NULL, path = NULL){\r\n    a <- `# \"'{ { { \r\n    `\r\n    test123  \r\n    }\r\n \r\n    ", "mirorenderer_tOutput"), c("    a <- `# \"'{ { { ", "    `", "    test123"))
 })
+
+source("../../modules/renderers/miro-pivot.R")
+
+setIndices <- c("hdr1", "hdr2", "hdr3", "hdr4")
+test_that("Getting index lists work (miroPivot)", {
+  expect_identical(getIndexLists(setIndices, list(cols = list(), filter = list(), aggregations = list(),
+                                                  rows = list("hdr2", "hdr3"))),
+                   list(rows = c("hdr2", "hdr3", "hdr1", "hdr4"), cols = character(),
+                        filter = character(), aggregations = character()))
+  expect_identical(getIndexLists(setIndices, list(cols = list("hdr4" = c()), filter = list(), aggregations = list(),
+                                                  rows = list("hdr2", "hdr3"))),
+                   list(rows = c("hdr2", "hdr3", "hdr1"), cols = "hdr4", filter = character(), aggregations = character()))
+  expect_identical(getIndexLists(setIndices, list(cols = list("hdr4" = c(), "hdr1" = c()),
+                                                  filter = list(), aggregations = list(),
+                                                  rows = list("hdr2", "hdr3"))),
+                   list(rows = c("hdr2", "hdr3"), cols = c("hdr4", "hdr1"),
+                        filter = character(), aggregations = character()))
+  expect_identical(getIndexLists(setIndices, list(cols = list("hdr4" = c(), "asd" = c()),
+                                                  filter = list(), aggregations = list(),
+                                                  rows = list("hdr2", "hdr3"))),
+                   list(rows = c("hdr2", "hdr3", "hdr1"), cols = c("hdr4"),
+                        filter = character(), aggregations = character()))
+  expect_identical(getIndexLists(setIndices, list(cols = list("hdr4" = c(), "hdr1" = c()),
+                                                  filter = list(), aggregations = list(),
+                                                  rows = list("hdr2", "hdr3", "hdr1"))),
+                   list(rows = c("hdr2", "hdr3"), cols = c("hdr4", "hdr1"),
+                        filter = character(), aggregations = character()))
+  expect_identical(getIndexLists(setIndices, list(cols = list("hdr4" = c(), "hdr1" = c()),
+                                                  filter = list(), aggregations = list(),
+                                                  rows = list("asd", "hdr3", "hdr1"))),
+                   list(rows = c( "hdr3", "hdr2"), cols = c("hdr4", "hdr1"),
+                        filter = character(), aggregations = character()))
+  expect_identical(getIndexLists(setIndices, list(cols = list(),
+                                                  filter = list(), aggregations = list(),
+                                                  rows = list())),
+                   list(rows = c("hdr1", "hdr2", "hdr3", "hdr4"), cols = character(),
+                        filter = character(), aggregations = character()))
+})

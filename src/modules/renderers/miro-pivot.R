@@ -12,7 +12,15 @@ getIndexLists <- function(setIndices, options = list()){
     if(length(indexIds))
       unassignedSetIndices <- unassignedSetIndices[-indexIds]
   }
-  indices[["rows"]] <- unassignedSetIndices
+  if(length(options[["rows"]])){
+    rowIndices <- unlist(options[["rows"]])
+    missingIndices <- unassignedSetIndices[!unassignedSetIndices %in% rowIndices]
+    indexIds <- match(rowIndices, unassignedSetIndices)
+    indices[["rows"]] <- c(unassignedSetIndices[indexIds[!is.na(indexIds)]],
+                           missingIndices)
+  }else{
+    indices[["rows"]] <- unassignedSetIndices
+  }
   return(indices)
 }
 genIndexList <- function(indexList) {
@@ -72,7 +80,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                lang$renderers$miroPivot$aggregationFunctions$min,
                lang$renderers$miroPivot$aggregationFunctions$max)) 
   
-  tags$div(id = ns("container"),
+  tags$div(id = ns("container"), style = "overflow:hidden;",
            tags$div(id = ns("customError"), class = "gmsalert gmsalert-error"),
            if(length(options$domainFilter$domains)){
              fluidRow(class = "domain-filter",
