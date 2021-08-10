@@ -1558,8 +1558,8 @@ if(is.null(errMsg)){
     }
     errMsgTmp <- NULL
     if(length(graphConfig$options$aggregationFunction) &&
-       graphConfig$options$aggregationFunction %in% c("count", "min") &&
-       identical(graphConfig$options[["_metadata_"]]$symtype, "set")){
+       identical(graphConfig$options[["_metadata_"]]$symtype, "set") &&
+       !graphConfig$options$aggregationFunction %in% c("count", "min")){
       errMsgTmp <- "Sets can only have 'count' or 'min' as aggregation function."
     }
     noNumericHeaders <- sum(vapply(graphConfig$options[["_metadata_"]]$headers, 
