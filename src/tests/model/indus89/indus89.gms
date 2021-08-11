@@ -3080,8 +3080,9 @@ Set
    ce(cq)      'exportable comodities'   / basmati, irri, cotton, onions, wheat /
    cm(cq)      'comodities which could be imported'       / sc-mill             /
    ex(z,g)     'to check fresh or saline area within a zone'
+$onExternalOutput
    techc(z,cq) 'comodities by zones';
-
+$offExternalOutput
 ex(z1,g)$resource(z1,g,"cca") = yes;
 display cq, cn, ccn, qn, ncn, ce, cm, ex, fert;
 

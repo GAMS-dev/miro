@@ -1,1 +1,20 @@
-{}
+{
+  "dataRendering": {
+    "techc": {
+      "outType": "miroPivot",
+      "height": 700,
+      "options": {
+        "aggregationFunction": "min",
+        "pivotRenderer": "table",
+        "enableHideEmptyCols": false,
+        "hideEmptyCols": false,
+        "hidePivotControls": false,
+        "emptyUEL": "-",
+        "rows": "cq",
+        "aggregations": {
+          "z": null
+        }
+      }
+    }
+  }
+}

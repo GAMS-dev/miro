@@ -3,6 +3,24 @@
 	"inputSymbols":	{
 	},
 	"outputSymbols":	{
+		"techc":	{
+			"alias":	"comodities by zones",
+			"symtype":	"set",
+			"headers":	{
+				"z":	{
+					"type":	"string",
+					"alias":	"agroclimatic zones"
+				},
+				"cq":	{
+					"type":	"string",
+					"alias":	"crop and livestock products"
+				},
+				"text":	{
+					"type":	"string",
+					"alias":	"Set text comodities by zones"
+				}
+			}
+		},
 		"x":	{
 			"alias":	"cropped area by technology                                      (thousand acres)",
 			"symtype":	"variable",
