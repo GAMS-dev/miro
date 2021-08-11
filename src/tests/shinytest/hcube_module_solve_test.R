@@ -26,6 +26,16 @@ app$setInputs(btImport = "click")
 Sys.sleep(1)
 app$setInputs(btLoadScenConfirm = "click")
 Sys.sleep(3)
+# make sure that we set daterange to proper values so that hashes are reproducible
+
+app$setInputs(inputTabset = "inputTabset_1")
+app$setInputs(inputTabset1 = "inputTabset1_6")
+app$setInputs(daterange_9 = c(NA, "2021-08-09"))
+app$setInputs(btSave = "click")
+Sys.sleep(1L)
+app$setInputs(btRemoveOutput = "click")
+Sys.sleep(2L)
+
 # open Hcube dialog and check that defaults are correct
 app$findElement(".btSolve .dropdown-toggle")$click()
 app$findElement(".sidebar-menu a[onclick*='Submit Hypercube']")$click()
