@@ -87,17 +87,17 @@ pipeline {
                                yarn dist
                         '''
                         script{
-                            if (params.BUILD_CI) {
-                                sh '''
-                                    yarn docker-build-ci
-                                '''
-                            }
                             if (params.PUSH_UNSTABLE_SERVER_IMAGES || env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
                                 sh '''#!/bin/bash -xe
                                     ## build MIRO server images
                                     pushd server > /dev/null
                                         python3 miro_server.py build
                                     popd > /dev/null
+                                '''
+                            }
+                            if (params.BUILD_CI) {
+                                sh '''
+                                    yarn docker-build-ci
                                 '''
                             }
                         }
