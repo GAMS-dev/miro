@@ -645,6 +645,7 @@ Section 8 -- Interpretation.
         - c3, Copyright (c) 2013 Masayuki Tanaka
         - handsontable, Copyright (c) 2012-2014 Marcin Warpechowski, Copyright (c) 2015 Handsoncode sp. z o.o. <hello@handsoncode.net>
         - R6, Copyright (c) 2015 RStudio
+        - hms, Copyright (c) 2020 hms authors
         - ps, Copyright (c) 2009-2020 Jay Loden, Dave Daeschler, Giampaolo Rodola', RStudio
         - processx, Copyright (c) 2016-2019 Mango Solutions, RStudio, Gábor Csárdi
         - askpass, Copyright (c) 2018 Jeroen Ooms
@@ -660,7 +661,7 @@ Section 8 -- Interpretation.
         - plotly, Copyright (c) 2017 Plotly, Inc.
         - shinyAce, Copyright (c) 2016 Vincent Nijs [aut, cre], Forest Fang [aut], Trestle Technology, LLC [aut], Jeff Allen [aut], Institut de Radioprotection et de Surete Nucleaire [cph], Ajax.org B.V. [ctb, cph] (Ace)
         - V8 (R package), Copyright (c) 2017 Jeroen Ooms
-        - jsonlite, Copyright (c) 2017 Jeroen Ooms
+        - jsonlite, Copyright (c) 2020 Jeroen Ooms
         - rpivotTable, Copyright (c) 2015 Enzo Martoglio
         - dygraphs, Copyright (c) 2015-2016 Dan Vanderkam; RStudio, Inc.
         - tidyr, Copyright (c) 2020 Hadley Wickham [aut, cre], Lionel Henry [aut], RStudio [cph]
@@ -699,10 +700,11 @@ Section 8 -- Interpretation.
         - prettyunits, Copyright (c) 2014 Gabor Csardi
         - viridis, Copyright (c) 2015 Simon Garnier
         - KaTeX, Copyright (c) 2013-2019 Khan Academy and other contributors
-        - labeling, Copyright (c) 2014 Justin Talbot
+        - labeling, Copyright (c) 2020 Justin Talbot
         - munsell, Copyright (c) 2016 Charlotte Wickham
+        - tidyselect, Copyright (c) 2020 Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
         - plyr, Copyright (c) 2014 Hadley Wickham [aut, cre]
-        - fastmap, Copyright (c) 2019 RStudio
+        - fastmap, Copyright (c) 2019 Winston Chang [aut, cre], RStudio [cph, fnd], Tessil [cph] (hopscotch_map library)
         - bootstrap, Copyright (c) 2011-2019 Twitter, Inc. 
                      Copyright (c) 2011-2019 The Bootstrap Authors
         - html5shiv, Copyright (c) 2014 Alexander Farkas (aFarkas)
@@ -1004,9 +1006,6 @@ Library.
             Hadley Wickham [aut], 
             Kirill Müller [cre], 
             RStudio [cph]
-        - hms, Copyright (c) 
-            Kirill Müller [aut, cre], 
-            The R Consortium [fnd]
         - Rcpp [expanded from: GPL (≥ 2)], Copyright (c)
             Dirk Eddelbuettel, 
             Romain Francois, 
@@ -1017,10 +1016,7 @@ Library.
             Douglas Bates and 
             John Chambers
         - httpuv [expanded from: GPL (≥ 2)], Copyright (c)
-            Joe Cheng, 
-            Hector Corrada Bravo [ctb], 
-            Jeroen Ooms [ctb], 
-            Winston Chang [ctb]
+            RStudio, PBC; Joyent, Inc.; Nginx Inc.; Igor Sysoev; Niels Provos; Internet Systems Consortium, Inc.; Alexander Chemeris; Berkeley Software Design; Google Inc.; Sony Mobile Communications AB; Alexander Peslyak; Free Software Foundation, Inc.; X Consortium; Ben Noordhuis; StrongLoop, Inc.; Saúl Ibarra Corretgé; Bert Belder; Fedor Indutny; libuv project; Refael Ackermann; Kenneth MacKay; Emergya; Diego Pettenò; xine project, The Regents of the University of California, Dariusz Dwornikowski
         - fs, Copyright (c)
             Jim Hester [aut, cre],
             Hadley Wickham [aut],
@@ -1051,7 +1047,6 @@ Library.
             Marcus Geelnard [ctb, cph] (TinyCThread library, https://tinycthread.github.io/), 
             Evan Nemerson [ctb, cph] (TinyCThread library, https://tinycthread.github.io/)
         - assertthat, Copyright (c) Hadley Wickham [aut, cre]
-        - tidyselect, Copyright (c) Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
         - clipr, Copyright (c) Matthew Lincoln [aut, cre], Louis Maddox [ctb], 
             Steve Simpson [ctb], Jennifer Bryan [ctb]
         - base64enc, Copyright (c) Simon Urbanek 
@@ -1062,8 +1057,8 @@ Library.
             Jeffrey A. Ryan [aut], Joshua M. Ulrich [ctb], Felix Andrews [ctb]
         - xts [expanded from: GPL (>=2)], Copyright (c) Jeffrey A. Ryan [aut, cph], 
             Joshua M. Ulrich [cre, aut], Ross Bennett [ctb], Corwin Joy [ctb]
-        - formatR, Copyright (c) Yihui Xie [aut, cre], Eugene Ha [ctb], 
-            Kohske Takahashi [ctb], Ed Lee [ctb]
+        - formatR, Copyright (c) Yihui Xie [aut, cre], Ed Lee [ctb], Eugene Ha [ctb], 
+            Kohske Takahashi [ctb], Pavel Krivitsky [ctb]
         - leaflet, Copyright (c) Joe Cheng [aut, cre], Bhaskar Karambelkar [aut], 
             Yihui Xie [aut], Hadley Wickham [ctb], Kenton Russell [ctb], Kent Johnson [ctb], 
             Barret Schloerke [ctb], jQuery Foundation and contributors [ctb, cph] (jQuery library), 
@@ -1814,9 +1809,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         - chroma, Copyright (c) 2011-2018, Gregor Aisch
         - sparkline, Copyright (c) Splunk, Inc 2012
         - stringi, Copyright (c) 2013-2018 Marek Gagolewski and other contributors
-        - colorspace, Copyright (c) 2005-2016
-            COPYRIGHT HOLDER: Ross Ihaka, Paul Murrell, Kurt Hornik, Jason C. Fisher, Reto Stauffer, Achim Zeileis
-            ORGANIZATION: Ross Ihaka, Paul Murrell, Kurt Hornik, Jason C. Fisher, Reto Stauffer, Achim Zeileis
+        - colorspace, Copyright (c) 2005-2018
+            COPYRIGHT HOLDER: Ross Ihaka, Paul Murrell, Kurt Hornik, Jason C. Fisher, Reto Stauffer, Claus O. Wilke, Claire D. McWhite, Achim Zeileis
+            ORGANIZATION: Ross Ihaka, Paul Murrell, Kurt Hornik, Jason C. Fisher, Reto Stauffer, Claus O. Wilke, Claire D. McWhite, Achim Zeileis
         - yaml, Copyright (C) 2008-2018 
                       COPYRIGHT HOLDER: Vanderbilt University Medical Center
                       ORGANIZATION: Vanderbilt University Medical Center
@@ -2796,6 +2791,41 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
 
+
+
+optional.h(pp):
+
+Copyright (C) 2011 - 2012 Andrzej Krzemienski.
+
+Use, modification, and distribution is subject to the Boost Software
+License, Version 1.0. (See below)
+
+The idea and interface is based on Boost.Optional library
+authored by Fernando Luis Cacciola Carballal
+
+Boost Software License - Version 1.0 - August 17th, 2003
+
+Permission is hereby granted, free of charge, to any person or organization
+obtaining a copy of the software and accompanying documentation covered by
+this license (the "Software") to use, reproduce, display, distribute,
+execute, and transmit the Software, and to prepare derivative works of the
+Software, and to permit third-parties to whom the Software is furnished to
+do so, all subject to the following:
+
+The copyright notices in the Software and this entire statement, including
+the above license grant, this restriction and the following disclaimer,
+must be included in all copies of the Software, in whole or in part, and
+all derivative works of the Software, unless such copies or derivative
+works are solely in the form of machine-executable object code generated by
+a source language processor.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO EVENT
+SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE SOFTWARE BE LIABLE
+FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
 -----------------------------------------------------------------------------
 
 ICU4C is licensed as follows:

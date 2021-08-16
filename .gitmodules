@@ -11,9 +11,6 @@
 [submodule "r-src/plotly"]
 	path = r-src/plotly
 	url = https://github.com/GAMS-dev/plotly.git
-[submodule "r-src/crosstalk"]
-	path = r-src/crosstalk
-	url = https://github.com/GAMS-dev/crosstalk.git
 [submodule "r-src/DT"]
 	path = r-src/DT
 	url = https://github.com/GAMS-dev/DT.git
