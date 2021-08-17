@@ -153,11 +153,11 @@ test_that("Test that initialising index works", {
   expect_true(any(grepl("non-empty rows", rWarnings, fixed = TRUE)))
   expect_true(any(grepl("Key=value", rWarnings, fixed = TRUE)))
   expect_equal(xlsioPrivate$rIndex[["i10"]], tibble(symbol = "i10", range = "testIndex!B26:E27",
-                                                    rdim = 0L, cdim = 2L, dim = 2L, values = "noData", ignorecols = NA_character_,
-                                                    ignorerows = NA_character_, se = "1", squeeze = "1"))
+                                                    rdim = 0L, cdim = 2L, dim = 2L, values = "noData", ignorerows = NA_character_, ignorecols = NA_character_, se = "1", squeeze = "1"))
   expect_equal(xlsioPrivate$rIndex[["modedistance"]], tibble(symbol = "modedistance", range = "testIndex!A26:E31",
-                                                             rdim = 1L, cdim = 2L, dim = 3L, values = "auto", ignorecols = NA_character_,
-                                                             ignorerows = NA_character_, se = "1", squeeze = "1"))
+                                                             rdim = 1L, cdim = 2L, dim = 3L, values = "auto", ignorerows = NA_character_,
+                                                             ignorecols = NA_character_,
+                                                             se = "1", squeeze = "1"))
   expect_equal(xlsioPrivate$rIndex[["distance2"]], tibble(symbol = "distance2", range = "testIndex!A26:E31",
                                                           rdim = 1L, cdim = 1L, dim = 2L, values = "auto", ignorerows = "27",
                                                           ignorecols = "C, E", se = "1", squeeze = "1"))
