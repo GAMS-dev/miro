@@ -182,3 +182,5 @@ test_that("Saving already deleted attachment should result in warning in log", {
   expect_output(opQueue <- attachments$flushOpQueue(), regexp = "Problems reading file:.* No such file or directory")
   expect_identical(opQueue$save$fileContent, blob::as_blob(raw(0)))
 })
+
+db$finalize()

@@ -242,6 +242,7 @@ for(dbType in c("sqlite", "postgres")){
                      schema = "mirotests")
   }
   populateDb(procEnv, "pickstock")
+  db$finalize()
   db <- Db$new(uid = "user", dbConf = dbConfig,
                slocktimeLimit = 20, modelName = modelName,
                hcubeActive = FALSE, ugroups = "users", forceNew = TRUE)
@@ -269,3 +270,4 @@ for(dbType in c("sqlite", "postgres")){
   })
 }
 
+db$finalize()

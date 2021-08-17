@@ -207,3 +207,4 @@ test_that("Getting all scalars works without scalars defined in app", {
   expect_identical(scenData$getScalars("sb"), tibble(scalar = character(), description = character(), value = character()))
 })
 
+db$finalize()
