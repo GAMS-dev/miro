@@ -181,7 +181,8 @@ createTestDb()
 db <- Db$new(uid = "te_de\\%d", 
              dbConf = dbConfig,
              slocktimeLimit = slocktimeLimit, modelName = "pickstock",
-             hcubeActive = FALSE, ugroups = c("bla_blubb", "test123"))
+             hcubeActive = FALSE, ugroups = c("bla_blubb", "test123"),
+             forceNew = TRUE)
 populateDb(procEnv, "indus89", modelPath = file.path(getwd(), "..", "model", "indus89"))
 
 ioConfig <<- list(modelOut = list(x = list()),

@@ -213,8 +213,8 @@ for(dbType in c("sqlite", "postgres")){
   if(dbType == "postgres" && skipPostgres){
     skip("Skipping Postgres tests as MIRO_DB_TYPE is not set to 'postgres'")
   }
-  procEnv <- procEnv <- list(R_LIBS_USER = Sys.getenv("LIB_PATH"),
-                             GAMS_SYS_DIR = Sys.getenv("GAMS_SYS_DIR"))
+  procEnv <- list(R_LIBS_USER = Sys.getenv("LIB_PATH"),
+                  GAMS_SYS_DIR = Sys.getenv("GAMS_SYS_DIR"))
   
   if(identical(dbType, "sqlite")){
     dbPath <- file.path(testDir, "pickstock.sqlite3")
