@@ -5,7 +5,7 @@ validFatals <- c("GAMS symbol: 'd': Invalid column name(s): 'bla' in configurati
                  "The column(s): 'value2' of table: 'd' specified in colFormat does not exist.",
                  "colFormat is not supported when pivotCols are active (table: d).")
 validErrors <- c("Confirm download of temporary files button clicked without any files specified.")
-validWarnings <- c()
+validWarnings <- c("Hypercube job directory: '")
 
 logFilePath <- Sys.getenv("MIRO_LOG_PATH")
 
