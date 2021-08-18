@@ -835,7 +835,8 @@
         "median": "Median",
         "mean": "Durchschnitt",
         "min": "Min",
-        "max": "Max"
+        "max": "Max",
+        "sd": "Standardabweichung"
       },
       "renderer":{
         "table": "Tabelle",

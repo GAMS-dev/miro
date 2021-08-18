@@ -3094,9 +3094,13 @@
                 "max": {
                   "type": "string",
                   "minLength": 1
+                },
+                "sd": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 6
+              "minProperties": 7
             },
             "renderer": {
               "type": "object",

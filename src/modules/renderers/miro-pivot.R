@@ -72,13 +72,14 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
              c(lang$renderers$miroPivot$aggregationFunctions$count,
                lang$renderers$miroPivot$aggregationFunctions$min))
   else
-    setNames(c("sum", "count", "mean", "median", "min", "max"), 
+    setNames(c("sum", "count", "mean", "median", "min", "max", "sd"), 
              c(lang$renderers$miroPivot$aggregationFunctions$sum,
                lang$renderers$miroPivot$aggregationFunctions$count,
                lang$renderers$miroPivot$aggregationFunctions$mean,
                lang$renderers$miroPivot$aggregationFunctions$median,
                lang$renderers$miroPivot$aggregationFunctions$min,
-               lang$renderers$miroPivot$aggregationFunctions$max)) 
+               lang$renderers$miroPivot$aggregationFunctions$max,
+               lang$renderers$miroPivot$aggregationFunctions$sd)) 
   
   tags$div(id = ns("container"), style = "overflow:hidden;",
            tags$div(id = ns("customError"), class = "gmsalert gmsalert-error"),
@@ -432,13 +433,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                  c(lang$renderers$miroPivot$aggregationFunctions$count,
                    lang$renderers$miroPivot$aggregationFunctions$min))
       else
-        setNames(c("sum", "count", "mean", "median", "min", "max"), 
+        setNames(c("sum", "count", "mean", "median", "min", "max", "sd"), 
                  c(lang$renderers$miroPivot$aggregationFunctions$sum,
                    lang$renderers$miroPivot$aggregationFunctions$count,
                    lang$renderers$miroPivot$aggregationFunctions$mean,
                    lang$renderers$miroPivot$aggregationFunctions$median,
                    lang$renderers$miroPivot$aggregationFunctions$min,
-                   lang$renderers$miroPivot$aggregationFunctions$max)) 
+                   lang$renderers$miroPivot$aggregationFunctions$max,
+                   lang$renderers$miroPivot$aggregationFunctions$sd))
       
       if(length(options$customChartColors)){
         customChartColors <- options$customChartColors
@@ -1151,7 +1153,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           if(identical(aggregationFunction, "")){
             aggregationFunction <- aggregationFunctions[[1]]
           }else if(length(aggregationFunction) != 1L ||
-             !aggregationFunction %in% c("sum", "count", "min", "max", "mean", "median")){
+             !aggregationFunction %in% c("sum", "count", "min", "max", "mean", "median", "sd")){
             flog.warn("Attempt to tamper with the app detected! User entered: '%s' as aggregation function.",
                       aggregationFunction)
             stop("Attempt to tamper with the app detected!", call. = FALSE)
