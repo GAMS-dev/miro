@@ -15,7 +15,12 @@ scenData <- getVisibleDtData(app, "batchLoadResults")
 expect_false(any(is.na(scenData[[20]])))
 expect_false(any(is.na(scenData[[21]])))
 
-scenHashTmp <- "5b34e4e1bdcf2ef45d5e95dbc3635bf8c3c5f0d193d4de1312f499da9462ed3c"
+if(.Platform$OS.type == 'windows'){
+  #CRLF in dowjones2016.csv results in different hash
+  scenHashTmp <- "e54c36e3fb4340624db0436bae4561a29afb2404cb6fa2fa859a6c22e89ce154"
+}else{
+  scenHashTmp <- "5b34e4e1bdcf2ef45d5e95dbc3635bf8c3c5f0d193d4de1312f499da9462ed3c"
+}
 scenToCompare <- match(c("default", scenHashTmp), scenData[[2]])
 expect_false(any(is.na(scenToCompare)))
 app$setInputs(batchLoadResults_rows_selected = scenToCompare, allowInputNoBinding_ = TRUE)
@@ -25,7 +30,8 @@ app$setInputs(hcubeLoadSelected = "click")
 Sys.sleep(2L)
 app$waitFor("$('#btBatchCompare').click()", timeout = 50L)
 Sys.sleep(3L)
-expect_true(app$waitFor("$('#cmpScenTitle_5').text().startsWith('HC (5b34e4e1...)')", timeout = 50L))
+expect_true(app$waitFor(paste0("$('#cmpScenTitle_5').text().startsWith('HC (",
+                               substr(scenHashTmp, 1, 8), "...)')"), timeout = 50L))
 graphData <- jsonlite::fromJSON(app$getAllValues()$output[["tab_5_3-graph"]], simplifyDataFrame = FALSE)$x$data
 expect_identical(length(graphData), 756L)
 expect_identical(graphData[, 1], c("2016-01-04T00:00:00.000Z", "100.572928794899", "101.703327363261"))
