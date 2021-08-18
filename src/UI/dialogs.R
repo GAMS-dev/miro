@@ -919,8 +919,7 @@ showDuplicatedScenDialog <- function(noDupScen, dupScenTags, noScen){
 }
 # Batch Load module
 showBatchLoadDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver = "", 
-                                maxConcurentLoad = 0L, exclAttribChoices = NULL,
-                                customScripts = NULL){
+                                exclAttribChoices = NULL, customScripts = NULL){
   if(LAUNCHHCUBEMODE){
     analysisTabset <- tagList(lang$nav$dialogBatchLoad$paverDesc,
                               selectInput("selPaverAttribs", lang$nav$dialogBatchLoad$selPaverAttribs, 
@@ -1000,10 +999,10 @@ showBatchLoadDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver 
                      )
                    ),
                    tags$div(class = "batch-load-content",
-                            if(length(sidsToLoad) <= maxConcurentLoad){
+                            if(length(sidsToLoad) <= 50L){
                               lang$nav$dialogBatchLoad$selectMethod
                             }else{
-                              sprintf(lang$nav$dialogBatchLoad$maxScenWarning1, maxConcurentLoad) %+% 
+                              sprintf(lang$nav$dialogBatchLoad$maxScenWarning1, 50L) %+% 
                                 lang$nav$dialogBatchLoad$maxScenWarning2
                             }
                    ),
@@ -1066,27 +1065,31 @@ showBatchLoadDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver 
                                           style = "display:none",
                                           lang$nav$dialogBatchLoad$interactiveButtonSb))
                    },
-                   if(length(sidsToLoad) <= maxConcurentLoad){
+                   if(length(sidsToLoad) <= 50L){
                      tags$div(class = "btn-group", class = "batch-load-content",
                               tags$button(class = "btn btn-default", type = "button", id = "btBatchCompare", 
-                                          style = "margin:6px 0px 6px 5px;border-right:0px;",
-                                          onclick = "Shiny.setInputValue('btBatchCompare','tab',{priority:'event'});", 
-                                          lang$nav$dialogBatchLoad$interactiveButtonTab),
-                              tags$button(class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
-                                          style = "margin:6px 0px 6px 0;display:block;",
-                                          tags$span(class = "caret"),
-                                          tags$span(class = "sr-only", "toggle dropdown")),
-                              tags$ul(class = "dropdown-menu", role = "menu", style = "margin-left: 5px;",
-                                      tags$li(
-                                        tags$a(href = "#",
-                                               onclick = "Shiny.setInputValue('btBatchCompare','pivot',{priority:'event'});",
-                                               lang$nav$dialogBatchLoad$interactiveButtonPivot)),
-                                      if(length(sidsToLoad) <= 2L){
-                                        tags$li(
-                                          tags$a(href = "#",
-                                                 onclick = "Shiny.setInputValue('btBatchCompare','split',{priority:'event'});",
-                                                 lang$nav$dialogBatchLoad$interactiveButtonSplit))
-                                      }))}))),
+                                          style = if(length(sidsToLoad) <= 10L)
+                                            "margin:6px 0px 6px 5px;border-right:0px;" else
+                                              "margin:6px 0px 6px 5px;",
+                                          onclick = "Shiny.setInputValue('btBatchCompare','pivot',{priority:'event'});", 
+                                          lang$nav$dialogBatchLoad$interactiveButtonPivot),
+                              if(length(sidsToLoad) <= 10L){
+                                tagList(
+                                  tags$button(class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
+                                              style = "margin:6px 0px 6px 0;display:block;",
+                                              tags$span(class = "caret"),
+                                              tags$span(class = "sr-only", "toggle dropdown")),
+                                  tags$ul(class = "dropdown-menu", role = "menu", style = "margin-left: 5px;",
+                                          tags$li(
+                                            tags$a(href = "#",
+                                                   onclick = "Shiny.setInputValue('btBatchCompare','tab',{priority:'event'});",
+                                                   lang$nav$dialogBatchLoad$interactiveButtonTab)),
+                                          if(length(sidsToLoad) <= 2L){
+                                            tags$li(
+                                              tags$a(href = "#",
+                                                     onclick = "Shiny.setInputValue('btBatchCompare','split',{priority:'event'});",
+                                                     lang$nav$dialogBatchLoad$interactiveButtonSplit))
+                                          }))})}))),
       tags$script("$('#shiny-modal').modal().focus();")))
 }
 # Hypercube job import module

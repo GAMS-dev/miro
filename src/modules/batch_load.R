@@ -445,7 +445,7 @@ observeEvent(input$hcubeLoadSelected, {
   }
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad <<- as.integer(batchLoadData[[1]][input$batchLoadResults_rows_selected])
-  showBatchLoadDialog(length(sidsToLoad), batchLoadFilters, maxSolversPaver, maxConcurentLoad,
+  showBatchLoadDialog(length(sidsToLoad), batchLoadFilters, maxSolversPaver,
                       exclAttribChoices = exclAttribChoices,
                       customScripts = config$scripts$hcube)
 })
@@ -456,7 +456,7 @@ observeEvent(input$hcubeLoadCurrent, {
   }
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad <<- as.integer(batchLoadData[[1]][input$batchLoadResults_rows_current])
-  showBatchLoadDialog(length(sidsToLoad), batchLoadFilters, maxSolversPaver, maxConcurentLoad,
+  showBatchLoadDialog(length(sidsToLoad), batchLoadFilters, maxSolversPaver,
                       exclAttribChoices = exclAttribChoices,
                       customScripts = config$scripts$hcube)
 })
@@ -467,7 +467,7 @@ observeEvent(input$hcubeLoadAll, {
   }
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad     <<- as.integer(batchLoadData[[1]])
-  showBatchLoadDialog(length(sidsToLoad), batchLoadFilters, maxSolversPaver, maxConcurentLoad, 
+  showBatchLoadDialog(length(sidsToLoad), batchLoadFilters, maxSolversPaver,
                       exclAttribChoices = exclAttribChoices,
                       customScripts = config$scripts$hcube)
 })
