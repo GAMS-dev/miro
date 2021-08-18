@@ -613,7 +613,7 @@
       "selectMethod": "Was möchtest du mit den ausgewählten Szenarien machen?",
       "selExportType": "Wählen Sie einen Dateityp aus",
       "maxScenWarning1": "Sie können nur bis zu: '%d' gleichzeitig für den Vergleich im interaktiven Modus laden.", 
-      "maxScenWarning2": " Wählen Sie weniger Szenarien aus oder verwenden Sie das Paver Modul zum Vergleich.",
+      "maxScenWarning2": " Wählen Sie weniger Szenarien oder verwenden Sie eigene Analyseskripte zum Vergleich.",
       "cancelButton": "Abbrechen",
       "paverButton": "Analysieren",
       "selAnalysisScript": "Wählen Sie das Skript aus, das Sie ausführen möchten.",

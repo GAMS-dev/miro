@@ -613,7 +613,7 @@
       "selectMethod": "What would you like to do with the selected scenarios?",
       "selExportType": "Select a file type",
       "maxScenWarning1": "You may only select up to: '%d' scenarios to load into interactive mode at once.", 
-      "maxScenWarning2": " Select less scenarios or use the PAVER module to compare.",
+      "maxScenWarning2": " Select less scenarios or use custom analysis scripts to compare.",
       "cancelButton": "Cancel",
       "paverButton": "Analyze",
       "selAnalysisScript": "Select the script you want to run",

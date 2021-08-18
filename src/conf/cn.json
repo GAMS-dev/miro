@@ -613,7 +613,7 @@
       "selectMethod": "对选定的场景进行什么操作？",
       "selExportType": "选择文件类型",
       "maxScenWarning1":"一次最多选择'%d'个场景加载到交互模式。",
-      "maxScenWarning2":"减少场景数或使用PAVER模块进行比较。",
+      "maxScenWarning2":"选择更少的场景或使用自定义分析脚本进行比较。",
       "cancelButton":"取消",
       "paverButton":"分析",
       "tabScript": "脚本",
