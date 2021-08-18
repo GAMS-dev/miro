@@ -94,7 +94,7 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
       private$dataHashes[[dsId]] <- paste0(dsPrefix, escapeGAMSCL(data))
       return(invisible(self))
     }
-    if(identical(private$scalarsConfig[[dsId]], "set")){
+    if(isClArg || identical(private$scalarsConfig[[dsId]], "set")){
       private$dataHashes[[dsId]] <- paste0(dsPrefix, escapeGAMSCL(data))
     }else{
       private$dataHashes[[dsId]] <- paste0(dsPrefix, data)
