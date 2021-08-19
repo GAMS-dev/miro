@@ -3126,12 +3126,24 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "scatter": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "area": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "stackedarea": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "radar": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 6
+              "minProperties": 9
             },
             "invalidFilters": {
               "type": "object",

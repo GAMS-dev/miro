@@ -844,7 +844,10 @@
         "bar": "Balkendiagramm",
         "stackedbar": "Gestapeltes Balkendiagramm",
         "radar": "Radardiagramm",
-        "line": "Liniendiagramm"
+        "line": "Liniendiagramm",
+        "scatter": "Streudiagramm",
+        "area": "Flächendiagramm",
+        "stackedarea": "Gestapeltes Flächendiagramm"
       },
       "invalidFilters":{
         "title": "Einige Filter konnten nicht angewendet werden, weil die Werte in den Daten nicht vorhanden sind.",

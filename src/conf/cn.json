@@ -844,7 +844,10 @@
         "bar": "柱形图",
         "stackedbar": "堆积柱形图",
         "radar": "雷达图",
-        "line": "折线图"
+        "line": "折线图",
+        "scatter": "散点图",
+        "area": "面积图",
+        "stackedarea": "堆积面积图"
       },
       "invalidFilters":{
         "title": "由于数据中不存在这些值，因此无法应用某些过滤器。",

@@ -26,12 +26,12 @@
 NULL
 
 # Format a list of colours for a type of graph and possible existing series
-cjs_get_colours <- function(chartjs, n){
+cjs_get_colours <- function(chartjs, n, ...){
   if (!is.null(chartjs$x$customColors)) {
     if(length(chartjs$x$customColors) < 2*(n+1)){
-      return(chartjs %>% cjs_get_chart_colours(rep.int("#666", 2*(n+1)), n))
+      return(chartjs %>% cjs_get_chart_colours(rep.int("#666", 2*(n+1)), n, ...))
     }
-    chartjs %>% cjs_get_chart_colours(chartjs$x$customColors, n)
+    chartjs %>% cjs_get_chart_colours(chartjs$x$customColors, n, ...)
   } else if (!is.list(chartjs$x$palette)) {
     vecColors <- baseColors(chartjs$x$palette)
     chartjs %>% cjs_get_chart_colours(vecColors, n)
@@ -43,7 +43,7 @@ cjs_get_chart_colours <- function(x, ...){
   UseMethod("cjs_get_chart_colours")
 }
 
-cjs_get_chart_colours.cjs_bar <- function(chartjs, vecColors, n) {
+cjs_get_chart_colours.cjs_bar <- function(chartjs, vecColors, n, ...) {
     list(borderColor = "#000000",
          backgroundColor = vecColors[(2*n)+1],
          hoverBorderColor =  "rgba(255,255,255,1)",
@@ -53,16 +53,23 @@ cjs_get_chart_colours.cjs_bar <- function(chartjs, vecColors, n) {
 cjs_get_chart_colours.cjs_horizontalBar <- cjs_get_chart_colours.cjs_bar
 
 
-cjs_get_chart_colours.cjs_line <- function(chartjs, vecColors, n) {
+cjs_get_chart_colours.cjs_line <- function(chartjs, vecColors, n, fill = FALSE, fillOpacity = 0.7) {
+  if(fill){
+    backgroundColor <- paste0("rgba(", paste(col2rgb(vecColors[2* (n + 1)]), collapse = ","),
+                              ",", fillOpacity, ")")
+  }else{
+    backgroundColor <- "rgba(0,0,0,0)"
+  }
   list(borderColor = vecColors[2* (n + 1)],
-       backgroundColor = "rgba(0,0,0,0)",
+       backgroundColor = backgroundColor,
        pointBorderColor = vecColors[(2 * n) + 1],
        pointBackgroundColor = vecColors[2 * (n + 1)],
        pointHoverBorderColor = vecColors[2 * (n + 1)],
-       pointHoverBackgroundColor = vecColors[(2 * n) + 1])
+       pointHoverBackgroundColor = vecColors[(2 * n) + 1],
+       fill = fill)
 }
 
-cjs_get_chart_colours.cjs_radar <- function(chartjs, vecColors, n) {
+cjs_get_chart_colours.cjs_radar <- function(chartjs, vecColors, n, ...) {
   list(borderColor = vecColors[2*(n+1)],
        backgroundColor = "rgba(0,0,0,0)",
        pointBorderColor = vecColors[(2*n)+1],
@@ -71,7 +78,7 @@ cjs_get_chart_colours.cjs_radar <- function(chartjs, vecColors, n) {
        pointHoverBackgroundColor = vecColors[(2*n)+1])
 }
 
-cjs_get_chart_colours.cjs_pie <- function(chartjs, vecColors, n) {
+cjs_get_chart_colours.cjs_pie <- function(chartjs, vecColors, n, ...) {
   lColors <- length(vecColors)
   list(borderColor = rep("rgba(255,255,255,0)", n),
        backgroundColor = vecColors[seq(1, lColors, 2)][1:n],

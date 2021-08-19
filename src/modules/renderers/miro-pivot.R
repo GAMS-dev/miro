@@ -210,12 +210,15 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                     style = if(isTRUE(options$hidePivotControls)) "margin:0;display:none;" else "margin:0;",
                     column(width = 2L,
                            selectInput(ns("pivotRenderer"), "", 
-                                       setNames(c("table", "heatmap", "bar", "stackedbar", "line", "radar"),
+                                       setNames(c("table", "heatmap", "bar", "stackedbar", "line", "scatter", "area", "stackedarea", "radar"),
                                                 c(lang$renderers$miroPivot$renderer$table,
                                                   lang$renderers$miroPivot$renderer$heatmap,
                                                   lang$renderers$miroPivot$renderer$bar,
                                                   lang$renderers$miroPivot$renderer$stackedbar,
                                                   lang$renderers$miroPivot$renderer$line,
+                                                  lang$renderers$miroPivot$renderer$scatter,
+                                                  lang$renderers$miroPivot$renderer$area,
+                                                  lang$renderers$miroPivot$renderer$stackedarea,
                                                   lang$renderers$miroPivot$renderer$radar)),
                                        selected = if(length(options$pivotRenderer))
                                          options$pivotRenderer else "table"),
@@ -487,7 +490,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         
         if(length(viewOptions[["pivotRenderer"]]) &&
-           viewOptions[["pivotRenderer"]] %in% c("table", "heatmap", "line", "bar", "stackedbar", "radar")){
+           viewOptions[["pivotRenderer"]] %in% c("table", "heatmap", "line", "scatter", "area", "stackedarea", "bar", "stackedbar", "radar")){
           updateSelectInput(session, "pivotRenderer", selected = viewOptions[["pivotRenderer"]])
         }else{
           updateSelectInput(session, "pivotRenderer", selected = "table")
@@ -597,9 +600,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         showAddViewDialog <- function(pivotRenderer, viewOptions = NULL){
           miroPivotState$editView <<- length(viewOptions) > 0L
           if(length(pivotRenderer) &&
-             pivotRenderer %in% c("line", "bar", "stackedbar", "radar")){
+             pivotRenderer %in% c("line", "scatter", "area", "stackedarea", "area", "stackedarea", "bar", "stackedbar", "radar")){
             moreOptions <- NULL
-            if(pivotRenderer %in% c("bar", "stackedbar", "line")){
+            if(pivotRenderer %in% c("bar", "stackedbar", "line", "scatter", "area", "stackedarea")){
               moreOptions <- tags$div(class = "row",
                                       tags$div(class = "col-sm-12",
                                                textInput(ns("advancedTitle"), width = "100%",
@@ -717,7 +720,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             }
             refreshRequired <- FALSE
             if(length(isolate(input$pivotRenderer)) &&
-               isolate(input$pivotRenderer) %in% c("line", "bar", "stackedbar", "radar")){
+               isolate(input$pivotRenderer) %in% c("line", "scatter", "area", "stackedarea", "bar", "stackedbar", "radar")){
               for(advancedOption in list(list(inputId = "advancedTitle",
                                               optionId = "title"),
                                          list(inputId = "advancedxTitle",
@@ -1235,7 +1238,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             return()
           }
         }
-        if(!pivotRenderer %in% c("line", "bar", "stackedbar", "radar")){
+        if(!pivotRenderer %in% c("line", "scatter", "area", "stackedarea", "bar", "stackedbar", "radar")){
           return()
         }
         showEl(session, paste0("#", ns("loadPivotTable")))
@@ -1306,12 +1309,17 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }else{
           chartColorsToUse <- customChartColors
         }
-        if(identical(pivotRenderer, "line")){
+        if(pivotRenderer %in% c("line", "scatter", "area", "stackedarea", "area", "stackedarea")){
           chartJsObj <- chartjs(customColors = chartColorsToUse,
             title = currentView$chartOptions$title) %>% 
             cjsLine(labels = labels,
                     xTitle = currentView$chartOptions$xTitle,
                     yTitle = currentView$chartOptions$yTitle)
+          if(identical(pivotRenderer, "scatter")){
+            chartJsObj$x$options$showLine <- FALSE
+          }else if(identical(pivotRenderer, "stackedarea")){
+            chartJsObj$x$scales$y$stacked <- TRUE
+          }
         }else if(identical(pivotRenderer, "stackedbar")){
           chartJsObj <- chartjs(customColors = chartColorsToUse,
             title = currentView$chartOptions$title) %>% 
@@ -1336,7 +1344,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         for(i in seq_len(min(noSeries, 40L))){
           chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]], 
-                                  label = names(dataTmp)[rowHeaderLen + i])
+                                  label = names(dataTmp)[rowHeaderLen + i],
+                                  fill = pivotRenderer %in% c("area", "stackedarea"),
+                                  fillOpacity = if(identical(pivotRenderer, "stackedarea")) 1 else 0.15)
         }
         hideEl(session, paste0("#", ns("loadPivotTable")))
         

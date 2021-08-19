@@ -803,7 +803,10 @@
         "bar": "Bar chart",
         "stackedbar": "Stacked bar chart",
         "radar": "Radar chart",
-        "line": "Line chart"
+        "line": "Line chart",
+        "scatter": "Scatter chart",
+        "area": "Area chart",
+        "stackedarea": "Stacked area chart"
       },
       "invalidFilters":{
         "title": "Some filters could not be applied because the values are not present in the data.",
