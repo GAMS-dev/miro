@@ -120,7 +120,7 @@ app$snapshot(items = list(input = c("dropdown_5")), screenshot = TRUE)
 app$setInputs(dropdown_5 = c("CPLEX"))
 
 app$setInputs(btSolve = "click")
-Sys.sleep(1)
+Sys.sleep(2)
 app$findElement(".modal-footer i[onclick*='$(this).next().slideToggle();']")$click()
 Sys.sleep(1)
 app$setInputs(hcubeSolve_dl = "click")
