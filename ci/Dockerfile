@@ -1,4 +1,4 @@
-FROM gamsmiro-ui
+FROM miro-ui:latest
 
 LABEL com.gamsmiroci.vendor="GAMS Development Corp."\
 com.gamsmiroci.license="GPL-3.0"\
