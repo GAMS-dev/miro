@@ -232,7 +232,7 @@ BatchLoader <- R6Class("BatchLoader",
                                                                               names(ioConfig$modelOut))){
                                                scenIds
                                              }else{
-                                               c(scenIds, as.integer(sidsToFetch))
+                                               as.integer(sidsToFetch)
                                              })
                              return(split(dataDbTmp[-1], dataDbTmp[[1L]]))
                            })
