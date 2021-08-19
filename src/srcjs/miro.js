@@ -308,9 +308,9 @@ $(document).ready(() => {
     $('#config-left-graph').toggleClass('collapse-config-left');
     if ($('#config-right-graph').hasClass('col-sm-12')) {
       $('#config-left-graph').removeClass('col-sm-12').addClass('col-sm-6');
-      $('#toggleFullscreenRight').find('i:first').removeClass('fa-compress').addClass('fa-expand');
+      $('#toggleFullscreenRight').find('i:last').removeClass('fa-compress').addClass('fa-expand');
     }
-    $('#toggleFullscreenLeft').find('i:last').toggleClass('fa-expand fa-compress');
+    $('#toggleFullscreenLeft').find('i:first').toggleClass('fa-expand fa-compress');
     $(window).trigger('resize');
     return false;
   });
@@ -322,9 +322,9 @@ $(document).ready(() => {
     $('#config-right-graph').toggleClass('collapse-config-right');
     if ($('#config-left-graph').hasClass('col-sm-12')) {
       $('#config-right-graph').removeClass('col-sm-12').addClass('col-sm-6');
-      $('#toggleFullscreenLeft').find('i:last').removeClass('fa-compress').addClass('fa-expand');
+      $('#toggleFullscreenLeft').find('i:first').removeClass('fa-compress').addClass('fa-expand');
     }
-    $('#toggleFullscreenRight').find('i:first').toggleClass('fa-expand fa-compress');
+    $('#toggleFullscreenRight').find('i:last').toggleClass('fa-expand fa-compress');
     $(window).trigger('resize');
     return false;
   });

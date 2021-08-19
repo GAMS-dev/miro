@@ -164,11 +164,11 @@ font-size: 12px;
                       tags$div(class = "col-sm-6",
                                tags$div(class="btn-group btn-group-right", role="group",
                                         tags$div(title = lang$adminMode$graphs$ui$toggleLeft,
-                                                 actionButton("toggleFullscreenLeft", HTML("<i class='fas fa-chevron-left'></i> <i class='fas fa-expand'></i>"), 
-                                                     class = "toggle-fullscreen-btn toggle-config-view-left")),
+                                                 actionButton("toggleFullscreenRight", HTML("<i class='fas fa-edit'></i> <i class='fas fa-expand'></i>"), 
+                                                              class = "toggle-fullscreen-btn toggle-config-view-right")),
                                         tags$div(title = lang$adminMode$graphs$ui$toggleRight,
-                                                 actionButton("toggleFullscreenRight", HTML("<i class='fas fa-expand'></i> <i class='fas fa-chevron-right'></i>"), 
-                                                     class = "toggle-fullscreen-btn toggle-config-view-right"))
+                                                 actionButton("toggleFullscreenLeft", HTML("<i class='fas fa-expand'></i> <i class='fas fa-chart-pie'></i>"), 
+                                                              class = "toggle-fullscreen-btn toggle-config-view-left"))
                                )
                       )
                     ),
