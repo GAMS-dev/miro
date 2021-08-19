@@ -70,13 +70,34 @@ expect_symbols_in_gdx <- function(app, id, symNames){
   tempFiles <- file.path(tempdir(check = TRUE), "shinytest-download.gdx")
   on.exit(unlink(tempFiles))
   writeBin(req$content, tempFiles)
+  if(length(names(symNames))){
+    filesInZip <- zip::zip_list(tempFiles)$filename
+    expect_identical(length(filesInZip), length(symNames))
+    gdxFileNames <- paste0(names(symNames), ".gdx")
+    expect_true(all(gdxFileNames %in% filesInZip))
+    tmpPath <- file.path(tempdir(check = TRUE), as.character(as.numeric(Sys.time())))
+    if(!dir.create(tmpPath)){
+      stop(sprintf("Could not create tmpdir: %s", tmpPath))
+    }
+    on.exit(unlink(tmpPath, recursive = TRUE), add = TRUE)
+    zip::unzip(tempFiles, exdir = tmpPath, files = gdxFileNames)
+    tempFiles <- file.path(tmpPath, gdxFileNames)
+  }
   gdxrrwMIRO::igdx(file.path(.libPaths()[1], "gdxrrwMIRO", 
                              if(identical(tolower(Sys.info()[["sysname"]]), "windows")) 
                                file.path("bin", "x64") else "bin"), silent = TRUE, returnStr = FALSE)
-  symInGdx <- gdxrrwMIRO::gdxInfo(tempFiles, returnList = TRUE, dump = FALSE)
-  symInGdx <- c(symInGdx$sets, symInGdx$parameters, symInGdx$variables, symInGdx$equations)
-  expect_identical(length(symInGdx), length(symNames))
-  expect_true(all(symNames %in% symInGdx))
+  for(tempFile in tempFiles){
+    symInGdx <- gdxrrwMIRO::gdxInfo(tempFile, returnList = TRUE, dump = FALSE)
+    symInGdx <- c(symInGdx$sets, symInGdx$parameters, symInGdx$variables, symInGdx$equations)
+    if(length(tempFiles) > 1L){
+      scenNameTmp <- gsub("\\.gdx$", "", basename(tempFile))
+      expect_identical(length(symInGdx), length(symNames[[scenNameTmp]]))
+      expect_true(all(symNames[[scenNameTmp]] %in% symInGdx))
+    }else{
+      expect_identical(length(symInGdx), length(symNames))
+      expect_true(all(symNames %in% symInGdx))
+    }
+  }
 }
 
 expect_sheets_in_xls <- function(app, id, sheetNames){

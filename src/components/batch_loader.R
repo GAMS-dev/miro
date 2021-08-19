@@ -204,8 +204,18 @@ BatchLoader <- R6Class("BatchLoader",
                              importDataset("_scenMeta", 
                                            subsetSids = scenIds,
                                            colNames = c("_sid", 
-                                                        "_sname"))
+                                                        "_sname",
+                                                        "_scode"))
                            scenIdsOrdered <- scenIdNameMap[[1]]
+                           sidsToFetch <- scenIdNameMap[[3]] > (SCODEMAP[["scen"]] + 10000L)
+                           if(any(sidsToFetch)){
+                             sidsToFetch <- c(setNames(as.character(scenIdNameMap[[3]][sidsToFetch] - 10000L),
+                                                       scenIdsOrdered[sidsToFetch]),
+                                              setNames(as.character(scenIdsOrdered[!sidsToFetch]),
+                                                       scenIdsOrdered[!sidsToFetch]))
+                           }else{
+                             sidsToFetch <- setNames(as.character(scenIdsOrdered), scenIdsOrdered)
+                           }
                            scenIdNameMap  <- setNames(scenIdNameMap[[2]], scenIdsOrdered)
                            
                            j <- 1L
@@ -216,8 +226,14 @@ BatchLoader <- R6Class("BatchLoader",
                                                                  j, noScenTables))
                                j <<- j + 1L
                              }
-                             dataDbTmp <- private$db$importDataset(tableName, 
-                                                                   subsetSids = scenIds)
+                             dataDbTmp <- private$db$
+                               importDataset(tableName, 
+                                             subsetSids = if(tableName %in% c(scalarsFileName,
+                                                                              names(ioConfig$modelOut))){
+                                               scenIds
+                                             }else{
+                                               c(scenIds, as.integer(sidsToFetch))
+                                             })
                              return(split(dataDbTmp[-1], dataDbTmp[[1L]]))
                            })
                            names(dataTmp) <- scenTableNames
@@ -244,12 +260,17 @@ BatchLoader <- R6Class("BatchLoader",
                              scenNameList[[j]] <- paste0(scenName, ".gdx")
                              j <- j + 1L
                              gdxio$wgdx(paste0(tmpDir, .Platform$file.sep, sanitizeFn(scenName), ".gdx"), 
-                                        lapply(dataTmp, function(data){
-                                          if(scenId %in% names(data)){
-                                            return(data[[scenId]])
+                                        setNames(lapply(names(dataTmp), function(symName){
+                                          if(symName %in% c(scalarsFileName, names(ioConfig$modelOut))){
+                                            scenIdToFetch <- scenId
+                                          }else{
+                                            scenIdToFetch <- sidsToFetch[[scenId]]
+                                          }
+                                          if(scenIdToFetch %in% names(dataTmp[[symName]])){
+                                            return(dataTmp[[symName]][[scenIdToFetch]])
                                           }
                                           return(tibble())
-                                        }))
+                                        }), names(dataTmp)))
                            }
                            if(genScenList){
                              write_lines(scenNameList, file.path(tmpDir, "hcube_file_names.txt"))
@@ -274,6 +295,7 @@ BatchLoader <- R6Class("BatchLoader",
                            if(!is.null(progressBar)){
                              noProgressSteps <- noScenTables * 2L + 1L
                            }
+                           staticInputSids <- integer(0L)
                            sameNameCounter   <- list()
                            for(tabId in seq_along(scenTableNames)){
                              if(identical(tabId, 1L)){
@@ -282,9 +304,6 @@ BatchLoader <- R6Class("BatchLoader",
                                tableName <- "_trace_"
                              }else{
                                tableName <- scenTableNames[[tabId]]
-                               if(startsWith(tableName, "_")){
-                                 tableName <- substring(tableName, 2)
-                               }
                              }
                              if(tableName %in% private$inputDsNamesNotToDisplay){
                                noProgressSteps <- noProgressSteps - 2L
@@ -295,8 +314,26 @@ BatchLoader <- R6Class("BatchLoader",
                                                message = sprintf("Importing table %d of %d from database.", 
                                                                  tabId, noScenTables))
                              }
-                             tableTmp <- private$db$importDataset(scenTableNames[[tabId]], 
-                                                                  subsetSids = scenIds)
+                             if(scenTableNames[[tabId]] %in% c(scalarsFileName,
+                                                               names(ioConfig$modelOut))){
+                               subsetSids <- scenIds
+                               isStaticInputDs <- FALSE
+                             }else{
+                               subsetSids <- c(scenIds, as.integer(staticInputSids))
+                               isStaticInputDs <- TRUE
+                             }
+                             tableTmp <- private$db$
+                               importDataset(scenTableNames[[tabId]], 
+                                             subsetSids = subsetSids)
+                             if(identical(tableName, "_metadata_")){
+                               staticInputSids <- tableTmp[["_scode"]] > (SCODEMAP[["scen"]] + 10000L)
+                               if(any(staticInputSids)){
+                                 staticInputSids <- setNames(as.character(tableTmp[["_scode"]][staticInputSids] - 10000L),
+                                                             tableTmp[["_sid"]][staticInputSids])
+                               }else{
+                                 staticInputSids <- integer(0L)
+                               }
+                             }
                              
                              if(length(tableTmp)){
                                tableTmp <- split(tableTmp, tableTmp[[1]])
@@ -332,6 +369,22 @@ BatchLoader <- R6Class("BatchLoader",
                                  if(!dir.create(dirNameScen)){
                                    stop(sprintf("Temporary folder: '%s' could not be created.", 
                                                 dirNameScen), call. = FALSE)
+                                 }
+                               }else if(isStaticInputDs && length(staticInputSids)){
+                                 if(scenId %in% names(staticInputSids)){
+                                   # we should only use save data of input sids
+                                   return()
+                                 }
+                                 originalSids <- match(scenId, staticInputSids)
+                                 originalSids <- as.integer(names(staticInputSids)[!is.na(originalSids)])
+                                 if(length(originalSids)){
+                                   # scenId is static input data pointed to by one or more scenarios
+                                   for(originalSid in originalSids){
+                                     write_csv(tableTmp[[i]][-1L], 
+                                               paste0(scenIdDirNameMap[[originalSid]], 
+                                                      .Platform$file.sep, sanitizeFn(tableName), ".csv"))
+                                   }
+                                   return()
                                  }
                                }
                                write_csv(tableTmp[[i]][-1L], 

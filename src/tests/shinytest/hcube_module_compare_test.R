@@ -28,7 +28,7 @@ app$setInputs(batchLoadResults_rows_selected = scenToCompare, allowInputNoBindin
 
 app$setInputs(hcubeLoadSelected = "click")
 Sys.sleep(2L)
-app$waitFor("$('#btBatchCompare').click()", timeout = 50L)
+app$waitFor("$('#btBatchCompare+.dropdown-toggle').click()&&$('#btBatchCompare~.dropdown-menu a:first').click();", timeout = 50L)
 Sys.sleep(3L)
 expect_true(app$waitFor(paste0("$('#cmpScenTitle_5').text().startsWith('HC (",
                                substr(scenHashTmp, 1, 8), "...)')"), timeout = 50L))
@@ -38,6 +38,31 @@ expect_identical(graphData[, 1], c("2016-01-04T00:00:00.000Z", "100.572928794899
 app$setInputs(contentScen_5 = "contentScen_5_11")
 expect_true(app$waitFor("$('.small-box:visible')[0].textContent.trim().startsWith('6')", timeout = 50L))
 expect_true(app$waitFor("$('.small-box:visible')[1].textContent.trim().startsWith('99')", timeout = 50))
+
+# Download HC and normal scenario
+app$findElement("#sidebarItemExpanded a[data-value='loadResults']")$click()
+Sys.sleep(0.5)
+app$setInputs(batchLoadResults_rows_selected = scenToCompare, allowInputNoBinding_ = TRUE)
+app$setInputs(hcubeLoadSelected = "click")
+Sys.sleep(2L)
+multiDimSym <- c("stock_weight", "dowvsindex", "abserror", "pricemerge", "schedule", 
+                 "mapnogroup", "gantt", "repc", "pressurethickness", "hovercraft", 
+                 "price", "maptest")
+scalarSym <- c("error_train", "error_test", "error_ratio", "maxstock", 
+               "trainingdays", "firstdaytraining", "lastdaytraining", "solver", 
+               "clearvalueset")
+expect_symbols_in_gdx(app, "btBatchDownloadGDX",
+                      setNames(rep.int(list(c(multiDimSym, scalarSym)), 2L), c("default", scenHashTmp)))
+
+Sys.sleep(0.5)
+app$setInputs(batchLoadResults_rows_selected = scenToCompare, allowInputNoBinding_ = TRUE)
+app$setInputs(hcubeLoadSelected = "click")
+Sys.sleep(2L)
+app$waitFor("$('#btBatchDownloadGDX+.dropdown-toggle').click()", timeout = 50L)
+expect_files_in_zip(app, "btBatchDownloadCSV",
+                    unlist(lapply(c("default", scenHashTmp), function(scenName){
+                      paste0(scenName, "/", c("", paste0(c(multiDimSym, "_metadata_",
+                                                           "_scalars", "_scalars_out"), ".csv")))})))
 
 
 # load second scenario into sandbox, change scalar value and save again as standard scenario

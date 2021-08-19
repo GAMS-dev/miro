@@ -239,7 +239,7 @@ noScen <- app$findElements("[id^='DataTables_Table_'] tbody tr")
 expect_identical(length(noScen), 3L)
 app$setInputs(hcubeLoadAll = "click")
 Sys.sleep(1)
-app$findElement("#btBatchCompare")$click()
+app$waitFor("$('#btBatchCompare+.dropdown-toggle').click()&&$('#btBatchCompare~.dropdown-menu a:first').click();", timeout = 50L)
 Sys.sleep(12)
 expect_error(app$findElements("#shiny-tab-scenarios #scen-tab-view #scenTabset li")[[1]]$click(), NA)
 #analysis script
