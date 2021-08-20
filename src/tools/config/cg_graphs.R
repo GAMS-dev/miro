@@ -3715,7 +3715,7 @@ getRendererFunctions <- function(rendererName){
   if(!file.exists(rendererPath)){
     return(list(output = "", renderer = ""))
   }
-  rendererContentRaw <- read_file(rendererPath)
+  rendererContentRaw <- read_file(rendererPath, locale = locale(encoding = "UTF-8"))
   
   # Need to detect the functions by looking for ^*Output <- * and ^render* <-
   funOutputStr <- paste0(tolower(rendererName), "Output")
@@ -4054,17 +4054,35 @@ observeEvent(rv$saveGraphConfirm, {
         return(showErrorMsg(lang$errMsg$fileWrite$title,
                             sprintf(lang$errMsg$fileWrite$desc, customRendererDir)))
       }
-      cat(paste0(
-        customOutputFunctionName(),
-        " <- function(id, height = NULL, options = NULL, path = NULL){\n    ns <- NS(id)\n",
-        isolate(input$customOutputFunction),
-        "\n}\n"
-      ), "\n", paste0(
-        customRendererFunctionName(),
-        " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){\n",
-        input$customRenderFunction,
-        "\n}\n"), 
-      file = file.path(customRendererDir, paste0(customRendererName, ".R")))
+      con <- NULL
+      rendererFilePathTmp <- file.path(customRendererDir, paste0(customRendererName, ".R"))
+      if(tryCatch({
+        con <- file(rendererFilePathTmp, open = "w", encoding = "UTF-8")
+        readr::write_file(x = enc2utf8(paste0(
+          customOutputFunctionName(),
+          " <- function(id, height = NULL, options = NULL, path = NULL){\n    ns <- NS(id)\n",
+          isolate(input$customOutputFunction),
+          "\n}\n\n",
+          customRendererFunctionName(),
+          " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){\n",
+          input$customRenderFunction,
+          "\n}\n")),
+          path = con)
+        FALSE
+      }, error = function(e){
+        flog.warn("Problems writing custom renderer file to: %s. Error message: %s",
+                  rendererFilePathTmp,
+                  conditionMessage(e))
+        showErrorMsg(lang$errMsg$fileWrite$title,
+                     sprintf(lang$errMsg$fileWrite$desc, rendererFilePathTmp))
+        return(TRUE)
+      }, finally = {
+        if(con){
+          close(con)
+        }
+      })){
+        return()
+      }
       if(!customRendererName %in% existingRendererFiles){
         existingRendererFiles <<- c(existingRendererFiles, customRendererName)
       }
