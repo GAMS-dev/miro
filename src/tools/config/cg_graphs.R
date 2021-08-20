@@ -3749,9 +3749,10 @@ output[["preview_custom_renderer"]] <- renderUI({
     isolate(input$customOutputFunction),
     "}"
   ))
-  eval(parse(text = outputFunction), envir = customRendererEvalEnv)("preview_output_custom", height = 400,
-                                                                    options = rv$graphConfig$options,
-                                                                    path = customRendererDir)
+  eval(parse(text = outputFunction, encoding = "UTF-8"),
+       envir = customRendererEvalEnv)("preview_output_custom", height = 400,
+                                      options = rv$graphConfig$options,
+                                      path = customRendererDir)
 })
 
 
@@ -3929,7 +3930,7 @@ observe({
           customRendererFunctionName(),
           " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){\n",
           input$customRenderFunction,
-          "\n}"))), envir = customRendererEvalEnv)
+          "\n}")), encoding = "UTF-8"), envir = customRendererEvalEnv)
         callModule(customRendererFunction, "preview_output_custom",
                    data, options = rv$graphConfig$options, 
                    path = customRendererDir, rendererEnv = customRendererEnv,
