@@ -503,25 +503,27 @@ if(is.null(errMsg)){
   }
 }
 if(is.null(errMsg) && debugMode){
-  rendererFiles <- list.files(customRendererDir, pattern = "\\.R$", ignore.case = TRUE)
-  lapply(rendererFiles, function(file){
-    if(!file.access(file.path(customRendererDir, file), mode = 4)){
-      tryCatch({
-        source(file.path(customRendererDir, file))
-      }, error = function(e){
-        errMsg <<- paste(errMsg, 
-                         sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
-                                 file, conditionMessage(e)), sep = "\n")
-      }, warning = function(w){
-        errMsg <<- paste(errMsg, 
-                         sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
-                                 file, w), sep = "\n")
-      })
-    }else{
-      errMsg <<- paste(errMsg, sprintf("Custom renderer file: '%s' could not be found or user has no read permissions.",
-                                       file), sep = "\n")
-    }
-  })
+  if(!LAUNCHCONFIGMODE){
+    rendererFiles <- list.files(customRendererDir, pattern = "\\.R$", ignore.case = TRUE)
+    lapply(rendererFiles, function(file){
+      if(!file.access(file.path(customRendererDir, file), mode = 4)){
+        tryCatch({
+          source(file.path(customRendererDir, file))
+        }, error = function(e){
+          errMsg <<- paste(errMsg, 
+                           sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
+                                   file, conditionMessage(e)), sep = "\n")
+        }, warning = function(w){
+          errMsg <<- paste(errMsg, 
+                           sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
+                                   file, w), sep = "\n")
+        })
+      }else{
+        errMsg <<- paste(errMsg, sprintf("Custom renderer file: '%s' could not be found or user has no read permissions.",
+                                         file), sep = "\n")
+      }
+    })
+  }
   listOfCustomRenderers <- Set$new()
   requiredPackagesCR <<- NULL
   
