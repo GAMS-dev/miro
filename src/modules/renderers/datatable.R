@@ -12,7 +12,7 @@ renderDTable <- function(data, options, roundPrecision = 2, render = TRUE){
   if(length(options$pivotCols)){
     pivotIdx <- match(options$pivotCols[[1]], names(data))[1]
     aliasesTmp <- attr(data, "aliases")[-c(pivotIdx, length(data))]
-    data <- pivot_wider(data, names_from = !!pivotIdx, 
+    data <- pivot_wider(data, names_from = !!pivotIdx,
                         values_from = !!length(data),
                         names_sort = isTRUE(options$sortPivotCols))
     options[["pivotCols"]] <- NULL
@@ -22,13 +22,13 @@ renderDTable <- function(data, options, roundPrecision = 2, render = TRUE){
   }else if(length(attr(data, "aliases"))){
     names(data) <- attr(data, "aliases")
   }
-  
+
   if("DT" %in% (.packages())){
     dt <- do.call(datatable, c(list(data), options))
-    
+
     isNumericCol <- vapply(data, is.numeric, logical(1L), USE.NAMES = FALSE)
     if(any(isNumericCol)){
-      dt <- formatRound(dt, seq_along(data)[isNumericCol], 
+      dt <- formatRound(dt, seq_along(data)[isNumericCol],
                         digits = if(length(options$options$decimals)) options$options$decimals else roundPrecision)
     }
     if(render)
@@ -36,7 +36,7 @@ renderDTable <- function(data, options, roundPrecision = 2, render = TRUE){
     return(dt)
   }
   data <- roundDf(data, roundPrecision)
-  
+
   if(render)
     return(renderDataTable(data, options = options))
   return(datatable(data, options = options))

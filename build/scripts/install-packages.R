@@ -28,13 +28,13 @@ if(CIBuild){
         }, logical(1), USE.NAMES = FALSE)]
 }
 for ( libPath in c(RLibPath, RlibPathDevel, RlibPathTmp) ) {
-    if (!dir.exists(libPath) && 
+    if (!dir.exists(libPath) &&
         !dir.create(libPath, showWarnings = TRUE, recursive = TRUE)){
         stop(sprintf('Could not create directory: %s', libPath))
     }
 }
 if ( isLinux ) {
-    # workaround since electron builder does 
+    # workaround since electron builder does
     # not include empty directories in app image
     writeLines('', file.path(RLibPath, 'EMPTY'))
 } else if ( isWindows ) {
@@ -43,14 +43,14 @@ if ( isLinux ) {
     Sys.setenv(PATH = paste(paste0(RtoolsHome, "/usr/bin/"), Sys.getenv("PATH"), sep=";"))
     Sys.setenv(BINPREF = paste0(RtoolsHome, "/mingw$(WIN)/bin/"))
 }
-requiredPackages <- c('devtools', 'remotes', 'jsonlite', 'V8', 
-    'zip', 'tibble', 'readr', 'R6', 'processx', 
+requiredPackages <- c('devtools', 'remotes', 'jsonlite', 'V8',
+    'zip', 'tibble', 'readr', 'R6', 'processx',
     'testthat', 'shinytest', 'Rcpp', 'futile.logger')
 if ( identical(Sys.getenv('BUILD_DOCKER'), 'true') ) {
     requiredPackages <- c(requiredPackages, 'DBI', 'blob')
 }
 installedPackagesDevel <- installed.packages(RlibPathDevel)
-newPackages <- requiredPackages[!requiredPackages %in% 
+newPackages <- requiredPackages[!requiredPackages %in%
   installedPackagesDevel[, "Package"]]
 
 # make sure correct version of packages is installed
@@ -94,12 +94,12 @@ packageIsInstalled <- function(package) {
 
 dontDisplayMe <- lapply(c('devtools', 'remotes'), library, character.only = TRUE)
 
-if ( isLinux && !dir.exists(RlibPathSrc) && 
+if ( isLinux && !dir.exists(RlibPathSrc) &&
     !dir.create(RlibPathSrc, showWarnings = TRUE, recursive = TRUE)) {
     stop(sprintf('Could not create directory: %s', RlibPathSrc))
 }
 
-if (!dir.exists('./dist/dump') && 
+if (!dir.exists('./dist/dump') &&
     !dir.create('./dist/dump', showWarnings = TRUE, recursive = TRUE)){
     stop('Could not create output directory: ./dist/dump')
 }
@@ -129,18 +129,18 @@ installPackage <- function(package, attempt = 0) {
             #        stop("Makevars already exist. Won't overwrite!")
             #    }
             #    on.exit(unlink(makevarsPath))
-            #    if (!dir.exists(dirname(makevarsPath)) && 
+            #    if (!dir.exists(dirname(makevarsPath)) &&
             #        !dir.create(dirname(makevarsPath), showWarnings = TRUE, recursive = TRUE)){
             #        stop(sprintf('Could not create directory: %s', dirname(makevarsPath)))
             #    }
-            #    writeLines(c('LLVM_LOC = /usr/local/opt/llvm', 
+            #    writeLines(c('LLVM_LOC = /usr/local/opt/llvm',
             #        'CC=$(LLVM_LOC)/bin/clang -fopenmp',
-            #       'CXX=$(LLVM_LOC)/bin/clang++ -fopenmp', 
+            #       'CXX=$(LLVM_LOC)/bin/clang++ -fopenmp',
             #       '# -O3 should be faster than -O2 (default) level optimisation ..',
-            #       'CFLAGS=-g -O3 -Wall -pedantic -std=gnu99 -mtune=native -pipe', 
+            #       'CFLAGS=-g -O3 -Wall -pedantic -std=gnu99 -mtune=native -pipe',
             #       'CXXFLAGS=-g -O3 -Wall -pedantic -std=c++11 -mtune=native -pipe',
             #       'LDFLAGS=-L/usr/local/opt/gettext/lib -L$(LLVM_LOC)/lib -Wl,-rpath,$(LLVM_LOC)/lib',
-            #        'CPPFLAGS=-I/usr/local/opt/gettext/include -I$(LLVM_LOC)/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include'), 
+            #        'CPPFLAGS=-I/usr/local/opt/gettext/include -I$(LLVM_LOC)/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include'),
             #    makevarsPath)
             #}
             withr::with_libpaths(if(CIBuild) RlibPathTmp else RLibPath, install_version(package[1], package[2], out = './dist/dump',
@@ -155,7 +155,7 @@ installPackage <- function(package, attempt = 0) {
 downloadPackage <- function(package) {
     packageFileNameTmp <- remotes::download_version(package[1], package[2],
         repos = CRANMirrors[1])
-    packageFileName <- file.path(RlibPathSrc, 
+    packageFileName <- file.path(RlibPathSrc,
         paste0(package[1], '_', package[2], '.tar.gz'))
     if (!file.rename(packageFileNameTmp, packageFileName)) {
         stop(sprintf("Problems renaming package: '%s' from '%s' to '%s'.",
@@ -180,15 +180,15 @@ for(package in packageVersionMap){
         next
     }
     if ( length(package) == 1L ) {
-        packagePath <- build(file.path('.', 'r-src', package), 
-            path = file.path('.', 'r-src', 'build/'), 
-            binary = FALSE, vignettes = FALSE, manual = FALSE, 
+        packagePath <- build(file.path('.', 'r-src', package),
+            path = file.path('.', 'r-src', 'build/'),
+            binary = FALSE, vignettes = FALSE, manual = FALSE,
             args = NULL, quiet = FALSE)
         if(isLinux){
-            file.rename(packagePath, 
+            file.rename(packagePath,
                 file.path(RlibPathSrc, basename(packagePath)))
         }else{
-            install.packages(packagePath, lib = if(CIBuild) RlibPathTmp else RLibPath, repos = NULL, 
+            install.packages(packagePath, lib = if(CIBuild) RlibPathTmp else RLibPath, repos = NULL,
                          type = "source", dependencies = FALSE, INSTALL_opts = "--no-multiarch")
         }
     } else {
@@ -211,7 +211,7 @@ if(CIBuild && !isLinux){
 }
 # clean up unncecessary files
 unlink(file.path('.', 'r-src', 'build/'), recursive = TRUE, force = TRUE)
-dontDisplayMe <- lapply(list.dirs(RLibPath, full.names = TRUE, recursive = FALSE), 
+dontDisplayMe <- lapply(list.dirs(RLibPath, full.names = TRUE, recursive = FALSE),
     function(x) {
         unlink(file.path(x, c("help", "doc", "tests", "html",
                               "include", "unitTests", file.path("inst", "examples"),
@@ -220,7 +220,7 @@ dontDisplayMe <- lapply(list.dirs(RLibPath, full.names = TRUE, recursive = FALSE
 if ( isWindows ) {
     unlink(file.path('r', c('doc', 'tests', file.path('bin', 'i386'))), force = TRUE, recursive = TRUE)
 }
-# replace directories with periods in their names with symlinks 
+# replace directories with periods in their names with symlinks
 # as directories with periods must be frameworks for codesign to not nag
 if (isMac) {
     currWd <- getwd()
@@ -234,8 +234,8 @@ if (isMac) {
         dirsWithoutPeriod <- paste0('.', dirsWithoutPeriod)
     }
 
-    if(!all(file.rename(file.path(dirname(dirsWithoutPeriod), 
-                                  basename(dirsWithPeriod)), 
+    if(!all(file.rename(file.path(dirname(dirsWithoutPeriod),
+                                  basename(dirsWithPeriod)),
         dirsWithoutPeriod))){
         stop('Some directories could not be renamed!')
     }
@@ -246,11 +246,11 @@ if (isMac) {
     tryCatch({
         for ( i in seq_along(dirsWithPeriod) ) {
             setwd(dirname(dirsWithoutPeriod[i]))
-            file.symlink(dirsWithoutPeriodBase[i], 
+            file.symlink(dirsWithoutPeriodBase[i],
                 dirsWithPeriod[i])
         }
     }, error = function(e){
-        stop(sprintf('Problems creating symlinks!! Error message: %s', 
+        stop(sprintf('Problems creating symlinks!! Error message: %s',
             conditionMessage(e)))
     }, finally = {
         setwd(currWorkDir)
@@ -261,7 +261,7 @@ if (isMac) {
     filesWithBadLink <- filesWithBadLink[filesWithBadLink != "README"]
     for ( fileWithBadLink in filesWithBadLink ) {
         unlink(fileWithBadLink, force = TRUE)
-        file.symlink(file.path('..', '..', 'fontconfig', 
+        file.symlink(file.path('..', '..', 'fontconfig',
             'conf.avail', fileWithBadLink),
             fileWithBadLink)
     }
@@ -272,7 +272,7 @@ local({
     eval(parse(text = readLines('./src/app.R',
      n = 5L, warn = FALSE)))
     mainJS = readLines('./main.js', warn = FALSE)
-    mainJS = gsub('const requiredAPIVersion = \\d+;', 
+    mainJS = gsub('const requiredAPIVersion = \\d+;',
         paste0('const requiredAPIVersion = ', APIVersion, ';'), mainJS)
     mainJS = gsub("const miroVersion = '[^']+';",
         paste0("const miroVersion = '", MIROVersion, "';"), mainJS)
@@ -303,10 +303,10 @@ local({
     writeLines(aboutDialog, './renderer/about.js')
 })
 # fix language schmea
-fixSchemaProc = processx::run(file.path(R.home(), 'bin', 'Rscript'), 
+fixSchemaProc = processx::run(file.path(R.home(), 'bin', 'Rscript'),
     c('./scripts/fixSchema.R'), error_on_status = FALSE)
 if(fixSchemaProc$status != 0L) {
-    stop(sprintf("Something went wrong while fixing language schema.\n\nStdout: %s\n\nStderr: %s", 
+    stop(sprintf("Something went wrong while fixing language schema.\n\nStdout: %s\n\nStderr: %s",
         fixSchemaProc$stdout, fixSchemaProc$stderr))
 }
 # build MIRO example apps
@@ -330,17 +330,17 @@ for ( modelName in c( 'pickstock', 'transport', 'sudoku', 'tsp', 'farming',
         !dir.create(file.path(examplesPath, modelName), recursive = TRUE)){
         stop(sprintf("Could not create path: %s", examplesPath))
     }
-    modelPath = file.path(getwd(), 'src', 'model', 
+    modelPath = file.path(getwd(), 'src', 'model',
                    modelName)
     miroAppPath = file.path(modelPath, paste0(modelName, '.miroapp'))
 
     Sys.setenv(MIRO_MODEL_PATH=file.path(modelPath, paste0(modelName, '.gms')))
 
-    buildProc = processx::run(file.path(R.home(), 'bin', 'Rscript'), 
+    buildProc = processx::run(file.path(R.home(), 'bin', 'Rscript'),
         c('--vanilla', './app.R'), error_on_status = FALSE,
         wd = file.path(getwd(), 'src'))
     if(buildProc$status != 0L) {
-        stop(sprintf("Something went wrong while creating MIRO app for model: %s.\n\nStdout: %s\n\nStderr: %s", 
+        stop(sprintf("Something went wrong while creating MIRO app for model: %s.\n\nStdout: %s\n\nStderr: %s",
             modelName, buildProc$stdout, buildProc$stderr))
     }
     zip::unzip(miroAppPath, exdir = file.path(examplesPath, modelName))

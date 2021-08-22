@@ -4,16 +4,16 @@
 Sets
   s           'students'
   g           'groups'
-  c           'cohorts'            / A, B /  
+  c           'cohorts'            / A, B /
   mode        'splitting mode'     / split, 'no split', 'split even', 'prevent split' /
   pmode(mode) 'mode with priority' / 'split even', 'prevent split' /
   smode(mode) 'mode with max size' / 'split' /
   ghdr        'group data header'  / maxGroupSize, priority /;
-Alias (*,gc);  
+Alias (*,gc);
 
 $onExternalInput
 Table groupData(g<,mode,ghdr)
-                                        maxGroupSize  priority  
+                                        maxGroupSize  priority
 
 6Et.                   'split even'                          1
 6a.                    'split'                     5
@@ -22,11 +22,11 @@ Table groupData(g<,mode,ghdr)
 6eR.                   'split even'                          1
 6kR.                   'split even'                          1
 muellers.              'prevent split'                     100
-paul_and_friends.      'prevent split'                       5        
+paul_and_friends.      'prevent split'                       5
 schoolbus_springfield. 'prevent split'                      99
 ;
 
-Set  
+Set
   gsmap(g,s<) /
    6Et.                  (Gabi,Lasse,Sandra,Tina,Udo)
    6a.                   (Anna,Bernd,Charlotte,Dieter,Erwin,Frauke,Gabi)
@@ -48,9 +48,9 @@ $ gdxIn "%gams.idcGDXInput%"
 * Filtered load to exclude the cohorts A and B as groups
 $ load existingCohortGroupMap
 $endIf
-  
+
 Scalar
-   priorityAB          'priority to keep the input assignment' / 0 /;  
+   priorityAB          'priority to keep the input assignment' / 0 /;
 $offExternalInput
 
 Set gmodemap(g,mode); option gmodemap<groupData;
@@ -75,7 +75,7 @@ Set gp(g) 'groups with priority'
     gs(g) 'groups with maxGroupSize'
 ;
 gp(g) = sum(gmodemap(g,pmode),1);
-gs(g)= sum(gmodemap(g,smode),1);  
+gs(g)= sum(gmodemap(g,smode),1);
 
 $macro studentsInGroup(g) sum(gsmap(g,s),1)
 
@@ -170,4 +170,3 @@ cohortReport(c,'size')         = sum(studentAssignment(s,c),1);
 cohortReport('A','moved')      = sum(s$existingCohortMap(s,'A'), 1-sAssign(s));
 cohortReport('B','moved')      = sum(s$existingCohortMap(s,'B'),   sAssign(s));
 cohortReport(c,'move penalty') = cohortReport(c,'moved')*priorityAB;
-

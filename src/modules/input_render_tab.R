@@ -12,7 +12,7 @@ getVisibleTabData <- function(id, type){
     stop("Unsupported type (getVisibleTabData).", call. = FALSE)
   }
   if(length(modelIn[[id]]$pivotCols)){
-    keyIdx <- match(modelIn[[id]]$pivotCols[[1]], 
+    keyIdx <- match(modelIn[[id]]$pivotCols[[1]],
                     names(modelIn[[id]]$headers))[[1L]]
     if(identical(names(data)[keyIdx], modelIn[[id]]$pivotCols[[1]]) &&
        length(data) == length(modelIn[[id]]$headers)){
@@ -23,21 +23,21 @@ getVisibleTabData <- function(id, type){
       return(modelInTemplate[[id]])
     }
     return(select(pivot_longer(suppressWarnings(
-      mutate_at(data, seq(length(modelIn[[id]]$headers) - 1L, 
-                          length(data)), as.numeric)), 
-      cols = seq(length(modelIn[[id]]$headers) - 1L, 
+      mutate_at(data, seq(length(modelIn[[id]]$headers) - 1L,
+                          length(data)), as.numeric)),
+      cols = seq(length(modelIn[[id]]$headers) - 1L,
                  length(data)),
-      names_to = modelIn[[id]]$pivotCols[[1]], 
+      names_to = modelIn[[id]]$pivotCols[[1]],
       values_to = names(modelIn[[id]]$headers)[length(modelIn[[id]]$headers)],
       values_drop_na = TRUE), !!!names(modelIn[[id]]$headers)))
   }
   return(data)
-} 
+}
 
 getInputDataset <- function(id, visible = FALSE){
   if(!length(modelIn[[id]]$pivotCols)){
     return(getInputDatasetRaw(id) %>%
-             mutate_if(is.character, 
+             mutate_if(is.character,
                        replace_na, replace = ""))
   }
   if(visible){
@@ -56,10 +56,10 @@ getInputDataset <- function(id, visible = FALSE){
   if(modelIn[[id]]$pivotCols[[1]] %in% names(intermDataTmp)){
     # table not yet initialised (so not pivoted either)
     return(intermDataTmp %>%
-             mutate_if(is.character, 
+             mutate_if(is.character,
                        replace_na, replace = ""))
   }
-  
+
   return(intermDataTmp)
 }
 getInputDatasetRaw <- function(id){
@@ -71,11 +71,11 @@ getInputDatasetRaw <- function(id){
             dataTmp <- getVisibleTabData(id, "hot")
             if(!length(dataTmp) || identical(nrow(dataTmp), 1L) &&
                all(vapply(dataTmp, identical, logical(1L), "", USE.NAMES = FALSE)))
-              return(bind_rows(modelInputData[[id]], 
+              return(bind_rows(modelInputData[[id]],
                                modelInputDataVisible[[id]]))
             return(bind_rows(dataTmp, modelInputData[[id]]))
           }
-          return(bind_rows(getVisibleTabData(id, "dt"), 
+          return(bind_rows(getVisibleTabData(id, "dt"),
                            modelInputData[[id]]))
         }
         return(modelInputData[[id]])
@@ -88,7 +88,7 @@ getInputDatasetRaw <- function(id){
       }
       return(modelInTemplate[[id]])
     }else if(!is.null(modelInputData[[id]])){
-      # tab was never activated, so shiny does not update handsontable thus it is 
+      # tab was never activated, so shiny does not update handsontable thus it is
       # empty although data was loaded
       return(modelInputData[[id]])
     }
@@ -110,7 +110,7 @@ pivotData <- function(i, tabData, force = FALSE){
   pivotIdx <- match(modelIn[[i]]$pivotCols[[1]], names(modelIn[[i]]$headers))[[1L]]
   attrTmp <- attr(modelInTemplate[[i]], "aliases")[-c(pivotIdx, length(modelInTemplate[[i]]))]
   if(tryCatch({
-    tabData <- pivot_wider(tabData, names_from = !!pivotIdx, 
+    tabData <- pivot_wider(tabData, names_from = !!pivotIdx,
                            values_from = !!length(tabData),
                            names_sort = isTRUE(modelIn[[i]]$sortPivotCols))
     FALSE
@@ -124,9 +124,9 @@ pivotData <- function(i, tabData, force = FALSE){
     }
     return(list(data = tabData, colnames = attr(modelInTemplate[[i]], "aliases")))
   }
-  
-  attrTmp <- c(attrTmp, 
-               names(tabData)[seq(length(attrTmp) + 1L, 
+
+  attrTmp <- c(attrTmp,
+               names(tabData)[seq(length(attrTmp) + 1L,
                                   length(tabData))])
   return(list(data = tabData, colnames = attrTmp))
 }
@@ -171,7 +171,7 @@ observeEvent(input$btGraphIn, {
   lapply(ids, function(i){
     toggleEl(session, "#graph-in_" %+% i)
     toggleEl(session, "#data-in_" %+% i)
-    
+
     if(modelInputGraphVisible[[i]]){
       flog.debug("Graph view for model input in sheet: %d deactivated", i)
       modelInputGraphVisible[[i]] <<- FALSE
@@ -180,7 +180,7 @@ observeEvent(input$btGraphIn, {
       flog.debug("Graph view for model input in sheet: %d activated.", i)
       modelInputGraphVisible[[i]] <<- TRUE
     }
-    
+
     if(is.null(configGraphsIn[[i]])){
       return()
     }else if(modelIn[[i]]$type %in% c("hot", "dt")){
@@ -188,9 +188,9 @@ observeEvent(input$btGraphIn, {
       tryCatch({
         data <- getInputDataset(i, visible = TRUE)
       }, error = function(e){
-        flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.", 
+        flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.",
                    modelInAlias[i], conditionMessage(e))
-        errMsg <<- sprintf(lang$errMsg$GAMSInput$noData, 
+        errMsg <<- sprintf(lang$errMsg$GAMSInput$noData,
                            modelInAlias[i])
       })
       if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
@@ -205,8 +205,8 @@ observeEvent(input$btGraphIn, {
     if(!dynamicUILoaded$inputGraphs[i]){
       tryCatch({
         insertUI(paste0("#graph-in_", i),
-                 ui = renderDataUI(paste0("in_", i), type = configGraphsIn[[i]]$outType, 
-                                   graphTool = configGraphsIn[[i]]$graph$tool, 
+                 ui = renderDataUI(paste0("in_", i), type = configGraphsIn[[i]]$outType,
+                                   graphTool = configGraphsIn[[i]]$graph$tool,
                                    customOptions = configGraphsIn[[i]]$options,
                                    filterOptions = configGraphsIn[[i]]$graph$filter,
                                    height = configGraphsIn[[i]]$height,
@@ -232,18 +232,18 @@ observeEvent(input$btGraphIn, {
           }
         }
       }
-      callModule(renderData, paste0("in_", i), 
-                 type = configGraphsIn[[i]]$outType, 
+      callModule(renderData, paste0("in_", i),
+                 type = configGraphsIn[[i]]$outType,
                  data = data,
-                 dtOptions = config$datatable, 
-                 graphOptions = configGraphsIn[[i]]$graph, 
-                 pivotOptions = configGraphsIn[[i]]$pivottable, 
+                 dtOptions = config$datatable,
+                 graphOptions = configGraphsIn[[i]]$graph,
+                 pivotOptions = configGraphsIn[[i]]$pivottable,
                  customOptions = configGraphsIn[[i]]$options,
                  roundPrecision = roundPrecision, modelDir = modelDir,
                  rendererEnv = rendererEnv[[paste0("in_", i)]],
                  views = views, attachments = attachments)
     }, error = function(e) {
-      flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", 
+      flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.",
                  modelInAlias[i], conditionMessage(e))
       errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), sep = "\n")
     })
@@ -268,12 +268,12 @@ lapply(modelInTabularData, function(sheet){
         data <- modelInputData[[i]]
       }else{
         # save changes made in handsontable
-        if(identical(modelIn[[i]]$type, "hot") && 
+        if(identical(modelIn[[i]]$type, "hot") &&
            !is.null(isolate(input[["in_" %+% i]]))){
-          tableContent[[i]] <<- hotToR(isolate(input[["in_" %+% i]]), 
+          tableContent[[i]] <<- hotToR(isolate(input[["in_" %+% i]]),
                                        modelIn[[i]])
         }
-        
+
         tryCatch({
           data <- bind_rows(tableContent[[i]], modelInputData[[i]])
         }, error = function(e){
@@ -286,7 +286,7 @@ lapply(modelInTabularData, function(sheet){
         # get id of element (e.g. dropdown menu) that causes backward dependency
         id  <- colsWithDep[[i]][[iDep]]
         # in case nothing was selected in dropdown menu, skip this iteration
-        if(is.null(input[["dropdown_" %+% id]]) || 
+        if(is.null(input[["dropdown_" %+% id]]) ||
            input[["dropdown_" %+% id]] %in% c("", "_")){
           next
         }
@@ -295,13 +295,13 @@ lapply(modelInTabularData, function(sheet){
         # filter data frame
         data <- data[data[[col]] %in% input[["dropdown_" %+% id]], ]
       }
-      modelInputData[[i]] <<- anti_join(modelInputData[[i]], 
+      modelInputData[[i]] <<- anti_join(modelInputData[[i]],
                                         data, by = idsIn[[i]])
-      
+
       if(identical(modelIn[[i]]$type, "hot")){
         if(!nrow(data)){
           data[1, ] <- NA
-          data <- mutate_if(data, is.character, 
+          data <- mutate_if(data, is.character,
                             replace_na, replace = "")
           if(!is.null(configGraphsIn[[i]]) &&
              length(inputTabs[[tabSheetMap$input[[i]]]]) == 1L){
@@ -343,7 +343,7 @@ lapply(modelInTabularData, function(sheet){
       rv[["in_" %+% i]]
       if(identical(modelIn[[i]]$type, "hot")){
         hotInit[[i]] <<- TRUE
-        if(length(modelInputData[[i]]) && 
+        if(length(modelInputData[[i]]) &&
            nrow(modelInputData[[i]]) > 0L){
           if(!is.null(configGraphsIn[[i]])){
             enableEl(session, "#btGraphIn")
@@ -354,7 +354,7 @@ lapply(modelInTabularData, function(sheet){
           }
         }else{
           modelInputData[[i]][1, ] <<- NA
-          modelInputData[[i]] <- mutate_if(modelInputData[[i]], is.character, 
+          modelInputData[[i]] <- mutate_if(modelInputData[[i]], is.character,
                                            replace_na, replace = "")
           if(!is.null(configGraphsIn[[i]]) &&
              length(inputTabs[[tabSheetMap$input[[i]]]]) == 1L){
@@ -385,7 +385,7 @@ lapply(modelInTabularData, function(sheet){
     })
   }
   if(identical(modelIn[[i]]$type, "hot")){
-    # rendering handsontables for input data 
+    # rendering handsontables for input data
     if(length(modelIn[[i]]$pivotCols)){
       noDomains  <- sum(vapply(modelIn[[i]]$headers, function(header){
         identical(header$type, "string")}, logical(1L), USE.NAMES = FALSE)) - 1L
@@ -394,7 +394,7 @@ lapply(modelInTabularData, function(sheet){
       noCheck[i] <<- TRUE
       isPivoted <- FALSE
       tabData <- dataModelIn[[i]]()
-      
+
       if(length(modelIn[[i]]$pivotCols)){
         isPivoted <- TRUE
         tabData  <- pivotData(i, tabData, force = TRUE)
@@ -403,7 +403,7 @@ lapply(modelInTabularData, function(sheet){
       }else{
         colnames <- attr(modelInTemplate[[i]], "aliases")
       }
-      
+
       # check for readonly columns
       colsReadonly <- vapply(seq_along(modelIn[[i]]$headers), function(j){
         if(identical(modelIn[[i]]$headers[[j]]$readonly, TRUE)){
@@ -413,23 +413,23 @@ lapply(modelInTabularData, function(sheet){
         }
       }, character(1L), USE.NAMES = FALSE)
       colsReadonly <- colsReadonly[!is.na(colsReadonly)]
-      
+
       isRo <- FALSE
       if(isTRUE(modelIn[[i]]$readonly) || length(colsReadonly) > 0L){
         isRo <- TRUE
       }
-      
-      ht <- rhandsontable(tabData, height = hotOptions$height, 
+
+      ht <- rhandsontable(tabData, height = hotOptions$height,
                           rowHeaders = if(isTRUE(modelIn[[i]]$hideIndexCol)) NULL else rownames(tabData),
                           colHeaders = colnames, useTypes = TRUE,
-                          width = hotOptions$width, search = hotOptions$search, 
-                          readOnly = if(isTRUE(modelIn[[i]]$readonly)) TRUE else NULL, 
-                          selectCallback = TRUE, digits = NA, 
+                          width = hotOptions$width, search = hotOptions$search,
+                          readOnly = if(isTRUE(modelIn[[i]]$readonly)) TRUE else NULL,
+                          selectCallback = TRUE, digits = NA,
                           naAsNull = isPivoted || isTRUE(attr(modelInTemplate[[i]], "isTable")))
-      ht <- hot_table(ht, contextMenu = hotOptions$contextMenu$enabled, 
-                      highlightCol = hotOptions$highlightCol, 
+      ht <- hot_table(ht, contextMenu = hotOptions$contextMenu$enabled,
+                      highlightCol = hotOptions$highlightCol,
                       highlightRow = hotOptions$highlightRow,
-                      rowHeaderWidth = hotOptions$rowHeaderWidth, 
+                      rowHeaderWidth = hotOptions$rowHeaderWidth,
                       stretchH = hotOptions$stretchH,
                       overflow = hotOptions$overflow)
       if(isTRUE(hotOptions$contextMenu$enabled)){
@@ -443,11 +443,11 @@ lapply(modelInTabularData, function(sheet){
                                  allowReadOnly = hotOptions$contextMenu$allowReadOnly)
         }
       }
-      ht <- hot_cols(ht, columnSorting = if(isPivoted) FALSE else hotOptions$columnSorting, 
-                     manualColumnMove = hotOptions$manualColumnMove, 
-                     manualColumnResize = hotOptions$manualColumnResize, 
+      ht <- hot_cols(ht, columnSorting = if(isPivoted) FALSE else hotOptions$columnSorting,
+                     manualColumnMove = hotOptions$manualColumnMove,
+                     manualColumnResize = hotOptions$manualColumnResize,
                      colWidths = if(length(modelIn[[i]]$colWidths))
-                       modelIn[[i]]$colWidths else hotOptions$colWidths, 
+                       modelIn[[i]]$colWidths else hotOptions$colWidths,
                      fixedColumnsLeft = modelIn[[i]]$fixedColumnsLeft)
       for(colSourceConfig in modelIn[[i]]$dropdownCols){
         k <- match(colSourceConfig$symbol, names(modelIn))
@@ -455,15 +455,15 @@ lapply(modelInTabularData, function(sheet){
         if(length(colSourceConfig$static)){
           source <- colSourceConfig$static
         }else if(length(rv[["in_" %+% k]]) && !isEmptyInput[k] &&
-                 (modelIn[[k]]$type == "hot" && 
-                  !is.null(input[["in_" %+% k]]) || 
+                 (modelIn[[k]]$type == "hot" &&
+                  !is.null(input[["in_" %+% k]]) ||
                   (length(rv[[paste0("wasModified_", k)]]) && !is.null(tableContent[[k]])) ||
                   identical(modelIn[[k]]$type, "custom") && length(modelInputDataVisible[[k]]))){
           tryCatch({
             source <- unique(getInputDataset(k)[[colSourceConfig$colId]])
           }, error = function(e){
             flog.error("Some problem occurred attempting to fetch values for table: '%s' " %+%
-                         "(forward dependency on dataset: '%s'). Error message: %s.", 
+                         "(forward dependency on dataset: '%s'). Error message: %s.",
                        modelInAlias[id], modelInAlias[k], conditionMessage(e))
           })
         }else if(length(modelInputData[[k]][[1]]) && !is.na(modelInputData[[k]][[1]][1])
@@ -503,7 +503,7 @@ lapply(modelInTabularData, function(sheet){
     output[["in_" %+% i]] <- renderDT({
       errMsg <- NULL
       tabData <- dataModelIn[[i]]()
-      
+
       if(length(modelIn[[i]]$pivotCols)){
         isPivoted <- TRUE
         tabData  <- pivotData(i, tabData)
@@ -515,16 +515,16 @@ lapply(modelInTabularData, function(sheet){
       }
       tryCatch({
         dtOptions <- modifyList(config$datatable,
-                                list(editable = !identical(modelIn[[i]]$readonly, 
+                                list(editable = !identical(modelIn[[i]]$readonly,
                                                            TRUE),
                                      options = list(scrollX = TRUE),
                                      colnames = colnames))
-        
-        dt <- renderDTable(tabData, dtOptions, 
+
+        dt <- renderDTable(tabData, dtOptions,
                            roundPrecision = roundPrecision, render = FALSE)
       }, error = function(e){
         flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
-                   modelInAlias[[i]], conditionMessage(e)) 
+                   modelInAlias[[i]], conditionMessage(e))
         errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
       })
       if(is.null(showErrorMsg(lang$errMsg$renderTable$title, errMsg))){
@@ -533,7 +533,7 @@ lapply(modelInTabularData, function(sheet){
       return(dt)
     })
     proxy[[i]] <<- dataTableProxy("in_" %+% i)
-    
+
     observeEvent(input[[paste0("in_", i, "_add_row")]], {
       if(!length(tableContent[[i]])){
         flog.warn("Remove rows button (symbol: %s) was clicked but tableContent has no length.",
@@ -541,11 +541,11 @@ lapply(modelInTabularData, function(sheet){
         return()
       }
       removeUI("body>.selectize-dropdown", multiple = TRUE, immediate = TRUE)
-      
+
       noRowHeaders <- sum(vapply(modelIn[[i]]$headers, function(header){
         return(identical(header$type, "string"))
       }, logical(1L), USE.NAMES = FALSE))
-      
+
       if(length(modelIn[[i]]$pivotCols) && nrow(tableContent[[i]]) > 0L){
         noRowHeaders <- noRowHeaders - 1L
         pivotIdx <- match(modelIn[[i]]$pivotCols[[1]], names(modelIn[[i]]$headers))[[1L]]
@@ -596,7 +596,7 @@ lapply(modelInTabularData, function(sheet){
           footer = tagList(
             modalButton(lang$renderers$miroPivot$dialogAddRow$btCancel),
             actionButton(paste0("in_", i, "_add_row_confirm"),
-                         label = lang$renderers$miroPivot$btAddRow, 
+                         label = lang$renderers$miroPivot$btAddRow,
                          class = "bt-highlight-1 bt-gms-confirm")),
           fade = TRUE, easyClose = FALSE, size = "l"
         ))
@@ -611,7 +611,7 @@ lapply(modelInTabularData, function(sheet){
       noRowHeaders <- sum(vapply(modelIn[[i]]$headers, function(header){
         return(identical(header$type, "string"))
       }, logical(1L), USE.NAMES = FALSE))
-      
+
       if(length(modelIn[[i]]$pivotCols) && nrow(tableContent[[i]]) > 0L){
         noRowHeaders <- noRowHeaders - 1L
       }
@@ -642,12 +642,12 @@ lapply(modelInTabularData, function(sheet){
         }
         return(newVal)
       }, numeric(1L), USE.NAMES = FALSE)
-      
+
       if(invalidValue){
         return(showHideEl(session, paste0("#", "newRowError"), 5000L,
                           lang$renderers$miroPivot$dialogAddRow$invalidValuesError))
       }
-      
+
       newRowId <- suppressWarnings(as.integer(input$newRowId))
       if(length(newRowId) != 1L || is.na(newRowId)){
         return(flog.error("Invalid data for 'newRowId' (symbol: %s).", names(modelIn)[i]))
@@ -703,7 +703,7 @@ lapply(modelInTabularData, function(sheet){
         col <- info$col + 1L
       }
       val <- info$value
-      tableContent[[i]][row, col] <<- suppressWarnings(coerceValue(val, 
+      tableContent[[i]][row, col] <<- suppressWarnings(coerceValue(val,
                                                                    tableContent[[i]][[col]][row]))
       replaceData(proxy[[i]], tableContent[[i]], resetPaging = FALSE, rownames = rownames)
       if(is.null(rv[[paste0("wasModified_", i)]])){
@@ -722,8 +722,8 @@ lapply(modelInTabularData, function(sheet){
         }else{
           dataIds <- i
         }
-        modelInputDataVisible[[i]] <<- callModule(generateData, paste0("data-in_", i), 
-                                                  type = modelIn[[i]]$rendererName, 
+        modelInputDataVisible[[i]] <<- callModule(generateData, paste0("data-in_", i),
+                                                  type = modelIn[[i]]$rendererName,
                                                   data = if(length(dataIds) > 1L)
                                                     dataModelIn[dataIds] else dataModelIn[[i]],
                                                   customOptions = modelIn[[i]]$options,
@@ -743,8 +743,8 @@ lapply(modelInTabularData, function(sheet){
               rendererEnv[[paste0("input_", i)]][[el]]$destroy()
             }
           }
-          modelInputDataVisible[[i]] <<- callModule(generateData, paste0("data-in_", i), 
-                                                    type = modelIn[[i]]$rendererName, 
+          modelInputDataVisible[[i]] <<- callModule(generateData, paste0("data-in_", i),
+                                                    type = modelIn[[i]]$rendererName,
                                                     data = as_tibble(dataModelIn[[i]]()),
                                                     customOptions = modelIn[[i]]$options,
                                                     rendererEnv = rendererEnv[[paste0("input_", i)]],

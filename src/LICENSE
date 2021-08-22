@@ -29,7 +29,7 @@ these components are included below):
 - c3, https://github.com/c3js/c3
 - handsontable, https://github.com/handsontable/handsontable
 - json2, https://github.com/douglascrockford/JSON-js
-- sparkline, https://github.com/gwatts/jquery.sparkline 
+- sparkline, https://github.com/gwatts/jquery.sparkline
 - chroma, https://github.com/gka/chroma.js
 - highlight.js, https://github.com/isagalaev/highlight.js
 - tar implementation from R, http://www.r-project.org/
@@ -49,13 +49,13 @@ these components are included below):
 - Ace (Ajax.org Cloud9 Editor) https://github.com/ajaxorg/ace
 - plotly https://github.com/ropensci/plotly or https://cran.r-project.org/web/packages/plotly/index.html
 - DT https://github.com/rstudio/DT or https://cran.r-project.org/web/packages/DT/index.html
-- V8 (R package) https://github.com/jeroen/V8 or https://cran.r-project.org/web/packages/V8/index.html 
+- V8 (R package) https://github.com/jeroen/V8 or https://cran.r-project.org/web/packages/V8/index.html
 - V8 https://github.com/v8/v8
 - jsonlite https://github.com/jeroen/jsonlite or https://cran.r-project.org/web/packages/jsonlite/index.html
 - rpivotTable https://github.com/smartinsightsfromdata/rpivotTable or https://cran.r-project.org/web/packages/rpivotTable/index.html
 - futile.logger https://github.com/zatonovo/futile.logger or https://cran.r-project.org/web/packages/futile.logger/index.html
 - KaTeX https://github.com/KaTeX/KaTeX or https://katex.org
-- zip https://github.com/r-lib/zip or https://cran.r-project.org/web/packages/zip/index.html    
+- zip https://github.com/r-lib/zip or https://cran.r-project.org/web/packages/zip/index.html
 - stringi https://github.com/gagolews/stringi or https://cran.r-project.org/web/packages/stringi/index.html
 - dygraphs https://github.com/rstudio/dygraphs or https://cran.r-project.org/web/packages/dygraphs/index.html
 - xts https://github.com/joshuaulrich/xts or https://cran.r-project.org/web/packages/xts/index.html
@@ -66,7 +66,7 @@ these components are included below):
 - ellipsis https://github.com/r-lib/ellipsis or https://ellipsis.r-lib.org or https://cran.r-project.org/web/packages/ellipsis/index.html
 - withr http://withr.r-lib.org or http://github.com/r-lib/withr or https://cran.r-project.org/web/packages/withr/index.html
 - DBI https://github.com/r-dbi/DBI or https://cran.r-project.org/web/packages/DBI/index.html
-- askpass https://github.com/jeroen/askpass or https://cran.r-project.org/web/packages/askpass/index.html 
+- askpass https://github.com/jeroen/askpass or https://cran.r-project.org/web/packages/askpass/index.html
 - timevis https://github.com/daattali/timevis or https://cran.r-project.org/web/packages/timevis/index.html
 - readr https://github.com/tidyverse/readr or https://cran.r-project.org/web/packages/readr/index.html
 - blob https://github.com/tidyverse/blob or https://cran.r-project.org/web/packages/blob/index.html
@@ -131,14 +131,14 @@ these components are included below):
 - rematch https://github.com/MangoTheCat/rematch or https://cran.r-project.org/web/packages/rematch/index.html
 - prettyunits https://github.com/gaborcsardi/prettyunits or https://cran.r-project.org/web/packages/prettyunits/index.html
 - chartjs (R link) https://github.com/Tutuchan/chartjs
-- Chart.js https://github.com/chartjs/Chart.js or https://www.chartjs.org/ 
+- Chart.js https://github.com/chartjs/Chart.js or https://www.chartjs.org/
 - sortable https://github.com/rstudio/sortable or https://cran.r-project.org/web/packages/sortable/index.html
 - yaml https://github.com/viking/r-yaml/ or https://cran.r-project.org/web/packages/yaml/index.html
 - formatR https://github.com/yihui/formatR or https://cran.r-project.org/web/packages/formatR/index.html
 - withr https://github.com/r-lib/withr or https://cran.r-project.org/web/packages/withr/index.html
 
 - leaflet https://github.com/rstudio/leaflet or  https://cran.r-project.org/web/packages/leaflet/index.html
-- png https://github.com/s-u/png or https://cran.r-project.org/web/packages/png/index.html 
+- png https://github.com/s-u/png or https://cran.r-project.org/web/packages/png/index.html
 - raster https://github.com/rspatial/raster or https://cran.r-project.org/web/packages/raster/index.html
 - sp https://github.com/edzer/sp/ or https://cran.r-project.org/web/packages/sp/index.html
 - viridis https://github.com/sjmgarnier/viridis or https://cran.r-project.org/web/packages/viridis/index.html
@@ -188,7 +188,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-   
+
 Font Awesome (CSS files are MIT licensed; fonts have SIL Open Font License 1.1, svgs have CC BY 4.0 License)
 ----------------------------------------------------------------------
 
@@ -635,7 +635,7 @@ Section 8 -- Interpretation.
 
 -----------------------------------------------------------------------------
                         The MIT License (MIT)
-        applies to: 
+        applies to:
         - AdminLTE, Copyright (c) 2014-2017 Abdullah Almsaeed
         - ajv, Copyright (c) 2015-2017 Evgeny Poberezkin
         - polyfill.io, Copyright (c) 2016 Financial Times
@@ -653,9 +653,9 @@ Section 8 -- Interpretation.
         - generics, Copyright (c) 2020 Hadley Wickham [aut, cre], Max Kuhn [aut], Davis Vaughan [aut], RStudio [cph]
         - dplyr, Copyright (c) 2013-2020 Hadley Wickham [aut, cre], Romain François [aut], Lionel Henry [aut], Kirill Müller [aut], RStudio [cph, fnd]
         - cpp11, Copyright (c) 2020 RStudio
-        - rhandsontable , Copyright (c) 2015-2018 Marcin Warpechowski, Handsoncode sp. z o.o., 
-          Gregor Aisch, Tim Wood, Iskren Chernev, Moment.js contributors, David Bushell, 
-          jQuery Foundation, Splunk Inc, Jon Rohan, James M. Greeneand, Företagsplatsen, 
+        - rhandsontable , Copyright (c) 2015-2018 Marcin Warpechowski, Handsoncode sp. z o.o.,
+          Gregor Aisch, Tim Wood, Iskren Chernev, Moment.js contributors, David Bushell,
+          jQuery Foundation, Splunk Inc, Jon Rohan, James M. Greeneand, Företagsplatsen,
           Kent Russell and Jonathan Owen
         - natural.js (DataTables plugin), Copyright (c) Jim Palmer (based on chunking idea from Dave Koelle), Mike Grier (mgrier.com), Clint Priest, Kyle Adams, guillermo
         - plotly, Copyright (c) 2017 Plotly, Inc.
@@ -665,13 +665,13 @@ Section 8 -- Interpretation.
         - rpivotTable, Copyright (c) 2015 Enzo Martoglio
         - dygraphs, Copyright (c) 2015-2016 Dan Vanderkam; RStudio, Inc.
         - tidyr, Copyright (c) 2020 Hadley Wickham [aut, cre], Lionel Henry [aut], RStudio [cph]
-        - plogr, Copyright (c) 2016 Kirill Müller [aut, cre], 
+        - plogr, Copyright (c) 2016 Kirill Müller [aut, cre],
           Sergey Podobry [cph] (Author of the bundled plog library)
-        - sourcetools, Copyright (c) 2015-2017 Kevin Ushey 
+        - sourcetools, Copyright (c) 2015-2017 Kevin Ushey
         - sys, Copyright (c) 2019 Jeroen Ooms ORCID iD [aut, cre], Gábor Csárdi [ctb]
-        - promises, Copyright (c) 2016-2017 RStudio, Inc. 
-        - crayon, Copyright (c) 2014-2016 Gabor Csardi 
-        - htmlwidgets, Copyright (c) 2016 Ramnath Vaidyanathan, Joe Cheng, 
+        - promises, Copyright (c) 2016-2017 RStudio, Inc.
+        - crayon, Copyright (c) 2014-2016 Gabor Csardi
+        - htmlwidgets, Copyright (c) 2016 Ramnath Vaidyanathan, Joe Cheng,
           JJ Allaire, Yihui Xie, and Kenton Russell
         - magrittr, Copyright (c) 2014 Stefan Milton Bache and Hadley Wickham
         - crosstalk, Copyright (c) 2016 RStudio, Inc.
@@ -705,7 +705,7 @@ Section 8 -- Interpretation.
         - tidyselect, Copyright (c) 2020 Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
         - plyr, Copyright (c) 2014 Hadley Wickham [aut, cre]
         - fastmap, Copyright (c) 2019 Winston Chang [aut, cre], RStudio [cph, fnd], Tessil [cph] (hopscotch_map library)
-        - bootstrap, Copyright (c) 2011-2019 Twitter, Inc. 
+        - bootstrap, Copyright (c) 2011-2019 Twitter, Inc.
                      Copyright (c) 2011-2019 The Bootstrap Authors
         - html5shiv, Copyright (c) 2014 Alexander Farkas (aFarkas)
         - Respond.js, Copyright (c) 2012 Scott Jehl
@@ -716,14 +716,14 @@ Section 8 -- Interpretation.
         - showdown.js, Copyright (c) 2018 ShowdownJS
         - autoNumeric, Copyright (c) 2009 Robert J. Knothe <bob@decorplanit.com> and contributors
         - showdown, Copyright (c) 2018 ShowdownJS
-        
+
 -----------------------------------------------------------------------------
 Based on <http://opensource.org/licenses/MIT>
 
 This is a template.  Provide completed entries of the form
 
 YEAR:
-COPYRIGHT HOLDER: 
+COPYRIGHT HOLDER:
 
 (separated by empty lines) as file LICENSE, and specify
 
@@ -756,22 +756,22 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -----------------------------------------------------------------------------
             The “GNU Lesser General Public License” version 3 (LGPL-3)
-        applies to: 
+        applies to:
         - futile.logger, Copyright (c) Brian Lee Yung Rowe
-        - DBI [expanded from: LGPL (≥ 2)], Copyright (c) R Special Interest Group on Databases (R-SIG-DB) [aut], 
-            Hadley Wickham [aut], 
-            Kirill Müller ORCID iD [aut, cre], 
+        - DBI [expanded from: LGPL (≥ 2)], Copyright (c) R Special Interest Group on Databases (R-SIG-DB) [aut],
+            Hadley Wickham [aut],
+            Kirill Müller ORCID iD [aut, cre],
             R Consortium [fnd]
         - lambda.r, Copyright (c) Brian Lee Yung Rowe
         - futile.options, Copyright (c) Brian Lee Yung Rowe
-        - RSQLite, Copyright (c) Kirill Müller ORCID iD [aut, cre], 
-            Hadley Wickham [aut], David A. James [aut], Seth Falcon [aut], 
-            SQLite Authors [ctb] (for the included SQLite sources), 
-            Liam Healy [ctb] (for the included SQLite sources), 
+        - RSQLite, Copyright (c) Kirill Müller ORCID iD [aut, cre],
+            Hadley Wickham [aut], David A. James [aut], Seth Falcon [aut],
+            SQLite Authors [ctb] (for the included SQLite sources),
+            Liam Healy [ctb] (for the included SQLite sources),
             R Consortium [fnd], RStudio [cph]
         - pillar, Copyright (c) Kirill Müller [aut, cre], Hadley Wickham [aut], RStudio [cph]
-        - fansi [expanded from: GPL (≥ 2)], Copyright (c) Brodie Gaslam [aut, cre], 
-            Elliott Sales De Andrade [ctb], 
+        - fansi [expanded from: GPL (≥ 2)], Copyright (c) Brodie Gaslam [aut, cre],
+            Elliott Sales De Andrade [ctb],
             R Core Team [cph] (UTF8 byte length calcs from src/util.c)
         - future, Copyright (c) Henrik Bengtsson [aut, cre, cph]
         - globals, Copyright (c) Henrik Bengtsson [aut, cre, cph]
@@ -792,7 +792,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 the terms and conditions of version 3 of the GNU General Public
 License, supplemented by the additional permissions listed below.
 
-  0. Additional Definitions. 
+  0. Additional Definitions.
 
   As used herein, "this License" refers to version 3 of the GNU Lesser
 General Public License, and the "GNU GPL" refers to version 3 of the GNU
@@ -893,7 +893,7 @@ the following:
        a copy of the Library already present on the user's computer
        system, and (b) will operate properly with a modified version
        of the Library that is interface-compatible with the Linked
-       Version. 
+       Version.
 
    e) Provide Installation Information, but only if you would otherwise
    be required to provide such information under section 6 of the
@@ -948,72 +948,72 @@ Library.
 
 -----------------------------------------------------------------------------
             The “GNU General Public License” version 3 (GPL-3)
-        applies to: 
+        applies to:
         - R, Copyright (C) 2018 The R Foundation for Statistical Computing
         - shinydashboard [expanded from: GPL (≥ 2)], Copyright (c) 2014 RStudio, Inc.
-        - readxl, Copyright (c) Hadley Wickham ORCID iD [aut], 
-            Jennifer Bryan ORCID iD [aut, cre], RStudio [cph, fnd] 
-            (Copyright holder of all R code and all C/C++ code 
-            without explicit copyright attribution), 
-            Marcin Kalicinski [ctb, cph] (Author of included RapidXML code), 
-            Komarov Valery [ctb, cph] (Author of included libxls code), 
-            Christophe Leitienne [ctb, cph] (Author of included libxls code), 
-            Bob Colbert [ctb, cph] (Author of included libxls code), 
-            David Hoerl [ctb, cph] (Author of included libxls code), 
+        - readxl, Copyright (c) Hadley Wickham ORCID iD [aut],
+            Jennifer Bryan ORCID iD [aut, cre], RStudio [cph, fnd]
+            (Copyright holder of all R code and all C/C++ code
+            without explicit copyright attribution),
+            Marcin Kalicinski [ctb, cph] (Author of included RapidXML code),
+            Komarov Valery [ctb, cph] (Author of included libxls code),
+            Christophe Leitienne [ctb, cph] (Author of included libxls code),
+            Bob Colbert [ctb, cph] (Author of included libxls code),
+            David Hoerl [ctb, cph] (Author of included libxls code),
             Evan Miller [ctb, cph] (Author of included libxls code)
-        - DT, Copyright (c) Yihui Xie [aut, cre], 
-            Joe Cheng [ctb], JJ Allaire [ctb], Xianying Tan [ctb], Maximilian Girlich [ctb], 
-            jQuery contributors [ctb, cph] (jQuery in htmlwidgets/lib), 
-            SpryMedia Limited [ctb, cph] (DataTables in htmlwidgets/lib), 
-            Brian Reavis [ctb, cph] (selectize.js in htmlwidgets/lib), 
-            Leon Gersen [ctb, cph] (noUiSlider in htmlwidgets/lib), 
-            Bartek Szopka [ctb, cph] (jquery.highlight.js in htmlwidgets/lib), 
+        - DT, Copyright (c) Yihui Xie [aut, cre],
+            Joe Cheng [ctb], JJ Allaire [ctb], Xianying Tan [ctb], Maximilian Girlich [ctb],
+            jQuery contributors [ctb, cph] (jQuery in htmlwidgets/lib),
+            SpryMedia Limited [ctb, cph] (DataTables in htmlwidgets/lib),
+            Brian Reavis [ctb, cph] (selectize.js in htmlwidgets/lib),
+            Leon Gersen [ctb, cph] (noUiSlider in htmlwidgets/lib),
+            Bartek Szopka [ctb, cph] (jquery.highlight.js in htmlwidgets/lib),
             RStudio Inc [cph]
-        - shiny, Copyright (c) Winston Chang [aut, cre], 
-            Joe Cheng [aut], JJ Allaire [aut], Yihui Xie [aut], 
-            Jonathan McPherson [aut], RStudio [cph], 
-            jQuery Foundation [cph] (jQuery library and jQuery UI library), 
-            jQuery contributors [ctb, cph] 
-            (jQuery library; authors listed in inst/www/shared/jquery-AUTHORS.txt), 
-            jQuery UI contributors [ctb, cph] 
-            (jQuery UI library; authors listed in inst/www/shared/jqueryui/AUTHORS.txt), 
-            Mark Otto [ctb] (Bootstrap library), Jacob Thornton [ctb] (Bootstrap library), 
-            Bootstrap contributors [ctb] (Bootstrap library), Twitter, 
-            Inc [cph] (Bootstrap library), Alexander Farkas [ctb, cph] (html5shiv library), 
-            Scott Jehl [ctb, cph] (Respond.js library), 
-            Stefan Petre [ctb, cph] (Bootstrap-datepicker library), 
-            Andrew Rowls [ctb, cph] (Bootstrap-datepicker library), 
-            Dave Gandy [ctb, cph] (Font-Awesome font), 
-            Brian Reavis [ctb, cph] (selectize.js library), 
-            Kristopher Michael Kowal [ctb, cph] (es5-shim library), 
-            es5-shim contributors [ctb, cph] (es5-shim library), 
-            Denis Ineshin [ctb, cph] (ion.rangeSlider library), 
-            ami Samhuri [ctb, cph] (Javascript strftime library), 
-            SpryMedia Limited [ctb, cph] (DataTables library), 
-            John Fraser [ctb, cph] (showdown.js library), 
-            John Gruber [ctb, cph] (showdown.js library), 
-            Ivan Sagalaev [ctb, cph] (highlight.js library), 
+        - shiny, Copyright (c) Winston Chang [aut, cre],
+            Joe Cheng [aut], JJ Allaire [aut], Yihui Xie [aut],
+            Jonathan McPherson [aut], RStudio [cph],
+            jQuery Foundation [cph] (jQuery library and jQuery UI library),
+            jQuery contributors [ctb, cph]
+            (jQuery library; authors listed in inst/www/shared/jquery-AUTHORS.txt),
+            jQuery UI contributors [ctb, cph]
+            (jQuery UI library; authors listed in inst/www/shared/jqueryui/AUTHORS.txt),
+            Mark Otto [ctb] (Bootstrap library), Jacob Thornton [ctb] (Bootstrap library),
+            Bootstrap contributors [ctb] (Bootstrap library), Twitter,
+            Inc [cph] (Bootstrap library), Alexander Farkas [ctb, cph] (html5shiv library),
+            Scott Jehl [ctb, cph] (Respond.js library),
+            Stefan Petre [ctb, cph] (Bootstrap-datepicker library),
+            Andrew Rowls [ctb, cph] (Bootstrap-datepicker library),
+            Dave Gandy [ctb, cph] (Font-Awesome font),
+            Brian Reavis [ctb, cph] (selectize.js library),
+            Kristopher Michael Kowal [ctb, cph] (es5-shim library),
+            es5-shim contributors [ctb, cph] (es5-shim library),
+            Denis Ineshin [ctb, cph] (ion.rangeSlider library),
+            ami Samhuri [ctb, cph] (Javascript strftime library),
+            SpryMedia Limited [ctb, cph] (DataTables library),
+            John Fraser [ctb, cph] (showdown.js library),
+            John Gruber [ctb, cph] (showdown.js library),
+            Ivan Sagalaev [ctb, cph] (highlight.js library),
             R Core Team [ctb, cph] (tar implementation from R)
-        - readr [expanded from: GPL (≥ 2)], Copyright (c) 
-            Hadley Wickham [aut], 
-            Jim Hester [aut, cre], 
-            Romain Francois [aut], 
-            R Core Team [ctb] (Date time code adapted from R), 
-            RStudio [cph, fnd], 
-            Jukka Jylänki [ctb, cph] (grisu3 implementation), 
+        - readr [expanded from: GPL (≥ 2)], Copyright (c)
+            Hadley Wickham [aut],
+            Jim Hester [aut, cre],
+            Romain Francois [aut],
+            R Core Team [ctb] (Date time code adapted from R),
+            RStudio [cph, fnd],
+            Jukka Jylänki [ctb, cph] (grisu3 implementation),
             Mikkel Jørgensen [ctb, cph] (grisu3 implementation)
-        - blob, Copyright (c) 
-            Hadley Wickham [aut], 
-            Kirill Müller [cre], 
+        - blob, Copyright (c)
+            Hadley Wickham [aut],
+            Kirill Müller [cre],
             RStudio [cph]
         - Rcpp [expanded from: GPL (≥ 2)], Copyright (c)
-            Dirk Eddelbuettel, 
-            Romain Francois, 
-            JJ Allaire, 
-            Kevin Ushey, 
-            Qiang Kou, 
-            Nathan Russell, 
-            Douglas Bates and 
+            Dirk Eddelbuettel,
+            Romain Francois,
+            JJ Allaire,
+            Kevin Ushey,
+            Qiang Kou,
+            Nathan Russell,
+            Douglas Bates and
             John Chambers
         - httpuv [expanded from: GPL (≥ 2)], Copyright (c)
             RStudio, PBC; Joyent, Inc.; Nginx Inc.; Igor Sysoev; Niels Provos; Internet Systems Consortium, Inc.; Alexander Chemeris; Berkeley Software Design; Google Inc.; Sony Mobile Communications AB; Alexander Peslyak; Free Software Foundation, Inc.; X Consortium; Ben Noordhuis; StrongLoop, Inc.; Saúl Ibarra Corretgé; Bert Belder; Fedor Indutny; libuv project; Refael Ackermann; Kenneth MacKay; Emergya; Diego Pettenò; xine project, The Regents of the University of California, Dariusz Dwornikowski
@@ -1023,56 +1023,56 @@ Library.
             libuv project contributors [cph] (libuv library), Joyent, Inc. and other Node contributors [cph] (libuv library),
             RStudio [cph, fnd]
         - mime [expanded from: GPL], Copyright (c)
-            Yihui Xie ORCID [aut, cre], 
-            Jeffrey Horner [ctb], 
+            Yihui Xie ORCID [aut, cre],
+            Jeffrey Horner [ctb],
             Beilei Bian [ctb]
         - xtable [expanded from: GPL (≥ 2)], Copyright (c)
-            David B. Dahl [aut], David Scott [aut, cre], Charles Roosen [aut], 
-            Arni Magnusson [aut], Jonathan Swinton [aut], Ajay Shah [ctb], 
-            Arne Henningsen [ctb], Benno Puetz [ctb], Bernhard Pfaff [ctb], 
-            Claudio Agostinelli [ctb], Claudius Loehnert [ctb], David Mitchell [ctb], 
-            David Whiting [ctb], Fernando da Rosa [ctb], Guido Gay [ctb], 
-            Guido Schulz [ctb], Ian Fellows [ctb], Jeff Laake [ctb], John Walker [ctb], 
-            Jun Yan [ctb], Liviu Andronic [ctb], Markus Loecher [ctb], Martin Gubri [ctb], 
-            Matthieu Stigler [ctb], Robert Castelo [ctb], Seth Falcon [ctb], 
+            David B. Dahl [aut], David Scott [aut, cre], Charles Roosen [aut],
+            Arni Magnusson [aut], Jonathan Swinton [aut], Ajay Shah [ctb],
+            Arne Henningsen [ctb], Benno Puetz [ctb], Bernhard Pfaff [ctb],
+            Claudio Agostinelli [ctb], Claudius Loehnert [ctb], David Mitchell [ctb],
+            David Whiting [ctb], Fernando da Rosa [ctb], Guido Gay [ctb],
+            Guido Schulz [ctb], Ian Fellows [ctb], Jeff Laake [ctb], John Walker [ctb],
+            Jun Yan [ctb], Liviu Andronic [ctb], Markus Loecher [ctb], Martin Gubri [ctb],
+            Matthieu Stigler [ctb], Robert Castelo [ctb], Seth Falcon [ctb],
             Stefan Edwards [ctb], Sven Garbade [ctb], Uwe Ligges [ctb]
         - digest [expanded from: GPL (≥ 2)], Copyright (c)
-            Dirk Eddelbuettel with contributions by Antoine Lucas, Jarek Tuszynski, 
-            Henrik Bengtsson, Simon Urbanek, Mario Frasca, Bryan Lewis, Murray Stokely, 
-            Hannes Muehleisen, Duncan Murdoch, Jim Hester, Wush Wu, Qiang Kou, 
+            Dirk Eddelbuettel with contributions by Antoine Lucas, Jarek Tuszynski,
+            Henrik Bengtsson, Simon Urbanek, Mario Frasca, Bryan Lewis, Murray Stokely,
+            Hannes Muehleisen, Duncan Murdoch, Jim Hester, Wush Wu, Qiang Kou,
             Thierry Onkelinx, Michel Lang, Viliam Simko, Kurt Hornik and Radford Neal
         - htmltools [expanded from: GPL (≥ 2)], Copyright (c) RStudio, Inc.
-        - later [expanded from: GPL (≥ 2)], Copyright (c)  
-            Joe Cheng [aut, cre], RStudio [cph], 
-            Marcus Geelnard [ctb, cph] (TinyCThread library, https://tinycthread.github.io/), 
+        - later [expanded from: GPL (≥ 2)], Copyright (c)
+            Joe Cheng [aut, cre], RStudio [cph],
+            Marcus Geelnard [ctb, cph] (TinyCThread library, https://tinycthread.github.io/),
             Evan Nemerson [ctb, cph] (TinyCThread library, https://tinycthread.github.io/)
         - assertthat, Copyright (c) Hadley Wickham [aut, cre]
-        - clipr, Copyright (c) Matthew Lincoln [aut, cre], Louis Maddox [ctb], 
+        - clipr, Copyright (c) Matthew Lincoln [aut, cre], Louis Maddox [ctb],
             Steve Simpson [ctb], Jennifer Bryan [ctb]
-        - base64enc, Copyright (c) Simon Urbanek 
+        - base64enc, Copyright (c) Simon Urbanek
         - lazyeval, Copyright (c) Hadley Wickham [aut, cre], RStudio [cph]
-        - purrr, Copyright (c) Lionel Henry [aut, cre], Hadley Wickham [aut], 
+        - purrr, Copyright (c) Lionel Henry [aut, cre], Hadley Wickham [aut],
             RStudio [cph, fnd]
-        - zoo, Copyright (c) Achim Zeileis ORCID [aut, cre], Gabor Grothendieck [aut], 
+        - zoo, Copyright (c) Achim Zeileis ORCID [aut, cre], Gabor Grothendieck [aut],
             Jeffrey A. Ryan [aut], Joshua M. Ulrich [ctb], Felix Andrews [ctb]
-        - xts [expanded from: GPL (>=2)], Copyright (c) Jeffrey A. Ryan [aut, cph], 
+        - xts [expanded from: GPL (>=2)], Copyright (c) Jeffrey A. Ryan [aut, cph],
             Joshua M. Ulrich [cre, aut], Ross Bennett [ctb], Corwin Joy [ctb]
-        - formatR, Copyright (c) Yihui Xie [aut, cre], Ed Lee [ctb], Eugene Ha [ctb], 
+        - formatR, Copyright (c) Yihui Xie [aut, cre], Ed Lee [ctb], Eugene Ha [ctb],
             Kohske Takahashi [ctb], Pavel Krivitsky [ctb]
-        - leaflet, Copyright (c) Joe Cheng [aut, cre], Bhaskar Karambelkar [aut], 
-            Yihui Xie [aut], Hadley Wickham [ctb], Kenton Russell [ctb], Kent Johnson [ctb], 
-            Barret Schloerke [ctb], jQuery Foundation and contributors [ctb, cph] (jQuery library), 
-            Vladimir Agafonkin [ctb, cph] (Leaflet library), CloudMade [cph] (Leaflet library), 
-            Leaflet contributors [ctb] (Leaflet library), 
-            Leaflet Providers contributors [ctb, cph] (Leaflet Providers plugin), 
-            Brandon Copeland [ctb, cph] (leaflet-measure plugin), 
-            Joerg Dietrich [ctb, cph] (Leaflet.Terminator plugin), 
-            Benjamin Becquet [ctb, cph] (Leaflet.MagnifyingGlass plugin), 
-            Norkart AS [ctb, cph] (Leaflet.MiniMap plugin), 
-            L. Voogdt [ctb, cph] (Leaflet.awesome-markers plugin), 
-            Daniel Montague [ctb, cph] (Leaflet.EasyButton plugin), 
-            Kartena AB [ctb, cph] (Proj4Leaflet plugin), 
-            Robert Kajic [ctb, cph] (leaflet-locationfilter plugin), 
+        - leaflet, Copyright (c) Joe Cheng [aut, cre], Bhaskar Karambelkar [aut],
+            Yihui Xie [aut], Hadley Wickham [ctb], Kenton Russell [ctb], Kent Johnson [ctb],
+            Barret Schloerke [ctb], jQuery Foundation and contributors [ctb, cph] (jQuery library),
+            Vladimir Agafonkin [ctb, cph] (Leaflet library), CloudMade [cph] (Leaflet library),
+            Leaflet contributors [ctb] (Leaflet library),
+            Leaflet Providers contributors [ctb, cph] (Leaflet Providers plugin),
+            Brandon Copeland [ctb, cph] (leaflet-measure plugin),
+            Joerg Dietrich [ctb, cph] (Leaflet.Terminator plugin),
+            Benjamin Becquet [ctb, cph] (Leaflet.MagnifyingGlass plugin),
+            Norkart AS [ctb, cph] (Leaflet.MiniMap plugin),
+            L. Voogdt [ctb, cph] (Leaflet.awesome-markers plugin),
+            Daniel Montague [ctb, cph] (Leaflet.EasyButton plugin),
+            Kartena AB [ctb, cph] (Proj4Leaflet plugin),
+            Robert Kajic [ctb, cph] (leaflet-locationfilter plugin),
             Mapbox [ctb, cph] (leaflet-omnivore plugin), Michael Bostock [ctb, cph] (topojson), RStudio [cph]
         - png, Copyright (c) Simon Urbanek
         - raster, Copyright (c) Robert J. Hijmans [cre, aut], Jacob van Etten [ctb], Joe Cheng [ctb], Michael Sumner [ctb], Matteo Mattiuzzi [ctb], Jonathan A. Greenberg [ctb], Oscar Perpinan Lamigueiro [ctb], Andrew Bevan [ctb], Roger Bivand [ctb], Lorenzo Busetto [ctb], Mort Canty [ctb], David Forrest [ctb], Aniruddha Ghosh [ctb], Duncan Golicher [ctb], Josh Gray [ctb], Paul Hiemstra [ctb], Institute for Mathematics Applied Geosciences [cph], Charles Karney [ctb], Steven Mosher [ctb], Jakub Nowosad [ctb], Edzer Pebesma [ctb], Etienne B. Racine [ctb], Barry Rowlingson [ctb], Ashton Shortridge [ctb], Bill Venables [ctb], Rafael Wueest [ctb]
@@ -1773,7 +1773,7 @@ Public License instead of this License.  But first, please read
 
 -----------------------------------------------------------------------------
             The “2-Clause BSD License” (BSD-2-Clause)
-        applies to: 
+        applies to:
         - commonmark, Copyright (c) 2017 Jeroen Ooms [aut, cre], John MacFarlane [cph] (Author of cmark)
         - writexl, Copyright (c) 2017 Jeroen Ooms [aut, cre], John McNamara [cph] (Author of libxlsxwriter), Gilles Vollant, Mathias Svensson (authors of minizip), Niels Provos (author of tree.h)
         - leaflet.providers, Copyright (c) 2019 Leslie Huang [aut, cre], Leaflet Providers contributors [ctb, cph] (Leaflet Providers plugin), RStudio [cph, fnd]
@@ -1805,18 +1805,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -----------------------------------------------------------------------------
             The “3-Clause BSD License” (BSD-3-Clause)
-        applies to: 
+        applies to:
         - chroma, Copyright (c) 2011-2018, Gregor Aisch
         - sparkline, Copyright (c) Splunk, Inc 2012
         - stringi, Copyright (c) 2013-2018 Marek Gagolewski and other contributors
         - colorspace, Copyright (c) 2005-2018
             COPYRIGHT HOLDER: Ross Ihaka, Paul Murrell, Kurt Hornik, Jason C. Fisher, Reto Stauffer, Claus O. Wilke, Claire D. McWhite, Achim Zeileis
             ORGANIZATION: Ross Ihaka, Paul Murrell, Kurt Hornik, Jason C. Fisher, Reto Stauffer, Claus O. Wilke, Claire D. McWhite, Achim Zeileis
-        - yaml, Copyright (C) 2008-2018 
+        - yaml, Copyright (C) 2008-2018
                       COPYRIGHT HOLDER: Vanderbilt University Medical Center
                       ORGANIZATION: Vanderbilt University Medical Center
         - highlight.js, Copyright (c) 2006, Ivan Sagalaev
-        
+
 -----------------------------------------------------------------------------
 
 Redistribution and use in source and binary forms, with or without
@@ -1847,10 +1847,10 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -----------------------------------------------------------------------------
             The “BSL-1.0 License"
-        applies to: 
-        - BH, Copyright (c) 
-            Dirk Eddelbuettel, 
-            John W. Emerson and 
+        applies to:
+        - BH, Copyright (c)
+            Dirk Eddelbuettel,
+            John W. Emerson and
             Michael J. Kane
 -----------------------------------------------------------------------------
 
@@ -1879,10 +1879,10 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 -----------------------------------------------------------------------------
-            The “Apache License 2.0” 
-        applies to: 
+            The “Apache License 2.0”
+        applies to:
        - RColorBrewer, Copyright (c) Erich Neuwirth [aut, cre]
-       - utf8, Copyright (c) Patrick O. Perry [aut, cph, cre], 
+       - utf8, Copyright (c) Patrick O. Perry [aut, cph, cre],
             Unicode, Inc. [cph, dtc] (Unicode Character Database)
        - bootstrap-datepicker
        - selectize.js
@@ -2089,10 +2089,10 @@ DEALINGS IN THE SOFTWARE.
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
+
 -----------------------------------------------------------------------------
             The “Creative Commons 1.0 Universal License” (CC0 1.0 Universal)
-        applies to: 
+        applies to:
        - zip, Copyright (c) Gábor Csárdi, Kuba Podgórski, Rich Geldreich
 -----------------------------------------------------------------------------
 
@@ -2140,94 +2140,94 @@ copyright and related or neighboring rights ("Copyright and
 Related Rights"). Copyright and Related Rights include, but
 are not limited to, the following:
 
-i. the right to reproduce, adapt, distribute, perform, display, 
+i. the right to reproduce, adapt, distribute, perform, display,
 communicate, and translate a Work;
 ii. moral rights retained by the original author(s) and/or performer(s);
-iii. publicity and privacy rights pertaining to a person's 
+iii. publicity and privacy rights pertaining to a person's
 image or likeness depicted in a Work;
-iv. rights protecting against unfair competition in regards to a Work, 
+iv. rights protecting against unfair competition in regards to a Work,
 subject to the limitations in paragraph 4(a), below;
-v. rights protecting the extraction, dissemination, use and 
+v. rights protecting the extraction, dissemination, use and
 reuse of data in a Work;
-vi. database rights (such as those arising under Directive 96/9/EC 
-of the European Parliament and of the Council of 11 March 1996 
-on the legal protection of databases, and under any national 
-implementation thereof, including any amended or successor 
+vi. database rights (such as those arising under Directive 96/9/EC
+of the European Parliament and of the Council of 11 March 1996
+on the legal protection of databases, and under any national
+implementation thereof, including any amended or successor
 version of such directive); and
-vii. other similar, equivalent or corresponding rights 
-throughout the world based on applicable law or treaty, 
+vii. other similar, equivalent or corresponding rights
+throughout the world based on applicable law or treaty,
 and any national implementations thereof.
 
-2. Waiver. 
-To the greatest extent permitted by, but not in contravention of, 
-applicable law, Affirmer hereby overtly, fully, permanently, 
-irrevocably and unconditionally waives, abandons, and surrenders 
-all of Affirmer's Copyright and Related Rights and associated 
-claims and causes of action, whether now known or unknown (including 
-existing as well as future claims and causes of action), in the 
-Work (i) in all territories worldwide, (ii) for the maximum 
-duration provided by applicable law or treaty (including future 
-time extensions), (iii) in any current or future medium and for 
-any number of copies, and (iv) for any purpose whatsoever, 
-including without limitation commercial, advertising or promotional 
-purposes (the "Waiver"). Affirmer makes the Waiver for the benefit 
-of each member of the public at large and to the detriment of Affirmer's 
-heirs and successors, fully intending that such Waiver shall not be 
-subject to revocation, rescission, cancellation, termination, or any 
-other legal or equitable action to disrupt the quiet enjoyment of the 
-Work by the public as contemplated by Affirmer's express Statement 
+2. Waiver.
+To the greatest extent permitted by, but not in contravention of,
+applicable law, Affirmer hereby overtly, fully, permanently,
+irrevocably and unconditionally waives, abandons, and surrenders
+all of Affirmer's Copyright and Related Rights and associated
+claims and causes of action, whether now known or unknown (including
+existing as well as future claims and causes of action), in the
+Work (i) in all territories worldwide, (ii) for the maximum
+duration provided by applicable law or treaty (including future
+time extensions), (iii) in any current or future medium and for
+any number of copies, and (iv) for any purpose whatsoever,
+including without limitation commercial, advertising or promotional
+purposes (the "Waiver"). Affirmer makes the Waiver for the benefit
+of each member of the public at large and to the detriment of Affirmer's
+heirs and successors, fully intending that such Waiver shall not be
+subject to revocation, rescission, cancellation, termination, or any
+other legal or equitable action to disrupt the quiet enjoyment of the
+Work by the public as contemplated by Affirmer's express Statement
 of Purpose.
 
-3. Public License Fallback. 
-hould any part of the Waiver for any reason be judged legally invalid 
-or ineffective under applicable law, then the Waiver shall be preserved 
-to the maximum extent permitted taking into account Affirmer's express 
-Statement of Purpose. In addition, to the extent the Waiver is so 
-judged Affirmer hereby grants to each affected person a royalty-free, 
-non transferable, non sublicensable, non exclusive, irrevocable and 
-unconditional license to exercise Affirmer's Copyright and Related 
-Rights in the Work (i) in all territories worldwide, (ii) for the 
-maximum duration provided by applicable law or treaty (including future 
-time extensions), (iii) in any current or future medium and for any 
-number of copies, and (iv) for any purpose whatsoever, including without 
-limitation commercial, advertising or promotional purposes (the "License"). 
-The License shall be deemed effective as of the date CC0 was applied by 
-Affirmer to the Work. Should any part of the License for any reason be 
-judged legally invalid or ineffective under applicable law, such partial 
-invalidity or ineffectiveness shall not invalidate the remainder of the 
-License, and in such case Affirmer hereby affirms that he or she will 
-not (i) exercise any of his or her remaining Copyright and Related 
-Rights in the Work or (ii) assert any associated claims and causes 
-of action with respect to the Work, in either case contrary to 
+3. Public License Fallback.
+hould any part of the Waiver for any reason be judged legally invalid
+or ineffective under applicable law, then the Waiver shall be preserved
+to the maximum extent permitted taking into account Affirmer's express
+Statement of Purpose. In addition, to the extent the Waiver is so
+judged Affirmer hereby grants to each affected person a royalty-free,
+non transferable, non sublicensable, non exclusive, irrevocable and
+unconditional license to exercise Affirmer's Copyright and Related
+Rights in the Work (i) in all territories worldwide, (ii) for the
+maximum duration provided by applicable law or treaty (including future
+time extensions), (iii) in any current or future medium and for any
+number of copies, and (iv) for any purpose whatsoever, including without
+limitation commercial, advertising or promotional purposes (the "License").
+The License shall be deemed effective as of the date CC0 was applied by
+Affirmer to the Work. Should any part of the License for any reason be
+judged legally invalid or ineffective under applicable law, such partial
+invalidity or ineffectiveness shall not invalidate the remainder of the
+License, and in such case Affirmer hereby affirms that he or she will
+not (i) exercise any of his or her remaining Copyright and Related
+Rights in the Work or (ii) assert any associated claims and causes
+of action with respect to the Work, in either case contrary to
 Affirmer's express Statement of Purpose.
 
 4. Limitations and Disclaimers.
 
-a. No trademark or patent rights held by Affirmer are waived, abandoned, 
+a. No trademark or patent rights held by Affirmer are waived, abandoned,
 surrendered, licensed or otherwise affected by this document.
-b. Affirmer offers the Work as-is and makes no representations or 
-warranties of any kind concerning the Work, express, implied, statutory 
-or otherwise, including without limitation warranties of title, 
-merchantability, fitness for a particular purpose, non infringement, 
-or the absence of latent or other defects, accuracy, or the present 
-or absence of errors, whether or not discoverable, all to the greatest 
+b. Affirmer offers the Work as-is and makes no representations or
+warranties of any kind concerning the Work, express, implied, statutory
+or otherwise, including without limitation warranties of title,
+merchantability, fitness for a particular purpose, non infringement,
+or the absence of latent or other defects, accuracy, or the present
+or absence of errors, whether or not discoverable, all to the greatest
 extent permissible under applicable law.
-c. Affirmer disclaims responsibility for clearing rights of other 
-persons that may apply to the Work or any use thereof, including 
-without limitation any person's Copyright and Related Rights in the 
-Work. Further, Affirmer disclaims responsibility for obtaining any 
-necessary consents, permissions or other rights required for any use 
+c. Affirmer disclaims responsibility for clearing rights of other
+persons that may apply to the Work or any use thereof, including
+without limitation any person's Copyright and Related Rights in the
+Work. Further, Affirmer disclaims responsibility for obtaining any
+necessary consents, permissions or other rights required for any use
 of the Work.
-d. Affirmer understands and acknowledges that Creative Commons is not 
-a party to this document and has no duty or obligation with respect 
+d. Affirmer understands and acknowledges that Creative Commons is not
+a party to this document and has no duty or obligation with respect
 to this CC0 or use of the Work.
 
 -----------------------------------------------------------------------------
             The “MPL-2.0 License”
-        applies to: 
-        - data.table, Copyright (c) Matt Dowle [aut, cre], Arun Srinivasan [aut], 
-            Jan Gorecki [ctb], Michael Chirico [ctb], Pasha Stetsenko [ctb], 
-            Tom Short [ctb], Steve Lianoglou [ctb], Eduard Antonyan [ctb], 
+        applies to:
+        - data.table, Copyright (c) Matt Dowle [aut, cre], Arun Srinivasan [aut],
+            Jan Gorecki [ctb], Michael Chirico [ctb], Pasha Stetsenko [ctb],
+            Tom Short [ctb], Steve Lianoglou [ctb], Eduard Antonyan [ctb],
             Markus Bonsch [ctb], Hugh Parsonage [ctb]
 -----------------------------------------------------------------------------
 
@@ -2268,7 +2268,7 @@ Mozilla Public License Version 2.0
     means any form of the work other than Source Code Form.
 
 1.7. "Larger Work"
-    means a work that combines Covered Software with other material, in 
+    means a work that combines Covered Software with other material, in
     a separate file or files, that is not Covered Software.
 
 1.8. "License"
@@ -2604,9 +2604,9 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
   This Source Code Form is "Incompatible With Secondary Licenses", as
   defined by the Mozilla Public License, v. 2.0.
-  
 
-  
+
+
 Source Sans Pro Font
 ----------------------------------------------------------------------
 
@@ -2695,7 +2695,7 @@ COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
 DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
-OTHER DEALINGS IN THE FONT SOFTWARE.  
+OTHER DEALINGS IN THE FONT SOFTWARE.
 
 
 -----------------------------------------------------------------------------

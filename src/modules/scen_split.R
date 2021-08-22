@@ -1,8 +1,8 @@
 resetCompTabset <- function(tabsetId){
-  updateTabsetPanel(session, paste0("contentScen_", tabsetId), 
+  updateTabsetPanel(session, paste0("contentScen_", tabsetId),
                     paste0("contentScen_", tabsetId, "_1"))
   if(isGroupOfSheets[[1]]){
-    updateTabsetPanel(session, paste0("contentScen_", tabsetId, "_1"), 
+    updateTabsetPanel(session, paste0("contentScen_", tabsetId, "_1"),
                       paste0("contentScen_", tabsetId, "_1_1"))
   }
 }
@@ -23,7 +23,7 @@ observeEvent(input$btSplitView, {
 observeEvent(input$btScenSplit1_open, {
   flog.debug("Load Scenario button clicked (left box in split view).")
   loadInLeftBoxSplit <<- TRUE
-  
+
   updateTabsetPanel(session, "contentScen_2", "contentScen_2_1")
   if(isGroupOfSheets[[1]]){
     updateTabsetPanel(session, "contentScen_2_1", "contentScen_2_1_1")
@@ -33,7 +33,7 @@ observeEvent(input$btScenSplit1_open, {
 observeEvent(input$btScenSplit2_open, {
   flog.debug("Load Scenario button clicked (right box in split view).")
   loadInLeftBoxSplit <<- FALSE
-  
+
   updateTabsetPanel(session, "contentScen_3", "contentScen_3_1")
   if(isGroupOfSheets[[1]]){
     updateTabsetPanel(session, "contentScen_3_1", "contentScen_3_1_1")
@@ -61,7 +61,7 @@ loadSandboxScen <- function(scenId, refresh = FALSE){
   renderScenInCompMode(scenId, refreshData = refresh)
   # load script results
   if(length(config$scripts$base)){
-    scriptOutput$loadResultsBase(scriptOutput$getResults(), 
+    scriptOutput$loadResultsBase(scriptOutput$getResults(),
                                  scenId = scenId)
   }
 }
@@ -70,7 +70,7 @@ observeEvent(input$loadActiveScenSplitComp, {
     flog.error("Load sandbox scenario button in split compare mode clicked while in Hypercube mode. This should never happen and is likely an attempt to tamper with the app!")
     return()
   }
-  flog.debug("Load sandbox scenario to split comparison mode clicked ID: '%s'.", 
+  flog.debug("Load sandbox scenario to split comparison mode clicked ID: '%s'.",
              isolate(input$loadActiveScenSplitComp))
   id <- suppressWarnings(as.integer(isolate(input$loadActiveScenSplitComp)))
   showEl(session, "#loading-screen")
@@ -90,7 +90,7 @@ observeEvent(input$loadActiveScenSplitComp, {
                generateScenarioTabsetSplit(3), immediate = TRUE)
     }
   }else{
-    flog.error("Button ID (load active scenario to split comp) has invalid value: '%s'. This should never happen! 
+    flog.error("Button ID (load active scenario to split comp) has invalid value: '%s'. This should never happen!
                User most likely tried to tamper with the app.", isolate(input$loadActiveScenSplitComp))
     return()
   }
@@ -103,7 +103,7 @@ closeScenSplitBox <- function(tabsetId){
   }
   views$clearConf(tabsetIdChar)
   scenData$clear(if(identical(tabsetId, 2L)) "cmpSplitL" else "cmpSplitR")
-  
+
   # show button and hide content
   resetCompTabset(tabsetIdChar)
   hideEl(session, paste0("#cmpScenTitle_", tabsetIdChar))

@@ -10,10 +10,10 @@ keywordsNoImport <- c("noImport")
 keywordsNoMustImport <- c("slider", "dropdown", "date", "daterange", "checkbox", "textinput", "numericinput",
                           "noImport")
 # list of return value/keyword pairs that define input data type (example: "hot" = "columns")
-keywordsType <- list("custom" = "rendererName", "dt" = "dtHeaders", "hot" = "headers", "slider" = "slider", 
-                     "dropdown" = "dropdown", "dropdowne" = "dropdowne", "daterange" = "daterange", 
+keywordsType <- list("custom" = "rendererName", "dt" = "dtHeaders", "hot" = "headers", "slider" = "slider",
+                     "dropdown" = "dropdown", "dropdowne" = "dropdowne", "daterange" = "daterange",
                      "date" = "date", "checkbox" = "checkbox", "textinput" = "textinput", "numericinput" = "numericinput")
-listOfOperators <- list("count" = "card", "max" = "max", "min" = "min", 
+listOfOperators <- list("count" = "card", "max" = "max", "min" = "min",
                         "mean" = "mean", "median" = "median", "var" = "var", "sd" = "sd")
 
 # scenario code mapping
@@ -36,7 +36,7 @@ slocktimeLimit <- 3600
 logFileDir <- paste0("logs", .Platform$file.sep)
 # specify the logging level (["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"])
 loggingLevel <- Sys.getenv("MIRO_LOG_LEVEL", "TRACE")
-# maximum number ofscenarios that can be displayed at the same time 
+# maximum number ofscenarios that can be displayed at the same time
 # (used in loop for observeEvent remove/save buttons)
 maxNumberScenarios <- 50
 # maximum number of scenarios that can be displayed in dropdown menu
@@ -60,14 +60,14 @@ prefixDDPar  <- "_gmspar_"
 prefixGMSOpt <- "_gmsopt_"
 reservedGMSOpt <- c("idir1", "trace", "traceopt", "curdir")
 
-# strings that indicate the value of a command line parameter should not 
+# strings that indicate the value of a command line parameter should not
 # be communicated with GAMS (will be unset)
 CLARG_MISSING_VALUES <- c("_", "system.empty", "")
 
 miroLanguage <- Sys.getenv("MIRO_LANG", "en")
 # get maximum number of lines to read for files
 maxSizeToRead <- 5e5
-# Limits on external programs that are allowed to be executed 
+# Limits on external programs that are allowed to be executed
 # (0 -> all allowed, 4 -> no shell calls, echo, put etc.) [0,4]
 gamsExecMode <- 0L
 
@@ -131,9 +131,9 @@ GAMSRCMAP <- c(
   '-100' = "Model execution timed out",
   '-15' = "Model execution was interrupted",
   '-9' = "Model execution was interrupted",
-  '1' = "Solver is to be called, the system should never return this number", 
-  '2' = "There was a compilation error", 
-  '3' = "There was an execution error", 
+  '1' = "Solver is to be called, the system should never return this number",
+  '2' = "There was a compilation error",
+  '3' = "There was an execution error",
   '4' = "System limits were reached",
   '5' = "There was a file error",
   '6' = "There was a parameter error",
@@ -184,4 +184,3 @@ GAMSRCMAP <- c(
   '126' = "Driver error: internal error: cannot load option handling library",
   '5000' = "Driver error: internal error: cannot load option handling library"
 )
-

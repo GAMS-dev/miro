@@ -26,4 +26,3 @@ renderChartjs(expr, env = parent.frame(), quoted = FALSE)
 \description{
 Shiny bindings for chartjs
 }
-

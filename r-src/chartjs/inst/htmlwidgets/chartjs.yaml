@@ -9,4 +9,3 @@ dependencies:
     src: htmlwidgets
     stylesheet:
       - chartjs.css
-

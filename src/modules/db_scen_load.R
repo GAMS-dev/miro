@@ -7,7 +7,7 @@ checkIfInputDataExists <- function(){
       return(FALSE)
     }
   }, logical(1), USE.NAMES = FALSE)
-  
+
   if(any(inputDatasetsExist)){
     hideEl(session, "#importDataTabset")
     showEl(session, "#btOverwriteScen")
@@ -26,22 +26,22 @@ observeEvent(input$selLoadScenTags, {
   desc <- if(btSortNameDesc || btSortTimeDesc) TRUE else FALSE
   if(!length(input$selLoadScenTags)){
     if(length(scenMetaDb) && nrow(scenMetaDb) > maxNoScenToShow){
-      scenMetaDbSubset <<- scenMetaDb[order(scenMetaDb[[oderByIdentifier]], 
+      scenMetaDbSubset <<- scenMetaDb[order(scenMetaDb[[oderByIdentifier]],
                                             decreasing = desc), ][seq_len(maxNoScenToShow), ]
       showHideEl(session, "#importScenMaxNoScen", 4000L)
     }else{
       scenMetaDbSubset <<- scenMetaDb
     }
-    updateSelectInput(session, "selLoadScen", 
-                      choices = formatScenList(scenMetaDbSubset, uid, oderByIdentifier, 
+    updateSelectInput(session, "selLoadScen",
+                      choices = formatScenList(scenMetaDbSubset, uid, oderByIdentifier,
                                                desc = desc),
                       selected = input$selLoadScen)
     return()
   }
   scenMetaDbSubset <<- scenMetaDb[vapply(scenMetaDb[["_stag"]], function(tags){
     any(csv2Vector(tags) %in% input$selLoadScenTags)}, logical(1L), USE.NAMES = FALSE), ]
-  updateSelectInput(session, "selLoadScen", 
-                    choices = formatScenList(scenMetaDbSubset, uid, 
+  updateSelectInput(session, "selLoadScen",
+                    choices = formatScenList(scenMetaDbSubset, uid,
                                              oderByIdentifier, desc = desc),
                     selected = input$selLoadScen)
 }, ignoreNULL = FALSE)
@@ -109,7 +109,7 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
     uiSidList <- integer()
     includeSandboxScen <- identical(currentCompMode, "tab")
   }
-  
+
   maxNoScenExceeded <- FALSE
   dbTagList <- scenMetaDb[["_stag"]]
   dbTagList <- csv2Vector(dbTagList[dbTagList != ""])
@@ -152,7 +152,7 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
     }
   }
   if(nrow(scenMetaDb) > maxNoScenToShow){
-    scenMetaDbSubset <<- scenMetaDb[order(scenMetaDb[["_stime"]], 
+    scenMetaDbSubset <<- scenMetaDb[order(scenMetaDb[["_stime"]],
                                           decreasing = TRUE), ][seq_len(maxNoScenToShow), ]
     maxNoScenExceeded <- TRUE
   }else{
@@ -167,58 +167,58 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
     if(maxNoScenExceeded)
       showHideEl(session, "#importScenMaxNoScen", 4000L)
   }else{
-    return(showErrorMsg(lang$nav$dialogLoadScen$titleNoScen, 
+    return(showErrorMsg(lang$nav$dialogLoadScen$titleNoScen,
                         lang$nav$dialogLoadScen$descNoScen))
   }
 })
 
 # sort by name
 observeEvent(input$btSortName, {
-  flog.debug("Button to sort scenarios by name clicked (%s).", 
+  flog.debug("Button to sort scenarios by name clicked (%s).",
              if(btSortNameDesc) "ascending order" else "descending order")
   removeClassEl(session, "#btSortTime", "scen-sort-by-selected")
   addClassEl(session, "#btSortName", "scen-sort-by-selected")
   btSortTime <<- FALSE
   if(btSortNameDesc){
-    updateSelectInput(session, "selLoadScen", 
-                      choices = formatScenList(scenMetaDbSubset, 
-                                               uid, "_sname", 
+    updateSelectInput(session, "selLoadScen",
+                      choices = formatScenList(scenMetaDbSubset,
+                                               uid, "_sname",
                                                desc = FALSE))
-    updateActionButton(session, "btSortName", 
-                       label = lang$nav$dialogLoadScen$btSortNameDESC, 
+    updateActionButton(session, "btSortName",
+                       label = lang$nav$dialogLoadScen$btSortNameDESC,
                        icon = icon("sort-alpha-down-alt"))
     btSortNameDesc <<- FALSE
   }else{
-    updateSelectInput(session, "selLoadScen", 
-                      choices = formatScenList(scenMetaDbSubset, 
+    updateSelectInput(session, "selLoadScen",
+                      choices = formatScenList(scenMetaDbSubset,
                                                uid, "_sname", desc = TRUE))
-    updateActionButton(session, "btSortName", 
-                       label = lang$nav$dialogLoadScen$btSortNameASC, 
+    updateActionButton(session, "btSortName",
+                       label = lang$nav$dialogLoadScen$btSortNameASC,
                        icon = icon("sort-alpha-down"))
     btSortNameDesc <<- TRUE
   }
-  
+
 })
 # sort by time
 observeEvent(input$btSortTime, {
-  flog.debug("Button to sort scenarios by time clicked (%s).", 
+  flog.debug("Button to sort scenarios by time clicked (%s).",
              if(btSortTimeDesc) "ascending order" else "descending order")
   removeClassEl(session, "#btSortName", "scen-sort-by-selected")
   addClassEl(session, "#btSortTime", "scen-sort-by-selected")
   btSortTime <<- TRUE
   if(btSortTimeDesc){
-    updateSelectInput(session, "selLoadScen", 
-                      choices = formatScenList(scenMetaDbSubset, 
+    updateSelectInput(session, "selLoadScen",
+                      choices = formatScenList(scenMetaDbSubset,
                                                uid, "_stime", desc = FALSE))
-    updateActionButton(session, "btSortTime", 
-                       label = lang$nav$dialogLoadScen$btSortTimeDESC, 
+    updateActionButton(session, "btSortTime",
+                       label = lang$nav$dialogLoadScen$btSortTimeDESC,
                        icon = icon("sort-numeric-down-alt"))
     btSortTimeDesc <<- FALSE
   }else{
     updateSelectInput(session, "selLoadScen", choices = formatScenList(
       scenMetaDbSubset, uid, "_stime", desc = TRUE))
-    updateActionButton(session, "btSortTime", 
-                       label = lang$nav$dialogLoadScen$btSortTimeASC, 
+    updateActionButton(session, "btSortTime",
+                       label = lang$nav$dialogLoadScen$btSortTimeASC,
                        icon = icon("sort-numeric-down"))
     btSortTimeDesc <<- TRUE
   }
@@ -285,7 +285,7 @@ observeEvent(input$btRefreshComp, {
   if(length(sidsToLoad)){
     inputDataSids <- scenData$getInputDataSids(sidsToLoad)
     inputDataSids[is.na(inputDataSids)] <- sidsToLoad[is.na(inputDataSids)]
-    views$loadConf(db$importDataset(tableName = "_scenViews", 
+    views$loadConf(db$importDataset(tableName = "_scenViews",
                                     subsetSids = inputDataSids), FALSE,
                    tabsetId, inputDataSids)
   }
@@ -318,7 +318,7 @@ observeEvent(input$btLoadScenConfirm, {
   }
   loadIntoSandbox <<- FALSE
   sidsToLoad  <<- lapply(strsplit(scenSelected, split = "_", fixed = TRUE), '[[', 1)
-  
+
   # if in comparison mode skip input data check
   if(!isInSolveMode){
     rv$btOverwriteScen <<- rv$btOverwriteScen + 1L
@@ -404,9 +404,9 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     sidsToLoad <<- c("sb", sidsToLoad)
   }
   sidsToLoadVector <- unlist(sidsToLoad, use.names = FALSE)
-  
+
   if(sum(!occupiedSidSlots) < length(sidsToLoad)){
-    flog.info("Maximum number of scenarios in scenario comparison mode reached (%d).", 
+    flog.info("Maximum number of scenarios in scenario comparison mode reached (%d).",
               length(occupiedSidSlots))
     return(showErrorMsg(lang$errMsg$maxScen$title, lang$errMsg$maxScen$desc))
   }
@@ -516,7 +516,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           inputDataSids <- scenData$getInputDataSids(sidsToLoadVector)
           inputDataSids[is.na(inputDataSids)] <- sidsToLoadVector[is.na(inputDataSids)]
         }
-        views$loadConf(db$importDataset(tableName = "_scenViews", 
+        views$loadConf(db$importDataset(tableName = "_scenViews",
                                         subsetSids = inputDataSids), isInSolveMode,
                        viewsSids, inputDataSids)
       }
@@ -525,14 +525,14 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
                               scriptDataTmp, sandboxId - 1)
     }
   }, error = function(e){
-    flog.error("Some error occurred loading scenarios: '%s' from database. Error message: %s.", 
+    flog.error("Some error occurred loading scenarios: '%s' from database. Error message: %s.",
                paste(sidsToLoad, collapse = ", "), conditionMessage(e))
     errMsg <<- lang$errMsg$loadScen$desc
   })
   if(is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))){
     return()
   }
-  
+
   if(isInSolveMode){
     # close currently opened scenario
     resetWidgetsOnClose <<- FALSE
@@ -560,7 +560,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
                          type = "warning")
       }
     }
-    
+
     # check whether all input datasets were imported
     if(length(inputDsNames)){
       scenInputData <- scenData$get("sb", symNames = inputDsNames)
@@ -570,17 +570,17 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     if(length(inputDsNames) != length(scenInputData)){
       flog.error("Length of data provided (%d) does not match the number of input sheets (%d).",
                  length(scenInputData), length(inputDsNames))
-      return(showErrorMsg(lang$nav$dialogLoadScen$titleDataError, 
+      return(showErrorMsg(lang$nav$dialogLoadScen$titleDataError,
                           lang$nav$dialogLoadScen$descDataError))
     }
     names(scenInputData) <- inputDsNames
-    
+
     if(scalarsFileName %in% inputDsNames){
       scalarDataset <- scenInputData[[length(scenInputData)]]
     }else{
       scalarDataset <- NULL
     }
-    
+
     errMsg    <-  NULL
     loadMode  <-  "scen"
     newInputCount <- 0L
@@ -590,7 +590,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     if(is.null(errMsg) && isFALSE(suppressCloseModalLocal)){
       removeModal()
     }
-    
+
     if(LAUNCHHCUBEMODE){
       noOutputData <<- TRUE
     }else{
@@ -598,15 +598,15 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       noOutputData <<- !scenData$getSandboxHasOutputData(scriptOutput)
       # rendering tables and graphs
       renderOutputData()
-      
+
       # load script results
       if(length(config$scripts$base)){
         scriptOutput$loadResultsBase(scriptDataTmp[[1]])
       }
     }
-    
+
     if(loadIntoSandbox){
-      flog.debug("Scenario data from a scenario with id: '%s' was loaded into sandbox.", 
+      flog.debug("Scenario data from a scenario with id: '%s' was loaded into sandbox.",
                  sidsToLoad[[1]])
       markUnsaved()
     }else{
@@ -618,7 +618,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     return()
   }
   # scenario comparison mode
-  
+
   if(identical(currentCompMode, "pivot")){
     if(!dynamicUILoaded$compareModeTabsets[3]){
       dynamicUILoaded$compareModeTabsets[3] <<- TRUE
@@ -633,7 +633,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       isInRefreshMode <<- TRUE
       enableEl(session, "#btClosePivotComp")
       removeModal()
-      flog.debug("Scenarios: '%s' loaded and rendered in scenario comparison mode (pivot view).", 
+      flog.debug("Scenarios: '%s' loaded and rendered in scenario comparison mode (pivot view).",
                  paste(sidsToLoad, collapse = ", "))
     }, error = function(e){
       flog.warn("Problems rendering scenarios in pivot compare mode. Error message: %s", conditionMessage(e))
@@ -643,7 +643,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   # split/tab comparison mode
   errMsg <- NULL
   lastImportedTabsetId <- NULL
-  
+
   lapply(seq_along(sidsToLoad), function(i){
     tryCatch({
       refIdToLoad <- NULL
@@ -673,7 +673,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         if(!identical(sidsToLoad[[i]], "sb")){
           inputDataSids <- scenData$getInputDataSids(sidsToLoad[[i]])
           inputDataSids[is.na(inputDataSids)] <- sidsToLoad[[i]][is.na(inputDataSids)]
-          views$loadConf(db$importDataset(tableName = "_scenViews", 
+          views$loadConf(db$importDataset(tableName = "_scenViews",
                                           subsetSids = inputDataSids), FALSE,
                          viewsSids[[i]], inputDataSids)
         }
@@ -687,7 +687,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       flog.error(e)
       errMsg  <<- lang$errMsg$loadScen$desc
     })
-    
+
     flog.debug("Scenario: '%s' loaded into UI (compare mode).", sidsToLoad[[i]])
     if(identical(currentCompMode, "tab")){
       lastImportedTabsetId <<- scenId
@@ -702,9 +702,9 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   if(is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))){
     return()
   }
-  
+
   removeModal()
-  flog.debug("Scenarios: '%s' loaded and rendered in scenario comparison mode.", 
+  flog.debug("Scenarios: '%s' loaded and rendered in scenario comparison mode.",
              paste(sidsToLoad, collapse = ", "))
   return()
 })
@@ -721,13 +721,13 @@ if(LAUNCHHCUBEMODE){
         scenMetaDbBase <<- db$fetchScenList(scode = SCODEMAP[['scen']])
         if(length(scenMetaDbBase) && nrow(scenMetaDbBase)){
           if(nrow(scenMetaDbBase) > maxNoScenToShow){
-            scenMetaDbBaseSubset <<- scenMetaDbBase[order(scenMetaDbBase[["_stime"]], 
+            scenMetaDbBaseSubset <<- scenMetaDbBase[order(scenMetaDbBase[["_stime"]],
                                                           decreasing = TRUE), ][seq_len(maxNoScenToShow), ]
             showHideEl(session, "#importScenMaxNoScen", 4000L)
           }else{
             scenMetaDbBaseSubset <<- scenMetaDbBase
           }
-          scenMetaDbBaseList    <<- formatScenList(scenMetaDbBaseSubset, uid, 
+          scenMetaDbBaseList    <<- formatScenList(scenMetaDbBaseSubset, uid,
                                                    "_stime", desc = TRUE)
           scenMetaDbBaseTagList <<- csv2Vector(scenMetaDbBase[["_stag"]])
         }else{
@@ -738,7 +738,7 @@ if(LAUNCHHCUBEMODE){
       updateSelectInput(session, "selLoadScen_base",
                         choices = scenMetaDbBaseList)
       if(length(scenMetaDbBaseTagList)){
-        updateSelectInput(session, "selLoadScenTags_base", 
+        updateSelectInput(session, "selLoadScenTags_base",
                           choices = scenMetaDbBaseTagList)
       }else{
         hideEl(session, "#selLoadScenTagsDiv_base")
@@ -756,70 +756,70 @@ if(LAUNCHHCUBEMODE){
     desc <- if(btSortNameDesc || btSortTimeDesc) TRUE else FALSE
     if(!length(input$selLoadScenTags_base)){
       if(length(scenMetaDbBase) && nrow(scenMetaDbBase) > maxNoScenToShow){
-        scenMetaDbBaseSubset <<- scenMetaDbBase[order(scenMetaDbBase[[oderByIdentifier]], 
+        scenMetaDbBaseSubset <<- scenMetaDbBase[order(scenMetaDbBase[[oderByIdentifier]],
                                                       decreasing = desc), ][seq_len(maxNoScenToShow), ]
         showHideEl(session, "#importScenMaxNoScen", 4000L)
       }else{
         scenMetaDbBaseSubset <<- scenMetaDbBase
       }
-      updateSelectInput(session, "selLoadScen_base", 
-                        choices = formatScenList(scenMetaDbBaseSubset, oderByIdentifier, uid, 
+      updateSelectInput(session, "selLoadScen_base",
+                        choices = formatScenList(scenMetaDbBaseSubset, oderByIdentifier, uid,
                                                  desc = desc))
       return()
     }
     scenMetaDbBaseSubset <<- scenMetaDbBase[vapply(scenMetaDbBase[["_stag"]], function(tags){
       any(csv2Vector(tags) %in% input$selLoadScenTags_base)}, logical(1L), USE.NAMES = FALSE), ]
-    updateSelectInput(session, "selLoadScen_base", 
-                      choices = formatScenList(scenMetaDbBaseSubset, uid, 
+    updateSelectInput(session, "selLoadScen_base",
+                      choices = formatScenList(scenMetaDbBaseSubset, uid,
                                                oderByIdentifier, desc = desc))
   }, ignoreNULL = FALSE)
   # sort by name
   observeEvent(input$btSortName_base, {
-    flog.debug("Button to sort base mode scenarios by name clicked (%s).", 
+    flog.debug("Button to sort base mode scenarios by name clicked (%s).",
                if(btSortNameDescBase) "ascending order" else "descending order")
     removeClassEl(session, "#btSortTime_base", "scen-sort-by-selected")
     addClassEl(session, "#btSortName_base", "scen-sort-by-selected")
     btSortTime <<- FALSE
     if(btSortNameDescBase){
-      updateSelectInput(session, "selLoadScen_base", 
-                        choices = formatScenList(scenMetaDbBaseSubset, uid, 
-                                                 "_sname", 
+      updateSelectInput(session, "selLoadScen_base",
+                        choices = formatScenList(scenMetaDbBaseSubset, uid,
+                                                 "_sname",
                                                  desc = FALSE))
-      updateActionButton(session, "btSortName_base", 
-                         label = lang$nav$dialogLoadScen$btSortNameDESC, 
+      updateActionButton(session, "btSortName_base",
+                         label = lang$nav$dialogLoadScen$btSortNameDESC,
                          icon = icon("sort-alpha-down-alt"))
       btSortNameDescBase <<- FALSE
     }else{
-      updateSelectInput(session, "selLoadScen_base", 
-                        choices = formatScenList(scenMetaDbBaseSubset, uid, 
+      updateSelectInput(session, "selLoadScen_base",
+                        choices = formatScenList(scenMetaDbBaseSubset, uid,
                                                  "_sname", desc = TRUE))
-      updateActionButton(session, "btSortName_base", 
-                         label = lang$nav$dialogLoadScen$btSortNameASC, 
+      updateActionButton(session, "btSortName_base",
+                         label = lang$nav$dialogLoadScen$btSortNameASC,
                          icon = icon("sort-alpha-down"))
       btSortNameDescBase <<- TRUE
     }
-    
+
   })
   # sort by time
   observeEvent(input$btSortTime_base, {
-    flog.debug("Button to sort base mode scenarios by time clicked (%s).", 
+    flog.debug("Button to sort base mode scenarios by time clicked (%s).",
                if(btSortTimeDescBase) "ascending order" else "descending order")
     removeClassEl(session, "#btSortName_base", "scen-sort-by-selected")
     addClassEl(session, "#btSortTime_base", "scen-sort-by-selected")
     btSortTime <<- TRUE
     if(btSortTimeDescBase){
-      updateSelectInput(session, "selLoadScen_base", 
-                        choices = formatScenList(scenMetaDbBaseSubset, uid, 
+      updateSelectInput(session, "selLoadScen_base",
+                        choices = formatScenList(scenMetaDbBaseSubset, uid,
                                                  "_stime", desc = FALSE))
-      updateActionButton(session, "btSortTime_base", 
-                         label = lang$nav$dialogLoadScen$btSortTimeDESC, 
+      updateActionButton(session, "btSortTime_base",
+                         label = lang$nav$dialogLoadScen$btSortTimeDESC,
                          icon = icon("sort-numeric-down-alt"))
       btSortTimeDescBase <<- FALSE
     }else{
       updateSelectInput(session, "selLoadScen_base", choices = formatScenList(
         scenMetaDbBaseSubset, uid, "_stime", desc = TRUE))
-      updateActionButton(session, "btSortTime_base", 
-                         label = lang$nav$dialogLoadScen$btSortTimeASC, 
+      updateActionButton(session, "btSortTime_base",
+                         label = lang$nav$dialogLoadScen$btSortTimeASC,
                          icon = icon("sort-numeric-down"))
       btSortTimeDescBase <<- TRUE
     }
@@ -831,8 +831,8 @@ if(LAUNCHHCUBEMODE){
     if(!length(scenSelected)){
       return()
     }
-    sidsToLoad  <<- lapply(regmatches(scenSelected, 
-                                      regexpr("_", scenSelected), 
+    sidsToLoad  <<- lapply(regmatches(scenSelected,
+                                      regexpr("_", scenSelected),
                                       invert = TRUE), '[[', 1)
     checkIfInputDataExists()
   })
@@ -841,7 +841,7 @@ if(LAUNCHHCUBEMODE){
   observeEvent(input$hcHashLookup, {
     flog.debug("Look up Hypercube scenario by hash value button clicked.")
     hashVal <- isolate(input$hcHashLookup)
-    if(!identical(nchar(hashVal), 64L) || 
+    if(!identical(nchar(hashVal), 64L) ||
        identical(grepl("^[A-Fa-f0-9]{64}$", hashVal)[[1L]], FALSE)){
       return()
     }
@@ -849,10 +849,10 @@ if(LAUNCHHCUBEMODE){
     on.exit(hideEl(session, "#hcHashLookup_load"))
     noErr <- TRUE
     tryCatch({
-      matchingScen <- db$importDataset("_scenMeta", 
+      matchingScen <- db$importDataset("_scenMeta",
                                        colNames = c("_sid", "_stag", "_stime"),
                                        tibble(c("_sname",
-                                                "_scode"), 
+                                                "_scode"),
                                               c(hashVal, SCODEMAP[['scen']]), c("=", ">")))
     }, error = function(e){
       flog.error("Problems fetching scenario metadata from database. Error message: '%s'.",

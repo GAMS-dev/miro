@@ -39,10 +39,10 @@ test_that("Generating hashes works", {
   inDataInst$addFilePaths(file.path(getwd(), "..", "data", c("bad-views.json", "pickstock_negative_price.gdx")))
   expectedHash <- "2d325cdb5b8b3866643fa12c1d74aa050536ce7ed3195b85cd092b5baff0e0a8"
   expect_identical(inDataInst$generateScenHash(), expectedHash)
-  
+
   # order of cl args should not matter
   shuffledRows <- sample(nrow(clArgsDf))
-  
+
   inDataInst <- InputDataInstance$new()
   inDataInst$push("maptest", tibble(i = "i1", j = "j1", value = 1.2345))
   inDataInst$push("price", priceDf)
@@ -50,7 +50,7 @@ test_that("Generating hashes works", {
   inDataInst$addFilePaths(file.path(getwd(), "..", "data", c("pickstock_negative_price.gdx", "bad-views.json")))
   inDataInst$pushClArgs(clArgsDf[shuffledRows, ])
   expect_identical(inDataInst$generateScenHash(), expectedHash)
-  
+
   # order of non-cl args SHOULD matter
   inDataInst <- InputDataInstance$new()
   inDataInst$push("price", priceDf)
@@ -59,7 +59,6 @@ test_that("Generating hashes works", {
   inDataInst$pushClArgs(clArgsDf)
   inDataInst$addFilePaths(file.path(getwd(), "..", "data", c("bad-views.json", "pickstock_negative_price.gdx")))
   expect_true(!identical(inDataInst$generateScenHash(), expectedHash))
-  
+
   expect_identical(inDataInst$get("price"), priceDf)
 })
-

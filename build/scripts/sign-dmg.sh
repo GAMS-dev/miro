@@ -9,23 +9,23 @@
 if [ -z "$1" ]; then
     echo "Please provide directory path as first argument"
     exit 1
-fi 
+fi
 if [ ! -d "$1"  ]; then
     echo "Directory $1 does not exist"
     exit 1
-fi 
+fi
 if [ -z "$2" ]; then
     echo "Please provide codesign identity as second argument"
     exit 1
-fi 
+fi
 if [ -z "$3" ]; then
     echo "Please provide entitlements file as third argument"
     exit 1
-fi 
+fi
 if [ ! -f "$3"  ]; then
     echo "Entitlements file $3 does not exist"
     exit 1
-fi 
+fi
 
 find "$1/Frameworks" -type f \( -name "*.so" -o -name "*.dylib" \) -exec sh -c "file '{}' \; | grep -q -e 'library x86_64\|bundle x86_64'" \; -print0 | \
    xargs -0 codesign --sign "$2" --force -v --timestamp || exit 1

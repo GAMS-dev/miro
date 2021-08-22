@@ -45,11 +45,11 @@ Sys.sleep(0.5)
 app$setInputs(batchLoadResults_rows_selected = scenToCompare, allowInputNoBinding_ = TRUE)
 app$setInputs(hcubeLoadSelected = "click")
 Sys.sleep(2L)
-multiDimSym <- c("stock_weight", "dowvsindex", "abserror", "pricemerge", "schedule", 
-                 "mapnogroup", "gantt", "repc", "pressurethickness", "hovercraft", 
+multiDimSym <- c("stock_weight", "dowvsindex", "abserror", "pricemerge", "schedule",
+                 "mapnogroup", "gantt", "repc", "pressurethickness", "hovercraft",
                  "price", "maptest")
-scalarSym <- c("error_train", "error_test", "error_ratio", "maxstock", 
-               "trainingdays", "firstdaytraining", "lastdaytraining", "solver", 
+scalarSym <- c("error_train", "error_test", "error_ratio", "maxstock",
+               "trainingdays", "firstdaytraining", "lastdaytraining", "solver",
                "clearvalueset")
 expect_symbols_in_gdx(app, "btBatchDownloadGDX",
                       setNames(rep.int(list(c(multiDimSym, scalarSym)), 2L), c("default", scenHashTmp)))

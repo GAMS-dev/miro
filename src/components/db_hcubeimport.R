@@ -1,18 +1,18 @@
-HcubeImport <- R6Class("HcubeImport", 
+HcubeImport <- R6Class("HcubeImport",
                        inherit = Db,
                        public = list(
-                         initialize        = function(db, scalarsInputName, scalarsOutputName, 
+                         initialize        = function(db, scalarsInputName, scalarsOutputName,
                                                       tableNamesCanHave, tableNamesMustHave,
                                                       csvDelim, workDir,
                                                       gdxio, inputSym, outputSym, templates){
                            # R6 class to import scenarios in hcube mode
                            #
-                           # Args:      
+                           # Args:
                            #   db:                      R6 database object
                            #   scalarsInputName:        file name of the scalar input file
                            #   scalarsOutputName:       file name of the scalar input file
                            #   tableNamesCanHave:       tables that can exist in a scenario
-                           #   tableNamesMustHave:      tables that must exist in order 
+                           #   tableNamesMustHave:      tables that must exist in order
                            #                            for the scenario to be valid
                            #   csvDelim:                csv delimiter
                            #   workDir:                 directory where temporary files are saved
@@ -21,7 +21,7 @@ HcubeImport <- R6Class("HcubeImport",
                            #   outputSym:               output symbols
                            #   templates:               input/output symbol templates
                            #
-                           
+
                            # BEGIN error checks
                            stopifnot(is.R6(db))
                            stopifnot(is.character(scalarsInputName), length(scalarsInputName) == 1)
@@ -33,7 +33,7 @@ HcubeImport <- R6Class("HcubeImport",
                            stopifnot(is.R6(gdxio), is.character(outputSym),
                                      is.list(templates))
                            # END error checks
-                           
+
                            private$conn               <- db$getConn()
                            private$uid                <- db$getUid()
                            private$userAccessGroups   <- db$getUserAccessGroups()
@@ -57,30 +57,30 @@ HcubeImport <- R6Class("HcubeImport",
                            #
                            # Args:
                            #   zipFilePath:     path to zip archive
-                           #   extractDir:      directory to extract 
+                           #   extractDir:      directory to extract
                            #                    zip archive into
-                           #   
-                           
+                           #
+
                            # BEGIN error checks
                            stopifnot(length(zipFilePath) == 1)
                            stopifnot(identical(tools::file_ext(zipFilePath), "zip"))
                            stopifnot(is.character(extractDir), length(extractDir) == 1)
                            # END error checks
-                           
+
                            filePaths             <- private$getFilePaths(zipFilePath)
                            private$scenNames     <- private$fetchScenNames(filePaths)
                            # workaround for unzip function as path with trailing slashes is not found
                            if(length(filePaths)){
-                             filePaths <- utils::unzip(zipFilePath, 
-                                                       exdir = gsub("/?$", "", 
+                             filePaths <- utils::unzip(zipFilePath,
+                                                       exdir = gsub("/?$", "",
                                                                     private$workDir))
                              if(any(is.symlink(filePaths))){
                                stop("zip archive contains symlinks.", call. = FALSE)
                              }
                            }
-                           
+
                            private$filePaths <- filePaths
-                           private$filePaths <- lapply(private$scenNames, 
+                           private$filePaths <- lapply(private$scenNames,
                                                        private$getScenFilePaths, filePaths)
                            names(private$filePaths) <- private$scenNames
                            flog.trace("%s files unzipped in: '%s'.", length(private$filePaths), private$workDir)
@@ -93,46 +93,46 @@ HcubeImport <- R6Class("HcubeImport",
                            #
                            # Returns:
                            #   reference to itself (importHcube R6 object)
-                           
-                           
-                           fileNames       <- lapply(private$filePaths, 
+
+
+                           fileNames       <- lapply(private$filePaths,
                                                     private$verifyScenFiles)
                            invalidScen    <- vapply(fileNames, is.null, logical(1L), USE.NAMES = FALSE)
-                           
+
                            private$invalidScenIds <- private$scenNames[invalidScen]
                            private$filePaths[private$invalidScenIds] <- NULL
-                           
+
                            return(private$invalidScenIds)
                          },
                          readAllScenData   = function(){
                            # Read scenario data and return them as a list of dataframes
                            #
                            # Args:
-                           # 
+                           #
                            # Returns:
                            #    R6 object (reference to itself)
                            private$scenData <- lapply(private$filePaths, private$readScenData)
                            invisible(self)
                          },
                          removeDuplicates  = function(){
-                           # Removes the duplicated tables 
+                           # Removes the duplicated tables
                            #
                            # Args:
                            #
                            # Returns:
                            #   R6 object (reference to itself)
-                           
+
                            # BEGIN error checks
                            stopifnot(is.list(private$scenData), length(private$scenData) >= 1)
                            # END error checks
-                           
+
                            if(length(private$duplicatedScenIds)){
                              private$scenData[private$duplicatedScenIds] <- NULL
                            }
-                           
+
                            invisible(self)
                          },
-                         saveScenarios     = function(hcubeTags, jobID, readPerm = private$uid, 
+                         saveScenarios     = function(hcubeTags, jobID, readPerm = private$uid,
                                                       writePerm = private$uid, execPerm = private$uid,
                                                       progressBar = NULL){
                            # Save multiple scenarios to database
@@ -140,23 +140,23 @@ HcubeImport <- R6Class("HcubeImport",
                            # Args:
                            #   hcubeTags:    character vector with tags to attach to scenario
                            #   jobID:        integer (scalar), job ID of Hypercube job to import
-                           #   readPerm:     character vector with uids/groups that have 
+                           #   readPerm:     character vector with uids/groups that have
                            #                 read permissions for scenarios
-                           #   writePerm:    character vector with uids/groups that have 
+                           #   writePerm:    character vector with uids/groups that have
                            #                 write permissions for scenarios
-                           #   execPerm:     character vector with uids/groups that have 
+                           #   execPerm:     character vector with uids/groups that have
                            #                 execute permissions for scenarios
                            #   progressBar:  shiny pogress bar R6 object
-                           # 
+                           #
                            # Returns:
                            #   reference to itself (HcubeImport R6 object)
-                           
+
                            # BEGIN error checks
                            stopifnot(is.list(private$scenData), length(private$scenData) >= 1)
                            jobID <- as.integer(jobID)
                            stopifnot(!is.na(jobID), length(jobID) == 1L)
                            stopifnot(is.character(hcubeTags), length(hcubeTags) >= 1)
-                           stopifnot(is.character(names(private$scenData)), 
+                           stopifnot(is.character(names(private$scenData)),
                                      length(private$scenData) >= 1)
                            stopifnot(is.character(readPerm), length(readPerm) >= 1)
                            stopifnot(is.character(writePerm), length(writePerm) >= 1)
@@ -164,7 +164,7 @@ HcubeImport <- R6Class("HcubeImport",
                              stopifnot(is.R6(progressBar))
                            }
                            # END error checks
-                           
+
                            scenData         <- private$scenData
                            saveTraceFile    <- as.integer(private$includeTrc)
                            tableNames       <- dbSchema$getAllSymbols()
@@ -172,24 +172,24 @@ HcubeImport <- R6Class("HcubeImport",
                            if(saveTraceFile){
                              tableNames <- c(tableNames, "_scenTrc")
                            }
-                           
+
                            readPerm         <- vector2Csv(readPerm)
                            writePerm        <- vector2Csv(writePerm)
                            execPerm         <- vector2Csv(execPerm)
-                           
+
                            # export metadata to reserve scenario ids
                            numberScen     <- length(scenData)
                            private$noScen <- numberScen
                            metadataTable  <- tibble(`_uid` = rep.int(private$uid, numberScen),
-                                                    `_sname` = names(scenData), 
+                                                    `_sname` = names(scenData),
                                                     `_stime` = rep.int(1, numberScen),
-                                                    `_stag` = rep.int(hcubeTags, numberScen), 
+                                                    `_stag` = rep.int(hcubeTags, numberScen),
                                                     `_accessr` = rep.int(readPerm, numberScen),
                                                     `_accessw` = rep.int(writePerm, numberScen),
                                                     `_accessx` = rep.int(execPerm, numberScen),
                                                     `_scode` = rep.int(jobID, numberScen))
                            metadataTable[[3]] <- Sys.time()
-                           
+
                            if(inherits(private$conn, "PqConnection")){
                              query <- paste(sqlAppendTable(private$conn, dbSchema$getDbTableName("_scenMeta"),
                                                            sqlData(private$conn, metadataTable),
@@ -202,7 +202,7 @@ HcubeImport <- R6Class("HcubeImport",
                              firstScenId <- lasInsertedRowId - numberScen + 1L
                            }
                            stopifnot(firstScenId >= 1L)
-                           
+
                            if(!is.null(progressBar)){
                              progressBar$inc(amount = 0, message = sprintf("Uploading tables to database."))
                            }
@@ -242,14 +242,14 @@ HcubeImport <- R6Class("HcubeImport",
                          },
                          getScenDuplicates = function(scenNames = NULL){
                            # Fetch duplicated scenarios and return them
-                           # 
+                           #
                            # Args:
-                           #   
+                           #
                            #   scenNames:     scenario names to check (optional)
                            #
                            # Returns:
                            #    dataframe with ID and tag columns
-                           
+
                            # BEGIN error checks
                            if(is.null(scenNames)){
                              stopifnot(length(private$scenNames) >= 1)
@@ -258,9 +258,9 @@ HcubeImport <- R6Class("HcubeImport",
                              stopifnot(is.character(scenNames), length(scenNames) >= 1)
                            }
                            # END error checks
-                           
+
                            previousResults <- self$importDataset("_scenMeta",
-                                                                 colNames = c("_sname", 
+                                                                 colNames = c("_sname",
                                                                               "_stag"))
                            isDuplicated <- previousResults[["_sname"]] %in% scenNames
                            private$duplicatedScenIds <- scenNames[isDuplicated]
@@ -330,7 +330,7 @@ HcubeImport <- R6Class("HcubeImport",
                                  }else if(symName %in% c(scalarsFileName, scalarsOutName)){
                                    names(scenData) <- c("scalar", "description", "value")
                                  }
-                                 return(scenData %>% mutate_if(is.character, 
+                                 return(scenData %>% mutate_if(is.character,
                                                                replace_na, replace = ""))
                                }))
                              }, error = function(e){
@@ -353,13 +353,13 @@ HcubeImport <- R6Class("HcubeImport",
                              use.names = FALSE, recursive = FALSE)
                            verifiedIds   <- match(private$tableNamesMustHave, tableNames)
                            if(any(is.na(verifiedIds))){
-                             flog.info("The scenario misses some tables that must be included: '%s'.", 
+                             flog.info("The scenario misses some tables that must be included: '%s'.",
                                        paste(private$tableNamesMustHave[is.na(verifiedIds)], collapse = "', '"))
                              return(NULL)
                            }else{
                              verifiedIds   <- match(tableNames, private$tableNamesToVerify)
                              if(any(is.na(verifiedIds))){
-                               flog.info("The scenario includes invalid datasets: '%s'.", 
+                               flog.info("The scenario includes invalid datasets: '%s'.",
                                          paste(tableNames[is.na(verifiedIds)], collapse = "', '"))
                                return(NULL)
                              }else{
@@ -369,14 +369,14 @@ HcubeImport <- R6Class("HcubeImport",
                          },
                          getFilePaths       = function(zipFilePath){
                            validFileNames <- c(MIROGdxInName, MIROGdxOutName)
-                            
+
                            if(private$includeTrc){
                              validFileNames <- c(validFileNames, "_scenTrc.trc",
                                                  paste0("_sys_trace_", modelName, ".trc"))
                            }
                            fileNamesZip   <- zip_list(zipFilePath)
                            fileNamesZip   <- fileNamesZip[fileNamesZip$compressed_size > 0, ]$filename
-                           
+
                            if(any(!basename(fileNamesZip) %in% validFileNames)){
                              stop("invalidFiles", call. = FALSE)
                            }
@@ -387,5 +387,3 @@ HcubeImport <- R6Class("HcubeImport",
                          }
                        )
 )
-
-

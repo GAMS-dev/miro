@@ -1,6 +1,6 @@
 jsonPath <- file.path("..", "model", "transport", "conf_transport", "transport.json")
 configJSON <- suppressWarnings(jsonlite::fromJSON(jsonPath,
-                                                  simplifyDataFrame = FALSE, 
+                                                  simplifyDataFrame = FALSE,
                                                   simplifyMatrix = FALSE))
 
 writeConfig <- function(){

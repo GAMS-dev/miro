@@ -55,7 +55,7 @@ Model m / all /;
 
 $iftheni.grb %gams.qcp%==gurobi
   m.optfile = 1;
-$ echo nonconvex 2 > gurobi.opt  
+$ echo nonconvex 2 > gurobi.opt
 $endif.grb
 
 solve m using qcp maximizing r;
@@ -68,7 +68,7 @@ $offExternalOutput
 
 circleData('outerCircle','x')      = eps;
 circleData('outerCircle','y')      = eps;
-circleData('outerCircle','radius') = 1;   
+circleData('outerCircle','radius') = 1;
 circleData(i,'x')      = x.l(i) + eps;
 circleData(i,'y')      = y.l(i) + eps;
 circleData(i,'radius') = r.l + eps;

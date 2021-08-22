@@ -25,11 +25,11 @@ expect_deploy_works <- function(useTemp = TRUE, buildArchive = TRUE, miroMode = 
     }
   }
   dir.create(testModelPath)
-  file.copy(file.path(testDir, "model", modelToTest, "."), 
+  file.copy(file.path(testDir, "model", modelToTest, "."),
             testModelPath, overwrite = TRUE, recursive = TRUE)
-  file.copy(file.path(testDir, "data", "täst"), 
+  file.copy(file.path(testDir, "data", "täst"),
             file.path(testModelPath, "."), overwrite = TRUE, recursive = TRUE)
-  file.copy(file.path(testDir, "data", "pickstock_files_täst.txt"), 
+  file.copy(file.path(testDir, "data", "pickstock_files_täst.txt"),
             file.path(testModelPath, "pickstock_files.txt"), overwrite = TRUE)
   if(identical(manipulate, "noAssembly") || identical(manipulate, "emptyAssembly")
      || identical(manipulate, "wrongAssembly")){
@@ -41,11 +41,11 @@ expect_deploy_works <- function(useTemp = TRUE, buildArchive = TRUE, miroMode = 
   if(identical(manipulate, "wrongAssembly")){
     writeLines(c("Hello","World"), file.path(testModelPath, paste0(modelToTest, "_files.txt")))
   }
-  
+
   Sys.setenv(MIRO_USE_TMP=if(useTemp) "true" else "false")
   Sys.setenv(MIRO_BUILD_ARCHIVE=if(buildArchive) "true" else "false")
   Sys.setenv(MIRO_MODE=miroMode)
-  
+
   deployProc <- process$new(file.path(R.home("bin"), "R"),
                             c("-f", "start-shiny.R"),
                             wd = file.path(testDir, ".."),
@@ -71,7 +71,7 @@ expect_deploy_works <- function(useTemp = TRUE, buildArchive = TRUE, miroMode = 
   }else{
     expect_identical(deployProc$get_exit_status(), 0L)
   }
-  
+
   #unzip .miroapp file and check contents
   testModelDir <- dirname(Sys.getenv("MIRO_MODEL_PATH"))
   unzipDir <- file.path(testModelDir, "miroappContents")
@@ -83,13 +83,13 @@ expect_deploy_works <- function(useTemp = TRUE, buildArchive = TRUE, miroMode = 
   miroappPath <- file.path(testModelDir, paste0(modelToTest, ".miroapp"))
   expect_true(file.exists(miroappPath))
   unzip(miroappPath, exdir = unzipDir)
-  
+
   if(buildArchive){
     expect_true(file.exists(file.path(unzipDir, paste0(modelToTest, ".zip"))))
     unzip(file.path(unzipDir, paste0(modelToTest, ".zip")), exdir = unzipDir)
   }
   expect_true(all(file.exists(modelFilesPaths)))
-  
+
   MIROVersion <- NULL
   APIVersion <- NULL
   local({
@@ -135,5 +135,5 @@ test_that(sprintf("Example app: '%s' can not be deployed with faulty model assem
   expect_deploy_works(useTemp = TRUE, buildArchive = TRUE, miroMode = "base", manipulate = "wrongAssembly")
 })
 
-Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_USE_TMP", "MIRO_BUILD_ARCHIVE", 
+Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_USE_TMP", "MIRO_BUILD_ARCHIVE",
                "MIRO_BUILD", "MIRO_MODE", "RE_SHINY_PATH", "RE_SHINY_PORT", "R_LIB_PATHS"))

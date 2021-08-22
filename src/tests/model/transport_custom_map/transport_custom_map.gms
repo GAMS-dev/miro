@@ -37,12 +37,12 @@ Scalar f 'freight in dollars per case per thousand miles' / 90 /
        beta 'beta (MINLP-only)' / 0.95 /;
 
 Table ilocData(i,locHdr) 'Plant location information'
-               lat           lng     
+               lat           lng
 Seattle     47.608013  -122.335167
 San-Diego   32.715736  -117.161087;
 
 Table jlocData(j,locHdr) 'Market location information'
-           lat           lng     
+           lat           lng
 New-York   40.730610  -73.935242
 Chicago    41.881832  -87.623177
 Topeka     39.056198  -95.695312;

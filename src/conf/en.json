@@ -15,7 +15,7 @@
         "value": "Scalar Value"
       }
     },
-    "sidebarMenu":{  
+    "sidebarMenu":{
       "inputScreen":"Input",
       "outputScreen":"Output",
       "gams":"GAMS interaction",
@@ -27,7 +27,7 @@
         "analyze" : "Analyze scenarios"
       }
     },
-    "sidebarButtons":{  
+    "sidebarButtons":{
       "importInput":"Load data",
       "solve":"Solve model",
       "submitJob": "Submit job",
@@ -65,21 +65,21 @@
         "switchToHcube": "Switch to Hypercube Mode"
       }
     },
-    "inputScreen":{  
+    "inputScreen":{
       "btCollapsedTabs": "More",
       "noDataDep":"Please first import all data this element depends on.",
       "widgetTabTitle": "Input widgets",
       "dirtyFlag": "The scenario contains output data that may not correspond to the modified input data anymore."
     },
-    "gams":{  
-      "boxModelStatus":{  
+    "gams":{
+      "boxModelStatus":{
         "title":"Model status"
       },
-      "boxGamsOutput":{  
+      "boxGamsOutput":{
         "title":"GAMS output",
         "tabCurrent": "Current job",
         "tabJobList": "Job list",
-        "gamsOutputTabset":{  
+        "gamsOutputTabset":{
           "logFile":"Log file",
           "lstFile":"Listing file",
           "miroLogFile":"MIRO log file",
@@ -87,18 +87,18 @@
         }
       }
     },
-    "outputScreen":{  
-      "boxResults":{  
+    "outputScreen":{
+      "boxResults":{
         "title":"Results",
         "noData":"no data"
       }
     },
-    "scen":{  
+    "scen":{
       "noScen":"No scenarios selected",
       "btLoad":"Load",
       "btCloseAll": "Close all",
       "scenNameSandboxSuffix": "(Sandbox)",
-      "tooltips":{  
+      "tooltips":{
         "btExport":"export scenario",
         "btTableView":"switch view",
         "btSymbolLink": "Use as input data",
@@ -169,7 +169,7 @@
 	    "btCancel": "Cancel",
 	    "btNew": "Select scenarios"
     },
-    "gamsModelStatus":{  
+    "gamsModelStatus":{
       "submission": "Model is being submitted",
       "queued": "Model queued",
       "exec":"Model execution phase",
@@ -177,7 +177,7 @@
       "success":"Run successfully terminated.",
       "error":"Run did not terminate successfully: "
     },
-    "notificationNewInput":{  
+    "notificationNewInput":{
       "new":"%s datasets imported.",
       "noNew":"No dataset was imported."
     },
@@ -190,11 +190,11 @@
       "cancelButton": "Cancel",
       "okButton": "Export"
     },
-    "dialogSaveSuccess":{  
+    "dialogSaveSuccess":{
       "title":"Success",
       "desc":" %d datasets were saved successfully."
     },
-    "dialogNewScen":{  
+    "dialogNewScen":{
       "title":"New scenario",
       "desc":"Please enter a name for the scenario:",
       "discardAttach": "Discard attachments?",
@@ -209,7 +209,7 @@
       "cancelButton":"Cancel",
       "okButton":"Ok"
     },
-    "dialogNewHCJob":{  
+    "dialogNewHCJob":{
       "title":"New Hypercube job",
       "desc":"Please enter a name for the Hypercube job configuration:",
       "tags":"Add tag(s) to your HC job (optional):",
@@ -315,7 +315,7 @@
       "okButton": "Import",
       "cancelButton": "Cancel"
     },
-    "dialogDeleteScen":{  
+    "dialogDeleteScen":{
       "title":"Delete scenario",
       "desc":"Are you sure you want to delete the selected scenario from the database?",
       "cancelButton":"Cancel",
@@ -327,7 +327,7 @@
         "okButton":"Remove from sandbox"
       }
     },
-    "dialogDeleteHCJob":{  
+    "dialogDeleteHCJob":{
       "title":"Delete Hypercube job",
       "desc":"Are you sure you want to delete the selected Hypercube job configuration from the database?",
       "cancelButton":"Cancel",
@@ -339,19 +339,19 @@
         "okButton":"Remove from sandbox"
       }
     },
-    "dialogRemoveScen":{  
+    "dialogRemoveScen":{
       "title":"Close scenario",
       "desc":"Are you sure you want to close the currently active scenario? Unsaved data will be lost!",
       "cancelButton":"Cancel",
       "okButton":"Close"
     },
-    "dialogRemoveHCJob":{  
+    "dialogRemoveHCJob":{
       "title":"Close Hypercube job",
       "desc":"Are you sure you want to close the currently active Hypercube job configuration? Unsaved data will be lost!",
       "cancelButton":"No",
       "okButton":"Yes"
     },
-    "dialogCloseScen":{  
+    "dialogCloseScen":{
       "title":"Close scenario",
       "desc":"Are you sure you want to close the selected scenario?",
       "cancelButton":"No",
@@ -363,20 +363,20 @@
       "cancelButton":"No",
       "okButton":"Yes"
     },
-    "dialogExistingOutput":{  
+    "dialogExistingOutput":{
       "title":"Output data exists",
       "desc":"The scenario you want to save contains output data that may not correspond to the current input data. Do you want to discard the output data?",
       "cancelButton"    : "Cancel",
       "saveOutputButton":"Save output data",
       "discardOutputButton":"Discard output data"
     },
-    "dialogSaveScen":{  
+    "dialogSaveScen":{
       "title":"Save scenario",
       "desc":"Are you sure you want to save the selected scenario in the database?",
       "cancelButton":"No",
       "okButton":"Yes"
     },
-    "dialogImport":{  
+    "dialogImport":{
       "title":"Load data",
       "tabLocal":"Local",
       "tabExternal": "External",
@@ -398,9 +398,9 @@
       "cbSelectManually":"Manually choose datasets",
       "overwriteWarning":"Already imported datasets might be lost if you did not save them!",
       "cancelButton":"Cancel",
-      "okButton":"Load"                        
+      "okButton":"Load"
     },
-    "dialogImportHC":{  
+    "dialogImportHC":{
       "title":"Import data",
       "tabLocal":"Local",
       "tabDatabase":"Hypercube",
@@ -422,7 +422,7 @@
       "overwriteButton": "Overwrite existing data",
       "newNameButton": "New name"
     },
-    "dialogLoadScen":{  
+    "dialogLoadScen":{
       "title":"Load scenario",
       "tabDB": "Database",
       "tabUI": "Local",
@@ -445,7 +445,7 @@
       "cancelButton":"Cancel",
       "okButton":"Import"
     },
-    "dialogNewCol":{  
+    "dialogNewCol":{
       "title":"New column",
       "desc":"Please enter a name for the new column:",
       "cancelButton":"Cancel",
@@ -455,7 +455,7 @@
       "fileTypes": ["MIRO Scenario (MIROSCEN)", "GAMS Data eXchange (GDX)", "Comma-separated values (CSV)", "Microsoft Excel (XLSX)"],
       "infoDataOnly": "With the selected file type only data is exported. Metadata such as attachments, views, tags, etc. are not included."
     },
-    "excelExport":{  
+    "excelExport":{
       "metadataSheet":{
         "title":"Info",
         "uid":"User",
@@ -579,7 +579,7 @@
         "corruptedNoDir": "The working directory of the job could not be located.",
         "corruptedNoProcess": "The job is terminated, but no results were found.",
         "corruptedManual": "The manual job import failed."
-      },      
+      },
       "header":{
         "owner": "Owner",
         "date": "Submission date",
@@ -612,7 +612,7 @@
       "title": "Select action",
       "selectMethod": "What would you like to do with the selected scenarios?",
       "selExportType": "Select a file type",
-      "maxScenWarning1": "You may only select up to: '%d' scenarios to load into interactive mode at once.", 
+      "maxScenWarning1": "You may only select up to: '%d' scenarios to load into interactive mode at once.",
       "maxScenWarning2": " Select less scenarios or use custom analysis scripts to compare.",
       "cancelButton": "Cancel",
       "paverButton": "Analyze",
@@ -798,7 +798,7 @@
         "sd": "Standard deviation"
       },
       "renderer":{
-        "table": "Table", 
+        "table": "Table",
         "heatmap": "Heatmap",
         "bar": "Bar chart",
         "stackedbar": "Stacked bar chart",
@@ -835,8 +835,8 @@
       }
     }
   },
-  "progressBar":{  
-    "renderOutput":{  
+  "progressBar":{
+    "renderOutput":{
       "title":"Rendering output graphs",
       "progress":"Rendering output "
     },
@@ -855,11 +855,11 @@
       "title": "Exporting scenario",
       "exportDs": "Exporting dataset %s of %s"
     },
-    "loadScenDb":{  
+    "loadScenDb":{
       "title":"Loading scenario data from database",
       "progress":"Loading dataset "
     },
-    "saveScenDb":{  
+    "saveScenDb":{
       "title":"Saving scenario data in database",
       "attachments": "Saving attachments",
       "progress":"Saving dataset "
@@ -879,7 +879,7 @@
   "errMsg":{
     "unknownError": "An unexpected error occurred. If this problem persists, please contact a system administrator.",
     "permErr": "The operation failed because you do not have sufficient permissions.",
-    "fileRead":{  
+    "fileRead":{
       "title":"Error reading file",
       "desc":"Some error occurred reading file: '%s'."
     },
@@ -937,40 +937,40 @@
         "invalidColRange": "ERROR: Invalid column range specification."
       }
     },
-    "invalidFileType":{  
+    "invalidFileType":{
       "title":"Invalid file type",
       "desc":"The file you are trying to import can not be read by MIRO. Supported file types are: %s."
     },
-    "fileWrite":{  
+    "fileWrite":{
       "title":"Error writing file",
       "desc":"Some error occurred writing file: '%s'."
     },
-    "initErrors":{  
+    "initErrors":{
       "title":"Some errors occurred",
       "desc":"Please fix the errors mentioned below and restart MIRO:",
       "okButton": "Ok"
     },
-    "fetchScenData":{  
+    "fetchScenData":{
       "title":"Error fetching scenario metadata",
       "desc":"Could not retrieve scenario metadata."
     },
-    "renderSlider":{  
+    "renderSlider":{
       "title":"Incorrect input data for slider",
       "desc":"The value '%s' for the slider: '%s' is not of numeric type."
     },
-    "saveInput":{  
+    "saveInput":{
       "title":"Error saving input data",
       "desc":"Some error occurred saving the data to the database."
     },
-    "readOutput":{  
+    "readOutput":{
       "title":"Error reading the results",
       "desc":"Some error occurred reading the results that were returned from GAMS."
     },
-    "dataError":{  
+    "dataError":{
       "title":"Error in data",
       "desc":"Some data error occurred. Please contact the system administrator in case this problem persists."
     },
-    "ddLenMismatch":{  
+    "ddLenMismatch":{
       "title":"Number of aliases and values does not match",
       "desc":"The number of aliases for dropdown menu: '%s' does not match the number of values."
     },
@@ -980,7 +980,7 @@
       "badColName" : "The column(s) '%s' was not found in the dataset : '%s'",
       "noData":"Dataset: '%s' could not be loaded. Please make sure the dataset actually contains data."
     },
-    "GAMSInput":{  
+    "GAMSInput":{
       "title":"Errors occurred writing input files",
       "desc":"Some errors occurred writing GAMS input files.",
       "excelRead":"Some error occurred reading the file: '%s'.",
@@ -989,11 +989,11 @@
       "badInputData":"The GAMS input dataset: '%s' is not valid. Please check the format of the data you wish to import.",
       "writeCsv":"Some error occurred writing csv file: '%s'."
     },
-    "GAMSOutput":{  
+    "GAMSOutput":{
       "title":"Errors reading output files",
       "badOutputData":"The GAMS output dataset: '%s' is not valid. Please check the format of the data you wish to import."
     },
-    "gamsExec":{  
+    "gamsExec":{
       "title":"GAMS could not be run",
       "desc":"Could not run GAMS. Did you forget to specify the GAMS installation path?"
     },
@@ -1005,42 +1005,42 @@
       "title": "MIRO busy",
       "desc": "MIRO is still busy extracting the model files in your workspace. Please wait and try again."
     },
-    "gamsTerm":{  
+    "gamsTerm":{
       "title":"Error terminating gams.exe",
       "desc":"Some error occurred terminating GAMS."
     },
-    "readLog":{  
+    "readLog":{
       "title":"Error reading log file",
       "desc":"Some error occurred reading the GAMS log file."
     },
-    "readLst":{  
+    "readLst":{
       "title":"Error reading listing file",
       "desc":"Some error occurred reading the GAMS listing file.",
       "fileSize":"The lst file you are trying to read is too large to be displayed. Please download the lst file to access it.",
       "fileNotFound": "The listing file could not be found."
     },
-    "saveScen":{  
+    "saveScen":{
       "title":"Error saving scenario",
       "desc":"An error occurred while trying to save the scenario."
     },
-    "loadScen":{  
+    "loadScen":{
       "title":"Error loading scenario",
       "desc":"Some error occurred loading the selected scenarios.",
       "inconsistentDataWarning": "The scenario was changed while you were viewing it. Therefore, the data may not be consistent. You may want to refresh the scenario."
     },
-    "deleteScen":{  
+    "deleteScen":{
       "title":"Error deleting scenario",
       "desc":"Some error occurred deleting the scenario. If this error persists please contact the system administrator."
     },
-    "renderTable":{  
+    "renderTable":{
       "title":"Error rendering table",
       "desc":"Some error occurred rendering table for output data: '%s'."
     },
-    "renderGraph":{  
+    "renderGraph":{
       "title":"Error rendering graph",
       "desc":"Some error occurred rendering graph for output data: '%s'."
     },
-    "blankScenName":{  
+    "blankScenName":{
       "title":"No name entered",
       "desc":"Please select a valid name for the scenario you want to save."
     },
@@ -1079,14 +1079,14 @@
       "hcubeRunning": "Hypercube Mode is already running.",
       "launchError": "An error occurred while trying to launch the Hypercube Mode. If this problem persists, please contact the system administrator."
     },
-    "paverFileLoad":{  
+    "paverFileLoad":{
       "desc":"Data could not be loaded for this category."
     },
-    "paverExec":{  
+    "paverExec":{
       "title":"Error executing Python",
       "desc":"Some error occurred executing Python."
     },
-    "paverTerm":{  
+    "paverTerm":{
       "title":"Error terminating python",
       "desc":"Some error occurred terminating python."
     },
@@ -1107,7 +1107,7 @@
       "desc": "Some graphics and/or widgets have been configured for symbols that are no longer part of your GAMS/MIRO data contract or are hidden. Do you want to remove them from your configuration? Note that this cannot be undone! Graphic configuration for invalid symbol(s): '%s'. Widget configuration for invalid symbol(s): '%s'.",
       "msgSuccess": "Invalid configuration was successfully removed",
       "btRemoveWidgets": "Remove invalid widgets",
-      "btRemoveGraphs": "Remove invalid graphs", 
+      "btRemoveGraphs": "Remove invalid graphs",
       "btCancel": "Cancel"
     },
     "uiR":{
@@ -1147,7 +1147,7 @@
         "tooltipDocs": "Open documentation"
       },
       "modalDialog":{
-        "title": "Error copying image", 
+        "title": "Error copying image",
         "content": "A problem occurred copying image. If this problem persists, please contact a system administrator."
       },
       "language":{
@@ -1245,7 +1245,7 @@
         "header": "Logo preview:",
         "label": "Upload a custom logo for your MIRO app: png/jpg file (best format: 4.6:1 or 230:50px)",
         "placeholder": "No file selected"
-      }, 
+      },
       "actScen":{
         "title" :"Save, delete and compare scenarios",
         "label": "Activate scenario functionality"

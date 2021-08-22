@@ -50,7 +50,7 @@ Set
 $if not set scenario $set scenario s1
 
 $onExternalInput
-Singleton set actScen(s) 'Active scenario' / %scenario% /;   
+Singleton set actScen(s) 'Active scenario' / %scenario% /;
 
 Table RData(rR,s,rhdr) 'Reactor data'
         s1.VMIN  s1.VMAX  s2.VMIN  s2.VMAX
@@ -263,7 +263,7 @@ Set
    SHdr   'Surplus Header'        / Demand, Surplus /
    PTHdr  'ProductionTime Header' / 'Production Time', 'max. Production Time' /
    RPHdr  'RP Header'             / 'Utilization rate', 'Number of batches' /;
-   
+
 $onExternalOutput
 Parameter
    Cost(CHdr)                     'Cost report'
@@ -275,7 +275,7 @@ $offExternalOutput
 
 Cost('Fixed Cost')      = cFixed.l;
 Cost('Investment Cost') = cInvest.l;
-                        
+
 Surplus(p,'Demand')     = demand(p);
 Surplus(p,'Surplus')    = demand(p)*pS.l(p);
 

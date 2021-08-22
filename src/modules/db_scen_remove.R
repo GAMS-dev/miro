@@ -12,7 +12,7 @@ closeScenario <- function(clearMeta = TRUE){
     lapply(seq_along(modelIn), function(i){
       switch(modelIn[[i]]$type,
              hot = {
-               # set identifier that data was overwritten 
+               # set identifier that data was overwritten
                hotInit[i]        <<- FALSE
                isEmptyInput[i]   <<- TRUE
              },
@@ -26,7 +26,7 @@ closeScenario <- function(clearMeta = TRUE){
                }else{
                  showEl(session, "#no_data_dep_" %+% i)
                  hideEl(session, "#slider_" %+% i)
-                 updateSliderInput(session, "slider_" %+% i, min = 0, max = 1, 
+                 updateSliderInput(session, "slider_" %+% i, min = 0, max = 1,
                                    value = 0, step = 1)
                }
                noCheck[i] <<- TRUE
@@ -34,7 +34,7 @@ closeScenario <- function(clearMeta = TRUE){
              dropdown = {
                if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
                  if(length(modelIn[[i]]$dropdown$selected))
-                   updateSelectInput(session, paste0("dropdown_", i), 
+                   updateSelectInput(session, paste0("dropdown_", i),
                                      selected = modelIn[[i]]$dropdown$selected)
                }else{
                  selectedDepEl[[i]] <<- character(0)
@@ -53,8 +53,8 @@ closeScenario <- function(clearMeta = TRUE){
              daterange = {
                if(is.null(modelInWithDep[[names(modelIn)[[i]]]]) && length(modelIn[[i]]$daterange$start) &&
                   length(modelIn[[i]]$daterange$end)){
-                 updateDateRangeInput(session, "daterange_" %+% i, 
-                                      start = modelIn[[i]]$daterange$start, 
+                 updateDateRangeInput(session, "daterange_" %+% i,
+                                      start = modelIn[[i]]$daterange$start,
                                       end = modelIn[[i]]$daterange$end)
                  noCheck[i] <<- TRUE
                }
@@ -78,7 +78,7 @@ closeScenario <- function(clearMeta = TRUE){
                }
              }
       )
-      # make sure data is cleaned even when modified manually 
+      # make sure data is cleaned even when modified manually
       # (and thus rv$in_i is NULL)
       if(is.null(isolate(rv[["in_" %+% i]]))){
         rv[["in_" %+% i]] <- 1L
@@ -87,7 +87,7 @@ closeScenario <- function(clearMeta = TRUE){
     })
   }
   resetWidgetsOnClose <<- TRUE
-  
+
   if(is.R6(activeScen))
     flog.debug("Scenario: '%s' closed.", activeScen$getScenName())
   # reset input data
@@ -96,7 +96,7 @@ closeScenario <- function(clearMeta = TRUE){
     hideEl(session, "#graph-in_" %+% i)
     showEl(session, "#data-in_" %+% i)
   })
-  
+
   # reset model output data
   if(length(activeScen)){
     if(clearMeta){
@@ -107,17 +107,17 @@ closeScenario <- function(clearMeta = TRUE){
     activeScen$finalize()
   }
   renderOutputData()
-  activeScen        <<- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
+  activeScen        <<- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName,
                                      isNewScen = TRUE, views = views, attachments = attachments)
   rv$activeSname    <<- NULL
   scenTags          <<- NULL
-  attachmentList    <<- tibble(name = vector("character", attachMaxNo), 
+  attachmentList    <<- tibble(name = vector("character", attachMaxNo),
                                execPerm = vector("logical", attachMaxNo))
   if(!LAUNCHHCUBEMODE && length(config$scripts$base)){
     scriptOutput$clearContent()
   }
   renderOutputData()
-  
+
   markSaved()
   clearLogs(session)
   inconsistentOutput <<- TRUE

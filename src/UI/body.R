@@ -2,37 +2,37 @@
 genSplitCompButtons <- function(id){
   if(LAUNCHHCUBEMODE){
     tags$div(id = paste0("scenSplit", id, "_open"),
-             actionButton(paste0("btScenSplit", id, "_open"), lang$nav$scen$split$load, 
+             actionButton(paste0("btScenSplit", id, "_open"), lang$nav$scen$split$load,
                           class = "scenSplit-button-load", style = "font-size: 20pt;")
     )
   }else{
     tags$div(id = paste0("scenSplit", id, "_open"), class = "split-open",
              tags$div(title = lang$nav$scen$tooltips$load, class = "split-open-cell",
-                      actionButton(paste0("btScenSplit", id, "_open"), lang$nav$scen$split$load, 
+                      actionButton(paste0("btScenSplit", id, "_open"), lang$nav$scen$split$load,
                                    class = "scenSplit-button-load")
              ),
              tags$div(title = lang$nav$scen$tooltips$loadActive, class = "split-open-cell",
-                      HTML(paste0('<button class="btn btn-default action-button scenSplit-button-load" 
-type="button" onclick="Shiny.setInputValue(\'loadActiveScenSplitComp\', ', id + 1, 
-                                  ', {priority: \'event\'})">', 
+                      HTML(paste0('<button class="btn btn-default action-button scenSplit-button-load"
+type="button" onclick="Shiny.setInputValue(\'loadActiveScenSplitComp\', ', id + 1,
+                                  ', {priority: \'event\'})">',
                                   lang$nav$scen$split$loadActive, '</button>'))))
   }
 }
 getJobsTableSkeleton <- function(id = NULL, content = NULL){
   tags$div(style = "max-height: 70vh;overflow:auto;margin-bottom:20px",
-           tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsDiscarded", 
+           tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsDiscarded",
                     lang$nav$importJobsDialog$discardSuccess),
-           tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsImported", 
+           tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsImported",
                     lang$nav$importJobsDialog$importSuccess),
-           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsAccessDenied", 
+           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsAccessDenied",
                     lang$nav$importJobsDialog$accessDenied),
-           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsUnknownHost", 
+           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsUnknownHost",
                     lang$nav$dialogRemoteLogin$hostNotFound),
-           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsJobNotFound", 
+           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsJobNotFound",
                     lang$nav$importJobsDialog$jobNotFound),
-           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsMaxDownloads", 
+           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsMaxDownloads",
                     lang$nav$importJobsDialog$maxDownloads),
-           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsError", 
+           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsError",
                     lang$errMsg$unknownError),
            if(is.null(id)){
              content
@@ -46,7 +46,7 @@ if(!debugMode){
   miroCacheFile <- paste0(modelNameRaw, "_",
                           MIROVersion, "_",
                           if(LAUNCHHCUBEMODE) "1_" else "0_",
-                          miroLanguage, 
+                          miroLanguage,
                           if(config$activateModules$remoteExecution) "_1" else "_0")
   if(isShinyProxy){
     miroCacheFile <- file.path(Sys.getenv("MIRO_DATA_DIR"), "cache", miroCacheFile)
@@ -70,28 +70,28 @@ if(buildUI){
                              if(hasDependency){
                                sliderStepSize <- 1L
                                slider         <- sliderInput(paste0("slider_", i),
-                                                             label = modelIn[[i]]$slider$label, min = NULL, max = NULL, 
-                                                             value = if(length(modelIn[[i]]$slider$default) > 1) 
-                                                               numeric(2L) else numeric(1L), step = sliderStepSize, 
-                                                             width = modelIn[[i]]$slider$width, 
+                                                             label = modelIn[[i]]$slider$label, min = NULL, max = NULL,
+                                                             value = if(length(modelIn[[i]]$slider$default) > 1)
+                                                               numeric(2L) else numeric(1L), step = sliderStepSize,
+                                                             width = modelIn[[i]]$slider$width,
                                                              ticks = if(isFALSE(modelIn[[i]]$slider$ticks)) FALSE else TRUE)
                                slider         <- tagList(
                                  tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                                 tagAppendAttributes(slider, style = "display:none;"), 
-                                 tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep",  
+                                 tagAppendAttributes(slider, style = "display:none;"),
+                                 tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep",
                                           lang$nav$inputScreen$noDataDep))
                              }else{
                                sliderName     <- tolower(names(modelIn)[[i]])
                                sliderStepSize <- sliderValues[[sliderName]]$step
                                slider         <- tagList(
                                  tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                                 sliderInput(paste0("slider_", i), 
-                                             label = modelIn[[i]]$slider$label, 
-                                             min = sliderValues[[sliderName]]$min, 
-                                             max = sliderValues[[sliderName]]$max, 
-                                             value = sliderValues[[sliderName]]$def, 
-                                             step = sliderValues[[sliderName]]$step, 
-                                             width = modelIn[[i]]$slider$width, 
+                                 sliderInput(paste0("slider_", i),
+                                             label = modelIn[[i]]$slider$label,
+                                             min = sliderValues[[sliderName]]$min,
+                                             max = sliderValues[[sliderName]]$max,
+                                             value = sliderValues[[sliderName]]$def,
+                                             step = sliderValues[[sliderName]]$step,
+                                             width = modelIn[[i]]$slider$width,
                                              ticks = if(isFALSE(modelIn[[i]]$slider$ticks)) FALSE else TRUE)
                                )
                              }
@@ -103,22 +103,22 @@ if(buildUI){
                                           ),
                                           column(width = 2, style = "min-width: 130px; min-height:100px;",
                                                  tagList(
-                                                   tags$label(class = "cb-label", "for" = "hcubeMode_" %+% i, 
-                                                              lang$nav$hcubeMode$sliderAllCombinations), 
+                                                   tags$label(class = "cb-label", "for" = "hcubeMode_" %+% i,
+                                                              lang$nav$hcubeMode$sliderAllCombinations),
                                                    tags$div(
-                                                     tags$label(class = "checkbox-material", "for" = "hcubeMode_" %+% i, 
-                                                                checkboxInput("hcubeMode_" %+% i, label = NULL, 
+                                                     tags$label(class = "checkbox-material", "for" = "hcubeMode_" %+% i,
+                                                                checkboxInput("hcubeMode_" %+% i, label = NULL,
                                                                               value = FALSE))
                                                    )
                                                  )
                                           ),
-                                          conditionalPanel("input.hcubeMode_" %+% i, 
+                                          conditionalPanel("input.hcubeMode_" %+% i,
                                                            column(width = 1, style = "min-width: 100px; min-height:100px;",
-                                                                  numericInput("hcubeStep_" %+% i, lang$nav$hcubeMode$stepsize, 
+                                                                  numericInput("hcubeStep_" %+% i, lang$nav$hcubeMode$stepsize,
                                                                                sliderStepSize, min = 0)
                                                            )
                                           )
-                                          
+
                                  )
                                }else if(identical(modelIn[[i]]$slider$single, TRUE)){
                                  tags$div(style = "overflow:auto",
@@ -126,7 +126,7 @@ if(buildUI){
                                                  slider
                                           ),
                                           column(width = 1, style = "min-width: 100px; min-height:100px;",
-                                                 numericInput("hcubeStep_" %+% i, lang$nav$hcubeMode$stepsize, 
+                                                 numericInput("hcubeStep_" %+% i, lang$nav$hcubeMode$stepsize,
                                                               sliderStepSize, min = 0)
                                           )
                                  )
@@ -144,26 +144,26 @@ if(buildUI){
                                tagList(
                                  tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
                                  tagAppendAttributes(selectInput(paste0("dropdown_", i),
-                                                                 label = modelIn[[i]]$dropdown$label, 
+                                                                 label = modelIn[[i]]$dropdown$label,
                                                                  choices = character(0), selected = character(0),
-                                                                 multiple = isTRUE(modelIn[[i]]$dropdown$multiple)), 
+                                                                 multiple = isTRUE(modelIn[[i]]$dropdown$multiple)),
                                                      style = "display:none;"),
-                                 tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep", 
+                                 tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep",
                                           lang$nav$inputScreen$noDataDep)
                                )
                              }else{
                                choices <- modelIn[[i]]$dropdown$choices
-                               
+
                                if(!is.null(modelIn[[i]]$dropdown$aliases)){
                                  names(choices) <- modelIn[[i]]$dropdown$aliases
                                }
                                tagList(
                                  tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                                 selectInput(paste0("dropdown_", i), 
-                                             label = modelIn[[i]]$dropdown$label, 
-                                             choices = choices, 
-                                             selected = modelIn[[i]]$dropdown$selected, 
-                                             multiple = if(identical(modelIn[[i]]$dropdown$multiple, 
+                                 selectInput(paste0("dropdown_", i),
+                                             label = modelIn[[i]]$dropdown$label,
+                                             choices = choices,
+                                             selected = modelIn[[i]]$dropdown$selected,
+                                             multiple = if(identical(modelIn[[i]]$dropdown$multiple,
                                                                      TRUE)) TRUE else FALSE)
                                )
                              }
@@ -171,41 +171,41 @@ if(buildUI){
                            dropdowne = {
                              tagList(
                                tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                               selectInput(paste0("dropdowne_", i), label = modelIn[[i]]$dropdowne$label, 
+                               selectInput(paste0("dropdowne_", i), label = modelIn[[i]]$dropdowne$label,
                                            choices = character(0), selected = character(0),
-                                           multiple = if(identical(modelIn[[i]]$dropdowne$multiple, 
+                                           multiple = if(identical(modelIn[[i]]$dropdowne$multiple,
                                                                    TRUE)) TRUE else FALSE)
                              )
                            },
                            daterange = {
                              tagList(
                                tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                               dateRangeInput(paste0("daterange_", i), 
-                                              label = modelIn[[i]]$daterange$label, 
-                                              start = modelIn[[i]]$daterange$start, 
-                                              end = modelIn[[i]]$daterange$end, 
-                                              min = modelIn[[i]]$daterange$min, 
-                                              max = modelIn[[i]]$daterange$max, 
-                                              format = modelIn[[i]]$daterange$format, 
-                                              startview = modelIn[[i]]$daterange$startview, 
-                                              weekstart = modelIn[[i]]$daterange$weekstart, 
-                                              language = miroLanguage, 
-                                              separator = if(identical(modelIn[[i]]$daterange$separator, 
-                                                                       NULL)) " to " else modelIn[[i]]$daterange$separator, 
-                                              width = modelIn[[i]]$daterange$width, 
-                                              autoclose = if(identical(modelIn[[i]]$daterange$autoclose, 
+                               dateRangeInput(paste0("daterange_", i),
+                                              label = modelIn[[i]]$daterange$label,
+                                              start = modelIn[[i]]$daterange$start,
+                                              end = modelIn[[i]]$daterange$end,
+                                              min = modelIn[[i]]$daterange$min,
+                                              max = modelIn[[i]]$daterange$max,
+                                              format = modelIn[[i]]$daterange$format,
+                                              startview = modelIn[[i]]$daterange$startview,
+                                              weekstart = modelIn[[i]]$daterange$weekstart,
+                                              language = miroLanguage,
+                                              separator = if(identical(modelIn[[i]]$daterange$separator,
+                                                                       NULL)) " to " else modelIn[[i]]$daterange$separator,
+                                              width = modelIn[[i]]$daterange$width,
+                                              autoclose = if(identical(modelIn[[i]]$daterange$autoclose,
                                                                        FALSE)) FALSE else TRUE)
                              )
                            },
                            date = {
                              tagList(
                                tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                               dateInput(paste0("date_", i), label = modelIn[[i]]$date$label, 
-                                         value = modelIn[[i]]$date$value, min = modelIn[[i]]$date$min, 
-                                         max = modelIn[[i]]$date$max, format = modelIn[[i]]$date$format, 
-                                         startview = modelIn[[i]]$date$startview, 
+                               dateInput(paste0("date_", i), label = modelIn[[i]]$date$label,
+                                         value = modelIn[[i]]$date$value, min = modelIn[[i]]$date$min,
+                                         max = modelIn[[i]]$date$max, format = modelIn[[i]]$date$format,
+                                         startview = modelIn[[i]]$date$startview,
                                          weekstart = modelIn[[i]]$date$weekstart,
-                                         language = miroLanguage, 
+                                         language = miroLanguage,
                                          width = modelIn[[i]]$date$width)
                              )
                            },
@@ -214,27 +214,27 @@ if(buildUI){
                                tagList(
                                  tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
                                  tags$div(id = paste0("cbDiv_", i), style = "display:none;",
-                                          tags$label(class = "cb-label", "for" = paste0("cb_", i), 
-                                                     modelIn[[i]]$checkbox$label), 
+                                          tags$label(class = "cb-label", "for" = paste0("cb_", i),
+                                                     modelIn[[i]]$checkbox$label),
                                           tags$div(
-                                            tags$label(class = modelIn[[i]]$checkbox$class, 
-                                                       "for" = paste0("cb_", i), 
-                                                       checkboxInput(paste0("cb_", i), 
-                                                                     label = NULL, value = NULL, 
+                                            tags$label(class = modelIn[[i]]$checkbox$class,
+                                                       "for" = paste0("cb_", i),
+                                                       checkboxInput(paste0("cb_", i),
+                                                                     label = NULL, value = NULL,
                                                                      width = modelIn[[i]]$checkbox$width))
                                           )
                                  ),
-                                 tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep",  
+                                 tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep",
                                           lang$nav$inputScreen$noDataDep)
                                )
                              }else{
                                tagList(
                                  tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                                 tags$label(class = "cb-label", "for" = paste0("cb_", i), modelIn[[i]]$checkbox$label), 
+                                 tags$label(class = "cb-label", "for" = paste0("cb_", i), modelIn[[i]]$checkbox$label),
                                  tags$div(
-                                   tags$label(class = modelIn[[i]]$checkbox$class, "for" = paste0("cb_", i), 
-                                              checkboxInput(paste0("cb_", i), label = NULL, 
-                                                            value = modelIn[[i]]$checkbox$value, 
+                                   tags$label(class = modelIn[[i]]$checkbox$class, "for" = paste0("cb_", i),
+                                              checkboxInput(paste0("cb_", i), label = NULL,
+                                                            value = modelIn[[i]]$checkbox$value,
                                                             width = modelIn[[i]]$checkbox$width))
                                  )
                                )
@@ -243,7 +243,7 @@ if(buildUI){
                            textinput = {
                              tagList(
                                tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                               textInput(paste0("text_", i), label = modelIn[[i]]$textinput$label, 
+                               textInput(paste0("text_", i), label = modelIn[[i]]$textinput$label,
                                          value = modelIn[[i]]$textinput$value,
                                          width = modelIn[[i]]$textinput$width,
                                          placeholder = modelIn[[i]]$textinput$placeholder)
@@ -303,8 +303,8 @@ if(buildUI){
                                    })
                                  }
                                }),
-                               tags$div(id = paste0("graph-in_", i), class = "render-output", 
-                                        style = paste0("padding:1px;display:none;", if(!is.null(configGraphsIn[[i]]$height)) 
+                               tags$div(id = paste0("graph-in_", i), class = "render-output",
+                                        style = paste0("padding:1px;display:none;", if(!is.null(configGraphsIn[[i]]$height))
                                           sprintf("min-height: %s;", addCssDim(configGraphsIn[[i]]$height, 5)))
                                ))
                            }
@@ -324,7 +324,7 @@ if(buildUI){
       }
       return(tabContent)
     })
-    
+
     return(tabPanel(
       title = inputTabTitles[[tabId]][1],
       value = paste0("inputTabset_", tabId),
@@ -333,7 +333,7 @@ if(buildUI){
                         btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs,
                         content)
       }else{
-        tagList(tags$div(class="small-space"), 
+        tagList(tags$div(class="small-space"),
                 if(length(inputTabs[[tabId]]) > 1L){
                   fluidRow(content)
                 }else{
@@ -345,11 +345,11 @@ if(buildUI){
   })
   if(length(config$readmeFile)){
     inputTabContent <- c(list(tabPanel(
-      title = if(length(config$readme$tabTitle)) 
+      title = if(length(config$readme$tabTitle))
         config$readme$tabTitle else
           "README",
       value = "inputTabset_0",
-      tagList(tags$div(class="small-space"), 
+      tagList(tags$div(class="small-space"),
               tags$div(class="readme-wrapper",
                        HTML(config$readmeFile)),
               tags$div(class="small-space"))
@@ -359,16 +359,16 @@ if(buildUI){
     tabItem(tabName = "inputData",
             fluidRow(
               box(title = list(
-                tags$div(id = "dirtyFlagIcon", title = lang$nav$inputScreen$dirtyFlag, class = "inline-el", 
+                tags$div(id = "dirtyFlagIcon", title = lang$nav$inputScreen$dirtyFlag, class = "inline-el",
                          style = "display:none;", icon("exclamation-triangle")),
                 uiOutput("inputDataTitle", inline = TRUE),
-                tags$div(style = "float: right;", 
+                tags$div(style = "float: right;",
                          HTML(paste0('<button type="button" class="btn btn-default bt-icon btRemove" id="btRemove1"
-                                   onclick="Miro.confirmModalShow(\'', 
-                                     lang$nav$dialogRemoveScen$title, '\', \'', 
-                                     lang$nav$dialogRemoveScen$desc, '\', \'', 
-                                     lang$nav$dialogRemoveScen$cancelButton, '\', \'', 
-                                     lang$nav$dialogRemoveScen$okButton, 
+                                   onclick="Miro.confirmModalShow(\'',
+                                     lang$nav$dialogRemoveScen$title, '\', \'',
+                                     lang$nav$dialogRemoveScen$desc, '\', \'',
+                                     lang$nav$dialogRemoveScen$cancelButton, '\', \'',
+                                     lang$nav$dialogRemoveScen$okButton,
                                      '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
                             <i class="fa fa-times" role="presentation" aria-label="', lang$nav$dialogRemoveScen$title, '"></i></button>'))
                 )
@@ -385,15 +385,15 @@ if(buildUI){
                        )
               ),
               tags$div(class="small-space"),
-              MIROtabBox(id = "inputTabset", 
-                         btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs, 
+              MIROtabBox(id = "inputTabset",
+                         btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs,
                          inputTabContent, hideTabs = identical(length(inputTabContent), 1L))
               )
             )
     ),
     tabItem(tabName = "loadResults",
             fluidRow(
-              box(title = lang$nav$queryBuilder$title, status="primary", 
+              box(title = lang$nav$queryBuilder$title, status="primary",
                   solidHeader = TRUE, width = 12, style="overflow-x: auto",
                   tags$div(id = "loadContent",
                            tags$div(id = "selectorsWrapper"
@@ -402,24 +402,24 @@ if(buildUI){
                                     actionButton("btNewBlock", label = lang$nav$queryBuilder$orButton,
                                                  class = "btn-custom")),
                            tags$div(class = "item-or-query",
-                                    actionButton("btSendQuery", label = lang$nav$queryBuilder$queryButton, 
+                                    actionButton("btSendQuery", label = lang$nav$queryBuilder$queryButton,
                                                  class = "bt-highlight-1")
                            )
                   ),
                   genSpinner(id = "hyperQueryLoad", hidden = TRUE, absolute = FALSE),
                   tags$div(id = "queryBuilderError", class = "gmsalert gmsalert-error"),
                   tags$div(style = "min-height: 80px;", dataTableOutput("batchLoadResults")),
-                  tags$div(id = "batchLoadNoData", 
+                  tags$div(id = "batchLoadNoData",
                            style = "text-align:center;font-size:16px;font-weight:bold;margin:20px;display:none;",
                            lang$nav$queryBuilder$noData),
                   tags$div(id = "batchLoadButtons", style = "display:none;padding:30px 0 50px 0;",
                            tags$div(class = "col-sm-6",
                                     tags$div(
-                                      actionButton("hcubeLoadSelected", lang$nav$queryBuilder$chooseSelectedButton , 
+                                      actionButton("hcubeLoadSelected", lang$nav$queryBuilder$chooseSelectedButton ,
                                                    class = "bt-highlight-1"),
-                                      actionButton("hcubeLoadCurrent", lang$nav$queryBuilder$chooseCurrentButton , 
+                                      actionButton("hcubeLoadCurrent", lang$nav$queryBuilder$chooseCurrentButton ,
                                                    class = "bt-highlight-1"),
-                                      actionButton("hcubeLoadAll", lang$nav$queryBuilder$chooseAllButton, 
+                                      actionButton("hcubeLoadAll", lang$nav$queryBuilder$chooseAllButton,
                                                    class = "bt-highlight-1")
                                     )
                            ),
@@ -439,11 +439,11 @@ if(buildUI){
                               tags$a(id = "btCmpTabCloseAll", style = "padding: 3px;",
                                      style = "display:none",
                                      href = "#",
-                                     onclick = paste0("Miro.confirmModalShow('", 
-                                                      lang$nav[["dialogCloseAllScen"]]$title, "', '", 
-                                                      lang$nav[["dialogCloseAllScen"]]$desc, "', '", 
-                                                      lang$nav[["dialogCloseAllScen"]]$cancelButton, "', '", 
-                                                      lang$nav[["dialogCloseAllScen"]]$okButton, 
+                                     onclick = paste0("Miro.confirmModalShow('",
+                                                      lang$nav[["dialogCloseAllScen"]]$title, "', '",
+                                                      lang$nav[["dialogCloseAllScen"]]$desc, "', '",
+                                                      lang$nav[["dialogCloseAllScen"]]$cancelButton, "', '",
+                                                      lang$nav[["dialogCloseAllScen"]]$okButton,
                                                       "','Shiny.setInputValue(\\'btCmpTabCloseAll\\',1,{priority:\\'event\\'})')"),
                                      lang$nav$scen$btCloseAll)),
                      tabsetPanel(id="scenTabset"),
@@ -457,22 +457,22 @@ if(buildUI){
             ),
             fluidRow(
               tags$div(id = "scen-split-view", style = if(identical(config$defCompMode, "split")) "" else "display:none;",
-                       box(width = 6, solidHeader = TRUE, status="primary", title = 
+                       box(width = 6, solidHeader = TRUE, status="primary", title =
                              tagList(tags$span(id = "cmpScenTitle_2"),
-                                     tags$div(style = "float: right;", 
-                                              actionButton(inputId = "btScenSplit1_close", 
+                                     tags$div(style = "float: right;",
+                                              actionButton(inputId = "btScenSplit1_close",
                                                            class = "bt-icon",
-                                                           icon = icon("times"), 
-                                                           label = NULL))), 
-                           tags$div(id = "scenSplit1_content", style = "display:none;"), 
+                                                           icon = icon("times"),
+                                                           label = NULL))),
+                           tags$div(id = "scenSplit1_content", style = "display:none;"),
                            genSplitCompButtons(1)
                        ),
-                       box(width = 6, solidHeader = TRUE, status="primary", 
+                       box(width = 6, solidHeader = TRUE, status="primary",
                            title = tagList(tags$span(id = "cmpScenTitle_3"),
-                                           tags$div(style = "float: right;", 
-                                                    actionButton(inputId = "btScenSplit2_close", 
+                                           tags$div(style = "float: right;",
+                                                    actionButton(inputId = "btScenSplit2_close",
                                                                  class = "bt-icon", icon = icon("times"), label = NULL))),
-                           tags$div(id = "scenSplit2_content", style = "display:none;"), 
+                           tags$div(id = "scenSplit2_content", style = "display:none;"),
                            genSplitCompButtons(2)
                        )
               )
@@ -483,28 +483,28 @@ if(buildUI){
     tabItemList <- c(tabItemList, list(
       tabItem(tabName = "importData",
               fluidRow(
-                box(title = tagList(lang$nav$hcubeImport$title, 
-                                    tags$div(title = lang$nav$hcubeImport$refresh, style = "float: right;", 
+                box(title = tagList(lang$nav$hcubeImport$title,
+                                    tags$div(title = lang$nav$hcubeImport$refresh, style = "float: right;",
                                              actionButton(
-                                               inputId = "refreshActiveJobs", 
-                                               class = "bt-icon", 
+                                               inputId = "refreshActiveJobs",
+                                               class = "bt-icon",
                                                icon = icon("refresh"), label = NULL))),
                     status="primary", solidHeader = TRUE, width = 12,
                     genSpinner("jImport_load", absolute = FALSE),
                     getJobsTableSkeleton(id = "jImport_output"),
                     tags$div(class = "col-sm-6",
-                             actionButton("btShowHistory", 
+                             actionButton("btShowHistory",
                                           lang$nav$hcubeImport$btShowHistory)
                     ),
                     tags$div(class = "col-sm-6", style = "text-align:right;",
-                             actionButton("btManualImport", 
+                             actionButton("btManualImport",
                                           lang$nav$hcubeImport$btManualImport)
                     )
                 )
               )
       ),
       tabItem(tabName = "hcubeAnalyze",
-              box(width = NULL, solidHeader = TRUE, status="primary", title = lang$nav$hcubeAnalyze$title, 
+              box(width = NULL, solidHeader = TRUE, status="primary", title = lang$nav$hcubeAnalyze$title,
                   tabsetPanel(id = "analysisResults",
                               tabPanel("Index", value = "analysisResults_1",
                                        tags$div(style = "overflow: auto; height: 75vh;",
@@ -515,7 +515,7 @@ if(buildUI){
                                                          genSpinner(absolute = FALSE),
                                                          actionButton("btAnalysisInterrupt", lang$nav$hcubeAnalyze$btCancel)
                                                 ),
-                                                tags$div(id = "paverFail", class = "gmsalert gmsalert-error", 
+                                                tags$div(id = "paverFail", class = "gmsalert gmsalert-error",
                                                          lang$nav$hcubeAnalyze$failMsg
                                                 ),
                                                 tags$div(id = "newPaverRunButton", class = "centered-div",
@@ -540,7 +540,7 @@ if(buildUI){
         box(title=lang$nav$gams$boxModelStatus$title, status="primary", solidHeader = TRUE, width=12,
             uiOutput("modelStatus"))
       ),
-      if(any(config$activateModules$logFile, config$activateModules$lstFile, 
+      if(any(config$activateModules$logFile, config$activateModules$lstFile,
              config$activateModules$miroLogFile)){
         logTabsetList <- list()
         if(config$activateModules$logFile){
@@ -548,8 +548,8 @@ if(buildUI){
                                         value = "log",
                                         tags$pre(id = "logStatusContainer",
                                                  class = "shiny-text-output noplaceholder"),
-                                        checkboxInput("logUpdate", 
-                                                      label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
+                                        checkboxInput("logUpdate",
+                                                      label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate,
                                                       value = TRUE))
           if(config$activateModules$miroLogFile){
             logTabsetList$miroLog <- tabPanel(title = tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$miroLogFile),
@@ -562,8 +562,8 @@ if(buildUI){
                                         value = "mirolog",
                                         tags$div(id = "logStatusContainer",
                                                  class = "shiny-text-output noplaceholder pre-style-div"),
-                                        checkboxInput("logUpdate", 
-                                                      label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
+                                        checkboxInput("logUpdate",
+                                                      label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate,
                                                       value = TRUE))
         }
         if(config$activateModules$lstFile){
@@ -574,7 +574,7 @@ if(buildUI){
         logTabsetList <- unname(logTabsetList)
         logTabsetList$id <- "logFileTabsset"
         fluidRow(
-          box(title=lang$nav$gams$boxGamsOutput$title, status="primary", solidHeader = TRUE, 
+          box(title=lang$nav$gams$boxGamsOutput$title, status="primary", solidHeader = TRUE,
               width=12, collapsible = TRUE,
               do.call(tabsetPanel, logTabsetList)
           )
@@ -584,8 +584,8 @@ if(buildUI){
     outputTabContent <- lapply(seq_along(outputTabs), function(tabId){
       content <- lapply(outputTabs[[tabId]], function(i){
         tabContent <- tagList(
-          tags$div(id = paste0("scenGraph_1_", i), class = "render-output", 
-                   style = if(!is.null(configGraphsOut[[i]]$height)) 
+          tags$div(id = paste0("scenGraph_1_", i), class = "render-output",
+                   style = if(!is.null(configGraphsOut[[i]]$height))
                      sprintf("min-height: %s;", addCssDim(configGraphsOut[[i]]$height, 5))
           ),
           tags$div(id = paste0("scenTable_1_", i), class = "render-output", style = "display:none;")
@@ -613,7 +613,7 @@ if(buildUI){
                           btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs,
                           content)
         }else{
-          tagList(tags$div(class="small-space"), 
+          tagList(tags$div(class="small-space"),
                   if(length(outputTabs[[tabId]]) > 1L){
                     fluidRow(content)
                   }else{
@@ -646,22 +646,22 @@ if(buildUI){
       tabItem(tabName="gamsinter",
               if(config$activateModules$remoteExecution){
                 fluidRow(
-                  tabBox(width = 12, id = "jobListPanel", 
+                  tabBox(width = 12, id = "jobListPanel",
                          tabPanel(lang$nav$gams$boxGamsOutput$tabCurrent, value = "current",
-                                  outputTabset             
-                         ), 
+                                  outputTabset
+                         ),
                          tabPanel(lang$nav$gams$boxGamsOutput$tabJobList, value = "joblist",
                                   fluidRow(
                                     box(title = tagList(lang$nav$hcubeImport$title,
-                                                        tags$div(style = "float: right;", 
-                                                                 actionButton(inputId = "refreshActiveJobs", 
-                                                                              class = "bt-icon", 
+                                                        tags$div(style = "float: right;",
+                                                                 actionButton(inputId = "refreshActiveJobs",
+                                                                              class = "bt-icon",
                                                                               icon = icon("refresh"), label = NULL))),
                                         status="primary", solidHeader = TRUE, width = 12,
                                         genSpinner("jImport_load", absolute = FALSE),
                                         getJobsTableSkeleton(id = "jImport_output"),
                                         tags$div(class = "col-sm-6",
-                                                 actionButton("btShowHistory", 
+                                                 actionButton("btShowHistory",
                                                               lang$nav$hcubeImport$btShowHistory)
                                         )
                                     )
@@ -675,16 +675,16 @@ if(buildUI){
       tabItem(tabName = "outputData",
               fluidRow(
                 box(title = list(
-                  tags$div(id = "dirtyFlagIconO", title = lang$nav$inputScreen$dirtyFlag, class = "inline-el", 
+                  tags$div(id = "dirtyFlagIconO", title = lang$nav$inputScreen$dirtyFlag, class = "inline-el",
                            style = "display:none;", icon("exclamation-triangle")),
                   uiOutput("outputDataTitle", inline = TRUE),
-                  tags$div(style = "float: right;", 
-                           HTML(paste0('<button type="button" class="btn btn-default bt-icon btRemove" 
-                                   onclick="Miro.confirmModalShow(\'', 
-                                       lang$nav$dialogRemoveScen$title, '\', \'', 
-                                       lang$nav$dialogRemoveScen$desc, '\', \'', 
-                                       lang$nav$dialogRemoveScen$cancelButton, '\', \'', 
-                                       lang$nav$dialogRemoveScen$okButton, 
+                  tags$div(style = "float: right;",
+                           HTML(paste0('<button type="button" class="btn btn-default bt-icon btRemove"
+                                   onclick="Miro.confirmModalShow(\'',
+                                       lang$nav$dialogRemoveScen$title, '\', \'',
+                                       lang$nav$dialogRemoveScen$desc, '\', \'',
+                                       lang$nav$dialogRemoveScen$cancelButton, '\', \'',
+                                       lang$nav$dialogRemoveScen$okButton,
                                        '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
                             <i class="fa fa-times" role="presentation" aria-label="', lang$nav$dialogRemoveScen$title, '"></i></button>'))
                   )
@@ -695,30 +695,30 @@ if(buildUI){
                                     tags$div(title = lang$nav$scen$tooltips$btSymbolLink, class = "scen-button-tt",
                                              tags$button(class = "btn btn-default scen-button", id = "btSymbolLink",
                                                          tags$i(class = "fa fa-share", role = "presentation",
-                                                                `aria-label` = "Load dataset as input data"), 
+                                                                `aria-label` = "Load dataset as input data"),
                                                          onclick = paste0("Miro.confirmModalShow('",
-                                                                          lang$nav$dialogImport$title, "', '", 
-                                                                          lang$nav$dialogImport$descOverwriteInput, "', '", 
-                                                                          lang$nav$dialogImport$cancelButton, "', '",  
-                                                                          lang$nav$dialogImport$okButton, 
+                                                                          lang$nav$dialogImport$title, "', '",
+                                                                          lang$nav$dialogImport$descOverwriteInput, "', '",
+                                                                          lang$nav$dialogImport$cancelButton, "', '",
+                                                                          lang$nav$dialogImport$okButton,
                                                                           "', 'Shiny.setInputValue(\\'btSymbolLink\\',1",
                                                                           ",{priority:\\'event\\'})')"))
                                     )
                                   },
                                   if(isTRUE(config$activateModules$downloadTempFiles)){
                                     tags$div(title = lang$nav$scen$tooltips$btDownloadTmpFiles, class = "scen-button-tt",
-                                             actionButton("btDownloadTmpFiles", icon("folder-open"), 
+                                             actionButton("btDownloadTmpFiles", icon("folder-open"),
                                                           class="scen-button")
                                     )
                                   },
                                   tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
-                                           actionButton("outputTableView", icon("chart-bar"), 
+                                           actionButton("outputTableView", icon("chart-bar"),
                                                         class="scen-button")
                                   )
                          )
                 ),
                 tags$div(class="small-space"),
-                MIROtabBox(id = "outputTabset", btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs, 
+                MIROtabBox(id = "outputTabset", btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs,
                            outputTabContent, hideTabs = identical(length(outputTabContent), 1L))
                 )
               )
@@ -747,12 +747,12 @@ if(buildUI){
         tags$style(HTML(
           paste0('
 .main-header .logo {
-  background-image: url("', 
-if(!identical(config$UILogo, "gams_logo.png") && 
-   dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) 
+  background-image: url("',
+if(!identical(config$UILogo, "gams_logo.png") &&
+   dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName)))
   "static_", modelName, "/", config$UILogo, '") ',
-if(!identical(config$UILogo, "gams_logo.png") && 
-   dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) 
+if(!identical(config$UILogo, "gams_logo.png") &&
+   dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName)))
   '!important;
   background-size: contain;
 }')))),
@@ -790,8 +790,8 @@ HTML(paste0('<!-- Creates modal dialog for confirm messages -->
 </div>
 <div id="loading-screen"><noscript><div class="miro-noscript">Please enable Javascript to use GAMS MIRO</div></noscript>
 <div class="lds-ellipsis" style="position:relative;top:50%;left:50%"><div></div><div></div><div></div><div></div>
-       </div></div><div class="gmsalert gmsalert-error" id="hcubeRunning">', 
-            lang$errMsg$hcubeLaunch$hcubeRunning, '</div>', '<div class="gmsalert gmsalert-error" id="hcubeLaunchError">', 
+       </div></div><div class="gmsalert gmsalert-error" id="hcubeRunning">',
+            lang$errMsg$hcubeLaunch$hcubeRunning, '</div>', '<div class="gmsalert gmsalert-error" id="hcubeLaunchError">',
             lang$errMsg$hcubeLaunch$launchError, '</div>')),
 do.call(tabItems, tabItemList)
     )})
@@ -800,11 +800,11 @@ do.call(tabItems, tabItemList)
     if(!dir.exists(dirname(miroCacheFile))){
       dir.create(dirname(miroCacheFile), recursive = TRUE, mode = "0700")
     }
-    save(list = c("cacheTestDir", "miroBody"), 
+    save(list = c("cacheTestDir", "miroBody"),
          file = miroCacheFile)
   }
 }
 if(dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))){
-  addResourcePath(paste0("static_", modelName), paste0(currentModelDir, .Platform$file.sep, 
+  addResourcePath(paste0("static_", modelName), paste0(currentModelDir, .Platform$file.sep,
                                                        "static_", modelName))
 }

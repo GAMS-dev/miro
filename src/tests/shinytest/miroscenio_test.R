@@ -3,7 +3,7 @@ app$snapshotInit("miroscenio_test")
 
 app$setInputs(inputTabset = "inputTabset_7")
 Sys.sleep(1)
-app$snapshot(items = list(input = paste0("slider_", c("7", "8"))), 
+app$snapshot(items = list(input = paste0("slider_", c("7", "8"))),
              screenshot = TRUE)
 app$setInputs(btImport = "click")
 Sys.sleep(0.5)
@@ -14,7 +14,7 @@ app$uploadFile(localInput = paste0("../data/transport.miroscen"))
 app$setInputs(btImportLocal = "click")
 app$setInputs(inputTabset = "inputTabset_7")
 Sys.sleep(1)
-app$snapshot(items = list(input = paste0("slider_", c("7", "8"))), 
+app$snapshot(items = list(input = paste0("slider_", c("7", "8"))),
              screenshot = TRUE)
 Sys.sleep(0.5)
 app$setInputs(btEditMeta = "click")

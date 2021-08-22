@@ -111,7 +111,7 @@ function stop_proxies
         docker stop $orphaned_adminc | Out-Null
         docker rm $orphaned_adminc | Out-Null
     }
-    
+
     $orphaned_uic = docker container ls -f "network=miroserver-network" -f "ancestor=gams/miro-ui" --format "{{.ID}}"
     if ($orphaned_uic) {
         docker stop $orphaned_uic | Out-Null

@@ -17,13 +17,13 @@ REQUIREDCOLS = ['InputFileName', 'SolverName', 'ObjectiveValue', 'SolverTime'];
 INTCOLS = ['NumberOfEquations', 'NumberOfVariables', 'NumberOfDiscreteVariables', 'NumberOfNonZeros', 'NumberOfNonlinearNonZeros',
            'ModelStatus', 'SolverStatus', 'NumberOfIterations', 'NumberOfDomainViolations', 'NumberOfNodes','TerminationStatus'
            ];
-           
+
 FLOATCOLS = ['ObjectiveValue', 'ObjectiveValueEstimate', 'SolverTime', 'JulianDate', 'ETSolver',
              'PrimalVarInfeas', 'DualVarInfeas', 'PrimalConInfeas', 'DualConInfeas', 'PrimalCompSlack', 'DualCompSlack'];
-           
+
 INSTANCEATTRS = ['Direction', 'NumberOfEquations', 'NumberOfVariables', 'NumberOfDiscreteVariables',
                  'NumberOfNonZeros', 'NumberOfNonlinearNonZeros'];
-                 
+
 SOLVEATTRS = ['JulianDate', 'TerminationStatus', 'PrimalBound', 'DualBound',
               'SolverTime', 'ETSolver', 'NumberOfIterations', 'NumberOfDomainViolations', 'NumberOfNodes',
               'PrimalVarInfeas', 'DualVarInfeas', 'PrimalConInfeas', 'DualConInfeas', 'PrimalCompSlack', 'DualCompSlack'];
@@ -72,7 +72,7 @@ MODELSTAT2SOLUSTAT = {
                        18 : SolutionStatus.Unbounded,
                        19 : SolutionStatus.GlobalInfeasible
                        };
-    
+
 # SOLVER STATUS CODE
 # 1     Normal Completion
 # 2     Iteration Interrupt
@@ -116,15 +116,15 @@ GAMSSOLVERINFINITY = 1e20;
 def addCommandLineOptions(parser) :
     '''Make command line parser aware of command line options of this reader.'''
     parser.add_argument('--optfileisrunname', help = 'whether to treat GAMS option file names as solver run name', action = 'store_true', default = False);
-    
+
 
 def read(f, paver, **attribs) :
     '''Stores data in form of GAMS trace file in a SolveData object.
-    
+
     Currently uses runid 0 for all data.
-    
+
     If a Trace Record Definition is given, assumes that it uses comma separated values.
-    
+
     @param tracefile Name of GAMS trace file.
     @param data Object to store solving data.
     @param optfileisrunname Whether the OptionFile field should be takes as run name instead as part of the solver identifier.
@@ -133,10 +133,10 @@ def read(f, paver, **attribs) :
     '''
     cols = DEFAULTCOLS;
     intracerecorddef = False;
-    
+
     optfileisrunname = False;
     runname = None;
-    solvername = None;    
+    solvername = None;
     if 'optfileisrunname' in attribs :
         optfileisrunname = attribs['optfileisrunname'];
     if 'runname' in attribs :
@@ -144,7 +144,7 @@ def read(f, paver, **attribs) :
     if 'solvername' in attribs :
         solvername = attribs['solvername'];
     settingsname = None;
-    
+
     linenr = 0;
     for line in f :
         linenr += 1;
@@ -155,17 +155,17 @@ def read(f, paver, **attribs) :
                 continue;
             if( line.find('GAMS/Examiner') >= 0 ) :
                 continue;
-        
+
             # starting trace record definition (discards any previously read definition)
             if( line.find('Trace Record Definition') >= 0 ) :
                 cols = [];
                 intracerecorddef = True;
                 continue;
-            
+
             if( intracerecorddef ) :
                 # get rid of '*' and spaces at begin and end
                 line = line[1:].strip();
-                # take empty comment line as end of trace record definition 
+                # take empty comment line as end of trace record definition
                 if len(line) == 0 :
                     intracerecorddef = False;
                     continue;
@@ -179,15 +179,15 @@ def read(f, paver, **attribs) :
                 for c in line.split(',') :
                     assert(len(c.strip()) > 0);
                     cols.append(c.strip());
-                    
+
             elif( line.find('SETTINGS') >= 0 ) :
                 # get rid of '*' and spaces at begin and end
                 line = line[1:].strip();
                 settingsname = line.split(',')[1];
-                    
+
             # skip comment lines
             continue;
-        
+
         if( intracerecorddef ) :
             intracerecorddef = False;
             # check if required columns are present
@@ -195,7 +195,7 @@ def read(f, paver, **attribs) :
                 assert rc in cols, 'Required column "' + str(rc) + '" not in trace records definition for file "' + str(f) +'".';
 
             #print cols;
-            
+
         record = {};
         colit = iter(cols);
         for r in line.split(',') :
@@ -217,7 +217,7 @@ def read(f, paver, **attribs) :
                     record[c] = float(r);
             else :
                 record[c] = r.strip();
-        
+
         # if we seem to get examiner written trace files, take only the lines for the solu point
         # TODO optionally, do SOLUP_SCALED
         if 'WhatPoint' in record and record['WhatPoint'] != 'SOLUP' :
@@ -232,7 +232,7 @@ def read(f, paver, **attribs) :
             thisrunname = runname;
         else :
             thisrunname = '0';
-            
+
         if 'OptionFile' in record and record['OptionFile'] != 'NA' and record['OptionFile'] != '' :
             if settingsname is not None :
                 record['OptionFile'] = settingsname;
@@ -243,25 +243,25 @@ def read(f, paver, **attribs) :
 
         if solverid in solverrename :
             solverid = solverrename[solverid];
-         
+
         if paver.hasSolveAttributes(instanceid, solverid, thisrunname) :
             raise BaseException(str(f) + ':' + str(linenr) + ': Already have data for run ' + thisrunname + ' of solver ' + solverid + ' on instance ' + instanceid + '.');
-            
+
         if ('Direction' in record) and (record['Direction'] != "NA") :
             # map trace record direction (0 = min, 1 = max) to SolveData direction (1 = min, -1 = max)
             record['Direction'] = 1 - 2 * int(record['Direction']);
         else :
             # assume minimization, if not specified
             record['Direction'] = 1;
-        
+
         if 'ModelStatus' in record :
             record['SolutionStatus'] = MODELSTAT2SOLUSTAT[int(record['ModelStatus'])];
-            
+
         if 'SolverStatus' in record :
             record['TerminationStatus'] = SOLVERSTAT2TERMSTAT[int(record['SolverStatus'])];
         elif not 'TerminationStatus' in record :
             raise BaseException(str(f) + ':' + str(linenr) + ': Missing termination status for run ' + thisrunname + ' of solver ' + solverid + ' on instance ' + instanceid + '.\n\t' + line);
-    
+
         if 'ObjectiveValue' in record :
             record['PrimalBound'] = record['ObjectiveValue'];
         else :
@@ -292,11 +292,10 @@ def read(f, paver, **attribs) :
         for c in INSTANCEATTRS :
             if c in record :
                 paver.addInstanceAttribute(instanceid, c, record[c]);
-        
+
         for c in SOLVEATTRS :
             if c in record :
                 paver.addSolveAttribute(instanceid, solverid, thisrunname, c, record[c]);
 
 
     f.close();
-

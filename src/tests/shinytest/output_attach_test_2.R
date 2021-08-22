@@ -63,4 +63,3 @@ Sys.sleep(0.1)
 attachmentList <- app$findElements(".attachment-line")
 expect_identical(length(attachmentList), 4L)
 app$stop()
-

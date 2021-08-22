@@ -30,7 +30,7 @@
     "sidebarButtons":{
       "importInput":"加载数据",
       "solve":"求解模型",
-      "submitJob": "提交作业",				
+      "submitJob": "提交作业",
       "submitHcJob": "提交Hypercube作业",
       "solveHcube":"提交作业",
       "splitView":"拆分视图",
@@ -58,7 +58,7 @@
       "help":{
         "title":"帮助",
         "doc":"文档",
-        "forum": "GAMS World Forum",									
+        "forum": "GAMS World Forum",
         "about":"关于"
       },
       "tooltips":{
@@ -69,7 +69,7 @@
       "btCollapsedTabs": "更多",
       "noDataDep":"请先导入此元素所依赖的所有数据。",
       "widgetTabTitle":"输入小部件",
-	  "dirtyFlag": "该场景包含可能与修改后的输入数据不再对应的输出数据。"																											   
+	  "dirtyFlag": "该场景包含可能与修改后的输入数据不再对应的输出数据。"
     },
     "gams":{
       "boxModelStatus":{
@@ -101,7 +101,7 @@
       "tooltips":{
         "btExport":"导出场景",
         "btTableView":"切换视图",
-		"btSymbolLink": "作为输入数据",									
+		"btSymbolLink": "作为输入数据",
         "btClose":"关闭场景",
         "btClosePivot": "关闭",
         "btAddPivot": "添加场景",
@@ -174,7 +174,7 @@
       "queued": "模型已加入队列",
       "collection": "正在下载结果",
       "exec":"模型执行阶段",
-      "success":"运行已终止。",											   
+      "success":"运行已终止。",
       "error":"运行未终止:"
     },
     "notificationNewInput":{
@@ -187,7 +187,7 @@
       "cancelButton":"取消",
 	  "selDatasets":"选择要导出的数据集",
       "noDsSelected": "未指定任何要导出的数据集。",
-      "cbSelectManually":"手动指定数据集",															   
+      "cbSelectManually":"手动指定数据集",
       "okButton":"导出"
     },
     "dialogSaveSuccess":{
@@ -379,7 +379,7 @@
     "dialogImport":{
       "title":"加载数据",
       "tabLocal": "本地",
-      "tabExternal": "外部",							
+      "tabExternal": "外部",
       "tabDatabase": "数据库",
       "tabHcube": "Hypercube",
       "hcubeHashDesc":"输入要加载的场景的哈希值（来自Hypercube模式），单击该场景并加载。",
@@ -436,7 +436,7 @@
       "maxNoScenExceeded":"已超出可显示场景数的上限，仅显示一个子集。",
       "noDsSelected": "指定要导入的数据集的名称",
       "symNotInDataSrc": "在您提供的数据中找不到您要导入的记录。",
-      "invalidFile": "无法验证上传文件的有效性",																			  
+      "invalidFile": "无法验证上传文件的有效性",
       "sortBy":"排序依据:",
       "btSortNameASC":"名称（ASC）",
       "btSortTimeASC":"时间（ASC）",
@@ -520,7 +520,7 @@
       "cancelButton":"取消",
       "okButton": "提交",
       "successMsg": "该作业已安排。 在作业完成执行后可以立即检索结果。"
-    },						   	  
+    },
     "dialogHcube":{
       "title":"Hypercube配置",
       "desc":"选中%d个场景在Hypercube模式下进行求解。其中, %d个场景已解决。",
@@ -529,7 +529,7 @@
       "newTags":"为作业分配一个或多个标签:",
       "manualSwitch":"手动处理作业？",
       "cancelButton": "取消",
-      "processAllButton":"处理所有",													   
+      "processAllButton":"处理所有",
       "processUnsolvedButton":"仅处理未解决的",
       "successMsg":"Hypercube作业已安排，在作业完成后可以立即查看结果。",
       "waitTime":"提交新作业前，请等待几秒钟。",
@@ -569,7 +569,7 @@
           "completed": "已完成",
           "corrupted": "已损坏",
           "discarded": "已丢弃"
-        },          
+        },
         "ttips":{
           "importedManual":"作业已手动导入。",
           "discardedCorrupted":"该作业已损坏。",
@@ -584,7 +584,7 @@
           "owner":"所有者",
           "date":"提交日期",
           "tags":"作业标签",
-		  "name": "作业名称",				   
+		  "name": "作业名称",
           "status":"状态",
           "action":"行动"
         },
@@ -839,7 +839,7 @@
         "sd": "标准偏差"
       },
       "renderer":{
-        "table": "表格", 
+        "table": "表格",
         "heatmap": "热图",
         "bar": "柱形图",
         "stackedbar": "堆积柱形图",
@@ -937,7 +937,7 @@
       "title":"读取文件时出错",
       "desc":"读取以下文件时出现错误：'%s'。"
     },
-    "invalidFileType":{  
+    "invalidFileType":{
       "title":"无效的文件类型",
       "desc":"MIRO无法读取要导入的文件。 支持的文件类型为： %s."
     },
@@ -1039,11 +1039,11 @@
     "renderGraph":{
       "title":"绘制图形时出错",
       "desc":"绘制输出数据的图形时出现错误:'%s'。"
-    },															 
+    },
     "blankScenName":{
       "title":"未键入名称",
       "desc":"请为要保存的场景输入有效的名称。"
-    },	  
+    },
     "maxScen":{
       "title":"已达到场景个数上限",
       "desc":"已达到可加载场景数的上限，在添加新场景前请先删除部分已存在的场景。"
@@ -1107,7 +1107,7 @@
       "desc": "用于配置的部分图形和小部件已不再属于GAMS或者MIRO的数据集了。要从配置中删除它们吗？请注意，此操作无法撤消！无效符号的图形配置：'%s'。 无效符号的窗口小部件配置：'%s'。",
       "msgSuccess": "已删除无效的配置",
       "btRemoveWidgets": "删除无效的小部件",
-      "btRemoveGraphs": "删除无效的图形", 
+      "btRemoveGraphs": "删除无效的图形",
       "btCancel": "取消"
     },
     "uiR":{
@@ -1147,7 +1147,7 @@
         "tooltipDocs": "打开文档"
       },
       "modalDialog":{
-        "title": "复制图像时出错", 
+        "title": "复制图像时出错",
         "content": "复制图像时出现错误. 如果该问题仍然存在，请与系统管理员联系。"
       },
       "language":{
@@ -1244,7 +1244,7 @@
         "header": "预览标志:",
         "label": "上传该MIRO应用程序的自定义标志： png文件或者jpg文件（最佳格式：4,6：1）",
         "placeholder": "无选中的文件"
-      }, 
+      },
       "actScen":{
         "title" :"保存场景，删除场景和比较场景",
         "label": "激活场景的功能"
@@ -1350,7 +1350,7 @@
           "cancel": "取消",
           "confirm": "确认"
         },
-		"noGraph": "不要显示图形。 只显示表格。",					   
+		"noGraph": "不要显示图形。 只显示表格。",
         "saveJson":{
           "warnTitle": "数据存在",
           "warnContent": "根据配置，不应显示该符号的图形：'％s'。 该GAMS符号的图形配置已存在。 确定要覆盖此配置吗？该操作无法撤消！",
@@ -1456,7 +1456,7 @@
         "date": "日期",
         "daterange": "日期范围",
         "text": "文本框",
-        "numericinput": "数值输入"						  
+        "numericinput": "数值输入"
       },
       "table":{
         "label": "标签（支持Markdown）",
@@ -1474,8 +1474,8 @@
         "label": "选择一个标签",
 		"minlabel": "最小值",
         "maxlabel": "最大值",
-        "defaultlabel": "默认值",		
-		"min": "设置默认的下限值",										  
+        "defaultlabel": "默认值",
+		"min": "设置默认的下限值",
         "max": "设置默认的上限值",
         "default": "设置默认值",
         "dep": "选择要依赖的GAMS符号和标题",
@@ -1493,15 +1493,15 @@
       "sliderrange":{
         "label": "选择一个标签",
 		"minlabel": "最小值",
-        "maxlabel": "最大值",	
-		"min": "设置默认的下限值",										  
-        "dep": "选择要依赖的GAMS符号和标题",											 
+        "maxlabel": "最大值",
+		"min": "设置默认的下限值",
+        "dep": "选择要依赖的GAMS符号和标题",
         "depOp":{
           "label": "选择算子",
           "choices": ["最小值", "最大值", "计数", "平均值", "中值", "方差", "标准差"]
         },
-        "depSelector": "静态值？",										  
-		"max": "设置默认的上限值",								  
+        "depSelector": "静态值？",
+		"max": "设置默认的上限值",
         "default1": "默认的下限值",
         "default2": "默认的上限值",
         "step": "步长（支持小数）",
@@ -1531,7 +1531,7 @@
       },
       "date":{
         "label": "选择一个标签",
-		"defaultlabel": "默认日期",							   
+		"defaultlabel": "默认日期",
         "default": "选择默认日期",
         "defOff": "使用当前日期",
 		"minlabel": "最早日期",
@@ -1540,7 +1540,7 @@
 		"maxlabel": "最晚日期",
         "max": "选择允许的最晚日期",
         "maxOff": "没有最晚日期吗？",
-        "format": "选择格式化日期的方式。",							  
+        "format": "选择格式化日期的方式。",
         "formatCustom": "输入自定义日期格式",
         "formatCustomSelector": "要自定义日期的格式？",
         "startview":{
@@ -1565,11 +1565,11 @@
         "minOff": "没有最早日期吗？",
         "max": "选择允许的最晚日期",
         "defaultStartlabel": "默认开始日期",
-        "defaultEndlabel": "默认结束日期",           
-		"minlabel": "最早日期",							
-		"maxlabel": "最晚日期",						  
-		"maxOff": "没有最晚日期吗？",					   
-		"format": "选择格式化日期的方式。",														  
+        "defaultEndlabel": "默认结束日期",
+		"minlabel": "最早日期",
+		"maxlabel": "最晚日期",
+		"maxOff": "没有最晚日期吗？",
+		"format": "选择格式化日期的方式。",
         "formatCustom": "输入自定义日期格式",
         "formatCustomSelector": "要自定义日期的格式？",
         "startview":{
@@ -1905,7 +1905,7 @@
         "placeholder": "按元素筛选",
         "multiple": "是否允许同时选择几个元素作为筛选器？ （不提供单个下拉菜单的实时预览）",
         "date": "要过滤列中的数据包含日期（时间）。 不支持实时预览！"
-      },					   
+      },
       "saveJson":{
         "warnTitle": "数据存在",
         "warnContent": "该GAMS符号的图形配置已存在：'％s'。 确定要覆盖此配置吗？该操作无法撤消！",

@@ -7,7 +7,7 @@ Sys.sleep(1)
 app$setInputs(in_1_rows_selected = 3, allowInputNoBinding_ = TRUE)
 app$setInputs(in_1_remove_row = "click")
 Sys.sleep(1)
-app$snapshot(items = list(output = "inputDataTitle"), 
+app$snapshot(items = list(output = "inputDataTitle"),
              screenshot = TRUE)
 app$setInputs(in_1_add_row = "click")
 Sys.sleep(1)

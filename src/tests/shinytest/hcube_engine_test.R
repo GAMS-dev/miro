@@ -1,16 +1,16 @@
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("hcube_engine_test")
 
-authHeader <- paste0("Basic ", 
+authHeader <- paste0("Basic ",
                      processx::base64_encode(charToRaw(
-                       paste0(Sys.getenv("ENGINE_USER"), 
+                       paste0(Sys.getenv("ENGINE_USER"),
                               ":", Sys.getenv("ENGINE_PASSWORD")))))
 getLatestJobDetails <- function(token = NULL){
   httr::content(httr::GET(paste0(Sys.getenv("ENGINE_URL"), "/hypercube/",
                                  if(length(token)) paste0("?hypercube_token=", token)),
                           httr::add_headers(Authorization = authHeader),
                           httr::timeout(2L)),
-                type = "application/json", 
+                type = "application/json",
                 encoding = "utf-8")$results[[1]]
 }
 
@@ -71,7 +71,7 @@ Sys.sleep(7)
 app$findElement("#sidebarItemExpanded a[data-value='importData']")$click()
 app$findElement('#refreshActiveJobs')$click()
 Sys.sleep(1)
-expect_true(app$waitFor(paste0("$('#jImport_output td')[0].textContent==='", Sys.info()[["user"]], "'"), timeout = 50)) 
+expect_true(app$waitFor(paste0("$('#jImport_output td')[0].textContent==='", Sys.info()[["user"]], "'"), timeout = 50))
 expect_true(app$waitFor("$('#jImport_output td')[2].innerText==='abcd'", timeout = 50))
 expect_error(app$findElements("#jImport_output button[onclick*='showJobProgress']")[[1]]$click(), NA)
 Sys.sleep(1)

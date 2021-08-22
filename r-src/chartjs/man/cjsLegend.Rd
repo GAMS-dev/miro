@@ -28,4 +28,3 @@ cjsLegend(chartjs, position = NULL, onClick = NULL, fullWidth = NULL,
 \description{
 Add legends
 }
-

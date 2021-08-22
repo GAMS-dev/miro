@@ -8,7 +8,7 @@ isolate({
                                 outputGroups_full = seq_along(configJSON$outputGroups),
                                 symlink = seq_along(configJSON$symbolLinks),
                                 outputAttachments = seq_along(configJSON$outputAttachments)))
-  
+
   groupTemp <- list(inputGroups = configJSON$inputGroups,
                     inputWidgetGroups = configJSON$inputWidgetGroups,
                     outputGroups = configJSON$outputGroups)
@@ -20,23 +20,23 @@ isolate({
   rv$generalConfig$scripts <- configJSON$scripts
   rv$generalConfig$UILogo <- configJSON$UILogo
 })
-scalarSymbols <- setNames(c(names(modelIn), 
-                            if(length(modelIn[[scalarsFileName]])) 
-                              modelIn[[scalarsFileName]]$symnames),  
-                          c(modelInAlias, 
-                            if(length(modelIn[[scalarsFileName]])) 
+scalarSymbols <- setNames(c(names(modelIn),
+                            if(length(modelIn[[scalarsFileName]]))
+                              modelIn[[scalarsFileName]]$symnames),
+                          c(modelInAlias,
+                            if(length(modelIn[[scalarsFileName]]))
                               modelIn[[scalarsFileName]]$symtext))
 scalarSymbols <- scalarSymbols[scalarSymbols %in% scalarInputSym]
 
-baseScriptValidator  <- Validator$new(c("id", "tabTitle", "command", 
+baseScriptValidator  <- Validator$new(c("id", "tabTitle", "command",
                                         "args", "outputFile", "markdown", "timeout"),
                                       configJSON$scripts$base,
-                                      requiredKeys = c("id", "tabTitle", 
+                                      requiredKeys = c("id", "tabTitle",
                                                        "command", "outputFile"))
-hcubeScriptValidator <- Validator$new(c("id", "title", "command", 
+hcubeScriptValidator <- Validator$new(c("id", "title", "command",
                                         "args", "outputFile", "markdown", "timeout"),
                                       configJSON$scripts$hcube,
-                                      requiredKeys = c("id", "title", 
+                                      requiredKeys = c("id", "title",
                                                        "command", "outputFile"))
 outputAttachmentsValidator <- Validator$new(c("filename", "execPerm", "throwError"),
                                       configJSON$outputAttachments,
@@ -61,14 +61,14 @@ if(length(configJSON$outputAttachments))
 output$general_logo_preview <- renderImage({
   rv$customLogoChanged
   isolate({
-    if(identical(rv$generalConfig$UILogo, "gams_logo.png") || 
-       !length(rv$generalConfig$UILogo) || !file.exists(paste0(currentModelDir, .Platform$file.sep, 
-                                                               "static_", modelName, .Platform$file.sep, 
+    if(identical(rv$generalConfig$UILogo, "gams_logo.png") ||
+       !length(rv$generalConfig$UILogo) || !file.exists(paste0(currentModelDir, .Platform$file.sep,
+                                                               "static_", modelName, .Platform$file.sep,
                                                                rv$generalConfig$UILogo))){
       filename <- normalizePath(file.path(getwd(), "www", "gams_logo.png"))
     }else{
-      filename <- normalizePath(paste0(currentModelDir, .Platform$file.sep, 
-                                       "static_", modelName, .Platform$file.sep, 
+      filename <- normalizePath(paste0(currentModelDir, .Platform$file.sep,
+                                       "static_", modelName, .Platform$file.sep,
                                        rv$generalConfig$UILogo))
     }
   })
@@ -111,25 +111,25 @@ observeEvent(input$widget_general_logo_upload, {
   fileName <- inFile$name
   if(!dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))){
     if(!dir.create(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))){
-      flog.error("A problem occurred creating directory: %s. Maybe you have insufficient permissions?", 
+      flog.error("A problem occurred creating directory: %s. Maybe you have insufficient permissions?",
                  paste0(currentModelDir, .Platform$file.sep, "static_", modelName))
-      showModal(modalDialog(lang$adminMode$general$modalDialog$title, 
+      showModal(modalDialog(lang$adminMode$general$modalDialog$title,
                             lang$adminMode$general$modalDialog$content))
       return()
     }
   }else{
-    filesToDelete <- file.path(currentModelDir, paste0("static_", modelName), 
+    filesToDelete <- file.path(currentModelDir, paste0("static_", modelName),
                                rv$generalConfig$UILogo)
     filesFailedToDelete <- !suppressWarnings(file.remove(filesToDelete))
     if(any(filesFailedToDelete)){
-      flog.warn("Problems removing files: '%s'. Do you lack the necessary permissions?", 
+      flog.warn("Problems removing files: '%s'. Do you lack the necessary permissions?",
                 paste(filesToDelete[filesFailedToDelete], collapse = "', '"))
     }
   }
   if(!file.copy(filePath, file.path(currentModelDir, paste0("static_", modelName), fileName), overwrite = TRUE)){
-    flog.error("A problem occurred copying image (%s) to folder: %s. Maybe you have insufficient permissions?", 
+    flog.error("A problem occurred copying image (%s) to folder: %s. Maybe you have insufficient permissions?",
                filePath, paste0(currentModelDir, .Platform$file.sep, "static_", modelName))
-    showModal(modalDialog(lang$adminMode$general$modalDialog$title, 
+    showModal(modalDialog(lang$adminMode$general$modalDialog$title,
                           lang$adminMode$general$modalDialog$content))
     return()
   }
@@ -245,7 +245,7 @@ observeEvent(input$general_overwriteSheetOrderOutput, {
 lapply(c(modelInRaw[[scalarsFileName]]$symnames,
          modelOut[[scalarsOutName]]$symnames), function(name){
            observeEvent(input[[paste0("general_overwriteSymAlias_", name)]], {
-             if(length(input[[paste0("general_overwriteSymAlias_", name)]]) && 
+             if(length(input[[paste0("general_overwriteSymAlias_", name)]]) &&
                 nchar(input[[paste0("general_overwriteSymAlias_", name)]]) > 0L){
                newAlias <- input[[paste0("general_overwriteSymAlias_", name)]]
                if(!length(rv$generalConfig$overwriteAliases)){
@@ -265,7 +265,7 @@ lapply(c(modelInRaw[[scalarsFileName]]$symnames,
          })
 lapply(c(names(modelInRaw), names(modelOut)), function(name){
   observeEvent(input[[paste0("general_overwriteSymAlias_", name)]], {
-    if(length(input[[paste0("general_overwriteSymAlias_", name)]]) && 
+    if(length(input[[paste0("general_overwriteSymAlias_", name)]]) &&
        nchar(input[[paste0("general_overwriteSymAlias_", name)]]) > 0L){
       newAlias <- input[[paste0("general_overwriteSymAlias_", name)]]
       if(!length(rv$generalConfig$overwriteAliases)){
@@ -294,7 +294,7 @@ lapply(c(names(modelInRaw), names(modelOut)), function(name){
       if(any(newHeaders == "")){
         addClassEl(session, paste0("#general_overwriteSymHeaders_", name), "has-error")
         defaultAlias <- TRUE
-      }else if(identical(newHeaders, vapply(dataContract$outputSymbols[[name]]$headers, "[[", 
+      }else if(identical(newHeaders, vapply(dataContract$outputSymbols[[name]]$headers, "[[",
                                             character(1L), "alias",
                                             USE.NAMES = FALSE))){
         removeClassEl(session, paste0("#general_overwriteSymHeaders_", name), "has-error")
@@ -312,7 +312,7 @@ lapply(c(names(modelInRaw), names(modelOut)), function(name){
       if(any(newHeaders == "")){
         addClassEl(session, paste0("#general_overwriteSymHeaders_", name), "has-error")
         defaultAlias <- TRUE
-      }else if(identical(newHeaders, vapply(dataContract$inputSymbols[[name]]$headers, "[[", 
+      }else if(identical(newHeaders, vapply(dataContract$inputSymbols[[name]]$headers, "[[",
                                       character(1L), "alias",
                                       USE.NAMES = FALSE))){
         removeClassEl(session, paste0("#general_overwriteSymHeaders_", name), "has-error")
@@ -359,7 +359,7 @@ observeEvent(input$general_decimal, {
 observeEvent(input$general_mirologfile, {
   if(!nchar(input$general_mirologfile))
     configJSON$miroLogFile <<- NULL
-  if(length(input$general_mirologfile) && 
+  if(length(input$general_mirologfile) &&
      nchar(trimws(input$general_mirologfile))){
     rv$generalConfig$miroLogFile <<- input$general_mirologfile
     return()
@@ -373,9 +373,9 @@ observeEvent(input$add_general, {
   arrayID  <- strsplit(input$add_general[3], "_")[[1]][2]
   arrayIdx <- indexMap$push(arrayID, input$add_general[1])
   arrayIdxAll <- indexMap$push(paste0(arrayID, "_full"), input$add_general[1])
-  
+
   minMembers <- if(identical(arrayID, "inputWidgetGroups")) 0L else 1L
-  
+
   if(length(input$add_general) < 3L || nchar(trimws(input$add_general[2])) < 1L){
     # name has no characters
     if(arrayIdx <= length(rv$generalConfig[[arrayID]])){
@@ -389,7 +389,7 @@ observeEvent(input$add_general, {
       indexMap$pop(arrayID, input$add_general[1])
     }
     newName <- NULL
-    showElReplaceTxt(session, paste0("#", input$add_general[3], input$add_general[1], "_err"), 
+    showElReplaceTxt(session, paste0("#", input$add_general[3], input$add_general[1], "_err"),
                      lang$adminMode$widgets$validate$val36)
   }else{
     newName <- input$add_general[2]
@@ -398,21 +398,21 @@ observeEvent(input$add_general, {
       if(identical(arrayID, "inputWidgetGroups")){
         updateSheetOrderInput(arrayIdxAll, newName)
       }
-    }else if(arrayIdxAll <= length(groupTemp[[arrayID]]) && 
+    }else if(arrayIdxAll <= length(groupTemp[[arrayID]]) &&
              length(groupTemp[[arrayID]][[arrayIdxAll]]$members) > minMembers &&
-             !any(groupTemp[[arrayID]][[arrayIdxAll]]$members %in% 
+             !any(groupTemp[[arrayID]][[arrayIdxAll]]$members %in%
                   unlist(lapply(rv$generalConfig[[arrayID]][-arrayIdx], "[[", "members"), use.names = FALSE))){
-      rv$generalConfig[[arrayID]][[arrayIdx]] <- list(name = newName, 
+      rv$generalConfig[[arrayID]][[arrayIdx]] <- list(name = newName,
                                                       members = groupTemp[[arrayID]][[arrayIdxAll]]$members,
                                                       sameTab = isTRUE(groupTemp[[arrayID]][[arrayIdxAll]]$sameTab))
       if(identical(arrayID, "inputWidgetGroups")){
         updateSheetOrderInput(arrayIdxAll, newName)
       }
     }else{
-      showElReplaceTxt(session, paste0("#group_member", 
-                                       if(identical(arrayID, "inputGroups")) "In" 
-                                       else if(identical(arrayID, "inputWidgetGroups")) "Widget" else "Out", 
-                                       input$add_general[1], "_err"), 
+      showElReplaceTxt(session, paste0("#group_member",
+                                       if(identical(arrayID, "inputGroups")) "In"
+                                       else if(identical(arrayID, "inputWidgetGroups")) "Widget" else "Out",
+                                       input$add_general[1], "_err"),
                        lang$adminMode$widgets$validate[[if(minMembers == 0L) "val37a" else "val37"]])
     }
     hideEl(session, paste0("#", input$add_general[3], input$add_general[1], "_err"))
@@ -424,17 +424,17 @@ observeEvent(input$add_general, {
   }
 })
 validateSymbolLink <- function(sourceSym, targetSym, arrayId){
-  if(!identical(vapply(modelInRaw[[targetSym]]$headers, 
+  if(!identical(vapply(modelInRaw[[targetSym]]$headers,
                        "[[", character(1L), "type",
                        USE.NAMES = FALSE),
-                vapply(modelOut[[sourceSym]]$headers, 
+                vapply(modelOut[[sourceSym]]$headers,
                        "[[", character(1L), "type",
                        USE.NAMES = FALSE))){
-    showElReplaceTxt(session, paste0("#symlink_target", 
+    showElReplaceTxt(session, paste0("#symlink_target",
                                      arrayId, "_err"),
                      lang$adminMode$widgets$validate$val47)
   }else{
-    hideEl(session, paste0("#symlink_target", 
+    hideEl(session, paste0("#symlink_target",
                            arrayId, "_err"))
   }
 }
@@ -443,20 +443,20 @@ observeEvent(input$add_symlink, {
     return()
   }
   arrayIdx <- indexMap$push("symlink", input$add_symlink[1])
-  
+
   if(!length(arrayIdx)){
     flog.error("Bad index for symbolLink detected: '%s'. Please report to GAMS!", arrayIdx)
     return()
   }
   if(arrayIdx <= length(rv$generalConfig$symbolLinks)){
     rv$generalConfig$symbolLinks[[arrayIdx]]$source <<- input$add_symlink[2]
-    validateSymbolLink(input$add_symlink[2], 
+    validateSymbolLink(input$add_symlink[2],
                        rv$generalConfig$symbolLinks[[arrayIdx]]$target,
                        input$add_symlink[1])
   }else{
     rv$generalConfig$symbolLinks[[arrayIdx]] <<- list(source = input$add_symlink[2],
                                                       target = inputSymMultiDim[[1L]])
-    validateSymbolLink(input$add_symlink[2], 
+    validateSymbolLink(input$add_symlink[2],
                        inputSymMultiDim[[1L]],
                        input$add_symlink[1])
   }
@@ -465,9 +465,9 @@ observeEvent(input$symlink_target, {
   if(length(input$symlink_target) < 2L){
     return()
   }
-  arrayIdx <- indexMap$push("symlink", 
+  arrayIdx <- indexMap$push("symlink",
                             input$symlink_target[1])
-  
+
   if(length(arrayIdx) && arrayIdx <= length(rv$generalConfig$symbolLinks)){
     targetSym <- input$symlink_target[2]
     rv$generalConfig$symbolLinks[[arrayIdx]]$target <<- targetSym
@@ -479,7 +479,7 @@ observeEvent(input$remove_symlink, {
   if(length(input$remove_symlink) < 3L){
     return()
   }
-  arrayIdx <- indexMap$pop("symlink", 
+  arrayIdx <- indexMap$pop("symlink",
                            input$remove_symlink[3])
   if(length(arrayIdx) && arrayIdx <= length(rv$generalConfig$symbolLinks)){
     rv$generalConfig$symbolLinks[[arrayIdx]] <<- NULL
@@ -495,7 +495,7 @@ observeEvent(input$add_script, {
   }
   isHcubeScript <- identical(input$add_script[3], "scripts_hcube")
   if(!grepl("^[[:alnum:]]+$", input$add_script[2])){
-    showElReplaceTxt(session, paste0("#", input$add_script[3], arrayID, "_err"), 
+    showElReplaceTxt(session, paste0("#", input$add_script[3], arrayID, "_err"),
                      lang$adminMode$widgets$validate$val49)
     if(isHcubeScript){
       rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
@@ -514,7 +514,7 @@ observeEvent(input$add_script, {
     validScriptIds <- baseScriptValidator$getValid("id")
   }
   if(input$add_script[2] %in% validScriptIds){
-    showElReplaceTxt(session, paste0("#", input$add_script[3], arrayID, "_err"), 
+    showElReplaceTxt(session, paste0("#", input$add_script[3], arrayID, "_err"),
                      lang$adminMode$widgets$validate$val50)
     if(isHcubeScript){
       rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
@@ -548,12 +548,12 @@ observeEvent(input$scriptsB_title, {
   }
   val <- input$scriptsB_title[2]
   if(!length(val) || !nchar(val)){
-    showElReplaceTxt(session, paste0("#scriptsB_title", arrayID, "_err"), 
+    showElReplaceTxt(session, paste0("#scriptsB_title", arrayID, "_err"),
                      lang$adminMode$widgets$validate$val51)
     return()
   }
   hideEl(session, paste0("#scriptsB_title", arrayID, "_err"))
-  
+
   rv$generalConfig$scripts$base <- baseScriptValidator$
     setVal(arrayID, "tabTitle", val)$
     getValidData()
@@ -568,12 +568,12 @@ observeEvent(input$scriptsB_cmd, {
   }
   val <- input$scriptsB_cmd[2]
   if(!length(val) || !nchar(val)){
-    showElReplaceTxt(session, paste0("#scriptsB_cmd", arrayID, "_err"), 
+    showElReplaceTxt(session, paste0("#scriptsB_cmd", arrayID, "_err"),
                      lang$adminMode$widgets$validate$val52)
     return()
   }
   hideEl(session, paste0("#scriptsB_cmd", arrayID, "_err"))
-  
+
   rv$generalConfig$scripts$base <- baseScriptValidator$
     setVal(arrayID, "command", val)$
     getValidData()
@@ -606,12 +606,12 @@ observeEvent(input$scriptsB_outFile, {
   }
   val <- input$scriptsB_outFile[2]
   if(!length(val) || !nchar(val)){
-    showElReplaceTxt(session, paste0("#scriptsB_outFile", arrayID, "_err"), 
+    showElReplaceTxt(session, paste0("#scriptsB_outFile", arrayID, "_err"),
                      lang$adminMode$widgets$validate$val53)
     return()
   }
   hideEl(session, paste0("#scriptsB_outFile", arrayID, "_err"))
-  
+
   rv$generalConfig$scripts$base <- baseScriptValidator$
     setVal(arrayID, "outputFile", val)$
     getValidData()
@@ -664,12 +664,12 @@ observeEvent(input$scriptsH_title, {
   }
   val <- input$scriptsH_title[2]
   if(!length(val) || !nchar(val)){
-    showElReplaceTxt(session, paste0("#scriptsH_title", arrayID, "_err"), 
+    showElReplaceTxt(session, paste0("#scriptsH_title", arrayID, "_err"),
                      lang$adminMode$widgets$validate$val51)
     return()
   }
   hideEl(session, paste0("#scriptsH_title", arrayID, "_err"))
-  
+
   rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
     setVal(arrayID, "title", val)$
     getValidData()
@@ -684,12 +684,12 @@ observeEvent(input$scriptsH_cmd, {
   }
   val <- input$scriptsH_cmd[2]
   if(!length(val) || !nchar(val)){
-    showElReplaceTxt(session, paste0("#scriptsH_cmd", arrayID, "_err"), 
+    showElReplaceTxt(session, paste0("#scriptsH_cmd", arrayID, "_err"),
                      lang$adminMode$widgets$validate$val52)
     return()
   }
   hideEl(session, paste0("#scriptsH_cmd", arrayID, "_err"))
-  
+
   rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
     setVal(arrayID, "command", val)$
     getValidData()
@@ -722,12 +722,12 @@ observeEvent(input$scriptsH_outFile, {
   }
   val <- input$scriptsH_outFile[2]
   if(!length(val) || !nchar(val)){
-    showElReplaceTxt(session, paste0("#scriptsH_outFile", arrayID, "_err"), 
+    showElReplaceTxt(session, paste0("#scriptsH_outFile", arrayID, "_err"),
                      lang$adminMode$widgets$validate$val53)
     return()
   }
   hideEl(session, paste0("#scriptsH_outFile", arrayID, "_err"))
-  
+
   rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
     setVal(arrayID, "outputFile", val)$
     getValidData()
@@ -803,7 +803,7 @@ observeEvent(input$add_attach, {
     return()
   }
   if(!identical(sanitizeFn(input$add_attach[2]), input$add_attach[2])){
-    showElReplaceTxt(session, paste0("#", input$add_attach[3], arrayID, "_err"), 
+    showElReplaceTxt(session, paste0("#", input$add_attach[3], arrayID, "_err"),
                      lang$adminMode$widgets$validate$val57)
     rv$generalConfig$outputAttachments <- outputAttachmentsValidator$
       removeKey(arrayID, "filename")$
@@ -811,7 +811,7 @@ observeEvent(input$add_attach, {
     return()
   }
   if(input$add_attach[2] %in% outputAttachmentsValidator$getValid("filename")){
-    showElReplaceTxt(session, paste0("#", input$add_attach[3], arrayID, "_err"), 
+    showElReplaceTxt(session, paste0("#", input$add_attach[3], arrayID, "_err"),
                      lang$adminMode$widgets$validate$val56)
     rv$generalConfig$outputAttachments <- outputAttachmentsValidator$
       removeKey(arrayID, "filename")$
@@ -881,23 +881,23 @@ observeEvent(input$remove_attach, {
 changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID, minNoMembers = 2L){
   arrayIdx <- indexMap$push(arrayID, groupMembers[1])
   arrayIdxAll <- indexMap$push(paste0(arrayID, "_full"), groupMembers[1])
-  
-  if(length(groupMembers) > minNoMembers && 
+
+  if(length(groupMembers) > minNoMembers &&
      !any(groupMembers[-1] %in% unlist(lapply(rv$generalConfig[[arrayID]][-arrayIdx], "[[", "members"), use.names = FALSE))){
     newMembers <- groupMembers[2:length(groupMembers)]
     if(arrayIdx <= length(rv$generalConfig[[arrayID]]) && length(rv$generalConfig[[arrayID]][[arrayIdx]])){
       rv$generalConfig[[arrayID]][[arrayIdx]]$members <- newMembers
-    }else if(arrayIdxAll <= length(groupTemp[[arrayID]]) && 
+    }else if(arrayIdxAll <= length(groupTemp[[arrayID]]) &&
              length(groupTemp[[arrayID]][[arrayIdxAll]]$name)){
       newName <- groupTemp[[arrayID]][[arrayIdxAll]]$name
-      rv$generalConfig[[arrayID]][[arrayIdx]] <- list(name = newName, 
+      rv$generalConfig[[arrayID]][[arrayIdx]] <- list(name = newName,
                                                       members = newMembers,
                                                       sameTab = isTRUE(groupTemp[[arrayID]][[arrayIdxAll]]$sameTab))
       if(identical(arrayID, "inputWidgetGroups")){
         updateSheetOrderInput(arrayIdxAll, newName)
       }
     }else{
-      showElReplaceTxt(session, paste0("#symbol_", arrayID, input$add_general[1], "_err"), 
+      showElReplaceTxt(session, paste0("#symbol_", arrayID, input$add_general[1], "_err"),
                        lang$adminMode$widgets$validate$val36)
     }
     hideEl(session, paste0("#", HTMLarrayID, groupMembers[1], "_err"))
@@ -913,7 +913,7 @@ changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID, mi
       indexMap$pop(arrayID, groupMembers[1])
     }
     newMembers <- NULL
-    showElReplaceTxt(session, paste0("#", HTMLarrayID, groupMembers[1], "_err"), 
+    showElReplaceTxt(session, paste0("#", HTMLarrayID, groupMembers[1], "_err"),
                      if(identical(minNoMembers, 2L)) lang$adminMode$widgets$validate[[if(minNoMembers == 0L) "val37a" else "val37"]]
                      else lang$adminMode$widgets$validate$val60)
   }
@@ -930,8 +930,8 @@ updateSheetOrderInput <- function(arrayIdx, newName = NULL){
     if(is.null(newName)){
       return()
     }
-    inputTabs <<- c(inputTabs, 
-                    setNames(orderItemId, 
+    inputTabs <<- c(inputTabs,
+                    setNames(orderItemId,
                              newName))
   }else if(is.null(newName)){
     inputTabs <<- inputTabs[-orderItemIdx]
@@ -942,29 +942,29 @@ updateSheetOrderInput <- function(arrayIdx, newName = NULL){
   if(length(input$general_overwriteSheetOrderInput)){
     newSheetOrder <- inputTabs[order(match(inputTabs, input$general_overwriteSheetOrderInput))]
   }
-  updateSelectInput(session, "general_overwriteSheetOrderInput", 
+  updateSelectInput(session, "general_overwriteSheetOrderInput",
                     choices = newSheetOrder, selected = newSheetOrder)
 }
 observeEvent(input$group_memberIn, {
-  changeAndValidateGroupMembers("inputGroups", input$group_memberIn, 
+  changeAndValidateGroupMembers("inputGroups", input$group_memberIn,
                                 "group_memberIn")
 })
 observeEvent(input$group_memberWidget, {
-  changeAndValidateGroupMembers("inputWidgetGroups", input$group_memberWidget, 
+  changeAndValidateGroupMembers("inputWidgetGroups", input$group_memberWidget,
                                 "group_memberWidget", 1L)
 })
 observeEvent(input$group_memberOut, {
-  changeAndValidateGroupMembers("outputGroups", input$group_memberOut, 
+  changeAndValidateGroupMembers("outputGroups", input$group_memberOut,
                                 "group_memberOut")
 })
 observeEvent(input$group_sameTabIn, {
   if(length(input$group_sameTabIn) < 2L)
     return()
-  
+
   arrayIdx <- indexMap$push("inputGroups", input$group_sameTabIn[1])
   arrayIdxAll <- indexMap$push("inputGroups_full", input$group_sameTabIn[1])
   newVal   <- isTRUE(as.logical(input$group_sameTabIn[2]))
-  
+
   if(arrayIdx <= length(rv$generalConfig[["inputGroups"]]) &&
      length(rv$generalConfig[["inputGroups"]][[arrayIdx]])){
     rv$generalConfig[["inputGroups"]][[arrayIdx]]$sameTab <<- newVal
@@ -978,7 +978,7 @@ observeEvent(input$group_sameTabIn, {
 observeEvent(input$group_sameTabWidget, {
   if(length(input$group_sameTabWidget) < 2L)
     return()
-  
+
   arrayIdx <- indexMap$push("inputWidgetGroups", input$group_sameTabWidget[1])
   arrayIdxAll <- indexMap$push("inputWidgetGroups_full", input$group_sameTabWidget[1])
   newVal   <- isTRUE(as.logical(input$group_sameTabWidget[2]))
@@ -995,12 +995,12 @@ observeEvent(input$group_sameTabWidget, {
 observeEvent(input$group_sameTabOut, {
   if(length(input$group_sameTabOut) < 2L)
     return()
-  
+
   arrayIdx <- indexMap$push("outputGroups", input$group_sameTabOut[1])
   arrayIdxAll <- indexMap$push("outputGroups_full", input$group_sameTabOut[1])
   newVal   <- isTRUE(as.logical(input$group_sameTabOut[2]))
-  
-  if(arrayIdx <= length(rv$generalConfig[["outputGroups"]]) && 
+
+  if(arrayIdx <= length(rv$generalConfig[["outputGroups"]]) &&
      length(rv$generalConfig[["outputGroups"]][[arrayIdx]])){
     rv$generalConfig[["outputGroups"]][[arrayIdx]]$sameTab <<- newVal
   }else if(arrayIdxAll <= length(groupTemp[["outputGroups"]]) &&
@@ -1012,9 +1012,9 @@ observeEvent(input$group_sameTabOut, {
 })
 observeEvent(input$remove_general, {
   arrayID <- strsplit(input$remove_general[1], "_")[[1]][2]
-  arrayIdx <- indexMap$pop(arrayID, 
+  arrayIdx <- indexMap$pop(arrayID,
                            input$remove_general[2])
-  arrayIdxAll <- indexMap$pop(paste0(arrayID, "_full"), 
+  arrayIdxAll <- indexMap$pop(paste0(arrayID, "_full"),
                               input$remove_general[2])
   if(length(arrayIdx) &&
      arrayIdx <= length(rv$generalConfig[[arrayID]])){
@@ -1032,24 +1032,24 @@ observeEvent(input$remove_general, {
   }
 })
 observeEvent(input$btEditReadme, {
-  req(length(rv$generalConfig$readme$filename) > 0L, 
+  req(length(rv$generalConfig$readme$filename) > 0L,
       nchar(trimws(rv$generalConfig$readme$filename)) > 0L)
   readmeContent <- character(0L)
   readmeContentParsed <- character(0L)
-  if(length(rv$generalConfig$readme$filename) && 
-     file.exists(file.path(currentModelDir, 
+  if(length(rv$generalConfig$readme$filename) &&
+     file.exists(file.path(currentModelDir,
                            rv$generalConfig$readme$filename))){
-    readmeContent <- read_file(file.path(currentModelDir, 
+    readmeContent <- read_file(file.path(currentModelDir,
                                          rv$generalConfig$readme$filename))
     readmeContentParsed <- HTML(markdownParser$
                                   parseFile(file.path(currentModelDir,
                                                       rv$generalConfig$
                                                         readme$filename)))
   }
-  
+
   showModal(modalDialog(
     title = lang$adminMode$general$readme$dialogEdit$title,
-    tags$div(class = "gmsalert gmsalert-error center-alert", id = "mdSaveError", 
+    tags$div(class = "gmsalert gmsalert-error center-alert", id = "mdSaveError",
              lang$adminMode$general$readme$dialogEdit$msgErrSave),
     fluidRow(
       column(6L,
@@ -1059,9 +1059,9 @@ observeEvent(input$btEditReadme, {
                                             if(isTRUE(input$general_readmeEnableMath)) "true" else "false", ")"),
                            readmeContent)
       ),
-      column(6L, 
+      column(6L,
              tags$div(class = "readme-preview-header", lang$adminMode$general$readme$dialogEdit$markdownHeader),
-             tags$div(id = "mdConvertedContent", 
+             tags$div(id = "mdConvertedContent",
                       class = "readme-wrapper readme-preview-output", readmeContentParsed)
       ),
       tags$script(paste0("setTimeout(function(){Miro.mdToHTML(document.getElementById('mdContent').value,'#mdConvertedContent',",
@@ -1077,7 +1077,7 @@ observeEvent(input$btEditReadme, {
 observeEvent(input$btMdSave, {
   req(length(rv$generalConfig$readme$filename))
   tryCatch({
-    write_file(input$btMdSave, file.path(currentModelDir, 
+    write_file(input$btMdSave, file.path(currentModelDir,
                                          rv$generalConfig$readme$filename))
     removeModal()
   }, error = function(e){
@@ -1093,8 +1093,8 @@ observeEvent(rv$generalConfig, {
   configJSON$inputGroups <<- NULL
   configJSON$outputGroups <<- NULL
   configJSON$inputWidgetGroups <<- NULL
-  if(length(rv$generalConfig$inputGroups) || 
-     length(rv$generalConfig$outputGroups) || 
+  if(length(rv$generalConfig$inputGroups) ||
+     length(rv$generalConfig$outputGroups) ||
      length(rv$generalConfig$inputWidgetGroups)){
     newGeneralJSON <- rv$generalConfig
     newGeneralJSON$inputGroups[vapply(newGeneralJSON$inputGroups, is.null, logical(1L), USE.NAMES = FALSE)] <- NULL

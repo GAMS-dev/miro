@@ -537,8 +537,8 @@ ipcRenderer.on('apps-received', (e, apps, appDataPath, startup = false, deactiva
     if (app.logoPath) {
       logoPath = path.join(appDataPath, app.id, app.logoPath);
     }
-    return `${html}<div class="col-xxl-3 col-lg-4 col-6 miro-app-item" data-id="${app.id}" 
-               data-usetmp="${app.usetmpdir}" data-mode="${app.modesAvailable[0]}" 
+    return `${html}<div class="col-xxl-3 col-lg-4 col-6 miro-app-item" data-id="${app.id}"
+               data-usetmp="${app.usetmpdir}" data-mode="${app.modesAvailable[0]}"
                data-apiver="${app.apiversion}" data-mirover="${app.miroversion}">
                  <div id="appBox_${app.id}" class="app-box launch-app-box app-box-fixed-height" data-id="${app.id}">
                    <div id="appLoadingScreen_${app.id}" class="app-loading-screen" style="display:none">
@@ -572,21 +572,21 @@ data-id="${app.id}" class="app-logo">
                      </div>
                      <div class="dropdown mb-3 btn-launch-wrapper">
                            ${app.modesAvailable.length <= 1
-    ? `<button class="btn btn-outline-secondary btn-launch launch-app" 
-                               type="button" data-id="${app.id}" data-dbpath="${app.dbpath == null ? '' : app.dbpath}" 
-                               data-usetmpdir="${app.usetmpdir}" data-mode="${app.modesAvailable[0]}" 
+    ? `<button class="btn btn-outline-secondary btn-launch launch-app"
+                               type="button" data-id="${app.id}" data-dbpath="${app.dbpath == null ? '' : app.dbpath}"
+                               data-usetmpdir="${app.usetmpdir}" data-mode="${app.modesAvailable[0]}"
                                data-apiversion="${app.apiversion}" data-miroversion="${app.miroversion}">${lang.btLaunch}</button>`
-    : `<button class="btn btn-outline-secondary dropdown-toggle btn-launch" 
+    : `<button class="btn btn-outline-secondary dropdown-toggle btn-launch"
                                type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">${lang.btLaunch}</button>
                              <div class="dropdown-menu dropdown-custom">
-                                 <a class="dropdown-item launch-app" data-id="${app.id}" 
+                                 <a class="dropdown-item launch-app" data-id="${app.id}"
                                    data-usetmpdir="${app.usetmpdir}" data-mode="base" data-dbpath="${app.dbpath == null ? '' : app.dbpath}"
                                    data-apiversion="${app.apiversion}" data-miroversion="${app.miroversion}">${lang.btLaunchBase}</a>
-                                 <a class="dropdown-item launch-app" data-id="${app.id}" 
+                                 <a class="dropdown-item launch-app" data-id="${app.id}"
                                    data-usetmpdir="${app.usetmpdir}" data-mode="hcube" data-dbpath="${app.dbpath == null ? '' : app.dbpath}"
                                    data-apiversion="${app.apiversion}" data-miroversion="${app.miroversion}">${lang.btLaunchHcube}</a>
                              </div>`}
-                           
+
                     </div>
                  </div>
                  <div style="text-align:right;display:none;" class="edit-bt-group">

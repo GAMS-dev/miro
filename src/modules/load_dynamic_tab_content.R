@@ -84,7 +84,7 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
   refId <- tabIdToRef(tabsetId)
   showLoadingScreen(session, 500)
   on.exit(hideLoadingScreen(session))
-  
+
   if(is.null(dynamicUILoaded$dynamicTabsets[[tabsetIdChar]])){
     dynamicUILoaded$dynamicTabsets[[tabsetIdChar]] <<- list(ui = vector("logical", length(configGraphsOut) + length(modelIn)),
                                                             content = vector("logical", length(configGraphsOut) + length(modelIn)))
@@ -144,9 +144,9 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
       tryCatch({
         insertUI(paste0("#scenGraph_", tabsetId, "_", tabId),
                  ui = renderDataUI(paste0(tabsetIdChar,
-                                          "_", tabId), 
-                                   type = graphConfig$outType, 
-                                   graphTool = graphConfig$graph$tool, 
+                                          "_", tabId),
+                                   type = graphConfig$outType,
+                                   graphTool = graphConfig$graph$tool,
                                    customOptions = graphConfig$options,
                                    filterOptions = graphConfig$graph$filter,
                                    height = graphConfig$height,
@@ -155,7 +155,7 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
                  immediate = TRUE)
         dynamicUILoaded$dynamicTabsets[[tabsetIdChar]][["ui"]][tabId] <<- TRUE
       }, error = function(e) {
-        flog.error("Problems rendering UI elements for scenario dataset: '%s'. Error message: %s.", 
+        flog.error("Problems rendering UI elements for scenario dataset: '%s'. Error message: %s.",
                    sheetName, conditionMessage(e))
         errMsg <<- lang$errMsg$loadScen$desc
       })
@@ -170,7 +170,7 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
                                      createdDynamically = FALSE),
                    immediate = TRUE)
         }, error = function(e) {
-          flog.error("Problems rendering table UI for scenario dataset: '%s'. Error message: %s.", 
+          flog.error("Problems rendering table UI for scenario dataset: '%s'. Error message: %s.",
                      sheetName, conditionMessage(e))
           errMsg <<- lang$errMsg$loadScen$desc
         })
@@ -191,8 +191,8 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
             return(paste0(scenMeta[["_uid"]][1], ": ", scenMeta[["_sname"]][1]))
           }, character(1L), USE.NAMES = FALSE)
           dataToRender <- bind_rows(dataToRender, .id = "_scenName")
-          callModule(renderData, paste0(tabsetIdChar, "_", tabId), 
-                     type = "miroPivot", 
+          callModule(renderData, paste0(tabsetIdChar, "_", tabId),
+                     type = "miroPivot",
                      data = dataToRender,
                      customOptions = graphConfig$options,
                      roundPrecision = roundPrecision,
@@ -209,22 +209,22 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
         })
       }else{
         tryCatch({
-          callModule(renderData, paste0(tabsetIdChar, "_", tabId), 
-                     type = graphConfig$outType, 
+          callModule(renderData, paste0(tabsetIdChar, "_", tabId),
+                     type = graphConfig$outType,
                      data = scenData$get(refId,
                                          symNames = c(sheetName, graphConfig$additionalData),
-                                         drop = TRUE), 
-                     configData = scenData$getScalars(refId), 
+                                         drop = TRUE),
+                     configData = scenData$getScalars(refId),
                      dtOptions = graphConfig$datatable,
-                     graphOptions = graphConfig$graph, 
-                     pivotOptions = graphConfig$pivottable, 
+                     graphOptions = graphConfig$graph,
+                     pivotOptions = graphConfig$pivottable,
                      customOptions = graphConfig$options,
                      roundPrecision = roundPrecision,
                      modelDir = modelDir,
                      rendererEnv = rendererEnv[[refId]], views = views, attachments = attachments)
           callModule(renderData, paste0("table_", tabsetIdChar, "_", tabId),
                      type = "datatable",
-                     data = scenData$get(refId, symNames = sheetName, drop = TRUE), 
+                     data = scenData$get(refId, symNames = sheetName, drop = TRUE),
                      dtOptions = graphConfig$datatable, roundPrecision = roundPrecision)
           dynamicUILoaded$dynamicTabsets[[tabsetIdChar]][["content"]][tabId] <<- TRUE
           if(identical(scenData$getById("dirty", refId = refId, drop = TRUE), TRUE)){

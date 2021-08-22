@@ -8,20 +8,20 @@ Db <- R6Class("Db",
                   #
                   # Args:
                   #   dbConf:              list with database connection configuration
-                  #                        includes: type, host, port(optional), username, 
+                  #                        includes: type, host, port(optional), username,
                   #                        password and name elements
                   #   modelName:           name of the current model
                   #   slocktimeLimit:      maximum duration a lock is allowed to persist
                   #   hcubeActive:         boolean that specifies whether Hypercube mode is currently active
                   #   ugroups:             user group(s) (optional)
                   #   forceNew:            force creating new db object even if one already exists
-                  
-                  #BEGIN error checks 
+
+                  #BEGIN error checks
                   if(is.null(private$info$isInitialized) || forceNew){
                     private$info$isInitialized <- 1L
                   }else{
                     flog.error("Db: Tried to create more than one Db object.")
-                    stop("An Object of class Db has already been initialized. Only one Db object allowed.", 
+                    stop("An Object of class Db has already been initialized. Only one Db object allowed.",
                          call. = FALSE)
                   }
                   stopifnot(is.character(uid), length(uid) == 1L)
@@ -39,8 +39,8 @@ Db <- R6Class("Db",
                   stopifnot(is.character(dbConf$type), length(dbConf$type) == 1L,
                             is.character(modelName), length(modelName) == 1L,
                             is.logical(hcubeActive), length(hcubeActive) == 1L)
-                  #END error checks 
-                  
+                  #END error checks
+
                   private$uid                         <- uid
                   if(length(ugroups) >= 1L && is.character(ugroups)){
                     private$userAccessGroups <- paste0("#", ugroups)
@@ -50,16 +50,16 @@ Db <- R6Class("Db",
                   private$modelName                   <- modelName
                   private$slocktimeLimit              <- slocktimeLimit
                   private$hcubeActive                 <- hcubeActive
-                  
+
                   if(identical(dbConf$type, "postgres")){
                     tryCatch({
-                      private$conn <- DBI::dbConnect(drv = RPostgres::Postgres(), dbname = dbConf$name, 
-                                                     host = dbConf$host, port = dbConf$port, 
+                      private$conn <- DBI::dbConnect(drv = RPostgres::Postgres(), dbname = dbConf$name,
+                                                     host = dbConf$host, port = dbConf$port,
                                                      user = dbConf$username, password = dbConf$password,
                                                      bigint = "integer")
                     }, error = function(e){
                       stop(sprintf("Db: Database connection could not be established. Error message: %s",
-                                   conditionMessage(e)), 
+                                   conditionMessage(e)),
                            call. = FALSE)
                     })
                     private$connectionInfo <- list(loc = paste0(dbConf$host, ":", dbConf$port),
@@ -77,7 +77,7 @@ Db <- R6Class("Db",
                         source("./migrations/1-4-0-migrate-db.R")
                         migrateMiroDatabase(oldPath = dbConf$dbPathToMigrate, newPath = dirname(dbConf$name))
                       }, error = function(e){
-                        stop(sprintf("Db: Database could not be migrated. Error message: %s", conditionMessage(e)), 
+                        stop(sprintf("Db: Database could not be migrated. Error message: %s", conditionMessage(e)),
                              call. = FALSE)
                       })
                     }
@@ -87,14 +87,14 @@ Db <- R6Class("Db",
                       self$runQuery("PRAGMA foreign_keys = ON;")
                     }, error = function(e){
                       stop(sprintf("Db: Database connection could not be established. Error message: %s",
-                                   conditionMessage(e)), 
+                                   conditionMessage(e)),
                            call. = FALSE)
                     })
                     private$connectionInfo <- list(loc = dbConf$name,
                                                    name = NULL)
                   }else{
-                    stop(sprintf("Db: A non supported database type (%s) was specified. Could not establish connection.", 
-                                 dbConf$type), call. = FALSE) 
+                    stop(sprintf("Db: A non supported database type (%s) was specified. Could not establish connection.",
+                                 dbConf$type), call. = FALSE)
                   }
                   return(invisible(self))
                 },
@@ -115,11 +115,11 @@ Db <- R6Class("Db",
                   #   list with strings: $loc (location info), $name (database name)
                   return(private$connectionInfo)
                 },
-                getMetadata           = function(sid, uid, sname, stime, stag = character(0L), 
+                getMetadata           = function(sid, uid, sname, stime, stag = character(0L),
                                                  readPerm = character(0L), writePerm = character(0L),
                                                  execPerm = character(0L),
-                                                 uidAlias = "_uid", 
-                                                 snameAlias = "_sname", 
+                                                 uidAlias = "_uid",
+                                                 snameAlias = "_sname",
                                                  stimeAlias = "_time",
                                                  stagAlias = "_stag",
                                                  readPermAlias = "_accessr",
@@ -146,7 +146,7 @@ Db <- R6Class("Db",
                   #
                   # Returns:
                   #   dataframe with metadata
-                  
+
                   #BEGIN error checks
                   if(!length(sid))
                     sid <- NA_integer_
@@ -163,7 +163,7 @@ Db <- R6Class("Db",
                             is.character(stagAlias), is.character(readPermAlias),
                             is.character(writePermAlias), is.character(execPermAlias))
                   #END error checks
-                  
+
                   metadata <- tibble(sid, uid, sname, stime)
                   names(metadata) <- c("_sid", uidAlias, snameAlias, stimeAlias)
                   if(length(stag)){
@@ -181,7 +181,7 @@ Db <- R6Class("Db",
                       metadata[[permList$alias[[i]]]] <- vector2Csv(perm)
                     }
                   }
-                  
+
                   return(metadata)
                 },
                 getAccessPermSubQuery = function(accessId){
@@ -205,7 +205,7 @@ Db <- R6Class("Db",
                                                                        dbSchema$getDbTableName("_scenMeta"))
                         if(length(scenHashes) > 500L){
                                 dbWriteTable(private$conn, "_sys_temp_hashLookup",
-                                             tibble(hash = scenHashes), 
+                                             tibble(hash = scenHashes),
                                              row.names = FALSE, append = FALSE, overwrite = TRUE,
                                              temporary = TRUE)
                                 inClause <- "SELECT hash FROM _sys_temp_hashLookup"
@@ -233,34 +233,34 @@ Db <- R6Class("Db",
                         return(as_tibble(DBI::dbGetQuery(private$conn, query)))
                 },
                 checkSnameExists      = function(sname, uid = NULL, checkNormalScen = FALSE){
-                  # test whether scenario with the given name already exists 
+                  # test whether scenario with the given name already exists
                   # for the user specified
-                  # 
+                  #
                   # Args:
                   #   sname:                scenario name
                   #   uid:                  user ID (optional)
                   #   checkNormalScen:      relevant in HC mode: whether to check HC job config (FALSE)
                   #                         or all normal scenarios (TRUE)
                   #
-                  # Returns: 
-                  #   boolean:              TRUE if id exists, FALSE otherwise, 
+                  # Returns:
+                  #   boolean:              TRUE if id exists, FALSE otherwise,
                   #   throws exception in case of error
-                  
-                  #BEGIN error checks 
+
+                  #BEGIN error checks
                   if(!is.null(uid)){
                     stopifnot(is.character(uid), length(uid) == 1)
                   }else{
                     uid <- private$uid
                   }
                   stopifnot(is.character(sname), length(sname) == 1)
-                  #END error checks 
-                  
+                  #END error checks
+
                   # check whether scenario name already exists
                   scenExists <- self$importDataset("_scenMeta",
                                                    tibble(
                                                      c("_uid",
                                                        "_sname",
-                                                       "_scode"), 
+                                                       "_scode"),
                                                      c(uid, sname,
                                                        if(private$hcubeActive && !checkNormalScen) -1L else 0L),
                                                      c("=", "=",
@@ -271,12 +271,12 @@ Db <- R6Class("Db",
                                  "(Db.checkScenExists returns TRUE).", sname, uid)
                     return(TRUE)
                   }
-                  flog.trace("Db: Scenario with name: '%s' does not yet exist for user: '%s' " %+% 
+                  flog.trace("Db: Scenario with name: '%s' does not yet exist for user: '%s' " %+%
                                "(Db.checkScenExists returns FALSE).", sname, uid)
                   return(FALSE)
                 },
                 getSid = function(sname, uid = NULL){
-                  # fetch scenario ID for a given scenario name/ user ID 
+                  # fetch scenario ID for a given scenario name/ user ID
                   # combination
                   #
                   # Args:
@@ -286,7 +286,7 @@ Db <- R6Class("Db",
                   # Returns:
                   #    integer: scenario ID for the given scenario name
                   #             or 0 in case scenario does not exist
-                  
+
                   # BEGIN error checks
                   if(is.null(uid)){
                     uid <- private$uid
@@ -295,17 +295,17 @@ Db <- R6Class("Db",
                   }
                   stopifnot(is.character(sname), length(sname) == 1)
                   # END error checks
-                  
+
                   metadataRow <- self$importDataset("_scenMeta",
                                                     tibble(
-                                                      c("_uid", 
+                                                      c("_uid",
                                                         "_sname",
                                                         "_scode"),
                                                       c(uid, sname,
-                                                        if(private$hcubeActive) SCODEMAP[['hcube_jobconfig']] 
-                                                        else SCODEMAP[['scen']])), 
+                                                        if(private$hcubeActive) SCODEMAP[['hcube_jobconfig']]
+                                                        else SCODEMAP[['scen']])),
                                                     limit = 1L)
-                  
+
                   if(nrow(metadataRow)){
                     return(as.integer(metadataRow[["_sid"]][1]))
                   }else{
@@ -316,19 +316,19 @@ Db <- R6Class("Db",
                   # Load script results from database
                   #
                   # Args:
-                  #   sids:             scenario IDs to load 
+                  #   sids:             scenario IDs to load
                   #   limit:            maxmimum number of rows to fetch per dataset
                   #   msgProgress:      title and progress info for the progress bar
                   #
                   # Returns:
                   #   list of scenario datasets
-                  
-                  #BEGIN error checks 
+
+                  #BEGIN error checks
                   sids <- suppressWarnings(as.integer(sids))
                   stopifnot(!any(is.na(sids)), length(sids) >= 1)
                   stopifnot(is.numeric(limit), length(limit) == 1)
                   #END error checks
-                  
+
                   #initialize progress bar
                   if(!is.null(msgProgress)){
                           stopifnot(is.character(msgProgress$title), length(msgProgress$title) == 1)
@@ -342,7 +342,7 @@ Db <- R6Class("Db",
                           }
                   }
                   scriptData <- lapply(seq_along(sids), function(i){
-                    dataset <- self$importDataset(tableName = "_scenScripts", 
+                    dataset <- self$importDataset(tableName = "_scenScripts",
                                                   subsetSids = sids[i], limit = limit)
                     dataset[, "_sid"] <- NULL
                     if(!is.null(msgProgress)){
@@ -353,7 +353,7 @@ Db <- R6Class("Db",
                   return(scriptData)
                 },
                 deleteRows        = function(tableName, colNames = NULL, values = NULL,
-                                             conditionSep = c("AND", "OR"), 
+                                             conditionSep = c("AND", "OR"),
                                              subsetSids = NULL, force = FALSE){
                   # remove rows from table where rows have given values
                   #
@@ -367,8 +367,8 @@ Db <- R6Class("Db",
                   #
                   # Returns:
                   #   integer: number of rows deleted
-                  
-                  #BEGIN error checks 
+
+                  #BEGIN error checks
                   stopifnot(is.character(tableName), length(tableName) == 1)
                   if(!is.null(colNames)){
                     stopifnot(is.character(colNames), length(colNames) >= 1)
@@ -381,24 +381,24 @@ Db <- R6Class("Db",
                     stop(sprintf("Can't delete entire table: '%s'. Please specify subset.",
                                  tableName), call. = FALSE)
                   }
-                  #END error checks 
-                  
+                  #END error checks
+
                   tableNameDb <- dbSchema$getDbTableName(tableName)
-                  
+
                   conditionSep <- match.arg(conditionSep)
-                  
+
                   affectedRows <- 0
-                  
+
                   subsetSidSQL <- NULL
-                  
+
                   subsetRows <- NULL
                   if(!is.null(colNames)){
-                    subsetRows <- paste(paste(DBI::dbQuoteIdentifier(private$conn, colNames), 
-                                              DBI::dbQuoteLiteral(private$conn, values), sep = " = "), 
+                    subsetRows <- paste(paste(DBI::dbQuoteIdentifier(private$conn, colNames),
+                                              DBI::dbQuoteLiteral(private$conn, values), sep = " = "),
                                         collapse = paste0(" ", conditionSep, " "))
                   }
                   if(!is.null(subsetSids) && length(subsetSids) >= 1L){
-                    subsetSidSQL <- paste0(DBI::dbQuoteIdentifier(private$conn, "_sid"), 
+                    subsetSidSQL <- paste0(DBI::dbQuoteIdentifier(private$conn, "_sid"),
                                            " IN (",
                                            paste(DBI::dbQuoteLiteral(private$conn, subsetSids), collapse = ","),
                                            ") ")
@@ -418,7 +418,7 @@ Db <- R6Class("Db",
                       subsetCondition <- ""
                     }else{
                       flog.error("No condition provided for rows to delete on table: '%s'.", tableNameDb)
-                      stop(sprintf("No condition provided for rows to delete on table: '%s'.", tableNameDb), 
+                      stop(sprintf("No condition provided for rows to delete on table: '%s'.", tableNameDb),
                            call. = FALSE)
                     }
                   }else{
@@ -447,15 +447,15 @@ Db <- R6Class("Db",
                   #                     (if innerSep AND is TRUE) different blocks are concatenated with OR
                   #   colNames:         column names to update
                   #   values:           character vector of new values that colNames should be set to
-                  #   innerSepAND:      boolean that specifies whether inner seperator in 
-                  #                     substrings should be AND (TRUE) or OR (FALSE)  
+                  #   innerSepAND:      boolean that specifies whether inner seperator in
+                  #                     substrings should be AND (TRUE) or OR (FALSE)
                   #   subsetSids:       vector of scenario IDs that query should be filtered on
                   #
                   # Returns:
                   #   integer with number of affected rows
-                  
+
                   dots <- list(...)
-                  stopifnot(all(vapply(dots, private$isValidSubsetGroup, logical(1L), 
+                  stopifnot(all(vapply(dots, private$isValidSubsetGroup, logical(1L),
                                        USE.NAMES = FALSE)))
                   if(innerSepAND){
                     innerSep <- " AND "
@@ -473,14 +473,14 @@ Db <- R6Class("Db",
                     stopifnot(is.character(colNames), length(colNames) >= 1)
                     stopifnot(length(values) >= 1)
                   }
-                  
+
                   tableNameDb <- dbSchema$getDbTableName(tableName)
-                  
+
                   subsetRows <- self$buildRowSubsetSubquery(dots, innerSep, outerSep)
                   stopifnot(length(subsetRows) >= 0L)
                   if(!is.null(subsetSids) && length(subsetSids) >= 1L){
-                    subsetSidSQL <- paste0(DBI::dbQuoteIdentifier(private$conn, "_sid"), 
-                                           " IN (", paste(DBI::dbQuoteLiteral(private$conn, subsetSids), 
+                    subsetSidSQL <- paste0(DBI::dbQuoteIdentifier(private$conn, "_sid"),
+                                           " IN (", paste(DBI::dbQuoteLiteral(private$conn, subsetSids),
                                                           collapse = ","), ") ")
                     if(length(subsetRows)){
                       subsetRows <- DBI::SQL(paste(subsetRows, subsetSidSQL, sep = " AND "))
@@ -495,8 +495,8 @@ Db <- R6Class("Db",
                   }
                   tryCatch({
                     query <- paste0("UPDATE ", DBI::dbQuoteIdentifier(private$conn, tableNameDb), " SET ",
-                                    paste(paste(DBI::dbQuoteIdentifier(private$conn, colNames), 
-                                                DBI::dbQuoteLiteral(private$conn, values), sep = " = "), 
+                                    paste(paste(DBI::dbQuoteIdentifier(private$conn, colNames),
+                                                DBI::dbQuoteLiteral(private$conn, values), sep = " = "),
                                           collapse = ", "), " WHERE ", subsetRows, subsetWritePerm, ";")
                     affectedRows <- self$runQuery(query)
                     flog.debug("Db: %s rows in table: '%s' were updated (Db.updateRows)",
@@ -518,14 +518,14 @@ Db <- R6Class("Db",
                   #
                   # Returns:
                   #   reference to class or throws exception in case of failure
-                  
-                  stopifnot(inherits(data, "data.frame"),is.character(tableName), 
-                            identical(length(tableName), 1L), 
-                            is.logical(checkColNames), 
+
+                  stopifnot(inherits(data, "data.frame"),is.character(tableName),
+                            identical(length(tableName), 1L),
+                            is.logical(checkColNames),
                             identical(length(checkColNames), 1L))
-                  
+
                   tableNameDb <- dbSchema$getDbTableName(tableName)
-                  
+
                   if(!dbExistsTable(private$conn, tableNameDb)){
                     dbWriteTable(private$conn, tableNameDb, data, row.names = FALSE)
                     return(self)
@@ -535,11 +535,11 @@ Db <- R6Class("Db",
                     return(self)
                   }
                   dataValidate <- self$importDataset(tableName, limit = 1L)
-                  nonMatchingColNames <- is.na(match(names(data), 
+                  nonMatchingColNames <- is.na(match(names(data),
                                                      names(dataValidate)))
                   if(any(nonMatchingColNames)){
                     stop(sprintf("Some columns could not be found in the table: '%s'",
-                                 paste(names(data)[nonMatchingColNames], 
+                                 paste(names(data)[nonMatchingColNames],
                                        collapse = "', '")), call. = FALSE)
                   }
                   if(identical(length(dataValidate, nonMatchingColNames))){
@@ -556,7 +556,7 @@ Db <- R6Class("Db",
                     if(any(class(col) == "POSIXt")){
                       return(rep(NA_character_, nrowData))
                     }
-                    switch(class(col), 
+                    switch(class(col),
                            logical = {
                              return(logical(nrowData))
                            },
@@ -570,20 +570,20 @@ Db <- R6Class("Db",
                              return(rep(NA_character_, nrowData))
                            },
                            {
-                             stop(sprintf("Unknown data type: '%s' of column: '%s'", 
+                             stop(sprintf("Unknown data type: '%s' of column: '%s'",
                                           class(col), colName), call. = FALSE)
                            }
                     )
                   })
                   names(dataList) <- names(dataValidate)
-                  dbWriteTable(private$conn, tableNameDb, as_tibble(dataList), 
+                  dbWriteTable(private$conn, tableNameDb, as_tibble(dataList),
                                row.names = FALSE, append = TRUE)
                   return(self)
                 },
-                importDataset = function(tableName, ..., colNames = NULL, count = FALSE, limit = 1e7, 
+                importDataset = function(tableName, ..., colNames = NULL, count = FALSE, limit = 1e7,
                                          innerSepAND = TRUE, distinct = FALSE, subsetSids = NULL,
                                          orderBy = character(0L), orderAsc = TRUE, isAdmin = FALSE){
-                  # Import the data corresponding to the table name provided from the database by 
+                  # Import the data corresponding to the table name provided from the database by
                   # considering scenario IDs specified.
                   #
                   # Args:
@@ -592,12 +592,12 @@ Db <- R6Class("Db",
                   #                     these will be handled as a block of AND conditions
                   #                     (if innerSep AND is TRUE) different blocks are concatenated with OR
                   #   colNames:         column names to select, if NULL all will be selected (optional)
-                  #   count :           boolean that specifies whether to merely count number 
+                  #   count :           boolean that specifies whether to merely count number
                   #                     of rows or return actual values (optional)
                   #   limit:            maxmimum number of rows to fetch (optional)
-                  #   innerSepAND:      boolean that specifies whether inner seperator in 
-                  #                     substrings should be AND (TRUE) or OR (FALSE)  
-                  #   distinct:         boolean that specifies whether to remove duplicate rows 
+                  #   innerSepAND:      boolean that specifies whether inner seperator in
+                  #                     substrings should be AND (TRUE) or OR (FALSE)
+                  #   distinct:         boolean that specifies whether to remove duplicate rows
                   #                     (TRUE) or not (FALSE)
                   #   subsetSids:       vector of scenario IDs that query should be filtered on
                   #   orderBy:          character vector of columns to order by
@@ -608,10 +608,10 @@ Db <- R6Class("Db",
                   # Returns:
                   #   tibble: dataset (cleaned of metadata columns) with data coming from the table selected.
                   #   In case table does not exist or no rows in dataset, returns NULL
-                  
-                  #BEGIN error checks 
+
+                  #BEGIN error checks
                   dots <- list(...)
-                  stopifnot(all(vapply(dots, private$isValidSubsetGroup, logical(1L), 
+                  stopifnot(all(vapply(dots, private$isValidSubsetGroup, logical(1L),
                                        USE.NAMES = FALSE)))
                   stopifnot(is.character(tableName), length(tableName) == 1)
                   if(!is.null(colNames)){
@@ -635,12 +635,12 @@ Db <- R6Class("Db",
                     subsetSids <- as.integer(subsetSids)
                     stopifnot(!any(is.na(subsetSids)))
                   }
-                  #END error checks 
-                  
+                  #END error checks
+
                   tableNameDb <- dbSchema$getDbTableName(tableName)
-                  
+
                   if(!dbExistsTable(private$conn, tableNameDb)){
-                    flog.debug("Db: A table named: '%s' does not exist in the database (Db.importDataset).", 
+                    flog.debug("Db: A table named: '%s' does not exist in the database (Db.importDataset).",
                                tableNameDb)
                     return(tibble())
                   }else{
@@ -658,7 +658,7 @@ Db <- R6Class("Db",
                     }
                     innerJoin <- NULL
                     subsetRows <- NULL
-                    
+
                     if(length(dots)){
                       subsetRows <- self$buildRowSubsetSubquery(dots, innerSep, outerSep)
                     }
@@ -669,8 +669,8 @@ Db <- R6Class("Db",
                                             ")) vals(_v) ON ",
                                             DBI::dbQuoteIdentifier(private$conn, "_sid"), "=_v")
                       }else{
-                        subsetSidSQL <- paste0(DBI::dbQuoteIdentifier(private$conn, "_sid"), 
-                                               " IN (", paste(DBI::dbQuoteLiteral(private$conn, subsetSids), 
+                        subsetSidSQL <- paste0(DBI::dbQuoteIdentifier(private$conn, "_sid"),
+                                               " IN (", paste(DBI::dbQuoteLiteral(private$conn, subsetSids),
                                                               collapse = ","), ") ")
                         if(length(subsetRows)){
                           subsetRows <- DBI::SQL(paste0(subsetRows, " AND ", subsetSidSQL))
@@ -681,8 +681,8 @@ Db <- R6Class("Db",
                     }
                     orderByQuery <- character(0L)
                     if(length(orderBy)){
-                      orderByQuery <- paste0(" ORDER BY ", 
-                                             paste(DBI::dbQuoteIdentifier(private$conn, 
+                      orderByQuery <- paste0(" ORDER BY ",
+                                             paste(DBI::dbQuoteIdentifier(private$conn,
                                                                           orderBy), collapse = ", "),
                                              if(orderAsc) " ASC" else " DESC")
                     }
@@ -696,9 +696,9 @@ Db <- R6Class("Db",
                       }
                     }
                     tryCatch({
-                      sql     <- DBI::SQL(paste0("SELECT ", colNames, " FROM ", 
+                      sql     <- DBI::SQL(paste0("SELECT ", colNames, " FROM ",
                                                  DBI::dbQuoteIdentifier(private$conn, tableNameDb),
-                                                 innerJoin, 
+                                                 innerJoin,
                                                  if(length(subsetRows)) " WHERE ", subsetRows, orderByQuery,
                                                  " LIMIT ?lim ;"))
                       query   <- DBI::sqlInterpolate(private$conn, sql, lim = limit)
@@ -723,12 +723,12 @@ Db <- R6Class("Db",
                   #   dataset:             dataframe to save
                   #   tableName:           name of the table to export dataframe to
                   #   isHcJobConfig:       boolean that indicates whether data to store is
-                  #                        Hypercube Mode job configuration (optional)   
+                  #                        Hypercube Mode job configuration (optional)
                   #
                   # Returns:
                   #   Db object: invisibly returns reference to object in case of success, throws Exception if error
-                  
-                  #BEGIN error checks 
+
+                  #BEGIN error checks
                   if(!hasContent(dataset)){
                           flog.debug("Db: Nothing was written to table '%s' as no data was provided.", tableNameDb)
                           return(invisible(self))
@@ -736,7 +736,7 @@ Db <- R6Class("Db",
                   stopifnot(inherits(dataset, "data.frame") || is.null(dataset))
                   stopifnot(is.character(tableName), length(tableName) == 1)
                   #END error checks
-                  
+
                   tableNameDb <- dbSchema$getDbTableName(tableName)
                   if(tableName %in% c(scalarsFileName, scalarsOutName)){
                           if(private$hcubeActive && isHcJobConfig &&
@@ -783,7 +783,7 @@ Db <- R6Class("Db",
                   tryCatch({
                           DBI::dbWriteTable(private$conn, tableNameDb, dataset,
                                             row.names = FALSE, append = TRUE)
-                          flog.debug("Db: Data was added to table: '%s' (Db.exportScenDataset).", 
+                          flog.debug("Db: Data was added to table: '%s' (Db.exportScenDataset).",
                                      tableNameDb)
                   }, error = function(e){
                           stop(sprintf("Db: An error occurred writing to database (Db.exportScenDataset, table: '%s'). Error message: %s",
@@ -797,17 +797,17 @@ Db <- R6Class("Db",
             # Args:
             #   metadata:      dataframe containing metadata for one or
             #                  multiple scenarios
-            #   update:        boolean that specifies whether existing metadata 
+            #   update:        boolean that specifies whether existing metadata
             #                  shall be updated
             #
             # Returns:
             #   reference to itself (Db R6 object)
-            
+
             # BEGIN error checks
             stopifnot(inherits(metadata, "data.frame"))
             # END error checks
             metaTabName <- dbSchema$getDbTableName("_scenMeta")
-            
+
             metadata <- dateColToChar(private$conn, metadata)
             if(!DBI::dbExistsTable(private$conn, metaTabName)){
               tryCatch({
@@ -842,27 +842,27 @@ Db <- R6Class("Db",
                                              sid = metadata[["_sid"]][[1]])
               tryCatch({
                 self$runQuery(query)
-                flog.debug("Db: Metadata (table: '%s') was written to database. (Db.writeMetadata).", 
+                flog.debug("Db: Metadata (table: '%s') was written to database. (Db.writeMetadata).",
                            metaTabName)
               }, error = function(e){
                 stop(sprintf("Db: Metadata (table: '%s') could not " %+% "
-        be written to database (Db.writeMetadata). Error message: %s.", 
+        be written to database (Db.writeMetadata). Error message: %s.",
         metaTabName, conditionMessage(e)), call. = FALSE)
               })
             }else{
               # write new metadata
               tryCatch({
-                DBI::dbWriteTable(private$conn, metaTabName, 
+                DBI::dbWriteTable(private$conn, metaTabName,
                                   metadata, row.names = FALSE, append = TRUE)
-                flog.debug("Db: Metadata (table: '%s') was written to database. (Db.writeMetadata).", 
+                flog.debug("Db: Metadata (table: '%s') was written to database. (Db.writeMetadata).",
                            metaTabName)
               }, error = function(e){
                 stop(sprintf("Db: Metadata (table: '%s') could not " %+% "
-        be written to database (Db.writeMetadata). Error message: %s.", 
+        be written to database (Db.writeMetadata). Error message: %s.",
         metaTabName, conditionMessage(e)), call. = FALSE)
               })
             }
-            
+
             invisible(self)
           },
         createJobMeta = function(){
@@ -881,29 +881,29 @@ Db <- R6Class("Db",
           #   gt:              boolean that specifies whether to fetch equal status codes or greater/equal
           #
           # Returns:
-          #   tibble: tibble with all scenarios user has access to read as well 
+          #   tibble: tibble with all scenarios user has access to read as well
           #   as their metadata, throws exception in case of error
           stopifnot(is.integer(scode))
           stopifnot(is.logical(gt), length(gt) == 1L)
-          
+
           if(gt){
-            return(self$importDataset("_scenMeta", 
-                                      tibble("_scode", 
+            return(self$importDataset("_scenMeta",
+                                      tibble("_scode",
                                              scode, ">="), innerSepAND = FALSE))
           }
-          return(self$importDataset("_scenMeta", 
-                                    tibble("_scode", 
+          return(self$importDataset("_scenMeta",
+                                    tibble("_scode",
                                            scode), innerSepAND = FALSE))
-          
+
         },
         buildRowSubsetSubquery = function(subsetData, innerSep, outerSep){
                 brackets <- NULL
                 if(identical(innerSep, " OR "))
                         brackets <- c("(", ")")
-                query <- unlist(lapply(subsetData, private$buildSQLSubsetString, 
+                query <- unlist(lapply(subsetData, private$buildSQLSubsetString,
                                        innerSep), use.names = FALSE)
                 if(length(query))
-                        query <- paste(brackets[1], query, brackets[2],  
+                        query <- paste(brackets[1], query, brackets[2],
                                        collapse = outerSep)
                 else
                         return(character(0L))
@@ -914,7 +914,7 @@ Db <- R6Class("Db",
             return(self$escapePattern(pattern))
           }else{
             bsEscaped <- gsub("\\", "\\\\\\\\", pattern, fixed = TRUE)
-            return(gsub("([.|()^{}+$*?'\"]|\\[|\\])", 
+            return(gsub("([.|()^{}+$*?'\"]|\\[|\\])",
                         "\\\\\\\\\\1", stringi::stri_escape_unicode(bsEscaped)))
           }
         },
@@ -946,7 +946,7 @@ Db <- R6Class("Db",
           hcubeActive         = logical(1L),
           info                = new.env(),
           isValidSubsetGroup  = function(dataFrame){
-            if(inherits(dataFrame, "data.frame") 
+            if(inherits(dataFrame, "data.frame")
                && length(dataFrame) <= 3L
                && is.character(dataFrame[[1]])
                && (is.character(dataFrame[[2]])
@@ -954,9 +954,9 @@ Db <- R6Class("Db",
                    || is.logical(dataFrame[[2]]))){
               if(length(dataFrame) < 3L){
                 return(TRUE)
-              }else if(all(dataFrame[[3]] %in% 
-                           c("=", "<", ">", "<=", ">=", "!=", "<>", 
-                             "SIMILAR TO", "NOT SIMILAR TO", 
+              }else if(all(dataFrame[[3]] %in%
+                           c("=", "<", ">", "<=", ">=", "!=", "<>",
+                             "SIMILAR TO", "NOT SIMILAR TO",
                              "LIKE", "NOT LIKE"))){
                 return(TRUE)
               }
@@ -965,7 +965,7 @@ Db <- R6Class("Db",
           },
           getCsvSubsetClause = function(colName, vector){
             subsetClause <- tibble(colName,
-                                   paste0("%,", self$escapePattern(vector), ",%"), 
+                                   paste0("%,", self$escapePattern(vector), ",%"),
                                    "LIKE")
             return(subsetClause)
           },
@@ -980,7 +980,7 @@ Db <- R6Class("Db",
             checkForNull <- is.na(vals)
             fields <- DBI::dbQuoteIdentifier(private$conn, fields)
             vals   <- DBI::dbQuoteLiteral(private$conn, vals)
-            
+
             if(identical(length(dataFrame), 4L)){
               fields <- paste0(dbQuoteIdentifier(private$conn, dataFrame[[4]]),
                                ".", fields)
@@ -999,28 +999,28 @@ Db <- R6Class("Db",
             # Returns number of unique entries in the specified column
             #
             # Args:
-            #   tableName :      name of the table to retrieve maximum value from 
+            #   tableName :      name of the table to retrieve maximum value from
             #   colName:         column name to fetch maximum from
             #
             # Returns:
-            #   numeric: largest value in the column specified, 
+            #   numeric: largest value in the column specified,
             #   throws exception in case of error
-            
+
             tableNameDb <- dbSchema$getDbTableName(tableName)
-            
+
             if(!dbExistsTable(private$conn, tableNameDb)){
               return(0L)
             }
             tryCatch({
-              query <- DBI::SQL(paste0("SELECT ", DBI::dbQuoteIdentifier(private$conn, colName), 
-                                       " FROM ", DBI::dbQuoteIdentifier(private$conn, tableNameDb), 
-                                       " ORDER BY ", DBI::dbQuoteIdentifier(private$conn, colName), 
+              query <- DBI::SQL(paste0("SELECT ", DBI::dbQuoteIdentifier(private$conn, colName),
+                                       " FROM ", DBI::dbQuoteIdentifier(private$conn, tableNameDb),
+                                       " ORDER BY ", DBI::dbQuoteIdentifier(private$conn, colName),
                                        " DESC LIMIT 1;"))
               max   <- suppressWarnings(as.integer(dbGetQuery(private$conn, query)[[1]][1]))
             }, error = function(e){
               stop(sprintf("An error occurred while querying the database (Db.getMaximum). Error message: %s.", conditionMessage(e)), call. = FALSE)
             })
-            
+
             if(!is.na(max)){
               return(max)
             }else{
@@ -1045,7 +1045,7 @@ Db <- R6Class("Db",
                   scalarsToSave <- dbSchema$getDbViews(tableName)
                   scalarOrder <- match(scalarsToSave, names(dataset))
                   coerceToFloat <- which(symtypes[!is.na(scalarOrder)] == "parameter") + 1L
-                  
+
                   return(suppressWarnings(
                           mutate_at(select(dataset, c(1L, scalarOrder[!is.na(scalarOrder)])),
                                     coerceToFloat, as.numeric)))

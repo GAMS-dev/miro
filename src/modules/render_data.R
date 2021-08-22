@@ -1,4 +1,4 @@
-renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions = NULL, 
+renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions = NULL,
                          filterOptions = NULL, modelDir = NULL, createdDynamically = FALSE, showNoDataTxt = TRUE){
   ns <- NS(id)
   # make output type case insensitive
@@ -6,7 +6,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
   type <- tolower(type)
   if(!length(type))
     type <- "datatable"
-  
+
   if(type == "pivot"){
     # set default height
     if(is.null(height)){
@@ -20,7 +20,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
       if(type == "graph"){
         dataGraph <- plotlyOutput(ns("graph"), height = height)
       }else{
-        dataGraph <- tags$div(class = "renderer-wrapper", 
+        dataGraph <- tags$div(class = "renderer-wrapper",
                               genSpinner(externalStyle = character(0L)),
                               plotlyOutput(ns("graph"), height = height))
       }
@@ -34,13 +34,13 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
       stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS MIRO."))
     }
     if(length(filterOptions$col)){
-      data <- tagList(tags$div(class = "data-filter-wrapper", 
+      data <- tagList(tags$div(class = "data-filter-wrapper",
                                if(isTRUE(filterOptions$date)){
                                  dateRangeInput(ns("data_filter"),
                                                 filterOptions$label)
                                }else{
-                                 selectInput(ns("data_filter"), 
-                                             filterOptions$label, 
+                                 selectInput(ns("data_filter"),
+                                             filterOptions$label,
                                              choices = c(), multiple = isTRUE(filterOptions$multiple))
                                },
                                dataGraph))
@@ -63,7 +63,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
     tryCatch({
       customOutput <- match.fun(typeCustom %+% "Output")
     }, error = function(e){
-      stop(sprintf("An output function for the custom renderer: '%s' was not found. 
+      stop(sprintf("An output function for the custom renderer: '%s' was not found.
                    Please make sure you first define such a function.", typeCustom), call. = FALSE)
     })
     data <- customOutput(ns("custom"), height = height, options = customOptions,
@@ -76,8 +76,8 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
   ))
 }
 
-renderData <- function(input, output, session, data, type, configData = NULL, dtOptions = NULL, 
-                       graphOptions = NULL, pivotOptions = NULL, customOptions = NULL, 
+renderData <- function(input, output, session, data, type, configData = NULL, dtOptions = NULL,
+                       graphOptions = NULL, pivotOptions = NULL, customOptions = NULL,
                        roundPrecision = 2, modelDir = NULL, rendererEnv = NULL, views = NULL,
                        attachments = NULL){
   if(!is.null(graphOptions)){
@@ -104,7 +104,7 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
       hideEl(session, "#" %+% session$ns("noData"))
     }
   }
-  
+
   # make output type case insensitive
   typeCustom <- type
   type <- tolower(type)
@@ -114,19 +114,19 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
     filterCol <- as.name(graphOptions$filter$col)
     if(isTRUE(graphOptions$filter$date)){
       choices <- data[[graphOptions$filter$col]]
-      updateDateRangeInput(session, "data_filter", min = choices[1], 
-                           max = choices[length(choices)], 
+      updateDateRangeInput(session, "data_filter", min = choices[1],
+                           max = choices[length(choices)],
                            start = choices[1], end = choices[length(choices)])
     }else{
       choices <- data[[graphOptions$filter$col]]
-      updateSelectInput(session, "data_filter", choices = choices, 
+      updateSelectInput(session, "data_filter", choices = choices,
                         selected = choices[1])
     }
   }
   if(type == "pivot"){
     output$pivottable <- renderPivot(data, options = pivotOptions, roundPrecision = roundPrecision)
   }else if(type == "graph"){
-    output$graph <- renderGraph(data, configData = configData, options = graphOptions, 
+    output$graph <- renderGraph(data, configData = configData, options = graphOptions,
                                 input = input, filterCol = if(!is.null(filterCol)) filterCol)
   }else if(type == "datatable" || type == "dtgraph"){
     output$datatable <- renderDTable(data, options = dtOptions, roundPrecision = roundPrecision)
@@ -203,19 +203,19 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
       })
     })
   }else if(type == "miropivot"){
-    renderMiroPivot("miroPivot", data, options = customOptions, 
-                    roundPrecision = roundPrecision, 
+    renderMiroPivot("miroPivot", data, options = customOptions,
+                    roundPrecision = roundPrecision,
                     rendererEnv = rendererEnv, views = views)
   }else{
     tryCatch({
       customRenderer <- match.fun(paste0("render", toupper(substr(typeCustom, 1, 1)),
                                          substr(typeCustom, 2, nchar(typeCustom))))
     }, error = function(e){
-      stop(sprintf("A custom renderer function: '%s' was not found. 
+      stop(sprintf("A custom renderer function: '%s' was not found.
                    Please make sure you first define such a function.", typeCustom), call. = FALSE)
     })
     tryCatch({
-      callModule(customRenderer, "custom", data, options = customOptions, 
+      callModule(customRenderer, "custom", data, options = customOptions,
                  path = customRendererDir, rendererEnv = rendererEnv, views = views,
                  attachments = attachments, outputScalarsFull = configData)
     }, error = function(e){
@@ -223,5 +223,5 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
                    conditionMessage(e)), call. = FALSE)
     })
   }
-  
+
 }

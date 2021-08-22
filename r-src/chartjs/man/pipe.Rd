@@ -14,4 +14,3 @@ lhs \%>\% rhs
 \description{
 Imports the pipe operator from magrittr.
 }
-

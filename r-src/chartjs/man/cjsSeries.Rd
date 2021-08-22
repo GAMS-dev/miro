@@ -63,4 +63,3 @@ Use this function to add a series to a chart.
 \item \code{cjs_polarArea}: Add series to a polarArea chart
 }}
 \keyword{internal}
-

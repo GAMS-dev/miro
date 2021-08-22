@@ -1,4 +1,4 @@
-html, 
+html,
 body {
     background-color: #e2e3e8;
     font-family: "montserratlight",sans-serif;
@@ -311,9 +311,9 @@ a:hover {
   }
 }
 .app-window {
-  height:180px; 
-  display: block; 
-  margin:auto; 
+  height:180px;
+  display: block;
+  margin:auto;
   text-align: center;
 }
 .add-app-logo {
@@ -967,7 +967,7 @@ a:hover {
   border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: darken(#848991, 10%); 
+  background: darken(#848991, 10%);
 }
 @media (prefers-color-scheme: dark) {
   .custom-scrollbar::-webkit-scrollbar-track {

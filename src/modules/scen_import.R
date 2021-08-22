@@ -171,7 +171,7 @@ observeEvent(input$btImportLocal, {
     return()
   }
   flog.debug("Load local data button clicked.")
-  
+
   fileExt <- tolower(tools::file_ext(basename(input$localInput$datapath)))
   if(length(fileExt) != 1L){
     flog.error("Bad file extension format. This looks like an attempt to tamper with the app!")
@@ -235,7 +235,7 @@ observeEvent(input$btImportLocal, {
       idsToFetch <- seq_along(modelIn)
     }
   }
-  
+
   datasetsImported <- vapply(idsToFetch, function(i){
     if(length(isolate(rv[[paste0("in_", i)]]))){
       return(TRUE)
@@ -243,7 +243,7 @@ observeEvent(input$btImportLocal, {
       return(FALSE)
     }
   }, logical(1L))
-  
+
   if(any(datasetsImported)){
     hideEl(session, "#importDataTabset")
     showEl(session, "#btOverwriteInput")
@@ -267,22 +267,22 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     flog.error("Try to load local data even though the loadLocal module is disabled! This is most likely because the user is trying to tamper with the app!")
     return()
   }
-  
+
   # initialize new imported sheets counter
   newInputCount <- 0L
   errMsg <- NULL
   scalarDataset <- NULL
-  
+
   loadModeFileName <- basename(input$localInput$datapath)
   loadModeWorkDir  <- dirname(input$localInput$datapath)
   fileType <- tolower(tools::file_ext(loadModeFileName))
-  
+
   prog <- Progress$new()
   on.exit(suppressWarnings(prog$close()))
   prog$set(message = lang$progressBar$importScen$title, value = 0.1)
-  
+
   dfClArgs <- NULL
-  
+
   if(identical(fileType, "miroscen") && useGdx){
     resetWidgetsOnClose <<- FALSE
     if(!closeScenario(clearMeta = TRUE)){
@@ -316,8 +316,8 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   }else if(identical(fileType, "zip")){
     loadMode <- "csv"
     csvFiles <- tryCatch(
-      getValidCsvFromZip(input$localInput$datapath, 
-                         c(names(modelOut), 
+      getValidCsvFromZip(input$localInput$datapath,
+                         c(names(modelOut),
                            inputDsNames), uid)
       , error = function(e){
         errMsg <- conditionMessage(e)
@@ -339,7 +339,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
       }else{
         flog.error("Problems removing temporary directory: '%s'.", csvFiles$tmpDir)
       }}, add = TRUE)
-    datasetsToFetch <- substr(csvFiles$validFileNames, 1L, 
+    datasetsToFetch <- substr(csvFiles$validFileNames, 1L,
                               nchar(csvFiles$validFileNames) - 4L)
     loadModeWorkDir <- csvFiles$tmpDir
   }else if(fileType %in% csvio$getValidExtensions()){
@@ -355,7 +355,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     datasetsToFetch <- xlsio$getSymbolNames()
   }else{
     removeModal()
-    showErrorMsg(lang$errMsg$invalidFileType$title, 
+    showErrorMsg(lang$errMsg$invalidFileType$title,
                  sprintf(lang$errMsg$invalidFileType$desc,
                          paste0(c( "zip", xlsio$getValidExtensions(),csvio$getValidExtensions(),
                                   if(useGdx) c("miroscen", "gdx")), collapse = ",")))
@@ -363,9 +363,9 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     return()
   }
   removeModal()
-  datasetsToFetch <- datasetsToFetch[datasetsToFetch %in% c(names(modelInToImport), 
+  datasetsToFetch <- datasetsToFetch[datasetsToFetch %in% c(names(modelInToImport),
                                                             scalarsFileName)]
-  
+
   # extract scalar sheets
   if(!identical(loadMode, "gdx") &&
      (length(modelIn) > length(modelInTabularData)  || !scalarsFileName %in% names(modelIn))){
@@ -383,21 +383,21 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
       }
     }
   }
-  
+
   # find out which datasets to import from Excel sheet
   if(input$cbSelectManuallyLoc && length(input$selInputDataLoc)){
-    datasetsToFetch <- datasetsToFetch[tolower(datasetsToFetch) %in% 
+    datasetsToFetch <- datasetsToFetch[tolower(datasetsToFetch) %in%
                                          tolower(isolate(input$selInputDataLoc))]
   }
   prog$set(detail = lang$progressBar$importScen$renderInput, value = 0.4)
-  
+
   # reset input data
   modelInputGraphVisible[] <<- FALSE
   lapply(seq_along(modelIn)[names(modelIn) %in% datasetsToFetch], function(i){
     hideEl(session, "#graph-in_" %+% i)
     showEl(session, "#data-in_" %+% i)
   })
-  
+
   loadErrors <- character(0L)
   source("./modules/input_load.R", local = TRUE)
   if(identical(fileType, "miroscen")){
@@ -425,7 +425,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
                                  xlsio = xlsio, csvio = csvio)
       loadErrors <- c(loadErrors, outputData$errors)
     }, error = function(e){
-      flog.info("Problems loading output data. Error message: %s.", 
+      flog.info("Problems loading output data. Error message: %s.",
                 conditionMessage(e))
       errMsg <<- conditionMessage(e)
     })
@@ -440,7 +440,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
       noOutputData <<- TRUE
     }
   }
-  
+
   if(newInputCount){
     showNotification(sprintf(lang$nav$notificationNewInput$new, newInputCount))
   }else{

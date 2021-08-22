@@ -1,5 +1,5 @@
 InputDataInstance <- R6Class("InputDataInstance", public = list(
-  initialize = function(fileExchange = c("csv", "gdx"), 
+  initialize = function(fileExchange = c("csv", "gdx"),
                         gdxio = NULL,
                         csvDelim = ",",
                         sortedNames = character(0L),
@@ -30,7 +30,7 @@ InputDataInstance <- R6Class("InputDataInstance", public = list(
     inputScalars <- tryCatch(self$get(scalarsFileName)[c(1,3)], error = function(e){
       emptyScalarTibble
     })
-    return(pivot_wider(bind_rows(clArgs, inputScalars), 
+    return(pivot_wider(bind_rows(clArgs, inputScalars),
                        names_from = "scalar", values_from = "value"))
   },
   pushClArgs = function(data){
@@ -63,7 +63,7 @@ InputDataInstance <- R6Class("InputDataInstance", public = list(
     return(clArgsTmp[!is.na(clArgsTmp)])
   },
   push = function(datasetName, data){
-    stopifnot(is.character(datasetName), 
+    stopifnot(is.character(datasetName),
               identical(length(datasetName), 1L),
               inherits(data, "data.frame"))
     private$data[[datasetName]] <- data
@@ -125,14 +125,14 @@ InputDataInstance <- R6Class("InputDataInstance", public = list(
   addInexFile = function(workDir, modelDataFiles){
     if(!length(modelDataFiles))
       return(NULL)
-    stopifnot(is.character(modelDataFiles), is.character(workDir), 
+    stopifnot(is.character(modelDataFiles), is.character(workDir),
               identical(length(workDir), 1L))
-    
+
     inexFileName <- file.path(workDir, "_inex_file_")
-    
-    jsonlite::write_json(list(files = modelDataFiles, type = "include"), 
+
+    jsonlite::write_json(list(files = modelDataFiles, type = "include"),
                          inexFileName, auto_unbox = TRUE)
-    
+
     return(inexFileName)
   },
   add = function(datasetNames, data){
@@ -176,7 +176,7 @@ InputDataInstance <- R6Class("InputDataInstance", public = list(
     }
     if(private$fileExchange == "csv")
       return(private$writeCSV(filePath, idsToWrite, ...))
-    
+
     return(private$writeGDX(file.path(filePath, fileName), idsToWrite, ...))
   },
   copyMiroWs = function(wsPath, jobName = NULL){
@@ -234,15 +234,15 @@ InputDataInstance <- R6Class("InputDataInstance", public = list(
   },
   writeCSV = function(filePath, idsToWrite){
     for(id in idsToWrite){
-      fileName <- file.path(filePath, 
-                            paste0(names(private$data)[[id]], 
+      fileName <- file.path(filePath,
+                            paste0(names(private$data)[[id]],
                                    ".csv"))
-      write_delim(private$data[[id]], fileName, 
+      write_delim(private$data[[id]], fileName,
                   delim = private$csvDelim, na = "")
     }
-    private$filePaths <- c(private$filePaths, 
-                           paste0(filePath, 
-                                  names(private$data)[idsToWrite], 
+    private$filePaths <- c(private$filePaths,
+                           paste0(filePath,
+                                  names(private$data)[idsToWrite],
                                   ".csv"))
     return(invisible(self))
   },

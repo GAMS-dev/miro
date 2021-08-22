@@ -10,7 +10,7 @@ testModelPath <- file.path(getwd(), "..", "model", modelToTest)
 Sys.setenv(MIRO_MODE="base")
 
 configJSONFileName <- file.path(testModelDir, paste0("conf_", modelToTest), paste0(modelToTest, ".json"))
-file.copy(configJSONFileName, file.path(dirname(configJSONFileName), 
+file.copy(configJSONFileName, file.path(dirname(configJSONFileName),
                                         paste0(modelToTest, "_tmp.json")), overwrite = TRUE)
 
 oldValueboxConfigJSON <- file.path(testModelDir, paste0("conf_", modelToTest), paste0(modelToTest, "_valuebox_old.json"))

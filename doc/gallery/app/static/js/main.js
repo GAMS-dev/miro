@@ -1,43 +1,43 @@
 $(document).ready(function() {
-    
+
     /* ===== Stickyfill ===== */
     /* Ref: https://github.com/wilddeer/stickyfill */
     // Add browser support to position: sticky
     var elements = $('.sticky');
     Stickyfill.add(elements);
-  
-    
+
+
     /* Hack related to: https://github.com/twbs/bootstrap/issues/10236 */
     $(window).on('load resize', function() {
-        $(window).trigger('scroll'); 
+        $(window).trigger('scroll');
     });
 
     /* Activate scrollspy menu */
     $('body').scrollspy({target: '#doc-menu', offset: 100});
-    
+
     /* Smooth scrolling */
     $('a.scrollto').on('click', function(e){
         //store hash
-        var target = this.hash;    
+        var target = this.hash;
         e.preventDefault();
         $('body').scrollTo(target, 800, {offset: 0, 'axis':'y'});
-        
+
     });
-    
-    
+
+
     /* ======= jQuery Responsive equal heights plugin ======= */
     /* Ref: https://github.com/liabru/jquery-match-height */
-    
+
     // $('#cards-wrapper .item-inner').matchHeight();
     // $('#showcase .card').matchHeight();
-     
+
     /* Bootstrap lightbox */
     /* Ref: http://ashleydw.github.io/lightbox/ */
 
     $(document).delegate('*[data-toggle="lightbox"]', 'click', function(e) {
         e.preventDefault();
         $(this).ekkoLightbox();
-    });    
+    });
 });
 (function ($) {
     /**
@@ -462,7 +462,7 @@ $(document).ready(function() {
             if (searchTerm.length > 0) {
                 $searchResultsBox.html('<li class="list-group-item"><i>Searching...</i></li>');
                 var encodedSearchTerm = encodeURIComponent(searchTerm);
-                searchRequest = $.getJSON( "https://search.gams.com/miro/select?q="+ 
+                searchRequest = $.getJSON( "https://search.gams.com/miro/select?q="+
                     encodedSearchTerm + "&df=content&rows=5&hl=true&hl.snippets=2&hl.fl=content&hl.fragsize=200&hl.q=" + encodedSearchTerm + "&fl=url,title&q.op=AND&indent=on&defType=edismax",
                     function( data ) {
                         if (data.response.docs.length) {
@@ -474,7 +474,7 @@ $(document).ready(function() {
                                     content = "";
                                 }
                                 $searchResultsBox.append('<a class="list-group-item list-group-item-action" href="' +
-                                    resultUrl + '?search=' + encodedSearchTerm + '"><b>'+ 
+                                    resultUrl + '?search=' + encodedSearchTerm + '"><b>'+
                                     escapeHtml(data.response.docs[i].title) + '</b><br>' + content + '</a>');
                             }
                         } else {

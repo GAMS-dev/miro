@@ -1,6 +1,6 @@
 jsonPath <- file.path("..", "model", "transport", "conf_transport")
 configOld <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "bk_transport.json"),
-                                                 simplifyDataFrame = FALSE, 
+                                                 simplifyDataFrame = FALSE,
                                                  simplifyMatrix = FALSE))
 configNew <- configOld
 configNew$inputWidgets$d$dropdownCols <- list(i = list(static = letters))

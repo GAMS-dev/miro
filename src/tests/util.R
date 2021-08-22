@@ -83,8 +83,8 @@ expect_symbols_in_gdx <- function(app, id, symNames){
     zip::unzip(tempFiles, exdir = tmpPath, files = gdxFileNames)
     tempFiles <- file.path(tmpPath, gdxFileNames)
   }
-  gdxrrwMIRO::igdx(file.path(.libPaths()[1], "gdxrrwMIRO", 
-                             if(identical(tolower(Sys.info()[["sysname"]]), "windows")) 
+  gdxrrwMIRO::igdx(file.path(.libPaths()[1], "gdxrrwMIRO",
+                             if(identical(tolower(Sys.info()[["sysname"]]), "windows"))
                                file.path("bin", "x64") else "bin"), silent = TRUE, returnStr = FALSE)
   for(tempFile in tempFiles){
     symInGdx <- gdxrrwMIRO::gdxInfo(tempFile, returnList = TRUE, dump = FALSE)
@@ -122,9 +122,9 @@ get_downloaded_file_content <- function(app, id, raw = FALSE){
 connectDb <- function(modelName = NULL, dbPath = file.path(getwd(), "..", "testdb")){
   if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
     conn <- DBI::dbConnect(drv = RPostgres::Postgres(),
-                           dbname = Sys.getenv("MIRO_DB_NAME"), 
+                           dbname = Sys.getenv("MIRO_DB_NAME"),
                            host = Sys.getenv("MIRO_DB_HOST"),
-                           port = 5432, 
+                           port = 5432,
                            user = Sys.getenv("MIRO_DB_USERNAME"),
                            password = Sys.getenv("MIRO_DB_PASSWORD"),
                            bigint = "integer")
@@ -141,9 +141,9 @@ createTestDb <- function(dbPath = file.path(getwd(), "..", "testdb")){
   if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
     # need to clean db tables
     conn <- DBI::dbConnect(drv = RPostgres::Postgres(),
-                           dbname = Sys.getenv("MIRO_DB_NAME"), 
+                           dbname = Sys.getenv("MIRO_DB_NAME"),
                            host = Sys.getenv("MIRO_DB_HOST"),
-                           port = 5432, 
+                           port = 5432,
                            user = Sys.getenv("MIRO_DB_USERNAME"),
                            password = Sys.getenv("MIRO_DB_PASSWORD"),
                            bigint = "integer")
@@ -177,8 +177,8 @@ saveAdditionalGamsClArgs <- function(miroModelDir, modelToTest, additionalGamsCl
   configJSONFileName <- file.path(miroModelDir, paste0("conf_", modelToTest), paste0(modelToTest, ".json"))
   file.copy(configJSONFileName,
             file.path(dirname(configJSONFileName), paste0(modelToTest, "_tmp.json")), overwrite = TRUE)
-  configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, 
-                                                    simplifyDataFrame = FALSE, 
+  configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName,
+                                                    simplifyDataFrame = FALSE,
                                                     simplifyMatrix = FALSE))
   configJSON$extraClArgs <- c(configJSON$extraClArgs, additionalGamsClArgs)
   jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
@@ -243,9 +243,9 @@ populateDb <- function(procEnv, modelName, modelPath = NULL){
   procEnv$MIRO_DATA_DIR <- file.path(modelPath, paste0("data_", modelName),
                                      "default.gdx")
   procEnv$MIRO_OVERWRITE_SCEN_IMPORT <- "true"
-  
+
   miroProc <- processx::run(file.path(R.home("bin"), "R"),
-                            c("-e", 
+                            c("-e",
                               paste0("shiny::runApp('", miroAppPath, "',port=3839,host='0.0.0.0')")),
                             env = unlist(procEnv), wd = miroAppPath, error_on_status = FALSE, timeout = 30)
   if(miroProc$status != 0L){

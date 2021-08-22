@@ -7,14 +7,14 @@ getData <- function(){
 Sys.sleep(2)
 app$findElement("a[data-value='outputData']")$click()
 Sys.sleep(1)
-app$snapshot(items = list(output = "outputDataTitle"), 
+app$snapshot(items = list(output = "outputDataTitle"),
              screenshot = TRUE)
 expect_equal(getData(), list(c(NA, 300), c(275, 50), c(275, NA)))
 
 #presentation mode
 app$findElement("div[id='tab_1_1-miroPivot-hidePivotControls']")$click()
 Sys.sleep(3)
-app$snapshot(items = list(input = c("tab_1_1-miroPivot-aggregationFunction", 
+app$snapshot(items = list(input = c("tab_1_1-miroPivot-aggregationFunction",
                                     "tab_1_1-miroPivot-aggregationIndexList",
                                     "tab_1_1-miroPivot-colIndexList",
                                     "tab_1_1-miroPivot-filter_Hdr",
@@ -22,7 +22,7 @@ app$snapshot(items = list(input = c("tab_1_1-miroPivot-aggregationFunction",
                                     "tab_1_1-miroPivot-filterIndexList",
                                     "tab_1_1-miroPivot-pivotRenderer",
                                     "tab_1_1-miroPivot-rowIndexList",
-                                    "tab_1_1-miroPivot-saveView")), 
+                                    "tab_1_1-miroPivot-saveView")),
              screenshot = TRUE)
 #filter row
 expect_true(app$waitFor("$('#tab_1_1-miroPivot-toggleViewButton').is(':visible')"))

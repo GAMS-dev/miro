@@ -20,7 +20,7 @@ Set crop
                price               'crop sales price [$/ton]'
                amount              'max amount of crop sold at sales price [tons]' /
     seq   'price curve segments';
-               
+
 $onExternalInput
 Table cd(crop<,ch) 'crop data'
               yield   cost  pprice  minreq
@@ -122,14 +122,14 @@ set rh 'report header' /
               pcost      'purchase cost [$]' /
     rcomph 'crop comparison report header' /
               planted_d  'deterministic: crop planted [acres]'
-              planted_s  'stochastic: crop planted [acres]' /;            
-              
+              planted_s  'stochastic: crop planted [acres]' /;
+
 $onExternalOutput
 Parameter
-    rep(rh)              'report'    
+    rep(rh)              'report'
     repc(c,rch)          'crop report'
     repcompare(c,rcomph) 'crop comparison deterministic versus stochastic';
-Table repc, repcompare;    
+Table repc, repcompare;
 $offExternalOutput
 
 repcompare(c,'planted_d') = x.l(c);
@@ -158,9 +158,9 @@ Set dict / s     .scenario.''
 file emp / '%emp.info%' /;
 put emp '* problem %gams.i%' / 'randvar yf discrete';
 $ifthen %SNUM%==3
-put / '0.33 0.8' 
-    / '0.33 1.0' 
-    / '0.33 1.2'; 
+put / '0.33 0.8'
+    / '0.33 1.0'
+    / '0.33 1.2';
 $else
 loop(s, put (1/card(s)) ' ' normal(1,0.1) /);
 $endif
@@ -187,5 +187,3 @@ repc(c,'sales')     = sum(pcs(c,seq), w(pcs)*pricecurve(pcs,'price'));
 repc(c,'purchased') = y(c);
 repc(c,'pcost')     = cd(c,'pprice')*y(c);
 $offDotL
-
-

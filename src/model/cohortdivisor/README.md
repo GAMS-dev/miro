@@ -44,9 +44,9 @@ This assignment can now be moved to the input tab "Existing cohort map" by click
 
 ## Import and Export of data
 
-Entering all the group and student information is a tedious task and the information (potentially anonymized) is already present in some Excel workbooks. The MIRO Cohort Divisor can import the data from an Excel workbook. The structure of such a workbook needs to be recognizable by the application and hence it is probably best to start with a workbook containing sample data which you can find [here](https://www.gams.com/blog/2021/03/a-cohort-divisor-application-for-schools/Cohort_Assignment_EN.xlsx). 
+Entering all the group and student information is a tedious task and the information (potentially anonymized) is already present in some Excel workbooks. The MIRO Cohort Divisor can import the data from an Excel workbook. The structure of such a workbook needs to be recognizable by the application and hence it is probably best to start with a workbook containing sample data which you can find [here](https://www.gams.com/blog/2021/03/a-cohort-divisor-application-for-schools/Cohort_Assignment_EN.xlsx).
 
-1.  Open the workbook in Excel and enter/copy your data into the sheets "Group Info" and "Group Assignment". If a cohort division already exists that is to be improved by the application, the division can be entered in the "Existing Cohorts" sheet. 
+1.  Open the workbook in Excel and enter/copy your data into the sheets "Group Info" and "Group Assignment". If a cohort division already exists that is to be improved by the application, the division can be entered in the "Existing Cohorts" sheet.
 
 ![](static_cohortdivisor/image12.png)
 

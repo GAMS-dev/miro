@@ -65,9 +65,9 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
     if(!length(dataToWrite)){
       return(writexl::write_xlsx(tibble(), path))
     }
-    
+
     wsNamesRaw <- names(dataToWrite)
-    
+
     # remove empty datasets
     emptySheets <- vapply(dataToWrite, function(sheet) identical(nrow(sheet), 0L),
                           logical(1L), USE.NAMES = FALSE)
@@ -79,9 +79,9 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
     if(!length(dataToWrite)){
       return(writexl::write_xlsx(tibble(), path))
     }
-    
+
     wsNamesTmp <- wsNamesRaw
-    
+
     isOutputSheet <- tolower(wsNamesTmp) %in% tolower(names(ioConfig$modelOut))
     if(any(isOutputSheet)){
       wsNamesTmp[isOutputSheet] <- paste0(wsNamesTmp[isOutputSheet],
@@ -106,7 +106,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       }
     }
     names(dataToWrite) <- wsNamesTmp
-    
+
     dataToWrite <- c(dataToWrite,
                      setNames(list(private$genIndexFromMetadata(wsNamesRaw[!emptySheets],
                                                                 names(dataToWrite)[!emptySheets],
@@ -165,7 +165,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         return(self)
       }
       indexTmp <- private$readInternal(path, range = indexRange, col_names = TRUE)
-      
+
       private$rIndex <- private$parseIndex(indexTmp)
       return(self)
     },
@@ -178,12 +178,12 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
     getRangeSymbol = function(symName){
       index <- private$rIndex[[symName]]
       range <- private$parseCellRange(symName, index$range)
-      
+
       if(symName %in% private$scalars){
         index$cdim <- 0L
         index$rdim <- 0L
       }
-      
+
       if("ignorerows" %in% names(index) && !is.na(index$ignorerows)){
         rowsToIgnore <- tryCatch(private$rangeToIndex(index$ignorerows, allowLetters = FALSE),
                                  error_parse_config = function(e){
@@ -221,7 +221,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         rows <- seq(headerRange$ul[1], headerRange$ul[1] + index$cdim + length(rowsToIgnore) + 1L)
         headerRange$lr[1] <- rows[!rows %in% rowsToIgnore][index$cdim]
         range$ul[1] <- headerRange$lr[1]
-        
+
         if(index$rdim > 0L){
           cols <- seq(headerRange$ul[2], headerRange$ul[2] + index$rdim + length(colsToIgnore) + 1L)
           headerRange$ul[2] <- cols[!cols %in% colsToIgnore][index$rdim]
@@ -233,9 +233,9 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
     readFromIndex = function(symName){
       index <- private$rIndex[[symName]]
       isSetType <- identical(private$metadata[[symName]]$symtype, "set")
-      
+
       rangeInfo <- private$getRangeSymbol(symName)
-      
+
       if(isSetType && index$dim > 0L && !is.na(rangeInfo$range$lr[2]) &&
          identical(rangeInfo$range$ul[1], rangeInfo$range$lr[1])){
         data <- suppressMessages(as_tibble(as.list(vector("character", rangeInfo$range$lr[2] - rangeInfo$range$ul[2] + 1L)),
@@ -249,7 +249,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         }
       }
       colsToIgnore <- rangeInfo$colsToIgnore - rangeInfo$range$ul[2] + 1L
-      
+
       if(length(colsToIgnore)){
         colsToIgnore <- colsToIgnore[colsToIgnore > 0 & colsToIgnore <= length(data)]
       }
@@ -258,7 +258,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       if(length(rowsToIgnore)){
         rowsToIgnore <- rowsToIgnore[rowsToIgnore > 0 & rowsToIgnore <= nrow(data)]
       }
-      
+
       if(length(colsToIgnore)){
         if(length(rowsToIgnore)){
           data <- data[-rowsToIgnore, -colsToIgnore]
@@ -268,14 +268,14 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       }else if(length(rowsToIgnore)){
         data <- data[-rowsToIgnore, ]
       }
-      
+
       if(symName %in% private$scalars){
         if(!length(data)){
           return(NA_character_)
         }
         return(data[[1]])
       }
-      
+
       if(index$rdim > 0L){
         if(length(data) < index$rdim + if(isSetType) 0L else 1L){
           if(nrow(data) > 0L){
@@ -297,7 +297,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       }else{
         emptyRows <- integer(0L)
       }
-      
+
       if(index$cdim > 1L){
         hdrTmp <- private$getColHeaders(symName, rangeInfo)
         if(length(data) > length(hdrTmp)){
@@ -308,7 +308,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       }else{
         emptyCols <- which(names(data) == "")
       }
-      
+
       # remove empty rows and columns
       if(length(emptyCols)){
         if(rangeInfo$isOpenRange && identical(index$se, "0")){
@@ -343,7 +343,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         }
         data <- data[-emptyRows, ]
       }
-      
+
       if(index$cdim > 0L){
         if(length(data) < index$dim - index$cdim + 1L){
           stop_custom("error_parse_config",
@@ -352,18 +352,18 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         valColName <- names(private$metadata[[symName]]$headers)[length(private$metadata[[symName]]$headers)]
         if(index$cdim > 1L){
           if(private$isTable(symName)){
-            data <- tidyr::pivot_longer(data, -seq_len(index$dim - index$cdim), 
+            data <- tidyr::pivot_longer(data, -seq_len(index$dim - index$cdim),
                                         names_to = c(names(private$metadata[[symName]]$headers)[seq(index$dim - index$cdim + 1L, index$dim - 1L)],
-                                                     ".value"), 
+                                                     ".value"),
                                         names_sep = "\U2024", values_to = valColName, values_drop_na = TRUE)
           }else{
-            data <- tidyr::pivot_longer(data, -seq_len(index$dim - index$cdim), 
-                                        names_to = names(private$metadata[[symName]]$headers)[seq(index$dim - index$cdim + 1L, index$dim)], 
+            data <- tidyr::pivot_longer(data, -seq_len(index$dim - index$cdim),
+                                        names_to = names(private$metadata[[symName]]$headers)[seq(index$dim - index$cdim + 1L, index$dim)],
                                         names_sep = "\U2024", values_to = valColName, values_drop_na = TRUE)
           }
         }else if(!private$isTable(symName)){
-          data <- tidyr::pivot_longer(data, -seq_len(index$dim - 1L), 
-                                      names_to = names(private$metadata[[symName]]$headers)[index$dim], 
+          data <- tidyr::pivot_longer(data, -seq_len(index$dim - 1L),
+                                      names_to = names(private$metadata[[symName]]$headers)[index$dim],
                                       values_to = valColName, values_drop_na = TRUE)
         }
       }else if(private$isTable(symName)){
@@ -373,10 +373,10 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
                       sprintf(lang$errMsg$xlsio$errors$badSymbolRange, symName), call. = FALSE)
         }
         data <- tidyr::pivot_wider(data,
-                                   names_from = !!length(data) - 1L, 
+                                   names_from = !!length(data) - 1L,
                                    values_from = !!length(data))
       }
-      
+
       if(private$isTable(symName)){
         pivotedHeaders <- names(private$metadata[[symName]]$headers)[-seq_len(index$dim - 1L)]
         missingCols <- !tolower(pivotedHeaders) %in% tolower(names(data)[-seq_len(index$dim - 1L)])
@@ -396,7 +396,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
           data <- data[, c(seq_len(index$dim - 1L), colOrder + (index$dim - 1L))]
         }
       }
-      
+
       if(isSetType){
         return(private$readSet(data, symName))
       }
@@ -476,7 +476,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       scalarsDf <- tibble(scalar = scalarsToProcess,
                           description = scalarDesc,
                           value = NA_character_)
-      
+
       sheetId <- match(symName, tolower(private$rSheetsNoIndex))
       if(!is.na(sheetId)){
         scalarsDfTmp <- private$readInternal(private$rpath, sheet = sheetId, col_names = TRUE)
@@ -593,7 +593,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       if(length(rowsToIgnore)){
         rowsToIgnore <- rowsToIgnore[rowsToIgnore < 1 | rowsToIgnore > nrow(headerData)]
       }
-      
+
       if(length(colsToIgnore)){
         if(length(rowsToIgnore)){
           headerData <- headerData[-rowsToIgnore, -colsToIgnore]
@@ -603,13 +603,13 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       }else if(length(rowsToIgnore)){
         headerData <- headerData[-rowsToIgnore, ]
       }
-      
+
       colHeaders <- character(0L)
       if(index$rdim > 0L){
         colHeaders <- names(private$metadata[[symName]]$headers)[seq_len(index$rdim)]
         headerData <- headerData[, -seq_len(index$rdim)]
       }
-      
+
       colHeaders <- c(colHeaders, vapply(headerData, paste, character(1L),
                                          collapse = "\U2024", USE.NAMES = FALSE))
       return(colHeaders)
@@ -642,12 +642,12 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       }
       symbolsInExcel <- indexDf[[symColId]]
       duplicateSymbols <- duplicated(symbolsInExcel)
-      
+
       if(any(duplicateSymbols)){
         stop_custom("error_parse_config", sprintf(lang$errMsg$xlsio$errors$duplicateSymbols,
                                                   paste(symbolsInExcel[duplicateSymbols], collapse = "', '")), call. = FALSE)
       }
-      
+
       if(!nrow(indexDf)){
         return(list())
       }
@@ -659,7 +659,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       }
       names(indexDf)[c(1L, 2L)] <- c("symbol", "range")
       colNames <- tolower(names(indexDf))
-      
+
       # remove empty cols
       emptyCols <- vapply(seq_along(indexDf), function(idx){
         return(identical(colNames[idx], "") && is.logical(indexDf[[idx]]))
@@ -668,7 +668,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         indexDf <- indexDf[, !emptyCols]
         colNames <- tolower(names(indexDf))
       }
-      kvArgCols <- colNames == "" 
+      kvArgCols <- colNames == ""
       if(any(kvArgCols)){
         private$warnings$push(lang$errMsg$xlsio$warnings$keyValueCols)
         indexDf <- indexDf[, !kvArgCols]
@@ -751,7 +751,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       }else{
         indexDf[["squeeze"]] <- "1"
       }
-      invalidKeys <- !tolower(names(indexDf)) %in% 
+      invalidKeys <- !tolower(names(indexDf)) %in%
         c("symbol", "range", "cdim", "rdim", "dim", "values", "ignorerows", "ignorecols", "se", "squeeze")
       if(any(invalidKeys)){
         private$warnings$push(sprintf(lang$errMsg$xlsio$warnings$invalidOptions,
@@ -775,7 +775,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         }
         return(dim)
       }, integer(1L), USE.NAMES = FALSE)
-      
+
       if("cdim" %in% names(indexDf)){
         if("rdim" %in% names(indexDf)){
           missingcDim <- is.na(indexDf[["cdim"]])
@@ -783,17 +783,17 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
           missingDim <- missingcDim & missingrDim
           indexDf[missingDim, "rdim"] <- indexDf[["dim"]][missingDim] - 1L
           indexDf[missingDim, "cdim"] <- 1L
-          
+
           indexDf[missingcDim & !missingrDim, "cdim"] <- indexDf[["dim"]][missingcDim & !missingrDim] - indexDf[["rdim"]][missingcDim & !missingrDim]
           invalidRdim <- indexDf[["cdim"]] < 0L
           if(any(invalidRdim)){
             stop_custom("error_parse_config", sprintf(lang$errMsg$xlsio$errors$indexInvalidRdim,
                                                       paste(symbolsInExcel[invalidRdim], collapse = "', '")), call. = FALSE)
           }
-          
+
           indexDf[!missingcDim & missingrDim, "rdim"] <- indexDf[["dim"]][!missingcDim & missingrDim] - indexDf[["cdim"]][!missingcDim & missingrDim]
           invalidCdim <- indexDf[["rdim"]] < 0L
-          
+
           if(any(invalidCdim)){
             invalidCdimSym <- symbolsInExcel[invalidCdim]
             if(any(tolower(invalidCdimSym) %in% private$scalars)){
@@ -804,11 +804,11 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
                                                         paste(invalidCdimSym, collapse = "', '")), call. = FALSE)
             }
           }
-          
+
           invalidDim <- (indexDf[["dim"]][!missingDim] -
                            indexDf[["cdim"]][!missingDim] -
                            indexDf[["rdim"]][!missingDim]) != 0L
-          
+
           if(any(invalidDim)){
             stop_custom("error_parse_config", sprintf(lang$errMsg$xlsio$errors$indexInvalidDim,
                                                       paste(symbolsInExcel[!missingDim][invalidDim], collapse = "', '")), call. = FALSE)
@@ -817,7 +817,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
           missingcDim <- is.na(indexDf[["cdim"]])
           indexDf[missingcDim, "rdim"]   <- indexDf[["dim"]][missingcDim] - 1L
           indexDf[missingcDim, "cdim"]   <- 1L
-          
+
           indexDf[!missingcDim, "rdim"]  <- indexDf[["dim"]][!missingcDim] - indexDf[["cdim"]][!missingcDim]
           invalidCdim <- indexDf[["rdim"]] < 0L
           if(any(invalidCdim)){
@@ -827,10 +827,10 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         }
       }else if("rdim" %in% names(indexDf)){
         missingrDim <- is.na(indexDf[["rdim"]])
-        
+
         indexDf[missingrDim, "rdim"]   <- indexDf[["dim"]][missingrDim] - 1L
         indexDf[missingrDim, "cdim"]   <- 1L
-        
+
         indexDf[!missingrDim, "cdim"]  <- indexDf[["dim"]][!missingrDim] - indexDf[["rdim"]][!missingrDim]
         invalidRdim <- indexDf[["cdim"]] < 0L
         if(any(invalidRdim)){

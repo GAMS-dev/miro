@@ -34,7 +34,7 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
     if(length(private$currentModelConfigs) < modelIndex){
         stop(sprintf("Model with index: %s does not exist", modelIndex), call. = FALSE)
     }
-    return(list(private$currentModelConfigs[[modelIndex]][["id"]], 
+    return(list(private$currentModelConfigs[[modelIndex]][["id"]],
         private$currentModelConfigs[[model_index]][["containerEnv"]][["MIRO_MODEL_PATH"]]))
   },
   getConfigList = function(){
@@ -145,7 +145,7 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
   getAppConfig = function(index){
     appConfig <- private$currentModelConfigs[[index]]
     if("logoURL" %in% names(appConfig)){
-        logoB64 <- tryCatch(getLogoB64(file.path("data", 
+        logoB64 <- tryCatch(getLogoB64(file.path("data",
           "logos", appConfig[["logoURL"]])), error = function(e){
             flog.info("Problems reading app logo. Default logo will be used. Error: %s", conditionMessage(e))
             return(DEFAULT_LOGO_B64)
@@ -171,7 +171,7 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
       appEnv <- as.character(jsonlite::toJSON(appEnv, auto_unbox = TRUE))
     }
 
-    return(list(id = appConfig[["id"]], alias = appConfig[["displayName"]], 
+    return(list(id = appConfig[["id"]], alias = appConfig[["displayName"]],
         desc = appConfig[["description"]], logob64 = logoB64,
         appEnv = if(length(appEnv)) appEnv else "",
         groups = I(accessGroups)))
@@ -185,8 +185,8 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
       "MIRO_VERSION_STRING", "MIRO_DB_USERNAME", "MIRO_DB_PASSWORD", "MIRO_DB_SCHEMA",
       "MIRO_ENGINE_MODELNAME"),
     writeConfig = function(){
-      yaml::write_yaml(list(specs = c(private$modelConfigsNoAccess, private$currentModelConfigs)), 
+      yaml::write_yaml(list(specs = c(private$modelConfigsNoAccess, private$currentModelConfigs)),
         private$configPath)
     }
-  ) 
+  )
 )

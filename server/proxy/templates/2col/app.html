@@ -43,7 +43,7 @@
     <div id="navbarWrapper" style="display:none;position:absolute;">
         <div th:replace="../fragments/navbar :: navbar"></div>
     </div>
-    <iframe id="shinyframe" th:src="${container}" width="100%" frameBorder="0" style="overflow:hidden;height:100vh;"></iframe>    
+    <iframe id="shinyframe" th:src="${container}" width="100%" frameBorder="0" style="overflow:hidden;height:100vh;"></iframe>
 	<script type="text/javascript" th:inline="javascript">
         var timer;
 		$("#navbarHandle").hover(function() {

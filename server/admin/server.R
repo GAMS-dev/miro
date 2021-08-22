@@ -52,7 +52,7 @@ server <- function(input, output, session){
     modelConfigList <- modelConfig$getConfigList()
 
     session$sendCustomMessage("onInit", list(loginRequired = LOGIN_REQUIRED,
-        configList = modelConfigList, 
+        configList = modelConfigList,
         groupList = modelConfig$getAccessGroupUnion()))
 
     if(LOGIN_REQUIRED){
@@ -66,7 +66,7 @@ server <- function(input, output, session){
                 return()
             }
             flog.info("Wrong log in attempt.")
-            session$sendCustomMessage("onError", list(requestType = "loginRequest", 
+            session$sendCustomMessage("onError", list(requestType = "loginRequest",
                 message = "Wrong username or password."))
         })
     }else{
@@ -81,12 +81,12 @@ server <- function(input, output, session){
         flog.info("Request to validate MIRO app received.")
         tryCatch({
             miroAppValidator$validate(input$miroAppFile$datapath)
-            session$sendCustomMessage("onNewAppValidated", 
+            session$sendCustomMessage("onNewAppValidated",
                 list(appTitle = htmltools::htmlEscape(miroAppValidator$getAppTitle()),
                     appDesc = htmltools::htmlEscape(miroAppValidator$getAppDesc()),
                     logoB64 = miroAppValidator$getLogoB64()));
         }, error = function(e){
-            errMsg <- sprintf("Invalid app bundle uploaded. Error message: %s", 
+            errMsg <- sprintf("Invalid app bundle uploaded. Error message: %s",
                     conditionMessage(e))
             flog.info(errMsg)
             session$sendCustomMessage("onError", list(requestType = "addApp", message = errMsg))
@@ -99,10 +99,10 @@ server <- function(input, output, session){
         flog.info("Request to add app logo received.")
         tryCatch({
             miroAppValidator$setLogoFile(input$miroAppLogo$datapath)
-            session$sendCustomMessage("onAddAppLogo", 
+            session$sendCustomMessage("onAddAppLogo",
                 list(logoB64 = miroAppValidator$getLogoB64()));
         }, error = function(e){
-            errMsg <- sprintf("Invalid app logo. Error message: %s", 
+            errMsg <- sprintf("Invalid app logo. Error message: %s",
                     conditionMessage(e))
             flog.info(errMsg)
             session$sendCustomMessage("onError", list(requestType = "updateLogoAddApp", message = errMsg))
@@ -114,10 +114,10 @@ server <- function(input, output, session){
         }
         flog.info("Request to update app logo received.")
         tryCatch({
-            session$sendCustomMessage("onAddAppLogo", 
+            session$sendCustomMessage("onAddAppLogo",
                 list(logoB64 = getLogoB64(input$updateMiroAppLogo$datapath)));
         }, error = function(e){
-            errMsg <- sprintf("Invalid app logo. Error message: %s", 
+            errMsg <- sprintf("Invalid app logo. Error message: %s",
                     conditionMessage(e))
             flog.info(errMsg)
             session$sendCustomMessage("onError", list(requestType = "updateLogo", message = errMsg))
@@ -159,11 +159,11 @@ server <- function(input, output, session){
             modelName <- miroAppValidator$getModelName()
             newAppConfig <- list(id = appId, displayName = newAppTitle, description = newAppDesc,
                 logoURL = logoURL,
-                containerVolumes = c(sprintf("/%s:/home/miro/app/model/%s:ro", appId, appId), 
+                containerVolumes = c(sprintf("/%s:/home/miro/app/model/%s:ro", appId, appId),
                     sprintf("/data_%s:%s", appId, MIRO_CONTAINER_DATA_DIR)),
                 containerEnv = list(
-                    MIRO_MODEL_PATH = paste0("/home/miro/app/model/", appId, "/", modelName), 
-                    MIRO_DATA_DIR = MIRO_CONTAINER_DATA_DIR, 
+                    MIRO_MODEL_PATH = paste0("/home/miro/app/model/", appId, "/", modelName),
+                    MIRO_DATA_DIR = MIRO_CONTAINER_DATA_DIR,
                     MIRO_VERSION_STRING = miroAppValidator$getMIROVersion(),
                     MIRO_MODE = "base",
                     MIRO_ENGINE_MODELNAME = appId))
@@ -216,19 +216,19 @@ server <- function(input, output, session){
                         modelConfig$add(newAppConfig)
                         flog.debug("New MIRO app: %s added.", appId)
 
-                        session$sendCustomMessage("onSuccess", 
-                            list(requestType = "addApp", 
-                                configList = modelConfig$getConfigList(), 
+                        session$sendCustomMessage("onSuccess",
+                            list(requestType = "addApp",
+                                configList = modelConfig$getConfigList(),
                                 groupList = modelConfig$getAccessGroupUnion()))
                     }, error = function(e){
-                        errMsg <- sprintf("Invalid MIRO app. Error message: %s", 
+                        errMsg <- sprintf("Invalid MIRO app. Error message: %s",
                                 conditionMessage(e))
                         flog.info(errMsg)
                         session$sendCustomMessage("onError", list(requestType = "addApp", message = errMsg))
                     })
                 })
         }, error = function(e){
-            errMsg <- sprintf("Invalid MIRO app. Error message: %s", 
+            errMsg <- sprintf("Invalid MIRO app. Error message: %s",
                     conditionMessage(e))
             flog.info(errMsg)
             session$sendCustomMessage("onError", list(requestType = "addApp", message = errMsg))
@@ -260,12 +260,12 @@ server <- function(input, output, session){
             modelConfig$remove(appIndex)
 
             flog.info("MIRO app: %s removed successfully.", appId)
-            session$sendCustomMessage("onSuccess", 
-                    list(requestType = "deleteApp", 
-                        configList = modelConfig$getConfigList(), 
+            session$sendCustomMessage("onSuccess",
+                    list(requestType = "deleteApp",
+                        configList = modelConfig$getConfigList(),
                         groupList = modelConfig$getAccessGroupUnion()))
         }, error = function(e){
-            errMsg <- sprintf("Problems deleting app. Error message: %s", 
+            errMsg <- sprintf("Problems deleting app. Error message: %s",
                     conditionMessage(e))
             flog.info(errMsg)
             session$sendCustomMessage("onError", list(requestType = "deleteApp", message = errMsg))
@@ -310,18 +310,18 @@ server <- function(input, output, session){
             newGroups <- csv2Vector(input$updateApp$groups)
             engineClient$updateModel(appId, userGroups = newGroups)
             modelConfig$update(appIndex, list(displayName = input$updateApp$title,
-                logoURL = newLogoName, 
+                logoURL = newLogoName,
                 containerEnv = newAppEnv,
                 description = input$updateApp$desc,
                 accessGroups = newGroups))
 
             flog.info("MIRO app: %s updated successfully.", appId)
-            session$sendCustomMessage("onSuccess", 
+            session$sendCustomMessage("onSuccess",
                     list(requestType = "updateApp",
-                        configList = modelConfig$getConfigList(), 
+                        configList = modelConfig$getConfigList(),
                         groupList = modelConfig$getAccessGroupUnion()))
         }, error = function(e){
-            errMsg <- sprintf("Problems updating app. Error message: %s", 
+            errMsg <- sprintf("Problems updating app. Error message: %s",
                     conditionMessage(e))
             flog.info(errMsg)
             session$sendCustomMessage("onError", list(requestType = "updateApp", message = errMsg))
@@ -339,11 +339,11 @@ server <- function(input, output, session){
             modelConfig$swapApps(idFrom, idTo)
 
             flog.info("Apps: %s and %s swapped positions.", idFrom, idTo)
-            session$sendCustomMessage("onSuccess", 
-                    list(requestType = "updateOrder", 
+            session$sendCustomMessage("onSuccess",
+                    list(requestType = "updateOrder",
                         configList = modelConfig$getConfigList()))
         }, error = function(e){
-            errMsg <- sprintf("Problems reordering apps. Error message: %s", 
+            errMsg <- sprintf("Problems reordering apps. Error message: %s",
                     conditionMessage(e))
             flog.info(errMsg)
             session$sendCustomMessage("onError", list(requestType = "updateOrder", message = errMsg))
@@ -370,11 +370,11 @@ server <- function(input, output, session){
                 progressSelector = "#loadingScreenProgress",
                 requestType = "addScen", overwriteScen = overwriteExisting, function(){
                     flog.info("MIRO scenario added for app: %s.", appId)
-                    session$sendCustomMessage("onSuccess", 
+                    session$sendCustomMessage("onSuccess",
                         list(requestType = "addScen"))
             })
         }, error = function(e){
-            errMsg <- sprintf("Invalid miroscen file uploaded. Error message: %s", 
+            errMsg <- sprintf("Invalid miroscen file uploaded. Error message: %s",
                     conditionMessage(e))
             flog.info(errMsg)
             session$sendCustomMessage("onError", list(requestType = "addScen", message = errMsg))
@@ -409,7 +409,7 @@ server <- function(input, output, session){
                     migrationObs <<- NULL
                 }, silent = TRUE)
 
-                session$sendCustomMessage("onProgress", 
+                session$sendCustomMessage("onProgress",
                         list(selector = "dbMigration",
                           progress = 10))
 
@@ -428,7 +428,7 @@ server <- function(input, output, session){
                         flog.debug("Database for app: %s migrated successfully.",
                             migrationInfo$appId)
                         removeModal()
-                        session$sendCustomMessage("onSuccess", 
+                        session$sendCustomMessage("onSuccess",
                             list(requestType = "migrateDb"))
                 })
             }

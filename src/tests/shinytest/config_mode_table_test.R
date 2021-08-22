@@ -6,11 +6,11 @@ Sys.sleep(1)
 
 
 jsonPath <- file.path("..", "model", "pickstock_configuration", "conf_pickstock_configuration")
-configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"), 
-                                                 simplifyDataFrame = FALSE, 
+configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"),
+                                                 simplifyDataFrame = FALSE,
                                                  simplifyMatrix = FALSE))
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
-                                                 simplifyDataFrame = FALSE, 
+                                                 simplifyDataFrame = FALSE,
                                                  simplifyMatrix = FALSE))
 
 
@@ -45,7 +45,7 @@ Sys.sleep(1)
 app$findElement("button[id='saveTableWidget']")$click()
 Sys.sleep(1)
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
-                                                 simplifyDataFrame = FALSE, 
+                                                 simplifyDataFrame = FALSE,
                                                  simplifyMatrix = FALSE))
 
 #input symbol price

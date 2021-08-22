@@ -1,6 +1,6 @@
 jsonPath <- file.path("..", "model", "transport", "conf_transport")
 configOld <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "bk_transport.json"),
-                                                 simplifyDataFrame = FALSE, 
+                                                 simplifyDataFrame = FALSE,
                                                  simplifyMatrix = FALSE))
 
 # invalid column name should throw error

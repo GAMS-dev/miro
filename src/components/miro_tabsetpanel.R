@@ -1,18 +1,18 @@
 # modified original shiny tabsetPanel function (see: https://github.com/rstudio/shiny/blob/master/R/bootstrap.R)
 # to add more flexibility in MIRO
-MIROtabBox <- function(tabs, id = NULL, selected = NULL, 
+MIROtabBox <- function(tabs, id = NULL, selected = NULL,
                        maxTabsExpanded = 5L, btCollapsedTabs = "",
                        noTabsGrouped = -1L, hideTabs = FALSE)
 {
-  content <- MIROtabsetPanel(tabs, id, selected, 
+  content <- MIROtabsetPanel(tabs, id, selected,
                              maxTabsExpanded, btCollapsedTabs,
                              noTabsGrouped, hideTabs = hideTabs)
-  
+
   content$attribs$class <- "nav-tabs-custom"
-  
+
   div(class = "col-sm-12", content)
 }
-MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL, 
+MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
                             maxTabsExpanded = 5L, btCollapsedTabs = "",
                             noTabsGrouped = -1L, onclick = NULL, hideTabs = FALSE)
 {
@@ -20,7 +20,7 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
   tabs <- lapply(tabs, function(div) {
     if (foundSelected || is.character(div)) {
       # Strings are not selectable items
-      
+
     } else {
       # Base case: regular tab item. If the `selected` argument is
       # provided, check for a match in the existing tabs; else,
@@ -41,10 +41,10 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
     }
     return(div)
   })
-  
+
   # add input class if we have an id
   if (!is.null(id)) ulClass <- "nav nav-tabs shiny-tab-input"
-  
+
   noTabs <- length(tabs)
   if(noTabs > maxTabsExpanded + 1L){
     noExpandedTabs <- maxTabsExpanded
@@ -57,7 +57,7 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
                          onclick = onclick)
   liTagList <- lapply(expandedTabs, "[[", 1)
   divTagList <- lapply(expandedTabs, "[[", 2)
-  
+
   if(noTabs > maxTabsExpanded + 1L){
     if(length(ulClass)){
       ulClass <- paste(ulClass, "nav-tabs-dropdown")
@@ -65,15 +65,15 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
     collapsedTabIds <- seq(from = noExpandedTabs + 1L,
                            to = noTabs)
     ddTabs <- lapply(collapsedTabIds, MIRObuildTabItem,
-                     tabsetId = tabsetId, 
+                     tabsetId = tabsetId,
                      tabs = tabs, noTabsGrouped = noTabsGrouped,
                      onclick = onclick)
     ddLiTagList <- lapply(ddTabs, "[[", 1)
     divTagList <- c(divTagList, lapply(ddTabs, "[[", 2))
-    
-    liTagList <- c(liTagList, 
+
+    liTagList <- c(liTagList,
                    list(tags$li(class = "dropdown max-tabs-dropdown-label",
-                                tags$a(class = "dropdown-toggle", 
+                                tags$a(class = "dropdown-toggle",
                                        `data-toggle` = "dropdown",
                                        `data-defaultLabel` = btCollapsedTabs,
                                        role = "button",
@@ -90,13 +90,13 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
                                                           onkeyup = "Miro.filterMiroDropdown(this)")),
                                           ddLiTagList)))))
   }
-  
+
   tabNavList <- tags$ul(class = ulClass, id = id, style = if(hideTabs) "display:none",
                         `data-tabsetid` = tabsetId, liTagList)
-  
+
   tabContent <- tags$div(class = "tab-content",
                          `data-tabsetid` = tabsetId, divTagList)
-  
+
   # create the tab div
   tags$div(class = "tabbable", tabNavList, tabContent)
 }
@@ -113,7 +113,7 @@ insertScenTab <- function(inputId, tab, target,
   force(select)
   position <- match.arg(position)
   inputId <- session$ns(inputId)
-  
+
   # Barbara -- August 2017
   # Note: until now, the number of tabs in a tabsetPanel (or navbarPage
   # or navlistPanel) was always fixed. So, an easy way to give an id to
@@ -121,9 +121,9 @@ insertScenTab <- function(inputId, tab, target,
   # give a random 4-digit number to identify the tabsetPanel). Since we
   # can only know this in the client side, we'll just pass `id` and
   # `tsid` (TabSetID) as dummy values that will be fixed in the JS code.
-  item <- MIRObuildTabItem("id", "tsid", TRUE, divTag = tab, 
+  item <- MIRObuildTabItem("id", "tsid", TRUE, divTag = tab,
                            scenID = scenID, scenButtonLang = scenButtonLang)
-  
+
   callback <- function() {
     session$sendInsertTab(
       inputId = inputId,
@@ -137,10 +137,10 @@ insertScenTab <- function(inputId, tab, target,
   if(immediate) callback() else session$onFlush(callback, once = TRUE)
 }
 
-MIRObuildTabItem <- function(index, tabsetId, tabs = NULL, 
+MIRObuildTabItem <- function(index, tabsetId, tabs = NULL,
                              divTag = NULL, scenID = NULL, scenButtonLang = NULL,
                              noTabsGrouped = -1L, onclick = NULL) {
-  
+
   divTag <- if (!is.null(divTag)) divTag else tabs[[index]]
   # tabPanel item: create the tab's liTag and divTag
   tabId <- paste("tab", tabsetId, index, sep = "-")
@@ -148,7 +148,7 @@ MIRObuildTabItem <- function(index, tabsetId, tabs = NULL,
     tags$a(
       href = paste("#", tabId, sep = ""),
       onclick = onclick,
-      class = if(noTabsGrouped > -1L) 
+      class = if(noTabsGrouped > -1L)
         paste("miro-tabset-group-", if(index <= noTabsGrouped) "1" else "2", sep = ""),
       `data-toggle` = "tab",
       `data-value` = divTag$attribs$`data-value`,
@@ -156,12 +156,12 @@ MIRObuildTabItem <- function(index, tabsetId, tabs = NULL,
       if(!is.null(scenID))
         tags$button(class = "btn btn-default bt-icon", type = "button",
                     title = scenButtonLang[["tooltip"]], style = "margin-bottom:3px;margin-left:10px;",
-                    onclick = paste0("Miro.confirmModalShow('", 
-                                     scenButtonLang[["title"]], "', '", 
-                                     scenButtonLang[["desc"]], "', '", 
-                                     scenButtonLang[["cancelButton"]], "', '", 
-                                     scenButtonLang[["okButton"]], 
-                    "', 'Shiny.setInputValue(\\'btScenClose\\',", scenID, 
+                    onclick = paste0("Miro.confirmModalShow('",
+                                     scenButtonLang[["title"]], "', '",
+                                     scenButtonLang[["desc"]], "', '",
+                                     scenButtonLang[["cancelButton"]], "', '",
+                                     scenButtonLang[["okButton"]],
+                    "', 'Shiny.setInputValue(\\'btScenClose\\',", scenID,
                     ",{priority:\\'event\\'})')"),
                     tags$i(class = "fa fa-times",
                            role = "presentation",
@@ -175,6 +175,6 @@ MIRObuildTabItem <- function(index, tabsetId, tabs = NULL,
   }
   divTag$attribs$id <- tabId
   divTag$attribs$title <- NULL
-  
+
   return(list(liTag = liTag, divTag = divTag))
 }

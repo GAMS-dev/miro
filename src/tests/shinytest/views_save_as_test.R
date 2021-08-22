@@ -162,4 +162,3 @@ app$setInputs(btRemoveDeletedConfirm = "click")
 Sys.sleep(0.5)
 
 app$stop()
-

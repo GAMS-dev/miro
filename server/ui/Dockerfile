@@ -20,7 +20,7 @@ ENV APP /home/miro/app
 RUN mkdir -p $APP
 RUN chown -R miro /home/miro
 
-RUN apt-get update \ 
+RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         software-properties-common \
         dirmngr \
@@ -43,7 +43,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV TZ UTC
 
 
-## Now install R 
+## Now install R
 ## Also set a default CRAN repo
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \

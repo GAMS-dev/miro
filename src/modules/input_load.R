@@ -48,9 +48,9 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
       if(tolower(dataset) %in% modelInTabularData){
         dataTmp <- scenInputData[[dataset]]
         if(length(dataTmp) && nrow(dataTmp)){
-          
+
           if(identical(names(modelIn)[[i]], scalarsFileName)){
-            if(verifyScalarInput(dataTmp, modelIn[[i]]$headers, 
+            if(verifyScalarInput(dataTmp, modelIn[[i]]$headers,
                                  c(scalarInputSym, scalarInputSymToVerify))){
               scalarDataset <<- dataTmp
               modelInputData[[i]] <<- dataTmp[dataTmp[[1]] %in% modelIn[[i]]$symnames, , drop = FALSE]
@@ -60,7 +60,7 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
             if(verifyInput(dataTmp, modelIn[[i]]$headers)){
               # GAMS sets are always strings so make sure it is not parsed as a numeric
               numericSet <- vapply(seq_along(dataTmp), function(dataColIdx){
-                if(is.numeric(dataTmp[[dataColIdx]]) && 
+                if(is.numeric(dataTmp[[dataColIdx]]) &&
                    identical(modelIn[[i]]$headers[[dataColIdx]]$type, "string")){
                   return(TRUE)
                 }else{
@@ -80,12 +80,12 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
           isEmptyInput[[i]]   <<- TRUE
           inputVerified       <- TRUE
         }
-        
+
       }else{
         # single dropdown, slider or date
-        
+
         scalarName <- tolower(names(modelIn)[[i]])
-        
+
         # check whether scalar dataset has already been imported
         if(is.null(scalarDataset)){
           dataTmp <- scenInputData[[scalarsFileName]]
@@ -97,14 +97,14 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
         }
         if(length(scalarDataset) && nrow(scalarDataset)){
           # double slider has two scalar values saved
-          if((modelIn[[i]]$type == "slider" && length(modelIn[[i]]$slider$default) > 1) || 
+          if((modelIn[[i]]$type == "slider" && length(modelIn[[i]]$slider$default) > 1) ||
              (modelIn[[i]]$type == "daterange")){
             if(identical(modelIn[[i]]$slider$single, TRUE)){
               # single slider that was extended in HC Mode
-              dataTmp <- scalarDataset[[3]][tolower(scalarDataset[[1]]) %in% 
+              dataTmp <- scalarDataset[[3]][tolower(scalarDataset[[1]]) %in%
                                               paste0(scalarName, c("$lo", "$up"))]
             }else{
-              dataTmp <- scalarDataset[[3]][tolower(scalarDataset[[1]]) %in% 
+              dataTmp <- scalarDataset[[3]][tolower(scalarDataset[[1]]) %in%
                                               paste0(scalarName, c("_lo", "_up"))]
             }
             if(identical(modelIn[[i]]$type, "slider")){
@@ -112,13 +112,13 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
             }
             if(length(dataTmp) && !all(is.na(dataTmp))){
               modelInputData[[i]]      <<- dataTmp
-              
+
               if(isTRUE(modelIn[[i]]$slider$single) ||
                  isTRUE(modelIn[[i]]$slider$double)){
                 modelInputDataHcubeTmp  <- scalarDataset[[3]][tolower(scalarDataset[[1]]) ==
                                                                 paste0(scalarName, "$step")]
                 if(isTRUE(modelIn[[i]]$slider$double)){
-                  modelInputDataHcubeTmp <- c(modelInputDataHcubeTmp, 
+                  modelInputDataHcubeTmp <- c(modelInputDataHcubeTmp,
                                               scalarDataset[[3]][tolower(scalarDataset[[1]]) ==
                                                                    paste0(scalarName, "$mode")])
                 }
@@ -140,14 +140,14 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
           }
         }
       }
-      
-      
+
+
       # check if input data is valid
       if(inputVerified){
         if(!isTRUE(isEmptyInput[i])){
           flog.debug("Dataset: %s loaded successfully (mode: %s, overwrite: %s)", dataset, loadMode, overwriteInput)
           newInputCount <<- newInputCount + 1
-          # set identifier that data was overwritten 
+          # set identifier that data was overwritten
           isEmptyInput[i] <<- TRUE
         }
         if(!identical(loadMode, "scen")){
@@ -162,7 +162,7 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
         }
         # reset dependent elements
         inputInitialized[dependentDatasets[[i]]] <<- FALSE
-        
+
         if(!is.null(modelInWithDep[[tolower(names(modelIn)[[i]])]])){
           id <- match(tolower(names(modelIn)[[i]]), tolower(names(modelInWithDep)))[1]
           if(inputInitialized[id]){
@@ -190,7 +190,7 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
     }
   })
   showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)
-  
+
   # set initialisation flags for handsontables to FALSE
   if(any(hotInit)){
     hotInit[]     <<- FALSE

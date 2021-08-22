@@ -21,10 +21,10 @@ Sys.setenv(MIRO_MODEL_PATH = file.path(testModelDir, paste0(modelToTest, ".gms")
 Sys.setenv(MIRO_MODEL_NAME = modelToTest)
 Sys.setenv(MIRO_REMOTE_EXEC = "true")
 
-#activate local upload module, deactivate 
-file.copy(file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), "_expected.json")), 
+#activate local upload module, deactivate
+file.copy(file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), "_expected.json")),
           file.path(dirname(configJSONFileName),paste0(tolower(modelToTest), ".json")), overwrite = TRUE)
-configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, simplifyDataFrame = FALSE, 
+configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, simplifyDataFrame = FALSE,
                                                   simplifyMatrix = FALSE))
 configJSON$activateModules$loadLocal <- TRUE
 configJSON$activateModules$hcube <- TRUE

@@ -7,16 +7,16 @@ import metric;
 import utils;
 
 def _splitusereval(usereval) :
-    '''Splits value of --eval option.''' 
+    '''Splits value of --eval option.'''
     splitted = {};
-    
+
     fields = usereval.split('@');
     splitted['attrib'] = fields[0];
-    
+
     for field in fields[1:] :
         [key, val] = field.split('=');
         splitted[key] = val;
-        
+
     return splitted;
 
 class PaverSetup :
@@ -30,7 +30,7 @@ class PaverSetup :
     _defaultboundsabstol = 1e-4;
     _defaultfeastol = 2e-6;
     _defaultopttol = np.inf;
-    
+
     _defaulttimeshift = 10.0;
     _defaultnodeshift = 100;
     _defaultmintime = 1.0;
@@ -42,14 +42,14 @@ class PaverSetup :
     _defaultfilternodes = None;
     _defaulttimerelimpr = 0.1;
     _defaultboundrelimpr = 0.1;
-    
+
     def __init__(self) :
         pass;
 
 
     def addCommandLineOptions(self, parser) :
         '''Make command line parser aware of command line options of this setup.'''
-        
+
         parser.add_argument('--ccreltol', action = 'store', type = float, default = self._defaultboundsreltol,
                             help = 'relative tolerance in consistency check of bounds (default: ' + str(self._defaultboundsreltol) + ')');
         parser.add_argument('--ccabstol', action = 'store', type = float, default = self._defaultboundsabstol,
@@ -58,7 +58,7 @@ class PaverSetup :
                             help = 'tolerance for examiner computed primal infeasibilities in consistency check (default: ' + str(self._defaultfeastol) + ')');
         parser.add_argument('--ccopttol', action = 'store', type = float, default = self._defaultopttol,
                             help = 'tolerance for examiner computed dual infeasibilities in consistency check (default: ' + str(self._defaultopttol) + ')');
-        
+
         parser.add_argument('--timeshift', action = 'store', type = float, default = self._defaulttimeshift,
                             help = 'shift value for shifted geom. means of timings (default: ' + str(self._defaulttimeshift) + ')');
         parser.add_argument('--nodeshift', action = 'store', type = float, default = self._defaultnodeshift,
@@ -92,7 +92,7 @@ class PaverSetup :
 
     def getConsistencyChecks(self, paver) :
         '''Gives a list of consistency checks to execute.'''
-        
+
         if 'ccreltol' not in paver.options :
             paver.options['ccreltol'] = self._defaultboundsreltol;
         if 'ccabstol' not in paver.options :
@@ -103,9 +103,9 @@ class PaverSetup :
             paver.options['ccopttol'] = self._defaultopttol;
 
         checks = [];
-        
+
         checks.append(checkconsistency.CheckTerminationStatus());
-        
+
         checks.append(checkconsistency.CheckBounds(reltol = paver.options['ccreltol'], abstol = paver.options['ccabstol'], ignoredualbounds = 'ignoredualbounds' in paver.options and paver.options['ignoredualbounds']));
 
         checks.append(checkconsistency.CheckExaminer(paver.options['ccfeastol'], paver.options['ccopttol'], paver.options['ccopttol']));
@@ -114,7 +114,7 @@ class PaverSetup :
 
     def getMetrics(self, paver) :
         '''Gives a list of performance metrics to evaluate.'''
-        
+
         if 'timeshift' not in paver.options :
             paver.options['timeshift'] = self._defaulttimeshift;
         if 'nodeshift' not in paver.options :
@@ -135,27 +135,27 @@ class PaverSetup :
             paver.options['boundrelimpr'] = self._defaultboundrelimpr;
         if 'filtertime' not in paver.options :
             paver.options['filtertime'] = self._defaultfiltertime;
-        
+
         metrics = [];
 
         # check whether we have dual bounds/gaps
         ignoredualbounds = 'ignoredualbounds' in paver.options and paver.options['ignoredualbounds'];
-        
+
         valsbyattr = {};
         for attr in paver.aggrsolvedata.minor_axis :
             valsbyattr[attr] = paver.aggrsolvedata.loc[:, :, attr].stack();
         havegap = not ignoredualbounds and paver.hasSolveAttribute('Gap') and valsbyattr['Gap'].nunique() > 1;
         havedualbound = not ignoredualbounds and paver.hasSolveAttribute('DualBound') and len(set(valsbyattr['Gap']) - set([-np.inf, np.inf])) > 0;
         havedualgap = not ignoredualbounds and paver.hasSolveAttribute('DualGap') and not np.isinf(valsbyattr['DualGap'].min());
-        
+
         fails = paver.aggrsolvedata.loc[:, :, 'Fail'].astype(np.bool);
         failsany = fails.any(axis=1) | paver.instancedata['Fail'];
-        
+
         # mask for no fails (for each solver) and no fail on instance in general
         filternofail = ~fails;
         filternofail[paver.instancedata['Fail']] = False;
         filternofail.name = "no fail";
-        
+
         # get instances without fail for all solver
         filterallnofail = ~failsany;
         filterallnofail.name = "no fail by all solver"
@@ -163,9 +163,9 @@ class PaverSetup :
         filterallnofailknownopt = None;
         if paver.hasInstanceAttribute('KnownPrimalBound') and paver.hasInstanceAttribute('KnownDualBound') :
             filterallnofailknownopt = filterallnofail & (paver.instancedata['KnownPrimalBound'] == paver.instancedata['KnownDualBound']);
-            filterallnofailknownopt.name = "no fail by all solver and known optimal value" 
-        
-        # get instances solved by all solvers up to a certain gap 
+            filterallnofailknownopt.name = "no fail by all solver and known optimal value"
+
+        # get instances solved by all solvers up to a certain gap
         filterallmaxgap = [];
         if havegap :
             for g in [paver.options['gaptol']] + paver.options['evalgap'] :
@@ -174,7 +174,7 @@ class PaverSetup :
                 f.name = "gap <= %.6g%% and no fail for all solvers" % (100*g);
                 filterallmaxgap.append(f);
 
-        # get instances solved up to a certain gap 
+        # get instances solved up to a certain gap
         filtermaxgap = [];
         if havegap :
             for g in [paver.options['gaptol']] + paver.options['evalgap'] :
@@ -206,7 +206,7 @@ class PaverSetup :
                 f = (paver.aggrsolvedata.loc[:, :, 'DualGap'] <= g)[filternofail].fillna(False).astype(np.bool);
                 f.name = "dual gap <= %.6g%% and not failed" % (100*g);
                 filtermaxdualgap.append(f);
-        
+
         # get instances with a certain minimal (max) solving time and no fail
         filterminmaxtime = (paver.aggrsolvedata.loc[:, :, 'SolverTime'].max(axis = 1) >= paver.options['filtertime'])[filterallnofail].reindex_like(filterallnofail).fillna(False);
         filterminmaxtime.name = 'time >= ' + str(paver.options['filtertime']) + ' by at least one solver and no fail for all solvers';
@@ -217,7 +217,7 @@ class PaverSetup :
         if filterallnofailknownopt is not None and filterminmaxtime is not None :
             filterminmaxtimeknownopt = filterminmaxtime & filterallnofailknownopt;
             filterminmaxtimeknownopt.name = 'time >= ' + str(paver.options['filtertime']) + ' by at least one solver and no fail for all solvers and known optimal value';
- 
+
         if paver.hasSolveAttribute('NumberOfNodes') and 'filternodes' in paver.options and paver.options['filternodes'] is not None :
             # get instances with a certain minimal (max) number of nodes and no fail
             filterminmaxnodes = (paver.aggrsolvedata.loc[:, :, 'NumberOfNodes'].max(axis = 1) >= paver.options['filternodes'])[filterallnofail].reindex_like(filterallnofail).fillna(False);
@@ -261,7 +261,7 @@ class PaverSetup :
         m.boxplot = False;
         metrics.append(m);
         # pylint: enable=E1101
-        
+
         m = metric.Metric('Efficiency', 'SolverTime');
         m.shift = paver.options['timeshift'];
         m.clip_lower = paver.options['mintime'];
@@ -323,17 +323,17 @@ class PaverSetup :
                 m.ppfilter = [filtermaxgap[0]];
                 m.ppextended = 'extendedprofiles' in paver.options and paver.options['extendedprofiles'];
             metrics.append(m);
-            
+
         for usereval in paver.options['eval'] :
             ueval = _splitusereval(usereval);
             attrib = ueval['attrib'];
-            
+
             # skip if no interesting data
             if not paver.hasSolveAttribute(attrib) or valsbyattr[attrib].nunique() <= 1 :
                 continue;
 
             m = metric.Metric('--eval', attrib);
-            
+
             #omit = evaluators.OmitFailedInstance;
             if 'fail' in ueval :
                 m.failvalue = float(ueval['fail']);
@@ -360,9 +360,9 @@ class PaverSetup :
             m.filter += filterallmaxgap + filterallmaxprimgap;
             m.ppfilter = [filternofail] + filtermaxgap + filtermaxprimgap;
             m.ppextended = 'extendedprofiles' in paver.options and paver.options['extendedprofiles'];
-            
+
             metrics.append(m);
-            
+
         if paver.hasSolveAttribute('PrimalDualIntegral') and not ignoredualbounds :
             m = metric.Metric('Efficiency', 'PrimalDualIntegral');
             m.clip_lower = paver.options['mintime'];
@@ -395,7 +395,7 @@ class PaverSetup :
             m.ppabsolute = True;
             m.pprelative = False;
             metrics.append(m);
-            
+
             # counts on instance within a certain gap
             m = metric.Metric('Solution Quality', 'Gap');
             m.filter = filtermaxgap;
@@ -403,7 +403,7 @@ class PaverSetup :
             m.means = False;
             m.quantiles = [];
             metrics.append(m);
-            
+
         if paver.hasSolveAttribute('PrimalIntegral') and filterallnofailknownopt is not None:
             m = metric.Metric('Efficiency', 'PrimalIntegral');
             m.clip_lower = paver.options['mintime'];
@@ -421,7 +421,7 @@ class PaverSetup :
             m.ppfilter = [filternofail];
             m.ppextended = 'extendedprofiles' in paver.options and paver.options['extendedprofiles'];
             metrics.append(m);
-            
+
         if paver.hasSolveAttribute('PrimalGap') and filterallnofailknownopt is not None :
             # averages and quantiles on primal gap (more or less useful)
             m = metric.Metric('Solution Quality', 'PrimalGap');
@@ -436,7 +436,7 @@ class PaverSetup :
             m.ppabsolute = True;
             m.pprelative = False;
             metrics.append(m);
-            
+
             # counts on instance within a certain primal gap
             m = metric.Metric('Solution Quality', 'PrimalGap');
             m.filter = filtermaxprimgap;
@@ -462,7 +462,7 @@ class PaverSetup :
             m.ppfilter = [filternofail];
             m.ppextended = 'extendedprofiles' in paver.options and paver.options['extendedprofiles'];
             metrics.append(m);
-            
+
         if havedualgap and filterallnofailknownopt is not None :
             # averages and quantiles on dual gap (more or less useful)
             m = metric.Metric('Solution Quality', 'DualGap');
@@ -474,7 +474,7 @@ class PaverSetup :
             if filterminmaxnodesknownopt is not None :
                 m.filter.append(filterminmaxnodesknownopt);
             metrics.append(m);
-            
+
             # counts on instance within a certain dual gap
             m = metric.Metric('Solution Quality', 'DualGap');
             m.filter = filtermaxdualgap;
@@ -496,7 +496,7 @@ class PaverSetup :
             m.boxplot = False;
             m.reltol = paver.options['boundrelimpr'];
             metrics.append(m);
-        
+
         if havedualbound :
             m = metric.Metric('Solution Quality', 'DualBound');
             m.filter = [filterallnofail];
@@ -516,7 +516,7 @@ class PaverSetup :
 
     def getWriteSolveDataRunColumns(self, paver) :
         '''Gives a list of columns for the detailed solver run tables.'''
-        
+
         defaultruncolumns = [];
         defaultruncolumns.append(writesolvedata.TermStatusColumn());
         #_defaultcolumns.append(SolveStatusColumn());
@@ -602,7 +602,7 @@ class PaverSetup :
                                                               plot = self._dataplots));
         else :
             inclnodes = False;
-                                                                 
+
         if not inclnodes and paver.hasSolveAttribute('NumberOfIterations') and valsbyattr['NumberOfIterations'].max() > 1 and valsbyattr['NumberOfIterations'].nunique() > 1 :
             defaultruncolumns.append(writesolvedata.IntColumn('NumberOfIterations',
                                                               header = 'Iters',
@@ -612,7 +612,7 @@ class PaverSetup :
         for usereval in paver.options['eval'] :
             ueval = _splitusereval(usereval);
             attrib = ueval['attrib'];
-            
+
             # skip if no interesting data
             if not paver.hasSolveAttribute(attrib) or valsbyattr[attrib].nunique() <= 1 :
                 continue;
@@ -625,19 +625,19 @@ class PaverSetup :
             if paver.hasSolveAttribute(attrib) and valsbyattr[attrib].max() > 0.0 :
                 defaultruncolumns.append(writesolvedata.ExaminerColumn(plot = self._dataplots, plotcap = 10.0));
                 break;
-        
+
         return defaultruncolumns;
-        
+
     def getWriteSolveDataInstanceColumns(self, paver) :
         '''Gives a list of columns for the detailed instance tables.'''
-        
+
         defaultinstancecolumns = [];
 
         if 'ignoredualbounds' in paver.options :
             ignoredualbounds = paver.options['ignoredualbounds'];
         else :
             ignoredualbounds = False;
-                
+
         # get minima and maxima for each attribute over all solver-run's and instances
         #minattr = paver.solvedata.min('items').min('index');
         #maxattr = paver.solvedata.max('items').min('index');
@@ -645,21 +645,21 @@ class PaverSetup :
         # get minima and maxima for each attribute
         #minattr = paver.instancedata.min();
         #maxattr = paver.instancedata.max();
-                
+
         if paver.hasInstanceAttribute('NumberOfVariables') and \
             len(paver.instancedata.groupby('NumberOfVariables', sort = False).groups) > 1 :
             defaultinstancecolumns.append(writesolvedata.IntColumn('NumberOfVariables',
                                                                    align = writesolvedata.ColumnAlign.right, # pylint: disable=E1101
                                                                    header = '#Vars',
                                                                    plot = self._dataplots));
-                                                                      
+
         if paver.hasInstanceAttribute('NumberOfDiscreteVariables') and \
             len(paver.instancedata.groupby('NumberOfDiscreteVariables', sort = False).groups) > 1 :
             defaultinstancecolumns.append(writesolvedata.IntColumn('NumberOfDiscreteVariables',
                                                                    align = writesolvedata.ColumnAlign.right, # pylint: disable=E1101
                                                                    header = '#Disc',
                                                                    plot = self._dataplots));
-                                                                      
+
         if paver.hasInstanceAttribute('NumberOfEquations') and \
             len(paver.instancedata.groupby('NumberOfEquations', sort = False).groups) > 1 :
             defaultinstancecolumns.append(writesolvedata.IntColumn('NumberOfEquations',
@@ -672,19 +672,19 @@ class PaverSetup :
             defaultinstancecolumns.append(writesolvedata.StringColumn(lambda paver, data, instance, solverrun : utils.DirectionName[data['Direction'][instance]],
                                                                       align = writesolvedata.ColumnAlign.right, # pylint: disable=E1101
                                                                       header = 'Dir'));
-        
+
         if not ignoredualbounds and paver.hasInstanceAttribute('KnownDualBound') and \
             len(set(paver.instancedata.groupby('KnownDualBound', sort = False).groups.keys()) - set([-np.inf, np.inf])) > 0 :
             defaultinstancecolumns.append(writesolvedata.FloatColumn('KnownDualBound',
                                                                      header = 'Dual bound'));
-                                                                     
+
         if paver.hasInstanceAttribute('KnownPrimalBound') and \
             len(set(paver.instancedata.groupby('KnownPrimalBound', sort = False).groups.keys()) - set([-np.inf, np.inf])) > 0 :
             defaultinstancecolumns.append(writesolvedata.FloatColumn('KnownPrimalBound',
                                                                      header = 'Primal bound'));
-        
+
         return defaultinstancecolumns;
-    
+
     def getInstanceSelector(self, paver) :
         if 'instances' not in paver.options or paver.options['instances'] is None :
             return None;

@@ -45,7 +45,7 @@
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" media="screen" type="text/css" href="assets/css/login.css"/>
     <link rel="stylesheet" media="screen" type="text/css" href="//cdn.jsdelivr.net/bootstrap-social/5.1.1/bootstrap-social.css"/>
-    <link rel="stylesheet" media="screen" type="text/css" href="//cdn.jsdelivr.net/fontawesome/4.7.0/css/font-awesome.min.css"/>   
+    <link rel="stylesheet" media="screen" type="text/css" href="//cdn.jsdelivr.net/fontawesome/4.7.0/css/font-awesome.min.css"/>
 </head>
 
 <body>
@@ -71,14 +71,14 @@
 				<div class="alert alert-danger" th:if="${error}">
 	  				<strong>Could not sign in!</strong><br/><span th:text="${error}"></span>
 				</div>
-				<label for="username" class="sr-only">Email address</label> 
-				<input name="username" id="username" class="form-control" placeholder="User name" required="required" autofocus="autofocus"></input> 
+				<label for="username" class="sr-only">Email address</label>
+				<input name="username" id="username" class="form-control" placeholder="User name" required="required" autofocus="autofocus"></input>
 				<label for="password" class="sr-only">Password</label>
 				<input name="password" type="password" id="password" class="form-control" placeholder="Password" required="required"></input>
 				<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
 			</form>
 		</div>
-		
+
 		<div th:if="${@authenticationBackend.name == 'social'}">
 			<br/>
 			<h2 class="form-signin form-signin-heading">Please sign in:</h2>

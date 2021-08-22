@@ -47,7 +47,7 @@ spring:
     multipart:
       max-file-size: 200MB
       max-request-size: 200MB
-   
+
 server:
   forward-headers-strategy: native
   servlet:

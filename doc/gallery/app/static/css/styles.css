@@ -148,7 +148,7 @@
   right:0;
   display: none;
 }
-@media (min-width: 992px) { 
+@media (min-width: 992px) {
   .page-wrapper #miroSearchResults {
     width:500px;
   }
@@ -485,11 +485,11 @@ body{
     width:inherit;
     display:block;
     margin:auto;
-    position: absolute; 
-    top: 0; 
-    left: 0; 
-    bottom: 0; 
-    right: 0; 
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
   }
   #videoOverlay {
     position: absolute;
@@ -943,7 +943,7 @@ body{
   margin-bottom: 5px;
 }
 .page-wrapper .doc-sub-menu .has-sub-sub {
-    margin-bottom: 0;    
+    margin-bottom: 0;
 }
 .page-wrapper .doc-sub-menu .nav-link:first-child {
   padding-top: 5px;
@@ -1333,7 +1333,7 @@ body{
 }
 .modal-content-custom {
     width:inherit;
-    max-width:inherit; 
+    max-width:inherit;
     height:inherit;
     margin: 0 auto;
     pointer-events: all;
@@ -1356,5 +1356,5 @@ input[type=text], select {
   }
   .page-wrapper .btn {
     white-space: unset;
-  } 
+  }
 }

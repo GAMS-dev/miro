@@ -6,8 +6,8 @@ updateSelectInputNoClear <- function(session, id, choices){
   if(length(selected) && !selected %in% choices){
     selected <- NULL
   }
-  updateSelectInput(session, id, 
-                    choices = choices, 
+  updateSelectInput(session, id,
+                    choices = choices,
                     selected = selected)
 }
 isNonSingletonSet <- function(symName){
@@ -20,10 +20,10 @@ langSpecificWidget$widgetOptionsInput <- setNames(c("slider", "dropdown", "check
                                                     lang$adminMode$widgets$widgetOptions$dropdown,
                                                     lang$adminMode$widgets$widgetOptions$checkbox,
                                                     lang$adminMode$widgets$widgetOptions$numericinput))
-langSpecificWidget$widgetOptionsAll <- setNames(c("slider", "sliderrange", "dropdown", 
-                                                  "checkbox", "date", "daterange", 
-                                                  "textinput", "numericinput"), 
-                                                c(lang$adminMode$widgets$widgetOptions$slider, 
+langSpecificWidget$widgetOptionsAll <- setNames(c("slider", "sliderrange", "dropdown",
+                                                  "checkbox", "date", "daterange",
+                                                  "textinput", "numericinput"),
+                                                c(lang$adminMode$widgets$widgetOptions$slider,
                                                   lang$adminMode$widgets$widgetOptions$sliderrange,
                                                   lang$adminMode$widgets$widgetOptions$dropdown,
                                                   lang$adminMode$widgets$widgetOptions$checkbox,
@@ -31,8 +31,8 @@ langSpecificWidget$widgetOptionsAll <- setNames(c("slider", "sliderrange", "drop
                                                   lang$adminMode$widgets$widgetOptions$daterange,
                                                   lang$adminMode$widgets$widgetOptions$text,
                                                   lang$adminMode$widgets$widgetOptions$numericinput))
-langSpecificWidget$widgetOptionsGo <- setNames(c("slider", "dropdown", "checkbox", "textinput", "numericinput"), 
-                                                c(lang$adminMode$widgets$widgetOptions$slider, 
+langSpecificWidget$widgetOptionsGo <- setNames(c("slider", "dropdown", "checkbox", "textinput", "numericinput"),
+                                                c(lang$adminMode$widgets$widgetOptions$slider,
                                                   lang$adminMode$widgets$widgetOptions$dropdown,
                                                   lang$adminMode$widgets$widgetOptions$checkbox,
                                                   lang$adminMode$widgets$widgetOptions$text,
@@ -42,22 +42,22 @@ langSpecificWidget$widgetOptionsSet <- setNames(c("multidropdown", "table"), c(l
 langSpecificWidget$widgetOptionsDate <- setNames("date", lang$adminMode$widgets$widgetOptions$date)
 langSpecificWidget$widgetOptionsTextinput <- setNames("textinput", lang$adminMode$widgets$widgetOptions$text)
 langSpecificWidget$minDepOp <- c("Minimum" = "min", "Maximum" = "max", "Count" = "card",
-                                          "Mean" = "mean", "Median" = "median", "Variance" = "var", 
+                                          "Mean" = "mean", "Median" = "median", "Variance" = "var",
                                           "Standard Deviation" = "sd")
 names(langSpecificWidget$minDepOp) <- lang$adminMode$widgets$slider$depOp$choices
 langSpecificWidget$maxDepOp <- c("Minimum" = "min", "Maximum" = "max", "Count" = "card",
-                                 "Mean" = "mean", "Median" = "median", "Variance" = "var", 
+                                 "Mean" = "mean", "Median" = "median", "Variance" = "var",
                                  "Standard Deviation" = "sd")
 names(langSpecificWidget$maxDepOp) <- lang$adminMode$widgets$slider$depOp$choices
 langSpecificWidget$defDepOp <- c("Minimum" = "min", "Maximum" = "max", "Count" = "card",
-                                 "Mean" = "mean", "Median" = "median", "Variance" = "var", 
+                                 "Mean" = "mean", "Median" = "median", "Variance" = "var",
                                  "Standard Deviation" = "sd")
 names(langSpecificWidget$defDepOp) <- lang$adminMode$widgets$slider$depOp$choices
 langSpecificWidget$depChoices <- c("All" = "")
 names(langSpecificWidget$depChoices) <- lang$adminMode$widgets$dropdown$choiceDep$depChoices
 langSpecificWidget$startview <- c("Month" = "month", "Year" = "year", "Decade" = "decade")
 names(langSpecificWidget$startview) <- lang$adminMode$widgets$date$startview$choices
-langSpecificWidget$weekdays <- c("Sunday" = 0L, "Monday" = 1L, "Tuesday" = 2L, 
+langSpecificWidget$weekdays <- c("Sunday" = 0L, "Monday" = 1L, "Tuesday" = 2L,
                                  "Wednesday" = 3L, "Thursday" = 4L, "Friday" = 5L, "Saturday" = 6L)
 names(langSpecificWidget$weekdays) <- lang$adminMode$widgets$date$weekstart$choices
 langSpecificWidget$decimalCharacterChoices <- c(",", ".", "&middot;", "&#1643;", "&#9110;")
@@ -87,7 +87,7 @@ validateWidgetConfig <- function(widgetJSON){
   if(!length(widgetJSON$alias) || identical(nchar(trimws(widgetJSON$alias)), 0L)){
     return(lang$adminMode$widgets$validate[["val1"]])
   }
-  if(startsWith(currentWidgetSymbolName, prefixDDPar) && 
+  if(startsWith(currentWidgetSymbolName, prefixDDPar) &&
      identical(nchar(trimws(currentWidgetSymbolName)), nchar(prefixDDPar))){
     return(lang$adminMode$widgets$validate[["val2"]])
   }
@@ -102,13 +102,13 @@ validateWidgetConfig <- function(widgetJSON){
   if(identical(grepl("\\s", currentWidgetSymbolName), TRUE)){
     return(lang$adminMode$widgets$validate$val39)
   }
-  
 
-    
-  switch(widgetJSON$widgetType, 
+
+
+  switch(widgetJSON$widgetType,
          slider = ,
          sliderrange = {
-           if(!is.null(widgetJSON$default) && (length(widgetJSON$default) < 1L || 
+           if(!is.null(widgetJSON$default) && (length(widgetJSON$default) < 1L ||
               length(widgetJSON$default) > 2L)){
              return(lang$adminMode$widgets$validate[["val6"]])
            }
@@ -118,18 +118,18 @@ validateWidgetConfig <- function(widgetJSON){
            if(is.na(widgetJSON$max)){
              return(lang$adminMode$widgets$validate$val41)
            }
-           if(any(widgetJSON$max < widgetJSON$min) && 
+           if(any(widgetJSON$max < widgetJSON$min) &&
               isTRUE(input$slider_min_dep_selector) &&
               isTRUE(input$slider_max_dep_selector)){
              return(lang$adminMode$widgets$validate$val42)
            }
-           if(!is.null(widgetJSON$default) && (any(widgetJSON$default < widgetJSON$min) && 
+           if(!is.null(widgetJSON$default) && (any(widgetJSON$default < widgetJSON$min) &&
               isTRUE(input$slider_min_dep_selector) &&
               isTRUE(input$slider_def_dep_selector))){
              return(lang$adminMode$widgets$validate[["val7"]])
            }
-           if(!is.null(widgetJSON$default) && (any(widgetJSON$max < widgetJSON$default) && 
-              isTRUE(input$slider_max_dep_selector) && 
+           if(!is.null(widgetJSON$default) && (any(widgetJSON$max < widgetJSON$default) &&
+              isTRUE(input$slider_max_dep_selector) &&
               isTRUE(input$slider_def_dep_selector))){
              return(lang$adminMode$widgets$validate[["val7"]])
            }
@@ -151,11 +151,11 @@ validateWidgetConfig <- function(widgetJSON){
            if(!length(widgetJSON$choices)){
              return(lang$adminMode$widgets$validate$val38)
            }
-           if(!identical(length(widgetJSON$aliases), 0L) && 
+           if(!identical(length(widgetJSON$aliases), 0L) &&
               !identical(length(widgetJSON$choices), length(widgetJSON$aliases))){
              return(lang$adminMode$widgets$validate$val10)
            }
-           if(length(widgetJSON$selected) && !widgetJSON$selected %in% widgetJSON$choices && 
+           if(length(widgetJSON$selected) && !widgetJSON$selected %in% widgetJSON$choices &&
               isTRUE(input$dd_choice_dep_selector)){
              return(lang$adminMode$widgets$validate$val11)
            }
@@ -164,7 +164,7 @@ validateWidgetConfig <- function(widgetJSON){
            }
          },
          textinput = {
-           
+
          },
          checkbox = {
            if(isTRUE(widgetJSON$value)){
@@ -284,7 +284,7 @@ validateWidgetConfig <- function(widgetJSON){
                return(lang$adminMode$widgets$validate$val25)
              }
            }
-           
+
            if(!is.null(startDate) && !is.null(minDate)){
              if(startDate < minDate){
                return(lang$adminMode$widgets$validate$val26)
@@ -339,7 +339,7 @@ validateWidgetConfig <- function(widgetJSON){
 
 observeEvent({input$widget_symbol
   rv$widget_symbol}, {
-    req(length(input$widget_symbol) > 0L, nchar(input$widget_symbol) > 0L, 
+    req(length(input$widget_symbol) > 0L, nchar(input$widget_symbol) > 0L,
         identical(input$widget_symbol_type, "gams"))
     hideEl(session, "#noSymbolMsg")
     hideEl(session, "#noWidgetMsg")
@@ -353,7 +353,7 @@ observeEvent({input$widget_symbol
     }
     symID <- match(input$widget_symbol, modelInRaw[[scalarsFileName]]$symnames)
     widgetOptions <- langSpecificWidget$widgetOptionsInput
-    
+
     if(!identical(modelInRaw[[scalarsFileName]]$symtypes[[symID]], "parameter")){
       #lang$adminMode$widgets$widgetOptionsDate$choices
       widgetOptions <- c(widgetOptions, langSpecificWidget$widgetOptionsDate,
@@ -362,14 +362,14 @@ observeEvent({input$widget_symbol
   }else if(any(startsWith(input$widget_symbol, c(prefixDDPar, prefixGMSOpt)))){
     currentWidgetSymbolName <<- input$widget_symbol
     if(startsWith(currentWidgetSymbolName, prefixGMSOpt)){
-      showElReplaceTxt(session, "#optionConfigMsg", 
-                       sprintf(lang$adminMode$widgets$ui$optionConfigMsg, 
+      showElReplaceTxt(session, "#optionConfigMsg",
+                       sprintf(lang$adminMode$widgets$ui$optionConfigMsg,
                                substring(currentWidgetSymbolName, nchar(prefixGMSOpt) + 1L)))
       widgetOptions <- langSpecificWidget$widgetOptionsGo
     }
     if(startsWith(currentWidgetSymbolName, prefixDDPar)){
-      showElReplaceTxt(session, "#doubledashConfigMsg", 
-                       sprintf(lang$adminMode$widgets$ui$doubledashConfigMsg, 
+      showElReplaceTxt(session, "#doubledashConfigMsg",
+                       sprintf(lang$adminMode$widgets$ui$doubledashConfigMsg,
                                substring(currentWidgetSymbolName, nchar(prefixDDPar) + 1L)))
       widgetOptions <- langSpecificWidget$widgetOptionsAll
     }
@@ -393,10 +393,10 @@ observeEvent({input$widget_symbol
   selectedType <- widgetOptions[[1L]]
   if(currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
     selectedType <- configJSON$inputWidgets[[currentWidgetSymbolName]]$widgetType
-    if(identical(selectedType, "slider") && 
+    if(identical(selectedType, "slider") &&
        identical(length(configJSON$inputWidgets[[currentWidgetSymbolName]]$default), 2L)){
       selectedType <- "sliderrange"
-    }else if(identical(selectedType, "dropdown") && 
+    }else if(identical(selectedType, "dropdown") &&
              (isTRUE(configJSON$inputWidgets[[currentWidgetSymbolName]]$multiple) ||
               length(isNonSingletonSet(currentWidgetSymbolName)))){
       selectedType <- "multidropdown"
@@ -404,9 +404,9 @@ observeEvent({input$widget_symbol
     if(!selectedType %in% widgetOptions){
       widgetAlias <- names(langSpecificWidget$widgetOptionsAll[langSpecificWidget$widgetOptionsAll == selectedType[1]])
       removeUI(selector = "#widget_options .shiny-input-container", multiple = TRUE)
-      insertUI(selector = "#widget_options", 
-               tags$div(class="shiny-input-container config-no-hide", 
-                        sprintf(lang$adminMode$widgets$ui$notConfigurable, currentWidgetSymbolName, 
+      insertUI(selector = "#widget_options",
+               tags$div(class="shiny-input-container config-no-hide",
+                        sprintf(lang$adminMode$widgets$ui$notConfigurable, currentWidgetSymbolName,
                                 if(length(widgetAlias)) widgetAlias else selectedType)),
                where = "beforeEnd")
       disableEl(session, "#saveWidget")
@@ -415,8 +415,8 @@ observeEvent({input$widget_symbol
       })
     }
   }
-  
-  updateSelectInput(session, "widget_type", 
+
+  updateSelectInput(session, "widget_type",
                     choices = widgetOptions,
                     selected = selectedType)
   if(identical(input$widget_type, selectedType))
@@ -441,11 +441,11 @@ observeEvent(input$widget_symbol_type, {
     updateTextInput(session, "widget_label", value = "")
     if(identical(input$widget_symbol_type, "dd")){
       updateTextInput(session, "widget_dd", value = "")
-      updateSelectInput(session, "widget_type", choices = 
+      updateSelectInput(session, "widget_type", choices =
                           langSpecificWidget$widgetOptionsAll)
     }else if(identical(input$widget_symbol_type, "go")){
       updateTextInput(session, "widget_go", value = "")
-      updateSelectInput(session, "widget_type", choices = 
+      updateSelectInput(session, "widget_type", choices =
                           langSpecificWidget$widgetOptionsGo)
     }
     if(!length(latest_widget_symbol_type)){
@@ -454,17 +454,17 @@ observeEvent(input$widget_symbol_type, {
     }
     if(latest_widget_symbol_type %in% c("dd", "go")){
       if(identical(input$widget_symbol_type, "go") &&
-         identical(latest_widget_symbol_type, "dd") && 
+         identical(latest_widget_symbol_type, "dd") &&
          startsWith(prefixDDPar, currentWidgetSymbolName)){
-        currentWidgetSymbolName <<- prefixGMSOpt %+% substr(currentWidgetSymbolName, 
-                                                            nchar(prefixDDPar) + 1L, 
+        currentWidgetSymbolName <<- prefixGMSOpt %+% substr(currentWidgetSymbolName,
+                                                            nchar(prefixDDPar) + 1L,
                                                             nchar(currentWidgetSymbolName))
       }
       if(identical(input$widget_symbol_type, "dd") &&
-         identical(latest_widget_symbol_type, "go") && 
+         identical(latest_widget_symbol_type, "go") &&
          startsWith(prefixGMSOpt, currentWidgetSymbolName)){
-        currentWidgetSymbolName <<- prefixDDPar %+% substr(currentWidgetSymbolName, 
-                                                           nchar(prefixGMSOpt) + 1L, 
+        currentWidgetSymbolName <<- prefixDDPar %+% substr(currentWidgetSymbolName,
+                                                           nchar(prefixGMSOpt) + 1L,
                                                            nchar(currentWidgetSymbolName))
       }
     }
@@ -489,12 +489,12 @@ observeEvent(input$widget_symbol_type, {
 })
 observeEvent({input$widget_type
   rv$widget_type}, {
-    req(length(input$widget_type) > 0L, length(currentWidgetSymbolName) > 0L, 
+    req(length(input$widget_type) > 0L, length(currentWidgetSymbolName) > 0L,
         nchar(currentWidgetSymbolName) > 0L)
     removeUI(selector = "#widget_options .shiny-input-container", multiple = TRUE)
     enableEl(session, "#saveWidget")
     enableEl(session, "#deleteWidget")
-    rv$widgetConfig <- list() 
+    rv$widgetConfig <- list()
     currentConfig <- NULL
     if(currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
       currentConfig <- configJSON$inputWidgets[[currentWidgetSymbolName]]
@@ -514,7 +514,7 @@ observeEvent({input$widget_type
                                    alias = widgetAlias,
                                    min = if(length(currentConfig$min)) currentConfig$min else 0L,
                                    max = if(length(currentConfig$max)) currentConfig$max else 10L,
-                                   default = 
+                                   default =
                                      if(length(currentConfig$default) && length(currentConfig$default) < 2L){
                                        currentConfig$default
                                      }else if(length(currentConfig$default) && length(currentConfig$default) > 1L){
@@ -532,13 +532,13 @@ observeEvent({input$widget_type
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
            dynamicDef <- getWidgetDependencies("slider", rv$widgetConfig$default)
-           
-           staticMinInput <- tags$div(numericInput("slider_min", lang$adminMode$widgets$slider$min, 
+
+           staticMinInput <- tags$div(numericInput("slider_min", lang$adminMode$widgets$slider$min,
                                                    value = if(is.numeric(rv$widgetConfig$min)) rv$widgetConfig$min else 0L))
-           staticMaxInput <- tags$div(numericInput("slider_max", lang$adminMode$widgets$slider$max, 
+           staticMaxInput <- tags$div(numericInput("slider_max", lang$adminMode$widgets$slider$max,
                                                    value = if(is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max else 10L))
-           staticDefInput <- tags$div(numericInput("slider_def", lang$adminMode$widgets$slider$default, 
-                                                   value = 
+           staticDefInput <- tags$div(numericInput("slider_def", lang$adminMode$widgets$slider$default,
+                                                   value =
                                                      if(is.numeric(rv$widgetConfig$default)){
                                                        rv$widgetConfig$default
                                                      }else if(is.numeric(rv$widgetConfig$min)){
@@ -555,7 +555,7 @@ observeEvent({input$widget_type
                                         textInput("widget_label", lang$adminMode$widgets$slider$label, value = rv$widgetConfig$label))),
                       tags$div(class = "shiny-input-container highlight-block",
                                tags$label(lang$adminMode$widgets$slider$minlabel),
-                               tags$div(class = "conditional", 
+                               tags$div(class = "conditional",
                                         tags$div(class = "col-sm-8",
                                                  if(length(inputSymMultiDim)){
                                                    tagList(
@@ -565,17 +565,17 @@ observeEvent({input$widget_type
                                                      conditionalPanel(condition = "input.slider_min_dep_selector!==true",
                                                                       tags$label(class = "cb-label", "for" = "slider_min_dep_wrapper",
                                                                                  style = "display:block;", lang$adminMode$widgets$slider$dep),
-                                                                      tags$div(id = "slider_min_dep_wrapper", 
+                                                                      tags$div(id = "slider_min_dep_wrapper",
                                                                                class = "shiny-input-container two-col-wrapper",
                                                                                tags$div(class = "two-col-left",
                                                                                         selectInput("slider_min_dep", NULL,
                                                                                                     choices = inputSymMultiDim, selected = dynamicMin[2])),
                                                                                tags$div(class = "two-col-right",
-                                                                                        selectInput("slider_min_dep_header", NULL, 
+                                                                                        selectInput("slider_min_dep_header", NULL,
                                                                                                     choices = if(length(dynamicMin)) inputSymHeaders[[dynamicMin[2]]] else
                                                                                                       inputSymHeaders[[1]],
                                                                                                     selected = dynamicMin[3]))),
-                                                                      selectInput("slider_min_dep_op", lang$adminMode$widgets$slider$depOp$label, 
+                                                                      selectInput("slider_min_dep_op", lang$adminMode$widgets$slider$depOp$label,
                                                                                   choices = langSpecificWidget$minDepOp,
                                                                                   selected = dynamicMin[1])
                                                      )
@@ -595,7 +595,7 @@ observeEvent({input$widget_type
                       ),
                       tags$div(class = "shiny-input-container highlight-block",
                                tags$label(lang$adminMode$widgets$slider$maxlabel),
-                               tags$div(class = "conditional", 
+                               tags$div(class = "conditional",
                                         tags$div(class = "col-sm-8",
                                                  if(length(inputSymMultiDim)){
                                                    tagList(
@@ -605,17 +605,17 @@ observeEvent({input$widget_type
                                                      conditionalPanel(condition = "input.slider_max_dep_selector!==true",
                                                                       tags$label(class = "cb-label", "for" = "slider_max_dep_wrapper",
                                                                                  style = "display:block;", lang$adminMode$widgets$slider$dep),
-                                                                      tags$div(id = "slider_max_dep_wrapper", 
+                                                                      tags$div(id = "slider_max_dep_wrapper",
                                                                                class = "shiny-input-container two-col-wrapper",
                                                                                tags$div(class = "two-col-left",
-                                                                                        selectInput("slider_max_dep", NULL, 
+                                                                                        selectInput("slider_max_dep", NULL,
                                                                                                     choices = inputSymMultiDim, selected = dynamicMax[2])),
                                                                                tags$div(class = "two-col-right",
-                                                                                        selectInput("slider_max_dep_header", NULL, 
+                                                                                        selectInput("slider_max_dep_header", NULL,
                                                                                                     choices = if(length(dynamicMax)) inputSymHeaders[[dynamicMax[2]]] else
                                                                                                       inputSymHeaders[[1]],
                                                                                                     selected = dynamicMax[3]))),
-                                                                      selectInput("slider_max_dep_op", lang$adminMode$widgets$slider$depOp$label, 
+                                                                      selectInput("slider_max_dep_op", lang$adminMode$widgets$slider$depOp$label,
                                                                                   choices = langSpecificWidget$maxDepOp,
                                                                                   selected = dynamicMax[1])
                                                      )
@@ -626,7 +626,7 @@ observeEvent({input$widget_type
                                         if(length(inputSymMultiDim)){
                                           tags$div(class = "col-sm-4",
                                                    tags$div(class = "shiny-input-container",
-                                                            checkboxInput_MIRO("slider_max_dep_selector", 
+                                                            checkboxInput_MIRO("slider_max_dep_selector",
                                                                                lang$adminMode$widgets$slider$depSelector,
                                                                                is.numeric(rv$widgetConfig$max))
                                                    ))
@@ -635,7 +635,7 @@ observeEvent({input$widget_type
                       ),
                       tags$div(class = "shiny-input-container highlight-block",
                                tags$label(lang$adminMode$widgets$slider$defaultlabel),
-                               tags$div(class = "conditional", 
+                               tags$div(class = "conditional",
                                         tags$div(class = "col-sm-8",
                                                  if(length(inputSymMultiDim)){
                                                    tagList(
@@ -645,17 +645,17 @@ observeEvent({input$widget_type
                                                      conditionalPanel(condition = "input.slider_def_dep_selector!==true",
                                                                       tags$label(class = "cb-label", "for" = "slider_max_dep_wrapper",
                                                                                  style = "display:block;", lang$adminMode$widgets$slider$dep),
-                                                                      tags$div(id = "slider_max_dep_wrapper", 
+                                                                      tags$div(id = "slider_max_dep_wrapper",
                                                                                class = "shiny-input-container two-col-wrapper",
                                                                                tags$div(class = "two-col-left",
-                                                                      selectInput("slider_def_dep", NULL, 
+                                                                      selectInput("slider_def_dep", NULL,
                                                                                   choices = inputSymMultiDim, selected = dynamicDef[2])),
                                                                       tags$div(class = "two-col-right",
-                                                                      selectInput("slider_def_dep_header", NULL, 
+                                                                      selectInput("slider_def_dep_header", NULL,
                                                                                   choices = if(length(dynamicDef)) inputSymHeaders[[dynamicDef[2]]] else
                                                                                     inputSymHeaders[[1]],
                                                                                   selected = dynamicDef[3]))),
-                                                                      selectInput("slider_def_dep_op", lang$adminMode$widgets$slider$depOp$label, 
+                                                                      selectInput("slider_def_dep_op", lang$adminMode$widgets$slider$depOp$label,
                                                                                   choices = langSpecificWidget$defDepOp,
                                                                                   selected = dynamicDef[1])
                                                      )
@@ -666,7 +666,7 @@ observeEvent({input$widget_type
                                         if(length(inputSymMultiDim)){
                                           tags$div(class = "col-sm-4",
                                                    tags$div(class = "shiny-input-container",
-                                                            checkboxInput_MIRO("slider_def_dep_selector", 
+                                                            checkboxInput_MIRO("slider_def_dep_selector",
                                                                                lang$adminMode$widgets$slider$depSelector,
                                                                                is.numeric(rv$widgetConfig$default))
                                                    ))
@@ -676,10 +676,10 @@ observeEvent({input$widget_type
                       tags$div(class="option-wrapper",
                                numericInput("slider_step", lang$adminMode$widgets$slider$step, value = rv$widgetConfig$step, min = 0L),
                                tags$div(class = "info-position",
-                                 numericInput("slider_minStep", tags$div(lang$adminMode$widgets$slider$minStep, 
-                                                                         tags$a("", title = lang$adminMode$widgets$slider$minStepTooltip, 
+                                 numericInput("slider_minStep", tags$div(lang$adminMode$widgets$slider$minStep,
+                                                                         tags$a("", title = lang$adminMode$widgets$slider$minStepTooltip,
                                                                                 class="info-wrapper",
-                                                                                href="https://gams.com/miro/widgets.html#slider-option-minstep", 
+                                                                                href="https://gams.com/miro/widgets.html#slider-option-minstep",
                                                                                 tags$span(class="fas fa-info-circle", class="info-icon",
                                                                                           role = "presentation",
                                                                                           `aria-label` = "More information"), target="_blank")),
@@ -692,11 +692,11 @@ observeEvent({input$widget_type
                                checkboxInput_MIRO("widget_hcube", lang$adminMode$widgets$slider$hcube,
                                                   !rv$widgetConfig$noHcube)
                       )
-                    ), 
+                    ),
                     where = "beforeEnd")
            output$widget_preview <- renderUI({
              sliderInput("slider_preview", rv$widgetConfig$label, min = if(is.numeric(rv$widgetConfig$min)) rv$widgetConfig$min else 0L,
-                         max = if(is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max else 10L, 
+                         max = if(is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max else 10L,
                          value = if(is.numeric(rv$widgetConfig$default)) rv$widgetConfig$default else 2L,
                          step = if(is.numeric(rv$widgetConfig$step)) rv$widgetConfig$step else 1L,
                          ticks = rv$widgetConfig$ticks)
@@ -707,7 +707,7 @@ observeEvent({input$widget_type
                                    alias = widgetAlias,
                                    min = if(length(currentConfig$min)) currentConfig$min else 0L,
                                    max = if(length(currentConfig$max)) currentConfig$max else 10L,
-                                   default = 
+                                   default =
                                      if(length(currentConfig$default) > 1L){
                                        currentConfig$default
                                      }else if(is.numeric(currentConfig$min)){
@@ -722,22 +722,22 @@ observeEvent({input$widget_type
            rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
-           staticMinInput <- numericInput("slider_min", lang$adminMode$widgets$sliderrange$min, 
+           staticMinInput <- numericInput("slider_min", lang$adminMode$widgets$sliderrange$min,
                                           value = if(is.numeric(rv$widgetConfig$min)) rv$widgetConfig$min else 0L)
-           staticMaxInput <- numericInput("slider_max", lang$adminMode$widgets$sliderrange$max, 
+           staticMaxInput <- numericInput("slider_max", lang$adminMode$widgets$sliderrange$max,
                                           value = if(is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max else 10L)
-           
+
            insertUI(selector = "#widget_options",
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",
                                tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, 
+                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias,
                                                   value = rv$widgetConfig$alias)),
                                tags$div(class="two-col-right",
                                         textInput("widget_label", lang$adminMode$widgets$sliderrange$label, value = rv$widgetConfig$label))),
                       tags$div(class = "shiny-input-container highlight-block",
                                tags$label(lang$adminMode$widgets$sliderrange$minlabel),
-                               tags$div(class = "conditional", 
+                               tags$div(class = "conditional",
                                         tags$div(class = "col-sm-8",
                                                  if(length(inputSymMultiDim)){
                                                    tagList(
@@ -747,17 +747,17 @@ observeEvent({input$widget_type
                                                      conditionalPanel(condition = "input.slider_min_dep_selector!==true",
                                                                       tags$label(class = "cb-label", "for" = "slider_min_dep_wrapper",
                                                                                  style = "display:block;", lang$adminMode$widgets$sliderrange$dep),
-                                                                      tags$div(id = "slider_min_dep_wrapper", 
+                                                                      tags$div(id = "slider_min_dep_wrapper",
                                                                                class = "shiny-input-container two-col-wrapper",
                                                                                tags$div(class = "two-col-left",
-                                                                                        selectInput("slider_min_dep", NULL, 
+                                                                                        selectInput("slider_min_dep", NULL,
                                                                                                     choices = inputSymMultiDim, selected = dynamicMin[2])),
                                                                                tags$div(class = "two-col-right",
-                                                                                        selectInput("slider_min_dep_header", NULL, 
+                                                                                        selectInput("slider_min_dep_header", NULL,
                                                                                                     choices = if(length(dynamicMin)) inputSymHeaders[[dynamicMin[2]]] else
                                                                                                       inputSymHeaders[[1]],
                                                                                                     selected = dynamicMin[3]))),
-                                                                      selectInput("slider_min_dep_op", lang$adminMode$widgets$sliderrange$depOp$label, 
+                                                                      selectInput("slider_min_dep_op", lang$adminMode$widgets$sliderrange$depOp$label,
                                                                                   choices = langSpecificWidget$minDepOp,
                                                                                   selected = dynamicMin[1])
                                                      )
@@ -768,7 +768,7 @@ observeEvent({input$widget_type
                                         if(length(inputSymMultiDim)){
                                           tags$div(class = "col-sm-4",
                                                    tags$div(class = "shiny-input-container",
-                                                            checkboxInput_MIRO("slider_min_dep_selector", 
+                                                            checkboxInput_MIRO("slider_min_dep_selector",
                                                                                lang$adminMode$widgets$sliderrange$depSelector,
                                                                                is.numeric(rv$widgetConfig$min))
                                                    ))
@@ -777,7 +777,7 @@ observeEvent({input$widget_type
                       ),
                       tags$div(class = "shiny-input-container highlight-block",
                                tags$label(lang$adminMode$widgets$slider$maxlabel),
-                               tags$div(class = "conditional", 
+                               tags$div(class = "conditional",
                                         tags$div(class = "col-sm-8",
                                                  if(length(inputSymMultiDim)){
                                                    tagList(
@@ -787,17 +787,17 @@ observeEvent({input$widget_type
                                                      conditionalPanel(condition = "input.slider_max_dep_selector!==true",
                                                                       tags$label(class = "cb-label", "for" = "slider_max_dep_wrapper",
                                                                                  style = "display:block;", lang$adminMode$widgets$sliderrange$dep),
-                                                                      tags$div(id = "slider_max_dep_wrapper", 
+                                                                      tags$div(id = "slider_max_dep_wrapper",
                                                                                class = "shiny-input-container two-col-wrapper",
                                                                                tags$div(class = "two-col-left",
-                                                                                        selectInput("slider_max_dep", NULL, 
+                                                                                        selectInput("slider_max_dep", NULL,
                                                                                                     choices = inputSymMultiDim, selected = dynamicMax[2])),
                                                                                tags$div(class = "two-col-right",
-                                                                                        selectInput("slider_max_dep_header", NULL, 
+                                                                                        selectInput("slider_max_dep_header", NULL,
                                                                                                     choices = if(length(dynamicMax)) inputSymHeaders[[dynamicMax[2]]] else
                                                                                                       inputSymHeaders[[1]],
                                                                                                     selected = dynamicMax[3]))),
-                                                                      selectInput("slider_max_dep_op", lang$adminMode$widgets$sliderrange$depOp$label, 
+                                                                      selectInput("slider_max_dep_op", lang$adminMode$widgets$sliderrange$depOp$label,
                                                                                   choices = langSpecificWidget$maxDepOp,
                                                                                   selected = dynamicMax[1])
                                                      )
@@ -808,7 +808,7 @@ observeEvent({input$widget_type
                                         if(length(inputSymMultiDim)){
                                           tags$div(class = "col-sm-4",
                                                    tags$div(class = "shiny-input-container",
-                                                            checkboxInput_MIRO("slider_max_dep_selector", 
+                                                            checkboxInput_MIRO("slider_max_dep_selector",
                                                                                lang$adminMode$widgets$sliderrange$depSelector,
                                                                                is.numeric(rv$widgetConfig$max))
                                                    ))
@@ -817,36 +817,36 @@ observeEvent({input$widget_type
                       ),
                       tags$div(class="shiny-input-container two-col-wrapper",
                                tags$div(class="two-col-left",
-                                        numericInput("slider_def1", lang$adminMode$widgets$sliderrange$default1, 
+                                        numericInput("slider_def1", lang$adminMode$widgets$sliderrange$default1,
                                                      value = rv$widgetConfig$default[1])),
                                tags$div(class="two-col-right",
-                                        numericInput("slider_def2", lang$adminMode$widgets$sliderrange$default2, 
+                                        numericInput("slider_def2", lang$adminMode$widgets$sliderrange$default2,
                                                      value = rv$widgetConfig$default[2]))),
                       tags$div(class="two-col-left",
-                               numericInput("slider_step", lang$adminMode$widgets$sliderrange$step, 
+                               numericInput("slider_step", lang$adminMode$widgets$sliderrange$step,
                                             value = rv$widgetConfig$step, min = 0L),
-                               numericInput("slider_minStep", lang$adminMode$widgets$slider$minStep, 
+                               numericInput("slider_minStep", lang$adminMode$widgets$slider$minStep,
                                             value = rv$widgetConfig$minStep, min = 0L)),
                       tags$div(class = "shiny-input-container",
                                checkboxInput_MIRO("slider_ticks", lang$adminMode$widgets$sliderrange$ticks,
                                                   rv$widgetConfig$ticks)
                       ),
                       tags$div(class = "shiny-input-container",
-                               checkboxInput_MIRO("widget_hcube", 
+                               checkboxInput_MIRO("widget_hcube",
                                                   lang$adminMode$widgets$sliderrange$hcube,
                                                   !rv$widgetConfig$noHcube)
                       )
-                    ), 
+                    ),
                     where = "beforeEnd")
            output$widget_preview <- renderUI({
              sliderInput("slider_preview", rv$widgetConfig$label, min = if(is.numeric(rv$widgetConfig$min)) rv$widgetConfig$min else 0L,
-                         max = if(is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max else 10L, 
+                         max = if(is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max else 10L,
                          value = rv$widgetConfig$default,
                          step = if(is.numeric(rv$widgetConfig$step)) rv$widgetConfig$step else 1L,
                          ticks = rv$widgetConfig$ticks)
            })
          },
-         dropdown = , 
+         dropdown = ,
          multidropdown = {
            rv$widgetConfig <- list(widgetType = "dropdown",
                                    alias = widgetAlias,
@@ -864,27 +864,27 @@ observeEvent({input$widget_type
            }
            ddChoicesDynamic <- inputSymMultiDim[!inputSymMultiDim %in% currentWidgetSymbolName]
            staticChoiceInput <- tagList(
-             selectizeInput("dd_choices", lang$adminMode$widgets$dropdown$choices, 
-                            if(!length(dynamicChoices)) currentConfig$choices else c(), 
+             selectizeInput("dd_choices", lang$adminMode$widgets$dropdown$choices,
+                            if(!length(dynamicChoices)) currentConfig$choices else c(),
                             selected = if(!length(dynamicChoices)) currentConfig$choices else "",
                             multiple = TRUE, options = list(
                               'create' = TRUE,
                               'persist' = FALSE)),
-             selectizeInput("dd_aliases", lang$adminMode$widgets$dropdown$choicesAlias, 
-                            if(!length(dynamicChoices)) currentConfig$aliases else c(), 
+             selectizeInput("dd_aliases", lang$adminMode$widgets$dropdown$choicesAlias,
+                            if(!length(dynamicChoices)) currentConfig$aliases else c(),
                             selected = if(!length(dynamicChoices)) rv$widgetConfig$aliases else "",
                             multiple = TRUE, options = list(
                               'create' = TRUE,
                               'persist' = FALSE)),
-             selectInput("dd_default", lang$adminMode$widgets$dropdown$default, 
-                         choices = if(length(dynamicChoices)) "" else rv$widgetConfig$choices, 
+             selectInput("dd_default", lang$adminMode$widgets$dropdown$default,
+                         choices = if(length(dynamicChoices)) "" else rv$widgetConfig$choices,
                          selected = if(length(dynamicChoices)) "" else rv$widgetConfig$selected)
            )
            insertUI(selector = "#widget_options",
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",
                                tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, 
+                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias,
                                                   value = rv$widgetConfig$alias)),
                                tags$div(class="two-col-right",
                                         textInput("widget_label", lang$adminMode$widgets$dropdown$label, value = rv$widgetConfig$label))),
@@ -907,19 +907,19 @@ observeEvent({input$widget_type
                                             conditionalPanel(condition = "input.dd_choice_dep_selector!==true",
                                                              tags$label(class = "cb-label", "for" = "dd_choice_dep_wrapper",
                                                                         style = "display:block;", lang$adminMode$widgets$dropdown$choiceDep$label),
-                                                             tags$div(id = "dd_choice_dep_wrapper", 
+                                                             tags$div(id = "dd_choice_dep_wrapper",
                                                                       class = "shiny-input-container two-col-wrapper",
                                                                       tags$div(class = "two-col-left",
-                                                                               selectInput("dd_choice_dep", NULL, 
-                                                                                           choices = c(langSpecificWidget$depChoices, 
-                                                                                                       ddChoicesDynamic), 
+                                                                               selectInput("dd_choice_dep", NULL,
+                                                                                           choices = c(langSpecificWidget$depChoices,
+                                                                                                       ddChoicesDynamic),
                                                                                            selected = dynamicChoices[2])),
                                                                       tags$div(class = "two-col-right",
-                                                                               selectInput("dd_choice_dep_header", NULL, 
+                                                                               selectInput("dd_choice_dep_header", NULL,
                                                                                            choices = depHeader,
                                                                                            selected = dynamicChoices[3]))),
-                                                             checkboxInput_MIRO("dd_choice_dep_type", 
-                                                                                lang$adminMode$widgets$dropdown$choiceDep$type, 
+                                                             checkboxInput_MIRO("dd_choice_dep_type",
+                                                                                lang$adminMode$widgets$dropdown$choiceDep$type,
                                                                                 identical(dynamicChoices[1], "2"))
                                             )
                                           )
@@ -928,27 +928,27 @@ observeEvent({input$widget_type
                                         }),
                                if(length(ddChoicesDynamic)){
                                  tags$div(class = "col-sm-4",
-                                          checkboxInput_MIRO("dd_choice_dep_selector", 
+                                          checkboxInput_MIRO("dd_choice_dep_selector",
                                                              lang$adminMode$widgets$dropdown$choiceDep$selector,
                                                              identical(length(dynamicChoices), 0L))
-                                          
+
                                           )
                                }
                       ),
                       if(input$widget_type == "multidropdown"){
                         tags$div(class = "shiny-input-container",
-                                 checkboxInput_MIRO("widget_multiple", 
+                                 checkboxInput_MIRO("widget_multiple",
                                                     lang$adminMode$widgets$dropdown$multiple,
                                                     rv$widgetConfig$multiple)
                         )
                       },
-                      if(!is.na(singletonSetId) && 
+                      if(!is.na(singletonSetId) &&
                          identical(modelInRaw[[scalarsFileName]]$symtypes[singletonSetId], "set")){
                         tags$div(class = "shiny-input-container info-position",
-                                 checkboxInput_MIRO("widget_clearValue", 
+                                 checkboxInput_MIRO("widget_clearValue",
                                                     tags$div(lang$adminMode$widgets$dropdown$clearValue,
-                                                             tags$a("", title = lang$adminMode$widgets$dropdown$clearValueTooltip, 
-                                                                    class="info-wrapper", href="https://gams.com/miro/widgets.html#dropdown-option-clearvalue", 
+                                                             tags$a("", title = lang$adminMode$widgets$dropdown$clearValueTooltip,
+                                                                    class="info-wrapper", href="https://gams.com/miro/widgets.html#dropdown-option-clearvalue",
                                                                     tags$span(class="fas fa-info-circle", class="info-icon",
                                                                               role = "presentation",
                                                                               `aria-label` = "More information"), target="_blank")),
@@ -956,11 +956,11 @@ observeEvent({input$widget_type
                         )
                       },
                       tags$div(class = "shiny-input-container",
-                               checkboxInput_MIRO("widget_hcube", 
+                               checkboxInput_MIRO("widget_hcube",
                                                   lang$adminMode$widgets$dropdown$hcube,
                                                   !rv$widgetConfig$noHcube)
                       )
-                    ), 
+                    ),
                     where = "beforeEnd")
            output$widget_preview <- renderUI({
              if(identical(length(rv$widgetConfig$aliases), 0L)){
@@ -969,7 +969,7 @@ observeEvent({input$widget_type
                req(identical(length(rv$widgetConfig$choices), length(rv$widgetConfig$aliases)))
                choices <- setNames(rv$widgetConfig$choices, rv$widgetConfig$aliases)
              }
-             selectInput("dropdown_preview", rv$widgetConfig$label, choices = choices, 
+             selectInput("dropdown_preview", rv$widgetConfig$label, choices = choices,
                          selected = rv$widgetConfig$selected, multiple = rv$widgetConfig$multiple)
            })
          },
@@ -984,26 +984,26 @@ observeEvent({input$widget_type
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",
                                tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, 
+                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias,
                                                   value = rv$widgetConfig$alias)),
                                tags$div(class="two-col-right",
                                         textInput("widget_label", lang$adminMode$widgets$checkbox$label, value = rv$widgetConfig$label))),
                                tags$div(class = "shiny-input-container",
-                                        checkboxInput_MIRO("widget_value", 
+                                        checkboxInput_MIRO("widget_value",
                                                   lang$adminMode$widgets$checkbox$default,
                                                   rv$widgetConfig$value)
                       ),
                       tags$div(class = "shiny-input-container",
-                               checkboxInput_MIRO("widget_hcube", 
+                               checkboxInput_MIRO("widget_hcube",
                                                   lang$adminMode$widgets$checkbox$hcube,
                                                   !rv$widgetConfig$noHcube)
                       )
-                    ), 
+                    ),
                     where = "beforeEnd")
-           
+
            output$widget_preview <- renderUI({
              tagList(
-               checkboxInput_MIRO("checkbox_preview", 
+               checkboxInput_MIRO("checkbox_preview",
                                   rv$widgetConfig$label,
                                   rv$widgetConfig$value)
              )
@@ -1031,14 +1031,14 @@ observeEvent({input$widget_type
                                         textInput("widget_label", lang$adminMode$widgets$date$label, value = rv$widgetConfig$label))),
                       tags$div(class = "shiny-input-container",
                                tags$label(lang$adminMode$widgets$date$defaultlabel),
-                               tags$div(class = "conditional", 
-                                        tags$div(class = "col-sm-8", 
+                               tags$div(class = "conditional",
+                                        tags$div(class = "col-sm-8",
                                                  conditionalPanel(condition = "input.date_def_off!==true",
                                                                   dateInput("date_default", lang$adminMode$widgets$date$default, value = rv$widgetConfig$value)
                                                  )),
                                         tags$div(class = "col-sm-4",
                                                  tags$div(class = "shiny-input-container",
-                                                          checkboxInput_MIRO("date_def_off", 
+                                                          checkboxInput_MIRO("date_def_off",
                                                                              lang$adminMode$widgets$date$defOff,
                                                                              is.null(rv$widgetConfig$value))
                                                  ))
@@ -1046,7 +1046,7 @@ observeEvent({input$widget_type
                       ),
                       tags$div(class = "shiny-input-container",
                                tags$label(lang$adminMode$widgets$date$minlabel),
-                               tags$div(class = "conditional", 
+                               tags$div(class = "conditional",
                                         tags$div(class = "col-sm-8",
                                                  conditionalPanel(condition = "input.date_min_off!==true",
                                                                   dateInput("date_min", lang$adminMode$widgets$date$min, value = rv$widgetConfig$min)
@@ -1060,10 +1060,10 @@ observeEvent({input$widget_type
                       ),
                       tags$div(class = "shiny-input-container",
                                tags$label(lang$adminMode$widgets$date$maxlabel),
-                               tags$div(class = "conditional", 
+                               tags$div(class = "conditional",
                                         tags$div(class = "col-sm-8",
                                                  conditionalPanel(condition = "input.date_max_off!==true",
-                                                                  dateInput("date_max", lang$adminMode$widgets$date$max, 
+                                                                  dateInput("date_max", lang$adminMode$widgets$date$max,
                                                                             value = rv$widgetConfig$max)
                                                  )),
                                         tags$div(class = "col-sm-4",
@@ -1077,7 +1077,7 @@ observeEvent({input$widget_type
                                tags$div(class = "col-sm-8 no-padding-left",
                                         conditionalPanel(condition = "input.date_format_custom_selector!==true",
                                                          selectInput("date_format", lang$adminMode$widgets$date$format,
-                                                                     choices = dateFormatChoices, 
+                                                                     choices = dateFormatChoices,
                                                                      selected = if(rv$widgetConfig$format %in% dateFormatChoices) rv$widgetConfig$format
                                                                      else NULL)
                                         ),
@@ -1087,39 +1087,39 @@ observeEvent({input$widget_type
                                         )),
                                tags$div(class = "col-sm-4",
                                         tags$div(class = "shiny-input-container",
-                                                 checkboxInput_MIRO("date_format_custom_selector", 
+                                                 checkboxInput_MIRO("date_format_custom_selector",
                                                                     lang$adminMode$widgets$date$formatCustomSelector,
                                                                     !rv$widgetConfig$format %in% dateFormatChoices)
                                         ))
                       ),
                       tags$div(class = "shiny-input-container two-col-wrapper",
                                tags$div(class = "two-col-left",
-                                        selectInput("date_startview", lang$adminMode$widgets$date$startview$label, 
+                                        selectInput("date_startview", lang$adminMode$widgets$date$startview$label,
                                                     choices = langSpecificWidget$startview,
                                                     selected = rv$widgetConfig$startview)),
                                tags$div(class = "two-col-right",
-                                        selectInput("date_weekstart", lang$adminMode$widgets$date$weekstart$label, 
+                                        selectInput("date_weekstart", lang$adminMode$widgets$date$weekstart$label,
                                                     choices = langSpecificWidget$weekdays,
                                                     selected = rv$widgetConfig$weekstart))),
-                      selectInput("date_daysdisabled", lang$adminMode$widgets$date$daysDisabled, 
+                      selectInput("date_daysdisabled", lang$adminMode$widgets$date$daysDisabled,
                                   choices = langSpecificWidget$weekdays,
                                   selected = rv$widgetConfig$daysofweekdisabled, multiple = TRUE),
                       tags$div(class = "shiny-input-container",
-                               checkboxInput_MIRO("date_autoclose", 
+                               checkboxInput_MIRO("date_autoclose",
                                                   lang$adminMode$widgets$date$autoclose,
                                                   rv$widgetConfig$autoclose)
                       ),
                       tags$div(class = "shiny-input-container",
-                               checkboxInput_MIRO("widget_hcube", 
+                               checkboxInput_MIRO("widget_hcube",
                                                   lang$adminMode$widgets$date$hcube,
                                                   !rv$widgetConfig$noHcube)
                       )
-                    ), 
+                    ),
                     where = "beforeEnd")
            output$widget_preview <- renderUI({
              dateInput("date_preview", label = rv$widgetConfig$label,
                        value = rv$widgetConfig$value, min = rv$widgetConfig$min, max = rv$widgetConfig$max,
-                       format = rv$widgetConfig$format, startview = rv$widgetConfig$startview, 
+                       format = rv$widgetConfig$format, startview = rv$widgetConfig$startview,
                        weekstart = rv$widgetConfig$weekstart, daysofweekdisabled = rv$widgetConfig$daysofweekdisabled,
                        autoclose = rv$widgetConfig$autoclose)
            })
@@ -1138,7 +1138,7 @@ observeEvent({input$widget_type
            rv$widgetConfig$end <- currentConfig$end
            rv$widgetConfig$min <- currentConfig$min
            rv$widgetConfig$max <- currentConfig$max
-           
+
            insertUI(selector = "#widget_options",
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",
@@ -1151,12 +1151,12 @@ observeEvent({input$widget_type
                                tags$div(class = "conditional",
                                         tags$div(class = "col-sm-8",
                                                  conditionalPanel(condition = "input.date_start_off!==true",
-                                                                  dateInput("date_start", lang$adminMode$widgets$daterange$defaultStart, 
+                                                                  dateInput("date_start", lang$adminMode$widgets$daterange$defaultStart,
                                                                             value = rv$widgetConfig$start)
                                                  )),
                                         tags$div(class = "col-sm-4",
                                                  tags$div(class = "shiny-input-container",
-                                                          checkboxInput_MIRO("date_start_off", 
+                                                          checkboxInput_MIRO("date_start_off",
                                                                              lang$adminMode$widgets$daterange$startOff,
                                                                              is.null(rv$widgetConfig$start))
                                                  ))
@@ -1166,12 +1166,12 @@ observeEvent({input$widget_type
                                tags$div(class = "conditional",
                                         tags$div(class = "col-sm-8",
                                                  conditionalPanel(condition = "input.date_end_off!==true",
-                                                                  dateInput("date_end", lang$adminMode$widgets$daterange$defaultEnd, 
+                                                                  dateInput("date_end", lang$adminMode$widgets$daterange$defaultEnd,
                                                                             value = rv$widgetConfig$end)
                                                  )),
                                         tags$div(class = "col-sm-4",
                                                  tags$div(class = "shiny-input-container",
-                                                          checkboxInput_MIRO("date_end_off", 
+                                                          checkboxInput_MIRO("date_end_off",
                                                                              lang$adminMode$widgets$daterange$endOff,
                                                                              is.null(rv$widgetConfig$end))
                                                  ))
@@ -1185,7 +1185,7 @@ observeEvent({input$widget_type
                                                  )),
                                         tags$div(class = "col-sm-4",
                                                  tags$div(class = "shiny-input-container",
-                                                          checkboxInput_MIRO("date_min_off", 
+                                                          checkboxInput_MIRO("date_min_off",
                                                                              lang$adminMode$widgets$daterange$minOff,
                                                                              is.null(rv$widgetConfig$min))
                                                  ))
@@ -1195,12 +1195,12 @@ observeEvent({input$widget_type
                                tags$div(class = "conditional",
                                         tags$div(class = "col-sm-8",
                                                  conditionalPanel(condition = "input.date_max_off!==true",
-                                                                  dateInput("date_max", lang$adminMode$widgets$daterange$max, 
+                                                                  dateInput("date_max", lang$adminMode$widgets$daterange$max,
                                                                             value = rv$widgetConfig$max)
                                                  )),
                                         tags$div(class = "col-sm-4",
                                                  tags$div(class = "shiny-input-container",
-                                                          checkboxInput_MIRO("date_max_off", 
+                                                          checkboxInput_MIRO("date_max_off",
                                                                              lang$adminMode$widgets$daterange$maxOff,
                                                                              is.null(rv$widgetConfig$max))
                                                  ))
@@ -1209,7 +1209,7 @@ observeEvent({input$widget_type
                                tags$div(class = "col-sm-8 no-padding-left",
                                         conditionalPanel(condition = "input.date_format_custom_selector!==true",
                                                          selectInput("date_format", lang$adminMode$widgets$daterange$format,
-                                                                     choices = dateFormatChoices, 
+                                                                     choices = dateFormatChoices,
                                                                      selected = if(rv$widgetConfig$format %in% dateFormatChoices) rv$widgetConfig$format
                                                                      else NULL)
                                         ),
@@ -1219,40 +1219,40 @@ observeEvent({input$widget_type
                                         )),
                                tags$div(class = "col-sm-4",
                                         tags$div(class = "shiny-input-container",
-                                                 checkboxInput_MIRO("date_format_custom_selector", 
+                                                 checkboxInput_MIRO("date_format_custom_selector",
                                                                     lang$adminMode$widgets$daterange$formatCustomSelector,
                                                                     !rv$widgetConfig$format %in% dateFormatChoices)
                                         ))
                       ),
                       tags$div(class = "shiny-input-container two-col-wrapper",
                                tags$div(class = "two-col-left",
-                      selectInput("date_startview", lang$adminMode$widgets$daterange$startview$label, 
+                      selectInput("date_startview", lang$adminMode$widgets$daterange$startview$label,
                                   choices = langSpecificWidget$startview,
                                   selected = rv$widgetConfig$startview)),
                       tags$div(class = "two-col-right",
-                      selectInput("date_weekstart", lang$adminMode$widgets$daterange$weekstart$label, 
+                      selectInput("date_weekstart", lang$adminMode$widgets$daterange$weekstart$label,
                                   choices = langSpecificWidget$weekdays,
                                   selected = rv$widgetConfig$weekstart))),
                       tags$div(class = "option-wrapper",
-                      textInput("date_separator", lang$adminMode$widgets$daterange$separator, 
+                      textInput("date_separator", lang$adminMode$widgets$daterange$separator,
                                   value = rv$widgetConfig$separator)),
                       tags$div(class = "shiny-input-container",
-                               checkboxInput_MIRO("date_autoclose", 
+                               checkboxInput_MIRO("date_autoclose",
                                                   lang$adminMode$widgets$daterange$autoclose,
                                                   rv$widgetConfig$autoclose)
                       ),
                       tags$div(class = "shiny-input-container",
-                               checkboxInput_MIRO("widget_hcube", 
+                               checkboxInput_MIRO("widget_hcube",
                                                   lang$adminMode$widgets$daterange$hcube,
                                                   !rv$widgetConfig$noHcube)
                       )
-                    ), 
+                    ),
                     where = "beforeEnd")
            output$widget_preview <- renderUI({
              dateRangeInput("daterange_preview", label = rv$widgetConfig$label,
-                            start = rv$widgetConfig$start, end = rv$widgetConfig$end, 
+                            start = rv$widgetConfig$start, end = rv$widgetConfig$end,
                             min = rv$widgetConfig$min, max = rv$widgetConfig$max,
-                            format = rv$widgetConfig$format, startview = rv$widgetConfig$startview, 
+                            format = rv$widgetConfig$format, startview = rv$widgetConfig$startview,
                             weekstart = rv$widgetConfig$weekstart, separator = rv$widgetConfig$separator,
                             autoclose = rv$widgetConfig$autoclose)
            })
@@ -1272,7 +1272,7 @@ observeEvent({input$widget_type
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",
                                tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, 
+                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias,
                                                   value = rv$widgetConfig$alias)),
                                tags$div(class="two-col-right",
                                         textInput("widget_label", lang$adminMode$widgets$textinput$label, value = rv$widgetConfig$label))),
@@ -1281,18 +1281,18 @@ observeEvent({input$widget_type
                                         textInput("widget_value", lang$adminMode$widgets$textinput$value, value = rv$widgetConfig$value)),
                                tags$div(class = "two-col-right",
                                         textInput("text_placeholder", lang$adminMode$widgets$textinput$placeholder, value = rv$widgetConfig$placeholder))),
-                      if(!is.na(singletonSetId) && 
+                      if(!is.na(singletonSetId) &&
                          identical(modelInRaw[[scalarsFileName]]$symtypes[singletonSetId], "set")){
                         tags$div(class = "shiny-input-container two-col-wrapper",
                                  tags$div(class = "two-col-left",
-                                          checkboxInput_MIRO("widget_clearValue", labelTooltip(lang$adminMode$widgets$textinput$clearValue, 
-                                                                                             lang$adminMode$widgets$textinput$clearValueTooltip, 
-                                                                                             "https://gams.com/miro/widgets.html#textbox-option-clearvalue"), 
+                                          checkboxInput_MIRO("widget_clearValue", labelTooltip(lang$adminMode$widgets$textinput$clearValue,
+                                                                                             lang$adminMode$widgets$textinput$clearValueTooltip,
+                                                                                             "https://gams.com/miro/widgets.html#textbox-option-clearvalue"),
                                                              value = rv$widgetConfig$clearValue)))
                       }
-                    ), 
+                    ),
                     where = "beforeEnd")
-           
+
            output$widget_preview <- renderUI({
              textInput("textinput_preview", rv$widgetConfig$label, value = rv$widgetConfig$value,
                        placeholder = rv$widgetConfig$placeholder)
@@ -1313,43 +1313,43 @@ observeEvent({input$widget_type
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",
                                tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, 
+                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias,
                                                   value = rv$widgetConfig$alias)),
                                tags$div(class="two-col-right",
                                         textInput("widget_label", lang$adminMode$widgets$numericinput$label, value = rv$widgetConfig$label))),
                       tags$div(class = "shiny-input-container two-col-wrapper",
                                tags$div(class = "two-col-left",
-                                        numericInput("numericinput_min", lang$adminMode$widgets$numericinput$min, 
+                                        numericInput("numericinput_min", lang$adminMode$widgets$numericinput$min,
                                                      value = if(is.numeric(rv$widgetConfig$min)) rv$widgetConfig$min)),
                                tags$div(class = "two-col-right",
-                                        numericInput("numericinput_max", lang$adminMode$widgets$numericinput$max, 
+                                        numericInput("numericinput_max", lang$adminMode$widgets$numericinput$max,
                                                      value = if(is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max))),
                       tags$div(class="shiny-input-container two-col-wrapper",
                                tags$div(class = "two-col-left",
-                                        numericInput("numericinput_value", lang$adminMode$widgets$numericinput$value, 
+                                        numericInput("numericinput_value", lang$adminMode$widgets$numericinput$value,
                                                      value = if(is.numeric(rv$widgetConfig$value)) rv$widgetConfig$value)),
                                tags$div(class = "two-col-right",
-                                        numericInput("numericinput_decimal", lang$adminMode$widgets$numericinput$decimal, 
-                                                     min = 0, 
+                                        numericInput("numericinput_decimal", lang$adminMode$widgets$numericinput$decimal,
+                                                     min = 0,
                                                      value = if(is.numeric(rv$widgetConfig$decimal)) rv$widgetConfig$decimal else 0L))),
                       tags$div(class="shiny-input-container two-col-wrapper",
                                tags$div(class = "two-col-left",
-                                        selectInput("numericinput_decimalCharacter", lang$adminMode$widgets$numericinput$decimalCharacter, 
+                                        selectInput("numericinput_decimalCharacter", lang$adminMode$widgets$numericinput$decimalCharacter,
                                                     choices = langSpecificWidget$decimalCharacterChoices,
                                                     selected = rv$widgetConfig$decimalCharacter)),
-                               tags$div(class = "two-col-right", 
-                                        selectInput("numericinput_digitGroupSeparator", lang$adminMode$widgets$numericinput$digitGroupSeparator, 
+                               tags$div(class = "two-col-right",
+                                        selectInput("numericinput_digitGroupSeparator", lang$adminMode$widgets$numericinput$digitGroupSeparator,
                                                     choices = langSpecificWidget$digitGroupSeparatorChoices,
                                                     selected = if(identical(rv$widgetConfig$digitGroupSeparator, "")) "empty" else rv$widgetConfig$digitGroupSeparator))),
                       tags$div(class="shiny-input-container two-col-wrapper",
                                tags$div(class = "two-col-left",
                                         textInput("numericinput_sign", lang$adminMode$widgets$numericinput$sign, value = rv$widgetConfig$sign)))
-                    ), 
+                    ),
                     where = "beforeEnd")
-           
+
            output$widget_preview <- renderUI({
-             autoNumericInput("numericinput_preview", 
-                              label = rv$widgetConfig$label,  
+             autoNumericInput("numericinput_preview",
+                              label = rv$widgetConfig$label,
                               value = rv$widgetConfig$value,
                               min = rv$widgetConfig$min,
                               max = rv$widgetConfig$max,
@@ -1361,8 +1361,8 @@ observeEvent({input$widget_type
          },
          #in case a table was configured for a set
          table = {
-           insertUI(selector = "#widget_options", 
-                    tags$div(class="shiny-input-container config-no-hide", 
+           insertUI(selector = "#widget_options",
+                    tags$div(class="shiny-input-container config-no-hide",
                              paste0(lang$adminMode$widgets$ui$tableWidget, lang$adminMode$uiR$table, "'!")),
                     where = "beforeEnd")
            disableEl(session, "#saveWidget")
@@ -1456,10 +1456,10 @@ observeEvent(input$dd_choices, ignoreNULL = FALSE, {
 })
 observeEvent(input$dd_choice_dep, {
   if(identical(input$dd_choice_dep, "")){
-    updateSelectInputNoClear(session, "dd_choice_dep_header", 
+    updateSelectInputNoClear(session, "dd_choice_dep_header",
                              choices = allInputSymHeaders)
   }else{
-    updateSelectInputNoClear(session, "dd_choice_dep_header", 
+    updateSelectInputNoClear(session, "dd_choice_dep_header",
                              choices = inputSymHeaders[[input$dd_choice_dep]])
   }
 })
@@ -1483,9 +1483,9 @@ observeEvent(input$dd_choice_dep_selector, {
     rv$widgetConfig$aliases <<- input$dd_aliases
     rv$widgetConfig$selected <<- input$dd_default
   }else{
-    rv$widgetConfig$choices <<- paste0("$", input$dd_choice_dep, 
+    rv$widgetConfig$choices <<- paste0("$", input$dd_choice_dep,
                                        if(nchar(input$dd_choice_dep)){"$"},
-                                       input$dd_choice_dep_header, 
+                                       input$dd_choice_dep_header,
                                        if(isTRUE(input$dd_choice_dep_type)){"$"})
     rv$widgetConfig$aliases <<- NULL
     rv$widgetConfig$selected <<- NULL
@@ -1633,21 +1633,21 @@ observeEvent(input$saveWidget, {
   req(length(currentWidgetSymbolName) > 0L, nchar(currentWidgetSymbolName) > 0L)
   if(rv$widgetConfig$widgetType %in% c("slider", "sliderrange")){
     if(isFALSE(input$slider_min_dep_selector)){
-      rv$widgetConfig$min <<- paste0(input$slider_min_dep_op, "(", input$slider_min_dep, 
+      rv$widgetConfig$min <<- paste0(input$slider_min_dep_op, "(", input$slider_min_dep,
                                      "$", input$slider_min_dep_header, ")")
     }else{
       rv$widgetConfig$min <<- input$slider_min
     }
     if(isFALSE(input$slider_max_dep_selector)){
-      rv$widgetConfig$max <<- paste0(input$slider_max_dep_op, "(", input$slider_max_dep, 
+      rv$widgetConfig$max <<- paste0(input$slider_max_dep_op, "(", input$slider_max_dep,
                                      "$", input$slider_max_dep_header, ")")
     }else{
       rv$widgetConfig$max <<- input$slider_max
     }
-    if(identical(rv$widgetConfig$widgetType, "slider") && 
+    if(identical(rv$widgetConfig$widgetType, "slider") &&
        identical(length(rv$widgetConfig$default), 1L)){
       if(isFALSE(input$slider_def_dep_selector)){
-        rv$widgetConfig$default <<- paste0(input$slider_def_dep_op, "(", input$slider_def_dep, 
+        rv$widgetConfig$default <<- paste0(input$slider_def_dep_op, "(", input$slider_def_dep,
                                            "$", input$slider_def_dep_header, ")")
       }else{
         rv$widgetConfig$default <<- input$slider_def
@@ -1656,11 +1656,11 @@ observeEvent(input$saveWidget, {
   }else if(rv$widgetConfig$widgetType %in% c("dropdown", "multidropdown")){
     if(isFALSE(input$dd_choice_dep_selector)){
       if(isTRUE(input$dd_choice_dep_type)){
-        rv$widgetConfig$choices <<- paste0("$", input$dd_choice_dep, 
+        rv$widgetConfig$choices <<- paste0("$", input$dd_choice_dep,
                                            if(nchar(input$dd_choice_dep)){"$"},
                                            input$dd_choice_dep_header, "$")
       }else{
-        rv$widgetConfig$choices <<- paste0("$", input$dd_choice_dep, 
+        rv$widgetConfig$choices <<- paste0("$", input$dd_choice_dep,
                                            if(nchar(input$dd_choice_dep)){"$"},
                                            input$dd_choice_dep_header)
       }
@@ -1675,7 +1675,7 @@ observeEvent(input$saveWidget, {
 })
 observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm), {
   req(length(currentWidgetSymbolName) > 0L, nchar(currentWidgetSymbolName) > 0L)
-  
+
   configJSON$inputWidgets[[currentWidgetSymbolName]] <<- rv$widgetConfig
   if(!length(configJSON$inputWidgets[[currentWidgetSymbolName]]$readonlyCols)){
     configJSON$inputWidgets[[currentWidgetSymbolName]]$readonlyCols <<- NULL
@@ -1683,24 +1683,24 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
   if(identical(configJSON$inputWidgets[[currentWidgetSymbolName]]$pivotCols, "_")){
     configJSON$inputWidgets[[currentWidgetSymbolName]]$pivotCols <<- NULL
   }
-  if(configJSON$inputWidgets[[currentWidgetSymbolName]]$widgetType %in% c("dropdown", "multidropdown") && 
+  if(configJSON$inputWidgets[[currentWidgetSymbolName]]$widgetType %in% c("dropdown", "multidropdown") &&
      isTRUE(input$dd_choice_dep_selector)){
     configJSON$inputWidgets[[currentWidgetSymbolName]]$
-      choices <- gsub("$", "$$", 
+      choices <- gsub("$", "$$",
                       configJSON$inputWidgets[[currentWidgetSymbolName]]$choices,
                       fixed = TRUE)
     if(length(configJSON$inputWidgets[[currentWidgetSymbolName]]$aliases)){
       configJSON$inputWidgets[[currentWidgetSymbolName]]$
-        aliases <- gsub("$", "$$", 
+        aliases <- gsub("$", "$$",
                         configJSON$inputWidgets[[currentWidgetSymbolName]]$aliases,
                         fixed = TRUE)
     }
   }
-  
+
   symbolDDNeedsUpdate <- FALSE
-  
+
   currentSymbolID <- match(currentWidgetSymbolName, widgetSymbols)
-  if(!is.na(currentSymbolID) && 
+  if(!is.na(currentSymbolID) &&
      !identical(names(widgetSymbols)[[currentSymbolID]], rv$widgetConfig$alias)){
     names(widgetSymbols)[[currentSymbolID]] <<- rv$widgetConfig$alias
     symbolDDNeedsUpdate <- TRUE
@@ -1724,7 +1724,7 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
     }
   }
   write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
-  
+
   if(symbolDDNeedsUpdate){
     updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
   }
@@ -1742,7 +1742,7 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
       if(length(input$general_overwriteSheetOrderInput)){
         newSheetOrder <- inputTabs[order(match(inputTabs, input$general_overwriteSheetOrderInput))]
       }
-      updateSelectInput(session, "general_overwriteSheetOrderInput", 
+      updateSelectInput(session, "general_overwriteSheetOrderInput",
                         choices = newSheetOrder, selected = newSheetOrder)
     }
   }
@@ -1753,14 +1753,14 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
 })
 observeEvent(input$deleteWidget, {
   req(length(input$widget_symbol) > 0L, nchar(input$widget_symbol) > 0L)
-  
-  showModal(modalDialog(title = lang$adminMode$widgets$removeDialog$title, lang$adminMode$widgets$removeDialog$message, 
-                          footer = tagList(modalButton(lang$adminMode$widgets$removeDialog$cancel), 
+
+  showModal(modalDialog(title = lang$adminMode$widgets$removeDialog$title, lang$adminMode$widgets$removeDialog$message,
+                          footer = tagList(modalButton(lang$adminMode$widgets$removeDialog$cancel),
                                            actionButton("deleteWidgetConfirm", lang$adminMode$widgets$removeDialog$confirm))))
 })
 observeEvent(input$deleteWidgetConfirm, {
   req(length(currentWidgetSymbolName) > 0L, nchar(currentWidgetSymbolName) > 0L)
-  
+
   configJSON$inputWidgets[[currentWidgetSymbolName]] <<- NULL
   write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
   if(any(startsWith(currentWidgetSymbolName, c(prefixDDPar, prefixGMSOpt)))){
@@ -1773,13 +1773,13 @@ observeEvent(input$deleteWidgetConfirm, {
     # need to add set to overwrite sheet order as it is no longer a widget
     tabId <- match(currentWidgetSymbolName, inputTabs)
     if(is.na(tabId)){
-      inputTabs <<- c(inputTabs, 
+      inputTabs <<- c(inputTabs,
                       inputSymMultiDim[match(currentWidgetSymbolName, inputSymMultiDim)])
       newSheetOrder <- inputTabs
       if(length(input$general_overwriteSheetOrderInput)){
         newSheetOrder <- inputTabs[order(match(inputTabs, input$general_overwriteSheetOrderInput))]
       }
-      updateSelectInput(session, "general_overwriteSheetOrderInput", 
+      updateSelectInput(session, "general_overwriteSheetOrderInput",
                         choices = newSheetOrder, selected = newSheetOrder)
     }
   }

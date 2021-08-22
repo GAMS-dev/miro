@@ -6,7 +6,7 @@ renderScenInCompMode <- function(scenId, refreshData = FALSE){
     hideEl(session, paste0("#scenSplit", scenId - 1L, "_open"))
   }else if(!refreshData){
     # add new Scenario tab
-    insertScenTab("scenTabset", generateScenarioTabsetMulti(scenId), "scen_add", "before", 
+    insertScenTab("scenTabset", generateScenarioTabsetMulti(scenId), "scen_add", "before",
                   scenID = scenId, scenButtonLang = c(list(tooltip = lang$nav$scen$tooltips$btClose),
                                                       lang$nav[["dialogCloseScen"]]),
                   immediate = TRUE)

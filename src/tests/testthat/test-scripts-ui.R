@@ -14,10 +14,10 @@ Sys.setenv(MIRO_MODEL_PATH = file.path(testModelDir, paste0(modelToTest, ".gms")
 Sys.setenv(PATH = paste0(Sys.getenv("GAMS_SYS_DIR"), .Platform$path.sep, Sys.getenv("PATH")))
 Sys.setenv(MIRO_MODE="base")
 
-file.copy(file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), ".json")), 
+file.copy(file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), ".json")),
           file.path(dirname(configJSONFileName),paste0(tolower(modelToTest), "_tmp.json")), overwrite = TRUE)
 
-configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, simplifyDataFrame = FALSE, 
+configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, simplifyDataFrame = FALSE,
                                                   simplifyMatrix = FALSE))
 testFile <- file.path(testDir, "bla.txt")
 unlink(testFile)

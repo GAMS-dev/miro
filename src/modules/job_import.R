@@ -29,7 +29,7 @@ observeEvent({
     flog.error("Log file could not be shown as no job ID could be identified. This looks like an attempt to tamper with the app!")
     return()
   }
-  
+
   if(identical(fileType, "log")){
     if(asyncLogLoaded[1L]){
       flog.debug("Log file is already loaded. No reloading..")
@@ -69,14 +69,14 @@ observeEvent({
     return(showElReplaceTxt(session, containerID, lang$errMsg$unknownError))
   }
   logContent <- tryCatch({
-    worker$readTextEntity(fileToFetch, 
+    worker$readTextEntity(fileToFetch,
                           pID, getSize = TRUE)
   }, error = function(e){
     statusCode <- conditionMessage(e)
     if(identical(statusCode, 404L)){
       return(lang$nav$hcubeMode$showLogFileDialog$noContent)
     }
-    flog.error("Could not retrieve job log. Error message: '%s'.", 
+    flog.error("Could not retrieve job log. Error message: '%s'.",
                statusCode)
     return(1L)
   })
@@ -90,8 +90,8 @@ observeEvent({
       return(showElReplaceTxt(session, containerID, lang$errMsg$unknownError))
     }
   }
-  return(session$sendCustomMessage('gms-showLogContent', 
-                                   list(id = containerID, 
+  return(session$sendCustomMessage('gms-showLogContent',
+                                   list(id = containerID,
                                         jID = jID,
                                         content = logContent[[1]],
                                         noChunks = logContent[[2]],
@@ -119,11 +119,11 @@ observeEvent(input$loadTextEntityChunk, {
     return()
   }
   logContent <- tryCatch({
-    worker$readTextEntity(fileToFetch, 
-                          worker$getPid(input$loadTextEntityChunk$jID), 
+    worker$readTextEntity(fileToFetch,
+                          worker$getPid(input$loadTextEntityChunk$jID),
                           chunkNo = input$loadTextEntityChunk$chunkCount)
   }, error = function(e){
-    flog.error("Could not retrieve job log. Error message: '%s'.", 
+    flog.error("Could not retrieve job log. Error message: '%s'.",
                conditionMessage(e))
     return(1L)
   })
@@ -153,7 +153,7 @@ observeEvent(input$importJob, {
     return(showLoginDialog(cred = worker$getCredentials()))
   }
   if(!worker$getStatus(jobImportID) %in% c(JOBSTATUSMAP[['completed']], JOBSTATUSMAP[['downloaded']])){
-    flog.error("Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.", 
+    flog.error("Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.",
                jobImportID)
     showHideEl(session, "#fetchJobsError")
     return()
@@ -174,13 +174,13 @@ observeEvent(
     removeModal()
     errMsg <- NULL
     if(!worker$getStatus(jobImportID) %in% c(JOBSTATUSMAP[['completed']], JOBSTATUSMAP[['downloaded']])){
-      flog.error("Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.", 
+      flog.error("Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.",
                  jobImportID)
       showHideEl(session, "#fetchJobsError")
       return()
     }
     tryCatch({
-      activeScen <<- Scenario$new(db = db, sname = rv$activeSname, 
+      activeScen <<- Scenario$new(db = db, sname = rv$activeSname,
                                   tags = scenTags,
                                   isNewScen = TRUE, views = views, attachments = attachments)
       scenTags   <<- NULL
@@ -200,7 +200,7 @@ observeEvent(virtualActionButton(
     req(length(jobImportID) == 1L)
     removeModal()
     if(!worker$getStatus(jobImportID) %in% c(JOBSTATUSMAP[['completed']], JOBSTATUSMAP[['downloaded']])){
-      flog.error("Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.", 
+      flog.error("Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.",
                  jobImportID)
       showHideEl(session, "#fetchJobsError")
       return()
@@ -215,46 +215,46 @@ observeEvent(virtualActionButton(
     scalarDataset <- NULL
     loadMode <- config$fileExchange
     datasetsToFetch <- names(modelIn)
-    
+
     progress <- Progress$new()
-    
+
     on.exit(progress$close())
-    
-    progress$set(message = lang$progressBar$importScen$title, 
-                 detail = lang$progressBar$importScen$downloadResults, 
+
+    progress$set(message = lang$progressBar$importScen$title,
+                 detail = lang$progressBar$importScen$downloadResults,
                  value = 0.1)
-    
+
     tryCatch({
       tmpdir     <- worker$getJobResultsPath(jobImportID)
       on.exit(unlink(tmpdir), add = TRUE)
     }, error = function(e){
-      flog.error("Problems importing job. Error message: '%s'.", 
+      flog.error("Problems importing job. Error message: '%s'.",
                  conditionMessage(e))
       showHideEl(session, "#fetchJobsError")
     })
     if(length(errMsg))
       return()
-    
+
     tryCatch({
       loadMiroScenMeta(file.path(tmpdir, "_miro_ws_"),
                        activeScen, attachments, views,
                        names(modelIn))
     }, error = function(e){
-      flog.error("Problems loading scenario metadata. Error message: '%s'.", 
+      flog.error("Problems loading scenario metadata. Error message: '%s'.",
                  conditionMessage(e))
       showHideEl(session, "#fetchJobsError")
     })
     if(length(errMsg))
       return()
-    
+
     rv$activeSname  <- activeScen$getScenName()
-    
+
     loadModeWorkDir  <- tmpdir
     loadModeFileName <- if(identical(config$fileExchange, "gdx")) MIROGdxInName else NULL
     dfClArgs <- NULL
     tryCatch({
       progress$set(message = lang$progressBar$importScen$renderInput, value = 0.5)
-      # load input data 
+      # load input data
       source("./modules/input_load.R", local = TRUE)
       if(!is.null(errMsg)){
         return(NULL)
@@ -266,7 +266,7 @@ observeEvent(virtualActionButton(
         scenData$loadSandbox(loadScenData(metaData = modelOut, workDir = tmpdir,
                                           fileName = MIROGdxOutName,
                                           templates = modelOutTemplate,
-                                          method = config$fileExchange, 
+                                          method = config$fileExchange,
                                           csvDelim = config$csvDelim)$tabular,
                              names(modelOut))
       }
@@ -286,9 +286,9 @@ observeEvent(virtualActionButton(
       })
     }
     progress$set(message = lang$progressBar$importScen$renderOutput, value = 0.8)
-    
+
     storeGAMSOutputFiles(tmpdir)
-    
+
     #select first tab in current run tabset
     switchTab(session, "output")
     updateTabsetPanel(session, "scenTabset",
@@ -297,12 +297,12 @@ observeEvent(virtualActionButton(
                       selected = "outputTabset_1")
     # rendering tables and graphs
     renderOutputData()
-    
+
     tryCatch({
-      worker$updateJobStatus(JOBSTATUSMAP[['imported']], 
+      worker$updateJobStatus(JOBSTATUSMAP[['imported']],
                              jobImportID)
     }, error = function(e){
-      flog.warn("Problems updating job status. Error message: '%s'.", 
+      flog.warn("Problems updating job status. Error message: '%s'.",
                 conditionMessage(e))
     })
     rv$jobListPanel <- rv$jobListPanel + 1L

@@ -20,7 +20,7 @@ $ontext
     100lbs  2.832
     175lbs  3.746
     250lbs  4.477
-  
+
    table lambda(load, speed)
            500rpm  2500rpm 5000rpm
    100lbs  6.057   30.29   60.57

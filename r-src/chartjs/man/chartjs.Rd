@@ -18,4 +18,3 @@ chartjs(width = NULL, height = NULL, palette = "Paired", debug = FALSE)
 \description{
 Draw a graph using the Chart.js library.
 }
-

@@ -8,16 +8,16 @@ HcubeResults <- R6Class("HcubeResults", public = list(
     private$outputAttachments <- outputAttachments
     private$jobMeta <- jobMeta
     private$includeTrc <- includeTrc
-    
+
     private$hcScalars <- private$db$importDataset("_hcScalars",
                                                   subsetSids = jobMeta[["_sid"]][1])[-1]
     if(!length(private$hcScalars) && !nrow(private$hcScalars)){
       flog.error("HcubeResults: Hypercube job configuration with id: %s could not be found. This should never happen and is likely an attempt to tamper with the app!", jobMeta[["_sid"]][1])
       stop_custom("error_not_found", "HC job configuration not found", call. = FALSE)
     }
-    
+
     validFileNames <- c(outputAttachments, MIROGdxOutName)
-    
+
     if(private$includeTrc){
       validFileNames <- c(validFileNames, "_scenTrc.trc")
     }
@@ -28,7 +28,7 @@ HcubeResults <- R6Class("HcubeResults", public = list(
       stop_custom("error_bad_format", "Invalid Hypercube results file format", call. = FALSE)
     })
     fileNamesZip   <- fileNamesZip[fileNamesZip$compressed_size > 0, ]$filename
-    
+
     invalidFiles   <- !basename(fileNamesZip) %in% c(validFileNames, filesMayInclude)
     if(any(invalidFiles)){
       flog.error("HcubeResults: The Hypercube results zip file contains invalid files: %s",
@@ -111,7 +111,7 @@ HcubeResults <- R6Class("HcubeResults", public = list(
                                `_accessw` = rep.int(vector2Csv(uid), numberScen),
                                `_accessx` = rep.int(vector2Csv(uid), numberScen),
                                `_scode` = rep.int(private$jobMeta[["_sid"]][1], numberScen) + 10000L)
-      
+
       if(inherits(private$conn, "PqConnection")){
         query <- paste(sqlAppendTable(private$conn, dbSchema$getDbTableName("_scenMeta"),
                                       sqlData(private$conn, metadataTable),
@@ -180,7 +180,7 @@ HcubeResults <- R6Class("HcubeResults", public = list(
               bind_cols(`_sid` = rep.int(firstScenId + scenIdx - 1L,
                                          nrow(scenData)),
                         scenData) %>%
-                mutate_if(is.character, 
+                mutate_if(is.character,
                           replace_na, replace = ""),
               symName, isHcJobConfig = FALSE)
             if(length(progressCallback)){

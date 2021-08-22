@@ -138,7 +138,7 @@ ScenData <- R6Class("ScenData", public = list(
             if(checkDirty){
               private$checkDirty(scenId)
             }
-            dataTmp <- private$db$importDataset(tableName = symName, 
+            dataTmp <- private$db$importDataset(tableName = symName,
                                                 subsetSids = scenIdToFetch,
                                                 limit = limit)
             if(length(dataTmp)){
@@ -162,7 +162,7 @@ ScenData <- R6Class("ScenData", public = list(
             dataTmp <- private$db$importDataset(tableName =
                                                   if(LAUNCHHCUBEMODE && isHcJobConfig
                                                      && identical(symName, scalarsFileName))
-                                                    "_hc__scalars" else symName, 
+                                                    "_hc__scalars" else symName,
                                                 subsetSids = scenIdToFetch,
                                                 limit = limit)
             if(length(dataTmp)){
@@ -285,7 +285,7 @@ ScenData <- R6Class("ScenData", public = list(
   },
   clear = function(refId, scenIds = NULL, clearRef = TRUE){
     stopifnot(is.character(refId))
-    
+
     if(is.null(scenIds)){
       scenIds <- private$refScenMap[[refId]]
       refScenIdx <- seq_along(scenIds)
@@ -295,7 +295,7 @@ ScenData <- R6Class("ScenData", public = list(
         stop_custom("bad_ref", "The scenario ids could not be found for the refId you provided. Did you forget to register them via ScenData$addRefId()?", call. = FALSE)
       }
     }
-    
+
     scenIdsToClear <- rep.int(TRUE, length(scenIds))
     # don't clear sandbox data
     scenIdsToClear[scenIds == "sb"] <- FALSE
@@ -320,7 +320,7 @@ ScenData <- R6Class("ScenData", public = list(
   dbSymbols = NULL,
   refScenMap = list(),
   getMetadata = function(scenIds){
-    metaTmp <- private$db$importDataset("_scenMeta", 
+    metaTmp <- private$db$importDataset("_scenMeta",
                                         subsetSids = scenIds)
     isHcScen <- metaTmp[["_scode"]] > 0
     if(any(isHcScen)){
@@ -329,7 +329,7 @@ ScenData <- R6Class("ScenData", public = list(
     return(metaTmp)
   },
   checkDirty = function(scenId){
-    currentTimestamp <- private$db$importDataset("_scenMeta", 
+    currentTimestamp <- private$db$importDataset("_scenMeta",
                                                  subsetSids = scenId,
                                                  colNames = "_stime")[["_stime"]][1]
     cSid <- as.character(scenId)

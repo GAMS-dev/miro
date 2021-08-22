@@ -26,9 +26,9 @@ Set
    i 'widths'
    cols     'column'      / 1*1000 /
    p 'patterns' / p1*p1000 /;
-   
+
 Parameter
-   w(i)     'width'   
+   w(i)     'width'
    d(i<)     'demand';
 
 $onExternalInput
@@ -45,7 +45,7 @@ demand = []
 for j, w in enumerate(gams.get("demand_miro")):
     widths.append(("w" + str(j + 1), float(w[0])))
     demand.append(("w" + str(j + 1), w[1]))
-    
+
 gams.set("w", widths)
 gams.set("d", demand)
 $offEmbeddedCode d, w
@@ -163,7 +163,7 @@ Parameter
     patterns_used(i,p,ptuHdr) 'Patterns used in solution';
 
 Table patterns_used;
-    
+
 Scalar width_out 'Paper roll width'
        number 'Number of paper rolls used';
 $offExternalOutput

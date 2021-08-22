@@ -1,9 +1,9 @@
 # Quick reference
 
--	**Maintained by**:  
+-	**Maintained by**:
 	[GAMS Development Corp., GAMS Software GmbH](https://www.gams.com/)
 
--	**Where to get help**:  
+-	**Where to get help**:
   	support@gams.com
 
 # Supported tags

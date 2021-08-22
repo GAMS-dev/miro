@@ -1,7 +1,7 @@
 EngineClient <- R6::R6Class("EngineClient", public = list(
   initialize = function(){
     ret <- httr::GET(paste0(ENGINE_URL, "/version"))
-    private$apiInfo <- content(ret, type = "application/json", 
+    private$apiInfo <- content(ret, type = "application/json",
                                  encoding = "utf-8")
     private$apiInfo$apiVersionInt <- suppressWarnings(
       as.integer(gsub(".", "", private$apiInfo$version, fixed = TRUE)))[1]
@@ -20,18 +20,18 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
           flog.info("Invalid return code: %s when logging in user: %s.", status_code(ret), username)
           return(FALSE)
         }
-        authToken <- content(ret, type = "application/json", 
+        authToken <- content(ret, type = "application/json",
                           encoding = "utf-8")[["token"]]
         self$setAuthHeader(authToken)
         ret <- httr::GET(paste0(ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/permissions?username=", URLencode(username)),
-                      add_headers(Authorization = private$getAuthHeader(), 
-                                  Timestamp = as.character(Sys.time(), 
+                      add_headers(Authorization = private$getAuthHeader(),
+                                  Timestamp = as.character(Sys.time(),
                                     usetz = TRUE)))
         if(status_code(ret) != 200){
           flog.info("Invalid return code: %s when trying to get namespace permissions on namespace: %s.", status_code(ret), ENGINE_NAMESPACE)
           return(FALSE)
         }
-        namespacePermission <- as.integer(content(ret, type = "application/json", 
+        namespacePermission <- as.integer(content(ret, type = "application/json",
                                         encoding = "utf-8")[["permission"]])
         if(!identical(namespacePermission, 7L)){
           flog.info("User: %s does not have full permissions on namespace: %s", username, ENGINE_NAMESPACE)
@@ -49,15 +49,15 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
   },
   getModelList = function(){
     ret <- httr::GET(paste0(ENGINE_URL, "/namespaces/", ENGINE_NAMESPACE),
-                  add_headers(Authorization = private$getAuthHeader(), 
-                              Timestamp = as.character(Sys.time(), 
+                  add_headers(Authorization = private$getAuthHeader(),
+                              Timestamp = as.character(Sys.time(),
                                 usetz = TRUE),
                               `X-Fields` = "name"))
     if(status_code(ret) != 200){
         stop(sprintf("Unexpected return code: %s from GAMS Engine when trying to fetch list of models. Error: %s",
             status_code(ret), private$getErrorMessage(ret)), call. = FALSE)
     }
-    return(vapply(content(ret, type = "application/json", 
+    return(vapply(content(ret, type = "application/json",
               encoding = "utf-8"), function(modelObj){
         return(modelObj[["name"]])
       }, character(1L), USE.NAMES = FALSE))
@@ -69,7 +69,7 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
         self$deregisterModel(appId)
     }
     modelDataPath <- file.path(MIRO_MODEL_DIR, appId, paste0(modelId, ".zip"))
-    requestData <- list(data = upload_file(modelDataPath, 
+    requestData <- list(data = upload_file(modelDataPath,
                           type = 'application/zip'),
                         run = mainGMSName)
     if(length(userGroups) &&
@@ -80,8 +80,8 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
                           URLencode(appId)),
                   encode = "multipart",
                   body = requestData,
-                  add_headers(Authorization = private$getAuthHeader(), 
-                              Timestamp = as.character(Sys.time(), 
+                  add_headers(Authorization = private$getAuthHeader(),
+                              Timestamp = as.character(Sys.time(),
                                 usetz = TRUE)),
                   timeout(600))
     if(status_code(ret) != 201){
@@ -111,8 +111,8 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
                             URLencode(appId)),
                   encode = "multipart",
                   body = requestData,
-                  add_headers(Authorization = private$getAuthHeader(), 
-                                    Timestamp = as.character(Sys.time(), 
+                  add_headers(Authorization = private$getAuthHeader(),
+                                    Timestamp = as.character(Sys.time(),
                                       usetz = TRUE)),
                   timeout(4))
     if(status_code(ret) != 200){
@@ -128,9 +128,9 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
       return(invisible(self))
     }
     flog.trace("Deregistering app: %s at Engine", appId)
-    ret <- httr::DELETE(paste0(ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/models/", URLencode(appId)), 
-            add_headers(Authorization = private$getAuthHeader(), 
-                              Timestamp = as.character(Sys.time(), 
+    ret <- httr::DELETE(paste0(ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/models/", URLencode(appId)),
+            add_headers(Authorization = private$getAuthHeader(),
+                              Timestamp = as.character(Sys.time(),
                                 usetz = TRUE)),
             timeout(4))
 
@@ -164,21 +164,21 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
     return(private$authHeader)
   },
   getErrorMessage = function(ret){
-    return(tryCatch(content(ret, type = "application/json", encoding = "utf-8")[["message"]], 
+    return(tryCatch(content(ret, type = "application/json", encoding = "utf-8")[["message"]],
         error = function(e){
         return(conditionMessage(e))
     }))
   },
   fetchGroupLabels = function(){
     ret <- httr::GET(paste0(ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/user-groups"),
-      add_headers(Authorization = private$getAuthHeader(), 
-                                  Timestamp = as.character(Sys.time(), 
+      add_headers(Authorization = private$getAuthHeader(),
+                                  Timestamp = as.character(Sys.time(),
                                     usetz = TRUE)))
     if(status_code(ret) != 200){
         stop(sprintf("Unexpected return code: %s from GAMS Engine when trying to fetch user groups. Error: %s",
             status_code(ret), private$getErrorMessage(ret)), call. = FALSE)
     }
-    groupLabelsEngine <- content(ret, type = "application/json", 
+    groupLabelsEngine <- content(ret, type = "application/json",
                                  encoding = "utf-8")
     private$labelsEngine <- vapply(groupLabelsEngine, "[[", character(1L),
       "label", USE.NAMES = FALSE)

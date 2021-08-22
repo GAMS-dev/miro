@@ -23,7 +23,7 @@ lang <<- list(nav = list(scen = list(pivot = list(viewPrefix = "Pivot Comparison
 views <- Views$new(c("in1", "widget1", "widget2", "in2"), c("out1", "out2", "out3"), c("in1", "in2"))
 
 test_that("Loading/Unloading configuration works", {
-  testViewData <- tibble("_sid" = c(1, 1, 1, 1, 5, 6, 7, 7), 
+  testViewData <- tibble("_sid" = c(1, 1, 1, 1, 5, 6, 7, 7),
                          symName = c("in1", "in1", "in3", "_pivotcomp_out2", "in2", "out2", "out2", "out2"),
                          id = c("view1", "view2", "view3", "pivot1", "view4", "view5", "view5", "view6"),
                          data = c('{"rows":["bla","blubb"]}', '{"cols":["bla","blubb"]}',
@@ -64,7 +64,7 @@ test_that("Adding configuration works", {
   fakeSessionIn1 <- FakeSession$new("in_1")
   fakeSessionScen3Out2 <- FakeSession$new("tab_3_2")
   fakeSessionScen0Out2 <- FakeSession$new("tab_0_2")
-  
+
   expect_error(views$add(fakeSessionIn1, "view1", list(cols = list("a", "b"))), NA)
   expect_identical(views$get(fakeSessionIn1, "view1"),
                    list(cols = list("a", "b")))
@@ -75,7 +75,7 @@ test_that("Adding configuration works", {
 test_that("Removing configuration works", {
   fakeSessionIn1 <- FakeSession$new("in_1")
   fakeSessionScen4Out2 <- FakeSession$new("tab_4_2")
-  
+
   expect_error(views$removeConf(list(c("in1", "view1"))), NA)
   expect_error(views$removeConf(list(c("out2", "view1")), scenId = "4"))
   expect_error(views$get(fakeSessionScen4Out2, "view5"), NA)
@@ -88,7 +88,7 @@ test_that("Removing configuration works", {
 
 test_that("Adding configuration works", {
   fakeSessionIn1 <- FakeSession$new("in_1")
-  
+
   expect_identical(views$getConf(),
                    tibble(symName = c("in1", "in3", "_pivotcomp_out2", "_pivotcomp_out2"),
                           id = c("view2", "view3", "pivot1", "pivot123"),
@@ -151,7 +151,7 @@ test_that("Removing configuration works", {
   fakeSessionIn1 <- FakeSession$new("in_1")
   fakeSessionScen3Out2 <- FakeSession$new("tab_3_2")
   fakeSessionScen0Out2 <- FakeSession$new("tab_0_2")
-  
+
   expect_error(views$remove(fakeSessionIn1, "new1"), NA)
   expect_error(views$remove(fakeSessionIn1, "new1"))
   expect_error(views$remove(fakeSessionScen3Out2, "new1"))
@@ -176,12 +176,12 @@ test_that("Removing configuration works", {
 test_that("Callback functions work", {
   fakeSessionIn1 <- FakeSession$new("in_1")
   fakeSessionScen0In1 <- FakeSession$new("tab_0_4")
-  
+
   testEnv <- new.env(parent = emptyenv())
   testEnv0 <- new.env(parent = emptyenv())
   testEnv$a <- 1L
   testEnv0$a <- 4L
-  
+
   testModule <- function(env, session){
     a <- 1L
     updateEnv <- function(){
@@ -195,13 +195,13 @@ test_that("Callback functions work", {
   }
   testModule(testEnv, fakeSessionIn1)
   testModule(testEnv0, fakeSessionScen0In1)
-  
+
   expect_error(views$addConf(list(in1 = list(new1 = list(a = "b"),
                                              new2 = list(a = "c")))), NA)
   expect_identical(testEnv$a, 2L)
   expect_error(views$removeConf(list(c("in1", "new1"), c("in1", "new2"))), NA)
   expect_identical(testEnv$a, 3L)
-  
+
   expect_identical(testEnv0$a, 4L)
   expect_error(views$addConf(list(`_pivotcomp_in1` = list(new1 = list(a = "b"),
                                                           new2 = list(a = "c")))), NA)
@@ -223,7 +223,7 @@ test_that("Getting views summary works", {
                                          out2 = list(alias = "output 2"),
                                          out3 = list(alias = "output 3"))),
                    list(symName = c("out3", "in1", "in3"),
-                        symAlias = c("output 3", 
+                        symAlias = c("output 3",
                                      "input 1", "in3"),
                         id = c("bla", "view2", "view3")))
   expect_error(views$addConf(list(out2 = list(new1 = list(a = "b"),
@@ -265,7 +265,7 @@ test_that("Getting views summary works", {
 
 test_that("Duplicating sandbox configuration works", {
   fakeSessionScen3Out2 <- FakeSession$new("tab_3_2")
-  
+
   expect_identical(views$getIds(fakeSessionScen3Out2), c("view5"))
   views$duplicateSandboxConf("3")
   expect_identical(views$getIds(fakeSessionScen3Out2), c("new1", "new2"))
@@ -284,7 +284,7 @@ test_that("Clearing configuration works", {
 })
 
 test_that("Loading scenario with no view config and one that does have views works", {
-  testViewData <- tibble("_sid" = c(1, 1), 
+  testViewData <- tibble("_sid" = c(1, 1),
                          symName = c("in1", "in1"),
                          id = c("view1", "view2"),
                          data = c('{"rows":["bla","blubb"]}', '{"cols":["bla","blubb"]}'))
@@ -307,7 +307,7 @@ test_that("View IDs should be stripped of spaces", {
                           id = c("new1", "new2"),
                           data = c("{\"a\":\"b\"}",
                                    "{\"a\":\"c\"}")))
-  testViewData <- tibble("_sid" = c(1, 1), 
+  testViewData <- tibble("_sid" = c(1, 1),
                          symName = c("in1", "out2"),
                          id = c("view1 ", " view6\t"),
                          data = c('{"rows":["bla","blubb"]}',

@@ -4,8 +4,8 @@ importHcJob <- function(filePath, jobMeta){
   if(config$activateModules$attachments && config$storeLogFilesDuration > 0L){
     if(any(c(config$activateModules$logFile, config$activateModules$lstFile)))
       outputAttachmentNames  <- c(outputAttachmentNames,
-                                  paste0(modelNameRaw, 
-                                         c(if(config$activateModules$logFile) ".log", 
+                                  paste0(modelNameRaw,
+                                         c(if(config$activateModules$logFile) ".log",
                                            if(config$activateModules$lstFile) ".lst")))
     if(config$activateModules$miroLogFile)
       outputAttachmentNames <- c(outputAttachmentNames, config$miroLogFile)
@@ -14,8 +14,8 @@ importHcJob <- function(filePath, jobMeta){
   if(tryCatch({
     hcubeResults <- HcubeResults$new(db, gdxio, filePath, outputAttachmentNames, jobMeta,
                                      includeTrc = config$saveTraceFile,
-                                     filesMayInclude = c(paste0(modelNameRaw, 
-                                                                c(if(config$activateModules$logFile) ".log", 
+                                     filesMayInclude = c(paste0(modelNameRaw,
+                                                                c(if(config$activateModules$logFile) ".log",
                                                                   if(config$activateModules$lstFile) ".lst")),
                                                          config$miroLogFile))
     FALSE
@@ -47,7 +47,7 @@ importHcJob <- function(filePath, jobMeta){
   tryCatch({
     hcubeResults$extractArchive(session, workDir,
                                 progressCallback = function(progress){
-                                  prog$set(message = lang$progressBar$hcubeImport$title, 
+                                  prog$set(message = lang$progressBar$hcubeImport$title,
                                            detail = lang$progressBar$hcubeImport$zipExtract,
                                            value = progress)
                                 },
@@ -85,7 +85,7 @@ importHcJob <- function(filePath, jobMeta){
                                     worker$updateJobStatus(JOBSTATUSMAP[["imported"]],
                                                            jobMeta[["_jid"]][1])
                                   }, error = function(e){
-                                    flog.warn("Problems updating job status. Error message: '%s'.", 
+                                    flog.warn("Problems updating job status. Error message: '%s'.",
                                               conditionMessage(e))
                                   })
                                   rv$jobListPanel <- rv$jobListPanel + 1L

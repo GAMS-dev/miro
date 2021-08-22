@@ -123,12 +123,12 @@ dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
             return()
           }
           selectedTableInfo <- orphanedTablesInfo[[orphanSelected]]
-          
+
           textCols <- selectedTableInfo$colNames[tolower(selectedTableInfo$colTypes) == "text"]
           numericCols <- selectedTableInfo$colNames[!selectedTableInfo$colNames %in% textCols]
-          
+
           colTypes <- strsplit(tableInfo$colTypes, "", fixed = TRUE)[[1]]
-          
+
           for(j in seq_along(tableInfo$colNames)){
             if(identical(length(tableInfo$colNames), 1L)){
               # scalar tables are allowed to be type-converted
@@ -209,7 +209,7 @@ dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
           return(migrationConfig)
         })
       })
-      
+
       observe({
         if(isTRUE(input$cbConfirmDataLoss)){
           enableEl(session, paste0("#", session$ns("btConfirmDataLoss")))
@@ -352,7 +352,7 @@ migrateFromConfig <- function(path){
   updateProgress <- function(){
     write("\n", stderr())
     write(paste0("mmigprog:::",
-                 round(noTablesMigrated/length(inconsistentTablesInfo) * 100)), 
+                 round(noTablesMigrated/length(inconsistentTablesInfo) * 100)),
           stderr())
     noTablesMigrated <<- noTablesMigrated + 1L
   }

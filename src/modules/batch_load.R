@@ -9,12 +9,12 @@ modelInSorted <- sort(names(modelIn))
 modelOutSorted <- sort(modelOut[[scalarsOutName]]$symnames)
 
 appendInputTypeList <- function(scalarsTabName){
-  inputType$text <<- c(inputType$text, vapply(scalarKeyTypeList[[scalarsTabName]], 
-                                              function(el) if(el$type %in% c("set", "string", "acronym")) el$key else NA_character_, 
+  inputType$text <<- c(inputType$text, vapply(scalarKeyTypeList[[scalarsTabName]],
+                                              function(el) if(el$type %in% c("set", "string", "acronym")) el$key else NA_character_,
                                               character(1L), USE.NAMES = FALSE))
   inputType$text <<- inputType$text[!is.na(inputType$text)]
-  inputType$number <<- c(inputType$number, vapply(scalarKeyTypeList[[scalarsTabName]], 
-                                                  function(el) if(el$type %in% c("scalar", "parameter", "number")) el$key else NA_character_, 
+  inputType$number <<- c(inputType$number, vapply(scalarKeyTypeList[[scalarsTabName]],
+                                                  function(el) if(el$type %in% c("scalar", "parameter", "number")) el$key else NA_character_,
                                                   character(1L), USE.NAMES = FALSE))
   inputType$number <<- inputType$number[!is.na(inputType$number)]
 }
@@ -59,17 +59,17 @@ for(j in seq_along(modelIn)){
 }
 
 if(length(modelIn[[scalarsFileName]])){
-  scalarKeyTypeList[[scalarsFileName]] <- c(scalarKeyTypeList[[scalarsFileName]], 
+  scalarKeyTypeList[[scalarsFileName]] <- c(scalarKeyTypeList[[scalarsFileName]],
                                             lapply(seq_along(modelIn[[scalarsFileName]]$symnames), function(i){
-                                              list(key = modelIn[[scalarsFileName]]$symnames[[i]], 
-                                                   type = modelIn[[scalarsFileName]]$symtypes[[i]], 
+                                              list(key = modelIn[[scalarsFileName]]$symnames[[i]],
+                                                   type = modelIn[[scalarsFileName]]$symtypes[[i]],
                                                    alias = modelIn[[scalarsFileName]]$symtext[[i]])
                                             }))
 }
 
 if(length(scalarKeyTypeList[[scalarsFileName]])){
   appendInputTypeList(scalarsFileName)
-  scalarFields        <- paste0(scalarsFileName, ".", 
+  scalarFields        <- paste0(scalarsFileName, ".",
                                 vapply(scalarKeyTypeList[[scalarsFileName]],
                                        "[[", character(1L), "key", USE.NAMES = FALSE))
   names(scalarFields) <- vapply(scalarKeyTypeList[[scalarsFileName]],
@@ -78,14 +78,14 @@ if(length(scalarKeyTypeList[[scalarsFileName]])){
 scalarOutFields <- NULL
 if(length(modelOut[[scalarsOutName]])){
   scalarKeyTypeList[[scalarsOutName]] <- lapply(seq_along(modelOut[[scalarsOutName]]$symnames), function(i){
-    list(key = modelOut[[scalarsOutName]]$symnames[[i]], 
-         type = modelOut[[scalarsOutName]]$symtypes[[i]], 
+    list(key = modelOut[[scalarsOutName]]$symnames[[i]],
+         type = modelOut[[scalarsOutName]]$symtypes[[i]],
          alias = modelOut[[scalarsOutName]]$symtext[[i]])
   })
-  scalarKeyTypeList[[scalarsOutName]] <- scalarKeyTypeList[[scalarsOutName]][order(vapply(scalarKeyTypeList[[scalarsOutName]], 
+  scalarKeyTypeList[[scalarsOutName]] <- scalarKeyTypeList[[scalarsOutName]][order(vapply(scalarKeyTypeList[[scalarsOutName]],
                                                                                           "[[", character(1L), "key", USE.NAMES = FALSE))]
   appendInputTypeList(scalarsOutName)
-  scalarOutFields        <- scalarsOutName %+% "." %+% 
+  scalarOutFields        <- scalarsOutName %+% "." %+%
     vapply(scalarKeyTypeList[[scalarsOutName]], "[[", character(1L), "key", USE.NAMES = FALSE)
   names(scalarOutFields) <- vapply(scalarKeyTypeList[[scalarsOutName]],
                                    "[[", character(1L), "alias", USE.NAMES = FALSE)
@@ -106,7 +106,7 @@ activeBlocks   <- vector("logical", maxNumBlocks)
 activeLines    <- vector("logical", maxNumBlocks^2)
 fieldsSelected <- vector("character", maxNumBlocks^2)
 exclAttribChoices <- c(batchLoadFilters[2:4], scalarOutFields)
-if(length(vapply(scalarKeyTypeList[[scalarsOutName]], 
+if(length(vapply(scalarKeyTypeList[[scalarsOutName]],
                  "[[", character(1L), "key", USE.NAMES = FALSE)))
   names(exclAttribChoices)[4:length(exclAttribChoices)] <- vapply(scalarKeyTypeList[[scalarsOutName]],
                                                                   "[[", character(1L), "alias", USE.NAMES = FALSE)
@@ -151,9 +151,9 @@ lapply(seq_len(maxNumBlocks), function(blockIdx){
     lineIdxToAssign <- which.min(activeLines[seq(blockOffset + 1L,
                                                  blockOffset + maxNumBlocks)])
     activeLines[blockOffset + lineIdxToAssign]  <<- TRUE
-    
+
     fieldSelected <- input[[paste0("newLine_", blockIdx)]]
-    
+
     fieldId <- match(fieldSelected, batchLoadFilters)
     if(length(fieldId) != 1L || is.na(fieldId)){
       flog.error("Invalid field selected in query builder: '%s'. This is likely an attempt to tamper with the app!",
@@ -161,10 +161,10 @@ lapply(seq_len(maxNumBlocks), function(blockIdx){
       stop()
     }
     label <- names(batchLoadFilters)[fieldId]
-    
+
     fieldsSelected[blockOffset + lineIdxToAssign] <<- fieldSelected
     field <- strsplit(fieldSelected, ".", fixed = TRUE)[[1]][[2]]
-    
+
     if(field %in% inputType[["text"]]){
       ui <- generateLine(blockIdx, lineIdxToAssign, "text", label)
     }else if(field %in% inputType[["date"]]){
@@ -188,7 +188,7 @@ observeEvent(input$btSendQuery, {
   showEl(session, "#hyperQueryLoad")
   on.exit(hideEl(session, "#hyperQueryLoad"))
   on.exit(enableEl(session, "#btSendQuery"), add = TRUE)
-  
+
   i <- 1L
   subsetCoditions <- NULL
   for(blockIdx in which(activeBlocks)){
@@ -197,17 +197,17 @@ observeEvent(input$btSendQuery, {
     field       <- NULL
     val         <- NULL
     op          <- NULL
-    
+
     blockOffset <- (blockIdx - 1L) * maxNumBlocks
     for(lineIdx in which(activeLines[seq(blockOffset + 1L,
                                          blockOffset + maxNumBlocks)])){
-      tableField <- strsplit(fieldsSelected[blockOffset + lineIdx], 
+      tableField <- strsplit(fieldsSelected[blockOffset + lineIdx],
                              ".", fixed = TRUE)[[1]]
       table[j]  <- tableField[[1]]
       field[j]  <- tableField[[2]]
       opUntrusted <- as.character(input[[paste0("op_", blockIdx, "_", lineIdx)]])
       filterVal <- input[[paste0("val_", blockIdx, "_", lineIdx)]]
-      
+
       if(field[j] %in% inputType[["text"]]){
         validOperators <- c("%LIKE%", "%NOTLIKE%", "LIKE%", "%LIKE", "=", "!=", "%EXIST", "%NOTEXIST")
       }else if(field[j] %in% inputType[["date"]]){
@@ -235,8 +235,8 @@ observeEvent(input$btSendQuery, {
       if(grepl("%", op[j])[[1]]){
         switch(op[j],
                "%LIKE" = {
-                 val[j] <- paste0("%", filterValEscaped) 
-                 
+                 val[j] <- paste0("%", filterValEscaped)
+
                  op[j]  <- "LIKE"
                },
                "LIKE%" = {
@@ -297,10 +297,10 @@ observeEvent(input$btSendQuery, {
     i <- i + 1L
   }
   colsToFetch <- strsplit(batchLoadFilters[-1], ".", fixed = TRUE)
-  colN <- c("_sid", vapply(colsToFetch, 
-                           '[[', FUN.VALUE = "character", 2, 
+  colN <- c("_sid", vapply(colsToFetch,
+                           '[[', FUN.VALUE = "character", 2,
                            USE.NAMES = FALSE))
-  names(colN) <- c("_sys_metadata_", vapply(colsToFetch, '[[', 
+  names(colN) <- c("_sys_metadata_", vapply(colsToFetch, '[[',
                                             FUN.VALUE = "character", 1,
                                             USE.NAMES = FALSE))
   tryCatch({
@@ -310,7 +310,7 @@ observeEvent(input$btSendQuery, {
     rv$updateBatchLoadData <- rv$updateBatchLoadData + 1L
   }, error = function(e){
     if(identical(conditionMessage(e), "maxNoRowsVio")){
-      errMsg <- sprintf("Your query results in too many scenarios to be fetched from the database. The maximum number of scenarios to be fetched is: %d. Please narrow your search.", 
+      errMsg <- sprintf("Your query results in too many scenarios to be fetched from the database. The maximum number of scenarios to be fetched is: %d. Please narrow your search.",
                         hcubeLoadMaxScen)
     }else{
       errMsg <- "An error occurred while executing the database query. " %+%
@@ -402,7 +402,7 @@ output$batchLoadResults <- renderDataTable(
       formatDate(3L,  method = "toLocaleString")
     if(length(data) > 4L){
       return(dtObj %>% formatRound(seq(5L, length(data))[vapply(data[, seq(5L, length(data))],
-                                                                is.numeric, logical(1L), USE.NAMES = FALSE)], 
+                                                                is.numeric, logical(1L), USE.NAMES = FALSE)],
                                    digits = roundPrecision))
     }
     return(dtObj)
@@ -418,7 +418,7 @@ observeEvent(input$btShowHash, {
   }
   noErr <- TRUE
   tryCatch(
-    hashValue <- db$importDataset("_scenMeta", colNames = "_sname", 
+    hashValue <- db$importDataset("_scenMeta", colNames = "_sname",
                                   tibble("_scode", SCODEMAP[['scen']], ">"),
                                   subsetSids = batchLoadData[[1]][selectedRows])[[1]]
     , error = function(e){
@@ -501,7 +501,7 @@ downloadBatchData <- function(file, sids, type){
     }else{
       batchLoader$genGdxFiles(sidsToLoad, tmpDir, gdxio, prog)
     }
-    return(zipr(file, list.files(tmpDir, full.names = TRUE), 
+    return(zipr(file, list.files(tmpDir, full.names = TRUE),
                 compression_level = 6))
   }, error = function(e){
     flog.error(sprintf("Problems generating the data archive for download. Error message: %s",
@@ -533,7 +533,7 @@ observeEvent(input$btBatchRemove, {
     errMsg <- NULL
     disableEl(session, "#btBatchRemove")
     affectedRows <- 0L
-    tryCatch(affectedRows <- db$deleteRows("_scenMeta", subsetSids = sidsToLoad), 
+    tryCatch(affectedRows <- db$deleteRows("_scenMeta", subsetSids = sidsToLoad),
              error = function(e){
                flog.error("Problems removing scenarios. Error message: %s",
                           conditionMessage(e))

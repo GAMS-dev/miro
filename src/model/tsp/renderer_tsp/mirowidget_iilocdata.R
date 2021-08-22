@@ -5,7 +5,7 @@ mirowidget_iilocdataOutput <- function(id, height, options, path){
 
 renderMirowidget_iilocdata <- function(input, output, session, data, options = NULL, path = NULL, ...){
   markerCnt <- 1L
-  
+
   rv <- reactiveValues(markerPositions = list)
   observe({
     if(length(data()) != 3L && !nrow(data())){
@@ -22,14 +22,14 @@ renderMirowidget_iilocdata <- function(input, output, session, data, options = N
     if(length(data()) == 3L && nrow(data())){
       return(leaflet::leaflet() %>% leaflet::addTiles() %>%
                leaflet::addMarkers(data()[[3L]], data()[[2L]], label = data()[[1L]],
-                                   group = "markers", options = leaflet::markerOptions(draggable = TRUE), 
+                                   group = "markers", options = leaflet::markerOptions(draggable = TRUE),
                                    layerId = data()[[1L]]))
     }else{
       return(leaflet::leaflet() %>% leaflet::addTiles())
     }
   })
   init <- FALSE
-  
+
   observe({
     input$tsp_input_marker_click
     if(!init){
@@ -53,7 +53,7 @@ renderMirowidget_iilocdata <- function(input, output, session, data, options = N
                                               lng = input$tsp_input_marker_dragend$lng)
     })
   })
-  
+
   observe({
     input$tsp_input_click
     if(!init){
@@ -62,23 +62,22 @@ renderMirowidget_iilocdata <- function(input, output, session, data, options = N
     }
     isolate({
       markerId <- paste0("Location", markerCnt)
-      newMarker <- list(lat = input$tsp_input_click$lat, 
+      newMarker <- list(lat = input$tsp_input_click$lat,
                         lng = input$tsp_input_click$lng)
       rv$markerPositions[[markerId]] <<- newMarker
       markerCnt <<- markerCnt + 1L
-      
+
       leaflet::leafletProxy("tsp_input") %>%
         leaflet::addMarkers(lat = newMarker$lat, lng = newMarker$lng, group = "markers",
-                            options = leaflet::markerOptions(draggable = TRUE), layerId = markerId) 
+                            options = leaflet::markerOptions(draggable = TRUE), layerId = markerId)
     })
   })
   return(reactive({
     if(!length(rv$markerPositions)){
       return(tibble(u = character(0L), lat= numeric(0L), lng = numeric(0L)))
     }
-    return(tibble(u = names(rv$markerPositions), 
+    return(tibble(u = names(rv$markerPositions),
                   lat = vapply(rv$markerPositions, "[[", numeric(1L), "lat"),
                   lng = vapply(rv$markerPositions, "[[", numeric(1L), "lng")))
   }))
 }
-

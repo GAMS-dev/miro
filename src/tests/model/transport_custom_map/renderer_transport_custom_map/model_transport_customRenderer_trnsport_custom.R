@@ -1,6 +1,6 @@
 trnsport1Output <- function(id, height = NULL, options = NULL, path = NULL){
   ns <- NS(id)
-  
+
   # set default height
   if(is.null(height)){
     height <- 800
@@ -10,7 +10,7 @@ trnsport1Output <- function(id, height = NULL, options = NULL, path = NULL){
 }
 
 renderTrnsport1 <- function(input, output, session, data, options = NULL, path = NULL, ...){
-  data <- data$schedule %>% left_join(data$ilocdata, by = names(data$ilocdata)[1]) %>% 
+  data <- data$schedule %>% left_join(data$ilocdata, by = names(data$ilocdata)[1]) %>%
     left_join(data$jlocdata, by = names(data$jlocdata)[1])
   #generate map
   map <- leaflet::leaflet() %>%
@@ -26,12 +26,12 @@ renderTrnsport1 <- function(input, output, session, data, options = NULL, path =
       label = paste(sep = "\n", data$j, " (demand: ", data$demand, ")"),
       labelOptions = leaflet::labelOptions(closeButton = FALSE, noHide = TRUE,
                                            textsize = "22px", style= list("color" = "rgb(243, 150, 25)"))) %>%
-    
+
     leaflet.minicharts::addFlows(lng0 = data[["lng.x"]], lat0 = data[["lat.x"]],
-                                 lng1 = data[["lng.y"]], lat1 = data[["lat.y"]], 
+                                 lng1 = data[["lng.y"]], lat1 = data[["lat.y"]],
                                  color = "indianred",
-                                 flow = coalesce(data$quantities, 0), opacity = 1, minThickness = 0, 
-                                 maxThickness = 12, 
+                                 flow = coalesce(data$quantities, 0), opacity = 1, minThickness = 0,
+                                 maxThickness = 12,
                                  layerId = paste0("From ", data$i, " to ", data$j),
                                  popup = leaflet.minicharts::popupArgs())
   output$path <- renderText({

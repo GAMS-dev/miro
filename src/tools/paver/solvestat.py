@@ -20,11 +20,11 @@ DEFAULTNUMPTS = 40;
 
 def _calculateProfile(paver, data, minabscissa = None, maxabscissa = None, logabscissa = True) :
     '''Calculates a performance profile from given data.'''
-    
+
     numpts = DEFAULTNUMPTS;
     if 'numpts' in paver.options :
         numpts = paver.options['numpts'];
-            
+
     # set min/maxabscissa to min/max in data, if not given by user
     if minabscissa is None :
         minabscissa = data.min().min();
@@ -38,7 +38,7 @@ def _calculateProfile(paver, data, minabscissa = None, maxabscissa = None, logab
         #maxabscissa = 1000.0 * minabscissa;
         raise BaseException("Maximal abscissa is at infinity.");
     #maxabscissa = max(maxabscissa, 1.0);
-    
+
     # setup ticks for profile
     if minabscissa == maxabscissa :
         raise BaseException("Minimal and maximal attribute values are equal.");
@@ -50,7 +50,7 @@ def _calculateProfile(paver, data, minabscissa = None, maxabscissa = None, logab
                 ticks[i] = math.exp(math.log(minabscissa) + i/(numpts-1.0) * (math.log(maxabscissa + 1e-6) - math.log(minabscissa)));
             else :
                 ticks[i] = minabscissa + i/(numpts-1.0) * (maxabscissa-minabscissa);
-    
+
     # compute profile data
     profile = pd.DataFrame(0, index = ticks, columns = data.columns);
     for c, r in data.items() :
@@ -65,18 +65,18 @@ def _calculateProfile(paver, data, minabscissa = None, maxabscissa = None, logab
 
     return profile;
 
-    
+
 def _barchart(data, datamax = None, bw = False) :
     '''Create a matplotlib barchart for given data.'''
     #data.drop(['virt. best', 'virt. worst']).plot(kind = 'bar');
-    
+
     #means = outcome.stat[meantype + '. mean'];
     #devs = outcome.stat[meantype + '. std.'];
-    
+
     # drop NaN's and infinities
     data = data[data.map(np.isfinite)];
     realdata = data;
-    
+
     nsolvers = len(data.index);
     if 'virt. best' in data :
         realdata = realdata.drop('virt. best');
@@ -90,14 +90,14 @@ def _barchart(data, datamax = None, bw = False) :
     for s in range(nsolvers) :
         barstart[s] = s;
         ticks[s] = s;
-        
+
     plt.clf(); # clear figure
 
     yerr = None;
     #if meantype == 'arith' :
     #    yerr = devs.drop(['virt. best', 'virt. worst']);
     rects = plt.bar(barstart, realdata, 0.8, yerr = yerr, color = 'k' if bw else 'b');
-    
+
     if 'virt. best' in data :
         plt.plot([-0.5, nsolvers-0.5], [data['virt. best'], data['virt. best']], label = 'virt. best', color = 'k' if bw else 'b');
     if 'virt. worst' in data :
@@ -157,17 +157,17 @@ def addCommandLineOptions(parser) :
 class StatisticsGenerator():
     '''Computes and stores solve statistics based on the aggregated solving data and a given set of performance metrics.'''
 
-    
+
     class Outcome() :
         '''Class to store a computed solve statistic.'''
-        
+
         def __init__(self, metric, datafilter) :
             self.metric = metric;
             self.filter = datafilter;
 
             self.stat = None;
             self.data = None;
-            
+
             self.refsolver = {};
 
             self.pprofilerel = None;
@@ -179,7 +179,7 @@ class StatisticsGenerator():
         '''Constructor.
         @param metrics A list of metrics to evaluate.
         '''
-        
+
         self._metrics = metrics;
         self._results = None;
 
@@ -189,35 +189,35 @@ class StatisticsGenerator():
         virt = True;
         if 'novirt' in paver.options :
             virt = not paver.options['novirt'];
-        
+
         if f is None :
             # a simple filter that includes all instances
             f = pd.Series(True, index = df.index);
             f.name = "all instances";
         # print f.name, f.count();
-        
+
         # apply filter and drop rows that are complete NaN
         fdf = df[f].dropna(how = 'all').convert_objects(convert_numeric=True);
 
         #if len(fdf.index) == 0 :
         #   print 'No data left to evaluate attribute', metric.attribute, 'after applying filter "' + f.name + '". Skipping statistics.';
         #   return
-        
+
         # fill remaining NaN's with na value (only does something if f was a dataframe, too)
         if metric.navalue is not None :
             fdf = fdf.fillna(metric.navalue).convert_objects(convert_numeric=True);
-        
+
         if virt :
             # add virtual best, worst (can depend on filter, so do it now, not earlier)
             if metric.multbydirection :
                 normalized = fdf.mul(paver.instancedata['Direction'], axis = 0);
-                
+
                 fdfmin = normalized.min(axis = 1).mul(paver.instancedata['Direction']);
                 fdfmax = normalized.max(axis = 1).mul(paver.instancedata['Direction']);
             else :
                 fdfmin = fdf.min(axis = 1);
                 fdfmax = fdf.max(axis = 1);
-                
+
             if metric.betterisup :
                 fdf['virt. best']  = fdfmax;
                 fdf['virt. worst'] = fdfmin.reindex_axis(fdf.dropna(how='any').index);
@@ -225,32 +225,32 @@ class StatisticsGenerator():
                 fdf['virt. best']  = fdfmin;
                 fdf['virt. worst'] = fdfmax.reindex_axis(fdf.dropna(how='any').index);
             #print fdf.to_string();
-        
+
         # create dataframe for statistics
         stat = pd.DataFrame(index = fdf.columns);
-        
+
         # always count number of non-NaNs
         stat['count'] = fdf.count();
-        
+
         # skip statistic if no instance left in filter
         if stat['count'].max() == 0 :
             return;
-        
+
         # compute arithmetic, geometric, shifted geometric means
         if metric.means :
             stat['arith. mean'] = fdf.mean();
             stat['arith. std.'] = fdf.std();
-            
+
             # compute geometric mean
             #===================================================================
             # Given a set of data points (v_1, ..., v_n), we compute
             #  (prod_i (v_i + shift)) ^ (1/n) - shift
             # for some shift >= -v_i.
             # shift = 0 is the usual geometric mean.
-            # 
+            #
             # Internally, we compute the (sh.) geom mean as
             #  exp( (sum_i log(v_i+shift) ) / n ) - shift.
-            #  
+            #
             # The geometric standard deviation is
             #  exp( sqrt( {sum_i log(v_i+shift)^2} / n  - log(mean + shift)^2 ) ).
             #===================================================================
@@ -258,17 +258,17 @@ class StatisticsGenerator():
                 fdflog = np.log(fdf);
                 fdflogmean = fdflog.mean();
                 stat['geom. mean'] = np.exp(fdflogmean);
-                
+
                 part1 = np.square(fdflog).mean();
                 part2 = np.square(fdflogmean);
-                
+
                 #if part2 > part1 :
                 #    if part2 > part1 + 1e-9 :
                 #        stat['geom. std.'] = np.nan;
                 #    return 0.0;
                 stat['geom. std.'] = np.exp(np.sqrt(part1 - part2));
                 stat['geom. std.'][part2 > part1].fillna(0.0);
-                
+
             # compute shifted geometric mean, if shift is given
             if metric.shift > 0.0 and (fdf.fillna(metric.shift + 1) > -metric.shift).min().min():
                 fdflog = np.log(fdf + metric.shift);
@@ -277,7 +277,7 @@ class StatisticsGenerator():
 
                 part1 = np.square(fdflog).mean();
                 part2 = np.square(fdflogmean);
-                
+
                 stat['sh.geom. std.'] = np.exp(np.sqrt(part1 - part2));
                 stat['sh.geom. std.'][part2 > part1].fillna(0.0);
 
@@ -297,18 +297,18 @@ class StatisticsGenerator():
         for refsolver in refsolvers :
 
             refsolstat = pd.DataFrame(index = fdf.columns);
-            
+
             # skip statistics if there are 0's in the reference values
             ratiotoref = None;
             if (not haszero[refsolver]) and ('bool' not in fdf.get_dtype_counts()) :
                 ratiotoref = fdf.div(fdf[refsolver], axis=0);
                 #print ratiotoref.to_string();
-            
+
                 # just arithmetic mean for now
                 if metric.means :
                     refsolstat['arith. mean'] = ratiotoref.mean();
                     refsolstat['arith. std.'] = ratiotoref.std();
-                
+
                 # compute quantiles
                 if 0.0 in metric.quantiles :
                     refsolstat['min'] = ratiotoref.min();
@@ -335,7 +335,7 @@ class StatisticsGenerator():
                     else :
                         reldiff = utils.relDiff(s, fdf[refsolver]);
                         absdiff = s - fdf[refsolver];
-                        
+
                     if metric.multbydirection :
                         reldiff = reldiff.mul(paver.instancedata['Direction']);
                         absdiff = absdiff.mul(paver.instancedata['Direction']);
@@ -343,7 +343,7 @@ class StatisticsGenerator():
                     allreldiff[c] = reldiff;
                     allabsdiff[c] = absdiff;
 
-                    # check where solver c is worse than reference solver, i.e., differences > tolerances 
+                    # check where solver c is worse than reference solver, i.e., differences > tolerances
                     cb = None;
                     if metric.reltol is not None :
                         cb = reldiff >= metric.reltol;
@@ -354,7 +354,7 @@ class StatisticsGenerator():
                             cb = absdiff >= metric.abstol;
                     worsethanref[c] = cb;
 
-                    # check where solver c is better than reference solver, i.e., differences < -tolerances 
+                    # check where solver c is better than reference solver, i.e., differences < -tolerances
                     cb = None;
                     if metric.reltol is not None :
                         cb = reldiff <= -metric.reltol;
@@ -367,12 +367,12 @@ class StatisticsGenerator():
 
                 # check where solver c is about the same as reference solver
                 closetoref = ~betterthanref & ~worsethanref & ~np.isnan(allreldiff) & ~np.isnan(allabsdiff);
-                
+
                 # if we did not compute ratios, provide relative differences as data
                 # (FIXME: a big ugly and maybe confusing?)
                 if ratiotoref is None :
                     ratiotoref = allreldiff;
-                
+
                 #===============================================================
                 # if metric.attribute == 'NumberOfNodes' and refsolver != 'virt. best' :
                 #    print metric.attribute, refsolver;
@@ -385,12 +385,12 @@ class StatisticsGenerator():
                 #    print worsethanref.sum();
                 #    exit(0);
                 #===============================================================
-                
+
                 # count how many are within reltol/abstol of reference solver
                 refsolstat['better'] = betterthanref.sum();
                 refsolstat['close'] = closetoref.sum();
                 refsolstat['worse'] = worsethanref.sum();
-            
+
             # store only if we computed something
             if len(refsolstat.columns) > 0 :
                 if ratiotoref is not None :
@@ -417,33 +417,33 @@ class StatisticsGenerator():
 
     def _calculateProfiles(self, paver, metric, df, f) :
         '''Calculates performance profiles for a particular metric and filter and stores corresponding outcome object.'''
-        
+
         virt = True;
         if 'novirt' in paver.options :
             virt = not paver.options['novirt'];
-    
+
         absprofile = None;
         relprofile = None;
         extprofile = None;
-    
+
         if f is None :
             # a simple filter that includes all instances
             f = pd.Series(True, index = df.index);
             f.name = "all instances";
-    
+
         # print f.name, f.count();
-        
+
         # apply filter
         fdf = df[f].dropna(how = 'all');
-        
+
         if len(fdf.index) == 0 :
             print('No data left to evaluate attribute', metric.attribute, 'after applying filter "' + f.name + '". Skipping profiles.');
             return
-           
+
         if fdf.min().min() == fdf.max().max() :
             print('Attribute', metric.attribute, 'is the same for all instances and solvers after applying filter "' + f.name + '". Skipping profiles.');
             return
-    
+
         if metric.ppextended :
             # for each solver run, compute best among all other solvers (for each instance)
             extbest = {};
@@ -451,7 +451,7 @@ class StatisticsGenerator():
                 fdfother = fdf.drop(sr, axis=1);
                 if metric.multbydirection :
                     normalized = fdfother.mul(paver.instancedata['Direction'], axis = 0);
-                    
+
                     if metric.betterisup :
                         extbest[sr] = normalized.max(axis = 1).mul(paver.instancedata['Direction']);
                     else :
@@ -464,45 +464,45 @@ class StatisticsGenerator():
             extbest = pd.DataFrame(extbest);
             #print fdf.to_string();
             #print extbest.to_string();
-    
+
             # get ratio to best among others
             ratiotoextbest = fdf.div(extbest);
-            
+
             # virtually best / worst should be the best / worst ratio
             if virt :
                 ratiotoextbest['virt. best'] = ratiotoextbest.min(axis = 1);
                 ratiotoextbest['virt. worst'] = ratiotoextbest.dropna(how='any').max(axis = 1);
-                
+
             # compute profile
             try :
                 extprofile = _calculateProfile(paver, ratiotoextbest, None, None, metric.pprelsemilog);
             except BaseException as e :
                 print('Could not generate extended performance profile for attribute', metric.attribute, 'filter', f.name);
                 print(e);
-        
+
         # compute virtual best and worst
         if metric.multbydirection :
             normalized = fdf.mul(paver.instancedata['Direction'], axis = 0);
-            
+
             fdfmin = normalized.min(axis = 1).mul(paver.instancedata['Direction']);
             fdfmax = normalized.max(axis = 1).mul(paver.instancedata['Direction']);
         else :
             fdfmin = fdf.min(axis = 1);
             fdfmax = fdf.max(axis = 1);
-            
+
         if metric.betterisup :
             fdfvirtbest = fdfmax;
             fdfvirtworst = fdfmin;
         else :
             fdfvirtbest = fdfmin;
             fdfvirtworst = fdfmax;
-    
+
         # include virt. best / worst solver into fdf
         if virt :
             fdf['virt. best'] = fdfvirtbest;
             fdf['virt. worst'] = fdfvirtworst.reindex_axis(fdf.dropna(how='any').index);
             #print fdf.to_string();
-        
+
         # compute absolute profile
         if metric.ppabsolute :
             try :
@@ -510,7 +510,7 @@ class StatisticsGenerator():
             except BaseException as e :
                 print('Could not generate absolute performance profile for attribute', metric.attribute, 'filter', f.name);
                 print(e);
-    
+
         # compute relative profile
         if metric.pprelative :
             ratiotobest = fdf.div(fdfvirtbest, axis=0);
@@ -519,14 +519,14 @@ class StatisticsGenerator():
             except BaseException as e :
                 print('Could not generate relative performance profile for attribute', metric.attribute, 'filter', f.name);
                 print(e);
-    
+
         # store results in Outcome object
         outcome = self.Outcome(metric, f);
         outcome.data = fdf;
         outcome.pprofilerel = relprofile;
         outcome.pprofileabs = absprofile;
         outcome.pprofileext = extprofile;
-    
+
         # store results in _results
         if metric.category not in self._results :
             self._results[metric.category] = [];
@@ -545,16 +545,16 @@ class StatisticsGenerator():
             for solver in paver.aggrsolvedata.items :
                 if solver in paver.options['refsolver'] :
                     refsolvers.append(solver);
-                    
+
         sortcolumns = True;
         if 'nosortsolver' in paver.options :
             sortcolumns = not paver.options['nosortsolver'];
-        
+
         self._results = {};
         for metric in self._metrics :
-            
+
             assert paver.hasSolveAttribute(metric.attribute);
-            
+
             df = paver.aggrsolvedata.loc[:, :, metric.attribute];
 
             # replace NaN's and values for failed instances by failvalue, if given
@@ -562,7 +562,7 @@ class StatisticsGenerator():
                 # set all fails to NaN
                 df = df.mask(paver.aggrsolvedata.loc[:, :, 'Fail'].astype(bool));
                 df[paver.instancedata['Fail']] = np.nan;
-                
+
                 # fill all NaN's with failvalue
                 df = df.fillna(metric.failvalue);
 
@@ -581,19 +581,19 @@ class StatisticsGenerator():
             # performance profile for each ppfilter
             for f in metric.ppfilter :
                 self._calculateProfiles(paver, metric, df, f);
-                
+
 
     def getCategories(self) :
-        '''Gets the metric categories of the computed solve statistics.''' 
+        '''Gets the metric categories of the computed solve statistics.'''
         if self._results is None :
             return [];
         return list(self._results.keys());
-    
+
     def writeText(self, category, outdir, fileprefix):
         '''Outputs statistics for a certain category in plain text form.'''
-        
+
         out = open(os.path.join(outdir, fileprefix + '.txt'), 'w');
-        
+
         count = 0;
         for outcome in self._results[category] :
             #print >> out, "<H4>";
@@ -605,7 +605,7 @@ class StatisticsGenerator():
             print("Category:", category, file=out);
             print("Attribute:", outcome.metric.attribute, file=out);
             print("Filter:", outcome.filter.name, file=out);
-            
+
             if outcome.stat is not None :
                 # output data dataframe into separate file
                 datafile = fileprefix + 'data{0:03d}'.format(count) + '.txt';
@@ -624,7 +624,7 @@ class StatisticsGenerator():
             if outcome.pprofilerel is not None :
                 profilefile = fileprefix + 'profilerel{0:03d}'.format(count) + '.txt';
                 outdata = open(os.path.join(outdir, profilefile), 'w');
-                
+
                 print('Relative performance profile for', outcome.metric.attribute, file=outdata);
                 print('Filter:', outcome.filter.name, file=outdata);
                 print(outcome.pprofilerel.to_string(), file=outdata);
@@ -634,17 +634,17 @@ class StatisticsGenerator():
             if outcome.pprofileabs is not None :
                 profilefile = fileprefix + 'profileabs{0:03d}'.format(count) + '.txt';
                 outdata = open(os.path.join(outdir, profilefile), 'w');
-                
+
                 print('Absolute performance profile for', outcome.metric.attribute, file=outdata);
                 print('Filter:', outcome.filter.name, file=outdata);
                 print(outcome.pprofileabs.to_string(), file=outdata);
 
                 print("Absolute performance profile:", profilefile, file=out);
-                
+
             if outcome.pprofileext is not None :
                 profilefile = fileprefix + 'profileext{0:03d}'.format(count) + '.txt';
                 outdata = open(os.path.join(outdir, profilefile), 'w');
-                
+
                 print('Extended performance profile for', outcome.metric.attribute, file=outdata);
                 print('Filter:', outcome.filter.name, file=outdata);
                 print(outcome.pprofileext.to_string(), file=outdata);
@@ -674,12 +674,12 @@ class StatisticsGenerator():
                     if refsolveroutcome['worsethanref'] is not None :
                         df = df.combine(refsolveroutcome['worsethanref'].drop(refsolver, axis=1),
                                         lambda r, c : np.where(c, r+'-', r));
-                
+
                     datafile = fileprefix + 'ratio{0:03d}_'.format(count) + str(refsolver).translate(str.maketrans('', '', " ()',")) + '.txt';
                     outdata = open(os.path.join(outdir, datafile), 'w');
                     print(df.to_string(), file=outdata);
                     outdata.close();
-                
+
                 stat = refsolveroutcome['stat'].transpose().drop(refsolver, axis=1);
 
                 print(file=out);
@@ -691,7 +691,7 @@ class StatisticsGenerator():
 
             count += 1;
             print(file=out);
-            
+
         out.close();
 
     def writeHTML(self, paver, category, outdir, fileprefix, args) :
@@ -715,18 +715,18 @@ class StatisticsGenerator():
         print("<HEAD>", file=out);
         print(paver.htmlheader, file=out);
         print("<STYLE> .block {background:#f0f0f0; padding:10px; border: 1px solid #c2c2c2;} @media (prefers-color-scheme: dark) {.block {background:#444a54;} </STYLE>", file=out);
-        
+
         print("<H3>Statistics for category", category, "</H3>", file=out)
-        
+
         # get Tab-number for Shiny (tab switching)
         if(category == 'Status'):
            n = 2;
         if(category == 'Efficiency'):
            n = 3;
         if(category == 'Solution Quality'):
-           n = 4;      
-           
-        # print table of contents       
+           n = 4;
+
+        # print table of contents
         count = 0;
         prevattr = '';
         print("<P><TABLE><TR><TH align=left>Attribute</TH><TH align=left> Filter</TH></TR>", file=out)
@@ -742,7 +742,7 @@ class StatisticsGenerator():
             count += 1;
         print("</TABLE></P>", file=out)
         print("<P>For a short description on the computed values, refer to <A href='#' onclick = 'Miro.changeTab($(this), ", n, ", 6)'>the documentation</A>.</P>", file=out);
-        
+
         count = 0;
         for outcome in self._results[category] :
             #print >> out, "<H4>";
@@ -756,7 +756,7 @@ class StatisticsGenerator():
             print("<H4>", outcome.metric.attribute, "<BR>", file=out);
             print("Filter:", outcome.filter.name, "</H4>", file=out);
             print("</A>", file=out);
-            
+
             print("<P><FONT SIZE=-1>", file=out);
             if not np.isneginf(outcome.metric.clip_lower) or not np.isposinf(outcome.metric.clip_upper) :
                 print("Attribute values were projected onto interval [" + str(outcome.metric.clip_lower) + ', ' + str(outcome.metric.clip_upper) + '].<BR>', file=out);
@@ -764,8 +764,8 @@ class StatisticsGenerator():
                 print("Missing values and values for failed instances substituted by", outcome.metric.failvalue, ".<BR>", file=out);
             if outcome.metric.navalue is not None :
                 print("Missing values after filtering substituted by", outcome.metric.navalue, ".<BR>", file=out);
-            print("</FONT></P>", file=out) 
-            
+            print("</FONT></P>", file=out)
+
             if outcome.stat is not None :
                 # output data dataframe into separate file
                 datafile = fileprefix + 'data{0:03d}'.format(count) + '.html';
@@ -775,13 +775,13 @@ class StatisticsGenerator():
                                                                          index_names = False), file=outdata);
                 print("</BODY>", "</HTML>", file=outdata);
                 outdata.close();
-				
-                # output data dataframe into separate csv file				
-                datafile_csv = fileprefix + 'data{0:03d}'.format(count) + '.csv';				
+
+                # output data dataframe into separate csv file
+                datafile_csv = fileprefix + 'data{0:03d}'.format(count) + '.csv';
                 outdata = open(os.path.join(args.writeimg, datafile_csv), 'w');
                 print(outcome.data.dropna(how='all').to_csv(), file=outdata);
                 outdata.close();
-                
+
                 # write statistics
                 table = outcome.stat.transpose().to_html(na_rep = "-",
                                                          index_names = False,
@@ -792,7 +792,7 @@ class StatisticsGenerator():
                 if 'sh.geom. mean' in outcome.stat :
                     print("<FONT SIZE=-1>geometric mean shift:", outcome.metric.shift, "</FONT>", file=out);
                 print("</P>", file=out);
-                
+
                 print("<P>", file=out);
                 # if we have only a count, do a plot for this one (probably that's why we have this metric)
                 if (outcome.stat.columns == 'count').all() and len(outcome.refsolver) == 0 :
@@ -800,39 +800,39 @@ class StatisticsGenerator():
                     plt.title(outcome.metric.attribute + ' - ' + outcome.filter.name);
                     plotfile = fileprefix + 'count{0:03d}'.format(count);
                     plt.xticks(rotation=45);
-                    plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);                    
+                    plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);
                     with utils.Timer() :
                         plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.png'));
                     if paver.options['figformat'] != 'png' :
                         with utils.Timer() :
-                            plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.' + paver.options['figformat']));  
+                            plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.' + paver.options['figformat']));
                     plt.close();
-                    
+
                     #print("<a href=" + plotfile + "." + paver.options['figformat'] + "><img src=paver/" + plotfile + ".png width=300 style='cursor: pointer;'></a>", file=out);
                     print("<img src=paver/" + args.gmswebiter + "_" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;'/>", file=out);
 
-				
+
                 # bar charts for each type of mean
                 if outcome.metric.means :
                     for meantype in ('arith', 'geom', 'sh.geom') :
                         if meantype + '. mean' not in outcome.stat :
                             continue;
-                        
+
                         _barchart(outcome.stat[meantype + '. mean'], bw = bw);
                         plt.title(outcome.metric.attribute + ' - ' + meantype + '. means\nFilter: ' + outcome.filter.name);
 
                         plotfile = fileprefix + meantype + 'mean{0:03d}'.format(count);
                         plt.xticks(rotation=45);
-                        plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);     
+                        plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);
                         with utils.Timer() :
                             plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.png'));
                         if paver.options['figformat'] != 'png' :
                             with utils.Timer() :
                                 plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.' + paver.options['figformat']));
                         plt.close();
-                        
+
                         print("<img src=paver/" + args.gmswebiter + "_" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
-                
+
                 # boxplot
                 if outcome.metric.boxplot :
                     plt.clf();
@@ -845,17 +845,17 @@ class StatisticsGenerator():
                     else :
                         outcome.data.boxplot(); # return_type = 'axes'
                     plt.title(outcome.metric.attribute + '\nFilter: ' + outcome.filter.name);
-                    
+
                     plotfile = fileprefix + 'boxplot{0:03d}'.format(count);
                     plt.xticks(rotation=45);
-                    plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);     
+                    plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);
                     with utils.Timer() :
                         plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.png'));
                     if paver.options['figformat'] != 'png' :
                         with utils.Timer() :
                             plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.' + paver.options['figformat']));
                     plt.close();
-                    
+
                     print("<img src=paver/" + args.gmswebiter + "_" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
 
                 print("</P>", file=out);
@@ -864,7 +864,7 @@ class StatisticsGenerator():
             haveprof = outcome.pprofilerel is not None or outcome.pprofileabs is not None or outcome.pprofileext is not None;
             if haveprof :
                 print("<P>", file=out);
-            
+
             if outcome.pprofilerel is not None :
                 plt.figure();
                 outcome.pprofilerel.plot(logx = outcome.metric.pprelsemilog,
@@ -873,7 +873,7 @@ class StatisticsGenerator():
                 plt.xlabel(outcome.metric.attribute + ' at most this factor of best');
                 plt.ylabel('Number of instances with ' + outcome.filter.name);
                 plt.ylim(0, len(outcome.metric.ppfilter[0].index));
-                
+
                 plotfile = fileprefix + 'profilerel{0:03d}'.format(count);
                 plt.xticks(rotation=45);
                 plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);
@@ -894,7 +894,7 @@ class StatisticsGenerator():
                 plt.xlabel(outcome.metric.attribute);
                 plt.ylabel('Number of instances with ' + outcome.filter.name);
                 plt.ylim(0, len(outcome.metric.ppfilter[0].index));
-                
+
                 plotfile = fileprefix + 'profileabs{0:03d}'.format(count);
                 plt.xticks(rotation=45);
                 plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);
@@ -915,7 +915,7 @@ class StatisticsGenerator():
                 plt.xlabel(outcome.metric.attribute + ' at most this factor of best excluding self');
                 plt.ylabel('Number of instances with ' + outcome.filter.name);
                 plt.ylim(0, len(outcome.metric.ppfilter[0].index));
-                
+
                 plotfile = fileprefix + 'profileext{0:03d}'.format(count);
                 plt.xticks(rotation=45);
                 plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);
@@ -930,7 +930,7 @@ class StatisticsGenerator():
 
             if haveprof :
                 print("</P>", file=out);
-                            
+
             for refsolver, refsolveroutcome in outcome.refsolver.items() :
 
                 # output ratiodata into separate file
@@ -954,7 +954,7 @@ class StatisticsGenerator():
                     if refsolveroutcome['worsethanref'] is not None :
                         df = df.combine(refsolveroutcome['worsethanref'].drop(refsolver, axis=1),
                                         lambda r, c : np.where(c, '<span style="{color: red}">'+r+'</span>', r));
-                
+
                     datafile = fileprefix + 'ratio{0:03d}_'.format(count) + str(refsolver).translate(str.maketrans('', '', " ()',")) + '.html';
                     outdata = open(os.path.join(outdir, datafile), 'w');
                     print("<HTML><HEAD>", paver.htmlheader, "</HEAD><BODY>", file=outdata);
@@ -963,13 +963,13 @@ class StatisticsGenerator():
                     outdata.close();
 
                     # output ratiodata into separate csv file
-                    datafile_csv = fileprefix + 'ratio{0:03d}_'.format(count) + str(refsolver).translate(str.maketrans('', '', " ()',")) + '.csv';	
+                    datafile_csv = fileprefix + 'ratio{0:03d}_'.format(count) + str(refsolver).translate(str.maketrans('', '', " ()',")) + '.csv';
                     outdata = open(os.path.join(args.writeimg, datafile_csv), 'w');
                     print(df_csv.to_csv(), file=outdata);
-                    outdata.close();					
-					
-					
-                
+                    outdata.close();
+
+
+
                 stat = refsolveroutcome['stat'].transpose().drop(refsolver, axis=1);
 
                 table = stat.to_html(na_rep = "-",
@@ -977,7 +977,7 @@ class StatisticsGenerator():
                                      float_format = "{0:.2f}".format);
                 if data is not None :
                     table = table.replace("<th>minor</th>", "<th></th>", 1).replace("<th></th>", "<th align=left><A href=paver/" + datafile_csv + " download>Data</A></th>", 1);
-                
+
                 print("<P>", file=out);
                 print("Performance with respect to ", refsolver + ":", "<BR>", file=out);
                 print("<FONT SIZE=-1>Tolerance:", file=out);
@@ -988,7 +988,7 @@ class StatisticsGenerator():
                 print("</FONT><BR>", file=out);
                 print(table, file=out);
                 print("</P>", file=out);
-                
+
                 print("<P>", file=out);
                 # boxplot
                 if outcome.metric.boxplot and data is not None:
@@ -1002,7 +1002,7 @@ class StatisticsGenerator():
                     else :
                         data.boxplot(); # return_type = 'axes'
                     plt.title(outcome.metric.attribute + ' w.r.t. ' + str(refsolver) + '\nFilter: ' + outcome.filter.name);
-                    
+
                     plotfile = fileprefix + 'boxplot{0:03d}_'.format(count) + str(refsolver).translate(str.maketrans('', '', " ()',"));
                     plt.xticks(rotation=45);
                     plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);
@@ -1012,7 +1012,7 @@ class StatisticsGenerator():
                         with utils.Timer() :
                             plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.' + paver.options['figformat']));
                     plt.close();
-                    
+
                     print("<img src=paver/" + args.gmswebiter + "_" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
 
                 # bar charts for each type of mean
@@ -1020,7 +1020,7 @@ class StatisticsGenerator():
                     for meantype in ('arith', 'geom', 'sh.geom') :
                         if meantype + '. mean' not in refsolveroutcome['stat'] :
                             continue;
-                        
+
                         _barchart(refsolveroutcome['stat'][meantype + '. mean'], bw = bw);
                         plt.title(outcome.metric.attribute + ' w.r.t. ' + str(refsolver) + ' - ' + meantype + '. means\nFilter: '+ outcome.filter.name);
 
@@ -1033,7 +1033,7 @@ class StatisticsGenerator():
                             with utils.Timer() :
                                 plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.' + paver.options['figformat']));
                         plt.close();
-                        
+
                         print("<img src=paver/" + args.gmswebiter + "_" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
 
                 # bar charts for number of instance close to/better than/worse than refsolver
@@ -1049,7 +1049,7 @@ class StatisticsGenerator():
                             title += 'abs ' + str(outcome.metric.abstol);
                         title += ')\nFilter: ' + outcome.filter.name;
                         plt.title(title);
-    
+
                         plotfile = fileprefix + a + '{0:03d}_'.format(count) + str(refsolver).translate(str.maketrans('', '', " ()',"));
                         plt.xticks(rotation=45);
                         plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);
@@ -1059,13 +1059,13 @@ class StatisticsGenerator():
                             with utils.Timer() :
                                 plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.' + paver.options['figformat']));
                         plt.close();
-                        
+
                         print("<img src=paver/" + args.gmswebiter + "_" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
 
                 print("</P>", file=out);
 
             count += 1;
-            print("</div><BR>", file=out);	
+            print("</div><BR>", file=out);
 
         print("</BODY>", "</HTML>", file=out);
         out.close();

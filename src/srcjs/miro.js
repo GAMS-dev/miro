@@ -196,7 +196,7 @@ export function filterMiroDropdown(that) {
 export function modal(msg, okButton, cancelButton,
   value, callback, ...callbackArgs) {
   Shiny.modal.show({
-    html: `<div id="shiny-modal" class="modal fade" 
+    html: `<div id="shiny-modal" class="modal fade"
     tabindex="-1" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
@@ -209,7 +209,7 @@ export function modal(msg, okButton, cancelButton,
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">${cancelButton}</button>
-        <button id="miroModalConfirmButton" type="button" 
+        <button id="miroModalConfirmButton" type="button"
         class="btn btn-default bt-highlight-1 bt-gms-confirm">${okButton}</button>
       </div>
     </div>
