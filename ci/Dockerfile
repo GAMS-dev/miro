@@ -34,7 +34,8 @@ RUN curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 RUN sudo apt-get install -y nodejs
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-RUN apt-get update && apt-get install -y yarn
+RUN apt-get update && apt-get install -y yarn python3-pip git
+RUN pip3 install pre-commit
 
 RUN groupadd -g 1001 miroci && \
     useradd -r -u 1001 -g miroci miroci
