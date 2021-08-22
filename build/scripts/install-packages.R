@@ -1,14 +1,14 @@
 # install required packages for MIRO
 local({
     packageVersionMapTmp <- read.csv('./src/miro-pkg-lock.csv', header = FALSE, stringsAsFactors = FALSE)
-    packageVersionMapTmp <- deparse(lapply(seq_len(nrow(packageVersionMapTmp)), function(pkgIdx){
+    packageVersionMapTmp <- trimws(deparse(lapply(seq_len(nrow(packageVersionMapTmp)), function(pkgIdx){
         pkgInfo <- packageVersionMapTmp[pkgIdx, ]
         pkgInfo <- trimws(c(pkgInfo[[1]], pkgInfo[[2]]))
         if(identical(pkgInfo[2], "")){
           return(pkgInfo[1])
         }
         return(pkgInfo)
-    }))
+    })), "right")
     packageVersionMapTmp[1] <- paste0("packageVersionMap <- ", packageVersionMapTmp[1])
     globalsSrc = readLines('./scripts/globals.R', warn = FALSE)
     linesToReplaceLo <- grep("packageVersionMap", globalsSrc)[1] - 1
