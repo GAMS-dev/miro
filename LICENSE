@@ -329,6 +329,7 @@ in a sepeare LICENSE filed located in src/LICENSE or online at: https://gams.com
 "portscanner@2.2.0","MIT","https://github.com/baalexander/node-portscanner","https://github.com/baalexander/node-portscanner/raw/master/LICENSE","com.gams.miro"
 "prelude-ls@1.2.1","MIT","https://github.com/gkz/prelude-ls","https://github.com/gkz/prelude-ls/raw/master/LICENSE","com.gams.miro"
 "prepend-http@2.0.0","MIT","https://github.com/sindresorhus/prepend-http","https://github.com/sindresorhus/prepend-http/raw/master/license","com.gams.miro"
+"prettier@2.3.2","MIT","https://github.com/prettier/prettier","https://github.com/prettier/prettier/raw/master/LICENSE","com.gams.miro"
 "process-nextick-args@2.0.1","MIT","https://github.com/calvinmetcalf/process-nextick-args","https://github.com/calvinmetcalf/process-nextick-args/raw/master/license.md","com.gams.miro"
 "progress@2.0.3","MIT","https://github.com/visionmedia/node-progress","https://github.com/visionmedia/node-progress/raw/master/LICENSE","com.gams.miro"
 "proto-list@1.2.4","ISC","https://github.com/isaacs/proto-list","https://github.com/isaacs/proto-list/raw/master/LICENSE","com.gams.miro"
