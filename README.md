@@ -27,7 +27,15 @@ This repository contains a number of submodules. Thus, you need to clone it via:
 
 For information about how to build GAMS MIRO Desktop as well as the GAMS MIRO Docker image from source, please see [build/README.md](build/README.md). In case you just want to run the R/Shiny MIRO app, find more information in [src/README.md](src/README.md).
 
+## Contributing
+
+This repository uses [pre-commit](https://pre-commit.com) to automatically lint the code you want to commit. This prevents many common errors and ensures that the CI pipeline passes the linting stage.
+Please follow the installation instructions at: [https://pre-commit.com/#install](https://pre-commit.com/#install) to install `pre-commit`. To enable the hooks, run:
+```
+   pre-commit install
+```
+
 ## License
 
-GAMS MIRO as a whole is distributed under GPL-3 (GNU GENERAL PUBLIC LICENSE version 3). 
+GAMS MIRO as a whole is distributed under GPL-3 (GNU GENERAL PUBLIC LICENSE version 3).
 Each MIRO component has its own license information. Information about the Electron based MIRO Library can be found in the file [LICENSE](LICENSE). More details about the software used for the R/Shiny application can be found in the file [src/LICENSE](src/LICENSE).
