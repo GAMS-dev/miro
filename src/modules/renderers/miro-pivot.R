@@ -1955,7 +1955,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             }else{
               dataRet <- data
             }
-            dataRet[length(dataRed)] <- NA_character_
+            dataRet[length(dataRet)] <- NA_character_
             
             return(dataRet)
           }else if(identical(names(data)[1], "__key__")){
