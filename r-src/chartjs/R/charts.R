@@ -46,7 +46,7 @@ cjsPie <- function(chartjs, labels){
 #' charts (defaults to 50)
 #' @export
 cjsDoughnut <- function(chartjs, labels, cutout = 50){
-  chartjs$x$options$cutoutPercentage <- cutout
+  chartjs$x$options$cutout <- cutout
   cjs_base_chart(chartjs, labels, "pie")
 }
 
