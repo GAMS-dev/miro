@@ -2,302 +2,726 @@
 <!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
 <!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
 <!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
-<head>
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+  <!--<![endif]-->
+  <head>
     <title>GAMS MIRO - Introduction</title>
     <!-- Meta -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="GAMS MIRO documentation">
-    <meta name="author" content="GAMS Development Corp.">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GAMS MIRO documentation" />
+    <meta name="author" content="GAMS Development Corp." />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
+      rel="stylesheet"
+      type="text/css"
+    />
     <!-- FontAwesome JS -->
-    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.1.1/js/all.js"
+      integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a"
+      crossorigin="anonymous"
+    ></script>
     <!-- Global CSS -->
-    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <link
+      rel="stylesheet"
+      href="assets/plugins/bootstrap/css/bootstrap.min.css"
+    />
     <!-- Plugins CSS -->
-    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
-    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css" />
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css" />
 
     <!-- Theme CSS -->
-    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css" />
     <!--#include virtual="/wheader.html" -->
-</head>
+  </head>
 
-<body class="body-orange">
+  <body class="body-orange">
     <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
-    <!--#include virtual="/mirover.html" -->
+      <!--#include virtual="/mirover.html" -->
 
-        <!-- ******Header****** -->
-        <header id="header" class="sub-header">
-            <div class="container">
-                <div class="branding">
-                    <h1 class="logo">
-                        <a href="index.html">
-                          <img class="img-fluid" style="height:75px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
-                        </a>
-                    </h1>
-                </div><!--//branding-->
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                    <li class="breadcrumb-item active">Introduction</li>
-                </ol>
-            </div><!--//container-->
-        </header><!--//header-->
-        <div class="doc-wrapper">
-            <div class="container">
-              <div class="row justify-content-end search-box-wrapper">
-                    <div class="float-right">
-                        <input class="form-control search-box" id="miroSearch" type="text" placeholder="Search" aria-label="Search">
-                        <ul id="miroSearchResults" class="list-group">
-                        </ul>
-                    </div>
-                </div>
-                <div id="doc-header" class="doc-header text-center">
-                    <h1 class="doc-title"><i class="icon fa fa-handshake"></i> Introduction</h1>
-                </div><!--//doc-header-->
-                <div class="doc-body row">
-                    <div class="doc-content col-md-9 col-12 order-1">
-                        <div class="content-inner">
-                            <section id="what-is-miro" class="doc-section">
-                                <h2 class="section-title">What is MIRO and what can I use it for?</h2>
-                                <div class="section-block">
-                                    <div class="intro" style="margin: 75px auto;margin-top:35px;">
-                                        <div class="row">
-                                          <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <img class="img-fluid center-image-lg" style= "max-height:350pt; display: block; padding:10px;" src="assets/images/miro.png" alt="GAMS MIRO" />
-                                          </div>
-                                          <div class="col-sm-12 col-md-12 col-lg-6 order-first order-lg-last" style="text-align:left;">
-                                            <h3 class="block-title" style="margin-bottom: 15px;">Get the maximum out of your optimization</h3>
-                                            <p>GAMS MIRO (Model Interface with Rapid Orchestration) is a deployment environment that enables you to turn your GAMS models into fully-fledged end-user applications that are easy to distribute. 
-                                            An intuitive, user-friendly interface allows you to interact with the underlying GAMS model, quickly create scenarios, compare results and much more. 
-                                            MIRO's extensive data visualization capabilities provide you with the ability to create powerful charts, time series, maps, widgets, etc. with ease. </p>
-                                          </div>
-                                        </div>
-                                    </div>
-                                    <div class="intro" style="margin: 75px auto;">
-                                        <div class="row">
-                                          <div class="col-sm-12 col-md-12 col-lg-6" style="text-align:left;">
-                                            <h3 class="block-title" style="margin-bottom: 15px;">Rapid setup, highly customizable</h3>
-                                            <p>You can create your first application within minutes and then develop it step by step. No programming knowledge is required, the focus is rather on providing a wide range of configuration options. If the configuration options are not sufficient for you, you can become creative yourself and implement your own ideas. </p>
-                                          </div>
-                                          <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <img class="img-fluid center-image-lg" style= "max-height:350pt; display: block; padding:10px;" src="assets/images/configuration_mode/configure.png" alt="Highly customizable" />
-                                          </div>
-                                        </div>
-                                    </div>
-                                    <div class="intro" style="margin: 75px auto;">
-                                        <div class="row">
-                                          <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <img class="img-fluid center-image-lg" style= "max-height:350pt; display: block; padding:10px;" src="assets/images/remote/setups.png" alt="Enterprise setups" />
-                                          </div>
-                                          <div class="col-sm-12 col-md-12 col-lg-6 order-first order-lg-last" style="text-align:left;">
-                                            <h3 class="block-title" style="margin-bottom: 15px;">Enterprise Setups</h3>
-                                             <p>GAMS MIRO can be used as a local application, a hybrid of a local application that performs model calculations in a highly scalable cloud setup, up to a pure server setup that can be accessed from anywhere.</p>
-                                          </div>
-                                        </div>
-                                    </div>
-                                    <div class="callout-block callout-success">
-                                      <div class="custom-icon-holder icon-holder" style="top:15px">
-                                          <i class="fas fa-thumbs-up"></i>
-                                      </div><!--//icon-holder-->
-                                      <div class="custom-icon-content content">
-                                            <p>GAMS MIRO helps you make smart decisions by exploiting the full potential of mathematical optimization.</p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->                                    
-                                </div><!--//section-block-->
-                            </section><!--//doc-section-->
-                            <section id="for-whom-is-miro" class="doc-section">
-                                <h2 class="section-title">For whom is GAMS MIRO designed?</h2>
-                                <div class="section-block">
-                                    <p>The possible applications of GAMS MIRO are manifold. MIRO is intended for everyone who works with optimization models or wants to make decisions based on those.</p>
-                                    <div class="intro" style="margin: 75px auto;">
-                                        <div class="row">
-                                          <div class="col-sm-3" style="text-align:center">
-                                            <i class="fas fa-user-tie" style="font-size: 80px;color: #495057;"></i>
-                                          </div>
-                                          <div class="col-sm" style="text-align:left;">
-                                            <h3 class="block-title" style="margin-bottom: 15px;">Business</h3>
-                                             <p>Make business decisions based on optimization software without the need for extensive Operations Research or GAMS expertise.</p>
-                                          </div>
-                                        </div>
-                                    </div>
-                                    <div class="intro" style="margin: 75px auto;">
-                                        <div class="row">
-                                          <div class="col-sm-3" style="text-align:center">
-                                            <i class="fas fa-university" style="font-size: 80px;color: #495057;"></i>
-                                          </div>
-                                          <div class="col-sm" style="text-align:left;">
-                                            <h3 class="block-title" style="margin-bottom: 15px;">Research</h3>
-                                            <p>Benefit from MIRO's advanced scenario and data management system that helps you focus on your research.</p>
-                                          </div>
-                                        </div>
-                                    </div>
-                                    <div class="intro" style="margin: 75px auto;">
-                                        <div class="row">
-                                          <div class="col-sm-3" style="text-align:center">
-                                            <i class="fas fa-chalkboard-teacher" style="font-size: 80px;color: #495057;"></i>
-                                          </div>
-                                          <div class="col-sm" style="text-align:left;">
-                                            <h3 class="block-title" style="margin-bottom: 15px;">Teaching</h3>
-                                            <p>Give a general insight into the topic of optimization or illustrate a specific problem in detail.</p>
-                                          </div>
-                                        </div>
-                                    </div>
-                                </div><!--//section-block-->
-                            </section><!--//doc-section-->
-                            <section id="miro-components" class="doc-section">
-                                <h2 class="section-title">Components of GAMS MIRO</h2>
-                                <div class="section-block">
-                                    <p><i>GAMS MIRO</i> is the deployment environment for GAMS models. To understand the different components, let's first look at the simplest setup: MIRO is installed locally on a computer that also runs GAMS. The generic term for the MIRO components of this setup is <i>GAMS MIRO Desktop</i>.</p>
-                                    <div class="callout-block callout-success">
-                                      <div class="custom-icon-holder icon-holder" style="top:15px">
-                                          <i class="fas fa-thumbs-up"></i>
-                                      </div><!--//icon-holder-->
-                                      <div class="custom-icon-content content">
-                                            <p>GAMS MIRO Desktop is supported on Windows, macOS and Linux.</p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->
-                                    <div class="callout-block callout-warning">
-                                        <div class="icon-holder">
-                                            <i class="fas fa-info-circle"></i>
-                                        </div><!--//icon-holder-->
-                                        <div class="content">
-                                            <b class="callout-title">Note:</b>
-                                            <p>The term <i>GAMS MIRO</i> is used in various situations in this documentation. However, the context should indicate which component is being referred to. In most of the cases the graphical user interface is meant.</p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->
-                                    <div class="intro" style="margin: 75px auto;">
-                                        <div class="row">
-                                          <div class="col-sm-12 col-md-12 col-lg-6" style="text-align:left;">
-                                            <h3 class="block-title" style="margin-bottom: 15px;">GAMS MIRO user interface</h3>
-                                            <p>The probably most prominent component is the MIRO <i>user interface</i> (<i>MIRO UI</i>). This shows the classic MIRO application in the browser, where you can modify model input data, execute GAMS jobs and view the results. Also the configuration of the application such as creating graphics and setting general options is done here.</p> 
-                                          </div>
-                                          <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <img class="img-fluid center-image-lg" style= "max-height:350pt; display: block; padding:10px;" src="assets/images/initial-screen.png" alt="GAMS MIRO UI" />
-                                          </div>
-                                        </div>
-                                    </div>
-                                    <div class="intro" style="margin: 100px auto;">
-                                        <div class="row">
-                                          <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <img class="img-fluid center-image-lg" style= "max-height:350pt; display: block; padding:10px;" src="assets/images/miro_connector.png" alt="GAMS/MIRO connector" />
-                                          </div>
-                                          <div class="col-sm-12 col-md-12 col-lg-6 order-first order-lg-last" style="text-align:left;">
-                                            <h3 class="block-title" style="margin-bottom: 15px;">GAMS/MIRO connector</h3>
-                                             <p>The GAMS/MIRO connector is the interface between GAMS and MIRO and is responsible for their data contract. For communication between GAMS and MIRO this component takes over the data management on the GAMS side.</p>
-                                          </div>
-                                        </div>
-                                    </div>
-                                    <div class="intro" style="margin: 75px auto;">
-                                        <div class="row">
-                                          <div class="col-sm-12 col-md-12 col-lg-6" style="text-align:left;">
-                                            <h3 class="block-title" style="margin-bottom: 15px;">GAMS MIRO Library</h3>
-                                             <p>For the app development you only need the components MIRO UI and the GAMS/MIRO connector. The MIRO UI can be accessed via GAMS Studio or the command line. For locally deployed apps another component - the personal <i>MIRO library</i> - is used. All deployed apps can be accessed from here. But also global settings such as the language or the browser to be used are made.</p>
-                                          </div>
-                                          <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <img class="img-fluid center-image-lg" style= "max-height:350pt; display: block; padding:10px;" src="assets/images/deployment/gallery.png" alt="GAMS MIRO Library" />
-                                          </div>
-                                        </div>
-                                    </div>
-                                    <div class="intro" style="margin: 100px auto;">
-                                        <div class="row">
-                                          <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <img class="img-fluid center-image-lg" style= "max-height:250pt; display: block; padding:10px;" src="assets/images/miro_desktop_engine.png" alt="MIRO Desktop - boosted by GAMS Engine" />
-                                          </div>
-                                          <div class="col-sm-12 col-md-12 col-lg-6 order-first order-lg-last" style="text-align:left;">
-                                            <h3 class="block-title">GAMS MIRO Desktop</h3>
-                                            <h6 class="block-title" style="margin-bottom: 15px;">Boosted by GAMS Engine</h6>
-                                            <p>You can solve GAMS jobs in the cloud from a local MIRO application. In such a setup, additional components are required. <i>GAMS Engine</i> takes over the entire job management and the associated infrastructure for cloud-based optimization. The MIRO UI and the MIRO library are installed on the local computer. However, since the GAMS jobs are solved in the cloud, the GAMS system no longer runs locally, but as part of GAMS Engine on a server.</p>
-                                          </div>
-                                        </div>
-                                    </div>
-                                    <div class="intro" style="margin: 75px auto;">
-                                        <div class="row">
-                                          <div class="col-sm-12 col-md-12 col-lg-6" style="text-align:left;">
-                                            <h3 class="block-title">GAMS MIRO Server</h3>
-                                            <h6 class="block-title" style="margin-bottom: 15px;">Everything on a server</h6>
-                                            <p>In another setup - GAMS MIRO Server - all components run in the cloud. Also in this setup GAMS Engine is responsible for the computation of GAMS jobs. The access to deployed MIRO applications is no longer done via the local MIRO library, but via a slightly modified variant on the server. </p>
-                                            <a class="btn btn-primary btn-cta btn-gallery margin-bottom-lg margin-bottom-lg" style="background: #f9f9fb; color: #616670 !important;width: 125pt;padding: 12pt 0pt; -webkit-transition:unset;" href="./server.html">Learn more <i class="icon fa fa-external-link-alt" style="margin-left:8px;"></i></a>
-                                          </div>
-                                          <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <img class="img-fluid center-image-lg" style= "max-height:250pt; display: block; padding:10px;" src="assets/images/miro_server.png" alt="GAMS MIRO Server" />
-                                          </div>
-                                        </div>
-                                    </div>
-                                    <div class="intro" style="margin: 75px auto;">
-                                        <div class="row">
-                                          <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <img class="img-fluid center-image-lg" style= "max-height:350pt; display: block; padding:10px;" src="assets/images/engine/overview.png" alt="GAMS Engine" />
-                                          </div>
-                                          <div class="col-sm-12 col-md-12 col-lg-6 order-first order-lg-last" style="text-align:left;">
-                                            <h3 class="block-title" style="margin-bottom: 15px;">GAMS Engine</h3>
-                                            <h6 class="block-title" style="margin-bottom: 15px;">Optimizing in the cloud</h6>
-                                             <p>GAMS Engine is a REST API designed to run in cloud environments. It is an enterprise-grade system that runs on a server and offers features such as high scalability, load balancing via a job queue, rolling updates and much more. GAMS Engine automatically schedules jobs and assigns them to an available GAMS worker to solve it. Also, it comes with a powerful user management system that allows you to restrict the activities of your users according to your organizational hierarchy.</p>
-											 <p>GAMS Engine can not only be controlled by a MIRO application. Thanks to the use of <a href="https://swagger.io/resources/open-api/" target="_blank">OpenAPI</a>, clients in various programming languages are available.</p>
-											 <a class="btn btn-primary btn-cta btn-gallery" style="background: #f9f9fb; color: #616670 !important;width: 225pt;padding: 12pt 0pt; -webkit-transition:unset;" href="./engine/">Learn more about GAMS Engine<i class="icon fa fa-external-link-alt" style="margin-left:8px;"></i></a>
-                                          </div>
-                                        </div>
-                                    </div>
-                                    
-                                </div><!--//section-block-->
-                            </section><!--//doc-section-->
-                            <section id="underlying-technology" class="doc-section">
-                                <h2 class="section-title">The underlying technology</h2>
-                                <div class="section-block">
-                                    <div class="intro" style="margin: 75px auto;">
-                                        <div class="row">
-                                          <div class="col-sm-3" style="text-align:center">
-                                            <i class="fab fa-r-project" style="font-size: 80px;color: #495057;"></i>
-                                          </div>
-                                          <div class="col-sm" style="text-align:left;">
-                                            <h3 class="block-title" style="margin-bottom: 15px;">R</h3>
-                                            <p>The MIRO user interface is mainly written in <a href="https://cloud.r-project.org/" target="_blank">R</a> and uses the advanced data processing and extensive visualization capabilities of R to provide its rich functionality.</p>
-                                          </div>
-                                        </div>
-                                    </div>
-                                    <div class="intro" style="margin: 75px auto;">
-                                        <div class="row">
-                                          <div class="col-sm-3" style="text-align:center">
-                                            <i class="fab fa-docker" style="font-size: 80px;color: #495057;"></i>
-                                          </div>
-                                          <div class="col-sm" style="text-align:left;">
-                                            <h3 class="block-title" style="margin-bottom: 15px;">Docker</h3>
-                                            <p><a href="https://www.gams.com/engine/">GAMS Engine</a> is a product based on <a href = "https://www.docker.com/" target = "_blank">Docker</a>, that uses state-of-the-art technology to take care of the entire job management and the associated infrastructure for the cloud-based optimization.</p>
-                                          </div>
-                                        </div>
-                                    </div>
-                                    
-                                </div><!--//section-block-->
-                            </section><!--//doc-section-->
-                        </div><!--//content-inner-->
-                    </div><!--//doc-content-->
-                    <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
-                        <div id="doc-nav" class="doc-nav">
-
-	                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
-                                    <a class="nav-link scrollto" href="#what-is-miro">What is MIRO and what can I use it for?</a>
-                                    <a class="nav-link scrollto" href="#for-whom-is-miro">For whom is GAMS MIRO designed?</a>
-                                    <a class="nav-link scrollto" href="#miro-components">Components of GAMS MIRO</a>
-                                    <a class="nav-link scrollto" href="#underlying-technology">The underlying technology</a>
-	                            </nav><!--//doc-menu-->
-
+      <!-- ******Header****** -->
+      <header id="header" class="sub-header">
+        <div class="container">
+          <div class="branding">
+            <h1 class="logo">
+              <a href="index.html">
+                <img
+                  class="img-fluid"
+                  style="height: 75px"
+                  src="assets/images/logo.svg"
+                  onerror="this.onerror=null; this.src='assets/images/logo.png'"
+                  alt="GAMS MIRO"
+                />
+              </a>
+            </h1>
+          </div>
+          <!--//branding-->
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item active">Introduction</li>
+          </ol>
+        </div>
+        <!--//container-->
+      </header>
+      <!--//header-->
+      <div class="doc-wrapper">
+        <div class="container">
+          <div class="row justify-content-end search-box-wrapper">
+            <div class="float-right">
+              <input
+                class="form-control search-box"
+                id="miroSearch"
+                type="text"
+                placeholder="Search"
+                aria-label="Search"
+              />
+              <ul id="miroSearchResults" class="list-group"></ul>
+            </div>
+          </div>
+          <div id="doc-header" class="doc-header text-center">
+            <h1 class="doc-title">
+              <i class="icon fa fa-handshake"></i> Introduction
+            </h1>
+          </div>
+          <!--//doc-header-->
+          <div class="doc-body row">
+            <div class="doc-content col-md-9 col-12 order-1">
+              <div class="content-inner">
+                <section id="what-is-miro" class="doc-section">
+                  <h2 class="section-title">
+                    What is MIRO and what can I use it for?
+                  </h2>
+                  <div class="section-block">
+                    <div
+                      class="intro"
+                      style="margin: 75px auto; margin-top: 35px"
+                    >
+                      <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                          <img
+                            class="img-fluid center-image-lg"
+                            style="
+                              max-height: 350pt;
+                              display: block;
+                              padding: 10px;
+                            "
+                            src="assets/images/miro.png"
+                            alt="GAMS MIRO"
+                          />
                         </div>
-                    </div><!--//doc-sidebar-->
-                </div><!--//doc-body-->
-            </div><!--//container-->
-        </div><!--//doc-wrapper-->
-    </div><!--//page-wrapper-->
-    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+                        <div
+                          class="
+                            col-sm-12 col-md-12 col-lg-6
+                            order-first order-lg-last
+                          "
+                          style="text-align: left"
+                        >
+                          <h3 class="block-title" style="margin-bottom: 15px">
+                            Get the maximum out of your optimization
+                          </h3>
+                          <p>
+                            GAMS MIRO (Model Interface with Rapid Orchestration)
+                            is a deployment environment that enables you to turn
+                            your GAMS models into fully-fledged end-user
+                            applications that are easy to distribute. An
+                            intuitive, user-friendly interface allows you to
+                            interact with the underlying GAMS model, quickly
+                            create scenarios, compare results and much more.
+                            MIRO's extensive data visualization capabilities
+                            provide you with the ability to create powerful
+                            charts, time series, maps, widgets, etc. with ease.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="intro" style="margin: 75px auto">
+                      <div class="row">
+                        <div
+                          class="col-sm-12 col-md-12 col-lg-6"
+                          style="text-align: left"
+                        >
+                          <h3 class="block-title" style="margin-bottom: 15px">
+                            Rapid setup, highly customizable
+                          </h3>
+                          <p>
+                            You can create your first application within minutes
+                            and then develop it step by step. No programming
+                            knowledge is required, the focus is rather on
+                            providing a wide range of configuration options. If
+                            the configuration options are not sufficient for
+                            you, you can become creative yourself and implement
+                            your own ideas.
+                          </p>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                          <img
+                            class="img-fluid center-image-lg"
+                            style="
+                              max-height: 350pt;
+                              display: block;
+                              padding: 10px;
+                            "
+                            src="assets/images/configuration_mode/configure.png"
+                            alt="Highly customizable"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="intro" style="margin: 75px auto">
+                      <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                          <img
+                            class="img-fluid center-image-lg"
+                            style="
+                              max-height: 350pt;
+                              display: block;
+                              padding: 10px;
+                            "
+                            src="assets/images/remote/setups.png"
+                            alt="Enterprise setups"
+                          />
+                        </div>
+                        <div
+                          class="
+                            col-sm-12 col-md-12 col-lg-6
+                            order-first order-lg-last
+                          "
+                          style="text-align: left"
+                        >
+                          <h3 class="block-title" style="margin-bottom: 15px">
+                            Enterprise Setups
+                          </h3>
+                          <p>
+                            GAMS MIRO can be used as a local application, a
+                            hybrid of a local application that performs model
+                            calculations in a highly scalable cloud setup, up to
+                            a pure server setup that can be accessed from
+                            anywhere.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="callout-block callout-success">
+                      <div
+                        class="custom-icon-holder icon-holder"
+                        style="top: 15px"
+                      >
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="custom-icon-content content">
+                        <p>
+                          GAMS MIRO helps you make smart decisions by exploiting
+                          the full potential of mathematical optimization.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
+                <section id="for-whom-is-miro" class="doc-section">
+                  <h2 class="section-title">For whom is GAMS MIRO designed?</h2>
+                  <div class="section-block">
+                    <p>
+                      The possible applications of GAMS MIRO are manifold. MIRO
+                      is intended for everyone who works with optimization
+                      models or wants to make decisions based on those.
+                    </p>
+                    <div class="intro" style="margin: 75px auto">
+                      <div class="row">
+                        <div class="col-sm-3" style="text-align: center">
+                          <i
+                            class="fas fa-user-tie"
+                            style="font-size: 80px; color: #495057"
+                          ></i>
+                        </div>
+                        <div class="col-sm" style="text-align: left">
+                          <h3 class="block-title" style="margin-bottom: 15px">
+                            Business
+                          </h3>
+                          <p>
+                            Make business decisions based on optimization
+                            software without the need for extensive Operations
+                            Research or GAMS expertise.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="intro" style="margin: 75px auto">
+                      <div class="row">
+                        <div class="col-sm-3" style="text-align: center">
+                          <i
+                            class="fas fa-university"
+                            style="font-size: 80px; color: #495057"
+                          ></i>
+                        </div>
+                        <div class="col-sm" style="text-align: left">
+                          <h3 class="block-title" style="margin-bottom: 15px">
+                            Research
+                          </h3>
+                          <p>
+                            Benefit from MIRO's advanced scenario and data
+                            management system that helps you focus on your
+                            research.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="intro" style="margin: 75px auto">
+                      <div class="row">
+                        <div class="col-sm-3" style="text-align: center">
+                          <i
+                            class="fas fa-chalkboard-teacher"
+                            style="font-size: 80px; color: #495057"
+                          ></i>
+                        </div>
+                        <div class="col-sm" style="text-align: left">
+                          <h3 class="block-title" style="margin-bottom: 15px">
+                            Teaching
+                          </h3>
+                          <p>
+                            Give a general insight into the topic of
+                            optimization or illustrate a specific problem in
+                            detail.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
+                <section id="miro-components" class="doc-section">
+                  <h2 class="section-title">Components of GAMS MIRO</h2>
+                  <div class="section-block">
+                    <p>
+                      <i>GAMS MIRO</i> is the deployment environment for GAMS
+                      models. To understand the different components, let's
+                      first look at the simplest setup: MIRO is installed
+                      locally on a computer that also runs GAMS. The generic
+                      term for the MIRO components of this setup is
+                      <i>GAMS MIRO Desktop</i>.
+                    </p>
+                    <div class="callout-block callout-success">
+                      <div
+                        class="custom-icon-holder icon-holder"
+                        style="top: 15px"
+                      >
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="custom-icon-content content">
+                        <p>
+                          GAMS MIRO Desktop is supported on Windows, macOS and
+                          Linux.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          The term <i>GAMS MIRO</i> is used in various
+                          situations in this documentation. However, the context
+                          should indicate which component is being referred to.
+                          In most of the cases the graphical user interface is
+                          meant.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <div class="intro" style="margin: 75px auto">
+                      <div class="row">
+                        <div
+                          class="col-sm-12 col-md-12 col-lg-6"
+                          style="text-align: left"
+                        >
+                          <h3 class="block-title" style="margin-bottom: 15px">
+                            GAMS MIRO user interface
+                          </h3>
+                          <p>
+                            The probably most prominent component is the MIRO
+                            <i>user interface</i> (<i>MIRO UI</i>). This shows
+                            the classic MIRO application in the browser, where
+                            you can modify model input data, execute GAMS jobs
+                            and view the results. Also the configuration of the
+                            application such as creating graphics and setting
+                            general options is done here.
+                          </p>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                          <img
+                            class="img-fluid center-image-lg"
+                            style="
+                              max-height: 350pt;
+                              display: block;
+                              padding: 10px;
+                            "
+                            src="assets/images/initial-screen.png"
+                            alt="GAMS MIRO UI"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="intro" style="margin: 100px auto">
+                      <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                          <img
+                            class="img-fluid center-image-lg"
+                            style="
+                              max-height: 350pt;
+                              display: block;
+                              padding: 10px;
+                            "
+                            src="assets/images/miro_connector.png"
+                            alt="GAMS/MIRO connector"
+                          />
+                        </div>
+                        <div
+                          class="
+                            col-sm-12 col-md-12 col-lg-6
+                            order-first order-lg-last
+                          "
+                          style="text-align: left"
+                        >
+                          <h3 class="block-title" style="margin-bottom: 15px">
+                            GAMS/MIRO connector
+                          </h3>
+                          <p>
+                            The GAMS/MIRO connector is the interface between
+                            GAMS and MIRO and is responsible for their data
+                            contract. For communication between GAMS and MIRO
+                            this component takes over the data management on the
+                            GAMS side.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="intro" style="margin: 75px auto">
+                      <div class="row">
+                        <div
+                          class="col-sm-12 col-md-12 col-lg-6"
+                          style="text-align: left"
+                        >
+                          <h3 class="block-title" style="margin-bottom: 15px">
+                            GAMS MIRO Library
+                          </h3>
+                          <p>
+                            For the app development you only need the components
+                            MIRO UI and the GAMS/MIRO connector. The MIRO UI can
+                            be accessed via GAMS Studio or the command line. For
+                            locally deployed apps another component - the
+                            personal <i>MIRO library</i> - is used. All deployed
+                            apps can be accessed from here. But also global
+                            settings such as the language or the browser to be
+                            used are made.
+                          </p>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                          <img
+                            class="img-fluid center-image-lg"
+                            style="
+                              max-height: 350pt;
+                              display: block;
+                              padding: 10px;
+                            "
+                            src="assets/images/deployment/gallery.png"
+                            alt="GAMS MIRO Library"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="intro" style="margin: 100px auto">
+                      <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                          <img
+                            class="img-fluid center-image-lg"
+                            style="
+                              max-height: 250pt;
+                              display: block;
+                              padding: 10px;
+                            "
+                            src="assets/images/miro_desktop_engine.png"
+                            alt="MIRO Desktop - boosted by GAMS Engine"
+                          />
+                        </div>
+                        <div
+                          class="
+                            col-sm-12 col-md-12 col-lg-6
+                            order-first order-lg-last
+                          "
+                          style="text-align: left"
+                        >
+                          <h3 class="block-title">GAMS MIRO Desktop</h3>
+                          <h6 class="block-title" style="margin-bottom: 15px">
+                            Boosted by GAMS Engine
+                          </h6>
+                          <p>
+                            You can solve GAMS jobs in the cloud from a local
+                            MIRO application. In such a setup, additional
+                            components are required. <i>GAMS Engine</i> takes
+                            over the entire job management and the associated
+                            infrastructure for cloud-based optimization. The
+                            MIRO UI and the MIRO library are installed on the
+                            local computer. However, since the GAMS jobs are
+                            solved in the cloud, the GAMS system no longer runs
+                            locally, but as part of GAMS Engine on a server.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="intro" style="margin: 75px auto">
+                      <div class="row">
+                        <div
+                          class="col-sm-12 col-md-12 col-lg-6"
+                          style="text-align: left"
+                        >
+                          <h3 class="block-title">GAMS MIRO Server</h3>
+                          <h6 class="block-title" style="margin-bottom: 15px">
+                            Everything on a server
+                          </h6>
+                          <p>
+                            In another setup - GAMS MIRO Server - all components
+                            run in the cloud. Also in this setup GAMS Engine is
+                            responsible for the computation of GAMS jobs. The
+                            access to deployed MIRO applications is no longer
+                            done via the local MIRO library, but via a slightly
+                            modified variant on the server.
+                          </p>
+                          <a
+                            class="
+                              btn btn-primary btn-cta btn-gallery
+                              margin-bottom-lg margin-bottom-lg
+                            "
+                            style="
+                              background: #f9f9fb;
+                              color: #616670 !important;
+                              width: 125pt;
+                              padding: 12pt 0pt;
+                              -webkit-transition: unset;
+                            "
+                            href="./server.html"
+                            >Learn more
+                            <i
+                              class="icon fa fa-external-link-alt"
+                              style="margin-left: 8px"
+                            ></i
+                          ></a>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                          <img
+                            class="img-fluid center-image-lg"
+                            style="
+                              max-height: 250pt;
+                              display: block;
+                              padding: 10px;
+                            "
+                            src="assets/images/miro_server.png"
+                            alt="GAMS MIRO Server"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="intro" style="margin: 75px auto">
+                      <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                          <img
+                            class="img-fluid center-image-lg"
+                            style="
+                              max-height: 350pt;
+                              display: block;
+                              padding: 10px;
+                            "
+                            src="assets/images/engine/overview.png"
+                            alt="GAMS Engine"
+                          />
+                        </div>
+                        <div
+                          class="
+                            col-sm-12 col-md-12 col-lg-6
+                            order-first order-lg-last
+                          "
+                          style="text-align: left"
+                        >
+                          <h3 class="block-title" style="margin-bottom: 15px">
+                            GAMS Engine
+                          </h3>
+                          <h6 class="block-title" style="margin-bottom: 15px">
+                            Optimizing in the cloud
+                          </h6>
+                          <p>
+                            GAMS Engine is a REST API designed to run in cloud
+                            environments. It is an enterprise-grade system that
+                            runs on a server and offers features such as high
+                            scalability, load balancing via a job queue, rolling
+                            updates and much more. GAMS Engine automatically
+                            schedules jobs and assigns them to an available GAMS
+                            worker to solve it. Also, it comes with a powerful
+                            user management system that allows you to restrict
+                            the activities of your users according to your
+                            organizational hierarchy.
+                          </p>
+                          <p>
+                            GAMS Engine can not only be controlled by a MIRO
+                            application. Thanks to the use of
+                            <a
+                              href="https://swagger.io/resources/open-api/"
+                              target="_blank"
+                              >OpenAPI</a
+                            >, clients in various programming languages are
+                            available.
+                          </p>
+                          <a
+                            class="btn btn-primary btn-cta btn-gallery"
+                            style="
+                              background: #f9f9fb;
+                              color: #616670 !important;
+                              width: 225pt;
+                              padding: 12pt 0pt;
+                              -webkit-transition: unset;
+                            "
+                            href="./engine/"
+                            >Learn more about GAMS Engine<i
+                              class="icon fa fa-external-link-alt"
+                              style="margin-left: 8px"
+                            ></i
+                          ></a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
+                <section id="underlying-technology" class="doc-section">
+                  <h2 class="section-title">The underlying technology</h2>
+                  <div class="section-block">
+                    <div class="intro" style="margin: 75px auto">
+                      <div class="row">
+                        <div class="col-sm-3" style="text-align: center">
+                          <i
+                            class="fab fa-r-project"
+                            style="font-size: 80px; color: #495057"
+                          ></i>
+                        </div>
+                        <div class="col-sm" style="text-align: left">
+                          <h3 class="block-title" style="margin-bottom: 15px">
+                            R
+                          </h3>
+                          <p>
+                            The MIRO user interface is mainly written in
+                            <a
+                              href="https://cloud.r-project.org/"
+                              target="_blank"
+                              >R</a
+                            >
+                            and uses the advanced data processing and extensive
+                            visualization capabilities of R to provide its rich
+                            functionality.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="intro" style="margin: 75px auto">
+                      <div class="row">
+                        <div class="col-sm-3" style="text-align: center">
+                          <i
+                            class="fab fa-docker"
+                            style="font-size: 80px; color: #495057"
+                          ></i>
+                        </div>
+                        <div class="col-sm" style="text-align: left">
+                          <h3 class="block-title" style="margin-bottom: 15px">
+                            Docker
+                          </h3>
+                          <p>
+                            <a href="https://www.gams.com/engine/"
+                              >GAMS Engine</a
+                            >
+                            is a product based on
+                            <a href="https://www.docker.com/" target="_blank"
+                              >Docker</a
+                            >, that uses state-of-the-art technology to take
+                            care of the entire job management and the associated
+                            infrastructure for the cloud-based optimization.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
+              </div>
+              <!--//content-inner-->
+            </div>
+            <!--//doc-content-->
+            <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+              <div id="doc-nav" class="doc-nav">
+                <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                  <a class="nav-link scrollto" href="#what-is-miro"
+                    >What is MIRO and what can I use it for?</a
+                  >
+                  <a class="nav-link scrollto" href="#for-whom-is-miro"
+                    >For whom is GAMS MIRO designed?</a
+                  >
+                  <a class="nav-link scrollto" href="#miro-components"
+                    >Components of GAMS MIRO</a
+                  >
+                  <a class="nav-link scrollto" href="#underlying-technology"
+                    >The underlying technology</a
+                  >
+                </nav>
+                <!--//doc-menu-->
+              </div>
+            </div>
+            <!--//doc-sidebar-->
+          </div>
+          <!--//doc-body-->
+        </div>
+        <!--//container-->
+      </div>
+      <!--//doc-wrapper-->
+    </div>
+    <!--//page-wrapper-->
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-3.3.1.min.js"
+    ></script>
     <!--#include virtual="/footer_miro.html" -->
 
     <!-- Main Javascript -->
-    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/markjs/jquery.mark.min.js"></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/stickyfill/dist/stickyfill.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/markjs/jquery.mark.min.js"
+    ></script>
     <script type="text/javascript" src="assets/js/main.js"></script>
-</body>
+  </body>
 </html>

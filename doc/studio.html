@@ -2,226 +2,611 @@
 <!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
 <!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
 <!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
-<head>
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+  <!--<![endif]-->
+  <head>
     <title>GAMS MIRO - GAMS Studio integration</title>
     <!-- Meta -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="GAMS MIRO documentation">
-    <meta name="author" content="GAMS Development Corp.">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GAMS MIRO documentation" />
+    <meta name="author" content="GAMS Development Corp." />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
+      rel="stylesheet"
+      type="text/css"
+    />
     <!-- FontAwesome JS -->
-    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.1.1/js/all.js"
+      integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a"
+      crossorigin="anonymous"
+    ></script>
     <!-- Global CSS -->
-    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <link
+      rel="stylesheet"
+      href="assets/plugins/bootstrap/css/bootstrap.min.css"
+    />
     <!-- Plugins CSS -->
-    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
-    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css" />
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css" />
 
     <!-- Theme CSS -->
-    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css" />
     <!--#include virtual="/wheader.html" -->
-</head>
+  </head>
 
-<body class="body-orange">
+  <body class="body-orange">
     <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
-    <!--#include virtual="/mirover.html" -->
+      <!--#include virtual="/mirover.html" -->
 
-        <!-- ******Header****** -->
-        <header id="header" class="sub-header">
-            <div class="container">
-                <div class="branding">
-                    <h1 class="logo">
-                        <a href="index.html">
-                          <img class="img-fluid" style="height:75px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
-                        </a>
-                    </h1>
-                </div><!--//branding-->
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                    <li class="breadcrumb-item active">GAMS Studio integration</li>
-                </ol>
-            </div><!--//container-->
-        </header><!--//header-->
-        <div class="doc-wrapper">
-            <div class="container">
-                <div class="row justify-content-end search-box-wrapper">
-                    <div class="float-right">
-                        <input class="form-control search-box" id="miroSearch" type="text" placeholder="Search" aria-label="Search">
-                        <ul id="miroSearchResults" class="list-group">
-                        </ul>
+      <!-- ******Header****** -->
+      <header id="header" class="sub-header">
+        <div class="container">
+          <div class="branding">
+            <h1 class="logo">
+              <a href="index.html">
+                <img
+                  class="img-fluid"
+                  style="height: 75px"
+                  src="assets/images/logo.svg"
+                  onerror="this.onerror=null; this.src='assets/images/logo.png'"
+                  alt="GAMS MIRO"
+                />
+              </a>
+            </h1>
+          </div>
+          <!--//branding-->
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item active">GAMS Studio integration</li>
+          </ol>
+        </div>
+        <!--//container-->
+      </header>
+      <!--//header-->
+      <div class="doc-wrapper">
+        <div class="container">
+          <div class="row justify-content-end search-box-wrapper">
+            <div class="float-right">
+              <input
+                class="form-control search-box"
+                id="miroSearch"
+                type="text"
+                placeholder="Search"
+                aria-label="Search"
+              />
+              <ul id="miroSearchResults" class="list-group"></ul>
+            </div>
+          </div>
+          <div id="doc-header" class="doc-header text-center">
+            <h1 class="doc-title">
+              <i class="icon fa fa-file-code"></i> GAMS Studio integration
+            </h1>
+          </div>
+          <!--//doc-header-->
+          <div class="doc-body row">
+            <div class="doc-content col-md-9 col-12 order-1">
+              <div class="content-inner">
+                <section id="studio-introduction" class="doc-section">
+                  <h2 class="section-title">Introduction</h2>
+                  <div class="section-block">
+                    <p>
+                      In this section we show you how to use
+                      <a href="https://www.gams.com/latest/docs/T_STUDIO.html"
+                        >GAMS Studio</a
+                      >
+                      for the development and deployment of your MIRO apps. The
+                      new integrated development environment for GAMS has
+                      built-in functionality of the most important interactions
+                      with MIRO. In this section we only give an overview of
+                      these. Different aspects are explained in more detail in
+                      corresponding linked chapters.
+                    </p>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
+                <section id="studio-general" class="doc-section">
+                  <h2 class="section-title">General</h2>
+                  <div id="miro-installation-location" class="section-block">
+                    <h3 class="block-title">MIRO installation location</h3>
+                    <p>
+                      After installing GAMS MIRO, make sure that Studio and MIRO
+                      know about each other. In Studio go to <i>File</i> &rarr;
+                      <i>Settings</i> &rarr; <i>MIRO</i> and check whether the
+                      MIRO installation location is correct:
+                    </p>
+                    <div
+                      class="section-block"
+                      style="display: block; margin: auto"
+                    >
+                      <img
+                        class="img-fluid"
+                        style="max-height: 330pt"
+                        src="assets/images/studio/miro_path.png"
+                        alt="MIRO installation location"
+                      />
                     </div>
-                </div>
-                <div id="doc-header" class="doc-header text-center">
-                    <h1 class="doc-title"><i class="icon fa fa-file-code"></i> GAMS Studio integration</h1>
-                </div><!--//doc-header-->
-                <div class="doc-body row">
-                    <div class="doc-content col-md-9 col-12 order-1">
-                        <div class="content-inner">
-                            <section id="studio-introduction" class="doc-section">
-                                <h2 class="section-title">Introduction</h2>
-                                <div class="section-block">
-                                    <p>In this section we show you how to use <a href="https://www.gams.com/latest/docs/T_STUDIO.html">GAMS Studio</a> for the development and deployment of your MIRO apps. The new integrated development environment for GAMS has built-in functionality of the most important interactions with MIRO. In this section we only give an overview of these. Different aspects are explained in more detail in corresponding linked chapters.</p>
-                                </div><!--//section-block-->
-                            </section><!--//doc-section-->
-                            <section id="studio-general" class="doc-section">
-                                <h2 class="section-title">General</h2>
-                                <div  id="miro-installation-location"  class="section-block">
-                                    <h3 class="block-title">MIRO installation location</h3>
-                                    <p>After installing GAMS MIRO, make sure that Studio and MIRO know about each other. In Studio go to <i>File</i> &rarr; <i>Settings</i> &rarr; <i>MIRO</i> and check whether the MIRO installation location is correct:</p>
-                                    <div class="section-block" style="display:block; margin:auto;">
-                                        <img class="img-fluid" style="max-height: 330pt;" src="assets/images/studio/miro_path.png" alt="MIRO installation location" />
-                                    </div>
-                                </div>
-                                <div  id="studio-main-file"  class="section-block">
-                                    <h3 class="block-title">Main file in Studio</h3>
-                                    <p>GAMS Studio is not executing the file currently visible in the editor, but the file which is set as main file in the corresponding group in the <a href="https://www.gams.com/latest/docs/T_STUDIO.html#STUDIO_PROJECT_EXPLORER" target="_blank">project explorer</a>. Make sure that the model you want to use for MIRO is marked as the <i>main file</i>. If this is not the case, you can change it by right clicking on the file in the project explorer &rarr; <i>set as main file</i>:
-                                    <div class="section-block" style="display:block; margin:auto;">
-                                        <img class="img-fluid" style = "max-height:200pt;" src="assets/images/studio/studio_main_file.png" alt="Set as main file in Studio" />
-                                    </div></p>
-                                </div>
-                                <div  id="studio-file-encoding"  class="section-block">
-                                    <h3 class="block-title">File encoding</h3>
-                                    <p>Your GAMS model files need to be encoded with UTF-8. In GAMS Studio this is the default file encoding from version 0.14.5 on. You can change the encoding of your file via <i>Edit</i> &rarr; <i>Encoding</i> &rarr; <i>convert to</i> ... &rarr; <i>UTF-8</i>. 
-                                    Other file encodings are not supported in GAMS MIRO!</p>
-                                    <div class="section-block" style="display:block; margin:auto;">
-                                        <img class="img-fluid" src="assets/images/studio/encoding_studio.png" alt="File encoding in GAMS Studio" />
-                                    </div>
-                                </div><!--//section-block-->
-                                <div  id="studio-miro-interaction"  class="section-block">
-                                    <h3 class="block-title">MIRO interaction</h3>
-                                    <p>All interaction between GAMS Studio and MIRO can be found in the MIRO menu:</p>
-                                    <div class="section-block" style="display:block; margin:auto;">
-                                        <img class="img-fluid" style="max-height: 150pt;" src="assets/images/studio/menu.png" alt="MIRO menu in GAMS Studio" />
-                                    </div>
-                                </div>
-                            </section><!--//doc-section-->
-                            <section id="studio-base-mode" class="doc-section">
-                                <h2 class="section-title">Run Base Mode<a title="Go to chapter" class=" info-wrapper" href="./start.html#start-miro"><i class="icon fa fa-external-link-alt info-icon"></i></a></h2>
-                                <div class="section-block">
-                                    <div class="section-block" style="display:block; margin:auto;">
-                                        <img class="img-fluid" style = "max-height:150pt;" src="assets/images/studio/launch-miro-btn.png" alt="Launch MIRO Base Mode" />
-                                    </div>
-                                    <p>This option starts the MIRO Base Mode. In the Base Mode, you can supply your models with input data, generate, display and save the results of your optimization as well as compare different scenarios with each other, everything visually supported by various plotting tools. 
-                                    </p>
-                                    <div class="section-block" style="display:block; margin:auto;">
-                                        <img class="img-fluid" style="margin-bottom:15px;" src="assets/images/initial-screen-configured.png" alt="MIRO Base Mode" />
-                                    </div>
-                                </div>
-                            </section><!--//doc-section-->
-                            <section id="studio-configuration-mode" class="doc-section">
-                                <h2 class="section-title">Run Configuration Mode<a title="Go to chapter" class=" info-wrapper" href="./customize.html#configurationMode"><i class="icon fa fa-external-link-alt info-icon"></i></a></h2>
-                                <div class="section-block">
-                                    <div class="section-block" style="display:block; margin:auto;">
-                                        <img class="img-fluid" style="max-height: 150pt;" src="assets/images/studio/start_studio.png" alt="Launch MIRO Configuration Mode" />
-                                    </div>
-                                    <p>This option starts the MIRO Configuration Mode. Here, you can create plots and widgets or change certain settings with a few mouse clicks, visually supported by a live preview. 
-                                    </p>
-                                    <div class="section-block" style="display:block; margin:auto;">
-                                        <img class="img-fluid" style="margin-bottom:15px;max-height: 360pt;" src="assets/images/configuration_mode/timeseries_event.png" alt="MIRO Configuration Mode" />
-                                    </div>
-                                </div>
-                            </section><!--//doc-section-->
-                            <section id="studio-skip-execution" class="doc-section">
-                                <h2 class="section-title">Skip model execution</h2>
-                                <div class="section-block">
-                                    <p>In the MIRO menu of GAMS Studio there is the entry "Skip model execution". If this option is activated, the model is not executed before MIRO is started, but MIRO is called directly instead. This can be helpful if the model takes a long time to be solved. </p>
-                                    <div class="section-block" style="display:block; margin:auto;">
-                                        <img class="img-fluid" style = "max-height:150pt;" src="assets/images/studio/skip_model_execution.png" alt="Skip model execution" />
-                                    </div>
-                                    <p>But: This option should be used with caution!</br> 
-                                    If the model execution is skipped, the GAMS/MIRO <a href="./start.html#data-concept">data contract</a> is not created or refreshed. This means that changes made in the model are not communicated to MIRO. If you have a model that takes a long time to be solved and you don't want to run through it in order to launch MIRO, you can simply set the GAMS option <a href = "https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOaction" target = "_blank"><i>a=c</i></a> (action=compile) instead of the option "Skip model execution". This will only compile the model which is sufficient to update the data contract. Note that in this case a new default scenario is created, but it contains only the data that is available after the compilation phase (most of the time only input data).</p>
-                                </div>
-                            </section><!--//doc-section-->
-                            <section id="studio-create-assembly" class="doc-section">
-                                <h2 class="section-title">Create model assembly<a title="Go to chapter" class=" info-wrapper" href="./deployment.html#sbs-create-app"><i class="icon fa fa-external-link-alt info-icon"></i></a></h2>
-                                <div class="section-block">
-                                    <p>If you want to <a href="#studio-deploy" class="scrollto">deploy</a> a fully configured app, MIRO needs to know about the files that belong to your model. This is primarily the main model file, but also all files necessary to calculate all inputs and outputs, e.g. files that are included in the model. To tell MIRO about these files, go to <i>Assembly and Deploy</i>. In the <i>Assembly File</i> section select those folders and files which are needed. If you select a folder, all files in it will be included. If you want to use only single files of a folder, you have to expand the folder and select the corresponding file(s). When you are finished, click on <i>create</i>.</p>
-                                    <div class="section-block" style="text-align:center;">
-                                        <img class="img-fluid" style="max-height:350pt" src="assets/images/deployment/model-assembly.png" alt="create model assembly file" />
-                                    </div>
-                                    <div class="callout-block callout-warning">
-                                        <div class="icon-holder">
-                                            <i class="fas fa-info-circle"></i>
-                                        </div><!--//icon-holder-->
-                                        <div class="content">
-                                            <b class="callout-title">Attention</b>
-                                            <p>In case you have specified <a href = "./customize.html#analysis-scripts">custom analysis scripts</a>, make sure to include these here as well!</p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->
-                                </div>
-                            </section><!--//doc-section-->
-                            <section id="studio-deploy" class="doc-section">
-                                <h2 class="section-title">Deploy<a title="Go to chapter" class=" info-wrapper" href="./deployment.html"><i class="icon fa fa-external-link-alt info-icon"></i></a></h2>
-                                <div class="section-block">
-                                    <p>When the MIRO app is completely configured it can be deployed, i.e. exported and installed so that it can be easily shared with end users. No further changes to the model or the configuration can be made once it is deployed.</p>
-                                    <div class="section-block" style="text-align:center;">
-                                        <img class="img-fluid" style="max-height:350pt" src="assets/images/deployment/deploy.png" alt="Deploy MIRO model" />
-                                    </div>
-                                    <p>In GAMS Studio, select <i>Assembly and Deploy</i>. In the <i>Deploy Configuration</i> section specify which MIRO modes you want to support in your MIRO app (Base Mode/Hypercube Mode or both). If the Base Mode is selected, you also need to decide how your model shall be executed (<i>execution environment</i>). There are three options:</p>
-                                        <ol>
-                                            <li> Multi-user: This option allows your app to be used by multiple users simultaneously. Your model files are extracted at a random location, which is different for each user, and your model is executed from there.</li>
-                                            <li> Single-user: Your model is executed inside the model directory. No extraction of your model files is required, but this means that you can NOT have multiple users accessing your MIRO app at the same time.</li>
-                                            <li> Local multi-user (uses <i>idir</i>): With this third option, your model is again executed from a random location, but this time no model data is extracted here. Instead, GAMS is executed with an <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir" target="_blank">input directory</a> pointing to the path where your model files are located. Choose this option ONLY if you have many large files that belong to your model and extracting them would take a long time. Be aware that due to the fact that <span class="code">idir</span> is used, your model might break! For example, if you use <code class="language-gams">$call</code> or the execution-time equivalent <code class="language-gams">execute</code> (or related functions), the relative paths used in these calls will no longer exist (since the <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOcurdir">curdir</a> is now a random location). The solution is to prefix all these relative paths with <code class="language-gams">%gams.idir1%</code>. For example, in order to import an Excel file <span class="code">test.xlsx</span>, GDXXRW needs to be called like this: <kbd>$call gdxxrw i=%gams.idir1%test.xlsx</kbd>. Alternatively, you can also use absolute paths (e.g. via <code class="language-gams">$setNames "%gams.input%" fp fn fe</code> (see <a href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARsetnames" target="_blank">here</a>). 
-                                            <br>Adjusting all affected paths is potentially a lot of work, so we strongly advise against using this option unless you know what you are doing!</li>
-                                        </ol>
-                                        <div class="callout-block callout-warning">
-                                            <div class="icon-holder">
-                                                <i class="fas fa-info-circle"></i>
-                                            </div><!--//icon-holder-->
-                                            <div class="content">
-                                                <b class="callout-title">Note</b>
-                                                <p>With MIRO version 2.1, the Hypercube Mode is deprecated and and no longer exists as a separate mode. You can now submit Hypercube jobs from the Base Mode if you are using GAMS MIRO with a <a href = "./server.html">GAMS Engine backend</a> (GAMS MIRO Server or GAMS MIRO Desktop - boosted by GAMS Engine). You can find the most recent documentation <a href = "./hc-module.html">here</a>.</p>
-                                            </div><!--//content-->
-                                        </div><!--//callout-block-->
-                                    <div class="callout-block callout-warning">
-                                          <div class="icon-holder">
-                                              <i class="fas fa-info-circle"></i>
-                                          </div><!--//icon-holder-->
-                                          <div class="content">
-                                              <b class="callout-title">Advice</b>
-                                              <p>We advise you to test your MIRO app before distributing it. GAMS Studio offers an option <i>test deployment</i>. This simulates how your end users will experience the MIRO app (e.g. for the <i>Base Mode</i> MIRO is launched in the specified execution environment). In particular, you should check whether you forgot to include important files in the <a href="#studio-create-assembly" class="scrollto">model assembly</a>.</p>
-                                          </div><!--//content-->
-                                      </div><!--//callout-block-->
-                                </div>
-                            </section><!--//doc-section-->
-                        </div><!--//content-inner-->
-                    </div><!--//doc-content-->
-                    <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
-                        <div id="doc-nav" class="doc-nav">
-	                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
-                                    <a class="nav-link scrollto" href="#studio-introduction">Introduction</a>
-                                    <a class="nav-link scrollto" href="#studio-general">General</a>
-                                    <nav class="doc-sub-menu nav flex-column">
-                                      <a class="nav-link scrollto" href="#miro-installation-location">MIRO installation location</a>
-                                      <a class="nav-link scrollto" href="#studio-main-file">Main file in Studio</a>
-                                      <a class="nav-link scrollto" href="#studio-file-encoding">File encoding</a>
-                                      <a class="nav-link scrollto" href="#studio-miro-interaction">MIRO interaction</a>
-                                    </nav>
-                                    <a class="nav-link scrollto" href="#studio-base-mode">Run Base Mode</a>
-                                    <a class="nav-link scrollto" href="#studio-configuration-mode">Run Configuration Mode</a>
-                                    <a class="nav-link scrollto" href="#studio-skip-execution">Skip model execution</a>
-                                    <a class="nav-link scrollto" href="#studio-create-assembly">Create model assembly</a>
-                                    <a class="nav-link scrollto" href="#studio-deploy">Deploy</a>
-	                            </nav><!--//doc-menu-->
-                        </div>
-                    </div><!--//doc-sidebar-->
-                </div><!--//doc-body-->
-            </div><!--//container-->
-        </div><!--//doc-wrapper-->
-    </div><!--//page-wrapper-->
-    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+                  </div>
+                  <div id="studio-main-file" class="section-block">
+                    <h3 class="block-title">Main file in Studio</h3>
+                    <p>
+                      GAMS Studio is not executing the file currently visible in
+                      the editor, but the file which is set as main file in the
+                      corresponding group in the
+                      <a
+                        href="https://www.gams.com/latest/docs/T_STUDIO.html#STUDIO_PROJECT_EXPLORER"
+                        target="_blank"
+                        >project explorer</a
+                      >. Make sure that the model you want to use for MIRO is
+                      marked as the <i>main file</i>. If this is not the case,
+                      you can change it by right clicking on the file in the
+                      project explorer &rarr; <i>set as main file</i>:
+                    </p>
+                    <div
+                      class="section-block"
+                      style="display: block; margin: auto"
+                    >
+                      <img
+                        class="img-fluid"
+                        style="max-height: 200pt"
+                        src="assets/images/studio/studio_main_file.png"
+                        alt="Set as main file in Studio"
+                      />
+                    </div>
+                  </div>
+                  <div id="studio-file-encoding" class="section-block">
+                    <h3 class="block-title">File encoding</h3>
+                    <p>
+                      Your GAMS model files need to be encoded with UTF-8. In
+                      GAMS Studio this is the default file encoding from version
+                      0.14.5 on. You can change the encoding of your file via
+                      <i>Edit</i> &rarr; <i>Encoding</i> &rarr;
+                      <i>convert to</i> ... &rarr; <i>UTF-8</i>. Other file
+                      encodings are not supported in GAMS MIRO!
+                    </p>
+                    <div
+                      class="section-block"
+                      style="display: block; margin: auto"
+                    >
+                      <img
+                        class="img-fluid"
+                        src="assets/images/studio/encoding_studio.png"
+                        alt="File encoding in GAMS Studio"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                  <div id="studio-miro-interaction" class="section-block">
+                    <h3 class="block-title">MIRO interaction</h3>
+                    <p>
+                      All interaction between GAMS Studio and MIRO can be found
+                      in the MIRO menu:
+                    </p>
+                    <div
+                      class="section-block"
+                      style="display: block; margin: auto"
+                    >
+                      <img
+                        class="img-fluid"
+                        style="max-height: 150pt"
+                        src="assets/images/studio/menu.png"
+                        alt="MIRO menu in GAMS Studio"
+                      />
+                    </div>
+                  </div>
+                </section>
+                <!--//doc-section-->
+                <section id="studio-base-mode" class="doc-section">
+                  <h2 class="section-title">
+                    Run Base Mode<a
+                      title="Go to chapter"
+                      class="info-wrapper"
+                      href="./start.html#start-miro"
+                      ><i class="icon fa fa-external-link-alt info-icon"></i
+                    ></a>
+                  </h2>
+                  <div class="section-block">
+                    <div
+                      class="section-block"
+                      style="display: block; margin: auto"
+                    >
+                      <img
+                        class="img-fluid"
+                        style="max-height: 150pt"
+                        src="assets/images/studio/launch-miro-btn.png"
+                        alt="Launch MIRO Base Mode"
+                      />
+                    </div>
+                    <p>
+                      This option starts the MIRO Base Mode. In the Base Mode,
+                      you can supply your models with input data, generate,
+                      display and save the results of your optimization as well
+                      as compare different scenarios with each other, everything
+                      visually supported by various plotting tools.
+                    </p>
+                    <div
+                      class="section-block"
+                      style="display: block; margin: auto"
+                    >
+                      <img
+                        class="img-fluid"
+                        style="margin-bottom: 15px"
+                        src="assets/images/initial-screen-configured.png"
+                        alt="MIRO Base Mode"
+                      />
+                    </div>
+                  </div>
+                </section>
+                <!--//doc-section-->
+                <section id="studio-configuration-mode" class="doc-section">
+                  <h2 class="section-title">
+                    Run Configuration Mode<a
+                      title="Go to chapter"
+                      class="info-wrapper"
+                      href="./customize.html#configurationMode"
+                      ><i class="icon fa fa-external-link-alt info-icon"></i
+                    ></a>
+                  </h2>
+                  <div class="section-block">
+                    <div
+                      class="section-block"
+                      style="display: block; margin: auto"
+                    >
+                      <img
+                        class="img-fluid"
+                        style="max-height: 150pt"
+                        src="assets/images/studio/start_studio.png"
+                        alt="Launch MIRO Configuration Mode"
+                      />
+                    </div>
+                    <p>
+                      This option starts the MIRO Configuration Mode. Here, you
+                      can create plots and widgets or change certain settings
+                      with a few mouse clicks, visually supported by a live
+                      preview.
+                    </p>
+                    <div
+                      class="section-block"
+                      style="display: block; margin: auto"
+                    >
+                      <img
+                        class="img-fluid"
+                        style="margin-bottom: 15px; max-height: 360pt"
+                        src="assets/images/configuration_mode/timeseries_event.png"
+                        alt="MIRO Configuration Mode"
+                      />
+                    </div>
+                  </div>
+                </section>
+                <!--//doc-section-->
+                <section id="studio-skip-execution" class="doc-section">
+                  <h2 class="section-title">Skip model execution</h2>
+                  <div class="section-block">
+                    <p>
+                      In the MIRO menu of GAMS Studio there is the entry "Skip
+                      model execution". If this option is activated, the model
+                      is not executed before MIRO is started, but MIRO is called
+                      directly instead. This can be helpful if the model takes a
+                      long time to be solved.
+                    </p>
+                    <div
+                      class="section-block"
+                      style="display: block; margin: auto"
+                    >
+                      <img
+                        class="img-fluid"
+                        style="max-height: 150pt"
+                        src="assets/images/studio/skip_model_execution.png"
+                        alt="Skip model execution"
+                      />
+                    </div>
+                    <p>
+                      But: This option should be used with caution!<br />
+                      If the model execution is skipped, the GAMS/MIRO
+                      <a href="./start.html#data-concept">data contract</a> is
+                      not created or refreshed. This means that changes made in
+                      the model are not communicated to MIRO. If you have a
+                      model that takes a long time to be solved and you don't
+                      want to run through it in order to launch MIRO, you can
+                      simply set the GAMS option
+                      <a
+                        href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOaction"
+                        target="_blank"
+                        ><i>a=c</i></a
+                      >
+                      (action=compile) instead of the option "Skip model
+                      execution". This will only compile the model which is
+                      sufficient to update the data contract. Note that in this
+                      case a new default scenario is created, but it contains
+                      only the data that is available after the compilation
+                      phase (most of the time only input data).
+                    </p>
+                  </div>
+                </section>
+                <!--//doc-section-->
+                <section id="studio-create-assembly" class="doc-section">
+                  <h2 class="section-title">
+                    Create model assembly<a
+                      title="Go to chapter"
+                      class="info-wrapper"
+                      href="./deployment.html#sbs-create-app"
+                      ><i class="icon fa fa-external-link-alt info-icon"></i
+                    ></a>
+                  </h2>
+                  <div class="section-block">
+                    <p>
+                      If you want to
+                      <a href="#studio-deploy" class="scrollto">deploy</a> a
+                      fully configured app, MIRO needs to know about the files
+                      that belong to your model. This is primarily the main
+                      model file, but also all files necessary to calculate all
+                      inputs and outputs, e.g. files that are included in the
+                      model. To tell MIRO about these files, go to
+                      <i>Assembly and Deploy</i>. In the
+                      <i>Assembly File</i> section select those folders and
+                      files which are needed. If you select a folder, all files
+                      in it will be included. If you want to use only single
+                      files of a folder, you have to expand the folder and
+                      select the corresponding file(s). When you are finished,
+                      click on <i>create</i>.
+                    </p>
+                    <div class="section-block" style="text-align: center">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 350pt"
+                        src="assets/images/deployment/model-assembly.png"
+                        alt="create model assembly file"
+                      />
+                    </div>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Attention</b>
+                        <p>
+                          In case you have specified
+                          <a href="./customize.html#analysis-scripts"
+                            >custom analysis scripts</a
+                          >, make sure to include these here as well!
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                </section>
+                <!--//doc-section-->
+                <section id="studio-deploy" class="doc-section">
+                  <h2 class="section-title">
+                    Deploy<a
+                      title="Go to chapter"
+                      class="info-wrapper"
+                      href="./deployment.html"
+                      ><i class="icon fa fa-external-link-alt info-icon"></i
+                    ></a>
+                  </h2>
+                  <div class="section-block">
+                    <p>
+                      When the MIRO app is completely configured it can be
+                      deployed, i.e. exported and installed so that it can be
+                      easily shared with end users. No further changes to the
+                      model or the configuration can be made once it is
+                      deployed.
+                    </p>
+                    <div class="section-block" style="text-align: center">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 350pt"
+                        src="assets/images/deployment/deploy.png"
+                        alt="Deploy MIRO model"
+                      />
+                    </div>
+                    <p>
+                      In GAMS Studio, select <i>Assembly and Deploy</i>. In the
+                      <i>Deploy Configuration</i> section specify which MIRO
+                      modes you want to support in your MIRO app (Base
+                      Mode/Hypercube Mode or both). If the Base Mode is
+                      selected, you also need to decide how your model shall be
+                      executed (<i>execution environment</i>). There are three
+                      options:
+                    </p>
+                    <ol>
+                      <li>
+                        Multi-user: This option allows your app to be used by
+                        multiple users simultaneously. Your model files are
+                        extracted at a random location, which is different for
+                        each user, and your model is executed from there.
+                      </li>
+                      <li>
+                        Single-user: Your model is executed inside the model
+                        directory. No extraction of your model files is
+                        required, but this means that you can NOT have multiple
+                        users accessing your MIRO app at the same time.
+                      </li>
+                      <li>
+                        Local multi-user (uses <i>idir</i>): With this third
+                        option, your model is again executed from a random
+                        location, but this time no model data is extracted here.
+                        Instead, GAMS is executed with an
+                        <a
+                          href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir"
+                          target="_blank"
+                          >input directory</a
+                        >
+                        pointing to the path where your model files are located.
+                        Choose this option ONLY if you have many large files
+                        that belong to your model and extracting them would take
+                        a long time. Be aware that due to the fact that
+                        <span class="code">idir</span> is used, your model might
+                        break! For example, if you use
+                        <code class="language-gams">$call</code> or the
+                        execution-time equivalent
+                        <code class="language-gams">execute</code> (or related
+                        functions), the relative paths used in these calls will
+                        no longer exist (since the
+                        <a
+                          href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOcurdir"
+                          >curdir</a
+                        >
+                        is now a random location). The solution is to prefix all
+                        these relative paths with
+                        <code class="language-gams">%gams.idir1%</code>. For
+                        example, in order to import an Excel file
+                        <span class="code">test.xlsx</span>, GDXXRW needs to be
+                        called like this:
+                        <kbd>$call gdxxrw i=%gams.idir1%test.xlsx</kbd>.
+                        Alternatively, you can also use absolute paths (e.g. via
+                        <code class="language-gams"
+                          >$setNames "%gams.input%" fp fn fe</code
+                        >
+                        (see
+                        <a
+                          href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARsetnames"
+                          target="_blank"
+                          >here</a
+                        >). <br />Adjusting all affected paths is potentially a
+                        lot of work, so we strongly advise against using this
+                        option unless you know what you are doing!
+                      </li>
+                    </ol>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note</b>
+                        <p>
+                          With MIRO version 2.1, the Hypercube Mode is
+                          deprecated and and no longer exists as a separate
+                          mode. You can now submit Hypercube jobs from the Base
+                          Mode if you are using GAMS MIRO with a
+                          <a href="./server.html">GAMS Engine backend</a> (GAMS
+                          MIRO Server or GAMS MIRO Desktop - boosted by GAMS
+                          Engine). You can find the most recent documentation
+                          <a href="./hc-module.html">here</a>.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Advice</b>
+                        <p>
+                          We advise you to test your MIRO app before
+                          distributing it. GAMS Studio offers an option
+                          <i>test deployment</i>. This simulates how your end
+                          users will experience the MIRO app (e.g. for the
+                          <i>Base Mode</i> MIRO is launched in the specified
+                          execution environment). In particular, you should
+                          check whether you forgot to include important files in
+                          the
+                          <a href="#studio-create-assembly" class="scrollto"
+                            >model assembly</a
+                          >.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                </section>
+                <!--//doc-section-->
+              </div>
+              <!--//content-inner-->
+            </div>
+            <!--//doc-content-->
+            <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+              <div id="doc-nav" class="doc-nav">
+                <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                  <a class="nav-link scrollto" href="#studio-introduction"
+                    >Introduction</a
+                  >
+                  <a class="nav-link scrollto" href="#studio-general"
+                    >General</a
+                  >
+                  <nav class="doc-sub-menu nav flex-column">
+                    <a
+                      class="nav-link scrollto"
+                      href="#miro-installation-location"
+                      >MIRO installation location</a
+                    >
+                    <a class="nav-link scrollto" href="#studio-main-file"
+                      >Main file in Studio</a
+                    >
+                    <a class="nav-link scrollto" href="#studio-file-encoding"
+                      >File encoding</a
+                    >
+                    <a class="nav-link scrollto" href="#studio-miro-interaction"
+                      >MIRO interaction</a
+                    >
+                  </nav>
+                  <a class="nav-link scrollto" href="#studio-base-mode"
+                    >Run Base Mode</a
+                  >
+                  <a class="nav-link scrollto" href="#studio-configuration-mode"
+                    >Run Configuration Mode</a
+                  >
+                  <a class="nav-link scrollto" href="#studio-skip-execution"
+                    >Skip model execution</a
+                  >
+                  <a class="nav-link scrollto" href="#studio-create-assembly"
+                    >Create model assembly</a
+                  >
+                  <a class="nav-link scrollto" href="#studio-deploy">Deploy</a>
+                </nav>
+                <!--//doc-menu-->
+              </div>
+            </div>
+            <!--//doc-sidebar-->
+          </div>
+          <!--//doc-body-->
+        </div>
+        <!--//container-->
+      </div>
+      <!--//doc-wrapper-->
+    </div>
+    <!--//page-wrapper-->
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-3.3.1.min.js"
+    ></script>
     <!--#include virtual="/footer_miro.html" -->
 
     <!-- Main Javascript -->
-    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>
-    <script type="text/javascript" src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/markjs/jquery.mark.min.js"></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/stickyfill/dist/stickyfill.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/prism/min/prism-min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/markjs/jquery.mark.min.js"
+    ></script>
     <script type="text/javascript" src="assets/js/main.js"></script>
-</body>
+  </body>
 </html>
