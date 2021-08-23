@@ -27,21 +27,18 @@
   "inputWidgets": {
     "cd": {
       "widgetType": "table",
-      "alias": "crop data",
       "readonly": false,
       "heatmap": false,
       "bigData": false
     },
     "pricecurve": {
       "widgetType": "table",
-      "alias": "price curve data",
       "readonly": false,
       "heatmap": false,
       "bigData": false
     },
     "yf": {
       "widgetType": "slider",
-      "alias": "yield factor",
       "min": 0,
       "max": 2,
       "default": 1,
@@ -52,7 +49,6 @@
     },
     "land": {
       "widgetType": "slider",
-      "alias": "available land [acre]",
       "min": 200,
       "max": 1000,
       "default": 500,
@@ -63,7 +59,6 @@
     },
     "_gmsopt_emp": {
       "widgetType": "dropdown",
-      "alias": "Stochastic solver",
       "choices": ["DE", "DECIS", "LINDO"],
       "selected": "DE",
       "noHcube": false,
@@ -72,7 +67,6 @@
     },
     "nums": {
       "widgetType": "slider",
-      "alias": "number of scenarios",
       "min": 0,
       "max": 50,
       "default": 0,
@@ -80,6 +74,16 @@
       "ticks": true,
       "noHcube": false,
       "label": "Number of scenarios"
+    },
+    "_gmspar_yfsd": {
+      "widgetType": "slider",
+      "min": 0,
+      "max": 1,
+      "default": 0.1,
+      "step": 0.01,
+      "ticks": true,
+      "noHcube": false,
+      "label": "Set standard deviation of normal distribution of yield factor scenarios"
     }
   },
   "dataRendering": {

@@ -170,13 +170,8 @@ Set dict / s     .scenario.''
 
 file emp / '%emp.info%' /;
 put emp '* problem %gams.i%' / 'randvar yf discrete';
-$ifthen %SNUM%==3
-put / '0.33 0.8' 
-    / '0.33 1.0' 
-    / '0.33 1.2'; 
-$else
-loop(s, put (1/card(s)) ' ' normal(1,0.1) /);
-$endif
+$if not set YFSD $set YFSD 0.1
+loop(s, put (1/card(s)) ' ' normal(yf,%YFSD%) /);
 putclose 'stage 2 yf y w bal profit';
 
 $if not %SNUM%==0 solve farm_emp using emp maximizing profit scenario dict;
