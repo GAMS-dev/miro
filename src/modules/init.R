@@ -206,14 +206,16 @@ if(is.null(errMsg)){
     if(is.na(i)){
       j <- NA
       if(tolower(scalarsFileName) %in% names(modelIn)){
-        j <- match(tolower(el), tolower(modelIn[[tolower(scalarsFileName)]]$symnames))
+        j <- match(tolower(el), tolower(modelIn[[scalarsFileName]]$symnames))
       }
       widgetConfig$widgetType <- NULL
       
       if(!is.na(j)){
         modelIn[[el_l]] <- list()
         
-        if(!is.null(widgetConfig$alias)){
+        if(is.null(widgetConfig$alias)){
+          modelIn[[el_l]]$alias <- modelIn[[scalarsFileName]]$symtext[j]
+        }else{
           modelIn[[el_l]]$alias <- widgetConfig$alias
           widgetConfig$alias    <- NULL
         }

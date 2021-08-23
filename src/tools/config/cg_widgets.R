@@ -84,9 +84,6 @@ if(length(widgetSymbols)){
 }
 
 validateWidgetConfig <- function(widgetJSON){
-  if(!length(widgetJSON$alias) || identical(nchar(trimws(widgetJSON$alias)), 0L)){
-    return(lang$adminMode$widgets$validate[["val1"]])
-  }
   if(startsWith(currentWidgetSymbolName, prefixDDPar) && 
      identical(nchar(trimws(currentWidgetSymbolName)), nchar(prefixDDPar))){
     return(lang$adminMode$widgets$validate[["val2"]])
@@ -398,7 +395,7 @@ observeEvent({input$widget_symbol
       selectedType <- "sliderrange"
     }else if(identical(selectedType, "dropdown") && 
              (isTRUE(configJSON$inputWidgets[[currentWidgetSymbolName]]$multiple) ||
-              length(isNonSingletonSet(currentWidgetSymbolName)))){
+              isNonSingletonSet(currentWidgetSymbolName))){
       selectedType <- "multidropdown"
     }
     if(!selectedType %in% widgetOptions){
@@ -437,7 +434,6 @@ observeEvent(input$widget_symbol_type, {
     hideEl(session, "#doubledashConfigMsg")
     hideEl(session, "#noWidgetConfigMsg")
     hideEl(session, "#deleteWidget")
-    updateTextInput(session, "widget_alias", value = "")
     updateTextInput(session, "widget_label", value = "")
     if(identical(input$widget_symbol_type, "dd")){
       updateTextInput(session, "widget_dd", value = "")
@@ -502,7 +498,9 @@ observeEvent({input$widget_type
     widgetAlias <- ''
     if(length(currentConfig$alias) && nchar(currentConfig$alias)){
       widgetAlias <- currentConfig$alias
+      setAlias <- TRUE
     }else{
+      setAlias <- FALSE
       widgetSymbolID <- match(input$widget_symbol, widgetSymbols)
       if(!is.na(widgetSymbolID)){
         widgetAlias <- names(widgetSymbols)[[widgetSymbolID]]
@@ -511,7 +509,6 @@ observeEvent({input$widget_type
   switch(input$widget_type,
          slider = {
            rv$widgetConfig <- list(widgetType = "slider",
-                                   alias = widgetAlias,
                                    min = if(length(currentConfig$min)) currentConfig$min else 0L,
                                    max = if(length(currentConfig$max)) currentConfig$max else 10L,
                                    default = 
@@ -527,6 +524,9 @@ observeEvent({input$widget_type
                                    step = if(length(currentConfig$step)) currentConfig$step else 1L,
                                    ticks = isTRUE(currentConfig$ticks),
                                    noHcube = isTRUE(currentConfig$noHcube))
+           if(setAlias){
+             rv$widgetConfig$alias <- widgetAlias
+           }
            rv$widgetConfig$minStep <- currentConfig$minStep
            rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
@@ -548,11 +548,8 @@ observeEvent({input$widget_type
                                                      }))
            insertUI(selector = "#widget_options",
                     tagList(
-                      tags$div(class="shiny-input-container two-col-wrapper",
-                               tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, value = rv$widgetConfig$alias)),
-                               tags$div(class="two-col-right",
-                                        textInput("widget_label", lang$adminMode$widgets$slider$label, value = rv$widgetConfig$label))),
+                      tags$div(class="shiny-input-container",
+                               textInput("widget_label", lang$adminMode$widgets$slider$label, value = rv$widgetConfig$label)),
                       tags$div(class = "shiny-input-container highlight-block",
                                tags$label(lang$adminMode$widgets$slider$minlabel),
                                tags$div(class = "conditional", 
@@ -704,7 +701,6 @@ observeEvent({input$widget_type
          },
          sliderrange = {
            rv$widgetConfig <- list(widgetType = "slider",
-                                   alias = widgetAlias,
                                    min = if(length(currentConfig$min)) currentConfig$min else 0L,
                                    max = if(length(currentConfig$max)) currentConfig$max else 10L,
                                    default = 
@@ -718,6 +714,9 @@ observeEvent({input$widget_type
                                    step = if(length(currentConfig$step)) currentConfig$step else 1L,
                                    ticks = isTRUE(currentConfig$ticks),
                                    noHcube = isTRUE(currentConfig$noHcube))
+           if(setAlias){
+             rv$widgetConfig$alias <- widgetAlias
+           }
            rv$widgetConfig$minStep <- currentConfig$minStep
            rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
@@ -729,12 +728,8 @@ observeEvent({input$widget_type
            
            insertUI(selector = "#widget_options",
                     tagList(
-                      tags$div(class="shiny-input-container two-col-wrapper",
-                               tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, 
-                                                  value = rv$widgetConfig$alias)),
-                               tags$div(class="two-col-right",
-                                        textInput("widget_label", lang$adminMode$widgets$sliderrange$label, value = rv$widgetConfig$label))),
+                      tags$div(class="shiny-input-container",
+                               textInput("widget_label", lang$adminMode$widgets$sliderrange$label, value = rv$widgetConfig$label)),
                       tags$div(class = "shiny-input-container highlight-block",
                                tags$label(lang$adminMode$widgets$sliderrange$minlabel),
                                tags$div(class = "conditional", 
@@ -849,12 +844,14 @@ observeEvent({input$widget_type
          dropdown = , 
          multidropdown = {
            rv$widgetConfig <- list(widgetType = "dropdown",
-                                   alias = widgetAlias,
                                    choices = currentConfig$choices,
                                    selected = currentConfig$selected,
                                    noHcube = isTRUE(currentConfig$noHcube),
                                    clearValue = isTRUE(currentConfig$clearValue),
                                    multiple = isTRUE(currentConfig$multiple))
+           if(setAlias){
+             rv$widgetConfig$alias <- widgetAlias
+           }
            rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            rv$widgetConfig$aliases <- currentConfig$aliases
            dynamicChoices <- getWidgetDependencies("dropdown", rv$widgetConfig$choices)
@@ -882,12 +879,8 @@ observeEvent({input$widget_type
            )
            insertUI(selector = "#widget_options",
                     tagList(
-                      tags$div(class="shiny-input-container two-col-wrapper",
-                               tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, 
-                                                  value = rv$widgetConfig$alias)),
-                               tags$div(class="two-col-right",
-                                        textInput("widget_label", lang$adminMode$widgets$dropdown$label, value = rv$widgetConfig$label))),
+                      tags$div(class="shiny-input-container",
+                               textInput("widget_label", lang$adminMode$widgets$dropdown$label, value = rv$widgetConfig$label)),
                       tags$div(class = "shiny-input-container conditional highlight-block",
                                tags$div(class = "col-sm-8",
                                         if(length(ddChoicesDynamic)){
@@ -975,21 +968,19 @@ observeEvent({input$widget_type
          },
          checkbox = {
            rv$widgetConfig <- list(widgetType = "checkbox",
-                                   alias = widgetAlias,
                                    value = identical(currentConfig$value, 1L),
                                    noHcube = isTRUE(currentConfig$noHcube),
                                    class =  "checkbox-material")
+           if(setAlias){
+             rv$widgetConfig$alias <- widgetAlias
+           }
            rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            insertUI(selector = "#widget_options",
                     tagList(
-                      tags$div(class="shiny-input-container two-col-wrapper",
-                               tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, 
-                                                  value = rv$widgetConfig$alias)),
-                               tags$div(class="two-col-right",
-                                        textInput("widget_label", lang$adminMode$widgets$checkbox$label, value = rv$widgetConfig$label))),
-                               tags$div(class = "shiny-input-container",
-                                        checkboxInput_MIRO("widget_value", 
+                      tags$div(class="shiny-input-container",
+                               textInput("widget_label", lang$adminMode$widgets$checkbox$label, value = rv$widgetConfig$label)),
+                      tags$div(class = "shiny-input-container",
+                               checkboxInput_MIRO("widget_value", 
                                                   lang$adminMode$widgets$checkbox$default,
                                                   rv$widgetConfig$value)
                       ),
@@ -1011,12 +1002,14 @@ observeEvent({input$widget_type
          },
          date = {
            rv$widgetConfig <- list(widgetType = "date",
-                                   alias = widgetAlias,
                                    format = if(length(currentConfig$format)) currentConfig$format else "yyyy-mm-dd",
                                    startview = if(length(currentConfig$startview)) currentConfig$startview else "month",
                                    weekstart = if(length(currentConfig$weekstart)) currentConfig$weekstart else 0L,
                                    autoclose = if(identical(currentConfig$autoclose, FALSE)) FALSE else TRUE,
                                    noHcube = isTRUE(currentConfig$noHcube))
+           if(setAlias){
+             rv$widgetConfig$alias <- widgetAlias
+           }
            rv$widgetConfig$value <- currentConfig$value
            rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            rv$widgetConfig$min <- currentConfig$min
@@ -1024,11 +1017,8 @@ observeEvent({input$widget_type
            rv$widgetConfig$daysofweekdisabled <- currentConfig$daysofweekdisabled
            insertUI(selector = "#widget_options",
                     tagList(
-                      tags$div(class="shiny-input-container two-col-wrapper",
-                               tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, value = rv$widgetConfig$alias)),
-                               tags$div(class="two-col-right",
-                                        textInput("widget_label", lang$adminMode$widgets$date$label, value = rv$widgetConfig$label))),
+                      tags$div(class="shiny-input-container",
+                               textInput("widget_label", lang$adminMode$widgets$date$label, value = rv$widgetConfig$label)),
                       tags$div(class = "shiny-input-container",
                                tags$label(lang$adminMode$widgets$date$defaultlabel),
                                tags$div(class = "conditional", 
@@ -1126,13 +1116,15 @@ observeEvent({input$widget_type
          },
          daterange = {
            rv$widgetConfig <- list(widgetType = "daterange",
-                                   alias = widgetAlias,
                                    format = if(length(currentConfig$format)) currentConfig$format else "yyyy-mm-dd",
                                    startview = if(length(currentConfig$startview)) currentConfig$startview else "month",
                                    weekstart = if(length(currentConfig$weekstart)) currentConfig$weekstart else 0L,
                                    separator = if(length(currentConfig$separator)) currentConfig$separator else " to ",
                                    autoclose = if(identical(currentConfig$autoclose, FALSE)) FALSE else TRUE,
                                    noHcube = isTRUE(currentConfig$noHcube))
+           if(setAlias){
+             rv$widgetConfig$alias <- widgetAlias
+           }
            rv$widgetConfig[["start"]] <- currentConfig[["start"]]
            rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            rv$widgetConfig$end <- currentConfig$end
@@ -1141,11 +1133,8 @@ observeEvent({input$widget_type
            
            insertUI(selector = "#widget_options",
                     tagList(
-                      tags$div(class="shiny-input-container two-col-wrapper",
-                               tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, value = rv$widgetConfig$alias)),
-                               tags$div(class="two-col-right",
-                                        textInput("widget_label", lang$adminMode$widgets$daterange$label, value = rv$widgetConfig$label))),
+                      tags$div(class="shiny-input-container",
+                               textInput("widget_label", lang$adminMode$widgets$daterange$label, value = rv$widgetConfig$label)),
                       tags$div(class = "shiny-input-container",
                                tags$label(lang$adminMode$widgets$daterange$defaultStartlabel),
                                tags$div(class = "conditional",
@@ -1259,10 +1248,12 @@ observeEvent({input$widget_type
          },
          textinput = {
            rv$widgetConfig <- list(widgetType = "textinput",
-                                   alias = widgetAlias,
                                    value = if(length(currentConfig$value)) currentConfig$value else "",
                                    placeholder = if(length(currentConfig$placeholder)) currentConfig$placeholder else "",
                                    clearValue = isTRUE(currentConfig$clearValue))
+           if(setAlias){
+             rv$widgetConfig$alias <- widgetAlias
+           }
            rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            singletonSetId <- NA_integer_
            if(scalarsFileName %in% names(modelInRaw)){
@@ -1270,12 +1261,8 @@ observeEvent({input$widget_type
            }
            insertUI(selector = "#widget_options",
                     tagList(
-                      tags$div(class="shiny-input-container two-col-wrapper",
-                               tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, 
-                                                  value = rv$widgetConfig$alias)),
-                               tags$div(class="two-col-right",
-                                        textInput("widget_label", lang$adminMode$widgets$textinput$label, value = rv$widgetConfig$label))),
+                      tags$div(class="shiny-input-container",
+                               textInput("widget_label", lang$adminMode$widgets$textinput$label, value = rv$widgetConfig$label)),
                       tags$div(class = "shiny-input-container two-col-wrapper",
                                tags$div(class = "two-col-left",
                                         textInput("widget_value", lang$adminMode$widgets$textinput$value, value = rv$widgetConfig$value)),
@@ -1300,7 +1287,6 @@ observeEvent({input$widget_type
          },
          numericinput = {
            rv$widgetConfig <- list(widgetType = "numericinput",
-                                   alias = widgetAlias,
                                    value = if(length(currentConfig$value)) currentConfig$value,
                                    min = if(length(currentConfig$min)) currentConfig$min,
                                    max = if(length(currentConfig$max)) currentConfig$max,
@@ -1308,15 +1294,14 @@ observeEvent({input$widget_type
                                    decimalCharacter = if(length(currentConfig[["decimalCharacter"]])) currentConfig[["decimalCharacter"]] else ".",
                                    digitGroupSeparator = if(length(currentConfig[["digitGroupSeparator"]])) currentConfig[["digitGroupSeparator"]] else ",",
                                    sign = if(length(currentConfig$sign)) currentConfig$sign else NULL)
+           if(setAlias){
+             rv$widgetConfig$alias <- widgetAlias
+           }
            rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            insertUI(selector = "#widget_options",
                     tagList(
-                      tags$div(class="shiny-input-container two-col-wrapper",
-                               tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, 
-                                                  value = rv$widgetConfig$alias)),
-                               tags$div(class="two-col-right",
-                                        textInput("widget_label", lang$adminMode$widgets$numericinput$label, value = rv$widgetConfig$label))),
+                      tags$div(class="shiny-input-container",
+                               textInput("widget_label", lang$adminMode$widgets$numericinput$label, value = rv$widgetConfig$label)),
                       tags$div(class = "shiny-input-container two-col-wrapper",
                                tags$div(class = "two-col-left",
                                         numericInput("numericinput_min", lang$adminMode$widgets$numericinput$min, 
@@ -1372,9 +1357,6 @@ observeEvent({input$widget_type
          }
   )
   #hideEl(session, "#hot_preview")
-})
-observeEvent(input$widget_alias, {
-  rv$widgetConfig$alias <<- input$widget_alias
 })
 observeEvent(input$widget_label, {
   if(nchar(input$widget_label))
@@ -1698,15 +1680,9 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
   }
   
   symbolDDNeedsUpdate <- FALSE
-  
-  currentSymbolID <- match(currentWidgetSymbolName, widgetSymbols)
-  if(!is.na(currentSymbolID) && 
-     !identical(names(widgetSymbols)[[currentSymbolID]], rv$widgetConfig$alias)){
-    names(widgetSymbols)[[currentSymbolID]] <<- rv$widgetConfig$alias
-    symbolDDNeedsUpdate <- TRUE
-  }
+
   if(any(startsWith(currentWidgetSymbolName, c(prefixDDPar, prefixGMSOpt)))){
-    widgetSymbols <<- c(widgetSymbols, setNames(currentWidgetSymbolName, rv$widgetConfig$alias))
+    widgetSymbols <<- c(widgetSymbols, setNames(currentWidgetSymbolName, currentWidgetSymbolName))
     symbolDDNeedsUpdate <- TRUE
   }else if(currentWidgetSymbolName %in% scalarInputSymWithAliases){
     if(all(scalarInputSymWithAliases %in% names(configJSON$inputWidgets))){
