@@ -48,14 +48,22 @@ set pcs(crop,seq) relevant segments; option pcs<pricecurve;
 alias (crop,c);
 
 * Data checks
-file fmiro / 'farming_miro.log' /; put fmiro 'Crop plant alloction problem with stochastic crop yield' / 'Exception report:' /;
+file fmiro / 'farming_miro.log' /; put fmiro 'Crop plant alloction problem with stochastic crop yield' //;
 
+put '------------------------------------'/;
+put '        Data validation'/;
+put '------------------------------------'//;
+
+put 'Validating crop data ...';
 if (smin((c,ch), cd(c,ch))<0,
   put 'cd:: No negative entires allowed!'/;
   loop((c,ch)$(cd(c,ch)<0),
       put / ' Negative entry for crop ' c.tl:14 ' in field ' ch.te(ch):30 ': ' cd(c,ch):6:2);
   abort "Data errors detected."
+else
+  put ' OK'/;
 );
+put 'Validating price data ...';
 if (smin(pcs(c,seq), pricecurve(pcs,'price'))<0,
   put 'pricecurve:: No negative entires allowed!'/;
   loop((pcs(c,seq),ph)$(pricecurve(pcs,'price')<0 and sameas(ph,'price')),
@@ -67,14 +75,19 @@ if (smin(pcs(c,seq), pricecurve(c,seq,'price')-pricecurve(c,seq+1,'price'))<0,
   loop(pcs(c,seq)$(pricecurve(c,seq,'price')-pricecurve(c,seq+1,'price') < 0),
       put / ' Price for crop ' c.tl:14 ' of step ' seq.tl:4 ' to next step increases by $' (pricecurve(c,seq+1,'price')-pricecurve(c,seq,'price')):6:2);
   abort "Data errors detected."
+else
+  put ' OK'/;
 );
+put 'Validating purchase data ...';
 if (sum(c$(cd(c,'minreq')>0 and cd(c,'pprice')=0),1),
   put 'cd:: Crop for cattlefeed without external purchase ability!'/;
   loop(c$(cd(c,'minreq')>0 and cd(c,'pprice')=0),
       put / ' Crop ' c.tl:14 ' required for feed (min. requirement is ' cd(c,'minreq'):6:2 ' ) cannot be purchased (purchase price is $0)');
   abort "Data errors detected."
+else
+  put ' OK'/;
 );
-put 'No data exceptions.';
+put / 'No data exceptions.';
 
 Variables
    x(c)     crop planted in acres of land

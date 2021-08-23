@@ -1,20 +1,18 @@
 {
   "overwriteSheetOrder": {
     "input": ["cd", "pricecurve", "_widgets"],
-    "output": ["repc", "rep", "repcompare", "s_profit"]
-  },
-  "pivottable": {
-    "bgColor": "rgb(255,128,0)"
+    "output": ["rep", "repcompare", "repfinance", "repc"]
   },
   "theme": "browser",
   "defCompMode": "split",
   "roundingDecimals": 2,
   "activateModules": {
-    "logFile": true,
-    "lstFile": true,
+    "logFile": false,
+    "lstFile": false,
     "loadLocal": true,
     "attachments": false,
-    "downloadTempFiles": true
+    "downloadTempFiles": true,
+    "hcube": true
   },
   "autoGenInputGraphs": true,
   "aggregateWidgets": true,
@@ -85,59 +83,6 @@
     }
   },
   "dataRendering": {
-    "repc": {
-      "outType": "graph",
-      "graph": {
-        "title": "crop report",
-        "tool": "plotly",
-        "type": "pie",
-        "traces": {
-          "1": {
-            "labels": "c",
-            "values": "yield",
-            "hole": 0.3,
-            "name": "crop yield [tons]"
-          },
-          "2": {
-            "labels": "c",
-            "values": "planted",
-            "name": "crop planted [acres]",
-            "hole": 0.3
-          },
-          "3": {
-            "labels": "c",
-            "values": "seedcost",
-            "name": "seed cost [$]",
-            "hole": 0.3
-          },
-          "4": {
-            "labels": "c",
-            "values": "sold",
-            "name": "crop sold [tons]",
-            "hole": 0.3
-          },
-          "5": {
-            "labels": "c",
-            "values": "sales",
-            "name": "sales",
-            "hole": 0.3
-          },
-          "6": {
-            "labels": "c",
-            "values": "purchased",
-            "name": "crop purchased [tons]",
-            "hole": 0.3
-          },
-          "7": {
-            "labels": "c",
-            "values": "pcost",
-            "name": "purchase cost [$]",
-            "hole": 0.3
-          }
-        }
-      },
-      "height": 700
-    },
     "repfinance": {
       "outType": "graph",
       "graph": {
@@ -178,58 +123,163 @@
       },
       "height": 700
     },
+    "rep": {
+      "outType": "mirorenderer_rep",
+      "additionalData": ["cd", "pricecurve", "repc", "repcompare", "repfinance"]
+    },
     "repcompare": {
+      "outType": "miroPivot",
+      "height": 700,
+      "options": {
+        "aggregationFunction": "sum",
+        "pivotRenderer": "bar",
+        "enableHideEmptyCols": false,
+        "hideEmptyCols": false,
+        "hidePivotControls": false,
+        "emptyUEL": "-",
+        "rows": "c",
+        "cols": {
+          "Hdr": null
+        }
+      }
+    },
+    "repc": {
       "outType": "graph",
       "graph": {
-        "title": "crop data",
         "tool": "plotly",
         "type": "pie",
         "traces": {
           "1": {
             "labels": "c",
-            "values": "planted_d",
-            "hole": 0,
-            "name": "deterministic: crop planted [acres]"
+            "values": "yield",
+            "hole": 0.4,
+            "name": "crop yield [tons]"
           },
           "2": {
             "labels": "c",
-            "values": "planted_s",
-            "name": "stochastic: crop planted [acres]",
-            "hole": 0
+            "values": "planted",
+            "name": "crop planted [acres]",
+            "hole": 0.4
+          },
+          "3": {
+            "labels": "c",
+            "values": "seedcost",
+            "name": "seed cost [$]",
+            "hole": 0.4
+          },
+          "4": {
+            "labels": "c",
+            "values": "sold",
+            "name": "crop sold [tons]",
+            "hole": 0.4
+          },
+          "5": {
+            "labels": "c",
+            "values": "sales",
+            "name": "sales",
+            "hole": 0.4
+          },
+          "6": {
+            "labels": "c",
+            "values": "purchased",
+            "name": "crop purchased [tons]",
+            "hole": 0.4
+          },
+          "7": {
+            "labels": "c",
+            "values": "pcost",
+            "name": "purchase cost [$]",
+            "hole": 0.4
           }
         },
-        "showlegend": true
+        "title": "crop report",
+        "showlegend": true,
+        "staticPlot": false
       },
       "height": 700
+    }
+  },
+  "readme": {
+    "tabTitle": "Crop plant alloction problem with stochastic crop yield",
+    "filename": "README.md",
+    "enableMath": false
+  },
+  "defaultRendererOutput": "miroPivot",
+  "overwriteAliases": {
+    "yf": {
+      "newAlias": "Yield Factor"
+    },
+    "land": {
+      "newAlias": "Available Land [acre]"
+    },
+    "nums": {
+      "newAlias": "Number of Scenarios"
+    },
+    "cd": {
+      "newAlias": "Crop Data"
+    },
+    "pricecurve": {
+      "newAlias": "Price Curve Data"
+    },
+    "rep": {
+      "newAlias": "Dashboard"
+    },
+    "repc": {
+      "newAlias": "Crop Report"
+    },
+    "repcompare": {
+      "newAlias": "Crop Comparison Deterministic vs. Stochastic"
+    },
+    "repfinance": {
+      "newAlias": "Financial Report by Scenario"
+    }
+  },
+  "outputTables": {
+    "repfinance": {
+      "pivotCols": "rh",
+      "class": "display",
+      "filter": "none",
+      "options": {
+        "pageLength": 15,
+        "decimals": 3
+      },
+      "rownames": false
+    },
+    "repcompare": {
+      "class": "display",
+      "filter": "none",
+      "options": {
+        "pageLength": 15,
+        "decimals": 3
+      },
+      "rownames": false
+    },
+    "repc": {
+      "class": "display",
+      "filter": "none",
+      "options": {
+        "pageLength": 15,
+        "decimals": 3
+      },
+      "rownames": false
     }
   },
   "datatable": {
     "class": "stripe",
     "filter": "top",
+    "rownames": false,
     "options": {
-      "buttons": ["copy", "excel", "pdf"],
-      "dom": "Bfrtip",
       "pageLength": 15
-    },
-    "extensions": "Buttons",
-    "rownames": false
-  },
-  "readme": {
-    "tabTitle": "Crop plant alloction problem with stochastic crop yield",
-    "filename": "README.md"
+    }
   },
   "handsontable": {
     "stretchH": "all",
     "readonly": false,
-    "highlightCol": true,
-    "highlightRow": true,
-    "columnSorting": true,
     "manualColumnResize": true,
     "contextMenu": {
       "enabled": true,
       "allowRowEdit": true,
-      "allowColEdit": true,
-      "allowReadOnly": false
+      "allowColEdit": true
     },
     "height": 700,
     "colWidths": 150
