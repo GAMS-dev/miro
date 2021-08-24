@@ -193,7 +193,7 @@ getInputDataFromSandbox <- function(){
              }
            }
     )
-    flog.trace("Dataset: %s saved in dataTmp.", modelIn[[i]])
+    flog.trace("Dataset: %s saved in dataTmp.", names(modelIn)[i])
   })
   return(dataTmp)
 }
