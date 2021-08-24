@@ -1,4 +1,4 @@
-renderDTable <- function(data, options, roundPrecision = 2, render = TRUE){
+renderDTable <- function(data, options, roundPrecision = 2, render = TRUE, metadata = NULL){
   # Renders the datatable for a dataframe using the provided configuration.
   #
   # Args:
@@ -9,9 +9,16 @@ renderDTable <- function(data, options, roundPrecision = 2, render = TRUE){
   #
   # Returns:
   #   DT object or renderDT object with data and options specified
+  if(length(metadata)){
+    colHeaders <- vapply(metadata[["headers"]], "[[", character(1L), "alias")
+  }else if(length(attr(data, "aliases"))){
+    colHeaders <- attr(data, "aliases")
+  }else{
+    colHeaders <- names(data)
+  }
   if(length(options$pivotCols)){
     pivotIdx <- match(options$pivotCols[[1]], names(data))[1]
-    aliasesTmp <- attr(data, "aliases")[-c(pivotIdx, length(data))]
+    aliasesTmp <- colHeaders[-c(pivotIdx, length(data))]
     data <- pivot_wider(data, names_from = !!pivotIdx, 
                         values_from = !!length(data),
                         names_sort = isTRUE(options$sortPivotCols))
@@ -19,8 +26,8 @@ renderDTable <- function(data, options, roundPrecision = 2, render = TRUE){
     if(length(aliasesTmp)){
       names(data)[seq_along(aliasesTmp)] <- aliasesTmp
     }
-  }else if(length(attr(data, "aliases"))){
-    names(data) <- attr(data, "aliases")
+  }else{
+    names(data) <- colHeaders
   }
   
   if("DT" %in% (.packages())){

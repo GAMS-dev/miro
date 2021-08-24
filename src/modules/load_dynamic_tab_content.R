@@ -225,7 +225,8 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
           callModule(renderData, paste0("table_", tabsetIdChar, "_", tabId),
                      type = "datatable",
                      data = scenData$get(refId, symNames = sheetName, drop = TRUE), 
-                     dtOptions = graphConfig$datatable, roundPrecision = roundPrecision)
+                     dtOptions = graphConfig$datatable, customOptions = graphConfig$options,
+                     roundPrecision = roundPrecision)
           dynamicUILoaded$dynamicTabsets[[tabsetIdChar]][["content"]][tabId] <<- TRUE
           if(identical(scenData$getById("dirty", refId = refId, drop = TRUE), TRUE)){
             showErrorMsg(lang$errMsg$loadScen$title, lang$errMsg$loadScen$inconsistentDataWarning)

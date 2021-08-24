@@ -129,7 +129,8 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
     output$graph <- renderGraph(data, configData = configData, options = graphOptions, 
                                 input = input, filterCol = if(!is.null(filterCol)) filterCol)
   }else if(type == "datatable" || type == "dtgraph"){
-    output$datatable <- renderDTable(data, options = dtOptions, roundPrecision = roundPrecision)
+    output$datatable <- renderDTable(data, options = dtOptions, roundPrecision = roundPrecision,
+                                     metadata = if(length(customOptions)) customOptions[["_metadata_"]])
     if(!is.null(graphOptions)){
       output$graph <- renderGraph(data, configData = configData, options = graphOptions,
                                   input = input, filterCol = if(!is.null(filterCol)) filterCol)
