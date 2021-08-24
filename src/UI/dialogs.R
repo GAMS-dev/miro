@@ -755,7 +755,7 @@ showHashExistsDialog <- function(scenData, uid){
     title = lang$nav$dialogHashExists$title,
     sprintf(lang$nav$dialogHashExists$desc, scenData[["_sname"]],
             if(nchar(tagsString))
-              sprintf(lang$nav$dialogHashExists$descTags, tagsString) else "",
+              tagsString else "",
             scenData[["_uid"]], scenData[["_stime"]]),
     footer = tagList(
       modalButton(lang$nav$dialogHashExists$cancelButton),
