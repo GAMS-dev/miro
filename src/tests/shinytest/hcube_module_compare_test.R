@@ -25,6 +25,26 @@ scenToCompare <- match(c("default", scenHashTmp), scenData[[2]])
 expect_false(any(is.na(scenToCompare)))
 app$setInputs(batchLoadResults_rows_selected = scenToCompare, allowInputNoBinding_ = TRUE)
 
+# check that scalar-name-mapping works
+app$setInputs(hcubeLoadSelected = "click")
+Sys.sleep(2L)
+app$setInputs(batchCompareNameCols = c("_gmsopt_lsttitleleftaligned", "maxstock"))
+app$waitFor("$('#btBatchCompare').click()", timeout = 50L)
+Sys.sleep(3L)
+app$setInputs(contentScen_0 = "contentScen_0_2")
+Sys.sleep(2L)
+app$setInputs(`tab_0_2-miroPivot-pivotRenderer` = "line")
+Sys.sleep(2L)
+expect_identical(jsonlite::fromJSON(app$getAllValues()$output[["tab_0_2-miroPivot-pivotChart"]])$x$data$labels,
+                 c("0_6.AAPL", "0_6.AXP", "0_6.BA", "0_6.GS", "0_6.HD", "0_6.MMM", "1_2.DD", "1_2.MCD"))
+
+app$setInputs(btScenPivot_close = "click")
+Sys.sleep(1L)
+
+# load scenarios into tab comparison mode
+app$findElement("#sidebarItemExpanded a[data-value='loadResults']")$click()
+Sys.sleep(0.5)
+app$setInputs(batchLoadResults_rows_selected = scenToCompare, allowInputNoBinding_ = TRUE)
 
 app$setInputs(hcubeLoadSelected = "click")
 Sys.sleep(2L)
@@ -38,6 +58,34 @@ expect_identical(graphData[, 1], c("2016-01-04T00:00:00.000Z", "100.572928794899
 app$setInputs(contentScen_5 = "contentScen_5_11")
 expect_true(app$waitFor("$('.small-box:visible')[0].textContent.trim().startsWith('6')", timeout = 50L))
 expect_true(app$waitFor("$('.small-box:visible')[1].textContent.trim().startsWith('99')", timeout = 50))
+
+# Download HC and normal scenario while remapping scenario names
+app$findElement("#sidebarItemExpanded a[data-value='loadResults']")$click()
+Sys.sleep(0.5)
+app$setInputs(batchLoadResults_rows_selected = scenToCompare, allowInputNoBinding_ = TRUE)
+app$setInputs(hcubeLoadSelected = "click")
+Sys.sleep(2L)
+app$setInputs(batchCompareNameCols = c("_gmsopt_lsttitleleftaligned", "maxstock"))
+multiDimSym <- c("stock_weight", "dowvsindex", "abserror", "pricemerge", "schedule",
+                 "mapnogroup", "gantt", "repc", "pressurethickness", "hovercraft",
+                 "price", "maptest")
+scalarSym <- c("error_train", "error_test", "error_ratio", "maxstock",
+               "trainingdays", "firstdaytraining", "lastdaytraining", "solver",
+               "clearvalueset")
+expect_symbols_in_gdx(app, "btBatchDownloadGDX",
+                      setNames(rep.int(list(c(multiDimSym, scalarSym)), 2L), c("1_2", "0_6")))
+
+Sys.sleep(0.5)
+app$setInputs(batchLoadResults_rows_selected = scenToCompare, allowInputNoBinding_ = TRUE)
+app$setInputs(hcubeLoadSelected = "click")
+Sys.sleep(2L)
+app$setInputs(batchCompareNameCols = c("maxstock", "_gmsopt_lsttitleleftaligned"))
+app$waitFor("$('#btBatchDownloadGDX+.dropdown-toggle').click()", timeout = 50L)
+Sys.sleep(0.5)
+expect_files_in_zip(app, "btBatchDownloadCSV",
+                    unlist(lapply(c("2_1", "6_0"), function(scenName){
+                      paste0(scenName, "/", c("", paste0(c(multiDimSym, "_metadata_",
+                                                           "_scalars", "_scalars_out"), ".csv")))})))
 
 # Download HC and normal scenario
 app$findElement("#sidebarItemExpanded a[data-value='loadResults']")$click()
@@ -59,6 +107,7 @@ app$setInputs(batchLoadResults_rows_selected = scenToCompare, allowInputNoBindin
 app$setInputs(hcubeLoadSelected = "click")
 Sys.sleep(2L)
 app$waitFor("$('#btBatchDownloadGDX+.dropdown-toggle').click()", timeout = 50L)
+Sys.sleep(0.5)
 expect_files_in_zip(app, "btBatchDownloadCSV",
                     unlist(lapply(c("default", scenHashTmp), function(scenName){
                       paste0(scenName, "/", c("", paste0(c(multiDimSym, "_metadata_",

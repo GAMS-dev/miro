@@ -385,6 +385,26 @@ observeEvent(input$btBatchCompare, {
       loadInLeftBoxSplit <<- identical(sidInLeftSplit, 0L)
     }
   }
+  if(length(input$batchCompareNameCols)){
+    if(tryCatch({
+      mapColIds <- match(input$batchCompareNameCols, names(batchLoadData))
+      if(any(is.na(mapColIds))){
+        stop(sprintf("Invalid column(s): %s. This is likely an attempt to tamper with the app!",
+                     paste(input$batchCompareNameCols[is.na(mapColIds)], collapse = ", ")))
+      }
+      scenData$setScenIdNameMap(setNames(unite(batchLoadData[batchLoadData[[1]] %in% sidsToLoad, mapColIds],
+                                               "name", sep = "_")[[1]], as.character(sidsToLoad)))
+      FALSE
+    }, error = function(e){
+      flog.error("Unexpected error while setting scenIdNameMap. Error message: %s",
+                 conditionMessage(e))
+      return(TRUE)
+    })){
+      return(showErrorMsg(lang$errMsg$loadScen$title, lang$errMsg$unknownError))
+    }
+  }else{
+    scenData$setScenIdNameMap(character(0L))
+  }
   flog.debug("Load batch of scenarios to compare mode (%s) button clicked.", viewMode)
   isInSolveMode <<- FALSE
   loadIntoSandbox <<- FALSE

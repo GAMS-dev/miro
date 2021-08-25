@@ -919,7 +919,7 @@ showDuplicatedScenDialog <- function(noDupScen, dupScenTags, noScen){
 }
 # Batch Load module
 showBatchLoadDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver = "",
-                                exclAttribChoices = NULL, customScripts = NULL){
+                                exclAttribChoices = NULL, customScripts = NULL, colNamesForNaming = NULL){
   if(LAUNCHHCUBEMODE){
     analysisTabset <- tagList(lang$nav$dialogBatchLoad$paverDesc,
                               selectInput("selPaverAttribs", lang$nav$dialogBatchLoad$selPaverAttribs,
@@ -1004,6 +1004,16 @@ showBatchLoadDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver 
                             }else{
                               sprintf(lang$nav$dialogBatchLoad$maxScenWarning1, 50L) %+%
                                 lang$nav$dialogBatchLoad$maxScenWarning2
+                            },
+                            if(length(sidsToLoad) <= 50L){
+                              tagList(
+                                tags$label(lang$nav$dialogBatchLoad$scenNameCols,
+                                           `for` = "batchCompareNameCols",
+                                           style = "font-weight:unset;margin-top:10px;"),
+                                selectInput("batchCompareNameCols", NULL,
+                                            choices = colNamesForNaming,
+                                            multiple = TRUE)
+                              )
                             }
                    ),
                    tags$div(style = "display:none", class = "batch-load-dl-content",
@@ -1022,74 +1032,79 @@ showBatchLoadDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver 
                                 genSpinner(id = "batchLoadAnalysisSpinner", absolute = FALSE,
                                            extraClasses = "gen-spinner-black"))
                      )
-                   }),
+                   },
+                   tags$div(
+                     tags$div(class = "btn-group", class = "batch-load-content",
+                              tags$a(class = "btn btn-default shiny-download-link", type = "button",
+                                     id = "btBatchDownloadGDX", target = '_blank', href = "", download = NA,
+                                     style = "margin:6px 0px 6px 0;border-right:0px;",
+                                     paste0(lang$nav$dialogBatchLoad$downloadButton, " (GDX)")),
+                              tags$button(class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
+                                          style = "margin:6px 0px 6px 0;display:block;",
+                                          tags$span(class = "caret"),
+                                          tags$span(class = "sr-only", "toggle dropdown")),
+                              tags$ul(class = "dropdown-menu", role = "menu", style = "margin-left: 5px;",
+                                      tags$li(
+                                        tags$a(class = "shiny-download-link", type = "button",
+                                               id = "btBatchDownloadCSV", target = '_blank', href = "", download = NA,
+                                               paste0(lang$nav$dialogBatchLoad$downloadButton, " (CSV)"))))),
+                     if(length(analysisTabset)){
+                       tagList(actionButton("btAnalysisConfig", class = "batch-load-content",
+                                            lang$nav$dialogBatchLoad$paverButton),
+                               tags$div(style = "display:none;",
+                                        class = "batch-load-content batch-load-analysis-footer",
+                                        actionButton("btRunPaver", lang$nav$dialogBatchLoad$runPaverButton,
+                                                     class = "bt-highlight-1 bt-gms-confirm",
+                                                     style = if(length(customScripts)) "display:none;"),
+                                        actionButton("btRunHcubeScript", lang$nav$dialogBatchLoad$runScriptButton,
+                                                     class = "bt-highlight-1 bt-gms-confirm",
+                                                     style = if(!length(customScripts)) "display:none;")),
+                               downloadButton("btDownloadBatchLoadScript",
+                                              lang$nav$dialogBatchLoad$downloadAnalysisButton,
+                                              style = "display:none"))
+                     },
+                     if(identical(length(sidsToLoad), 1L) && !LAUNCHHCUBEMODE){
+                       tagList(actionButton("btBatchLoadSb", class = "batch-load-content",
+                                            style = "margin-left:5px",
+                                            lang$nav$dialogBatchLoad$interactiveButtonSb),
+                               actionButton("btBatchLoadSbOverwrite",
+                                            class = "bt-highlight-1 bt-gms-confirm batch-load-sb-content",
+                                            style = "display:none",
+                                            lang$nav$dialogBatchLoad$interactiveButtonSb))
+                     },
+                     if(length(sidsToLoad) <= 50L){
+                       tags$div(class = "btn-group", class = "batch-load-content",
+                                tags$button(class = "btn btn-default", type = "button", id = "btBatchCompare",
+                                            style = if(length(sidsToLoad) <= 10L)
+                                              "margin:6px 0px 6px 5px;border-right:0px;" else
+                                                "margin:6px 0px 6px 5px;",
+                                            onclick = "Shiny.setInputValue('btBatchCompare','pivot',{priority:'event'});",
+                                            lang$nav$dialogBatchLoad$interactiveButtonPivot),
+                                if(length(sidsToLoad) <= 10L){
+                                  tagList(
+                                    tags$button(class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
+                                                style = "margin:6px 0px 6px 0;display:block;",
+                                                tags$span(class = "caret"),
+                                                tags$span(class = "sr-only", "toggle dropdown")),
+                                    tags$ul(class = "dropdown-menu", role = "menu", style = "margin-left: 5px;",
+                                            tags$li(
+                                              tags$a(href = "#",
+                                                     onclick = "Shiny.setInputValue('btBatchCompare','tab',{priority:'event'});",
+                                                     lang$nav$dialogBatchLoad$interactiveButtonTab)),
+                                            if(length(sidsToLoad) <= 2L){
+                                              tags$li(
+                                                tags$a(href = "#",
+                                                       onclick = "Shiny.setInputValue('btBatchCompare','split',{priority:'event'});",
+                                                       lang$nav$dialogBatchLoad$interactiveButtonSplit))
+                                            }))})}
+                   )
+                   ),
           tags$div(class = "modal-footer",
                    actionButton("btBatchLoadCancel", lang$nav$dialogImport$cancelButton),
                    actionButton("btBatchRemove",
                                 lang$nav$dialogBatchLoad$removeButton,
                                 class = "bt-remove batch-load-content batch-load-remove-content"),
-                   tags$div(class = "btn-group", class = "batch-load-content",
-                            tags$a(class = "btn btn-default shiny-download-link", type = "button",
-                                   id = "btBatchDownloadGDX", target = '_blank', href = "", download = NA,
-                                   style = "margin:6px 0px 6px 5px;border-right:0px;",
-                                   paste0(lang$nav$dialogBatchLoad$downloadButton, " (GDX)")),
-                            tags$button(class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
-                                        style = "margin:6px 0px 6px 0;display:block;",
-                                        tags$span(class = "caret"),
-                                        tags$span(class = "sr-only", "toggle dropdown")),
-                            tags$ul(class = "dropdown-menu", role = "menu", style = "margin-left: 5px;",
-                                    tags$li(
-                                      tags$a(class = "shiny-download-link", type = "button",
-                                             id = "btBatchDownloadCSV", target = '_blank', href = "", download = NA,
-                                             paste0(lang$nav$dialogBatchLoad$downloadButton, " (CSV)"))))),
-                   if(length(analysisTabset)){
-                     tagList(actionButton("btAnalysisConfig", class = "batch-load-content",
-                                          lang$nav$dialogBatchLoad$paverButton),
-                             tags$div(style = "display:none;",
-                                      class = "batch-load-content batch-load-analysis-footer",
-                                      actionButton("btRunPaver", lang$nav$dialogBatchLoad$runPaverButton,
-                                                   class = "bt-highlight-1 bt-gms-confirm",
-                                                   style = if(length(customScripts)) "display:none;"),
-                                      actionButton("btRunHcubeScript", lang$nav$dialogBatchLoad$runScriptButton,
-                                                   class = "bt-highlight-1 bt-gms-confirm",
-                                                   style = if(!length(customScripts)) "display:none;")),
-                             downloadButton("btDownloadBatchLoadScript",
-                                            lang$nav$dialogBatchLoad$downloadAnalysisButton,
-                                            style = "display:none"))
-                   },
-                   if(identical(length(sidsToLoad), 1L) && !LAUNCHHCUBEMODE){
-                     tagList(actionButton("btBatchLoadSb", class = "batch-load-content",
-                                          lang$nav$dialogBatchLoad$interactiveButtonSb),
-                             actionButton("btBatchLoadSbOverwrite",
-                                          class = "bt-highlight-1 bt-gms-confirm batch-load-sb-content",
-                                          style = "display:none",
-                                          lang$nav$dialogBatchLoad$interactiveButtonSb))
-                   },
-                   if(length(sidsToLoad) <= 50L){
-                     tags$div(class = "btn-group", class = "batch-load-content",
-                              tags$button(class = "btn btn-default", type = "button", id = "btBatchCompare",
-                                          style = if(length(sidsToLoad) <= 10L)
-                                            "margin:6px 0px 6px 5px;border-right:0px;" else
-                                              "margin:6px 0px 6px 5px;",
-                                          onclick = "Shiny.setInputValue('btBatchCompare','pivot',{priority:'event'});",
-                                          lang$nav$dialogBatchLoad$interactiveButtonPivot),
-                              if(length(sidsToLoad) <= 10L){
-                                tagList(
-                                  tags$button(class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
-                                              style = "margin:6px 0px 6px 0;display:block;",
-                                              tags$span(class = "caret"),
-                                              tags$span(class = "sr-only", "toggle dropdown")),
-                                  tags$ul(class = "dropdown-menu", role = "menu", style = "margin-left: 5px;",
-                                          tags$li(
-                                            tags$a(href = "#",
-                                                   onclick = "Shiny.setInputValue('btBatchCompare','tab',{priority:'event'});",
-                                                   lang$nav$dialogBatchLoad$interactiveButtonTab)),
-                                          if(length(sidsToLoad) <= 2L){
-                                            tags$li(
-                                              tags$a(href = "#",
-                                                     onclick = "Shiny.setInputValue('btBatchCompare','split',{priority:'event'});",
-                                                     lang$nav$dialogBatchLoad$interactiveButtonSplit))
-                                          }))})}))),
+                   ))),
       tags$script("$('#shiny-modal').modal().focus();")))
 }
 # Hypercube job import module

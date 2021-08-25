@@ -447,7 +447,8 @@ observeEvent(input$hcubeLoadSelected, {
   sidsToLoad <<- as.integer(batchLoadData[[1]][input$batchLoadResults_rows_selected])
   showBatchLoadDialog(length(sidsToLoad), batchLoadFilters, maxSolversPaver,
                       exclAttribChoices = exclAttribChoices,
-                      customScripts = config$scripts$hcube)
+                      customScripts = config$scripts$hcube,
+                      colNamesForNaming = setNames(names(batchLoadData)[-1], names(batchLoadFilters)[-1]))
 })
 observeEvent(input$hcubeLoadCurrent, {
   flog.debug("Button to load current page of scenarios (Batch load) clicked.")
@@ -458,7 +459,8 @@ observeEvent(input$hcubeLoadCurrent, {
   sidsToLoad <<- as.integer(batchLoadData[[1]][input$batchLoadResults_rows_current])
   showBatchLoadDialog(length(sidsToLoad), batchLoadFilters, maxSolversPaver,
                       exclAttribChoices = exclAttribChoices,
-                      customScripts = config$scripts$hcube)
+                      customScripts = config$scripts$hcube,
+                      colNamesForNaming = setNames(names(batchLoadData)[-1], names(batchLoadFilters)[-1]))
 })
 observeEvent(input$hcubeLoadAll, {
   flog.debug("Button to load all scenarios (Batch load) clicked.")
@@ -469,7 +471,8 @@ observeEvent(input$hcubeLoadAll, {
   sidsToLoad     <<- as.integer(batchLoadData[[1]])
   showBatchLoadDialog(length(sidsToLoad), batchLoadFilters, maxSolversPaver,
                       exclAttribChoices = exclAttribChoices,
-                      customScripts = config$scripts$hcube)
+                      customScripts = config$scripts$hcube,
+                      colNamesForNaming = setNames(names(batchLoadData)[-1], names(batchLoadFilters)[-1]))
 })
 downloadBatchData <- function(file, sids, type){
   if(!length(sids)){
@@ -479,6 +482,26 @@ downloadBatchData <- function(file, sids, type){
   if(length(sids) > hcubeLoadMaxScen){
     flog.warn("Maximum number of scenarios to download is exceeded.")
     return(downloadHandlerError(file))
+  }
+  if(length(input$batchCompareNameCols)){
+    if(tryCatch({
+      mapColIds <- match(input$batchCompareNameCols, names(batchLoadData))
+      if(any(is.na(mapColIds))){
+        stop(sprintf("Invalid column(s): %s. This is likely an attempt to tamper with the app!",
+                     paste(input$batchCompareNameCols[is.na(mapColIds)], collapse = ", ")))
+      }
+      batchLoader$setScenIdNameMap(setNames(unite(batchLoadData[batchLoadData[[1]] %in% sidsToLoad, mapColIds],
+                                                  "name", sep = "_")[[1]], as.character(sidsToLoad)))
+      FALSE
+    }, error = function(e){
+      flog.error("Unexpected error while setting scenIdNameMap. Error message: %s",
+                 conditionMessage(e))
+      return(TRUE)
+    })){
+      return(downloadHandlerError(file))
+    }
+  }else{
+    batchLoader$setScenIdNameMap(character())
   }
   tmpDir      <- file.path(tempdir(), paste0("dl_batch_", uid))
   on.exit(unlink(tmpDir, recursive = TRUE, force = TRUE), add = TRUE)

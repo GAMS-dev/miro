@@ -283,6 +283,10 @@ ScenData <- R6Class("ScenData", public = list(
     }
     return(lapply(private$cachedData[as.character(scenIds)], "[[", id))
   },
+  setScenIdNameMap = function(scenIdNameMap){
+    private$scenIdNameMap <- scenIdNameMap
+    return(invisible(self))
+  },
   clear = function(refId, scenIds = NULL, clearRef = TRUE){
     stopifnot(is.character(refId))
 
@@ -319,12 +323,21 @@ ScenData <- R6Class("ScenData", public = list(
   cachedData = NULL,
   dbSymbols = NULL,
   refScenMap = list(),
+  scenIdNameMap = character(),
   getMetadata = function(scenIds){
     metaTmp <- private$db$importDataset("_scenMeta",
                                         subsetSids = scenIds)
-    isHcScen <- metaTmp[["_scode"]] > 0
-    if(any(isHcScen)){
-      metaTmp[["_sname"]][isHcScen] <- paste0("HC (", substr(metaTmp[["_sname"]][isHcScen], 1L, 8L), "...)")
+    if(length(private$scenIdNameMap)){
+      sidNameMapIds <- match(as.character(metaTmp[["_sid"]]), names(private$scenIdNameMap))
+      namesNeedRemapping <- !is.na(sidNameMapIds)
+      if(any(namesNeedRemapping)){
+        metaTmp[["_sname"]][namesNeedRemapping] <- private$scenIdNameMap[sidNameMapIds[namesNeedRemapping]]
+      }
+    }else{
+      isHcScen <- metaTmp[["_scode"]] > 0
+      if(any(isHcScen)){
+        metaTmp[["_sname"]][isHcScen] <- paste0("HC (", substr(metaTmp[["_sname"]][isHcScen], 1L, 8L), "...)")
+      }
     }
     return(metaTmp)
   },

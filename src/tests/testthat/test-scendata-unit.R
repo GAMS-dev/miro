@@ -213,4 +213,18 @@ test_that("Getting all scalars works without scalars defined in app", {
   expect_identical(scenData$getScalars("sb"), tibble(scalar = character(), description = character(), value = character()))
 })
 
+test_that("Remapping scenario names works", {
+  scenNames <- paste0("scen_", seq_len(6L))
+  DBI::dbWriteTable(db$getConn(), dbSchema$getDbTableName("_scenMeta"),
+                    tibble(`_sid` = seq_len(6L), `_uid` = c("te_de\\%d", "user", "te_de\\%d", "te_de\\%d", "te_de\\%d", "te_de\\%d"),
+                           `_sname` = scenNames, `_stime` = rep.int(Sys.time(), 6L),
+                           `stag` = rep.int(",asd,", 6L), `_accessr` = c(",te_de\\%d,", ",user,", ",te_de\\%d,", ",te_de\\%d,", ",te_de\\%d,", ",te_de\\%d,"),
+                           `_accessw` = c("te_de\\%d", "user", "te_de\\%d", "te_de\\%d", "te_de\\%d", "te_de\\%d"),
+                           `_accessx` = c("te_de\\%d", "user", "te_de\\%d", "te_de\\%d", "te_de\\%d", "te_de\\%d"),
+                           `_scode` = rep.int(0L, 6L)), overwrite = TRUE)
+  expect_identical(scenData$.__enclos_env__$private$getMetadata(c(1, 2, 6))[["_sname"]], scenNames[c(1, 6)])
+  scenData$setScenIdNameMap(c('2' = 'asd', '6' = '...'))
+  expect_identical(scenData$.__enclos_env__$private$getMetadata(c(1, 2, 6))[["_sname"]], c("scen_1", "..."))
+})
+
 db$finalize()

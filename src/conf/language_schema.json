@@ -2378,6 +2378,10 @@
               "type": "string",
               "minLength": 1
             },
+            "scenNameCols": {
+              "type": "string",
+              "minLength": 1
+            },
             "selExportType": {
               "type": "string",
               "minLength": 1
@@ -2483,7 +2487,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 28
+          "minProperties": 29
         },
         "hcubeMode": {
           "type": "object",

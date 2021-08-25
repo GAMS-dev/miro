@@ -217,6 +217,13 @@ BatchLoader <- R6Class("BatchLoader",
                              sidsToFetch <- setNames(as.character(scenIdsOrdered), scenIdsOrdered)
                            }
                            scenIdNameMap  <- setNames(scenIdNameMap[[2]], scenIdsOrdered)
+                           if(length(private$scenIdNameMap)){
+                             sidNameMapIds <- match(names(scenIdNameMap), names(private$scenIdNameMap))
+                             namesNeedRemapping <- !is.na(sidNameMapIds)
+                             if(any(namesNeedRemapping)){
+                               scenIdNameMap[namesNeedRemapping] <- private$scenIdNameMap[sidNameMapIds[namesNeedRemapping]]
+                             }
+                           }
 
                            j <- 1L
                            dataTmp <- lapply(scenTableNames, function(tableName){
@@ -237,12 +244,10 @@ BatchLoader <- R6Class("BatchLoader",
                              return(split(dataDbTmp[-1], dataDbTmp[[1L]]))
                            })
                            names(dataTmp) <- scenTableNames
-                           sameNameCounter   <- list()
-
 
                            j <- 1L
 
-                           scenNameList <- vector("character", length(scenIds))
+                           fileNamesTmp <- vector("list", length(scenIds))
 
                            for(scenId in as.character(scenIds)){
                              if(!is.null(progressBar)){
@@ -250,16 +255,17 @@ BatchLoader <- R6Class("BatchLoader",
                                                message = sprintf("Writing dataset %d of %d.",
                                                                  j, noScenIds))
                              }
-                             scenName <- scenIdNameMap[[scenId]]
-                             if(is.null(sameNameCounter[[scenName]])){
-                               sameNameCounter[[scenName]] <- 1L
-                             }else{
-                               scenName <- paste0(scenName, "_", sameNameCounter[[scenName]])
-                               sameNameCounter[[scenName]] <- sameNameCounter[[scenName]] + 1L
+                             sanitizedScenName <- sanitizeFn(scenIdNameMap[[scenId]])
+                             if(!nchar(sanitizedScenName)){
+                               sanitizedScenName <- "~invalid_file_name~"
                              }
-                             scenNameList[[j]] <- paste0(scenName, ".gdx")
-                             j <- j + 1L
-                             gdxio$wgdx(paste0(tmpDir, .Platform$file.sep, sanitizeFn(scenName), ".gdx"),
+                             fnCount <- 1L
+                             while(sanitizedScenName %in% fileNamesTmp){
+                               sanitizedScenName <- paste0(sanitizedScenName, "(", fnCount, ")")
+                               fnCount <- fnCount + 1L
+                             }
+                             fileNamesTmp[[j]] <- sanitizedScenName
+                             gdxio$wgdx(file.path(tmpDir, paste0(sanitizedScenName, ".gdx")),
                                         setNames(lapply(names(dataTmp), function(symName){
                                           if(symName %in% c(scalarsFileName, names(ioConfig$modelOut))){
                                             scenIdToFetch <- scenId
@@ -271,9 +277,11 @@ BatchLoader <- R6Class("BatchLoader",
                                           }
                                           return(tibble())
                                         }), names(dataTmp)))
+                             j <- j + 1L
                            }
                            if(genScenList){
-                             write_lines(scenNameList, file.path(tmpDir, "hcube_file_names.txt"))
+                             write_lines(paste0(fileNamesTmp, ".gdx"),
+                                         file.path(tmpDir, "hcube_file_names.txt"))
                            }
                            if(!is.null(progressBar)){
                              progressBar$inc(amount = 1/noProgressSteps,
@@ -296,7 +304,7 @@ BatchLoader <- R6Class("BatchLoader",
                              noProgressSteps <- noScenTables * 2L + 1L
                            }
                            staticInputSids <- integer(0L)
-                           sameNameCounter   <- list()
+                           fileNamesTmp <- vector("list", length(scenIds))
                            for(tabId in seq_along(scenTableNames)){
                              if(identical(tabId, 1L)){
                                tableName <- "_metadata_"
@@ -355,16 +363,26 @@ BatchLoader <- R6Class("BatchLoader",
                                }
 
                                if(identical(tabId, 1L)){
-
-                                 sanitizedScenName <- sanitizeFn(tableTmp[[i]][["_sname"]][[1L]])
-                                 dirNameScen <- file.path(tmpDir, sanitizedScenName)
-
-                                 if(!is.null(sameNameCounter[[sanitizedScenName]])){
-                                   dirNameScen <- paste0(dirNameScen, "_", sameNameCounter[[sanitizedScenName]])
-                                   sameNameCounter[[sanitizedScenName]] <<- sameNameCounter[[sanitizedScenName]] + 1L
+                                 if(length(private$scenIdNameMap)){
+                                   sidNameMapId <- match(as.character(scenId), names(private$scenIdNameMap))
+                                   if(!is.na(sidNameMapId)){
+                                     sanitizedScenName <- sanitizeFn(private$scenIdNameMap[sidNameMapId])
+                                   }else{
+                                     sanitizedScenName <- sanitizeFn(tableTmp[[i]][["_sname"]][[1L]])
+                                   }
                                  }else{
-                                   sameNameCounter[[sanitizedScenName]] <<- 1L
+                                   sanitizedScenName <- sanitizeFn(tableTmp[[i]][["_sname"]][[1L]])
                                  }
+                                 if(!nchar(sanitizedScenName)){
+                                   sanitizedScenName <- "~invalid_file_name~"
+                                 }
+                                 fnCount <- 1L
+                                 while(sanitizedScenName %in% fileNamesTmp){
+                                   sanitizedScenName <- paste0(sanitizedScenName, "(", fnCount, ")")
+                                   fnCount <- fnCount + 1L
+                                 }
+                                 fileNamesTmp[[i]] <<- sanitizedScenName
+                                 dirNameScen <- file.path(tmpDir, sanitizedScenName)
                                  scenIdDirNameMap[[scenId]] <<- dirNameScen
                                  if(!dir.create(dirNameScen)){
                                    stop(sprintf("Temporary folder: '%s' could not be created.",
@@ -398,6 +416,10 @@ BatchLoader <- R6Class("BatchLoader",
                            }
                            return(invisible(self))
                          },
+                         setScenIdNameMap = function(scenIdNameMap){
+                           private$scenIdNameMap <- scenIdNameMap
+                           return(invisible(self))
+                         },
                          finalize = function(){
                            NULL
                          }
@@ -411,6 +433,7 @@ BatchLoader <- R6Class("BatchLoader",
                          groupLabels             = list(),
                          groupedNames            = list(),
                          groupedSids             = list(),
+                         scenIdNameMap           = character(),
                          buildQuery              = function(subsetList, colNames, limit){
                            escapedMetaTableName <- dbQuoteIdentifier(private$conn,
                                                                      dbSchema$getDbTableName("_scenMeta"))
