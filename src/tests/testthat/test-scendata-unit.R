@@ -215,6 +215,10 @@ test_that("Getting all scalars works without scalars defined in app", {
 
 test_that("Remapping scenario names works", {
   scenNames <- paste0("scen_", seq_len(6L))
+  if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
+    DBI::dbExecute(db$getConn(), paste0("DROP TABLE ",
+                                        DBI::dbQuoteIdentifier(db$getConn(), dbSchema$getDbTableName("_scenMeta")), " CASCADE;"))
+  }
   DBI::dbWriteTable(db$getConn(), dbSchema$getDbTableName("_scenMeta"),
                     tibble(`_sid` = seq_len(6L), `_uid` = c("te_de\\%d", "user", "te_de\\%d", "te_de\\%d", "te_de\\%d", "te_de\\%d"),
                            `_sname` = scenNames, `_stime` = rep.int(Sys.time(), 6L),
