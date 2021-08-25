@@ -260,11 +260,12 @@ BatchLoader <- R6Class("BatchLoader",
                                sanitizedScenName <- "~invalid_file_name~"
                              }
                              fnCount <- 1L
-                             while(sanitizedScenName %in% fileNamesTmp){
-                               sanitizedScenName <- paste0(sanitizedScenName, "(", fnCount, ")")
+                             sanitizedScenNameTmp <- sanitizedScenName
+                             while(sanitizedScenNameTmp %in% fileNamesTmp){
+                               sanitizedScenNameTmp <- paste0(sanitizedScenName, "(", fnCount, ")")
                                fnCount <- fnCount + 1L
                              }
-                             fileNamesTmp[[j]] <- sanitizedScenName
+                             fileNamesTmp[[j]] <- sanitizedScenNameTmp
                              gdxio$wgdx(file.path(tmpDir, paste0(sanitizedScenName, ".gdx")),
                                         setNames(lapply(names(dataTmp), function(symName){
                                           if(symName %in% c(scalarsFileName, names(ioConfig$modelOut))){
@@ -377,11 +378,12 @@ BatchLoader <- R6Class("BatchLoader",
                                    sanitizedScenName <- "~invalid_file_name~"
                                  }
                                  fnCount <- 1L
-                                 while(sanitizedScenName %in% fileNamesTmp){
-                                   sanitizedScenName <- paste0(sanitizedScenName, "(", fnCount, ")")
+                                 sanitizedScenNameTmp <- sanitizedScenName
+                                 while(sanitizedScenNameTmp %in% fileNamesTmp){
+                                   sanitizedScenNameTmp <- paste0(sanitizedScenName, "(", fnCount, ")")
                                    fnCount <- fnCount + 1L
                                  }
-                                 fileNamesTmp[[i]] <<- sanitizedScenName
+                                 fileNamesTmp[[i]] <<- sanitizedScenNameTmp
                                  dirNameScen <- file.path(tmpDir, sanitizedScenName)
                                  scenIdDirNameMap[[scenId]] <<- dirNameScen
                                  if(!dir.create(dirNameScen)){
