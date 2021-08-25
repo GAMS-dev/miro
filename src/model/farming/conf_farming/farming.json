@@ -1,7 +1,7 @@
 {
   "overwriteSheetOrder": {
     "input": ["cd", "pricecurve", "_widgets"],
-    "output": ["rep", "repcompare", "repfinance", "repc"]
+    "output": ["rep", "repcompare", "repfinance", "repc", "s_yf"]
   },
   "theme": "browser",
   "defCompMode": "split",
@@ -14,6 +14,7 @@
     "downloadTempFiles": true,
     "hcube": true
   },
+  "hiddenOutputSymbols": "s_yf",
   "autoGenInputGraphs": true,
   "aggregateWidgets": true,
   "storeLogFilesDuration": 7,
@@ -47,6 +48,17 @@
       "noHcube": false,
       "label": "Yield factor"
     },
+    "_gmspar_yfsd": {
+      "alias": "Yield factor standard deviation",
+      "widgetType": "slider",
+      "min": 0,
+      "max": 1,
+      "default": 0.1,
+      "step": 0.01,
+      "ticks": true,
+      "noHcube": false,
+      "label": "Set standard deviation of normal distribution of yield factor scenarios"
+    },
     "land": {
       "widgetType": "slider",
       "min": 200,
@@ -57,6 +69,16 @@
       "noHcube": false,
       "label": "Available land [acre]"
     },
+    "nums": {
+      "widgetType": "slider",
+      "min": 0,
+      "max": 1000,
+      "default": 0,
+      "step": 1,
+      "ticks": true,
+      "noHcube": false,
+      "label": "Number of scenarios"
+    },
     "_gmsopt_emp": {
       "widgetType": "dropdown",
       "choices": ["DE", "DECIS", "LINDO"],
@@ -64,26 +86,6 @@
       "noHcube": false,
       "multiple": false,
       "label": "Stochastic solver"
-    },
-    "nums": {
-      "widgetType": "slider",
-      "min": 0,
-      "max": 50,
-      "default": 0,
-      "step": 1,
-      "ticks": true,
-      "noHcube": false,
-      "label": "Number of scenarios"
-    },
-    "_gmspar_yfsd": {
-      "widgetType": "slider",
-      "min": 0,
-      "max": 1,
-      "default": 0.1,
-      "step": 0.01,
-      "ticks": true,
-      "noHcube": false,
-      "label": "Set standard deviation of normal distribution of yield factor scenarios"
     }
   },
   "dataRendering": {
@@ -129,7 +131,7 @@
     },
     "rep": {
       "outType": "mirorenderer_rep",
-      "additionalData": ["cd", "pricecurve", "repc", "repcompare", "repfinance"]
+      "additionalData": ["cd", "pricecurve", "repc", "repcompare", "repfinance", "s_yf"]
     },
     "repcompare": {
       "outType": "miroPivot",
@@ -168,7 +170,7 @@
           "3": {
             "labels": "c",
             "values": "seedcost",
-            "name": "seed cost [$]",
+            "name": "seed cost [€]",
             "hole": 0.4
           },
           "4": {
@@ -192,7 +194,7 @@
           "7": {
             "labels": "c",
             "values": "pcost",
-            "name": "purchase cost [$]",
+            "name": "purchase cost [€]",
             "hole": 0.4
           }
         },
@@ -236,6 +238,9 @@
     },
     "repfinance": {
       "newAlias": "Financial Report by Scenario"
+    },
+    "s_yf": {
+      "newAlias": "Yield factor realization by scenario"
     }
   },
   "outputTables": {
@@ -287,5 +292,28 @@
     },
     "height": 700,
     "colWidths": 150
+  },
+  "overwriteHeaderAliases": {
+    "cd": {
+      "newHeaders": ["Crops", "Yield [tons/acre]", "Plant cost [€/acre]", "Purchase price [€/ton]", "Minimum requirements of crop to feed cattle [tons]"]
+    },
+    "pricecurve": {
+      "newHeaders": ["Crops", "Price curve segments", "Crop sales price [€/ton]", "Max amount of crop sold at sales price [tons]"]
+    },
+    "repc": {
+      "newHeaders": ["Crops", "Crop yield [tons]", "Crop planted [acres]", "Seed cost [€]", "Crop sold [tons]", "Crop revenue [€]", "Crop purchased [tons]", "Purchase cost [€]"]
+    },
+    "repcompare": {
+      "newHeaders": ["Crops", "Deterministic: crop planted [acres]", "Stochastic: crop planted [acres]"]
+    },
+    "s_yf": {
+      "newHeaders": ["Scenarios", "Yield factor realization by scenario"]
+    },
+    "repfinance": {
+      "newHeaders": ["Scenarios", "Reports", "Value"]
+    },
+    "rep": {
+      "newHeaders": ["Report", "Value"]
+    }
   }
 }

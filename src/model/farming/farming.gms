@@ -9,7 +9,7 @@ Birge, R, and Louveaux, F V, Introduction to Stochastic Programming.
 Springer, 1997.
 
 $offtext
-
+execseed = (jnow-trunc(jnow))*3600*24;
 Set crop
     ch    'header for data table' /
                yield               'yield [tons/acre]'
@@ -32,7 +32,7 @@ corn            3      230     210     240
 Parameter
    yf     'yield factor'          /   1 /
    land   'available land [acre]' / 500 /
-   nums   'number of scenarios'   /   3 /
+   nums   'number of scenarios'   /   500 /
 ;
 
 Table pricecurve(crop,seq<,ph) 'price curve data'
@@ -153,9 +153,9 @@ $if not %SNUM%==0 Set s(s) scenarios / s1*s%SNUM% /;
 $if     %SNUM%==0 Set s(s) scenarios /            /;
 Parameter
     srep(s,*)         scenario attributes / #s.prob 0 /
-    s_yf(s)           yield factor realization by scenario
     s_profit(s)       profit by scenario  /  /
 $onExternalOutput
+    s_yf(s)           yield factor realization by scenario
     repfinance(s,rh)  financial report by scenario
 $offExternalOutput
     s_w(s,c,seq)      crops sold in segment of cost curve in tons by scenario /  /
@@ -169,9 +169,10 @@ Set dict / s     .scenario.''
            y     .level.   s_y /;
 
 file emp / '%emp.info%' /;
+emp.nd = 6;
 put emp '* problem %gams.i%' / 'randvar yf discrete';
 $if not set YFSD $set YFSD 0.1
-loop(s, put (1/card(s)) ' ' normal(yf,%YFSD%) /);
+loop(s, put (1/card(s)) ' ' max(0, normal(yf,%YFSD%)) /);
 putclose 'stage 2 yf y w bal profit';
 
 $if not %SNUM%==0 solve farm_emp using emp maximizing profit scenario dict;

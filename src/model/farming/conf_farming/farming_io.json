@@ -141,6 +141,20 @@
 				}
 			}
 		},
+		"s_yf":	{
+			"alias":	"yield factor realization by scenario",
+			"symtype":	"parameter",
+			"headers":	{
+				"s":	{
+					"type":	"string",
+					"alias":	"scenarios"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"yield factor realization by scenario"
+				}
+			}
+		},
 		"repfinance":	{
 			"alias":	"financial report by scenario",
 			"symtype":	"parameter",

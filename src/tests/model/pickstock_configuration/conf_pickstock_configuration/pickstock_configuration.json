@@ -1,14 +1,15 @@
 {
+  "defaultRendererOutput": "datatable",
   "UILogo": "pickstock.png",
   "miroLogFile": "miro.log",
   "scripts": {
     "hcube": [
       {
-        "title": "High level scalar analysis",
+        "title": "Test analysis",
         "id": "script1",
-        "command": "jupyter",
-        "args": ["nbconvert", "--to", "html", "--execute", "hcube_analysis.ipynb"],
-        "outputFile": "hcube_analysis.html"
+        "command": "gams",
+        "args": ["test_script.gms", "--testVar", "test"],
+        "outputFile": "out.txt"
       }
     ]
   },
@@ -16,7 +17,7 @@
     "price": {
       "widgetType": "table",
       "label": "#asd\n*test*",
-      "bigData": false,
+      "tableType": "default",
       "readonly": false,
       "readonlyCols": ["date", "symbol"],
       "hideIndexCol": true,
@@ -42,7 +43,7 @@
       "alias": "number of days for training",
       "widgetType": "slider",
       "ticks": false,
-      "noHcube": false
+      "noHcube": true
     },
     "solver": {
       "alias": "MIP-Solver",
@@ -70,17 +71,9 @@
       "default": [7, 22],
       "step": 3,
       "ticks": true,
-      "noHcube": true,
+      "noHcube": false,
       "label": "select the slider range",
       "minStep": 1
-    },
-    "_gmsopt_checkbox": {
-      "widgetType": "checkbox",
-      "alias": "checkbox tab",
-      "value": 1,
-      "noHcube": true,
-      "class": "checkbox-material",
-      "label": "select checkbox"
     },
     "_gmspar_date": {
       "widgetType": "date",
@@ -124,6 +117,14 @@
       "label": "select a number",
       "max": 10000,
       "sign": "€"
+    },
+    "_gmsopt_LstTitleLeftAligned": {
+      "widgetType": "checkbox",
+      "alias": "checkbox tab",
+      "value": 1,
+      "noHcube": false,
+      "class": "checkbox-material",
+      "label": "select checkbox"
     }
   },
   "dataRendering": {
@@ -397,10 +398,7 @@
           "axisLabelFontSize": 14,
           "gridLineWidth": 0.3,
           "gridLineColor": "gray",
-          "valueRange": [
-            null,
-            null
-          ],
+          "valueRange": [null, null],
           "independentTicks": true
         },
         "yaxis2": {
@@ -410,10 +408,7 @@
           "axisLabelFontSize": 14,
           "gridLineWidth": 0.3,
           "drawGrid": true,
-          "valueRange": [
-            null,
-            null
-          ],
+          "valueRange": [null, null],
           "independentTicks": true
         },
         "ydata": {
@@ -433,7 +428,7 @@
           }
         },
         "dyHighlight": {
-		  "highlightCircleSize": 3,
+          "highlightCircleSize": 3,
           "hideOnMouseOut": true,
           "highlightSeriesOpts": {
             "strokeWidth": 10,
@@ -782,12 +777,13 @@
   "storeLogFilesDuration": 0,
   "roundingDecimals": 0,
   "activateModules": {
-    "loadLocal": false,
+    "loadLocal": true,
     "logFile": false,
     "lstFile": false,
-    "attachments": false,
+    "attachments": true,
     "remoteExecution": false,
-    "downloadTempFiles": false
+    "downloadTempFiles": false,
+    "hcube": true
   },
   "aggregateWidgets": false,
   "excelIncludeMeta": false,
@@ -796,6 +792,10 @@
   "autoGenInputGraphs": false,
   "theme": "dark",
   "defCompMode": "tab",
+  "pivotCompSettings": {
+    "enableHideEmptyCols": true,
+    "emptyUEL": "&"
+  },
   "symbolLinks": [
     {
       "source": "pricemerge",
@@ -859,17 +859,12 @@
   },
   "outputAttachments": [
     {
-      "filename": "testOutputAttachment",
+      "filename": "dowjones2016.csv",
       "execPerm": true,
       "throwError": false
-    },
-    {
-      "filename": "testOutputAttachment2",
-      "execPerm": false,
-      "throwError": true
     }
   ],
-  "extraClArgs": "--test=true",
+  "extraClArgs": ["--test=true", "--sleep=1"],
   "inputWidgetGroups": [
     {
       "name": "Advanced options",
