@@ -468,9 +468,25 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         symToFetch <- getSheetnamesByTabsetId("0")
       }
     }else if(identical(currentCompMode, "tab")){
+      sidsInTabComp <- scenData$getRefScenMap()
+      sidsInTabComp[["sb"]] <- NULL
+      if(length(sidsInTabComp)){
+        tabRefs <- startsWith(names(sidsInTabComp), "cmpTab_")
+        sidsInTabComp <- sidsToLoadVector %in% unlist(sidsInTabComp[tabRefs], use.names = FALSE)
+        sidsToLoad <- sidsToLoad[!sidsInTabComp]
+        sidsToLoadVector <- sidsToLoadVector[!sidsInTabComp]
+      }
       refId <- NULL
       viewsSids <- which(!occupiedSidSlots)[seq_along(sidsToLoadVector)] + 3
     }else if(identical(currentCompMode, "split")){
+      sidsInSplitComp <- scenData$getRefScenMap()
+      sidsInSplitComp[["sb"]] <- NULL
+      if(length(sidsInSplitComp)){
+        splitRefs <- names(sidsInSplitComp) %in% c("cmpSplitL", "cmpSplitR")
+        sidsInSplitComp <- sidsToLoadVector %in% unlist(sidsInSplitComp[splitRefs], use.names = FALSE)
+        sidsToLoad <- sidsToLoad[!sidsInSplitComp]
+        sidsToLoadVector <- sidsToLoadVector[!sidsInSplitComp]
+      }
       if(identical(length(sidsToLoadVector), 2L)){
         refId <- NULL
         viewsSids <- c(2L, 3L)
