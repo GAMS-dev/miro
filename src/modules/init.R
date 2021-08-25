@@ -253,6 +253,10 @@ if(is.null(errMsg)){
         if(!is.null(widgetConfig$alias)){
           modelIn[[elL]]$alias <- widgetConfig$alias
           widgetConfig$alias <- NULL
+        }else if(startsWith(elL, prefixGMSOpt)){
+          modelIn[[elL]]$alias <- substr(toupper(el), 9L, nchar(el))
+        }else{
+          modelIn[[elL]]$alias <- paste0("--", toupper(substr(el, 9L, nchar(el))))
         }
         if(!is.null(widgetConfig$noHcube)){
           modelIn[[elL]]$noHcube <- widgetConfig$noHcube
