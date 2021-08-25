@@ -321,11 +321,7 @@ Sys.setenv(MIRO_BUILD='true')
 for ( modelName in c( 'pickstock', 'transport', 'sudoku', 'tsp', 'farming',
     'inscribedsquare', 'cpack', 'cutstock' ) ) {
     print(sprintf("Building example app: %s", modelName))
-    if(modelName %in% c('inscribedsquare', 'cpack', 'tsp', 'cutstock')){
-        Sys.setenv(MIRO_MODE='base')
-    }else{
-        Sys.setenv(MIRO_MODE='full')
-    }
+    Sys.setenv(MIRO_MODE='base')
     if(!dir.exists(file.path(examplesPath, modelName)) &&
         !dir.create(file.path(examplesPath, modelName), recursive = TRUE)){
         stop(sprintf("Could not create path: %s", examplesPath))

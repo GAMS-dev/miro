@@ -142,7 +142,8 @@
     "lstFile": true,
     "loadLocal": true,
     "attachments": true,
-    "downloadTempFiles": true
+    "downloadTempFiles": true,
+    "hcube": true
   },
   "autoGenInputGraphs": true,
   "aggregateWidgets": true,

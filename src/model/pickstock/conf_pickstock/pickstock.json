@@ -344,7 +344,8 @@
     "logFile": true,
     "lstFile": true,
     "attachments": true,
-    "downloadTempFiles": true
+    "downloadTempFiles": true,
+    "hcube": true
   },
   "aggregateWidgets": true,
   "excelIncludeMeta": true,
