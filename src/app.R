@@ -1491,6 +1491,7 @@ if(!is.null(errMsg)){
       scenMetaDbBaseSubset <- NULL
       occupiedSidSlots <- vector("logical", length = maxNumberScenarios)
       loadInLeftBoxSplit <- TRUE
+      pivotCompRefreshAll <- FALSE
       # trigger navigation through tabs by shortcuts
       shortcutNest     <- 0L
       nestTabsetsViaShortcuts <- function(direction){

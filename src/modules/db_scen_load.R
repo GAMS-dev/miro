@@ -406,6 +406,7 @@ observeEvent(input$btBatchCompare, {
     scenData$setScenIdNameMap(character(0L))
   }
   flog.debug("Load batch of scenarios to compare mode (%s) button clicked.", viewMode)
+  pivotCompRefreshAll <<- TRUE
   isInSolveMode <<- FALSE
   loadIntoSandbox <<- FALSE
   switchCompareMode(session, viewMode, length(sidsToLoad))
@@ -415,6 +416,8 @@ observeEvent(input$btBatchCompare, {
 observeEvent(virtualActionButton(rv$btOverwriteScen), {
   flog.debug("Loading and rendering scenarios: '%s'.",
              paste(sidsToLoad, collapse = ", "))
+  refreshAllScenTmp <- pivotCompRefreshAll
+  pivotCompRefreshAll <<- FALSE
   suppressCloseModalLocal <- suppressCloseModal
   suppressCloseModal      <<- FALSE
   if(!length(sidsToLoad)){
@@ -458,9 +461,13 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         if(!is.null(dynamicUILoaded$dynamicTabsets[["tab_0"]])){
           dynamicUILoaded$dynamicTabsets[["tab_0"]][["content"]][] <<- FALSE
         }
-        sidsToRemoveFromPivotComp <- !sidsInPivotComp %in% c(sidsToLoadVector, "sb_cmpPivot")
-        if(any(sidsToRemoveFromPivotComp)){
-          scenData$clear(refId, sidsInPivotComp[sidsToRemoveFromPivotComp])
+        if(refreshAllScenTmp){
+          scenData$clear(refId)
+        }else{
+          sidsToRemoveFromPivotComp <- !sidsInPivotComp %in% c(sidsToLoadVector, "sb_cmpPivot")
+          if(any(sidsToRemoveFromPivotComp)){
+            scenData$clear(refId, sidsInPivotComp[sidsToRemoveFromPivotComp])
+          }
         }
         if(isGroupOfSheets[[1]]){
           tabId <- 1
