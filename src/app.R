@@ -220,6 +220,9 @@ if(!miroDeploy &&
   LAUNCHCONFIGMODE <- TRUE
 }else if(identical(tolower(Sys.getenv("MIRO_MODE")), "hcube")){
   LAUNCHHCUBEMODE <<- TRUE
+  warningMsgTmp <- "The MIRO Hypercube Mode is deprecated as of MIRO 2.1. Please use the Hypercube module instead. Go here to find the latest documentation: https://gams.com/miro/hc-module.html"
+  warning(warningMsgTmp, call. = FALSE)
+  warningMsg <- warningMsgTmp
 }
 if(is.null(errMsg)){
   rSaveFilePath <- file.path(currentModelDir,
