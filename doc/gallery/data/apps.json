@@ -1,79 +1,79 @@
 {
     "apps": [ {
-        "id": "transport", 
-        "title": "Transport", 
-        "desc": "A transportation problem", 
-        "author": "GAMS Development Corp.", 
+        "id": "transport",
+        "title": "Transport",
+        "desc": "A transportation problem",
+        "author": "GAMS Development Corp.",
         "upvotes": 0
     },
     {
-        "id": "pickstock", 
-        "title": "Pickstock", 
-        "author": "GAMS Development Corp", 
-        "desc": "Stock Selection Optimization", 
+        "id": "pickstock",
+        "title": "Pickstock",
+        "author": "GAMS Development Corp",
+        "desc": "Stock Selection Optimization",
         "upvotes": 0
     },
     {
-        "id": "sudoku", 
-        "title": "Sudoku solver", 
-        "author": "GAMS Development Corp", 
-        "desc": "This model allows you to solve your Sudokus.", 
+        "id": "sudoku",
+        "title": "Sudoku solver",
+        "author": "GAMS Development Corp",
+        "desc": "This model allows you to solve your Sudokus.",
         "upvotes": 0
     },
     {
-        "id": "tsp", 
-        "title": "TSP", 
-        "author": "GAMS Development Corp", 
-        "desc": "Traveling Salesman Problem", 
+        "id": "tsp",
+        "title": "TSP",
+        "author": "GAMS Development Corp",
+        "desc": "Traveling Salesman Problem",
         "upvotes": 0
     },
     {
-        "id": "cpack", 
-        "title": "Circle packing", 
-        "author": "GAMS Development Corp", 
-        "desc": "Packing identical size circles in the unit circle", 
+        "id": "cpack",
+        "title": "Circle packing",
+        "author": "GAMS Development Corp",
+        "desc": "Packing identical size circles in the unit circle",
         "upvotes": 0
     },
     {
-        "id": "farming", 
-        "title": "Farming model", 
-        "author": "GAMS Development Corp", 
-        "desc": "Crop plant allocation problem with stochastic crop yield", 
+        "id": "farming",
+        "title": "Farming model",
+        "author": "GAMS Development Corp",
+        "desc": "Crop plant allocation problem with stochastic crop yield",
         "upvotes": 0
     },
     {
-        "id": "inscribedsquare", 
-        "title": "Inscribed Square", 
-        "author": "GAMS Development Corp", 
-        "desc": "Maximal area Inscribed Square Problem", 
+        "id": "inscribedsquare",
+        "title": "Inscribed Square",
+        "author": "GAMS Development Corp",
+        "desc": "Maximal area Inscribed Square Problem",
         "upvotes": 0
     },
     {
-        "id": "simple_mip", 
-        "title": "Simple", 
-        "author": "GAMS Development Corp", 
-        "desc": "Simplified Energy Systems Model", 
+        "id": "simple_mip",
+        "title": "Simple",
+        "author": "GAMS Development Corp",
+        "desc": "Simplified Energy Systems Model",
         "upvotes": 0
     },
     {
-        "id": "times_miro", 
-        "title": "TIMES", 
-        "author": "Frederik Fiand, Evangelos Panos, Gary Goldstein", 
-        "desc": "Open source app for IEA-ETSAP TIMES", 
+        "id": "times_miro",
+        "title": "TIMES",
+        "author": "Frederik Fiand, Evangelos Panos, Gary Goldstein",
+        "desc": "Open source app for IEA-ETSAP TIMES",
         "upvotes": 0
     },
     {
-        "id": "cutstock", 
-        "title": "Cutting Stock", 
-        "author": "GAMS Development Corp", 
-        "desc": "Classical Cutting Stock Problem", 
+        "id": "cutstock",
+        "title": "Cutting Stock",
+        "author": "GAMS Development Corp",
+        "desc": "Classical Cutting Stock Problem",
         "upvotes": 0
     },
     {
-        "id": "cohortdivisor", 
-        "title": "Cohort Divisor", 
-        "author": "GAMS Development Corp", 
-        "desc": "Partition students into cohorts so that inter-cohort connections are minimized", 
+        "id": "cohortdivisor",
+        "title": "Cohort Divisor",
+        "author": "GAMS Development Corp",
+        "desc": "Partition students into cohorts so that inter-cohort connections are minimized",
         "upvotes": 0
     }
     ]

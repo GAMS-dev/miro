@@ -32,12 +32,12 @@ test_that("MIRO pivot renderer handles filtering", {
                                           filterElements = list()))
     session$setInputs(rowIndexList = letters[2:6],
                       filterIndexList = "a")
-    expect_identical(filteredData(), 
+    expect_identical(filteredData(),
                      list(data = testDataFactor[c(1, 6), ],
                           filterElements = list(a = factor(c("a1", "a2", "a3", "a4", "a5"))),
                           multiFilterIndices = NULL))
     session$setInputs(rowIndexList = letters[3:6], filterIndexList = c("a", "b"))
-    expect_identical(filteredData(), 
+    expect_identical(filteredData(),
                      list(data = testDataFactor[1, ],
                           filterElements = list(a = factor(c("a1", "a2", "a3", "a4", "a5")),
                                                 b = factor(c("b1", "b6"),
@@ -46,7 +46,7 @@ test_that("MIRO pivot renderer handles filtering", {
                           multiFilterIndices = NULL))
     session$setInputs(filterIndexList = c("a"),
                       aggregationIndexList = c("b"))
-    expect_identical(filteredData(), 
+    expect_identical(filteredData(),
                      list(data = testDataFactor[c(1, 6), ],
                           filterElements = list(a = factor(c("a1", "a2", "a3", "a4", "a5")),
                                                 b = factor(c("b1", "b6"),
@@ -191,7 +191,7 @@ test_that("MIRO pivot renderer handles sorting (part1)", {
                                 a3 = c(NA_integer_, NA_integer_, NA_integer_, NA_integer_, 8L, NA_integer_, 3L, NA_integer_, NA_integer_, NA_integer_),
                                 a4 = c(NA_integer_, NA_integer_, 4L, NA_integer_, NA_integer_, NA_integer_, NA_integer_, NA_integer_, NA_integer_, 9L),
                                 a5 = c(10L, NA_integer_, NA_integer_, NA_integer_, NA_integer_, NA_integer_, NA_integer_, 5L, NA_integer_, NA_integer_)))
-   
+
   }, args = list(data = testData,
                  options = list(enablePersistentViews = FALSE,
                                 "_metadata_" = list(symtype = "parameter"))))
@@ -209,7 +209,7 @@ test_that("MIRO pivot renderer handles sorting (part2)", {
                                 `a4.e2` = c(NA_integer_, NA_integer_, NA_integer_, 9L),
                                 `a5.e10` = c(10L, NA_integer_, NA_integer_, NA_integer_),
                                 `a5.e2` = c(NA_integer_, NA_integer_, 5L, NA_integer_)))
-    
+
   }, args = list(data = tibble(a = rep.int(paste0("a", seq_len(5)), 2L), b = rep.int(c("b2", "b10", "b4", "b11", "b5"), 2L),
                                c = rep.int(c("c10", "c1"), 5L), d = paste0("d", seq_len(10)),
                                e = rep.int(c("e2", "e10"), 5L), f = "f10",

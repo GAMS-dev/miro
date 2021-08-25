@@ -11,7 +11,7 @@ observeEvent(input$btAnalysisConfig, {
 if(length(config$scripts$base)){
   observeEvent(input$runScript, {
     scriptId <- suppressWarnings(as.integer(input$runScript))
-    if(is.na(scriptId) || scriptId < 1 || 
+    if(is.na(scriptId) || scriptId < 1 ||
        scriptId > length(config$scripts$base)){
       flog.error("A script with id: '%s' was attempted to be executed. However, this script does not exist. Looks like an attempt to tamper with the app!",
                  input$runScript)
@@ -24,13 +24,13 @@ if(length(config$scripts$base)){
       hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
       hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
       showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-      
-      showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"), 
+
+      showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"),
                        lang$nav$scriptOutput$runButton)
       return()
     }
     flog.debug("Button to execute script: '%s' clicked.", scriptId)
-    
+
     if(!dir.exists(scriptsPath)){
       if(dir.exists(file.path(currentModelDir, paste0("scripts_", modelName)))){
         if(!file.copy2(file.path(currentModelDir, paste0("scripts_", modelName)),
@@ -53,16 +53,16 @@ if(length(config$scripts$base)){
     showEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
     hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
     hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-    
+
     errMsg <- NULL
-    
+
     tryCatch({
       scenData$loadSandbox(getInputDataFromSandbox(),
                            if(length(modelInFileNames)) modelInFileNames else character())
-      gdxio$wgdx(file.path(workDir, paste0("scripts_", modelName), "data.gdx"), 
+      gdxio$wgdx(file.path(workDir, paste0("scripts_", modelName), "data.gdx"),
                  scenData$get("sb", includeHiddenScalars = TRUE), squeezeZeros = 'n')
     }, error = function(e){
-      flog.error("Problems writing gdx file for script: '%s'. Error message: '%s'.", 
+      flog.error("Problems writing gdx file for script: '%s'. Error message: '%s'.",
                  scriptId, conditionMessage(e))
       errMsg <<- sprintf(lang$errMsg$fileWrite$desc, "data.gdx")
       hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
@@ -74,12 +74,12 @@ if(length(config$scripts$base)){
     }
     tryCatch({
       scriptOutput$run(scriptId)
-      showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"), 
+      showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"),
                        lang$nav$scriptOutput$interruptButton)
     }, error = function(e){
       flog.info("Script: '%s' crashed during startup. Error message: '%s'.",
                 scriptId, conditionMessage(e))
-      scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$crash, scriptId, 
+      scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$crash, scriptId,
                                hcube = FALSE, isError = TRUE)
     })
   })
@@ -91,7 +91,7 @@ if(length(config$scripts$hcube)){
   observeEvent(input$btRunHcubeScript, {
     scriptId <- suppressWarnings(as.integer(input$selHcubeAnalysisScript))
     flog.debug("Button to execute Hypercube analysis script: '%s' clicked.", scriptId)
-    
+
     if(is.na(scriptId) || scriptId < 1 || scriptId > length(config$scripts$hcube)){
       flog.error("A script with id: '%s' was attempted to be executed. However, this script does not exist. Looks like an attempt to tamper with the app!",
                  scriptId)
@@ -125,7 +125,7 @@ if(length(config$scripts$hcube)){
     }
     hideEl(session, ".batch-load-content")
     showEl(session, ".batch-load-script-content")
-    
+
     prog <- Progress$new()
     on.exit(prog$close(), add = TRUE)
     prog$set(message = lang$nav$dialogHcube$waitDialog$title, value = 0)
@@ -145,7 +145,7 @@ if(length(config$scripts$hcube)){
                               gdxio, prog, genScenList = TRUE)
       FALSE
     }, error = function(e){
-      flog.error("Problems writing gdx files for script: '%s'. Error message: '%s'.", 
+      flog.error("Problems writing gdx files for script: '%s'. Error message: '%s'.",
                  scriptId, conditionMessage(e))
       hideModal(session, 4L)
       showHideEl(session, "#analysisRunUnknownError", 4000L,

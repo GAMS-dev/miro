@@ -2,82 +2,160 @@
 <!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
 <!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
 <!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
-<head>
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+  <!--<![endif]-->
+  <head>
     <title>GAMS MIRO - Tutorial</title>
     <!-- Meta -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="GAMS MIRO documentation">
-    <meta name="author" content="GAMS Development Corp.">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GAMS MIRO documentation" />
+    <meta name="author" content="GAMS Development Corp." />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
+      rel="stylesheet"
+      type="text/css"
+    />
     <!-- FontAwesome JS -->
-    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.1.1/js/all.js"
+      integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a"
+      crossorigin="anonymous"
+    ></script>
     <!-- Global CSS -->
-    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <link
+      rel="stylesheet"
+      href="assets/plugins/bootstrap/css/bootstrap.min.css"
+    />
     <!-- Plugins CSS -->
-    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
-    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css" />
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css" />
 
     <!-- Theme CSS -->
-    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css" />
     <!--#include virtual="/wheader.html" -->
-</head>
+  </head>
 
-<body class="body-orange">
+  <body class="body-orange">
     <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
-    <!--#include virtual="/mirover.html" -->
+      <!--#include virtual="/mirover.html" -->
 
-        <!-- ******Header****** -->
-        <header id="header" class="sub-header">
-            <div class="container">
-                <div class="branding">
-                    <h1 class="logo">
-                        <a href="index.html">
-                          <img class="img-fluid" style="height:75px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
-                        </a>
-                    </h1>
-                </div><!--//branding-->
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                    <li class="breadcrumb-item active">Tutorial</li>
-                </ol>
-            </div><!--//container-->
-        </header><!--//header-->
-        <div class="doc-wrapper">
-            <div class="container">
-                <div class="row justify-content-end search-box-wrapper">
-                    <div class="float-right">
-                        <input class="form-control search-box" id="miroSearch" type="text" placeholder="Search" aria-label="Search">
-                        <ul id="miroSearchResults" class="list-group">
-                        </ul>
-                    </div>
-                </div>
-                <div id="doc-header" class="doc-header text-center">
-                    <h1 class="doc-title"><i class="icon fa fa-glasses"></i> Tutorial</h1>
-                </div><!--//doc-header-->
-                <div class="doc-body row">
-                    <div class="doc-content col-md-9 col-12 order-1">
-                        <div class="content-inner">
-                            <section id="tutorial-introduction" class="doc-section">
-                                <h2 class="section-title">Introduction</h2>
-                                <div class="section-block">
-                                    <p>In this section we show you how a typical workflow in the development of a MIRO application can look like - from the simple GAMS model to the initialization and customization of a MIRO application up to its deployment. This tutorial is a quick guide to the most important aspects of the MIRO application development. The individual aspects are explained in more detail in corresponding linked chapters (<i class="icon fa fa-external-link-alt"></i>). <p>
-                                    <p>The easiest way to develop a MIRO application from scratch is to use the new <a href="https://www.gams.com/latest/docs/T_STUDIO.html">GAMS Studio</a>. It offers built-in functionality of the most important interactions with MIRO. Learn more about this <a href="./studio.html">here</a>.</p>
-                                </div><!--//section-block-->
-                            </section><!--//doc-section-->
-                            <section id="tutorial-model-adjustments" class="doc-section">
-                                <h2 class="section-title info-label">Model adjustments</h2><a title="Go to chapter" class=" info-wrapper" href="./model.html#model-adjustments"><i class="icon fa fa-external-link-alt info-icon"></i></a>
-                                <div class="section-block">
-                                    <p>Ideally, you start off with a fully developed GAMS model or a model in which no major changes are made to the symbols that will later be visible in MIRO (of course, you can also start from scratch and adjust your symbols as you go). In our example we use the classic <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">Trnsport model</a> from the GAMS model library. The only thing we have to do in the model is to tell MIRO which symbols we want to see in the application. We do this by wrapping the corresponding <i>symbol declarations</i> with the tags <code class="language-gams">$onExternalInput
-                                        </code> / <code class="language-gams">$offExternalInput
-                                        </code> for input data and <code class="language-gams">$onExternalOutput
-                                        </code> / <code class="language-gams">$offExternalOutput
-                                        </code> for output data. These tags can be used multiple times within a model. Symbols which are not tagged won’t be visible in MIRO.</p>
-                                        
-                                        <pre style="max-height: 300px;"><code class="language-gams">Set
+      <!-- ******Header****** -->
+      <header id="header" class="sub-header">
+        <div class="container">
+          <div class="branding">
+            <h1 class="logo">
+              <a href="index.html">
+                <img
+                  class="img-fluid"
+                  style="height: 75px"
+                  src="assets/images/logo.svg"
+                  onerror="this.onerror=null; this.src='assets/images/logo.png'"
+                  alt="GAMS MIRO"
+                />
+              </a>
+            </h1>
+          </div>
+          <!--//branding-->
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item active">Tutorial</li>
+          </ol>
+        </div>
+        <!--//container-->
+      </header>
+      <!--//header-->
+      <div class="doc-wrapper">
+        <div class="container">
+          <div class="row justify-content-end search-box-wrapper">
+            <div class="float-right">
+              <input
+                class="form-control search-box"
+                id="miroSearch"
+                type="text"
+                placeholder="Search"
+                aria-label="Search"
+              />
+              <ul id="miroSearchResults" class="list-group"></ul>
+            </div>
+          </div>
+          <div id="doc-header" class="doc-header text-center">
+            <h1 class="doc-title">
+              <i class="icon fa fa-glasses"></i> Tutorial
+            </h1>
+          </div>
+          <!--//doc-header-->
+          <div class="doc-body row">
+            <div class="doc-content col-md-9 col-12 order-1">
+              <div class="content-inner">
+                <section id="tutorial-introduction" class="doc-section">
+                  <h2 class="section-title">Introduction</h2>
+                  <div class="section-block">
+                    <p>
+                      In this section we show you how a typical workflow in the
+                      development of a MIRO application can look like - from the
+                      simple GAMS model to the initialization and customization
+                      of a MIRO application up to its deployment. This tutorial
+                      is a quick guide to the most important aspects of the MIRO
+                      application development. The individual aspects are
+                      explained in more detail in corresponding linked chapters
+                      (<i class="icon fa fa-external-link-alt"></i>).
+                    </p>
+                    <p></p>
+                    <p>
+                      The easiest way to develop a MIRO application from scratch
+                      is to use the new
+                      <a href="https://www.gams.com/latest/docs/T_STUDIO.html"
+                        >GAMS Studio</a
+                      >. It offers built-in functionality of the most important
+                      interactions with MIRO. Learn more about this
+                      <a href="./studio.html">here</a>.
+                    </p>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
+                <section id="tutorial-model-adjustments" class="doc-section">
+                  <h2 class="section-title info-label">Model adjustments</h2>
+                  <a
+                    title="Go to chapter"
+                    class="info-wrapper"
+                    href="./model.html#model-adjustments"
+                    ><i class="icon fa fa-external-link-alt info-icon"></i
+                  ></a>
+                  <div class="section-block">
+                    <p>
+                      Ideally, you start off with a fully developed GAMS model
+                      or a model in which no major changes are made to the
+                      symbols that will later be visible in MIRO (of course, you
+                      can also start from scratch and adjust your symbols as you
+                      go). In our example we use the classic
+                      <a
+                        href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html"
+                        target="_blank"
+                        >Trnsport model</a
+                      >
+                      from the GAMS model library. The only thing we have to do
+                      in the model is to tell MIRO which symbols we want to see
+                      in the application. We do this by wrapping the
+                      corresponding <i>symbol declarations</i> with the tags
+                      <code class="language-gams">$onExternalInput </code> /
+                      <code class="language-gams">$offExternalInput </code> for
+                      input data and
+                      <code class="language-gams">$onExternalOutput </code> /
+                      <code class="language-gams">$offExternalOutput </code> for
+                      output data. These tags can be used multiple times within
+                      a model. Symbols which are not tagged won’t be visible in
+                      MIRO.
+                    </p>
+
+                    <pre
+                      style="max-height: 300px"
+                    ><code class="language-gams">Set
    i 'canning plants' / seattle,  san-diego /
    j 'markets'        / new-york, chicago, topeka /;
 
@@ -96,7 +174,7 @@ Table d(i,j) 'distance in thousands of miles'
               new-york  chicago  topeka
    seattle         2.5      1.7     1.8
    san-diego       2.5      1.8     1.4;
-          
+
 Scalar f 'freight in dollars per case per thousand miles' / 90 /;
 $offExternalInput
 
@@ -128,83 +206,251 @@ solve transport using lp minimizing z;
 
 display x.l, x.m;
 </code></pre>
-                            </div>
-                            <div class="section-block">
-                                <p>After starting MIRO for the first time, all the selected symbols are available in tabular form. 
-                                With the basic configuration you can load data, modify it from within the interface and start or 
-                                stop a GAMS job. You also have access to the <i>log</i> and <i>listing</i> (<i>lst</i>) files of GAMS as well as 
-                                all files generated during the run. When the model has finished the execution phase successfully, the results can 
-                                be examined. Since MIRO is connected to a database, you can store results there, fetch previously saved results 
-                                and modify them or use them to compare with other scenarios.</p>
-                                <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                    <img class="img-fluid" src="assets/images/initial-screen.png" alt="initial GAMS MIRO screen" />
-                                </div>
-                                </div><!--//section-block-->
-                            </section><!--//doc-section-->
-                            <section id="tutorial-configuration" class="doc-section">
-                                <h2 class="section-title info-label">Configuration</h2><a title="Go to chapter" class=" info-wrapper" href="./customize.html"><i class="icon fa fa-external-link-alt info-icon"></i></a>
-                                <div class="section-block">
-                                    <p>Now the MIRO app can be configured. This includes</p>
-                                    <ul>
-                                      <li>General settings: <a title="Go to chapter" class=" info-wrapper-small" href="./customize.html#general-settings"><i class="icon fa fa-external-link-alt info-icon-small"></i></a><br>
-                                      There is a wide range of general options available. Among other things, the title, theme and logo of the application can be defined, but also own analysis scripts, readme/starting pages or custom logs can be included.</li>
-                                      <li>Tables: <a title="Go to chapter" class=" info-wrapper-small" href="./customize.html#table-settings"><i class="icon fa fa-external-link-alt info-icon-small"></i></a><br>
-                                      Customization of input and output tables.</li>
-                                      <li>Widgets: <a title="Go to chapter" class=" info-wrapper-small" href="./customize.html#configure-widgets"><i class="icon fa fa-external-link-alt info-icon-small"></i></a><br>
-                                      Input widgets can be used to enter scalar input data. Examples of such widgets include: sliders, dropdown menus, date selectors or checkboxes.</li>
-                                      <li>Graphs: <a title="Go to chapter" class=" info-wrapper-small" href="./customize.html#configure-graphs"><i class="icon fa fa-external-link-alt info-icon-small"></i></a><br>
-                                      GAMS symbols can be visualized as graphs. A lot of plotting types are available and only need to be configured, i.e. adapted to your model-specific data. To create graphics that are perfectly tailored to your data and not available in MIRO yet, you can also write your own custom renderer.</li>
-                                    </ul>
-                                    <p>In the following example a <a href="./charts.html#map-chart">map</a> was configured as a graphic for a symbol: </p>
-                                    <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                        <img class="img-fluid" style = "max-height:375pt;" src="assets/images/tutorial/map.png" alt="Configured map" />
-                                    </div>
-                                </div><!--//section-block-->
-                            </section><!--//doc-section-->
-                            <section id="tutorial-deployment" class="doc-section">
-                                <h2 class="section-title info-label">Deployment</h2><a title="Go to chapter" class=" info-wrapper" href="./deployment.html"><i class="icon fa fa-external-link-alt info-icon"></i></a>
-                                <div class="section-block">
-                                    <p>When the MIRO app is completely configured, i.e. all graphics have been created, options have been set and adjustments have been made, the app can be deployed. Deploying a MIRO application is the process of exporting and installing your app so that it can be easily shared and used in the daily business of your end users. No further changes to the model or the configuration can be made once it is deployed.</p>
-                                    <p>Deploying MIRO applications can be done directly <a href="./studio.html#studio-deployment">from within GAMS Studio</a>. We need to do two things: clarify which files belong to the GAMS model and then package all these files together with the app configuration into an app bundle. The result is a single <i>.miroapp</i> file which can be sent to the end user(s) of the application.</p>
-                                    <div style="display:block; margin:auto;">
-                                        <img class="img-fluid" style = "max-height:70pt;" src="assets/images/tutorial/miroapp.png" alt="miroapp file" />
-                                    </div>
-                                    <p>If the app is to be used on a local computer, it is simply added to the personal MIRO library. There, all deployed MIRO apps can be accessed and started. </p>
-                                    <div class="section-block" style="text-align:center;">
-                                        <img class="img-fluid" src="assets/images/deployment/gallery.png" alt="MIRO gallery example" />
-                                    </div>
-                                </div><!--//section-block-->
-                                <div class="section-block">
-                                    <p>So much for what a typical workflow might look like. Besides the local setup shown here, MIRO also offers the possibility to solve GAMS jobs in the cloud or even host the applications there and collaborate with your colleagues in the cloud. You can find out more about this <a href="./server.html">here</a>. </p>
-                                </div><!--//section-block-->
-                            </section><!--//doc-section-->
-                        </div><!--//content-inner-->
-                    </div><!--//doc-content-->
-                    <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
-                        <div id="doc-nav" class="doc-nav">
-
-	                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
-                                    <a class="nav-link scrollto" href="#tutorial-introduction">Introduction</a>
-                                    <a class="nav-link scrollto" href="#tutorial-model-adjustments">Model adjustments</a>
-                                    <a class="nav-link scrollto" href="#tutorial-configuration">Configuration</a>
-                                    <a class="nav-link scrollto" href="#tutorial-deployment">Deployment</a>
-	                            </nav><!--//doc-menu-->
-
-                        </div>
-                    </div><!--//doc-sidebar-->
-                </div><!--//doc-body-->
-            </div><!--//container-->
-        </div><!--//doc-wrapper-->
-    </div><!--//page-wrapper-->
-    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+                  </div>
+                  <div class="section-block">
+                    <p>
+                      After starting MIRO for the first time, all the selected
+                      symbols are available in tabular form. With the basic
+                      configuration you can load data, modify it from within the
+                      interface and start or stop a GAMS job. You also have
+                      access to the <i>log</i> and <i>listing</i> (<i>lst</i>)
+                      files of GAMS as well as all files generated during the
+                      run. When the model has finished the execution phase
+                      successfully, the results can be examined. Since MIRO is
+                      connected to a database, you can store results there,
+                      fetch previously saved results and modify them or use them
+                      to compare with other scenarios.
+                    </p>
+                    <div
+                      class="section-block"
+                      style="display: block; margin: auto; text-align: center"
+                    >
+                      <img
+                        class="img-fluid"
+                        src="assets/images/initial-screen.png"
+                        alt="initial GAMS MIRO screen"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
+                <section id="tutorial-configuration" class="doc-section">
+                  <h2 class="section-title info-label">Configuration</h2>
+                  <a
+                    title="Go to chapter"
+                    class="info-wrapper"
+                    href="./customize.html"
+                    ><i class="icon fa fa-external-link-alt info-icon"></i
+                  ></a>
+                  <div class="section-block">
+                    <p>Now the MIRO app can be configured. This includes</p>
+                    <ul>
+                      <li>
+                        General settings:
+                        <a
+                          title="Go to chapter"
+                          class="info-wrapper-small"
+                          href="./customize.html#general-settings"
+                          ><i
+                            class="icon fa fa-external-link-alt info-icon-small"
+                          ></i></a
+                        ><br />
+                        There is a wide range of general options available.
+                        Among other things, the title, theme and logo of the
+                        application can be defined, but also own analysis
+                        scripts, readme/starting pages or custom logs can be
+                        included.
+                      </li>
+                      <li>
+                        Tables:
+                        <a
+                          title="Go to chapter"
+                          class="info-wrapper-small"
+                          href="./customize.html#table-settings"
+                          ><i
+                            class="icon fa fa-external-link-alt info-icon-small"
+                          ></i></a
+                        ><br />
+                        Customization of input and output tables.
+                      </li>
+                      <li>
+                        Widgets:
+                        <a
+                          title="Go to chapter"
+                          class="info-wrapper-small"
+                          href="./customize.html#configure-widgets"
+                          ><i
+                            class="icon fa fa-external-link-alt info-icon-small"
+                          ></i></a
+                        ><br />
+                        Input widgets can be used to enter scalar input data.
+                        Examples of such widgets include: sliders, dropdown
+                        menus, date selectors or checkboxes.
+                      </li>
+                      <li>
+                        Graphs:
+                        <a
+                          title="Go to chapter"
+                          class="info-wrapper-small"
+                          href="./customize.html#configure-graphs"
+                          ><i
+                            class="icon fa fa-external-link-alt info-icon-small"
+                          ></i></a
+                        ><br />
+                        GAMS symbols can be visualized as graphs. A lot of
+                        plotting types are available and only need to be
+                        configured, i.e. adapted to your model-specific data. To
+                        create graphics that are perfectly tailored to your data
+                        and not available in MIRO yet, you can also write your
+                        own custom renderer.
+                      </li>
+                    </ul>
+                    <p>
+                      In the following example a
+                      <a href="./charts.html#map-chart">map</a> was configured
+                      as a graphic for a symbol:
+                    </p>
+                    <div
+                      class="section-block"
+                      style="display: block; margin: auto; text-align: center"
+                    >
+                      <img
+                        class="img-fluid"
+                        style="max-height: 375pt"
+                        src="assets/images/tutorial/map.png"
+                        alt="Configured map"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
+                <section id="tutorial-deployment" class="doc-section">
+                  <h2 class="section-title info-label">Deployment</h2>
+                  <a
+                    title="Go to chapter"
+                    class="info-wrapper"
+                    href="./deployment.html"
+                    ><i class="icon fa fa-external-link-alt info-icon"></i
+                  ></a>
+                  <div class="section-block">
+                    <p>
+                      When the MIRO app is completely configured, i.e. all
+                      graphics have been created, options have been set and
+                      adjustments have been made, the app can be deployed.
+                      Deploying a MIRO application is the process of exporting
+                      and installing your app so that it can be easily shared
+                      and used in the daily business of your end users. No
+                      further changes to the model or the configuration can be
+                      made once it is deployed.
+                    </p>
+                    <p>
+                      Deploying MIRO applications can be done directly
+                      <a href="./studio.html#studio-deployment"
+                        >from within GAMS Studio</a
+                      >. We need to do two things: clarify which files belong to
+                      the GAMS model and then package all these files together
+                      with the app configuration into an app bundle. The result
+                      is a single <i>.miroapp</i> file which can be sent to the
+                      end user(s) of the application.
+                    </p>
+                    <div style="display: block; margin: auto">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 70pt"
+                        src="assets/images/tutorial/miroapp.png"
+                        alt="miroapp file"
+                      />
+                    </div>
+                    <p>
+                      If the app is to be used on a local computer, it is simply
+                      added to the personal MIRO library. There, all deployed
+                      MIRO apps can be accessed and started.
+                    </p>
+                    <div class="section-block" style="text-align: center">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/deployment/gallery.png"
+                        alt="MIRO gallery example"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block">
+                    <p>
+                      So much for what a typical workflow might look like.
+                      Besides the local setup shown here, MIRO also offers the
+                      possibility to solve GAMS jobs in the cloud or even host
+                      the applications there and collaborate with your
+                      colleagues in the cloud. You can find out more about this
+                      <a href="./server.html">here</a>.
+                    </p>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
+              </div>
+              <!--//content-inner-->
+            </div>
+            <!--//doc-content-->
+            <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+              <div id="doc-nav" class="doc-nav">
+                <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                  <a class="nav-link scrollto" href="#tutorial-introduction"
+                    >Introduction</a
+                  >
+                  <a
+                    class="nav-link scrollto"
+                    href="#tutorial-model-adjustments"
+                    >Model adjustments</a
+                  >
+                  <a class="nav-link scrollto" href="#tutorial-configuration"
+                    >Configuration</a
+                  >
+                  <a class="nav-link scrollto" href="#tutorial-deployment"
+                    >Deployment</a
+                  >
+                </nav>
+                <!--//doc-menu-->
+              </div>
+            </div>
+            <!--//doc-sidebar-->
+          </div>
+          <!--//doc-body-->
+        </div>
+        <!--//container-->
+      </div>
+      <!--//doc-wrapper-->
+    </div>
+    <!--//page-wrapper-->
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-3.3.1.min.js"
+    ></script>
     <!--#include virtual="/footer_miro.html" -->
 
     <!-- Main Javascript -->
-    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>
-    <script type="text/javascript" src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/markjs/jquery.mark.min.js"></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/stickyfill/dist/stickyfill.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/prism/min/prism-min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/markjs/jquery.mark.min.js"
+    ></script>
     <script type="text/javascript" src="assets/js/main.js"></script>
-</body>
+  </body>
 </html>

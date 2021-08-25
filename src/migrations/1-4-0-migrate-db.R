@@ -13,7 +13,7 @@ migrateMiroDatabase <- function(oldPath, newPath){
            || (startsWith(dbTableName, "_sys_")
                && endsWith(dbTableName, paste0("_", appId))))
   }
-  
+
   conn <- DBI::dbConnect(drv = RSQLite::SQLite(),
                          dbname = oldPath, bigint = "integer")
   tryCatch({
@@ -94,14 +94,14 @@ migrateMiroDatabase <- function(oldPath, newPath){
             if(dbExistsTable(conn, scalarTableName)){
               # is Hypercube scalar table
               dbExecute(conn, SQL(paste0("ALTER TABLE ",
-                                         DBI::dbQuoteIdentifier(conn, scalarTableName), 
+                                         DBI::dbQuoteIdentifier(conn, scalarTableName),
                                          " RENAME TO ",
                                          DBI::dbQuoteIdentifier(conn, paste0("_hc_", scalarTableName)))))
             }
             dbExecute(conn,
-                      paste0("CREATE TABLE ", 
-                             dbQuoteIdentifier(conn, scalarTableName), 
-                             " (_sid INTEGER,", dbQuoteIdentifier(conn, scalarTableName), 
+                      paste0("CREATE TABLE ",
+                             dbQuoteIdentifier(conn, scalarTableName),
+                             " (_sid INTEGER,", dbQuoteIdentifier(conn, scalarTableName),
                              " TEXT, CONSTRAINT foreign_key FOREIGN KEY (_sid) REFERENCES ",
                              "_sys_metadata_(_sid) ON DELETE CASCADE);"))
             dbExecute(conn, paste0("CREATE INDEX ",
@@ -133,7 +133,7 @@ migrateMiroDatabase <- function(oldPath, newPath){
           next
         }
         dbExecute(conn, SQL(paste0("ALTER TABLE ",
-                                   DBI::dbQuoteIdentifier(conn, dbTableToRename), 
+                                   DBI::dbQuoteIdentifier(conn, dbTableToRename),
                                    " RENAME TO ",
                                    DBI::dbQuoteIdentifier(conn, newTableName))))
         dbExecute(conn, paste0("DROP INDEX IF EXISTS ",

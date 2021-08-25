@@ -49,4 +49,3 @@ Sys.sleep(1)
 app$snapshot(items = list(output = "outputDataTitle"),
              screenshot = TRUE)
 app$stop()
-

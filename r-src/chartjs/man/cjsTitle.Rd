@@ -30,4 +30,3 @@ cjsTitle(chartjs, title, position = NULL, fullWidth = NULL,
 \description{
 Add title
 }
-

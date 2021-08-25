@@ -103,13 +103,13 @@ module.exports = (env, argv) => ({
             ]
           },
           {
-            test: /\.(png|jp(e*)g|svg)$/,  
+            test: /\.(png|jp(e*)g|svg)$/,
             use: [{
                 loader: 'url-loader',
-                options: { 
+                options: {
                     limit: 8000, // Convert images < 8kb to base64 strings
                     name: 'images/[hash]-[name].[ext]'
-                } 
+                }
             }]
           }
         ]

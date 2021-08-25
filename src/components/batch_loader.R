@@ -1,17 +1,17 @@
-BatchLoader <- R6Class("BatchLoader", 
+BatchLoader <- R6Class("BatchLoader",
                        public = list(
                          initialize        = function(db, inputDsNamesNotToDisplay){
                            # R6 class to import scenarios in hcube mode
                            #
-                           # Args:      
+                           # Args:
                            #   db:                      R6 database object
                            #   inputDsNamesNotToDisplay: input datasets that are not displayed in UI
                            #
-                           
+
                            # BEGIN error checks
                            stopifnot(is.R6(db))
                            # END error checks
-                           
+
                            private$db                 <- db
                            private$conn               <- db$getConn()
                            private$inputDsNamesNotToDisplay <- inputDsNamesNotToDisplay
@@ -28,8 +28,8 @@ BatchLoader <- R6Class("BatchLoader",
                            # Executes data from multiple tables and returns result of query
                            #
                            # Args:
-                           #   subsetList:      list with dataframes to subset on 
-                           #                    data frames must be of the form: 
+                           #   subsetList:      list with dataframes to subset on
+                           #                    data frames must be of the form:
                            #                    data.frame(field, val, op, table)
                            #   colNames:        named character vector with column names to select
                            #                    and names being the table to select from
@@ -37,15 +37,15 @@ BatchLoader <- R6Class("BatchLoader",
                            #
                            # Returns:
                            #   tibble with results from query
-                           
+
                            # BEGIN error checks
                            if(length(subsetList))
                              stopifnot(is.list(subsetList))
                            stopifnot(is.character(colNames), length(colNames) >= 1L)
                            stopifnot(!is.na(as.integer(limit)), length(limit) == 1L)
                            # END error checks
-                           
-                           query <- private$buildQuery(subsetList = subsetList, 
+
+                           query <- private$buildQuery(subsetList = subsetList,
                                                        colNames = colNames, limit = limit)
                            tryCatch({
                              flog.trace("Running query: '%s' (BatchLoader.fetchResults).", query)
@@ -104,7 +104,7 @@ BatchLoader <- R6Class("BatchLoader",
                          exceedsMaxNoSolvers = function(data, attribs, maxNoGroups, exclAttrib = NULL){
                            stopifnot(inherits(data, "data.frame"))
                            stopifnot(is.character("attribs"), length(attribs) > 0L)
-                           
+
                            if(!inherits(private$conn, "PqConnection")){
                              names(data) <- gsub("^.+\\.", "", names(data))
                            }
@@ -113,20 +113,20 @@ BatchLoader <- R6Class("BatchLoader",
                            sids             <- as.integer(data[[1]])
                            colIdsAttrib     <- match(attribs, names(data))
                            colIdsExclAttrib <- match(exclAttrib, names(data))
-                           
+
                            if(any(is.na(colIdsAttrib))){
                              stop(sprintf("Attributes: '%s' not found in data.",
-                                          paste(attribs[is.na(colIdsAttrib)], 
-                                                collapse = "', '")), 
+                                          paste(attribs[is.na(colIdsAttrib)],
+                                                collapse = "', '")),
                                   call. = FALSE)
                            }
                            if(any(is.na(colIdsExclAttrib))){
                              stop(sprintf("Attributes: '%s' not found in data.",
-                                          paste(exclAttrib[is.na(colIdsExclAttrib)], 
-                                                collapse = "', '")), 
+                                          paste(exclAttrib[is.na(colIdsExclAttrib)],
+                                                collapse = "', '")),
                                   call. = FALSE)
                            }
-                           
+
                            attribs             <- rlang::syms(attribs)
                            groupedData         <- dplyr::group_by(data, !!!attribs)
                            groupedMetaData     <- dplyr::group_data(groupedData)
@@ -137,11 +137,11 @@ BatchLoader <- R6Class("BatchLoader",
                            if(length(groupedRowIds) > maxNoGroups){
                              return(TRUE)
                            }
-                           
+
                            private$groupedNames <- lapply(private$groupedSids, function(sidGroup) {
                              vapply(sidGroup, function(sid){
-                               paste(as.vector(groupedData[groupedData[[1]] == sid, -c(1, colIdsAttrib, 
-                                                                                       colIdsExclAttrib), 
+                               paste(as.vector(groupedData[groupedData[[1]] == sid, -c(1, colIdsAttrib,
+                                                                                       colIdsExclAttrib),
                                                            drop = FALSE]),
                                      collapse = "\\")
                              }, character(1L), USE.NAMES = FALSE)
@@ -154,7 +154,7 @@ BatchLoader <- R6Class("BatchLoader",
                            stopifnot(length(private$groupedSids) > 0L)
                            stopifnot(length(private$groupLabels) > 0L)
                            stopifnot(is.character(workDir), length(workDir) == 1L)
-                           
+
                            groupLabels   <- vapply(seq_len(nrow(private$groupLabels)), function(i){
                              paste0(as.vector(private$groupLabels[i, ], "character"), collapse = "\\")
                            }, character(1L), USE.NAMES = FALSE)
@@ -165,9 +165,9 @@ BatchLoader <- R6Class("BatchLoader",
                                                "* ", paste(setdiff(TRACE_COL_NAMES, exclTraceCols), collapse = ","),
                                                "\n*\n* SOLVER,\n* TIMELIMIT,3600\n* NODELIMIT,2100000000\n* GAPLIMIT,0"), con = paverFile)
                              close(paverFile)
-                             paverData      <- private$db$importDataset("_scenTrc", 
+                             paverData      <- private$db$importDataset("_scenTrc",
                                                                         subsetSids = private$groupedSids[[i]])
-                             if(!length(paverData) || 
+                             if(!length(paverData) ||
                                 nrow(paverData) != length(private$groupedSids[[i]])){
                                stop("noTrc", call. = FALSE)
                              }
@@ -178,32 +178,32 @@ BatchLoader <- R6Class("BatchLoader",
                              if(length(exclTraceCols)){
                                paverData[, exclTraceCols] <- NULL
                              }
-                             
+
                              write_csv(paverData, fileName, append = TRUE)
-                             
+
                            })
-                           
+
                          },
-                         genGdxFiles = function(scenIds, tmpDir, gdxio, progressBar = NULL, 
+                         genGdxFiles = function(scenIds, tmpDir, gdxio, progressBar = NULL,
                                                 genScenList = FALSE){
-                           stopifnot(length(scenIds) >= 1L, is.character(tmpDir), 
+                           stopifnot(length(scenIds) >= 1L, is.character(tmpDir),
                                      length(tmpDir) == 1L)
-                           
+
                            scenTableNames <- dbSchema$getAllSymbols()
                            scenTableNames <- scenTableNames[!scenTableNames %in% private$
                                                               inputDsNamesNotToDisplay]
                            noScenTables   <- length(scenTableNames)
                            noScenIds <- length(scenIds)
-                           
+
                            scenIdDirNameMap <- vector("list", length(scenIds))
-                           
+
                            if(!is.null(progressBar)){
                              noProgressSteps <- noScenTables + noScenIds + 1L
                            }
                            scenIdNameMap <- private$db$
-                             importDataset("_scenMeta", 
+                             importDataset("_scenMeta",
                                            subsetSids = scenIds,
-                                           colNames = c("_sid", 
+                                           colNames = c("_sid",
                                                         "_sname",
                                                         "_scode"))
                            scenIdsOrdered <- scenIdNameMap[[1]]
@@ -217,17 +217,17 @@ BatchLoader <- R6Class("BatchLoader",
                              sidsToFetch <- setNames(as.character(scenIdsOrdered), scenIdsOrdered)
                            }
                            scenIdNameMap  <- setNames(scenIdNameMap[[2]], scenIdsOrdered)
-                           
+
                            j <- 1L
                            dataTmp <- lapply(scenTableNames, function(tableName){
                              if(!is.null(progressBar)){
-                               progressBar$inc(amount = 1/noProgressSteps, 
-                                               message = sprintf("Importing table %s of %d from database.", 
+                               progressBar$inc(amount = 1/noProgressSteps,
+                                               message = sprintf("Importing table %s of %d from database.",
                                                                  j, noScenTables))
                                j <<- j + 1L
                              }
                              dataDbTmp <- private$db$
-                               importDataset(tableName, 
+                               importDataset(tableName,
                                              subsetSids = if(tableName %in% c(scalarsFileName,
                                                                               names(ioConfig$modelOut))){
                                                scenIds
@@ -238,16 +238,16 @@ BatchLoader <- R6Class("BatchLoader",
                            })
                            names(dataTmp) <- scenTableNames
                            sameNameCounter   <- list()
-                           
-                           
+
+
                            j <- 1L
-                           
+
                            scenNameList <- vector("character", length(scenIds))
-                           
+
                            for(scenId in as.character(scenIds)){
                              if(!is.null(progressBar)){
-                               progressBar$inc(amount = 1/noProgressSteps, 
-                                               message = sprintf("Writing dataset %d of %d.", 
+                               progressBar$inc(amount = 1/noProgressSteps,
+                                               message = sprintf("Writing dataset %d of %d.",
                                                                  j, noScenIds))
                              }
                              scenName <- scenIdNameMap[[scenId]]
@@ -259,7 +259,7 @@ BatchLoader <- R6Class("BatchLoader",
                              }
                              scenNameList[[j]] <- paste0(scenName, ".gdx")
                              j <- j + 1L
-                             gdxio$wgdx(paste0(tmpDir, .Platform$file.sep, sanitizeFn(scenName), ".gdx"), 
+                             gdxio$wgdx(paste0(tmpDir, .Platform$file.sep, sanitizeFn(scenName), ".gdx"),
                                         setNames(lapply(names(dataTmp), function(symName){
                                           if(symName %in% c(scalarsFileName, names(ioConfig$modelOut))){
                                             scenIdToFetch <- scenId
@@ -276,7 +276,7 @@ BatchLoader <- R6Class("BatchLoader",
                              write_lines(scenNameList, file.path(tmpDir, "hcube_file_names.txt"))
                            }
                            if(!is.null(progressBar)){
-                             progressBar$inc(amount = 1/noProgressSteps, 
+                             progressBar$inc(amount = 1/noProgressSteps,
                                              message = "Generating zip file.")
                            }
                            return(invisible(self))
@@ -284,14 +284,14 @@ BatchLoader <- R6Class("BatchLoader",
                          genCsvFiles = function(scenIds, tmpDir, progressBar = NULL){
                            stopifnot(length(scenIds) >= 1L)
                            stopifnot(is.character(tmpDir), length(tmpDir) == 1L)
-                           
-                           scenTableNames <- c("_scenMeta", 
-                                               dbSchema$getAllSymbols(), 
+
+                           scenTableNames <- c("_scenMeta",
+                                               dbSchema$getAllSymbols(),
                                                "_scenTrc")
                            noScenTables   <- length(scenTableNames)
-                           
+
                            scenIdDirNameMap <- vector("list", length(scenIds))
-                           
+
                            if(!is.null(progressBar)){
                              noProgressSteps <- noScenTables * 2L + 1L
                            }
@@ -310,8 +310,8 @@ BatchLoader <- R6Class("BatchLoader",
                                next
                              }
                              if(!is.null(progressBar)){
-                               progressBar$inc(amount = 1/noProgressSteps, 
-                                               message = sprintf("Importing table %d of %d from database.", 
+                               progressBar$inc(amount = 1/noProgressSteps,
+                                               message = sprintf("Importing table %d of %d from database.",
                                                                  tabId, noScenTables))
                              }
                              if(scenTableNames[[tabId]] %in% c(scalarsFileName,
@@ -323,7 +323,7 @@ BatchLoader <- R6Class("BatchLoader",
                                isStaticInputDs <- TRUE
                              }
                              tableTmp <- private$db$
-                               importDataset(scenTableNames[[tabId]], 
+                               importDataset(scenTableNames[[tabId]],
                                              subsetSids = subsetSids)
                              if(identical(tableName, "_metadata_")){
                                staticInputSids <- tableTmp[["_scode"]] > (SCODEMAP[["scen"]] + 10000L)
@@ -334,31 +334,31 @@ BatchLoader <- R6Class("BatchLoader",
                                  staticInputSids <- integer(0L)
                                }
                              }
-                             
+
                              if(length(tableTmp)){
                                tableTmp <- split(tableTmp, tableTmp[[1]])
                              }else{
                                tableTmp <- list()
                              }
-                             
-                             
+
+
                              if(!is.null(progressBar)){
-                               progressBar$inc(amount = 1/noProgressSteps, 
-                                               message = sprintf("Writing dataset %d of %d.", 
+                               progressBar$inc(amount = 1/noProgressSteps,
+                                               message = sprintf("Writing dataset %d of %d.",
                                                                  tabId, noScenTables))
                              }
                              lapply(seq_along(tableTmp), function(i){
                                scenId   <- suppressWarnings(as.integer(tableTmp[[i]][[1L]][[1L]]))
-                               
+
                                if(is.na(scenId)){
                                  stop("Invalid scenario ID.", call. = FALSE)
                                }
-                               
+
                                if(identical(tabId, 1L)){
-                                 
+
                                  sanitizedScenName <- sanitizeFn(tableTmp[[i]][["_sname"]][[1L]])
                                  dirNameScen <- file.path(tmpDir, sanitizedScenName)
-                                 
+
                                  if(!is.null(sameNameCounter[[sanitizedScenName]])){
                                    dirNameScen <- paste0(dirNameScen, "_", sameNameCounter[[sanitizedScenName]])
                                    sameNameCounter[[sanitizedScenName]] <<- sameNameCounter[[sanitizedScenName]] + 1L
@@ -367,7 +367,7 @@ BatchLoader <- R6Class("BatchLoader",
                                  }
                                  scenIdDirNameMap[[scenId]] <<- dirNameScen
                                  if(!dir.create(dirNameScen)){
-                                   stop(sprintf("Temporary folder: '%s' could not be created.", 
+                                   stop(sprintf("Temporary folder: '%s' could not be created.",
                                                 dirNameScen), call. = FALSE)
                                  }
                                }else if(isStaticInputDs && length(staticInputSids)){
@@ -380,20 +380,20 @@ BatchLoader <- R6Class("BatchLoader",
                                  if(length(originalSids)){
                                    # scenId is static input data pointed to by one or more scenarios
                                    for(originalSid in originalSids){
-                                     write_csv(tableTmp[[i]][-1L], 
-                                               paste0(scenIdDirNameMap[[originalSid]], 
+                                     write_csv(tableTmp[[i]][-1L],
+                                               paste0(scenIdDirNameMap[[originalSid]],
                                                       .Platform$file.sep, sanitizeFn(tableName), ".csv"))
                                    }
                                    return()
                                  }
                                }
-                               write_csv(tableTmp[[i]][-1L], 
-                                         paste0(scenIdDirNameMap[[scenId]], 
+                               write_csv(tableTmp[[i]][-1L],
+                                         paste0(scenIdDirNameMap[[scenId]],
                                                 .Platform$file.sep, sanitizeFn(tableName), ".csv"))
                              })
                            }
                            if(!is.null(progressBar)){
-                             progressBar$inc(amount = 1/noProgressSteps, 
+                             progressBar$inc(amount = 1/noProgressSteps,
                                              message = "Generating zip file.")
                            }
                            return(invisible(self))
@@ -414,7 +414,7 @@ BatchLoader <- R6Class("BatchLoader",
                          buildQuery              = function(subsetList, colNames, limit){
                            escapedMetaTableName <- dbQuoteIdentifier(private$conn,
                                                                      dbSchema$getDbTableName("_scenMeta"))
-                           
+
                            escapedColNamesToFetch <- paste0(DBI::dbQuoteIdentifier(private$conn,
                                                                                    names(colNames)),
                                                             ".", DBI::dbQuoteIdentifier(private$conn, colNames),
@@ -435,10 +435,10 @@ BatchLoader <- R6Class("BatchLoader",
                            if(length(subsetList) > 1L || length(subsetList[[1L]])){
                              subsetRows <- paste(subsetRows, "AND (",
                                                  private$db$buildRowSubsetSubquery(subsetList,
-                                                                                   " AND ", 
+                                                                                   " AND ",
                                                                                    " OR "), ")")
                            }
-                           query     <- SQL(paste0("SELECT ", escapedColNamesToFetch, " FROM ", 
+                           query     <- SQL(paste0("SELECT ", escapedColNamesToFetch, " FROM ",
                                                    escapedMetaTableName, " ", leftJoin,
                                                    " WHERE ",  subsetRows, " LIMIT ",
                                                    as.integer(limit + 1L), ";"))

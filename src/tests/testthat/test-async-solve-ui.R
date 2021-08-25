@@ -32,9 +32,9 @@ writeLines(paste0(modelToTest, ".gms"),
            file.path(testModelDir, paste0(tolower(modelToTest), "_files.txt")))
 
 #add --sleep=1 to extraClArgs and hide log and lst file
-file.copy(configJSONFileName, file.path(dirname(configJSONFileName), 
+file.copy(configJSONFileName, file.path(dirname(configJSONFileName),
                                         paste0(tolower(modelToTest), "_tmp.json")), overwrite = TRUE)
-configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, simplifyDataFrame = FALSE, 
+configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, simplifyDataFrame = FALSE,
                                                   simplifyMatrix = FALSE))
 configJSON$extraClArgs <- c(configJSON$extraClArgs, "--sleep=1")
 configJSON$activateModules$logFile <- FALSE

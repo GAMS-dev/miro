@@ -12,20 +12,20 @@ observe({
                input$selExternalSource)
     return()
   }
-  extSourceDatasheets <- match(names(externalInputConfig[[extSourceID]]), 
+  extSourceDatasheets <- match(names(externalInputConfig[[extSourceID]]),
                                names(modelInToImport))
-  updateSelectInput(session, "selInputDataExt", 
-                    choices = setNames(names(modelInToImport)[extSourceDatasheets], 
+  updateSelectInput(session, "selInputDataExt",
+                    choices = setNames(names(modelInToImport)[extSourceDatasheets],
                                        modelInToImportAlias[extSourceDatasheets]))
 })
 
 observeEvent(input$btImportExternal, {
   externalSource <- input$selExternalSource
   removeModal()
-  flog.trace("Import remote data button clicked with remote importer: '%s' selected.", 
+  flog.trace("Import remote data button clicked with remote importer: '%s' selected.",
              externalSource)
-  
-  if(!length(externalSource) || 
+
+  if(!length(externalSource) ||
      !externalSource %in% names(externalInputConfig)){
     flog.info("Invalid remote importer: '%s'. This should not happen! Possible attempt of user tampering with the app!",
               externalSource)
@@ -34,9 +34,9 @@ observeEvent(input$btImportExternal, {
   errMsg <- NULL
   extConf <- externalInputConfig[[externalSource]]
   scalarDataset <- NULL
-  
+
   datasetsToImport <- names(modelIn)
-  
+
   if(input$cbSelectManuallyExt){
     if(!length(input$selInputDataExt)){
       return()
@@ -44,7 +44,7 @@ observeEvent(input$btImportExternal, {
     datasetsToImport <- datasetsToImport[datasetsToImport %in%
                                            tolower(input$selInputDataExt)]
   }
-  
+
   scenInputData <- lapply(datasetsToImport, function(inputName){
     extIdx <- match(inputName, names(extConf))[1L]
     if(is.na(extIdx)){
@@ -55,7 +55,7 @@ observeEvent(input$btImportExternal, {
       return()
     }
     i <- match(inputName, names(modelIn))
-    
+
     # load from database
     tryCatch({
       externalInputData[[i]] <<- dataio$import(item, inputName)
@@ -75,8 +75,8 @@ observeEvent(input$btImportExternal, {
              if(!is.null(item$colSubset)){
                subsetIdx <- match(tolower(item$colSubset), tolower(names(externalInputData[[i]])))
                if(any(is.na(subsetIdx))){
-                 errMsg <<- paste(errMsg, sprintf(lang$errMsg$fetchDataset$badColName, 
-                                                  paste(item$colSubset[is.na(subsetIdx)], collapse = ","), 
+                 errMsg <<- paste(errMsg, sprintf(lang$errMsg$fetchDataset$badColName,
+                                                  paste(item$colSubset[is.na(subsetIdx)], collapse = ","),
                                                   inputName), sep = "\n")
                  return(NULL)
                }
@@ -94,12 +94,12 @@ observeEvent(input$btImportExternal, {
                # only 1 column so no aliases
                choices <- choices[[1]]
              }
-             updateSelectInput(session, "dropdown_" %+% i, 
-                               choices = choices, 
+             updateSelectInput(session, "dropdown_" %+% i,
+                               choices = choices,
                                selected = modelIn[[i]]$dropdown$selected)
-             
+
              observe({
-               if(!identical(length(input[["dropdown_" %+% i]]), 1L) || 
+               if(!identical(length(input[["dropdown_" %+% i]]), 1L) ||
                   identical(nchar(input[["dropdown_" %+% i]]), 0L)){
                  return()
                }
@@ -123,7 +123,7 @@ observeEvent(input$btImportExternal, {
   loadMode  <-  "scen"
   newInputCount <- 0L
   overwriteInput <- TRUE
-  datasetsToFetch <- datasetsToImport[!vapply(scenInputData, is.null, 
+  datasetsToFetch <- datasetsToImport[!vapply(scenInputData, is.null,
                                               logical(1L), USE.NAMES = FALSE)]
   dfClArgs <- NULL
   source("./modules/input_load.R", local = TRUE)

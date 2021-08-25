@@ -187,7 +187,7 @@ generateMiroScen <- function(path, metadata, data, attachments, views, scenId = 
     clArgs <- character()
   }
   generateMiroScenMeta(tmpd, metadata, attachments, views, scenId, clArgs)
-  
+
   gdxio$wgdx(file.path(tmpd, "data.gdx"), data, squeezeZeros = "n")
   return(zipMiro(path, files = c("metadata.json", "data.gdx",
                                  "views.json", "attachments"),

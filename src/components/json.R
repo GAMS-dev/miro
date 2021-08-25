@@ -1,5 +1,5 @@
 JSONValidator <- R6Class(
-  "Worker", 
+  "Worker",
   public = list(
     initialize = function(miroRootDir = "."){
       private$ct <- V8::v8(global = "window")
@@ -12,8 +12,8 @@ JSONValidator <- R6Class(
         private$ct$eval("var validate=ajv.compile(JSON.parse(schema));")
       }, error = function(e) {
         stop(paste0("Error reading'", jsonSchemaLocation,
-                    "'. Check for valid JSON syntax and make sure file is accessible.\nError message: ", 
-                    conditionMessage(e)), 
+                    "'. Check for valid JSON syntax and make sure file is accessible.\nError message: ",
+                    conditionMessage(e)),
              call. = FALSE)
       })
       tryCatch({
@@ -21,30 +21,30 @@ JSONValidator <- R6Class(
         private$ct$eval("data=JSON.parse(data);")
       }, error = function(e) {
         stop(paste0("Error reading'", jsonFileLocation,
-                    "'. Check for valid JSON syntax and make sure file is accessible.\nError message: ", 
-                    conditionMessage(e)), 
+                    "'. Check for valid JSON syntax and make sure file is accessible.\nError message: ",
+                    conditionMessage(e)),
              call. = FALSE)
       })
       tryCatch({
         private$ct$eval("var valid=validate(data);")
       }, error = function(e) {
-        stop(paste0("Problems validating JSON file: '", jsonFileLocation, 
-                    "'.\nError message: '", conditionMessage(e), "'."), 
+        stop(paste0("Problems validating JSON file: '", jsonFileLocation,
+                    "'.\nError message: '", conditionMessage(e), "'."),
              call. = FALSE)
       })
       valid <- private$ct$get("valid")
       if(identical(valid, TRUE)){
         errors <- NULL
-        data <- private$ct$get("data", 
-                               simplifyDataFrame = FALSE, 
+        data <- private$ct$get("data",
+                               simplifyDataFrame = FALSE,
                                simplifyMatrix = FALSE)
-      }else{ 
+      }else{
         errors <- private$ct$get("ajv.errorsText(validate.errors)")
         data <- NULL
       }
       return(list(errors = errors, data = data))
     }
-  ), 
+  ),
   private = list(
     ct = NULL
   )

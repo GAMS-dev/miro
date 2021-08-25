@@ -24,7 +24,7 @@
   top: 0;
   left: 0;
 }
-html, 
+html,
 body {
     background-color: #e2e3e8;
     font-family: "montserratlight",sans-serif;
@@ -104,7 +104,7 @@ a:hover {
   color:#000;
   background-color: #FFF;
   background-color: rgba(0,0,0,0);
-  transition: all 500ms ease; 
+  transition: all 500ms ease;
 }
 @media (prefers-color-scheme: dark) {
     .btn-default {
@@ -395,9 +395,9 @@ a:hover {
   }
 }
 .app-window {
-  height:180px; 
-  display: block; 
-  margin:auto; 
+  height:180px;
+  display: block;
+  margin:auto;
   text-align: center;
 }
 .add-app-logo {

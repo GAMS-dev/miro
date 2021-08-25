@@ -36,14 +36,14 @@ test_that("Filtering, pivoting, aggregating large data works", {
                                    filter_ALLYEAR = c("2010", "2012", "2015", "2020", "2030"))
                  expect_identical(nrow(dataToRender()), 484565L)
                })
-    
+
     pr$measure("pivot",
                {
                  session$setInputs(rowIndexList = dataHeaders[-c(2, 4, 6, 9, length(dataHeaders))],
                                    colIndexList = c("COM_GRP", "ALL_TS"))
                  expect_identical(length(dataToRender()), 99563L)
                })
-    
+
     pr$measure("aggregate",
                {
                  session$setInputs(rowIndexList = dataHeaders[-c(2, 4, 5, 6, 9, length(dataHeaders))],

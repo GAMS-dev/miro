@@ -63,13 +63,13 @@ eq_col(col,val)..
 
 eq_row(row,val)..
    sum(col,x(col,row,val)) =e= 1;
-   
+
 eq_quad(quad,val)..
    sum(rcquad_map(quad,col,row),x(col,row,val)) =e= 1;
 
 eq_val(col,row)..
    sum(val,x(col,row,val)) =e= 1;
-   
+
 eq_z..
    1 =e= z;
 

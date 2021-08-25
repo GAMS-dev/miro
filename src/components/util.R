@@ -4,10 +4,10 @@
 getCommandArg <- function(argName, exception = TRUE){
   # local mode
   args <- commandArgs(trailingOnly = TRUE)
-  matches <- grepl(paste0("^-+", argName, "\\s?=\\s?"), args, 
+  matches <- grepl(paste0("^-+", argName, "\\s?=\\s?"), args,
                    ignore.case = TRUE)
   if(any(matches)){
-    return(gsub(paste0("^-+", argName, "\\s?=\\s?"), "", args[matches][1], 
+    return(gsub(paste0("^-+", argName, "\\s?=\\s?"), "", args[matches][1],
                 ignore.case = TRUE))
   }else{
     if(exception){
@@ -44,16 +44,16 @@ hasContent <- function(x){
   }else if(is.null(x) || length(x) == 0){
     return(FALSE)
   }
-  
+
   return(TRUE)
 }
 getCommandArg <- function(argName, exception = TRUE){
   # local mode
   args <- commandArgs(trailingOnly = TRUE)
-  matches <- grepl(paste0("^-+", argName, "\\s?=\\s?"), args, 
+  matches <- grepl(paste0("^-+", argName, "\\s?=\\s?"), args,
                    ignore.case = TRUE)
   if(any(matches)){
-    return(gsub(paste0("^-+", argName, "\\s?=\\s?"), "", args[matches][1], 
+    return(gsub(paste0("^-+", argName, "\\s?=\\s?"), "", args[matches][1],
                 ignore.case = TRUE))
   }else{
     if(exception){
@@ -65,14 +65,14 @@ getCommandArg <- function(argName, exception = TRUE){
 }
 getModelPath <- function(modelPath = NULL, envVarPath = NULL){
   # returns name of the model currently rendered
-  # 
+  #
   # Args:
   # modelPath:                  path of the GAMS model as defined externally (e.g. in development mode)
   # envVarPath:                 name of the environment variable that specifies model path
   #
   # Returns:
   # string with model name or error  in case no model name could be retrieved
-  
+
   envName <- Sys.getenv(envVarPath)
   if(identical(envName, "")){
     modelPath <- file.path(getwd(), modelDir, modelName, modelName %+% ".gms")
@@ -97,7 +97,7 @@ getInputToImport <- function(data, keywordsNoImport){
   #
   # Returns:
   # list of sheets that have to be imported from an external source
-  
+
   dataToImport <- list()
   # index variable as c() is slow
   j <- 1
@@ -117,7 +117,7 @@ getWidgetDependencies <- function(widgetType, depString){
   }
   switch(widgetType,
          slider = {
-           widgetDepTmp <- strsplit(substr(depString, 1L, 
+           widgetDepTmp <- strsplit(substr(depString, 1L,
                                            nchar(depString) - 1L), "(", fixed = TRUE)[[1]]
            return(c(widgetDepTmp[1], strsplit(widgetDepTmp[2], "$", fixed = TRUE)[[1]]))
          },
@@ -180,11 +180,11 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL){
   # Returns:
   # list of sheet and column names that need to be loaded for dropdown menu to have all data required (all lower case).
   # list also contains singular elements without dependencies
-  
+
   ddownDep          <- list(fw = list(), bw = list())
   # define indexing variable for strings as c() is slow
   k <- 1
-  
+
   if(length(choices)){
     choices <- as.character(choices)
     elRaw <- choices
@@ -193,17 +193,17 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL){
     if(any(forwardDep | backwardDep)){
       forwardDep  <- forwardDep & !startsWith(choices, "$$")
       backwardDep <- backwardDep & !endsWith(choices, "$$")
-      elRaw[forwardDep] <- stringi::stri_trim_left(elRaw[forwardDep], 
+      elRaw[forwardDep] <- stringi::stri_trim_left(elRaw[forwardDep],
                                                    pattern = "[^\\$]")
-      elRaw[backwardDep] <- stringi::stri_trim_right(elRaw[backwardDep], 
+      elRaw[backwardDep] <- stringi::stri_trim_right(elRaw[backwardDep],
                                                      pattern = "[^\\$]")
       hasDep <- forwardDep | backwardDep
       ddownDep$hasDep <- any(hasDep)
-      ddownDep$strings <- unlist(gsub("$$", "$", choices[!hasDep], 
+      ddownDep$strings <- unlist(gsub("$$", "$", choices[!hasDep],
                                       fixed = TRUE), use.names = FALSE)
     }else{
       return(list(hasDep = FALSE,
-                  strings = unlist(gsub("$$", "$", choices, 
+                  strings = unlist(gsub("$$", "$", choices,
                                         fixed = TRUE), use.names = FALSE)))
     }
     lapply(seq_along(choices)[hasDep], function(i){
@@ -216,10 +216,10 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL){
       #           "b$"     <- no input data (choices) for dropdown but all columns b will be filtered when selected
       # to escape a dollar sign in a string, dollar should be used again:
       # examples : "a$$b"  <- "a$b" (string without dependencies), "a$$" -> "a$" (same), "$$a" <- "$a" (same)
-      
+
       # check case with both backward and forward dependency on the same column and issue error if stric mode is active
       # find out if column has dependency defined and replace leading and ending signs
-      
+
       if(grepl("$", elRaw[i], fixed = TRUE)){
         # split string into the layers/elements ("dataset_1$column_3" -> "dataset_1", "column_3")
         el <- strsplit(elRaw[i], "$", fixed = TRUE)[[1]]
@@ -235,15 +235,15 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL){
               ddownDep$shared <<- el[[1]]
             }
             return(ddownDep)
-          }else if(!is.na(idx1) && 
+          }else if(!is.na(idx1) &&
                    identical(modelIn[[idx1]]$type, "dropdown") &&
                    length(el) > 1 && forwardDep[i]){
             # dependency on another dropdown menu, so dont check header info
             j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
             ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- getNestedDep(el[-1])
           }else{
-            stop(paste0("The header: '", el[[2]], "' for input sheet: '", 
-                        el[[1]], "' could not be found. Make sure you define a valid reference."), 
+            stop(paste0("The header: '", el[[2]], "' for input sheet: '",
+                        el[[1]], "' could not be found. Make sure you define a valid reference."),
                  call. = FALSE)
           }
         }else{
@@ -258,8 +258,8 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL){
             ddownDep$bw[[names(modelIn)[[idx1]]]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
           }else if(!forwardDep[i]){
             # neither forward nor backward dependency selected results in error or rendering as string
-            stop(paste0("Neither a forward nor a backward dependency was defined in: '", 
-                        choices[[i]], "'. Make sure you define some type of dependency."), 
+            stop(paste0("Neither a forward nor a backward dependency was defined in: '",
+                        choices[[i]], "'. Make sure you define some type of dependency."),
                  call. = FALSE)
           }
         }
@@ -288,7 +288,7 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL){
                 colFound <- TRUE
               }else{
                 # neither forward nor backward dependency selected results in error or rendering as string
-                stop(paste0("Neither a forward nor a backward dependency was defined in: '", 
+                stop(paste0("Neither a forward nor a backward dependency was defined in: '",
                             choices[[i]], "'. Make sure you define some type of dependency."), call. = FALSE)
               }
             }
@@ -322,7 +322,7 @@ getDependenciesSlider <- function(min, max, def, step, modelIn, listOfOperators)
   # Returns:
   # list of values with either a sheet name/column name pair in case of an external dependency or a numeric value in case of no dependency.
   # returns NULL, if no value of slider has dependency on external data
-  
+
   listOfValues <- c("min" = min, "max" = max, "def" = def, "step" = step)
   # check if any value of slider has dependency on external data
   if(any(grepl("(", listOfValues, fixed = TRUE))){
@@ -334,7 +334,7 @@ getDependenciesSlider <- function(min, max, def, step, modelIn, listOfOperators)
         operator <- splitted[[1]]
         operatorId <- match(operator, listOfOperators)[1]
         if(is.na(operatorId)){
-          stop(paste0("'", operator, "' is not a valid operator for sliders."), 
+          stop(paste0("'", operator, "' is not a valid operator for sliders."),
                call. = FALSE)
         }
         dep      <- splitted[[2]]
@@ -359,13 +359,13 @@ getDependenciesSlider <- function(min, max, def, step, modelIn, listOfOperators)
               return(sliderValue)
             }
           }
-          
+
           if(length(dep) > 1){
-            stop(paste0("Invalid reference. The header: '", dep[[2]], 
-                        "' specified for input sheet: '", dep[[1]], 
+            stop(paste0("Invalid reference. The header: '", dep[[2]],
+                        "' specified for input sheet: '", dep[[1]],
                         "' could not be found."), call. = FALSE)
           }else{
-            stop(paste0("Invalid reference. The reference: '", dep, 
+            stop(paste0("Invalid reference. The reference: '", dep,
                         "' specified could not be found."), call. = FALSE)
           }
         }else{
@@ -376,7 +376,7 @@ getDependenciesSlider <- function(min, max, def, step, modelIn, listOfOperators)
         }
       }else{
         if(is.na(as.numeric(el))){
-          stop(paste0("'", el, "' is not a valid value for a slider."), 
+          stop(paste0("'", el, "' is not a valid value for a slider."),
                call. = FALSE)
         }
         return(as.numeric(el))
@@ -419,14 +419,14 @@ verifyInput <- function(data, headers){
   #
   # Returns:
   #   boolean specifying whether input data is valid (TRUE) or not (FASLE)
-  
-  
+
+
   if(!is.null(headers)){
     for(i in seq_along(headers)){
       if(identical(headers[[i]]$type, "numeric") && class(data[[i]]) != "numeric"){
         return(FALSE)
       }
-      if(identical(headers[[i]]$type, "string") && 
+      if(identical(headers[[i]]$type, "string") &&
          !any(class(data[[i]]) %in% c("factor", "character", "numeric", "POSIXt", "Date"))){
         return(FALSE)
       }
@@ -451,7 +451,7 @@ roundDf <- function(data, decimals){
   #
   # Returns:
   #   dataframe with numeric values rounded to number of decimals specified
-  
+
   isNumeric <- vapply(data, is.numeric, FUN.VALUE = logical(1))
   data[is.na(data)] <- 0
   data[,isNumeric] <-  round(data[,isNumeric], digits=decimals)
@@ -466,19 +466,19 @@ addHtmlLineBreaks <- function(string){
   #
   # Returns:
   #   string with <br> tags where \n used to be
-  
+
   # escape string
   escapedString <- htmltools::htmlEscape(string)
   # replace \n with <br> tag
   escapedString <- gsub("\\n", "<br>", escapedString)
-  
+
   return(escapedString)
 }
 
 getOS <- function(){
-  # returns string that identifies the operationg system 
+  # returns string that identifies the operationg system
   # that shiny is running on
-  
+
   sysinf <- Sys.info()
   if (!is.null(sysinf)){
     os <- sysinf['sysname']
@@ -504,7 +504,7 @@ dateColToChar <- function(conn, df){
       as.character(col)
     }else{
       col
-    } 
+    }
   })
   return(df)
 }
@@ -517,10 +517,10 @@ addCssDim <- function(x, y){
   #
   # Returns:
   #   string with sum of both height and unit
-  
+
   stopifnot(!missing(x), !is.null(x), is.character(x) || is.numeric(x), length(x) == 1)
   stopifnot(!missing(y), !is.null(y), is.numeric(y), length(y) == 1)
-  
+
   tmp    <- strsplit( gsub("([0-9]+)","\\1~", x), "~" )[[1]]
   dgts   <- as.numeric(tmp[1]) + y
   if(is.na(dgts)){
@@ -540,7 +540,7 @@ showErrorMsg <- function(title, errMsg){
   if(!is.null(errMsg)){
     stopifnot(is.character(errMsg), length(errMsg) == 1)
   }
-  
+
   if(!is.null(errMsg)){
     stopifnot(is.character(title), length(title) == 1)
     showModal(modalDialog(
@@ -576,36 +576,36 @@ csv2Vector <- function(csv){
 vector2Csv <- function(vector){
   if(!length(vector)){
     return("")
-  }else if(length(vector) > 1L || 
+  }else if(length(vector) > 1L ||
            !(startsWith(vector, ",") && endsWith(vector, ","))){
     return(paste0(",", paste0(vector, collapse = ","), ","))
   }else{
     return(vector)
   }
 }
-# redefined reactiveFileReader and reactivePoll functions since the original shiny functions 
+# redefined reactiveFileReader and reactivePoll functions since the original shiny functions
 # leak an observer that can not be destoryed
-# original implementation can be found here: 
+# original implementation can be found here:
 #       https://github.com/rstudio/shiny/blob/19623694f585c8e7a8cf2c38e831a6752e5520c6/R/reactives.R#L1316
-# Please note that this is a slightly modified version of the original functions 
+# Please note that this is a slightly modified version of the original functions
 # by RStudio licensed under GPL v3
 #
-# once this issue (https://github.com/rstudio/shiny/issues/1548) is closed, 
+# once this issue (https://github.com/rstudio/shiny/issues/1548) is closed,
 # the original functions can be used again!
 reactivePoll2 <- function(intervalMillis, session, checkFunc, valueFunc) {
-  
+
   rv <- reactiveValues(cookie = isolate(checkFunc()))
-  
+
   obs <- observe({
     rv$cookie <- checkFunc()
     invalidateLater(intervalMillis, session)
   })
-  
+
   re <- reactive({
     rv$cookie
     valueFunc()
   })
-  
+
   return(list("re" = re, "obs" = obs))
 }
 reactiveFileReader2 <- function(intervalMillis, session, filePath) {
@@ -630,16 +630,16 @@ reactiveFileReaderAppend <- function(intervalMillis, session, filePath) {
   }
   rv <- reactiveValues(cookie = isolate(checkFunc()))
   cursorPos <- 0L
-  
+
   obs <- observe({
     rv$cookie <- checkFunc()
     invalidateLater(intervalMillis, session)
   })
-  
+
   re <- reactive({
     rv$cookie
     fileContent <- valueFunc(cursorPos)
-    
+
     if(!length(fileContent)){
       return("")
     }
@@ -651,7 +651,7 @@ reactiveFileReaderAppend <- function(intervalMillis, session, filePath) {
     }
     return(paste(fileContent, collapse = "\n"))
   })
-  
+
   return(list("re" = re, "obs" = obs))
 }
 prepopPivot <- function(symbol){
@@ -683,11 +683,11 @@ getNestedDep <- function(depStr){
   }
 }
 genSpinner <- function(id = NULL, hidden = FALSE, absolute = TRUE, externalStyle = NULL, extraClasses = NULL){
-  div(id = id, class = paste(c("lds-ellipsis", extraClasses), collapse = " "), 
+  div(id = id, class = paste(c("lds-ellipsis", extraClasses), collapse = " "),
       style = paste0(if(is.null(externalStyle))
         "top:50%;left:50%;z-index:1;margin-left:-32px;margin-top:-32px;" else
-          externalStyle, 
-        if(absolute) "position:absolute;" else "display:block;", if(hidden) "display:none;"), 
+          externalStyle,
+        if(absolute) "position:absolute;" else "display:block;", if(hidden) "display:none;"),
       div(class = "gen-spinner"),
       div(class = "gen-spinner"),
       div(class = "gen-spinner"),
@@ -702,24 +702,24 @@ checkboxInput_MIRO <- function(inputId, label, value = FALSE){
            tags$label(class = "cb-label", "for" = inputId, label),
            tags$div(
              tags$label(class = "checkbox-material",
-                        tags$div(class = "form-group", 
+                        tags$div(class = "form-group",
                                  tags$div(class = "checkbox",
                                           tags$label(inputTag, tags$span())))
              ))
   )
 }
-autoNumericInput <- function(id, label = NULL, value = NULL, min = NULL, max = NULL, 
+autoNumericInput <- function(id, label = NULL, value = NULL, min = NULL, max = NULL,
                              sign = NULL, decimal = NULL, decimalCharacter = NULL, digitGroupSeparator = NULL){
   HTML(paste0('<div class="form-group shiny-input-container">\n
     <label for="', id, '">', label, '</label>\n
-      <input id="', id, '" type="text" class="form-control miro-auto-numeric" value="', value, 
+      <input id="', id, '" type="text" class="form-control miro-auto-numeric" value="', value,
               '" placeholder="', value,
               '" data-override-min-max-limits="invalid"',
-              if(length(min)) paste0(' data-minimum-value="', min, '"'), 
-              if(length(max)) paste0(' data-maximum-value="', max, '"'), 
-              if(length(sign)) paste0(' data-currency-symbol="', sign, '"'), 
-              if(length(decimalCharacter)) paste0(' data-decimal-character="', decimalCharacter, '"'), 
-              if(length(digitGroupSeparator)) paste0(' data-digit-group-separator="', digitGroupSeparator, '"'), 
+              if(length(min)) paste0(' data-minimum-value="', min, '"'),
+              if(length(max)) paste0(' data-maximum-value="', max, '"'),
+              if(length(sign)) paste0(' data-currency-symbol="', sign, '"'),
+              if(length(decimalCharacter)) paste0(' data-decimal-character="', decimalCharacter, '"'),
+              if(length(digitGroupSeparator)) paste0(' data-digit-group-separator="', digitGroupSeparator, '"'),
               if(length(decimal)) paste0(' data-decimal-places="', decimal, '"'), ' />\n
     </div>'))
 }
@@ -751,7 +751,7 @@ validateHeaders <- function(headersData, headersConfig, headerTypes = NULL){
   if(!is.null(headerTypes)){
     headerNames <- names(headersData)
   }
-  validNames <- identical(length(headerNames), length(headersConfig)) && 
+  validNames <- identical(length(headerNames), length(headersConfig)) &&
     all(!is.na(match(tolower(headerNames), tolower(headersConfig))))
   if(!validNames){
     return(FALSE)
@@ -760,7 +760,7 @@ validateHeaders <- function(headersData, headersConfig, headerTypes = NULL){
     return(TRUE)
   }
   return(hasValidHeaderTypes(headersData, headerTypes))
-  
+
 }
 hasValidHeaderTypes <- function(headersData, headerTypes){
   stopifnot(inherits(headersData, "data.frame"))
@@ -791,23 +791,23 @@ colTypeVectorToString <- function(colTypeVector){
 }
 fixColTypes <- function(data, colTypes){
   stopifnot(identical(length(data), nchar(colTypes)))
-  
+
   data[] <- lapply(seq_along(data), function(i){
     colType <- substr(colTypes, i, i)
-    if(identical(colType, "c") && 
+    if(identical(colType, "c") &&
        (is.numeric(data[[i]]) || is.logical(data[[i]]))){
       return(as.character(data[[i]]))
-    }else if(identical(colType, "d") && 
+    }else if(identical(colType, "d") &&
              (is.character(data[[i]]) || is.logical(data[[i]]))){
       return(suppressWarnings(as.numeric(data[[i]])))
     }else{
       return(data[[i]])
-    } 
+    }
   })
   return(data)
 }
 ddToTibble <- function(values, metaData){
-  choiceIdx         <- match(values, 
+  choiceIdx         <- match(values,
                              metaData$dropdown$choices)
   if(length(metaData$headers)){
     headers <- names(metaData$headers)
@@ -816,7 +816,7 @@ ddToTibble <- function(values, metaData){
   }
   aliases <- ""
   if(length(choiceIdx)){
-    if(!any(is.na(choiceIdx)) && 
+    if(!any(is.na(choiceIdx)) &&
        length(metaData$dropdown$aliases)){
       aliasCol          <- metaData$dropdown$aliases[choiceIdx]
       aliasCol[is.na(aliasCol)] <- ""
@@ -831,7 +831,7 @@ ddToTibble <- function(values, metaData){
   }else{
     ddTibble <- tibble(val = values)
   }
-  
+
   names(ddTibble) <- headers
   return(ddTibble)
 }
@@ -841,7 +841,7 @@ pidExists <- function(pid){
     return(FALSE)
   }
   if(isWindows()){
-    grepl("Mem Usage", run("tasklist", c("/FI", paste0("PID eq ", pid)), 
+    grepl("Mem Usage", run("tasklist", c("/FI", paste0("PID eq ", pid)),
                            windows_hide_window = TRUE)$stdout, fixed = TRUE)
   }else{
     pidExists <- TRUE
@@ -890,7 +890,7 @@ CharArray <- R6Class("CharArray", public = list(
   },
   delete = function(el){
     stopifnot(identical(length(el), 1L), is.character(el))
-    
+
     idx <- match(el, private$items)[[1L]]
     if(is.na(idx)){
       return(FALSE)
@@ -916,7 +916,7 @@ CharArray <- R6Class("CharArray", public = list(
     }else{
       return(FALSE)
     }
-    
+
     idx <- match(old, private$items)[[1L]]
     if(is.na(idx)){
       return(FALSE)
@@ -978,7 +978,7 @@ IdIdxMap <- R6Class("IdIdxMap", public = list(
   pop = function(arrayID, elID){
     stopifnot(identical(length(arrayID), 1L), is.character(arrayID))
     stopifnot(identical(length(elID),  1L))
-    
+
     if(identical(self$size(arrayID), 0L)){
       return(integer(0L))
     }
@@ -992,7 +992,7 @@ IdIdxMap <- R6Class("IdIdxMap", public = list(
   get = function(arrayID, elID){
     stopifnot(identical(length(arrayID), 1L), is.character(arrayID))
     stopifnot(identical(length(elID),  1L))
-    
+
     if(!arrayID %in% names(private$items)){
       return(integer(0L))
     }
@@ -1018,7 +1018,7 @@ IdIdxMap <- R6Class("IdIdxMap", public = list(
 ), private = list(
   items = list()
 ))
-parseMiroLog <- function(session, logPath, 
+parseMiroLog <- function(session, logPath,
                          inputSymbols, inputScalars = NULL){
   logContent <- htmltools::htmlEscape(read_lines(logPath))
   if(!length(inputSymbols)){
@@ -1027,25 +1027,25 @@ parseMiroLog <- function(session, logPath,
   parsedLog <- list()
   for(i in seq_along(logContent)){
     logLine <- logContent[i]
-    logLineSplitted <- stri_split_fixed(str = logLine, 
+    logLineSplitted <- stri_split_fixed(str = logLine,
                                         pattern = "::", n = 2)[[1L]]
     if(length(logLineSplitted) < 2L){
       next
     }
     symbolName <- tolower(trimws(logLineSplitted[[1L]]))
     if(symbolName %in% inputSymbols){
-      parsedLog[[symbolName]] <- c(parsedLog[[symbolName]], 
-                                   paste0('<li ondblclick="Miro.jumpToLogMark(', i, ')">', 
+      parsedLog[[symbolName]] <- c(parsedLog[[symbolName]],
+                                   paste0('<li ondblclick="Miro.jumpToLogMark(', i, ')">',
                                           paste(logLineSplitted[-1], collapse = ""),
                                           '</li>'))
-      logContent[i] <- paste0('<mark id="mlogMark_', i, 
+      logContent[i] <- paste0('<mark id="mlogMark_', i,
                               '" class="miro-log-mark">', logContent[i], '</mark>')
       next
     }
     if(length(inputScalars) && symbolName %in% inputScalars){
-      parsedLog[[scalarsFileName]] <- c(parsedLog[[symbolName]], 
+      parsedLog[[scalarsFileName]] <- c(parsedLog[[symbolName]],
                                         paste(logLineSplitted[-1], collapse = ""))
-      logContent[i] <- paste0('<mark id="mlogMark_', i, 
+      logContent[i] <- paste0('<mark id="mlogMark_', i,
                               '" class="miro-log-mark">', logContent[i], '</mark>')
       next
     }
@@ -1054,7 +1054,7 @@ parseMiroLog <- function(session, logPath,
 }
 filterScalars <- function(scalars, scalarsOutList, type = c("input", "output")){
   type <- match.arg(type)
-  
+
   scalarsToFilter <- c()
   if(length(scalarsOutList)){
     scalarsToFilter <- scalarsOutList$symnames
@@ -1067,7 +1067,7 @@ filterScalars <- function(scalars, scalarsOutList, type = c("input", "output")){
 setDbConfig <- function(){
   config <- list()
   errMsg <- NULL
-  
+
   envNameDbDataMap <- list(
     list(envVar = 'MIRO_DB_TYPE', keyName = 'type', desc = 'database type', default = 'postgres'),
     list(envVar = 'MIRO_DB_USERNAME', keyName = 'username', desc = 'database username'),
@@ -1076,16 +1076,16 @@ setDbConfig <- function(){
     list(envVar = 'MIRO_DB_HOST', keyName = 'host', desc = 'database host', default = 'localhost'),
     list(envVar = 'MIRO_DB_PORT', keyName = 'port', desc = 'database port', numeric = TRUE, default = 5432),
     list(envVar = 'MIRO_DB_SCHEMA', keyName = 'schema', desc = 'database schema', default = 'public'))
-  
+
   for(i in seq_along(envNameDbDataMap)){
     metaData <- envNameDbDataMap[[i]]
-    
+
     data <- Sys.getenv(metaData$envVar, unset = NA)
     if(is.na(data)){
       if(length(metaData$default)){
         config[[metaData$keyName]] <- metaData$default
       }else{
-        errMsg <- paste(errMsg, paste0("The ", metaData$desc , " could not be identified. Please make sure you specify a valid ", 
+        errMsg <- paste(errMsg, paste0("The ", metaData$desc , " could not be identified. Please make sure you specify a valid ",
                                        metaData$desc, ":\nThe ", metaData$desc, " should be stored in the environment variable: '", metaData$envVar, "'."),
                         sep = "\n")
       }
@@ -1134,7 +1134,7 @@ file.copy2 <- function(from, to){
   fromDirs <- from[fromIsDir]
   toDirs   <- dirname(to[fromIsDir])
   for(i in seq_along(fromDirs)){
-    if(!file.copy(fromDirs[i], toDirs[i], 
+    if(!file.copy(fromDirs[i], toDirs[i],
                   recursive = TRUE, overwrite = TRUE)){
       return(FALSE)
     }
@@ -1183,7 +1183,7 @@ hotToR <- function(data, metaData, fixType = TRUE){
 isAbsolutePath <- function(path){
   if(isWindows()){
     # credits to: agent-j @ https://stackoverflow.com/questions/6416065/c-sharp-regex-for-file-paths-e-g-c-test-test-exe
-    return(grepl("^(?:[a-zA-Z]\\:|\\\\\\\\[\\w\\.]+\\\\[\\w.$]+)\\\\(?:[\\w]+\\\\)*\\w([\\w.])+$", 
+    return(grepl("^(?:[a-zA-Z]\\:|\\\\\\\\[\\w\\.]+\\\\[\\w.$]+)\\\\(?:[\\w]+\\\\)*\\w([\\w.])+$",
                  path, perl = TRUE))
   }
   return(startsWith(path, "/"))
@@ -1201,29 +1201,29 @@ zipMiro <- function(zipfile, files, baseDir, ...){
   suppressMessages(zip::zip(zipfile, nativeFileEnc(files), ...))
 }
 getHcubeScalars <- function(modelIn){
-  return(names(modelIn)[vapply(seq_along(modelIn), 
-                               function(i) 
+  return(names(modelIn)[vapply(seq_along(modelIn),
+                               function(i)
                                  isTRUE(modelIn[[i]]$dropdown$single) ||
-                                 isTRUE(modelIn[[i]]$dropdown$checkbox), 
+                                 isTRUE(modelIn[[i]]$dropdown$checkbox),
                                logical(1L), USE.NAMES = FALSE)])
 }
 loadPfFileContent <- function(content, GMSOpt = character(0L), DDPar = character(0L)){
   content <- stri_split_regex(content, "=| ", 2)
-  content <- tryCatch(tibble(scalar = trimws(vapply(content, "[[", 
-                                                    character(1L), 1L, 
-                                                    USE.NAMES = FALSE), "left", "-"), 
-                             description = character(length(content)), 
-                             value = trimws(vapply(content, "[[", 
-                                                   character(1L), 2L, 
-                                                   USE.NAMES = FALSE), "both", '"')), 
+  content <- tryCatch(tibble(scalar = trimws(vapply(content, "[[",
+                                                    character(1L), 1L,
+                                                    USE.NAMES = FALSE), "left", "-"),
+                             description = character(length(content)),
+                             value = trimws(vapply(content, "[[",
+                                                   character(1L), 2L,
+                                                   USE.NAMES = FALSE), "both", '"')),
                       error = function(e){
                         return(tibble())
                       })
   if(!length(content)){
     return(tibble())
   }
-  content       <- content[tolower(content[[1]]) %in% 
-                             c(GMSOpt, DDPar), , 
+  content       <- content[tolower(content[[1]]) %in%
+                             c(GMSOpt, DDPar), ,
                            drop = FALSE]
   if(!length(content[[1]])){
     return(tibble())
@@ -1235,35 +1235,35 @@ getValidCsvFromZip <- function(zipFileName, dsToVerify, uid){
   tryCatch({
     filesInArchive <- zip_list(zipFileName)
   }, error = function(e){
-    stop(sprintf("e: Could not read zip archive: '%s'.", 
+    stop(sprintf("e: Could not read zip archive: '%s'.",
                  zipFileName))
   })
-  
+
   filesInArchive   <- filesInArchive[filesInArchive$compressed_size > 0, ]$filename
-  validFileNames <- grep("^((?!\\.\\.).)*\\.csv$", filesInArchive, 
+  validFileNames <- grep("^((?!\\.\\.).)*\\.csv$", filesInArchive,
                          ignore.case = TRUE, value = TRUE, perl = TRUE)
   validFileNames <- validFileNames[tolower(validFileNames) %in% paste0(dsToVerify, ".csv")]
-  
+
   if(!identical(length(filesInArchive), length(validFileNames))){
-    stop(sprintf("Zip archive contains invalid files: '%s'.", 
+    stop(sprintf("Zip archive contains invalid files: '%s'.",
                  zipFileName))
   }
-  
+
   tmpDir <- file.path(tempdir(), paste0(uid, "_imp_tmp_dir"))
-  
+
   if(file.exists(tmpDir) && !identical(unlink(tmpDir, recursive = TRUE), 0L)){
     stop(sprintf("e: Could not remove temporary directory: '%s'.", tmpDir))
   }
   if(!dir.create(tmpDir, recursive = TRUE)){
     stop(sprintf("e: Could not create temporary directory: '%s'.", tmpDir))
   }
-  
+
   tryCatch(
-    csvPaths <- zip::unzip(zipFileName, exdir = tmpDir, 
+    csvPaths <- zip::unzip(zipFileName, exdir = tmpDir,
                            junkpaths = TRUE)
     , error = function(e){
       unlink(tmpDir, recursive = TRUE)
-      stop(sprintf("e: Problems extracting zip archive. Error message: '%s'.", 
+      stop(sprintf("e: Problems extracting zip archive. Error message: '%s'.",
                    conditionMessage(e)))
     })
   if(any(Sys.readlink(file.path(tmpDir, validFileNames)) != "")){
@@ -1282,7 +1282,7 @@ DTbuildColHeaderContainer <- function(colNames, noRowHeaders, rowHeaders){
   colNameList <- stri_split_fixed(colNameHeaders, "\U2024")
   noColDim <- length(colNameList[[1L]])
   noCols   <- length(colNameHeaders)
-  
+
   colNameList <- purrr::transpose(colNameList)
   colGroupBorders <- integer(0L)
   return(htmltools::withTags(tags$table(
@@ -1317,12 +1317,12 @@ DTbuildColHeaderContainer <- function(colNames, noRowHeaders, rowHeaders){
           }
         }
         if(i == 1L){
-          return(tags$tr(c(lapply(rowHeaders, tags$th, rowspan = noColDim), 
+          return(tags$tr(c(lapply(rowHeaders, tags$th, rowspan = noColDim),
                            headerRowHTML[seq_len(k)])))
         }
         return(tags$tr(headerRowHTML[seq_len(k)]))
       }),
-      tags$tr(lapply(if(identical(noColDim, 1L)) 
+      tags$tr(lapply(if(identical(noColDim, 1L))
         c(rowHeaders, colNameList[[noColDim]]) else colNameList[[noColDim]], tags$th))
     )
   )))
@@ -1350,13 +1350,13 @@ genWidgetGroups <- function(widgetNames, widgetGroups, widgetTabName, aggregateW
   if(length(widgetNames)){
     widgetNames <- widgetNames[!widgetNames %in% unlist(lapply(inputGroups, "[[", "members"))]
     if(length(widgetNames)){
-      return(c(list(list(name = widgetTabName, members = widgetNames, sameTab = aggregateWidgets)), 
+      return(c(list(list(name = widgetTabName, members = widgetNames, sameTab = aggregateWidgets)),
                newWidgetGroups))
     }
   }
   return(newWidgetGroups)
 }
-getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NULL, 
+getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NULL,
                     scalarsTabName = "Scalars", mergeScalars = FALSE, widgetIdsMultiDim = integer(0L)){
   j              <- 1L
   tabs     <- vector("list", length(names))
@@ -1391,7 +1391,7 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
       next
     }
     if(length(groups)){
-      groupId <- vapply(seq_along(groups), 
+      groupId <- vapply(seq_along(groups),
                         function(gId){
                           if(names[i] %in% groups[[gId]]$members)
                             return(gId)
@@ -1400,7 +1400,7 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
       if(any(!is.na(groupId))){
         groupId <- groupId[!is.na(groupId)]
         if(length(groupId) > 1L){
-          warningMsgTmp <- sprintf("Dataset: '%s' appears in more than one group. Only the first group will be used.", 
+          warningMsgTmp <- sprintf("Dataset: '%s' appears in more than one group. Only the first group will be used.",
                                    aliases[i])
           warning(warningMsgTmp)
           groupId <- groupId[1]
@@ -1408,7 +1408,7 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
         groupMemberIds      <- match(groups[[groupId]]$members, names)
         groupMemberIds      <- groupMemberIds[groupMemberIds %in% idsToDisplay]
         if(any(is.na(groupMemberIds))){
-          warningMsgTmp <- sprintf("The table(s): '%s' that you specified in group: '%s' do not exist. Thus, they were ignored.", 
+          warningMsgTmp <- sprintf("The table(s): '%s' that you specified in group: '%s' do not exist. Thus, they were ignored.",
                                    paste(groups[[groupId]]$members[is.na(groupMemberIds)], collapse = "', '"),
                                    groups[[groupId]]$name)
           warning(warningMsgTmp)
@@ -1427,7 +1427,7 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
         }else{
           tabTitles[[j]] <-  c(groups[[groupId]]$name, aliases[groupMemberIds])
         }
-        isAssigned[groupMemberIds] <- TRUE 
+        isAssigned[groupMemberIds] <- TRUE
         j <- j + 1L
         next
       }
@@ -1435,7 +1435,7 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
     sheetId <- i
     tabSheetMap[[sheetId]] <- j
     tabs[[j]]      <-  sheetId
-    
+
     tabTitles[[j]] <-  aliases[[i]]
     tabSheetMap[sheetId] <- j
     j <- j + 1L
@@ -1460,7 +1460,7 @@ htmlIdDec <- function(string){
                                         vectorize_all = FALSE)))
 }
 condition <- function(subclass, message, call = sys.call(-1), ...) {
-  # taken from: Advanced R by Hadley Wickham (chapter about Debugging, 
+  # taken from: Advanced R by Hadley Wickham (chapter about Debugging,
   #   condition handling, and defensive programming)
   structure(
     class = c(subclass, "condition"),
@@ -1468,9 +1468,9 @@ condition <- function(subclass, message, call = sys.call(-1), ...) {
     ...
   )
 }
-custom_stop <- function(subclass, message, call = sys.call(-1), 
+custom_stop <- function(subclass, message, call = sys.call(-1),
                         ...) {
-  # taken from: Advanced R by Hadley Wickham (chapter about Debugging, 
+  # taken from: Advanced R by Hadley Wickham (chapter about Debugging,
   #   condition handling, and defensive programming)
   c <- condition(c(subclass, "error"), message, call = call, ...)
   stop(c)
@@ -1541,7 +1541,7 @@ isValidUEL <- function(uelToTest){
   return(TRUE)
 }
 is_wholenumber <- function(x) x%%1==0
-# safeFromJSON function taken from Shiny package 
+# safeFromJSON function taken from Shiny package
 # see LICENSE file for license information of Shiny package
 safeFromJSON <- function(txt, ...) {
   if (!jsonlite::validate(txt)) {
@@ -1557,13 +1557,13 @@ path_sanitize <- function(filename, replacement = "") {
   reserved <- "^[.]+$"
   windows_reserved <- "^(con|prn|aux|nul|com[0-9]|lpt[0-9])([.].*)?$"
   windows_trailing <- "[. ]+$"
-  
+
   filename <- gsub(illegal, replacement, filename)
   filename <- gsub(control, replacement, filename)
   filename <- gsub(reserved, replacement, filename)
   filename <- gsub(windows_reserved, replacement, filename, ignore.case = TRUE)
   filename <- gsub(windows_trailing, replacement, filename)
-  
+
   # TODO: this substr should really be unicode aware, so it doesn't chop a
   # multibyte code point in half.
   filename <- substr(filename, 1, 255)
@@ -1592,14 +1592,14 @@ formatScenList = function(scenList, uid, orderBy = NULL, desc = FALSE, limit = 1
   #   scenList:          dataframe with scenario metadata
   #   uid:               name of currently logged in user
   #   orderBy:           column to use for ordering data frame (optional)
-  #   desc:              boolean that specifies whether ordering should be 
+  #   desc:              boolean that specifies whether ordering should be
   #                      descending(FALSE) or ascending (TRUE) (optional)
   #   limit:             maximum number of scenarios to format
   #
   # Returns:
-  #   character vector: named vector formatted to be used in dropdown menus, 
+  #   character vector: named vector formatted to be used in dropdown menus,
   #   returns NULL in case no scenarios found
-  
+
   #BEGIN error checks
   if(!hasContent(scenList)){
     return(NULL)
@@ -1612,7 +1612,7 @@ formatScenList = function(scenList, uid, orderBy = NULL, desc = FALSE, limit = 1
   limit <- as.integer(limit)
   stopifnot(!is.na(limit))
   # END error checks
-  
+
   limit <- min(nrow(scenList), limit)
   scenList <- scenList[seq_len(limit), , drop = FALSE]
   if(!is.null(orderBy)){
@@ -1622,14 +1622,14 @@ formatScenList = function(scenList, uid, orderBy = NULL, desc = FALSE, limit = 1
       scenList <- dplyr::arrange(scenList, !!as.name(orderBy))
     }
   }
-  
-  return(setNames(paste0(scenList[["_sid"]], "_", 
-                         scenList[["_uid"]]), 
-                  paste0(vapply(scenList[["_uid"]], 
-                                function(el){ 
-                                  if(identical(el, uid)) "" else paste0(el, ": ")}, 
-                                character(1), USE.NAMES = FALSE), 
-                         scenList[["_sname"]], " (", 
+
+  return(setNames(paste0(scenList[["_sid"]], "_",
+                         scenList[["_uid"]]),
+                  paste0(vapply(scenList[["_uid"]],
+                                function(el){
+                                  if(identical(el, uid)) "" else paste0(el, ": ")},
+                                character(1), USE.NAMES = FALSE),
+                         scenList[["_sname"]], " (",
                          scenList[["_stime"]], ")")))
 }
 tabIdToRef <- function(tabId){
@@ -1696,7 +1696,7 @@ getCombinationsSlider <- function(lowerVal, upperVal, stepSize = 1){
   stopifnot(is.numeric(upperVal), length(upperVal) == 1)
   stopifnot(is.numeric(stepSize), length(stepSize) == 1, stepSize > 0)
   # END error checks
-  
+
   ret <- list()
   repeat{
     lowTmp  <- seq(lowerVal, upperVal, stepSize)
@@ -1705,7 +1705,7 @@ getCombinationsSlider <- function(lowerVal, upperVal, stepSize = 1){
     upperVal <- upperVal - stepSize
     if(upperVal < lowerVal){
       if((upperVal + 1e-10) < lowerVal){
-        break 
+        break
       }else{
         upperVal <- lowerVal
       }

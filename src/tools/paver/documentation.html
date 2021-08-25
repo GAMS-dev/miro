@@ -18,7 +18,7 @@ $$ gap(a,b) = \begin{cases}0, & \textrm{if } |a-b| < tol, \\
 \end{cases}
 $$ where tol is by default 1e-9.
 For instances with known optimal value, also the gap between primal and dual bound to optimal value are computed.
-These are denoted as <i>primal gap</i> and <i>dual gap</i>, respectively. 
+These are denoted as <i>primal gap</i> and <i>dual gap</i>, respectively.
 
 <H4>Integrals</H4>
 If the progress of primal and/or dual bound during the solving progress is available, e.g., in form of a GAMS <i>solvetrace</i> file,
@@ -189,13 +189,13 @@ The (shifted) <b>geometric mean</b> and <b>standard deviation</b> for a sequence
   $$\nu = \prod_{i=1}^n (v_i + s)^{1/n} - s \qquad \textrm{and} \qquad
     \exp{\sqrt{\frac{1}{n}\sum_{i=1}^n \log(v_i+s)^2 - \log(\nu + s)^2}}.$$
 In this example, the shifted geometric mean and std.dev. are computed for a shift of 10.
-<LI> <b>min, x%, max</b>: Minimal, x-quantile, and maximal value of attribute.  
-That is, for Solver A, the minimal value of the attribute is 1.18, for 10% of the instances, it is below 1.38, ..., and the maximal one is 912.34. 
+<LI> <b>min, x%, max</b>: Minimal, x-quantile, and maximal value of attribute.
+That is, for Solver A, the minimal value of the attribute is 1.18, for 10% of the instances, it is below 1.38, ..., and the maximal one is 912.34.
 </UL>
 
 <P>
 The virtual best and virtual worst solvers are computed instance-wise from the values of all solvers.
-If some solver does not provide a value, also the virtual worst one does not. 
+If some solver does not provide a value, also the virtual worst one does not.
 </P>
 <P>
 Bar charts for counts and mean values may be shown, too.
@@ -203,7 +203,7 @@ Further, a <a href="http://en.wikipedia.org/wiki/Box_plot" target="_blank"><b>bo
 together with the median (red line), 25% quantile (lower edge of the blue box), 75% quantile (upper edge of the blue box),
 the lowest data point still within 1.5 * (75%-quantile - 25%-quantile) of the 25% quantile (the lower whisker),
 the largest data point still within 1.5 * (75%-quantile - 25%-quantile) of the 75% quantile (the upper whisker),
-and data points that are beyond the whiskers (the outliers). 
+and data points that are beyond the whiskers (the outliers).
 </P>
 
 </P>
@@ -329,7 +329,7 @@ These numbers have the following meaning:
 <LI> <b>arith. mean / std.</b>: Arithmetic mean and standard deviation of ratios.
 <LI> <b>min, x%, max</b>: Minimal, x-quantile, and maximal value of attribute.
  As this is 1.0 for solvers A, B, and C in this example, it means that each solver was at least for one instance as good as the best solver on this instance (w.r.t. the considered attribute).
- The max row shows, that solver A, B, and C were at most 5, 24, and 642 times slower than the best one on some instance, respectively. 
+ The max row shows, that solver A, B, and C were at most 5, 24, and 642 times slower than the best one on some instance, respectively.
 <LI> <b>better</b>, <b>worse</b>, <b>close</b>: Number of instances where a solver is better / worse / not-better-and-not-worse than the reference solver w.r.t. specified relative and absolute tolerances.
  In this example, no solver is better than the virtual best one (which is clear by definition).
  Solver A was on 22 instances at by least 10% and at least 1.0 worse than the best one,

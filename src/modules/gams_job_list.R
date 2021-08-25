@@ -7,7 +7,7 @@ observe({
   input$refreshActiveJobs
   showEl(session, "#jImport_load")
   on.exit(hideEl(session, "#jImport_load"), add = TRUE)
-  
+
   flog.trace("Refreshing job list..")
   isolate({
     flog.debug("Job list tab clicked. Job list is being reloaded")
@@ -17,7 +17,7 @@ observe({
       hideEl(session, "#jImport_load")
       return(NULL)
     }
-    
+
     jobList <- NULL
     redirect <- FALSE
     tryCatch({
@@ -28,29 +28,29 @@ observe({
       jobList <- jobList$jobList
     }, error = function(e){
       errMsg <- conditionMessage(e)
-      
-      if(errMsg == 404L || startsWith(errMsg, "Could not") || 
+
+      if(errMsg == 404L || startsWith(errMsg, "Could not") ||
          startsWith(errMsg, "Timeout"))
         return(showHideEl(session, "#fetchJobsUnknownHost", 6000L))
-      
+
       if(errMsg == 401L || errMsg == 403L){
         flog.debug("User is not logged in. Login dialog is opened.")
         showLoginDialog(cred = worker$getCredentials(), forward = "jobListPanel")
         redirect <<- TRUE
         return(showHideEl(session, "#fetchJobsAccessDenied", 6000L))
       }
-      flog.error("Problems loading job list from database. Error message: '%s'.", 
+      flog.error("Problems loading job list from database. Error message: '%s'.",
                  conditionMessage(e))
       showHideEl(session, "#fetchJobsError", 6000L)
     })
     if(redirect)
       return()
-    
+
     output$jImport_output <- renderUI(
-      getJobsTable(jobList, 
+      getJobsTable(jobList,
                    hcubeMode = LAUNCHHCUBEMODE,
-                   showLogFileDialog = any(config$activateModules$logFile, 
-                                           config$activateModules$lstFile, 
+                   showLogFileDialog = any(config$activateModules$logFile,
+                                           config$activateModules$lstFile,
                                            config$activateModules$miroLogFile)))
     hideEl(session, "#jImport_load")
   })
@@ -69,7 +69,7 @@ if(isTRUE(config$activateModules$remoteExecution)){
       return(showLoginDialog(cred = worker$getCredentials(), forward = "jobListPanel"))
     }
     if(length(worker$getActiveDownloads()) > 10L){
-      flog.info("Can not download job as maximum number of: %d parallel downloads is reached.", 
+      flog.info("Can not download job as maximum number of: %d parallel downloads is reached.",
                 length(resDlIdx))
       return(showHideEl(session, "#fetchJobsMaxDownloads", 6000L))
     }
@@ -92,14 +92,14 @@ if(isTRUE(config$activateModules$remoteExecution)){
                         rv$jobListPanel <- rv$jobListPanel + 1L
                         return()
                       }
-                      flog.error("Problems initiating job results download of job ID: '%s'. Error message: '%s'.", 
+                      flog.error("Problems initiating job results download of job ID: '%s'. Error message: '%s'.",
                                  jID, errMsg)
                       showHideEl(session, "#fetchJobsError")
                     })
     if(identical(res, 100L)){
       activeDownloads <- worker$getActiveDownloads()
-      session$sendCustomMessage("gms-markJobDownloadComplete", 
-                                list(id = jID, 
+      session$sendCustomMessage("gms-markJobDownloadComplete",
+                                list(id = jID,
                                      text = lang$nav$importJobsDialog$status$downloaded,
                                      triggerImport = identical(length(activeDownloads), 0L)))
       return()
@@ -113,7 +113,7 @@ if(isTRUE(config$activateModules$remoteExecution)){
         invalidateLater(2000L, session)
         flog.debug("Download-results-observer triggered.")
         activeDownloads <- worker$getActiveDownloads()
-        if(identical(length(activeDownloads), 0L) && 
+        if(identical(length(activeDownloads), 0L) &&
            length(asyncResObs)){
           asyncResObs$destroy()
           asyncResObs <<- NULL
@@ -131,17 +131,17 @@ if(isTRUE(config$activateModules$remoteExecution)){
                                  })
           if(identical(dlProgress, -1L))
             next
-          
+
           if(identical(dlProgress, 100L)){
-            session$sendCustomMessage("gms-markJobDownloadComplete", 
-                                      list(id = dlID, 
+            session$sendCustomMessage("gms-markJobDownloadComplete",
+                                      list(id = dlID,
                                            text = lang$nav$importJobsDialog$status$downloaded,
                                            triggerImport = identical(length(activeDownloads), 1L)))
             return()
           }
-          session$sendCustomMessage("gms-updateJobProgress", 
-                                    list(id = paste0("#jobImportDlProgress_", dlID), 
-                                         progress = list(noCompleted = dlProgress, 
+          session$sendCustomMessage("gms-updateJobProgress",
+                                    list(id = paste0("#jobImportDlProgress_", dlID),
+                                         progress = list(noCompleted = dlProgress,
                                                          noTotal = 100L)))
         }
       })
@@ -162,13 +162,13 @@ observeEvent(input$btShowHistory, {
       err <<- TRUE
       return()
     }
-    flog.error("Problems loading job list from database. Error message: '%s'.", 
+    flog.error("Problems loading job list from database. Error message: '%s'.",
                conditionMessage(e))
     showHideEl(session, "#fetchJobsError")
   })
   if(err)
     return()
-  
+
   showJobHistoryDialog(jobList,  hcubeMode = LAUNCHHCUBEMODE)
 })
 
@@ -187,8 +187,8 @@ observeEvent(input$discardJob, {
   }
   tryCatch({
     jobMeta <- worker$getInfoFromJobList(jID)
-    worker$updateJobStatus(JOBSTATUSMAP[['discarded']], 
-                           jID, 
+    worker$updateJobStatus(JOBSTATUSMAP[['discarded']],
+                           jID,
                            tags = input[[paste0("jTag_", jID)]])
     if(identical(jobMeta[["_scode"]][1], SCODEMAP[["hcube_jobconfig"]])){
       db$deleteRows("_scenMeta", "_sid", jobMeta[["_sid"]][1])
@@ -214,7 +214,7 @@ getJobProgress <- function(jID){
     return(NULL)
   }
   jobProgress <- worker$getHcubeJobProgress(jID)
-  
+
   noJobsCompleted <- jobProgress[[1L]]
   noJobs <- jobProgress[[2L]]
   if(identical(length(jobProgress), 3L)){
@@ -223,7 +223,7 @@ getJobProgress <- function(jID){
   }else{
     noFail <- NULL
   }
-  
+
   if(identical(noJobsCompleted, noJobs)){
     rv$jobListPanel <- rv$jobListPanel + 1L
     removeModal()
@@ -241,8 +241,8 @@ observeEvent(input$updateJobProgress, {
   if(is.null(currentProgress)){
     return()
   }
-  session$sendCustomMessage("gms-updateJobProgress", 
-                            list(id = paste0("#hcubeProgress", jID), 
+  session$sendCustomMessage("gms-updateJobProgress",
+                            list(id = paste0("#hcubeProgress", jID),
                                  progress = currentProgress))
 })
 observeEvent(input$showJobProgress, {
@@ -258,7 +258,7 @@ observeEvent(input$showJobProgress, {
     return()
   }
   showJobProgressDialog(jID, currentProgress)
-  session$sendCustomMessage("gms-startUpdateJobProgress", 
+  session$sendCustomMessage("gms-startUpdateJobProgress",
                             list(id = paste0("#hcubeProgress", jID),
                                  jID = jID))
 })

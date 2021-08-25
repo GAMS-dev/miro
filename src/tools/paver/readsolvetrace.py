@@ -28,7 +28,7 @@ def addCommandLineOptions(parser) :
 def read(f, paver, **attribs) :
     '''Reads input in form of a GAMS solvetrace (aka miptrace) file with progress of primal and dual bounds w.r.t. time and number of nodes.'''
     # pylint: disable=W0613
-    
+
     solver = None;
     runname = None;
     instance = None;
@@ -38,19 +38,19 @@ def read(f, paver, **attribs) :
     seenend = False;
 
     for line in f :
-        
+
         if line.startswith("* solvetrace file") or line.startswith("* miptrace file") :
             pos = line.find("ID = ");
             if pos >= 0 :
                 solverid = line[pos+5:].split()[0].upper();
-                
+
                 if solverid in solverrename :
                     solverid = solverrename[solverid];
-                
+
                 # see if we find a solver name which matches our solverid (case insensitive) or at least starts with the same name
                 for sr in paver.solvedata.items :
                     s = sr.split('@')[0];
-                
+
                     if s.upper() == solverid :
                         solver = s;
                         runname = sr.split('@')[1];
@@ -58,16 +58,16 @@ def read(f, paver, **attribs) :
                     elif s.upper().startswith(solverid) or solverid.startswith(s.upper()) :
                         solver = s;
                         runname = sr.split('@')[1];
-                
+
                 if solver is None :
                     raise BaseException('Do not have solver with name ' + solverid);
-                
+
             pos = line.find("Instance = ");
             if pos >= 0 :
                 instance = line[pos+11:].split()[0];
-                
+
             continue;
-                
+
         if line.startswith("* fields are") :
             # get rid of '* fields are' and spaces at begin and end
             line = line[12:].strip();
@@ -80,38 +80,38 @@ def read(f, paver, **attribs) :
             for c in line.split(',') :
                 assert(len(c.strip()) > 0);
                 cols.append(c.strip());
-                
+
             continue;
-        
+
         # skip comment and empty lines
         if line[0] == '*' or len(line.strip()) == 0 :
             continue;
-        
+
         record = {};
         colit = iter(cols);
         for r in line.split(',') :
             r = r.strip();
             c = next(colit);
-            
+
             if r.upper() == "NA" :
                 continue;
-            
+
             if c in COLRENAME :
                 c = COLRENAME[c];
-            
+
             if c in INTCOLS :
                 record[c] = int(r);
             elif c in FLOATCOLS :
                 record[c] = float(r);
             else :
                 record[c] = r.strip();
-        
+
         if 'seriesID' in cols:
             seenstart |= (record['seriesID'] == 'S');
             seenend |= (record['seriesID'] == 'E');
-        
+
         tracedata.append(record);
-        
+
     if instance is None :
         raise BaseException("No information on instancedata in solvetrace file");
 

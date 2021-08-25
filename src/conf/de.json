@@ -1,11 +1,11 @@
-{  
+{
   "general":{
     "modal":{
       "okButton": "OK",
       "cancelButton": "Abbrechen"
     }
   },
-  "nav":{  
+  "nav":{
     "scalarAliases":{
       "scalars": "Skalare",
       "scalarsOut": "Ergebnisskalare",
@@ -15,7 +15,7 @@
         "value": "Skalarwert"
       }
     },
-    "sidebarMenu":{  
+    "sidebarMenu":{
       "inputScreen":"Eingabedaten",
       "outputScreen":"Ergebnisse",
       "gams":"GAMS Interaktion",
@@ -27,7 +27,7 @@
         "analyze": "Szenarienanalyse"
       }
     },
-    "sidebarButtons":{  
+    "sidebarButtons":{
       "importInput":"Daten laden",
       "solve":"Modell lösen",
       "submitJob": "Job senden",
@@ -65,21 +65,21 @@
         "switchToHcube": "Wechsel zum Hypercube Modus"
       }
     },
-    "inputScreen":{  
+    "inputScreen":{
       "btCollapsedTabs": "Mehr",
       "noDataDep":"Bitte zuerst alle Daten importieren, auf denen dieses Element basiert.",
       "widgetTabTitle": "Eingabe-Widgets",
       "dirtyFlag": "Das Szenario enthält Ausgabedaten, die möglicherweise nicht mehr zu den modifizierten Eingabedaten passen."
     },
-    "gams":{  
-      "boxModelStatus":{  
+    "gams":{
+      "boxModelStatus":{
         "title":"Modellstatus"
       },
-      "boxGamsOutput":{  
+      "boxGamsOutput":{
         "title":"GAMS Ausgabe",
         "tabCurrent": "Aktueller Job",
         "tabJobList": "Jobliste",
-        "gamsOutputTabset":{  
+        "gamsOutputTabset":{
           "logFile":"Log-Datei",
           "lstFile":"Listing-Datei",
           "miroLogFile":"MIRO Log-Datei",
@@ -87,18 +87,18 @@
         }
       }
     },
-    "outputScreen":{  
-      "boxResults":{  
+    "outputScreen":{
+      "boxResults":{
         "title":"Ergebnisse",
         "noData":"Keine Daten"
       }
     },
-    "scen":{  
+    "scen":{
       "noScen":"Kein Szenario ausgewählt",
       "btLoad":"Laden",
       "btCloseAll": "Alle schließen",
       "scenNameSandboxSuffix": "(Sandbox)",
-      "tooltips":{  
+      "tooltips":{
         "btExport":"Exportiere Szenariodaten",
         "btTableView":"Ansicht wechseln",
         "btSymbolLink": "Als Eingabedaten verwenden",
@@ -169,7 +169,7 @@
 	    "btCancel": "Abbrechen",
 	    "btNew": "Szenarien auswählen"
     },
-    "gamsModelStatus":{  
+    "gamsModelStatus":{
       "submission": "Modell wird übermittelt",
       "queued": "Modell in der Warteschlange",
       "exec":"Modell wird gelöst",
@@ -177,7 +177,7 @@
       "success":"Das Modell wurde erfolgreich gelöst.",
       "error":"Beim Lösen des GAMS-Modells ist ein Fehler aufgetreten: "
     },
-    "notificationNewInput":{  
+    "notificationNewInput":{
       "new":"%s Datensätze importiert.",
       "noNew":"Keine neuen Datensätze importiert."
     },
@@ -190,11 +190,11 @@
       "cancelButton": "Abbrechen",
       "okButton": "Exportieren"
     },
-    "dialogSaveSuccess":{  
+    "dialogSaveSuccess":{
       "title":"Erfolgreich",
       "desc":" Datensätze wurden erfolgreich gespeichert."
     },
-    "dialogNewScen":{  
+    "dialogNewScen":{
       "title":"Neues Szenario",
       "desc":"Bitte wählen Sie einen Namen für das Szenario:",
       "discardAttach": "Anhänge verwerfen?",
@@ -209,7 +209,7 @@
       "cancelButton":"Abbrechen",
       "okButton":"Ok"
     },
-    "dialogNewHCJob":{  
+    "dialogNewHCJob":{
       "title":"Neue Hypercube-Job-Konfiguration",
       "desc":"Bitte wählen Sie einen Namen für die Hypercube-Job-Konfiguration:",
       "discardAttach": "Anhänge verwerfen?",
@@ -315,43 +315,43 @@
       "okButton": "Importieren",
       "cancelButton": "Abbrechen"
     },
-    "dialogDeleteScen":{  
+    "dialogDeleteScen":{
       "title":"Szenario löschen",
       "desc":"Sind Sie sicher, dass Sie das ausgewählte Szenario löschen möchten?",
       "cancelButton":"Abbrechen",
       "okButton":"Ja",
-      "removeFromUI":{  
+      "removeFromUI":{
         "title":"Szenario aus Sandbox entfernen",
         "desc":"Möchten Sie das Szenario aus der Sandbox entfernen? Ungespeicherte Daten gehen dadurch verloren!",
         "cancelButton": "Abbrechen",
         "okButton":"Szenario schließen"
       }
     },
-    "dialogDeleteHCJob":{  
+    "dialogDeleteHCJob":{
       "title":"Hypercube-Job löschen",
       "desc":"Sind Sie sicher, dass Sie die ausgewählte Hypercube-Job-Konfiguration löschen möchten?",
       "cancelButton":"Abbrechen",
       "okButton":"Ja",
-      "removeFromUI":{  
+      "removeFromUI":{
         "title":"Hypercube-Job aus Sandbox entfernen",
         "desc":"Möchten Sie die Hypercube-Job-Konfiguration aus der Sandbox entfernen? Ungespeicherte Daten gehen dadurch verloren!",
         "cancelButton": "Abbrechen",
         "okButton":"Szenario schließen"
       }
     },
-    "dialogRemoveScen":{  
+    "dialogRemoveScen":{
       "title":"Szenario schließen",
       "desc":"Sind Sie sicher, dass Sie das Szenario schließen möchten? Ungespeicherte Daten gehen dadurch verloren!",
       "cancelButton":"Abbrechen",
       "okButton":"Schließen"
     },
-    "dialogRemoveHCJob":{  
+    "dialogRemoveHCJob":{
       "title":"Hypercube-Job schließen",
       "desc":"Sind Sie sicher, dass Sie die aktive Hypercube-Job-Konfiguration schließen möchten? Ungespeicherte Daten gehen dadurch verloren!",
       "cancelButton":"No",
       "okButton":"Yes"
     },
-    "dialogCloseScen":{  
+    "dialogCloseScen":{
       "title":"Szenario schließen",
       "desc":"Sind Sie sicher, dass Sie das ausgewählte Szenario schließen möchten?",
       "cancelButton":"Nein",
@@ -363,20 +363,20 @@
       "cancelButton":"Nein",
       "okButton":"Ja"
     },
-    "dialogExistingOutput":{  
+    "dialogExistingOutput":{
       "title":"Es existieren Ausgabedaten",
       "desc":"Das Szenario, das Sie sichern wollen, enthält Ausgabedaten, die möglicherweise nicht zu den Eingabedaten passen. Möchten Sie die Ausgabedaten verwerfen?",
       "cancelButton"    : "Abbrechen",
       "saveOutputButton":"Ausgabedaten speichern",
       "discardOutputButton":"Ausgabedaten verwerfen"
     },
-    "dialogSaveScen":{  
+    "dialogSaveScen":{
       "title":"Szenario speichern",
       "desc":"Sind Sie sicher, dass Sie das ausgewählte Szenario in der Datenbank speichern möchten?",
       "cancelButton":"Nein",
       "okButton":"Ja"
     },
-    "dialogImport":{  
+    "dialogImport":{
       "title":"Daten laden",
       "tabLocal":"Lokal",
       "tabExternal": "Extern",
@@ -400,7 +400,7 @@
       "okButton":"Laden",
       "cancelButton":"Abbrechen"
     },
-    "dialogImportHC":{  
+    "dialogImportHC":{
       "title":"Daten importieren",
       "tabLocal":"Lokal",
       "tabDatabase":"Hypercube",
@@ -422,7 +422,7 @@
       "overwriteButton": "Existierende Daten überschreiben",
       "newNameButton": "Neuer Name"
     },
-    "dialogLoadScen":{  
+    "dialogLoadScen":{
       "title":"Szenario laden",
       "tabDB": "Datenbank",
       "tabUI": "Lokal",
@@ -445,7 +445,7 @@
       "cancelButton":"Nein",
       "okButton":"Importieren"
     },
-    "dialogNewCol":{  
+    "dialogNewCol":{
       "title":"Neue Spalte",
       "desc":"Bitte wählen Sie einen Namen für die neue Spalte:",
       "cancelButton":"Abbrechen",
@@ -455,8 +455,8 @@
       "fileTypes": ["MIRO Szenario (MIROSCEN)", "GAMS-Datenaustausch (GDX)", "Komma-separierte Werte (CSV)", "Microsoft Excel (XLSX)"],
       "infoDataOnly": "Mit dem ausgewählten Dateityp werden nur Daten exportiert. Metadaten wie Anhänge, Ansichten, Tags usw. sind nicht enthalten."
     },
-    "excelExport":{  
-      "metadataSheet":{  
+    "excelExport":{
+      "metadataSheet":{
         "title":"Metadaten",
         "uid":"Benutzer",
         "sname":"Szenarioname",
@@ -612,7 +612,7 @@
       "title": "Aktion auswählen",
       "selectMethod": "Was möchtest du mit den ausgewählten Szenarien machen?",
       "selExportType": "Wählen Sie einen Dateityp aus",
-      "maxScenWarning1": "Sie können nur bis zu: '%d' gleichzeitig für den Vergleich im interaktiven Modus laden.", 
+      "maxScenWarning1": "Sie können nur bis zu: '%d' gleichzeitig für den Vergleich im interaktiven Modus laden.",
       "maxScenWarning2": " Wählen Sie weniger Szenarien oder verwenden Sie eigene Analyseskripte zum Vergleich.",
       "cancelButton": "Abbrechen",
       "paverButton": "Analysieren",
@@ -740,8 +740,8 @@
       }
     }
   },
-  "progressBar":{  
-    "renderOutput":{  
+  "progressBar":{
+    "renderOutput":{
       "title":"Rendern der Grafiken",
       "progress":"Rendern von Grafik "
     },
@@ -760,11 +760,11 @@
       "title": "Szenario wird exportiert",
       "exportDs": "Datensatz %s von %s wird exportiert"
     },
-    "loadScenDb":{  
+    "loadScenDb":{
       "title":"Laden von Szenariodaten aus der Datenbank",
       "progress":"Laden von Datensatz "
     },
-    "saveScenDb":{  
+    "saveScenDb":{
       "title":"Speichern von Szenariodaten in der Datenbank ",
       "attachments": "Speichern von Anhängen",
       "progress":"Speichern von Datensatz "
@@ -879,7 +879,7 @@
   "errMsg":{
     "unknownError": "Ein unerwarteter Fehler ist aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich an einen Systemadministrator.",
     "permErr": "Die Operation ist fehlgeschlagen, weil Sie nicht über ausreichende Berechtigungen verfügen.",
-    "fileRead":{  
+    "fileRead":{
       "title":"Fehler beim Lesen von Datei",
       "desc":"Beim Lesen der Datei: '%s' ist ein Fehler aufgetreten."
     },
@@ -937,40 +937,40 @@
         "invalidColRange": "FEHLER: Ungültige Zeilendimension."
       }
     },
-    "invalidFileType":{  
+    "invalidFileType":{
       "title":"Ungültiger Dateityp",
       "desc":"Die Datei, die Sie zu importieren versuchen, kann von MIRO nicht gelesen werden. Unterstützte Dateitypen sind: %s."
     },
-    "fileWrite":{  
+    "fileWrite":{
       "title":"Fehler beim Schreiben von Datei",
       "desc":"Beim Schreiben der Datei: '%s' ist ein Fehler aufgetreten."
     },
-    "initErrors":{  
+    "initErrors":{
       "title":"Es sind Fehler aufgetreten",
       "desc":"Bitte beheben Sie die nachfolgend aufgeführten Fehler und starten Sie MIRO neu.",
       "okButton": "Ok"
     },
-    "fetchScenData":{  
+    "fetchScenData":{
       "title":"Fehler beim Lesen der Szenariodaten",
       "desc":"Die Szenario-Metadaten konnten nicht geladen werden."
     },
-    "renderSlider":{  
+    "renderSlider":{
       "title":"Falsche Daten für den Schieberegler",
       "desc":"Szenario-Metadaten konnten nicht abgerufen werden."
     },
-    "saveInput":{  
+    "saveInput":{
       "title":"Fehler beim Speichern der Daten",
       "desc":"Beim Speichern der Daten in die Datenbank ist ein Fehler aufgetreten."
     },
-    "readOutput":{  
+    "readOutput":{
       "title":"Fehler beim Lesen der Ergebnisse",
       "desc":"Beim Lesen der Ergebnisse von GAMS ist ein Fehler aufgetreten."
     },
-    "dataError":{  
+    "dataError":{
       "title":"Fehler in den Daten",
       "desc":"Ein Datenfehler ist aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt."
     },
-    "ddLenMismatch":{  
+    "ddLenMismatch":{
       "title":"Anzahl der Aliase und Werte stimmt nicht überein",
       "desc":"Die Anzahl der Aliase für das Dropdown-Menü: '%s' stimmt nicht mit der Anzahl der Werte überein."
     },
@@ -980,7 +980,7 @@
       "badColName" : "Die Spalte(n): '%s' konnten im Datensatz : '%s' nicht gefunden werden.",
       "noData":"Datensatz: '%s' konnte nicht geladen werden. Bitte stellen Sie sicher, dass der Datensatz Daten enthält."
     },
-    "GAMSInput":{  
+    "GAMSInput":{
       "title":"Fehler beim Schreiben der GAMS Eingabedaten",
       "desc":"Beim Schreiben der GAMS Eingabedaten sind Fehler aufgetreten:",
       "excelRead":"Beim Lesen der Datei: '%s' ist ein Fehler aufgetreten.",
@@ -989,11 +989,11 @@
       "badInputData":"Die GAMS Eingabedaten: '%s' sind ungültig. Bitte überprüfen Sie das Format der Daten, die Sie importieren möchten.",
       "writeCsv":"Beim Schreiben der csv-Datei: '%s' ist ein Fehler aufgetreten."
     },
-    "GAMSOutput":{  
+    "GAMSOutput":{
       "title":"Fehler beim Lesen der Ergebnisse",
       "badOutputData":"Der Datensatz: '%s' ist ungültig. Bitte überprüfen Sie das Format der Ausgabedaten."
     },
-    "gamsExec":{  
+    "gamsExec":{
       "title":"Fehler beim Ausführen von GAMS",
       "desc":"Konnte GAMS nicht ausführen. Haben Sie vergessen, den GAMS-Installationspfad anzugeben?"
     },
@@ -1005,42 +1005,42 @@
       "title": "MIRO beschäftigt",
       "desc": "MIRO ist beschäftigt, die Modelldateien in Ihrem Arbeitsbereich zu extrahieren. Bitte warten Sie und versuchen Sie es dann erneut."
     },
-    "gamsTerm":{  
+    "gamsTerm":{
       "title":"Fehler beim Beenden von gams.exe",
       "desc":"Bei dem Beenden von GAMS ist ein Fehler aufgetreten."
     },
-    "readLog":{  
+    "readLog":{
       "title":"Fehler beim Lesen der log-Datei",
       "desc":"Beim Lesen der GAMS log-Datei ist ein Fehler aufgetreten."
     },
-    "readLst":{  
+    "readLst":{
       "title":"Fehler beim Lesen der listing-Datei",
       "desc":"Beim Lesen der GAMS listing-Datei ist ein Fehler aufgetreten.",
       "fileSize":"Die lst-Datei, die sie versuchen zu lesen ist zu groß, um hier dargestellt zu werden. Bitte laden Sie die Datei herunter, um sie zu öffnen.",
       "fileNotFound": "Die lst-Datei konnte nicht gefunden werden."
     },
-    "saveScen":{  
+    "saveScen":{
       "title":"Fehler beim Speichern des Szenarien",
       "desc":"Beim Speichern des Szenarien ist ein Fehler aufgetreten."
     },
-    "loadScen":{  
+    "loadScen":{
       "title":"Fehler beim Laden der Szenarien",
       "desc":"Beim Laden der ausgewählten Szenarien ist ein Fehler aufgetreten.",
       "inconsistentDataWarning": "Das Szenario wurde geändert, während Sie es angesehen haben. Daher sind die Daten eventuell nicht konsistent. Möglicherweise möchten Sie das Szenario aktualisieren."
     },
-    "deleteScen":{  
+    "deleteScen":{
       "title":"Fehler beim Löschen des Szenarien",
       "desc":"Beim Löschen des Szenarien ist ein Fehler aufgetreten. Falls dieses Problem bestehen bleibt, kontaktieren Sie bitte den Administrator."
     },
-    "renderTable":{  
+    "renderTable":{
       "title":"Fehler beim Darstellen der Tabelle",
       "desc":"Beim Darstellen der Daten: '%s' ist ein Fehler aufgetreten."
     },
-    "renderGraph":{  
+    "renderGraph":{
       "title":"Fehler beim Darstellen der Grafik",
       "desc":"Beim Darstellen der Grafik: '%s' ist ein Fehler aufgetreten."
     },
-    "blankScenName":{  
+    "blankScenName":{
       "title":"Kein Name gewählt",
       "desc":"Bitte wählen Sie für das Szenario, das Sie speichern möchten, einen gültigen Namen."
     },
@@ -1079,14 +1079,14 @@
       "hcubeRunning": "Der Hypercube-Modus läuft bereits.",
       "launchError": "Beim Versuch, den Hypercube-Modus zu starten, ist ein Fehler aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich bitte an den Systemadministrator."
     },
-    "paverFileLoad":{  
+    "paverFileLoad":{
       "desc":"Daten für diese Kategorie konnten nicht geladen werden."
     },
-    "paverExec":{  
+    "paverExec":{
       "title":"Fehler beim Ausführen von Python",
       "desc":"Bei der Ausführung von Python ist ein Fehler aufgetreten."
     },
-    "paverTerm":{  
+    "paverTerm":{
       "title":"Fehler beim Beenden von Python",
       "desc":"Bei dem Beenden von Python ist ein Fehler aufgetreten."
     },
@@ -1107,7 +1107,7 @@
       "desc": "Einige Grafiken und/oder Widgets wurden für Symbole konfiguriert, die nicht mehr Teil Ihres GAMS/MIRO-Datenvertrags oder ausgeblendet sind. Wollen Sie diese aus Ihrer Konfiguration entfernen? Beachten Sie, dass dies nicht rückgängig gemacht werden kann! Grafische Konfiguration für ungültige(s) Symbol(e): '%s'. Widget-Konfiguration für ungültige(s) Symbol(e): '%s'.",
       "msgSuccess": "Ungültige Konfiguration wurde erfolgreich entfernt",
       "btRemoveWidgets": "Ungültige Widgets entfernen",
-      "btRemoveGraphs": "Ungültige Grafiken entfernen", 
+      "btRemoveGraphs": "Ungültige Grafiken entfernen",
       "btCancel": "Abbrechen"
     },
     "uiR":{
@@ -1147,7 +1147,7 @@
         "tooltipDocs": "Dokumentation öffnen"
       },
       "modalDialog":{
-        "title": "Fehler beim Kopieren des Bildes", 
+        "title": "Fehler beim Kopieren des Bildes",
         "content": "Es ist ein Problem beim Kopieren von Bildern aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich bitte an einen Systemadministrator."
       },
       "language":{
@@ -1245,7 +1245,7 @@
         "header": "Logo Vorschau:",
         "label": "Laden Sie ein eigenes Logo für Ihre MIRO-App hoch: png/jpg-Datei (bestes Format: 4,6:1 oder 230*50px)",
         "placeholder": "Keine Datei ausgewählt"
-      }, 
+      },
       "actScen":{
         "title" :"Szenarien speichern, löschen und vergleichen",
         "label": "Szenario-Funktionalität aktivieren"

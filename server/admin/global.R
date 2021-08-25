@@ -26,5 +26,5 @@ flog.appender("appender.console")
 flog.threshold("TRACE")
 
 lang <- fromJSON(file.path(MIRO_APP_PATH, "conf", "en.json"),
-                 simplifyDataFrame = FALSE, 
+                 simplifyDataFrame = FALSE,
                  simplifyMatrix = FALSE)

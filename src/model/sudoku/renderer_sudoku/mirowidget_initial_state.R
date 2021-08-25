@@ -1,22 +1,22 @@
 mirowidget_initial_stateOutput <- function(id, height = NULL, options = NULL, path = NULL){
     ns <- NS(id)
     if (isTRUE(options$isInput)) {
-        return(tagList(span(textOutput(ns("uniqueSolWarning")), 
+        return(tagList(span(textOutput(ns("uniqueSolWarning")),
             style = "color:red"), rHandsontableOutput(ns("sudoku"))))
     }
     return(rHandsontableOutput(ns("sudoku")))
 }
- 
+
  renderMirowidget_initial_state <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){
     if (isTRUE(options$isInput)) {
         output$uniqueSolWarning <- renderText({
-            if (isTRUE(data$force_unique_sol())) 
+            if (isTRUE(data$force_unique_sol()))
                 "Model will abort if more than one solution exists."
         })
     }
     initialData <- NULL
     dataToRender <- reactive({
-        dataTmp <- if (isTRUE(options$isInput)) 
+        dataTmp <- if (isTRUE(options$isInput))
             data[[1]]()
         else data
         if (!length(dataTmp) || !nrow(dataTmp)) {
@@ -37,16 +37,16 @@ mirowidget_initial_stateOutput <- function(id, height = NULL, options = NULL, pa
         }
         return(dataTmp)
     })
-    output$sudoku <- renderRHandsontable(rhandsontable(dataToRender(), 
-        readOnly = !isTRUE(options$isInput), rowHeaders = FALSE, 
-        colHeaders = FALSE) %>% hot_table(contextMenu = FALSE, 
+    output$sudoku <- renderRHandsontable(rhandsontable(dataToRender(),
+        readOnly = !isTRUE(options$isInput), rowHeaders = FALSE,
+        colHeaders = FALSE) %>% hot_table(contextMenu = FALSE,
         customBorders = lapply(0:8, function(i) {
-            list(range = list(from = list(row = i%%3L * 3L, col = i%/%3L * 
-                3L), to = list(row = i%%3L * 3L + 2L, col = i%/%3L * 
-                3L + 2L)), top = list(width = 4, color = "black"), 
-                left = list(width = 4, color = "black"), bottom = list(width = 4, 
+            list(range = list(from = list(row = i%%3L * 3L, col = i%/%3L *
+                3L), to = list(row = i%%3L * 3L + 2L, col = i%/%3L *
+                3L + 2L)), top = list(width = 4, color = "black"),
+                left = list(width = 4, color = "black"), bottom = list(width = 4,
                   color = "black"), right = list(width = 4, color = "black"))
-        })) %>% hot_validate_numeric(cols = 1:9, min = 1, max = 9, 
+        })) %>% hot_validate_numeric(cols = 1:9, min = 1, max = 9,
         allowInvalid = TRUE) %>% hot_cols(colWidths = 50, renderer = if (isTRUE(options$isInput)) {
         "function (instance, td, row, col, prop, value, cellProperties) {\n
             Handsontable.renderers.NumericRenderer.apply(this, arguments);\n
@@ -59,7 +59,7 @@ mirowidget_initial_stateOutput <- function(id, height = NULL, options = NULL, pa
     else {
         paste0("function (instance, td, row, col, prop, value, cellProperties) {\n
             Handsontable.renderers.NumericRenderer.apply(this, arguments);\n
-            if ([", 
+            if ([",
             paste0(initialData, collapse = ","), "].includes(col*9+row+1)){\n
                 td.style.fontWeight = 900;\n
                 td.style.fontFamily = 'Verdana';\n

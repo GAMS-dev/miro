@@ -5,7 +5,7 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
   if(length(newPackages)){
     checkSourceDefault <- getOption("install.packages.check.source")
     options(install.packages.check.source = "no")
-    
+
     if(installMIROPackages){
       packageVersionMap <- read.csv("miro-pkg-lock.csv",
                                     header = FALSE, stringsAsFactors = FALSE)
@@ -34,7 +34,7 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
         }
         if(!buildDepInstalled){
           print("Installing: remotes")
-          install.packages("remotes", lib = if(length(RLibPath)) RLibPath else .libPaths()[[1]], 
+          install.packages("remotes", lib = if(length(RLibPath)) RLibPath else .libPaths()[[1]],
                            repos = CRANMirror, dependencies = c("Depends", "Imports", "LinkingTo"))
           buildDepInstalled <- TRUE
         }
@@ -119,9 +119,9 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
   }
   if(attachPackages){
     tryCatch({
-      suppressWarnings(suppressMessages(lapply(requiredPackages, library, character.only = TRUE, 
+      suppressWarnings(suppressMessages(lapply(requiredPackages, library, character.only = TRUE,
                                                quietly = TRUE, verbose = FALSE, warn.conflicts = FALSE, lib.loc = RLibPath)))
-      
+
     }, error = function(e){
       if(exists("flog.fatal")){
         flog.fatal("Problems loading required R packages. Error message: %s.", conditionMessage(e))

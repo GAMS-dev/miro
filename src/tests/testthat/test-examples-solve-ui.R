@@ -31,7 +31,7 @@ for(modelToTest in c("pickstock", "transport", "sudoku", "farming",
     file.copy(file.path(testDir, "shinytest", paste0(testFile, ".R")),
               file.path(testDir, "shinytest", paste0(testFile, "_", modelToTest, ".R")),
               overwrite = TRUE)
-    
+
   }
   test_that(sprintf("Example app: '%s' solves: ", modelToTest),
             expect_pass(testApp(file.path(testDir, ".."), paste0("solve_model_test_", modelToTest),

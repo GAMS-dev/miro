@@ -7,14 +7,14 @@ getInputDataFromSandbox <- function(){
   j <- 1L
   # first add scalar data which is in a table
   scalarId <- match(scalarsFileName, modelInTabularData)[[1]]
-  
+
   if(!is.na(scalarId)){
     i <- match(tolower(modelInTabularData[scalarId]), names(modelIn))[[1]]
     tryCatch({
       dataTmp[[length(modelInFileNames)]] <- getInputDataset(i)
     }, error = function(e){
       flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
-      stop_custom("no_data", sprintf(lang$errMsg$GAMSInput$noData, 
+      stop_custom("no_data", sprintf(lang$errMsg$GAMSInput$noData,
                                      modelInAlias[i]), call. = FALSE)
     })
   }
@@ -29,7 +29,7 @@ getInputDataFromSandbox <- function(){
       # no headers, just data
       newData        <- tibble(scalar, description, value)
       names(newData) <- scalarsFileHeaders
-      dataTmp[[length(modelInFileNames)]] <<- rbind(dataTmp[[length(modelInFileNames)]], newData) 
+      dataTmp[[length(modelInFileNames)]] <<- rbind(dataTmp[[length(modelInFileNames)]], newData)
     }
   }
   lapply(seq_along(modelIn), function(i){
@@ -42,7 +42,7 @@ getInputDataFromSandbox <- function(){
                value <- sliderValues[[tolower(names(modelIn)[[i]])]]$def
              }else{
                flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
-               stop_custom("no_data", sprintf(lang$errMsg$GAMSInput$noData, 
+               stop_custom("no_data", sprintf(lang$errMsg$GAMSInput$noData,
                                               modelInAlias[i]), call. = FALSE)
              }
              # add name and description fields
@@ -52,15 +52,15 @@ getInputDataFromSandbox <- function(){
                  # HC Mode: already double slider in base mode
                  scalar      <- paste0(names(modelIn)[i],
                                        c("_lo", "_up", "$step", "$mode"))
-                 description <- paste0(modelInAlias[i], 
+                 description <- paste0(modelInAlias[i],
                                        c(" (lower)", " (upper)", " (step size)", " (mode)"))
                  value       <- c(value, isolate(input[[paste0("hcubeStep_", i)]]),
                                   isolate(input[[paste0("hcubeMode_", i)]]))
                }else if(identical(modelIn[[i]]$slider$single, TRUE)){
                  # HC Mode: slider was expanded to double slider
-                 scalar      <- paste0(names(modelIn)[i], 
+                 scalar      <- paste0(names(modelIn)[i],
                                        c("$lo", "$up", "$step"))
-                 description <- paste0(modelInAlias[i], 
+                 description <- paste0(modelInAlias[i],
                                        c(" (lower)", " (upper)", " (step size)"))
                  value       <- c(value, isolate(input[["hcubeStep_" %+% i]]))
                }else{
@@ -84,7 +84,7 @@ getInputDataFromSandbox <- function(){
                value <- as.character(modelIn[[i]]$date$value)
              }else{
                flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
-               stop_custom("no_data", sprintf(lang$errMsg$GAMSInput$noData, 
+               stop_custom("no_data", sprintf(lang$errMsg$GAMSInput$noData,
                                               modelInAlias[i]), call. = FALSE)
              }
              # add name and description fields
@@ -100,11 +100,11 @@ getInputDataFromSandbox <- function(){
                  value[emptyDate] <- ""
                }
              }else if(!is.null(modelIn[[i]]$daterange$start) && !is.null(modelIn[[i]]$daterange$end)){
-               value <- c(as.character(modelIn[[i]]$daterange$start), 
+               value <- c(as.character(modelIn[[i]]$daterange$start),
                           as.character(modelIn[[i]]$daterange$end))
              }else{
                flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
-               stop_custom("no_data", sprintf(lang$errMsg$GAMSInput$noData, 
+               stop_custom("no_data", sprintf(lang$errMsg$GAMSInput$noData,
                                               modelInAlias[i]), call. = FALSE)
              }
              # add name and description fields
@@ -119,7 +119,7 @@ getInputDataFromSandbox <- function(){
                value <- as.character(modelIn[[i]]$textinput$value)
              }else{
                flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
-               stop_custom("no_data", sprintf(lang$errMsg$GAMSInput$noData, 
+               stop_custom("no_data", sprintf(lang$errMsg$GAMSInput$noData,
                                               modelInAlias[i]), call. = FALSE)
              }
              # add name and description fields
@@ -149,7 +149,7 @@ getInputDataFromSandbox <- function(){
              }else if(!is.null(modelIn[[i]]$dropdown$selected)){
                value <- modelIn[[i]]$dropdown$selected
              }else{
-               stop_custom("no_data", sprintf(lang$errMsg$GAMSInput$noData, 
+               stop_custom("no_data", sprintf(lang$errMsg$GAMSInput$noData,
                                               modelInAlias[i]), call. = FALSE)
              }
              value <- value[value != "_"]
@@ -171,7 +171,7 @@ getInputDataFromSandbox <- function(){
              }else if(!is.null(modelIn[[i]]$checkbox$value)){
                value <- if(identical(modelIn[[i]]$checkbox$value, TRUE)) 1L else 0L
              }else{
-               stop_custom("no_data", sprintf(lang$errMsg$GAMSInput$noData, 
+               stop_custom("no_data", sprintf(lang$errMsg$GAMSInput$noData,
                                               modelInAlias[i]), call. = FALSE)
              }
              # add name and description fields
@@ -186,7 +186,7 @@ getInputDataFromSandbox <- function(){
                }, error = function(e){
                  flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.",
                             modelInAlias[i], conditionMessage(e))
-                 stop_custom("no_data", sprintf(lang$errMsg$GAMSInput$noData, 
+                 stop_custom("no_data", sprintf(lang$errMsg$GAMSInput$noData,
                                                 modelInAlias[i]), call. = FALSE)
                })
                j <<- j + 1

@@ -3,18 +3,18 @@ addArrayEl <- function(session, arrayID, plotlyChartType = "", defaults = NULL, 
   session$sendCustomMessage("gms-addArrayEl", list(arrayID = arrayID, defaults = defaults, destroy = destroy,
                                                    symbol = symbolName))
 }
-createArray <- function(session, arrayID, label, plotlyChartType = "", autoCreate = TRUE, 
+createArray <- function(session, arrayID, label, plotlyChartType = "", autoCreate = TRUE,
                         class_outer = "array-wrapper-outer-default", hr = TRUE, symbolName = NULL){
   if(isTRUE(autoCreate)){
-    addArrayEl(session, arrayID, plotlyChartType, destroy = TRUE, 
+    addArrayEl(session, arrayID, plotlyChartType, destroy = TRUE,
                symbolName = symbolName)
   }else if(length(session)){
     # destroy existing array elements
     session$sendCustomMessage("gms-destroyArray", paste0(arrayID, plotlyChartType))
   }
-  
+
   arrayID <- paste0(arrayID, plotlyChartType)
-  HTML(paste0('<div id="', arrayID, '_wrapper" ', 
+  HTML(paste0('<div id="', arrayID, '_wrapper" ',
               if(length(symbolName)) paste0('data-symbol="', symbolName, '" ') else '',
               'class="shiny-input-container ', class_outer, '">\n',
               if ( hr ) "<hr>\n" else '',
@@ -46,8 +46,8 @@ checkNotFALSE <- function(configuredWithThisTool = FALSE, el = NULL){
 }
 labelTooltip <- function(label = NULL, tooltip = NULL, href = NULL){
   return(
-    tags$div(label, 
-             tags$a("", title = tooltip, class="info-wrapper", href = href, 
+    tags$div(label,
+             tags$a("", title = tooltip, class="info-wrapper", href = href,
                     tags$span(class="fas fa-info-circle", class="info-icon",
                               role = "presentation",
                               `aria-label` = "More information"), target="_blank"))
@@ -55,8 +55,8 @@ labelTooltip <- function(label = NULL, tooltip = NULL, href = NULL){
 }
 optionSection <- function(title, ..., collapsed = FALSE){
   tags$div(class = "shiny-input-container", style = "min-height:30px;",
-           tags$h4(class = "box-title option-section-header", title, if(isFALSE(collapsed)) icon("minus") else icon("plus"), 
-                   style = "cursor:pointer;font-weight:bold;", 
+           tags$h4(class = "box-title option-section-header", title, if(isFALSE(collapsed)) icon("minus") else icon("plus"),
+                   style = "cursor:pointer;font-weight:bold;",
                    onclick = "$(this).next().toggle();$(this).children('.fa').toggleClass('fa-plus fa-minus');"),
            tags$div(class = "option-section", ..., style = if(collapsed) "display:none;" else "")
   )
@@ -78,7 +78,7 @@ Validator <- R6Class("Validator", public = list(
     private$template <- vector("list", length(requiredKeys))
     names(private$template) <- requiredKeys
     private$template$isValid <- FALSE
-    
+
     if(length(data)){
       private$data <- lapply(data, function(el){
         return(c(el, isValid = TRUE))
@@ -123,10 +123,10 @@ Validator <- R6Class("Validator", public = list(
       return(invisible(self))
     }
     # required key
-    private$data[[as.character(id)]] <- c(private$data[[as.character(id)]], 
+    private$data[[as.character(id)]] <- c(private$data[[as.character(id)]],
                                           setNames(list(NULL), key))
     private$data[[as.character(id)]][["isValid"]] <- FALSE
-    
+
     invisible(self)
   },
   setVal = function(id, key, val){
@@ -136,7 +136,7 @@ Validator <- R6Class("Validator", public = list(
       private$data[[id]][[key]] <- val
     }else{
       private$data[[id]][[key]] <- val
-      if(!any(vapply(private$data[[id]], is.null, 
+      if(!any(vapply(private$data[[id]], is.null,
                      logical(1L), USE.NAMES = FALSE))){
         private$data[[id]][["isValid"]] <- TRUE
         private$cacheClean <- FALSE
@@ -172,7 +172,7 @@ getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE){
                        lang$adminMode$graphs$miroPivotOptions$hidePivotControlsSwitch,
                        value = isTRUE(currentConfig$hidePivotControls)),
     if(!pivotComp)
-      tags$div(id = "miroPivotInfoMsg", class="config-message", 
+      tags$div(id = "miroPivotInfoMsg", class="config-message",
                style = "display:block;",
                lang$adminMode$graphs$miroPivotOptions$infoMsg))
 }

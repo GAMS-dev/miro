@@ -21,4 +21,3 @@ cjsAddScale(cjs, axis = c("x", "y", NULL), type = "category", ...)
 \details{
 See the \href{http://www.chartjs.org/docs/#scales}{Charts.js documentation} for values in ...
 }
-

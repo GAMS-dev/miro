@@ -9,7 +9,7 @@ if len(sys.argv) > 1:
     ws = GamsWorkspace(system_directory = sys.argv[1])
 else:
     ws = GamsWorkspace()
-    
+
 file1 = open('hcube_file_names.txt', 'r')
 lines = file1.read().splitlines()
 

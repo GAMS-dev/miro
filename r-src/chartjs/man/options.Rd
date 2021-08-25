@@ -22,4 +22,3 @@ under \code{Charts.default.global}. You can also use this function to edit the \
 options by passing them as a list, or to edit the chart-specific options.
 To edit tooltips, legends or titles, use the corresponding functions.
 }
-

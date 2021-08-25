@@ -88,16 +88,16 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
   },
   removeTablesModel = function(dbTableNames = NULL){
     stopifnot(is.null(dbTableNames) || is.character(dbTableNames))
-    
+
     if(length(dbTableNames)){
       removeAllTables <- FALSE
     }else{
       removeAllTables <- TRUE
       dbTableNames <- self$getDbTableNamesModel()
     }
-    
+
     if(inherits(private$conn, "PqConnection")){
-      private$db$runQuery(paste0("DROP TABLE IF EXISTS ",  
+      private$db$runQuery(paste0("DROP TABLE IF EXISTS ",
                                  paste(dbQuoteIdentifier(private$conn, dbTableNames),
                                        collapse = ", "), " CASCADE;"))
       flog.info("Database tables: '%s' deleted.", paste(dbTableNames, collapse = "', '"))
@@ -105,7 +105,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     }
     private$db$runQuery("PRAGMA foreign_keys = OFF;")
     for(dbTableName in dbTableNames){
-      private$db$runQuery(paste0("DROP TABLE IF EXISTS ",  
+      private$db$runQuery(paste0("DROP TABLE IF EXISTS ",
                                  dbQuoteIdentifier(private$conn, dbTableName), " ;"))
       flog.info("Database table: '%s' deleted.", dbTableName)
     }
@@ -116,14 +116,14 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     oldTableNames <- vapply(migrationConfig, "[[", character(1L), "oldTableName", USE.NAMES = FALSE)
     migrationConfig <- migrationConfig[oldTableNames != "-"]
     oldTableNames <- oldTableNames[oldTableNames != "-"]
-    
+
     if(length(oldTableNames)){
       private$validateMigrationConfig(migrationConfig)
       newTableNames <- names(migrationConfig)
     }
-    
+
     tablesToRemove <- !private$orphanedTables %in% oldTableNames
-    
+
     # drop views in case scalar tables get dropped/modified
     # (will be recreated at the end of the migration process)
     # TODO: Do this only if scalar tables have changed
@@ -139,28 +139,28 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     }
     if(length(oldTableNames)){
       tablesToRename <- newTableNames[newTableNames != oldTableNames]
-      
+
       newTableNamesExist <- tablesToRename %in% private$existingTables
-      
+
       if(any(!tablesToRename[newTableNamesExist] %in% oldTableNames)){
         stop_custom("error_config", sprintf("Invalid migration config: Can't rename table(s): %s as they already exist",
                                             tablesToRename[newTableNamesExist]),
                     call. = FALSE)
       }
-      
+
       for(tableToRename in tablesToRename[newTableNamesExist]){
         private$renameTable(migrationConfig[[tableToRename]]$oldTableName,
                             paste0("__",  migrationConfig[[tableToRename]]$oldTableName))
         migrationConfig[[tableToRename]]$oldTableName <- paste0("__", migrationConfig[[tableToRename]]$oldTableName)
       }
-      
+
       for(tableToRename in tablesToRename){
         private$renameTable(migrationConfig[[tableToRename]]$oldTableName,
                             tableToRename)
       }
     }
     scalarViews <- dbSchema$getDbViews()
-    
+
     lapply(names(migrationConfig), function(symName){
       # first see if we can take shortcuts
       if(!is.null(callback)){
@@ -168,15 +168,15 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
       }
       currentLayout <- private$getTableInfo(symName)
       migrationLayout <- migrationConfig[[symName]]
-      
+
       colsToRemove <- !currentLayout$colNames %in% migrationLayout$colNames
       if(any(colsToRemove) && !forceRemove){
         stop_custom("error_data_loss", "The database migration you specified will lead to loss of data but forceRemove was not set.", call.= FALSE)
       }
-      
+
       newSchema <- dbSchema$getDbSchema(symName)
       dbTableName <- dbSchema$getDbTableName(symName)
-      
+
       if(!inherits(private$conn, "PqConnection") && any(colsToRemove)){
         # since sqlite does not support dropping columns, we need to remap table anyway
         flog.debug("Remapping table: %s", dbTableName)
@@ -193,11 +193,11 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
           currentLayout$colNames <- currentLayout$colNames[!colsToRemove]
           currentLayout$colTypes <- currentLayout$colTypes[!colsToRemove]
         }
-        
+
         currentColNames <- migrationLayout$colNames
         colsToRename <- currentColNames == currentLayout$colNames & currentColNames != newSchema$colNames
         newNamesExist <- colsToRename & currentColNames %in% newSchema$colNames
-        
+
         currentColNamesTmp <- currentColNames
         currentColNamesTmp[newNamesExist] <- paste0("_", currentColNamesTmp[newNamesExist])
         for(colIdToRename in which(newNamesExist)){
@@ -228,7 +228,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
         }
         return()
       }
-      
+
       colsToAdd <- migrationLayout$colNames == "-"
       if(all(colsToAdd)){
         # just remove old table
@@ -236,7 +236,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
         self$removeTablesModel(dbTableName)
         return()
       }
-      
+
       if(any(colsToAdd) &&
          identical(sum(colsToAdd), length(newSchema$colNames) - min(which(colsToAdd)) + 1L)){
         # all columns to add are at the end
@@ -318,7 +318,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
                   paste(vapply(colMapping, function(colNameOrigin){
                     if(!is.null(castAs)){
                       return(paste0("CAST(",
-                                    DBI::dbQuoteIdentifier(private$conn, colNameOrigin), 
+                                    DBI::dbQuoteIdentifier(private$conn, colNameOrigin),
                                     " AS ", castAs, ")"))
                     }
                     return(DBI::dbQuoteIdentifier(private$conn, colNameOrigin))
@@ -338,16 +338,16 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     colMapping <- colNames
     names(colMapping) <- newColNames
     colMapping <- colMapping[colMapping != "-"]
-    
+
     if(!length(colMapping)){
       dbTableName <- dbSchema$getDbTableName(tableName)
-      private$db$runQuery(paste0("DROP TABLE IF EXISTS ",  
+      private$db$runQuery(paste0("DROP TABLE IF EXISTS ",
                                  dbQuoteIdentifier(private$conn,
                                                    dbTableName), " ;"))
       flog.info("Database table: '%s' deleted.", dbTableName)
       return(invisible(self))
     }
-    
+
     if(inherits(private$conn, "PqConnection")){
       return(private$remapTablePostgres(tableName, colMapping))
     }
@@ -364,7 +364,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
         private$db$runQuery(paste0("DROP TABLE ",
                                    dbQuoteIdentifier(private$conn, dbTableName), " CASCADE;"))
         private$db$runQuery(paste0("ALTER TABLE ",
-                            DBI::dbQuoteIdentifier(private$conn, paste0("_", dbTableName)), 
+                            DBI::dbQuoteIdentifier(private$conn, paste0("_", dbTableName)),
                             " RENAME TO ",
                             DBI::dbQuoteIdentifier(private$conn, dbTableName)))
         private$db$runQuery(dbSchema$getCreateIndexQueryRaw(dbTableName))
@@ -378,7 +378,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     sidColName <- DBI::dbQuoteIdentifier(private$conn,
                                          "_sid")
     dbTableName <- dbSchema$getDbTableName(tableName)
-    
+
     dbWithTransaction(
       private$conn,
       {
@@ -388,7 +388,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
         private$db$runQuery(paste0("DROP TABLE ",
                                    dbQuoteIdentifier(private$conn, dbTableName)))
         private$db$runQuery(paste0("ALTER TABLE ",
-                                   DBI::dbQuoteIdentifier(private$conn, paste0("_", dbTableName)), 
+                                   DBI::dbQuoteIdentifier(private$conn, paste0("_", dbTableName)),
                                    " RENAME TO ",
                                    DBI::dbQuoteIdentifier(private$conn, dbTableName)))
         private$db$runQuery(dbSchema$getCreateIndexQueryRaw(dbTableName))
@@ -401,7 +401,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
   renameColumn = function(dbTableName, oldName, newName){
     private$db$runQuery(paste0("ALTER TABLE ",
                                DBI::dbQuoteIdentifier(private$conn,
-                                                      dbTableName), 
+                                                      dbTableName),
                                " RENAME COLUMN ",
                                DBI::dbQuoteIdentifier(private$conn, oldName), "  TO ",
                                DBI::dbQuoteIdentifier(private$conn, newName)))
@@ -428,7 +428,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
   dropColumns = function(dbTableName, colNames){
     if(inherits(private$conn, "PqConnection")){
       private$db$runQuery(paste0("ALTER TABLE ",
-                                 DBI::dbQuoteIdentifier(private$conn, dbTableName), 
+                                 DBI::dbQuoteIdentifier(private$conn, dbTableName),
                                  paste(" DROP COLUMN",
                                        DBI::dbQuoteIdentifier(private$conn, colNames),
                                        collapse = ",")))
@@ -438,7 +438,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
   },
   renameTable = function(oldName, newName){
     private$db$runQuery(paste0("ALTER TABLE ",
-                               DBI::dbQuoteIdentifier(private$conn, oldName), 
+                               DBI::dbQuoteIdentifier(private$conn, oldName),
                                " RENAME TO ",
                                DBI::dbQuoteIdentifier(private$conn, newName)))
     private$renameIndex(oldName, newName)
@@ -474,10 +474,10 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     return(invisible(self))
   },
   getOrphanedTablesInternal     = function(hcubeScalars = NULL){
-    # find orphaned database tables 
+    # find orphaned database tables
     #
     # Args:
-    #   hcubeScalars:        name of scalars that are transferred to 
+    #   hcubeScalars:        name of scalars that are transferred to
     #                        tables in Hypercube mode
     #
     # Returns:
@@ -496,7 +496,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
   },
   getTableInfo = function(dbTableName){
     if(inherits(private$conn, "PqConnection")){
-      query <- SQL(paste0("SELECT ordinal_position,column_name,data_type FROM information_schema.columns WHERE table_name =", 
+      query <- SQL(paste0("SELECT ordinal_position,column_name,data_type FROM information_schema.columns WHERE table_name =",
                           dbQuoteString(private$conn, dbTableName),
                           " AND table_schema=",
                           dbQuoteString(private$conn, private$db$getInfo()$schema),
@@ -504,7 +504,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
       tabInfo     <- dbGetQuery(private$conn, query)
       return(list(colNames = tabInfo$column_name[-1], colTypes = tabInfo$data_type[-1]))
     }
-    query <- SQL(paste0("PRAGMA table_info(", 
+    query <- SQL(paste0("PRAGMA table_info(",
                         dbQuoteIdentifier(private$conn, dbTableName), ");"))
     tabInfo     <- dbGetQuery(private$conn, query)
     return(list(colNames = tabInfo$name[-1], colTypes = tabInfo$type[-1]))

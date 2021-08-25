@@ -29,4 +29,3 @@ app$setInputs(selectDownloadTmp = "asd.csv")
 content <- get_downloaded_file_content(app, "btDownloadTmpConfirm")
 expect_true(identical(content, paste0("Invalid  filename", if(.Platform$OS.type == 'windows') "\r\n" else "\n")))
 app$stop()
-

@@ -4,11 +4,11 @@ app$snapshotInit("config_mode_graph_test")
 app$snapshot(items = list(input = "deleteGraph"), screenshot = TRUE)
 Sys.sleep(2L)
 jsonPath <- file.path("..", "model", "pickstock_configuration", "conf_pickstock_configuration")
-configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"), 
-                                                 simplifyDataFrame = FALSE, 
+configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"),
+                                                 simplifyDataFrame = FALSE,
                                                  simplifyMatrix = FALSE))
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
-                                                 simplifyDataFrame = FALSE, 
+                                                 simplifyDataFrame = FALSE,
                                                  simplifyMatrix = FALSE))
 
 
@@ -25,7 +25,7 @@ for(GraphToTest in names(configRaw$dataRendering)){
     Sys.sleep(4)
   if(identical(GraphToTest, "maptest")){
     setOptions <- getSelectizeOptions(app, "#chart_tool")
-    #langSpecificGraphs$graphOptionsSet in tools/cg_graphs.R 
+    #langSpecificGraphs$graphOptionsSet in tools/cg_graphs.R
     expect_identical(setOptions, c("timevis", "miropivot", "custom", "leaflet"))
   }
   app$findElement("button[id='saveGraph']")$click()
@@ -34,7 +34,7 @@ for(GraphToTest in names(configRaw$dataRendering)){
   Sys.sleep(1)
 }
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
-                                                 simplifyDataFrame = FALSE, 
+                                                 simplifyDataFrame = FALSE,
                                                  simplifyMatrix = FALSE))
 
 #histogram

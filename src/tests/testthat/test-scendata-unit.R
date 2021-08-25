@@ -40,7 +40,7 @@ outScalarDataFull <- tibble(scalar = outScalarNames,
                             value = c("79.6135736013082", "951.166205306451",
                                       "11.9472869044886", "2016-01-04", "2016-05-24"))
 
-dbSchema <<- DbSchema$new(list(schema = list(stock_weight = list(tabName = "stock_weight", 
+dbSchema <<- DbSchema$new(list(schema = list(stock_weight = list(tabName = "stock_weight",
                                                                  colNames = c("symbol", "value"),
                                                                  colTypes = "cd"),
                                              dowvsindex = list(tabName = "dowvsindex",
@@ -49,9 +49,9 @@ dbSchema <<- DbSchema$new(list(schema = list(stock_weight = list(tabName = "stoc
                                              abserror = list(tabName = "abserror",
                                                              colNames = c("date", "absolute error train", "absolute error test"),
                                                              colTypes = "cdd"),
-                                             pricemerge = list(tabName = "pricemerge", 
+                                             pricemerge = list(tabName = "pricemerge",
                                                                colNames = c("date", "uni", "value"),
-                                                               colTypes = "ccd"), 
+                                                               colTypes = "ccd"),
                                              price = list(tabName = "price",
                                                           colNames = c("date", "symbol", "value"),
                                                           colTypes = "ccd"),
@@ -60,9 +60,9 @@ dbSchema <<- DbSchema$new(list(schema = list(stock_weight = list(tabName = "stoc
                                                                 colTypes = "d"),
                                              error_test = list(tabName = "error_test",
                                                                colNames = "error_test",
-                                                               colTypes = "d"), 
+                                                               colTypes = "d"),
                                              error_ratio = list(tabName = "error_ratio",
-                                                                colNames = "error_ratio", 
+                                                                colNames = "error_ratio",
                                                                 colTypes = "d"),
                                              firstdaytraining = list(tabName = "firstdaytraining",
                                                                      colNames = "firstdaytraining",
@@ -92,7 +92,7 @@ if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
   procEnv$MIRO_DB_NAME <- Sys.getenv("MIRO_DB_NAME", "postgres")
   procEnv$MIRO_DB_HOST <- Sys.getenv("MIRO_DB_HOST", "localhost")
   procEnv$MIRO_DB_PORT <- as.integer(Sys.getenv("MIRO_DB_PORT", "5432"))
-  
+
   dbConfig <- list(type = "postgres",
                    username = procEnv$MIRO_DB_USERNAME,
                    password = procEnv$MIRO_DB_PASSWORD,
@@ -108,7 +108,7 @@ if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
                    name = dbPath)
 }
 createTestDb()
-db <- Db$new(uid = "te_de\\%d", 
+db <- Db$new(uid = "te_de\\%d",
              dbConf = dbConfig,
              slocktimeLimit = slocktimeLimit, modelName = "pickstock",
              hcubeActive = FALSE, ugroups = c("bla_blubb", "test123"))
@@ -147,20 +147,20 @@ test_that("includeHiddenScalars argument works when calling ScenData$get", {
   dataTmp <- scenData$get("sb")
   expect_identical(names(dataTmp), c(names(ioConfig$modelOut), ioConfig$inputDsNames))
   expect_identical(dataTmp[[scalarsOutName]], outScalarDataVisible)
-  
+
   dataTmp <- scenData$get("sb", includeHiddenScalars = TRUE)
   expect_identical(names(dataTmp), c(names(ioConfig$modelOut), ioConfig$inputDsNames))
   expect_identical(dataTmp[[scalarsOutName]], outScalarDataFull)
-  
+
   dataTmp <- scenData$get("sb", c(ioConfig$inputDsNames, scalarsOutName))
   expect_identical(names(dataTmp), c(ioConfig$inputDsNames, scalarsOutName))
   expect_identical(dataTmp[[scalarsOutName]], outScalarDataVisible)
-  
+
   dataTmp <- scenData$get("sb", c(ioConfig$inputDsNames, scalarsOutName),
                           includeHiddenScalars = TRUE)
   expect_identical(names(dataTmp), c(ioConfig$inputDsNames, scalarsOutName))
   expect_identical(dataTmp[[scalarsOutName]], outScalarDataFull)
-  
+
   expect_identical(scenData$get("sb", scalarsOutName, includeHiddenScalars = TRUE)[[1]],
                    outScalarDataFull)
   expect_identical(scenData$get("sb", scalarsOutName)[[1]], outScalarDataVisible)
@@ -178,7 +178,7 @@ if(!identical(procEnv$MIRO_DB_TYPE, "postgres")){
 }
 db$finalize()
 createTestDb()
-db <- Db$new(uid = "te_de\\%d", 
+db <- Db$new(uid = "te_de\\%d",
              dbConf = dbConfig,
              slocktimeLimit = slocktimeLimit, modelName = "pickstock",
              hcubeActive = FALSE, ugroups = c("bla_blubb", "test123"),

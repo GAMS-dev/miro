@@ -152,7 +152,7 @@ app$setInputs(btUploadHcube = "click")
 Sys.sleep(5)
 app$findElement('#refreshActiveJobs')$click()
 Sys.sleep(3)
-expect_true(app$waitFor(paste0("$('#jImport_output td')[0].textContent==='", Sys.info()[["user"]], "'"), timeout = 50)) 
+expect_true(app$waitFor(paste0("$('#jImport_output td')[0].textContent==='", Sys.info()[["user"]], "'"), timeout = 50))
 expect_true(app$waitFor("$('#jImport_output td')[2].innerText==='thisisatest'", timeout = 50))
 expect_error(app$findElements("#jImport_output button[onclick*='importJob']")[[1]]$click(), NA)
 Sys.sleep(3)
@@ -192,7 +192,7 @@ app$findElement("#confirmModal .bt-gms-confirm")$click()
 Sys.sleep(3)
 expect_true(app$waitFor("$('#jImport_output td').length===0", 50))
 
-#load and remove manually submitted scenarios 
+#load and remove manually submitted scenarios
 app$findElement("#sidebarItemExpanded a[data-value='loadResults']")$click()
 Sys.sleep(0.5)
 app$setInputs(newLine_1 = "_sys_metadata_._stime")
@@ -277,7 +277,7 @@ expect_true(app$waitFor("$('div[data-value*=\"tabsetAnalysisMethodScript\"]').is
 app$setInputs(selHcubeAnalysisScript = "script1")
 Sys.sleep(0.5)
 if(grepl("linux-gnu", R.version$os)){
-  # FIXME: Run this also on Windws/macOS as soon as issue products/3557 is closed. 
+  # FIXME: Run this also on Windws/macOS as soon as issue products/3557 is closed.
   # Currently, GAMS can't handle running embedded code when curdir is longer than 128 characters
   app$setInputs(btRunHcubeScript = "click")
   expect_true(app$waitFor("$('#shiny-tab-hcubeAnalyze').is(':visible');", 15000))

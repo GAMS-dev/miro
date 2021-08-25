@@ -16,4 +16,3 @@ services:
       - type: bind
         source: ./data/logos
         target: /home/mirodoc/app/static/images/gallery
-

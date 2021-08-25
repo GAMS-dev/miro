@@ -1,4 +1,4 @@
-{  
+{
    "type":"sqlite",
    "name":"sqlitetests",
    "host":"localhost",

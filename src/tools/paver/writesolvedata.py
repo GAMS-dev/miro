@@ -24,7 +24,7 @@ def _shortenstr(string, width) :
 class SolveDataColumn():
     '''Abstract base class for formatting of columns in solvedata table.
     A derived class can or has to implement the following functions:
-    
+
     getHeader()
     getUnit()
     getAlign()
@@ -32,15 +32,15 @@ class SolveDataColumn():
     getStr()     [mandatory]
     getNumber()  [mandatory for plotted columns]
     getColor()
-    
+
     '''
-    
+
     def __init__(self, **attribs):
         if 'header' in attribs :
             self._header = attribs['header'];
         else :
             self._header = None;
-            
+
         if 'align' in attribs :
             self._align = attribs['align'];
         else :
@@ -50,12 +50,12 @@ class SolveDataColumn():
             self._unit = attribs['unit'];
         else :
             self._unit = None;
-            
+
         if 'plot' in attribs :
             self.plot = attribs['plot'];
         else :
             self.plot = False;
-            
+
         if 'plotcap' in attribs :
             self.plotcap = attribs['plotcap'];
         else :
@@ -64,15 +64,15 @@ class SolveDataColumn():
     def getHeader(self):
         '''Returns the column header string.'''
         return self._header;
-    
+
     def getUnit(self) :
         '''Returns the column unit string, or None.'''
         return self._unit;
-        
+
     def getAlign(self) :
         '''Returns the column alignment as ColumnAlign enum, or None.'''
         return self._align;
-    
+
     def getColor(self, paver, data, instance, solverrun = None) :
         '''Returns the text color for a table cell.'''
         # pylint: disable=W0613,R0201
@@ -80,28 +80,28 @@ class SolveDataColumn():
 
 def _getAttributeValueFunction(paver, data, attrname, instance, solverrun = None):
     '''Helper function to get attribute value either from data (either instancedata or solvedata).'''
-    # pylint: disable=W0613 
+    # pylint: disable=W0613
     if solverrun is None :
         # return instance attribute
         return data[attrname][instance];
-    
+
     # return solver run attribute
     return data[solverrun][attrname][instance];
 
 class StringColumn(SolveDataColumn) :
     '''A versatile column class to print strings.'''
-    
+
     def __init__(self, source, **attribs) :
         SolveDataColumn.__init__(self, **attribs);
-        
+
         if isinstance(source, str) :
             self._getvaluefunc = lambda paver, data, instance, solverrun : _getAttributeValueFunction(paver, data, source, instance, solverrun);
-            
+
             if self._header is None :
                 self._header = source;
         else :
             self._getvaluefunc = source;
-        
+
         if 'width' in attribs :
             self._width = attribs['width'];
         else :
@@ -123,7 +123,7 @@ class StringColumn(SolveDataColumn) :
         if val is None or np.isnan(val) :
             return '--';
         return str(val);
-    
+
     def getNumber(self, paver, data, instance, solverrun = None) :
         '''Returns table cell content as number (to generate plots).'''
         try :
@@ -136,18 +136,18 @@ class StringColumn(SolveDataColumn) :
 
 class IntColumn(SolveDataColumn) :
     '''A versatile column class to print integers.'''
-    
+
     def __init__(self, source, **attribs):
         SolveDataColumn.__init__(self, **attribs);
-        
+
         if isinstance(source, str) :
             self._getvaluefunc = lambda paver, data, instance, solverrun : _getAttributeValueFunction(paver, data, source, instance, solverrun);
-            
+
             if self._header is None :
                 self._header = source;
         else :
             self._getvaluefunc = source;
-            
+
     def getWidth(self) :
         '''Returns column width. We use automatic detection here.'''
         # pylint: disable=R0201
@@ -168,7 +168,7 @@ class IntColumn(SolveDataColumn) :
         if np.isneginf(val) :
             return '-inf';
         return str(int(val));
-            
+
     def getNumber(self, paver, data, instance, solverrun = None) :
         '''Returns table cell content as number (to generate plots).'''
         try :
@@ -181,31 +181,31 @@ class IntColumn(SolveDataColumn) :
 
 class FloatColumn(SolveDataColumn) :
     '''A versatile column class to print floating point numbers.'''
-    
+
     def __init__(self, source, **attribs):
         SolveDataColumn.__init__(self, **attribs);
-        
+
         if isinstance(source, str) :
             self._getvaluefunc = lambda paver, data, instance, solverrun : _getAttributeValueFunction(paver, data, source, instance, solverrun);
-            
+
             if self._header is None :
                 self._header = source;
         else :
             self._getvaluefunc = source;
-        
+
         if 'precision' in attribs :
             self._precision = attribs['precision'];
         else :
             self._precision = 6;
-            
+
         if 'format' in attribs :
             self._format = attribs['format'];
         else :
             self._format = 'e';
-            
+
         if self._align is None :
             self._align = ColumnAlign.right;  # pylint: disable=E1101
-    
+
     def getWidth(self) :
         '''Returns column width.'''
         if self._format == 'e' :
@@ -225,7 +225,7 @@ class FloatColumn(SolveDataColumn) :
         if np.isneginf(val) :
             return '-inf';
         return ('{0:.' + str(self._precision) + self._format + '}').format(val);
-    
+
     def getNumber(self, paver, data, instance, solverrun = None) :
         '''Returns table cell content as number (to generate plots).'''
         val = self._getvaluefunc(paver, data, instance, solverrun);
@@ -236,20 +236,20 @@ class FloatColumn(SolveDataColumn) :
 
 class GapColumn(SolveDataColumn) :
     '''A versatile column class to print gaps.'''
-    
+
     def __init__(self, attrname, **attribs):
         SolveDataColumn.__init__(self, **attribs);
-        
+
         self._attrname = attrname;
-        
+
         if 'precision' in attribs :
             self._precision = attribs['precision'];
         else :
             self._precision = 2;
-            
+
         if self._header is None :
             self._header = attrname;
-            
+
         if self._unit is None :
             self._unit = '%';
 
@@ -257,14 +257,14 @@ class GapColumn(SolveDataColumn) :
             self._cap = attribs['cap'];
         else :
             self._cap = 10.0;
-            
+
         # overwrite default plotcap from base class
         if 'plotcap' not in attribs :
             self.plotcap = 20.0 * self._cap;
 
         if self._align is None :
             self._align = ColumnAlign.right;  # pylint: disable=E1101
-    
+
     def getWidth(self) :
         '''Returns column width.'''
         width = 0;
@@ -275,9 +275,9 @@ class GapColumn(SolveDataColumn) :
             return None;
         width += 1;  # digit
         width += self._precision;
-        
+
         return max(width, len(self._header), 6);
-    
+
     def getStr(self, paver, data, instance, solverrun) :
         '''Returns table cell content to show as string.'''
         # pylint: disable=W0613
@@ -293,7 +293,7 @@ class GapColumn(SolveDataColumn) :
         if np.isnan(val) :
             return '--';
         return ('{0:.' + str(self._precision) + 'f}').format(100.0*val);
-    
+
     def getNumber(self, paver, data, instance, solverrun) :
         '''Returns table cell content as number (to generate plots).'''
         # pylint: disable=W0613
@@ -305,7 +305,7 @@ class GapColumn(SolveDataColumn) :
 
 class TermStatusColumn(SolveDataColumn) :
     '''Column to print termination status.'''
-    
+
     # pylint: disable=E1101
     _termcolor = {
              TerminationStatus.Normal            : "Blue",
@@ -325,15 +325,15 @@ class TermStatusColumn(SolveDataColumn) :
 
         if self._header is None:
             self._header = 'TermStatus';
-            
+
         if self._align is None :
             self._align = ColumnAlign.left;  # pylint: disable=E1101
-    
+
     def getWidth(self) :
         '''Returns column width.'''
         # pylint: disable=R0201
         return 10;
-    
+
     def getStr(self, paver, data, instance, solverrun) :
         '''Returns table cell content to show as string.'''
         # pylint: disable=R0201,W0613
@@ -341,7 +341,7 @@ class TermStatusColumn(SolveDataColumn) :
         if np.isnan(status) :
             return '--';
         return utils.TerminationStatusNames[status];
-        
+
     def getColor(self, paver, data, instance, solverrun = None) :
         status = data[solverrun]['TerminationStatus'][instance];
         if np.isnan(status) :
@@ -359,28 +359,28 @@ class TermStatusColumn(SolveDataColumn) :
 
 class ExaminerColumn(SolveDataColumn) :
     '''Column to report maximal infeasibility of all examiner computed values'''
-    
+
     _shortstring = {
         'PrimalVarInfeas' : 'pv',
         'DualVarInfeas'   : 'dv',
-        'PrimalConInfeas' : 'pc', 
+        'PrimalConInfeas' : 'pc',
         'DualConInfeas'   : 'dc',
         'PrimalCompSlack' : 'ps',
         'DualCompSlack'   : 'ds' }
-    
+
     def __init__(self, **attribs):
         SolveDataColumn.__init__(self, **attribs);
-        
+
         if 'precision' in attribs :
             self._precision = attribs['precision'];
         else :
             self._precision = 2;
-            
+
         if 'format' in attribs :
             self._format = attribs['format'];
         else :
             self._format = 'e';
-                
+
     def getWidth(self) :
         '''Returns column width.'''
         if self._format == 'e' :
@@ -392,13 +392,13 @@ class ExaminerColumn(SolveDataColumn) :
 
     def getHeader(self):
         return "Viol.";
-    
+
     def getUnit(self) :
         return None;
-        
+
     def getAlign(self) :
         return ColumnAlign.right;  # pylint: disable=E1101
-    
+
     def getStr(self, paver, data, instance, solverrun) :
         '''Returns table cell content to show as string.'''
         # pylint: disable=W0613
@@ -411,12 +411,12 @@ class ExaminerColumn(SolveDataColumn) :
             if not np.isnan(infeas) and infeas > maxinfeas :
                 maxinfeas = infeas;
                 maxinfeasattrib = attrib;
-                
+
         if maxinfeasattrib is None :
             return '--';
-        
+
         return ('{0:.' + str(self._precision) + self._format + '}' + self._shortstring[maxinfeasattrib]).format(maxinfeas);
-    
+
     def getNumber(self, paver, data, instance, solverrun) :
         '''Returns table cell content as number (to generate plots).'''
         # pylint: disable=W0613,R0201
@@ -427,14 +427,14 @@ class ExaminerColumn(SolveDataColumn) :
             infeas = data[solverrun][attrib][instance];
             if not np.isnan(infeas) and infeas > maxinfeas :
                 maxinfeas = infeas;
-                
+
         if np.isneginf(maxinfeas) :
             return None;
         return maxinfeas;
 
 class SolveDataWriter() :
     '''Class to write instance and solve data in a table with user-specified column objects.'''
-    
+
     def __init__(self, paver, instancecolumns = None, runcolumns = None, singleruns = True, aggrrun = True) :
         self._paver = paver;
         self._instancecolumns = instancecolumns;
@@ -448,10 +448,10 @@ class SolveDataWriter() :
         plotdata = [];
         for i in self._paver.instancedata.index :
             plotdata.append( (i, column.getNumber(self._paver, data, i, solverrun), column.getStr(self._paver, data, i, solverrun)) );
-        
+
         # sort data such that missing data is front
         plotdata.sort(key=lambda x : x[1] if x[1] is not None else -np.inf);
-        
+
         # extract labels and bar heights
         # get last index with missing plotdata
         inames = [];
@@ -479,14 +479,14 @@ class SolveDataWriter() :
                 #print solvername, runname, plotdata[s][0];
             barstart[s] = s + 0.1;
             ticks[s] = s + 0.5;
-        
+
         # generate bar chart
         fig = plt.figure(); # start new figure
         rects = plt.bar(barstart, heights, 0.8, color = colors, edgecolor = colors);
         plt.gca().set_xticks(ticks);
         plt.gca().set_xticklabels(inames, rotation = 'vertical', size = 'xx-small');
         plt.gca().tick_params('x', length = 0);
-        
+
         # arrange size
         plt.xlim(0, len(plotdata));
         minheight = min(heights);
@@ -514,7 +514,7 @@ class SolveDataWriter() :
             else :
                 rotation = 'vertical'
             plt.text((lastna+1) / 2.0, maxheight, 'no data', size = 'xx-small', rotation = rotation, horizontalalignment = 'center', verticalalignment = 'top', color = 'r');
-        
+
         # add title
         #plt.ylabel('Percentage of instances');
         title = column.getHeader();
@@ -535,9 +535,9 @@ class SolveDataWriter() :
 
     def writeHTML(self, solvedata, out, chartsdir = None, plotfileprefix = '') :
         '''Generates HTML tables for PAVER instance data and given solve data.'''
-        
+
         print("<P>For a short description on how gaps and integrals are calculated, refer to <A href='#' onclick = 'Miro.changeTab($(this), 5, 6)'>the documentation</A>.</P>", file=out);
-        
+
         # print instances and solver runs
         col_align = ['left'];
         col_style = [None];
@@ -545,9 +545,9 @@ class SolveDataWriter() :
                                      attribs = {'colspan' : len(self._instancecolumns)+1,
                                                 'style' : 'border-right: thick solid ;'})];
         header2row = ['name'];
-        
+
         haveplot = False;
-        
+
         # add column alignments and headers for instance data
         for c in self._instancecolumns :
             if c.getAlign() is not None :
@@ -560,7 +560,7 @@ class SolveDataWriter() :
             if c.getUnit() is not None :
                 cell.attribs['title'] = 'in ' + str(c.getUnit());
             header2row.append(cell);
-            
+
             haveplot |= c.plot;
         col_style[-1] = 'border-right: thick solid; font-family: monospace'
 
@@ -572,12 +572,12 @@ class SolveDataWriter() :
                 caligns.append(ColumnAlign.getName(c.getAlign()));
             else :
                 caligns.append('');
-            
+
             cell = HTML.TableCell(c.getHeader(), header = True);
             if c.getUnit() is not None :
                 cell.attribs['title'] = 'in ' + str(c.getUnit());
             cnames.append(cell);
-            
+
             haveplot |= c.plot;
 
         # setup header rows for runs
@@ -595,10 +595,10 @@ class SolveDataWriter() :
         t.style += ' font-size: 12px;';
         t.rows.append(HTML.TableRow(header1row, header = True));
         t.rows.append(HTML.TableRow(header2row, header = True));
-        
+
         if haveplot and chartsdir is not None:
             row = [''];
-            
+
             chartnr = 1;
             for c in self._instancecolumns :
                 if c.plot :
@@ -625,7 +625,7 @@ class SolveDataWriter() :
         bgcolor = 'LightGrey';
         count = 0;
         for i in sorted(self._paver.instancedata.index) :
-            
+
             count += 1;
             if count % 30 == 0 :
                 t.rows.append(HTML.TableRow(header1row, header = True));
@@ -644,7 +644,7 @@ class SolveDataWriter() :
                 reasontxt = self._paver.instancedata['FailReason'][i];
                 rowattribs['bgcolor'] = 'Pink';
                 rowattribs['title'] = reasontxt;
-                
+
             for c in self._instancecolumns :
                 celltext = c.getStr(self._paver, self._paver.instancedata, i);
                 cellcolor = c.getColor(self._paver, self._paver.instancedata, i);
@@ -660,7 +660,7 @@ class SolveDataWriter() :
                     reasontxt = solvedata[sr]['FailReason'][i];
                     cellattribs['bgcolor'] = 'Pink';
                     cellattribs['title'] = reasontxt;
-                    
+
                 for c in self._runcolumns :
                     celltext = c.getStr(self._paver, solvedata, i, sr);
                     cellcolor = c.getColor(self._paver, solvedata, i, sr);
@@ -669,10 +669,10 @@ class SolveDataWriter() :
                     thiscellattribs = cellattribs.copy();
                     if c.getUnit() is not None :
                         thiscellattribs['title'] = 'in ' + str(c.getUnit());
-                    row.append(HTML.TableCell(celltext, attribs = thiscellattribs)); 
+                    row.append(HTML.TableCell(celltext, attribs = thiscellattribs));
 
             t.rows.append(HTML.TableRow(row, attribs = rowattribs));
-        
+
         print("<P>", t, "</P>", file=out);
 
         # print small statistics of instance attributes
@@ -680,7 +680,7 @@ class SolveDataWriter() :
         print("<P>Instance Attributes:<BR>", file=out);
         df1.transpose().to_html(out, float_format = '{0:.2f}'.format);
         print("</P>", file=out);
-        
+
         # print small statistics of solve attributes
         # why is this not working???
         # df2 = solvedata.transpose(2,1,0).to_frame().convert_objects(convert_numeric=True).describe();
@@ -709,7 +709,7 @@ class SolveDataWriter() :
             for c in self._instancecolumns :
                 if c.getWidth() is None :
                     colwidth[c] = max(colwidth[c], len(c.getStr(self._paver, self._paver.instancedata, i)));
-            
+
             for sr in solvedata.items :
                 for c in self._runcolumns :
                     if c.getWidth() is None :
@@ -720,13 +720,13 @@ class SolveDataWriter() :
         for c in self._instancecolumns :
             instancewidth += colwidth[c] + 1;
         instancewidth += 1;
-            
+
         # get width of all run columns together
         runwidth = 0;
         for c in self._runcolumns :
             runwidth += colwidth[c] + 1;
         runwidth += 1;
-            
+
         alignchar = { None : '', ColumnAlign.left : '<', ColumnAlign.center : '^', ColumnAlign.right : '>' };  # pylint: disable=E1101
 
 
@@ -754,7 +754,7 @@ class SolveDataWriter() :
         runcolstr += 'I|';
         line += runcolstr * len(solvedata.items);
         print(line, file=out);
-        
+
         # print ---- line
         line = '-' * (instancewidth+1);
         line += '-' * len(solvedata.items) * (runwidth+1);

@@ -14,7 +14,7 @@ Views <- R6Class("Views",
                      stopifnot(is.list(viewConf), length(names(viewConf)) != 0)
                      cleanViewConf <- viewConf
                      scenId <- as.character(scenId)
-                     
+
                      invalidViews <- !names(cleanViewConf) %in% private$getValidSymNames()
                      if(any(invalidViews)){
                        private$invalidViews <- names(cleanViewConf)[invalidViews]
@@ -61,7 +61,7 @@ Views <- R6Class("Views",
                        }
                        return(invisible(self))
                      }
-                     
+
                      idColName  <- names(viewConf)[1]
                      sids       <- viewConf[[1]]
                      if(length(scenIds) > 1L){
@@ -182,7 +182,7 @@ Views <- R6Class("Views",
                      symIds     <- match(viewsMetadata[["symName"]],
                                          private$getValidSymNames())
                      viewsMetadata[["symAlias"]] <- private$symbolAliases[symIds]
-                     
+
                      if(any(is.na(symIds))){
                        flog.info("Invalid symbol names found when trying to get view summary: %s. They were ignored.",
                                  viewsMetadata[["symName"]][is.na(symIds)])
@@ -208,7 +208,7 @@ Views <- R6Class("Views",
                      if(identical(scenId, "1")){
                        private$markUnsaved()
                      }
-                     
+
                      lapply(unique(vapply(viewsToRemove, "[[", character(1L), 1,
                                           USE.NAMES = FALSE)),
                             function(symName){
@@ -225,7 +225,7 @@ Views <- R6Class("Views",
                        return(invisible(self))
                      }
                      private$scenViewConf[[scenId]] <- list()
-                     
+
                      if(identical(scenId, "1")){
                        private$markUnsaved()
                      }

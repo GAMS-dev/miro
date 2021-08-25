@@ -71,8 +71,8 @@ disableEl <- function(session, id){
   session$sendCustomMessage("gms-disableEl", id)
 }
 slideToggleEl <- function(session, id, duration = 400, toggleIconDiv = NULL){
-  session$sendCustomMessage("gms-slideToggleEl", 
-                            list(id = id, duration = duration, 
+  session$sendCustomMessage("gms-slideToggleEl",
+                            list(id = id, duration = duration,
                                  toggleIconDiv = toggleIconDiv))
 }
 toggleEl <- function(session, id){
@@ -87,9 +87,9 @@ removeClassEl <- function(session, id, class){
 emptyEl <- function(session, id){
   session$sendCustomMessage("gms-emptyEl", id)
 }
-appendEl <- function(session, id, content, text = TRUE, scroll = FALSE, 
+appendEl <- function(session, id, content, text = TRUE, scroll = FALSE,
                      triggerChange = FALSE){
-  session$sendCustomMessage("gms-appendEl", list(id = id, content = content, 
+  session$sendCustomMessage("gms-appendEl", list(id = id, content = content,
                                                  text = text, scroll = scroll,
                                                  triggerChange = triggerChange))
 }
@@ -97,8 +97,8 @@ hideModal <- function(session, delay = 1L){
   session$sendCustomMessage("gms-hideModal", delay)
 }
 updateAttachList <- function(session, id, fileName, token, labelCb, allowExec = FALSE){
-  session$sendCustomMessage("gms-updateAttachList", list(name = fileName, id = id, 
-                                                         token = token, labelCb = labelCb, 
+  session$sendCustomMessage("gms-updateAttachList", list(name = fileName, id = id,
+                                                         token = token, labelCb = labelCb,
                                                          allowExec = allowExec))
 }
 fitTitleInBox <- function(session, id){
@@ -132,10 +132,10 @@ getHotCustomColOptions <- function(noDomains){
     }
     const isSelectedByCorner = hot.selection.isSelectedByCorner();
     let columnLeft = 0;
-    
+
     if (!isSelectedByCorner) {
       const latestSelection = normalizedSelection[Math.max(normalizedSelection.length - 1, 0)];
-    
+
       columnLeft = latestSelection.start.col;
     }
     newParams.columns.splice(columnLeft,0,{type:'numeric',numericFormat:{pattern:'0.00'}});
@@ -144,7 +144,7 @@ getHotCustomColOptions <- function(noDomains){
       newParams.data[row].splice(columnLeft, 0, null);
     }
     hot.updateSettings(newParams);
-    
+
     if (isSelectedByCorner) {
       hot.selectAll();
     }
@@ -172,14 +172,14 @@ getHotCustomColOptions <- function(noDomains){
     }
     const isSelectedByCorner = hot.selection.isSelectedByCorner();
     let columnRight = 0;
-    
+
     if (isSelectedByCorner) {
       columnRight = hot.countCols();
-  
+
     } else {
       const latestSelection = normalizedSelection[Math.max(normalizedSelection.length - 1, 0)];
       const selectedColumn = latestSelection?.end?.col;
-  
+
       // If there is no selection we have clicked on the corner and there is no data.
       columnRight = typeof selectedColumn !== 'undefined' ? selectedColumn + 1 : 0;
     }
@@ -189,7 +189,7 @@ getHotCustomColOptions <- function(noDomains){
       newParams.data[row].splice(columnRight, 0, null);
     }
     hot.updateSettings(newParams);
-    
+
     if (isSelectedByCorner) {
       hot.selectAll();
     }

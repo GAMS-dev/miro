@@ -6,11 +6,11 @@ MarkdownParser <- R6Class("MarkdownParser",
                               if(enableMath){
                                 private$ctx$source(file.path(libPath, 'mathjax-extension.js'))
                               }
-                              private$ctx$assign("converter", 
+                              private$ctx$assign("converter",
                                                  JS(paste0("new showdown.Converter({tables: true,
                                                     tasklists:true, strikethrough:true,
                                                     noHeaderId: true,
-                                                    openLinksInNewWindow: true", 
+                                                    openLinksInNewWindow: true",
                                                     if(enableMath) ",extensions: ['mathjax']", "})")))
                               return(invisible(self))
                             },
@@ -20,7 +20,7 @@ MarkdownParser <- R6Class("MarkdownParser",
                             },
                             parseFile = function(filePath){
                               if(!file.exists(filePath))
-                                stop(sprintf("File: %s does not exist.", filePath), 
+                                stop(sprintf("File: %s does not exist.", filePath),
                                      call. = FALSE)
                               return(self$parse(read_file(filePath)))
                             },

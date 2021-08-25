@@ -3,7 +3,7 @@ DbSchema <- R6Class("DbSchema", public = list(
     private$dbSymbols <- c(names(ioConfig$modelOut), ioConfig$inputDsNames)
     private$dbTableNames <- names(symbolSchema$schema)
     private$dbViews <- symbolSchema$views
-    
+
     private$schema <- c(list(
       '_scenMeta' = list(tabName = "_sys_metadata_",
                          colNames = c(sid = "_sid",
@@ -13,7 +13,7 @@ DbSchema <- R6Class("DbSchema", public = list(
                                       stag = "_stag",
                                       accessR = "_accessr",
                                       accessW = "_accessw",
-                                      accessX = "_accessx", 
+                                      accessX = "_accessx",
                                       scode = "_scode"),
                          colTypes = "iccTcccci"
       ),
@@ -30,7 +30,7 @@ DbSchema <- R6Class("DbSchema", public = list(
       '_scenAttach' = list(tabName = "_sys_attach_",
                            colNames = c(sid = "_sid",
                                         fn = "fileName",
-                                        fExt = "fileExt", 
+                                        fExt = "fileExt",
                                         execPerm = "execPerm",
                                         content = "fileContent",
                                         time = "timestamp"),
@@ -52,11 +52,11 @@ DbSchema <- R6Class("DbSchema", public = list(
       ),
       '_jobMeta' = list(tabName = "_sys_jobs_",
                         colNames = c(jid = "_jid",
-                                     uid = "_uid",  
+                                     uid = "_uid",
                                      status = "_status",
-                                     time = "_jtime", 
+                                     time = "_jtime",
                                      tag = "_stag",
-                                     pid = "_pid", 
+                                     pid = "_pid",
                                      sid = "_sid",
                                      gamsret = "_gamsret",
                                      scode = "_scode",
@@ -146,13 +146,13 @@ DbSchema <- R6Class("DbSchema", public = list(
       dbTableName <- self$getDbTableName(symName)
     }
     if(includeForeignKey){
-      foreignKeyConstraint <- paste0(", CONSTRAINT foreign_key FOREIGN KEY (", 
-                                     dbQuoteIdentifier(private$conn, "_sid"), 
+      foreignKeyConstraint <- paste0(", CONSTRAINT foreign_key FOREIGN KEY (",
+                                     dbQuoteIdentifier(private$conn, "_sid"),
                                      ") REFERENCES ",
                                      dbQuoteIdentifier(private$conn,
-                                                       self$getDbTableName("_scenMeta")), 
+                                                       self$getDbTableName("_scenMeta")),
                                      "(",
-                                     dbQuoteIdentifier(private$conn, "_sid"), 
+                                     dbQuoteIdentifier(private$conn, "_sid"),
                                      ") ON DELETE CASCADE")
     }else{
       foreignKeyConstraint <- ""
@@ -162,9 +162,9 @@ DbSchema <- R6Class("DbSchema", public = list(
       symSchema$colNames <- c("_sid", symSchema$colNames)
       symSchema$colTypes <- paste0("i", symSchema$colTypes)
     }
-    return(paste0("CREATE TABLE ", 
-                  dbQuoteIdentifier(private$conn, dbTableName), 
-                  " (", paste(dbQuoteIdentifier(private$conn, symSchema$colNames), 
+    return(paste0("CREATE TABLE ",
+                  dbQuoteIdentifier(private$conn, dbTableName),
+                  " (", paste(dbQuoteIdentifier(private$conn, symSchema$colNames),
                               self$getColTypesSQL(symSchema$colTypes), collapse = ", "),
                   foreignKeyConstraint, ");"))
   },
@@ -262,7 +262,7 @@ DbSchema <- R6Class("DbSchema", public = list(
   conn = NULL,
   getCreateScenMetaTableQuery = function(){
     schema <- private$schema[["_scenMeta"]]
-    
+
     return(paste0("CREATE TABLE ",
                   dbQuoteIdentifier(private$conn, schema$tabName),
                   " (",
@@ -289,28 +289,28 @@ DbSchema <- R6Class("DbSchema", public = list(
   },
   getCreateJobMetaTableQuery = function(){
     schema <- private$schema[["_jobMeta"]]
-    
-    return(paste0("CREATE TABLE ", 
-                  dbQuoteIdentifier(private$conn, schema$tabName), 
-                  " (", 
-                  dbQuoteIdentifier(private$conn, schema$colNames[["jid"]]), 
-                  if(inherits(private$conn, "PqConnection")) 
+
+    return(paste0("CREATE TABLE ",
+                  dbQuoteIdentifier(private$conn, schema$tabName),
+                  " (",
+                  dbQuoteIdentifier(private$conn, schema$colNames[["jid"]]),
+                  if(inherits(private$conn, "PqConnection"))
                     " serial PRIMARY KEY," else " integer PRIMARY KEY,",
-                  dbQuoteIdentifier(private$conn, schema$colNames[["uid"]]), 
+                  dbQuoteIdentifier(private$conn, schema$colNames[["uid"]]),
                   " varchar(50) NOT NULL,",
-                  dbQuoteIdentifier(private$conn, schema$colNames[["status"]]), 
-                  " integer,", 
-                  dbQuoteIdentifier(private$conn, schema$colNames[["time"]]), 
-                  if(inherits(private$conn, "PqConnection")) 
+                  dbQuoteIdentifier(private$conn, schema$colNames[["status"]]),
+                  " integer,",
+                  dbQuoteIdentifier(private$conn, schema$colNames[["time"]]),
+                  if(inherits(private$conn, "PqConnection"))
                     " timestamp with time zone," else " text,",
-                  dbQuoteIdentifier(private$conn, schema$colNames[["tag"]]), 
+                  dbQuoteIdentifier(private$conn, schema$colNames[["tag"]]),
                   " text,",
-                  dbQuoteIdentifier(private$conn, schema$colNames[["pid"]]), 
+                  dbQuoteIdentifier(private$conn, schema$colNames[["pid"]]),
                   " varchar(255) NOT NULL,",
                   dbQuoteIdentifier(private$conn, schema$colNames[["sid"]]),
                   " integer,",
                   dbQuoteIdentifier(private$conn, schema$colNames[["gamsret"]]),
-                  if(inherits(private$conn, "PqConnection")) 
+                  if(inherits(private$conn, "PqConnection"))
                     " smallint," else " integer,",
                   dbQuoteIdentifier(private$conn, schema$colNames[["scode"]]),
                   " integer,",
@@ -319,7 +319,7 @@ DbSchema <- R6Class("DbSchema", public = list(
   },
   getCreateScenlocksTableQuery = function(){
     schema <- private$schema[["_scenLock"]]
-    
+
     return(paste0("CREATE TABLE ",
                   dbQuoteIdentifier(private$conn, schema$tabName),
                   " (",

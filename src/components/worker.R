@@ -1,7 +1,7 @@
 Worker <- R6Class("Worker", public = list(
   initialize = function(metadata, remote, hcube, db = NULL){
-    stopifnot(is.list(metadata), is.logical(remote), 
-              identical(length(remote), 1L), is.logical(hcube), 
+    stopifnot(is.list(metadata), is.logical(remote),
+              identical(length(remote), 1L), is.logical(hcube),
               identical(length(hcube), 1L))
     private$remote   <- remote
     private$hcube    <- hcube
@@ -36,9 +36,9 @@ Worker <- R6Class("Worker", public = list(
     private$metadata$useRegistered <- useRegistered
     private$metadata$password  <- password
     private$metadata$namespace <- namespace
-    
+
     private$authHeader <- private$buildAuthHeader(useBearer)
-    
+
     if(refreshToken){
       future({
         library(httr)
@@ -51,13 +51,13 @@ Worker <- R6Class("Worker", public = list(
     }
     return(invisible(self))
   },
-  login = function(url, username, password, namespace, 
-                   rememberMeFlag = FALSE, 
+  login = function(url, username, password, namespace,
+                   rememberMeFlag = FALSE,
                    useRegistered = FALSE){
     stopifnot(isFALSE(private$metadata$noNeedCred))
-    
+
     private$metadata$url <- private$resolveRemoteURL(url)
-    
+
     if(!private$testConnection()){
       private$metadata$url <- ""
       stop(426, call. = FALSE)
@@ -66,29 +66,29 @@ Worker <- R6Class("Worker", public = list(
     private$metadata$useRegistered <- useRegistered
     private$metadata$password  <- password
     private$authHeader <- private$buildAuthHeader()
-    
+
     private$metadata$namespace <- namespace
-    
+
     if(!length(private$apiInfo) || is.na(private$apiInfo$apiVersionInt) ||
        private$apiInfo$apiVersionInt > 210603L){
       ret <- GET(url = paste0(private$metadata$url, "/namespaces/", namespace, "/permissions?username=",
-                              URLencode(username)), 
+                              URLencode(username)),
                  add_headers(Authorization = private$authHeader,
-                             Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+                             Timestamp = as.character(Sys.time(), usetz = TRUE)),
                  timeout(10L))
     }else{
-      ret <- GET(url = paste0(private$metadata$url, "/namespaces/", namespace, "/permissions/me"), 
+      ret <- GET(url = paste0(private$metadata$url, "/namespaces/", namespace, "/permissions/me"),
                  add_headers(Authorization = private$authHeader,
-                             Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+                             Timestamp = as.character(Sys.time(), usetz = TRUE)),
                  timeout(10L))
     }
     if(identical(status_code(ret), 404L))
       stop(444L, call. = FALSE)
     if(identical(status_code(ret), 401L))
       stop(401L, call. = FALSE)
-    
+
     retContent <- tryCatch({
-      content(ret, type = "application/json", 
+      content(ret, type = "application/json",
               encoding = "utf-8")
     }, error = function(e){
       stop(404L, call. = FALSE)
@@ -96,22 +96,22 @@ Worker <- R6Class("Worker", public = list(
     if(identical(status_code(ret), 404L)){
       stop(400L, call. = FALSE)
     }
-    
+
     if(identical(status_code(ret), 200L)){
       permissionLevel <- retContent$permission
-      
+
       if(identical(useRegistered, TRUE)){
         if(permissionLevel < 5L)
           stop(403L, call. = FALSE)
-        
+
         ret <- GET(url = paste0(private$metadata$url, "/namespaces/", namespace, "?model=",
-                                URLencode(private$metadata$modelId)), 
+                                URLencode(private$metadata$modelId)),
                    add_headers(Authorization = private$authHeader,
                                Timestamp = as.character(Sys.time(), usetz = TRUE),
-                               "X-Fields" = "name"), 
+                               "X-Fields" = "name"),
                    timeout(3L))
         retContent <- tryCatch({
-          content(ret, type = "application/json", 
+          content(ret, type = "application/json",
                   encoding = "utf-8")
         }, error = function(e){
           return("Invalid JSON")
@@ -124,8 +124,8 @@ Worker <- R6Class("Worker", public = list(
           stop(445L, call. = FALSE)
         }
         if(rememberMeFlag){
-          private$saveLoginCredentials(private$metadata$url, username, 
-                                       namespace, 
+          private$saveLoginCredentials(private$metadata$url, username,
+                                       namespace,
                                        useRegistered)
         }
         return(200L)
@@ -133,8 +133,8 @@ Worker <- R6Class("Worker", public = list(
       if(permissionLevel < 7L)
         stop(403L, call. = FALSE)
       if(rememberMeFlag){
-        private$saveLoginCredentials(private$metadata$url, username, 
-                                     namespace, 
+        private$saveLoginCredentials(private$metadata$url, username,
+                                     namespace,
                                      useRegistered)
       }
       return(200L)
@@ -153,12 +153,12 @@ Worker <- R6Class("Worker", public = list(
   },
   validateCredentials = function(){
     cred <- c(private$metadata$url,
-              private$metadata$password, 
+              private$metadata$password,
               private$metadata$namespace)
     if(private$remote &&
        !identical(private$metadata$noNeedCred, TRUE) &&
        (!length(cred) ||
-        any(vapply(cred, private$isEmptyString, 
+        any(vapply(cred, private$isEmptyString,
                    logical(1L), USE.NAMES = FALSE))))
       return(FALSE)
     return(TRUE)
@@ -173,7 +173,7 @@ Worker <- R6Class("Worker", public = list(
   },
   run = function(sid = NULL, name = NULL){
     private$initRun(sid)
-    
+
     if(private$remote){
       private$runRemote(name = name)
       return(0L)
@@ -181,10 +181,10 @@ Worker <- R6Class("Worker", public = list(
     private$runLocal()
     return(0L)
   },
-  runAsync = function(sid = NULL, tags = NULL, 
+  runAsync = function(sid = NULL, tags = NULL,
                       dynamicPar = NULL, name = NULL){
     stopifnot(private$remote)
-    
+
     private$runRemote(dynamicPar, name = name)
     tryCatch({
       remoteSubValue <- as.character(value(private$fRemoteSub))
@@ -212,7 +212,7 @@ Worker <- R6Class("Worker", public = list(
           private$jID <- self$addJobDb(private$process, sid, tags = tags, name = name,
                                        isHcJob = is.R6(dynamicPar))
         }, error = function(e){
-          flog.warn("Could not add job to database. Error message; '%s'.", 
+          flog.warn("Could not add job to database. Error message; '%s'.",
                     conditionMessage(e))
         })
       }
@@ -221,79 +221,79 @@ Worker <- R6Class("Worker", public = list(
     private$fRemoteSub <- NULL
     return(private$process)
   },
-  runHcube = function(dynamicPar = NULL, sid = NULL, tags = NULL, 
+  runHcube = function(dynamicPar = NULL, sid = NULL, tags = NULL,
                       attachmentFilePaths = NULL){
     req(length(private$db) > 0L)
-    
+
     private$initRun(sid)
-    
+
     if(private$remote){
-      pID <- self$runAsync(sid = sid, 
+      pID <- self$runAsync(sid = sid,
                            tags = tags, dynamicPar = dynamicPar)
     }else{
       private$jID <- self$addJobDb("", sid, tags = tags, isHcJob = TRUE)
       if(identical(private$jID, -1L)){
         stop("Problems storing Hypercube job metadata.", call. = FALSE)
       }
-      flog.trace("Metadata for Hypercube job was written to database. Hypercube job ID: '%d' was assigned to job.", 
+      flog.trace("Metadata for Hypercube job was written to database. Hypercube job ID: '%d' was assigned to job.",
                  private$jID)
       private$runHcubeLocal(dynamicPar, attachmentFilePaths)
       pID <- private$process$get_pid()
       flog.trace("Hypercube job submitted successfuly. Hypercube job process ID: '%d'.", pID)
     }
-    
+
     self$updateJobStatus(status = JOBSTATUSMAP[["running"]], updatePid = !private$remote)
     flog.trace("Process ID: '%s' added to Hypercube job ID: '%s'.", pID, private$jID)
     return(0L)
   },
   createHcubeWorkDir = function(workDir, dynamicPar,
                                 attachmentFilePaths = NULL){
-    
+
     if(dir.exists(workDir)){
       flog.warn("Hypercube job directory: '%s' already existed. Removing old data.", workDir)
       if(identical(unlink(workDir, recursive = TRUE, force = TRUE), 1L))
         stop(sprintf("Problems removing Hypercube job directory: '%s'.", workDir), call. = FALSE)
     }
-    
+
     if(!dir.exists(workDir) && !dir.create(workDir, recursive = TRUE, showWarnings = FALSE))
       stop(sprintf("Problems creating Hypercube job directory: '%s'.", workDir), call. = FALSE)
-    
+
     staticDir <- file.path(workDir, "static")
-    
+
     if(!dir.create(staticDir))
       stop(sprintf("Problems creating static directory: '%s'.", staticDir), call. = FALSE)
-    
+
     if(length(private$inputData))
       private$inputData$writeDisk(staticDir, fileName = private$metadata$MIROGdxInName)
-    
+
     if(length(attachmentFilePaths)){
       if(!all(file.copy(attachmentFilePaths, staticDir)))
-        stop(sprintf("Problems writing attachment data to: '%s'.", 
+        stop(sprintf("Problems writing attachment data to: '%s'.",
                      staticDir), call. = FALSE)
     }
     if(length(private$metadata[["modelData"]])){
-      zip::unzip(private$metadata[["modelData"]], 
-                 overwrite = TRUE, junkpaths = FALSE, 
+      zip::unzip(private$metadata[["modelData"]],
+                 overwrite = TRUE, junkpaths = FALSE,
                  exdir = workDir)
     }
-    scenGmsPar <- c(if(length(private$metadata$extraClArgs)) private$metadata$extraClArgs, 
+    scenGmsPar <- c(if(length(private$metadata$extraClArgs)) private$metadata$extraClArgs,
                     private$metadata$clArgs,
-                    paste0('IDCGDXInput="', 
+                    paste0('IDCGDXInput="',
                            if(is.null(workDir)){
-                             gmsFilePath(file.path(staticDir, 
+                             gmsFilePath(file.path(staticDir,
                                                    private$metadata$MIROGdxInName))
                            }else{
-                             gmsFilePath(file.path("..", "..", "static", 
+                             gmsFilePath(file.path("..", "..", "static",
                                                    private$metadata$MIROGdxInName))
                            },'"'))
     if(private$metadata$saveTraceFile){
       scenGmsPar <- c(scenGmsPar, 'trace="_scenTrc.trc"', "traceopt=3")
     }
-    
+
     writeLines(scenGmsPar, file.path(workDir, tolower(private$metadata$modelName) %+% ".pf"))
     dynamicPar$writeHcubeFile(paste0(workDir, .Platform$file.sep))
     flog.trace("New folder for Hypercube job was created: '%s'.", workDir)
-    
+
     return(invisible(self))
   },
   interrupt = function(hardKill = NULL, process = NULL, isHcJob = FALSE){
@@ -311,10 +311,10 @@ Worker <- R6Class("Worker", public = list(
         private$hardKill <- TRUE
       }
     }
-    
+
     if(private$remote)
       return(private$interruptRemote(hardKill, process, isHcJob = isHcJob))
-    
+
     return(private$interruptLocal(hardKill, process))
   },
   getInfoFromJobList = function(jID, key = NULL){
@@ -342,7 +342,7 @@ Worker <- R6Class("Worker", public = list(
     }
     if(is.null(jID)){
       req(length(private$process) > 0L)
-      
+
       jID <- private$jID
       if(private$remote){
         pID <- private$process
@@ -363,7 +363,7 @@ Worker <- R6Class("Worker", public = list(
       return()
     }
     gamsRetCode <- NULL
-    if(status %in% c(JOBSTATUSMAP[['imported']], 
+    if(status %in% c(JOBSTATUSMAP[['imported']],
                      JOBSTATUSMAP[['discarded']])){
       jobStatus   <- private$getJobStatus(pID, jID, isHcJob = isHcJob)
       gamsRetCode <- jobStatus$gamsRetCode
@@ -383,17 +383,17 @@ Worker <- R6Class("Worker", public = list(
         }
         if(private$hcube){
           hcubeJobDir <- file.path(hcubeDirName, jID)
-          if(dir.exists(hcubeJobDir) && 
+          if(dir.exists(hcubeJobDir) &&
              identical(unlink(hcubeJobDir,recursive = TRUE, force = TRUE), 1L)){
             flog.error("Problems removing Hypercube job workspace: '%s'.", hcubeJobDir)
           }
         }
       }
     }
-    
+
     colNames <- private$dbColNames[['status']]
     values   <- status
-    
+
     if(length(gamsRetCode)){
       colNames <- c(colNames, private$dbColNames[['gamsret']])
       values   <- c(values, gamsRetCode)
@@ -406,25 +406,25 @@ Worker <- R6Class("Worker", public = list(
       colNames <- c(colNames, private$dbColNames[['pid']])
       values   <- c(values, pID)
     }
-    private$db$updateRows("_jobMeta", 
-                          tibble(private$dbColNames[[1L]], jID), 
+    private$db$updateRows("_jobMeta",
+                          tibble(private$dbColNames[[1L]], jID),
                           colNames = colNames, values = values)
-    
+
     return(invisible(self))
   },
   getJobList = function(jobHist = FALSE){
     newCompleted <- FALSE
-    jobList <- private$db$importDataset("_jobMeta", 
-                                        tibble(c(private$dbColNames[['uid']], 
+    jobList <- private$db$importDataset("_jobMeta",
+                                        tibble(c(private$dbColNames[['uid']],
                                                  private$dbColNames[['status']],
                                                  private$dbColNames[['scode']]),
                                                c(private$metadata$uid,
                                                  JOBSTATUSMAP[['discarded']],
-                                                 SCODEMAP[['hcube_jobconfig']]), 
+                                                 SCODEMAP[['hcube_jobconfig']]),
                                                c('=', if(jobHist) '>=' else '<',
                                                  if(private$hcube) '=' else '>=')),
                                         orderBy = private$dbColNames[['time']], orderAsc = FALSE)
-    
+
     # TODO: allow import of jobs solved via Engine if in local mode and vice versa...
     if(length(jobList)){
       if(private$remote){
@@ -432,40 +432,40 @@ Worker <- R6Class("Worker", public = list(
       }else{
         jobList <- filter(jobList, !grepl("-", !!sym(private$dbColNames[['pid']]), fixed = TRUE))
       }
-      
+
     }
     if(jobHist)
       return(list(jobList = jobList, newCompleted = FALSE))
-    
-    
-    
+
+
+
     if(!length(jobList) || !nrow(jobList)){
       private$jobList <- jobList
       private$jobListInit <- TRUE
       return(list(jobList = private$jobList, newCompleted = newCompleted))
     }else{
-      jobList[jobList[[1]] %in% self$getFinishedDownloads(), 
+      jobList[jobList[[1]] %in% self$getFinishedDownloads(),
               3L] <- JOBSTATUSMAP[['downloaded']]
       private$jobList <- jobList
     }
-    
+
     jIDs <- private$jobList[[1]]
     pIDs <- private$jobList[[6]]
     jStatus <- private$jobList[[3]]
     for(i in seq_along(jIDs)){
       if(jStatus[i] > JOBSTATUSMAP[['running']])
         next
-      
+
       jobStatus   <- private$getJobStatus(pIDs[i], jIDs[i],
                                           isHcJob = identical(private$jobList[["_scode"]][i],
                                                               SCODEMAP[['hcube_jobconfig']]))
       gamsRetCode <- jobStatus$gamsRetCode
       newStatus   <- jobStatus$status
-      
-      if(identical(newStatus, JOBSTATUSMAP[['completed']]) && 
+
+      if(identical(newStatus, JOBSTATUSMAP[['completed']]) &&
          !private$jobListInit)
         newCompleted <- TRUE
-      
+
       if(length(newStatus)){
         self$updateJobStatus(newStatus, jIDs[i])
         private$jobList[i, 3] <- newStatus
@@ -507,7 +507,7 @@ Worker <- R6Class("Worker", public = list(
   getHcubeJobProgress = function(jID){
     if(is.na(jID) || length(jID) != 1L)
       stop(sprintf("Invalid job ID: '%s'.", jID), call. = FALSE)
-    
+
     if(private$remote){
       return(private$getHcubeJobProgressRemote(jID))
     }
@@ -515,12 +515,12 @@ Worker <- R6Class("Worker", public = list(
   },
   getJobResultsPath = function(jID){
     if(!private$remote && private$hcube)
-      return(file.path(hcubeDirName, 
+      return(file.path(hcubeDirName,
                        jID, "4upload.zip"))
-    
+
     jIDChar <- as.character(jID)
     if(!jIDChar %in% names(private$jobResultsFile))
-      stop(sprintf("Job directory not found for job: '%s'.", jID), 
+      stop(sprintf("Job directory not found for job: '%s'.", jID),
            call. = FALSE)
     return(private$jobResultsFile[[jIDChar]])
   },
@@ -538,7 +538,7 @@ Worker <- R6Class("Worker", public = list(
     jIDChar <- as.character(jID)
     private$fJobRes[[jIDChar]] <- NULL
     if(file.exists(private$jobResultsFile[[jIDChar]])){
-      if(identical(unlink(private$jobResultsFile[[jIDChar]], 
+      if(identical(unlink(private$jobResultsFile[[jIDChar]],
                           force = TRUE), 1L)){
         flog.error("Problems removing job file: '%s'.",
                    private$jobResultsFile[[jIDChar]])
@@ -557,7 +557,7 @@ Worker <- R6Class("Worker", public = list(
       if(isHcJob){
         private$removeJobResults(self$getPid(jID), isHcJob = isHcJob)
         if(!file.exists(private$jobResultsFile[[jIDChar]])){
-          file.rename(paste0(private$jobResultsFile[[jIDChar]], ".dl"), 
+          file.rename(paste0(private$jobResultsFile[[jIDChar]], ".dl"),
                       private$jobResultsFile[[jIDChar]])
           flog.debug("Hypercube results of job: '%s' were downloaded to: '%s'.",
                      jIDChar, private$jobResultsFile[[jIDChar]])
@@ -567,100 +567,100 @@ Worker <- R6Class("Worker", public = list(
           stop(sprintf("Problems downloading results of job: '%s'. Error message: '%s'.",
                jIDChar, value(private$fJobRes[[jIDChar]])), call. = FALSE)
         if(identical(unlink(paste0(private$jobResultsFile[[jIDChar]], ".dl")), 1L))
-          stop(sprintf("Could not remove temporary file: '%s'.", 
+          stop(sprintf("Could not remove temporary file: '%s'.",
                        paste0(private$jobResultsFile[[jIDChar]], ".dl")), call. = FALSE)
         private$jobResultsFile[[jIDChar]] <- dirname(private$jobResultsFile[[jIDChar]])
         flog.debug("Job results of job: '%s' were downloaded to: '%s'.",
                    jIDChar, private$jobResultsFile[[jIDChar]])
       }
-      
+
       private$fJobRes[[jIDChar]] <- NULL
       private$resultFileSize[[jIDChar]] <- NULL
       return(100L)
     }
-    
+
     if(!length(private$jobResultsFile[[jIDChar]])){
       jobResultsFile <- file.path(tempdir(TRUE), jIDChar, "results.zip")
-      
+
       if(file.exists(jobResultsFile)){
         private$jobResultsFile[[jIDChar]] <- jobResultsFile
         return(100L)
       }
-      
-      if(dir.exists(dirname(jobResultsFile)) && 
+
+      if(dir.exists(dirname(jobResultsFile)) &&
          identical(unlink(dirname(jobResultsFile),
                           recursive = TRUE, force = TRUE), 1L))
-        stop(sprintf("Problems removing existing directory: '%s'.", 
+        stop(sprintf("Problems removing existing directory: '%s'.",
                      jobResultsFile), call. = FALSE)
-      
+
       if(!dir.create(dirname(jobResultsFile), recursive = TRUE))
-        stop("Problems creating temporary directory for saving results.", 
+        stop("Problems creating temporary directory for saving results.",
              call. = FALSE)
-      ret <- HEAD(url = paste0(private$metadata$url, 
-                               if(isHcJob) "/hypercube/" else "/jobs/", 
-                               self$getPid(jID), "/result"), 
+      ret <- HEAD(url = paste0(private$metadata$url,
+                               if(isHcJob) "/hypercube/" else "/jobs/",
+                               self$getPid(jID), "/result"),
                   add_headers(Authorization = private$authHeader,
-                              Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+                              Timestamp = as.character(Sys.time(), usetz = TRUE)),
                   timeout(10L))
       if(!identical(status_code(ret), 200L)){
         stop(status_code(ret), call. = FALSE)}
-        
-      
+
+
       fileSize <- suppressWarnings(
         as.integer(headers(ret)[["content-length"]]))
-      
+
       if(!length(fileSize) || is.na(fileSize))
-        stop(sprintf("Could not determine file size of job results (job id: '%s').", 
+        stop(sprintf("Could not determine file size of job results (job id: '%s').",
                      jIDChar), call. = FALSE)
-      
+
       private$resultFileSize[[jIDChar]] <- fileSize
       private$jobResultsFile[[jIDChar]] <- jobResultsFile
-      
+
       if(isHcJob){
         private$fJobRes[[jIDChar]] <- future({
           library(httr)
           private$getRemoteHcubeResults(resultsPath, pID)
-        }, globals = list(private = private, pID = self$getPid(jID), 
+        }, globals = list(private = private, pID = self$getPid(jID),
                           resultsPath = paste0(private$jobResultsFile[[jIDChar]], ".dl")))
       }else{
         private$fJobRes[[jIDChar]] <- future({
           library(httr)
-          private$readRemoteOutput(self$getPid(jID), workDir = dirname(private$jobResultsFile[[jIDChar]]), 
+          private$readRemoteOutput(self$getPid(jID), workDir = dirname(private$jobResultsFile[[jIDChar]]),
                                    resultsPath = paste0(private$jobResultsFile[[jIDChar]], ".dl"))
         })
       }
       return(5L)
     }
-    
+
     if(!length(private$resultFileSize[[jIDChar]])){
       if(length(private$fJobRes[[jIDChar]]))
-        stop("Future is still running, but no file size determined. This should never happen!", 
+        stop("Future is still running, but no file size determined. This should never happen!",
              call. = FALSE)
     }
-    
+
     bytesDownloaded <- file.info(paste0(private$jobResultsFile[[jIDChar]], ".dl"))[['size']]
 
     if(is.na(bytesDownloaded))
       return(5L)
-    
+
     if(identical(private$resultFileSize[[jIDChar]], bytesDownloaded))
       return(99L)
-    
+
     return(max(5L, round(bytesDownloaded/private$resultFileSize[[jIDChar]]*100)))
   },
   readTextEntity = function(name, jID, chunkNo = 0L, getSize = FALSE){
     req(private$remote)
-    return(private$readRemoteTextEntity(name, jID, saveDisk = FALSE, 
+    return(private$readRemoteTextEntity(name, jID, saveDisk = FALSE,
                                         maxSize = private$metadata$maxSizeToRead,
                                         chunkNo = chunkNo, getSize = getSize))
   },
   getRemoteAccessGroups = function(){
     stopifnot(private$remote)
-    ret <- GET(url = paste0(private$metadata$url, 
-                            "/namespaces/", 
-                            private$metadata$namespace, "/user-groups"), 
+    ret <- GET(url = paste0(private$metadata$url,
+                            "/namespaces/",
+                            private$metadata$namespace, "/user-groups"),
                add_headers(Authorization = private$authHeader,
-                           Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+                           Timestamp = as.character(Sys.time(), usetz = TRUE)),
                timeout(5L))
     groupsTmp <- unlist(lapply(content(ret), function(accessGroup){
       return(c(paste0("#", accessGroup$label),
@@ -677,7 +677,7 @@ Worker <- R6Class("Worker", public = list(
     if(private$metadata$hiddenLogFile &&
        !private$streamEntryQueueFinished &&
        !(identical(private$status, "s") || identical(private$status, "q"))){
-      private$log <- private$readStreamEntity(private$process, 
+      private$log <- private$readStreamEntity(private$process,
                                               private$metadata$miroLogFile)
       if(!identical(private$log, "")){
         private$updateLog <- private$updateLog + 1L
@@ -695,10 +695,10 @@ Worker <- R6Class("Worker", public = list(
     return(private$pingRemoteProcess())
   },
   getReactiveLog = function(session){
-    if(private$metadata$hiddenLogFile && 
+    if(private$metadata$hiddenLogFile &&
        inherits(private$process, "process")){
-      return(reactiveFileReaderAppend(500, session, 
-                                      file.path(private$workDir, 
+      return(reactiveFileReaderAppend(500, session,
+                                      file.path(private$workDir,
                                                 private$metadata$miroLogFile)))
     }
     return(reactivePoll2(500, session, checkFunc = function(){
@@ -718,7 +718,7 @@ Worker <- R6Class("Worker", public = list(
   },
   addJobDb = function(pid, sid, tags = NULL, status = NULL, name = NULL, isHcJob = FALSE){
     stopifnot(length(pid) == 1)
-    
+
     if(!is.null(sid)){
       stopifnot(length(sid) == 1, is.integer(sid))
     }
@@ -741,7 +741,7 @@ Worker <- R6Class("Worker", public = list(
     tryCatch({
       private$db$createJobMeta()
     }, error = function(e){
-      flog.error("Problems creating job metadata table. Error message: '%s'.", 
+      flog.error("Problems creating job metadata table. Error message: '%s'.",
                  conditionMessage(e))
       err <<- TRUE
     })
@@ -749,7 +749,7 @@ Worker <- R6Class("Worker", public = list(
       return(-1L)
     tryCatch({
       query <- paste0("INSERT INTO ",
-                      dbQuoteIdentifier(private$conn, tabName), 
+                      dbQuoteIdentifier(private$conn, tabName),
                       " (", DBI::dbQuoteIdentifier(private$conn, colNames[[2]]), ",",
                       dbQuoteIdentifier(private$conn, colNames[[3]]), ",",
                       dbQuoteIdentifier(private$conn, colNames[[4]]), ",",
@@ -758,20 +758,20 @@ Worker <- R6Class("Worker", public = list(
                       dbQuoteIdentifier(private$conn, colNames[[7]]), ",",
                       dbQuoteIdentifier(private$conn, colNames[[9]]), ",",
                       dbQuoteIdentifier(private$conn, colNames[[10]]),
-                      ") VALUES (",  
-                      dbQuoteLiteral(private$conn, private$metadata$uid), ",", 
+                      ") VALUES (",
+                      dbQuoteLiteral(private$conn, private$metadata$uid), ",",
                       status, ",",
                       dbQuoteLiteral(private$conn, as.character(Sys.time(), usetz = TRUE)), ",",
                       dbQuoteLiteral(private$conn, vector2Csv(tags)), ",",
                       dbQuoteLiteral(private$conn, as.character(pid)), ",",
-                      if(length(sid)) dbQuoteLiteral(private$conn, sid) else "NULL", ",", 
-                      dbQuoteLiteral(private$conn, 
-                                     if(isHcJob) 
+                      if(length(sid)) dbQuoteLiteral(private$conn, sid) else "NULL", ",",
+                      dbQuoteLiteral(private$conn,
+                                     if(isHcJob)
                                        SCODEMAP[['hcube_jobconfig']]
                                      else
-                                       SCODEMAP[['scen']]), ",", 
+                                       SCODEMAP[['scen']]), ",",
                       dbQuoteString(private$conn, name), ")",
-                      if(inherits(private$conn, "PqConnection")) 
+                      if(inherits(private$conn, "PqConnection"))
                         paste0(" RETURNING", dbQuoteIdentifier(private$conn, colNames[[1]]))
       )
       if(inherits(private$conn, "PqConnection")) {
@@ -779,13 +779,13 @@ Worker <- R6Class("Worker", public = list(
       }else{
         private$db$runQuery(query)
         # need to send second SQL statement because SQLite doesn't support RETURNING function
-        query <- paste0("SELECT last_insert_rowid() FROM ", 
+        query <- paste0("SELECT last_insert_rowid() FROM ",
                         dbQuoteIdentifier(private$conn, tabName))
         jID <- dbGetQuery(private$conn, SQL(query))[[1]][1L]
       }
       return(jID)
     }, error = function(e){
-      flog.error("Problems writing job metadata. Error message: '%s'.", 
+      flog.error("Problems writing job metadata. Error message: '%s'.",
                  conditionMessage(e))
     })
     return(-1L)
@@ -793,7 +793,7 @@ Worker <- R6Class("Worker", public = list(
 ), private = list(
   remote = logical(1L),
   hcube = logical(1L),
-  status = NULL, 
+  status = NULL,
   jID = NULL,
   jobName = NULL,
   db = NULL,
@@ -825,21 +825,21 @@ Worker <- R6Class("Worker", public = list(
     stopifnot(!is.null(private$inputData))
     private$status  <- NULL
     private$inputData$writeDisk(private$workDir, fileName = private$metadata$MIROGdxInName)
-    
-    gamsArgs <- c(if(length(private$metadata$extraClArgs)) private$metadata$extraClArgs, 
-                  paste0('curdir="', private$workDir, '"'), "lo=3", private$metadata$clArgs, 
-                  paste0('IDCGDXInput="', private$metadata$MIROGdxInName, '"'), 
+
+    gamsArgs <- c(if(length(private$metadata$extraClArgs)) private$metadata$extraClArgs,
+                  paste0('curdir="', private$workDir, '"'), "lo=3", private$metadata$clArgs,
+                  paste0('IDCGDXInput="', private$metadata$MIROGdxInName, '"'),
                   "LstTitleLeftAligned=1")
     if(private$metadata$saveTraceFile){
       gamsArgs <- c(gamsArgs, 'trace="_scenTrc.trc"', "traceopt=3")
     }
     pfFilePath <- gmsFilePath(file.path(private$workDir, tolower(private$metadata$modelName) %+% ".pf"))
     writeLines(c(private$inputData$getClArgs(), gamsArgs), pfFilePath)
-    
-    private$process <- process$new(file.path(private$metadata$gamsSysDir, "gams"), 
-                                   args = c(private$metadata$modelGmsName, "pf", pfFilePath), 
+
+    private$process <- process$new(file.path(private$metadata$gamsSysDir, "gams"),
+                                   args = c(private$metadata$modelGmsName, "pf", pfFilePath),
                                    stdout = if(private$metadata$hiddenLogFile) NULL else "|",
-                                   windows_hide_window = TRUE, 
+                                   windows_hide_window = TRUE,
                                    env = private$getProcEnv())
     return(self)
   },
@@ -849,15 +849,15 @@ Worker <- R6Class("Worker", public = list(
     # create daemon to execute Hypercube job
     hcubeSubmDir <- gmsFilePath(file.path(getwd(), "resources", hcubeSubmissionFile %+% ".gms"))
     curdir       <- gmsFilePath(hcubeDir)
-    
+
     tryCatch({
-      writeChar(paste0("0/ ", dynamicPar$getNoJobs(), "\n"), file.path(hcubeDir, private$jID %+% ".log"), 
+      writeChar(paste0("0/ ", dynamicPar$getNoJobs(), "\n"), file.path(hcubeDir, private$jID %+% ".log"),
                 eos = NULL)
     }, error = function(e){
       flog.warn("Log file: '%s' could not be written. Check whether you have sufficient permissions to write files to: '%s'.",
                 private$jID %+% ".log", hcubeDir)
     })
-    private$process <- process$new(file.path(private$metadata$gamsSysDir, "gams"), 
+    private$process <- process$new(file.path(private$metadata$gamsSysDir, "gams"),
                                    args = c(hcubeSubmDir, 'curdir', curdir, "lo=3",
                                             paste0("--jobID=", private$jID)),
                                    cleanup = FALSE, cleanup_tree = FALSE, supervise = FALSE,
@@ -868,7 +868,7 @@ Worker <- R6Class("Worker", public = list(
   runRemote = function(hcubeData = NULL, name = NULL){
     stopifnot(!is.null(private$inputData))
     private$status  <- "s"
-    private$inputData$writeDisk(private$workDir, 
+    private$inputData$writeDisk(private$workDir,
                                 fileName = private$metadata$MIROGdxInName)
     if(!is.R6(hcubeData)){
       private$jobName <- name
@@ -882,15 +882,15 @@ Worker <- R6Class("Worker", public = list(
         library(readr)
         library(jsonlite)
       }))
-      
+
       dataFilesToFetch <- metadata$modelDataFiles
-      
+
       requestBody <- list(model = metadata$modelId,
                           run = metadata$modelGmsName,
-                          arguments = paste0("pf=", metadata$modelName, ".pf"), 
+                          arguments = paste0("pf=", metadata$modelName, ".pf"),
                           namespace = metadata$namespace)
-      
-      gamsArgs <- c(if(length(metadata$extraClArgs)) metadata$extraClArgs, 
+
+      gamsArgs <- c(if(length(metadata$extraClArgs)) metadata$extraClArgs,
                     metadata$clArgs)
       if(metadata$saveTraceFile){
         traceFileName <- "_scenTrc.trc"
@@ -900,9 +900,9 @@ Worker <- R6Class("Worker", public = list(
       }
       textEntities <- ""
       if(is.R6(hcubeData)){
-        gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="', 
+        gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="',
                                        metadata$MIROGdxInName, '"'))
-        requestBody$hypercube_file <- upload_file(hcubeData$writeHcubeFile(workDir), 
+        requestBody$hypercube_file <- upload_file(hcubeData$writeHcubeFile(workDir),
                                                   type = 'application/json')
         if(hcube){
           # in Hypercube Mode, we don't include output attachments, but have to include input GDX
@@ -916,7 +916,7 @@ Worker <- R6Class("Worker", public = list(
       }else{
         gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="', metadata$MIROGdxInName, '"'))
         if(length(metadata$text_entities)){
-          textEntities <- URLencode(paste0("?text_entries=", paste(metadata$text_entities, 
+          textEntities <- URLencode(paste0("?text_entries=", paste(metadata$text_entities,
                                                                    collapse = "&text_entries=")))
         }
         if(metadata$hiddenLogFile){
@@ -930,25 +930,25 @@ Worker <- R6Class("Worker", public = list(
       }
       pfFilePath <- gmsFilePath(file.path(workDir, paste0(tolower(metadata$modelName), ".pf")))
       writeLines(c(pfFileContent, gamsArgs), pfFilePath)
-      
+
       requestBody$inex_file <- upload_file(inputData$
                                              addInexFile(workDir,
                                                          filesToInclude),
                                            type = 'application/json')
       requestBody$data <- upload_file(inputData$
                                         addFilePaths(pfFilePath)$
-                                        compress(), 
+                                        compress(),
                                       type = 'application/zip')
-      
+
       if(identical(metadata$useRegistered, FALSE)){
-        requestBody$model_data <- upload_file(metadata[["modelData"]], 
+        requestBody$model_data <- upload_file(metadata[["modelData"]],
                                               type = 'application/zip')
       }
-      ret <- POST(paste0(metadata$url, if(is.R6(hcubeData)) "/hypercube" else "/jobs", textEntities), 
-                  encode = "multipart", 
+      ret <- POST(paste0(metadata$url, if(is.R6(hcubeData)) "/hypercube" else "/jobs", textEntities),
+                  encode = "multipart",
                   body = requestBody,
-                  add_headers(Authorization = authHeader, 
-                              Timestamp = as.character(Sys.time(), 
+                  add_headers(Authorization = authHeader,
+                              Timestamp = as.character(Sys.time(),
                                                        usetz = TRUE)),
                   timeout(metadata$timeout))
       if(identical(status_code(ret), 201L)){
@@ -974,18 +974,18 @@ Worker <- R6Class("Worker", public = list(
                       isWindows = isWindows, hcubeData = hcubeData))
     return(self)
   },
-  readRemoteTextEntity = function(text_entity, jID = NULL, saveDisk = TRUE, maxSize = NULL, 
+  readRemoteTextEntity = function(text_entity, jID = NULL, saveDisk = TRUE, maxSize = NULL,
                                   workDir = private$workDir, chunkNo = 0L, getSize = FALSE){
     if(is.null(jID)){
       jID <- private$process
     }
     if(!is.null(maxSize)){
-      ret <- HEAD(paste0(private$metadata$url, "/jobs/", jID, "/text-entry/", 
+      ret <- HEAD(paste0(private$metadata$url, "/jobs/", jID, "/text-entry/",
                          URLencode(text_entity)),
                   add_headers(Authorization = private$authHeader,
                               Timestamp = as.character(Sys.time(), usetz = TRUE)),
                   timeout(10L))
-      
+
       if(!identical(status_code(ret), 200L)){
         return(status_code(ret))
       }
@@ -1001,15 +1001,15 @@ Worker <- R6Class("Worker", public = list(
     }else{
       teLength <- NULL
     }
-    
-    ret <- GET(paste0(private$metadata$url, "/jobs/", jID, "/text-entry/", 
-                      URLencode(text_entity), 
-                      if(!is.null(teLength)) paste0("?start_position=", startPos, 
+
+    ret <- GET(paste0(private$metadata$url, "/jobs/", jID, "/text-entry/",
+                      URLencode(text_entity),
+                      if(!is.null(teLength)) paste0("?start_position=", startPos,
                                                     "&length=", min(teLength - startPos, maxSize))),
                add_headers(Authorization = private$authHeader,
                            Timestamp = as.character(Sys.time(), usetz = TRUE)),
                timeout(10L))
-    
+
     if(identical(status_code(ret), 200L)){
       if(saveDisk){
         entityContent <- content(ret, encoding = "utf-8")$entry_value
@@ -1021,7 +1021,7 @@ Worker <- R6Class("Worker", public = list(
         return(200L)
       }
       if(getSize)
-        return(list(content = content(ret, encoding = "utf-8")$entry_value, 
+        return(list(content = content(ret, encoding = "utf-8")$entry_value,
                     chunkNo = ceiling(teLength/maxSize)))
       return(content(ret, encoding = "utf-8")$entry_value)
     }
@@ -1058,7 +1058,7 @@ Worker <- R6Class("Worker", public = list(
   readStreamEntity = function(jID, name){
     tryCatch({
       return(private$validateAPIResponse(DELETE(paste0(private$metadata$url, "/jobs/", jID, "/stream-entry/",
-                                                       name), 
+                                                       name),
                                                 add_headers(Authorization = private$authHeader,
                                                             Timestamp = as.character(Sys.time(), usetz = TRUE)),
                                                 timeout(2L)))$entry_value)
@@ -1112,7 +1112,7 @@ Worker <- R6Class("Worker", public = list(
               private$jID <- self$addJobDb(private$process, private$sid,
                                            name = private$jobName)
             }, error = function(e){
-              flog.warn("Could not add job to database. Error message; '%s'.", 
+              flog.warn("Could not add job to database. Error message; '%s'.",
                         conditionMessage(e))
             })
           }
@@ -1153,7 +1153,7 @@ Worker <- R6Class("Worker", public = list(
       return(private$status)
     }
     tryCatch({
-      ret <- DELETE(paste0(private$metadata$url, "/jobs/", private$process, "/unread-logs"), 
+      ret <- DELETE(paste0(private$metadata$url, "/jobs/", private$process, "/unread-logs"),
                     add_headers(Authorization = private$authHeader,
                                 Timestamp = as.character(Sys.time(), usetz = TRUE)),
                     timeout(2L))
@@ -1162,10 +1162,10 @@ Worker <- R6Class("Worker", public = list(
       flog.warn("Problems reading log from remote executor. Error message: %s", conditionMessage(e))
       statusCode <<- 403L
     })
-    
+
     if(identical(statusCode, 200L)){
       responseContent <- tryCatch({
-        content(ret, type = "application/json", 
+        content(ret, type = "application/json",
                 encoding = "utf-8")
       }, error = function(e){
         private$status <- -404L
@@ -1197,7 +1197,7 @@ Worker <- R6Class("Worker", public = list(
       # job finished, get full log
       ret <- private$getRemoteStatus(private$process)
       gamsRetCode <- content(ret)$gams_return_code
-      
+
       if(is.null(gamsRetCode)){
         private$status <- -500L
       }else{
@@ -1234,8 +1234,8 @@ Worker <- R6Class("Worker", public = list(
     }
     timeout <- FALSE
     tryCatch(
-      ret <- GET(url = paste0(private$metadata$url, "/jobs/", jID, "/result"), 
-                 write_disk(resultsPath), 
+      ret <- GET(url = paste0(private$metadata$url, "/jobs/", jID, "/result"),
+                 write_disk(resultsPath),
                  add_headers(Authorization = private$authHeader,
                              Timestamp = as.character(Sys.time(), usetz = TRUE)),
                  timeout(36000)),
@@ -1246,7 +1246,7 @@ Worker <- R6Class("Worker", public = list(
       return(-100L)
     }
     private$removeJobResults(jID, isHcJob = FALSE)
-    
+
     if(identical(status_code(ret), 200L)){
       unzip(resultsPath, exdir = workDir)
     }else{
@@ -1263,7 +1263,7 @@ Worker <- R6Class("Worker", public = list(
   },
   interruptLocal = function(hardKill = FALSE, process = NULL){
     errMsg <- NULL
-    
+
     if(is.R6(process)){
       tryCatch({
         if(hardKill){
@@ -1280,7 +1280,7 @@ Worker <- R6Class("Worker", public = list(
     }else{
       errMsg <- "External process"
       pID <- suppressWarnings(as.integer(process))
-      
+
       if(is.na(pID)){
         flog.error("Invalid process id: '%s'. Could not interrupt job", pID)
         return(0L)
@@ -1294,10 +1294,10 @@ Worker <- R6Class("Worker", public = list(
       flog.info("Interrupting process with pid: '%s'.", pID)
       if(private$metadata$serverOS == 'windows'){
         tryCatch({
-          processx::run(command = 'taskkill', args = c(if(hardKill) "/F", 
-                                                       "/PID", 
-                                                       pID, 
-                                                       "/T"), 
+          processx::run(command = 'taskkill', args = c(if(hardKill) "/F",
+                                                       "/PID",
+                                                       pID,
+                                                       "/T"),
                         windows_hide_window = TRUE, timeout = 10L)
         }, error = function(e){
           flog.error("Problems interrupting process with pid: %s. Error message: '%s'.",
@@ -1305,7 +1305,7 @@ Worker <- R6Class("Worker", public = list(
         })
       }else if(private$metadata$serverOS %in% c('linux', 'osx')){
         tryCatch({
-          processx::run(command = 'kill', 
+          processx::run(command = 'kill',
                         args = c(if(hardKill) "-SIGKILL" else "-SIGINT",
                                  -pID), timeout = 10L)
         }, error = function(e){
@@ -1323,8 +1323,8 @@ Worker <- R6Class("Worker", public = list(
       return("Process not started")
     }
     private$validateAPIResponse(DELETE(
-      url = paste0(private$metadata$url, 
-                   if(isHcJob) "/hypercube/" else "/jobs/", process), 
+      url = paste0(private$metadata$url,
+                   if(isHcJob) "/hypercube/" else "/jobs/", process),
       body = list(hard_kill = hardKill),
       add_headers(Authorization = private$authHeader,
                   Timestamp = as.character(Sys.time(), usetz = TRUE)),
@@ -1340,20 +1340,20 @@ Worker <- R6Class("Worker", public = list(
                          Timestamp = as.character(Sys.time(), usetz = TRUE)),
              timeout(private$metadata$timeout))),
       error = function(e){
-        warning(sprintf("Problems removing results of job: '%s'. Error message: '%s'.", 
+        warning(sprintf("Problems removing results of job: '%s'. Error message: '%s'.",
                         jID, conditionMessage(e)), call. = FALSE)
       })
     return(invisible(self))
   },
   getHcubeJobProgressLocal = function(jID){
-    logFilePath <- file.path(hcubeDirName, 
+    logFilePath <- file.path(hcubeDirName,
                              jID, paste0(jID, ".log"))
-    
+
     if(file.access(logFilePath, 4L) != -1L){
       logContent <- tryCatch(
         readLines(logFilePath, n = 1L)
         , error = function(e){
-          stop(sprintf("Could not fetch Hypercube progress status. Error message: '%s'.", 
+          stop(sprintf("Could not fetch Hypercube progress status. Error message: '%s'.",
                        conditionMessage(e)), call. = FALSE)
         })
     }else{
@@ -1368,10 +1368,10 @@ Worker <- R6Class("Worker", public = list(
   },
   getHcubeJobProgressRemote = function(jID){
     jobProgress <- private$validateAPIResponse(
-      GET(url = paste0(private$metadata$url, "/hypercube/?hypercube_token=", self$getPid(jID)), 
+      GET(url = paste0(private$metadata$url, "/hypercube/?hypercube_token=", self$getPid(jID)),
           add_headers(`X-Fields` = "finished,job_count,successfully_finished",
                       Authorization = private$authHeader,
-                      Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+                      Timestamp = as.character(Sys.time(), usetz = TRUE)),
           timeout(10L)))$results[[1]]
     return(c(jobProgress$finished, jobProgress$job_count, jobProgress$successfully_finished))
   },
@@ -1388,7 +1388,7 @@ Worker <- R6Class("Worker", public = list(
         status <- JOBSTATUSMAP[['corrupted(noProcess)']]
       }
     }else{
-      flog.info("Job with ID: '%s' could not be accessed (directory is missing or lacks read permissions). Job was marked: 'corrupted'.", 
+      flog.info("Job with ID: '%s' could not be accessed (directory is missing or lacks read permissions). Job was marked: 'corrupted'.",
                 jID)
       status <- JOBSTATUSMAP[['corrupted(noDir)']]
     }
@@ -1424,10 +1424,10 @@ Worker <- R6Class("Worker", public = list(
   },
   getRemoteHcubeResults = function(resultsPath, pID){
     return(private$validateAPIResponse(
-      GET(url = paste0(private$metadata$url, "/hypercube/", pID, "/result"), 
+      GET(url = paste0(private$metadata$url, "/hypercube/", pID, "/result"),
           write_disk(resultsPath, overwrite = TRUE),
           add_headers(Authorization = private$authHeader,
-                      Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+                      Timestamp = as.character(Sys.time(), usetz = TRUE)),
           timeout(36000))))
   },
   isEmptyString = function(string){
@@ -1439,27 +1439,27 @@ Worker <- R6Class("Worker", public = list(
     if(useTokenAuth){
       return(paste0("Bearer ", private$metadata$password))
     }
-    return(paste0("Basic ", 
+    return(paste0("Basic ",
                   base64_encode(charToRaw(
-                    paste0(private$metadata$username, 
+                    paste0(private$metadata$username,
                            ":", private$metadata$password)))))
   },
   saveLoginCredentials = function(url, username, namespace, useRegistered){
     # create token that expires in a week
     sessionToken <- private$validateAPIResponse(POST(
-      url = paste0(url, "/auth/login"), 
+      url = paste0(url, "/auth/login"),
       body = list(expires_in = 604800,
                   username = username,
                   password = private$metadata$password),
-      add_headers(Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+      add_headers(Timestamp = as.character(Sys.time(), usetz = TRUE)),
       timeout(2L)))$token
-    
+
     private$metadata$password  <- sessionToken
     write_json(list(url = url,
-                    username = username, 
+                    username = username,
                     password = sessionToken,
                     namespace = namespace,
-                    reg = useRegistered), 
+                    reg = useRegistered),
                private$metadata$rememberMeFileName, auto_unbox = TRUE)
     return(invisible(self))
   },
@@ -1475,7 +1475,7 @@ Worker <- R6Class("Worker", public = list(
     private$updateLog  <- 0L
     private$wait       <- 0L
     private$waitCnt    <- 0L
-    
+
     return(invisible(self))
   },
   getJobStatus = function(pID, jID = NULL, isHcJob = FALSE){
@@ -1520,22 +1520,22 @@ Worker <- R6Class("Worker", public = list(
   getHcubeJobStatus = function(pID, jID ){
     if(private$remote)
       return(private$getHcubeJobStatusRemote(pID, jID))
-    
+
     return(private$getHcubeJobStatusLocal(pID, jID))
   },
   validateAPIResponse = function(response){
     if(status_code(response) >= 300L){
-      stop(status_code(response), 
+      stop(status_code(response),
            call. = FALSE)
     }
     ret <- tryCatch({
-      content(response, 
-              type = "application/json", 
+      content(response,
+              type = "application/json",
               encoding = "utf-8")
     }, error = function(e){
       stop(-404L, call. = FALSE)
     })
-    
+
     return(ret)
   },
   testConnection = function(){
@@ -1546,24 +1546,24 @@ Worker <- R6Class("Worker", public = list(
     if(tryCatch({
       if(endsWith(private$metadata$url, "/api")){
         ret <- GET(paste0(private$metadata$url, "/version"), timeout(10L))
-        if(!"gams_version" %in% names(content(ret, type = "application/json", 
+        if(!"gams_version" %in% names(content(ret, type = "application/json",
                                               encoding = "utf-8"))){
           stop("Not a GAMS Engine server", call. = FALSE)
         }
       }else{
         ret <- GET(paste0(private$metadata$url, "/api/version"), timeout(10L))
-        if("gams_version" %in% names(content(ret, type = "application/json", 
+        if("gams_version" %in% names(content(ret, type = "application/json",
                                              encoding = "utf-8"))){
           private$metadata$url <- paste0(private$metadata$url, "/api")
         }else{
           ret <- GET(paste0(private$metadata$url, "/version"), timeout(10L))
-          if(!"gams_version" %in% names(content(ret, type = "application/json", 
+          if(!"gams_version" %in% names(content(ret, type = "application/json",
                                                 encoding = "utf-8"))){
             stop("Not a GAMS Engine server", call. = FALSE)
           }
         }
       }
-      private$apiInfo <- content(ret, type = "application/json", 
+      private$apiInfo <- content(ret, type = "application/json",
                                  encoding = "utf-8")
       private$apiInfo$apiVersionInt <- suppressWarnings(
         as.integer(gsub(".", "", private$apiInfo$version, fixed = TRUE)))[1]
@@ -1576,7 +1576,7 @@ Worker <- R6Class("Worker", public = list(
     })){
       return(FALSE)
     }
-    
+
     if(startsWith(ret, "https://") ||
        identical(ret, "http://localhost") ||
        startsWith(ret, "http://localhost:") ||
@@ -1586,7 +1586,7 @@ Worker <- R6Class("Worker", public = list(
     return(FALSE)
   },
   checkAuthenticationStatus = function(){
-    return(status_code(HEAD(paste0(private$metadata$url, "/jobs"), 
+    return(status_code(HEAD(paste0(private$metadata$url, "/jobs"),
                             add_headers(Authorization = private$authHeader,
                                         Timestamp = as.character(Sys.time(), usetz = TRUE)),
                             timeout(10L))))

@@ -21,7 +21,7 @@ ioConfig <<- list(modelOut = list(results = NULL, `_scalars_out` = NULL),
 
 dbSchema <<- DbSchema$new(list(schema = list(results = list(tabName = "results",
                                                             colNames = c("i", "j", "cap", "demand", "quantities", "bla"),
-                                                            colTypes = "ccdddd"), 
+                                                            colTypes = "ccdddd"),
                                              total_cost = list(tabName = "total_cost",
                                                                colNames = "total_cost",
                                                                colTypes = "c"),
@@ -32,12 +32,12 @@ dbSchema <<- DbSchema$new(list(schema = list(results = list(tabName = "results",
                                                       colNames = c("k", "value"),
                                                       colTypes = "cd"),
                                              d = list(tabName = "d",
-                                                      colNames = c("i", 
+                                                      colNames = c("i",
                                                                    "j", "k", "value"),
                                                       colTypes = "cccd"),
                                              ilocdata = list(tabName = "ilocdata",
                                                              colNames = c("i", "lng", "lat"),
-                                                             colTypes = "cdd"), 
+                                                             colTypes = "cdd"),
                                              jlocdata = list(tabName = "jlocdata",
                                                              colNames = c("j", "lng", "lat"),
                                                              colTypes = "cdd")),
@@ -49,13 +49,13 @@ for(dbType in c("sqlite", "postgres")){
   }
   procEnv <- list(R_LIBS_USER = Sys.getenv("LIB_PATH"),
                   GAMS_SYS_DIR = Sys.getenv("GAMS_SYS_DIR"))
-  
+
   if(identical(dbType, "sqlite")){
     dbPath <- file.path(testDir, "transport.sqlite3")
     procEnv$MIRO_DB_PATH <- dirname(dbPath)
-    
+
     unlink(dbPath)
-    
+
     dbConfig <- list(type = "sqlite",
                      name = dbPath)
   }else{
@@ -66,7 +66,7 @@ for(dbType in c("sqlite", "postgres")){
     procEnv$MIRO_DB_NAME <- Sys.getenv("MIRO_DB_NAME", "postgres")
     procEnv$MIRO_DB_HOST <- Sys.getenv("MIRO_DB_HOST", "localhost")
     procEnv$MIRO_DB_PORT <- as.integer(Sys.getenv("MIRO_DB_PORT", "5432"))
-    
+
     dbConfig <- list(type = "postgres",
                      username = procEnv$MIRO_DB_USERNAME,
                      password = procEnv$MIRO_DB_PASSWORD,
@@ -81,17 +81,17 @@ for(dbType in c("sqlite", "postgres")){
                hcubeActive = FALSE, ugroups = "users", forceNew = TRUE)
   conn <- db$getConn()
   dbSchema$setConn(conn)
-  
+
   dbMigrator <- DbMigrator$new(db)
-  
+
   test_that(paste0("Validating migration config works (", dbType, ")"), {
     migrationConfig <- list(results = list(oldTableName  = "schedule1",
-                                           colNames = c("i", "j", "cap", 
+                                           colNames = c("i", "j", "cap",
                                                         "demand", "quantities", "-")))
     expect_error(dbMigrator$migrateDb(migrationConfig,
                                       forceRemove = FALSE), class = "error_config", regex = "schedule1")
     migrationConfig <- list(results = list(oldTableName  = "schedule",
-                                           colNames = c("i", "j", "cap", 
+                                           colNames = c("i", "j", "cap",
                                                         "demand", "quantities", "-")),
                             a = list(oldTableName = "schedule", colNames = c("i", "-", "demand")))
     expect_error(dbMigrator$migrateDb(migrationConfig,
@@ -103,10 +103,10 @@ for(dbType in c("sqlite", "postgres")){
     expect_error(dbMigrator$migrateDb(migrationConfig,
                                       forceRemove = FALSE), class = "error_config", regex = "aa")
   })
-  
+
   test_that(paste0("Migrating tables works (", dbType, ")"), {
     migrationConfig <- list(results = list(oldTableName  = "schedule",
-                                           colNames = c("i", "j", "cap", 
+                                           colNames = c("i", "j", "cap",
                                                         "demand", "quantities", "-")),
                             a = list(oldTableName = "a", colNames = c("i", "-", "value")),
                             b = list(oldTableName = "b", colNames = c("j", "value")),
@@ -215,13 +215,13 @@ for(dbType in c("sqlite", "postgres")){
   }
   procEnv <- list(R_LIBS_USER = Sys.getenv("LIB_PATH"),
                   GAMS_SYS_DIR = Sys.getenv("GAMS_SYS_DIR"))
-  
+
   if(identical(dbType, "sqlite")){
     dbPath <- file.path(testDir, "pickstock.sqlite3")
     procEnv$MIRO_DB_PATH <- dirname(dbPath)
-    
+
     unlink(dbPath)
-    
+
     dbConfig <- list(type = "sqlite",
                      name = dbPath)
   }else{
@@ -232,7 +232,7 @@ for(dbType in c("sqlite", "postgres")){
     procEnv$MIRO_DB_NAME <- Sys.getenv("MIRO_DB_NAME", "postgres")
     procEnv$MIRO_DB_HOST <- Sys.getenv("MIRO_DB_HOST", "localhost")
     procEnv$MIRO_DB_PORT <- as.integer(Sys.getenv("MIRO_DB_PORT", "5432"))
-    
+
     dbConfig <- list(type = "postgres",
                      username = procEnv$MIRO_DB_USERNAME,
                      password = procEnv$MIRO_DB_PASSWORD,
@@ -248,9 +248,9 @@ for(dbType in c("sqlite", "postgres")){
                hcubeActive = FALSE, ugroups = "users", forceNew = TRUE)
   conn <- db$getConn()
   dbSchema$setConn(conn)
-  
+
   dbMigrator <- DbMigrator$new(db)
-  
+
   test_that(paste0("Migrating tables works (", dbType, "), pickstock"), {
     migrationConfig <- list(dowvsindex = list(oldTableName  = "dowvsindex",
                                               colNames = c("date", "index fund")),
@@ -262,7 +262,7 @@ for(dbType in c("sqlite", "postgres")){
                                       forceRemove = TRUE), NA)
     expect_equal(dbReadTable(conn, "dowvsindex")[-1][1:2, ],
                  data.frame(date = c("2016-01-04", "2016-01-05"),
-                            "index fund" = c(98.3977098527647, 
+                            "index fund" = c(98.3977098527647,
                                              99.9596599723713)))
     expect_false(dbExistsTable(conn, "stock_weight"))
     expect_equal(dbReadTable(conn, "_scalars_out")[-1],

@@ -1,5 +1,5 @@
 # Notarization script in large part taken from: https://github.com/rstudio/rstudio/blob/master/docker/jenkins/notarize-release.sh
-# Copyright (C) 2009-19 by RStudio, Inc. 
+# Copyright (C) 2009-19 by RStudio, Inc.
 # License: GNU AGPL v.3.0
 
 XCRUN_RESULT="$(mktemp)"
@@ -32,7 +32,7 @@ fi
 # Wait for notarization to complete
 echo "Waiting for notarization to complete. This will take several minutes."
 sleep 120
-while true; do 
+while true; do
     sleep 60
     echo "Checking notarization status..."
     xcrun altool --notarization-info $REQUEST_UUID \
@@ -41,13 +41,13 @@ while true; do
                  --output-format xml > $XCRUN_RESULT
     NOTARIZATION_STATUS=$(/usr/libexec/PlistBuddy -c "Print :notarization-info:Status" $XCRUN_RESULT)
     if [ $? -eq 0 ]; then
-        if [ "$NOTARIZATION_STATUS" != "in progress" ]; then 
+        if [ "$NOTARIZATION_STATUS" != "in progress" ]; then
             echo "Notarization ended; result: $NOTARIZATION_STATUS"
             break
         fi
         echo "Notarization still in progress. Waiting 60s to check again."
     else
-        echo "Could not determine notarization status; giving up. Server response:" 
+        echo "Could not determine notarization status; giving up. Server response:"
         cat $XCRUN_RESULT
         exit 1
     fi
@@ -71,4 +71,3 @@ else
     echo "Notarization failed."
     exit 1
 fi
-

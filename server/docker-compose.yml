@@ -76,7 +76,7 @@ services:
       GMS_MIRO_ENGINE_NS: ${GMS_MIRO_ENGINE_NS}
       GMS_MIRO_ENGINE_ANONYMOUS_USER: ${GMS_MIRO_ENGINE_ANONYMOUS_USER}
       GMS_MIRO_ENGINE_ANONYMOUS_PWD: ${GMS_MIRO_ENGINE_ANONYMOUS_PWD}
-    networks: 
+    networks:
       - gamsmiro-network
       - gamsmiro-internal-network
 
@@ -88,4 +88,3 @@ networks:
     name: miroserver-network
   gamsmiro-internal-network:
     internal: true
-

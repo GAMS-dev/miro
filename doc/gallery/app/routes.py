@@ -132,7 +132,7 @@ def add_app():
     except OSError as e:
         logging.error(f"Problems creating directory: {new_app_dir_name}. Error message: {str(e)}")
         return jsonify({"status": 1, "message": "An unexpected error occurred"}), 200
-    
+
     miro_app_filepath = os.path.join(new_app_dir_name, secure_filename(miro_app_filename))
     try:
         miro_app_file.save(miro_app_filepath)
@@ -161,4 +161,3 @@ author: {author_name}\nemail: {author_mail}")
 def gallery():
     return render_template("gallery.html.j2", apps=sorted(app_data.get_data(), \
         key=lambda app: app["upvotes"], reverse = True))
-

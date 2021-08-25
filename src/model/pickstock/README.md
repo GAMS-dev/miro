@@ -1,8 +1,8 @@
 # Stock Selection Optimization
 Pickstock is an optimization model from the financing sector. The goal is to pick a small subset of stocks together with some weights, such that this portfolio has a similar behavior to our overall Dow Jones index.
 
-### Data: 
-Performance (price) data of all 30 shares of the Dow Jones index over a period of 1 year: 
+### Data:
+Performance (price) data of all 30 shares of the Dow Jones index over a period of 1 year:
 
 | Date          | Stock         | Price   |
 | ------------- | ------------- | -------:|
@@ -19,21 +19,21 @@ Performance (price) data of all 30 shares of the Dow Jones index over a period o
 | [...]         | [...]         | [...]   |
 
 
-### Goal: 
-The goal is to find a small selection of stocks that follows the Dow Jones as good as possible. 
-The interesting part is not how good the model performs with the data it knows about but how well it approximates the Dow Jones index in the future. 
-In order to simulate this the stock data is devided into two parts: the **training phase** and the **testing phase**. 
-The training phase is be the model input data, i.e. the data the model uses to find an index fund to approximate the Dow Jones index as good as possible. 
-When the model finds a solution, the results can be evaluated in the testing phase.  
+### Goal:
+The goal is to find a small selection of stocks that follows the Dow Jones as good as possible.
+The interesting part is not how good the model performs with the data it knows about but how well it approximates the Dow Jones index in the future.
+In order to simulate this the stock data is devided into two parts: the **training phase** and the **testing phase**.
+The training phase is be the model input data, i.e. the data the model uses to find an index fund to approximate the Dow Jones index as good as possible.
+When the model finds a solution, the results can be evaluated in the testing phase.
 
 ![Training and testing phase](static_pickstock/training_testing.png =800x276)
 
 The data of the testing phase is not used for the optimization but only for the evaluation.
-Since the objective function minimizes the absolute deviation between the DJ index and the selected stocks,the area between the two lines shows how good the solution is. 
+Since the objective function minimizes the absolute deviation between the DJ index and the selected stocks,the area between the two lines shows how good the solution is.
 
 ![Example](static_pickstock/example.png =800x389)
 
-### Optimization model: 
+### Optimization model:
 Select a subset (≤ maxstock) of Dow Jones stocks, along with weights, so that this portfolio behaves similarly to the overall index (in the training phase).
 The model is based on a linear regression over the time series, but it minimizes the loss using the L1-norm (absolute value), and allows only a fixed number of weights to take nonzero variable.
 
@@ -83,7 +83,7 @@ The mean price per stock is calculated which can be used in order to calculate w
 Parameter
     avgprice(symbol)          'average price of stock'
     weight(symbol)            'weight of stock';
-    
+
 avgprice(s)       = sum(d, price(d,s))/card(d);
 weight(symbol)    = avgprice(symbol)/sum(s, avgprice(s));
 ```
@@ -92,14 +92,14 @@ Computation of the contributions using weight and price:
 
 ```
 Parameter contribution(date,symbol) 'contribution of stock on date';
-    
+
 contribution(d,s) = weight(s)*price(d,s);
 ```
 
 Computation of index values:
 ```
 Parameter index(date) 'Dow Jones index';
-    
+
 index(d)          = sum(s, contribution(d,s));
 ```
 
@@ -144,19 +144,19 @@ Reporting parameters:
 Parameter
     fund(date)                'Index fund report parameter'
     error(date)               'Absolute error';
-    
+
 fund(d)  = sum(s, price(d, s)*w.l(s));
 error(d) = abs(index(d)-fund(d));
 
 Set fHdr      'fund header'            / dj 'dow jones','index fund'  /
     errHdr    'stock symbol header'    / 'absolute error train', 'absolute error test' /;
-    
+
 Scalar error_train                     'Absolute error in entire training phase'
        error_test                      'Absolute error in entire testing phase'
        error_ratio                     'Ratio between error test and error train'
 Parameter
-       stock_weight(symbol)            'weight'   
-       dowVSindex(date,fHdr)           'dow jones vs. index fund'     
+       stock_weight(symbol)            'weight'
+       dowVSindex(date,fHdr)           'dow jones vs. index fund'
        abserror(date,errHdr)           'absolute error'
        priceMerge(date,*)              'Price (stocks & dow jones)';
 
@@ -174,7 +174,7 @@ if(error_train > 0,
 else
    error_ratio = inf;);
 ```
-### Hypercube analysis script: 
+### Hypercube analysis script:
 The Hypercube analysis script allows your to analyse a large number of scenarios to answer high-level questions like `How many stock should I pick?` or `How many training days should I choose?`.
 
 This analysis script relies on [Python](https://www.python.org) to be installed on your machine. In addition, the [GAMS Python API](https://www.gams.com/latest/docs/API_PY_TUTORIAL.html#PY_GETTING_STARTED) is required as well as the following Python packages:
@@ -184,4 +184,3 @@ This analysis script relies on [Python](https://www.python.org) to be installed 
 1. matplotlib
 
 The latter can be installed via `pip install notebook pandas matplotlib`.
- 

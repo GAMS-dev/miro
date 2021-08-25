@@ -3,7 +3,7 @@ DataIO <- R6Class("DataIO", public = list(
     stopifnot(is.list(config))
     if(!is.null(db))
       stopifnot(is.R6(db))
-    private$config <- config[!vapply(names(config), is.null, 
+    private$config <- config[!vapply(names(config), is.null,
                                      logical(1L), USE.NAMES = FALSE)]
     private$db <- db
   },
@@ -35,10 +35,10 @@ DataIO <- R6Class("DataIO", public = list(
         stop("No url specified to send HTTP requests to", call. = FALSE)
       }
       item$headers <- private$buildHTTPHeader(item)
-      bodyValues <- lapply(item$httpBody, "[[", 
+      bodyValues <- lapply(item$httpBody, "[[",
                            "value")
       bodyValues <- c(bodyValues, private$config$modelName, dsName)
-      bodyKeys <- vapply(item$httpBody, "[[", character(1L), 
+      bodyKeys <- vapply(item$httpBody, "[[", character(1L),
                          "key", USE.NAMES = FALSE)
       bodyKeys <- c(bodyKeys, "modelname", "dataset")
       if(any(duplicated(bodyKeys))){
@@ -52,7 +52,7 @@ DataIO <- R6Class("DataIO", public = list(
   },
   export = function(data, item, dsName){
     stopifnot(inherits(data, "data.frame"), length(item) > 0L, is.list(item))
-    
+
     switch(tolower(item$source),
            customfunction = {
              if(!length(item$functionName)){
@@ -82,12 +82,12 @@ DataIO <- R6Class("DataIO", public = list(
              if(!length(item$url)){
                stop("No url specified to send HTTP requests to", call. = FALSE)
              }
-             bodyValues <- lapply(item$httpBody, "[[", 
+             bodyValues <- lapply(item$httpBody, "[[",
                                   "value")
-             names(bodyValues) <- vapply(item$httpBody, "[[", character(1L), 
+             names(bodyValues) <- vapply(item$httpBody, "[[", character(1L),
                                          "key", USE.NAMES = FALSE)
-             item$body <- list(data = data, 
-                               modelname = private$config$modelName, 
+             item$body <- list(data = data,
+                               modelname = private$config$modelName,
                                dataset = dsName,
                                options = bodyValues)
              item$headers <- private$buildHTTPHeader(item)
@@ -95,7 +95,7 @@ DataIO <- R6Class("DataIO", public = list(
              return(self)
            },
            {
-             stop(sprintf("Export method: '%s' not supported", 
+             stop(sprintf("Export method: '%s' not supported",
                           item$source), call. = FALSE)
            })
   }
@@ -113,7 +113,7 @@ DataIO <- R6Class("DataIO", public = list(
            POST = {
              req <- POST(url = item$url, body = item$body, item$headers, timeout(20),
                          encode = if(length(item$encode)) item$encode else "json")
-             
+
            },
            PUT = {
              req <- PUT(url = item$url, body = item$body, item$headers, timeout(20),
@@ -131,7 +131,7 @@ DataIO <- R6Class("DataIO", public = list(
              stop(sprintf("Unsupported HTTP method: '%s'", item$method), call. = FALSE)
            })
     if(status_code(req) >= 300){
-      stop(sprintf("HTTP request resulted in status code: '%s'. Aborting", 
+      stop(sprintf("HTTP request resulted in status code: '%s'. Aborting",
                    status_code(req)), call. = FALSE)
     }
     return(content(req, as = 'text', encoding = 'UTF-8'))
@@ -143,14 +143,14 @@ DataIO <- R6Class("DataIO", public = list(
     return(val)
   },
   buildHTTPHeader = function(item){
-    headerValues <- vapply(item$httpHeaders, "[[", character(1L), 
+    headerValues <- vapply(item$httpHeaders, "[[", character(1L),
                            "value", USE.NAMES = FALSE)
-    headerKeys <- vapply(item$httpHeaders, "[[", character(1L), 
+    headerKeys <- vapply(item$httpHeaders, "[[", character(1L),
                          "key", USE.NAMES = FALSE)
     if(length(item$authentication)){
       headerKeys <- c(headerKeys, "Authorization")
-      headerValues <- c(headerValues, 
-                        paste0("Basic ", 
+      headerValues <- c(headerValues,
+                        paste0("Basic ",
                                base64_encode(charToRaw(
                                  paste0(private$retrieveVal(item$authentication$username), ":",
                                         private$retrieveVal(item$authentication$password))))))

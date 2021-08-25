@@ -1,22 +1,22 @@
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("async_solve_test")
 
-authHeader <- paste0("Basic ", 
+authHeader <- paste0("Basic ",
                      processx::base64_encode(charToRaw(
-                       paste0(Sys.getenv("ENGINE_USER"), 
+                       paste0(Sys.getenv("ENGINE_USER"),
                               ":", Sys.getenv("ENGINE_PASSWORD")))))
 getLatestJobToken <- function(){
   httr::content(httr::GET(paste0(Sys.getenv("ENGINE_URL"), "/jobs/"),
                           httr::add_headers(Authorization = authHeader),
                           httr::timeout(2L)),
-                type = "application/json", 
+                type = "application/json",
                 encoding = "utf-8")$results[[1]]$token
 }
 getJobStatus <- function(token){
   httr::content(httr::GET(paste0(Sys.getenv("ENGINE_URL"), "/jobs/", token),
                           httr::add_headers(Authorization = authHeader),
                           httr::timeout(2L)),
-                type = "application/json", 
+                type = "application/json",
                 encoding = "utf-8")$status
 }
 
@@ -239,17 +239,17 @@ app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()
 app$findElement('#shiny-tab-gamsinter a[data-value="joblist"]')$click()
 app$findElement('#refreshActiveJobs')$click()
 Sys.sleep(3)
-expect_true(app$waitFor(paste0("$('#jImport_output td')[0].textContent==='", Sys.info()[["user"]], "'"), timeout = 50)) 
-expect_true(app$waitFor("$('#jImport_output td')[2].textContent==='test4'", timeout = 50)) 
-expect_true(app$waitFor("$('#jImport_output td')[7].textContent==='test3'", timeout = 50)) 
-expect_true(app$waitFor("$('#jImport_output td')[4].childElementCount===1", timeout = 50)) 
+expect_true(app$waitFor(paste0("$('#jImport_output td')[0].textContent==='", Sys.info()[["user"]], "'"), timeout = 50))
+expect_true(app$waitFor("$('#jImport_output td')[2].textContent==='test4'", timeout = 50))
+expect_true(app$waitFor("$('#jImport_output td')[7].textContent==='test3'", timeout = 50))
+expect_true(app$waitFor("$('#jImport_output td')[4].childElementCount===1", timeout = 50))
 
 #discard test4
 expect_error(app$findElements("#jImport_output button[onclick*='discardJob']")[[1]]$click(), NA)
 Sys.sleep(1)
 app$findElement("#confirmModal .bt-gms-confirm")$click()
 Sys.sleep(3)
-expect_true(app$waitFor("$('#jImport_output td')[2].textContent==='test3'", timeout = 50)) 
+expect_true(app$waitFor("$('#jImport_output td')[2].textContent==='test3'", timeout = 50))
 
 #restart app
 app$stop()
@@ -335,7 +335,7 @@ Sys.sleep(1)
 expect_error(app$findElement("#shiny-modal .bt-gms-confirm")$click(), NA)
 Sys.sleep(2)
 
-#show test1 log 
+#show test1 log
 app$snapshot()
 expect_error(app$findElement("#outputTableView")$click(), NA)
 app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()

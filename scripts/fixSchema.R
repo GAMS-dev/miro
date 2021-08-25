@@ -3,8 +3,8 @@ if(identical(basename(getwd()), "src")){
 }else{
   rootDir <- "src/"
 }
-schema <- suppressWarnings(jsonlite::fromJSON(paste0(rootDir, "conf/language_schema.json"), 
-                                              simplifyDataFrame = FALSE, 
+schema <- suppressWarnings(jsonlite::fromJSON(paste0(rootDir, "conf/language_schema.json"),
+                                              simplifyDataFrame = FALSE,
                                               simplifyMatrix = FALSE))
 fixRequired <- function(schema){
   if("properties" %in% names(schema)){

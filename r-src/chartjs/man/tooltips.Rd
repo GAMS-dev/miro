@@ -20,4 +20,3 @@ The allowed values in \code{...} can be found in the
 \href{http://www.chartjs.org/docs/#getting-started-global-chart-configuration}{Chart.js documentation}
 under \code{Charts.default.global.tooltips}.
 }
-

@@ -114,7 +114,7 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
     dataHashes <- private$dataHashes[dataHashesToUse]
     isDynamicCol <- private$isDynamicCol[dataHashesToUse]
     colsNeedSplit <- private$colsNeedSplit[dataHashesToUse]
-    allParValCombinations <- do.call("expand.grid", 
+    allParValCombinations <- do.call("expand.grid",
                                      c(unname(dataHashes),
                                        stringsAsFactors = FALSE))
     private$parValCombinations <- do.call(function(...) Map(list,...),
@@ -126,7 +126,7 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
     names(private$parValCombinations) <- vapply(unite(allParValCombinations, "val",
                                                       seq_along(allParValCombinations),
                                                       remove = TRUE, sep = " ")[[1]],
-                                                digest::digest, character(1L), algo = "sha256", 
+                                                digest::digest, character(1L), algo = "sha256",
                                                 serialize = FALSE, USE.NAMES = FALSE)
     return(names(private$parValCombinations))
   },
@@ -134,7 +134,7 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
     return(length(private$parValCombinations))
   },
   getHcubeScalars = function(){
-    allParValCombinationsRaw <- do.call("expand.grid", 
+    allParValCombinationsRaw <- do.call("expand.grid",
                                         c(unname(private$dataRaw[which(private$isDynamicCol)]),
                                           stringsAsFactors = FALSE))
     if(length(private$scenToRemove)){

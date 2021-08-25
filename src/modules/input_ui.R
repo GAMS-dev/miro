@@ -10,7 +10,7 @@ observeEvent(input$btImport, {
   # only load single scenario as not in comparison mode
   errMsg <- NULL
   tryCatch({
-    scenMetaDb       <<- db$fetchScenList(scode = if(LAUNCHHCUBEMODE) 
+    scenMetaDb       <<- db$fetchScenList(scode = if(LAUNCHHCUBEMODE)
       SCODEMAP[['hcube_jobconfig']] else SCODEMAP[['scen']])
     dbTagList        <- csv2Vector(scenMetaDb[["_stag"]])
   }, error = function(e){
@@ -22,7 +22,7 @@ observeEvent(input$btImport, {
     return(NULL)
   }
   if(length(scenMetaDb) && nrow(scenMetaDb) > maxNoScenToShow){
-    scenMetaDbSubset <<- scenMetaDb[order(scenMetaDb[["_stime"]], 
+    scenMetaDbSubset <<- scenMetaDb[order(scenMetaDb[["_stime"]],
                                           decreasing = TRUE), ][seq_len(maxNoScenToShow), ]
     maxNoScenExceeded <- TRUE
   }else{
@@ -31,10 +31,10 @@ observeEvent(input$btImport, {
   }
   if(!is.null(activeScen) && length(activeScen$getSid()) && length(scenMetaDbSubset)){
     activeSid  <- activeScen$getSid()
-    scenListDb <- formatScenList(scenMetaDbSubset[scenMetaDbSubset[[1L]] != activeSid, ], 
+    scenListDb <- formatScenList(scenMetaDbSubset[scenMetaDbSubset[[1L]] != activeSid, ],
                                  uid, "_stime", desc = TRUE)
   }else{
-    scenListDb <- formatScenList(scenMetaDbSubset, uid, 
+    scenListDb <- formatScenList(scenMetaDbSubset, uid,
                                  "_stime", desc = TRUE)
   }
   if(!LAUNCHHCUBEMODE){

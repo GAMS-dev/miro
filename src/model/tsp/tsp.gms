@@ -218,11 +218,11 @@ loop(ste$(proceed and ord(ste)<maxCuts),
 
 Set tourHdr 'Tour header' / 'lngA', 'latA', 'lngB', 'latB', 'Flow' /;
 
-$onExternalOutput   
+$onExternalOutput
 Scalar
    total_cost 'Total Distance (miles)';
 Table  tourDetails(ii,jj,tourHdr);
-$offExternalOutput   
+$offExternalOutput
 
 total_cost = z.l * 1000;
 

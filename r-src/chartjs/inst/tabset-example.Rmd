@@ -1,6 +1,6 @@
 ---
 title: "chartjs examples"
-output: 
+output:
   html_document
 ---
 
@@ -17,7 +17,7 @@ chartjs(height = "200px") %>%
   cjsBar(labels = LETTERS[1:10]) %>%
   cjsSeries(data = c(abs(c(rnorm(8))), NA, 0.5), label = "Series 1") %>%
   cjsSeries(data = abs(c(rnorm(10))), label = "Series 2") %>%
-  cjsSeries(data = abs(c(rnorm(10))), label = "Series 3") %>% 
+  cjsSeries(data = abs(c(rnorm(10))), label = "Series 3") %>%
   cjsLegend()
 ```
 
@@ -26,10 +26,10 @@ chartjs(height = "200px") %>%
 ```{r line}
 chartjs(height = "200px") %>%
   cjsLine(labels = seq.Date(as.Date("2011-01-01"), as.Date("2011-01-08"), by = 1)) %>%
-  cjsEditScale("x", 1, type = "time") %>% 
+  cjsEditScale("x", 1, type = "time") %>%
   cjsEditScale("y", 1, type = "logarithmic") %>%
   cjsSeries(data = abs(c(rnorm(8))), label = "Series 1") %>%
   cjsSeries(data = c(abs(c(rnorm(3))), NA, abs(c(rnorm(4)))), label = "Series 2") %>%
-  cjsSeries(data = abs(c(rnorm(8))), label = "Series 3") %>% 
+  cjsSeries(data = abs(c(rnorm(8))), label = "Series 3") %>%
   cjsLegend()
 ```

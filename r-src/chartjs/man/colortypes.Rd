@@ -37,4 +37,3 @@ color <- list(background = "#FF0000",
                            hover = list(background = "#FF0000",
                                         border = "#00FF00")))
 }
-

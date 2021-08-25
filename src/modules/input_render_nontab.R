@@ -81,7 +81,7 @@ lapply(seq_along(modelIn), function(id){
              })
              observe({
                value <- getSelected[[id]]()
-               if(!is.null(value) && !identical(suppressWarnings(as.logical(value)), 
+               if(!is.null(value) && !identical(suppressWarnings(as.logical(value)),
                                                 isolate(input[[paste0("cb_", id)]]))){
                  noCheck[id] <<- TRUE
                  updateCheckboxInput(session, paste0("cb_", id), value = value)
@@ -97,12 +97,12 @@ lapply(seq_along(modelIn), function(id){
                rv[["in_" %+% k]]
                input[["in_" %+% k]]
                rv[["in_" %+% id]]
-               
+
                tryCatch({
                  value <- getInputDataset(k, visible = TRUE)[[modelIn[[id]]$checkbox$max]]
                }, error = function(e){
                  flog.error("Some problem occurred attempting to fetch values for checkbox: '%s' " %+%
-                              "(forward dependency on dataset: '%s'). Error message: %s.", 
+                              "(forward dependency on dataset: '%s'). Error message: %s.",
                             modelInAlias[id], modelInAlias[k], conditionMessage(e))
                  errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                })
@@ -112,7 +112,7 @@ lapply(seq_along(modelIn), function(id){
                tryCatch({
                  value <- getScalarValue(unlist(value, use.names = FALSE), modelIn[[id]]$checkbox$operator)
                }, error = function(e){
-                 flog.warn("Input type for checkbox: '%s' is not numeric. (Operator: '%s')", 
+                 flog.warn("Input type for checkbox: '%s' is not numeric. (Operator: '%s')",
                            name, modelIn[[id]]$checkbox$operator)
                  errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                })
@@ -128,7 +128,7 @@ lapply(seq_along(modelIn), function(id){
                    return()
                  }
                }
-               
+
                if(length(modelInputData[[id]][[1]])){
                  selected <- suppressWarnings(as.integer(modelInputData[[id]]))
                  if(value < selected){
@@ -143,11 +143,11 @@ lapply(seq_along(modelIn), function(id){
                }else{
                  selected <- isolate(input[["cb_" %+% id]])
                }
-               if(!is.null(selected) && !identical(suppressWarnings(as.logical(selected)), 
+               if(!is.null(selected) && !identical(suppressWarnings(as.logical(selected)),
                                                    isolate(input[["cb_" %+% id]]))){
                  noCheck[id] <<- TRUE
                  updateCheckboxInput(session, "cb_" %+% id, value = selected)
-                 
+
                  if(value <= 0.5){
                    disableEl(session, "#cb_" %+% id)
                  }else{
@@ -247,13 +247,13 @@ lapply(seq_along(modelIn), function(id){
              }
            })
            # TODO: support dependency
-           
+
            observe({
              value <- getSelected[[id]]()
              if(!is.null(value) && !identical(value, isolate(input[["daterange_" %+% id]]))){
                noCheck[id] <<- TRUE
-               updateDateRangeInput(session, "daterange_" %+% id, 
-                                    start = value[[1]], 
+               updateDateRangeInput(session, "daterange_" %+% id,
+                                    start = value[[1]],
                                     end = value[[2]])
              }
            })
@@ -277,7 +277,7 @@ lapply(seq_along(modelIn), function(id){
            })
            if(is.na(i)){
              # does not have any dependencies on other datasets
-             
+
              # observe changes of dropdown menu data
              observe({
                value <- getSelected[[id]]()
@@ -289,7 +289,7 @@ lapply(seq_along(modelIn), function(id){
              })
            }else{
              # has dependencies on other datasets
-             
+
              # retrieve choices for dropdown menu
              getData[[i]] <<- reactive({
                choices <- vector(mode = "list", length = length(ddownDep[[name]]$fw) + 1)
@@ -301,7 +301,7 @@ lapply(seq_along(modelIn), function(id){
                if(!is.null(aliasesNoDep[[name]])){
                  aliases[[1]] <- aliasesNoDep[[name]]
                }
-               
+
                if(length(ddownDep[[name]]$fw)){
                  errMsg <- NULL
                  # reset counter
@@ -319,7 +319,7 @@ lapply(seq_along(modelIn), function(id){
                      dataTmp <- getInputDataset(k, visible = TRUE)
                    }, error = function(e){
                      flog.error("Some problem occurred attempting to fetch values for dropdown menu: '%s' " %+%
-                                  "(forward dependency on dataset: '%s'). Error message: %s.", 
+                                  "(forward dependency on dataset: '%s'). Error message: %s.",
                                 modelInAlias[id], modelInAlias[k], conditionMessage(e))
                      errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                    })
@@ -353,7 +353,7 @@ lapply(seq_along(modelIn), function(id){
                  return(sort(choices))
                }
              })
-             
+
              # observe changes of dropdown menu data
              observe({
                # update choices
@@ -361,8 +361,8 @@ lapply(seq_along(modelIn), function(id){
                  choices <- getData[[i]]()
                  if(length(choices)){
                    selectedEl <- modelIn[[id]]$dropdown$selected[[1]]
-                   if((!length(selectedEl) && (!isTRUE(modelIn[[id]]$dropdown$multiple) || 
-                                               isTRUE(modelIn[[id]]$dropdown$single))) || 
+                   if((!length(selectedEl) && (!isTRUE(modelIn[[id]]$dropdown$multiple) ||
+                                               isTRUE(modelIn[[id]]$dropdown$single))) ||
                       (length(selectedEl) && !selectedEl %in% choices)){
                      selectedEl <- choices[[1]]
                    }
@@ -373,7 +373,7 @@ lapply(seq_along(modelIn), function(id){
                      selectedEl <- character(0L)
                    }
                    selectedDepEl[[id]] <<- selectedEl
-                   updateSelectInput(session, paste0("dropdown_", id), choices = choices, 
+                   updateSelectInput(session, paste0("dropdown_", id), choices = choices,
                                      selected = selectedEl)
                    inputInitialized[i] <<- TRUE
                    showEl(session, paste0("#dropdown_", id))
@@ -392,7 +392,7 @@ lapply(seq_along(modelIn), function(id){
                    selectedEl <- character(0L)
                  }
                  selectedDepEl[[id]] <<- selectedEl
-                 updateSelectInput(session, paste0("dropdown_", id), choices = getData[[i]](), 
+                 updateSelectInput(session, paste0("dropdown_", id), choices = getData[[i]](),
                                    selected = selectedDepEl[[id]])
                }
              })
@@ -443,7 +443,7 @@ lapply(seq_along(modelIn), function(id){
              })
            }else{
              # has dependencies on other datasets
-             
+
              # retrieve choices for slider
              getData[[i]] <<- reactive({
                errMsg <- NULL
@@ -481,10 +481,10 @@ lapply(seq_along(modelIn), function(id){
                      )
                      return(NULL)
                    }
-                   if(length(rv[["in_" %+% k]]) && (modelIn[[k]]$type == "hot" && 
-                                                    !is.null(input[["in_" %+% k]]) || 
+                   if(length(rv[["in_" %+% k]]) && (modelIn[[k]]$type == "hot" &&
+                                                    !is.null(input[["in_" %+% k]]) ||
                                                     (length(rv[[paste0("wasModified_", k)]]) && !is.null(tableContent[[k]])) ||
-                                                    identical(modelIn[[k]]$type, "custom") && length(modelInputDataVisible[[k]])) 
+                                                    identical(modelIn[[k]]$type, "custom") && length(modelInputDataVisible[[k]]))
                       && !isEmptyInput[k]){
                      tryCatch({
                        if(identical(modelIn[[k]]$type, "custom")){
@@ -493,7 +493,7 @@ lapply(seq_along(modelIn), function(id){
                        dataTmp <- unique(getInputDataset(k, visible = TRUE)[[el[[1]][1]]])
                      }, error = function(e){
                        flog.error("Some problem occurred attempting to fetch values for slider: '%s' " %+%
-                                    "(forward dependency on dataset: '%s'). Error message: %s.", 
+                                    "(forward dependency on dataset: '%s'). Error message: %s.",
                                   modelInAlias[id], modelInAlias[k], conditionMessage(e))
                        errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                      })
@@ -517,13 +517,13 @@ lapply(seq_along(modelIn), function(id){
                })
                names(sliderData) <- names(sliderValues[[name]])
                showErrorMsg(lang$errMsg$renderSlider$title, errMsg)
-               
+
                if(is.numeric(sliderData$def1) && is.numeric(sliderData$def2)){
                  sliderData$def <- c(sliderData$def1, sliderData$def2)
                }
                return(sliderData)
              })
-             
+
              # observe changes of slider data
              observe({
                value <- getData[[i]]()$def
@@ -535,7 +535,7 @@ lapply(seq_along(modelIn), function(id){
                noCheck[id] <<- TRUE
                #}
                newDefaultValue[[i]] <<- value
-               updateSliderInput(session, inputId = paste0("slider_", id), value = value, min = getData[[i]]()$min, 
+               updateSliderInput(session, inputId = paste0("slider_", id), value = value, min = getData[[i]]()$min,
                                  max = getData[[i]]()$max, step = getData[[i]]()$step)
                if(!inputInitialized[i]){
                  if(!is.null(isolate(getData[[i]]()$min)) && !is.null(isolate(getData[[i]]()$max))){
@@ -567,28 +567,28 @@ lapply(seq_along(modelIn), function(id){
                  }
                }
              }, priority = -1)
-             
+
            }
-           if(identical(modelIn[[id]]$slider$single, TRUE) || 
+           if(identical(modelIn[[id]]$slider$single, TRUE) ||
               identical(modelIn[[id]]$slider$double, TRUE)){
              observe({
                rv[["in_" %+% id]]
                value <- modelInputDataHcube[[id]]
-               if(length(value) && !identical(value[1], 
+               if(length(value) && !identical(value[1],
                                               as.numeric(isolate(input[[paste0("hcubeStep_", id)]])))){
                  noCheck[id] <<- TRUE
-                 updateNumericInput(session, "hcubeStep_" %+% id, 
+                 updateNumericInput(session, "hcubeStep_" %+% id,
                                     value = value[1])
                }
-               if(length(value) > 1 && !identical(value[2], 
+               if(length(value) > 1 && !identical(value[2],
                                                   as.numeric(isolate(input[[paste0("hcubeMode_", id)]])))){
                  noCheck[id] <<- TRUE
-                 updateCheckboxInput(session, "hcubeMode_" %+% id, 
+                 updateCheckboxInput(session, "hcubeMode_" %+% id,
                                      value = value[2])
                }
              }, priority = -1)
            }
          }
   )
-  
+
 })

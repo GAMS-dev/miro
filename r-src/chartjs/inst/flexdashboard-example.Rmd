@@ -1,6 +1,6 @@
 ---
 title: "Flex Dashboard"
-output: 
+output:
   flexdashboard::flex_dashboard:
     orientation: rows
     social: menu
@@ -20,11 +20,11 @@ Row 1
 
 ```{r}
 chartjs() %>%
-  cjsOptions(responsive = FALSE, maintainAspectRatio = FALSE) %>% 
+  cjsOptions(responsive = FALSE, maintainAspectRatio = FALSE) %>%
   cjsBar(labels = LETTERS[1:10]) %>%
   cjsSeries(data = c(abs(c(rnorm(8))), NA, 0.5), label = "Series 1") %>%
   cjsSeries(data = abs(c(rnorm(10))), label = "Series 2") %>%
-  cjsSeries(data = abs(c(rnorm(10))), label = "Series 3") %>% 
+  cjsSeries(data = abs(c(rnorm(10))), label = "Series 3") %>%
   cjsLegend()
 ```
 
@@ -38,12 +38,12 @@ customColors = list(border = rep("#000000", 3),
                                  background = RColorBrewer::brewer.pal(6, "Paired")[c(4, 6, 2)]))
 
 chartjs(palette = customColors) %>%
-  cjsOptions(responsive = FALSE, maintainAspectRatio = FALSE) %>% 
+  cjsOptions(responsive = FALSE, maintainAspectRatio = FALSE) %>%
   cjsHorizontalBar(labels = LETTERS[1:10]) %>%
-  cjsEditScale(axis = "x", scale = 1, ticks = list(beginAtZero = TRUE)) %>% 
+  cjsEditScale(axis = "x", scale = 1, ticks = list(beginAtZero = TRUE)) %>%
   cjsSeries(data = 1:10, label = "Series 1") %>%
   cjsSeries(data = seq(10, 1, -1), label = "Series 2") %>%
-  cjsSeries(data = rep(5, 10), label = "Series 3") %>% 
+  cjsSeries(data = rep(5, 10), label = "Series 3") %>%
   cjsLegend()
 ```
 
@@ -54,9 +54,9 @@ Row 2
 
 ```{r}
 chartjs(palette = "Set3") %>%
-  cjsOptions(responsive = FALSE, maintainAspectRatio = FALSE) %>% 
+  cjsOptions(responsive = FALSE, maintainAspectRatio = FALSE) %>%
   cjsPie(labels = LETTERS[1:4]) %>%
-  cjsSeries(data = abs(c(rnorm(4)))) %>% 
+  cjsSeries(data = abs(c(rnorm(4)))) %>%
   cjsLegend()
 ```
 
@@ -65,10 +65,10 @@ chartjs(palette = "Set3") %>%
 
 ```{r}
 chartjs(palette = "BrBG") %>%
-  cjsOptions(responsive = FALSE, maintainAspectRatio = FALSE) %>% 
+  cjsOptions(responsive = FALSE, maintainAspectRatio = FALSE) %>%
   cjsLine(labels = LETTERS[1:10]) %>%
   cjsSeries(data = c(abs(c(rnorm(8))), NA, 0.5), label = "Series 1") %>%
   cjsSeries(data = abs(c(rnorm(10))), label = "Series 2") %>%
-  cjsSeries(data = abs(c(rnorm(10))), label = "Series 3") %>% 
+  cjsSeries(data = abs(c(rnorm(10))), label = "Series 3") %>%
   cjsLegend()
 ```

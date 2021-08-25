@@ -1,6 +1,6 @@
 # elements that must be saved in scalar table
 scalarInToVerify <- unlist(lapply(scalarInputSym, function(el){
-  if((!is.null(modelIn[[el]]$slider) && identical(modelIn[[el]]$slider$double, TRUE)) || 
+  if((!is.null(modelIn[[el]]$slider) && identical(modelIn[[el]]$slider$double, TRUE)) ||
      !is.null(modelIn[[el]]$daterange)){
     return(paste0(el, c("_lo", "_up")))
   }else{
@@ -8,31 +8,31 @@ scalarInToVerify <- unlist(lapply(scalarInputSym, function(el){
   }
 }), use.names = FALSE)
 additionalInputScalars <- inputDsNames[vapply(inputDsNames, function(el){
-  return(isTRUE(modelIn[[el]]$dropdown$single) || 
+  return(isTRUE(modelIn[[el]]$dropdown$single) ||
            isTRUE(modelIn[[el]]$dropdown$checkbox))
 }, logical(1L), USE.NAMES = FALSE)]
 if(length(scalarInToVerify))
   scalarInToVerify <- scalarInToVerify[!startsWith(scalarInToVerify, "_")]
 
 # initialise hcube import class
-hcubeImport <- HcubeImport$new(db, scalarsFileName, scalarsOutName, 
+hcubeImport <- HcubeImport$new(db, scalarsFileName, scalarsOutName,
                                tableNamesCanHave = c(setdiff(c(inputDsNames,
                                                                modelIn[[scalarsFileName]]$symnames,
-                                                               modelIn[[scalarEquationsName]]$symnames), 
+                                                               modelIn[[scalarEquationsName]]$symnames),
                                                              c(additionalInputScalars,
                                                                scalarsFileName,
-                                                               scalarEquationsName)), 
+                                                               scalarEquationsName)),
                                                      setdiff(c(names(modelOut),
                                                                modelOut[[scalarsOutName]]$symnames,
-                                                               modelOut[[scalarEquationsOutName]]$symnames), 
+                                                               modelOut[[scalarEquationsOutName]]$symnames),
                                                              c(scalarsOutName,
                                                                scalarEquationsOutName))),
-                               tableNamesMustHave = c(scalarInToVerify, 
+                               tableNamesMustHave = c(scalarInToVerify,
                                                       if(config$saveTraceFile) "_scenTrc"),
                                config$csvDelim, workDir,
-                               gdxio = gdxio, inputSym = setdiff(inputDsNames, additionalInputScalars), 
+                               gdxio = gdxio, inputSym = setdiff(inputDsNames, additionalInputScalars),
                                outputSym = names(modelOut),
-                               templates = setNames(c(modelInTemplate, modelOutTemplate, scalarsInTemplate), 
+                               templates = setNames(c(modelInTemplate, modelOutTemplate, scalarsInTemplate),
                                                     c(names(modelIn), names(modelOut), scalarsFileName)))
 duplicatedScenIds <- vector("character", 0L)
 hcubeTags         <- character(0L)
@@ -47,7 +47,7 @@ observeEvent(rv$uploadHcube, {
   zipFilePathTmp <- zipFilePath
   zipFilePath    <<- NULL
   prog           <- Progress$new()
-  prog$set(message = lang$progressBar$hcubeImport$title, 
+  prog$set(message = lang$progressBar$hcubeImport$title,
            detail = lang$progressBar$hcubeImport$zipExtract, value = 1/8)
   on.exit(prog$close())
 
@@ -79,7 +79,7 @@ observeEvent(rv$uploadHcube, {
     return(NULL)
   }
   if(length(hcubeImport$getScenNames()) - length(invalidScenIds) == 0){
-    showErrorMsg(lang$errMsg$hcubeImport$invalidJob$title, 
+    showErrorMsg(lang$errMsg$hcubeImport$invalidJob$title,
                  lang$errMsg$hcubeImport$invalidJob$desc)
     return(NULL)
   }
@@ -102,7 +102,7 @@ observeEvent(virtualActionButton(rv$noInvalidData), {
   on.exit(prog$close())
   errMsg <- NULL
   removeModal()
-  
+
   tryCatch({
     hcubeImport$readAllScenData()
     flog.trace("Scenario data read into memory.")
@@ -113,9 +113,9 @@ observeEvent(virtualActionButton(rv$noInvalidData), {
   if(is.null(showErrorMsg(lang$errMsg$hcubeImport$scenRead$title, errMsg))){
     return(NULL)
   }
-  
+
   prog$inc(amount = 0, detail = lang$progressBar$hcubeImport$scenRead)
-  
+
   prog$inc(amount = 1/6, detail = lang$progressBar$hcubeImport$duplicateCheck)
   tryCatch({
     duplicatedScen    <- hcubeImport$getScenDuplicates()
@@ -156,7 +156,7 @@ observeEvent(virtualActionButton(rv$btSave), {
   errMsg <- NULL
   removeModal()
   tryCatch({
-    hcubeImport$saveScenarios(hcubeTags, jobID = jobImportID, readPerm = uid, 
+    hcubeImport$saveScenarios(hcubeTags, jobID = jobImportID, readPerm = uid,
                               writePerm = uid, execPerm = uid, progressBar = prog)
   }, error = function(e){
     flog.error("Problems importing scenarios. Error message: %s.",
@@ -203,7 +203,7 @@ observeEvent(input$btUploadHcube, {
   zipFilePath       <<- input$hcubeImport$datapath
   noErr <- TRUE
   tryCatch({
-    jIDtmp <- worker$addJobDb("", NULL, tags = hcubeTags, 
+    jIDtmp <- worker$addJobDb("", NULL, tags = hcubeTags,
                               status = JOBSTATUSMAP[['corrupted(man)']],
                               isHcJob = TRUE)
     if(identical(jIDtmp, -1L)){

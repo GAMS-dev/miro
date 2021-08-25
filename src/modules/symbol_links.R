@@ -43,7 +43,7 @@ observeEvent(input$btSymbolLink, {
   errMsg    <-  NULL
   loadMode  <-  "scen"
   newInputCount <- 0L
-  
+
   scenInputData <- scenData$get("sb", names(modelOut)[i], drop = TRUE)
   inputId <- match(modelOut[[i]]$symbolLink, names(modelIn))
   names(scenInputData) <- names(modelIn[[inputId]]$headers)
@@ -56,13 +56,13 @@ observeEvent(input$btSymbolLink, {
   if(!is.null(errMsg)){
     return(NULL)
   }
-  
+
   switchTab(session, "input")
   inputTabId <- tabSheetMap$input[[inputId]]
   updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", inputTabId[1]))
   if(length(outputTabTitles) > 1L){
-    updateTabsetPanel(session, paste0("inputTabset", inputTabId[1]), 
-                      paste0("inputTabset", inputTabId[1], "_", 
+    updateTabsetPanel(session, paste0("inputTabset", inputTabId[1]),
+                      paste0("inputTabset", inputTabId[1], "_",
                              inputTabId[2]))
   }
 })

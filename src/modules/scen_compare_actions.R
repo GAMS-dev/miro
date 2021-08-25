@@ -3,22 +3,22 @@ observeEvent(input[["btScenTableView"]], {
   # get sheet ID for current scenario
   tabsetId <- suppressWarnings(as.integer(input[["btScenTableView"]]))
   if(is.na(tabsetId) || tabsetId < 1){
-    flog.error("Problems switching table view for table ID: '%s'. This looks like an attempt to tamper with the app!", 
+    flog.error("Problems switching table view for table ID: '%s'. This looks like an attempt to tamper with the app!",
                input[["btScenTableView"]])
     return()
   }
-  j <- suppressWarnings(as.integer(strsplit(isolate(input[[paste0("contentScen_", tabsetId)]]), 
+  j <- suppressWarnings(as.integer(strsplit(isolate(input[[paste0("contentScen_", tabsetId)]]),
                                             "_", fixed = TRUE)[[1L]][[3L]]))
   if(is.na(j) || j < 1 || j > length(isGroupOfSheets)){
     return(NULL)
   }
   if(isGroupOfSheets[[j]]){
-    j <- groupSheetToTabIdMap[[j]][[as.integer(strsplit(isolate(input[[paste0("contentScen_", tabsetId, "_", j)]]), 
+    j <- groupSheetToTabIdMap[[j]][[as.integer(strsplit(isolate(input[[paste0("contentScen_", tabsetId, "_", j)]]),
                                                         "_", fixed = TRUE)[[1L]][[4L]])]]
   }else{
     j <- unlist(groupSheetToTabIdMap[[j]], use.names = FALSE)
   }
-  flog.debug("Table view in scenario with tabset id: %s for sheet: %s activated.", tabsetId, 
+  flog.debug("Table view in scenario with tabset id: %s for sheet: %s activated.", tabsetId,
              paste0(j, collapse = ", "))
   if(isInCompareMode){
     if(identical(currentCompMode, "split")){
@@ -73,13 +73,13 @@ observeEvent(input[["btCmpTabCloseAll"]], {
 observeEvent(input[["btScenClose"]], {
   tabsetId <- suppressWarnings(as.integer(input[["btScenClose"]]))
   if(is.na(tabsetId) || tabsetId < 1){
-    flog.error("Problems closing scenario with ID: '%s'. This looks like an attempt to tamper with the app!", 
+    flog.error("Problems closing scenario with ID: '%s'. This looks like an attempt to tamper with the app!",
                input[["btScenClose"]])
     return()
   }
   flog.debug("Close scenario '%d' button clicked", tabsetId)
   removeModal()
-  
+
   closeCmpTab(tabsetId)
   numberScenTabs                 <<- numberScenTabs - 1
   occupiedSidSlots[tabsetId - 3] <<- FALSE
@@ -97,7 +97,7 @@ output[["scenExportHandler"]] <- downloadHandler(
   filename = function() {
     tabsetId <- suppressWarnings(as.integer(input[["scenExportId"]]))
     if(is.na(tabsetId) || tabsetId < 1L){
-      flog.error("Problems exporting scenario with ID: '%s'. This looks like an attempt to tamper with the app!", 
+      flog.error("Problems exporting scenario with ID: '%s'. This looks like an attempt to tamper with the app!",
                  input[["scenExportId"]])
       return()
     }
@@ -121,7 +121,7 @@ output[["scenExportHandler"]] <- downloadHandler(
         }
       }
       fileName <- paste0(modelName, "_",
-                         scenData$getById("meta", refId = tabIdToRef(tabsetId), drop = TRUE)[["_sname"]][1], 
+                         scenData$getById("meta", refId = tabIdToRef(tabsetId), drop = TRUE)[["_sname"]][1],
                          ".", fileExt)
       flog.debug("File: '%s' was downloaded.", fileName)
     })
@@ -131,14 +131,14 @@ output[["scenExportHandler"]] <- downloadHandler(
     prog <- Progress$new()
     on.exit(suppressWarnings(prog$close()))
     prog$set(message = lang$progressBar$exportScen$title, value = 0.1)
-    
+
     tabsetId <- suppressWarnings(as.integer(input[["scenExportId"]]))
     if(is.na(tabsetId) || tabsetId < 1L){
-      flog.error("Problems exporting scenario with ID: '%s'. This looks like an attempt to tamper with the app!", 
+      flog.error("Problems exporting scenario with ID: '%s'. This looks like an attempt to tamper with the app!",
                  input[["scenExportId"]])
       return(downloadHandlerError(file, lang$errMsg$unknownError))
     }
-    
+
     if(tabsetId == 1){
       # active scenario (editable)
       errMsg <- tryCatch({
@@ -169,11 +169,11 @@ output[["scenExportHandler"]] <- downloadHandler(
     if(scalarsOutName %in% names(data)){
       data[[scalarsOutName]] <- scenData$getScalars(refId, outputScalarsOnly = TRUE)
     }
-    
+
     if(isTRUE(input$cbSelectManuallyExp)){
       outputDataToExport <- names(modelOut)[names(modelOut) %in% input$selDataToExport]
       inputDataToExport  <- inputDsNames[inputDsNames %in% input$selDataToExport]
-      
+
       if(!length(outputDataToExport) && !length(inputDataToExport)){
         flog.info("No datasets selected. Nothing will be exported.")
         showElReplaceTxt(session, "#scenExportError", lang$nav$dialogExportScen$noDsSelected)
@@ -186,7 +186,7 @@ output[["scenExportHandler"]] <- downloadHandler(
     }
     noDatasets <- length(data)
     prog$set(value = 0.2)
-    
+
     if(identical(exportFileType, "gdx")){
       return(tryCatch({
         gdxio$wgdx(file, data, squeezeZeros = "n")
@@ -240,9 +240,9 @@ output[["scenExportHandler"]] <- downloadHandler(
         dsName <- names(data)[i]
         prog$inc(amount = 0.8/noDatasets, detail = sprintf(lang$progressBar$exportScen$exportDs, i, noDatasets))
         readr::write_csv(data[[dsName]], file.path(tmpDir, paste0(dsName, ".csv")))
-        
+
       }
-      return(suppressWarnings(zip::zipr(file, list.files(tmpDir, full.names = TRUE), 
+      return(suppressWarnings(zip::zipr(file, list.files(tmpDir, full.names = TRUE),
                                         recurse = FALSE, include_directories = FALSE)))
     }
     if(!suppressRemoveModal){
@@ -257,12 +257,12 @@ observeEvent(input[["scenRemoteExportHandler"]], {
   hideEl(session, "#scenExportError")
   tabsetId <- suppressWarnings(as.integer(input[["scenExportId"]]))
   if(is.na(tabsetId) || tabsetId < 1L){
-    flog.error("Problems exporting scenario with ID: '%s'. This looks like an attempt to tamper with the app!", 
+    flog.error("Problems exporting scenario with ID: '%s'. This looks like an attempt to tamper with the app!",
                input[["scenExportId"]])
     return()
   }
   if(!length(datasetsRemoteExport) || !length(input$exportFileType)){
-    flog.error("Remote export button clicked but export file type: '%s' does not exist.", 
+    flog.error("Remote export button clicked but export file type: '%s' does not exist.",
                input$exportFileType)
     return()
   }
@@ -270,7 +270,7 @@ observeEvent(input[["scenRemoteExportHandler"]], {
   if(!is.na(exportId)){
     expConfig  <- datasetsRemoteExport[[input$exportFileType]]
     dsToExport <- names(expConfig)
-    
+
     if(isTRUE(input$cbSelectManuallyExp)){
       dsToExport <- dsToExport[dsToExport %in% input$selDataToExport]
       if(!length(dsToExport)){
@@ -310,12 +310,12 @@ observeEvent(input[["scenRemoteExportHandler"]], {
       showElReplaceTxt(session, "#scenExportError", lang$errMsg$loadScen$inconsistentDataWarning)
       suppressRemoveModal <- TRUE
     }
-    
+
     if(scalarsOutName %in% names(data) && length(config$hiddenOutputScalars)){
       # we want to export hidden output scalars as well
       data[[scalarsOutName]] <- scenData$getScalars(refId, outputScalarsOnly = TRUE)
     }
-    
+
     noDatasets <- length(dsToExport)
     errMsg <- NULL
     for(expId in seq_along(dsToExport)){
@@ -324,10 +324,10 @@ observeEvent(input[["scenRemoteExportHandler"]], {
         next
       }
       dsName <- names(data)[dataId]
-      prog$inc(amount = 0.8/noDatasets, 
-               detail = sprintf(lang$progressBar$exportScen$exportDs, 
+      prog$inc(amount = 0.8/noDatasets,
+               detail = sprintf(lang$progressBar$exportScen$exportDs,
                                 expId, noDatasets))
-      tryCatch(dataio$export(data[[dsName]], expConfig[[expId]], dsName), 
+      tryCatch(dataio$export(data[[dsName]], expConfig[[expId]], dsName),
                error = function(e){
                  flog.warn("Problems exporting data (export name: '%s', dataset: '%s'). Error message: '%s'.",
                            input$exportFileType, dsName, conditionMessage(e))

@@ -1,14 +1,14 @@
 # Installation
-GAMS MIRO Server makes use of GAMS Engine, a server software that allows you to run GAMS jobs in cloud environments. 
+GAMS MIRO Server makes use of GAMS Engine, a server software that allows you to run GAMS jobs in cloud environments.
 
 1\.  Engine
-   1.  For the installation of GAMS Engine follow the instructions at [https://www.gams.com/engine/installation.html](https://www.gams.com/engine/installation.html). When successfully installed, MIRO Engine will be mounted on `/engine` (Management interface) and `/engine/api` (Engine API).  
-   2.  Log into the Engine user interface (`/engine`) with username: `admin` and password: `admin`. Change the password of the administrator via the interface.   
-   
+   1.  For the installation of GAMS Engine follow the instructions at [https://www.gams.com/engine/installation.html](https://www.gams.com/engine/installation.html). When successfully installed, MIRO Engine will be mounted on `/engine` (Management interface) and `/engine/api` (Engine API).
+   2.  Log into the Engine user interface (`/engine`) with username: `admin` and password: `admin`. Change the password of the administrator via the interface.
+
 2\.  MIRO Server
    1.  Extract `miro_server.zip`. This will create a subfolder `miro_server`.
    2.  Open a terminal and `cd` into that folder.
-   3.  In case MIRO Server and GAMS Engine run on the same machine: 
+   3.  In case MIRO Server and GAMS Engine run on the same machine:
        Get IP of `docker0` network interface via: `sudo ip addr show docker0 |grep -Po 'inet \K[\d.]+'`.
    4.  Install MIRO Sever by running `./miro-server install`. You will be asked to enter the GAMS Engine host and the [namespace](https://gams.com/engine/administration.html#namespaces) to be used by MIRO Server. For the host enter: `http://<IP extracted from previous step>/engine/api`. If you specified a port when installing GAMS Engine, this port must also be specified here: `http://<IP extracted from previous step>:<engine port>/engine/api`. The default namespace is `global`. You can also specify any other namespace created in GAMS Engine. You can change the GAMS Engine connection info at any time by modifying the `.env` file that is located inside the miro_server directory. The following environment variables have to be set:
 
@@ -16,7 +16,7 @@ GAMS MIRO Server makes use of GAMS Engine, a server software that allows you to 
    |-------------------------|--------------------------|---------|
    | `GMS_MIRO_ENGINE_HOST`    | IP adress and port/DNS of Engine|`https://miro.gams.com/engine/api`|
    | `GMS_MIRO_ENGINE_NS `  | Engine namespace to be used by MIRO Server | `miro_server`|
-   
+
     Note that MIRO Server must be restarted if the `.env` has been changed.
     You will also be asked whether you want to use MIRO Server with or without authentication service, i.e. whether users have to log in with an existing GAMS Engine account (default) or whether everyone with a URL should have free access. Read more about the user management in the section `Authentication and User Management`.
     The installation script will inform you whether the installation was successful or not.
@@ -71,7 +71,7 @@ server {
     }
     location /engine {
         proxy_pass http://127.0.0.1:5000/engine;
-        
+
         proxy_redirect    off;
         proxy_set_header  Host             $http_host;
         proxy_set_header  X-Real-IP        $remote_addr;

@@ -4,7 +4,7 @@ This MIRO App is based on the [inscribedsquare](https://www.gams.com/latest/gams
 
 The inscribed square problem, also known as the square peg problem or the Toeplitz' conjecture, is an unsolved question in geometry:
 
-#### &rarr; Does every plane simple closed curve contain all four vertices of some square?  
+#### &rarr; Does every plane simple closed curve contain all four vertices of some square?
 
 This is true if the curve is convex or piecewise smooth and in other
 special cases. The problem was proposed by Otto Toeplitz in 1911.

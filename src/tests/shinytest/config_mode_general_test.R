@@ -4,11 +4,11 @@ app$snapshotInit("config_mode_general_test")
 app$snapshot(items = list(input = "deleteGraph"), screenshot = TRUE)
 Sys.sleep(1)
 jsonPath <- file.path("..", "model", "pickstock_configuration", "conf_pickstock_configuration")
-configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"), 
-                                                  simplifyDataFrame = FALSE, 
+configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"),
+                                                  simplifyDataFrame = FALSE,
                                                   simplifyMatrix = FALSE))
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
-                                                 simplifyDataFrame = FALSE, 
+                                                 simplifyDataFrame = FALSE,
                                                  simplifyMatrix = FALSE))
 
 #interface tab (I)
@@ -83,13 +83,13 @@ app$findElement("a[data-value='Symbol configuration']")$click()
 app$setInputs("general_overwriteSymHeaders_price_1" = "2nd header")
 Sys.sleep(1L)
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
-                                                 simplifyDataFrame = FALSE, 
+                                                 simplifyDataFrame = FALSE,
                                                  simplifyMatrix = FALSE))
 expect_identical(configNew$overwriteHeaderAliases$price$newHeaders, c("2nd header", "2nd header", "3rd header"))
 app$setInputs("general_overwriteSymHeaders_price_1" = "")
 Sys.sleep(1L)
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
-                                                 simplifyDataFrame = FALSE, 
+                                                 simplifyDataFrame = FALSE,
                                                  simplifyMatrix = FALSE))
 expect_identical(configNew$overwriteHeaderAliases$price$newHeaders, NULL)
 

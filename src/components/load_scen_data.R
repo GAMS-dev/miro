@@ -34,8 +34,8 @@ loadScenData <- function(metaData, workDir,
              },
              csv = {
                if(file.exists(file.path(workDir, names(metaData)[[i]] %+% '.csv'))){
-                 ret$tabular[[i]] <<- read_delim(file.path(workDir, names(metaData)[[i]] %+% '.csv'), 
-                                                 csvDelim, col_types = metaData[[i]]$colTypes, 
+                 ret$tabular[[i]] <<- read_delim(file.path(workDir, names(metaData)[[i]] %+% '.csv'),
+                                                 csvDelim, col_types = metaData[[i]]$colTypes,
                                                  col_names = TRUE)
                }else{
                  ret$tabular[[i]] <<- templates[[i]]
@@ -85,7 +85,7 @@ loadScenData <- function(metaData, workDir,
              },
              gdx = {
                tryCatch({
-                 ret$tabular[[i]] <<- gdxio$rgdx(dataFilePath, names(metaData)[[i]], 
+                 ret$tabular[[i]] <<- gdxio$rgdx(dataFilePath, names(metaData)[[i]],
                                                  names = names(metaData[[i]]$headers),
                                                  isNewGdx = isNewGdx)
                  isNewGdx <<- FALSE
@@ -96,8 +96,8 @@ loadScenData <- function(metaData, workDir,
                    ret$tabular[[i]] <<- templates[[i]]
                  }
                }, error = function(e){
-                 if(grepl("Compression library not found", 
-                          conditionMessage(e), 
+                 if(grepl("Compression library not found",
+                          conditionMessage(e),
                           fixed = TRUE)){
                    stop("Compressed GDX is not supported. Please remove the GDXCOMPRESS environment variable.")
                  }
@@ -105,7 +105,7 @@ loadScenData <- function(metaData, workDir,
                })
              })
     }, error = function(e) {
-      stop(sprintf("Model file: '%s' could not be read. Error message: %s", 
+      stop(sprintf("Model file: '%s' could not be read. Error message: %s",
                    names(metaData)[[i]], conditionMessage(e)), call. = FALSE)
     })
     if(!identical(length(ret$tabular[[i]]), length(metaData[[i]]$headers))){
@@ -126,13 +126,13 @@ loadScenData <- function(metaData, workDir,
         ret$tabular[[i]] <<- bind_rows(ret$tabular[[i]], setNames(dfClArgs, names(metaData[[i]]$headers)))
       }
     }else{
-      ret$tabular[[i]] <<- ret$tabular[[i]] %>% mutate_if(is.character, 
+      ret$tabular[[i]] <<- ret$tabular[[i]] %>% mutate_if(is.character,
                                                           replace_na, replace = "")
     }
     if(!hasValidHeaderTypes(ret$tabular[[i]], metaData[[i]]$colTypes)){
-      flog.warn("Dataset: '%s' has invalid header types ('%s'). Header types should be: '%s'.", 
-                names(metaData)[i], paste(vapply(ret$tabular[[i]], function(el) return(class(el)[[1L]]), 
-                                                 character(1L), USE.NAMES = FALSE), collapse = "', '"), 
+      flog.warn("Dataset: '%s' has invalid header types ('%s'). Header types should be: '%s'.",
+                names(metaData)[i], paste(vapply(ret$tabular[[i]], function(el) return(class(el)[[1L]]),
+                                                 character(1L), USE.NAMES = FALSE), collapse = "', '"),
                 metaData[[i]]$colTypes)
       stop(sprintf(lang$errMsg$GAMSOutput$badOutputData, names(metaData)[i]), call. = FALSE)
     }

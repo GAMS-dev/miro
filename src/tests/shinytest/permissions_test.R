@@ -20,7 +20,7 @@ Sys.unsetenv("MIRO_USERNAME")
 #4_ r permissions from user1
 #5_ rwx permissions from user1
 
-#user1 saves scenario with user2 permissions rx 
+#user1 saves scenario with user2 permissions rx
 app$setInputs(btSaveAs = "click")
 Sys.sleep(0.5)
 app$setInputs(scenName = "user1Scenario1")
@@ -28,7 +28,7 @@ Sys.sleep(0.5)
 app$findElement("#shiny-modal .bt-gms-confirm")$click()
 Sys.sleep(1)
 
-#user1 saves scenario with user2 permissions r 
+#user1 saves scenario with user2 permissions r
 app$setInputs(btEditMeta = "click")
 Sys.sleep(0.5)
 app$findElement("a[data-value='accessPerm']")$click()
@@ -43,7 +43,7 @@ app$setInputs(scenName = "user1Scenario3")
 Sys.sleep(0.5)
 app$findElement("#shiny-modal .bt-gms-confirm")$click()
 
-#user1 saves scenario where user2 has no permissions 
+#user1 saves scenario where user2 has no permissions
 app$setInputs(btEditMeta = "click")
 Sys.sleep(0.5)
 app$findElement("a[data-value='accessPerm']")$click()
@@ -57,7 +57,7 @@ app$setInputs(scenName = "noUser2")
 app$findElement("#shiny-modal .bt-gms-confirm")$click()
 Sys.sleep(0.5)
 
-#user1 saves scenario with user2 permissions rwx 
+#user1 saves scenario with user2 permissions rwx
 app$setInputs(btEditMeta = "click")
 Sys.sleep(0.5)
 app$findElement("a[data-value='accessPerm']")$click()
@@ -157,7 +157,7 @@ app$setInputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
 
 
-################# Start general permission tests ################# 
+################# Start general permission tests #################
 
 #user2 loads scenario with permissions rwx
 app2$setInputs(btImport = "click")
@@ -171,7 +171,7 @@ Sys.sleep(0.5)
 expect_error(app2$findElement("a[data-value='accessPerm']")$click(), NA)
 Sys.sleep(1)
 expect_length(getSelectizeOptions(app2, "#editMetaWritePerm"), 2L)
-#expect user2 not be allowed to remove user1 (owner) from permissions  
+#expect user2 not be allowed to remove user1 (owner) from permissions
 app2$setInputs(editMetaReadPerm = "#users")
 app2$setInputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
@@ -291,6 +291,6 @@ Sys.sleep(0.5)
 app2$findElement(".modal-footer .bt-gms-confirm")$click()
 Sys.sleep(0.5)
 
-################# END general permission tests ################# 
+################# END general permission tests #################
 
 app2$stop()

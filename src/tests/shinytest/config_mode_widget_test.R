@@ -4,11 +4,11 @@ app$snapshotInit("config_mode_widget_test")
 app$snapshot(items = list(input = "deleteGraph"), screenshot = TRUE)
 Sys.sleep(1)
 jsonPath <- file.path("..", "model", "pickstock_configuration", "conf_pickstock_configuration")
-configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"), 
-                                                 simplifyDataFrame = FALSE, 
+configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"),
+                                                 simplifyDataFrame = FALSE,
                                                  simplifyMatrix = FALSE))
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
-                                                 simplifyDataFrame = FALSE, 
+                                                 simplifyDataFrame = FALSE,
                                                  simplifyMatrix = FALSE))
 
 
@@ -22,7 +22,7 @@ for(widgetToTest in names(configRaw$inputWidgets)){
   Sys.sleep(1)
 }
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
-                                                 simplifyDataFrame = FALSE, 
+                                                 simplifyDataFrame = FALSE,
                                                  simplifyMatrix = FALSE))
 
 expect_identical(configRaw$inputWidgets$price$widgetType, configNew$inputWidgets$price$widgetType)

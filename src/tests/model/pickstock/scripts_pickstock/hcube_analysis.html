@@ -9129,15 +9129,15 @@ label {
 }
 /* Flexible box model classes */
 /* Taken from Alex Russell http://infrequently.org/2009/08/css-3-progress/ */
-/* This file is a compatability layer.  It allows the usage of flexible box 
+/* This file is a compatability layer.  It allows the usage of flexible box
 model layouts accross multiple browsers, including older browsers.  The newest,
 universal implementation of the flexible box model is used when available (see
-`Modern browsers` comments below).  Browsers that are known to implement this 
+`Modern browsers` comments below).  Browsers that are known to implement this
 new spec completely include:
 
     Firefox 28.0+
     Chrome 29.0+
-    Internet Explorer 11+ 
+    Internet Explorer 11+
     Opera 17.0+
 
 Browsers not listed, including Safari, are supported via the styling under the
@@ -12519,7 +12519,7 @@ div#pager .ui-resizable-handle {
   background: #f7f7f7;
   border-top: 1px solid #cfcfcf;
   border-bottom: 1px solid #cfcfcf;
-  /* This injects handle bars (a short, wide = symbol) for 
+  /* This injects handle bars (a short, wide = symbol) for
         the resize handle. */
 }
 div#pager .ui-resizable-handle::after {
@@ -13033,14 +13033,14 @@ div#notebook {
   div.cell {
     display: block;
     page-break-inside: avoid;
-  } 
-  div.output_wrapper { 
-    display: block;
-    page-break-inside: avoid; 
   }
-  div.output { 
+  div.output_wrapper {
     display: block;
-    page-break-inside: avoid; 
+    page-break-inside: avoid;
+  }
+  div.output {
+    display: block;
+    page-break-inside: avoid;
   }
 }
 </style>
@@ -13112,7 +13112,7 @@ div#notebook {
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 <script>
-code_show=true; 
+code_show=true;
 function code_toggle() {
  if (code_show){
  $('div.input').hide();
@@ -13120,7 +13120,7 @@ function code_toggle() {
  $('div.input').show();
  }
  code_show = !code_show
-} 
+}
 $( document ).ready(code_toggle);
 </script>
 <form action="javascript:code_toggle()"><input type="submit" value="Click here to toggle on/off the raw code."></form>
@@ -13206,14 +13206,14 @@ $( document ).ready(code_toggle);
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span>
 <span class="n">scalar_df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">scalar_data</span><span class="p">)</span>
 
-<span class="n">scalar_df</span><span class="p">[</span><span class="s1">&#39;error_train_norm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scalar_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> 
-                                                  <span class="n">row</span><span class="p">[</span><span class="s1">&#39;error_train&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;trainingdays&#39;</span><span class="p">],</span> 
+<span class="n">scalar_df</span><span class="p">[</span><span class="s1">&#39;error_train_norm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scalar_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span>
+                                                  <span class="n">row</span><span class="p">[</span><span class="s1">&#39;error_train&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;trainingdays&#39;</span><span class="p">],</span>
                                                 <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">scalar_df</span><span class="p">[</span><span class="s1">&#39;error_test_norm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scalar_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> 
-                                                  <span class="n">row</span><span class="p">[</span><span class="s1">&#39;error_test&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">total_days</span> <span class="o">-</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;trainingdays&#39;</span><span class="p">]),</span> 
+<span class="n">scalar_df</span><span class="p">[</span><span class="s1">&#39;error_test_norm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scalar_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span>
+                                                  <span class="n">row</span><span class="p">[</span><span class="s1">&#39;error_test&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">total_days</span> <span class="o">-</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;trainingdays&#39;</span><span class="p">]),</span>
                                                 <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">scalar_df</span><span class="p">[</span><span class="s1">&#39;error_ratio_norm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scalar_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> 
-                                                  <span class="n">row</span><span class="p">[</span><span class="s1">&#39;error_train_norm&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;error_test_norm&#39;</span><span class="p">],</span> 
+<span class="n">scalar_df</span><span class="p">[</span><span class="s1">&#39;error_ratio_norm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scalar_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span>
+                                                  <span class="n">row</span><span class="p">[</span><span class="s1">&#39;error_train_norm&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;error_test_norm&#39;</span><span class="p">],</span>
                                                 <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="n">scalar_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
@@ -13529,7 +13529,7 @@ $( document ).ready(code_toggle);
   </div>
 </body>
 
- 
+
 
 
 </html>

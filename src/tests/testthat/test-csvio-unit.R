@@ -90,7 +90,7 @@ test_that("Initialising CSV file works", {
 
 test_that("Reading CSV file works", {
   expect_error(csvio$setColsToRead(c("header 2", "header 1", "Value"), "distance"), NA)
-  expect_identical(csvio$read("../data/csvtest-1.csv", "distance", decimalSep = ","), 
+  expect_identical(csvio$read("../data/csvtest-1.csv", "distance", decimalSep = ","),
                    tibble(uni1 = paste0("i", 1:7),
                           uni2 = paste0("j", 1:7),
                           value = c(12.34,13.470,16.471,11,13.477,7,13.4791)))
@@ -116,7 +116,7 @@ test_that("Setting symbol name should prevent reading symbol with different name
   expect_error(csvio$setRSymName("distance"), NA)
   expect_error(csvio$read("../data/csvtest-1.csv", "distance2"), class = "error_notfound")
   expect_identical(csvio$read("../data/csvtest-1.csv", "distance", decimalSep = ",",
-                              colsToRead = c("header 2", "header 1", "Value")), 
+                              colsToRead = c("header 2", "header 1", "Value")),
                    tibble(uni1 = paste0("i", 1:7),
                           uni2 = paste0("j", 1:7),
                           value = c(12.34,13.470,16.471,11,13.477,7,13.4791)))

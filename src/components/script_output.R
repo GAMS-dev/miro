@@ -5,12 +5,12 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
     private$hcConfig <- config$hcube
     private$errorMsg <- errorMsg
     private$workDir <- workDir
-    if(!identical(.Platform$OS.type, "windows") && 
+    if(!identical(.Platform$OS.type, "windows") &&
        length(gamsSysDir) && nchar(gamsSysDir) > 0L){
       # on Windows setting environment for local processes does not seem to work.
       # We have to rely on GAMS being in the PATH here.
       private$scriptEnv <- Sys.getenv()
-      private$scriptEnv[["PATH"]] <- paste0(gamsSysDir, .Platform$path.sep, 
+      private$scriptEnv[["PATH"]] <- paste0(gamsSysDir, .Platform$path.sep,
                                             private$scriptEnv[["PATH"]])
     }
   },
@@ -32,12 +32,12 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
   getResults = function(scriptId = NULL){
     if(is.null(scriptId)){
       if(length(private$scriptResults))
-        return(tibble(id = names(private$scriptResults), 
-                      content = unlist(private$scriptResults, 
+        return(tibble(id = names(private$scriptResults),
+                      content = unlist(private$scriptResults,
                                        use.names = FALSE)))
       return(tibble(id = character(0L),
                     content = character(0L)))
-      
+
     }
     return(private$scriptResults[[scriptId]])
   },
@@ -61,7 +61,7 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
     }
     return(invisible(self))
   },
-  sendContent = function(data, id, scenId = NULL, 
+  sendContent = function(data, id, scenId = NULL,
                          hcube = FALSE, isError = FALSE, inModal = FALSE){
     if(inModal){
       hideEl(private$session, "#batchLoadAnalysisSpinner")
@@ -71,7 +71,7 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
         showEl(private$session, "#btDownloadBatchLoadScript")
       }
     }
-    private$session$sendCustomMessage("gms-scriptExecuted", 
+    private$session$sendCustomMessage("gms-scriptExecuted",
                                       list(id = id,
                                            sid = scenId,
                                            data = data,
@@ -141,26 +141,26 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
   },
   run = function(id, hcube = FALSE, inModal = FALSE){
     stopifnot(is.integer(id), id > 0)
-    
+
     if(hcube){
       configLocal <- private$hcConfig[[id]]
     }else{
       configLocal <- private$config[[id]]
     }
-    
+
     scriptId <- configLocal$id
     if(scriptId %in% names(private$activeScripts)){
       flog.warn("Script: '%s' is already running!", scripId)
       return(invisible(self))
     }
-    
-    private$activeScripts[[scriptId]] <- process$new(configLocal$command, 
+
+    private$activeScripts[[scriptId]] <- process$new(configLocal$command,
                                                      configLocal$args,
                                                stdout = "|", stderr = "2>&1",
                                                wd = private$workDir,
                                                env = private$scriptEnv)
-    
-    private$activeScriptsTo[[scriptId]] <- if(length(configLocal$timeout)) 
+
+    private$activeScriptsTo[[scriptId]] <- if(length(configLocal$timeout))
       configLocal$timeout else -1L
     private$activeScriptsObs[[scriptId]] <- observe({
       if(private$activeScriptsTo[[scriptId]] == 0L){
@@ -180,7 +180,7 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
           }, error = function(e){
             character(1L)
           })
-          flog.warn("Script output: '%s' terminated with exit code: '%s'. Stdout/err: '%s'.", 
+          flog.warn("Script output: '%s' terminated with exit code: '%s'. Stdout/err: '%s'.",
                     scriptId, private$pingProcess(scriptId), stdout)
           self$sendContent(private$errorMsg$crash, id, hcube = hcube, isError = TRUE,
                            inModal = inModal)
@@ -201,7 +201,7 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
       script$kill()}), silent = TRUE)
   },
   readOutput = function(id, scriptId, hcube = FALSE){
-    stopifnot(is.integer(id), id > 0, 
+    stopifnot(is.integer(id), id > 0,
               is.character(scriptId), length(scriptId) == 1L)
     if(hcube){
       outputFile <- private$hcConfig[[id]]$outputFile
@@ -218,7 +218,7 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
       }
       return(private$scriptResults[[scriptId]])
     }, error = function(e){
-      flog.error("Problems reading output file of script: '%s'. Error message: '%s'.", 
+      flog.error("Problems reading output file of script: '%s'. Error message: '%s'.",
                  id, conditionMessage(e))
       return(private$errorMsg$noOutput)
     }))
@@ -252,7 +252,7 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
         private$activeScripts[[scriptId]]$kill()
         return(TRUE)},
         error= function(e){
-          flog.error("Problems terminating script: '%s'. Error message: '%s'.", 
+          flog.error("Problems terminating script: '%s'. Error message: '%s'.",
                      conditionMessage(e))
           return(FALSE)
         }))

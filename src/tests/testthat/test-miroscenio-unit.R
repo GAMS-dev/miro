@@ -12,11 +12,11 @@ source("../../components/miroscenio.R")
 modelNameRaw <<- "Pickstock"
 
 gdxio <<- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO",
-                              if(identical(tolower(Sys.info()[["sysname"]]), "windows")) 
+                              if(identical(tolower(Sys.info()[["sysname"]]), "windows"))
                                 file.path("bin", "x64") else "bin"),
-                    c(modelInRaw, modelOut), 
-                    scalarsFileName, scalarsOutName, 
-                    scalarEquationsName, 
+                    c(modelInRaw, modelOut),
+                    scalarsFileName, scalarsOutName,
+                    scalarEquationsName,
                     scalarEquationsOutName,
                     list())
 
@@ -36,7 +36,7 @@ attachmentsDummy <- list(add = function(session, filePaths, fileNames = NULL, ov
   expect_identical(basename(filePaths), c("a.txt", "b.txt"))
 }, getMetadata = function(scenId){
   return(tibble::tibble(name = c("a.txt", "b.txt"), execPerm = c(FALSE, TRUE)))
-}, download = function(filePath, fileNames = NULL, 
+}, download = function(filePath, fileNames = NULL,
                        fullPath = FALSE, allExecPerm = FALSE, scenId = NULL){
   for(fileName in fileNames){
     writeLines(fileName, file.path(filePath, fileName))
@@ -59,7 +59,7 @@ test_that("Writing miroscen files works", {
                         x = tibble::tibble('1' = c("seattle", "seattle", "seattle",
                                                    "san-diego", "san-diego", "san-diego"),
                                            '2' = c("new-york", "chicago", "topeka",
-                                                   "new-york", "chicago", "topeka"), 
+                                                   "new-york", "chicago", "topeka"),
                                            l = c(50, 300, 0, 275, 0, 275),
                                            m = c(0, 0, 0.036, 0, 0.009, 0),
                                            lo = rep.int(0, 6L), up = rep.int(Inf, 6L), s = rep.int(1, 6L)),
@@ -79,7 +79,7 @@ test_that("Writing miroscen files works", {
                         x = tibble::tibble('1' = c("seattle", "seattle", "seattle",
                                                    "san-diego", "san-diego", "san-diego"),
                                            '2' = c("new-york", "chicago", "topeka",
-                                                   "new-york", "chicago", "topeka"), 
+                                                   "new-york", "chicago", "topeka"),
                                            l = c(50, 300, 0, 275, 0, 275),
                                            m = c(0, 0, 0.036, 0, 0.009, 0),
                                            lo = rep.int(0, 6L), up = rep.int(Inf, 6L), s = rep.int(1, 6L)),
@@ -109,7 +109,7 @@ test_that("Reading miroscen files works", {
                         x = tibble::tibble('1' = c("seattle", "seattle", "seattle",
                                                    "san-diego", "san-diego", "san-diego"),
                                            '2' = c("new-york", "chicago", "topeka",
-                                                   "new-york", "chicago", "topeka"), 
+                                                   "new-york", "chicago", "topeka"),
                                            l = c(50, 300, 0, 275, 0, 275),
                                            m = c(0, 0, 0.036, 0, 0.009, 0),
                                            lo = rep.int(0, 6L), up = rep.int(Inf, 6L), s = rep.int(1, 6L)),

@@ -5,7 +5,7 @@ LocalFileIO <- R6::R6Class("LocalFileIO", public = list(
     if(any(isClOptScalar)){
       private$clOptScalars <- private$getSpecialScalars(names(ioConfig$modelIn)[isClOptScalar])
     }
-    
+
     if(scalarsFileName %in% names(ioConfig$modelInRaw)){
       scalarMeta <- ioConfig$modelInRaw[scalarsFileName]
       scalarMeta[[1]]$symtype <- "set"

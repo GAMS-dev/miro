@@ -9,7 +9,7 @@ observeEvent(input$outputTableView, {
   on.exit(hideLoadingScreen(session))
   i <- as.integer(strsplit(isolate(input$outputTabset), "_")[[1]][2])
   errMsg <- NULL
-  
+
   if(!is.integer(i) || i < 1 || i > length(outputTabTitles)){
     return(NULL)
   }

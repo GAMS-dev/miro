@@ -2,74 +2,122 @@
 <!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
 <!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
 <!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
-<head>
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+  <!--<![endif]-->
+  <head>
     <title>GAMS MIRO - Charts</title>
     <!-- Meta -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="GAMS MIRO documentation">
-    <meta name="author" content="GAMS Development Corp.">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GAMS MIRO documentation" />
+    <meta name="author" content="GAMS Development Corp." />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
+      rel="stylesheet"
+      type="text/css"
+    />
     <!-- FontAwesome JS -->
-    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.1.1/js/all.js"
+      integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a"
+      crossorigin="anonymous"
+    ></script>
     <!-- Global CSS -->
-    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <link
+      rel="stylesheet"
+      href="assets/plugins/bootstrap/css/bootstrap.min.css"
+    />
     <!-- Plugins CSS -->
-    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
-    <link rel="stylesheet" href="assets/plugins/lightbox/dist/ekko-lightbox.css">
-    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css" />
+    <link
+      rel="stylesheet"
+      href="assets/plugins/lightbox/dist/ekko-lightbox.css"
+    />
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css" />
     <!-- Theme CSS -->
-    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css" />
     <!--#include virtual="/wheader.html" -->
-</head>
+  </head>
 
-<body class="body-orange">
+  <body class="body-orange">
     <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
-    <!--#include virtual="/mirover.html" -->
+      <!--#include virtual="/mirover.html" -->
 
-        <!-- ******Header****** -->
-        <header id="header" class="sub-header">
-            <div class="container">
-                <div class="branding">
-                    <h1 class="logo">
-                        <a href="index.html">
-                          <img class="img-fluid" style="height:75px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
-                        </a>
-                    </h1>
-                </div><!--//branding-->
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                    <li class="breadcrumb-item active"><a href="customize.html">Configuration</a></li>
-                    <li class="breadcrumb-item active">Charts</li>
-                </ol>
-            </div><!--//container-->
-        </header><!--//header-->
-        <div class="doc-wrapper">
-            <div class="container">
-              <div class="row justify-content-end search-box-wrapper">
-                    <div class="float-right">
-                        <input class="form-control search-box" id="miroSearch" type="text" placeholder="Search" aria-label="Search">
-                        <ul id="miroSearchResults" class="list-group">
-                        </ul>
-                    </div>
-                </div>
-                <div id="doc-header" class="doc-header text-center">
-                    <h1 class="doc-title"><span aria-hidden="true" class="icon fas fa-chart-pie"></span> Charts</h1>
-                </div><!--//doc-header-->
-                <div class="doc-body row">
-                    <div class="doc-content col-md-9 col-12 order-1">
-                        <div class="content-inner">
-                            <section id="pie-chart" class="doc-section">
-                                <h2 class="section-title">Pie chart</h2>
-                                <div class="section-block">
-                                  <p>MIRO uses <a href = "https://plot.ly/r/pie-charts/" target = "_blank">Plotly</a> to render pie charts.</p>
-                                  <h3 class="block-title">Configuration</h3>
-                                    <p>Any GAMS symbol with a value column can be displayed as a pie chart.</p>
-                                    <p>Example: Model <i>Pickstock</i>, parameter <i>weight</i></p>
-                                    <pre><code class="language-gams">Set         symbol           'stock symbol';
+      <!-- ******Header****** -->
+      <header id="header" class="sub-header">
+        <div class="container">
+          <div class="branding">
+            <h1 class="logo">
+              <a href="index.html">
+                <img
+                  class="img-fluid"
+                  style="height: 75px"
+                  src="assets/images/logo.svg"
+                  onerror="this.onerror=null; this.src='assets/images/logo.png'"
+                  alt="GAMS MIRO"
+                />
+              </a>
+            </h1>
+          </div>
+          <!--//branding-->
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item active">
+              <a href="customize.html">Configuration</a>
+            </li>
+            <li class="breadcrumb-item active">Charts</li>
+          </ol>
+        </div>
+        <!--//container-->
+      </header>
+      <!--//header-->
+      <div class="doc-wrapper">
+        <div class="container">
+          <div class="row justify-content-end search-box-wrapper">
+            <div class="float-right">
+              <input
+                class="form-control search-box"
+                id="miroSearch"
+                type="text"
+                placeholder="Search"
+                aria-label="Search"
+              />
+              <ul id="miroSearchResults" class="list-group"></ul>
+            </div>
+          </div>
+          <div id="doc-header" class="doc-header text-center">
+            <h1 class="doc-title">
+              <span aria-hidden="true" class="icon fas fa-chart-pie"></span>
+              Charts
+            </h1>
+          </div>
+          <!--//doc-header-->
+          <div class="doc-body row">
+            <div class="doc-content col-md-9 col-12 order-1">
+              <div class="content-inner">
+                <section id="pie-chart" class="doc-section">
+                  <h2 class="section-title">Pie chart</h2>
+                  <div class="section-block">
+                    <p>
+                      MIRO uses
+                      <a href="https://plot.ly/r/pie-charts/" target="_blank"
+                        >Plotly</a
+                      >
+                      to render pie charts.
+                    </p>
+                    <h3 class="block-title">Configuration</h3>
+                    <p>
+                      Any GAMS symbol with a value column can be displayed as a
+                      pie chart.
+                    </p>
+                    <p>
+                      Example: Model <i>Pickstock</i>, parameter <i>weight</i>
+                    </p>
+                    <pre><code class="language-gams">Set         symbol           'stock symbol';
 Variable    w(symbol)        'what part of the portfolio';
 
 $onExternalOutput
@@ -78,30 +126,73 @@ $offExternalOutput
 
 stock_weight(s) = w.l(s);
 </code></pre>
-                                    <p>In a resulting <i>GDX</i> this parameter looks as follows:</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:125pt;" src="assets/images/configuration_mode/pie_table.png" alt="Pie chart data"/>
-                                    </div>
-                                     <p>In the Configuration Mode we can then configure a pie chart.</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_pie_config.png" alt="Pie chart configuration"/>
-                                    </div>
-                                    <p><b>Note:</b> <br>Instead of the parameter <i>weight</i>, to which you assign the values of the variable <i>w</i>, you could have used a pie chart directly for the levels of variable <i>w</i>.
-                                    However, this variable also contains all the zero values (due to nonzero upper bounds and scale factors) that would then become visible in the pie chart, see below.
-                                    If you assign the levels of the variable <i>w</i> (<code class="language-gams">w.l(symbol)</code>) to the parameter <i>weight</i> instead, zeros will be squeezed out. </p>
-                                    <div class="section-block" id="pie-variable">
-                                        <img class="img-fluid" style= "max-height:175pt;" src="assets/images/configuration_mode/pie_variable.png" alt="Pie chart with variable"/>
-                                    </div>
-                                </div>
-                                <div class="section-block">
-                                    <p id = "multi-pie-chart"><b>Multi-pie chart:</b> <br>In a pie chart only one dimension, i.e. one column of a table, can be displayed. However, it is possible to display several pie charts for one symbol at the same time. This makes it possible to easily distribute a multidimensional symbol over several pie charts. This is comparable to e.g. a line chart, where new lines can be displayed by including new table headers.</p>
-                                    <div class="section-block" id="pie-variable">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_multi_pie_config.png" alt="Multi-pie chart"/>
-                                    </div>
-                                </div><!--//section-block-->
-                                <div class="section-block">
-                                  <h3 class="block-title">JSON example</h3>
-                                    <pre><code class="language-json">
+                    <p>
+                      In a resulting <i>GDX</i> this parameter looks as follows:
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 125pt"
+                        src="assets/images/configuration_mode/pie_table.png"
+                        alt="Pie chart data"
+                      />
+                    </div>
+                    <p>
+                      In the Configuration Mode we can then configure a pie
+                      chart.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 350pt"
+                        src="assets/images/configuration_mode/graphs_pie_config.png"
+                        alt="Pie chart configuration"
+                      />
+                    </div>
+                    <p>
+                      <b>Note:</b> <br />Instead of the parameter <i>weight</i>,
+                      to which you assign the values of the variable <i>w</i>,
+                      you could have used a pie chart directly for the levels of
+                      variable <i>w</i>. However, this variable also contains
+                      all the zero values (due to nonzero upper bounds and scale
+                      factors) that would then become visible in the pie chart,
+                      see below. If you assign the levels of the variable
+                      <i>w</i> (<code class="language-gams">w.l(symbol)</code>)
+                      to the parameter <i>weight</i> instead, zeros will be
+                      squeezed out.
+                    </p>
+                    <div class="section-block" id="pie-variable">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 175pt"
+                        src="assets/images/configuration_mode/pie_variable.png"
+                        alt="Pie chart with variable"
+                      />
+                    </div>
+                  </div>
+                  <div class="section-block">
+                    <p id="multi-pie-chart">
+                      <b>Multi-pie chart:</b> <br />In a pie chart only one
+                      dimension, i.e. one column of a table, can be displayed.
+                      However, it is possible to display several pie charts for
+                      one symbol at the same time. This makes it possible to
+                      easily distribute a multidimensional symbol over several
+                      pie charts. This is comparable to e.g. a line chart, where
+                      new lines can be displayed by including new table headers.
+                    </p>
+                    <div class="section-block" id="pie-variable">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 350pt"
+                        src="assets/images/configuration_mode/graphs_multi_pie_config.png"
+                        alt="Multi-pie chart"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block">
+                    <h3 class="block-title">JSON example</h3>
+                    <pre><code class="language-json">
 {
   "dataRendering": {
     "stock_weight": {
@@ -126,23 +217,45 @@ stock_weight(s) = w.l(s);
   }
 }
                                     </code></pre>
-                                </div><!--//section-block-->
-                            </section>
-                            <section id="donut-chart" class="doc-section">
-                                <h2 class="section-title">Donut chart</h2>
-                                <div class="section-block">
-                                  <p>MIRO uses <a href = "https://plot.ly/r/pie-charts/#donut-chart" target = "_blank">Plotly</a> to render donut charts.</p>
-                                  <h3 class="block-title">Configuration</h3>
-                                    <p>A donut chart is a pie chart with a "hole". In the Configuration Mode the donut chart is therefore to be found under <i>pie chart</i>.
-                                    In addition to a standard pie chart, only the size of the donut "hole" can be configured.</p>
-                                    <p>Example: Model <i>Pickstock</i>, parameter <i>weight</i></p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_donut_config.png" alt="Donut chart configuration"/>
-                                    </div>
-                                </div><!--//section-block-->
-                                <div class="section-block">
-                                  <h3 class="block-title">JSON example</h3>
-                                    <pre><code class="language-json">
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <section id="donut-chart" class="doc-section">
+                  <h2 class="section-title">Donut chart</h2>
+                  <div class="section-block">
+                    <p>
+                      MIRO uses
+                      <a
+                        href="https://plot.ly/r/pie-charts/#donut-chart"
+                        target="_blank"
+                        >Plotly</a
+                      >
+                      to render donut charts.
+                    </p>
+                    <h3 class="block-title">Configuration</h3>
+                    <p>
+                      A donut chart is a pie chart with a "hole". In the
+                      Configuration Mode the donut chart is therefore to be
+                      found under <i>pie chart</i>. In addition to a standard
+                      pie chart, only the size of the donut "hole" can be
+                      configured.
+                    </p>
+                    <p>
+                      Example: Model <i>Pickstock</i>, parameter <i>weight</i>
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 350pt"
+                        src="assets/images/configuration_mode/graphs_donut_config.png"
+                        alt="Donut chart configuration"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block">
+                    <h3 class="block-title">JSON example</h3>
+                    <pre><code class="language-json">
 {
   "dataRendering": {
     "stock_weight": {
@@ -167,17 +280,30 @@ stock_weight(s) = w.l(s);
   }
 }
                                     </code></pre>
-                                </div><!--//section-block-->
-                            </section>
-                            <section id="bar-chart" class="doc-section">
-                                <h2 class="section-title">Bar chart</h2>
-                                <div class="section-block">
-                                  <p>MIRO uses <a href = "https://plot.ly/r/bar-charts/" target = "_blank">Plotly</a> to render bar charts.</p>
-                                  <h3 class="block-title">Configuration</h3>
-                                    <p>If a symbol is to be visualized as a bar chart, an index must be specified for the x-axis as well as for the y-axis.
-                                    Several data series can be plotted together on the x-axis. </p>
-                                    <p>Example: Model <i>Pickstock</i>, parameter <i>weight</i></p>
-                                    <pre><code class="language-gams">Set         symbol           'stock symbol';
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <section id="bar-chart" class="doc-section">
+                  <h2 class="section-title">Bar chart</h2>
+                  <div class="section-block">
+                    <p>
+                      MIRO uses
+                      <a href="https://plot.ly/r/bar-charts/" target="_blank"
+                        >Plotly</a
+                      >
+                      to render bar charts.
+                    </p>
+                    <h3 class="block-title">Configuration</h3>
+                    <p>
+                      If a symbol is to be visualized as a bar chart, an index
+                      must be specified for the x-axis as well as for the
+                      y-axis. Several data series can be plotted together on the
+                      x-axis.
+                    </p>
+                    <p>
+                      Example: Model <i>Pickstock</i>, parameter <i>weight</i>
+                    </p>
+                    <pre><code class="language-gams">Set         symbol           'stock symbol';
 Variable    w(symbol)        'what part of the portfolio';
 
 $onExternalOutput
@@ -186,20 +312,45 @@ $offExternalOutput
 
 stock_weight(s) = w.l(s);
 </code></pre>
-                                    <p>In a resulting <i>GDX</i> this parameter looks as follows:</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:125pt;" src="assets/images/configuration_mode/pie_table.png" alt="Bar chart data"/>
-                                    </div>
-                                    <p>In the Configuration Mode we then can configure a bar chart.</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_bar_config.png" alt="Bar chart configuration"/>
-                                    </div>
-                                    <p><b>Note:</b> <br>Instead of the parameter <i>weight</i>, to which you assign the values of the variable <i>w</i>, you could have used a bar chart directly for the levels of variable <i>w</i>.
-                                    However, this variable also contains all the zero values that would then become visible in the chart, see the <a href="#pie-variable" class="scrollto">pie chart example</a>.</p>
-                                </div><!--//section-block-->
-                                <div class="section-block">
-                                  <h3 class="block-title">JSON example</h3>
-                                    <pre><code class="language-json">
+                    <p>
+                      In a resulting <i>GDX</i> this parameter looks as follows:
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 125pt"
+                        src="assets/images/configuration_mode/pie_table.png"
+                        alt="Bar chart data"
+                      />
+                    </div>
+                    <p>
+                      In the Configuration Mode we then can configure a bar
+                      chart.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 350pt"
+                        src="assets/images/configuration_mode/graphs_bar_config.png"
+                        alt="Bar chart configuration"
+                      />
+                    </div>
+                    <p>
+                      <b>Note:</b> <br />Instead of the parameter <i>weight</i>,
+                      to which you assign the values of the variable <i>w</i>,
+                      you could have used a bar chart directly for the levels of
+                      variable <i>w</i>. However, this variable also contains
+                      all the zero values that would then become visible in the
+                      chart, see the
+                      <a href="#pie-variable" class="scrollto"
+                        >pie chart example</a
+                      >.
+                    </p>
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block">
+                    <h3 class="block-title">JSON example</h3>
+                    <pre><code class="language-json">
 {
   "dataRendering": {
     "stock_weight": {
@@ -242,19 +393,40 @@ stock_weight(s) = w.l(s);
     }
 }
                                     </code></pre>
-                                </div><!--//section-block-->
-                            </section>
-                            <section id="scatter-chart" class="doc-section">
-                                <h2 class="section-title">Scatter plot</h2>
-                                <div class="section-block">
-                                  <p>MIRO uses <a href = "https://plot.ly/r/line-and-scatter/" target = "_blank">Plotly</a> to render scatter plots.</p>
-                                  <h3 class="block-title">Configuration</h3>
-                                    <p></p>
-                                    <p>Example: Model <i>Pickstock</i>, parameter <i>absolute error</i></p>
-                                    <p>The parameter to plot represents the absolute errors in the training phase. <br>
-                                    We define a parameter <code class="language-gams">abserror(td, 'absolute error train')</code> (last row), to which we assign the values of the parameter <code class="language-gams">error(d)</code>, but only those values where <code class="language-gams">ord(d) <= trainingdays</code>.
-                                    </p>
-                                    <pre><code class="language-gams">Set         date           'date';
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <section id="scatter-chart" class="doc-section">
+                  <h2 class="section-title">Scatter plot</h2>
+                  <div class="section-block">
+                    <p>
+                      MIRO uses
+                      <a
+                        href="https://plot.ly/r/line-and-scatter/"
+                        target="_blank"
+                        >Plotly</a
+                      >
+                      to render scatter plots.
+                    </p>
+                    <h3 class="block-title">Configuration</h3>
+                    <p></p>
+                    <p>
+                      Example: Model <i>Pickstock</i>, parameter
+                      <i>absolute error</i>
+                    </p>
+                    <p>
+                      The parameter to plot represents the absolute errors in
+                      the training phase. <br />
+                      We define a parameter
+                      <code class="language-gams"
+                        >abserror(td, 'absolute error train')</code
+                      >
+                      (last row), to which we assign the values of the parameter
+                      <code class="language-gams">error(d)</code>, but only
+                      those values where
+                      <code class="language-gams">ord(d) <= trainingdays</code>.
+                    </p>
+                    <pre><code class="language-gams">Set         date           'date';
 Parameter   error(date)    'Absolute error';
 
 td(d)     = ord(d) <= trainingdays;
@@ -273,18 +445,34 @@ $offExternalOutput
 abserror(td, 'absolute error train')   = error(td);
 abserror(ntd,'absolute error test')    = error(ntd);
 </code></pre>
-                                    <p>In a resulting <i>GDX</i> this parameter looks as follows:</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/scatter_data.png" alt="Scatter plot data"/>
-                                    </div>
-                                    <p>In the Configuration Mode we then can configure a scatter plot.</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_scatter_config.png" alt="Scatter plot configuration"/>
-                                    </div>
-                                </div><!--//section-block-->
-                                <div class="section-block">
-                                  <h3 class="block-title">JSON example</h3>
-                                    <pre><code class="language-json">
+                    <p>
+                      In a resulting <i>GDX</i> this parameter looks as follows:
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 150pt"
+                        src="assets/images/configuration_mode/scatter_data.png"
+                        alt="Scatter plot data"
+                      />
+                    </div>
+                    <p>
+                      In the Configuration Mode we then can configure a scatter
+                      plot.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 350pt"
+                        src="assets/images/configuration_mode/graphs_scatter_config.png"
+                        alt="Scatter plot configuration"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block">
+                    <h3 class="block-title">JSON example</h3>
+                    <pre><code class="language-json">
 {
   "dataRendering": {
     "abserror": {
@@ -335,23 +523,46 @@ abserror(ntd,'absolute error test')    = error(ntd);
   }
 }
                                     </code></pre>
-                                </div><!--//section-block-->
-                            </section>
-                            <section id="line-chart" class="doc-section">
-                                <h2 class="section-title">Line chart</h2>
-                                <div class="section-block">
-                                  <p>MIRO uses <a href = "https://plot.ly/r/line-and-scatter/" target = "_blank">Plotly</a> to render line charts.</p>
-                                  <h3 class="block-title">Configuration</h3>
-                                    <p>Line charts also include area charts.</p>
-                                    <p>Example: Model <i>Pickstock</i>, parameter <i>absolute error</i></p>
-                                    <p>For an example in GAMS, see the <a href="#scatter-chart" class="scrollto">scatter plot example</a>.</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_line_config.png" alt="Line chart configuration"/>
-                                    </div>
-                                </div><!--//section-block-->
-                                <div class="section-block">
-                                  <h3 class="block-title">JSON example</h3>
-                                    <pre><code class="language-json">
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <section id="line-chart" class="doc-section">
+                  <h2 class="section-title">Line chart</h2>
+                  <div class="section-block">
+                    <p>
+                      MIRO uses
+                      <a
+                        href="https://plot.ly/r/line-and-scatter/"
+                        target="_blank"
+                        >Plotly</a
+                      >
+                      to render line charts.
+                    </p>
+                    <h3 class="block-title">Configuration</h3>
+                    <p>Line charts also include area charts.</p>
+                    <p>
+                      Example: Model <i>Pickstock</i>, parameter
+                      <i>absolute error</i>
+                    </p>
+                    <p>
+                      For an example in GAMS, see the
+                      <a href="#scatter-chart" class="scrollto"
+                        >scatter plot example</a
+                      >.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 350pt"
+                        src="assets/images/configuration_mode/graphs_line_config.png"
+                        alt="Line chart configuration"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block">
+                    <h3 class="block-title">JSON example</h3>
+                    <pre><code class="language-json">
 {
   "dataRendering": {
     "abserror": {
@@ -407,23 +618,47 @@ abserror(ntd,'absolute error test')    = error(ntd);
   }
 }
                                     </code></pre>
-                                </div><!--//section-block-->
-                            </section>
-                            <section id="bubble-chart" class="doc-section">
-                                <h2 class="section-title">Bubble chart</h2>
-                                <div class="section-block">
-                                  <p>MIRO uses <a href = "https://plot.ly/r/bubble-charts/" target = "_blank">Plotly</a> to render bubble charts.</p>
-                                  <h3 class="block-title">Configuration</h3>
-                                    <p>A bubble chart is a scatter diagram with an additional dimension in the form of the size of the "bubbles".</p>
-                                    <p>Example: Model <i>Pickstock</i>, parameter <i>absolute error</i></p>
-                                    <p>For an example in GAMS, see the <a href="#scatter-chart" class="scrollto">scatter plot example</a>.</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_bubble_config.png" alt="Bubble chart configuration"/>
-                                    </div>
-                                </div><!--//section-block-->
-                                <div class="section-block">
-                                  <h3 class="block-title">JSON example</h3>
-                                    <pre><code class="language-json">
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <section id="bubble-chart" class="doc-section">
+                  <h2 class="section-title">Bubble chart</h2>
+                  <div class="section-block">
+                    <p>
+                      MIRO uses
+                      <a href="https://plot.ly/r/bubble-charts/" target="_blank"
+                        >Plotly</a
+                      >
+                      to render bubble charts.
+                    </p>
+                    <h3 class="block-title">Configuration</h3>
+                    <p>
+                      A bubble chart is a scatter diagram with an additional
+                      dimension in the form of the size of the "bubbles".
+                    </p>
+                    <p>
+                      Example: Model <i>Pickstock</i>, parameter
+                      <i>absolute error</i>
+                    </p>
+                    <p>
+                      For an example in GAMS, see the
+                      <a href="#scatter-chart" class="scrollto"
+                        >scatter plot example</a
+                      >.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 350pt"
+                        src="assets/images/configuration_mode/graphs_bubble_config.png"
+                        alt="Bubble chart configuration"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block">
+                    <h3 class="block-title">JSON example</h3>
+                    <pre><code class="language-json">
 {
   "dataRendering": {
     "abserror": {
@@ -473,23 +708,44 @@ abserror(ntd,'absolute error test')    = error(ntd);
   }
 }
                                     </code></pre>
-                                </div><!--//section-block-->
-                            </section>
-                            <section id="histogram-chart" class="doc-section">
-                                <h2 class="section-title">Histogram</h2>
-                                <div class="section-block">
-                                  <p>MIRO uses <a href = "https://plot.ly/r/histograms/" target = "_blank">Plotly</a> to render histograms.</p>
-                                  <h3 class="block-title">Configuration</h3>
-                                    <p></p>
-                                    <p>Example: Model <i>Pickstock</i>, parameter <i>absolute error</i></p>
-                                    <p>For an example in GAMS, see the <a href="#scatter-chart" class="scrollto">scatter plot example</a>.</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_histogram_config.png" alt="Histogram configuration"/>
-                                    </div>
-                                </div><!--//section-block-->
-                                <div class="section-block">
-                                  <h3 class="block-title">JSON example</h3>
-                                    <pre><code class="language-json">
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <section id="histogram-chart" class="doc-section">
+                  <h2 class="section-title">Histogram</h2>
+                  <div class="section-block">
+                    <p>
+                      MIRO uses
+                      <a href="https://plot.ly/r/histograms/" target="_blank"
+                        >Plotly</a
+                      >
+                      to render histograms.
+                    </p>
+                    <h3 class="block-title">Configuration</h3>
+                    <p></p>
+                    <p>
+                      Example: Model <i>Pickstock</i>, parameter
+                      <i>absolute error</i>
+                    </p>
+                    <p>
+                      For an example in GAMS, see the
+                      <a href="#scatter-chart" class="scrollto"
+                        >scatter plot example</a
+                      >.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 350pt"
+                        src="assets/images/configuration_mode/graphs_histogram_config.png"
+                        alt="Histogram configuration"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block">
+                    <h3 class="block-title">JSON example</h3>
+                    <pre><code class="language-json">
 {
   "dataRendering": {
     "abserror": {
@@ -527,17 +783,31 @@ abserror(ntd,'absolute error test')    = error(ntd);
   }
 }
                                     </code></pre>
-                                </div><!--//section-block-->
-                            </section>
-                            <section id="map-chart" class="doc-section">
-                                <h2 class="section-title">Map</h2>
-                                <div class="section-block">
-                                  <p>MIRO uses <a href = "https://rstudio.github.io/leaflet/" target = "_blank">Leaflet</a> to render maps.</p>
-                                  <h3 class="block-title">Configuration</h3>
-                                    <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
-                                    <p>The parameter to plot represents the shipment quantities between canning plants and markets. <br>
-                                    </p>
-                                    <pre><code class="language-gams">Set
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <section id="map-chart" class="doc-section">
+                  <h2 class="section-title">Map</h2>
+                  <div class="section-block">
+                    <p>
+                      MIRO uses
+                      <a
+                        href="https://rstudio.github.io/leaflet/"
+                        target="_blank"
+                        >Leaflet</a
+                      >
+                      to render maps.
+                    </p>
+                    <h3 class="block-title">Configuration</h3>
+                    <p>
+                      Example: Model <i>Transport</i>, parameter
+                      <i>shipment quantities in cases</i>
+                    </p>
+                    <p>
+                      The parameter to plot represents the shipment quantities
+                      between canning plants and markets. <br />
+                    </p>
+                    <pre><code class="language-gams">Set
     i           'canning plants'
     j           'markets'
     scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM', 'latM', 'cap', 'demand', 'quantities' /;
@@ -554,27 +824,54 @@ schedule(i,j, 'cap')        = a(i);
 schedule(i,j, 'demand')     = b(j);
 schedule(i,j, 'quantities') = x.l(i,j);
 </code></pre>
-                                    <p>To be able to set markers on a map, the map tool requires latitude and longitude information.
-									By declaring the parameter <code class="language-gams">schedule</code> as a
-									<code class="language-gams">table</code>, the elements of the last index set
-									<code class="language-gams">scheduleHdr</code> (<code class="language-gams">lngP, latP, lngM, latM, cap, demand, quantities</code>) can be used for the map configuration.
-									You can find a detailed example <a href = "./model.html#table-miro">here</a>.</p>
-                                    <p>In a resulting <i>GDX</i> this parameter looks as follows:</p>
-                                    <div class="section-block" id="map-data">
-                                        <img class="img-fluid" style= "max-height:140pt;" src="assets/images/configuration_mode/map_data.png" alt="Map data"/>
-                                    </div>
-                                    <p>In the Configuration Mode we then can configure a map.</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" src="assets/images/configuration_mode/graphs_map_config.png" alt="Map configuration"/>
-                                    </div>
-									<div class="callout-block callout-success">
-                                        <div class="icon-holder">
-                                            <i class="fas fa-thumbs-up"></i>
-                                        </div><!--//icon-holder-->
-                                        <div class="content">
-                                            <b class="callout-title">Tip:</b>
-                                            <p>Instead of a table with the geographic information in the header, we can also use a parameter or even a set that contains all latitude and longitude information in separate domains:</p>
-									        <pre><code class="language-gams">$onExternalOutput
+                    <p>
+                      To be able to set markers on a map, the map tool requires
+                      latitude and longitude information. By declaring the
+                      parameter <code class="language-gams">schedule</code> as a
+                      <code class="language-gams">table</code>, the elements of
+                      the last index set
+                      <code class="language-gams">scheduleHdr</code> (<code
+                        class="language-gams"
+                        >lngP, latP, lngM, latM, cap, demand, quantities</code
+                      >) can be used for the map configuration. You can find a
+                      detailed example
+                      <a href="./model.html#table-miro">here</a>.
+                    </p>
+                    <p>
+                      In a resulting <i>GDX</i> this parameter looks as follows:
+                    </p>
+                    <div class="section-block" id="map-data">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 140pt"
+                        src="assets/images/configuration_mode/map_data.png"
+                        alt="Map data"
+                      />
+                    </div>
+                    <p>
+                      In the Configuration Mode we then can configure a map.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/configuration_mode/graphs_map_config.png"
+                        alt="Map configuration"
+                      />
+                    </div>
+                    <div class="callout-block callout-success">
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Tip:</b>
+                        <p>
+                          Instead of a table with the geographic information in
+                          the header, we can also use a parameter or even a set
+                          that contains all latitude and longitude information
+                          in separate domains:
+                        </p>
+                        <pre><code class="language-gams">$onExternalOutput
 Parameter schedule(i,j,latP, lngP, latM, lngM) 'shipment quantities in cases';
 $offExternalOutput
 
@@ -583,40 +880,97 @@ schedule('Seattle',  'Chicago',  '47.608013', '-122.335167', '41.881832', '-87.6
 schedule('San-Diego','New-York', '32.715736', '-117.161087', '40.730610', '-73.935242') = 275;
 schedule('San-Diego','Topeka',   '32.715736', '-117.161087', '39.056198', '-95.695312') = 275;
 </code></pre>
-                                            <p>The geographic information is then no longer available in numerical form, but the map tool interprets the data properly.</p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->
-                                    <p>With regard to map-based graphics, a multitude of possible visualizations are conceivable. In the Configuration Mode of MIRO, the following features can be realized on a map:</p>
-                                    <ul>
-                                      <li><b>Markers</b><br>
-                                      Markers can be set. For this purpose, the position of the markers must be available in the data as longitude and latitude information (see <a href="#map-data" class="scrollto">table above</a>).
-                                      Marker labels can be set dynamically, i.e. based on data. In the following example, the marker label is set to <i>Market: [j]</i>.
-                                      If you now click on a marker on the resulting map, the label will not be <i>Market: [j]</i>. Instead, the <i>[j]</i> is replaced with the element of the GAMS index set belonging to the marker (here: <i>Chicago</i>).
-                                      <div class="section-block">
-                                        <img class="img-fluid" src="assets/images/configuration_mode/map_markers.png" alt="Map markers"/>
-                                      </div>
-                                      The second index of the symbol <i>schedule</i> contains the markets <i>j</i>. The indices <i>lngM</i> and <i>latM</i> were selected as longitude and latitude data.
-                                      For a given longitude-latitude combination, the corresponding element from the second index <i>j</i> is now displayed as label.
-                                      </li>
-                                      <li><b>Flows</b><br>
-                                      Flows can be displayed between different points on the map. If configured accordingly, the thickness of the arrows can depend on the flow data.
-                                      The data overview from the <a href="#map-data" class="scrollto">table above</a> also helps to understand this:
-                                      In the example below the flows have been configured to point from <i>lngP</i>/<i>latP</i> to <i>lngM</i>/<i>latM</i>.
-                                      The thickness depends on the data in the column <i>quantities</i>.
-                                      <div class="callout-block callout-warning">
-                                          <div class="icon-holder">
-                                              <i class="fas fa-info-circle"></i>
-                                          </div><!--//icon-holder-->
-                                          <div class="content">
-                                              <b class="callout-title">Note:</b>
-                                              <p>Flows cannot be configured for sets, since numeric values are required for the flow data.</p>
-                                          </div><!--//content-->
-                                      </div><!--//callout-block-->
-                                      <div class="section-block">
-                                        <img class="img-fluid" src="assets/images/configuration_mode/map_flows.png" alt="Map flows"/>
-                                      </div>
-                                      <b id="unique-flow-label">Unique flow labels</b>:
-                                      <p>When configuring flows, you can optionally specify a unique label for each flow. This label appears when you click on a flow. It is important that the label is different for each flow. If this is not the case, only one flow is displayed for each duplicated label. A suitable configuration for a label is to specify the originator and the recipient for each flow. You can achieve this by using the square brackets syntax to address the symbol/data domains. In the example above the symbol <i>schedule</i> is used to display a map:</p><pre><code class="language-gams">Set
+                        <p>
+                          The geographic information is then no longer available
+                          in numerical form, but the map tool interprets the
+                          data properly.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <p>
+                      With regard to map-based graphics, a multitude of possible
+                      visualizations are conceivable. In the Configuration Mode
+                      of MIRO, the following features can be realized on a map:
+                    </p>
+                    <ul>
+                      <li>
+                        <b>Markers</b><br />
+                        Markers can be set. For this purpose, the position of
+                        the markers must be available in the data as longitude
+                        and latitude information (see
+                        <a href="#map-data" class="scrollto">table above</a>).
+                        Marker labels can be set dynamically, i.e. based on
+                        data. In the following example, the marker label is set
+                        to <i>Market: [j]</i>. If you now click on a marker on
+                        the resulting map, the label will not be
+                        <i>Market: [j]</i>. Instead, the <i>[j]</i> is replaced
+                        with the element of the GAMS index set belonging to the
+                        marker (here: <i>Chicago</i>).
+                        <div class="section-block">
+                          <img
+                            class="img-fluid"
+                            src="assets/images/configuration_mode/map_markers.png"
+                            alt="Map markers"
+                          />
+                        </div>
+                        The second index of the symbol <i>schedule</i> contains
+                        the markets <i>j</i>. The indices <i>lngM</i> and
+                        <i>latM</i> were selected as longitude and latitude
+                        data. For a given longitude-latitude combination, the
+                        corresponding element from the second index <i>j</i> is
+                        now displayed as label.
+                      </li>
+                      <li>
+                        <b>Flows</b><br />
+                        Flows can be displayed between different points on the
+                        map. If configured accordingly, the thickness of the
+                        arrows can depend on the flow data. The data overview
+                        from the
+                        <a href="#map-data" class="scrollto">table above</a>
+                        also helps to understand this: In the example below the
+                        flows have been configured to point from <i>lngP</i>/<i
+                          >latP</i
+                        >
+                        to <i>lngM</i>/<i>latM</i>. The thickness depends on the
+                        data in the column <i>quantities</i>.
+                        <div class="callout-block callout-warning">
+                          <div class="icon-holder">
+                            <i class="fas fa-info-circle"></i>
+                          </div>
+                          <!--//icon-holder-->
+                          <div class="content">
+                            <b class="callout-title">Note:</b>
+                            <p>
+                              Flows cannot be configured for sets, since numeric
+                              values are required for the flow data.
+                            </p>
+                          </div>
+                          <!--//content-->
+                        </div>
+                        <!--//callout-block-->
+                        <div class="section-block">
+                          <img
+                            class="img-fluid"
+                            src="assets/images/configuration_mode/map_flows.png"
+                            alt="Map flows"
+                          />
+                        </div>
+                        <b id="unique-flow-label">Unique flow labels</b>:
+                        <p>
+                          When configuring flows, you can optionally specify a
+                          unique label for each flow. This label appears when
+                          you click on a flow. It is important that the label is
+                          different for each flow. If this is not the case, only
+                          one flow is displayed for each duplicated label. A
+                          suitable configuration for a label is to specify the
+                          originator and the recipient for each flow. You can
+                          achieve this by using the square brackets syntax to
+                          address the symbol/data domains. In the example above
+                          the symbol <i>schedule</i> is used to display a map:
+                        </p>
+                        <pre><code class="language-gams">Set
     i           'canning plants'
     j           'markets'
     scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM', 'latM', 'cap', 'demand', 'quantities' /;
@@ -625,49 +979,109 @@ $onExternalOutput
 Table  schedule(i,j,scheduleHdr) 'shipment quantities in cases';
 $offExternalOutput
 </code></pre>
-                                      <p>Originator and recipient in this case are the domains <i>i</i> and <i>j</i> of the symbol <i>schedule</i>. If you configure the label as follows: <span class="code">From [i] to [j]</span> - then the originator and recipient cities appear as labels for each arrow:</p>
-                                      <div class="section-block">
-                                        <img class="img-fluid" src="assets/images/configuration_mode/map_flows_label.png" alt="Unique label"/>
-                                      </div>
-                                      </li>
-                                      <li><b>Charts</b><br>
-                                      You can display small diagrams on your map. The following example shows a pie chart for each of the 16 German states.
-                                      <p>Example: Model <i>Simple</i> (see <a href="https://miro.gams.com">GAMS MIRO gallery</a>), parameter <i>energy mix report</i></p>
-                                      <div class="section-block">
-                                        <img class="img-fluid" src="assets/images/configuration_mode/map_charts.png" alt="Map charts"/>
-                                      </div>
-                                      The graph is based on the data below:
-                                      <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/map_charts2.png" alt="Map charts data"/>
-                                      </div>
-                                      The position of each pie chart results from a longitude/latitude combination.
-                                      The data of the pie chart for each state were determined in Configuration Mode with <i>Renewable</i> and <i>Fossil</i>. <br>
-                                      You also have the option to define a time dimension in the charts. The data of the example covers a period of one year with a resolution of one hour.
-                                      The first column was defined as the time dimension (starting with <i>t001</i>.
-                                      In this way, a separate pie chart is displayed for each period for each state (see play button at the bottom right of the map).
-                                      <div class="callout-block callout-warning">
-                                          <div class="icon-holder">
-                                              <i class="fas fa-info-circle"></i>
-                                          </div><!--//icon-holder-->
-                                          <div class="content">
-                                              <b class="callout-title">Note:</b>
-                                              <p>Charts on maps cannot be configured for sets, because numeric values are required for the chart data.</p>
-                                          </div><!--//content-->
-                                      </div><!--//callout-block-->
-									  <p>
-                                      <b>Note</b> that all data of your entire graph must come from the same GAMS symbol. If you want to have more sophisticated graphics, it may make sense to combine data from different symbols in one symbol. Or you can use our <a href="./customize.html#custom-renderers">R API</a> and create your own graphics.
-                                      </li>
-                                    </ul>
-                                    <p><b>Layers</b><br>For map visualizations it can be helpful to display different layers, e.g. with markers.
-                                    In Configuration Mode you can specify such layers. In the resulting graphic you can select the different layers and display only the corresponding markers.</p>
-                                    <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
-                                    <div class="section-block">
-                                      <img class="img-fluid" src="assets/images/configuration_mode/map_layers.png" alt="Map charts data"/>
-                                    </div>
-                                </div><!--//section-block-->
-                                <div class="section-block">
-                                  <h3 class="block-title">JSON example</h3>
-                                    <pre><code class="language-json">
+                        <p>
+                          Originator and recipient in this case are the domains
+                          <i>i</i> and <i>j</i> of the symbol <i>schedule</i>.
+                          If you configure the label as follows:
+                          <span class="code">From [i] to [j]</span> - then the
+                          originator and recipient cities appear as labels for
+                          each arrow:
+                        </p>
+                        <div class="section-block">
+                          <img
+                            class="img-fluid"
+                            src="assets/images/configuration_mode/map_flows_label.png"
+                            alt="Unique label"
+                          />
+                        </div>
+                      </li>
+                      <li>
+                        <b>Charts</b><br />
+                        You can display small diagrams on your map. The
+                        following example shows a pie chart for each of the 16
+                        German states.
+                        <p>
+                          Example: Model <i>Simple</i> (see
+                          <a href="https://miro.gams.com">GAMS MIRO gallery</a
+                          >), parameter <i>energy mix report</i>
+                        </p>
+                        <div class="section-block">
+                          <img
+                            class="img-fluid"
+                            src="assets/images/configuration_mode/map_charts.png"
+                            alt="Map charts"
+                          />
+                        </div>
+                        The graph is based on the data below:
+                        <div class="section-block">
+                          <img
+                            class="img-fluid"
+                            style="max-height: 350pt"
+                            src="assets/images/configuration_mode/map_charts2.png"
+                            alt="Map charts data"
+                          />
+                        </div>
+                        The position of each pie chart results from a
+                        longitude/latitude combination. The data of the pie
+                        chart for each state were determined in Configuration
+                        Mode with <i>Renewable</i> and <i>Fossil</i>. <br />
+                        You also have the option to define a time dimension in
+                        the charts. The data of the example covers a period of
+                        one year with a resolution of one hour. The first column
+                        was defined as the time dimension (starting with
+                        <i>t001</i>. In this way, a separate pie chart is
+                        displayed for each period for each state (see play
+                        button at the bottom right of the map).
+                        <div class="callout-block callout-warning">
+                          <div class="icon-holder">
+                            <i class="fas fa-info-circle"></i>
+                          </div>
+                          <!--//icon-holder-->
+                          <div class="content">
+                            <b class="callout-title">Note:</b>
+                            <p>
+                              Charts on maps cannot be configured for sets,
+                              because numeric values are required for the chart
+                              data.
+                            </p>
+                          </div>
+                          <!--//content-->
+                        </div>
+                        <!--//callout-block-->
+                        <p>
+                          <b>Note</b> that all data of your entire graph must
+                          come from the same GAMS symbol. If you want to have
+                          more sophisticated graphics, it may make sense to
+                          combine data from different symbols in one symbol. Or
+                          you can use our
+                          <a href="./customize.html#custom-renderers">R API</a>
+                          and create your own graphics.
+                        </p>
+                      </li>
+                    </ul>
+                    <p>
+                      <b>Layers</b><br />For map visualizations it can be
+                      helpful to display different layers, e.g. with markers. In
+                      Configuration Mode you can specify such layers. In the
+                      resulting graphic you can select the different layers and
+                      display only the corresponding markers.
+                    </p>
+                    <p>
+                      Example: Model <i>Transport</i>, parameter
+                      <i>shipment quantities in cases</i>
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/configuration_mode/map_layers.png"
+                        alt="Map charts data"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block">
+                    <h3 class="block-title">JSON example</h3>
+                    <pre><code class="language-json">
 {
   "dataRendering": {
     "schedule": {
@@ -722,18 +1136,41 @@ $offExternalOutput
   }
 }
                                     </code></pre>
-                                </div><!--//section-block-->
-                            </section>
-                            <section id="timeseries-chart" class="doc-section">
-                                <h2 class="section-title">Time series diagram</h2>
-                                <div class="section-block">
-                                  <p>MIRO uses <a href = "https://rstudio.github.io/dygraphs/" target = "_blank">DyGraphs</a> to render time series diagrams.</p>
-                                  <h3 class="block-title">Configuration</h3>
-                                    <p>As the name of the graphic type suggests, this chart type is useful if you want to visualize time series data.
-                                    An important property of such time series is the format of the data. You should make sure that the elements of the index set, which should represent the time component of your graphic, have their data available in a date format or at least can be formatted into such a format.
-                                    A suitable syntax for a date would be <i>yyyy-MM-dd</i>, e.g. <i>2014-07-13</i>. For a finer granularity, the format <i style="white-space: nowrap;">yyyy-MM-dd HH:mm:ss</i> is recommended.</p>
-                                    <p>Example: Model <i>Pickstock</i>, parameter <i>dow jones vs. index fund</i></p>
-                                    <pre><code class="language-gams">Set date      'date'
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <section id="timeseries-chart" class="doc-section">
+                  <h2 class="section-title">Time series diagram</h2>
+                  <div class="section-block">
+                    <p>
+                      MIRO uses
+                      <a
+                        href="https://rstudio.github.io/dygraphs/"
+                        target="_blank"
+                        >DyGraphs</a
+                      >
+                      to render time series diagrams.
+                    </p>
+                    <h3 class="block-title">Configuration</h3>
+                    <p>
+                      As the name of the graphic type suggests, this chart type
+                      is useful if you want to visualize time series data. An
+                      important property of such time series is the format of
+                      the data. You should make sure that the elements of the
+                      index set, which should represent the time component of
+                      your graphic, have their data available in a date format
+                      or at least can be formatted into such a format. A
+                      suitable syntax for a date would be <i>yyyy-MM-dd</i>,
+                      e.g. <i>2014-07-13</i>. For a finer granularity, the
+                      format
+                      <i style="white-space: nowrap">yyyy-MM-dd HH:mm:ss</i> is
+                      recommended.
+                    </p>
+                    <p>
+                      Example: Model <i>Pickstock</i>, parameter
+                      <i>dow jones vs. index fund</i>
+                    </p>
+                    <pre><code class="language-gams">Set date      'date'
     fHdr      'fund header'   / dj 'dow jones','index fund'  /;
 
 $onExternalOutput
@@ -743,68 +1180,142 @@ $offExternalOutput
 dowVSindex(d,'dj')             = index(d);
 dowVSindex(d,'index fund')     = fund(d);
 </code></pre>
-                                    <div class="row" style="margin-bottom:20pt;">
-                                        <div class="col-md-6">
-                                              <p>The index set <i>date</i> looks as follows:</p>
-                                              <img class="img-fluid" style= "max-height:140pt;" src="assets/images/configuration_mode/timeseries_date.png" alt="Time series diagram dates"/>
-                                        </div>
-                                        <div class="col-md-6">
-                                              <p>The parameter <i>dowVSindex</i>:</p>
-                                              <img class="img-fluid" style= "max-height:140pt;" src="assets/images/configuration_mode/timeseries_data.png" alt="Time series diagram data"/>
-                                        </div>
-                                    </div>
-                                     <p>In the Configuration Mode we then can configure a time series diagram:</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" src="assets/images/configuration_mode/graphs_timeseries_config.png" alt="Time series configuration"/>
-                                    </div>
-                                    <p>The picture in this example shows a red dotted vertical line showing the "last day of training phase". A scalar output value has been integrated into the graph to define this event.
-                                    <br><b>Note:</b> To use such a scalar in the graphic, MIRO must of course know this symbol. You therefore need to tag it with <code class="language-gams">$onExternalInput
-                                        </code> / <code class="language-gams">$offExternalInput
-                                        </code> or <code class="language-gams">$onExternalOutput
-                                        </code> / <code class="language-gams">$offExternalOutput
-                                        </code> in the GAMS model.</p>
-                                    <div class="callout-block callout-success" style="margin-top:10px;">
-                                       <div class="icon-holder">
-                                           <i class="fas fa-thumbs-up"></i>
-                                       </div><!--//icon-holder-->
-                                       <div class="content">
-                                           <b class="callout-title">Tip:</b>
-                                            <p>You want to use a scalar value in a graph but not in the scalars table in MIRO? You can do this by <a href="./customize.html#hidden-scalars">hiding that symbol</a>.</p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->
-                                    <p>The tool for creating time series diagrams supports the integration of static or dynamic scalar values. A static value could show a limit in the data in the form of a horizontal line. A dynamic scalar can be a date which results from the model calculations (i.e. output scalar) and is displayed in the graphic as an vertical event line.</p>
-                                    <div class="callout-block callout-warning">
-                                        <div class="icon-holder">
-                                            <i class="fas fa-info-circle"></i>
-                                        </div><!--//icon-holder-->
-                                        <div class="content">
-                                            <b class="callout-title">Note:</b>
-                                            <p>Dynamic scalar values can only be displayed in graphics of output symbols!</p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->
-                                    <p>The following options are available:</p>
-                                    <ul>
-                                      <li><b>Event line</b>
-                                        <div class="section-block">
-                                          <img class="img-fluid" src="assets/images/configuration_mode/timeseries_event.png" alt="Vertical event"/>
-                                      </div></li>
-                                      <li><b>Limit line</b>
-                                        <div class="section-block">
-                                          <img class="img-fluid" src="assets/images/configuration_mode/timeseries_limit.png" alt="Horizontal line"/>
-                                      </div></li>
-                                      <li><b>Annotation</b>
-                                        <div class="section-block">
-                                          <img class="img-fluid" src="assets/images/configuration_mode/timeseries_annotation.png" alt="Annotation"/>
-                                      </div></li>
-                                      <li><b>Shading</b>
-                                        <div class="section-block">
-                                          <img class="img-fluid" src="assets/images/configuration_mode/timeseries_shading.png" alt="Shading"/>
-                                      </div></li>
-                                    </ul>
-                                </div><!--//section-block-->
-                                <div class="section-block">
-                                  <h3 class="block-title">JSON example</h3>
-                                    <pre><code class="language-json">
+                    <div class="row" style="margin-bottom: 20pt">
+                      <div class="col-md-6">
+                        <p>The index set <i>date</i> looks as follows:</p>
+                        <img
+                          class="img-fluid"
+                          style="max-height: 140pt"
+                          src="assets/images/configuration_mode/timeseries_date.png"
+                          alt="Time series diagram dates"
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <p>The parameter <i>dowVSindex</i>:</p>
+                        <img
+                          class="img-fluid"
+                          style="max-height: 140pt"
+                          src="assets/images/configuration_mode/timeseries_data.png"
+                          alt="Time series diagram data"
+                        />
+                      </div>
+                    </div>
+                    <p>
+                      In the Configuration Mode we then can configure a time
+                      series diagram:
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/configuration_mode/graphs_timeseries_config.png"
+                        alt="Time series configuration"
+                      />
+                    </div>
+                    <p>
+                      The picture in this example shows a red dotted vertical
+                      line showing the "last day of training phase". A scalar
+                      output value has been integrated into the graph to define
+                      this event. <br /><b>Note:</b> To use such a scalar in the
+                      graphic, MIRO must of course know this symbol. You
+                      therefore need to tag it with
+                      <code class="language-gams">$onExternalInput </code> /
+                      <code class="language-gams">$offExternalInput </code> or
+                      <code class="language-gams">$onExternalOutput </code> /
+                      <code class="language-gams">$offExternalOutput </code> in
+                      the GAMS model.
+                    </p>
+                    <div
+                      class="callout-block callout-success"
+                      style="margin-top: 10px"
+                    >
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Tip:</b>
+                        <p>
+                          You want to use a scalar value in a graph but not in
+                          the scalars table in MIRO? You can do this by
+                          <a href="./customize.html#hidden-scalars"
+                            >hiding that symbol</a
+                          >.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <p>
+                      The tool for creating time series diagrams supports the
+                      integration of static or dynamic scalar values. A static
+                      value could show a limit in the data in the form of a
+                      horizontal line. A dynamic scalar can be a date which
+                      results from the model calculations (i.e. output scalar)
+                      and is displayed in the graphic as an vertical event line.
+                    </p>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          Dynamic scalar values can only be displayed in
+                          graphics of output symbols!
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <p>The following options are available:</p>
+                    <ul>
+                      <li>
+                        <b>Event line</b>
+                        <div class="section-block">
+                          <img
+                            class="img-fluid"
+                            src="assets/images/configuration_mode/timeseries_event.png"
+                            alt="Vertical event"
+                          />
+                        </div>
+                      </li>
+                      <li>
+                        <b>Limit line</b>
+                        <div class="section-block">
+                          <img
+                            class="img-fluid"
+                            src="assets/images/configuration_mode/timeseries_limit.png"
+                            alt="Horizontal line"
+                          />
+                        </div>
+                      </li>
+                      <li>
+                        <b>Annotation</b>
+                        <div class="section-block">
+                          <img
+                            class="img-fluid"
+                            src="assets/images/configuration_mode/timeseries_annotation.png"
+                            alt="Annotation"
+                          />
+                        </div>
+                      </li>
+                      <li>
+                        <b>Shading</b>
+                        <div class="section-block">
+                          <img
+                            class="img-fluid"
+                            src="assets/images/configuration_mode/timeseries_shading.png"
+                            alt="Shading"
+                          />
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block">
+                    <h3 class="block-title">JSON example</h3>
+                    <pre><code class="language-json">
 {
   "dataRendering": {
     "dowvsindex": {
@@ -877,28 +1388,101 @@ dowVSindex(d,'index fund')     = fund(d);
   }
 }
                                     </code></pre>
-                                </div><!--//section-block-->
-                            </section>
-                            <section id="pivot-chart" class="doc-section">
-                                <h2 class="section-title">Pivot table</h2>
-                                <div class="section-block">
-                                  <p>MIRO comes with a powerful pivot table renderer that allows you to filter, aggregate and pivot data. In addition to a table, the MIRO pivot table renderer also supports the visualization of data in the form of a heatmap or as chart (line chart, bar chart, etc.). Each slice, or "view" of data can be exported by clicking the <img class="img-fluid" src="assets/images/configuration_mode/miropivot_exportview_btn.png" width="25" height="25" align="middle" alt="Export as CSV/PNG" /> button. If you are currently viewing a chart, the view is exported as a PNG file; if you are viewing a table or heatmap, the data is exported as a CSV file.</p>
-                                  <p>A click on the <img class="img-fluid" src="assets/images/configuration_mode/miropivot_presentationmode_btn.png" width="25" height="25" align="middle" alt="Export Show/hide pivot controls" /> button toggles the <a href ="#presentation-mode">presentation mode</a>.</p>
-                                  <p>The MIRO pivot table renderer allows you to store "views" - the current representation of the data - to the database and load it together with the scenario data. Simply click the <img class="img-fluid" src="assets/images/configuration_mode/miropivot_addview_btn.png" width="25" height="25" align="middle" alt="Add view" /> button and assign a name to the view. When you save the scenario, all your views are automatically stored as well. Load a view by first clicking on the "Load view" button and then selecting which view to load.</p>
-                                  <div class="section-block">
-                                      <img class="img-fluid" src="assets/images/configuration_mode/miropivot_loadview_btn.png" alt="Load views"/>
-                                  </div>
-                                  <h3 class="block-title">Configuration</h3>
-                                    <p>You can specify the default view as well as the default renderer (table/chart) of the pivot table renderer in the Configuration Mode. Note that unlike other charting tools, you configure most of the MIRO pivot table directly in the preview on the right. Drag and drop the domains where you want them to be and click on "Save". The symbol is loaded in MIRO with the same view that you have set up in the Configuration Mode.</p>
-                                    <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
-                                    <p>For an example in GAMS, see the <a href="#map-chart" class="scrollto">map example</a>.</p>
-                                    <div class="section-block" style = "cursor: pointer;">
-                                        <img class="img-fluid" src="assets/images/configuration_mode/graphs_miropivot_config.png" alt="Pivottable configuration" onclick="window.open(this.src, '_blank');"/>
-                                    </div>
-                                </div><!--//section-block-->
-                                <div class="section-block">
-                                  <h3 class="block-title">JSON example</h3>
-                                    <pre><code class="language-json">
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <section id="pivot-chart" class="doc-section">
+                  <h2 class="section-title">Pivot table</h2>
+                  <div class="section-block">
+                    <p>
+                      MIRO comes with a powerful pivot table renderer that
+                      allows you to filter, aggregate and pivot data. In
+                      addition to a table, the MIRO pivot table renderer also
+                      supports the visualization of data in the form of a
+                      heatmap or as chart (line chart, bar chart, etc.). Each
+                      slice, or "view" of data can be exported by clicking the
+                      <img
+                        class="img-fluid"
+                        src="assets/images/configuration_mode/miropivot_exportview_btn.png"
+                        width="25"
+                        height="25"
+                        align="middle"
+                        alt="Export as CSV/PNG"
+                      />
+                      button. If you are currently viewing a chart, the view is
+                      exported as a PNG file; if you are viewing a table or
+                      heatmap, the data is exported as a CSV file.
+                    </p>
+                    <p>
+                      A click on the
+                      <img
+                        class="img-fluid"
+                        src="assets/images/configuration_mode/miropivot_presentationmode_btn.png"
+                        width="25"
+                        height="25"
+                        align="middle"
+                        alt="Export Show/hide pivot controls"
+                      />
+                      button toggles the
+                      <a href="#presentation-mode">presentation mode</a>.
+                    </p>
+                    <p>
+                      The MIRO pivot table renderer allows you to store "views"
+                      - the current representation of the data - to the database
+                      and load it together with the scenario data. Simply click
+                      the
+                      <img
+                        class="img-fluid"
+                        src="assets/images/configuration_mode/miropivot_addview_btn.png"
+                        width="25"
+                        height="25"
+                        align="middle"
+                        alt="Add view"
+                      />
+                      button and assign a name to the view. When you save the
+                      scenario, all your views are automatically stored as well.
+                      Load a view by first clicking on the "Load view" button
+                      and then selecting which view to load.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/configuration_mode/miropivot_loadview_btn.png"
+                        alt="Load views"
+                      />
+                    </div>
+                    <h3 class="block-title">Configuration</h3>
+                    <p>
+                      You can specify the default view as well as the default
+                      renderer (table/chart) of the pivot table renderer in the
+                      Configuration Mode. Note that unlike other charting tools,
+                      you configure most of the MIRO pivot table directly in the
+                      preview on the right. Drag and drop the domains where you
+                      want them to be and click on "Save". The symbol is loaded
+                      in MIRO with the same view that you have set up in the
+                      Configuration Mode.
+                    </p>
+                    <p>
+                      Example: Model <i>Transport</i>, parameter
+                      <i>shipment quantities in cases</i>
+                    </p>
+                    <p>
+                      For an example in GAMS, see the
+                      <a href="#map-chart" class="scrollto">map example</a>.
+                    </p>
+                    <div class="section-block" style="cursor: pointer">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/configuration_mode/graphs_miropivot_config.png"
+                        alt="Pivottable configuration"
+                        onclick="window.open(this.src, '_blank');"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block">
+                    <h3 class="block-title">JSON example</h3>
+                    <pre><code class="language-json">
 {
   "dataRendering": {
     "schedule": {
@@ -921,99 +1505,195 @@ dowVSindex(d,'index fund')     = fund(d);
   }
 }
                                     </code></pre>
-                                </div><!--//section-block-->
-                                <div class="section-block">
-                                  <p><b>Hide empty columns:</b><br>
-                                  In addition to the configuration of the default view, there is also the possibility to activate a switch that allows to hide <i>empty</i> columns. This is especially useful if you use the MIRO Pivot Table for a <i>data cube</i>. A <i>data cube</i> is a collection of GAMS parameters that are combined to form a large cube. For example, if you have location information in the two parameters: <code class="language-gams">ilocData(i,locHdr)</code> and <code class="language-gams">jlocData(j,locHdr)</code>, you can combine them into a cube with four dimensions: one dimension to store the name of the GAMS symbols: <code class="language-gams">symname</code> and the three dimensions <code class="language-gams">i</code>, <code class="language-gams">j</code> and <code class="language-gams">locHdr</code>. Note that the dimension <code class="language-gams">i</code> is missing in the parameter <code class="language-gams">jlocData</code> and vice versa. So we end up with a sparse cube:</p>
-                                  <div class="table-responsive">
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <tr>
-                                              <th>symname</th>
-                                              <th>i</th>
-                                              <th>j</th>
-                                              <th>locHdr</th>
-                                              <th>value</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                              <td>ilocData</td>
-                                              <td>Seattle</td>
-                                              <td>-</td>
-                                              <td>lat</td>
-                                              <td>47.61</td>
-                                            </tr>
-                                            <tr>
-                                              <td>ilocData</td>
-                                              <td>Seattle</td>
-                                              <td>-</td>
-                                              <td>lng</td>
-                                              <td>-122.33</td>
-                                            </tr>
-                                            <tr>
-                                              <td>jlocData</td>
-                                              <td>-</td>
-                                              <td>New-York</td>
-                                              <td>lat</td>
-                                              <td>40.73</td>
-                                            </tr>
-                                            <tr>
-                                              <td>jlocData</td>
-                                              <td>-</td>
-                                              <td>New-York</td>
-                                              <td>lng</td>
-                                              <td>-73.94</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <p>You probably noticed that in this example missing dimensions in a symbol are filled with <kbd>-</kbd>. But we could have chosen any other UEL to indicate missing values. If you would visualize the data of this parameter with the MIRO Pivot Table, you might not want to see columns containing only <kbd>-</kbd>. Therefore, the MIRO Pivot Table has the options to hide these <i> empty</i> columns:</p>
-                                <div class="section-block">
-                                    <img class="img-fluid" src="assets/images/configuration_mode/miropivot_empty_col_visible.png" alt="MIRO Pivot Table with empty column visible"/>
-                                </div>
-                                <div class="section-block">
-                                    <img class="img-fluid" src="assets/images/configuration_mode/miropivot_empty_col_hidden.png" alt="MIRO Pivot Table with empty column hidden"/>
-                                </div>
-                                <p id="presentation-mode"><b>Hide pivot controls (presentation mode):</b><br>
-                                This option activates the presentation mode by default. In this mode, all pivot controls are hidden so that the chart or table takes center stage. Only configured views and export buttons remain visible. The presentation mode can be very useful for users who do not want to play around with the data in the pivot tool, but only want to view predefined views/reports. </p>
-                                <div class="section-block" style = "cursor: pointer;">
-                                    <img class="img-fluid" src="assets/images/configuration_mode/graphs_miropivot_presentation.png" alt="Presentation mode" onclick="window.open(this.src, '_blank');"/>
-                                </div>
-                            </section>
-                            <section id="gantt-chart" class="doc-section">
-                                <h2 class="section-title">Gantt chart</h2>
-                                <div class="section-block">
-                                  <p>MIRO uses <a href = "https://github.com/daattali/timevis" target = "_blank">timevis</a> to render gantt charts.</p>
-                                  <h3 class="block-title">Configuration</h3>
-                                    <p>The GAMS symbol whose data is to be visualized as a Gantt chart must contain the following index sets: </p>
-                                    <ul>
-                                      <li>Start<br>
-                                      Each event must have a start date. The GAMS elements of this set must be in date format, e.g. <i>yyyy-mm-dd hh:mm:ss</i> (<i>hh:mm:ss</i> is not required).
-                                      </li>
-                                      <li>Content<br>
-                                      Each event must have a content which is then shown as a label. The GAMS elements of the underlying set can be of any format.</li>
-                                    </ul>
-                                    <p>Optional index sets of the GAMS Symbol:</p>
-                                    <ul>
-                                      <li>End<br>
-                                      If an event is not a single point in time, but rather a range, you can specify an end date. The GAMS elements of this set must be in date format.</li>
-                                      <li>Title<br>
-                                      A title is shown when you hover over an item. The GAMS elements of this set can be of any format.</li>
-                                      <li>Group<br>
-                                      When a group variable is specified, elements of the same group are grouped together. The GAMS elements of this set can be of any format.</li>
-                                    </ul>
-                                    <div class="callout-block callout-warning">
-                                        <div class="icon-holder">
-                                            <i class="fas fa-info-circle"></i>
-                                        </div><!--//icon-holder-->
-                                        <div class="content">
-                                            <b class="callout-title">Note:</b>
-                                            <p>The index sets of the GAMS symbol do not have to be named <i>start</i>, <i>end</i>, <i>content</i> etc. Only the mapping you define in the Configuration Mode is relevant.</p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->
-                                    <p>As an example we use a GAMS Parameter <i>gantt</i> with index sets <i>id</i>, <i>start</i>, <i>end</i>, <i>content</i> and <i>group</i>:</p>
-                                    <pre><code class="language-gams">Set
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block">
+                    <p>
+                      <b>Hide empty columns:</b><br />
+                      In addition to the configuration of the default view,
+                      there is also the possibility to activate a switch that
+                      allows to hide <i>empty</i> columns. This is especially
+                      useful if you use the MIRO Pivot Table for a
+                      <i>data cube</i>. A <i>data cube</i> is a collection of
+                      GAMS parameters that are combined to form a large cube.
+                      For example, if you have location information in the two
+                      parameters:
+                      <code class="language-gams">ilocData(i,locHdr)</code> and
+                      <code class="language-gams">jlocData(j,locHdr)</code>, you
+                      can combine them into a cube with four dimensions: one
+                      dimension to store the name of the GAMS symbols:
+                      <code class="language-gams">symname</code> and the three
+                      dimensions <code class="language-gams">i</code>,
+                      <code class="language-gams">j</code> and
+                      <code class="language-gams">locHdr</code>. Note that the
+                      dimension <code class="language-gams">i</code> is missing
+                      in the parameter
+                      <code class="language-gams">jlocData</code> and vice
+                      versa. So we end up with a sparse cube:
+                    </p>
+                    <div class="table-responsive">
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th>symname</th>
+                            <th>i</th>
+                            <th>j</th>
+                            <th>locHdr</th>
+                            <th>value</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>ilocData</td>
+                            <td>Seattle</td>
+                            <td>-</td>
+                            <td>lat</td>
+                            <td>47.61</td>
+                          </tr>
+                          <tr>
+                            <td>ilocData</td>
+                            <td>Seattle</td>
+                            <td>-</td>
+                            <td>lng</td>
+                            <td>-122.33</td>
+                          </tr>
+                          <tr>
+                            <td>jlocData</td>
+                            <td>-</td>
+                            <td>New-York</td>
+                            <td>lat</td>
+                            <td>40.73</td>
+                          </tr>
+                          <tr>
+                            <td>jlocData</td>
+                            <td>-</td>
+                            <td>New-York</td>
+                            <td>lng</td>
+                            <td>-73.94</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <p>
+                      You probably noticed that in this example missing
+                      dimensions in a symbol are filled with <kbd>-</kbd>. But
+                      we could have chosen any other UEL to indicate missing
+                      values. If you would visualize the data of this parameter
+                      with the MIRO Pivot Table, you might not want to see
+                      columns containing only <kbd>-</kbd>. Therefore, the MIRO
+                      Pivot Table has the options to hide these
+                      <i> empty</i> columns:
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/configuration_mode/miropivot_empty_col_visible.png"
+                        alt="MIRO Pivot Table with empty column visible"
+                      />
+                    </div>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/configuration_mode/miropivot_empty_col_hidden.png"
+                        alt="MIRO Pivot Table with empty column hidden"
+                      />
+                    </div>
+                    <p id="presentation-mode">
+                      <b>Hide pivot controls (presentation mode):</b><br />
+                      This option activates the presentation mode by default. In
+                      this mode, all pivot controls are hidden so that the chart
+                      or table takes center stage. Only configured views and
+                      export buttons remain visible. The presentation mode can
+                      be very useful for users who do not want to play around
+                      with the data in the pivot tool, but only want to view
+                      predefined views/reports.
+                    </p>
+                    <div class="section-block" style="cursor: pointer">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/configuration_mode/graphs_miropivot_presentation.png"
+                        alt="Presentation mode"
+                        onclick="window.open(this.src, '_blank');"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <section id="gantt-chart" class="doc-section">
+                  <h2 class="section-title">Gantt chart</h2>
+                  <div class="section-block">
+                    <p>
+                      MIRO uses
+                      <a
+                        href="https://github.com/daattali/timevis"
+                        target="_blank"
+                        >timevis</a
+                      >
+                      to render gantt charts.
+                    </p>
+                    <h3 class="block-title">Configuration</h3>
+                    <p>
+                      The GAMS symbol whose data is to be visualized as a Gantt
+                      chart must contain the following index sets:
+                    </p>
+                    <ul>
+                      <li>
+                        Start<br />
+                        Each event must have a start date. The GAMS elements of
+                        this set must be in date format, e.g.
+                        <i>yyyy-mm-dd hh:mm:ss</i> (<i>hh:mm:ss</i> is not
+                        required).
+                      </li>
+                      <li>
+                        Content<br />
+                        Each event must have a content which is then shown as a
+                        label. The GAMS elements of the underlying set can be of
+                        any format.
+                      </li>
+                    </ul>
+                    <p>Optional index sets of the GAMS Symbol:</p>
+                    <ul>
+                      <li>
+                        End<br />
+                        If an event is not a single point in time, but rather a
+                        range, you can specify an end date. The GAMS elements of
+                        this set must be in date format.
+                      </li>
+                      <li>
+                        Title<br />
+                        A title is shown when you hover over an item. The GAMS
+                        elements of this set can be of any format.
+                      </li>
+                      <li>
+                        Group<br />
+                        When a group variable is specified, elements of the same
+                        group are grouped together. The GAMS elements of this
+                        set can be of any format.
+                      </li>
+                    </ul>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          The index sets of the GAMS symbol do not have to be
+                          named <i>start</i>, <i>end</i>, <i>content</i> etc.
+                          Only the mapping you define in the Configuration Mode
+                          is relevant.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <p>
+                      As an example we use a GAMS Parameter <i>gantt</i> with
+                      index sets <i>id</i>, <i>start</i>, <i>end</i>,
+                      <i>content</i> and <i>group</i>:
+                    </p>
+                    <pre><code class="language-gams">Set
    id       'gannt_id'      / 1, 2, 3, 4, 5, 6 /
    start    'gannt_start'   / '2016-01-04 10:00:00', '2016-01-05 10:30:00', '2016-01-06 10:50:00', '2016-01-07 14:00:00', '2016-01-08 14:45:00', '2016-01-09 19:00:00' /
    end      'gannt_end'     / '2016-01-05 10:00:00', '2016-01-06 10:30:00', '2016-01-07 10:50:00', '2016-01-08 14:00:00', '2016-01-09 14:45:00', '2016-01-10 19:00:00' /
@@ -1031,20 +1711,42 @@ gantt('3', '2016-01-06 10:50:00', '2016-01-07 10:50:00', 'test3', 'a') = 1;
 gantt('4', '2016-01-07 14:00:00', '2016-01-08 14:00:00', 'test4', 'b') = 1;
 gantt('5', '2016-01-08 14:45:00', '2016-01-09 14:45:00', 'test5', 'b') = 1;
 gantt('6', '2016-01-09 19:00:00', '2016-01-10 19:00:00', 'test6', 'b') = 1;</code></pre>
-                                    <p>In a resulting <i>GDX</i> this parameter looks as follows:</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:125pt;" src="assets/images/configuration_mode/gantt_data.png" alt="Gantt chart data"/>
-                                    </div>
-                                    <p>In the Configuration Mode we can then configure a Gantt chart.</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" src="assets/images/configuration_mode/graphs_gantt_config.png" alt="Gantt chart configuration"/>
-                                    </div>
-                                    <p>More information on the tool we use for Gantt charts can be found <a href="https://github.com/daattali/timevis" target="_blank">here</a>.</p>
-
-                                </div><!--//section-block-->
-                                <div class="section-block">
-                                  <h3 class="block-title">JSON example</h3>
-                                    <pre><code class="language-json">
+                    <p>
+                      In a resulting <i>GDX</i> this parameter looks as follows:
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 125pt"
+                        src="assets/images/configuration_mode/gantt_data.png"
+                        alt="Gantt chart data"
+                      />
+                    </div>
+                    <p>
+                      In the Configuration Mode we can then configure a Gantt
+                      chart.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/configuration_mode/graphs_gantt_config.png"
+                        alt="Gantt chart configuration"
+                      />
+                    </div>
+                    <p>
+                      More information on the tool we use for Gantt charts can
+                      be found
+                      <a
+                        href="https://github.com/daattali/timevis"
+                        target="_blank"
+                        >here</a
+                      >.
+                    </p>
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block">
+                    <h3 class="block-title">JSON example</h3>
+                    <pre><code class="language-json">
 {
   "dataRendering": {
     "gantt": {
@@ -1075,22 +1777,49 @@ gantt('6', '2016-01-09 19:00:00', '2016-01-10 19:00:00', 'test6', 'b') = 1;</cod
   }
 }
                                     </code></pre>
-                                </div><!--//section-block-->
-                            </section>
-                            <section id="valuebox" class="doc-section">
-                                <h2 class="section-title">Value box</h2>
-                                <div class="section-block">
-                                  <h3 class="block-title">Configuration</h3>
-                                    <p></p>
-                                    <p>Example: Model <i>Pickstock</i>, scalars <i>error_train</i>, <i>error_test</i> and <i>error_ratio</i>, singleton sets <i>firstDayTraining</i> and <i>lastDayTraining</i></p>
-                                    <p>Value boxes are special in the sense that only scalar output values (including singleton sets declared as output data) can be displayed as such. The other way around, scalar output values can only be visualized as value boxes in addition to the classic table.</p>
-                                    <p>The three scalars to plot represent the absolute error in the entire training phase, the absolute error in the entire testing phase and the ratio between both values. <br>
-                                    The scalar <code class="language-gams">error_train</code> is equivalent to the objective function value <code class="language-gams">obj.l</code>.
-                                    The absolute error in entire testing phase <code class="language-gams">error_test</code> is the sum of all errors in this time: <code class="language-gams">sum(ntd, error(ntd))</code>.
-                                    The ratio of both values is calculated with <code class="language-gams">error_ratio = error_test/error_train;</code>. <br>
-                                    In addition to these numerical values, two singleton sets are used to indicate the dates of the beginning and end of the training period.
-                                    </p>
-                                    <pre><code class="language-gams">$onExternalOutput
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <section id="valuebox" class="doc-section">
+                  <h2 class="section-title">Value box</h2>
+                  <div class="section-block">
+                    <h3 class="block-title">Configuration</h3>
+                    <p></p>
+                    <p>
+                      Example: Model <i>Pickstock</i>, scalars
+                      <i>error_train</i>, <i>error_test</i> and
+                      <i>error_ratio</i>, singleton sets
+                      <i>firstDayTraining</i> and <i>lastDayTraining</i>
+                    </p>
+                    <p>
+                      Value boxes are special in the sense that only scalar
+                      output values (including singleton sets declared as output
+                      data) can be displayed as such. The other way around,
+                      scalar output values can only be visualized as value boxes
+                      in addition to the classic table.
+                    </p>
+                    <p>
+                      The three scalars to plot represent the absolute error in
+                      the entire training phase, the absolute error in the
+                      entire testing phase and the ratio between both values.
+                      <br />
+                      The scalar
+                      <code class="language-gams">error_train</code> is
+                      equivalent to the objective function value
+                      <code class="language-gams">obj.l</code>. The absolute
+                      error in entire testing phase
+                      <code class="language-gams">error_test</code> is the sum
+                      of all errors in this time:
+                      <code class="language-gams">sum(ntd, error(ntd))</code>.
+                      The ratio of both values is calculated with
+                      <code class="language-gams"
+                        >error_ratio = error_test/error_train;</code
+                      >. <br />
+                      In addition to these numerical values, two singleton sets
+                      are used to indicate the dates of the beginning and end of
+                      the training period.
+                    </p>
+                    <pre><code class="language-gams">$onExternalOutput
 Scalar error_train                     'Absolute error in entire training phase'
        error_test                      'Absolute error in entire testing phase'
        error_ratio                     'Ratio between error test and error train';
@@ -1110,15 +1839,31 @@ else
 lastDayTraining(td)                    = td.pos = card(td);
 firstDayTraining(td)                   = td.pos = 1;
 </code></pre>
-                                    <p><br>In the Configuration Mode we can configure the value boxes by selecting the symbol <i>Output Scalars</i>:</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:530pt;" src="assets/images/configuration_mode/graphs_valuebox_config.png" alt="Valuebox configuration"/>
-                                    </div>
-                                    <p>For a value box, the descriptive text (default: explanatory text of the symbol), the color of the box, an optional icon and the rounding behavior can be configured. The width of a value box results from the number of boxes in a row. Each box can be placed in the desired position by drag &amp; drop. Free rows are ignored.</p>
-                                </div><!--//section-block-->
-                                <div class="section-block">
-                                  <h3 class="block-title">JSON example</h3>
-                                    <pre><code class="language-json">
+                    <p>
+                      <br />In the Configuration Mode we can configure the value
+                      boxes by selecting the symbol <i>Output Scalars</i>:
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 530pt"
+                        src="assets/images/configuration_mode/graphs_valuebox_config.png"
+                        alt="Valuebox configuration"
+                      />
+                    </div>
+                    <p>
+                      For a value box, the descriptive text (default:
+                      explanatory text of the symbol), the color of the box, an
+                      optional icon and the rounding behavior can be configured.
+                      The width of a value box results from the number of boxes
+                      in a row. Each box can be placed in the desired position
+                      by drag &amp; drop. Free rows are ignored.
+                    </p>
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block">
+                    <h3 class="block-title">JSON example</h3>
+                    <pre><code class="language-json">
 {
   "dataRendering": {
     "_scalars_out": {
@@ -1180,32 +1925,87 @@ firstDayTraining(td)                   = td.pos = 1;
   }
 }
                                     </code></pre>
-                                </div><!--//section-block-->
-                            </section>
-                            <section id="custom-graphics" class="doc-section">
-                                <h2 class="section-title">Custom renderer</h2>
-                                <div class="section-block">
-                                  <h3 class="block-title">Configuration</h3>
-                                    <p>Section <a href = "./customize.html#custom-renderers">Custom graphics</a> gives examples and explains in detail how to deal with custom renderers in general.</p>
-                                    <p>The Configuration Mode can help you create your own renderers. If a symbol is selected for the use of a custom renderer in Configuration Mode, the following screen appears:</p>
-                                    <div class="section-block" style="text-align:center;">
-                                        <img class="img-fluid" src="assets/images/configuration_mode/graphs_custom_editor.png" alt="Custom graph editor configuration" />
-                                    </div>
-                                    <p>With the custom renderer editor you can write your own renderer and see the result immediately.
-                                      The upper editor defines the placeholder or output function, while the lower editor is for the renderer function. If you are not yet familiar with the concept of output and render function, please read the corresponding <a href="./customize.html#custom-renderers">section</a> first.
-                                      When you click the "Update" button, the code is executed in both cells and the graph appears on the right (or an error message if you made a mistake). As an example consider the map created for the transport model below</p>
-                                    <div class="section-block" style="text-align:center;">
-                                        <img class="img-fluid" src="assets/images/configuration_mode/graphs_custom_editor_transport.png" alt="Custom renderer editor for transport configuration" />
-                                    </div>
-                                    <p>To save your renderer, click the "Save" button at the bottom left. If it does not already exist, MIRO creates the folder <span class="code">renderer_&lt;modelname&gt;</span> in your current working directory and saves your code in a file called: <span class="code">mirorenderer_&lt;symbolname&gt;.R</span>.
-                                    </p>
-                                    <div class="section-block" style="text-align:center;">
-                                        <img class="img-fluid" src="assets/images/configuration_mode/graphs_custom_options.png" alt="Custom graph options configuration" />
-                                    </div>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <section id="custom-graphics" class="doc-section">
+                  <h2 class="section-title">Custom renderer</h2>
+                  <div class="section-block">
+                    <h3 class="block-title">Configuration</h3>
+                    <p>
+                      Section
+                      <a href="./customize.html#custom-renderers"
+                        >Custom graphics</a
+                      >
+                      gives examples and explains in detail how to deal with
+                      custom renderers in general.
+                    </p>
+                    <p>
+                      The Configuration Mode can help you create your own
+                      renderers. If a symbol is selected for the use of a custom
+                      renderer in Configuration Mode, the following screen
+                      appears:
+                    </p>
+                    <div class="section-block" style="text-align: center">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/configuration_mode/graphs_custom_editor.png"
+                        alt="Custom graph editor configuration"
+                      />
+                    </div>
+                    <p>
+                      With the custom renderer editor you can write your own
+                      renderer and see the result immediately. The upper editor
+                      defines the placeholder or output function, while the
+                      lower editor is for the renderer function. If you are not
+                      yet familiar with the concept of output and render
+                      function, please read the corresponding
+                      <a href="./customize.html#custom-renderers">section</a>
+                      first. When you click the "Update" button, the code is
+                      executed in both cells and the graph appears on the right
+                      (or an error message if you made a mistake). As an example
+                      consider the map created for the transport model below
+                    </p>
+                    <div class="section-block" style="text-align: center">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/configuration_mode/graphs_custom_editor_transport.png"
+                        alt="Custom renderer editor for transport configuration"
+                      />
+                    </div>
+                    <p>
+                      To save your renderer, click the "Save" button at the
+                      bottom left. If it does not already exist, MIRO creates
+                      the folder
+                      <span class="code">renderer_&lt;modelname&gt;</span> in
+                      your current working directory and saves your code in a
+                      file called:
+                      <span class="code">mirorenderer_&lt;symbolname&gt;.R</span
+                      >.
+                    </p>
+                    <div class="section-block" style="text-align: center">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/configuration_mode/graphs_custom_options.png"
+                        alt="Custom graph options configuration"
+                      />
+                    </div>
 
-                                    <p>On the Advanced Options tab, you can add additional symbols to be used by your renderer, specify R packages that are not included in MIRO but are required by your renderer, and set additional options that will be available in your renderer (read <a href="./customize.html#custom-renderers">here</a> to learn more). Additional options are especially useful when you share your renderer between different symbols.</p>
-                                    <p>The resulting JSON snippet for our transport example looks like this:</p>
-                                    <pre><code class="language-json">
+                    <p>
+                      On the Advanced Options tab, you can add additional
+                      symbols to be used by your renderer, specify R packages
+                      that are not included in MIRO but are required by your
+                      renderer, and set additional options that will be
+                      available in your renderer (read
+                      <a href="./customize.html#custom-renderers">here</a> to
+                      learn more). Additional options are especially useful when
+                      you share your renderer between different symbols.
+                    </p>
+                    <p>
+                      The resulting JSON snippet for our transport example looks
+                      like this:
+                    </p>
+                    <pre><code class="language-json">
 {
    "dataRendering":{
       "schedule": {
@@ -1219,145 +2019,406 @@ firstDayTraining(td)                   = td.pos = 1;
    }
 }
                                     </code></pre>
-                                    <div class="callout-block callout-success">
-                                      <div class="icon-holder">
-                                          <i class="fas fa-thumbs-up"></i>
-                                      </div><!--//icon-holder-->
+                    <div class="callout-block callout-success">
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <!--//icon-holder-->
 
-                                      <div class="content">
-                                          <b class="callout-title">Tip:</b>
-                                            <p>MIRO looks for a custom renderer function for your symbol in the folder <span class="code">renderer_&lt;modelname&gt;</span>. If a renderer was configured but is not found in this directory, the application doesn't start. To solve this you can always delete the configured renderer using the Configuration Mode (or remove it manually from the JSON file).</p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->
-                                </div><!--//section-block-->
-                            </section>
-                            <section id="graph-options" class="doc-section">
-                                <h2 class="section-title">Options</h2>
-                                <div class="section-block">
-                                    <p>As already mentioned, not all the options available for the different graphs are explained here. Nevertheless, some options are given as examples, especially those that are applicable to several graphic types.</p>
-                                    <h6 id = "group-domain" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Group domain</h6>
-                                    <div class="expanded">
-                                        <p>With some graphic types, a symbol dimension can be internally pivoted. This makes the graphic independent of the data.</p>
-                                        <p>In the model Pickstock there is the parameter <i>Price</i>, which contains all stock symbols of the Dow Jones index with their daily prices for a period of one year:</p>
-                                        <pre><code class="language-gams">Set       date                 'date'
+                      <div class="content">
+                        <b class="callout-title">Tip:</b>
+                        <p>
+                          MIRO looks for a custom renderer function for your
+                          symbol in the folder
+                          <span class="code">renderer_&lt;modelname&gt;</span>.
+                          If a renderer was configured but is not found in this
+                          directory, the application doesn't start. To solve
+                          this you can always delete the configured renderer
+                          using the Configuration Mode (or remove it manually
+                          from the JSON file).
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <section id="graph-options" class="doc-section">
+                  <h2 class="section-title">Options</h2>
+                  <div class="section-block">
+                    <p>
+                      As already mentioned, not all the options available for
+                      the different graphs are explained here. Nevertheless,
+                      some options are given as examples, especially those that
+                      are applicable to several graphic types.
+                    </p>
+                    <h6
+                      id="group-domain"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Group domain
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        With some graphic types, a symbol dimension can be
+                        internally pivoted. This makes the graphic independent
+                        of the data.
+                      </p>
+                      <p>
+                        In the model Pickstock there is the parameter
+                        <i>Price</i>, which contains all stock symbols of the
+                        Dow Jones index with their daily prices for a period of
+                        one year:
+                      </p>
+                      <pre><code class="language-gams">Set       date                 'date'
         symbol               'stock symbol';
 $onExternalInput
 Parameter price(date<,symbol<) 'Price';
 $offExternalInput
 </code> </pre>
-                                        <p><i>Price</i> is not declared as a table but as a normal parameter. For MIRO, this means that the data is available in list format with the headers <i>date</i> and <i>symbol</i>. The individual stocks are listed in the rows:</p>
-                                        <div class="section-block" style="text-align:center;">
-                                            <img class="img-fluid" style="max-height:250pt;" src="assets/images/single-col-line-table.png" alt="Parameter Price" />
-                                        </div>
-                                        <p>We want to configure a line chart in which the price trend of each stock symbol is plotted separately.
-                                        Now MIRO needs the price information of each symbol for each date. The problem is that MIRO only knows about one value column: <i>Price</i>.
-                                        Hence, we cannot distinguish between the prices of individual stocks. In the resulting line chart a single
-                                        line is plotted which contains all prices of all stock symbols:</p>
-                                        <div class="section-block" style="text-align:center;">
-                                            <img class="img-fluid" style="max-height:250pt;" src="assets/images/single-col-line.png" alt="Line chart configuration without Table statement" />
-                                        </div>
-                                        <p>In the section <i>Filters & Domains</i> we can can select a domain we want to pivot internally.
-                                        If we select the domain <i>stock symbol</i> here, the tool plots a line for each individual stock symbol:</p>
-                                        <div class="section-block" style="text-align:center;">
-                                            <img class="img-fluid" style="max-height:300pt;" src="assets/images/single-col-line-domain.png" alt="Line chart configuration without Table statement" />
-                                        </div>
-                                        <p>With this option, the chart configuration is completely independent of the data. We could even import data from another stock index - say the French CAC40 - and plot these accordingly.</p>
-                                        <p>The internal pivoting is available for the chart types <a href = "./charts.html#bar-chart">Bar chart</a>,
-                                        <a href = "./charts.html#scatter-chart">Scatter plot</a>, <a href = "./charts.html#line-chart">Line chart</a>,
-                                        <a href = "./charts.html#bubble-chart">Bubble chart</a>, <a href = "./charts.html#histogram-chart">Histogram</a> and
-                                        <a href = "./charts.html#timeseries-chart">Time series diagram</a>.</p>
-                                        <p>Please also see the chapter about <a href="./model.html#table-miro">tables in MIRO</a> to understand the difference between the MIRO-internal pivoting done here and the GAMS Table statement.</p>
-                                    </div>
-                                    <h6 id = "filter-option" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Filter graph</h6>
-                                    <div class="expanded">
-                                        <p>One dimension of a symbol visualized as a graphic can be configured as a filter dimension. Its elements can then be selected via a (multi-)drop-down menu. Only the data belonging to this selection is displayed in the graphic.</p>
-                                        <p>Example: Model <i>Pickstock</i>, parameter <i>price</i></p>
-                                        <p>The Parameter <i>price</i> has the dimensions <i>date</i> and <i>symbol</i>: <code class="language-gams">Parameter price(date,symbol) 'Price';</code>. With the previous option <a href="#group-domain" class="scrollto">Group domain</a> we made sure that each stock is displayed as a separate line (and the graphic is therefore independent of the data). Now we can activate the checkbox <i>Should one domain of the symbol be selectable via a dropdown menu?</i> in the same category <i>Filters & Domains</i> and select the dimension <i>stocks</i> as filter dimension. In the result a (multi-) dropdown menu appears above the chart, in which we can select the individual stocks. Only those stocks are displayed which are selected in the filter. </p>
-                                        <div class="section-block">
-                                            <img class="img-fluid" src="assets/images/configuration_mode/filter-graph.png" alt="Filter graph by domain"/>
-                                        </div>
-                                        <div class="callout-block callout-success">
-                                          <div class="icon-holder">
-                                              <i class="fas fa-thumbs-up"></i>
-                                          </div><!--//icon-holder-->
-                                          <div class="content">
-                                              <b class="callout-title">Tip:</b>
-                                                <p>If your filter dimension contains data in date format (e.g. <i>2020-05-06</i>), you will see a date range selector instead of a multi-dropdown menu for selection.</p>
-                                            </div><!--//content-->
-                                        </div><!--//callout-block-->
-                                    </div>
-                                    <h6 id = "table-graph-split-screen" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Show graphic and data table in split screen</h6>
-                                    <div class="expanded">
-                                        <p>If you have configured a graphical representation of your data, you can always switch between plot and data table by clicking on the <img class="img-fluid" src="assets/images/tabular-btn.png" width="25" height="25" align="middle" alt="Switch to tabular view button" /> button in the upper right corner:</p>
-                                        <div class="section-block">
-                                              <img class="img-fluid" src="assets/images/configuration_mode/table-graph-separate.png" alt="Table and chart separated" />
-                                        </div>
-                                        <p>With the option <i>Show graphic and data table in split screen</i> in the section <i>General</i> in Configuration Mode, both data representations can be displayed next to each other:</p>
-                                        <div class="section-block">
-                                              <img class="img-fluid" src="assets/images/configuration_mode/table-graph-split.png" alt="Table and chart in split screen" />
-                                        </div>
-                                    </div>
-                                    <h6 id = "animation" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Animation</h6>
-                                    <div class="expanded">
-                                        <p>Chart data can be animated in order to show how the data changes over time. Example: We want to animate a chart that shows the individual stocks of the Dow Jones index over time. The Y axis shows the price of a stock, the X axis shows the date. Now we want to display all stocks one after the other with an animation. For this we select in the category <i>Y axix</i> the dimension, which should be used in the animation for the single frames. Since we want to show all stock symbols one after the other, we choose <i>stock symbol</i>:</p>
-                                        <div class="section-block">
-                                              <img class="img-fluid" src="assets/images/configuration_mode/animation_y_axis.png" alt="Data dimension to animate" />
-                                        </div>
-                                        <p>After the selection the animation is rendered and a slider with play button appears under the graphic. <br><b>Note</b>: The animation of graphics can require a lot of computing power. It is therefore possible that it takes a little time until the preview graphics are rendered. This is especially true if you select a dimension for animation that consists of many individual values.</p>
-                                        <p>Under <i>Animation</i> we can further customize the animation, for example by setting the number of frames per second or the type of transition between two frame transitions. </p>
-                                        <div class="section-block">
-                                              <img class="img-fluid" src="assets/images/configuration_mode/animation_options.png" alt="Animation customization" />
-                                        </div>
-                                        <div class="callout-block callout-success" style="margin-top:10px;">
-                                           <div class="icon-holder">
-                                               <i class="fas fa-thumbs-up"></i>
-                                           </div><!--//icon-holder-->
-                                           <div class="content">
-                                               <b class="callout-title">Tip:</b>
-                                                <p>When using animations, it is often useful to define the visible areas for both axes in the corresponding axis categories. Otherwise it can happen that areas are pre-selected in which no data is visible.</p>
-                                            </div><!--//content-->
-                                        </div><!--//callout-block-->
-                                    </div>
-                                </div><!--//section-block-->
-                            </section>
-                        </div><!--//content-inner-->
-                    </div><!--//doc-content-->
-                    <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
-                        <div id="doc-nav" class="doc-nav">
-                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
-                            <a class="nav-link scrollto" href="#pie-chart">Pie chart</a>
-                             <a class="nav-link scrollto" href="#donut-chart">Donut chart</a>
-                             <a class="nav-link scrollto" href="#bar-chart">Bar chart</a>
-                             <a class="nav-link scrollto" href="#scatter-chart">Scatter plot</a>
-                             <a class="nav-link scrollto" href="#line-chart">Line chart</a>
-                             <a class="nav-link scrollto" href="#bubble-chart">Bubble chart</a>
-                             <a class="nav-link scrollto" href="#histogram-chart">Histogram</a>
-                             <a class="nav-link scrollto" href="#map-chart">Map</a>
-                             <a class="nav-link scrollto" href="#timeseries-chart">Time series diagram</a>
-                             <a class="nav-link scrollto" href="#pivot-chart">Pivot table</a>
-                             <a class="nav-link scrollto" href="#gantt-chart">Gantt chart</a>
-                             <a class="nav-link scrollto" href="#valuebox">Value box</a>
-                             <a class="nav-link scrollto" href="#custom-graphics">Custom renderer</a>
-                             <a class="nav-link scrollto" href="#graph-options">Options</a>
-                            </nav><!--//doc-menu-->
+                      <p>
+                        <i>Price</i> is not declared as a table but as a normal
+                        parameter. For MIRO, this means that the data is
+                        available in list format with the headers
+                        <i>date</i> and <i>symbol</i>. The individual stocks are
+                        listed in the rows:
+                      </p>
+                      <div class="section-block" style="text-align: center">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 250pt"
+                          src="assets/images/single-col-line-table.png"
+                          alt="Parameter Price"
+                        />
+                      </div>
+                      <p>
+                        We want to configure a line chart in which the price
+                        trend of each stock symbol is plotted separately. Now
+                        MIRO needs the price information of each symbol for each
+                        date. The problem is that MIRO only knows about one
+                        value column: <i>Price</i>. Hence, we cannot distinguish
+                        between the prices of individual stocks. In the
+                        resulting line chart a single line is plotted which
+                        contains all prices of all stock symbols:
+                      </p>
+                      <div class="section-block" style="text-align: center">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 250pt"
+                          src="assets/images/single-col-line.png"
+                          alt="Line chart configuration without Table statement"
+                        />
+                      </div>
+                      <p>
+                        In the section <i>Filters & Domains</i> we can can
+                        select a domain we want to pivot internally. If we
+                        select the domain <i>stock symbol</i> here, the tool
+                        plots a line for each individual stock symbol:
+                      </p>
+                      <div class="section-block" style="text-align: center">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 300pt"
+                          src="assets/images/single-col-line-domain.png"
+                          alt="Line chart configuration without Table statement"
+                        />
+                      </div>
+                      <p>
+                        With this option, the chart configuration is completely
+                        independent of the data. We could even import data from
+                        another stock index - say the French CAC40 - and plot
+                        these accordingly.
+                      </p>
+                      <p>
+                        The internal pivoting is available for the chart types
+                        <a href="./charts.html#bar-chart">Bar chart</a>,
+                        <a href="./charts.html#scatter-chart">Scatter plot</a>,
+                        <a href="./charts.html#line-chart">Line chart</a>,
+                        <a href="./charts.html#bubble-chart">Bubble chart</a>,
+                        <a href="./charts.html#histogram-chart">Histogram</a>
+                        and
+                        <a href="./charts.html#timeseries-chart"
+                          >Time series diagram</a
+                        >.
+                      </p>
+                      <p>
+                        Please also see the chapter about
+                        <a href="./model.html#table-miro">tables in MIRO</a> to
+                        understand the difference between the MIRO-internal
+                        pivoting done here and the GAMS Table statement.
+                      </p>
+                    </div>
+                    <h6
+                      id="filter-option"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Filter graph
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        One dimension of a symbol visualized as a graphic can be
+                        configured as a filter dimension. Its elements can then
+                        be selected via a (multi-)drop-down menu. Only the data
+                        belonging to this selection is displayed in the graphic.
+                      </p>
+                      <p>
+                        Example: Model <i>Pickstock</i>, parameter <i>price</i>
+                      </p>
+                      <p>
+                        The Parameter <i>price</i> has the dimensions
+                        <i>date</i> and <i>symbol</i>:
+                        <code class="language-gams"
+                          >Parameter price(date,symbol) 'Price';</code
+                        >. With the previous option
+                        <a href="#group-domain" class="scrollto"
+                          >Group domain</a
+                        >
+                        we made sure that each stock is displayed as a separate
+                        line (and the graphic is therefore independent of the
+                        data). Now we can activate the checkbox
+                        <i
+                          >Should one domain of the symbol be selectable via a
+                          dropdown menu?</i
+                        >
+                        in the same category <i>Filters & Domains</i> and select
+                        the dimension <i>stocks</i> as filter dimension. In the
+                        result a (multi-) dropdown menu appears above the chart,
+                        in which we can select the individual stocks. Only those
+                        stocks are displayed which are selected in the filter.
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          src="assets/images/configuration_mode/filter-graph.png"
+                          alt="Filter graph by domain"
+                        />
+                      </div>
+                      <div class="callout-block callout-success">
+                        <div class="icon-holder">
+                          <i class="fas fa-thumbs-up"></i>
                         </div>
-                    </div><!--//doc-sidebar-->
-                </div><!--//doc-body-->
-            </div><!--//container-->
-        </div><!--//doc-wrapper-->
-    </div><!--//page-wrapper-->
-    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+                        <!--//icon-holder-->
+                        <div class="content">
+                          <b class="callout-title">Tip:</b>
+                          <p>
+                            If your filter dimension contains data in date
+                            format (e.g. <i>2020-05-06</i>), you will see a date
+                            range selector instead of a multi-dropdown menu for
+                            selection.
+                          </p>
+                        </div>
+                        <!--//content-->
+                      </div>
+                      <!--//callout-block-->
+                    </div>
+                    <h6
+                      id="table-graph-split-screen"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Show graphic and
+                      data table in split screen
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        If you have configured a graphical representation of
+                        your data, you can always switch between plot and data
+                        table by clicking on the
+                        <img
+                          class="img-fluid"
+                          src="assets/images/tabular-btn.png"
+                          width="25"
+                          height="25"
+                          align="middle"
+                          alt="Switch to tabular view button"
+                        />
+                        button in the upper right corner:
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          src="assets/images/configuration_mode/table-graph-separate.png"
+                          alt="Table and chart separated"
+                        />
+                      </div>
+                      <p>
+                        With the option
+                        <i>Show graphic and data table in split screen</i> in
+                        the section <i>General</i> in Configuration Mode, both
+                        data representations can be displayed next to each
+                        other:
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          src="assets/images/configuration_mode/table-graph-split.png"
+                          alt="Table and chart in split screen"
+                        />
+                      </div>
+                    </div>
+                    <h6
+                      id="animation"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Animation
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        Chart data can be animated in order to show how the data
+                        changes over time. Example: We want to animate a chart
+                        that shows the individual stocks of the Dow Jones index
+                        over time. The Y axis shows the price of a stock, the X
+                        axis shows the date. Now we want to display all stocks
+                        one after the other with an animation. For this we
+                        select in the category <i>Y axix</i> the dimension,
+                        which should be used in the animation for the single
+                        frames. Since we want to show all stock symbols one
+                        after the other, we choose <i>stock symbol</i>:
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          src="assets/images/configuration_mode/animation_y_axis.png"
+                          alt="Data dimension to animate"
+                        />
+                      </div>
+                      <p>
+                        After the selection the animation is rendered and a
+                        slider with play button appears under the graphic.
+                        <br /><b>Note</b>: The animation of graphics can require
+                        a lot of computing power. It is therefore possible that
+                        it takes a little time until the preview graphics are
+                        rendered. This is especially true if you select a
+                        dimension for animation that consists of many individual
+                        values.
+                      </p>
+                      <p>
+                        Under <i>Animation</i> we can further customize the
+                        animation, for example by setting the number of frames
+                        per second or the type of transition between two frame
+                        transitions.
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          src="assets/images/configuration_mode/animation_options.png"
+                          alt="Animation customization"
+                        />
+                      </div>
+                      <div
+                        class="callout-block callout-success"
+                        style="margin-top: 10px"
+                      >
+                        <div class="icon-holder">
+                          <i class="fas fa-thumbs-up"></i>
+                        </div>
+                        <!--//icon-holder-->
+                        <div class="content">
+                          <b class="callout-title">Tip:</b>
+                          <p>
+                            When using animations, it is often useful to define
+                            the visible areas for both axes in the corresponding
+                            axis categories. Otherwise it can happen that areas
+                            are pre-selected in which no data is visible.
+                          </p>
+                        </div>
+                        <!--//content-->
+                      </div>
+                      <!--//callout-block-->
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                </section>
+              </div>
+              <!--//content-inner-->
+            </div>
+            <!--//doc-content-->
+            <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+              <div id="doc-nav" class="doc-nav">
+                <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                  <a class="nav-link scrollto" href="#pie-chart">Pie chart</a>
+                  <a class="nav-link scrollto" href="#donut-chart"
+                    >Donut chart</a
+                  >
+                  <a class="nav-link scrollto" href="#bar-chart">Bar chart</a>
+                  <a class="nav-link scrollto" href="#scatter-chart"
+                    >Scatter plot</a
+                  >
+                  <a class="nav-link scrollto" href="#line-chart">Line chart</a>
+                  <a class="nav-link scrollto" href="#bubble-chart"
+                    >Bubble chart</a
+                  >
+                  <a class="nav-link scrollto" href="#histogram-chart"
+                    >Histogram</a
+                  >
+                  <a class="nav-link scrollto" href="#map-chart">Map</a>
+                  <a class="nav-link scrollto" href="#timeseries-chart"
+                    >Time series diagram</a
+                  >
+                  <a class="nav-link scrollto" href="#pivot-chart"
+                    >Pivot table</a
+                  >
+                  <a class="nav-link scrollto" href="#gantt-chart"
+                    >Gantt chart</a
+                  >
+                  <a class="nav-link scrollto" href="#valuebox">Value box</a>
+                  <a class="nav-link scrollto" href="#custom-graphics"
+                    >Custom renderer</a
+                  >
+                  <a class="nav-link scrollto" href="#graph-options">Options</a>
+                </nav>
+                <!--//doc-menu-->
+              </div>
+            </div>
+            <!--//doc-sidebar-->
+          </div>
+          <!--//doc-body-->
+        </div>
+        <!--//container-->
+      </div>
+      <!--//doc-wrapper-->
+    </div>
+    <!--//page-wrapper-->
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-3.3.1.min.js"
+    ></script>
     <!--#include virtual="/footer_miro.html" -->
 
     <!-- Main Javascript -->
-    <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>
-    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/markjs/jquery.mark.min.js"></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/prism/min/prism-min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/stickyfill/dist/stickyfill.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/markjs/jquery.mark.min.js"
+    ></script>
 
     <script type="text/javascript" src="assets/js/main.js"></script>
-
-</body>
+  </body>
 </html>

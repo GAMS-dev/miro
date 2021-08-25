@@ -11,7 +11,7 @@ Note that both node and yarn need to be added to the [PATH](https://en.wikipedia
 * R (>=3.6.1)
 
 In order to compile the data.table package from source, you need an OpenMP compatible C compiler. See [here](https://github.com/Rdatatable/data.table/wiki/Installation#openmp-enabled-compiler-for-mac) for more information.
-Additionally, v8 needs to be installed. To install it via [Homebrew](https://brew.sh), use: `brew update && brew install v8`. 
+Additionally, v8 needs to be installed. To install it via [Homebrew](https://brew.sh), use: `brew update && brew install v8`.
 
 On some systems, libpng is also required. To install via [Homebrew](https://brew.sh), use: `brew update && brew install libpng`.
 
@@ -19,7 +19,7 @@ On some systems, libpng is also required. To install via [Homebrew](https://brew
 You will need [Rtools](https://cran.r-project.org/bin/windows/Rtools/) to compile R packages from source.
 To extract the R binaries from the Inno installer file, you need [innoextract](https://constexpr.org/innoextract/). Make sure it is added to your PATH
 
-Note: If you want to build on a CI server, it is recommended to install R (>=3.6.1) as well. This saves time as the R development libraries will not need to be reinstalled with every build. 
+Note: If you want to build on a CI server, it is recommended to install R (>=3.6.1) as well. This saves time as the R development libraries will not need to be reinstalled with every build.
 
 To build the gdxrrwMIRO package, you need either an intel compiler (https://software.intel.com/en-us/compilers) or Visual Studio Express (https://visualstudio.microsoft.com/vs/express/). For the Visual Studio Express 2019 Community Edition, the component 'Desktop development with C++' has to be installed via Visual Studio installer. Also make sure that the gdxlib path in src/Makevars matches your folder structure, e.g. "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat". Also control the path in the call in src/build-win.bat, e.g. "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat".
 
@@ -71,5 +71,3 @@ Note that in order for your artifact to be properly signed, you need to specify 
 * Codesign identity: `CODESIGN_IDENTITY`
 * Apple ID (for notarisation): `APPLEID`
 * Apple ID password (for notarisation): `APPLEIDPASS`
-
-

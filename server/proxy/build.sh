@@ -21,4 +21,3 @@ SP_PATH=`find /app/shinyproxy/target -regex '.*[0-9]\.jar'`
 echo $SP_PATH
 
 mv $SP_PATH /app/shinyproxy/target/shinyproxy.jar
-

@@ -1,0 +1,24 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+    -   id: end-of-file-fixer
+        exclude: |
+            (?x)^(
+                src/tests/data/good-views.json|
+                src/tests/data/good-views2.json|
+                src/tests/data/bad-views.json|
+                src/tests/data/bad-views2.json|
+                src/tests/data/pivot-comp-views.json|
+                src/tests/shinytest/views_metadata_test-expected/views.json|
+                src/tests/shinytest/views_metadata_test-expected/views2.json|
+                src/tests/shinytest/views_import_test-expected/views.json
+            )$
+    -   id: trailing-whitespace
+    -   id: check-merge-conflict
+-   repo: https://github.com/pre-commit/mirrors-prettier
+    rev: 'v2.3.2'
+    hooks:
+    -   id: prettier
+        files: '^doc/.*\.html'
+        args: ['--ignore-path', 'doc/.prettierignore', '--config', 'doc/.prettierrc.json']

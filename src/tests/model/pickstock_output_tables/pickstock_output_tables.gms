@@ -29,7 +29,7 @@ Parameter
 
 Set td(date)    'training days'
     ntd(date)   'none-training days';
-    
+
 * input validataion
 set error01(date, symbol);
 
@@ -47,7 +47,7 @@ if(card(error01),
   abort "Data errors detected."
 );
 putclose log;
-    
+
 avgprice(s)       = sum(d, price(d,s))/card(d);
 weight(symbol)    = avgprice(symbol)/sum(s, avgprice(s));
 contribution(d,s) = weight(s)*price(d,s);
@@ -91,14 +91,14 @@ error(d) = abs(index(d)-fund(d));
 
 Set fHdr      'fund header'            / dj 'dow jones','index fund'  /
     errHdr    'stock symbol header'    / 'absolute error train', 'absolute error test' /;
-    
+
 $onExternalOutput
 Scalar error_train                     'Absolute error in entire training phase'
        error_test                      'Absolute error in entire testing phase'
        error_ratio                     'Ratio between error test and error train'
 Parameter
-       stock_weight(symbol)            'weight'   
-       dowVSindex(date,fHdr)           'dow jones vs. index fund'     
+       stock_weight(symbol)            'weight'
+       dowVSindex(date,fHdr)           'dow jones vs. index fund'
        abserror(date,errHdr)           'absolute error'
 table dowVSindex;
 table abserror;
@@ -113,7 +113,7 @@ dowVSindex(d,'index fund')             = fund(d);
 abserror(td, 'absolute error train')   = error(td);
 abserror(ntd,'absolute error test')    = error(ntd);
 lastDayTraining(td)                    = td.pos=card(td);
-firstDayTraining(td)                   = td.pos=1; 
+firstDayTraining(td)                   = td.pos=1;
 error_train                            = obj.l;
 error_test                             = sum(ntd, error(ntd));
 if(error_train > 0,

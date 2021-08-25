@@ -18,7 +18,7 @@ from distutils.dir_util import copy_tree
 ZIP_IGNORE_FILES = ['.DS_Store']
 
 def gen_password(length):
-  return ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, 
+  return ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits,
     k=length))
 
 
@@ -74,7 +74,7 @@ class MiroServer(object):
       help='Module to build',
       choices=['dockerproxy', 'proxy', 'auth', 'admin', 'ui'])
 
-    parser.add_argument('--no-prep', help='Skips downloading required R packages (e.g. because they are already downloaded)', 
+    parser.add_argument('--no-prep', help='Skips downloading required R packages (e.g. because they are already downloaded)',
       action='store_true')
 
     args = parser.parse_args(sys.argv[2:])
@@ -102,7 +102,7 @@ class MiroServer(object):
   def down(self):
     parser = argparse.ArgumentParser(
           description='Stops GAMS MIRO Server')
-    parser.add_argument('-v', '--volumes', help='Removes volumes and networks', 
+    parser.add_argument('-v', '--volumes', help='Removes volumes and networks',
       action='store_true')
 
     args = parser.parse_args(sys.argv[2:])
@@ -118,7 +118,7 @@ class MiroServer(object):
 
     if args.volumes:
       dc_args_miro.append('-v')
-    
+
     subprocess.check_call(dc_args_miro, env=self.__compose_env)
 
 
@@ -143,7 +143,7 @@ class MiroServer(object):
     parser = argparse.ArgumentParser(
           description='Releases GAMS MIRO Server')
 
-    parser.add_argument('-f', '--force', help='Overwrite release if it exists', 
+    parser.add_argument('-f', '--force', help='Overwrite release if it exists',
       action='store_true')
 
     args = parser.parse_args(sys.argv[2:])
@@ -202,7 +202,7 @@ class MiroServer(object):
 
 
   def stop_proxies(self, image_name):
-    active_admin_containers = subprocess.run(['docker', 'container', 'ls', '-f', 'network=miroserver-network', '-f', 
+    active_admin_containers = subprocess.run(['docker', 'container', 'ls', '-f', 'network=miroserver-network', '-f',
       f'ancestor={image_name}', '--format', '{{.ID}}'], capture_output=True).stdout.strip()
 
     if not active_admin_containers:
@@ -270,4 +270,3 @@ class MiroServer(object):
 
 if __name__ == '__main__':
     MiroServer()
-

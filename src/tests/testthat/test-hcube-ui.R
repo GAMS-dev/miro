@@ -19,10 +19,10 @@ if(file.exists(file.path("~", ".miro", paste0(".cred_", tolower(modelToTest)))))
   unlink(file.path("~", ".miro", paste0(".cred_", tolower(modelToTest))), force = TRUE)
 }
 
-#activate local upload module, deactivate 
-file.copy(file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), "_expected.json")), 
+#activate local upload module, deactivate
+file.copy(file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), "_expected.json")),
           file.path(dirname(configJSONFileName),paste0(tolower(modelToTest), ".json")), overwrite = TRUE)
-configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, simplifyDataFrame = FALSE, 
+configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, simplifyDataFrame = FALSE,
                                                   simplifyMatrix = FALSE))
 configJSON$activateModules$loadLocal <- TRUE
 configJSON$activateModules$attachments <- TRUE

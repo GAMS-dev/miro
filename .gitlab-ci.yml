@@ -19,6 +19,21 @@ services:
 image:
   name: hub.gams.com:443/gamsmiro-ci:latest
 
+lint_job:
+  tags:
+   - linux
+  stage: test
+  script:
+   - pre-commit run --all-files
+  variables:
+    PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
+  cache:
+    paths:
+      - ${PRE_COMMIT_HOME}
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+      when: always
+
 test_job:
   tags:
     - linux

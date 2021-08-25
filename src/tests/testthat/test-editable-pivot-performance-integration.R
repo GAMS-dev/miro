@@ -73,7 +73,7 @@ test_that("Editing large data in table view works", {
                session$setInputs(pivotTable_cell_edit = list(col = 6, row = 1L, value = "AYAYAA")))
     expect_true("AYAYAA" %in% session$returned()[["UC_N"]])
     expect_identical(dataToRender()[[9]][1], 2)
-    
+
     nrow <- nrow(session$returned())
     pr$measure("tableEditAddRowDialog",
                session$setInputs(btAddRow = 1L))
@@ -86,7 +86,7 @@ test_that("Editing large data in table view works", {
     expect_identical(res[length(res) - 1], 1.23456)
     expect_identical(res[length(res)], 7.890123)
     expect_identical(nrow(session$returned()), nrow + 2L)
-    
+
     pr$measure("tableEditRemoveRows",
                session$setInputs(pivotTable_rows_selected = c(1, 11), btRemoveRows = 2L))
     expect_identical(nrow(session$returned()), 4163475L)

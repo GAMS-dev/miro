@@ -38,7 +38,7 @@ CsvIO <- R6::R6Class("CsvIO", inherit = LocalFileIO, public = list(
     }else{
       private$rDelim <- delim
     }
-    
+
     private$rHeaders <- strsplit(private$rSample[1], private$rDelim, fixed = TRUE)[[1L]]
     return(self)
   },
@@ -149,9 +149,9 @@ CsvIO <- R6::R6Class("CsvIO", inherit = LocalFileIO, public = list(
       }
       if(length(private$rDelim)){
         data <- suppressWarnings(
-          read_delim(private$rpath, 
+          read_delim(private$rpath,
                      private$rDelim,
-                     col_types = colTypes, 
+                     col_types = colTypes,
                      col_names = private$rHeaderRow,
                      progress = FALSE,
                      skip_empty_rows = TRUE,

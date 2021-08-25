@@ -1,6 +1,6 @@
 observeEvent(input$btDownloadTmpFiles, {
   flog.debug("Button to download files from temp folder clicked.")
-  
+
   fileNames <- list.files(workDir, pattern = ".+\\..+$")
   showModal(modalDialog(
     title = lang$nav$dialogDownloadTmp$title,
@@ -14,11 +14,11 @@ observeEvent(input$btDownloadTmpFiles, {
       modalButton(lang$nav$dialogDownloadTmp$cancelButton),
       if(length(fileNames)){
         tagList(
-          downloadButton("btDownloadTmpZip", 
+          downloadButton("btDownloadTmpZip",
                          label = lang$nav$dialogDownloadTmp$downloadAllButton),
           tags$span(`data-display-if` = "input.selectDownloadTmp.length>0",
-                    downloadButton("btDownloadTmpConfirm", 
-                                   label = lang$nav$dialogDownloadTmp$downloadButton, 
+                    downloadButton("btDownloadTmpConfirm",
+                                   label = lang$nav$dialogDownloadTmp$downloadButton,
                                    class = "bt-highlight-1 bt-gms-confirm"))
         )
       }
@@ -64,7 +64,7 @@ output$btDownloadTmpZip <- downloadHandler(
     }
   },
   content = function(file){
-    zipr(file, list.files(path = workDir, pattern = ".+\\..+$", 
+    zipr(file, list.files(path = workDir, pattern = ".+\\..+$",
                           full.names = TRUE), compression_level = 6)
   },
   contentType = "application/zip"

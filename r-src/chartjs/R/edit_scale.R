@@ -17,4 +17,3 @@ cjsEditScale <- function(cjs, axis = c("x", "y", NULL), scale, ...){
   } else cjs$x$scale <- mergeLists(cjs$x$scale, list(...))
   cjs
 }
-

@@ -44,7 +44,7 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
       procEnv$MIRO_MIGRATE_DB <- "true"
     }
     flog.trace("Adding data for app: %s", appId)
-    private$miroProc <- processx::process$new("R", c("-e", 
+    private$miroProc <- processx::process$new("R", c("-e",
         paste0("shiny::runApp('", MIRO_APP_PATH, "',port=3839,host='0.0.0.0')")),
         env = unlist(procEnv), wd = MIRO_APP_PATH, stderr = "|", stdout = "|")
 
@@ -85,7 +85,7 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
                 if(is.na(progress)){
                     flog.warn("Bad progress message received from MIRO: %s", line)
                 }else{
-                    private$session$sendCustomMessage("onProgress", 
+                    private$session$sendCustomMessage("onProgress",
                         list(selector = progressSelector,
                           progress = if(progress >= 100) -1 else progress))
                 }
@@ -94,7 +94,7 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
                 if(is.na(progress)){
                     flog.warn("Bad migration progress message received from MIRO: %s", line)
                 }else{
-                    private$session$sendCustomMessage("onProgress", 
+                    private$session$sendCustomMessage("onProgress",
                         list(progress = if(progress >= 100) -1 else progress))
                 }
             }

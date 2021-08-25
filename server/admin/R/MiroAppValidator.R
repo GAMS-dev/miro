@@ -49,7 +49,7 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     private$miroVersion <- NULL
     private$logoB64 <- NULL
     private$logoFile <- NULL
-    if(!is.character(miroAppFile) || length(miroAppFile) != 1 || 
+    if(!is.character(miroAppFile) || length(miroAppFile) != 1 ||
         !endsWith(miroAppFile, ".miroapp")){
         flog.info("Invalid miroapp file uploaded.")
         stop("Not a valid MIRO app file.", call. = FALSE)
@@ -95,7 +95,7 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     miroconfFiles  <- miroconfFiles[vapply(miroconfFiles, function(el){
         !is.na(el[1])
         }, logical(1L), USE.NAMES = FALSE)]
-    
+
     if(!length(miroconfFiles)){
         stop("No valid miroconf file found in bundle.", call. = FALSE)
     }
@@ -135,8 +135,8 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     },
     readLogo = function(miroAppFile, filesInBundleRaw){
         filesInBundle <- filesInBundleRaw[["filename"]]
-        logoCandidates <- startsWith(filesInBundle, file.path(private$getStaticFilePath(), 
-            paste0(self$getModelId(), "_logo."))) | 
+        logoCandidates <- startsWith(filesInBundle, file.path(private$getStaticFilePath(),
+            paste0(self$getModelId(), "_logo."))) |
             startsWith(filesInBundle, file.path(private$getStaticFilePath(), "app_logo."))
         if(sum(logoCandidates) == 0){
             return(DEFAULT_LOGO_B64)
@@ -150,7 +150,7 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
             return(DEFAULT_LOGO_B64)
         }
         private$logoFile <- filesInBundle[logoCandidates][1]
-        logoPath <- unzip(miroAppFile, files = private$logoFile, 
+        logoPath <- unzip(miroAppFile, files = private$logoFile,
             junkpaths = TRUE, exdir = tempdir(check = TRUE))
 
         return(tryCatch(getLogoB64(logoPath), error = function(e){
@@ -163,7 +163,7 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
         if(sum(appMetaFile) == 0){
             stop("No app metadata found. Please make sure to deploy your app with MIRO 2.0 or later!", call. = FALSE)
         }
-        appMetaPath <- unzip(miroAppFile, files = filesInBundle[appMetaFile][1], 
+        appMetaPath <- unzip(miroAppFile, files = filesInBundle[appMetaFile][1],
             junkpaths = TRUE, exdir = tempdir(check = TRUE))
 
         return(tryCatch(jsonlite::fromJSON(appMetaPath), error = function(e){
@@ -175,7 +175,7 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
         if(sum(appInfoFile) == 0){
             return(list())
         }
-        appInfoPath <- unzip(miroAppFile, files = filesInBundle[appInfoFile][1], 
+        appInfoPath <- unzip(miroAppFile, files = filesInBundle[appInfoFile][1],
             junkpaths = TRUE, exdir = tempdir(check = TRUE))
 
         return(tryCatch(jsonlite::fromJSON(appInfoPath), error = function(e){

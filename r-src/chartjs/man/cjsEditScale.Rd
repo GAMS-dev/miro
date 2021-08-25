@@ -21,4 +21,3 @@ cjsEditScale(cjs, axis = c("x", "y", NULL), scale, ...)
 \details{
 See the \href{http://www.chartjs.org/docs/#scales}{Charts.js documentation} for values in ...
 }
-

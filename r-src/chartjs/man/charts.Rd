@@ -36,4 +36,3 @@ charts (defaults to 50)}
 \description{
 These functions are used to draw the different types of graphs.
 }
-

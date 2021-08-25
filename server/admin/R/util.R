@@ -11,7 +11,7 @@ CharArray <- R6::R6Class("CharArray", public = list(
   },
   delete = function(el){
     stopifnot(identical(length(el), 1L), is.character(el))
-    
+
     idx <- match(el, private$items)[[1L]]
     if(is.na(idx)){
       return(FALSE)
@@ -37,7 +37,7 @@ CharArray <- R6::R6Class("CharArray", public = list(
     }else{
       return(FALSE)
     }
-    
+
     idx <- match(old, private$items)[[1L]]
     if(is.na(idx)){
       return(FALSE)
@@ -125,7 +125,7 @@ getLogoB64 <- function(logoPath) {
     }
 
     logoFormat <- tools::file_ext(logoPath)
-    
+
     logoB64 <- gsub("[\r\n]", "", jsonlite::base64_enc(readr::read_file_raw(logoPath)))
 
     if(logoFormat == "png"){
@@ -188,7 +188,7 @@ file.copy2 <- function(from, to){
   fromDirs <- from[fromIsDir]
   toDirs   <- dirname(to[fromIsDir])
   for(i in seq_along(fromDirs)){
-    if(!file.copy(fromDirs[i], toDirs[i], 
+    if(!file.copy(fromDirs[i], toDirs[i],
                   recursive = TRUE, overwrite = TRUE)){
       return(FALSE)
     }
@@ -230,7 +230,7 @@ checkboxInput_MIRO <- function(inputId, label, value = FALSE){
            tags$label(class = "cb-label", "for" = inputId, label),
            tags$div(
              tags$label(class = "checkbox-material",
-                        tags$div(class = "form-group", 
+                        tags$div(class = "form-group",
                                  tags$div(class = "checkbox",
                                           tags$label(inputTag, tags$span())))
              ))

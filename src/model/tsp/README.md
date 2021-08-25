@@ -1,8 +1,8 @@
 # Traveling Salesman Problem
-This model tries to find the shortest route through all cities given by the 
+This model tries to find the shortest route through all cities given by the
 user. To select the cities you want to travel through, simply click on the map that you find under the `City location information` tab. To remove an existing marker, click on the marker. You can also drag the markers around to place them in a different location.
-  
-At the tab `Advanced Settings` one can specify certain values to limit the 
+
+At the tab `Advanced Settings` one can specify certain values to limit the
 runtime of the model (at the cost of not finding the solution for all cities)
 given.
 
