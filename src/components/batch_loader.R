@@ -241,6 +241,9 @@ BatchLoader <- R6Class("BatchLoader",
                                              }else{
                                                as.integer(sidsToFetch)
                                              })
+                             if(length(dataDbTmp) < 1L){
+                               return(list())
+                             }
                              return(split(dataDbTmp[-1], dataDbTmp[[1L]]))
                            })
                            names(dataTmp) <- scenTableNames
