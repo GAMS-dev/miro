@@ -18,6 +18,7 @@ loadScenData <- function(metaData, workDir,
   # read scalar data in case it exists
   isNewGdx <- TRUE
   # fetch results from csv files
+  now <- Sys.time()
   lapply(seq_along(metaData), function(i){
     tryCatch({
       switch(method,
@@ -137,6 +138,7 @@ loadScenData <- function(metaData, workDir,
       stop(sprintf(lang$errMsg$GAMSOutput$badOutputData, names(metaData)[i]), call. = FALSE)
     }
   })
+  print(Sys.time() - now)
   ret$errors <- loadDataErrors$get()
   return(ret)
 }

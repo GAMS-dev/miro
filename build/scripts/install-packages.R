@@ -317,6 +317,7 @@ if (dir.exists(examplesPath)){
 if(length(RlibPathDevel)){
     Sys.setenv(R_LIBS=file.path(getwd(), RlibPathDevel))
 }
+print(sessionInfo())
 Sys.setenv(MIRO_BUILD='true')
 for ( modelName in c( 'pickstock', 'transport', 'sudoku', 'tsp', 'farming',
     'inscribedsquare', 'cpack', 'cutstock' ) ) {
