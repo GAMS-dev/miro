@@ -38,9 +38,6 @@ Sys.sleep(2L)
 expect_identical(jsonlite::fromJSON(app$getAllValues()$output[["tab_0_2-miroPivot-pivotChart"]])$x$data$labels,
                  c("0_6.AAPL", "0_6.AXP", "0_6.BA", "0_6.GS", "0_6.HD", "0_6.MMM", "1_2.DD", "1_2.MCD"))
 
-app$setInputs(btScenPivot_close = "click")
-Sys.sleep(1L)
-
 # load scenarios into tab comparison mode
 app$findElement("#sidebarItemExpanded a[data-value='loadResults']")$click()
 Sys.sleep(0.5)

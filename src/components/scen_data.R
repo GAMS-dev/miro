@@ -308,11 +308,17 @@ ScenData <- R6Class("ScenData", public = list(
       scenIdsToClear[which(scenIds %in% scenIdsInRef)] <- FALSE
     }
     scenIdsToClear <- scenIds[scenIdsToClear]
-    if(length(scenIdsToClear)){
-      private$cachedData[as.character(scenIdsToClear)] <- NULL
-    }
+    self$invalidateCache(scenIdsToClear)
     if(clearRef){
       private$refScenMap[[refId]] <- private$refScenMap[[refId]][-refScenIdx]
+    }
+    return(invisible(self))
+  },
+  invalidateCache = function(scenIds){
+    scenIds <- scenIds[scenIds != "sb"]
+    scenIds <- as.character(scenIds)[scenIds %in% names(private$cachedData)]
+    if(length(scenIds)){
+      private$cachedData[scenIds] <- NULL
     }
     return(invisible(self))
   }

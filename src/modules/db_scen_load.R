@@ -238,11 +238,11 @@ observeEvent(input$btRefreshComp, {
     flog.debug("Refresh scenario in tab compare mode clicked.")
   }
   refId <- tabIdToRef(tabsetId)
-  scenData$clear(refId, clearRef = FALSE)
   if(!is.null(dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetId)]])){
     dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetId)]][["content"]][] <<- FALSE
   }
   scenIds <- scenData$getRefScenMap(refId)
+  scenData$invalidateCache(scenIds)
   sbScenId <- startsWith(as.character(scenIds), "sb")
   if(any(sbScenId)){
     if(tryCatch({
@@ -452,6 +452,9 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         symToFetch <- names(modelIn)[symToFetch]
       }
     }
+    if(refreshAllScenTmp){
+      scenData$invalidateCache(sidsToLoadVector)
+    }
     if(identical(currentCompMode, "pivot")){
       refId <- "cmpPivot"
       viewsSids <- 0L
@@ -461,13 +464,9 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         if(!is.null(dynamicUILoaded$dynamicTabsets[["tab_0"]])){
           dynamicUILoaded$dynamicTabsets[["tab_0"]][["content"]][] <<- FALSE
         }
-        if(refreshAllScenTmp){
-          scenData$clear(refId)
-        }else{
-          sidsToRemoveFromPivotComp <- !sidsInPivotComp %in% c(sidsToLoadVector, "sb_cmpPivot")
-          if(any(sidsToRemoveFromPivotComp)){
-            scenData$clear(refId, sidsInPivotComp[sidsToRemoveFromPivotComp])
-          }
+        sidsToRemoveFromPivotComp <- !sidsInPivotComp %in% c(sidsToLoadVector, "sb_cmpPivot")
+        if(any(sidsToRemoveFromPivotComp)){
+          scenData$clear(refId, sidsInPivotComp[sidsToRemoveFromPivotComp])
         }
         if(isGroupOfSheets[[1]]){
           tabId <- 1
