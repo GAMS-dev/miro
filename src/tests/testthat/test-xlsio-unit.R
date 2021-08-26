@@ -94,6 +94,15 @@ test_that("Converting Excel column spec to index works", {
   expect_error(xlsioPrivate$excelColToIndex(c("Aa", "LH")), class = "error_parse_config")
 })
 
+test_that("Getting sheet names to cache works", {
+  xlsioPrivate$getSheetsToCache(c("\" asd efg!!bla!A1\"", " test1!A1:B12", "\" asd efg!!bla!B12\"",
+                                  "\" asd!A12\"", "test1!A1:B12", " test1!X23 ", "asd!X191:Z10000"))
+  expect_identical(xlsioPrivate$cache, list(` asd efg!!bla` = NULL, test1 = NULL))
+  expect_identical(xlsioPrivate$sheetRefCount, structure(c(2L, 3L), .Dim = 2L,
+                                                         .Dimnames = structure(list(c(" asd efg!!bla", "test1")),
+                                                                               .Names = "sheetNames"), class = "table"))
+})
+
 test_that("Converting column ranges to index works", {
   expect_identical(xlsioPrivate$rangeToIndex("1,A:2, 5"), c(1L, 2L, 5L))
   expect_identical(xlsioPrivate$rangeToIndex("D, E"), c(4L, 5L))
@@ -311,6 +320,7 @@ test_that("Reading variables/equations works", {
                           lower = c(NA_real_, NA_real_, NA_real_),
                           upper = c(100,200.23,-1.234),
                           scale = c(NA_real_, NA_real_, NA_real_)))
+  expect_identical(xlsioPrivate$sheetRefCount[["vareq"]], 2L)
   expect_identical(xlsio$read("../data/exampleData.xlsx", "var1a"),
                    tibble(uni = c("x1", "x2", "x3"),
                           level = c(1,2,0),
@@ -318,6 +328,8 @@ test_that("Reading variables/equations works", {
                           lower = c(NA_real_, NA_real_, NA_real_),
                           upper = c(100,200.23,-1.234),
                           scale = c(NA_real_, NA_real_, NA_real_)))
+  expect_identical(xlsioPrivate$sheetRefCount[["vareq"]], 1L)
+  expect_true(length(xlsioPrivate$cache[["vareq"]]) > 0)
   expect_identical(xlsio$read("../data/exampleData.xlsx", "var1b"),
                    tibble(uni = c("x1", "x2", "x3"),
                           level = c(1,2,NA_real_),
@@ -325,6 +337,8 @@ test_that("Reading variables/equations works", {
                           lower = c(NA_real_, NA_real_, NA_real_),
                           upper = c(100,200.23,-1.234),
                           scale = c(NA_real_, NA_real_, NA_real_)))
+  expect_identical(xlsioPrivate$sheetRefCount[["vareq"]], 0L)
+  expect_false(length(xlsioPrivate$cache[["vareq"]]) > 0)
   expect_identical(xlsio$read("../data/exampleData.xlsx", "eq1"),
                    tibble(uni1 = c("x1","x1", "x2","x2", "x3","x3"),
                           uni2 = c("y1","y2", "y1", "y2","y1", "y2"),

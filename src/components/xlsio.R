@@ -11,6 +11,8 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
     private$rSheetsNoIndex <- vapply(strsplit(private$rSheets, " ", fixed = TRUE),
                                      "[[", character(1L), 1L, USE.NAMES = FALSE)
     private$rIndex <- list()
+    private$sheetRefCount <- NULL
+    private$cache <- NULL
     return(self)
   },
   readIndex = function(path, indexRange = NULL, forceInit = FALSE){
@@ -151,6 +153,8 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
     rSymName = NULL,
     rIndex = list(),
     naList = c(""),
+    sheetRefCount = NULL,
+    cache = NULL,
     warnings = CharArray$new(),
     initIndexFromFile = function(path, indexRange = NULL){
       if(length(indexRange)){
@@ -241,9 +245,46 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         data <- suppressMessages(as_tibble(as.list(vector("character", rangeInfo$range$lr[2] - rangeInfo$range$ul[2] + 1L)),
                                            .name_repair = "unique"))
       }else{
-        data <- private$readInternal(private$rpath, range = rangeInfo$range,
-                                     col_names = index$dim > 0L && index$cdim > 0L,
-                                     na = private$naList, col_types = "text")
+        if(rangeInfo$range$sheet %in% names(private$cache)){
+          if(!length(private$cache[[rangeInfo$range$sheet]])){
+            rangeTmp <- suppressWarnings(cellranger::as.cell_limits(paste0(rangeInfo$range$sheet, "!A1")))
+            rangeTmp$lr <- c(NA, NA)
+            private$cache[[rangeInfo$range$sheet]] <- private$readInternal(private$rpath,
+                                                                           range = rangeTmp,
+                                                                           col_names = FALSE, na = private$naList,
+                                                                           col_types = "text")
+          }
+          if(is.na(rangeInfo$range$lr[1])){
+            rowRangeEndTmp <- nrow(private$cache[[rangeInfo$range$sheet]])
+          }else{
+            rowRangeEndTmp <- min(nrow(private$cache[[rangeInfo$range$sheet]]), rangeInfo$range$lr[1])
+          }
+          if(is.na(rangeInfo$range$lr[2])){
+            colRangeTmp <- seq(rangeInfo$range$ul[2], length(private$cache[[rangeInfo$range$sheet]]))
+          }else{
+            colRangeTmp <- seq(rangeInfo$range$ul[2], min(length(private$cache[[rangeInfo$range$sheet]]), rangeInfo$range$lr[2]))
+          }
+          if(index$dim > 0L && index$cdim > 0L){
+            colNamesTmp <- as.character(private$cache[[rangeInfo$range$sheet]][rangeInfo$range$ul[1], colRangeTmp])
+            if(rangeInfo$range$ul[1] + 1L > rowRangeEndTmp){
+              data <- private$cache[[rangeInfo$range$sheet]][seq(rowRangeEndTmp, rowRangeEndTmp), colRangeTmp]
+              data[] <- ""
+            }else{
+              data <- private$cache[[rangeInfo$range$sheet]][seq(rangeInfo$range$ul[1] + 1L, rowRangeEndTmp), colRangeTmp]
+            }
+            names(data)[!is.na(colNamesTmp)] <- colNamesTmp[!is.na(colNamesTmp)]
+          }else{
+            data <- private$cache[[rangeInfo$range$sheet]][seq(rangeInfo$range$ul[1], rowRangeEndTmp), colRangeTmp]
+          }
+          private$sheetRefCount[[rangeInfo$range$sheet]] <- private$sheetRefCount[[rangeInfo$range$sheet]] - 1L
+          if(identical(private$sheetRefCount[[rangeInfo$range$sheet]], 0L)){
+            private$cache[[rangeInfo$range$sheet]] <- NULL
+          }
+        }else{
+          data <- private$readInternal(private$rpath, range = rangeInfo$range,
+                                       col_names = index$dim > 0L && index$cdim > 0L,
+                                       na = private$naList, col_types = "text")
+        }
         if(isSetType && index$cdim > 0L && (!nrow(data) || rowSums(is.na(data))[[1]] == ncol(data))){
           data[1, ] <- ""
         }
@@ -441,7 +482,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         if(any(duplicatedSym)){
           stop_custom("error_data",
                       sprintf(lang$errMsg$xlsio$errors$duplicateScalars,
-                              paste(scalarsDfTmp[[1]][duplicateSymbols], collapse = "', '")), call. = FALSE)
+                              paste(scalarsDfTmp[[1]][duplicatedSym], collapse = "', '")), call. = FALSE)
         }
         noDescCol <- length(scalarsDfTmp) == 2L
         if(!noDescCol){
@@ -488,7 +529,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         if(any(duplicatedSym)){
           stop_custom("error_data",
                       sprintf(lang$errMsg$xlsio$errors$duplicateScalars,
-                              paste(scalarsDfTmp[[1]][duplicateSymbols], collapse = "', '")), call. = FALSE)
+                              paste(scalarsDfTmp[[1]][duplicatedSym], collapse = "', '")), call. = FALSE)
         }
         scalarsDf[match(scalarsDfTmp[[1]], scalarsToProcess), 3] <- as.character(scalarsDfTmp[[3L]])
         scalarsProcessed <- scalarsDfTmp[[1]]
@@ -517,7 +558,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         if(any(duplicatedSym)){
           stop_custom("error_data",
                       sprintf(lang$errMsg$xlsio$errors$duplicateScalarVE,
-                              paste(scalarsDf[[1]][duplicateSymbols], collapse = "', '")), call. = FALSE)
+                              paste(scalarsDf[[1]][duplicatedSym], collapse = "', '")), call. = FALSE)
         }
         if(length(scalarsDf) == 6L){
           scalarsDf <- add_column(scalarsDf,
@@ -857,6 +898,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         # need to throw warning if scalars both in table and declared individually
         private$warnings$push(lang$errMsg$xlsio$warnings$scalarDeclarations)
       }
+      private$getSheetsToCache(indexDf[["range"]])
       return(setNames(split(indexDf,
                             seq_len(nrow(indexDf))),
                       indexDf[["symbol"]]))
@@ -904,6 +946,22 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         }
         return(rChar[1] * 676L + rChar[2] * 26L + rChar[3])
       }, integer(1L), USE.NAMES = FALSE))
+    },
+    getSheetsToCache = function(rangeCol){
+      sheetNamesTmp <- trimws(rangeCol, whitespace = "\"")
+      sheetNamesQuoted <- nchar(sheetNamesTmp) == nchar(rangeCol) - 2L
+      sheetNames <- sheetNamesTmp
+      sheetNames[!sheetNamesQuoted] <- trimws(sheetNames[!sheetNamesQuoted])
+      sheetNames <- vapply(strsplit(sheetNames, "!", fixed = TRUE), function(el){
+        paste(el[-length(el)], collapse = "!")
+      }, character(1L), USE.NAMES = FALSE)
+      sheetsToCache <- table(sheetNames)
+      sheetsToCache <- sheetsToCache[sheetsToCache > 1]
+      if(length(sheetsToCache)){
+        private$sheetRefCount <- sheetsToCache
+        private$cache <- setNames(vector("list", length(sheetsToCache)), names(sheetsToCache))
+      }
+      return(invisible(self))
     },
     parseCellRange = function(symName, range){
       rangeTmp <- trimws(range, whitespace = "\"")
