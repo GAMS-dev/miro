@@ -363,6 +363,7 @@ observeEvent(input$btBatchLoadSb, {
 })
 
 observeEvent(input$btBatchCompare, {
+  disableEl(session, "#btBatchCompare")
   if(identical(input$btBatchCompare, "pivot")){
     viewMode <- "pivotView"
     currentCompMode <<- "pivot"

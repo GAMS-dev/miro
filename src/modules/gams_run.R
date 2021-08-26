@@ -638,6 +638,7 @@ if(LAUNCHHCUBEMODE){
     }
     # submit job
     tryCatch({
+      disableEl(session, "#btSubmitAsyncJob")
       hideEl(session, "#jobSubmissionWrapper")
       showEl(session, "#jobSubmissionLoad")
       worker$runAsync(sid, name = jobName)
