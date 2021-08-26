@@ -511,11 +511,7 @@ if(is.null(errMsg) && debugMode){
     lapply(rendererFiles, function(file){
       if(!file.access(file.path(customRendererDir, file), mode = 4)){
         tryCatch({
-          if(isWindows()){
-            eval(parse(file.path(customRendererDir, file), encoding = "UTF-8"), envir = .GlobalEnv)
-          }else{
-            source(file.path(customRendererDir, file))
-          }
+          eval(parse(file.path(customRendererDir, file), encoding = "UTF-8"), envir = .GlobalEnv)
         }, error = function(e){
           errMsg <<- paste(errMsg,
                            sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.",
