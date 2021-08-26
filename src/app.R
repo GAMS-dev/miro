@@ -511,7 +511,7 @@ if(is.null(errMsg) && debugMode){
     lapply(rendererFiles, function(file){
       if(!file.access(file.path(customRendererDir, file), mode = 4)){
         tryCatch({
-          source(file.path(customRendererDir, file), encoding = "UTF-8")
+          shiny:::sourceUTF8(file.path(customRendererDir, file))
         }, error = function(e){
           errMsg <<- paste(errMsg,
                            sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.",
