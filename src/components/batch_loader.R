@@ -266,7 +266,7 @@ BatchLoader <- R6Class("BatchLoader",
                                fnCount <- fnCount + 1L
                              }
                              fileNamesTmp[[j]] <- sanitizedScenNameTmp
-                             gdxio$wgdx(file.path(tmpDir, paste0(sanitizedScenName, ".gdx")),
+                             gdxio$wgdx(file.path(tmpDir, paste0(sanitizedScenNameTmp, ".gdx")),
                                         setNames(lapply(names(dataTmp), function(symName){
                                           if(symName %in% c(scalarsFileName, names(ioConfig$modelOut))){
                                             scenIdToFetch <- scenId
@@ -384,7 +384,7 @@ BatchLoader <- R6Class("BatchLoader",
                                    fnCount <- fnCount + 1L
                                  }
                                  fileNamesTmp[[i]] <<- sanitizedScenNameTmp
-                                 dirNameScen <- file.path(tmpDir, sanitizedScenName)
+                                 dirNameScen <- file.path(tmpDir, sanitizedScenNameTmp)
                                  scenIdDirNameMap[[scenId]] <<- dirNameScen
                                  if(!dir.create(dirNameScen)){
                                    stop(sprintf("Temporary folder: '%s' could not be created.",
