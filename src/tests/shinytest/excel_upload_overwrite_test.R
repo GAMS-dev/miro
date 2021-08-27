@@ -2,9 +2,9 @@ app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit(paste0("excel_upload_overwrite_test_", Sys.getenv("GMSMODELNAME")))
 
 widgetSheetId <- 1L
-if(identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
+if (identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
   widgetSheetId <- 2L
-}else if(identical(Sys.getenv("GMSMODELNAME"), "transport")){
+} else if (identical(Sys.getenv("GMSMODELNAME"), "transport")) {
   widgetSheetId <- 7L
 }
 
@@ -21,6 +21,8 @@ app$uploadFile(localInput = paste0("../data/", Sys.getenv("GMSMODELNAME"), ".xls
 app$setInputs(btImportLocal = "click")
 app$setInputs(btOverwriteInput = "click")
 Sys.sleep(1)
-app$snapshot(items = list(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L))),
-             screenshot = TRUE)
+app$snapshot(
+  items = list(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L))),
+  screenshot = TRUE
+)
 app$stop()

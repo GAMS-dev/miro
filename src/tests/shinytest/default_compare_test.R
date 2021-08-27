@@ -1,11 +1,14 @@
 jsonPath <- file.path("..", "model", "transport", "conf_transport", "transport.json")
 configJSON <- suppressWarnings(jsonlite::fromJSON(jsonPath,
-                                                  simplifyDataFrame = FALSE,
-                                                  simplifyMatrix = FALSE))
+  simplifyDataFrame = FALSE,
+  simplifyMatrix = FALSE
+))
 
-writeConfig <- function(){
-  jsonlite::write_json(configJSON, jsonPath, pretty = TRUE,
-                       auto_unbox = TRUE, null = "null")
+writeConfig <- function() {
+  jsonlite::write_json(configJSON, jsonPath,
+    pretty = TRUE,
+    auto_unbox = TRUE, null = "null"
+  )
 }
 
 # default = split view

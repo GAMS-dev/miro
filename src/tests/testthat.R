@@ -1,6 +1,6 @@
 RLibPath <- Sys.getenv("LIB_PATH")
-if(!identical(RLibPath, "")) {
-  .libPaths( c( RLibPath, .libPaths()) )
+if (!identical(RLibPath, "")) {
+  .libPaths(c(RLibPath, .libPaths()))
 }
 print(sessionInfo())
 
@@ -25,19 +25,25 @@ source(file.path("tests", "util.R"))
 source(file.path("components", "js_util.R"))
 source(file.path("components", "util.R"))
 
-if(!dependenciesInstalled()){
+if (!dependenciesInstalled()) {
   installDependencies()
 }
 
-if(dir.exists(logPathTests) && !identical(unlink(logPathTests, recursive = TRUE), 0L)){
-  stop(sprintf("Can't remove existing log file directory: '%s'. Do you lack write permissions?",
-               logPathTests),
-       call. = FALSE)
+if (dir.exists(logPathTests) && !identical(unlink(logPathTests, recursive = TRUE), 0L)) {
+  stop(sprintf(
+    "Can't remove existing log file directory: '%s'. Do you lack write permissions?",
+    logPathTests
+  ),
+  call. = FALSE
+  )
 }
-if(!dir.create(logPathTests)){
-  stop(sprintf("Can't create log file directory: '%s'. Do you lack write permissions?",
-               logPathTests),
-       call. = FALSE)
+if (!dir.create(logPathTests)) {
+  stop(sprintf(
+    "Can't create log file directory: '%s'. Do you lack write permissions?",
+    logPathTests
+  ),
+  call. = FALSE
+  )
 }
 
 Sys.setenv(MIRO_LOG_PATH = logPathTests)
@@ -47,10 +53,10 @@ reporter <- MultiReporter$new(list(
   JunitReporter$new(file = file.path(getwd(), "test-out.xml"))
 ))
 
-stopOnFailure <- identical(commandArgs(trailingOnly=TRUE), "--stop")
+stopOnFailure <- identical(commandArgs(trailingOnly = TRUE), "--stop")
 testDir <- file.path(getwd(), "tests")
 
-#test_file("tests/testthat/test-lang-ui.R", reporter = reporter)
+# test_file("tests/testthat/test-lang-ui.R", reporter = reporter)
 test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure)
 
 Sys.unsetenv("MIRO_LOG_PATH")

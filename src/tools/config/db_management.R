@@ -1,5 +1,7 @@
-removeDbTablesServer("removeAllButton", errorContainerId = "unknownError",
-                     successContainerId = "removeSuccess")
+removeDbTablesServer("removeAllButton",
+  errorContainerId = "unknownError",
+  successContainerId = "removeSuccess"
+)
 
 output$btDownloadBackup <- downloadHandler(
   filename = function() {

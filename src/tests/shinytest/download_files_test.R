@@ -6,9 +6,9 @@ app$setInputs(btImport = "click")
 Sys.sleep(0.5)
 app$setInputs(btLoadScenConfirm = "click")
 Sys.sleep(1)
-app$snapshot(items = list(output = "outputDataTitle"),screenshot = TRUE)
+app$snapshot(items = list(output = "outputDataTitle"), screenshot = TRUE)
 
-#export all file types
+# export all file types
 app$findElements(".navbar-custom-menu a.dropdown-toggle")[[1]]$click()
 app$findElement(".navbar-custom-menu a[onclick*='btExportScen']")$click()
 Sys.sleep(1)
@@ -45,7 +45,7 @@ expect_true(app$waitFor("$('#shiny-modal .gmsalert-error').is(':visible');", 50)
 expect_true(app$waitFor("$('#shiny-modal .choose-input').is(':visible');", 50))
 expect_download_size(app, "scenExportHandler", "scenExport.zip")
 
-#export all file types for manually selected symbol
+# export all file types for manually selected symbol
 app$findElements(".navbar-custom-menu a.dropdown-toggle")[[1]]$click()
 app$findElement(".navbar-custom-menu a[onclick*='btExportScen']")$click()
 Sys.sleep(1)

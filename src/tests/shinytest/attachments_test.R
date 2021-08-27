@@ -3,7 +3,7 @@ app$snapshotInit("attachments_test")
 
 app$snapshot(items = list(output = "outputDataTitle"), screenshot = TRUE)
 
-#add attachment and save scenario
+# add attachment and save scenario
 app$setInputs(btEditMeta = "click")
 Sys.sleep(0.5)
 app$findElement("a[data-value='Attachments']")$click()
@@ -17,7 +17,7 @@ Sys.sleep(0.2)
 expect_identical(length(app$findElements(".attachment-line")), 0L)
 app$uploadFile(file_addAttachments = "../model/pickstock_with_data/README.md")
 Sys.sleep(0.5)
-#try to upload same file again, should not result in second attachment
+# try to upload same file again, should not result in second attachment
 app$uploadFile(file_addAttachments = "../model/pickstock_with_data/README.md")
 Sys.sleep(1)
 attachmentList <- app$findElements(".attachment-line")
@@ -27,7 +27,7 @@ Sys.sleep(1)
 app$setInputs(btSave = "click")
 Sys.sleep(1)
 
-#remove scenario from sandbox and load it again
+# remove scenario from sandbox and load it again
 app$findElement("#btRemove1")$click()
 Sys.sleep(0.5)
 app$findElement(".modal-footer .bt-gms-confirm")$click()
@@ -37,7 +37,7 @@ Sys.sleep(0.5)
 app$setInputs(btLoadScenConfirm = "click")
 Sys.sleep(1)
 
-#download attachment
+# download attachment
 app$setInputs(btEditMeta = "click")
 Sys.sleep(0.5)
 app$findElement("a[data-value='Attachments']")$click()
@@ -46,7 +46,7 @@ attachmentList <- app$findElements(".attachment-line")
 attachmentList[[1]]$findElement("a")$click()
 app$snapshotDownload("downloadAttachmentData", "attachment.md")
 
-#un-check model read permissions for attachment several times, save and remove scenario from sandbox
+# un-check model read permissions for attachment several times, save and remove scenario from sandbox
 expect_identical(length(attachmentList), 1L)
 expect_identical(attachmentList[[1]]$findElement(".checkbox input")$getAttribute("checked"), "true")
 attachmentList[[1]]$findElement(".checkbox input")$click()
@@ -86,7 +86,7 @@ Sys.sleep(0.5)
 app$findElement(".modal-footer .bt-gms-confirm")$click()
 Sys.sleep(0.5)
 
-#load scenario, delete attachment and save scenario
+# load scenario, delete attachment and save scenario
 app$setInputs(btImport = "click")
 Sys.sleep(0.5)
 app$setInputs(btLoadScenConfirm = "click")

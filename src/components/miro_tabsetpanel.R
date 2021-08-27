@@ -2,11 +2,12 @@
 # to add more flexibility in MIRO
 MIROtabBox <- function(tabs, id = NULL, selected = NULL,
                        maxTabsExpanded = 5L, btCollapsedTabs = "",
-                       noTabsGrouped = -1L, hideTabs = FALSE)
-{
+                       noTabsGrouped = -1L, hideTabs = FALSE) {
   content <- MIROtabsetPanel(tabs, id, selected,
-                             maxTabsExpanded, btCollapsedTabs,
-                             noTabsGrouped, hideTabs = hideTabs)
+    maxTabsExpanded, btCollapsedTabs,
+    noTabsGrouped,
+    hideTabs = hideTabs
+  )
 
   content$attribs$class <- "nav-tabs-custom"
 
@@ -14,13 +15,11 @@ MIROtabBox <- function(tabs, id = NULL, selected = NULL,
 }
 MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
                             maxTabsExpanded = 5L, btCollapsedTabs = "",
-                            noTabsGrouped = -1L, onclick = NULL, hideTabs = FALSE)
-{
+                            noTabsGrouped = -1L, onclick = NULL, hideTabs = FALSE) {
   foundSelected <- FALSE
   tabs <- lapply(tabs, function(div) {
     if (foundSelected || is.character(div)) {
       # Strings are not selectable items
-
     } else {
       # Base case: regular tab item. If the `selected` argument is
       # provided, check for a match in the existing tabs; else,
@@ -29,10 +28,11 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
         foundSelected <<- TRUE
         div <- markTabAsSelected(div)
       } else {
-        if (is.null(div$attribs$`data-value`) || isTRUE(is.na(div$attribs$`data-value`)))
+        if (is.null(div$attribs$`data-value`) || isTRUE(is.na(div$attribs$`data-value`))) {
           tabValue <- div$attribs$title
-        else
+        } else {
           tabValue <- div$attribs$`data-value`
+        }
         if (identical(selected, tabValue)) {
           foundSelected <<- TRUE
           div <- markTabAsSelected(div)
@@ -46,56 +46,78 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
   if (!is.null(id)) ulClass <- "nav nav-tabs shiny-tab-input"
 
   noTabs <- length(tabs)
-  if(noTabs > maxTabsExpanded + 1L){
+  if (noTabs > maxTabsExpanded + 1L) {
     noExpandedTabs <- maxTabsExpanded
-  }else{
+  } else {
     noExpandedTabs <- noTabs
   }
   tabsetId <- shiny:::p_randomInt(1000, 10000)
   expandedTabs <- lapply(seq_len(noExpandedTabs), MIRObuildTabItem,
-                         tabsetId = tabsetId, tabs = tabs, noTabsGrouped = noTabsGrouped,
-                         onclick = onclick)
+    tabsetId = tabsetId, tabs = tabs, noTabsGrouped = noTabsGrouped,
+    onclick = onclick
+  )
   liTagList <- lapply(expandedTabs, "[[", 1)
   divTagList <- lapply(expandedTabs, "[[", 2)
 
-  if(noTabs > maxTabsExpanded + 1L){
-    if(length(ulClass)){
+  if (noTabs > maxTabsExpanded + 1L) {
+    if (length(ulClass)) {
       ulClass <- paste(ulClass, "nav-tabs-dropdown")
     }
-    collapsedTabIds <- seq(from = noExpandedTabs + 1L,
-                           to = noTabs)
+    collapsedTabIds <- seq(
+      from = noExpandedTabs + 1L,
+      to = noTabs
+    )
     ddTabs <- lapply(collapsedTabIds, MIRObuildTabItem,
-                     tabsetId = tabsetId,
-                     tabs = tabs, noTabsGrouped = noTabsGrouped,
-                     onclick = onclick)
+      tabsetId = tabsetId,
+      tabs = tabs, noTabsGrouped = noTabsGrouped,
+      onclick = onclick
+    )
     ddLiTagList <- lapply(ddTabs, "[[", 1)
     divTagList <- c(divTagList, lapply(ddTabs, "[[", 2))
 
-    liTagList <- c(liTagList,
-                   list(tags$li(class = "dropdown max-tabs-dropdown-label",
-                                tags$a(class = "dropdown-toggle",
-                                       `data-toggle` = "dropdown",
-                                       `data-defaultLabel` = btCollapsedTabs,
-                                       role = "button",
-                                       `aria-haspopup` = "true",
-                                       `aria-expanded` = "false",
-                                       href = "#", btCollapsedTabs,
-                                       onclick = "Miro.resetDropdownFilter(this)",
-                                       tags$i(class = "fa fa-angle-double-right",
-                                              `aria-hide` = "true")),
-                                tags$ul(class = "dropdown-menu maxTabsDropdown",
-                                        c(list(tags$input(type = "text",
-                                                          placeholder = lang$renderers$dropdownFilter$placeholder,
-                                                          class = "form-control miro-dropdown-filter",
-                                                          onkeyup = "Miro.filterMiroDropdown(this)")),
-                                          ddLiTagList)))))
+    liTagList <- c(
+      liTagList,
+      list(tags$li(
+        class = "dropdown max-tabs-dropdown-label",
+        tags$a(
+          class = "dropdown-toggle",
+          `data-toggle` = "dropdown",
+          `data-defaultLabel` = btCollapsedTabs,
+          role = "button",
+          `aria-haspopup` = "true",
+          `aria-expanded` = "false",
+          href = "#", btCollapsedTabs,
+          onclick = "Miro.resetDropdownFilter(this)",
+          tags$i(
+            class = "fa fa-angle-double-right",
+            `aria-hide` = "true"
+          )
+        ),
+        tags$ul(
+          class = "dropdown-menu maxTabsDropdown",
+          c(
+            list(tags$input(
+              type = "text",
+              placeholder = lang$renderers$dropdownFilter$placeholder,
+              class = "form-control miro-dropdown-filter",
+              onkeyup = "Miro.filterMiroDropdown(this)"
+            )),
+            ddLiTagList
+          )
+        )
+      ))
+    )
   }
 
-  tabNavList <- tags$ul(class = ulClass, id = id, style = if(hideTabs) "display:none",
-                        `data-tabsetid` = tabsetId, liTagList)
+  tabNavList <- tags$ul(
+    class = ulClass, id = id, style = if (hideTabs) "display:none",
+    `data-tabsetid` = tabsetId, liTagList
+  )
 
-  tabContent <- tags$div(class = "tab-content",
-                         `data-tabsetid` = tabsetId, divTagList)
+  tabContent <- tags$div(
+    class = "tab-content",
+    `data-tabsetid` = tabsetId, divTagList
+  )
 
   # create the tab div
   tags$div(class = "tabbable", tabNavList, tabContent)
@@ -121,8 +143,10 @@ insertScenTab <- function(inputId, tab, target,
   # give a random 4-digit number to identify the tabsetPanel). Since we
   # can only know this in the client side, we'll just pass `id` and
   # `tsid` (TabSetID) as dummy values that will be fixed in the JS code.
-  item <- MIRObuildTabItem("id", "tsid", TRUE, divTag = tab,
-                           scenID = scenID, scenButtonLang = scenButtonLang)
+  item <- MIRObuildTabItem("id", "tsid", TRUE,
+    divTag = tab,
+    scenID = scenID, scenButtonLang = scenButtonLang
+  )
 
   callback <- function() {
     session$sendInsertTab(
@@ -132,15 +156,15 @@ insertScenTab <- function(inputId, tab, target,
       menuName = NULL,
       target = target,
       position = position,
-      select = select)
+      select = select
+    )
   }
-  if(immediate) callback() else session$onFlush(callback, once = TRUE)
+  if (immediate) callback() else session$onFlush(callback, once = TRUE)
 }
 
 MIRObuildTabItem <- function(index, tabsetId, tabs = NULL,
                              divTag = NULL, scenID = NULL, scenButtonLang = NULL,
                              noTabsGrouped = -1L, onclick = NULL) {
-
   divTag <- if (!is.null(divTag)) divTag else tabs[[index]]
   # tabPanel item: create the tab's liTag and divTag
   tabId <- paste("tab", tabsetId, index, sep = "-")
@@ -148,24 +172,32 @@ MIRObuildTabItem <- function(index, tabsetId, tabs = NULL,
     tags$a(
       href = paste("#", tabId, sep = ""),
       onclick = onclick,
-      class = if(noTabsGrouped > -1L)
-        paste("miro-tabset-group-", if(index <= noTabsGrouped) "1" else "2", sep = ""),
+      class = if (noTabsGrouped > -1L) {
+        paste("miro-tabset-group-", if (index <= noTabsGrouped) "1" else "2", sep = "")
+      },
       `data-toggle` = "tab",
       `data-value` = divTag$attribs$`data-value`,
       divTag$attribs$title,
-      if(!is.null(scenID))
-        tags$button(class = "btn btn-default bt-icon", type = "button",
-                    title = scenButtonLang[["tooltip"]], style = "margin-bottom:3px;margin-left:10px;",
-                    onclick = paste0("Miro.confirmModalShow('",
-                                     scenButtonLang[["title"]], "', '",
-                                     scenButtonLang[["desc"]], "', '",
-                                     scenButtonLang[["cancelButton"]], "', '",
-                                     scenButtonLang[["okButton"]],
-                    "', 'Shiny.setInputValue(\\'btScenClose\\',", scenID,
-                    ",{priority:\\'event\\'})')"),
-                    tags$i(class = "fa fa-times",
-                           role = "presentation",
-                           `aria-label` = scenButtonLang[["title"]]))
+      if (!is.null(scenID)) {
+        tags$button(
+          class = "btn btn-default bt-icon", type = "button",
+          title = scenButtonLang[["tooltip"]], style = "margin-bottom:3px;margin-left:10px;",
+          onclick = paste0(
+            "Miro.confirmModalShow('",
+            scenButtonLang[["title"]], "', '",
+            scenButtonLang[["desc"]], "', '",
+            scenButtonLang[["cancelButton"]], "', '",
+            scenButtonLang[["okButton"]],
+            "', 'Shiny.setInputValue(\\'btScenClose\\',", scenID,
+            ",{priority:\\'event\\'})')"
+          ),
+          tags$i(
+            class = "fa fa-times",
+            role = "presentation",
+            `aria-label` = scenButtonLang[["title"]]
+          )
+        )
+      }
     )
   )
   # if this tabPanel is selected item, mark it active

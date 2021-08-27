@@ -11,10 +11,10 @@ app$setInputs(btSendQuery = "click")
 Sys.sleep(2)
 expect_true(app$waitFor("$('#batchLoadResults').data('datatable').data().length===8", timeout = 50L))
 scenData <- getVisibleDtData(app, "batchLoadResults")
-for(staticColId in c(1, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16)){
+for (staticColId in c(1, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16)) {
   allEqual <- length(unique(scenData[[staticColId]])) == 1
   expect_true(allEqual)
-  if(!allEqual){
+  if (!allEqual) {
     print(scenData[[staticColId]])
   }
 }
@@ -49,11 +49,14 @@ expect_identical(app$getValue("cb_12"), FALSE)
 app$setInputs(inputTabset = "inputTabset_4")
 Sys.sleep(1L)
 expect_equivalent(getHotData(app, "in_2"),
-                  tibble::tibble(j = c("New-york", "Chicago", "Topeka"),
-                                 latitude = c("40.730610", "41.881832", "39.056198"),
-                                 longitude = c("-73.935242", "-87.623177", "-95.695312"),
-                                 text = ""),
-                  ignore_attr = TRUE)
+  tibble::tibble(
+    j = c("New-york", "Chicago", "Topeka"),
+    latitude = c("40.730610", "41.881832", "39.056198"),
+    longitude = c("-73.935242", "-87.623177", "-95.695312"),
+    text = ""
+  ),
+  ignore_attr = TRUE
+)
 
 # check that attachment was added
 app$setInputs(btEditMeta = "click")
@@ -113,7 +116,8 @@ expect_identical(app$getValue("slider_3"), 4)
 app$setInputs(btSave = "click")
 Sys.sleep(2L)
 expect_true(app$waitFor("$('.modal-body').text().trim().includes('scenario with the name you have chosen already exists')",
-            timeout = 50L))
+  timeout = 50L
+))
 app$waitFor('$(\'button[data-dismiss="modal"]:visible\').click();true;', timeout = 50)
 Sys.sleep(2L)
 
@@ -128,19 +132,25 @@ app$setInputs(btSave = "click")
 Sys.sleep(2L)
 
 conn <- connectDb(modelName = "pickstock_configuration")
-tryCatch({
-  # check that HC job data of second job was removed as all scenarios of that job were saved
-  # as standard scenarios
-  hcJobData <- DBI::dbGetQuery(conn, paste0("SELECT * FROM ",
-                                            DBI::dbQuoteIdentifier(conn, "_sys_metadata_"),
-                                            " WHERE ",
-                                            DBI::dbQuoteIdentifier(conn, "_scode"), "=-2"))
-  expect_identical(nrow(hcJobData), 1L)
-}, error = function(e){
-  warning(conditionMessage(e), call. = FALSE)
-}, finally = {
-  DBI::dbDisconnect(conn)
-})
+tryCatch(
+  {
+    # check that HC job data of second job was removed as all scenarios of that job were saved
+    # as standard scenarios
+    hcJobData <- DBI::dbGetQuery(conn, paste0(
+      "SELECT * FROM ",
+      DBI::dbQuoteIdentifier(conn, "_sys_metadata_"),
+      " WHERE ",
+      DBI::dbQuoteIdentifier(conn, "_scode"), "=-2"
+    ))
+    expect_identical(nrow(hcJobData), 1L)
+  },
+  error = function(e) {
+    warning(conditionMessage(e), call. = FALSE)
+  },
+  finally = {
+    DBI::dbDisconnect(conn)
+  }
+)
 
 
 app$stop()

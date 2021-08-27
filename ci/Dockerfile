@@ -20,7 +20,7 @@ RUN wget https://d37drm4t2jghv5.cloudfront.net/distributions/${GAMS_MAJOR}.${GAM
     rm linux_x64_64_sfx.exe && \
     mv "gams${GAMS_MAJOR}.${GAMS_MINOR}_linux_x64_64_sfx" "/opt/gams"
 
-RUN R -e "install.packages(c('testthat', 'shinytest', 'xml2'));"
+RUN R -e "install.packages(c('testthat', 'shinytest', 'xml2', 'precommit', 'styler'));"
 
 # need to install Rcpp, plogr, BH again as we removed header files in miroui image
 RUN mkdir /home/miro/r

@@ -1,7 +1,7 @@
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("views_metadata_test")
 
-getData <- function(id){
+getData <- function(id) {
   return(jsonlite::fromJSON(app$getAllValues()$output[[id]])$x$data$datasets$data)
 }
 
@@ -24,7 +24,8 @@ app$uploadFile(file_addViews = "../data/good-views.json")
 Sys.sleep(0.5)
 expect_error(app$findElement("#currentViewsTable tbody tr"), NA)
 expect_true(app$waitFor("$('#viewsCustomError')[0].innerText.includes('idontexist')",
-                        timeout = 50))
+  timeout = 50
+))
 app$findElement("#editMetaUI .bt-remove")$click()
 expect_true(app$waitFor("$('#viewsNoneSelected').is(':visible');", timeout = 50))
 app$findElements("#currentViewsTable tbody tr")[[1]]$click()
@@ -36,30 +37,34 @@ expect_identical(length(app$findElements("#currentViewsTable tbody tr")), 3L)
 app$findElements("#currentViewsTable tbody tr")[[1]]$click()
 app$findElements("#currentViewsTable tbody tr")[[2]]$click()
 app$findElements("#currentViewsTable tbody tr")[[3]]$click()
-app$findElements('#editMetaUI .btn-default')[[3]]$click()
+app$findElements("#editMetaUI .btn-default")[[3]]$click()
 app$snapshotDownload("downloadViews", "views.json")
 app$findElements("#currentViewsTable tbody tr")[[2]]$click()
-app$findElements('#editMetaUI .btn-default')[[3]]$click()
+app$findElements("#editMetaUI .btn-default")[[3]]$click()
 app$snapshotDownload("downloadViews", "views2.json")
 
 expect_true(app$waitFor("$('#currentViewsTable tbody tr')[0].innerHTML==='<td data-val=\"YQ==\">capacity of plant i in cases</td><td>&lt;script&gt;alert(\\\\'asd\\\\')&lt;/script&gt;</td>'",
-            timeout = 50))
+  timeout = 50
+))
 expect_true(app$waitFor("$('#currentViewsTable tbody tr')[1].innerHTML==='<td data-val=\"YQ==\"></td><td>view2</td>'",
-                        timeout = 50))
+  timeout = 50
+))
 expect_true(app$waitFor("$('#currentViewsTable tbody tr')[2].innerHTML==='<td data-val=\"Yg==\">demand at market j in cases</td><td>&lt;script&gt;location.reload();&lt;/script&gt;</td>'",
-                        timeout = 50))
+  timeout = 50
+))
 app$uploadFile(file_addViews = "../data/good-views.json")
 expect_true(app$waitFor("$('#viewsCustomError')[0].innerText.includes('<script>alert(\\\\'asd\\\\')</script>')",
-                        timeout = 50))
+  timeout = 50
+))
 app$findElement('button[data-dismiss="modal"]')$click()
 Sys.sleep(1)
-app$findElement('#btGraphIn')$click()
+app$findElement("#btGraphIn")$click()
 Sys.sleep(1.5)
 app$findElement("#in_1-miroPivot-toggleViewButton")$click()
 Sys.sleep(1)
-expect_identical(length(app$findElements('#in_1-miroPivot-savedViewsDD li')), 3L)
+expect_identical(length(app$findElements("#in_1-miroPivot-savedViewsDD li")), 3L)
 expect_true(app$waitFor("$('#in_1-miroPivot-savedViewsDD li')[1].children[0].innerText==='<script>alert(\\\\'asd\\\\')</script>'"))
-app$findElement('#in_1-miroPivot-saveView')$click()
+app$findElement("#in_1-miroPivot-saveView")$click()
 Sys.sleep(0.5)
 app$setInputs("in_1-miroPivot-newViewName" = "\t\n ")
 Sys.sleep(1L)
@@ -90,17 +95,23 @@ Sys.sleep(0.5)
 app$findElement('#editMetaUI a[data-value="Views"]')$click()
 expect_identical(length(app$findElements("#currentViewsTable tbody tr")), 3L)
 expect_true(app$waitFor("$('#currentViewsTable tbody td')[0].innerHTML==='capacity of plant i in cases'",
-                        timeout = 50))
+  timeout = 50
+))
 expect_true(app$waitFor("$('#currentViewsTable tbody td')[1].innerHTML==='view2'",
-                        timeout = 50))
+  timeout = 50
+))
 expect_true(app$waitFor("$('#currentViewsTable tbody td')[2].innerHTML===''",
-                        timeout = 50))
+  timeout = 50
+))
 expect_true(app$waitFor("$('#currentViewsTable tbody td')[3].innerHTML==='new test view'",
-                        timeout = 50))
+  timeout = 50
+))
 expect_true(app$waitFor("$('#currentViewsTable tbody td')[4].innerHTML==='demand at market j in cases'",
-                        timeout = 50))
+  timeout = 50
+))
 expect_true(app$waitFor("$('#currentViewsTable tbody td')[5].innerHTML==='&lt;script&gt;location.reload();&lt;/script&gt;'",
-                        timeout = 50))
+  timeout = 50
+))
 
 app$snapshot(items = list(output = c("cmpScenTitle_2")), screenshot = TRUE)
 app$stop()

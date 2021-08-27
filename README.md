@@ -34,6 +34,11 @@ Please follow the installation instructions at: [https://pre-commit.com/#install
 ```
    pre-commit install
 ```
+### Coding styles
+We follow the [Tidyverse Style Guide](https://style.tidyverse.org) for R code and the [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript) for JavaScript.
+
+
+To style R code automatically as part of our `pre-commit` hook, we require R and the R packages `precommit` and `styler` to be installed. You have to install them manually (`install.packages(c('precommit','styler'))`).
 
 ## License
 

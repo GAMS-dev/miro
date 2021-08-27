@@ -5,25 +5,28 @@ app$snapshot(items = list(input = "deleteGraph"), screenshot = TRUE)
 Sys.sleep(1)
 jsonPath <- file.path("..", "model", "pickstock_configuration", "conf_pickstock_configuration")
 configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"),
-                                                 simplifyDataFrame = FALSE,
-                                                 simplifyMatrix = FALSE))
+  simplifyDataFrame = FALSE,
+  simplifyMatrix = FALSE
+))
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
-                                                 simplifyDataFrame = FALSE,
-                                                 simplifyMatrix = FALSE))
+  simplifyDataFrame = FALSE,
+  simplifyMatrix = FALSE
+))
 
 
-#load and save all widgets
+# load and save all widgets
 app$findElement("a[data-value='new_widget']")$click()
 Sys.sleep(1)
-for(widgetToTest in names(configRaw$inputWidgets)){
+for (widgetToTest in names(configRaw$inputWidgets)) {
   app$setInputs(widget_symbol = widgetToTest)
   Sys.sleep(1)
   app$findElement("button[id='saveWidget']")$click()
   Sys.sleep(1)
 }
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
-                                                 simplifyDataFrame = FALSE,
-                                                 simplifyMatrix = FALSE))
+  simplifyDataFrame = FALSE,
+  simplifyMatrix = FALSE
+))
 
 expect_identical(configRaw$inputWidgets$price$widgetType, configNew$inputWidgets$price$widgetType)
 expect_identical(configRaw$inputWidgets$price$tableType, configNew$inputWidgets$price$tableType)

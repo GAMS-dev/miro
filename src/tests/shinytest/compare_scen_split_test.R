@@ -15,9 +15,13 @@ Sys.sleep(0.5)
 app$setInputs(btLoadScenConfirm = "click")
 Sys.sleep(2)
 
-expect_true(app$waitFor(paste0("$('#cmpScenTitle_2').text()==='",
-                               scenOptions[[2]][1], "';"), timeout = 50))
-expect_true(app$waitFor(paste0("$('#cmpScenTitle_3').text()==='",
-                               scenOptions[[1]][1],"';"), timeout = 50))
+expect_true(app$waitFor(paste0(
+  "$('#cmpScenTitle_2').text()==='",
+  scenOptions[[2]][1], "';"
+), timeout = 50))
+expect_true(app$waitFor(paste0(
+  "$('#cmpScenTitle_3').text()==='",
+  scenOptions[[1]][1], "';"
+), timeout = 50))
 app$snapshot(items = list(output = c("inputDataTitle")), screenshot = TRUE)
 app$stop()

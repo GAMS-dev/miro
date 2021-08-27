@@ -1,10 +1,12 @@
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("attachments_save_as_test")
 
-app$snapshot(items = list(output = "outputDataTitle"),
-             screenshot = TRUE)
+app$snapshot(
+  items = list(output = "outputDataTitle"),
+  screenshot = TRUE
+)
 
-saveNewDefault <- function(newName = NULL, discardAttach = FALSE){
+saveNewDefault <- function(newName = NULL, discardAttach = FALSE) {
   app$findElement("#btRemove1")$click()
   Sys.sleep(0.5)
   app$findElement(".modal-footer .bt-gms-confirm")$click()
@@ -18,15 +20,16 @@ saveNewDefault <- function(newName = NULL, discardAttach = FALSE){
   app$setInputs(btSaveAs = "click")
   Sys.sleep(0.5)
   app$setInputs(scenName = newName)
-  if(isTRUE(discardAttach))
+  if (isTRUE(discardAttach)) {
     app$setInputs(newScenDiscardAttach = "click")
+  }
   Sys.sleep(0.1)
   app$findElement("#shiny-modal .bt-gms-confirm")$click()
   Sys.sleep(1)
 }
 
 
-#load default scenario
+# load default scenario
 app$findElement("#btRemove1")$click()
 Sys.sleep(0.5)
 app$findElement(".modal-footer .bt-gms-confirm")$click()
@@ -36,16 +39,16 @@ Sys.sleep(0.5)
 app$setInputs(btLoadScenConfirm = "click")
 Sys.sleep(1)
 
-#get user name
+# get user name
 app$setInputs(btEditMeta = "click")
 Sys.sleep(0.5)
 app$findElement("a[data-value='accessPerm']")$click()
 Sys.sleep(1)
-user <-app$getValue("editMetaWritePerm")[[1]]
+user <- app$getValue("editMetaWritePerm")[[1]]
 app$setInputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
 
-#save as same name (overwrite existing)
+# save as same name (overwrite existing)
 app$setInputs(btSaveAs = "click")
 Sys.sleep(0.5)
 expect_identical(app$findElement("#scenarioExists")$getAttribute("style"), c("display: none;"))
@@ -55,7 +58,7 @@ expect_identical(app$findElement("#scenarioExists")$getAttribute("style"), c("")
 app$setInputs(btSaveConfirm = "click")
 Sys.sleep(1)
 
-#save as same name (chose new scenario name)
+# save as same name (chose new scenario name)
 app$setInputs(btSaveAs = "click")
 Sys.sleep(0.5)
 expect_identical(app$findElement("#scenarioExists")$getAttribute("style"), c("display: none;"))
@@ -69,7 +72,7 @@ Sys.sleep(0.5)
 app$findElement("#shiny-modal .bt-gms-confirm")$click()
 Sys.sleep(1)
 
-#add attachment, save scenario newScen
+# add attachment, save scenario newScen
 app$setInputs(btEditMeta = "click")
 Sys.sleep(0.5)
 app$findElement("a[data-value='Attachments']")$click()
@@ -80,7 +83,7 @@ Sys.sleep(1)
 app$setInputs(btSave = "click")
 Sys.sleep(0.5)
 
-#save as same name and discard attachments
+# save as same name and discard attachments
 app$setInputs(btSaveAs = "click")
 Sys.sleep(0.5)
 app$setInputs(newScenDiscardAttach = "click")
@@ -98,7 +101,7 @@ expect_identical(length(attachmentList), 0L)
 app$setInputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
 
-#add attachment, save as new name and discard attachments
+# add attachment, save as new name and discard attachments
 saveNewDefault("newScen2", TRUE)
 app$setInputs(btEditMeta = "click")
 Sys.sleep(0.5)
@@ -126,7 +129,7 @@ expect_identical(length(attachmentList), 0L)
 app$setInputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
 
-#add attachment, save as same name and do not discard attachments
+# add attachment, save as same name and do not discard attachments
 saveNewDefault("newScen4", TRUE)
 app$setInputs(btEditMeta = "click")
 Sys.sleep(0.5)
@@ -153,7 +156,7 @@ expect_identical(length(attachmentList), 1L)
 app$setInputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
 
-#add attachment, save as new name and do not discard attachments
+# add attachment, save as new name and do not discard attachments
 saveNewDefault("newScen5", TRUE)
 app$setInputs(btEditMeta = "click")
 Sys.sleep(0.5)

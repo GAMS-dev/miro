@@ -3,8 +3,10 @@ app$snapshotInit("valuebox_new_config_test")
 Sys.sleep(2)
 app$findElement("a[data-value='outputData']")$click()
 Sys.sleep(1)
-app$snapshot(items = list(output = "inputDataTitle"),
-             screenshot = TRUE)
+app$snapshot(
+  items = list(output = "inputDataTitle"),
+  screenshot = TRUE
+)
 
 expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .row')[0].childElementCount===2", timeout = 50))
 expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .row')[1].childElementCount===1", timeout = 50))

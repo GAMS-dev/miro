@@ -2,23 +2,29 @@ context("Unit tests - worker class")
 
 source("../../components/worker.R")
 
-worker <- Worker$new(metadata = list(uid = "test", modelName = "pickstock", noNeedCred = FALSE,
-                                     maxSizeToRead = 5000,
-                                     modelDataFiles = c(MIROGdxInName, MIROGdxOutName),
-                                     MIROGdxInName = MIROGdxInName,
-                                     clArgs = c(paste0("execMode=", gamsExecMode),
-                                                paste0('IDCGDXOutput="', MIROGdxOutName, '"')),
-                                     text_entities = c("pickstock.lst"),
-                                     gamsExecMode = gamsExecMode,
-                                     extraClArgs = "MIP=CBC",
-                                     saveTraceFile = TRUE,
-                                     modelGmsName = "pickstock.gms", gamsSysDir = Sys.getenv("GAMS_SYS_DIR"), csvDelim = ",",
-                                     timeout = 10L, serverOS = getOS(),
-                                     modelData = file.path(getwd(), "..", "model", "pickstock", "pickstock.zip"),
-                                     rememberMeFileName = "",
-                                     hiddenLogFile = FALSE),
-                     remote = TRUE,
-                     hcube = FALSE)
+worker <- Worker$new(
+  metadata = list(
+    uid = "test", modelName = "pickstock", noNeedCred = FALSE,
+    maxSizeToRead = 5000,
+    modelDataFiles = c(MIROGdxInName, MIROGdxOutName),
+    MIROGdxInName = MIROGdxInName,
+    clArgs = c(
+      paste0("execMode=", gamsExecMode),
+      paste0('IDCGDXOutput="', MIROGdxOutName, '"')
+    ),
+    text_entities = c("pickstock.lst"),
+    gamsExecMode = gamsExecMode,
+    extraClArgs = "MIP=CBC",
+    saveTraceFile = TRUE,
+    modelGmsName = "pickstock.gms", gamsSysDir = Sys.getenv("GAMS_SYS_DIR"), csvDelim = ",",
+    timeout = 10L, serverOS = getOS(),
+    modelData = file.path(getwd(), "..", "model", "pickstock", "pickstock.zip"),
+    rememberMeFileName = "",
+    hiddenLogFile = FALSE
+  ),
+  remote = TRUE,
+  hcube = FALSE
+)
 privateWorkerEnv <- environment(worker$getCredentials)$private
 
 test_that("Resolving Engine url works", {

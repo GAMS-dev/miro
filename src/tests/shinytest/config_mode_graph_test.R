@@ -5,27 +5,30 @@ app$snapshot(items = list(input = "deleteGraph"), screenshot = TRUE)
 Sys.sleep(2L)
 jsonPath <- file.path("..", "model", "pickstock_configuration", "conf_pickstock_configuration")
 configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"),
-                                                 simplifyDataFrame = FALSE,
-                                                 simplifyMatrix = FALSE))
+  simplifyDataFrame = FALSE,
+  simplifyMatrix = FALSE
+))
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
-                                                 simplifyDataFrame = FALSE,
-                                                 simplifyMatrix = FALSE))
+  simplifyDataFrame = FALSE,
+  simplifyMatrix = FALSE
+))
 
 
-#load and save all widgets
+# load and save all widgets
 app$findElement("a[data-value='new_graph']")$click()
 Sys.sleep(1)
 app$findElement("button[id='dbInput']")$click()
 Sys.sleep(5)
-for(GraphToTest in names(configRaw$dataRendering)){
+for (GraphToTest in names(configRaw$dataRendering)) {
   app$setInputs(gams_symbols = GraphToTest)
-  if(identical(GraphToTest, "hovercraft"))
+  if (identical(GraphToTest, "hovercraft")) {
     Sys.sleep(12)
-  else
+  } else {
     Sys.sleep(4)
-  if(identical(GraphToTest, "maptest")){
+  }
+  if (identical(GraphToTest, "maptest")) {
     setOptions <- getSelectizeOptions(app, "#chart_tool")
-    #langSpecificGraphs$graphOptionsSet in tools/cg_graphs.R
+    # langSpecificGraphs$graphOptionsSet in tools/cg_graphs.R
     expect_identical(setOptions, c("timevis", "miropivot", "custom", "leaflet"))
   }
   app$findElement("button[id='saveGraph']")$click()
@@ -34,10 +37,11 @@ for(GraphToTest in names(configRaw$dataRendering)){
   Sys.sleep(1)
 }
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
-                                                 simplifyDataFrame = FALSE,
-                                                 simplifyMatrix = FALSE))
+  simplifyDataFrame = FALSE,
+  simplifyMatrix = FALSE
+))
 
-#histogram
+# histogram
 expect_identical(configRaw$dataRendering$abserror$outType, configNew$dataRendering$abserror$outType)
 expect_identical(configRaw$dataRendering$abserror$height, configNew$dataRendering$abserror$height)
 expect_identical(configRaw$dataRendering$abserror$graph$tool, configNew$dataRendering$abserror$graph$tool)
@@ -60,7 +64,7 @@ expect_identical(configRaw$dataRendering$abserror$graph$xdata[["absolute error t
 expect_identical(configRaw$dataRendering$abserror$graph$xaxis$title, configNew$dataRendering$abserror$graph$xaxis$title)
 expect_identical(configRaw$dataRendering$abserror$graph$yaxis$title, configNew$dataRendering$abserror$graph$yaxis$title)
 
-#map
+# map
 expect_identical(configRaw$dataRendering$schedule$outType, configNew$dataRendering$schedule$outType)
 expect_identical(configRaw$dataRendering$schedule$graph$title, configNew$dataRendering$schedule$graph$title)
 expect_identical(configRaw$dataRendering$schedule$graph$tool, configNew$dataRendering$schedule$graph$tool)
@@ -84,7 +88,7 @@ expect_identical(configRaw$dataRendering$schedule$graph$markers[["2"]]$iconOptio
 expect_identical(configRaw$dataRendering$schedule$graph$markers[["2"]]$iconOptions$markerColor, configNew$dataRendering$schedule$graph$markers[["2"]]$iconOptions$markerColor)
 expect_identical(configRaw$dataRendering$schedule$graph$markers[["2"]]$labelOptions$textsize, configNew$dataRendering$schedule$graph$markers[["2"]]$labelOptions$textsize)
 expect_identical(configRaw$dataRendering$schedule$graph$markers[["2"]]$labelOptions$permanent, configNew$dataRendering$schedule$graph$markers[["2"]]$labelOptions$permanent)
-expect_identical(configRaw$dataRendering$schedule$graph$markers[["2"]]$labelOptions$style$color , configNew$dataRendering$schedule$graph$markers[["2"]]$labelOptions$style$color)
+expect_identical(configRaw$dataRendering$schedule$graph$markers[["2"]]$labelOptions$style$color, configNew$dataRendering$schedule$graph$markers[["2"]]$labelOptions$style$color)
 expect_identical(configRaw$dataRendering$schedule$graph$markers[["2"]]$label, configNew$dataRendering$schedule$graph$markers[["2"]]$label)
 expect_identical(configRaw$dataRendering$schedule$graph$markers[["2"]]$group, configNew$dataRendering$schedule$graph$markers[["2"]]$group)
 expect_identical(configRaw$dataRendering$schedule$graph$flows[["1"]]$lng0, configNew$dataRendering$schedule$graph$flows[["1"]]$lng0)
@@ -98,7 +102,7 @@ expect_identical(configRaw$dataRendering$schedule$graph$flows[["1"]]$maxThicknes
 expect_identical(configRaw$dataRendering$schedule$graph$flows[["1"]]$layerId, configNew$dataRendering$schedule$graph$flows[["1"]]$layerId)
 expect_identical(configRaw$dataRendering$schedule$height, configNew$dataRendering$schedule$height)
 
-#map without groups
+# map without groups
 expect_null(configNew$dataRendering$mapNoGroup$graph$markers[["1"]]$group)
 expect_null(configNew$dataRendering$mapNoGroup$graph$markers[["2"]]$group)
 expect_identical(configRaw$dataRendering$mapNoGroup$graph$markers[["1"]]$lng, configNew$dataRendering$mapNoGroup$graph$markers[["1"]]$lng)
@@ -108,7 +112,7 @@ expect_identical(configRaw$dataRendering$mapNoGroup$graph$markers[["2"]]$lng, co
 expect_identical(configRaw$dataRendering$mapNoGroup$graph$markers[["2"]]$lat, configNew$dataRendering$mapNoGroup$graph$markers[["2"]]$lat)
 expect_identical(configRaw$dataRendering$mapNoGroup$graph$markers[["2"]]$label, configNew$dataRendering$mapNoGroup$graph$markers[["2"]]$label)
 
-#gantt chart
+# gantt chart
 expect_identical(configRaw$dataRendering$gantt$outType, configNew$dataRendering$gantt$outType)
 expect_identical(configRaw$dataRendering$gantt$height, configNew$dataRendering$gantt$height)
 expect_identical(configRaw$dataRendering$gantt$graph$tool, configNew$dataRendering$gantt$graph$tool)
@@ -130,7 +134,7 @@ expect_identical(configRaw$dataRendering$gantt$graph$filter$date, configNew$data
 expect_identical(configRaw$dataRendering$gantt$graph$filter$label, configNew$dataRendering$gantt$graph$filter$label)
 expect_identical(configRaw$dataRendering$gantt$graph$custom[["1"]]$time, configNew$dataRendering$gantt$graph$custom[["1"]]$time)
 
-#valuebox
+# valuebox
 expect_identical(configRaw$dataRendering[["_scalars_out"]][["error_train"]]$options$description, configNew$dataRendering[["_scalars_out"]][["error_train"]]$options$description)
 expect_identical(configRaw$dataRendering[["_scalars_out"]][["error_train"]]$options$color, configNew$dataRendering[["_scalars_out"]][["error_train"]]$options$color)
 expect_identical(configRaw$dataRendering[["_scalars_out"]][["error_train"]]$options$icon$name, configNew$dataRendering[["_scalars_out"]][["error_train"]]$options$icon$name)
@@ -157,7 +161,7 @@ expect_identical(configRaw$dataRendering[["_scalars_out"]][["lastdaytraining"]]$
 expect_identical(configRaw$dataRendering[["_scalars_out"]][["lastdaytraining"]]$options$icon$lib, configNew$dataRendering[["_scalars_out"]][["lastdaytraining"]]$options$icon$lib)
 expect_identical(configRaw$dataRendering[["_scalars_out"]][["lastdaytraining"]]$options$round, configNew$dataRendering[["_scalars_out"]][["lastdaytraining"]]$options$round)
 
-#time series diagram
+# time series diagram
 expect_identical(configRaw$dataRendering$dowvsindex$outType, configNew$dataRendering$dowvsindex$outType)
 expect_identical(configRaw$dataRendering$dowvsindex$height, configNew$dataRendering$dowvsindex$height)
 expect_identical(configRaw$dataRendering$dowvsindex$graph$tool, configNew$dataRendering$dowvsindex$graph$tool)
@@ -211,7 +215,7 @@ expect_identical(configRaw$dataRendering$dowvsindex$graph$dyHighlight$hideOnMous
 expect_identical(configRaw$dataRendering$dowvsindex$graph$dyHighlight$highlightCircleSize, configNew$dataRendering$dowvsindex$graph$dyHighlight$highlightCircleSize)
 expect_identical(configRaw$dataRendering$dowvsindex$graph$dyHighlight$highlightSeriesOpts$strokeWidth, configNew$dataRendering$dowvsindex$graph$dyHighlight$highlightSeriesOpts$strokeWidth)
 expect_identical(configRaw$dataRendering$dowvsindex$graph$dyHighlight$highlightSeriesOpts$strokeBorderWidth, configNew$dataRendering$dowvsindex$graph$dyHighlight$highlightSeriesOpts$strokeBorderWidth)
-expect_identical(configRaw$dataRendering$dowvsindex$graph$dyHighlight$highlightSeriesOpts$strokeBorderColor , configNew$dataRendering$dowvsindex$graph$dyHighlight$highlightSeriesOpts$strokeBorderColor)
+expect_identical(configRaw$dataRendering$dowvsindex$graph$dyHighlight$highlightSeriesOpts$strokeBorderColor, configNew$dataRendering$dowvsindex$graph$dyHighlight$highlightSeriesOpts$strokeBorderColor)
 expect_identical(configRaw$dataRendering$dowvsindex$graph$dyHighlight$highlightSeriesBackgroundAlpha, configNew$dataRendering$dowvsindex$graph$dyHighlight$highlightSeriesBackgroundAlpha)
 expect_identical(configRaw$dataRendering$dowvsindex$graph$dyRangeSelector$height, configNew$dataRendering$dowvsindex$graph$dyRangeSelector$height)
 expect_identical(configRaw$dataRendering$dowvsindex$graph$dyRangeSelector$strokeColor, configNew$dataRendering$dowvsindex$graph$dyRangeSelector$strokeColor)
@@ -238,7 +242,7 @@ expect_identical(configRaw$dataRendering$dowvsindex$graph$dyShading[["2"]]$to, c
 expect_identical(configRaw$dataRendering$dowvsindex$graph$dyShading[["2"]]$axis, configNew$dataRendering$dowvsindex$graph$dyShading[["2"]]$axis)
 expect_identical(configRaw$dataRendering$dowvsindex$graph$dyShading[["2"]]$color, configNew$dataRendering$dowvsindex$graph$dyShading[["2"]]$color)
 
-#pie chart(s)
+# pie chart(s)
 expect_identical(configRaw$dataRendering$repc$outType, configNew$dataRendering$repc$outType)
 expect_identical(configRaw$dataRendering$repc$height, configNew$dataRendering$repc$height)
 expect_identical(configRaw$dataRendering$repc$graph$title, configNew$dataRendering$repc$graph$title)
@@ -275,7 +279,7 @@ expect_identical(configRaw$dataRendering$repc$graph$traces[["7"]]$values, config
 expect_identical(configRaw$dataRendering$repc$graph$traces[["7"]]$name, configNew$dataRendering$repc$graph$traces[["7"]]$name)
 expect_identical(configRaw$dataRendering$repc$graph$traces[["7"]]$hole, configNew$dataRendering$repc$graph$traces[["7"]]$hole)
 
-#bar chart
+# bar chart
 expect_identical(configRaw$dataRendering$stock_weight$outType, configNew$dataRendering$stock_weight$outType)
 expect_identical(configRaw$dataRendering$stock_weight$graph$tool, configNew$dataRendering$stock_weight$graph$tool)
 expect_identical(configRaw$dataRendering$stock_weight$graph$type, configNew$dataRendering$stock_weight$graph$type)
@@ -294,7 +298,7 @@ expect_identical(configRaw$dataRendering$stock_weight$graph$yaxis$title, configN
 expect_identical(configRaw$dataRendering$stock_weight$graph$yaxis$showgrid, configNew$dataRendering$stock_weight$graph$yaxis$showgrid)
 expect_identical(configRaw$dataRendering$stock_weight$graph$yaxis$zeroline, configNew$dataRendering$stock_weight$graph$yaxis$zeroline)
 expect_identical(configRaw$dataRendering$stock_weight$graph$yaxis$showticklabels, configNew$dataRendering$stock_weight$graph$yaxis$showticklabels)
-expect_identical(configRaw$dataRendering$stock_weight$graph$yaxis$categoryorder , configNew$dataRendering$stock_weight$graph$yaxis$categoryorder)
+expect_identical(configRaw$dataRendering$stock_weight$graph$yaxis$categoryorder, configNew$dataRendering$stock_weight$graph$yaxis$categoryorder)
 expect_identical(configRaw$dataRendering$stock_weight$graph$title, configNew$dataRendering$stock_weight$graph$title)
 expect_identical(configRaw$dataRendering$stock_weight$graph$showlegend, configNew$dataRendering$stock_weight$graph$showlegend)
 expect_identical(configRaw$dataRendering$stock_weight$graph$staticPlot, configNew$dataRendering$stock_weight$graph$staticPlot)
@@ -302,13 +306,13 @@ expect_identical(configRaw$dataRendering$stock_weight$graph$color, configNew$dat
 expect_identical(configRaw$dataRendering$stock_weight$graph$filter$col, configNew$dataRendering$stock_weight$graph$filter$col)
 expect_identical(configRaw$dataRendering$stock_weight$graph$filter$label, configNew$dataRendering$stock_weight$graph$filter$label)
 expect_identical(configRaw$dataRendering$stock_weight$graph$filter$multiple, configNew$dataRendering$stock_weight$graph$filter$multiple)
-expect_identical(configRaw$dataRendering$stock_weight$graph$filter$date , configNew$dataRendering$stock_weight$graph$filter$date)
+expect_identical(configRaw$dataRendering$stock_weight$graph$filter$date, configNew$dataRendering$stock_weight$graph$filter$date)
 expect_identical(configRaw$dataRendering$stock_weight$graph$width, configNew$dataRendering$stock_weight$graph$width)
 expect_identical(configRaw$dataRendering$stock_weight$graph$paper_bgcolor, configNew$dataRendering$stock_weight$graph$paper_bgcolor)
 expect_identical(configRaw$dataRendering$stock_weight$graph$plot_bgcolor, configNew$dataRendering$stock_weight$graph$plot_bgcolor)
 expect_identical(configRaw$dataRendering$stock_weight$height, configNew$dataRendering$stock_weight$height)
 
-#line chart
+# line chart
 expect_identical(configRaw$dataRendering$price$outType, configNew$dataRendering$price$outType)
 expect_identical(configRaw$dataRendering$price$height, configNew$dataRendering$price$height)
 expect_identical(configRaw$dataRendering$price$graph$tool, configNew$dataRendering$price$graph$tool)
@@ -343,7 +347,7 @@ expect_identical(configRaw$dataRendering$price$graph$showlegend, configNew$dataR
 expect_identical(configRaw$dataRendering$price$graph$staticPlot, configNew$dataRendering$price$graph$staticPlot)
 expect_identical(configRaw$dataRendering$price$graph$color, configNew$dataRendering$price$graph$color)
 
-#miro pivot
+# miro pivot
 expect_identical(configRaw$dataRendering$pricemerge$outType, configNew$dataRendering$pricemerge$outType)
 expect_identical(configRaw$dataRendering$pricemerge$height, configNew$dataRendering$pricemerge$height)
 expect_identical(configRaw$dataRendering$pricemerge$options$aggregationFunction, configNew$dataRendering$pricemerge$options$aggregationFunction)
@@ -351,7 +355,7 @@ expect_identical(configRaw$dataRendering$pricemerge$options$pivotRenderer, confi
 expect_identical(configRaw$dataRendering$pricemerge$options$rows, configNew$dataRendering$pricemerge$options$rows)
 expect_identical(configRaw$dataRendering$pricemerge$options$cols$uni, configNew$dataRendering$pricemerge$options$cols$uni)
 
-#table as line chart with two axes
+# table as line chart with two axes
 expect_identical(configRaw$dataRendering$pressurethickness$outType, configNew$dataRendering$pressurethickness$outType)
 expect_identical(configRaw$dataRendering$pressurethickness$graph$tool, configNew$dataRendering$pressurethickness$graph$tool)
 expect_identical(configRaw$dataRendering$pressurethickness$graph$type, configNew$dataRendering$pressurethickness$graph$type)
@@ -359,14 +363,14 @@ expect_identical(configRaw$dataRendering$pressurethickness$graph$ydata$pressure$
 expect_identical(configRaw$dataRendering$pressurethickness$graph$ydata$pressure$mode, configNew$dataRendering$pressurethickness$graph$ydata$pressure$mode)
 expect_identical(configRaw$dataRendering$pressurethickness$graph$ydata$pressure$line$width, configNew$dataRendering$pressurethickness$graph$ydata$pressure$line$width)
 expect_identical(configRaw$dataRendering$pressurethickness$graph$ydata$pressure$line$shape, configNew$dataRendering$pressurethickness$graph$ydata$pressure$line$shape)
-expect_identical(configRaw$dataRendering$pressurethickness$graph$ydata$pressure$line$dash, configNew$dataRendering$pressurethickness$graph$ydata$pressure$line$dash        )
+expect_identical(configRaw$dataRendering$pressurethickness$graph$ydata$pressure$line$dash, configNew$dataRendering$pressurethickness$graph$ydata$pressure$line$dash)
 expect_identical(configRaw$dataRendering$pressurethickness$graph$ydata$pressure$showlegend, configNew$dataRendering$pressurethickness$graph$ydata$pressure$showlegend)
 expect_identical(configRaw$dataRendering$pressurethickness$graph$ydata$pressure$yaxis, configNew$dataRendering$pressurethickness$graph$ydata$pressure$yaxis)
 expect_identical(configRaw$dataRendering$pressurethickness$graph$ydata$thickness$label, configNew$dataRendering$pressurethickness$graph$ydata$thickness$label)
 expect_identical(configRaw$dataRendering$pressurethickness$graph$ydata$thickness$mode, configNew$dataRendering$pressurethickness$graph$ydata$thickness$mode)
 expect_identical(configRaw$dataRendering$pressurethickness$graph$ydata$thickness$line$width, configNew$dataRendering$pressurethickness$graph$ydata$thickness$line$width)
 expect_identical(configRaw$dataRendering$pressurethickness$graph$ydata$thickness$line$shape, configNew$dataRendering$pressurethickness$graph$ydata$thickness$line$shape)
-expect_identical(configRaw$dataRendering$pressurethickness$graph$ydata$thickness$line$dash, configNew$dataRendering$pressurethickness$graph$ydata$thickness$line$dash        )
+expect_identical(configRaw$dataRendering$pressurethickness$graph$ydata$thickness$line$dash, configNew$dataRendering$pressurethickness$graph$ydata$thickness$line$dash)
 expect_identical(configRaw$dataRendering$pressurethickness$graph$ydata$thickness$showlegend, configNew$dataRendering$pressurethickness$graph$ydata$thickness$showlegend)
 expect_identical(configRaw$dataRendering$pressurethickness$graph$ydata$thickness$yaxis, configNew$dataRendering$pressurethickness$graph$ydata$thickness$yaxis)
 expect_identical(configRaw$dataRendering$pressurethickness$graph$yaxis$title, configNew$dataRendering$pressurethickness$graph$yaxis$title)
@@ -380,7 +384,7 @@ expect_identical(configRaw$dataRendering$pressurethickness$graph$y2axis$zeroline
 expect_identical(configRaw$dataRendering$pressurethickness$graph$y2axis$showticklabels, configNew$dataRendering$pressurethickness$graph$y2axis$showticklabels)
 expect_identical(configRaw$dataRendering$pressurethickness$graph$y2axis$categoryorder, configNew$dataRendering$pressurethickness$graph$y2axis$categoryorder)
 
-#animation options
+# animation options
 expect_identical(configRaw$dataRendering$hovercraft$outType, configNew$dataRendering$hovercraft$outType)
 expect_identical(configRaw$dataRendering$hovercraft$height, configNew$dataRendering$hovercraft$height)
 expect_identical(configRaw$dataRendering$hovercraft$graph$tool, configNew$dataRendering$hovercraft$graph$tool)

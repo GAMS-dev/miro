@@ -1,44 +1,63 @@
 JSONValidator <- R6Class(
   "Worker",
   public = list(
-    initialize = function(miroRootDir = "."){
+    initialize = function(miroRootDir = ".") {
       private$ct <- V8::v8(global = "window")
       private$ct$source(file.path(miroRootDir, "JS", "ajv.min.js"))
       private$ct$eval("const ajv=new Ajv({useDefaults:true,validateSchema:false});")
     },
-    validate = function(jsonFileLocation, jsonSchemaLocation){
-      tryCatch({
-        private$ct$assign("schema", readr::read_file(jsonSchemaLocation))
-        private$ct$eval("var validate=ajv.compile(JSON.parse(schema));")
-      }, error = function(e) {
-        stop(paste0("Error reading'", jsonSchemaLocation,
-                    "'. Check for valid JSON syntax and make sure file is accessible.\nError message: ",
-                    conditionMessage(e)),
-             call. = FALSE)
-      })
-      tryCatch({
-        private$ct$assign("data", readr::read_file(jsonFileLocation))
-        private$ct$eval("data=JSON.parse(data);")
-      }, error = function(e) {
-        stop(paste0("Error reading'", jsonFileLocation,
-                    "'. Check for valid JSON syntax and make sure file is accessible.\nError message: ",
-                    conditionMessage(e)),
-             call. = FALSE)
-      })
-      tryCatch({
-        private$ct$eval("var valid=validate(data);")
-      }, error = function(e) {
-        stop(paste0("Problems validating JSON file: '", jsonFileLocation,
-                    "'.\nError message: '", conditionMessage(e), "'."),
-             call. = FALSE)
-      })
+    validate = function(jsonFileLocation, jsonSchemaLocation) {
+      tryCatch(
+        {
+          private$ct$assign("schema", readr::read_file(jsonSchemaLocation))
+          private$ct$eval("var validate=ajv.compile(JSON.parse(schema));")
+        },
+        error = function(e) {
+          stop(paste0(
+            "Error reading'", jsonSchemaLocation,
+            "'. Check for valid JSON syntax and make sure file is accessible.\nError message: ",
+            conditionMessage(e)
+          ),
+          call. = FALSE
+          )
+        }
+      )
+      tryCatch(
+        {
+          private$ct$assign("data", readr::read_file(jsonFileLocation))
+          private$ct$eval("data=JSON.parse(data);")
+        },
+        error = function(e) {
+          stop(paste0(
+            "Error reading'", jsonFileLocation,
+            "'. Check for valid JSON syntax and make sure file is accessible.\nError message: ",
+            conditionMessage(e)
+          ),
+          call. = FALSE
+          )
+        }
+      )
+      tryCatch(
+        {
+          private$ct$eval("var valid=validate(data);")
+        },
+        error = function(e) {
+          stop(paste0(
+            "Problems validating JSON file: '", jsonFileLocation,
+            "'.\nError message: '", conditionMessage(e), "'."
+          ),
+          call. = FALSE
+          )
+        }
+      )
       valid <- private$ct$get("valid")
-      if(identical(valid, TRUE)){
+      if (identical(valid, TRUE)) {
         errors <- NULL
         data <- private$ct$get("data",
-                               simplifyDataFrame = FALSE,
-                               simplifyMatrix = FALSE)
-      }else{
+          simplifyDataFrame = FALSE,
+          simplifyMatrix = FALSE
+        )
+      } else {
         errors <- private$ct$get("ajv.errorsText(validate.errors)")
         data <- NULL
       }

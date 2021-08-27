@@ -2,28 +2,34 @@ app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit(paste0("csv_upload_test_", Sys.getenv("GMSMODELNAME")))
 
 widgetSheetId <- 1L
-if(identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
+if (identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
   widgetSheetId <- 2L
-}else if(identical(Sys.getenv("GMSMODELNAME"), "transport")){
+} else if (identical(Sys.getenv("GMSMODELNAME"), "transport")) {
   widgetSheetId <- 7L
 }
 app$setInputs(inputTabset = paste0("inputTabset_", widgetSheetId))
-if(!identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
+if (!identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
   Sys.sleep(1)
-  app$snapshot(items = list(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L))),
-               screenshot = TRUE)
+  app$snapshot(
+    items = list(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L))),
+    screenshot = TRUE
+  )
 }
 app$setInputs(btImport = "click")
 app$setInputs(tb_importData = "tb_importData_local")
 app$uploadFile(localInput = paste0("../data/", Sys.getenv("GMSMODELNAME"), ".zip"))
 app$setInputs(btImportLocal = "click")
 app$setInputs(inputTabset = paste0("inputTabset_", widgetSheetId))
-app$snapshot(items = list(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L))),
-             screenshot = TRUE)
-if(identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
+app$snapshot(
+  items = list(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L))),
+  screenshot = TRUE
+)
+if (identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
   app$setInputs(inputTabset = "inputTabset_1")
-  expect_identical(length(jsonlite::fromJSON(app$getAllValues()$output[["in_1"]])$x$data[[1]]),
-                   7560L)
+  expect_identical(
+    length(jsonlite::fromJSON(app$getAllValues()$output[["in_1"]])$x$data[[1]]),
+    7560L
+  )
   app$findElement("#btRemove1")$click()
   Sys.sleep(0.5)
   app$findElement(".modal-footer .bt-gms-confirm")$click()
@@ -33,8 +39,10 @@ if(identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
   app$uploadFile(localInput = paste0("../data/price.csv"))
   app$setInputs(btImportLocal = "click")
   app$setInputs(inputTabset = paste0("inputTabset_", widgetSheetId))
-  app$snapshot(items = list(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L))),
-               screenshot = TRUE)
+  app$snapshot(
+    items = list(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L))),
+    screenshot = TRUE
+  )
   app$setInputs(btImport = "click")
   app$setInputs(tb_importData = "tb_importData_local")
   app$uploadFile(localInput = paste0("../data/_scalars2.csv"))
@@ -43,9 +51,13 @@ if(identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
   Sys.sleep(0.5)
   app$setInputs(btImportLocal = "click")
   Sys.sleep(0.5)
-  app$snapshot(items = list(input = c(paste0("slider_", c(widgetSheetId, widgetSheetId + 1L)),
-                                      "dropdown_4")),
-               screenshot = TRUE)
+  app$snapshot(
+    items = list(input = c(
+      paste0("slider_", c(widgetSheetId, widgetSheetId + 1L)),
+      "dropdown_4"
+    )),
+    screenshot = TRUE
+  )
   app$findElement("#btRemove1")$click()
   Sys.sleep(0.5)
   app$findElement(".modal-footer .bt-gms-confirm")$click()
@@ -57,15 +69,15 @@ if(identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
   Sys.sleep(1)
   app$setInputs(inputTabset = paste0("inputTabset_", widgetSheetId - 1L))
   priceData <- getHotData(app, "in_1")
-  expect_identical(priceData[[1]][1:3], c("2016-01-04","2016-01-04","2016-01-04"))
-  expect_identical(priceData[[2]][1:3], c("AAPL","AXP","BA"))
-  expect_identical(priceData[[3]][1:3], c(105.349998,67.589996,140.5))
+  expect_identical(priceData[[1]][1:3], c("2016-01-04", "2016-01-04", "2016-01-04"))
+  expect_identical(priceData[[2]][1:3], c("AAPL", "AXP", "BA"))
+  expect_identical(priceData[[3]][1:3], c(105.349998, 67.589996, 140.5))
   expect_identical(nrow(priceData), 7560L)
   app$setInputs(btImport = "click")
   app$setInputs(tb_importData = "tb_importData_local")
   app$uploadFile(localInput = paste0("../data/price.psv"))
   Sys.sleep(1)
-  expect_options(getSelectizeOptions(app, "#csvInputHdr_1"), c("-","bla1","date","symbol","value","value2"))
+  expect_options(getSelectizeOptions(app, "#csvInputHdr_1"), c("-", "bla1", "date", "symbol", "value", "value2"))
   expect_identical(app$getValue("selInputDataLocCSV"), "price")
   app$setInputs(csvInputHdr_2 = "bla1")
   Sys.sleep(0.5)
@@ -78,9 +90,9 @@ if(identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
   Sys.sleep(0.5)
   app$setInputs(btOverwriteInput = "click")
   priceData <- getHotData(app, "in_1")
-  expect_identical(priceData[[1]][1:3], c("AAPL","AXP","BA"))
-  expect_identical(priceData[[2]][1:3], c("2016-01-04","2016-01-04","2016-01-04"))
-  expect_identical(priceData[[3]][1:3], c(105.349998,67.589996,140.5))
+  expect_identical(priceData[[1]][1:3], c("AAPL", "AXP", "BA"))
+  expect_identical(priceData[[2]][1:3], c("2016-01-04", "2016-01-04", "2016-01-04"))
+  expect_identical(priceData[[3]][1:3], c(105.349998, 67.589996, 140.5))
   expect_identical(nrow(priceData), 7560L)
   app$setInputs(btImport = "click")
   app$setInputs(tb_importData = "tb_importData_local")
@@ -94,7 +106,7 @@ if(identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
   expect_true(app$waitFor("$('#localDataImportError').text().includes('is not UTF-8 encoded');", timeout = 50))
   app$uploadFile(localInput = paste0("../data/csvtest-bad2.csv"))
   Sys.sleep(1)
-  expect_options(getSelectizeOptions(app, "#csvInputHdr_1"), c("-","header1header 2"))
+  expect_options(getSelectizeOptions(app, "#csvInputHdr_1"), c("-", "header1header 2"))
   app$setInputs(csvInputHdr_1 = "-")
   app$setInputs(btImportLocal = "click")
   Sys.sleep(0.5)
@@ -108,9 +120,9 @@ if(identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
   app$setInputs(btOverwriteInput = "click")
   Sys.sleep(2)
   priceData <- getHotData(app, "in_1")
-  expect_identical(priceData[[1]][1:3], c("2016-01-04","2016-01-04","2016-01-04"))
-  expect_identical(priceData[[2]][1:3], c("","",""))
-  expect_identical(priceData[[3]][1:3], c(105.349998,67.589996,140.5))
+  expect_identical(priceData[[1]][1:3], c("2016-01-04", "2016-01-04", "2016-01-04"))
+  expect_identical(priceData[[2]][1:3], c("", "", ""))
+  expect_identical(priceData[[3]][1:3], c(105.349998, 67.589996, 140.5))
   expect_identical(nrow(priceData), 7560L)
 }
 app$stop()

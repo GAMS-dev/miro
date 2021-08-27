@@ -3,7 +3,7 @@ app$snapshotInit("hcube_test")
 
 context("UI tests - Hypercube Mode - load/import/export data")
 
-#load base scenario
+# load base scenario
 Sys.sleep(3)
 app$findElement("#btRemove1")$click()
 Sys.sleep(0.5)
@@ -13,14 +13,14 @@ app$setInputs(btImport = "click")
 Sys.sleep(1)
 app$setInputs(btLoadScenConfirm = "click")
 Sys.sleep(3)
-#check/set some widget configurations
+# check/set some widget configurations
 app$setInputs(inputTabset = "inputTabset_1")
 app$setInputs(inputTabset1 = "inputTabset1_1")
 Sys.sleep(1)
 expect_true(app$waitFor("$('div[data-value=\"inputTabset1_1\"] #hcubeStep_3').is(':visible');", 50))
 expect_true(app$waitFor("$('div[data-value=\"inputTabset1_1\"] .irs-slider.from i').is(':visible');", 50))
 app$snapshot(items = list(input = c("slider_3", "hcubeStep_3")), screenshot = TRUE)
-app$setInputs(slider_3 = c(1,3), hcubeStep_3 = 2)
+app$setInputs(slider_3 = c(1, 3), hcubeStep_3 = 2)
 # export maxstock csv, change values manually afterwards again for csv import check
 app$findElements(".navbar-custom-menu a.dropdown-toggle")[[1]]$click()
 app$findElement(".navbar-custom-menu a[onclick*='btExportScen']")$click()
@@ -30,7 +30,7 @@ Sys.sleep(0.5)
 app$setInputs(cbSelectManuallyExp = "click")
 app$setInputs(selDataToExport = c("_scalars"))
 expect_download_size(app, "scenExportHandler", "scalarExport.csv")
-app$setInputs(slider_3 = c(10,15), hcubeStep_3 = 1)
+app$setInputs(slider_3 = c(10, 15), hcubeStep_3 = 1)
 app$setInputs(inputTabset1 = "inputTabset1_2")
 expect_error(app$findElement("$('div[data-value=\"inputTabset1_2\"] .irs-slider.from i')")$click())
 app$snapshot(items = list(input = "slider_4"), screenshot = TRUE)
@@ -45,9 +45,9 @@ expect_true(app$waitFor("$('div[data-value=\"inputTabset1_4\"] #hcubeStep_7').is
 app$setInputs(hcubeMode_7 = FALSE)
 app$setInputs(inputTabset = "inputTabset_3")
 app$snapshot(items = list(input = c("dropdown_5")), screenshot = TRUE)
-app$setInputs(dropdown_5 = c("CPLEX","CBC","SCIP"))
+app$setInputs(dropdown_5 = c("CPLEX", "CBC", "SCIP"))
 
-#import local file for maxstock (manual)
+# import local file for maxstock (manual)
 app$setInputs(btImport = "click")
 Sys.sleep(1)
 app$setInputs(tb_importData = "tb_importData_local")
@@ -57,11 +57,12 @@ app$setInputs(selInputDataLocCSV = "_scalars")
 Sys.sleep(0.5)
 app$findElement("#btImportLocal")$click()
 Sys.sleep(1)
-if(app$waitFor("$('#shiny-modal #btOverwriteInput').is(':visible');", timeout = 50))
+if (app$waitFor("$('#shiny-modal #btOverwriteInput').is(':visible');", timeout = 50)) {
   app$findElement("#btOverwriteInput")$click()
+}
 Sys.sleep(4)
 
-#check some widget configurations
+# check some widget configurations
 app$setInputs(inputTabset = "inputTabset_1")
 app$setInputs(inputTabset1 = "inputTabset1_1")
 Sys.sleep(0.5)
@@ -70,7 +71,7 @@ app$setInputs(inputTabset1 = "inputTabset1_2")
 Sys.sleep(0.5)
 app$snapshot(items = list(input = c("slider_4", "hcubeStep_4")), screenshot = TRUE)
 
-#save new scenario, remove from sandbox, load again
+# save new scenario, remove from sandbox, load again
 app$setInputs(btSaveAs = "click")
 app$setInputs(scenName = "newHcubeScen")
 Sys.sleep(0.5)
@@ -93,7 +94,7 @@ app$snapshot(items = list(input = c("slider_4", "hcubeStep_4")), screenshot = TR
 app$setInputs(inputTabset = "inputTabset_3")
 app$snapshot(items = list(input = c("dropdown_5")), screenshot = TRUE)
 
-#export xlsx and csv
+# export xlsx and csv
 app$findElements(".navbar-custom-menu a.dropdown-toggle")[[1]]$click()
 app$findElement(".navbar-custom-menu a[onclick*='btExportScen']")$click()
 Sys.sleep(1)
@@ -112,7 +113,7 @@ expect_download_size(app, "scenExportHandler", "csvExport.zip")
 context("UI tests - Hypercube Mode - solve/discard/import")
 app$setInputs(inputTabset = "inputTabset_1")
 app$setInputs(inputTabset1 = "inputTabset1_1")
-app$setInputs(slider_3 = c(1,3), hcubeStep_3 = 1)
+app$setInputs(slider_3 = c(1, 3), hcubeStep_3 = 1)
 app$setInputs(inputTabset1 = "inputTabset1_2")
 app$setInputs(slider_4 = c(75))
 app$setInputs(inputTabset = "inputTabset_3")
@@ -150,26 +151,26 @@ selectSelectizeOption(app, "#hcubeTags", "manual submission")
 selectSelectizeOption(app, "#hcubeTags", "test")
 app$setInputs(btUploadHcube = "click")
 Sys.sleep(5)
-app$findElement('#refreshActiveJobs')$click()
+app$findElement("#refreshActiveJobs")$click()
 Sys.sleep(3)
 expect_true(app$waitFor(paste0("$('#jImport_output td')[0].textContent==='", Sys.info()[["user"]], "'"), timeout = 50))
 expect_true(app$waitFor("$('#jImport_output td')[2].innerText==='thisisatest'", timeout = 50))
 expect_error(app$findElements("#jImport_output button[onclick*='importJob']")[[1]]$click(), NA)
 Sys.sleep(3)
 
-#check job history
+# check job history
 app$findElement("#btShowHistory")$click()
 Sys.sleep(3)
 expect_true(app$waitFor("$('#shiny-modal tr td')[2].textContent==='4upload,manual submission,test'", timeout = 50))
 app$findElement("#shiny-modal .btn-default")$click()
 Sys.sleep(1)
 
-#submit unsolved only and discard job
+# submit unsolved only and discard job
 app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
 app$setInputs(inputTabset = "inputTabset_1")
 app$setInputs(inputTabset1 = "inputTabset1_1")
 app$snapshot(items = list(input = c("slider_3", "hcubeStep_3")), screenshot = TRUE)
-app$setInputs(slider_3 = c(1,12), hcubeStep_3 = 1)
+app$setInputs(slider_3 = c(1, 12), hcubeStep_3 = 1)
 app$setInputs(btSolve = "click")
 Sys.sleep(1)
 addSelectizeOption(app, "#newHcubeTags", "discard")
@@ -179,7 +180,7 @@ selectSelectizeOption(app, "#newHcubeTags", "test")
 app$setInputs(btHcubeAll = "click")
 Sys.sleep(7)
 app$findElement("#sidebarItemExpanded a[data-value='importData']")$click()
-app$findElement('#refreshActiveJobs')$click()
+app$findElement("#refreshActiveJobs")$click()
 Sys.sleep(3)
 expect_error(app$findElements("#jImport_output button[onclick*='showJobProgress']")[[1]]$click(), NA)
 Sys.sleep(1)
@@ -192,7 +193,7 @@ app$findElement("#confirmModal .bt-gms-confirm")$click()
 Sys.sleep(3)
 expect_true(app$waitFor("$('#jImport_output td').length===0", 50))
 
-#load and remove manually submitted scenarios
+# load and remove manually submitted scenarios
 app$findElement("#sidebarItemExpanded a[data-value='loadResults']")$click()
 Sys.sleep(0.5)
 app$setInputs(newLine_1 = "_sys_metadata_._stime")
@@ -215,7 +216,7 @@ Sys.sleep(1)
 app$setInputs(btBatchRemove = "click")
 Sys.sleep(3)
 
-#download and compare other scenarios
+# download and compare other scenarios
 context("UI tests - Hypercube Mode - load/download/analyze scenarios")
 app$setInputs(btRemoveLine1_1 = "click")
 app$setInputs(btRemoveLine1_2 = "click")
@@ -242,7 +243,7 @@ Sys.sleep(1)
 app$waitFor("$('#btBatchCompare+.dropdown-toggle').click()&&$('#btBatchCompare~.dropdown-menu a:first').click();", timeout = 50L)
 Sys.sleep(12)
 expect_error(app$findElements("#shiny-tab-scenarios #scen-tab-view #scenTabset li")[[1]]$click(), NA)
-#analysis script
+# analysis script
 app$findElement("#sidebarItemExpanded a[data-value='loadResults']")$click()
 Sys.sleep(0.5)
 noScen <- app$findElements("[id^='DataTables_Table_'] tbody tr")
@@ -268,7 +269,7 @@ expect_true(app$waitFor("$('#shiny-modal').is(':visible');", 50))
 hash3 <- app$findElement("#shiny-modal input")$getValue()
 app$findElement("#shiny-modal .btn-default")$click()
 Sys.sleep(1)
-#run analysis script
+# run analysis script
 app$setInputs(hcubeLoadAll = "click")
 Sys.sleep(1)
 app$setInputs(btAnalysisConfig = "click")
@@ -276,7 +277,7 @@ Sys.sleep(0.5)
 expect_true(app$waitFor("$('div[data-value*=\"tabsetAnalysisMethodScript\"]').is(':visible');", 50))
 app$setInputs(selHcubeAnalysisScript = "script1")
 Sys.sleep(0.5)
-if(grepl("linux-gnu", R.version$os)){
+if (grepl("linux-gnu", R.version$os)) {
   # FIXME: Run this also on Windws/macOS as soon as issue products/3557 is closed.
   # Currently, GAMS can't handle running embedded code when curdir is longer than 128 characters
   app$setInputs(btRunHcubeScript = "click")

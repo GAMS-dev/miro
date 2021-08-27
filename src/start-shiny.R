@@ -1,6 +1,6 @@
 
-if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
-    assign(".lib.loc", Sys.getenv("R_LIB_PATHS"), envir = environment(.libPaths))
+if (identical(tolower(Sys.info()[["sysname"]]), "windows")) {
+  assign(".lib.loc", Sys.getenv("R_LIB_PATHS"), envir = environment(.libPaths))
 }
 ret <- suppressMessages(shiny::runApp(
   Sys.getenv("RE_SHINY_PATH"),
@@ -8,8 +8,8 @@ ret <- suppressMessages(shiny::runApp(
   launch.browser = identical(Sys.getenv("LAUNCHINBROWSER"), "true"),
   port = as.integer(Sys.getenv("RE_SHINY_PORT"))
 ))
-if(is.integer(ret)){
+if (is.integer(ret)) {
   quit("no", ret)
-}else{
+} else {
   quit("no", 0L)
 }

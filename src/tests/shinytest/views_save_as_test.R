@@ -1,10 +1,12 @@
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("views_save_as_test")
 
-app$snapshot(items = list(output = "outputDataTitle"),
-             screenshot = TRUE)
+app$snapshot(
+  items = list(output = "outputDataTitle"),
+  screenshot = TRUE
+)
 
-saveNewDefault <- function(newName = NULL, discard = FALSE){
+saveNewDefault <- function(newName = NULL, discard = FALSE) {
   app$findElement("#btRemove1")$click()
   Sys.sleep(0.5)
   app$findElement(".modal-footer .bt-gms-confirm")$click()
@@ -18,15 +20,16 @@ saveNewDefault <- function(newName = NULL, discard = FALSE){
   app$setInputs(btSaveAs = "click")
   Sys.sleep(1)
   app$setInputs(scenName = newName)
-  if(isTRUE(discard))
+  if (isTRUE(discard)) {
     app$setInputs(newScenDiscardViews = "click")
+  }
   Sys.sleep(0.1)
   app$findElement("#shiny-modal .bt-gms-confirm")$click()
   Sys.sleep(1)
 }
 
 
-#load default scenario
+# load default scenario
 app$findElement("#btRemove1")$click()
 Sys.sleep(0.5)
 app$findElement(".modal-footer .bt-gms-confirm")$click()
@@ -36,7 +39,7 @@ Sys.sleep(0.5)
 app$setInputs(btLoadScenConfirm = "click")
 Sys.sleep(1)
 
-#get user name
+# get user name
 app$setInputs(btEditMeta = "click")
 Sys.sleep(1)
 app$findElement("a[data-value='accessPerm']")$click()
@@ -45,7 +48,7 @@ user <- app$getValue("editMetaWritePerm")[[1]]
 app$setInputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
 
-#add view, save scenario newScen
+# add view, save scenario newScen
 app$setInputs(btEditMeta = "click")
 Sys.sleep(1)
 app$findElement('#editMetaUI a[data-value="Views"]')$click()
@@ -56,7 +59,7 @@ Sys.sleep(1)
 app$setInputs(btSave = "click")
 Sys.sleep(0.5)
 
-#save as same name and discard views
+# save as same name and discard views
 app$setInputs(btSaveAs = "click")
 Sys.sleep(0.5)
 app$setInputs(newScenDiscardViews = "click")
@@ -74,7 +77,7 @@ Sys.sleep(0.5)
 app$setInputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
 
-#add view, save as new name and discard views
+# add view, save as new name and discard views
 saveNewDefault("newScen2", TRUE)
 app$setInputs(btEditMeta = "click")
 Sys.sleep(1)
@@ -101,7 +104,7 @@ expect_identical(length(app$findElements("#currentViewsTable tbody tr")), 0L)
 app$setInputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
 
-#add view, save as same name and do not discard views
+# add view, save as same name and do not discard views
 saveNewDefault("newScen4", TRUE)
 app$setInputs(btEditMeta = "click")
 Sys.sleep(1)
@@ -127,7 +130,7 @@ expect_identical(length(app$findElements("#currentViewsTable tbody tr")), 1L)
 app$setInputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
 
-#add view, save as new name and do not discard views
+# add view, save as new name and do not discard views
 saveNewDefault("newScen5", TRUE)
 app$setInputs(btEditMeta = "click")
 Sys.sleep(1)

@@ -1,4 +1,4 @@
-renderDTable <- function(data, options, roundPrecision = 2, render = TRUE, metadata = NULL){
+renderDTable <- function(data, options, roundPrecision = 2, render = TRUE, metadata = NULL) {
   # Renders the datatable for a dataframe using the provided configuration.
   #
   # Args:
@@ -9,42 +9,47 @@ renderDTable <- function(data, options, roundPrecision = 2, render = TRUE, metad
   #
   # Returns:
   #   DT object or renderDT object with data and options specified
-  if(length(metadata)){
+  if (length(metadata)) {
     colHeaders <- vapply(metadata[["headers"]], "[[", character(1L), "alias")
-  }else if(length(attr(data, "aliases"))){
+  } else if (length(attr(data, "aliases"))) {
     colHeaders <- attr(data, "aliases")
-  }else{
+  } else {
     colHeaders <- names(data)
   }
-  if(length(options$pivotCols)){
+  if (length(options$pivotCols)) {
     pivotIdx <- match(options$pivotCols[[1]], names(data))[1]
     aliasesTmp <- colHeaders[-c(pivotIdx, length(data))]
-    data <- pivot_wider(data, names_from = !!pivotIdx,
-                        values_from = !!length(data),
-                        names_sort = isTRUE(options$sortPivotCols))
+    data <- pivot_wider(data,
+      names_from = !!pivotIdx,
+      values_from = !!length(data),
+      names_sort = isTRUE(options$sortPivotCols)
+    )
     options[["pivotCols"]] <- NULL
-    if(length(aliasesTmp)){
+    if (length(aliasesTmp)) {
       names(data)[seq_along(aliasesTmp)] <- aliasesTmp
     }
-  }else{
+  } else {
     names(data) <- colHeaders
   }
 
-  if("DT" %in% (.packages())){
+  if ("DT" %in% (.packages())) {
     dt <- do.call(datatable, c(list(data), options))
 
     isNumericCol <- vapply(data, is.numeric, logical(1L), USE.NAMES = FALSE)
-    if(any(isNumericCol)){
+    if (any(isNumericCol)) {
       dt <- formatRound(dt, seq_along(data)[isNumericCol],
-                        digits = if(length(options$options$decimals)) options$options$decimals else roundPrecision)
+        digits = if (length(options$options$decimals)) options$options$decimals else roundPrecision
+      )
     }
-    if(render)
+    if (render) {
       return(renderDT(dt))
+    }
     return(dt)
   }
   data <- roundDf(data, roundPrecision)
 
-  if(render)
+  if (render) {
     return(renderDataTable(data, options = options))
+  }
   return(datatable(data, options = options))
 }

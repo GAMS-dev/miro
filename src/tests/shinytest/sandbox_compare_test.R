@@ -1,7 +1,7 @@
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("sandbox_compare_test")
 
-expect_chartjs <- function(id, data, labels){
+expect_chartjs <- function(id, data, labels) {
   chartjsData <- jsonlite::fromJSON(app$getAllValues()$output[[id]])$x$data
   expect_equal(chartjsData$datasets$data[[1]], data)
   expect_identical(chartjsData$labels, labels)
@@ -85,27 +85,35 @@ app$findElement('a[data-value="scenarios"]')$click()
 
 app$setInputs("tab_0_3-miroPivot-pivotRenderer" = "stackedbar")
 Sys.sleep(0.5)
-expect_chartjs("tab_0_3-miroPivot-pivotChart",
-               c(600, 350, 600, 350, 600, 350),
-               c("bliblablub (Sandbox).San-Diego",
-                 "bliblablub (Sandbox).Seattle",
-                 "default1.San-Diego",
-                 "default1.Seattle",
-                 "default3.San-Diego",
-                 "default3.Seattle"))
+expect_chartjs(
+  "tab_0_3-miroPivot-pivotChart",
+  c(600, 350, 600, 350, 600, 350),
+  c(
+    "bliblablub (Sandbox).San-Diego",
+    "bliblablub (Sandbox).Seattle",
+    "default1.San-Diego",
+    "default1.Seattle",
+    "default3.San-Diego",
+    "default3.Seattle"
+  )
+)
 # click refresh button in pivot compare mode
 expect_true(app$waitFor("$('.box-title:visible button').eq(1).click();true;", timeout = 50))
 Sys.sleep(3)
 app$setInputs("tab_0_3-miroPivot-pivotRenderer" = "stackedbar")
 Sys.sleep(0.5)
-expect_chartjs("tab_0_3-miroPivot-pivotChart",
-               c(600, 200, 600, 350, 600, 350),
-               c("bliblablub (Sandbox).San-Diego",
-                 "bliblablub (Sandbox).Seattle",
-                 "default1.San-Diego",
-                 "default1.Seattle",
-                 "default3.San-Diego",
-                 "default3.Seattle"))
+expect_chartjs(
+  "tab_0_3-miroPivot-pivotChart",
+  c(600, 200, 600, 350, 600, 350),
+  c(
+    "bliblablub (Sandbox).San-Diego",
+    "bliblablub (Sandbox).Seattle",
+    "default1.San-Diego",
+    "default1.Seattle",
+    "default3.San-Diego",
+    "default3.Seattle"
+  )
+)
 
 app$findElement(".btSplitView button")$click()
 app$findElements(".btSplitView a[data-view='tab']")[[1]]$click()

@@ -1,7 +1,9 @@
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("mirolog_test")
-app$snapshot(items = list(output = "inputDataTitle"),
-             screenshot = TRUE)
+app$snapshot(
+  items = list(output = "inputDataTitle"),
+  screenshot = TRUE
+)
 app$setInputs(btImport = "click")
 Sys.sleep(1)
 app$setInputs(tb_importData = "tb_importData_local", wait_ = FALSE, values_ = FALSE)

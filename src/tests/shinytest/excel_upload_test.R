@@ -2,16 +2,18 @@ app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit(paste0("excel_upload_test_", Sys.getenv("GMSMODELNAME")))
 
 widgetSheetId <- 1L
-if(identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
+if (identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
   widgetSheetId <- 2L
-}else if(identical(Sys.getenv("GMSMODELNAME"), "transport")){
+} else if (identical(Sys.getenv("GMSMODELNAME"), "transport")) {
   widgetSheetId <- 7L
 }
 app$setInputs(inputTabset = paste0("inputTabset_", widgetSheetId))
-if(!identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
+if (!identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
   Sys.sleep(1)
-  app$snapshot(items = list(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L))),
-               screenshot = TRUE)
+  app$snapshot(
+    items = list(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L))),
+    screenshot = TRUE
+  )
 }
 app$setInputs(btImport = "click")
 Sys.sleep(0.5)
@@ -21,13 +23,15 @@ Sys.sleep(0.5)
 app$setInputs(btImportLocal = "click")
 app$setInputs(inputTabset = paste0("inputTabset_", widgetSheetId))
 Sys.sleep(1)
-app$snapshot(items = list(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L))),
-             screenshot = TRUE)
+app$snapshot(
+  items = list(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L))),
+  screenshot = TRUE
+)
 app$setInputs(btSave = "click")
 Sys.sleep(1)
 app$findElement(".modal-footer .bt-gms-confirm")$click()
 Sys.sleep(2)
-if(identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
+if (identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
   app$findElement("#btRemove1")$click()
   Sys.sleep(1)
   app$findElement(".modal-footer .bt-gms-confirm")$click()
@@ -39,17 +43,21 @@ if(identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
   expect_identical(app$getValue("selExcelIndexSheet"), "_index")
   optionsTmp <- getSelectizeOptions(app, "#selExcelIndexSheet")
   expect_length(optionsTmp, 10L)
-  expect_true(all(optionsTmp %in% c("-", " Info", "_scalars_out (Output)", "stock_weight (Output)",
-                                    "dowvsindex (Output)", "abserror (Output)", "pricemerge (Output)",
-                                    "price (Input)", "_scalars (Input)", "_index")))
+  expect_true(all(optionsTmp %in% c(
+    "-", " Info", "_scalars_out (Output)", "stock_weight (Output)",
+    "dowvsindex (Output)", "abserror (Output)", "pricemerge (Output)",
+    "price (Input)", "_scalars (Input)", "_index"
+  )))
   expect_true(app$waitFor("$('#localDataImportError').text().includes('idontexist');", timeout = 50))
   app$uploadFile(localInput = "../data/pickstock_index.xlsx")
   Sys.sleep(2)
   optionsTmp <- getSelectizeOptions(app, "#selExcelIndexSheet")
   expect_length(optionsTmp, 10L)
-  expect_true(all(optionsTmp %in% c("-", " Info", "_scalars_out (Output)", "stock_weight (Output)",
-                                    "dowvsindex (Output)", "abserror (Output)", "pricemerge (Output)",
-                                    "price (Input)", "_scalars (Input)", "index")))
+  expect_true(all(optionsTmp %in% c(
+    "-", " Info", "_scalars_out (Output)", "stock_weight (Output)",
+    "dowvsindex (Output)", "abserror (Output)", "pricemerge (Output)",
+    "price (Input)", "_scalars (Input)", "index"
+  )))
   expect_true(app$waitFor("$('#localDataImportError').is(':hidden');", timeout = 50))
   expect_identical(app$getValue("selExcelIndexSheet"), "-")
   app$setInputs(selExcelIndexSheet = "index")

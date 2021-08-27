@@ -9,6 +9,8 @@ expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .row')[0].childEl
 expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .row')[1].childElementCount===2"))
 expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .row')[2].childElementCount===1"))
 
-app$snapshot(items = list(output = "inputDataTitle"),
-             screenshot = TRUE)
+app$snapshot(
+  items = list(output = "inputDataTitle"),
+  screenshot = TRUE
+)
 app$stop()

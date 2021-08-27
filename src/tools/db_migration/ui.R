@@ -9,5 +9,6 @@ uiDbMig <- fluidPage(
     h1(style = "text-align:center", lang$nav$migrationModule$title)
   ),
   dbMigrationForm("migration", inconsistentTablesInfo, orphanedTablesInfo,
-                  standalone = TRUE)
+    standalone = TRUE
+  )
 )

@@ -3,7 +3,7 @@ app$snapshotInit("comparison_mode_test")
 
 currentUser <- Sys.info()[["user"]]
 
-#test compare mode in tab view
+# test compare mode in tab view
 app$findElement("a[data-value='scenarios']")$click()
 app$findElement(".btSplitView button")$click()
 app$findElements(".btSplitView a[data-view='tab']")[[1]]$click()
@@ -26,7 +26,7 @@ app$findElement("a[data-value='scen_5_']")$click()
 Sys.sleep(2)
 expect_true(app$waitFor("$('.tab-content div[data-value=\"contentScen_5_5\"]').is(':visible');", timeout = 50))
 
-#test compare mode in split view
+# test compare mode in split view
 app$findElement(".btSplitView button")$click()
 app$findElements(".btSplitView a[data-view='split']")[[1]]$click()
 expect_true(app$waitFor("$('.scenSplit-button-load').get(1).click();true;", timeout = 50))
@@ -61,15 +61,19 @@ app$waitFor("$('.scen-buttons-wrapper button').get(4).click()", timeout = 50)
 Sys.sleep(1)
 app$setInputs(exportFileType = "gdx", cbSelectManuallyExp = "true", selDataToExport = c("_scalars_out", "dowvsindex"))
 Sys.sleep(1)
-expect_symbols_in_gdx(app, "scenExportHandler", c("dowvsindex", "error_ratio", "error_train", "error_test",
-                                                  "firstdaytraining", "lastdaytraining"))
+expect_symbols_in_gdx(app, "scenExportHandler", c(
+  "dowvsindex", "error_ratio", "error_train", "error_test",
+  "firstdaytraining", "lastdaytraining"
+))
 Sys.sleep(1)
 app$waitFor("$('.scen-buttons-wrapper button').get(1).click()", timeout = 50)
 Sys.sleep(1)
 app$setInputs(exportFileType = "gdx")
-expect_symbols_in_gdx(app, "scenExportHandler", c("dowvsindex", "error_ratio", "error_train", "error_test",
-                                                  "firstdaytraining", "lastdaytraining", "stock_weight",
-                                                  "abserror", "pricemerge", "price", "maxstock", "trainingdays"))
+expect_symbols_in_gdx(app, "scenExportHandler", c(
+  "dowvsindex", "error_ratio", "error_train", "error_test",
+  "firstdaytraining", "lastdaytraining", "stock_weight",
+  "abserror", "pricemerge", "price", "maxstock", "trainingdays"
+))
 Sys.sleep(1)
 
 app$waitFor("$('.scen-buttons-wrapper button').get(1).click()", timeout = 50)

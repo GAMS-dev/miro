@@ -3,8 +3,10 @@ app$snapshotInit("miroscenio_test")
 
 app$setInputs(inputTabset = "inputTabset_7")
 Sys.sleep(1)
-app$snapshot(items = list(input = paste0("slider_", c("7", "8"))),
-             screenshot = TRUE)
+app$snapshot(
+  items = list(input = paste0("slider_", c("7", "8"))),
+  screenshot = TRUE
+)
 app$setInputs(btImport = "click")
 Sys.sleep(0.5)
 scenariosInDb <- getSelectizeAliases(app, "#selLoadScen")
@@ -14,8 +16,10 @@ app$uploadFile(localInput = paste0("../data/transport.miroscen"))
 app$setInputs(btImportLocal = "click")
 app$setInputs(inputTabset = "inputTabset_7")
 Sys.sleep(1)
-app$snapshot(items = list(input = paste0("slider_", c("7", "8"))),
-             screenshot = TRUE)
+app$snapshot(
+  items = list(input = paste0("slider_", c("7", "8"))),
+  screenshot = TRUE
+)
 Sys.sleep(0.5)
 app$setInputs(btEditMeta = "click")
 Sys.sleep(1)
@@ -41,7 +45,9 @@ app$setInputs(exportFileType = "miroscen")
 Sys.sleep(0.5)
 expect_true(app$waitFor("$('#shiny-modal .gmsalert-error').is(':hidden');", 50))
 expect_true(app$waitFor("$('#shiny-modal .choose-input').is(':hidden');", 50))
-expect_files_in_zip(app, "scenExportHandler", c("data.gdx", "metadata.json", "views.json",
-                                                "attachments/", "attachments/scalars.csv",
-                                                "attachments/bad1.miroscen"))
+expect_files_in_zip(app, "scenExportHandler", c(
+  "data.gdx", "metadata.json", "views.json",
+  "attachments/", "attachments/scalars.csv",
+  "attachments/bad1.miroscen"
+))
 app$stop()

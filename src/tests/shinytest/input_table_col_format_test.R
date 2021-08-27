@@ -1,20 +1,24 @@
 jsonPath <- file.path("..", "model", "transport", "conf_transport")
 configOld <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "bk_transport.json"),
-                                                 simplifyDataFrame = FALSE,
-                                                 simplifyMatrix = FALSE))
+  simplifyDataFrame = FALSE,
+  simplifyMatrix = FALSE
+))
 
 # invalid column name should throw error
 configNew <- configOld
 configNew$inputWidgets$d$colFormat <- list(value2 = list(format = "0"))
 configNew$inputWidgets$d$pivotCols <- NULL
 jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
-                     pretty = TRUE, auto_unbox = TRUE, null = "null")
+  pretty = TRUE, auto_unbox = TRUE, null = "null"
+)
 
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("input_table_col_format_test")
 
-app$snapshot(items = list(output = "errorMessages"),
-             screenshot = TRUE)
+app$snapshot(
+  items = list(output = "errorMessages"),
+  screenshot = TRUE
+)
 app$stop()
 
 # colFormat and pivotCols should not be set together
@@ -22,7 +26,8 @@ configNew <- configOld
 configNew$inputWidgets$d$colFormat <- list(value = list(format = "0"))
 configNew$inputWidgets$d$pivotCols <- "i"
 jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
-                     pretty = TRUE, auto_unbox = TRUE, null = "null")
+  pretty = TRUE, auto_unbox = TRUE, null = "null"
+)
 
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 expect_identical(app$getAllValues()$output[["errorMessages"]], " colFormat is not supported when pivotCols are active (table: d).")
@@ -32,7 +37,8 @@ configNew <- configOld
 configNew$inputWidgets$d$colFormat <- list(value = list(format = "0"))
 configNew$inputWidgets$d$pivotCols <- NULL
 jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
-                     pretty = TRUE, auto_unbox = TRUE, null = "null")
+  pretty = TRUE, auto_unbox = TRUE, null = "null"
+)
 
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$setInputs(btImport = "click")
@@ -49,7 +55,8 @@ configNew <- configOld
 configNew$inputWidgets$d$colFormat <- list(value = list(format = "0", language = "ja-JP"))
 configNew$inputWidgets$d$pivotCols <- NULL
 jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
-                     pretty = TRUE, auto_unbox = TRUE, null = "null")
+  pretty = TRUE, auto_unbox = TRUE, null = "null"
+)
 
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$setInputs(btImport = "click")

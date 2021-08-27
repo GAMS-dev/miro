@@ -1,18 +1,19 @@
-serverDbMig <- function(session, input, output){
+serverDbMig <- function(session, input, output) {
   returnCode <- dbMigrationServer("migration", inconsistentTablesInfo, orphanedTablesInfo,
-                                  standalone = TRUE)
+    standalone = TRUE
+  )
 
   successTimeoutExpired <- FALSE
   observe({
-    if(length(returnCode())){
-      if(identical(returnCode(), 0L)){
+    if (length(returnCode())) {
+      if (identical(returnCode(), 0L)) {
         invalidateLater(4000)
-        if(successTimeoutExpired){
+        if (successTimeoutExpired) {
           stopApp(returnCode())
-        }else{
+        } else {
           successTimeoutExpired <<- TRUE
         }
-      }else{
+      } else {
         stopApp(returnCode())
       }
     }

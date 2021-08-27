@@ -1,22 +1,27 @@
 jsonPath <- file.path("..", "model", "transport", "conf_transport")
 configOld <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "bk_transport.json"),
-                                                 simplifyDataFrame = FALSE,
-                                                 simplifyMatrix = FALSE))
+  simplifyDataFrame = FALSE,
+  simplifyMatrix = FALSE
+))
 configNew <- configOld
 configNew$inputWidgets$d$dropdownCols <- list(i = list(static = letters))
 jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
-                     pretty = TRUE, auto_unbox = TRUE, null = "null")
+  pretty = TRUE, auto_unbox = TRUE, null = "null"
+)
 
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("input_table_dropdowncols_test")
 
-app$snapshot(items = list(output = "errorMessages"),
-             screenshot = TRUE)
+app$snapshot(
+  items = list(output = "errorMessages"),
+  screenshot = TRUE
+)
 app$stop()
 
 configNew$inputWidgets$d$dropdownCols <- list(bla = list(static = letters))
 jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
-                     pretty = TRUE, auto_unbox = TRUE, null = "null")
+  pretty = TRUE, auto_unbox = TRUE, null = "null"
+)
 
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 Sys.sleep(1)
@@ -26,7 +31,8 @@ app$stop()
 configNew <- configOld
 configNew$inputWidgets$d$dropdownCols <- list(j = list(static = letters))
 jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
-                     pretty = TRUE, auto_unbox = TRUE, null = "null")
+  pretty = TRUE, auto_unbox = TRUE, null = "null"
+)
 
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 Sys.sleep(1)
@@ -43,7 +49,8 @@ app$stop()
 configNew <- configOld
 configNew$inputWidgets$d$dropdownCols <- list(j = list(static = letters, colType = "dropdown"))
 jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
-                     pretty = TRUE, auto_unbox = TRUE, null = "null")
+  pretty = TRUE, auto_unbox = TRUE, null = "null"
+)
 
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 Sys.sleep(1)
@@ -60,7 +67,8 @@ app$stop()
 configNew <- configOld
 configNew$inputWidgets$d$dropdownCols <- list(j = list(symbol = "a", column = "i"))
 jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
-                     pretty = TRUE, auto_unbox = TRUE, null = "null")
+  pretty = TRUE, auto_unbox = TRUE, null = "null"
+)
 
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 Sys.sleep(1)
@@ -77,7 +85,8 @@ app$stop()
 configNew <- configOld
 configNew$inputWidgets$d$dropdownCols <- list(j = list(symbol = "a", column = "i", colType = "dropdown"))
 jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
-                     pretty = TRUE, auto_unbox = TRUE, null = "null")
+  pretty = TRUE, auto_unbox = TRUE, null = "null"
+)
 
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 Sys.sleep(1)
@@ -101,6 +110,8 @@ app$setInputs(btImport = "click")
 Sys.sleep(1)
 app$setInputs(btLoadScenConfirm = "click")
 Sys.sleep(2)
-expect_identical(as.character(app$getAllValues()$output$inputDataTitle$html),
-                 "New Scenario")
+expect_identical(
+  as.character(app$getAllValues()$output$inputDataTitle$html),
+  "New Scenario"
+)
 app$stop()

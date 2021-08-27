@@ -1,29 +1,33 @@
-showEl <- function(session, id, inline = FALSE){
+showEl <- function(session, id, inline = FALSE) {
   session$sendCustomMessage("gms-showEl", list(id = id, inline = inline))
 }
-showLoadingScreen <- function(session, delay){
+showLoadingScreen <- function(session, delay) {
   session$sendCustomMessage("gms-showLoadingScreen", delay)
 }
-hideLoadingScreen <- function(session){
+hideLoadingScreen <- function(session) {
   session$sendCustomMessage("gms-hideLoadingScreen", list())
 }
-showElReplaceTxt <- function(session, id, txt){
+showElReplaceTxt <- function(session, id, txt) {
   session$sendCustomMessage("gms-showElReplaceTxt", list(id = id, txt = htmltools::htmlEscape(txt)))
 }
-setContent <- function(session, selector, htmlContent){
+setContent <- function(session, selector, htmlContent) {
   session$sendCustomMessage("gms-setContent", list(selector = selector, content = htmlContent))
 }
-setTextContent <- function(session, selector, htmlContent){
+setTextContent <- function(session, selector, htmlContent) {
   session$sendCustomMessage("gms-setTextContent", list(selector = selector, content = htmlContent))
 }
-setAttributes <- function(session, selectors, attribute, values){
+setAttributes <- function(session, selectors, attribute, values) {
   stopifnot(identical(length(selectors), length(values)))
-  session$sendCustomMessage("gms-setAttribs",
-                            list(selectors = I(selectors),
-                                 attr = attribute, vals = I(values)))
+  session$sendCustomMessage(
+    "gms-setAttribs",
+    list(
+      selectors = I(selectors),
+      attr = attribute, vals = I(values)
+    )
+  )
 }
-switchCompareMode <- function(session, mode, numberScenTabs){
-  if(identical(mode, "pivotView")){
+switchCompareMode <- function(session, mode, numberScenTabs) {
+  if (identical(mode, "pivotView")) {
     hideEl(session, "#scen-split-view")
     hideEl(session, "#scen-tab-view")
     showEl(session, "#scen-pivot-view")
@@ -34,16 +38,16 @@ switchCompareMode <- function(session, mode, numberScenTabs){
   }
   showEl(session, "#btCompareScen")
   setAttributes(session, "#btCompareScen", "data-noshow", "false")
-  if(identical(mode, "splitView")){
+  if (identical(mode, "splitView")) {
     enableEl(session, "#btCompareScen")
     showEl(session, "#scen-split-view")
     hideEl(session, "#scen-tab-view")
     hideEl(session, "#scen-pivot-view")
     setTextContent(session, "#btSelectCompareMode", lang$nav$sidebarButtons$splitView)
-  }else{
-    if(numberScenTabs < 2){
+  } else {
+    if (numberScenTabs < 2) {
       disableEl(session, "#btCompareScen")
-    }else{
+    } else {
       enableEl(session, "#btCompareScen")
     }
     hideEl(session, "#scen-split-view")
@@ -52,72 +56,83 @@ switchCompareMode <- function(session, mode, numberScenTabs){
     setTextContent(session, "#btSelectCompareMode", lang$nav$sidebarButtons$tabView)
   }
 }
-hideEl <- function(session, id){
+hideEl <- function(session, id) {
   session$sendCustomMessage("gms-hideEl", id)
 }
-setCssEl <- function(session, id, css){
+setCssEl <- function(session, id, css) {
   session$sendCustomMessage("gms-setCss", list(id = id, css = css))
 }
-showHideEl <- function(session, id, delay = 2000, msg = NULL){
+showHideEl <- function(session, id, delay = 2000, msg = NULL) {
   session$sendCustomMessage("gms-showHideEl", list(id = id, delay = delay, msg = msg))
 }
-enableEl <- function(session, id){
+enableEl <- function(session, id) {
   session$sendCustomMessage("gms-enableEl", id)
 }
-scrollDown <- function(session, id){
+scrollDown <- function(session, id) {
   session$sendCustomMessage("gms-scrollDown", id)
 }
-disableEl <- function(session, id){
+disableEl <- function(session, id) {
   session$sendCustomMessage("gms-disableEl", id)
 }
-slideToggleEl <- function(session, id, duration = 400, toggleIconDiv = NULL){
-  session$sendCustomMessage("gms-slideToggleEl",
-                            list(id = id, duration = duration,
-                                 toggleIconDiv = toggleIconDiv))
+slideToggleEl <- function(session, id, duration = 400, toggleIconDiv = NULL) {
+  session$sendCustomMessage(
+    "gms-slideToggleEl",
+    list(
+      id = id, duration = duration,
+      toggleIconDiv = toggleIconDiv
+    )
+  )
 }
-toggleEl <- function(session, id){
+toggleEl <- function(session, id) {
   session$sendCustomMessage("gms-toggleEl", id)
 }
-addClassEl <- function(session, id, class){
+addClassEl <- function(session, id, class) {
   session$sendCustomMessage("gms-addClassEl", list(id = id, newclass = class))
 }
-removeClassEl <- function(session, id, class){
+removeClassEl <- function(session, id, class) {
   session$sendCustomMessage("gms-removeClassEl", list(id = id, oldclass = class))
 }
-emptyEl <- function(session, id){
+emptyEl <- function(session, id) {
   session$sendCustomMessage("gms-emptyEl", id)
 }
 appendEl <- function(session, id, content, text = TRUE, scroll = FALSE,
-                     triggerChange = FALSE){
-  session$sendCustomMessage("gms-appendEl", list(id = id, content = content,
-                                                 text = text, scroll = scroll,
-                                                 triggerChange = triggerChange))
+                     triggerChange = FALSE) {
+  session$sendCustomMessage("gms-appendEl", list(
+    id = id, content = content,
+    text = text, scroll = scroll,
+    triggerChange = triggerChange
+  ))
 }
-hideModal <- function(session, delay = 1L){
+hideModal <- function(session, delay = 1L) {
   session$sendCustomMessage("gms-hideModal", delay)
 }
-updateAttachList <- function(session, id, fileName, token, labelCb, allowExec = FALSE){
-  session$sendCustomMessage("gms-updateAttachList", list(name = fileName, id = id,
-                                                         token = token, labelCb = labelCb,
-                                                         allowExec = allowExec))
+updateAttachList <- function(session, id, fileName, token, labelCb, allowExec = FALSE) {
+  session$sendCustomMessage("gms-updateAttachList", list(
+    name = fileName, id = id,
+    token = token, labelCb = labelCb,
+    allowExec = allowExec
+  ))
 }
-fitTitleInBox <- function(session, id){
+fitTitleInBox <- function(session, id) {
   session$sendCustomMessage("gms-fitTitleInBox", id)
 }
-switchTab <- function(session, id){
+switchTab <- function(session, id) {
   session$sendCustomMessage("gms-switchTab", id)
 }
-toJSString <- function(string){
+toJSString <- function(string) {
   return(toJSON(string, auto_unbox = TRUE))
 }
-getHotCustomColOptions <- function(noDomains){
+getHotCustomColOptions <- function(noDomains) {
   setNames(
-    list(list(name = lang$renderers$handsontable$newCol$nameLeft,
-              callback = JS(paste0("function(key, normalizedSelection){
+    list(
+      list(
+        name = lang$renderers$handsontable$newCol$nameLeft,
+        callback = JS(paste0(
+          "function(key, normalizedSelection){
   Miro.modal(", toJSString(lang$renderers$handsontable$newCol$prompt), ",",
-                                   toJSString(lang$general$modal$okButton),
-                                   ",", toJSString(lang$general$modal$cancelButton),
-                                   ",'',function(newHdr, hot, key, normalizedSelection){
+          toJSString(lang$general$modal$okButton),
+          ",", toJSString(lang$general$modal$cancelButton),
+          ",'',function(newHdr, hot, key, normalizedSelection){
     let currentHeaders = hot.getColHeader();
     const newParams = hot.params;
     if ( newHdr == null || newHdr === '') {
@@ -149,15 +164,19 @@ getHotCustomColOptions <- function(noDomains){
       hot.selectAll();
     }
   }, this, key, normalizedSelection);
-}")),
-              disabled = JS(paste0("function(){
-                                return this.getSelectedLast()[1]<=", noDomains - 1L, ";}"))),
-         list(name = lang$renderers$handsontable$newCol$nameRight,
-              callback = JS(paste0("function(key, normalizedSelection){
+}"
+        )),
+        disabled = JS(paste0("function(){
+                                return this.getSelectedLast()[1]<=", noDomains - 1L, ";}"))
+      ),
+      list(
+        name = lang$renderers$handsontable$newCol$nameRight,
+        callback = JS(paste0(
+          "function(key, normalizedSelection){
   Miro.modal(", toJSString(lang$renderers$handsontable$newCol$prompt), ",",
-                                   toJSString(lang$general$modal$okButton),
-                                   ",", toJSString(lang$general$modal$cancelButton),
-                                   ",'',function(newHdr, hot, key, normalizedSelection){
+          toJSString(lang$general$modal$okButton),
+          ",", toJSString(lang$general$modal$cancelButton),
+          ",'',function(newHdr, hot, key, normalizedSelection){
     let currentHeaders = hot.getColHeader();
     const newParams = hot.params;
     if ( newHdr == null || newHdr === '' ) {
@@ -194,17 +213,21 @@ getHotCustomColOptions <- function(noDomains){
       hot.selectAll();
     }
  }, this, key, normalizedSelection);
-}")),
-              disabled = JS(paste0("function(){
-                                return this.getSelectedLast()[1]<=", noDomains - 2L, ";}"))),
-         list(name = lang$renderers$handsontable$renameCol$name,
-              callback = JS(paste0("function(){
+}"
+        )),
+        disabled = JS(paste0("function(){
+                                return this.getSelectedLast()[1]<=", noDomains - 2L, ";}"))
+      ),
+      list(
+        name = lang$renderers$handsontable$renameCol$name,
+        callback = JS(paste0(
+          "function(){
 const ind = this.getSelectedLast()[1];
 let currentHeaders = this.getColHeader();
 Miro.modal(", toJSString(lang$renderers$handsontable$renameCol$prompt), ",",
-                                   toJSString(lang$general$modal$okButton),
-                                   ",", toJSString(lang$general$modal$cancelButton),
-                                   ",currentHeaders[ind],function(newHdr, hot, ind){
+          toJSString(lang$general$modal$okButton),
+          ",", toJSString(lang$general$modal$cancelButton),
+          ",currentHeaders[ind],function(newHdr, hot, ind){
   let currentHeaders = hot.getColHeader();
   if ( newHdr == null || newHdr === '' ) {
    return false;
@@ -232,14 +255,17 @@ Miro.modal(", toJSString(lang$renderers$handsontable$renameCol$prompt), ",",
     });
   }, 90);
 }, this, ind);
-}")),
-              disabled = JS(paste0("function(){
+}"
+        )),
+        disabled = JS(paste0("function(){
 const selection = this.getSelected();
 if (selection && selection.length > 1) {
    return true;
 }
-return this.getSelectedLast()[1]<=", noDomains - 1L, ";}"))),
-         list(name = JS(paste0("function(){
+return this.getSelectedLast()[1]<=", noDomains - 1L, ";}"))
+      ),
+      list(
+        name = JS(paste0("function(){
   const selection = this.getSelected();
   let pluralForm = 0;
 
@@ -259,7 +285,8 @@ return this.getSelectedLast()[1]<=", noDomains - 1L, ";}"))),
   }
   return ", toJSString(lang$renderers$handsontable$removeCol$name), ";
 }")),
-              callback = JS(paste0("function(){
+        callback = JS(paste0(
+          "function(){
   let selections = this.getSelected();
   if (!Array.isArray(selections) || selections.length === 0) {
     return;
@@ -274,11 +301,11 @@ return this.getSelectedLast()[1]<=", noDomains - 1L, ";}"))),
     return self.indexOf(current) === index;
   });
   Miro.modal(", toJSString(lang$renderers$handsontable$removeCol$prompt1),
-                                   "+' '+colsToRemove.join(', ')+",
-                                   toJSString(lang$renderers$handsontable$removeCol$prompt2), ",",
-                                   toJSString(lang$general$modal$okButton),
-                                   ",", toJSString(lang$general$modal$cancelButton),
-                                   ",undefined,function(hot, selections, newParams){
+          "+' '+colsToRemove.join(', ')+",
+          toJSString(lang$renderers$handsontable$removeCol$prompt2), ",",
+          toJSString(lang$general$modal$okButton),
+          ",", toJSString(lang$general$modal$cancelButton),
+          ",undefined,function(hot, selections, newParams){
   // get [startCol, endCol] pairs and sort by startCol
   selections = selections.map((selection) => {
     if (selection[3] < selection[1]) {
@@ -317,8 +344,12 @@ return this.getSelectedLast()[1]<=", noDomains - 1L, ";}"))),
   newParams.colHeaders.splice(rngStart - offset, rngDistance + 1);
   hot.updateSettings(newParams);
 }, this, selections, newParams);
-}")),
-              disabled = JS(paste0("function(){
-return this.getSelectedLast()[1]<=", noDomains - 1L, ";}")))),
-    c("column_left", "column_right", "rename_column", "remove_column"))
+}"
+        )),
+        disabled = JS(paste0("function(){
+return this.getSelectedLast()[1]<=", noDomains - 1L, ";}"))
+      )
+    ),
+    c("column_left", "column_right", "rename_column", "remove_column")
+  )
 }
