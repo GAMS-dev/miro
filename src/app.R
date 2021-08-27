@@ -320,7 +320,7 @@ if(is.null(errMsg)){
     config$activateModules$remoteExecution <- TRUE
   }
   if(identical(config$activateModules$hcube, TRUE) &&
-    !config$activateModules$remoteExecution){
+    !config$activateModules$remoteExecution && !miroBuildOnly){
     flog.info("The Hypercube module is only available with a GAMS Engine backend. Therefore, it has been disabled.")
     config$activateModules$hcube <- FALSE
   }
