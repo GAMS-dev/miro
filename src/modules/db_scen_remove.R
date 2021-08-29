@@ -124,7 +124,7 @@ closeScenario <- function(clearMeta = TRUE) {
     name = vector("character", attachMaxNo),
     execPerm = vector("logical", attachMaxNo)
   )
-  if (!LAUNCHHCUBEMODE && length(config$scripts$base)) {
+  if (length(config$scripts$base)) {
     scriptOutput$clearContent()
   }
   renderOutputData()

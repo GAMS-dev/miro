@@ -346,7 +346,7 @@ onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\
     )
   )
 }
-generateScenarioTabsetPivot <- function(hcubeMode = FALSE) {
+generateScenarioTabsetPivot <- function() {
   fluidRow(
     tags$div(
       id = "scen-pivot-view", style = if (!identical(config$defCompMode, "pivot")) "display:none;",

@@ -87,12 +87,8 @@ export function changeDDButtonEvent(elText, DDBtnID, actionID,
   }
 }
 
-export function showJobsDialog(hcubeMode) {
+export function showJobsDialog() {
   removeModal();
-  if (hcubeMode) {
-    switchTab('importData');
-    return;
-  }
   switchTab('gamsinter');
   switchTabInTabset('jobListPanel', 'joblist');
 }
@@ -110,20 +106,6 @@ export function validateSname(el, inputID = 'btCheckSnameLocalConfirm') {
   }
   $(el).addClass('invalidInput');
   return false;
-}
-
-export function validateHcubeHash() {
-  const hashVal = $('#hcHashLookup').val();
-
-  if (/^[a-f0-9]{64}$/i.test(hashVal) === true) {
-    $('#hcHashLookup').removeClass('invalidInput');
-    Shiny.setInputValue('hcHashLookup', hashVal, {
-      priority: 'event',
-    });
-    return;
-  }
-
-  $('#hcHashLookup').addClass('invalidInput');
 }
 
 export function sendSelectedRowsRequest(tableId, shinyId, noneSelectedErrorId = null,
@@ -354,7 +336,7 @@ $(document).ready(() => {
   $('#scenTabset').on('click', 'a[data-toggle="tab"]', () => {
     rerenderDygraph();
   });
-  $('a[data-value="advanced"],a[data-value="importData"],a[data-value="loadResults"],a[data-value="hcubeAnalyze"]').click(() => {
+  $('a[data-value="advanced"],a[data-value="importData"],a[data-value="loadResults"]').click(() => {
     changeActiveButtons('default');
   });
   $('#inputTabset li').click(() => {
@@ -864,15 +846,6 @@ $(document).keyup((event) => {
     $('a[href="#shiny-tab-scenarios"]').click();
     return;
   }// Select scenario menu shortcut: CTRL + ALT + 4
-
-  if (event.keyCode === 53) {
-    const tab = $('a[href="#shiny-tab-hcubeAnalyze"]');
-
-    if (tab.length > 0) {
-      tab.click();
-    }
-    return;
-  } // Select scenario menu shortcut: CTRL + ALT + 5
 
   if (event.keyCode === 84) {
     if ($('#btGraphIn').is(':visible')) {

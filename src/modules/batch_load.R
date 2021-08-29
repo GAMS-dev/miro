@@ -41,8 +41,7 @@ for (j in seq_along(modelIn)) {
       alias = paste0(modelInAlias[[i]], " (upper)")
     )
     k <- k + 2L
-  } else if ((LAUNCHHCUBEMODE && identical(modelIn[[i]]$slider$double, TRUE)) ||
-    (!LAUNCHHCUBEMODE && length(modelIn[[i]]$slider$default) > 1L)) {
+  } else if (length(modelIn[[i]]$slider$default) > 1L) {
     # slider range
     scalarKeyTypeList[[scalarsFileName]][[k]] <- list(
       key = paste0(names(modelIn)[[i]], "_lo"),
@@ -514,40 +513,7 @@ output$batchLoadResults <- renderDataTable(
   }
 )
 
-observeEvent(input$btShowHash, {
-  flog.debug("Button to show hash of selected scenario (Hypercube load) clicked.")
-  selectedRows <- isolate(input$batchLoadResults_rows_selected)
-  if (!length(selectedRows) || length(selectedRows) > 1L) {
-    showHideEl(session, "#queryBuilderError", 4000L, lang$nav$queryBuilder$msgOnlyOneHash)
-    return()
-  }
-  noErr <- TRUE
-  tryCatch(
-    hashValue <- db$importDataset("_scenMeta",
-      colNames = "_sname",
-      tibble("_scode", SCODEMAP[["scen"]], ">"),
-      subsetSids = batchLoadData[[1]][selectedRows]
-    )[[1]],
-    error = function(e) {
-      flog.error(
-        "Problems fetching hash value from database. Error message: '%s'.",
-        conditionMessage(e)
-      )
-      showHideEl(session, "#queryBuilderError", 4000L, lang$errMsg$unknownError)
-      noErr <<- FALSE
-    }
-  )
-  if (!noErr) {
-    return()
-  }
-  if (!length(hashValue)) {
-    showHideEl(session, "#queryBuilderError", 4000L, lang$nav$queryBuilder$msgNoHashFound)
-    return()
-  }
-  showHashDialog(hashValue)
-})
-
-observeEvent(input$hcubeLoadSelected, {
+observeEvent(input$batchLoadSelected, {
   flog.debug("Button to load selected scenarios (Batch load) clicked.")
   if (!length(input$batchLoadResults_rows_selected)) {
     showHideEl(session, "#queryBuilderError", 4000L, lang$nav$scen$noScen)
@@ -561,7 +527,7 @@ observeEvent(input$hcubeLoadSelected, {
     colNamesForNaming = setNames(names(batchLoadData)[-1], names(batchLoadFilters)[-1])
   )
 })
-observeEvent(input$hcubeLoadCurrent, {
+observeEvent(input$batchLoadCurrent, {
   flog.debug("Button to load current page of scenarios (Batch load) clicked.")
   if (is.null(input$batchLoadResults_rows_current)) {
     return()
@@ -574,7 +540,7 @@ observeEvent(input$hcubeLoadCurrent, {
     colNamesForNaming = setNames(names(batchLoadData)[-1], names(batchLoadFilters)[-1])
   )
 })
-observeEvent(input$hcubeLoadAll, {
+observeEvent(input$batchLoadAll, {
   flog.debug("Button to load all scenarios (Batch load) clicked.")
   if (!length(batchLoadData) || !nrow(batchLoadData)) {
     return()
@@ -713,7 +679,7 @@ observeEvent(input$btBatchRemove, {
 
 observeEvent(input$btBatchLoadCancel, {
   flog.trace("Close batch load dialog button clicked.")
-  if (!LAUNCHHCUBEMODE && length(config$scripts$hcube) &&
+  if (length(config$scripts$hcube) &&
     any(scriptOutput$isRunning())) {
     for (script in config$scripts$hcube) {
       if (scriptOutput$isRunning(script$id)) {

@@ -11,17 +11,7 @@ LocalFileIO <- R6::R6Class("LocalFileIO",
         scalarMeta <- ioConfig$modelInRaw[scalarsFileName]
         scalarMeta[[1]]$symtype <- "set"
         scalarMeta[[1]]$colTypes <- "ccc"
-        if (LAUNCHHCUBEMODE) {
-          scalarsTmp <- private$getSpecialScalars(scalarMeta[[1]]$symnames)
-          scalarId <- match(scalarsTmp, scalarMeta[[1]]$symnames)
-          scalarMeta[[1]]$symnames <- scalarsTmp
-          scalarMeta[[1]]$symtypes <- scalarMeta[[1]]$symtypes[scalarId]
-          scalarMeta[[1]]$symtypes[is.na(scalarMeta[[1]]$symtypes)] <- "parameter"
-          scalarMeta[[1]]$symtext <- scalarMeta[[1]]$symtext[scalarId]
-          scalarMeta[[1]]$symtext[is.na(scalarMeta[[1]]$symtext)] <- ""
-        } else {
-          scalarsTmp <- scalarMeta[[1]]$symnames
-        }
+        scalarsTmp <- scalarMeta[[1]]$symnames
         scalarMetaId <- match(scalarsFileName, names(private$metadata))
         if (is.na(scalarMetaId)) {
           # no scalars sheet in metadata

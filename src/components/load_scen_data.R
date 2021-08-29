@@ -162,10 +162,10 @@ loadScenData <- function(metaData, workDir,
       flog.warn(
         "Dataset: '%s' has invalid header types ('%s'). Header types should be: '%s'.",
         names(metaData)[i], paste(vapply(ret$tabular[[i]], function(el) {
-            return(class(el)[[1L]])
-          },
-          character(1L),
-          USE.NAMES = FALSE
+          return(class(el)[[1L]])
+        },
+        character(1L),
+        USE.NAMES = FALSE
         ), collapse = "', '"),
         metaData[[i]]$colTypes
       )

@@ -20,12 +20,7 @@
       "outputScreen":"Output",
       "gams":"GAMS interaction",
       "load": "Load scenarios",
-      "scen":"Compare scenarios",
-      "hcube":{
-        "configureRun": "Configure Hypercube job",
-        "import": "Import jobs",
-        "analyze" : "Analyze scenarios"
-      }
+      "scen":"Compare scenarios"
     },
     "sidebarButtons":{
       "importInput":"Load data",
@@ -48,7 +43,6 @@
       },
       "scenario":{
         "title":"Scenario",
-        "titleHC": "HC job",
         "edit":"Edit metadata",
         "save":"Save",
         "saveAs":"Save As",
@@ -60,9 +54,6 @@
         "doc": "Documentation",
         "forum": "GAMS World Forum",
         "about": "About"
-      },
-      "tooltips":{
-        "switchToHcube": "Switch to Hypercube Mode"
       }
     },
     "inputScreen":{
@@ -130,9 +121,6 @@
       "title":"Load scenarios",
       "noData":"No data was returned by your query",
       "invalidCsvFilter": "'%s' must not contain ','.",
-      "showHashButton": "Show hash",
-      "msgOnlyOneHash": "Please select only one scenario.",
-      "msgNoHashFound": "No hash was found for the selected scenario. Apparently the scenario was not solved in Hypercube Mode.",
       "chooseSelectedButton":"Choose selected scenarios",
       "chooseCurrentButton":"Choose current page",
       "chooseAllButton":"Choose all",
@@ -150,10 +138,6 @@
         "between": "between"
       },
       "queryButton": "Fetch results",
-      "showHashDialog":{
-        "title": "Scenario hash",
-        "desc": "The selected scenario has the following hash. You may use this to import it in the Base Mode."
-      },
       "metaColAliases":{
         "uid":"Owner",
         "sname": "Name",
@@ -209,21 +193,6 @@
       "cancelButton":"Cancel",
       "okButton":"Ok"
     },
-    "dialogNewHCJob":{
-      "title":"New Hypercube job",
-      "desc":"Please enter a name for the Hypercube job configuration:",
-      "tags":"Add tag(s) to your HC job (optional):",
-      "discardAttach": "Discard attachments?",
-      "discardViews": "Discard views?",
-      "discardPerm": "Discard permissions?",
-      "newScenName":"New Hypercube job",
-      "badName":"Please choose a valid name for the new Hypercube job configuration.",
-      "scenExists":"The HC job name you chose does already exist. Do you want to overwrite the existing data?",
-      "btNewName":"Choose different name",
-      "btOverwrite":"Overwrite",
-      "cancelButton":"Cancel",
-      "okButton":"Ok"
-    },
     "dialogEditMeta":{
       "title":"Edit metadata",
       "categoryGeneral": "General options",
@@ -258,29 +227,6 @@
       "viewsDownload": "Download views",
       "viewsRemove": "Remove views",
       "errMsg": "Prolems updating scenario metadata. If this problem persists, please contact the system administrator.",
-      "cancelButton":"Close",
-      "okButton":"Update metadata"
-    },
-    "dialogEditMetaHC":{
-      "title":"Edit metadata",
-      "categoryGeneral": "General options",
-      "categoryAttachments": "Attachments",
-      "categoryViews": "Views",
-      "categoryAccessPerm": "Access permissions",
-      "newName": "New name",
-      "badName": "The name you chose is invalid (either too long or too short). Please choose another name.",
-      "newTags":"New tags",
-      "emptyPerm":"Job access permissions can not be empty!",
-      "incapOwner": "You cannot revoke the owner's access permissions.",
-      "scenExists":"A Hypercube job configuration already exists with the name you selected.",
-      "attachmentsAdd": "Add attachments",
-      "attachmentsExecPerm": "Allow model to read this file",
-      "attachSuccess": "Attachments were updated successfully",
-      "attachMaxSizeError": "Your attachments exceed the maximum attachment size of %s bytes.",
-      "attachMaxNoError":"The maximum number of attachments is reached. Please first remove attachments before uploading new ones.",
-      "attachDuplicateError": "An attachment with the same name already exists. Please choose another name and try again.",
-      "attachForbiddenFnameError": "An attachment you try to upload uses a forbidden filename. Please choose a different filename and try again.",
-      "errMsg": "Prolems updating Hypercube job metadata. If this problem persists, please contact the system administrator.",
       "cancelButton":"Close",
       "okButton":"Update metadata"
     },
@@ -327,29 +273,11 @@
         "okButton":"Remove from sandbox"
       }
     },
-    "dialogDeleteHCJob":{
-      "title":"Delete Hypercube job",
-      "desc":"Are you sure you want to delete the selected Hypercube job configuration from the database?",
-      "cancelButton":"Cancel",
-      "okButton":"Yes",
-      "removeFromUI":{
-        "title":"Remove Hypercube job from sandbox",
-        "desc":"Do you want to remove the Hypercube job configuration from the sandbox? Unsaved data will be lost!",
-        "cancelButton":"Cancel",
-        "okButton":"Remove from sandbox"
-      }
-    },
     "dialogRemoveScen":{
       "title":"Close scenario",
       "desc":"Are you sure you want to close the currently active scenario? Unsaved data will be lost!",
       "cancelButton":"Cancel",
       "okButton":"Close"
-    },
-    "dialogRemoveHCJob":{
-      "title":"Close Hypercube job",
-      "desc":"Are you sure you want to close the currently active Hypercube job configuration? Unsaved data will be lost!",
-      "cancelButton":"No",
-      "okButton":"Yes"
     },
     "dialogCloseScen":{
       "title":"Close scenario",
@@ -381,10 +309,6 @@
       "tabLocal":"Local",
       "tabExternal": "External",
       "tabDatabase":"Database",
-      "tabHcube":"Hypercube",
-      "hcubeHashDesc": "Enter the hash value of the scenario you wish to load from the Hypercube Mode. Then simply click on the scenario to load it.",
-      "hcubeHashButton": "Search",
-      "hcubeHashNoMatch": "No scenarios that match the hash you entered were found.",
       "selInputData":"Select input datasets to load",
       "selDecimalSep": "Select decimal separator",
       "selDelim": "Select delimiter",
@@ -399,28 +323,6 @@
       "overwriteWarning":"Already imported datasets might be lost if you did not save them!",
       "cancelButton":"Cancel",
       "okButton":"Load"
-    },
-    "dialogImportHC":{
-      "title":"Import data",
-      "tabLocal":"Local",
-      "tabDatabase":"Hypercube",
-      "tabBase": "Base Mode",
-      "selInputData":"Select datasets to import",
-      "selDecimalSep": "Select decimal separator",
-      "selDelim": "Select delimiter",
-      "selExcelIndexSheet": "Select index worksheet",
-      "excelIndexSheetRng": "Select index range",
-      "descLocal":"Choose file with data to import",
-      "newScenName": "Choose a name for the new Hypercube job configuration",
-      "badScenName": "Please specify a valid name",
-      "scenNameExists":"The name you chose does already exist. Do you want to overwrite the existing data?",
-      "descOverwriteInput":"You already have input data loaded. Are you sure you want to overwrite this data?",
-      "cbSelectManually":"Manually choose datasets",
-      "overwriteWarning":"Already imported datasets might be lost if you did not save them!",
-      "cancelButton":"Cancel",
-      "okButton":"Import",
-      "overwriteButton": "Overwrite existing data",
-      "newNameButton": "New name"
     },
     "dialogLoadScen":{
       "title":"Load scenario",
@@ -482,19 +384,9 @@
       "okButton": "Save as",
       "cancelButton": "Cancel"
     },
-    "dialogReadonlyHC":{
-      "title": "No write permissions",
-      "desc": "You do not have write permissions for this Hypercube job configuration. Do you want to save the it as a new configuration instead?",
-      "okButton": "Save as",
-      "cancelButton": "Cancel"
-    },
     "dialogNoExecPerm":{
       "title": "No execute permissions",
       "desc": "You do not have execute permissions for this scenario."
-    },
-    "dialogNoExecPermHC":{
-      "title": "No execute permissions",
-      "desc": "You do not have execute permissions for this Hypercube job configuration."
     },
     "dialogDownloadTmp":{
       "title": "Download temporary files",
@@ -656,13 +548,6 @@
         "cancelButton":"Abort",
         "importNewButton": "Import only new",
         "importAllButton": "Import all"
-      },
-      "manualJobImportDialog":{
-        "title": "Manual Hypercube job import",
-        "uploadZip":"Upload zip file with results here",
-        "hcubeTags":"Job tags (separate with comma)",
-        "uploadButton":"Import",
-        "cancelButton": "Cancel"
       },
       "showLogFileDialog":{
         "title": "Log file",
@@ -1076,10 +961,6 @@
         "desc": "Problems uploading the scenarios to the database. Please try again later."
       }
     },
-    "hcubeLaunch":{
-      "hcubeRunning": "Hypercube Mode is already running.",
-      "launchError": "An error occurred while trying to launch the Hypercube Mode. If this problem persists, please contact the system administrator."
-    },
     "paverFileLoad":{
       "desc":"Data could not be loaded for this category."
     },
@@ -1236,7 +1117,7 @@
       },
       "decimal":{
         "label": "Number of decimal places used for rounding numerical values (global setting).",
-        "tooltip": "Has an effect on all output tables, big data input tables and the table for loading scenarios in Hypercube Mode. - Open documentation."
+        "tooltip": "Affects all output tables, Big Data input tables and the table in the Batch Load module. - Open documentation."
       },
       "defaultRenderer":{
         "labelOutput": "Default renderer for output data",
@@ -1488,7 +1369,7 @@
         "depSelector": "Static value?",
         "step": "Step size (also decimal places possible)",
         "minStep": "Minimum step size",
-        "minStepTooltip": "Only relevant in Hypercube Mode. If empty, the step size is used. - Open documentation",
+        "minStepTooltip": "Only relevant in Hypercube module. If empty, the step size is used. - Open documentation",
         "ticks": "Show tick marks?",
         "hcube": "Should element be expanded automatically when submitting Hypercube jobs?"
       },
@@ -1508,7 +1389,7 @@
         "default2": "Upper default value",
         "step": "Step size (also decimal places possible)",
         "ticks": "Show tick marks?",
-        "hcube": "Should element be expanded automatically in Hypercube Mode?"
+        "hcube": "Should element be expanded automatically when submitting Hypercube jobs?"
       },
       "dropdown":{
         "label": "Choose a label",
@@ -1524,12 +1405,12 @@
         "multiple": "Should multiple items be selectable?",
         "clearValue": "Communicate as element text with GAMS",
         "clearValueTooltip": "Causes element label to be an empty string. - Open documentation",
-        "hcube": "Should element be expanded automatically in Hypercube Mode?"
+        "hcube": "Should element be expanded automatically when submitting Hypercube jobs?"
       },
       "checkbox":{
         "label": "Choose a label",
         "default": "Default value",
-        "hcube": "Should element be expanded automatically in Hypercube Mode?"
+        "hcube": "Should element be expanded automatically when submitting Hypercube jobs?"
       },
       "date":{
         "label": "Choose a label",
@@ -1555,7 +1436,7 @@
         },
         "daysDisabled": "Select weekdays that you want to disable",
         "autoclose": "Should datepicker be closed immediately when a date is selected?",
-        "hcube": "Should element be expanded automatically in Hypercube Mode?"
+        "hcube": "Should element be expanded automatically when submitting Hypercube jobs?"
       },
       "daterange":{
         "label": "Choose a label",
@@ -1584,7 +1465,7 @@
         },
         "separator": "Select the separator between start and end date selector",
         "autoclose": "Should datepicker be closed immediately when a date range is selected?",
-        "hcube": "Should element be expanded automatically in Hypercube Mode?"
+        "hcube": "Should element be expanded automatically when submitting Hypercube jobs?"
       },
       "textinput":{
         "label": "Choose a label",

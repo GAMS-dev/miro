@@ -74,16 +74,11 @@ Scenario <- R6Class("Scenario",
       private$execPerm <- vector2Csv(execPerm)
       private$views <- views
       private$attachments <- attachments
-      private$hcubeActive <- db$getHcubeActive()
 
       savedAttachConfig <- NULL
 
       if (is.null(scode)) {
-        if (private$hcubeActive) {
-          private$scode <- SCODEMAP[["hcube_jobconfig"]]
-        } else {
-          private$scode <- SCODEMAP[["scen"]]
-        }
+        private$scode <- SCODEMAP[["scen"]]
       } else {
         private$scode <- scode
       }

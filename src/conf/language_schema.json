@@ -93,30 +93,9 @@
               "description": "Scenario interaction menu item",
               "type": "string",
               "minLength": 1
-            },
-            "hcube": {
-              "description": "Hypercube Mode specific configuration",
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "configureRun": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "import": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "analyze": {
-                  "description": "Hypercube analyze menu item",
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "minProperties": 3
             }
           },
-          "minProperties": 6
+          "minProperties": 5
         },
         "sidebarButtons": {
           "type": "object",
@@ -200,10 +179,6 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "titleHC": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "edit": {
                   "type": "string",
                   "minLength": 1
@@ -225,7 +200,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 7
+              "minProperties": 6
             },
             "help": {
               "type": "object",
@@ -249,20 +224,9 @@
                 }
               },
               "minProperties": 4
-            },
-            "tooltips": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "switchToHcube": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "minProperties": 1
             }
           },
-          "minProperties": 4
+          "minProperties": 3
         },
         "inputScreen": {
           "type": "object",
@@ -504,23 +468,11 @@
               "type": "string",
               "minLength": 1
             },
-            "showHashButton": {
-              "type": "string",
-              "minLength": 1
-            },
             "noData": {
               "type": "string",
               "minLength": 1
             },
             "invalidCsvFilter": {
-              "type": "string",
-              "minLength": 1
-            },
-            "msgOnlyOneHash": {
-              "type": "string",
-              "minLength": 1
-            },
-            "msgNoHashFound": {
               "type": "string",
               "minLength": 1
             },
@@ -591,21 +543,6 @@
               "type": "string",
               "minLength": 1
             },
-            "showHashDialog": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "title": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "desc": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "minProperties": 2
-            },
             "metaColAliases": {
               "type": "object",
               "additionalProperties": false,
@@ -630,7 +567,7 @@
               "minProperties": 4
             }
           },
-          "minProperties": 15
+          "minProperties": 11
         },
         "hcubeAnalyze": {
           "type": "object",
@@ -818,65 +755,6 @@
           },
           "minProperties": 13
         },
-        "dialogNewHCJob": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "title": {
-              "type": "string",
-              "minLength": 1
-            },
-            "desc": {
-              "type": "string",
-              "minLength": 1
-            },
-            "tags": {
-              "type": "string",
-              "minLength": 1
-            },
-            "discardAttach": {
-              "type": "string",
-              "minLength": 1
-            },
-            "discardViews": {
-              "type": "string",
-              "minLength": 1
-            },
-            "discardPerm": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newScenName": {
-              "type": "string",
-              "minLength": 1
-            },
-            "badName": {
-              "type": "string",
-              "minLength": 1
-            },
-            "scenExists": {
-              "type": "string",
-              "minLength": 1
-            },
-            "btNewName": {
-              "type": "string",
-              "minLength": 1
-            },
-            "btOverwrite": {
-              "type": "string",
-              "minLength": 1
-            },
-            "cancelButton": {
-              "type": "string",
-              "minLength": 1
-            },
-            "okButton": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "minProperties": 13
-        },
         "dialogEditMeta": {
           "type": "object",
           "additionalProperties": false,
@@ -1024,97 +902,6 @@
           },
           "minProperties": 35
         },
-        "dialogEditMetaHC": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "title": {
-              "type": "string",
-              "minLength": 1
-            },
-            "categoryGeneral": {
-              "type": "string",
-              "minLength": 1
-            },
-            "categoryAttachments": {
-              "type": "string",
-              "minLength": 1
-            },
-            "categoryViews": {
-              "type": "string",
-              "minLength": 1
-            },
-            "categoryAccessPerm": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newName": {
-              "type": "string",
-              "minLength": 1
-            },
-            "badName": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newTags": {
-              "type": "string",
-              "minLength": 1
-            },
-            "emptyPerm": {
-              "type": "string",
-              "minLength": 1
-            },
-            "incapOwner": {
-              "type": "string",
-              "minLength": 1
-            },
-            "scenExists": {
-              "type": "string",
-              "minLength": 1
-            },
-            "attachmentsAdd": {
-              "type": "string",
-              "minLength": 1
-            },
-            "attachmentsExecPerm": {
-              "type": "string",
-              "minLength": 1
-            },
-            "attachSuccess": {
-              "type": "string",
-              "minLength": 1
-            },
-            "attachMaxSizeError": {
-              "type": "string",
-              "minLength": 1
-            },
-            "attachMaxNoError": {
-              "type": "string",
-              "minLength": 1
-            },
-            "attachDuplicateError": {
-              "type": "string",
-              "minLength": 1
-            },
-            "attachForbiddenFnameError": {
-              "type": "string",
-              "minLength": 1
-            },
-            "errMsg": {
-              "type": "string",
-              "minLength": 1
-            },
-            "cancelButton": {
-              "type": "string",
-              "minLength": 1
-            },
-            "okButton": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "minProperties": 21
-        },
         "dialogRemoteLogin": {
           "type": "object",
           "additionalProperties": false,
@@ -1214,29 +1001,6 @@
           "minProperties": 4
         },
         "dialogRemoveScen": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "title": {
-              "type": "string",
-              "minLength": 1
-            },
-            "desc": {
-              "type": "string",
-              "minLength": 1
-            },
-            "cancelButton": {
-              "type": "string",
-              "minLength": 1
-            },
-            "okButton": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "minProperties": 4
-        },
-        "dialogRemoveHCJob": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
@@ -1369,47 +1133,6 @@
           },
           "minProperties": 5
         },
-        "dialogDeleteHCJob": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "title": {
-              "type": "string",
-              "minLength": 1
-            },
-            "desc": {
-              "type": "string",
-              "minLength": 1
-            },
-            "cancelButton": {
-              "type": "string",
-              "minLength": 1
-            },
-            "okButton": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeFromUI": {
-              "title": {
-                "type": "string",
-                "minLength": 1
-              },
-              "desc": {
-                "type": "string",
-                "minLength": 1
-              },
-              "cancelButton": {
-                "type": "string",
-                "minLength": 1
-              },
-              "okButton": {
-                "type": "string",
-                "minLength": 1
-              }
-            }
-          },
-          "minProperties": 5
-        },
         "dialogExistingOutput": {
           "type": "object",
           "additionalProperties": false,
@@ -1480,22 +1203,6 @@
               "type": "string",
               "minLength": 1
             },
-            "tabHcube": {
-              "type": "string",
-              "minLength": 1
-            },
-            "hcubeHashDesc": {
-              "type": "string",
-              "minLength": 1
-            },
-            "hcubeHashButton": {
-              "type": "string",
-              "minLength": 1
-            },
-            "hcubeHashNoMatch": {
-              "type": "string",
-              "minLength": 1
-            },
             "selInputData": {
               "type": "string",
               "minLength": 1
@@ -1553,94 +1260,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 22
-        },
-        "dialogImportHC": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "title": {
-              "type": "string",
-              "minLength": 1
-            },
-            "tabLocal": {
-              "type": "string",
-              "minLength": 1
-            },
-            "tabDatabase": {
-              "type": "string",
-              "minLength": 1
-            },
-            "tabBase": {
-              "type": "string",
-              "minLength": 1
-            },
-            "selInputData": {
-              "type": "string",
-              "minLength": 1
-            },
-            "selDecimalSep": {
-              "type": "string",
-              "minLength": 1
-            },
-            "selDelim": {
-              "type": "string",
-              "minLength": 1
-            },
-            "selExcelIndexSheet": {
-              "type": "string",
-              "minLength": 1
-            },
-            "excelIndexSheetRng": {
-              "type": "string",
-              "minLength": 1
-            },
-            "descLocal": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newScenName": {
-              "type": "string",
-              "minLength": 1
-            },
-            "badScenName": {
-              "type": "string",
-              "minLength": 1
-            },
-            "scenNameExists": {
-              "type": "string",
-              "minLength": 1
-            },
-            "cbSelectManually": {
-              "type": "string",
-              "minLength": 1
-            },
-            "overwriteWarning": {
-              "type": "string",
-              "minLength": 1
-            },
-            "descOverwriteInput": {
-              "type": "string",
-              "minLength": 1
-            },
-            "okButton": {
-              "type": "string",
-              "minLength": 1
-            },
-            "cancelButton": {
-              "type": "string",
-              "minLength": 1
-            },
-            "overwriteButton": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newNameButton": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "minProperties": 20
+          "minProperties": 18
         },
         "dialogLoadScen": {
           "type": "object",
@@ -1880,45 +1500,7 @@
           },
           "minProperties": 5
         },
-        "dialogReadonlyHC": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "title": {
-              "type": "string",
-              "minLength": 1
-            },
-            "desc": {
-              "type": "string",
-              "minLength": 1
-            },
-            "okButton": {
-              "type": "string",
-              "minLength": 1
-            },
-            "cancelButton": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "minProperties": 4
-        },
         "dialogNoExecPerm": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "title": {
-              "type": "string",
-              "minLength": 1
-            },
-            "desc": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "minProperties": 2
-        },
-        "dialogNoExecPermHC": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
@@ -2565,33 +2147,6 @@
               },
               "minProperties": 6
             },
-            "manualJobImportDialog": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "title": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "uploadZip": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "hcubeTags": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "uploadButton": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "cancelButton": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "minProperties": 5
-            },
             "showLogFileDialog": {
               "type": "object",
               "additionalProperties": false,
@@ -2650,7 +2205,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 9
+          "minProperties": 8
         },
         "dialogPaverInUse": {
           "type": "object",
@@ -2878,7 +2433,7 @@
           }
         }
       },
-      "minProperties": 54
+      "minProperties": 47
     },
     "renderers": {
       "description": "language specific objects of renderers",
@@ -4160,21 +3715,6 @@
           },
           "minProperties": 5
         },
-        "hcubeLaunch": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "hcubeRunning": {
-              "type": "string",
-              "minLength": 1
-            },
-            "launchError": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "minProperties": 2
-        },
         "lockScen": {
           "type": "object",
           "additionalProperties": false,
@@ -4270,7 +3810,7 @@
           "minProperties": 3
         }
       },
-      "minProperties": 39
+      "minProperties": 38
     },
     "adminMode": {
       "description": "language specific objects of the MIRO admin mode",

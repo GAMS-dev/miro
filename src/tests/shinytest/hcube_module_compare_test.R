@@ -26,7 +26,7 @@ expect_false(any(is.na(scenToCompare)))
 app$setInputs(batchLoadResults_rows_selected = scenToCompare, allowInputNoBinding_ = TRUE)
 
 # check that scalar-name-mapping works
-app$setInputs(hcubeLoadSelected = "click")
+app$setInputs(batchLoadSelected = "click")
 Sys.sleep(2L)
 app$setInputs(batchCompareNameCols = c("_gmsopt_lsttitleleftaligned", "maxstock"))
 app$waitFor("$('#btBatchCompare').click()", timeout = 50L)
@@ -45,7 +45,7 @@ app$findElement("#sidebarItemExpanded a[data-value='loadResults']")$click()
 Sys.sleep(0.5)
 app$setInputs(batchLoadResults_rows_selected = scenToCompare, allowInputNoBinding_ = TRUE)
 
-app$setInputs(hcubeLoadSelected = "click")
+app$setInputs(batchLoadSelected = "click")
 Sys.sleep(2L)
 app$waitFor("$('#btBatchCompare+.dropdown-toggle').click()&&$('#btBatchCompare~.dropdown-menu a:first').click();", timeout = 50L)
 Sys.sleep(3L)
@@ -64,7 +64,7 @@ expect_true(app$waitFor("$('.small-box:visible')[1].textContent.trim().startsWit
 app$findElement("#sidebarItemExpanded a[data-value='loadResults']")$click()
 Sys.sleep(0.5)
 app$setInputs(batchLoadResults_rows_selected = scenToCompare, allowInputNoBinding_ = TRUE)
-app$setInputs(hcubeLoadSelected = "click")
+app$setInputs(batchLoadSelected = "click")
 Sys.sleep(2L)
 app$setInputs(batchCompareNameCols = c("_gmsopt_lsttitleleftaligned", "maxstock"))
 multiDimSym <- c(
@@ -84,7 +84,7 @@ expect_symbols_in_gdx(
 
 Sys.sleep(0.5)
 app$setInputs(batchLoadResults_rows_selected = scenToCompare, allowInputNoBinding_ = TRUE)
-app$setInputs(hcubeLoadSelected = "click")
+app$setInputs(batchLoadSelected = "click")
 Sys.sleep(2L)
 app$setInputs(batchCompareNameCols = c("maxstock", "_gmsopt_lsttitleleftaligned"))
 app$waitFor("$('#btBatchDownloadGDX+.dropdown-toggle').click()", timeout = 50L)
@@ -103,7 +103,7 @@ expect_files_in_zip(
 app$findElement("#sidebarItemExpanded a[data-value='loadResults']")$click()
 Sys.sleep(0.5)
 app$setInputs(batchLoadResults_rows_selected = scenToCompare, allowInputNoBinding_ = TRUE)
-app$setInputs(hcubeLoadSelected = "click")
+app$setInputs(batchLoadSelected = "click")
 Sys.sleep(2L)
 multiDimSym <- c(
   "stock_weight", "dowvsindex", "abserror", "pricemerge", "schedule",
@@ -122,7 +122,7 @@ expect_symbols_in_gdx(
 
 Sys.sleep(0.5)
 app$setInputs(batchLoadResults_rows_selected = scenToCompare, allowInputNoBinding_ = TRUE)
-app$setInputs(hcubeLoadSelected = "click")
+app$setInputs(batchLoadSelected = "click")
 Sys.sleep(2L)
 app$waitFor("$('#btBatchDownloadGDX+.dropdown-toggle').click()", timeout = 50L)
 Sys.sleep(0.5)
@@ -143,7 +143,7 @@ Sys.sleep(0.5)
 app$setInputs(btSendQuery = "click")
 expect_true(app$waitFor("$('#batchLoadResults').data('datatable').data().length===8", timeout = 50L))
 app$setInputs(batchLoadResults_rows_selected = scenToCompare[2], allowInputNoBinding_ = TRUE)
-app$setInputs(hcubeLoadSelected = "click")
+app$setInputs(batchLoadSelected = "click")
 Sys.sleep(2L)
 app$setInputs(btBatchLoadSb = "click")
 Sys.sleep(3L)

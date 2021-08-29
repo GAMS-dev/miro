@@ -77,10 +77,6 @@ loadSandboxScen <- function(scenId, refresh = FALSE) {
   }
 }
 observeEvent(input$loadActiveScenSplitComp, {
-  if (LAUNCHHCUBEMODE) {
-    flog.error("Load sandbox scenario button in split compare mode clicked while in Hypercube mode. This should never happen and is likely an attempt to tamper with the app!")
-    return()
-  }
   flog.debug(
     "Load sandbox scenario to split comparison mode clicked ID: '%s'.",
     isolate(input$loadActiveScenSplitComp)

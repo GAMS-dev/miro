@@ -20,12 +20,7 @@
       "outputScreen": "输出",
       "gams":"GAMS交互",
       "load":"加载场景",
-      "scen":"场景比较",
-      "hcube":{
-        "configureRun":"配置Hypercube作业",
-        "import":"导入作业",
-        "analyze":"分析场景"
-      }
+      "scen":"场景比较"
     },
     "sidebarButtons":{
       "importInput":"加载数据",
@@ -48,7 +43,6 @@
       },
       "scenario":{
         "title":"场景选项",
-        "titleHC":"HC作业",
         "edit":"编辑元数据",
         "save":"保存",
         "saveAs":"另存为",
@@ -60,9 +54,6 @@
         "doc":"文档",
         "forum": "GAMS World Forum",
         "about":"关于"
-      },
-      "tooltips":{
-        "switchToHcube":"切换到Hypercube模式"
       }
     },
     "inputScreen":{
@@ -130,9 +121,6 @@
       "title":"加载场景",
       "noData":"查询未返回任何数据",
       "invalidCsvFilter": "“%s”不得包含“，”。",
-      "showHashButton":"显示哈希值",
-      "msgOnlyOneHash":"请只选择一种场景。",
-      "msgNoHashFound":"未找到该场景的哈希值。该场景在Hypercube模式下可能未解决。",
       "chooseSelectedButton":"仅选中的场景",
       "chooseCurrentButton":"当前页面的场景",
       "chooseAllButton":"所有场景",
@@ -150,10 +138,6 @@
         "between": "间"
       },
       "queryButton":"获取结果",
-      "showHashDialog":{
-        "title":"场景的哈希值",
-        "desc":"所选场景具有以下哈希值，您可以在基本模式下导入该哈希值。"
-      },
       "metaColAliases":{
         "uid": "所有者",
         "sname": "名称",
@@ -209,21 +193,6 @@
       "cancelButton": "取消",
       "okButton": "确认"
     },
-    "dialogNewHCJob":{
-      "title":"新建Hypercube作业",
-      "desc":"请输入Hypercube作业配置的名称:",
-      "tags":"请为HC作业添加标签（可选）:",
-      "discardAttach": "舍弃附件？",
-      "discardViews": "抛弃观点？",
-      "discardPerm": "舍弃权限？",
-      "newScenName":"新建Hypercube作业",
-      "badName":"请输入正确的名称。",
-      "scenExists":"输入的名称已存在，要替换它吗？",
-      "btNewName":"选择不同的名称",
-      "btOverwrite": "替换",
-      "cancelButton": "取消",
-      "okButton": "确认"
-    },
     "dialogEditMeta":{
       "title":"编辑元数据",
       "categoryGeneral": "通用选项",
@@ -258,29 +227,6 @@
       "viewsDownload": "下载浏览量",
       "viewsRemove": "删除观点",
       "errMsg":"更新场景元数据中出现错误。如果此问题仍然存在,请与系统管理员联系。",
-      "cancelButton": "关闭",
-      "okButton":"更新元数据"
-    },
-    "dialogEditMetaHC":{
-      "title":"编辑元数据",
-      "categoryGeneral": "通用选项",
-      "categoryAttachments": "附件",
-      "categoryViews": "浏览次数",
-      "categoryAccessPerm": "访问权限",
-      "newName":"新建名称",
-      "badName":"该名称无效（太长或太短），请选择其他名称。",
-      "newTags":"新建标签",
-      "emptyPerm":"作业的访问权限不能为空!",
-      "incapOwner": "您无法撤销所有者的访问权限。",
-      "scenExists":"已存在该名称的Hypercube作业配置。",
-      "attachmentsAdd":"添加附件",
-      "attachmentsExecPerm":"允许模型读取此文件",
-      "attachSuccess":"附件已更新",
-      "attachMaxSizeError":"附件超过最大附件大小（%s字节）。",
-      "attachMaxNoError":"已达到最大附件数。请先删除附件,再上传新附件。",
-      "attachDuplicateError":"目标已存在相同名称的附件。请选择其他名称,再重试。",
-      "attachForbiddenFnameError":"尝试上传的附件使用了禁用的文件名。请选择其他文件名,再重试。",
-      "errMsg":"更新Hypercube作业元数据中出现错误。如果此问题仍然存在,请与系统管理员联系。",
       "cancelButton": "关闭",
       "okButton":"更新元数据"
     },
@@ -327,29 +273,11 @@
         "okButton":"从编辑器中删除"
       }
     },
-    "dialogDeleteHCJob":{
-      "title":"删除Hypercube作业",
-      "desc":"确定要从数据库中删除所选的Hypercube作业配置吗？",
-      "cancelButton": "取消",
-      "okButton": "确认",
-      "removeFromUI":{
-        "title":"从编辑器中删除Hypercube作业",
-        "desc":"确定要从编辑器中删除Hypercube作业配置？未保存的数据会丢失！",
-        "cancelButton": "取消",
-        "okButton":"从编辑器中删除"
-      }
-    },
     "dialogRemoveScen":{
       "title":"关闭场景",
       "desc":"确定要关闭当前活跃的场景吗？未保存的数据将会丢失！",
       "cancelButton": "取消",
       "okButton": "关闭"
-    },
-    "dialogRemoveHCJob":{
-      "title":"关闭Hypercube作业",
-      "desc":"确定要关闭当前活跃的Hypercube作业配置吗？未保存的数据可能会丢失！",
-      "cancelButton": "否",
-      "okButton": "是"
     },
     "dialogCloseScen":{
       "title":"关闭场景",
@@ -381,10 +309,6 @@
       "tabLocal": "本地",
       "tabExternal": "外部",
       "tabDatabase": "数据库",
-      "tabHcube": "Hypercube",
-      "hcubeHashDesc":"输入要加载的场景的哈希值（来自Hypercube模式），单击该场景并加载。",
-      "hcubeHashButton":"搜索",
-      "hcubeHashNoMatch":"未找到与输入的哈希值相匹配的场景。",
       "selInputData":"选择要加载的输入数据",
       "selDecimalSep": "选择小数点分隔符",
       "selDelim": "选择定界符",
@@ -399,28 +323,6 @@
       "overwriteWarning":"已导入的数据集,可能会丢失！",
       "cancelButton": "取消",
       "okButton": "加载"
-    },
-    "dialogImportHC":{
-      "title":"导入数据",
-      "tabLocal": "本地",
-      "tabDatabase": "Hypercube",
-      "tabBase":"基本模式",
-      "selInputData":"选择要导入的数据集",
-      "selDecimalSep": "选择小数点分隔符",
-      "selDelim": "选择定界符",
-      "selExcelIndexSheet": "选择索引工作表",
-      "excelIndexSheetRng": "选择指数范围",
-      "descLocal":"选择要导入数据的文件",
-      "newScenName":"为新的Hypercube作业配置选择一个名称",
-      "badScenName":"请指定一个有效的名称",
-      "scenNameExists":"该名称已存在，要覆盖现有数据吗？",
-      "descOverwriteInput":"已加载过该输入数据，确定要覆盖这些数据吗？",
-      "cbSelectManually":"手动选择数据集",
-      "overwriteWarning":"导入的未保存的数据集,可能会丢失！",
-      "cancelButton": "取消",
-      "okButton": "导入",
-      "overwriteButton":"覆盖现有数据",
-      "newNameButton":"新建名称"
     },
     "dialogLoadScen":{
       "title":"加载场景",
@@ -482,19 +384,9 @@
       "okButton":"另存为",
       "cancelButton":"取消"
     },
-    "dialogReadonlyHC":{
-      "title":"无写入权限",
-      "desc":"没有该Hypercube作业配置的写入权限，另存为新配置？",
-      "okButton":"另存为",
-      "cancelButton":"取消"
-    },
     "dialogNoExecPerm":{
       "title": "没有执行权限",
       "desc": "没有该场景的执行权限。"
-    },
-    "dialogNoExecPermHC":{
-      "title": "没有执行权限",
-      "desc": "没有该Hypercube作业配置的执行权限。"
     },
     "dialogDownloadTmp":{
       "title":"下载临时文件",
@@ -656,13 +548,6 @@
         "cancelButton": "中止",
         "importNewButton":"仅导入新场景",
         "importAllButton":"全部导入"
-      },
-      "manualJobImportDialog":{
-        "title":"手动导入Hypercube作业",
-        "uploadZip":"上传带有结果的zip文件",
-        "hcubeTags":"作业标签（以逗号分隔）",
-        "uploadButton": "导入",
-        "cancelButton":"取消"
       },
       "showLogFileDialog":{
         "title":"日志文件",
@@ -1076,10 +961,6 @@
         "desc":"将场景上传到数据库时出现错误，请稍后再试。"
       }
     },
-    "hcubeLaunch":{
-      "hcubeRunning":"Hypercube模式已经在运行。",
-      "launchError":"尝试启动Hypercube模式时出现错误。如果此问题仍然存在,请与系统管理员联系。"
-    },
     "paverFileLoad":{
       "desc":"无法为此类别加载数据。"
     },
@@ -1235,7 +1116,7 @@
       },
       "decimal":{
         "label": "指定输出值的精确小数位数",
-        "tooltip": "这影响了所有的输出表、大数据输入表和超立方体模式下用于加载场景的表。 - 打开文档"
+        "tooltip": "影响所有输出表，大数据输入表和批量负载模块中的表。 - 打开文档"
       },
       "defaultRenderer":{
         "labelOutput": "输出数据的默认渲染器",
@@ -1487,7 +1368,7 @@
         "depSelector": "静态值？",
         "step": "步长（支持小数）",
         "minStep": "最小步长",
-        "minStepTooltip": "仅在Hypercube模式下相关。 如果该值为空，则默认使用步长的值。更多信息，请查看文档",
+        "minStepTooltip": "仅在Hypercube模块中相关。 如果该值为空，则默认使用步长的值。更多信息，请查看文档",
         "ticks": "显示刻度线？",
         "hcube": "在提交Hypercube作业时，元素是否应该自动展开？"
       },
@@ -1507,7 +1388,7 @@
         "default2": "默认的上限值",
         "step": "步长（支持小数）",
         "ticks": "显示刻度线？",
-        "hcube": "是否允许元素在Hypercube模式下自动扩展？"
+        "hcube": "在提交Hypercube作业时，元素是否应该自动展开？"
       },
       "dropdown":{
         "label": "选择一个标签",
@@ -1523,12 +1404,12 @@
         "multiple": "是否允许选择多个条目？",
         "clearValue": "与GAMS通信作为元素文本",
         "clearValueTooltip": "元素标签为空字符串。 更多信息，请查看文档",
-        "hcube": "是否允许元素在Hypercube模式下自动扩展？"
+        "hcube": "在提交Hypercube作业时，元素是否应该自动展开？"
       },
       "checkbox":{
         "label": "选择一个标签",
         "default": "默认值",
-        "hcube": "是否允许元素在Hypercube模式下自动扩展？"
+        "hcube": "在提交Hypercube作业时，元素是否应该自动展开？"
       },
       "date":{
         "label": "选择一个标签",
@@ -1554,7 +1435,7 @@
         },
         "daysDisabled": "指定要禁用的工作日",
         "autoclose": "选定日期后立即关闭日期选择器吗？",
-        "hcube": "是否允许元素在Hypercube模式下自动扩展？"
+        "hcube": "在提交Hypercube作业时，元素是否应该自动展开？"
       },
       "daterange":{
         "label": "选择一个标签",
@@ -1583,7 +1464,7 @@
         },
         "separator": "选择开始和结束日期选择器之间的分隔符",
         "autoclose": "选定日期范围后立即关闭日期选择器吗？",
-        "hcube": "是否允许元素在Hypercube模式下自动扩展？"
+        "hcube": "在提交Hypercube作业时，元素是否应该自动展开？"
       },
       "textinput":{
         "label": "选择一个标签",

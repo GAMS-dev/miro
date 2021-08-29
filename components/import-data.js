@@ -6,7 +6,7 @@ const { format } = require('util');
 const log = require('electron-log');
 
 async function addModelData(miroProcessManager, paths, modelName,
-  miroMode, miroVersion, usetmpdir,
+  miroVersion, usetmpdir,
   windowObj, dataDir, progressEvent = 'add-app-progress') {
   let restartRProc;
   let overwriteData = false;
@@ -21,7 +21,6 @@ async function addModelData(miroProcessManager, paths, modelName,
     const procPid = await miroProcessManager.createNewMiroProc({
       id: appId,
       miroversion: miroVersion,
-      mode: miroMode,
       usetmpdir,
       dbpath: paths.dbpath,
       allowMultiple: true,

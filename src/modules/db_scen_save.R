@@ -262,7 +262,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
     return(NULL)
   }
   # check whether output data was saved and in case it was set identifier accordingly
-  if (!LAUNCHHCUBEMODE && scenData$getSandboxHasOutputData(scriptOutput)) {
+  if (scenData$getSandboxHasOutputData(scriptOutput)) {
     noOutputData <<- FALSE
   } else {
     noOutputData <<- TRUE

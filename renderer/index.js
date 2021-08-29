@@ -165,15 +165,6 @@ function expandAddAppForm() {
                            ${lang.appDescPlaceholder}
                         </p>
                         </div>
-                        <div class="input-group mb-3" style="visibility:hidden;">
-                          <div class="input-group-prepend">
-                            <button class="btn btn-outline-secondary dropdown-toggle btn-launch" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">${lang.btLaunch}</button>
-                            <div class="dropdown-menu">
-                              <a class="dropdown-item" href="#">${lang.btLaunchBase}</a>
-                              <a class="dropdown-item" href="#">${lang.btLaunchHcube}</a>
-                            </div>
-                          </div>
-                        </div>
                         <div style = "text-align:right;">
                             <input class="btn btn-secondary cancel-btn" id="btAddAppReset" value="${lang.btCancel}" type="reset">
                             <button class="btn btn-secondary confirm-btn" id="btAddApp" type="button">${lang.btAddApp}</button>
@@ -571,22 +562,10 @@ data-id="${app.id}" class="app-logo">
                          </div>
                      </div>
                      <div class="dropdown mb-3 btn-launch-wrapper">
-                           ${app.modesAvailable.length <= 1
-    ? `<button class="btn btn-outline-secondary btn-launch launch-app"
-                               type="button" data-id="${app.id}" data-dbpath="${app.dbpath == null ? '' : app.dbpath}"
-                               data-usetmpdir="${app.usetmpdir}" data-mode="${app.modesAvailable[0]}"
-                               data-apiversion="${app.apiversion}" data-miroversion="${app.miroversion}">${lang.btLaunch}</button>`
-    : `<button class="btn btn-outline-secondary dropdown-toggle btn-launch"
-                               type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">${lang.btLaunch}</button>
-                             <div class="dropdown-menu dropdown-custom">
-                                 <a class="dropdown-item launch-app" data-id="${app.id}"
-                                   data-usetmpdir="${app.usetmpdir}" data-mode="base" data-dbpath="${app.dbpath == null ? '' : app.dbpath}"
-                                   data-apiversion="${app.apiversion}" data-miroversion="${app.miroversion}">${lang.btLaunchBase}</a>
-                                 <a class="dropdown-item launch-app" data-id="${app.id}"
-                                   data-usetmpdir="${app.usetmpdir}" data-mode="hcube" data-dbpath="${app.dbpath == null ? '' : app.dbpath}"
-                                   data-apiversion="${app.apiversion}" data-miroversion="${app.miroversion}">${lang.btLaunchHcube}</a>
-                             </div>`}
-
+                      <button class="btn btn-outline-secondary btn-launch launch-app"
+                       type="button" data-id="${app.id}" data-dbpath="${app.dbpath == null ? '' : app.dbpath}"
+                       data-usetmpdir="${app.usetmpdir}" data-mode="${app.modesAvailable[0]}"
+                       data-apiversion="${app.apiversion}" data-miroversion="${app.miroversion}">${lang.btLaunch}</button>
                     </div>
                  </div>
                  <div style="text-align:right;display:none;" class="edit-bt-group">

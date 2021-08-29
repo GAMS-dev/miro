@@ -4,7 +4,6 @@ library(writexl)
 library(tidyr)
 library(dplyr)
 
-LAUNCHHCUBEMODE <<- FALSE
 lang <<- jsonlite::fromJSON("../../conf/en.json", simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
 source("../../components/localfileio.R")
 source("../../components/xlsio.R")
@@ -728,59 +727,4 @@ test_that("Example from documentation works", {
 
 test_that("Getting symbol names woks", {
   expect_identical(xlsio$getSymbolNames(), c("j", "d", "_scalars"))
-})
-
-# test xlsio in for special/Hypercube scalar
-ioConfig <<- list(
-  modelIn = list(
-    mins = list(
-      slider = list(default = c(1L, 2L), single = TRUE),
-      type = "slider"
-    ),
-    type = list(
-      dropdown = list(), symtype = "set",
-      colTypes = "c",
-      headers = list(type = list(alias = "model type"))
-    )
-  ),
-  hcubeScalars = "type",
-  modelInRaw = list("_scalars" = list(
-    symnames = c("f", "mins", "beta", "type"),
-    symtext = c("", "", "", ""),
-    symtypes = c("parameter", "parameter", "parameter", "set"),
-    colTypes = "ccc",
-    headers = list(
-      scalar = list(),
-      description = list(),
-      value = list()
-    )
-  ))
-)
-LAUNCHHCUBEMODE <<- TRUE
-xlsio <- XlsIO$new()
-
-test_that("Xlsio works properly for special/Hypercube scalars", {
-  tmpdir <- tempdir(TRUE)
-  xlsOutFileName <- file.path(tmpdir, "test.xlsx")
-  testData <- list(
-    "_scalars" = tibble(
-      scalar = c("mins$lo", "mins$up", "mins$step", "beta"),
-      description = c(""),
-      value = c("1", "4", "0.5", "12.34")
-    ),
-    type = tibble(type = c("lp", "mip"))
-  )
-  expect_error(xlsio$write(xlsOutFileName, testData, includeEmptySheets = FALSE), NA)
-  expect_identical(
-    xlsio$read(xlsOutFileName, "type", forceInit = TRUE),
-    tibble(type = c("lp", "mip"), text = "")
-  )
-  expect_identical(
-    xlsio$read(xlsOutFileName, "_scalars", forceInit = TRUE),
-    tibble(
-      scalar = c("f", "mins$lo", "mins$up", "mins$step", "beta"),
-      description = "",
-      value = c(NA_character_, "1", "4", "0.5", "12.34")
-    )
-  )
 })

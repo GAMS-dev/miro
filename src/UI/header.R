@@ -26,11 +26,7 @@ header <- dashboardHeader(
     class = "dropdown",
     tags$a(
       href = "#", class = "dropdown-toggle", "data-toggle" = "dropdown",
-      if (LAUNCHHCUBEMODE) {
-        lang$nav$header$scenario$titleHC
-      } else {
-        lang$nav$header$scenario$title
-      }, tags$span(class = "caret")
+      lang$nav$header$scenario$title, tags$span(class = "caret")
     ),
     tags$ul(
       class = "dropdown-menu", role = "menu",

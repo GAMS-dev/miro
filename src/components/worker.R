@@ -1,12 +1,10 @@
 Worker <- R6Class("Worker", public = list(
-  initialize = function(metadata, remote, hcube, db = NULL) {
+  initialize = function(metadata, remote, db = NULL) {
     stopifnot(
       is.list(metadata), is.logical(remote),
-      identical(length(remote), 1L), is.logical(hcube),
-      identical(length(hcube), 1L)
+      identical(length(remote), 1L)
     )
     private$remote <- remote
-    private$hcube <- hcube
     private$metadata <- metadata
     if (length(db)) {
       private$db <- db
@@ -283,97 +281,19 @@ Worker <- R6Class("Worker", public = list(
   },
   runHcube = function(dynamicPar = NULL, sid = NULL, tags = NULL,
                       attachmentFilePaths = NULL) {
+    stopifnot(private$remote)
     req(length(private$db) > 0L)
 
     private$initRun(sid)
 
-    if (private$remote) {
-      pID <- self$runAsync(
-        sid = sid,
-        tags = tags, dynamicPar = dynamicPar
-      )
-    } else {
-      private$jID <- self$addJobDb("", sid, tags = tags, isHcJob = TRUE)
-      if (identical(private$jID, -1L)) {
-        stop("Problems storing Hypercube job metadata.", call. = FALSE)
-      }
-      flog.trace(
-        "Metadata for Hypercube job was written to database. Hypercube job ID: '%d' was assigned to job.",
-        private$jID
-      )
-      private$runHcubeLocal(dynamicPar, attachmentFilePaths)
-      pID <- private$process$get_pid()
-      flog.trace("Hypercube job submitted successfuly. Hypercube job process ID: '%d'.", pID)
-    }
+    pID <- self$runAsync(
+      sid = sid,
+      tags = tags, dynamicPar = dynamicPar
+    )
 
     self$updateJobStatus(status = JOBSTATUSMAP[["running"]], updatePid = !private$remote)
     flog.trace("Process ID: '%s' added to Hypercube job ID: '%s'.", pID, private$jID)
     return(0L)
-  },
-  createHcubeWorkDir = function(workDir, dynamicPar,
-                                attachmentFilePaths = NULL) {
-    if (dir.exists(workDir)) {
-      flog.warn("Hypercube job directory: '%s' already existed. Removing old data.", workDir)
-      if (identical(unlink(workDir, recursive = TRUE, force = TRUE), 1L)) {
-        stop(sprintf("Problems removing Hypercube job directory: '%s'.", workDir), call. = FALSE)
-      }
-    }
-
-    if (!dir.exists(workDir) && !dir.create(workDir, recursive = TRUE, showWarnings = FALSE)) {
-      stop(sprintf("Problems creating Hypercube job directory: '%s'.", workDir), call. = FALSE)
-    }
-
-    staticDir <- file.path(workDir, "static")
-
-    if (!dir.create(staticDir)) {
-      stop(sprintf("Problems creating static directory: '%s'.", staticDir), call. = FALSE)
-    }
-
-    if (length(private$inputData)) {
-      private$inputData$writeDisk(staticDir, fileName = private$metadata$MIROGdxInName)
-    }
-
-    if (length(attachmentFilePaths)) {
-      if (!all(file.copy(attachmentFilePaths, staticDir))) {
-        stop(sprintf(
-          "Problems writing attachment data to: '%s'.",
-          staticDir
-        ), call. = FALSE)
-      }
-    }
-    if (length(private$metadata[["modelData"]])) {
-      zip::unzip(private$metadata[["modelData"]],
-        overwrite = TRUE, junkpaths = FALSE,
-        exdir = workDir
-      )
-    }
-    scenGmsPar <- c(
-      if (length(private$metadata$extraClArgs)) private$metadata$extraClArgs,
-      private$metadata$clArgs,
-      paste0(
-        'IDCGDXInput="',
-        if (is.null(workDir)) {
-          gmsFilePath(file.path(
-            staticDir,
-            private$metadata$MIROGdxInName
-          ))
-        } else {
-          gmsFilePath(file.path(
-            "..", "..", "static",
-            private$metadata$MIROGdxInName
-          ))
-        }, '"'
-      )
-    )
-    if (private$metadata$saveTraceFile) {
-      scenGmsPar <- c(scenGmsPar, 'trace="_scenTrc.trc"', "traceopt=3")
-    }
-
-    writeLines(scenGmsPar, file.path(workDir, tolower(private$metadata$modelName) %+% ".pf"))
-    dynamicPar$writeHcubeFile(paste0(workDir, .Platform$file.sep))
-    flog.trace("New folder for Hypercube job was created: '%s'.", workDir)
-
-    return(invisible(self))
   },
   interrupt = function(hardKill = NULL, process = NULL, isHcJob = FALSE) {
     if (is.null(process)) {
@@ -412,16 +332,11 @@ Worker <- R6Class("Worker", public = list(
     return(private$jobList[jIdx, ])
   },
   updateJobStatus = function(status, jID = NULL, tags = NULL, updatePid = FALSE) {
-    if (!private$hcube) {
-      if (!private$remote) {
-        return()
-      }
-      tags <- NULL
-      isHcJob <- FALSE
-    } else if (length(tags)) {
-      tags <- vector2Csv(tags)
-      isHcJob <- TRUE
+    if (!private$remote) {
+      return()
     }
+    tags <- NULL
+    isHcJob <- FALSE
     if (is.null(jID)) {
       req(length(private$process) > 0L)
 
@@ -467,13 +382,6 @@ Worker <- R6Class("Worker", public = list(
           }
           status <- JOBSTATUSMAP[["discarded(completed)"]]
         }
-        if (private$hcube) {
-          hcubeJobDir <- file.path(hcubeDirName, jID)
-          if (dir.exists(hcubeJobDir) &&
-            identical(unlink(hcubeJobDir, recursive = TRUE, force = TRUE), 1L)) {
-            flog.error("Problems removing Hypercube job workspace: '%s'.", hcubeJobDir)
-          }
-        }
       }
     }
 
@@ -515,7 +423,7 @@ Worker <- R6Class("Worker", public = list(
         ),
         c(
           "=", if (jobHist) ">=" else "<",
-          if (private$hcube) "=" else ">="
+          ">="
         )
       ),
       orderBy = private$dbColNames[["time"]], orderAsc = FALSE
@@ -617,20 +525,10 @@ Worker <- R6Class("Worker", public = list(
     if (is.na(jID) || length(jID) != 1L) {
       stop(sprintf("Invalid job ID: '%s'.", jID), call. = FALSE)
     }
-
-    if (private$remote) {
-      return(private$getHcubeJobProgressRemote(jID))
-    }
-    return(private$getHcubeJobProgressLocal(jID))
+    stopifnot(private$remote)
+    return(private$getHcubeJobProgressRemote(jID))
   },
   getJobResultsPath = function(jID) {
-    if (!private$remote && private$hcube) {
-      return(file.path(
-        hcubeDirName,
-        jID, "4upload.zip"
-      ))
-    }
-
     jIDChar <- as.character(jID)
     if (!jIDChar %in% names(private$jobResultsFile)) {
       stop(sprintf("Job directory not found for job: '%s'.", jID),
@@ -988,7 +886,6 @@ Worker <- R6Class("Worker", public = list(
   }
 ), private = list(
   remote = logical(1L),
-  hcube = logical(1L),
   status = NULL,
   jID = NULL,
   jobName = NULL,
@@ -1042,37 +939,6 @@ Worker <- R6Class("Worker", public = list(
     )
     return(self)
   },
-  runHcubeLocal = function(dynamicPar, attachmentFilePaths = NULL) {
-    hcubeDir <- file.path(hcubeDirName, private$jID)
-    self$createHcubeWorkDir(hcubeDir, dynamicPar, attachmentFilePaths)
-    # create daemon to execute Hypercube job
-    hcubeSubmDir <- gmsFilePath(file.path(getwd(), "resources", hcubeSubmissionFile %+% ".gms"))
-    curdir <- gmsFilePath(hcubeDir)
-
-    tryCatch(
-      {
-        writeChar(paste0("0/ ", dynamicPar$getNoJobs(), "\n"), file.path(hcubeDir, private$jID %+% ".log"),
-          eos = NULL
-        )
-      },
-      error = function(e) {
-        flog.warn(
-          "Log file: '%s' could not be written. Check whether you have sufficient permissions to write files to: '%s'.",
-          private$jID %+% ".log", hcubeDir
-        )
-      }
-    )
-    private$process <- process$new(file.path(private$metadata$gamsSysDir, "gams"),
-      args = c(
-        hcubeSubmDir, "curdir", curdir, "lo=3",
-        paste0("--jobID=", private$jID)
-      ),
-      cleanup = FALSE, cleanup_tree = FALSE, supervise = FALSE,
-      windows_hide_window = TRUE,
-      env = private$getProcEnv()
-    )
-    return(invisible(self))
-  },
   runRemote = function(hcubeData = NULL, name = NULL) {
     stopifnot(!is.null(private$inputData))
     private$status <- "s"
@@ -1122,17 +988,12 @@ Worker <- R6Class("Worker", public = list(
           requestBody$hypercube_file <- upload_file(hcubeData$writeHcubeFile(workDir),
             type = "application/json"
           )
-          if (hcube) {
-            # in Hypercube Mode, we don't include output attachments, but have to include input GDX
-            filesToInclude <- dataFilesToFetch
-          } else {
-            filesToInclude <- c(
-              dataFilesToFetch,
-              metadata$text_entities,
-              requestBody$stdout_filename
-            )
-            filesToInclude <- filesToInclude[!filesToInclude %in% metadata$MIROGdxInName]
-          }
+          filesToInclude <- c(
+            dataFilesToFetch,
+            metadata$text_entities,
+            requestBody$stdout_filename
+          )
+          filesToInclude <- filesToInclude[!filesToInclude %in% metadata$MIROGdxInName]
         } else {
           gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="', metadata$MIROGdxInName, '"'))
           if (length(metadata$text_entities)) {
@@ -1204,7 +1065,7 @@ Worker <- R6Class("Worker", public = list(
       globals = list(
         metadata = private$metadata, workDir = private$workDir,
         pfFileContent = private$inputData$getClArgs(),
-        inputData = private$inputData, hcube = private$hcube,
+        inputData = private$inputData,
         authHeader = private$authHeader,
         gmsFilePath = gmsFilePath,
         isWindows = isWindows, hcubeData = hcubeData
@@ -1683,35 +1544,6 @@ Worker <- R6Class("Worker", public = list(
     )
     return(invisible(self))
   },
-  getHcubeJobProgressLocal = function(jID) {
-    logFilePath <- file.path(
-      hcubeDirName,
-      jID, paste0(jID, ".log")
-    )
-
-    if (file.access(logFilePath, 4L) != -1L) {
-      logContent <- tryCatch(
-        readLines(logFilePath, n = 1L),
-        error = function(e) {
-          stop(sprintf(
-            "Could not fetch Hypercube progress status. Error message: '%s'.",
-            conditionMessage(e)
-          ), call. = FALSE)
-        }
-      )
-    } else {
-      stop(sprintf(
-        "Could not access Hypercube log file: '%s'. Insufficient access permissions.",
-        logFilePath
-      ), call. = FALSE)
-    }
-    errMsg <- "Progress status could not be determined. Invalid progress file format."
-    progressStatus <- suppressWarnings(as.integer(strsplit(logContent, "/", fixed = TRUE)[[1L]]))
-    if (length(progressStatus) != 2L || any(is.na(progressStatus))) {
-      stop(errMsg, call. = FALSE)
-    }
-    return(progressStatus)
-  },
   getHcubeJobProgressRemote = function(jID) {
     jobProgress <- private$validateAPIResponse(
       GET(
@@ -1725,29 +1557,6 @@ Worker <- R6Class("Worker", public = list(
       )
     )$results[[1]]
     return(c(jobProgress$finished, jobProgress$job_count, jobProgress$successfully_finished))
-  },
-  getHcubeJobStatusLocal = function(pID, jID) {
-    jobDir <- file.path(hcubeDirName, jID)
-    if (dir.exists(jobDir)) {
-      if (file.exists(file.path(jobDir, "4upload.zip"))) {
-        status <- JOBSTATUSMAP[["completed"]]
-      } else if (pidExists(pID)) {
-        status <- JOBSTATUSMAP[["running"]]
-      } else {
-        flog.info(
-          "Job with ID: '%s' is not running anymore, but results archive could not be found. Job was marked: 'corrupted'.",
-          jID
-        )
-        status <- JOBSTATUSMAP[["corrupted(noProcess)"]]
-      }
-    } else {
-      flog.info(
-        "Job with ID: '%s' could not be accessed (directory is missing or lacks read permissions). Job was marked: 'corrupted'.",
-        jID
-      )
-      status <- JOBSTATUSMAP[["corrupted(noDir)"]]
-    }
-    return(list(status = status, gamsRetCode = NULL))
   },
   getHcubeJobStatusRemote = function(pID, jID) {
     jobProgress <- tryCatch(private$getHcubeJobProgressRemote(jID),
@@ -1911,11 +1720,7 @@ Worker <- R6Class("Worker", public = list(
     ))
   },
   getHcubeJobStatus = function(pID, jID) {
-    if (private$remote) {
-      return(private$getHcubeJobStatusRemote(pID, jID))
-    }
-
-    return(private$getHcubeJobStatusLocal(pID, jID))
+    return(private$getHcubeJobStatusRemote(pID, jID))
   },
   validateAPIResponse = function(response) {
     if (status_code(response) >= 300L) {

@@ -81,7 +81,7 @@ BatchLoader <- R6Class("BatchLoader",
       }
       scenId <- as.integer(scenId)
       stopifnot(identical(length(scenId), 1L), !is.na(scenId))
-      if (private$db$checkSnameExists(newName, suid, checkNormalScen = TRUE)) {
+      if (private$db$checkSnameExists(newName, suid)) {
         stop_custom("error_scen_exists", "Scenario exists", call. = FALSE)
       }
       wasUpdated <- private$db$updateRows("_scenMeta",

@@ -1,7 +1,6 @@
 context("Unit tests - CsvIO class")
 library(readr)
 
-LAUNCHHCUBEMODE <<- FALSE
 lang <<- jsonlite::fromJSON("../../conf/en.json", simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
 source("../../components/localfileio.R")
 source("../../components/csvio.R")

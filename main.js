@@ -239,23 +239,13 @@ function validateMIROApp(filePathArg) {
       let invalidMiroApp = false;
       const errMsgTemplate = 'The MIRO app you want to add is invalid. Please make sure to upload a valid MIRO app!';
       const miroConfFormat = /(.*)_(\d)_(\d+)_(\d+\.\d+\.\d+)(_hcube)?\.miroconf$/;
-      let skipCntMiroconf = 0;
       // eslint-disable-next-line no-restricted-syntax
       for (const fileName of appFileNames) {
-        if (skipCntMiroconf > 1) {
-          break;
-        }
         if (path.dirname(fileName) === '.' && fileName.endsWith('.miroconf')) {
           const miroConfMatch = fileName.match(miroConfFormat);
           if (miroConfMatch && miroConfMatch[1].length) {
             if (miroConfMatch[5]) {
-              if (newAppConf.modesAvailable.includes('hcube')) {
-                log.warn('Multiple Hypercube configurations found in app bundle. Invalid app.');
-                invalidMiroApp = true;
-                break;
-              }
-              log.debug('Hypercube configuration in new MIRO app found.');
-              newAppConf.modesAvailable.push('hcube');
+              log.warn('Hypercube configuration found in app bundle. It will be ignored because the Hypercube Mode is no longer supported as of MIRO 2.2.');
             } else {
               if (newAppConf.modesAvailable.includes('base')) {
                 log.warn('Multiple base configurations found in app bundle. Invalid app.');
@@ -265,8 +255,6 @@ function validateMIROApp(filePathArg) {
               log.debug('Base mode configuration in new MIRO app found.');
               newAppConf.modesAvailable.push('base');
               newAppConf.usetmpdir = miroConfMatch[2] === '1';
-            }
-            if (!newAppConf.id) {
               [newAppConf.path] = filePath;
               [, newAppConf.id, , , newAppConf.miroversion] = miroConfMatch;
               newAppConf.apiversion = parseInt(miroConfMatch[3], 10);
@@ -274,7 +262,6 @@ function validateMIROApp(filePathArg) {
   API version: ${newAppConf.apiversion}, \
   MIRO version: ${newAppConf.miroversion}.`);
             }
-            skipCntMiroconf += 1;
           } else {
             log.debug(`Invalid MIROconf file found in new MIRO app: ${fileName}.`);
             invalidMiroApp = true;
@@ -1256,7 +1243,6 @@ ipcMain.on('add-app', async (e, newApp) => {
         appDir,
       },
       appConf.id,
-      appConf.modesAvailable.includes('base') ? 'base' : 'hcube',
       appConf.miroversion,
       appConf.usetmpdir,
       mainWindow,

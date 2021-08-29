@@ -20,12 +20,7 @@
       "outputScreen":"Ergebnisse",
       "gams":"GAMS Interaktion",
       "load": "Szenarien laden",
-      "scen":"Szenarien vergleichen",
-      "hcube":{
-        "configureRun": "Hypercube-Job konfigurieren",
-        "import": "Jobs importieren",
-        "analyze": "Szenarienanalyse"
-      }
+      "scen":"Szenarien vergleichen"
     },
     "sidebarButtons":{
       "importInput":"Daten laden",
@@ -48,7 +43,6 @@
       },
       "scenario":{
         "title":"Szenario",
-        "titleHC": "HC-Job",
         "edit":"Metadaten bearbeiten",
         "save":"Speichern",
         "saveAs":"Speichern unter",
@@ -60,9 +54,6 @@
         "doc": "Dokumentation",
         "forum": "GAMS World Forum",
         "about": "Über"
-      },
-      "tooltips":{
-        "switchToHcube": "Wechsel zum Hypercube Modus"
       }
     },
     "inputScreen":{
@@ -130,9 +121,6 @@
       "title":"Lade Szenarien",
       "noData":"Für die von Ihnen abgesetzte Datenbankabfrage konnten keine Daten gefunden werden.",
       "invalidCsvFilter": "'%s' dürfen kein ',' enthalten.",
-      "showHashButton": "Hash anzeigen",
-      "msgOnlyOneHash": "Bitte wählen Sie nur ein Szenario aus.",
-      "msgNoHashFound": "Für das ausgewählte Szenario wurde kein Hash gefunden. Anscheinend wurde das Szenario nicht im Hypercube-Modus gelöst.",
       "chooseSelectedButton":"Markierte auswählen",
       "chooseCurrentButton":"Aktuelle Seite auswählen",
       "chooseAllButton":"Wähle alle",
@@ -150,10 +138,6 @@
         "between": "zwischen"
       },
       "queryButton": "Ergebnisse abrufen",
-      "showHashDialog":{
-        "title": "Szenario Hash",
-        "desc": "Das ausgewählte Szenario hat den folgenden Hash. Damit können Sie es im Basismodus importieren."
-      },
       "metaColAliases":{
         "uid":"Eigentümer",
         "sname": "Name",
@@ -209,21 +193,6 @@
       "cancelButton":"Abbrechen",
       "okButton":"Ok"
     },
-    "dialogNewHCJob":{
-      "title":"Neue Hypercube-Job-Konfiguration",
-      "desc":"Bitte wählen Sie einen Namen für die Hypercube-Job-Konfiguration:",
-      "discardAttach": "Anhänge verwerfen?",
-      "discardViews": "Views verwerfen?",
-      "discardPerm": "Berechtigungen verwerfen?",
-      "tags":"Füge dem HC-Job Tag(s) hinzu (optional):",
-      "badName":"Bitte wählen Sie eine gültige Bezeichnung für die neue HC-Job-Konfiguration.",
-      "newScenName":"Neue HC-Job-Konfiguration",
-      "scenExists":"Der von Ihnen gewählte HC-Job-Name existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
-      "btNewName":"Anderen Namen wählen",
-      "btOverwrite":"Überschreiben",
-      "cancelButton":"Abbrechen",
-      "okButton":"Ok"
-    },
     "dialogEditMeta":{
       "title":"Metadaten bearbeiten",
       "categoryGeneral": "Allgemeine Optionen",
@@ -257,29 +226,6 @@
       "viewsTableHeaderId": "Name",
       "viewsDownload": "Views downloaden",
       "viewsRemove": "Views entfernen",
-      "errMsg": "Beim aktualisieren der Metadaten ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
-      "cancelButton":"Schließen",
-      "okButton":"Metadaten aktualisieren"
-    },
-    "dialogEditMetaHC":{
-      "title":"Metadaten bearbeiten",
-      "categoryGeneral": "Allgemeine Optionen",
-      "categoryAttachments": "Anhänge",
-      "categoryViews": "Views",
-      "categoryAccessPerm": "Zugriffsberechtigungen",
-      "newName": "New name",
-      "badName": "Der von Ihnen gewählte Name ist ungültig (entweder zu lang oder zu kurz). Bitte wählen Sie einen anderen Namen.",
-      "newTags":"Neue Tags",
-      "emptyPerm": "Job-Zugriffsrechte dürfen nicht leer sein!",
-      "incapOwner": "Du kannst dem Besitzer seine Zugriffsberechtigungen nicht entziehen.",
-      "scenExists":"Es existiert bereits eine Hypercube-Job-Konfiguration mit dem von Ihnen gewählten Namen.",
-      "attachmentsAdd": "Anhänge hinzufügen",
-      "attachmentsExecPerm": "Modell erlauben, diese Datei zu lesen",
-      "attachSuccess": "Anhänge wurden erfolgreich aktualisiert",
-      "attachMaxSizeError": "Die maximale Anhanggröße von %s Byte wurde überschritten.",
-      "attachMaxNoError":"Die maximale Anzahl an Anhängen wurde erreicht. Bevor neue Anhänge hochgeladen werden können, müssen zunächst alte Anhänge gelöscht werden.",
-      "attachDuplicateError": "Ein Anhang mit diesem Namen existiert bereits. Bitte wählen Sie einen anderen Namen und versuchen es anschließend erneut.",
-      "attachForbiddenFnameError": "Ein Anhang, den Sie hochladen möchten, verwendet einen verbotenen Dateinamen. Bitte wählen Sie einen anderen Dateinamen und versuchen Sie es erneut.",
       "errMsg": "Beim aktualisieren der Metadaten ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
       "cancelButton":"Schließen",
       "okButton":"Metadaten aktualisieren"
@@ -327,29 +273,11 @@
         "okButton":"Szenario schließen"
       }
     },
-    "dialogDeleteHCJob":{
-      "title":"Hypercube-Job löschen",
-      "desc":"Sind Sie sicher, dass Sie die ausgewählte Hypercube-Job-Konfiguration löschen möchten?",
-      "cancelButton":"Abbrechen",
-      "okButton":"Ja",
-      "removeFromUI":{
-        "title":"Hypercube-Job aus Sandbox entfernen",
-        "desc":"Möchten Sie die Hypercube-Job-Konfiguration aus der Sandbox entfernen? Ungespeicherte Daten gehen dadurch verloren!",
-        "cancelButton": "Abbrechen",
-        "okButton":"Szenario schließen"
-      }
-    },
     "dialogRemoveScen":{
       "title":"Szenario schließen",
       "desc":"Sind Sie sicher, dass Sie das Szenario schließen möchten? Ungespeicherte Daten gehen dadurch verloren!",
       "cancelButton":"Abbrechen",
       "okButton":"Schließen"
-    },
-    "dialogRemoveHCJob":{
-      "title":"Hypercube-Job schließen",
-      "desc":"Sind Sie sicher, dass Sie die aktive Hypercube-Job-Konfiguration schließen möchten? Ungespeicherte Daten gehen dadurch verloren!",
-      "cancelButton":"No",
-      "okButton":"Yes"
     },
     "dialogCloseScen":{
       "title":"Szenario schließen",
@@ -381,10 +309,6 @@
       "tabLocal":"Lokal",
       "tabExternal": "Extern",
       "tabDatabase":"Datenbank",
-      "tabHcube":"Hypercube",
-      "hcubeHashDesc": "Geben Sie hier den Hash-Wert des Szenarios ein, welches Sie aus dem Hypercube-Modus laden möchten. Klicken Sie dann einfach auf das Szenario, um es zu laden.",
-      "hcubeHashButton": "Suchen",
-      "hcubeHashNoMatch": "Es konnten keine Szenarios gefunden werden.",
       "selInputData":"Wählen Sie die Eingabedaten, die Sie laden möchten",
       "selDecimalSep": "Wählen Sie das Dezimaltrennzeichen",
       "selDelim": "Begrenzungszeichen auswählen",
@@ -399,28 +323,6 @@
       "overwriteWarning":"Bereits importierte Datensätze werden überschrieben!",
       "okButton":"Laden",
       "cancelButton":"Abbrechen"
-    },
-    "dialogImportHC":{
-      "title":"Daten importieren",
-      "tabLocal":"Lokal",
-      "tabDatabase":"Hypercube",
-      "tabBase": "Basismodus",
-      "selInputData":"Wählen Sie die zu importierenden Datensätze",
-      "selDecimalSep": "Wählen Sie das Dezimaltrennzeichen",
-      "selDelim": "Begrenzungszeichen auswählen",
-      "selExcelIndexSheet": "Wählen Sie das Index-Arbeitsblatt aus",
-      "excelIndexSheetRng": "Wählen Sie den Indexbereich",
-      "descLocal":"Wählen Sie eine Datei mit Daten aus",
-      "newScenName": "Wählen Sie einen Namen für die neue Hypercube-Job-Konfiguration.",
-      "badScenName": "Bitte wählen Sie einen gültigen Namen",
-      "scenNameExists":"Der von Ihnen gewählte Name existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
-      "descOverwriteInput":"Sie haben bereits Eingabedaten geladen. Sind Sie sicher, dass Sie diese Daten überschreiben wollen?",
-      "cbSelectManually":"Datensätze manuell auswählen",
-      "overwriteWarning":"Bereits importierte Datensätze werden überschrieben!",
-      "okButton":"Importieren",
-      "cancelButton":"Abbrechen",
-      "overwriteButton": "Existierende Daten überschreiben",
-      "newNameButton": "Neuer Name"
     },
     "dialogLoadScen":{
       "title":"Szenario laden",
@@ -482,19 +384,9 @@
       "okButton": "Speichern als",
       "cancelButton": "Abbrechen"
     },
-    "dialogReadonlyHC":{
-      "title": "Keine Schreibberechtigung",
-      "desc": "Sie habe keine Schreibrechte für diese Hypercube-Job-Konfiguration. Möchten Sie sie stattdessen als neue Konfiguration speichern?",
-      "okButton": "Speichern als",
-      "cancelButton": "Abbrechen"
-    },
     "dialogNoExecPerm":{
       "title": "Keine Ausführungsrechte",
       "desc": "Für dieses Szenario haben Sie keine Ausführungsberechtigungen."
-    },
-    "dialogNoExecPermHC":{
-      "title": "Keine Ausführungsrechte",
-      "desc": "Für diese Hypercube-Job-Konfiguration haben Sie keine Ausführungsrechte."
     },
     "dialogDownloadTmp":{
       "title": "Temporäre Dateien laden",
@@ -656,13 +548,6 @@
         "cancelButton":"Abbrechen",
         "importNewButton": "Nur neue importieren",
         "importAllButton": "Alle importieren"
-      },
-      "manualJobImportDialog":{
-        "title": "Manueller Hypercube-Job-Import",
-        "uploadZip":"Laden Sie hier eine Zip-Datei mit den Ergebnissen hoch.",
-        "hcubeTags":"Job Tags (kommasepariert)",
-        "uploadButton":"Importieren",
-        "cancelButton": "Abbrechen"
       },
       "showLogFileDialog":{
         "title": "Log-Datei",
@@ -1076,10 +961,6 @@
         "desc": "Probleme beim Hochladen der Szenarien in die Datenbank. Bitte versuchen Sie es später noch einmal."
       }
     },
-    "hcubeLaunch":{
-      "hcubeRunning": "Der Hypercube-Modus läuft bereits.",
-      "launchError": "Beim Versuch, den Hypercube-Modus zu starten, ist ein Fehler aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich bitte an den Systemadministrator."
-    },
     "paverFileLoad":{
       "desc":"Daten für diese Kategorie konnten nicht geladen werden."
     },
@@ -1236,7 +1117,7 @@
       },
       "decimal":{
         "label": "Anzahl der Dezimalstellen für das Runden von numerischen Werten (globale Option).",
-        "tooltip": "Wirkt sich auf alle Ausgabetabellen, Eingabetabellen mit großen Datenmengen und die Tabelle für Laden von Szenarien im Hypercube-Modus aus. - Dokumentation öffnen."
+        "tooltip": "Betrifft alle Ausgabetabellen, Big Data-Eingabetabellen und die Tabelle im Batch Load Modul. - Dokumentation öffnen."
       },
       "defaultRenderer":{
         "labelOutput": "Standard-Renderer für Ausgabedaten",
@@ -1488,9 +1369,9 @@
         "depSelector": "Statischer Wert?",
         "step": "Schrittweite (auch Dezimalstellen möglich)",
         "minStep": "Minimale Schrittweite",
-        "minStepTooltip": "Nur relevant im Hypercube-Modus. Wenn leer, wird die Schrittweite genommen. - Dokumentation öffnen",
+        "minStepTooltip": "Nur im Hypercube-Modul relevant. Wenn leer, wird die Schrittweite genommen. - Dokumentation öffnen",
         "ticks": "Markierungen Anzeigen?",
-        "hcube": "Soll das Element für das lösen von Hypercube jobs automatisch erweitert werden?"
+        "hcube": "Soll das Element für das Lösen von Hypercube jobs automatisch erweitert werden?"
       },
       "sliderrange":{
         "label": "Wählen Sie eine Widget-Beschriftung",
@@ -1508,7 +1389,7 @@
         "default2": "Oberer Standardwert",
         "step": "Schrittweite (auch Dezimalstellen möglich)",
         "ticks": "Markierungen Anzeigen?",
-        "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
+        "hcube": "Soll das Element für das Lösen von Hypercube jobs automatisch erweitert werden?"
       },
       "dropdown":{
         "label": "Wählen Sie eine Widget-Beschriftung",
@@ -1524,12 +1405,12 @@
         "multiple": "Sollen mehrere Elemente auswählbar sein?",
         "clearValue": "Als Elementtext mit GAMS kommunizieren",
         "clearValueTooltip": "Bewirkt, dass das Elementlabel ein leerer String ist. - Dokumentation öffnen",
-        "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
+        "hcube": "Soll das Element für das Lösen von Hypercube jobs automatisch erweitert werden?"
       },
       "checkbox":{
         "label": "Wählen Sie eine Widget-Beschriftung",
         "default": "Standardwert",
-        "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
+        "hcube": "Soll das Element für das Lösen von Hypercube jobs automatisch erweitert werden?"
       },
       "date":{
         "label": "Wählen Sie eine Widget-Beschriftung",
@@ -1555,7 +1436,7 @@
         },
         "daysDisabled": "Wählen Sie Wochentage aus, die Sie deaktivieren möchten",
         "autoclose": "Soll der Datepicker automatisch geschlossen werden, wenn ein Datum ausgewählt wurde?",
-        "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
+        "hcube": "Soll das Element für das Lösen von Hypercube jobs automatisch erweitert werden?"
       },
       "daterange":{
         "label": "Wählen Sie eine Widget-Beschriftung",
@@ -1584,7 +1465,7 @@
         },
         "separator": "Wählen Sie das Trennzeichen zwischen Start- und Enddatumswahlschalter",
         "autoclose": "Soll der Datepicker automatisch geschlossen werden, wenn ein Datumsbereich ausgewählt wurde?",
-        "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
+        "hcube": "Soll das Element für das Lösen von Hypercube jobs automatisch erweitert werden?"
       },
       "textinput":{
         "label": "Wählen Sie eine Widget-Beschriftung",

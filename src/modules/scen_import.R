@@ -475,9 +475,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
   errMsg <- NULL
   # save input data
   scenData$loadSandbox(scenInputData, names(scenInputData), activeScen$getMetadata())
-  if (LAUNCHHCUBEMODE) {
-    noOutputData <<- TRUE
-  } else if (!identical(loadMode, "scsv")) {
+  if (!identical(loadMode, "scsv")) {
     prog$set(detail = lang$progressBar$importScen$renderOutput, value = 0.8)
     tryCatch(
       {

@@ -149,7 +149,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       R_LIB_PATHS: libPath,
       MIRO_NO_DEBUG: !this.inDevelopmentMode,
       MIRO_FORCE_SCEN_IMPORT: this.inDevelopmentMode && appData.forceScenImport,
-      MIRO_USE_TMP: !isFalse(appData.usetmpdir) || appData.mode === 'hcube',
+      MIRO_USE_TMP: !isFalse(appData.usetmpdir),
       MIRO_WS_PATH: this.configData.getConfigPath(),
       MIRO_DB_PATH: dbPath,
       MIRO_BUILD: this.isInBuildMode,
@@ -161,7 +161,6 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       MIRO_LANG: await generalConfig.language,
       MIRO_LOG_LEVEL: await generalConfig.logLevel,
       MIRO_VERSION_STRING: appData.miroversion,
-      MIRO_MODE: appData.mode ? appData.mode : 'base',
       MIRO_MODEL_PATH: this.inDevelopmentMode ? appData.modelPath
         : path.join(this.appDataPath, appData.id, `${appData.id}.gms`),
     });

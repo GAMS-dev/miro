@@ -66,9 +66,6 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
         private$updateScalarTableViews(scalarViewName, scalarViews[[scalarViewName]])
       }
     }
-    if (LAUNCHHCUBEMODE && !"_hc__scalars" %in% private$existingTables) {
-      private$createHcScalarsTable()
-    }
     return(invisible(self))
   },
   getDbTableNamesModel = function() {
@@ -582,13 +579,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     dbTableNames <- self$getDbTableNamesModel()
     private$existingTables <- dbTableNames
     orphanedTables <- dbTableNames[!dbTableNames %in% dbSchema$getTableNamesCurrentSchema()]
-    if (LAUNCHHCUBEMODE) {
-      if (!is.null(hcubeScalars)) {
-        orphanedTables <- orphanedTables[!orphanedTables %in% paste0("_hc_", hcubeScalars)]
-      }
-    } else {
-      orphanedTables <- orphanedTables[!startsWith(orphanedTables, "_hc_")]
-    }
+    orphanedTables <- orphanedTables[!startsWith(orphanedTables, "_hc_")]
     return(orphanedTables)
   },
   getTableInfo = function(dbTableName) {
@@ -624,10 +615,6 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
       private$db$runQuery(dbSchema$getCreateScalarViewTriggerFnQuery(tableName, scalars))
     }
     private$db$runQuery(dbSchema$getCreateScalarViewTriggerQuery(tableName, scalars))
-    return(invisible(self))
-  },
-  createHcScalarsTable = function() {
-    private$db$runQuery(dbSchema$getCreateTableQuery("_hc__scalars"))
     return(invisible(self))
   }
 ))

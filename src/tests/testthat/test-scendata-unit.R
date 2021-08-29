@@ -172,7 +172,7 @@ db <- Db$new(
   uid = "te_de\\%d",
   dbConf = dbConfig,
   slocktimeLimit = slocktimeLimit, modelName = "pickstock",
-  hcubeActive = FALSE, ugroups = c("bla_blubb", "test123")
+  ugroups = c("bla_blubb", "test123")
 )
 dbSchema$setConn(db$getConn())
 
@@ -267,7 +267,7 @@ db <- Db$new(
   uid = "te_de\\%d",
   dbConf = dbConfig,
   slocktimeLimit = slocktimeLimit, modelName = "pickstock",
-  hcubeActive = FALSE, ugroups = c("bla_blubb", "test123"),
+  ugroups = c("bla_blubb", "test123"),
   forceNew = TRUE
 )
 populateDb(procEnv, "indus89", modelPath = file.path(getwd(), "..", "model", "indus89"))

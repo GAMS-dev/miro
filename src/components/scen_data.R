@@ -80,8 +80,7 @@ ScenData <- R6Class("ScenData", public = list(
     return(FALSE)
   },
   load = function(scenIds, sheetIds = NULL, symNames = NULL, limit = 1e7,
-                  showProgress = TRUE, refId = NULL, registerRef = TRUE,
-                  isHcJobConfig = FALSE) {
+                  showProgress = TRUE, refId = NULL, registerRef = TRUE) {
     if (identical(refId, "sb") && length(scenIds) > 1L) {
       stop_custom("bad_param", "Cannot load multiple scenarios with refId=sb", call. = FALSE)
     }
@@ -170,13 +169,7 @@ ScenData <- R6Class("ScenData", public = list(
               private$checkDirty(scenId)
             }
             dataTmp <- private$db$importDataset(
-              tableName =
-                if (LAUNCHHCUBEMODE && isHcJobConfig &&
-                  identical(symName, scalarsFileName)) {
-                  "_hc__scalars"
-                } else {
-                  symName
-                },
+              tableName = symName,
               subsetSids = scenIdToFetch,
               limit = limit
             )

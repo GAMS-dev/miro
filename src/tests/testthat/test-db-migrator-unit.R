@@ -107,7 +107,7 @@ for (dbType in c("sqlite", "postgres")) {
   db <- Db$new(
     uid = "user", dbConf = dbConfig,
     slocktimeLimit = 20, modelName = modelName,
-    hcubeActive = FALSE, ugroups = "users", forceNew = TRUE
+    ugroups = "users", forceNew = TRUE
   )
   conn <- db$getConn()
   dbSchema$setConn(conn)
@@ -378,7 +378,7 @@ for (dbType in c("sqlite", "postgres")) {
   db <- Db$new(
     uid = "user", dbConf = dbConfig,
     slocktimeLimit = 20, modelName = modelName,
-    hcubeActive = FALSE, ugroups = "users", forceNew = TRUE
+    ugroups = "users", forceNew = TRUE
   )
   conn <- db$getConn()
   dbSchema$setConn(conn)

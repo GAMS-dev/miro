@@ -1,32 +1,23 @@
 ## UI body
 genSplitCompButtons <- function(id) {
-  if (LAUNCHHCUBEMODE) {
+  tags$div(
+    id = paste0("scenSplit", id, "_open"), class = "split-open",
     tags$div(
-      id = paste0("scenSplit", id, "_open"),
+      title = lang$nav$scen$tooltips$load, class = "split-open-cell",
       actionButton(paste0("btScenSplit", id, "_open"), lang$nav$scen$split$load,
-        class = "scenSplit-button-load", style = "font-size: 20pt;"
+        class = "scenSplit-button-load"
       )
-    )
-  } else {
+    ),
     tags$div(
-      id = paste0("scenSplit", id, "_open"), class = "split-open",
-      tags$div(
-        title = lang$nav$scen$tooltips$load, class = "split-open-cell",
-        actionButton(paste0("btScenSplit", id, "_open"), lang$nav$scen$split$load,
-          class = "scenSplit-button-load"
-        )
-      ),
-      tags$div(
-        title = lang$nav$scen$tooltips$loadActive, class = "split-open-cell",
-        HTML(paste0(
-          '<button class="btn btn-default action-button scenSplit-button-load"
+      title = lang$nav$scen$tooltips$loadActive, class = "split-open-cell",
+      HTML(paste0(
+        '<button class="btn btn-default action-button scenSplit-button-load"
 type="button" onclick="Shiny.setInputValue(\'loadActiveScenSplitComp\', ', id + 1,
-          ', {priority: \'event\'})">',
-          lang$nav$scen$split$loadActive, "</button>"
-        ))
-      )
+        ', {priority: \'event\'})">',
+        lang$nav$scen$split$loadActive, "</button>"
+      ))
     )
-  }
+  )
 }
 getJobsTableSkeleton <- function(id = NULL, content = NULL) {
   tags$div(
@@ -70,8 +61,7 @@ buildUI <- TRUE
 if (!debugMode) {
   miroCacheFile <- paste0(
     modelNameRaw, "_",
-    MIROVersion, "_",
-    if (LAUNCHHCUBEMODE) "1_" else "0_",
+    MIROVersion, "_0_",
     miroLanguage,
     if (config$activateModules$remoteExecution) "_1" else "_0"
   )
@@ -130,67 +120,7 @@ if (buildUI) {
               )
             )
           }
-          if (LAUNCHHCUBEMODE) {
-            if (identical(modelIn[[i]]$slider$double, TRUE)) {
-              tags$div(
-                style = "overflow:auto",
-                column(
-                  width = 8, style = "padding-left:0px;",
-                  slider
-                ),
-                column(
-                  width = 2, style = "min-width: 130px; min-height:100px;",
-                  tagList(
-                    tags$label(
-                      class = "cb-label", "for" = "hcubeMode_" %+% i,
-                      lang$nav$hcubeMode$sliderAllCombinations
-                    ),
-                    tags$div(
-                      tags$label(
-                        class = "checkbox-material", "for" = "hcubeMode_" %+% i,
-                        checkboxInput("hcubeMode_" %+% i,
-                          label = NULL,
-                          value = FALSE
-                        )
-                      )
-                    )
-                  )
-                ),
-                conditionalPanel(
-                  "input.hcubeMode_" %+% i,
-                  column(
-                    width = 1, style = "min-width: 100px; min-height:100px;",
-                    numericInput("hcubeStep_" %+% i, lang$nav$hcubeMode$stepsize,
-                      sliderStepSize,
-                      min = 0
-                    )
-                  )
-                )
-              )
-            } else if (identical(modelIn[[i]]$slider$single, TRUE)) {
-              tags$div(
-                style = "overflow:auto",
-                column(
-                  width = 10, style = "padding-left:0px;",
-                  slider
-                ),
-                column(
-                  width = 1, style = "min-width: 100px; min-height:100px;",
-                  numericInput("hcubeStep_" %+% i, lang$nav$hcubeMode$stepsize,
-                    sliderStepSize,
-                    min = 0
-                  )
-                )
-              )
-            } else {
-              column(
-                width = 10, style = "padding-left:0px;",
-                slider
-              )
-            }
-          } else {
-            slider
-          }
+          slider
         },
         dropdown = {
           if (hasDependency) {
@@ -578,33 +508,24 @@ if (buildUI) {
             tags$div(
               class = "col-sm-6",
               tags$div(
-                actionButton("hcubeLoadSelected", lang$nav$queryBuilder$chooseSelectedButton,
+                actionButton("batchLoadSelected", lang$nav$queryBuilder$chooseSelectedButton,
                   class = "bt-highlight-1"
                 ),
-                actionButton("hcubeLoadCurrent", lang$nav$queryBuilder$chooseCurrentButton,
+                actionButton("batchLoadCurrent", lang$nav$queryBuilder$chooseCurrentButton,
                   class = "bt-highlight-1"
                 ),
-                actionButton("hcubeLoadAll", lang$nav$queryBuilder$chooseAllButton,
+                actionButton("batchLoadAll", lang$nav$queryBuilder$chooseAllButton,
                   class = "bt-highlight-1"
                 )
               )
-            ),
-            if (LAUNCHHCUBEMODE) {
-              tags$div(
-                class = "col-sm-6", style = "text-align:right;",
-                actionButton(
-                  "btShowHash",
-                  lang$nav$queryBuilder$showHashButton
-                )
-              )
-            }
+            )
           )
         )
       )
     ),
     tabItem(
       tabName = "scenarios",
-      generateScenarioTabsetPivot(LAUNCHHCUBEMODE),
+      generateScenarioTabsetPivot(),
       tags$div(
         id = "scen-tab-view", style = if (identical(config$defCompMode, "tab")) "" else "display:none;",
         tags$div(
@@ -677,358 +598,273 @@ if (buildUI) {
       )
     )
   )
-  if (LAUNCHHCUBEMODE) {
-    tabItemList <- c(tabItemList, list(
-      tabItem(
-        tabName = "importData",
-        fluidRow(
-          box(
-            title = tagList(
-              lang$nav$hcubeImport$title,
-              tags$div(
-                title = lang$nav$hcubeImport$refresh, style = "float: right;",
-                actionButton(
-                  inputId = "refreshActiveJobs",
-                  class = "bt-icon",
-                  icon = icon("refresh"), label = NULL
-                )
-              )
-            ),
-            status = "primary", solidHeader = TRUE, width = 12,
-            genSpinner("jImport_load", absolute = FALSE),
-            getJobsTableSkeleton(id = "jImport_output"),
-            tags$div(
-              class = "col-sm-6",
-              actionButton(
-                "btShowHistory",
-                lang$nav$hcubeImport$btShowHistory
-              )
-            ),
-            tags$div(
-              class = "col-sm-6", style = "text-align:right;",
-              actionButton(
-                "btManualImport",
-                lang$nav$hcubeImport$btManualImport
-              )
-            )
-          )
-        )
-      ),
-      tabItem(
-        tabName = "hcubeAnalyze",
-        box(
-          width = NULL, solidHeader = TRUE, status = "primary", title = lang$nav$hcubeAnalyze$title,
-          tabsetPanel(
-            id = "analysisResults",
-            tabPanel("Index",
-              value = "analysisResults_1",
-              tags$div(
-                style = "overflow: auto; height: 75vh;",
-                tags$div(
-                  id = "analysisLoad", class = "centered-div",
-                  style = "display:none;",
-                  lang$nav$hcubeAnalyze$loadMsg,
-                  tags$div(class = "space"),
-                  genSpinner(absolute = FALSE),
-                  actionButton("btAnalysisInterrupt", lang$nav$hcubeAnalyze$btCancel)
-                ),
-                tags$div(
-                  id = "paverFail", class = "gmsalert gmsalert-error",
-                  lang$nav$hcubeAnalyze$failMsg
-                ),
-                tags$div(
-                  id = "newPaverRunButton", class = "centered-div",
-                  actionButton("btNewAnalysisRun", lang$nav$hcubeAnalyze$btNew)
-                ),
-                tags$div(
-                  id = "scriptOutput_hcube", class = "script-wrapper",
-                  tags$div(
-                    class = "out-no-data", lang$nav$outputScreen$boxResults$noData,
-                    style = "display:none"
-                  ),
-                  tags$div(
-                    class = "out-no-data script-error",
-                    style = "display:none"
-                  ),
-                  tags$div(class = "space"),
-                  tags$iframe(class = "script-output", style = "height:70vh;")
-                ),
-                htmlOutput("paverResults")
-              )
-            )
-          )
-        )
+  outputTabset <- tagList(
+    fluidRow(
+      box(
+        title = lang$nav$gams$boxModelStatus$title, status = "primary", solidHeader = TRUE, width = 12,
+        uiOutput("modelStatus")
       )
-    ))
-  } else {
-    outputTabset <- tagList(
-      fluidRow(
-        box(
-          title = lang$nav$gams$boxModelStatus$title, status = "primary", solidHeader = TRUE, width = 12,
-          uiOutput("modelStatus")
+    ),
+    if (any(
+      config$activateModules$logFile, config$activateModules$lstFile,
+      config$activateModules$miroLogFile
+    )) {
+      logTabsetList <- list()
+      if (config$activateModules$logFile) {
+        logTabsetList$log <- tabPanel(
+          title = tags$div(class = "log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile),
+          value = "log",
+          tags$pre(
+            id = "logStatusContainer",
+            class = "shiny-text-output noplaceholder"
+          ),
+          checkboxInput("logUpdate",
+            label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate,
+            value = TRUE
+          )
         )
-      ),
-      if (any(
-        config$activateModules$logFile, config$activateModules$lstFile,
-        config$activateModules$miroLogFile
-      )) {
-        logTabsetList <- list()
-        if (config$activateModules$logFile) {
-          logTabsetList$log <- tabPanel(
-            title = tags$div(class = "log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile),
-            value = "log",
-            tags$pre(
-              id = "logStatusContainer",
-              class = "shiny-text-output noplaceholder"
-            ),
-            checkboxInput("logUpdate",
-              label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate,
-              value = TRUE
-            )
-          )
-          if (config$activateModules$miroLogFile) {
-            logTabsetList$miroLog <- tabPanel(
-              title = tags$div(class = "log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$miroLogFile),
-              value = "mirolog",
-              tagAppendAttributes(
-                class = "shiny-text-output noplaceholder pre-style-div",
-                uiOutput("miroLogContainer")
-              )
-            )
-          }
-        } else if (config$activateModules$miroLogFile) {
-          logTabsetList$log <- tabPanel(
-            title = tags$div(class = "log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile),
+        if (config$activateModules$miroLogFile) {
+          logTabsetList$miroLog <- tabPanel(
+            title = tags$div(class = "log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$miroLogFile),
             value = "mirolog",
-            tags$div(
-              id = "logStatusContainer",
-              class = "shiny-text-output noplaceholder pre-style-div"
-            ),
-            checkboxInput("logUpdate",
-              label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate,
-              value = TRUE
+            tagAppendAttributes(
+              class = "shiny-text-output noplaceholder pre-style-div",
+              uiOutput("miroLogContainer")
             )
           )
         }
-        if (config$activateModules$lstFile) {
-          logTabsetList$lst <- tabPanel(
-            title = tags$div(class = "log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile),
-            value = "listfile",
-            verbatimTextOutput("listFileContainer")
-          )
-        }
-        logTabsetList <- unname(logTabsetList)
-        logTabsetList$id <- "logFileTabsset"
-        fluidRow(
-          box(
-            title = lang$nav$gams$boxGamsOutput$title, status = "primary", solidHeader = TRUE,
-            width = 12, collapsible = TRUE,
-            do.call(tabsetPanel, logTabsetList)
+      } else if (config$activateModules$miroLogFile) {
+        logTabsetList$log <- tabPanel(
+          title = tags$div(class = "log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile),
+          value = "mirolog",
+          tags$div(
+            id = "logStatusContainer",
+            class = "shiny-text-output noplaceholder pre-style-div"
+          ),
+          checkboxInput("logUpdate",
+            label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate,
+            value = TRUE
           )
         )
       }
-    )
-    outputTabContent <- lapply(seq_along(outputTabs), function(tabId) {
-      content <- lapply(outputTabs[[tabId]], function(i) {
-        tabContent <- tagList(
-          tags$div(
-            id = paste0("scenGraph_1_", i), class = "render-output",
-            style = if (!is.null(configGraphsOut[[i]]$height)) {
-              sprintf("min-height: %s;", addCssDim(configGraphsOut[[i]]$height, 5))
-            }
-          ),
-          tags$div(id = paste0("scenTable_1_", i), class = "render-output", style = "display:none;")
+      if (config$activateModules$lstFile) {
+        logTabsetList$lst <- tabPanel(
+          title = tags$div(class = "log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile),
+          value = "listfile",
+          verbatimTextOutput("listFileContainer")
         )
-        if (length(outputTabTitles[[tabId]]) > 1L) {
-          titleId <- match(i, outputTabs[[tabId]]) + 1L
-          return(tabPanel(
-            title = outputTabTitles[[tabId]][titleId],
-            value = paste0("outputTabset_", tabId, "_", titleId - 1L),
-            tags$div(class = "small-space"),
-            tabContent,
-            tags$div(class = "small-space")
-          ))
-        }
-        if (length(outputTabs[[tabId]]) > 1L) {
-          return(column(width = 6, tabContent))
-        }
-        return(tabContent)
-      })
-      return(tabPanel(
-        title = outputTabTitles[[tabId]][1],
-        value = paste0("outputTabset_", tabId),
-        if (length(outputTabTitles[[tabId]]) > 1L) {
-          MIROtabsetPanel(
-            id = paste0("outputTabset_", tabId),
-            btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs,
-            content
-          )
-        } else {
-          tagList(
-            tags$div(class = "small-space"),
-            if (length(outputTabs[[tabId]]) > 1L) {
-              fluidRow(content)
-            } else {
-              content
-            },
-            tags$div(class = "small-space")
-          )
-        }
-      ))
-    })
-    if (length(config$scripts$base)) {
-      outputTabContent <- c(
-        outputTabContent,
-        lapply(seq_along(config$scripts$base), function(scriptId) {
-          tabPanel(
-            title = config$scripts$base[[scriptId]]$tabTitle,
-            value = paste0("outputTabset_", length(outputTabContent) + scriptId),
-            tagList(
-              tags$div(class = "small-space"),
-              tags$button(
-                type = "button", class = "btn btn-default btn-run-script", lang$nav$scriptOutput$runButton,
-                onclick = paste0("Shiny.setInputValue('runScript', ", scriptId, ", {priority: 'event'})")
-              ),
-              tags$div(class = "small-space"),
-              tags$div(
-                id = paste0("scriptOutput_", scriptId), class = "script-wrapper",
-                tags$div(class = "out-no-data", lang$nav$outputScreen$boxResults$noData),
-                tags$div(
-                  class = "script-spinner", style = "display:none;text-align:center;",
-                  genSpinner(absolute = FALSE, externalStyle = "margin-top: 50px")
-                ),
-                tags$iframe(class = "script-output")
-              ),
-              tags$div(class = "small-space")
-            )
-          )
-        })
+      }
+      logTabsetList <- unname(logTabsetList)
+      logTabsetList$id <- "logFileTabsset"
+      fluidRow(
+        box(
+          title = lang$nav$gams$boxGamsOutput$title, status = "primary", solidHeader = TRUE,
+          width = 12, collapsible = TRUE,
+          do.call(tabsetPanel, logTabsetList)
+        )
       )
     }
-    tabItemList <- c(tabItemList, list(
-      tabItem(
-        tabName = "gamsinter",
-        if (config$activateModules$remoteExecution) {
-          fluidRow(
-            tabBox(
-              width = 12, id = "jobListPanel",
-              tabPanel(lang$nav$gams$boxGamsOutput$tabCurrent,
-                value = "current",
-                outputTabset
+  )
+  outputTabContent <- lapply(seq_along(outputTabs), function(tabId) {
+    content <- lapply(outputTabs[[tabId]], function(i) {
+      tabContent <- tagList(
+        tags$div(
+          id = paste0("scenGraph_1_", i), class = "render-output",
+          style = if (!is.null(configGraphsOut[[i]]$height)) {
+            sprintf("min-height: %s;", addCssDim(configGraphsOut[[i]]$height, 5))
+          }
+        ),
+        tags$div(id = paste0("scenTable_1_", i), class = "render-output", style = "display:none;")
+      )
+      if (length(outputTabTitles[[tabId]]) > 1L) {
+        titleId <- match(i, outputTabs[[tabId]]) + 1L
+        return(tabPanel(
+          title = outputTabTitles[[tabId]][titleId],
+          value = paste0("outputTabset_", tabId, "_", titleId - 1L),
+          tags$div(class = "small-space"),
+          tabContent,
+          tags$div(class = "small-space")
+        ))
+      }
+      if (length(outputTabs[[tabId]]) > 1L) {
+        return(column(width = 6, tabContent))
+      }
+      return(tabContent)
+    })
+    return(tabPanel(
+      title = outputTabTitles[[tabId]][1],
+      value = paste0("outputTabset_", tabId),
+      if (length(outputTabTitles[[tabId]]) > 1L) {
+        MIROtabsetPanel(
+          id = paste0("outputTabset_", tabId),
+          btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs,
+          content
+        )
+      } else {
+        tagList(
+          tags$div(class = "small-space"),
+          if (length(outputTabs[[tabId]]) > 1L) {
+            fluidRow(content)
+          } else {
+            content
+          },
+          tags$div(class = "small-space")
+        )
+      }
+    ))
+  })
+  if (length(config$scripts$base)) {
+    outputTabContent <- c(
+      outputTabContent,
+      lapply(seq_along(config$scripts$base), function(scriptId) {
+        tabPanel(
+          title = config$scripts$base[[scriptId]]$tabTitle,
+          value = paste0("outputTabset_", length(outputTabContent) + scriptId),
+          tagList(
+            tags$div(class = "small-space"),
+            tags$button(
+              type = "button", class = "btn btn-default btn-run-script", lang$nav$scriptOutput$runButton,
+              onclick = paste0("Shiny.setInputValue('runScript', ", scriptId, ", {priority: 'event'})")
+            ),
+            tags$div(class = "small-space"),
+            tags$div(
+              id = paste0("scriptOutput_", scriptId), class = "script-wrapper",
+              tags$div(class = "out-no-data", lang$nav$outputScreen$boxResults$noData),
+              tags$div(
+                class = "script-spinner", style = "display:none;text-align:center;",
+                genSpinner(absolute = FALSE, externalStyle = "margin-top: 50px")
               ),
-              tabPanel(lang$nav$gams$boxGamsOutput$tabJobList,
-                value = "joblist",
-                fluidRow(
-                  box(
-                    title = tagList(
-                      lang$nav$hcubeImport$title,
-                      tags$div(
-                        style = "float: right;",
-                        actionButton(
-                          inputId = "refreshActiveJobs",
-                          class = "bt-icon",
-                          icon = icon("refresh"), label = NULL
-                        )
-                      )
-                    ),
-                    status = "primary", solidHeader = TRUE, width = 12,
-                    genSpinner("jImport_load", absolute = FALSE),
-                    getJobsTableSkeleton(id = "jImport_output"),
+              tags$iframe(class = "script-output")
+            ),
+            tags$div(class = "small-space")
+          )
+        )
+      })
+    )
+  }
+  tabItemList <- c(tabItemList, list(
+    tabItem(
+      tabName = "gamsinter",
+      if (config$activateModules$remoteExecution) {
+        fluidRow(
+          tabBox(
+            width = 12, id = "jobListPanel",
+            tabPanel(lang$nav$gams$boxGamsOutput$tabCurrent,
+              value = "current",
+              outputTabset
+            ),
+            tabPanel(lang$nav$gams$boxGamsOutput$tabJobList,
+              value = "joblist",
+              fluidRow(
+                box(
+                  title = tagList(
+                    lang$nav$hcubeImport$title,
                     tags$div(
-                      class = "col-sm-6",
+                      style = "float: right;",
                       actionButton(
-                        "btShowHistory",
-                        lang$nav$hcubeImport$btShowHistory
+                        inputId = "refreshActiveJobs",
+                        class = "bt-icon",
+                        icon = icon("refresh"), label = NULL
                       )
+                    )
+                  ),
+                  status = "primary", solidHeader = TRUE, width = 12,
+                  genSpinner("jImport_load", absolute = FALSE),
+                  getJobsTableSkeleton(id = "jImport_output"),
+                  tags$div(
+                    class = "col-sm-6",
+                    actionButton(
+                      "btShowHistory",
+                      lang$nav$hcubeImport$btShowHistory
                     )
                   )
                 )
               )
             )
           )
-        } else {
-          outputTabset
-        }
-      ),
-      tabItem(
-        tabName = "outputData",
-        fluidRow(
-          box(
-            title = list(
-              tags$div(
-                id = "dirtyFlagIconO", title = lang$nav$inputScreen$dirtyFlag, class = "inline-el",
-                style = "display:none;", icon("exclamation-triangle")
-              ),
-              uiOutput("outputDataTitle", inline = TRUE),
-              tags$div(
-                style = "float: right;",
-                HTML(paste0(
-                  '<button type="button" class="btn btn-default bt-icon btRemove"
-                                   onclick="Miro.confirmModalShow(\'',
-                  lang$nav$dialogRemoveScen$title, "', '",
-                  lang$nav$dialogRemoveScen$desc, "', '",
-                  lang$nav$dialogRemoveScen$cancelButton, "', '",
-                  lang$nav$dialogRemoveScen$okButton,
-                  '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
-                            <i class="fa fa-times" role="presentation" aria-label="', lang$nav$dialogRemoveScen$title, '"></i></button>'
-                ))
-              )
-            ), status = "primary", solidHeader = TRUE, width = 12,
+        )
+      } else {
+        outputTabset
+      }
+    ),
+    tabItem(
+      tabName = "outputData",
+      fluidRow(
+        box(
+          title = list(
             tags$div(
-              class = "scen-header",
-              tags$div(
-                class = "out-buttons-wrapper",
-                if (isTRUE(config$hasSymbolLinks)) {
-                  tags$div(
-                    title = lang$nav$scen$tooltips$btSymbolLink, class = "scen-button-tt",
-                    tags$button(
-                      class = "btn btn-default scen-button", id = "btSymbolLink",
-                      tags$i(
-                        class = "fa fa-share", role = "presentation",
-                        `aria-label` = "Load dataset as input data"
-                      ),
-                      onclick = paste0(
-                        "Miro.confirmModalShow('",
-                        lang$nav$dialogImport$title, "', '",
-                        lang$nav$dialogImport$descOverwriteInput, "', '",
-                        lang$nav$dialogImport$cancelButton, "', '",
-                        lang$nav$dialogImport$okButton,
-                        "', 'Shiny.setInputValue(\\'btSymbolLink\\',1",
-                        ",{priority:\\'event\\'})')"
-                      )
-                    )
-                  )
-                },
-                if (isTRUE(config$activateModules$downloadTempFiles)) {
-                  tags$div(
-                    title = lang$nav$scen$tooltips$btDownloadTmpFiles, class = "scen-button-tt",
-                    actionButton("btDownloadTmpFiles", icon("folder-open"),
-                      class = "scen-button"
-                    )
-                  )
-                },
+              id = "dirtyFlagIconO", title = lang$nav$inputScreen$dirtyFlag, class = "inline-el",
+              style = "display:none;", icon("exclamation-triangle")
+            ),
+            uiOutput("outputDataTitle", inline = TRUE),
+            tags$div(
+              style = "float: right;",
+              HTML(paste0(
+                '<button type="button" class="btn btn-default bt-icon btRemove"
+                                   onclick="Miro.confirmModalShow(\'',
+                lang$nav$dialogRemoveScen$title, "', '",
+                lang$nav$dialogRemoveScen$desc, "', '",
+                lang$nav$dialogRemoveScen$cancelButton, "', '",
+                lang$nav$dialogRemoveScen$okButton,
+                '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
+                            <i class="fa fa-times" role="presentation" aria-label="', lang$nav$dialogRemoveScen$title, '"></i></button>'
+              ))
+            )
+          ), status = "primary", solidHeader = TRUE, width = 12,
+          tags$div(
+            class = "scen-header",
+            tags$div(
+              class = "out-buttons-wrapper",
+              if (isTRUE(config$hasSymbolLinks)) {
                 tags$div(
-                  title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
-                  actionButton("outputTableView", icon("chart-bar"),
+                  title = lang$nav$scen$tooltips$btSymbolLink, class = "scen-button-tt",
+                  tags$button(
+                    class = "btn btn-default scen-button", id = "btSymbolLink",
+                    tags$i(
+                      class = "fa fa-share", role = "presentation",
+                      `aria-label` = "Load dataset as input data"
+                    ),
+                    onclick = paste0(
+                      "Miro.confirmModalShow('",
+                      lang$nav$dialogImport$title, "', '",
+                      lang$nav$dialogImport$descOverwriteInput, "', '",
+                      lang$nav$dialogImport$cancelButton, "', '",
+                      lang$nav$dialogImport$okButton,
+                      "', 'Shiny.setInputValue(\\'btSymbolLink\\',1",
+                      ",{priority:\\'event\\'})')"
+                    )
+                  )
+                )
+              },
+              if (isTRUE(config$activateModules$downloadTempFiles)) {
+                tags$div(
+                  title = lang$nav$scen$tooltips$btDownloadTmpFiles, class = "scen-button-tt",
+                  actionButton("btDownloadTmpFiles", icon("folder-open"),
                     class = "scen-button"
                   )
                 )
+              },
+              tags$div(
+                title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
+                actionButton("outputTableView", icon("chart-bar"),
+                  class = "scen-button"
+                )
               )
-            ),
-            tags$div(class = "small-space"),
-            MIROtabBox(
-              id = "outputTabset", btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs,
-              outputTabContent, hideTabs = identical(length(outputTabContent), 1L)
             )
+          ),
+          tags$div(class = "small-space"),
+          MIROtabBox(
+            id = "outputTabset", btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs,
+            outputTabContent, hideTabs = identical(length(outputTabContent), 1L)
           )
         )
       )
-    ))
-  }
+    )
+  ))
   miroBody <- dashboardBody({
     tagList(
       tags$head(
-        if (LAUNCHHCUBEMODE || isTRUE(config$readme$enableMath)) {
+        if (isTRUE(config$readme$enableMath)) {
           tagList(
             tags$link(type = "text/css", rel = "stylesheet", href = "katex.min.css"),
             tags$script(type = "application/javascript", `defer src` = "katex.min.js"),
@@ -1067,25 +903,6 @@ if (buildUI) {
           )
         ))
       ),
-      if (LAUNCHHCUBEMODE) {
-        HTML('<!-- Creates modal dialog for images generated by paver -->
-<div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content" style="width:685px;">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel"></h4>
-      </div>
-      <div class="modal-body">
-        <img src="" id="imagepreview" >
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-</div>
-</div>')
-      },
       HTML(paste0(
         '<!-- Creates modal dialog for confirm messages -->
 <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -1103,9 +920,7 @@ if (buildUI) {
 </div>
 <div id="loading-screen"><noscript><div class="miro-noscript">Please enable Javascript to use GAMS MIRO</div></noscript>
 <div class="lds-ellipsis" style="position:relative;top:50%;left:50%"><div></div><div></div><div></div><div></div>
-       </div></div><div class="gmsalert gmsalert-error" id="hcubeRunning">',
-        lang$errMsg$hcubeLaunch$hcubeRunning, "</div>", '<div class="gmsalert gmsalert-error" id="hcubeLaunchError">',
-        lang$errMsg$hcubeLaunch$launchError, "</div>"
+       </div></div>'
       )),
       do.call(tabItems, tabItemList)
     )

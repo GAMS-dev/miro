@@ -70,7 +70,6 @@ filesToInclude <- c(
   "./components/js_util.R", "./components/scen_data.R", "./components/batch_loader.R"
 )
 LAUNCHCONFIGMODE <- FALSE
-LAUNCHHCUBEMODE <<- FALSE
 if (is.null(errMsg)) {
   # include custom functions and modules
   lapply(filesToInclude, function(file) {
@@ -220,11 +219,6 @@ if (is.null(errMsg)) {
 if (!miroDeploy &&
   identical(tolower(Sys.getenv("MIRO_MODE")), "config")) {
   LAUNCHCONFIGMODE <- TRUE
-} else if (identical(tolower(Sys.getenv("MIRO_MODE")), "hcube")) {
-  LAUNCHHCUBEMODE <<- TRUE
-  warningMsgTmp <- "The MIRO Hypercube Mode is deprecated as of MIRO 2.1. Please use the Hypercube module instead. Go here to find the latest documentation: https://gams.com/miro/hc-module.html"
-  warning(warningMsgTmp, call. = FALSE)
-  warningMsg <- warningMsgTmp
 }
 if (is.null(errMsg)) {
   rSaveFilePath <- file.path(
@@ -238,7 +232,6 @@ if (is.null(errMsg)) {
       } else {
         Sys.getenv("MIRO_VERSION_STRING")
       },
-      if (identical(Sys.getenv("MIRO_MODE"), "hcube")) "_hcube",
       ".miroconf"
     )
   )
@@ -264,16 +257,6 @@ if (is.null(errMsg)) {
       dbSchemaModel <- lapply(seq_along(dbSchemaModel), function(i) {
         if (dbSchemaModel[i] %in% c(scalarsFileName, scalarsOutName)) {
           return(NA)
-        }
-        if (LAUNCHHCUBEMODE) {
-          if (i <= length(modelOut)) {
-            el <- modelOut[[i]]
-          } else {
-            el <- modelIn[[i - length(modelOut)]]
-          }
-          if (isTRUE(el$dropdown$single) || isTRUE(el$dropdown$checkbox)) {
-            return(NA)
-          }
         }
         list(
           tabName = dbSchemaModel[i],
@@ -387,18 +370,6 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
     paste0('IDCGDXOutput="', MIROGdxOutName, '"')
   )
 
-  if (LAUNCHHCUBEMODE) {
-    # in Hypercube mode we have to run in a temporary directory
-    if (!identical(useTempDir, TRUE)) {
-      errMsg <- paste(errMsg, "In Hypercube mode, MIRO must be executed in a temporary directory! MIRO_USE_TMP=false not allowed!",
-        sep = "\n"
-      )
-    }
-    GAMSClArgs <- c(GAMSClArgs, paste0(
-      'IDCGenerateGDXInput="',
-      MIROGdxInName, '"'
-    ))
-  }
   if (isShinyProxy || identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")) {
     dbConfig <- setDbConfig()
 
@@ -487,11 +458,7 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
           }
         )
       } else if (miroDeploy) {
-        if (LAUNCHHCUBEMODE) {
-          errMsg <- paste(errMsg, "Hypercube mode requires to be executed in temporary directory. Set the environment variable MIRO_BUILD_ARCHIVE to 'true'!",
-            sep = "\n"
-          )
-        } else if (isTRUE(config$activateModules$remoteExecution)) {
+        if (isTRUE(config$activateModules$remoteExecution)) {
           errMsg <- paste(errMsg, "Remote execution mode requires to be executed in temporary directory. Set the environment variable MIRO_BUILD_ARCHIVE to 'true'!",
             sep = "\n"
           )
@@ -556,7 +523,7 @@ if (is.null(errMsg)) {
   if (useTempDir &&
     file.exists(file.path(currentModelDir, paste0(modelName, ".zip")))) {
     modelData <- file.path(currentModelDir, paste0(modelName, ".zip"))
-  } else if (config$activateModules$remoteExecution || LAUNCHHCUBEMODE) {
+  } else if (config$activateModules$remoteExecution) {
     errMsg <- paste(errMsg, sprintf(
       "No model data ('%s.zip') found.\nPlease make sure that you specify the files that belong to your model in a text file named '%s_files.txt' (model assembly file).",
       modelName, modelName
@@ -773,45 +740,6 @@ if (miroBuildOnly) {
     }
     quit("no")
   }
-  if (identical(Sys.getenv("MIRO_MODE"), "full")) {
-    buildArchive <- !identical(Sys.getenv("MIRO_BUILD_ARCHIVE"), "false")
-    Sys.setenv(MIRO_COMPILE_ONLY = "true")
-    Sys.setenv(MIRO_USE_TMP = "true")
-    Sys.setenv(MIRO_BUILD_ARCHIVE = "true")
-    Sys.setenv(MIRO_MODE = "hcube")
-    buildProcHcube <- processx::process$new(file.path(R.home(), "bin", "R"),
-      c("--no-echo", "--no-restore", "--vanilla", "-f", "./app.R"),
-      stderr = "|"
-    )
-    Sys.setenv(MIRO_COMPILE_ONLY = "")
-    Sys.setenv(MIRO_MODE = "full")
-    Sys.setenv(MIRO_BUILD_ARCHIVE = if (buildArchive) "true" else "false")
-    Sys.setenv(MIRO_USE_TMP = if (useTempDir) "true" else "false")
-    buildProcHcube$wait()
-    procHcubeRetC <- buildProcHcube$get_exit_status()
-    if (!identical(procHcubeRetC, 0L)) {
-      warning(buildProcHcube$read_error(), call. = FALSE)
-      if (interactive()) {
-        stop()
-      }
-      quit("no", procHcubeRetC)
-    }
-    rSaveFilePath <- c(
-      rSaveFilePath,
-      file.path(
-        currentModelDir,
-        paste0(
-          modelNameRaw, "_1_",
-          APIVersion, "_",
-          MIROVersion,
-          "_hcube.miroconf"
-        )
-      )
-    )
-    if (!paste0(modelName, ".zip") %in% modelFiles) {
-      modelFiles <- c(modelFiles, paste0(modelName, ".zip"))
-    }
-  }
   tryCatch(
     {
       # create metadata file
@@ -823,7 +751,7 @@ if (miroBuildOnly) {
         main_gms_name = modelGmsName,
         timestamp = as.character(as.POSIXlt(Sys.time(), tz = "UTC"), usetz = TRUE),
         host_os = getOS(),
-        modes_included = Sys.getenv("MIRO_MODE"),
+        modes_included = "base",
         use_temp_dir = useTempDir
       )
       appMetadataFile <- file.path(tmpd, "miroapp.json")
@@ -935,7 +863,7 @@ if (is.null(errMsg)) {
       db <- Db$new(
         uid = uid, dbConf = dbConfig,
         slocktimeLimit = slocktimeLimit, modelName = modelName,
-        hcubeActive = LAUNCHHCUBEMODE, ugroups = ugroups
+        ugroups = ugroups
       )
       conn <- db$getConn()
       dbSchema$setConn(conn)
@@ -962,27 +890,7 @@ if (is.null(errMsg)) {
     }
   )
 
-  if (LAUNCHHCUBEMODE) {
-    hcubeDirName <<- file.path(miroWorkspace, hcubeDirName, modelName)
-    if (!dir.exists(hcubeDirName) &&
-      !dir.create(hcubeDirName, showWarnings = TRUE, recursive = TRUE)) {
-      errMsgTmp <- sprintf(
-        "Problems creating Hypercube jobs directory: '%s'. Do you miss write permissions?",
-        hcubeDirName
-      )
-      flog.error(errMsgTmp)
-      errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
-    }
-    errMsgTmp <- installAndRequirePackages(
-      c("digest"), installedPackages, RLibPath,
-      CRANMirror, miroWorkspace
-    )
-    if (length(errMsgTmp)) {
-      errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
-    }
-    source("./components/hcube_data_instance.R")
-    source("./components/db_hcubeimport.R")
-  } else if (identical(config$activateModules$hcube, TRUE)) {
+  if (identical(config$activateModules$hcube, TRUE)) {
     source("./components/hcube_builder.R")
     source("./components/hcube_results.R")
   }
@@ -1809,7 +1717,7 @@ if (!is.null(errMsg)) {
             } else {
               paste0(c(names(modelOut), inputDsNames), ".csv")
             },
-            if (!LAUNCHHCUBEMODE) vapply(config$outputAttachments, "[[", character(1L), "filename", USE.NAMES = FALSE)
+            vapply(config$outputAttachments, "[[", character(1L), "filename", USE.NAMES = FALSE)
           ),
           MIROGdxInName = MIROGdxInName,
           clArgs = GAMSClArgs,
@@ -1827,7 +1735,6 @@ if (!is.null(errMsg)) {
           hiddenLogFile = !config$activateModules$logFile
         ),
         remote = config$activateModules$remoteExecution,
-        hcube = LAUNCHHCUBEMODE,
         db = db
       )
       if (length(credConfig)) {
@@ -2040,14 +1947,7 @@ if (!is.null(errMsg)) {
       worker$setWorkDir(workDir)
       scriptOutput <- NULL
 
-      if (LAUNCHHCUBEMODE) {
-        if (length(config$scripts$hcube)) {
-          scriptOutput <- ScriptOutput$new(session, file.path(workDir, paste0("scripts_", modelName)),
-            config$scripts, lang$nav$scriptOutput$errMsg,
-            gamsSysDir = gamsSysDir
-          )
-        }
-      } else if (length(config$scripts$base) || length(config$scripts$hcube)) {
+      if (length(config$scripts$base) || length(config$scripts$hcube)) {
         source("./modules/analysis_scripts.R", local = TRUE)
       }
 
@@ -2284,13 +2184,7 @@ if (!is.null(errMsg)) {
       ####### Batch load module
       source("./modules/batch_load.R", local = TRUE)
 
-      if (LAUNCHHCUBEMODE) {
-        source("./modules/gams_job_list.R", local = TRUE)
-        ####### Hcube import module
-        source("./modules/hcube_import.R", local = TRUE)
-        ####### Hcube analysis module
-        source("./modules/analysis_run.R", local = TRUE)
-      } else if (config$activateModules$remoteExecution) {
+      if (config$activateModules$remoteExecution) {
         source("./modules/gams_job_list.R", local = TRUE)
         # remote job import
         source("./modules/job_import.R", local = TRUE)
@@ -2443,7 +2337,7 @@ if (!is.null(errMsg)) {
 
       observeEvent(input$btExportScen, {
         stopifnot(is.integer(input$btExportScen), length(input$btExportScen) == 1L)
-        if (useGdx && !LAUNCHHCUBEMODE) {
+        if (useGdx) {
           exportTypes <- setNames(c("miroscen", "gdx", "csv", "xls"), lang$nav$fileExport$fileTypes)
         } else {
           exportTypes <- setNames(c("csv", "xls"), lang$nav$fileExport$fileTypes[-c(1, 2)])

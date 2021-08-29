@@ -20,7 +20,6 @@ FakeSession <- R6Class("FakeSession", public = list(
 ), private = list(
   id = NULL
 ))
-LAUNCHHCUBEMODE <<- FALSE
 createTestDb()
 
 ioConfig <<- list()
@@ -49,7 +48,7 @@ db <- Db$new(
   uid = "te_de\\%d",
   dbConf = dbConfig,
   slocktimeLimit = slocktimeLimit, modelName = modelName,
-  hcubeActive = FALSE, ugroups = c("bla_blubb", "test123")
+  ugroups = c("bla_blubb", "test123")
 )
 dbSchema$setConn(db$getConn())
 

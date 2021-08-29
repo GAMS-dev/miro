@@ -128,10 +128,6 @@ if (is.null(errMsg)) {
   config[["inputSymbols"]] <- NULL
   config[["outputSymbols"]] <- NULL
 
-  if (LAUNCHHCUBEMODE && !length(modelIn)) {
-    errMsg <- "Can not launch Hypercube Mode without having input data defined! Please define input data and try again."
-  }
-
   if (!length(config$pageTitle) || nchar(config$pageTitle) == 0L) {
     config$pageTitle <- config$modelTitle
   }
@@ -879,80 +875,8 @@ if (is.null(errMsg)) {
       warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
       config$activateModules$hcube <- FALSE
     }
-    scalarSymbolsBase <- character(0L)
-  } else if (LAUNCHHCUBEMODE) {
-    hasExpandedWidgets <- FALSE
-    scalarSymbolsBase <- lapply(seq_along(modelIn), function(i) {
-      if (!isTRUE(modelIn[[i]]$noHcube)) {
-        switch(modelIn[[i]]$type,
-          checkbox = {
-            modelIn[[i]]$type <<- "dropdown"
-            modelIn[[i]]$dropdown$label <<- modelIn[[i]]$checkbox$label
-            value <- modelIn[[i]]$checkbox$value
-            if (is.null(modelIn[[i]]$checkbox$max) || !is.na(suppressWarnings(as.integer(modelIn[[i]]$checkbox$max)))) {
-              modelIn[[i]]$dropdown$aliases <<- lang$nav$hcubeMode$checkboxAliases
-              modelIn[[i]]$dropdown$choices <<- c(0L, 1L)
-            } else {
-              modelIn[[i]]$checkbox$max <<- paste0("$", modelIn[[i]]$checkbox$max)
-              modelIn[[i]]$dropdown$operator <<- modelIn[[i]]$checkbox$operator
-              modelIn[[i]]$dropdown$choices <<- modelIn[[i]]$checkbox$max
-            }
-            modelIn[[i]]$dropdown$selected <<- modelIn[[i]]$checkbox$value
-            modelIn[[i]]$dropdown$width <<- modelIn[[i]]$checkbox$width
-            modelIn[[i]]$dropdown$multiple <<- TRUE
-            modelIn[[i]]$dropdown$checkbox <<- TRUE
-            modelIn[[i]]$checkbox <<- NULL
-            hasExpandedWidgets <<- TRUE
-            return(names(modelIn)[i])
-          },
-          dropdown = {
-            if (!isTRUE(modelIn[[i]]$dropdown$multiple)) {
-              if (identical(modelIn[[i]]$symtype, "set")) {
-                warningMsgTmp <- sprintf(
-                  "The dataset: '%s' is a set configured as a single dropdown menu. Single dropdown menus for sets are not expanded in Hypercube Mode! Use singleton set instead.",
-                  names(modelIn)[i]
-                )
-                warning(warningMsgTmp, call. = FALSE)
-                warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
-              } else {
-                # specify that dropdown menu is originally a single select menu
-                modelIn[[i]]$dropdown$single <<- TRUE
-                modelIn[[i]]$dropdown$multiple <<- TRUE
-              }
-              hasExpandedWidgets <<- TRUE
-              return(names(modelIn)[i])
-            }
-          },
-          slider = {
-            if (length(modelIn[[i]]$slider$default) == 1) {
-              modelIn[[i]]$slider$single <<- TRUE
-              modelIn[[i]]$slider$default <<- rep(modelIn[[i]]$slider$default, 2L)
-            } else {
-              modelIn[[i]]$slider$double <<- TRUE
-            }
-            hasExpandedWidgets <<- TRUE
-          },
-          date = ,
-          daterange = ,
-          textinput = ,
-          numericinput = {
-            warningMsgTmp <- sprintf(
-              "The dataset: '%s' uses a widget that is not supported in Hypercube Mode.
-                                   Thus, it will not be transformed and stays static.",
-              names(modelIn)[i]
-            )
-            warning(warningMsgTmp, call. = FALSE)
-            warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
-          }
-        )
-      }
-    })
-    if (!hasExpandedWidgets) {
-      errMsg <- "Can not launch Hypercube Mode without having scalar input widgets configured! Please configure widgets via the Configuration Mode and try again."
-    }
-  } else {
-    scalarSymbolsBase <- character(0L)
   }
+  scalarSymbolsBase <- character(0L)
 
   widgetIds <- unlist(widgetIds[!vapply(widgetIds, is.null,
     numeric(1L),
@@ -1376,21 +1300,7 @@ if (is.null(errMsg)) {
 }
 
 if (is.null(errMsg)) {
-  if (LAUNCHHCUBEMODE && scalarsFileName %in% names(modelIn)) {
-    scalarInputSymToVerify <- unlist(lapply(scalarInputSym, function(el) {
-      if (identical(modelIn[[el]]$type, "slider") && length(modelIn[[el]]$slider$default) > 1) {
-        if (isTRUE(modelIn[[el]]$slider$double)) {
-          return(paste0(el, c("", "_lo", "_up", "$step", "$mode")))
-        }
-        return(paste0(el, c("", "$lo", "$up", "$step")))
-      } else if (identical(modelIn[[el]]$type, "daterange")) {
-        return(paste0(el, c("", "_lo", "_up")))
-      }
-      return(NULL)
-    }), use.names = FALSE)
-  } else {
-    scalarInputSymToVerify <- NULL
-  }
+  scalarInputSymToVerify <- NULL
   # determine the filenames for the model input datasets
   if (scalarsFileName %in% modelInTabularData) {
     scalarInputSym <- c(scalarInputSym, modelIn[[scalarsFileName]]$symnames)
@@ -1705,7 +1615,7 @@ if (is.null(errMsg)) {
     }, character(1L), USE.NAMES = FALSE), collapse = "")
   }
   # validate symbol links
-  if (!LAUNCHHCUBEMODE && !LAUNCHCONFIGMODE && length(config[["symbolLinks"]])) {
+  if (!LAUNCHCONFIGMODE && length(config[["symbolLinks"]])) {
     for (symbolLink in config[["symbolLinks"]]) {
       source <- tolower(symbolLink[["source"]])
       target <- tolower(symbolLink[["target"]])
@@ -2101,11 +2011,6 @@ if (is.null(errMsg)) {
     el$filename <- sanitizeFn(el$filename)
     return(el)
   })
-  if (LAUNCHHCUBEMODE && length(config$outputAttachments)) {
-    warningMsgTmp <- "Output attachments are not supported and will be ignored in Hypercube Mode."
-    warning(warningMsgTmp, call. = FALSE)
-    warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
-  }
 
   installPackage <- list()
   installPackage$plotly <- LAUNCHCONFIGMODE || any(vapply(c(configGraphsIn, configGraphsOut),

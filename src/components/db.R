@@ -2,7 +2,6 @@
 Db <- R6Class("Db",
   public = list(
     initialize = function(uid, dbConf, slocktimeLimit, modelName,
-                          hcubeActive = FALSE,
                           ugroups = character(0L), forceNew = FALSE) {
       # Initialize database class
       #
@@ -12,7 +11,6 @@ Db <- R6Class("Db",
       #                        password and name elements
       #   modelName:           name of the current model
       #   slocktimeLimit:      maximum duration a lock is allowed to persist
-      #   hcubeActive:         boolean that specifies whether Hypercube mode is currently active
       #   ugroups:             user group(s) (optional)
       #   forceNew:            force creating new db object even if one already exists
 
@@ -43,8 +41,7 @@ Db <- R6Class("Db",
       }
       stopifnot(
         is.character(dbConf$type), length(dbConf$type) == 1L,
-        is.character(modelName), length(modelName) == 1L,
-        is.logical(hcubeActive), length(hcubeActive) == 1L
+        is.character(modelName), length(modelName) == 1L
       )
       # END error checks
 
@@ -56,7 +53,6 @@ Db <- R6Class("Db",
       }
       private$modelName <- modelName
       private$slocktimeLimit <- slocktimeLimit
-      private$hcubeActive <- hcubeActive
 
       if (identical(dbConf$type, "postgres")) {
         tryCatch(
@@ -140,7 +136,6 @@ Db <- R6Class("Db",
       return(invisible(self))
     },
     getSlocktimeLimit = function() private$slocktimeLimit,
-    getHcubeActive = function() private$hcubeActive,
     getInfo = function() {
       # Returns some connection info
       #
@@ -290,15 +285,13 @@ Db <- R6Class("Db",
       )
       return(as_tibble(DBI::dbGetQuery(private$conn, query)))
     },
-    checkSnameExists = function(sname, uid = NULL, checkNormalScen = FALSE) {
+    checkSnameExists = function(sname, uid = NULL) {
       # test whether scenario with the given name already exists
       # for the user specified
       #
       # Args:
       #   sname:                scenario name
       #   uid:                  user ID (optional)
-      #   checkNormalScen:      relevant in HC mode: whether to check HC job config (FALSE)
-      #                         or all normal scenarios (TRUE)
       #
       # Returns:
       #   boolean:              TRUE if id exists, FALSE otherwise,
@@ -322,12 +315,10 @@ Db <- R6Class("Db",
             "_scode"
           ),
           c(
-            uid, sname,
-            if (private$hcubeActive && !checkNormalScen) -1L else 0L
+            uid, sname, 0L
           ),
           c(
-            "=", "=",
-            if (private$hcubeActive && !checkNormalScen) "=" else ">="
+            "=", "=", ">="
           )
         ),
         count = TRUE, limit = 1L
@@ -370,12 +361,7 @@ Db <- R6Class("Db",
             "_scode"
           ),
           c(
-            uid, sname,
-            if (private$hcubeActive) {
-              SCODEMAP[["hcube_jobconfig"]]
-            } else {
-              SCODEMAP[["scen"]]
-            }
+            uid, sname, SCODEMAP[["scen"]]
           )
         ),
         limit = 1L
@@ -880,13 +866,7 @@ Db <- R6Class("Db",
 
       tableNameDb <- dbSchema$getDbTableName(tableName)
       if (tableName %in% c(scalarsFileName, scalarsOutName)) {
-        if (private$hcubeActive && isHcJobConfig &&
-          identical(tableName, scalarsFileName)) {
-          tableName <- "_hc__scalars"
-          tableNameDb <- tableName
-        } else {
-          dataset <- private$convertScalarTableToDb(dataset, tableName)
-        }
+        dataset <- private$convertScalarTableToDb(dataset, tableName)
       } else {
         dataset <- dateColToChar(private$conn, dataset)
       }
@@ -1146,7 +1126,6 @@ Db <- R6Class("Db",
     userAccessGroups = character(1L),
     remoteUsers = character(),
     slocktimeLimit = character(1L),
-    hcubeActive = logical(1L),
     info = new.env(),
     isValidSubsetGroup = function(dataFrame) {
       if (inherits(dataFrame, "data.frame") &&

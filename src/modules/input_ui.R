@@ -11,11 +11,7 @@ observeEvent(input$btImport, {
   errMsg <- NULL
   tryCatch(
     {
-      scenMetaDb <<- db$fetchScenList(scode = if (LAUNCHHCUBEMODE) {
-        SCODEMAP[["hcube_jobconfig"]]
-      } else {
-        SCODEMAP[["scen"]]
-      })
+      scenMetaDb <<- db$fetchScenList(scode = SCODEMAP[["scen"]])
       dbTagList <- csv2Vector(scenMetaDb[["_stag"]])
     },
     error = function(e) {
@@ -49,9 +45,6 @@ observeEvent(input$btImport, {
       "_stime",
       desc = TRUE
     )
-  }
-  if (!LAUNCHHCUBEMODE) {
-    output$hcHashLookupResults <- renderUI(tags$div())
   }
   showLoadDataDialog(
     scenListDb = scenListDb, dbTagList = dbTagList,

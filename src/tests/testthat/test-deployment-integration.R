@@ -65,11 +65,7 @@ expect_deploy_works <- function(useTemp = TRUE, buildArchive = TRUE, miroMode = 
   )
   print(deployProc$read_all_error())
   deployProc$wait()
-  if (identical(miroMode, "hcube") && (isFALSE(useTemp) || isFALSE(buildArchive))) {
-    expect_identical(deployProc$get_exit_status(), 1L)
-    unlink(testModelPath, recursive = TRUE, force = TRUE)
-    return()
-  } else if (identical(manipulate, "noAssembly") || identical(manipulate, "emptyAssembly") ||
+  if (identical(manipulate, "noAssembly") || identical(manipulate, "emptyAssembly") ||
     identical(manipulate, "wrongAssembly")) {
     expect_true(!identical(deployProc$get_exit_status(), 0L))
     unlink(testModelPath, recursive = TRUE, force = TRUE)
@@ -108,32 +104,18 @@ expect_deploy_works <- function(useTemp = TRUE, buildArchive = TRUE, miroMode = 
   if (useTemp) tempIdent <- 1L else tempIdent <- 0L
   miroconfFile <- paste0(modelToTest, "_", tempIdent, "_", APIVersion, "_", MIROVersion, ".miroconf")
   miroconfFileHcube <- paste0(modelToTest, "_1_", APIVersion, "_", MIROVersion, "_hcube.miroconf")
-  if (identical(miroMode, "base")) {
-    expect_true(file.exists(file.path(unzipDir, miroconfFile)))
-    expect_false(file.exists(file.path(unzipDir, miroconfFileHcube)))
-  } else if (identical(miroMode, "hcube")) {
-    expect_false(file.exists(file.path(unzipDir, miroconfFile)))
-    expect_true(file.exists(file.path(unzipDir, miroconfFileHcube)))
-  } else {
-    expect_true(file.exists(file.path(unzipDir, miroconfFile)))
-    expect_true(file.exists(file.path(unzipDir, miroconfFileHcube)))
-  }
+  expect_true(file.exists(file.path(unzipDir, miroconfFile)))
+  expect_false(file.exists(file.path(unzipDir, miroconfFileHcube)))
   unlink(testModelPath, recursive = TRUE, force = TRUE)
 }
 
 test_that(sprintf("Example app: '%s' can be deployed: ", modelToTest), {
   # multi-user
-  expect_deploy_works(useTemp = TRUE, buildArchive = TRUE, miroMode = "base")
-  expect_deploy_works(useTemp = TRUE, buildArchive = TRUE, miroMode = "hcube")
-  expect_deploy_works(useTemp = TRUE, buildArchive = TRUE, miroMode = "full")
+  expect_deploy_works(useTemp = TRUE, buildArchive = TRUE)
   # single-user
-  expect_deploy_works(useTemp = FALSE, buildArchive = FALSE, miroMode = "base")
-  expect_deploy_works(useTemp = FALSE, buildArchive = FALSE, miroMode = "hcube")
-  expect_deploy_works(useTemp = FALSE, buildArchive = FALSE, miroMode = "full")
+  expect_deploy_works(useTemp = FALSE, buildArchive = FALSE)
   # local multi-user
-  expect_deploy_works(useTemp = TRUE, buildArchive = FALSE, miroMode = "base")
-  expect_deploy_works(useTemp = TRUE, buildArchive = FALSE, miroMode = "hcube")
-  expect_deploy_works(useTemp = TRUE, buildArchive = FALSE, miroMode = "full")
+  expect_deploy_works(useTemp = TRUE, buildArchive = FALSE)
 })
 
 test_that(sprintf("Example app: '%s' can not be deployed with faulty model assembly file : ", modelToTest), {

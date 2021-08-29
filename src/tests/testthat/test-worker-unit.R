@@ -22,8 +22,7 @@ worker <- Worker$new(
     rememberMeFileName = "",
     hiddenLogFile = FALSE
   ),
-  remote = TRUE,
-  hcube = FALSE
+  remote = TRUE
 )
 privateWorkerEnv <- environment(worker$getCredentials)$private
 

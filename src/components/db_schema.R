@@ -122,14 +122,6 @@ DbSchema <- R6Class("DbSchema", public = list(
     if (tableName %in% c(scalarsFileName, scalarsOutName)) {
       return(tableName)
     }
-    if (LAUNCHHCUBEMODE) {
-      if (tableName %in% ioConfig$hcubeScalars) {
-        return(paste0("_hc_", tableName))
-      }
-      if (identical(tableName, "_hc__scalars")) {
-        return("_hc__scalars")
-      }
-    }
     return(private$schema[[tableName]]$tabName)
   },
   getDbIndexName = function(tableName) {

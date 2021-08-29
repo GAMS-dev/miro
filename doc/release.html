@@ -96,6 +96,29 @@
           <div class="doc-body row">
             <div class="doc-content col-md-9 col-12 order-1">
               <div class="content-inner">
+                <section id="v22" class="doc-section">
+                  <h2 class="section-title" style="display: inline-block">
+                    GAMS MIRO 2.2
+                  </h2>
+                  <div style="display: inline-block; padding-left: 15px">
+                    (xxxx-xx-xx)
+                  </div>
+                  <div class="section-block">
+                    <h3>Breaking changes</h3>
+                    <ul>
+                      <li>
+                        The Hypercube Mode was removed. You can now
+                        <a href="./hc-module.html">submit Hypercube jobs</a>
+                        from the Base Mode if you are using GAMS MIRO with a
+                        <a href="https://gams.com/engine" target="_blank"
+                          >GAMS Engine</a
+                        >
+                        backend (<i>GAMS MIRO Server</i> or
+                        <i>GAMS MIRO Desktop - boosted by GAMS Engine</i>).
+                      </li>
+                    </ul>
+                  </div>
+                </section>
                 <section id="v21" class="doc-section">
                   <h2 class="section-title" style="display: inline-block">
                     GAMS MIRO 2.1
@@ -107,9 +130,8 @@
                     <h3>Deprecated features</h3>
                     <ul>
                       <li>
-                        The <a href="./hypercube.html">Hypercube Mode</a> is
-                        deprecated and will be removed in a future version of
-                        GAMS MIRO. You can now
+                        The Hypercube Mode is deprecated and will be removed in
+                        a future version of GAMS MIRO. You can now
                         <a href="./hc-module.html">submit Hypercube jobs</a>
                         from the Base Mode if you are using GAMS MIRO with a
                         <a href="https://gams.com/engine" target="_blank"
@@ -122,9 +144,8 @@
                     <h3>New features</h3>
                     <ul>
                       <li>
-                        <a href="./hypercube.html">Hypercube</a> jobs can now be
-                        submitted and imported from the Base Mode if MIRO is
-                        connected to
+                        Hypercube jobs can now be submitted and imported from
+                        the Base Mode if MIRO is connected to
                         <a href="https://gams.com/engine" target="_blank"
                           >GAMS Engine</a
                         >.
@@ -1779,10 +1800,7 @@
                         Completely restructured Hypercube Mode. This includes
                         the change from CSV to GDX file format for scenario
                         input and output data. This is especially relevant for
-                        the
-                        <a href="./hypercube.html#manual-jobsubmit"
-                          >manual job submission</a
-                        >.
+                        the manual job submission.
                       </li>
                       <li>
                         Changed directory name for custom renderers from
