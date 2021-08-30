@@ -29,7 +29,13 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       if(scalarsFileName %in% symNamesTmp){
         symNamesTmp <- c(symNamesTmp, private$scalars)
       }
-      symNamesTmp <- symNamesTmp[symNamesTmp %in% names(ioConfig$modelIn)]
+      symNamesValid <- symNamesTmp %in% names(ioConfig$modelIn)
+      if (any(!symNamesValid) && !scalarsFileName %in% symNamesTmp &&
+          any(symNamesTmp[!symNamesValid] %in% private$scalars)) {
+        symNamesTmp <- c(symNamesTmp[symNamesValid], scalarsFileName)
+      } else {
+        symNamesTmp <- symNamesTmp[symNamesValid]
+      }
       return(symNamesTmp)
     }
     return(names(ioConfig$modelIn))

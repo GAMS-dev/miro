@@ -467,6 +467,10 @@ test_that("Example from documentation works", {
                           value = c("153.675")))
 })
 
+test_that("Getting symbol names woks", {
+  expect_identical(xlsio$getSymbolNames(), c("j", "d", "_scalars"))
+})
+
 # test xlsio in for special/Hypercube scalar
 ioConfig <<- list(modelIn = list(mins = list(slider = list(default = c(1L, 2L), single = TRUE),
                                              type = "slider"),
