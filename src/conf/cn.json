@@ -318,9 +318,12 @@
       "descLocal":"选择要加载数据的文件",
       "newScenName":"为新场景选择一个名称",
       "scenNameExistsErr":"该场景名称已存在。",
-      "descOverwriteInput":"已加载过该输入数据，要覆盖这些数据吗？",
+      "descClearSandbox": "沙箱中已经装入数据。 您想删除此数据吗？",
+      "descOverwriteInput":"您选择的符号的数据已经加载。你想将新数据与现有数据合并，还是替换现有数据？",
       "cbSelectManually":"手动选择数据集",
       "overwriteWarning":"已导入的数据集,可能会丢失！",
+      "mergeButton": "合并",
+      "replaceButton": "代替",
       "cancelButton": "取消",
       "okButton": "加载"
     },

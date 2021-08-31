@@ -245,7 +245,7 @@ observeEvent(virtualActionButton(
   }
   newInputCount <- 0L
   errMsg <- NULL
-  overwriteInput <- TRUE
+  overwriteInput <- 1L
   scalarDataset <- NULL
   loadMode <- config$fileExchange
   datasetsToFetch <- names(modelIn)

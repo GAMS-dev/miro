@@ -1895,3 +1895,38 @@ getCombinationsSlider <- function(lowerVal, upperVal, stepSize = 1) {
   }
   return(ret)
 }
+mergeDf <- function(a, b, isScalarsTable = FALSE) {
+  stopifnot(identical(names(a), names(b)))
+  if (isScalarsTable) {
+    scalarIds <- match(b[[1]], a[[1]])
+    scalarIds <- scalarIds[!is.na(scalarIds)]
+    scalarIds <- scalarIds[!is.na(b[[length(b)]][scalarIds])]
+    a[[length(a)]][scalarIds] <- b[[length(b)]][scalarIds]
+    return(bind_rows(a, anti_join(b, a, by = names(a)[1])))
+  }
+  numericCols <- vapply(a, class, character(1L), USE.NAMES = FALSE) %in% c("numeric", "integer")
+  if (sum(numericCols) > 1L) {
+    # data is already pivoted
+    return(pivot_wider(mergeDf(
+      pivot_longer(a, names(a)[numericCols],
+        names_to = "Hdr",
+        values_to = "value", names_repair = "unique"
+      ),
+      pivot_longer(b, names(b)[numericCols],
+        names_to = "Hdr",
+        values_to = "value", names_repair = "unique"
+      )
+    ),
+    names_from = Hdr, values_from = value, names_repair = "unique"
+    ))
+  }
+  if (sum(numericCols) == 0L) {
+    indexCols <- names(a)[-length(a)]
+  } else {
+    indexCols <- names(a)[!numericCols]
+  }
+  valueColName <- names(a)[length(a)]
+  return(full_join(a, b, by = indexCols) %>%
+    mutate(!!valueColName := coalesce(!!!syms(paste0(valueColName, c(".y", ".x"))))) %>%
+    select(-c(paste0(valueColName, c(".x", ".y")))))
+}

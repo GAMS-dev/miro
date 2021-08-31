@@ -50,4 +50,15 @@ expect_files_in_zip(app, "scenExportHandler", c(
   "attachments/", "attachments/scalars.csv",
   "attachments/bad1.miroscen"
 ))
+app$setInputs(btImport = "click")
+Sys.sleep(0.5)
+app$setInputs(tb_importData = "tb_importData_local")
+app$uploadFile(localInput = paste0("../data/transport.miroscen"))
+app$setInputs(btImportLocal = "click")
+expect_true(app$waitFor("$('#importDataClearSandbox').is(':visible');", 50))
+expect_true(app$waitFor("$('#importDataOverwrite').is(':hidden');", 50))
+expect_true(app$waitFor("$('#importDataOverwrite').is(':hidden');", 50))
+expect_true(app$waitFor("$('#btReplaceInputData').is(':hidden');", 50))
+expect_true(app$waitFor("$('#btMergeInputData').is(':hidden');", 50))
+expect_true(app$waitFor("$('#btOverwriteScenLocal').is(':visible');", 50))
 app$stop()

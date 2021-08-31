@@ -1523,7 +1523,7 @@ if (!is.null(errMsg)) {
       # count number of open scenario tabs
       numberScenTabs <- 0L
       # boolean that specifies whether input data shall be overridden
-      overwriteInput <- FALSE
+      overwriteInput <- 0L
       # boolean that specifies whether data shall be saved under a new name
       # or existing scenario shall be overridden
       saveAsFlag <- TRUE

@@ -1247,7 +1247,19 @@
               "type": "string",
               "minLength": 1
             },
+            "descClearSandbox": {
+              "type": "string",
+              "minLength": 1
+            },
             "descOverwriteInput": {
+              "type": "string",
+              "minLength": 1
+            },
+            "mergeButton": {
+              "type": "string",
+              "minLength": 1
+            },
+            "replaceButton": {
               "type": "string",
               "minLength": 1
             },
@@ -1260,7 +1272,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 18
+          "minProperties": 21
         },
         "dialogLoadScen": {
           "type": "object",

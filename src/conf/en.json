@@ -318,10 +318,13 @@
       "descLocal":"Choose file with data to load",
       "newScenName": "Choose a name for the new scenario",
       "scenNameExistsErr": "The scenario name you chose does already exist.",
-      "descOverwriteInput":"You already have input data loaded. Are you sure you want to overwrite this data?",
+      "descClearSandbox": "There is already data loaded in the sandbox. Do you want to clear this data?",
+      "descOverwriteInput":"Data is already loaded for the symbol(s) you selected. Do you want to merge the new data with the existing data or replace the existing data?",
       "cbSelectManually":"Manually choose datasets",
       "overwriteWarning":"Already imported datasets might be lost if you did not save them!",
       "cancelButton":"Cancel",
+      "mergeButton": "Merge",
+      "replaceButton": "Replace",
       "okButton":"Load"
     },
     "dialogLoadScen":{

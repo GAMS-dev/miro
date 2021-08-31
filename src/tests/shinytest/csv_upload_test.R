@@ -88,7 +88,7 @@ if (identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
   app$setInputs(csvInputHdr_1 = "symbol", csvInputHdr_2 = "date", csvInputHdr_3 = "value")
   app$setInputs(btImportLocal = "click")
   Sys.sleep(0.5)
-  app$setInputs(btOverwriteInput = "click")
+  app$setInputs(btReplaceInputData = "click")
   priceData <- getHotData(app, "in_1")
   expect_identical(priceData[[1]][1:3], c("AAPL", "AXP", "BA"))
   expect_identical(priceData[[2]][1:3], c("2016-01-04", "2016-01-04", "2016-01-04"))
@@ -117,12 +117,28 @@ if (identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
   app$setInputs(csvInputHdr_1 = "date", csvInputHdr_2 = "-", csvInputHdr_3 = "value")
   app$setInputs(btImportLocal = "click")
   Sys.sleep(0.5)
-  app$setInputs(btOverwriteInput = "click")
+  app$setInputs(btReplaceInputData = "click")
   Sys.sleep(2)
   priceData <- getHotData(app, "in_1")
   expect_identical(priceData[[1]][1:3], c("2016-01-04", "2016-01-04", "2016-01-04"))
   expect_identical(priceData[[2]][1:3], c("", "", ""))
   expect_identical(priceData[[3]][1:3], c(105.349998, 67.589996, 140.5))
   expect_identical(nrow(priceData), 7560L)
+} else if (identical(Sys.getenv("GMSMODELNAME"), "transport")) {
+  app$setInputs(inputTabset = "inputTabset_1")
+  app$setInputs(btImport = "click")
+  Sys.sleep(0.5)
+  app$setInputs(tb_importData = "tb_importData_local")
+  app$uploadFile(localInput = paste0("../data/a.csv"))
+  app$setInputs(btImportLocal = "click")
+  app$setInputs(btMergeInputData = "click")
+  Sys.sleep(1)
+  expect_equal(getHotData(app, "in_1"),
+    tibble(
+      i = c("Seattle", "San-Diego", "Boston"),
+      value = c(123L, 600L, 456L)
+    ),
+    check.attributes = FALSE
+  )
 }
 app$stop()

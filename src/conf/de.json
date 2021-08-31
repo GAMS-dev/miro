@@ -318,9 +318,12 @@
       "descLocal":"Wählen Sie eine Datei mit Daten aus",
       "newScenName": "Wählen Sie einen Namen für das neue Szenario",
       "scenNameExistsErr": "Der von Ihnen gewählte Szenarioname existiert bereits.",
-      "descOverwriteInput":"Sie haben bereits Eingabedaten geladen. Sind Sie sicher, dass Sie diese Daten überschreiben wollen?",
+      "descClearSandbox": "Es sind bereits Daten in die Sandbox geladen. Möchten Sie diese Daten ersetzen?",
+      "descOverwriteInput":"Für das/die von Ihnen ausgewählte(n) Symbol(e) sind bereits Daten geladen. Möchten Sie die neuen Daten mit den vorhandenen Daten zusammenführen oder die vorhandenen Daten ersetzen?",
       "cbSelectManually":"Datensätze manuell auswählen",
       "overwriteWarning":"Bereits importierte Datensätze werden überschrieben!",
+      "mergeButton": "Zusammenführen",
+      "replaceButton": "Ersetzen",
       "okButton":"Laden",
       "cancelButton":"Abbrechen"
     },

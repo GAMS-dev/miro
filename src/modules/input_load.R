@@ -50,10 +50,17 @@ if (!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))) {
     }
     inputVerified <- FALSE
     # execute only if dataframe has not yet been imported or already imported data shall be overridden
-    if (!length(isolate(rv[["in_" %+% i]])) || overwriteInput) {
+    if (!length(isolate(rv[["in_" %+% i]])) || overwriteInput > 0L) {
       # handsontable, multi dropdown, or daterange
       if (tolower(dataset) %in% modelInTabularData) {
-        dataTmp <- scenInputData[[dataset]]
+        if (identical(overwriteInput, 2L)) {
+          dataTmp <- mergeDf(fixColTypes(getInputDataset(i), modelIn[[i]]$colTypes),
+            scenInputData[[dataset]],
+            isScalarsTable = identical(names(modelIn)[[i]], scalarsFileName)
+          )
+        } else {
+          dataTmp <- scenInputData[[dataset]]
+        }
         if (length(dataTmp) && nrow(dataTmp)) {
           if (identical(names(modelIn)[[i]], scalarsFileName)) {
             if (verifyScalarInput(

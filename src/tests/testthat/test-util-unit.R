@@ -482,3 +482,69 @@ test_that("Getting index lists work (miroPivot)", {
     )
   )
 })
+
+test_that("Merging dataframes works", {
+  expect_identical(
+    mergeDf(
+      tibble(i = c("i1", "i2"), j = c("j1", "j2"), val = c(1, 2)),
+      tibble(i = c("i1", "i2"), j = c("j2", "j2"), val = c(3, 4))
+    ),
+    tibble(i = c("i1", "i2", "i1"), j = c("j1", "j2", "j2"), val = c(1, 4, 3))
+  )
+  expect_identical(
+    mergeDf(
+      tibble(i = c("i1", "i2"), j = c("j1", "j2"), hdr2 = c(1, 2), hdr1 = c(3, NA)),
+      tibble(i = c("i1", "i2"), j = c("j2", "j2"), hdr2 = c(3, NA), hdr1 = c(NA, 6))
+    ),
+    tibble(i = c("i1", "i2", "i1"), j = c("j1", "j2", "j2"), hdr2 = c(1, 2, 3), hdr1 = c(3, 6, NA))
+  )
+  expect_identical(
+    mergeDf(
+      tibble(i = c("i1", "i2"), j = c("j1", "j2"), text = c("a", "b")),
+      tibble(i = c("i1", "i2"), j = c("j2", "j2"), text = c("c", "d"))
+    ),
+    tibble(i = c("i1", "i2", "i1"), j = c("j1", "j2", "j2"), text = c("a", "d", "c"))
+  )
+  expect_identical(
+    mergeDf(
+      tibble(i = c("i1", "i2"), j = c("j1", "j2"), val = c(1, NA)),
+      tibble(i = character(), j = character(), val = numeric())
+    ),
+    tibble(i = c("i1", "i2"), j = c("j1", "j2"), val = c(1, NA))
+  )
+  expect_identical(
+    mergeDf(
+      tibble(i = character(), j = character(), val = numeric()),
+      tibble(i = c("i1", "i2"), j = c("j1", "j2"), val = c(NA, 4))
+    ),
+    tibble(i = c("i1", "i2"), j = c("j1", "j2"), val = c(NA, 4))
+  )
+  expect_identical(
+    mergeDf(tibble(scalar = c("scalar1", "scalar2"), description = c("desc1", "desc2"), value = c("1.123456", "test")),
+      tibble(scalar = c("scalar3", "scalar2"), description = c("", ""), value = c("2.345678", "test2")),
+      isScalarsTable = TRUE
+    ),
+    tibble(scalar = c("scalar1", "scalar2", "scalar3"), description = c("desc1", "desc2", ""), value = c("1.123456", "test2", "2.345678"))
+  )
+  expect_identical(
+    mergeDf(tibble(scalar = c("scalar1", "scalar2"), description = c("desc1", "desc2"), value = c("1.123456", "test")),
+      tibble(scalar = c("scalar3", "scalar2"), description = c("", ""), value = c("2.345678", NA)),
+      isScalarsTable = TRUE
+    ),
+    tibble(scalar = c("scalar1", "scalar2", "scalar3"), description = c("desc1", "desc2", ""), value = c("1.123456", "test", "2.345678"))
+  )
+  expect_identical(
+    mergeDf(tibble(scalar = c("scalar1", "scalar2"), description = c("desc1", "desc2"), value = c("1.123456", "test")),
+      tibble(scalar = character(), description = character(), value = character()),
+      isScalarsTable = TRUE
+    ),
+    tibble(scalar = c("scalar1", "scalar2"), description = c("desc1", "desc2"), value = c("1.123456", "test"))
+  )
+  expect_identical(
+    mergeDf(tibble(scalar = character(), description = character(), value = character()),
+      tibble(scalar = c("scalar1", "scalar2"), description = c("desc1", "desc2"), value = c("1.123456", "test")),
+      isScalarsTable = TRUE
+    ),
+    tibble(scalar = c("scalar1", "scalar2"), description = c("desc1", "desc2"), value = c("1.123456", "test"))
+  )
+})

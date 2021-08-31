@@ -285,16 +285,36 @@ observeEvent(input$btImportLocal, {
 
   if (any(datasetsImported)) {
     hideEl(session, "#importDataTabset")
-    showEl(session, "#btOverwriteInput")
-    showEl(session, "#importDataOverwrite")
+    fileType <- tolower(tools::file_ext(basename(input$localInput$datapath)))
+    if (identical(fileType, "miroscen")) {
+      showEl(session, "#btOverwriteScenLocal")
+      showEl(session, "#importDataClearSandbox")
+    } else {
+      showEl(session, "#btReplaceInputData")
+      showEl(session, "#btMergeInputData")
+      showEl(session, "#importDataOverwrite")
+    }
   } else {
-    overwriteInput <<- FALSE
+    overwriteInput <<- 0L
     rv$btOverwriteInput <<- rv$btOverwriteInput + 1L
   }
 })
 
-observeEvent(input$btOverwriteInput, {
-  overwriteInput <<- TRUE
+observeEvent(input$btReplaceInputData, {
+  flog.debug("Replace input data button clicked.")
+  overwriteInput <<- 1L
+  rv$btOverwriteInput <<- rv$btOverwriteInput + 1L
+})
+
+observeEvent(input$btMergeInputData, {
+  flog.debug("Merge input data button clicked.")
+  overwriteInput <<- 2L
+  rv$btOverwriteInput <<- rv$btOverwriteInput + 1L
+})
+
+observeEvent(input$btOverwriteScenLocal, {
+  flog.debug("Clear input data button clicked.")
+  overwriteInput <<- 1L
   rv$btOverwriteInput <<- rv$btOverwriteInput + 1L
 })
 

@@ -11,9 +11,9 @@ checkIfInputDataExists <- function() {
   if (any(inputDatasetsExist)) {
     hideEl(session, "#importDataTabset")
     showEl(session, "#btOverwriteScen")
-    showEl(session, "#importDataOverwrite")
+    showEl(session, "#importDataClearSandbox")
   } else {
-    overwriteInput <<- FALSE
+    overwriteInput <<- 0L
     rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
   }
 }
@@ -400,17 +400,17 @@ observeEvent(input$btLoadScenConfirm, {
 })
 
 observeEvent(input$btOverwriteScen, {
-  flog.debug("Overwrite scenario button clicked.")
+  flog.debug("Clear sandbox data button clicked.")
   if (!length(sidsToLoad)) {
     return()
   }
-  overwriteInput <<- TRUE
+  overwriteInput <<- 1L
   rv$btOverwriteScen <<- rv$btOverwriteScen + 1L
 })
 
 observeEvent(input$btBatchLoadSbOverwrite, {
   flog.debug("Batch load: overwriting current content in sandbox confirmed.")
-  overwriteInput <<- TRUE
+  overwriteInput <<- 1L
   switchTab(session, "input")
   rv$btOverwriteScen <<- rv$btOverwriteScen + 1L
 })

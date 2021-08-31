@@ -539,17 +539,29 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL, selectLocalTab = FA
         ))
       ),
       tags$div(
+        id = "importDataClearSandbox", class = "col-sm-12", style = "display:none;",
+        lang$nav$dialogImport$descClearSandbox
+      ),
+      tags$div(
         id = "importDataOverwrite", class = "col-sm-12", style = "display:none;",
         lang$nav$dialogImport$descOverwriteInput
       )
     ), footer = {
       tagList(
         modalButton(lang$nav$dialogImport$cancelButton),
-        actionButton("btOverwriteInput",
+        actionButton("btReplaceInputData",
+          label = lang$nav$dialogImport$replaceButton,
+          style = "display:none;"
+        ),
+        actionButton("btMergeInputData",
+          label = lang$nav$dialogImport$mergeButton,
+          style = "display:none;"
+        ),
+        actionButton("btOverwriteScen",
           label = lang$nav$dialogImport$okButton,
           class = "bt-highlight-1 bt-gms-confirm", style = "display:none;"
         ),
-        actionButton("btOverwriteScen",
+        actionButton("btOverwriteScenLocal",
           label = lang$nav$dialogImport$okButton,
           class = "bt-highlight-1 bt-gms-confirm", style = "display:none;"
         )
