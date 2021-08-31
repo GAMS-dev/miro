@@ -121,3 +121,7 @@ test_that("Setting symbol name should prevent reading symbol with different name
                           uni2 = paste0("j", 1:7),
                           value = c(12.34,13.470,16.471,11,13.477,7,13.4791)))
 })
+
+test_that("Guessing delimiter works", {
+  expect_identical(csvioPrivate$guessDelim(c("uni,text", "fCapital,")), ",")
+})
