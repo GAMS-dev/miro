@@ -746,7 +746,11 @@ if(is.null(errMsg)){
   options("DT.TOJSON_ARGS" = list(na = "string", na_as_null = TRUE))
 
   if(config$activateModules$remoteExecution && !LAUNCHCONFIGMODE){
-    plan(multiprocess)
+    if(isWindows()){
+      plan(multisession)
+    }else{
+      plan(multicore)
+    }
   }
   # try to create the DB connection (PostgreSQL)
   db <- NULL
@@ -875,8 +879,7 @@ if(is.null(errMsg)){
                            username = credConfigTmp$username,
                            password = credConfigTmp$password,
                            namespace = credConfigTmp$namespace,
-                           useRegistered = credConfigTmp$reg,
-                           refreshToken = TRUE)
+                           useRegistered = credConfigTmp$reg)
       }
     }, error = function(e){
       errMsgTmp <- "Problems reading JSON file: '%s'. Please make sure you have sufficient access permissions."
