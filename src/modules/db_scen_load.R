@@ -393,7 +393,12 @@ observeEvent(input$btBatchCompare, {
         stop(sprintf("Invalid column(s): %s. This is likely an attempt to tamper with the app!",
                      paste(input$batchCompareNameCols[is.na(mapColIds)], collapse = ", ")))
       }
-      scenData$setScenIdNameMap(setNames(unite(batchLoadData[batchLoadData[[1]] %in% sidsToLoad, mapColIds],
+      rowIdsToPick <- match(sidsToLoad, batchLoadData[[1]])
+      if(any(is.na(rowIdsToPick))){
+        stop(sprintf("Setting scenIdNameMap: Invalid sid(s): %s. This is likely an attempt to tamper with the app!",
+                     paste(sidsToLoad[is.na(rowIdsToPick)], collapse = ", ")))
+      }
+      scenData$setScenIdNameMap(setNames(unite(batchLoadData[rowIdsToPick, mapColIds],
                                                "name", sep = "_")[[1]], as.character(sidsToLoad)))
       FALSE
     }, error = function(e){
@@ -465,7 +470,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         if(!is.null(dynamicUILoaded$dynamicTabsets[["tab_0"]])){
           dynamicUILoaded$dynamicTabsets[["tab_0"]][["content"]][] <<- FALSE
         }
-        sidsToRemoveFromPivotComp <- !sidsInPivotComp %in% c(sidsToLoadVector, "sb_cmpPivot")
+        sidsToRemoveFromPivotComp <- !sidsInPivotComp %in% sidsToLoadVector
         if(any(sidsToRemoveFromPivotComp)){
           scenData$clear(refId, sidsInPivotComp[sidsToRemoveFromPivotComp])
         }
