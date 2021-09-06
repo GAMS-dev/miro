@@ -561,6 +561,11 @@ if(LAUNCHHCUBEMODE){
         flog.info("Problems loading trace data. Error message: %s.", conditionMessage(e))
       })
     }
+    if(scenData$getSandboxHasOutputData(scriptOutput)){
+      noOutputData <<- FALSE
+    }else{
+      noOutputData <<- TRUE
+    }
     tryCatch(
       worker$updateJobStatus(JOBSTATUSMAP['imported']),
       error = function(e){
