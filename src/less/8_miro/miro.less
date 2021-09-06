@@ -1595,6 +1595,109 @@ animation: none !important;
 .list-presentation {
   list-style-type: none;
 }
+.pivot-chart-height {
+  min-height: 400px;
+}
+.row-index-header,
+.col-index-header {
+  display: none;
+}
+@media (max-width: 767px) {
+  .presentation-on > .row-agg-filter > .col-sm-10.presentation-show {
+    padding-left: 0;
+    padding-top: 5px;
+  }
+  .pivot-chart-height {
+    min-height: 250px;
+    overflow: auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .pivot-chart-height > div[id*="pivotChart-container"] {
+    min-width:400px;
+  }
+  .data-section > .row {
+    flex-direction: column;
+  }
+  .data-section-block {
+    margin-bottom: 5px;
+  }
+  .row-agg-filter:not(.presentation-on > .row-agg-filter) {
+    display: flex;
+    flex-flow: column;
+  }
+  .row-agg-filter:not(.presentation-on > .row-agg-filter) {
+    > .filter-index-wrapper {
+        order: 1;
+        padding: 0 3pt 0 0!important;
+    }
+    > .filter-dropdowns-wrapper {
+        order: 2;
+        padding: 0 3pt 5pt 0!important;
+    }
+    > .aggregate-index-wrapper {
+        order: 3;
+        padding: 5pt 3pt 0 0!important;
+        border-top: 1px solid;
+    }
+    > .aggregate-dropdowns-wrapper {
+        order: 4;
+        padding: 0 3pt 5pt 0!important;
+        border-bottom: 1px solid;
+    }
+  }
+  .row-agg-filter > .filter-index-wrapper:not(.presentation-on) {
+    display: flex;
+    flex-flow: column;
+  }
+  .row-agg-filter > .filter-index-wrapper:not(.presentation-on) {
+    > .dropdown.presentation {
+      order: 1;
+    }
+    > .presentation-hide{
+      order: 2;
+      margin-top: 5px;
+    }
+    > .drop-index-header {
+      order: 3;
+    }
+    > .filter-index-list {
+      order: 4;
+      margin-top: 0;
+    }
+  }
+  .col-filter:not(.presentation-on > .col-filter) {
+    display: flex;
+    flex-flow: column;
+    > .col-charttype-wrapper {
+      order: 3;
+      padding: 0 3pt 0 0!important;
+    }
+    > .col-index-wrapper {
+      order: 1;
+      padding: 5pt 3pt 5pt 0!important;
+      > .col-index-header {
+        display: block;
+      }
+    }
+    > .col-dropdowns-wrapper {
+      order: 2;
+      padding: 0 3pt 5pt 0;
+      border-bottom: 1px solid;
+    }
+  }
+  .table-chart:not(.presentation-on > .table-chart) {
+    > .row-dropdowns-wrapper {
+      padding: 5pt 3pt 5pt 0!important;
+      > .row-index-header {
+        display: block;
+      }
+    }
+  }
+  .miro-pivot-filter .control-label:not(.presentation-on > .miro-pivot-filter) {
+    text-align: right;
+  }
+}
 .dropdown-item-wrapper {
   display: flex;
   position: relative;

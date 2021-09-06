@@ -147,6 +147,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
       class = "row-agg-filter",
       style = "margin:0;padding-top: 5pt;",
       column(
+        class = "filter-index-wrapper",
         width = 2L, style = "padding: 1em;",
         style = if (isTRUE(options$hidePivotControls)) {
           "padding: 0;"
@@ -277,16 +278,19 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         )
       ),
       column(
+        class = "filter-dropdowns-wrapper",
         width = 4L, class = "presentation-hide",
         style = if (isTRUE(options$hidePivotControls)) "padding: 1em;display:none;" else "padding: 1em;",
         tags$div(id = ns("filterDropdowns"), class = "miro-pivot-filter")
       ),
       column(
+        class = "aggregate-dropdowns-wrapper",
         width = 4L, class = "presentation-hide",
         style = if (isTRUE(options$hidePivotControls)) "padding: 1em;display:none;" else "padding: 1em;",
         tags$div(id = ns("aggregateDropdowns"), class = "miro-pivot-filter")
       ),
       column(
+        class = "aggregate-index-wrapper",
         width = 2L,
         style = if (isTRUE(options$hidePivotControls)) "padding: 1em;display:none;" else "padding: 1em;",
         class = "presentation-hide",
@@ -305,6 +309,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
       class = "col-filter",
       style = if (isTRUE(options$hidePivotControls)) "margin:0;display:none;" else "margin:0;",
       column(
+        class = "col-charttype-wrapper",
         width = 2L,
         selectInput(ns("pivotRenderer"), "",
           setNames(
@@ -334,13 +339,19 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         }
       ),
       column(
+        class = "col-index-wrapper",
         width = 6L, style = "padding: 1em;",
+        tags$div(
+          class = "col-index-header drop-index-header",
+          lang$renderers$miroPivot$columns
+        ),
         tags$ul(
           id = ns("colIndexList"), class = "drop-index-list vertical-index-list",
           genIndexList(indices$cols)
         )
       ),
       column(
+        class = "col-dropdowns-wrapper",
         width = 4L,
         tags$div(id = ns("colDropdowns"), class = "miro-pivot-filter")
       )
@@ -348,12 +359,17 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
     fluidRow(
       class = "table-chart", style = "margin:0",
       column(
+        class = "row-dropdowns-wrapper",
         width = 2L,
         style = if (isTRUE(options$hidePivotControls)) {
           "padding: 1em;padding-top: 31px;display:none;"
         } else {
           "padding: 1em;padding-top: 31px;"
         },
+        tags$div(
+          class = "row-index-header drop-index-header",
+          lang$renderers$miroPivot$rows
+        ),
         tags$ul(
           id = ns("rowIndexList"), class = "drop-index-list",
           genIndexList(indices$rows)
@@ -362,10 +378,9 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
       column(
         width = if (isTRUE(options$hidePivotControls)) 12L else 10L,
         class = if (isTRUE(options[["_input_"]])) "has-edit-buttons",
+        class = "pivot-chart-height",
         style = if (isTRUE(options[["_input_"]]) && isTRUE(options$hidePivotControls)) {
-          "min-height: 400px;margin-top:30px;"
-        } else {
-          "min-height: 400px;"
+          "margin-top:30px;"
         },
         if (isTRUE(options[["_input_"]])) {
           tags$div(
