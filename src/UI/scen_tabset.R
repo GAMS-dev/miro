@@ -348,9 +348,11 @@ onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\
 }
 generateScenarioTabsetPivot <- function() {
   fluidRow(
+    class = "box-title-mobile",
     tags$div(
       id = "scen-pivot-view", style = if (!identical(config$defCompMode, "pivot")) "display:none;",
       box(
+        class = "box-mobile",
         width = 12L, solidHeader = TRUE, status = "primary", title =
           tagList(
             tags$button(

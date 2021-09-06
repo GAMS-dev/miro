@@ -11,7 +11,7 @@ MIROtabBox <- function(tabs, id = NULL, selected = NULL,
 
   content$attribs$class <- "nav-tabs-custom"
 
-  div(class = "col-sm-12", content)
+  div(class = "col-sm-12 col-mobile", content)
 }
 MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
                             maxTabsExpanded = 5L, btCollapsedTabs = "",
@@ -43,7 +43,7 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
   })
 
   # add input class if we have an id
-  if (!is.null(id)) ulClass <- "nav nav-tabs shiny-tab-input"
+  if (!is.null(id)) ulClass <- "nav nav-tabs shiny-tab-input tabs-ul-mobile"
 
   noTabs <- length(tabs)
   if (noTabs > maxTabsExpanded + 1L) {
@@ -109,13 +109,13 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
     )
   }
 
-  tabNavList <- tags$ul(
+  tabNavList <- tags$div(class = "tabs-ul-mobile-wrapper", tags$ul(
     class = ulClass, id = id, style = if (hideTabs) "display:none",
     `data-tabsetid` = tabsetId, liTagList
-  )
+  ))
 
   tabContent <- tags$div(
-    class = "tab-content",
+    class = "tab-content tab-mobile",
     `data-tabsetid` = tabsetId, divTagList
   )
 
@@ -169,6 +169,7 @@ MIRObuildTabItem <- function(index, tabsetId, tabs = NULL,
   # tabPanel item: create the tab's liTag and divTag
   tabId <- paste("tab", tabsetId, index, sep = "-")
   liTag <- tags$li(
+    class = "tabs-li-mobile",
     tags$a(
       href = paste("#", tabId, sep = ""),
       onclick = onclick,

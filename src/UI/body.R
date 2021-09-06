@@ -424,7 +424,9 @@ if (buildUI) {
     tabItem(
       tabName = "inputData",
       fluidRow(
+        class = "box-title-mobile",
         box(
+          class = "box-mobile",
           title = list(
             tags$div(
               id = "dirtyFlagIcon", title = lang$nav$inputScreen$dirtyFlag, class = "inline-el",
@@ -474,7 +476,9 @@ if (buildUI) {
     tabItem(
       tabName = "loadResults",
       fluidRow(
+        class = "box-title-mobile",
         box(
+          class = "box-mobile",
           title = lang$nav$queryBuilder$title, status = "primary",
           solidHeader = TRUE, width = 12, style = "overflow-x: auto",
           tags$div(
@@ -560,9 +564,11 @@ if (buildUI) {
         )
       ),
       fluidRow(
+        class = "box-title-mobile",
         tags$div(
           id = "scen-split-view", style = if (identical(config$defCompMode, "split")) "" else "display:none;",
           box(
+            class = "box-mobile",
             width = 6, solidHeader = TRUE, status = "primary", title =
               tagList(
                 tags$span(id = "cmpScenTitle_2"),
@@ -600,7 +606,9 @@ if (buildUI) {
   )
   outputTabset <- tagList(
     fluidRow(
+      class = "box-title-mobile",
       box(
+        class = "box-mobile",
         title = lang$nav$gams$boxModelStatus$title, status = "primary", solidHeader = TRUE, width = 12,
         uiOutput("modelStatus")
       )
@@ -657,7 +665,9 @@ if (buildUI) {
       logTabsetList <- unname(logTabsetList)
       logTabsetList$id <- "logFileTabsset"
       fluidRow(
+        class = "box-title-mobile",
         box(
+          class = "box-mobile",
           title = lang$nav$gams$boxGamsOutput$title, status = "primary", solidHeader = TRUE,
           width = 12, collapsible = TRUE,
           do.call(tabsetPanel, logTabsetList)
@@ -790,7 +800,9 @@ if (buildUI) {
     tabItem(
       tabName = "outputData",
       fluidRow(
+        class = "box-title-mobile",
         box(
+          class = "box-mobile",
           title = list(
             tags$div(
               id = "dirtyFlagIconO", title = lang$nav$inputScreen$dirtyFlag, class = "inline-el",

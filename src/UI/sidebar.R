@@ -17,7 +17,7 @@ sidebar <- dashboardSidebar(
         class = "btn-group btSolve", style = "width:100%",
         tags$button(
           class = "btn btn-default bt-highlight-2", type = "button", id = "btSolve",
-          style = "width:173px;margin:6px 0px 6px 15px;border-right:0px;",
+          style = "width:168px;margin:6px 0px 6px 15px;border-right:0px;",
           onclick = "Shiny.setInputValue('btSolve',1,{priority:'event'});",
           lang$nav$sidebarButtons$solve
         ),
