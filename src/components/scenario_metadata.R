@@ -77,13 +77,10 @@ ScenarioMetadata <- R6Class("ScenarioMetadata",
             scenId <- "1"
             prefix <- "_pivotcomp_"
           }
-          if (symId <= length(private$outputSymbols)) {
-            return(c(paste0(prefix, private$outputSymbols[[symId]]), scenId))
-          }
           return(c(
             paste0(
               prefix,
-              private$tabularInputSymbols[[symId - length(private$outputSymbols)]]
+              ioConfig$scenTableNamesToDisplay[[symId]]
             ),
             scenId
           ))

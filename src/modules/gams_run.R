@@ -236,6 +236,11 @@ loadOutputData <- function() {
       }
     )
   }
+  if (scenData$getSandboxHasOutputData(scriptOutput)) {
+    noOutputData <<- FALSE
+  } else {
+    noOutputData <<- TRUE
+  }
   tryCatch(
     worker$updateJobStatus(JOBSTATUSMAP["imported"]),
     error = function(e) {

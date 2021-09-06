@@ -242,7 +242,7 @@ CsvIO <- R6::R6Class("CsvIO", inherit = LocalFileIO, public = list(
   },
   guessDelim = function(sample) {
     return(private$supportedDelim[vapply(private$supportedDelim, function(delim) {
-      nbItems <- vapply(strsplit(sample, delim, fixed = TRUE), length,
+      nbItems <- vapply(stri_split_fixed(sample, delim), length,
         integer(1L),
         USE.NAMES = FALSE
       )
