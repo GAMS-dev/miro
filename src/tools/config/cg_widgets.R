@@ -1287,9 +1287,9 @@ observeEvent({input$widget_type
          },
          numericinput = {
            rv$widgetConfig <- list(widgetType = "numericinput",
-                                   value = if(length(currentConfig$value)) currentConfig$value,
-                                   min = if(length(currentConfig$min)) currentConfig$min,
-                                   max = if(length(currentConfig$max)) currentConfig$max,
+                                   value = if(length(currentConfig$value) && !is.character(currentConfig$value)) currentConfig$value,
+                                   min = if(length(currentConfig$min) && !is.character(currentConfig$min)) currentConfig$min,
+                                   max = if(length(currentConfig$max) && !is.character(currentConfig$max)) currentConfig$max,
                                    decimal = if(length(currentConfig[["decimal"]])) currentConfig[["decimal"]] else 0L,
                                    decimalCharacter = if(length(currentConfig[["decimalCharacter"]])) currentConfig[["decimalCharacter"]] else ".",
                                    digitGroupSeparator = if(length(currentConfig[["digitGroupSeparator"]])) currentConfig[["digitGroupSeparator"]] else ",",
