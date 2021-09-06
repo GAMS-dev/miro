@@ -20,7 +20,9 @@ FakeSession <- R6Class("FakeSession", public = list(
 
 lang <<- list(nav = list(scen = list(pivot = list(viewPrefix = "Pivot Comparison:"))))
 
-views <- Views$new(c("in1", "widget1", "widget2", "in2"), c("out1", "out2", "out3"), c("in1", "in2"))
+ioConfig <<- list(scenTableNamesToDisplay = c("out1", "out2", "out3", "in1", "in2"))
+
+views <- Views$new(c("in1", "widget1", "widget2", "in2"), c("out1", "out2", "out4", "out3"), c("in1", "in2"))
 
 test_that("Loading/Unloading configuration works", {
   testViewData <- tibble("_sid" = c(1, 1, 1, 1, 5, 6, 7, 7),
@@ -216,11 +218,13 @@ test_that("Getting views summary works", {
                                       in2 = list(alias = "input 2")),
                                  list(out1 = list(alias = "output 1"),
                                       out2 = list(alias = "output 2"),
+                                      out4 = list(alias = "output 4"),
                                       out3 = list(alias = "output 3"))))
   expect_identical(views$getSummary(list(in1 = list(alias = "input 1"),
                                          in2 = list(alias = "input 2")),
                                     list(out1 = list(alias = "output 1"),
                                          out2 = list(alias = "output 2"),
+                                         out4 = list(alias = "output 4"),
                                          out3 = list(alias = "output 3"))),
                    list(symName = c("out3", "in1", "in3"),
                         symAlias = c("output 3",
@@ -239,6 +243,7 @@ test_that("Getting views summary works", {
                                          in2 = list(alias = "input 2")),
                                     list(out1 = list(alias = "output 1"),
                                          out2 = list(alias = "output 2"),
+                                         out4 = list(alias = "output 4"),
                                          out3 = list(alias = "output 3"))),
                    list(symName = c("out1", "out2", "out2", "out3", "in1", "in1",
                                     "in2", "in3", "_pivotcomp_out1", "_pivotcomp_out1", "_pivotcomp_out2"),
