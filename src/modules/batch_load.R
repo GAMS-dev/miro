@@ -568,11 +568,18 @@ downloadBatchData <- function(file, sids, type) {
         mapColIds <- match(input$batchCompareNameCols, names(batchLoadData))
         if (any(is.na(mapColIds))) {
           stop(sprintf(
-            "Invalid column(s): %s. This is likely an attempt to tamper with the app!",
+            "Setting scenIdNameMap: Invalid column(s): %s. This is likely an attempt to tamper with the app!",
             paste(input$batchCompareNameCols[is.na(mapColIds)], collapse = ", ")
           ))
         }
-        batchLoader$setScenIdNameMap(setNames(unite(batchLoadData[batchLoadData[[1]] %in% sidsToLoad, mapColIds],
+        rowIdsToPick <- match(sidsToLoad, batchLoadData[[1]])
+        if (any(is.na(rowIdsToPick))) {
+          stop(sprintf(
+            "Setting scenIdNameMap: Invalid sid(s): %s. This is likely an attempt to tamper with the app!",
+            paste(sidsToLoad[is.na(rowIdsToPick)], collapse = ", ")
+          ))
+        }
+        batchLoader$setScenIdNameMap(setNames(unite(batchLoadData[rowIdsToPick, mapColIds],
           "name",
           sep = "_"
         )[[1]], as.character(sidsToLoad)))

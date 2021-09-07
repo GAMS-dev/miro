@@ -23,7 +23,7 @@ if (.Platform$OS.type == "windows") {
 }
 scenToCompare <- match(c("default", scenHashTmp), scenData[[2]])
 expect_false(any(is.na(scenToCompare)))
-app$setInputs(batchLoadResults_rows_selected = scenToCompare, allowInputNoBinding_ = TRUE)
+app$setInputs(batchLoadResults_rows_selected = rev(scenToCompare), allowInputNoBinding_ = TRUE)
 
 # check that scalar-name-mapping works
 app$setInputs(batchLoadSelected = "click")

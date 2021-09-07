@@ -1,7 +1,7 @@
 # version number
-MIROVersion <- "2.0.999"
+MIROVersion <- "2.1.0"
 APIVersion <- "1"
-MIRORDate <- "Aug 16 2021"
+MIRORDate <- "Sep 07 2021"
 
 # specify CRAN mirror
 CRANMirror <- "https://cloud.r-project.org/"
@@ -837,7 +837,11 @@ if (is.null(errMsg)) {
   options("DT.TOJSON_ARGS" = list(na = "string", na_as_null = TRUE))
 
   if (config$activateModules$remoteExecution && !LAUNCHCONFIGMODE) {
-    plan(multiprocess)
+    if (isWindows()) {
+      plan(multisession)
+    } else {
+      plan(multicore)
+    }
   }
   # try to create the DB connection (PostgreSQL)
   db <- NULL
@@ -995,8 +999,7 @@ if (is.null(errMsg)) {
             username = credConfigTmp$username,
             password = credConfigTmp$password,
             namespace = credConfigTmp$namespace,
-            useRegistered = credConfigTmp$reg,
-            refreshToken = TRUE
+            useRegistered = credConfigTmp$reg
           )
         }
       },
@@ -1722,6 +1725,7 @@ if (!is.null(errMsg)) {
           MIROGdxInName = MIROGdxInName,
           clArgs = GAMSClArgs,
           text_entities = c(
+            if (config$activateModules$logFile) paste0(modelNameRaw, ".log"),
             if (config$activateModules$lstFile) paste0(modelNameRaw, ".lst"),
             if (config$activateModules$miroLogFile) config$miroLogFile
           ),

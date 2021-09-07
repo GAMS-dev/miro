@@ -55,9 +55,9 @@ ScenarioMetadata <- R6Class("ScenarioMetadata",
         }
         return(private$inputSymbols[[symId]])
       } else if (identical(id[1], "tab")) {
-        if (length(id) == 2) {
+        if (identical(id[2], "1")) {
           # output symbol
-          symId <- suppressWarnings(as.integer(id[2]))
+          symId <- suppressWarnings(as.integer(id[3]))
           if (is.na(symId) || symId > length(private$outputSymbols)) {
             stop(sprintf("Invalid symbol id: %s", symId), call. = FALSE)
           }
@@ -77,13 +77,10 @@ ScenarioMetadata <- R6Class("ScenarioMetadata",
             scenId <- "1"
             prefix <- "_pivotcomp_"
           }
-          if (symId <= length(private$outputSymbols)) {
-            return(c(paste0(prefix, private$outputSymbols[[symId]]), scenId))
-          }
           return(c(
             paste0(
               prefix,
-              private$tabularInputSymbols[[symId - length(private$outputSymbols)]]
+              ioConfig$scenTableNamesToDisplay[[symId]]
             ),
             scenId
           ))
