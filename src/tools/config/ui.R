@@ -135,7 +135,7 @@ font-size: 12px;
     HTML('<!-- Creates modal dialog for confirm messages -->
        <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
        <div class="modal-dialog">
-       <div class="modal-content" style="width:685px;">
+       <div class="modal-content">
        <div class="modal-header">
        <h4 class="modal-title"></h4>
        </div>
