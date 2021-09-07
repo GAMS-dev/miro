@@ -763,7 +763,7 @@ autoNumericInput <- function(id, label = NULL, value = NULL, min = NULL, max = N
   HTML(paste0(
     '<div class="form-group shiny-input-container">\n
     <label for="', id, '">', label, '</label>\n
-      <input id="', id, '" type="text" class="form-control miro-auto-numeric" value="', value,
+      <input id="', id, '" type="tel" class="form-control miro-auto-numeric" value="', value,
     '" placeholder="', value,
     '" data-override-min-max-limits="invalid"',
     if (length(min)) paste0(' data-minimum-value="', min, '"'),
