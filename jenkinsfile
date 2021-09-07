@@ -408,7 +408,7 @@ pipeline {
                         git config user.email 'jenkins@berlin.noreply.gams.com'
                         git checkout -B $BRANCH_NAME
                         git fetch --unshallow
-                        git pull
+                        git pull origin master
 
                         MIRO_VERSION_FULL=$(grep -e '"version": .*' package.json |cut -f4 -d"\\"")
                         pushd src > /dev/null
