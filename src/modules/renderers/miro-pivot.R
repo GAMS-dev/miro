@@ -145,7 +145,6 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
     },
     fluidRow(
       class = "row-agg-filter",
-      style = "margin:0;padding-top: 5pt;",
       column(
         class = "filter-index-wrapper",
         width = 2L, style = "padding: 1em;",
