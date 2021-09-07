@@ -751,9 +751,10 @@
                                 >https://docs.docker.com/compose/install/</a
                               >.
                             </li>
-                            <li id="miro_server">
+                            <li>
                               Extract <kbd>miro_server.zip</kbd>. This will
                               create a subfolder <kbd>miro_server</kbd>.
+                              <a id="miro_server" class="anchor"></a>
                             </li>
                             <li>
                               Open a terminal and <kbd>cd</kbd> into that
@@ -783,7 +784,7 @@
                                 \K[\d.]+'</kbd
                               >. You will need this IP in the next step.
                             </li>
-                            <li id="step6">
+                            <li>
                               <p>
                                 Install MIRO Sever by running
                                 <kbd>./miro-server install</kbd>. You will be
@@ -793,6 +794,7 @@
                                   >namespace</a
                                 >
                                 to be used by MIRO Server.
+                                <a id="step6" class="anchor"></a>
                               </p>
                               <ul>
                                 <li>
@@ -930,7 +932,7 @@
                                 >start on login</a
                               >.
                             </li>
-                            <li id="miro_server">
+                            <li>
                               Extract <kbd>miro_server.zip</kbd>. This will
                               create a subfolder <kbd>miro_server</kbd>.
                             </li>
@@ -953,7 +955,7 @@
                               </div>
                               <!--//callout-block-->
                             </li>
-                            <li id="step6">
+                            <li>
                               Install MIRO Sever by running
                               <kbd>miro-server.cmd install</kbd>. You will be
                               asked to enter the GAMS Engine host and the
@@ -1238,8 +1240,8 @@ server:
                           that is visible in the browser tab.
                         </li>
                         <li>
-                          <a id="global-language" class="anchor"></a
-                          ><b>Language (<i>proxy.miro-lang</i>):</b><br />
+                          <b>Language (<i>proxy.miro-lang</i>):</b>
+                          <a id="global-language" class="anchor"></a>
                           <p>
                             With this setting you can set the global language
                             for all deployed MIRO apps. Currently, the languages
@@ -1283,12 +1285,12 @@ server:
                           </ul>
                         </li>
                         <p>
-                          Note that when using MIRO Server without
-                          authentication, an anonymous GAMS Engine user with at
-                          least execute permissions on the used namespace must
-                          be created. The credentials of this user must be
-                          provided in the <i>.env</i> file in the
-                          <i>miro_server</i> directory. More about this
+                          When running MIRO Server without authentication,
+                          models can only be solved/submitted to GAMS Engine if
+                          a user with execute permissions is used. The
+                          credentials of this user must be provided in the
+                          <i>.env</i> file in the <i>miro_server</i> directory.
+                          More about this
                           <a
                             href="#authentication-user-management"
                             class="scrollto"
@@ -1626,7 +1628,9 @@ server {
                           >
                           to be used. Or the other way around: Once you are a
                           registered GAMS Engine user with the required
-                          permissions, you can use MIRO Server.
+                          permissions, you can use MIRO Server. Users without
+                          permissions in the namespace can log in if they can
+                          see a user group associated with a model.
                         </p>
                         <p>
                           If you are GAMS Engine administrator or inviter, you
@@ -1678,6 +1682,11 @@ server {
                               </tr>
                             </tbody>
                           </table>
+                          <p>
+                            If you do not provide the credentials of the
+                            anonymous Engine user, the apps can be launched but
+                            not solved/submitted to Engine.
+                          </p>
                         </div>
                         <!--//table-responsive-->
                       </div>
@@ -1819,8 +1828,9 @@ server {
                               Engine</a
                             >.
                           </li>
-                          <li id="admin-panel-lang">
+                          <li>
                             App environment (JSON, optional):<br />
+                            <a id="admin-panel-lang" class="anchor"></a>
                             <p>
                               Here you can define a customized environment to be
                               used by the MIRO app in JSON syntax. This can be
