@@ -125,7 +125,10 @@
       "chooseCurrentButton":"Choose current page",
       "chooseAllButton":"Choose all",
       "orButton": "OR",
-      "andButton": "AND",
+      "addBlock": "Add block",
+      "andButton": "Add condition...",
+      "rmBlock": "Remove block",
+      "conditionBlock": "Conditions:",
       "operators":{
         "is": "is",
         "notis": "is not",

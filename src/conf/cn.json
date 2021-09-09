@@ -125,7 +125,10 @@
       "chooseCurrentButton":"当前页面的场景",
       "chooseAllButton":"所有场景",
       "orButton":"或",
-      "andButton":"和",
+      "addBlock":"添加块",
+      "andButton":"添加条件",
+      "rmBlock": "删除块",
+      "conditionBlock": "条件:",
       "operators":{
         "is": "等于",
         "notis": "不等于",

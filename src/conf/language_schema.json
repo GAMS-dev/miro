@@ -492,7 +492,19 @@
               "type": "string",
               "minLength": 1
             },
+            "addBlock": {
+              "type": "string",
+              "minLength": 1
+            },
             "andButton": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rmBlock": {
+              "type": "string",
+              "minLength": 1
+            },
+            "conditionBlock": {
               "type": "string",
               "minLength": 1
             },
@@ -567,7 +579,7 @@
               "minProperties": 4
             }
           },
-          "minProperties": 11
+          "minProperties": 14
         },
         "hcubeAnalyze": {
           "type": "object",

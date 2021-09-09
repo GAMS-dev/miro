@@ -480,14 +480,14 @@ if (buildUI) {
         box(
           class = "box-mobile",
           title = lang$nav$queryBuilder$title, status = "primary",
-          solidHeader = TRUE, width = 12, style = "overflow-x: auto",
+          solidHeader = TRUE, width = 12,
           tags$div(
             id = "loadContent",
             tags$div(id = "selectorsWrapper"),
             tags$div(
               id = "buttonsWrapper", class = "item-or-query",
               actionButton("btNewBlock",
-                label = lang$nav$queryBuilder$orButton,
+                label = lang$nav$queryBuilder$addBlock,
                 class = "btn-custom"
               )
             ),

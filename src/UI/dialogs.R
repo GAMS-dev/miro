@@ -1805,92 +1805,103 @@ showJobProgressDialog <- function(jID, progressStatus) {
 }
 # Hypercube load module
 generateLine <- function(i, j, type, label) {
-  tags$div(
-    id = paste0("line", i, "_", j), class = "item-line",
-    tags$div(class = "item-name", helpText(label)),
+  fluidRow(
+    class = "vertical-align",
+    id = paste0("line", i, "_", j),
     tags$div(
-      class = "item-scen-drop",
-      switch(type,
-        number = {
-          selectInput(paste0("op_", i, "_", j),
-            label = NULL,
-            choices = c("=", "<", ">", "<=", ">=", "!=")
-          )
-        },
-        text = {
-          selectInput(paste0("op_", i, "_", j),
-            label = NULL,
-            choices = setNames(
-              c(
-                "=", "!=", "%LIKE%",
-                "%NOTLIKE%", "LIKE%", "%LIKE",
-                "%EXIST", "%NOTEXIST"
-              ),
-              c(
-                lang$nav$queryBuilder$operators$is,
-                lang$nav$queryBuilder$operators$notis,
-                lang$nav$queryBuilder$operators$contains,
-                lang$nav$queryBuilder$operators$notcontains,
-                lang$nav$queryBuilder$operators$startswith,
-                lang$nav$queryBuilder$operators$endswith,
-                lang$nav$queryBuilder$operators$exists,
-                lang$nav$queryBuilder$operators$notexists
+      class = "col-xs-10 col-sm-10 col-lg-9",
+      fluidRow(
+        tags$div(class = "item-name col-sm-12 col-lg-5", helpText(label)),
+        tags$div(
+          class = "item-scen-drop col-sm-6 col-lg-3",
+          switch(type,
+            number = {
+              selectInput(paste0("op_", i, "_", j),
+                label = NULL,
+                choices = c("=", "<", ">", "<=", ">=", "!=")
               )
-            ),
-            selected = "="
-          )
-        },
-        csv = {
-          selectInput(paste0("op_", i, "_", j),
-            label = NULL,
-            choices = setNames(
-              c(
-                "%,LIKE,%", "%,NOTLIKE,%", "%LIKE%",
-                "%NOTLIKE%", ",LIKE%", "%LIKE,"
-              ),
-              c(
-                lang$nav$queryBuilder$operators$is,
-                lang$nav$queryBuilder$operators$notis,
-                lang$nav$queryBuilder$operators$contains,
-                lang$nav$queryBuilder$operators$notcontains,
-                lang$nav$queryBuilder$operators$startswith,
-                lang$nav$queryBuilder$operators$endswith
+            },
+            text = {
+              selectInput(paste0("op_", i, "_", j),
+                label = NULL,
+                choices = setNames(
+                  c(
+                    "=", "!=", "%LIKE%",
+                    "%NOTLIKE%", "LIKE%", "%LIKE",
+                    "%EXIST", "%NOTEXIST"
+                  ),
+                  c(
+                    lang$nav$queryBuilder$operators$is,
+                    lang$nav$queryBuilder$operators$notis,
+                    lang$nav$queryBuilder$operators$contains,
+                    lang$nav$queryBuilder$operators$notcontains,
+                    lang$nav$queryBuilder$operators$startswith,
+                    lang$nav$queryBuilder$operators$endswith,
+                    lang$nav$queryBuilder$operators$exists,
+                    lang$nav$queryBuilder$operators$notexists
+                  )
+                ),
+                selected = "="
               )
-            ),
-            selected = "%,LIKE,%"
+            },
+            csv = {
+              selectInput(paste0("op_", i, "_", j),
+                label = NULL,
+                choices = setNames(
+                  c(
+                    "%,LIKE,%", "%,NOTLIKE,%", "%LIKE%",
+                    "%NOTLIKE%", ",LIKE%", "%LIKE,"
+                  ),
+                  c(
+                    lang$nav$queryBuilder$operators$is,
+                    lang$nav$queryBuilder$operators$notis,
+                    lang$nav$queryBuilder$operators$contains,
+                    lang$nav$queryBuilder$operators$notcontains,
+                    lang$nav$queryBuilder$operators$startswith,
+                    lang$nav$queryBuilder$operators$endswith
+                  )
+                ),
+                selected = "%,LIKE,%"
+              )
+            },
+            date = {
+              selectInput(paste0("op_", i, "_", j),
+                label = NULL,
+                choices = setNames("BETWEEN", lang$nav$queryBuilder$operators$between)
+              )
+            }
           )
-        },
-        date = {
-          selectInput(paste0("op_", i, "_", j),
-            label = NULL,
-            choices = setNames("BETWEEN", lang$nav$queryBuilder$operators$between)
+        ),
+        tags$div(
+          class = "item-search-crit col-sm-6 col-lg-4",
+          switch(type,
+            number = {
+              numericInput(paste0("val_", i, "_", j),
+                label = NULL,
+                value = 0L
+              )
+            },
+            date = {
+              dateRangeInput(paste0("val_", i, "_", j), label = NULL)
+            },
+            {
+              conditionalPanel(
+                paste0("!['%EXIST','%NOTEXIST'].includes(input.op_", i, "_", j, ")"),
+                textInput(paste0("val_", i, "_", j), label = NULL)
+              )
+            }
           )
-        }
+        )
       )
     ),
     tags$div(
-      class = "item-search-crit",
-      switch(type,
-        number = {
-          numericInput(paste0("val_", i, "_", j),
-            label = NULL,
-            value = 0L
-          )
-        },
-        date = {
-          dateRangeInput(paste0("val_", i, "_", j), label = NULL)
-        },
-        {
-          conditionalPanel(
-            paste0("!['%EXIST','%NOTEXIST'].includes(input.op_", i, "_", j, ")"),
-            textInput(paste0("val_", i, "_", j), label = NULL)
-          )
-        }
+      class = "col-xs-2 col-sm-2 custom-left-padding",
+      fluidRow(
+        tags$div(
+          class = "col-lg-2 no-side-margin item-delete",
+          actionButton(paste0("btRemoveLine", i, "_", j), label = NULL, icon = icon("minus-circle"), class = "btn-custom btn-item-delete")
+        )
       )
-    ),
-    tags$div(
-      class = "item-delete",
-      actionButton(paste0("btRemoveLine", i, "_", j), label = HTML("&minus;"), class = "btn-custom btn-item-delete")
     )
   )
 }
@@ -1905,32 +1916,25 @@ addQueryBuilderBlock <- function(id, choices) {
           tags$div(class = "or-sign", lang$nav$queryBuilder$orButton)
         )
       },
+      tags$div(class = "and-sign", lang$nav$queryBuilder$conditionBlock),
       tags$div(
         class = "and-wrapper",
-        tags$div(class = "and-sign", "&"),
-        tags$div(
+        fluidRow(
           id = paste0("blockContent", id),
           class = "grid-container"
         ),
-        tags$div(
-          class = "item-add-block",
+        fluidRow(
+          class = "and-row",
           tags$div(
-            class = "item-and",
-            tags$span(
-              class = "and-button",
-              lang$nav$queryBuilder$andButton
-            )
-          ),
-          tags$div(
-            class = "item-dropdown",
+            class = "col-xs-10 col-sm-10 col-lg-2",
             selectInput(paste0("newLine_", id), "",
-              choices = choices
+              choices = c(setNames("", lang$nav$queryBuilder$andButton), choices)
             )
           ),
           if (id > 1L) {
             tags$div(
-              class = "item-delete",
-              actionButton(paste0("btRemoveBlock", id), label = HTML("&minus;"), class = "btn-custom btn-item-delete")
+              class = "col-lg-2 col-lg-offset-8",
+              actionButton(paste0("btRemoveBlock", id), label = lang$nav$queryBuilder$rmBlock, class = "btn-custom btn-remove-block")
             )
           }
         )
