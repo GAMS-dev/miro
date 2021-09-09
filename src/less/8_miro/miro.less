@@ -1531,6 +1531,9 @@ animation: none !important;
   margin-right: 5px;
   padding-right: 0;
 }
+.data-section .data-section-block.last-section {
+  margin-right: 0;
+}
 .data-section-header {
   font-weight: 600;
 }
@@ -1585,23 +1588,28 @@ animation: none !important;
 .row-presentation {
   margin: 3px;
 }
-.col-sm-4.column-presentation {
+.col-md-4.column-presentation {
   min-width: 50pt;
   padding: 0px 15px 0px 0px;
 }
-.col-sm-8.column-presentation {
+.col-md-8.column-presentation {
   padding: 0px;
 }
-@media (max-width: 1024px) {
+@media (max-width: 991px) {
   .column-presentation {
     margin-bottom: 3pt;
   }
-  .col-sm-4.column-presentation {
+  .col-md-4.column-presentation {
     width: 100%;
   }
-  .col-sm-8.column-presentation {
+  .col-md-8.column-presentation {
     padding: 0px 15px 0px 0px;
     width: 100%;
+  }
+}
+@media (max-width: 991px) {
+  .col-md-8.column-presentation {
+    display: none;
   }
 }
 .list-presentation {
@@ -1624,8 +1632,8 @@ animation: none !important;
   position: relative;
   min-height: 200px;
 }
-@media (max-width: 767px) {
-  .presentation-on > .row-agg-filter > .col-sm-10.presentation-show {
+@media (max-width: 991px) {
+  .presentation-on > .row-agg-filter > .col-md-10.presentation-show {
     padding-left: 0;
     padding-top: 5px;
   }
@@ -1641,8 +1649,9 @@ animation: none !important;
   .data-section > .row {
     flex-direction: column;
   }
-  .data-section-block {
+  .data-section .data-section-block {
     margin-bottom: 5px;
+    margin-right: 0px;
   }
   .row-agg-filter:not(.presentation-on > .row-agg-filter) {
     display: flex;
@@ -1662,6 +1671,20 @@ animation: none !important;
         order: 3;
         padding: 5pt 3pt 0 0!important;
         border-top: 1px solid;
+        display: flex;
+        flex-flow: column;
+        > .drop-index-header {
+          order: 1;
+        }
+        > .aggregation-function {
+          order: 2;
+          > .form-group {
+            margin-bottom: 5px;
+          }
+        }
+        > .aggregation-index-list {
+          order: 3;
+        }
     }
     > .aggregate-dropdowns-wrapper {
         order: 4;

@@ -146,8 +146,8 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
     fluidRow(
       class = "row-agg-filter",
       column(
-        class = "filter-index-wrapper",
-        width = 2L, style = "padding: 1em;",
+        class = "col-md-2 filter-index-wrapper",
+        width = 12L, style = "padding: 1em;",
         style = if (isTRUE(options$hidePivotControls)) {
           "padding: 0;"
         } else {
@@ -253,7 +253,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         }
       ),
       column(
-        width = 10L, class = "presentation-show",
+        width = 12L, class = "col-md-10 presentation-show",
         style = if (!isTRUE(options$hidePivotControls)) "display:none;",
         tags$a(
           `data-proxy-id` = ns("downloadCsv"),
@@ -277,20 +277,20 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         )
       ),
       column(
-        class = "filter-dropdowns-wrapper",
-        width = 4L, class = "presentation-hide",
+        class = "col-md-4 filter-dropdowns-wrapper",
+        width = 12L, class = "presentation-hide",
         style = if (isTRUE(options$hidePivotControls)) "padding: 1em;display:none;" else "padding: 1em;",
         tags$div(id = ns("filterDropdowns"), class = "miro-pivot-filter")
       ),
       column(
-        class = "aggregate-dropdowns-wrapper",
-        width = 4L, class = "presentation-hide",
+        class = "col-md-4 aggregate-dropdowns-wrapper",
+        width = 12L, class = "presentation-hide",
         style = if (isTRUE(options$hidePivotControls)) "padding: 1em;display:none;" else "padding: 1em;",
         tags$div(id = ns("aggregateDropdowns"), class = "miro-pivot-filter")
       ),
       column(
-        class = "aggregate-index-wrapper",
-        width = 2L,
+        class = "col-md-2 aggregate-index-wrapper",
+        width = 12L,
         style = if (isTRUE(options$hidePivotControls)) "padding: 1em;display:none;" else "padding: 1em;",
         class = "presentation-hide",
         tags$div(class = "drop-index-header", lang$renderers$miroPivot$aggregateLabel),
@@ -298,9 +298,12 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
           id = ns("aggregationIndexList"), class = "drop-index-list aggregation-index-list",
           genIndexList(indices$aggregations)
         ),
-        selectInput(ns("aggregationFunction"),
-          label = NULL,
-          choices = c()
+        tags$div(
+          class = "aggregation-function",
+          selectInput(ns("aggregationFunction"),
+            label = NULL,
+            choices = c()
+          )
         )
       )
     ),
@@ -308,8 +311,8 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
       class = "col-filter",
       style = if (isTRUE(options$hidePivotControls)) "margin:0;display:none;" else "margin:0;",
       column(
-        class = "col-charttype-wrapper",
-        width = 2L,
+        class = "col-md-2 col-charttype-wrapper",
+        width = 12L,
         selectInput(ns("pivotRenderer"), "",
           setNames(
             c("table", "heatmap", "bar", "stackedbar", "line", "scatter", "area", "stackedarea", "radar"),
@@ -338,8 +341,8 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         }
       ),
       column(
-        class = "col-index-wrapper",
-        width = 6L, style = "padding: 1em;",
+        class = "col-md-6 col-index-wrapper",
+        width = 12L, style = "padding: 1em;",
         tags$div(
           class = "col-index-header drop-index-header",
           lang$renderers$miroPivot$columns
@@ -350,16 +353,16 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         )
       ),
       column(
-        class = "col-dropdowns-wrapper",
-        width = 4L,
+        class = "col-md-4 col-dropdowns-wrapper",
+        width = 12L,
         tags$div(id = ns("colDropdowns"), class = "miro-pivot-filter")
       )
     ),
     fluidRow(
       class = "table-chart", style = "margin:0",
       column(
-        class = "row-dropdowns-wrapper",
-        width = 2L,
+        class = "col-md-2 row-dropdowns-wrapper",
+        width = 12L,
         style = if (isTRUE(options$hidePivotControls)) {
           "padding: 1em;padding-top: 31px;display:none;"
         } else {
@@ -375,9 +378,10 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         )
       ),
       column(
-        width = if (isTRUE(options$hidePivotControls)) 12L else 10L,
+        width = 12L,
         class = if (isTRUE(options[["_input_"]])) "has-edit-buttons",
         class = "pivot-chart-height",
+        class = if (isTRUE(options$hidePivotControls)) "col-md-12" else "col-md-10",
         style = if (isTRUE(options[["_input_"]]) && isTRUE(options$hidePivotControls)) {
           "margin-top:30px;"
         },
@@ -397,7 +401,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         ),
         genSpinner(ns("loadPivotTable"), hidden = TRUE),
         DTOutput(ns("pivotTable")),
-        chartjsOutput(ns("pivotChart"), height = "40px")
+        tags$div(class = "miro-pivot-height", chartjsOutput(ns("pivotChart"), height = "40px"))
       )
     ),
     fluidRow(
@@ -406,7 +410,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
       fluidRow(
         style = "margin:0;display:flex;",
         column(
-          width = 4L, class = "data-section-block",
+          width = 12L, class = "col-md-4 data-section-block",
           tags$ul(
             class = "drop-index-list-presentation",
             tags$li(
@@ -414,14 +418,14 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
               fluidRow(
                 class = "row-presentation",
                 column(
-                  width = 4L, class = "column-presentation",
+                  width = 12L, class = "col-md-4 column-presentation",
                   tags$div(
                     class = "data-section-header",
                     lang$renderers$miroPivot$rows
                   )
                 ),
                 column(
-                  width = 8L, class = "column-presentation",
+                  width = 12L, class = "col-md-8 column-presentation",
                   tags$div(
                     class = "data-section-header",
                     lang$renderers$miroPivot$filterLabel
@@ -433,7 +437,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
           tags$ul(id = ns("rowsPresentation"), class = "drop-index-list-presentation")
         ),
         column(
-          width = 4L, class = "data-section-block",
+          width = 12L, class = "col-md-4 data-section-block",
           tags$ul(
             class = "drop-index-list-presentation",
             tags$li(
@@ -441,14 +445,14 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
               fluidRow(
                 class = "row-presentation",
                 column(
-                  width = 4L, class = "column-presentation",
+                  width = 12L, class = "col-md-4 column-presentation",
                   tags$div(
                     class = "data-section-header",
                     lang$renderers$miroPivot$columns
                   )
                 ),
                 column(
-                  width = 8L, class = "column-presentation",
+                  width = 12L, class = "col-md-8 column-presentation",
                   tags$div(
                     class = "data-section-header",
                     lang$renderers$miroPivot$filterLabel
@@ -460,7 +464,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
           tags$ul(id = ns("colsPresentation"), class = "drop-index-list-presentation")
         ),
         column(
-          width = 4L, class = "data-section-block", style = "margin-right: 0;",
+          width = 12L, class = "col-md-4 data-section-block last-section",
           tags$ul(
             class = "drop-index-list-presentation",
             tags$li(
@@ -468,14 +472,14 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
               fluidRow(
                 class = "row-presentation",
                 column(
-                  width = 4L, class = "column-presentation",
+                  width = 12L, class = "col-md-4 column-presentation",
                   tags$div(
                     class = "data-section-header",
                     lang$renderers$miroPivot$aggregation
                   )
                 ),
                 column(
-                  width = 8L, class = "column-presentation",
+                  width = 12L, class = "col-md-8 column-presentation",
                   tags$div(
                     class = "data-section-header",
                     lang$renderers$miroPivot$filterLabel
@@ -1790,7 +1794,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           )
         }
         hideEl(session, paste0("#", ns("loadPivotTable")))
-
+        chartJsObj$x$options$maintainAspectRatio <- FALSE
         return(chartJsObj %>% cjsLegend())
       })
 

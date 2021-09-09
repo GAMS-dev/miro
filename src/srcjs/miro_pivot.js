@@ -22,10 +22,10 @@ function updatePivotPresentationData(id) {
       const indexAlias = $(`#${id}${item}IndexList [data-rank-id='${indexName}']`).text();
       return `<li class="list-presentation">
                 <div class="row row-presentation">
-                  <div class="col-sm-4 column-presentation">
+                  <div class="col-md-4 column-presentation">
                     <div class="drop-index-item-presentation">${escapeHTML(indexAlias)}</div>
                   </div>
-                  <div class="col-sm-8 column-presentation">
+                  <div class="col-md-8 column-presentation">
                   ${filterHTML}
                   </div>
                 </div>
@@ -69,15 +69,15 @@ export function activateMiroPivotPresentation(id) {
   }
 
   updatePivotPresentationData(id);
-  $(`#${id}container .row.table-chart`).children('.col-sm-2').animate({ width: 'hide' }, 250, () => {
-    $(`#${id}container .row.table-chart`).children('.col-sm-10').toggleClass('col-sm-10 col-sm-12', 500);
+  $(`#${id}container .row.table-chart`).children('.col-md-2').animate({ width: 'hide' }, 250, () => {
+    $(`#${id}container .row.table-chart`).children('.col-md-10').toggleClass('col-md-10 col-md-12', 500);
     $(`#${id}container .row.row-agg-filter`).slideUp(500);
     if ($(`#${id}container .row.table-chart .has-edit-buttons`).length > 0) {
-      $(`#${id}container .row.table-chart`).children('.col-sm-12').animate({ 'margin-top': '30px' }, 500);
+      $(`#${id}container .row.table-chart`).children('.col-md-12').animate({ 'margin-top': '30px' }, 500);
     }
     $(`#${id}container .row.col-filter`).slideUp(500, () => {
       $(`#${id}container .row.row-agg-filter`).find('.presentation-hide').hide();
-      $(`#${id}container .row.row-agg-filter`).children('.col-sm-2')[0].setAttribute('style', 'padding: 0px');
+      $(`#${id}container .row.row-agg-filter`).children('.col-md-2')[0].setAttribute('style', 'padding: 0px');
       $(`#${id}container .row.row-agg-filter`).find('.dropdown.presentation')[0].setAttribute('style', 'margin-top: 0px');
       $(`#${id}container .dropdown.presentation .miro-pivot-view-button`).css('display', 'none');
       $(`#${id}container`)[0].classList.add('presentation-on');
@@ -100,20 +100,20 @@ export function deactivateMiroPivotPresentation(id) {
 
   $(`#${id}container .row.row-agg-filter`).slideUp(350, () => {
     if ($(`#${id}container .row.table-chart .has-edit-buttons`).length > 0) {
-      $(`#${id}container .row.table-chart`).children('.col-sm-12').animate({ 'margin-top': '' }, 350, () => {
-        $(`#${id}container .row.table-chart`).children('.col-sm-12').css('margin-top', '');
+      $(`#${id}container .row.table-chart`).children('.col-md-12').animate({ 'margin-top': '' }, 350, () => {
+        $(`#${id}container .row.table-chart`).children('.col-md-12').css('margin-top', '');
       });
     }
     $(`#${id}container .dropdown.presentation .miro-pivot-view-button`).css('display', '');
     $(`#${id}container .row.row-agg-filter`).find('.dropdown.presentation')[0].setAttribute('style', 'margin-top: 10px');
-    $(`#${id}container .row.row-agg-filter`).children('.col-sm-2')[0].setAttribute('style', 'padding: 1em');
+    $(`#${id}container .row.row-agg-filter`).children('.col-md-2')[0].setAttribute('style', 'padding: 1em');
     $(`#${id}container .row.row-agg-filter`).find('.presentation-hide').show();
     $(`#${id}container .row.row-agg-filter`).find('.presentation-show').slideUp(0, () => {
       $(`#${id}container`)[0].classList.remove('presentation-on');
       $(`#${id}container .row.col-filter`).slideDown(500);
       $(`#${id}container .row.row-agg-filter`).slideDown(500, () => {
-        $(`#${id}container .row.table-chart`).children('.col-sm-12').toggleClass('col-sm-12 col-sm-10');
-        $(`#${id}container .row.table-chart`).children('.col-sm-2').animate({ width: 'show' }, 500, () => {
+        $(`#${id}container .row.table-chart`).children('.col-md-12').toggleClass('col-md-12 col-md-10');
+        $(`#${id}container .row.table-chart`).children('.col-md-2').animate({ width: 'show' }, 500, () => {
           if (document.getElementById(`${id}pivotTable`).getElementsByClassName('dataTable').length > 0) {
             $(`#${id}pivotTable`).data('datatable').draw();
           }
