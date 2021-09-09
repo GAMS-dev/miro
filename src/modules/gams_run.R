@@ -838,15 +838,14 @@ if (identical(config$activateModules$hcube, TRUE)) {
   generateHcInterface <- function() {
     tagList(
       tags$div(
-        class = "container-fluid",
-        style = "max-height:600px;max-height:60vh;overflow:auto;padding-bottom:50px;",
+        class = "container-fluid hc-container",
         tags$div(
           class = "row",
           lapply(seq_along(config$hcModule$scalarsConfig), function(widgetId) {
             scalarConfig <- config$hcModule$scalarsConfig[[widgetId]]
             symId <- match(scalarConfig$name, names(modelIn))
             dependencyId <- match(scalarConfig$name, names(modelInWithDep))
-            tags$div(class = "col-sm-6", {
+            tags$div(class = "col-md-6 hc-widget-row", {
               if (identical(scalarConfig$type, "dropdown")) {
                 if (identical(scalarConfig$baseType, "checkbox")) {
                   dropdownVal <- suppressWarnings(as.integer(isolate(input[[paste0("cb_", symId)]])))
@@ -877,7 +876,7 @@ if (identical(config$activateModules$hcube, TRUE)) {
                   scalarConfig$step <- configTmp$step
                 }
                 tags$div(
-                  class = "row", style = "overflow:hidden;background:",
+                  class = "row", style = "overflow:hidden;",
                   tags$div(
                     class = if (scalarConfig$single) "col-sm-10" else "col-sm-8",
                     sliderInput(paste0("hcWidget_", widgetId),
@@ -929,16 +928,6 @@ if (identical(config$activateModules$hcube, TRUE)) {
               }
             })
           })
-        )
-      ),
-      tags$div(
-        class = "row", style = "text-align:center;",
-        actionButton("btSubmitHcJobConfirm", lang$nav$hcModule$submissionDialog$btSubmitAll,
-          class = "bt-highlight-1 bt-gms-confirm bt-no-disable"
-        ),
-        actionButton("btSubmitHcJobConfirmUnsolved", lang$nav$hcModule$submissionDialog$btSubmitUnsolved,
-          class = "bt-highlight-1 bt-gms-confirm bt-no-disable",
-          style = "display:none;"
         )
       )
     )
@@ -1084,21 +1073,35 @@ if (identical(config$activateModules$hcube, TRUE)) {
     rv$refreshHcubeHashes <- rv$refreshHcubeHashes + 1L
 
     showModal(modalDialog(
+      class = "hc-modal",
       title = lang$nav$hcModule$submissionDialog$title,
       tags$div(
         id = "newHcJobError", class = "gmsalert gmsalert-error",
         style = "position: relative;max-width: unset;"
       ),
       tags$div(id = "newHcJobInfo", class = "shiny-text-output lead"),
-      selectizeInput("newHcubeTags", lang$nav$dialogHcube$newTags, c(),
-        multiple = TRUE, options = list(
-          "create" = TRUE,
-          "persist" = FALSE
+      tags$div(
+        class = "hc-tags-row",
+        selectizeInput("newHcubeTags", lang$nav$dialogHcube$newTags, c(),
+          multiple = TRUE, options = list(
+            "create" = TRUE,
+            "persist" = FALSE
+          )
         )
       ),
       tags$div(
         id = "newHcWrapper",
         genSpinner(absolute = FALSE)
+      ),
+      tags$div(
+        class = "row hc-submit-row", style = "text-align:center;",
+        actionButton("btSubmitHcJobConfirm", lang$nav$hcModule$submissionDialog$btSubmitAll,
+          class = "bt-highlight-1 bt-gms-confirm bt-no-disable"
+        ),
+        actionButton("btSubmitHcJobConfirmUnsolved", lang$nav$hcModule$submissionDialog$btSubmitUnsolved,
+          class = "bt-highlight-1 bt-gms-confirm bt-no-disable",
+          style = "display:none;"
+        )
       ),
       easyClose = FALSE,
       size = "l",
