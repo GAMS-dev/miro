@@ -1512,6 +1512,12 @@ if (!is.null(errMsg)) {
     # \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     # ______________________________________________________
     server <- function(input, output, session) {
+      isMobileDevice <- isolate(session$clientData$screenwidth)
+      isMobileDevice <- length(isMobileDevice) && isMobileDevice < 768L
+      if (isMobileDevice) {
+        hideEl(session, ".miro-show-on-desktop-devices")
+        showEl(session, ".miro-show-on-mobile-devices")
+      }
       newTab <- vector("list", maxNumberScenarios + 3L)
       btSortNameDesc <- FALSE
       btSortTimeDesc <- TRUE
@@ -2026,7 +2032,11 @@ if (!is.null(errMsg)) {
       })
 
       lapply(seq_along(modelIn), function(i) {
-        if (modelIn[[i]]$type == "hot") {
+        widgetType <- modelIn[[i]]$type
+        if (isMobileDevice && identical(widgetType, "hot")) {
+          widgetType <- "dt"
+        }
+        if (widgetType == "hot") {
           observeEvent(input[["in_" %+% i %+% "_select"]], {
             hotInit[[i]] <<- TRUE
             isEmptyInput[[i]] <<- FALSE
@@ -2037,7 +2047,7 @@ if (!is.null(errMsg)) {
         }
         observe(
           {
-            switch(modelIn[[i]]$type,
+            switch(widgetType,
               hot = {
                 input[["in_" %+% i]]
               },

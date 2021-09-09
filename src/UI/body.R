@@ -309,16 +309,34 @@ if (buildUI) {
               if (modelIn[[i]]$type == "hot") {
                 tagList(
                   tags$div(
-                    class = "hot-search-wrapper",
-                    tags$label(
-                      lang$nav$hot$search,
-                      tags$input(
-                        class = "hot-search-box",
-                        type = "search", id = paste0("in_", i, "-search")
+                    class = "miro-show-on-desktop-devices",
+                    tags$div(
+                      class = "hot-search-wrapper",
+                      tags$label(
+                        lang$nav$hot$search,
+                        tags$input(
+                          class = "hot-search-box",
+                          type = "search", id = paste0("in_", i, "-search")
+                        )
                       )
-                    )
+                    ),
+                    rHandsontableOutput(paste0("in_", i))
                   ),
-                  rHandsontableOutput(paste0("in_", i))
+                  tags$div(
+                    class = "miro-show-on-mobile-devices", style = "display:none",
+                    tags$div(
+                      style = "margin-bottom:10px;",
+                      actionButton(
+                        paste0("in_m_", i, "_add_row"),
+                        lang$renderers$miroPivot$btAddRow
+                      ),
+                      actionButton(paste0("in_m_", i, "_remove_row"),
+                        lang$renderers$miroPivot$btRemoveRows,
+                        class = "bt-remove"
+                      )
+                    ),
+                    dataTableOutput(paste0("in_m_", i))
+                  )
                 )
               } else if (modelIn[[i]]$type == "dt") {
                 tagList(

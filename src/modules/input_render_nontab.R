@@ -56,6 +56,10 @@ lapply(seq_along(modelIn), function(id) {
   if (!is.na(i)) {
     name <- names(modelInWithDep)[[i]]
   }
+  htmlSelectorPefix <- "in_"
+  if (isMobileDevice && identical(widgetType, "hot")) {
+    htmlSelectorPefix <- "in_m_"
+  }
   switch(modelIn[[id]]$type,
     checkbox = {
       dataModelIn[[id]] <<- reactive({
@@ -97,7 +101,7 @@ lapply(seq_along(modelIn), function(id) {
           errMsg <- NULL
           noShared <- FALSE
           rv[["in_" %+% k]]
-          input[["in_" %+% k]]
+          input[[htmlSelectorPefix %+% k]]
           rv[["in_" %+% id]]
 
           tryCatch(
@@ -323,11 +327,12 @@ lapply(seq_along(modelIn), function(id) {
             j <- 2
             for (dataSheet in unique(tolower(names(ddownDep[[name]]$fw)))) {
               k <- match(dataSheet, names(modelIn))
-              input[["in_" %+% k]]
+              input[[htmlSelectorPefix %+% k]]
               rv[["in_" %+% k]]
               if (identical(modelIn[[k]]$type, "custom")) {
                 force(modelInputDataVisible[[k]]())
-              } else if (identical(modelIn[[k]]$type, "dt")) {
+              } else if (identical(modelIn[[k]]$type, "dt") ||
+                (isMobileDevice && identical(modelIn[[k]]$type, "hot"))) {
                 force(rv[[paste0("wasModified_", k)]])
               }
               tryCatch(
@@ -508,8 +513,8 @@ lapply(seq_along(modelIn), function(id) {
                 )
                 return(NULL)
               }
-              if (length(rv[["in_" %+% k]]) && (modelIn[[k]]$type == "hot" &&
-                !is.null(input[["in_" %+% k]]) ||
+              if (length(rv[["in_" %+% k]]) && ((identical(modelIn[[k]]$type, "hot") && !isMobileDevice &&
+                !is.null(input[[htmlSelectorPefix %+% k]])) ||
                 (length(rv[[paste0("wasModified_", k)]]) && !is.null(tableContent[[k]])) ||
                 identical(modelIn[[k]]$type, "custom") && length(modelInputDataVisible[[k]])) &&
                 !isEmptyInput[k]) {

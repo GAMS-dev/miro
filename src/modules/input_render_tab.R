@@ -53,14 +53,18 @@ getInputDataset <- function(id, visible = FALSE) {
       ))
   }
   if (visible) {
-    if (identical(modelIn[[id]]$type, "hot")) {
+    widgetType <- modelIn[[id]]$type
+    if (isMobileDevice && identical(widgetType, "hot")) {
+      widgetType <- "dt"
+    }
+    if (identical(widgetType, "hot")) {
       intermDataTmp <- getVisibleTabData(id, "hot")
-    } else if (identical(modelIn[[id]]$type, "dt")) {
+    } else if (identical(widgetType, "dt")) {
       intermDataTmp <- getVisibleTabData(id, "dt")
     } else {
       flog.error(
         "Cannot get input datatset: '%s': Unsupported type: '%s'.",
-        names(modelIn)[id], modelIn[[id]]$type
+        names(modelIn)[id], widgetType
       )
       return(modelInTemplate[[id]])
     }
@@ -79,11 +83,17 @@ getInputDataset <- function(id, visible = FALSE) {
   return(intermDataTmp)
 }
 getInputDatasetRaw <- function(id) {
-  if (modelIn[[id]]$type %in% c("dt", "hot")) {
-    if ((!is.null(isolate(input[["in_" %+% id]])) && hotInit[[id]]) || length(tableContent[[id]])) {
+  widgetType <- modelIn[[id]]$type
+  htmlSelector <- paste0("in_", id)
+  if (isMobileDevice && identical(widgetType, "hot")) {
+    widgetType <- "dt"
+    htmlSelector <- paste0("in_m_", id)
+  }
+  if (widgetType %in% c("dt", "hot")) {
+    if ((!is.null(isolate(input[[htmlSelector]])) && hotInit[[id]]) || length(tableContent[[id]])) {
       if (length(colsWithDep[[id]])) {
         if (!isEmptyInput[id]) {
-          if (modelIn[[id]]$type == "hot") {
+          if (widgetType == "hot") {
             dataTmp <- getVisibleTabData(id, "hot")
             if (!length(dataTmp) || identical(nrow(dataTmp), 1L) &&
               all(vapply(dataTmp, identical, logical(1L), "", USE.NAMES = FALSE))) {
@@ -102,7 +112,7 @@ getInputDatasetRaw <- function(id) {
         return(modelInputData[[id]])
       }
       if (!isEmptyInput[id]) {
-        if (modelIn[[id]]$type == "hot") {
+        if (widgetType == "hot") {
           return(getVisibleTabData(id, "hot"))
         }
         return(getVisibleTabData(id, "dt"))
@@ -309,9 +319,15 @@ lapply(modelInTabularData, function(sheet) {
   if (isTRUE(modelIn[[i]]$dropdown$multiple)) {
     return()
   }
+  widgetType <- modelIn[[i]]$type
+  htmlSelector <- paste0("in_", i)
+  if (isMobileDevice && identical(widgetType, "hot")) {
+    widgetType <- "dt"
+    htmlSelector <- paste0("in_m_", i)
+  }
   if (length(colsWithDep[[i]])) {
     dataModelIn[[i]] <<- reactive({
-      if (identical(modelIn[[i]]$type, "hot")) {
+      if (identical(widgetType, "hot")) {
         hotInit[[i]] <<- TRUE
       }
       # make sure data will be updated when old data is overwritten
@@ -320,7 +336,7 @@ lapply(modelInTabularData, function(sheet) {
         data <- modelInputData[[i]]
       } else {
         # save changes made in handsontable
-        if (identical(modelIn[[i]]$type, "hot") &&
+        if (identical(widgetType, "hot") &&
           !is.null(isolate(input[["in_" %+% i]]))) {
           tableContent[[i]] <<- hotToR(
             isolate(input[["in_" %+% i]]),
@@ -357,7 +373,7 @@ lapply(modelInTabularData, function(sheet) {
         by = idsIn[[i]]
       )
 
-      if (identical(modelIn[[i]]$type, "hot")) {
+      if (identical(widgetType, "hot")) {
         if (!nrow(data)) {
           data[1, ] <- NA
           data <- mutate_if(data, is.character,
@@ -402,7 +418,7 @@ lapply(modelInTabularData, function(sheet) {
   } else {
     dataModelIn[[i]] <<- reactive({
       rv[["in_" %+% i]]
-      if (identical(modelIn[[i]]$type, "hot")) {
+      if (identical(widgetType, "hot")) {
         hotInit[[i]] <<- TRUE
         if (length(modelInputData[[i]]) &&
           nrow(modelInputData[[i]]) > 0L) {
@@ -447,7 +463,7 @@ lapply(modelInTabularData, function(sheet) {
       return(tableContent[[i]])
     })
   }
-  if (identical(modelIn[[i]]$type, "hot")) {
+  if (identical(widgetType, "hot")) {
     # rendering handsontables for input data
     if (length(modelIn[[i]]$pivotCols)) {
       noDomains <- sum(vapply(modelIn[[i]]$headers, function(header) {
@@ -532,10 +548,10 @@ lapply(modelInTabularData, function(sheet) {
         if (length(colSourceConfig$static)) {
           source <- colSourceConfig$static
         } else if (length(rv[["in_" %+% k]]) && !isEmptyInput[k] &&
-          (modelIn[[k]]$type == "hot" &&
+          (widgetType == "hot" &&
             !is.null(input[["in_" %+% k]]) ||
             (length(rv[[paste0("wasModified_", k)]]) && !is.null(tableContent[[k]])) ||
-            identical(modelIn[[k]]$type, "custom") && length(modelInputDataVisible[[k]]))) {
+            identical(widgetType, "custom") && length(modelInputDataVisible[[k]]))) {
           tryCatch(
             {
               source <- unique(getInputDataset(k)[[colSourceConfig$colId]])
@@ -584,8 +600,8 @@ lapply(modelInTabularData, function(sheet) {
         isolate(rv[[paste0("in_", i)]] <- 1L)
       }
     })
-  } else if (identical(modelIn[[i]]$type, "dt")) {
-    output[["in_" %+% i]] <- renderDT({
+  } else if (identical(widgetType, "dt")) {
+    output[[htmlSelector]] <- renderDT({
       errMsg <- NULL
       tabData <- dataModelIn[[i]]()
 
@@ -629,9 +645,9 @@ lapply(modelInTabularData, function(sheet) {
       }
       return(dt)
     })
-    proxy[[i]] <<- dataTableProxy("in_" %+% i)
+    proxy[[i]] <<- dataTableProxy(htmlSelector)
 
-    observeEvent(input[[paste0("in_", i, "_add_row")]], {
+    observeEvent(input[[paste0(htmlSelector, "_add_row")]], {
       if (!length(tableContent[[i]])) {
         flog.warn(
           "Remove rows button (symbol: %s) was clicked but tableContent has no length.",
@@ -655,7 +671,7 @@ lapply(modelInTabularData, function(sheet) {
       } else {
         colnames <- attr(modelInTemplate[[i]], "aliases")
       }
-      newRowId <- suppressWarnings(as.integer(input[[paste0("in_", i, "_rows_selected")]]))
+      newRowId <- suppressWarnings(as.integer(input[[paste0(htmlSelector, "_rows_selected")]]))
       if (any(is.na(newRowId))) {
         return(flog.error("Invalid data for 'rows_selected' (symbol: %s).", names(modelIn)[i]))
       }
@@ -708,7 +724,7 @@ lapply(modelInTabularData, function(sheet) {
           ),
           footer = tagList(
             modalButton(lang$renderers$miroPivot$dialogAddRow$btCancel),
-            actionButton(paste0("in_", i, "_add_row_confirm"),
+            actionButton(paste0(htmlSelector, "_add_row_confirm"),
               label = lang$renderers$miroPivot$btAddRow,
               class = "bt-highlight-1 bt-gms-confirm"
             )
@@ -717,7 +733,7 @@ lapply(modelInTabularData, function(sheet) {
         )
       )
     })
-    observeEvent(input[[paste0("in_", i, "_add_row_confirm")]], {
+    observeEvent(input[[paste0(htmlSelector, "_add_row_confirm")]], {
       flog.trace("Add row button for table: %s clicked.", names(modelIn)[i])
       if (!length(tableContent[[i]])) {
         flog.warn(
@@ -804,9 +820,9 @@ lapply(modelInTabularData, function(sheet) {
       }
       flog.trace("Added row (symbol: %s).", names(modelIn)[i])
     })
-    observeEvent(input[[paste0("in_", i, "_remove_row")]], {
+    observeEvent(input[[paste0(htmlSelector, "_remove_row")]], {
       flog.trace("Remove rows button (symbol: %s) was clicked.", names(modelIn)[i])
-      idsToRemove <- input[[paste0("in_", i, "_rows_selected")]]
+      idsToRemove <- input[[paste0(htmlSelector, "_rows_selected")]]
       if (!length(idsToRemove)) {
         flog.trace("No rows selected (symbol: %s).", names(modelIn)[i])
         return()
@@ -827,9 +843,9 @@ lapply(modelInTabularData, function(sheet) {
       }
       flog.trace("Removed %s row(s) (symbol: %s).", length(idsToRemove), names(modelIn)[i])
     })
-    observeEvent(input[[paste0("in_", i, "_cell_edit")]], {
+    observeEvent(input[[paste0(htmlSelector, "_cell_edit")]], {
       rownames <- config$datatable$rownames
-      info <- input[[paste0("in_", i, "_cell_edit")]]
+      info <- input[[paste0(htmlSelector, "_cell_edit")]]
       row <- info$row
       if (rownames) {
         col <- info$col
@@ -852,7 +868,7 @@ lapply(modelInTabularData, function(sheet) {
       }
       flog.trace("Modified value of row: %s, column: %s, value: %s (symbol: %s).", row, col, val, names(modelIn)[i])
     })
-  } else if (identical(modelIn[[i]]$type, "custom")) {
+  } else if (identical(widgetType, "custom")) {
     rendererEnv[[paste0("input_", i)]] <- new.env(parent = emptyenv())
     if (identical(modelIn[[i]]$apiVersion, 2L)) {
       tryCatch(
