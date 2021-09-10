@@ -78,6 +78,16 @@ if (!debugMode) {
   }
 }
 
+if (dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) {
+  staticDirExists <- TRUE
+  addResourcePath(paste0("static_", modelName), paste0(
+    currentModelDir, .Platform$file.sep,
+    "static_", modelName
+  ))
+} else {
+  staticDirExists <- FALSE
+}
+
 if (buildUI) {
   inputTabContent <- lapply(seq_along(inputTabs), function(tabId) {
     content <- lapply(inputTabs[[tabId]], function(i) {
@@ -913,6 +923,15 @@ if (buildUI) {
         ),
         tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
         tags$script(src = "miro.js", type = "application/javascript"),
+        if (staticDirExists && file.exists(file.path(currentModelDir, paste0("static_", modelName), "manifest.json"))) {
+          tags$link(rel = "manifest", href = paste0("static_", modelName, "/manifest.json"))
+        } else {
+          tags$link(rel = "manifest", href = "manifest.json")
+        },
+        tags$link(rel = "apple-touch-icon", sizes = "180x180", href = "apple-touch-icon.png"),
+        tags$link(rel = "icon", type = "image/png", sizes = "32x32", href = "favicon-32x32.png"),
+        tags$link(rel = "icon", type = "image/png", sizes = "16x16", href = "favicon-16x16.png"),
+        tags$meta(name = "msapplication-TileColor", content = "#ff9900"),
         # styles that depend on data from config JSON file
         # Logo ratio should be 4,6 (width/height)
         tags$style(HTML(
@@ -921,11 +940,11 @@ if (buildUI) {
 .main-header .logo {
   background-image: url("',
             if (!identical(config$UILogo, "gams_logo.png") &&
-              dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) {
+              staticDirExists) {
               "static_"
             }, modelName, "/", config$UILogo, '") ',
             if (!identical(config$UILogo, "gams_logo.png") &&
-              dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) {
+              staticDirExists) {
               "!important;
   background-size: contain;
 }"
@@ -965,10 +984,4 @@ if (buildUI) {
       file = miroCacheFile
     )
   }
-}
-if (dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) {
-  addResourcePath(paste0("static_", modelName), paste0(
-    currentModelDir, .Platform$file.sep,
-    "static_", modelName
-  ))
 }
