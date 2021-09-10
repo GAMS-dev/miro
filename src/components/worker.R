@@ -1025,7 +1025,7 @@ Worker <- R6Class("Worker", public = list(
               usetz = TRUE
             )
           ),
-          timeout(metadata$timeout)
+          timeout(120L)
         )
         if (identical(status_code(ret), 201L)) {
           if (is.R6(hcubeData)) {
