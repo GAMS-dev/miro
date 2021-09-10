@@ -340,17 +340,26 @@ observeEvent(input$tpEditMeta, {
   execPerm <- csv2Vector(metaTmp[["_accessx"]][[1]])
   insertUI("#contentAccessPerm",
     ui = tagList(
-      accessPermInput("editMetaReadPerm", lang$nav$excelExport$metadataSheet$readPerm,
-        sort(unique(c(readPerm, accessGroups))),
-        selected = readPerm
+      tags$div(
+        class = "input-form-mobile",
+        accessPermInput("editMetaReadPerm", lang$nav$excelExport$metadataSheet$readPerm,
+          sort(unique(c(readPerm, accessGroups))),
+          selected = readPerm, width = "100%"
+        )
       ),
-      accessPermInput("editMetaWritePerm", lang$nav$excelExport$metadataSheet$writePerm,
-        sort(unique(c(writePerm, accessGroups))),
-        selected = writePerm
+      tags$div(
+        class = "input-form-mobile",
+        accessPermInput("editMetaWritePerm", lang$nav$excelExport$metadataSheet$writePerm,
+          sort(unique(c(writePerm, accessGroups))),
+          selected = writePerm, width = "100%"
+        )
       ),
-      accessPermInput("editMetaExecPerm", lang$nav$excelExport$metadataSheet$execPerm,
-        sort(unique(c(execPerm, accessGroups))),
-        selected = execPerm
+      tags$div(
+        class = "input-form-mobile",
+        accessPermInput("editMetaExecPerm", lang$nav$excelExport$metadataSheet$execPerm,
+          sort(unique(c(execPerm, accessGroups))),
+          selected = execPerm, width = "100%"
+        )
       )
     )
   )

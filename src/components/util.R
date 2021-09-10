@@ -1800,7 +1800,7 @@ tabIdToRef <- function(tabId) {
   }
   return(paste0("cmpTab_", as.character(tabId)))
 }
-accessPermInput <- function(inputId, label, choices, selected = NULL) {
+accessPermInput <- function(inputId, label, choices, selected = NULL, width = NULL) {
   selectizeInput(inputId, label, "",
     multiple = TRUE,
     options = list(
@@ -1816,7 +1816,8 @@ accessPermInput <- function(inputId, label, choices, selected = NULL) {
       sortField = I("function(i1,i2) {return i1.value-i2.value;}"),
       items = I(toJSON(selected, auto_unbox = FALSE)),
       render = I("{option: function(d,e){return '<div>'+(d.isGroup?'<i class=\"fas fa-users\"></i> '+e(d.value.substring(1)):'<i class=\"fas fa-user\"></i> '+e(d.value))+'</div>';},item:function(d,e){return '<div>'+(d.isGroup?'<i class=\"fas fa-users\"></i> '+e(d.value.substring(1)):'<i class=\"fas fa-user\"></i> '+e(d.value))+'</div>';}}")
-    )
+    ),
+    width = width
   )
 }
 colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE) {

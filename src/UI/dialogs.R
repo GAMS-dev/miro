@@ -91,33 +91,42 @@ showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm",
     title = lang$nav$dialogNewScen$title,
     tags$div(
       id = "scenNameWrapper",
-      textInput("scenName", lang$nav$dialogNewScen$desc,
-        value = tmpScenName
+      tags$div(
+        class = "input-form-mobile",
+        textInput("scenName", lang$nav$dialogNewScen$desc,
+          value = tmpScenName,
+          width = "100%"
+        )
       ),
-      selectizeInput("newScenTags", lang$nav$dialogNewScen$tags, scenTags,
-        selected = scenTags,
-        multiple = TRUE, options = list(
-          "create" = TRUE,
-          "persist" = FALSE
+      tags$div(
+        class = "input-form-mobile",
+        selectizeInput("newScenTags", lang$nav$dialogNewScen$tags, scenTags,
+          selected = scenTags,
+          multiple = TRUE, options = list(
+            "create" = TRUE,
+            "persist" = FALSE
+          ),
+          width = "100%"
         )
       ),
       fluidRow(
-        column(
-          4L,
+        class = "keep-meta-wrapper",
+        tags$div(
+          class = "col-sm-4 col-xs-6 keep-meta-item",
           checkboxInput_MIRO(
             "newScenDiscardAttach",
             lang$nav$dialogNewScen$discardAttach
           )
         ),
-        column(
-          4L,
+        tags$div(
+          class = "col-sm-4 col-xs-6 keep-meta-item",
           checkboxInput_MIRO(
             "newScenDiscardViews",
             lang$nav$dialogNewScen$discardViews
           )
         ),
-        column(
-          4L,
+        tags$div(
+          class = "col-sm-4 col-xs-6 keep-meta-item",
           checkboxInput_MIRO(
             "newScenDiscardPerm",
             lang$nav$dialogNewScen$discardPerm,
@@ -136,6 +145,7 @@ showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm",
     ),
     footer = tagList(
       tags$div(
+        class = "modal-footer-mobile",
         id = "dialogSaveInit",
         modalButton(lang$nav$dialogNewScen$cancelButton),
         tags$button(
@@ -148,6 +158,7 @@ showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm",
         )
       ),
       tags$div(
+        class = "modal-footer-mobile",
         id = "dialogSaveConfirm", style = "display:none;",
         actionButton("btNewName", lang$nav$dialogNewScen$btNewName),
         actionButton(forwardTo, lang$nav$dialogNewScen$btOverwrite,
@@ -164,14 +175,17 @@ showRemoveScenDialog <- function(forwardTo) {
     title = lang$nav$dialogRemoveScen$title,
     lang$nav$dialogRemoveScen$desc,
     footer = tagList(
-      modalButton(lang$nav$dialogRemoveScen$cancelButton),
-      tags$button(
-        class = "btn btn-default bt-highlight-1 bt-gms-confirm",
-        type = "button", onclick = paste0(
-          "Shiny.setInputValue('", forwardTo, "',1,",
-          "{priority:'event'})"
-        ),
-        lang$nav$dialogRemoveScen$okButton
+      tags$div(
+        class = "modal-footer-mobile",
+        modalButton(lang$nav$dialogRemoveScen$cancelButton),
+        tags$button(
+          class = "btn btn-default bt-highlight-1 bt-gms-confirm",
+          type = "button", onclick = paste0(
+            "Shiny.setInputValue('", forwardTo, "',1,",
+            "{priority:'event'})"
+          ),
+          lang$nav$dialogRemoveScen$okButton
+        )
       )
     ), fade = TRUE, easyClose = FALSE
   ))
@@ -189,13 +203,16 @@ showDeleteScenDialog <- function() {
       lang$nav$dialogDeleteScen$removeFromUI$desc
     ),
     footer = tagList(
-      modalButton(lang$nav$dialogDeleteScen$cancelButton),
-      actionButton("btDeleteConfirm", lang$nav$dialogDeleteScen$okButton,
-        class = "bt-highlight-1 bt-gms-confirm"
-      ),
-      actionButton("btRemoveDeletedConfirm",
-        label = lang$nav$dialogDeleteScen$removeFromUI$okButton,
-        class = "bt-highlight-1 bt-gms-confirm", style = "display:none;"
+      tags$div(
+        class = "modal-footer-mobile",
+        modalButton(lang$nav$dialogDeleteScen$cancelButton),
+        actionButton("btDeleteConfirm", lang$nav$dialogDeleteScen$okButton,
+          class = "bt-highlight-1 bt-gms-confirm"
+        ),
+        actionButton("btRemoveDeletedConfirm",
+          label = lang$nav$dialogDeleteScen$removeFromUI$okButton,
+          class = "bt-highlight-1 bt-gms-confirm", style = "display:none;"
+        )
       )
     ),
     fade = TRUE, easyClose = FALSE
@@ -710,15 +727,23 @@ showEditMetaDialog <- function(metadata,
       lang$nav$dialogEditMeta$scenExists
     ),
     tags$div(class = "space"),
-    textInput("editMetaName", lang$nav$dialogEditMeta$newName,
-      value = metadata[["_sname"]][[1]]
+    tags$div(
+      class = "input-form-mobile",
+      textInput("editMetaName", lang$nav$dialogEditMeta$newName,
+        value = metadata[["_sname"]][[1]],
+        width = "100%"
+      )
     ),
-    selectizeInput("editMetaTags", lang$nav$dialogEditMeta$newTags,
-      scenTags,
-      selected = scenTags,
-      multiple = TRUE, options = list(
-        "create" = TRUE,
-        "persist" = FALSE
+    tags$div(
+      class = "input-form-mobile",
+      selectizeInput("editMetaTags", lang$nav$dialogEditMeta$newTags,
+        scenTags,
+        selected = scenTags,
+        multiple = TRUE, options = list(
+          "create" = TRUE,
+          "persist" = FALSE
+        ),
+        width = "100%"
       )
     )
   )
@@ -782,7 +807,12 @@ showEditMetaDialog <- function(metadata,
       ),
       tags$div(class = "space"),
       downloadLink("downloadAttachmentData", "", style = "visibility:hidden;"),
-      fileInput("file_addAttachments", lang$nav$dialogEditMeta$attachmentsAdd, multiple = TRUE),
+      tags$div(
+        class = "input-form-mobile",
+        fileInput("file_addAttachments", lang$nav$dialogEditMeta$attachmentsAdd,
+          multiple = TRUE, width = "100%"
+        )
+      ),
       if (length(attachmentMetadata[["name"]])) {
         lapply(seq_along(attachmentMetadata[["name"]]), function(i) {
           tags$div(
@@ -835,7 +865,12 @@ showEditMetaDialog <- function(metadata,
         lang$errMsg$unknownError
       ),
       tags$div(class = "space"),
-      fileInput("file_addViews", lang$nav$dialogEditMeta$viewsAdd, multiple = TRUE),
+      tags$div(
+        class = "input-form-mobile",
+        fileInput("file_addViews", lang$nav$dialogEditMeta$viewsAdd,
+          multiple = TRUE, width = "100%"
+        )
+      ),
       tags$div(
         id = "currentViewsTable-noData",
         style = paste0(
@@ -884,19 +919,22 @@ showEditMetaDialog <- function(metadata,
       ),
       tags$div(class = "small-space"),
       downloadLink("downloadViews", "", style = "visibility:hidden;"),
-      tags$button(
-        class = "btn btn-default",
-        type = "button",
-        onClick = "Miro.sendSelectedRowsRequest('currentViewsTable','downloadViews','viewsNoneSelected',true)",
-        icon("download"),
-        lang$nav$dialogEditMeta$viewsDownload
-      ),
-      tags$button(
-        class = "btn btn-default bt-remove",
-        type = "button",
-        onClick = "Miro.sendSelectedRowsRequest('currentViewsTable','removeViews','viewsNoneSelected')",
-        icon("trash"),
-        lang$nav$dialogEditMeta$viewsRemove
+      tags$div(
+        class = "input-form-mobile buttons-mobile-wrapper",
+        tags$button(
+          class = "btn btn-default buttons-mobile-left",
+          type = "button",
+          onClick = "Miro.sendSelectedRowsRequest('currentViewsTable','downloadViews','viewsNoneSelected',true)",
+          icon("download"),
+          lang$nav$dialogEditMeta$viewsDownload
+        ),
+        tags$button(
+          class = "btn btn-default bt-remove buttons-mobile-right",
+          type = "button",
+          onClick = "Miro.sendSelectedRowsRequest('currentViewsTable','removeViews','viewsNoneSelected')",
+          icon("trash"),
+          lang$nav$dialogEditMeta$viewsRemove
+        )
       ),
       genSpinner(
         id = "addViewsLoading", hidden = TRUE, absolute = FALSE,
@@ -924,6 +962,7 @@ showEditMetaDialog <- function(metadata,
       contentAccessPerm
     )
   }
+
   showModal(modalDialog(
     title = lang$nav$dialogEditMeta$title,
     tags$div(
@@ -937,9 +976,12 @@ showEditMetaDialog <- function(metadata,
       )
     ),
     footer = tagList(
-      modalButton(lang$nav$dialogEditMeta$cancelButton),
-      actionButton("btUpdateMeta", lang$nav$dialogEditMeta$okButton,
-        class = "bt-highlight-1 bt-gms-confirm"
+      tags$div(
+        class = "modal-footer-mobile",
+        modalButton(lang$nav$dialogEditMeta$cancelButton),
+        actionButton("btUpdateMeta", lang$nav$dialogEditMeta$okButton,
+          class = "bt-highlight-1 bt-gms-confirm"
+        )
       )
     ),
     fade = TRUE, easyClose = FALSE
@@ -948,7 +990,12 @@ showEditMetaDialog <- function(metadata,
 showScenExportDialog <- function(id, exportTypes) {
   showModal(modalDialog(
     title = lang$nav$dialogExportScen$title,
-    selectInput("exportFileType", lang$nav$dialogExportScen$desc, exportTypes),
+    tags$div(
+      class = "input-form-mobile",
+      selectInput("exportFileType", lang$nav$dialogExportScen$desc, exportTypes,
+        width = "100%"
+      )
+    ),
     tags$div(
       `data-display-if` = "input.exportFileType !== 'miroscen'",
       class = "gmsalert gmsalert-error", style = "position:relative;",
@@ -988,13 +1035,16 @@ showScenExportDialog <- function(id, exportTypes) {
       )
     ),
     footer = tagList(
-      modalButton(lang$nav$dialogExportScen$cancelButton),
-      downloadButton("scenExportHandler", lang$nav$dialogExportScen$okButton,
-        class = "bt-highlight-1 bt-gms-confirm file-export"
-      ),
-      actionButton("scenRemoteExportHandler", lang$nav$dialogExportScen$okButton,
-        class = "bt-highlight-1 bt-gms-confirm remote-export",
-        style = "display: none;"
+      tags$div(
+        class = "modal-footer-mobile",
+        modalButton(lang$nav$dialogExportScen$cancelButton),
+        downloadButton("scenExportHandler", lang$nav$dialogExportScen$okButton,
+          class = "bt-highlight-1 bt-gms-confirm file-export"
+        ),
+        actionButton("scenRemoteExportHandler", lang$nav$dialogExportScen$okButton,
+          class = "bt-highlight-1 bt-gms-confirm remote-export",
+          style = "display: none;"
+        )
       )
     ), fade = TRUE, easyClose = TRUE
   ))

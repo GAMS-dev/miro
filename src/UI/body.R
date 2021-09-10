@@ -375,9 +375,7 @@ if (buildUI) {
             }),
             tags$div(
               id = paste0("graph-in_", i), class = "render-output",
-              style = paste0("padding:1px;display:none;", if (!is.null(configGraphsIn[[i]]$height)) {
-                sprintf("min-height: %s;", addCssDim(configGraphsIn[[i]]$height, 5))
-              })
+              style = paste0("padding:1px;display:none;")
             )
           )
         }
@@ -697,10 +695,7 @@ if (buildUI) {
     content <- lapply(outputTabs[[tabId]], function(i) {
       tabContent <- tagList(
         tags$div(
-          id = paste0("scenGraph_1_", i), class = "render-output",
-          style = if (!is.null(configGraphsOut[[i]]$height)) {
-            sprintf("min-height: %s;", addCssDim(configGraphsOut[[i]]$height, 5))
-          }
+          id = paste0("scenGraph_1_", i), class = "render-output"
         ),
         tags$div(id = paste0("scenTable_1_", i), class = "render-output", style = "display:none;")
       )
