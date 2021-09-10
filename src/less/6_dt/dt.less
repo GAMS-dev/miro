@@ -402,7 +402,26 @@ table.dataTable td {
 }
 
 .dataTables_wrapper .dataTables_filter input {
-    margin-left: 0.5em
+    margin-left: 0.5em;
+    border: 1px solid;
+    border-radius: 3px;
+    background-color: transparent;
+    margin-left: 3px;
+    .responsiveDark({
+        border-color: @text-color;
+     },
+     {
+        border-color: @text-color-dark;
+     });
+}
+.dataTables_length select {
+    border-radius: 3px;
+    .responsiveDark({
+       border-color: @text-color;
+    },
+    {
+       border-color: @text-color-dark;
+    });
 }
 
 .dataTables_wrapper .dataTables_info {

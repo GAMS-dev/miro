@@ -329,6 +329,14 @@ animation: none !important;
 .renderer-wrapper .recalculating {
   z-index: -2;
 }
+.dtgraph-wrapper {
+  overflow-x:hidden;
+}
+@media ( max-width: 991px ) {
+  .dtgraph-wrapper > .dtgraph-graph {
+    margin-bottom:50px;
+  }
+}
 .datepicker{
   /* bring datepicker menu to the front */
   z-index: 9999 !important;
@@ -861,11 +869,9 @@ html {
   padding-left:5px;
   .responsiveDark({
      background-color: fade(@light-blue, 20%);
-     border-left: 5px solid @light-blue;
   },
   {
      background-color: fade(@light-blue-dark, 20%);
-     border-left: 5px solid @light-blue-dark;
   });
 }
 .miro-dropdown-filter{
@@ -927,6 +933,18 @@ html {
       margin-bottom: 5px;
     }
   }
+}
+.hot-search-box {
+  border: 1px solid;
+  border-radius: 3px;
+  background-color: transparent;
+  margin-left: 3px;
+  .responsiveDark({
+      border-color: @text-color;
+   },
+   {
+      border-color: @text-color-dark;
+   });
 }
 .miro-table {
   width: 100%;

@@ -58,9 +58,9 @@ renderDataUI <- function(id, type, graphTool = NULL, height = NULL, customOption
     if (type == "dtgraph") {
       data <- tagList(
         tags$div(
-          style = "overflow-x:hidden;",
-          column(6, dataTableOutput(ns("datatable")), style = "overflow-x:auto;"),
-          column(6, data, style = "overflow-x:auto;")
+          class = "dtgraph-wrapper",
+          tags$div(class = "col-md-6 col-md-push-6 dtgraph-graph", data, style = "overflow-x:auto;"),
+          tags$div(class = "col-md-6 col-md-pull-6", dataTableOutput(ns("datatable")), style = "overflow-x:auto;")
         )
       )
     }
