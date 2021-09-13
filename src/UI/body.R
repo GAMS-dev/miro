@@ -559,7 +559,7 @@ if (buildUI) {
       tags$div(
         id = "scen-tab-view", style = if (identical(config$defCompMode, "tab")) "" else "display:none;",
         tags$div(
-          style = "float: right;margin: 12px 5px;",
+          class = "close-all-tabs",
           tags$a(
             id = "btCmpTabCloseAll", style = "padding: 3px;",
             style = "display:none",
@@ -575,7 +575,10 @@ if (buildUI) {
             lang$nav$scen$btCloseAll
           )
         ),
-        tabsetPanel(id = "scenTabset"),
+        tags$div(
+          class = "tabs-ul-mobile-helper",
+          tabsetPanel(id = "scenTabset"),
+        ),
         tags$div(
           id = "cmpTabNoScenWrapper", lang$nav$scen$noScen, class = "no-scen",
           tags$div(
@@ -652,9 +655,12 @@ if (buildUI) {
             id = "logStatusContainer",
             class = "shiny-text-output noplaceholder"
           ),
-          checkboxInput("logUpdate",
-            label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate,
-            value = TRUE
+          tags$div(
+            class = "update-mobile",
+            checkboxInput("logUpdate",
+              label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate,
+              value = TRUE
+            )
           )
         )
         if (config$activateModules$miroLogFile) {
@@ -805,7 +811,7 @@ if (buildUI) {
                   genSpinner("jImport_load", absolute = FALSE),
                   getJobsTableSkeleton(id = "jImport_output"),
                   tags$div(
-                    class = "col-sm-6",
+                    class = "col-sm-6 no-padding-left no-padding-right",
                     actionButton(
                       "btShowHistory",
                       lang$nav$hcubeImport$btShowHistory
@@ -957,7 +963,7 @@ if (buildUI) {
       </div>
       <div class="modal-body">
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer modal-footer-mobile">
       </div>
     </div>
 </div>

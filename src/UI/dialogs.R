@@ -698,9 +698,12 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
       )
     },
     footer = tagList(
-      modalButton(lang$nav$dialogLoadScen$cancelButton),
-      actionButton("btLoadScenConfirm", lang$nav$dialogLoadScen$okButton,
-        class = "bt-highlight-1 bt-gms-confirm"
+      tags$div(
+        class = "modal-footer-mobile",
+        modalButton(lang$nav$dialogLoadScen$cancelButton),
+        actionButton("btLoadScenConfirm", lang$nav$dialogLoadScen$okButton,
+          class = "bt-highlight-1 bt-gms-confirm"
+        )
       )
     ),
     fade = TRUE, easyClose = FALSE
@@ -1146,14 +1149,22 @@ showJobSubmissionDialog <- function(jobName = "", hashExistsData = NULL) {
       lang$nav$dialogJobSubmission$desc,
       sameHashInfoBox,
       tags$div(class = "space"),
-      textInput("jobSubmissionName", lang$nav$dialogJobSubmission$jobName, jobName),
+      tags$div(
+        class = "input-form-mobile",
+        textInput("jobSubmissionName", lang$nav$dialogJobSubmission$jobName, jobName,
+          width = "100%"
+        )
+      ),
       tags$div(class = "small-space")
     ),
     title = lang$nav$dialogJobSubmission$title,
     footer = tagList(
-      modalButton(lang$nav$dialogJobSubmission$cancelButton),
-      actionButton("btSubmitAsyncJob", lang$nav$dialogJobSubmission$okButton,
-        class = "bt-highlight-1 bt-gms-confirm"
+      tags$div(
+        class = "modal-footer-mobile",
+        modalButton(lang$nav$dialogJobSubmission$cancelButton),
+        actionButton("btSubmitAsyncJob", lang$nav$dialogJobSubmission$okButton,
+          class = "bt-highlight-1 bt-gms-confirm"
+        )
       )
     ),
     fade = TRUE, easyClose = TRUE
