@@ -1,6 +1,7 @@
 /* general */
 body{
   font-family: "Helvetica", Times, "Times New Roman", serif;
+  min-height: unset!important; /* https://github.com/rstudio/shinydashboard/issues/283 */
 }
 .miro-noscript{
   position: absolute;
@@ -329,8 +330,9 @@ animation: none !important;
 .renderer-wrapper .recalculating {
   z-index: -2;
 }
-.dtgraph-wrapper {
-  overflow-x:hidden;
+.render-output .plot-container { /* make plotly chart height responsive. See also https://community.plotly.com/t/plot-sizing-problems/1620/24 */
+  height: 450px;
+  height: 65vh;
 }
 @media ( max-width: 991px ) {
   .dtgraph-wrapper > .dtgraph-graph {

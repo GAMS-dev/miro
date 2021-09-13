@@ -19,20 +19,20 @@ renderDataUI <- function(id, type, graphTool = NULL, height = NULL, customOption
   } else if (type %in% c("graph", "dtgraph")) {
     if (graphTool == "plotly") {
       if (type == "graph") {
-        dataGraph <- plotlyOutput(ns("graph"), height = height)
+        dataGraph <- plotlyOutput(ns("graph"), height = "100%")
       } else {
         dataGraph <- tags$div(
           class = "renderer-wrapper",
           genSpinner(externalStyle = character(0L)),
-          plotlyOutput(ns("graph"), height = height)
+          plotlyOutput(ns("graph"), height = "100%")
         )
       }
     } else if (graphTool == "dygraphs") {
-      dataGraph <- dygraphOutput(ns("graph"), height = height)
+      dataGraph <- tags$div(class = "dyGraphs-wrapper", dygraphOutput(ns("graph"), height = "70vh"))
     } else if (graphTool == "leaflet") {
-      dataGraph <- leafletOutput(ns("graph"), height = height)
+      dataGraph <- leafletOutput(ns("graph"), height = "70vh")
     } else if (graphTool == "timevis") {
-      dataGraph <- timevisOutput(ns("graph"), height = height)
+      dataGraph <- timevisOutput(ns("graph"), height = "70vh")
     } else {
       stop(paste0("The tool you selected for: '", id, "' is not supported by the current version of GAMS MIRO."))
     }
