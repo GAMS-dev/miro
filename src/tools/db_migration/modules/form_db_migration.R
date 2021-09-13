@@ -36,9 +36,9 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
       ),
       tags$p(style = "text-align: center;", lang$nav$migrationModule$desc),
       tags$div(
-        style = "text-align:center;margin-bottom:20px;",
+        style = "text-align:center;margin-bottom:20px;border: 2px solid #f39619;",
         tags$b(
-          style = "border: 2px solid #f39619;padding: 6px 12px;",
+          style = "padding: 6px 12px;",
           lang$nav$migrationModule$backupWarning
         )
       ),
@@ -63,7 +63,7 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
           tableMeta <- list()
         }
         colClass <- max(floor(12 / (length(tableInfo$colNames) + 1L)), 3L)
-        colClass <- paste0("col-", colClass, " col-xs-", colClass)
+        colClass <- paste0("col-sm-", colClass * 2, " col-md-", colClass, " col-xs-12")
         tagList(
           tags$div(
             class = "row", style = "border-top:3px solid #000;text-align:left;padding-left: 15px;",
@@ -78,11 +78,12 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
           tags$div(
             class = "row", style = "padding-top: 10px;",
             tags$div(
-              class = colClass,
+              class = paste0(colClass, " input-form-mobile"),
               selectInput(
                 ns(paste0("dbMigrateTable_", i)),
                 lang$nav$migrationModule$selectTableToMap,
-                tableMapping
+                tableMapping,
+                width = "100%"
               )
             ),
             lapply(seq_along(tableInfo$colNames), function(j) {
@@ -105,7 +106,7 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
                 colChoices <- "-"
               }
               tags$div(
-                class = colClass,
+                class = paste0(colClass, " input-form-mobile"),
                 selectInput(ns(paste0("dbMigrateTable_", i, "_", j)),
                   tags$span(
                     title = tableMeta$headers[[j]]$alias,
@@ -116,7 +117,8 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
                     tableInfo$colNames[j]
                   } else {
                     "-"
-                  }
+                  },
+                  width = "100%"
                 ),
                 tags$div(
                   id = ns("incompatibleTypeWarning"),
