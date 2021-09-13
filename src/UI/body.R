@@ -922,6 +922,7 @@ if (buildUI) {
           name = "color-scheme",
           content = if (identical(config$theme, "browser")) "dark light" else "normal"
         ),
+        tags$meta(name = "apple-mobile-web-app-capable", content = "yes"),
         tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
         tags$script(src = "miro.js", type = "application/javascript"),
         if (staticDirExists && file.exists(file.path(currentModelDir, paste0("static_", modelName), "manifest.json"))) {
@@ -934,6 +935,16 @@ if (buildUI) {
         } else {
           tags$link(rel = "apple-touch-icon", sizes = "180x180", href = "apple-touch-icon.png")
         },
+        tags$link(href = "iphone5_splash.png", media = "(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)", rel = "apple-touch-startup-image"),
+        tags$link(href = "iphone6_splash.png", media = "(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)", rel = "apple-touch-startup-image"),
+        tags$link(href = "iphoneplus_splash.png", media = "(device-width: 621px) and (device-height: 1104px) and (-webkit-device-pixel-ratio: 3)", rel = "apple-touch-startup-image"),
+        tags$link(href = "iphonex_splash.png", media = "(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)", rel = "apple-touch-startup-image"),
+        tags$link(href = "iphonexr_splash.png", media = "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)", rel = "apple-touch-startup-image"),
+        tags$link(href = "iphonexsmax_splash.png", media = "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)", rel = "apple-touch-startup-image"),
+        tags$link(href = "ipad_splash.png", media = "(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)", rel = "apple-touch-startup-image"),
+        tags$link(href = "ipadpro1_splash.png", media = "(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)", rel = "apple-touch-startup-image"),
+        tags$link(href = "ipadpro3_splash.png", media = "(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)", rel = "apple-touch-startup-image"),
+        tags$link(href = "ipadpro2_splash.png", media = "(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)", rel = "apple-touch-startup-image"),
         tags$link(rel = "icon", type = "image/png", sizes = "32x32", href = "favicon-32x32.png"),
         tags$link(rel = "icon", type = "image/png", sizes = "16x16", href = "favicon-16x16.png"),
         tags$meta(name = "msapplication-TileColor", content = "#ff9900"),
