@@ -19,13 +19,16 @@ removeDbTablesServer <- function(id, errorContainerId = NULL,
             lang$nav$migrationModule$btRemoveTables$cbConfirm
           ),
           footer = tagList(
-            modalButton(lang$nav$migrationModule$btRemoveTables$btCancel),
-            tagAppendAttributes(
-              actionButton(session$ns("btRemoveAllDbTablesConfirm"),
-                lang$nav$migrationModule$btRemoveTables$btConfirm,
-                class = "bt-highlight-1 bt-gms-confirm"
-              ),
-              `disabled` = "true"
+            tags$div(
+              class = "modal-footer-mobile",
+              modalButton(lang$nav$migrationModule$btRemoveTables$btCancel),
+              tagAppendAttributes(
+                actionButton(session$ns("btRemoveAllDbTablesConfirm"),
+                  lang$nav$migrationModule$btRemoveTables$btConfirm,
+                  class = "bt-highlight-1 bt-gms-confirm"
+                ),
+                `disabled` = "true"
+              )
             )
           )
         ))

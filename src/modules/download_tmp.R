@@ -5,29 +5,36 @@ observeEvent(input$btDownloadTmpFiles, {
   showModal(modalDialog(
     title = lang$nav$dialogDownloadTmp$title,
     if (length(fileNames)) {
-      serverSelectInput(session, "selectDownloadTmp",
-        label = lang$nav$dialogDownloadTmp$desc,
-        choices = fileNames, multiple = TRUE
+      tags$div(
+        class = "input-form-mobile",
+        serverSelectInput(session, "selectDownloadTmp",
+          label = lang$nav$dialogDownloadTmp$desc,
+          choices = fileNames, multiple = TRUE,
+          width = "100%"
+        )
       )
     } else {
       lang$nav$dialogDownloadTmp$noFiles
     },
     footer = tagList(
-      modalButton(lang$nav$dialogDownloadTmp$cancelButton),
-      if (length(fileNames)) {
-        tagList(
-          downloadButton("btDownloadTmpZip",
-            label = lang$nav$dialogDownloadTmp$downloadAllButton
-          ),
-          tags$span(
-            `data-display-if` = "input.selectDownloadTmp.length>0",
-            downloadButton("btDownloadTmpConfirm",
-              label = lang$nav$dialogDownloadTmp$downloadButton,
-              class = "bt-highlight-1 bt-gms-confirm"
+      tags$div(
+        class = "modal-footer-mobile",
+        modalButton(lang$nav$dialogDownloadTmp$cancelButton),
+        if (length(fileNames)) {
+          tagList(
+            downloadButton("btDownloadTmpZip",
+              label = lang$nav$dialogDownloadTmp$downloadAllButton
+            ),
+            tags$span(
+              `data-display-if` = "input.selectDownloadTmp.length>0",
+              downloadButton("btDownloadTmpConfirm",
+                label = lang$nav$dialogDownloadTmp$downloadButton,
+                class = "bt-highlight-1 bt-gms-confirm"
+              )
             )
           )
-        )
-      }
+        }
+      )
     )
   ))
 })

@@ -296,12 +296,15 @@ dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
               lang$nav$migrationModule$dialogConfirmDataLoss$cbConfirmDataLoss
             ),
             footer = tagList(
-              modalButton(lang$nav$migrationModule$dialogConfirmDataLoss$btCancel),
-              tagAppendAttributes(actionButton(session$ns("btConfirmDataLoss"),
-                class = "bt-highlight-1",
-                lang$nav$migrationModule$dialogConfirmDataLoss$btConfirm
-              ),
-              `disabled` = "true"
+              tags$div(
+                class = "modal-footer-mobile",
+                modalButton(lang$nav$migrationModule$dialogConfirmDataLoss$btCancel),
+                tagAppendAttributes(actionButton(session$ns("btConfirmDataLoss"),
+                  class = "bt-highlight-1",
+                  lang$nav$migrationModule$dialogConfirmDataLoss$btConfirm
+                ),
+                `disabled` = "true"
+                )
               )
             )
           ))
