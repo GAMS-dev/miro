@@ -6,7 +6,7 @@ import AutoNumeric from 'autonumeric';
 import {
   sleep, changeActiveButtons, switchTabInTabset, removeModal,
   switchTab, isInputEl, rerenderDygraph, rerenderHot, showHideEl, scrollDown,
-  changeTheme, LoadingScreen, colorPickerBinding,
+  changeTheme, LoadingScreen, colorPickerBinding, getActualHeight,
 } from './util';
 
 import {
@@ -222,6 +222,18 @@ $(document).ready(() => {
       changeTheme(e.matches);
     });
   }
+  $(document).on('click', '.toggle-label-height', function () {
+    const $this = $(this);
+    $this.children('.fa').toggleClass('fa-chevron-circle-down fa-chevron-circle-up');
+    $this.parent().prev().toggleClass('label-full label-collapsed', 500);
+  });
+  $('.label-wrapper').each(function () {
+    const $this = $(this);
+    if (getActualHeight($this, 'outerHeight') < 99.8) {
+      $this.removeClass('label-collapsed');
+      $this.next().hide();
+    }
+  });
   $('#toolCategories').on('click', '.category-btn', function () {
     const catId = this.dataset.cat;
     const catBody = $(`.cat-body-${catId}`);
@@ -891,11 +903,4 @@ $(document).keyup((event) => {
   if (event.keyCode === 32 && $('#btCompareScen').is(':enabled') && $('#btCompareScen').is(':visible')) {
     $('#btCompareScen').click();
   }// Activate/deactivate scenario comparison mode: CTRL + ALT + space
-});
-$(document).on('click', '.toggle-label-height', function () {
-  const buttonId = this.id;
-  let labelId = '';
-  labelId = buttonId.substring(0, buttonId.indexOf('_toggle'));
-  $(`#${buttonId} .fa`).toggleClass('fa-chevron-circle-down fa-chevron-circle-up');
-  $(`#${labelId}`).toggleClass('label-full label-collapsed', 500);
 });

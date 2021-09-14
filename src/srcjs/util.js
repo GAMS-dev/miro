@@ -219,3 +219,84 @@ $.extend(colorPickerBinding, {
     $(el).off('.colorPickerBinding');
   },
 });
+
+/*! Copyright 2011, Ben Lin (http://dreamerslab.com/)
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+export function getActualHeight($target, method, options) {
+  const defaults = {
+    absolute: false,
+    includeMargin: false,
+    display: 'block',
+  };
+
+  const configs = $.extend(defaults, options);
+
+  const tmp = [];
+  let style = '';
+  let $hidden;
+
+  const fix = function () {
+    // get all hidden parents
+    $hidden = $target.parents().addBack().filter(':hidden');
+    style += `visibility: hidden !important; display: ${configs.display} !important; `;
+
+    if (configs.absolute === true) style += 'position: absolute !important; ';
+
+    // save the origin style props
+    // set the hidden el css to be got the actual value later
+    $hidden.each(function () {
+      // Save original style. If no style was set, attr() returns undefined
+      const $this = $(this);
+      const thisStyle = $this.attr('style');
+
+      tmp.push(thisStyle);
+      // Retain as much of the original style as possible, if there is one
+      $this.attr('style', thisStyle ? `${thisStyle};${style}` : style);
+    });
+  };
+
+  const restore = function () {
+    // restore origin style values
+    $hidden.each(function (i) {
+      const $this = $(this);
+      const tmpI = tmp[i];
+
+      if (tmpI === undefined) {
+        $this.removeAttr('style');
+      } else {
+        $this.attr('style', tmpI);
+      }
+    });
+  };
+
+  fix();
+  // get the actual value with user specific methed
+  // it can be 'width', 'height', 'outerWidth', 'innerWidth'... etc
+  // configs.includeMargin only works for 'outerWidth' and 'outerHeight'
+  const actual = /(outer)/.test(method)
+    ? $target[method](configs.includeMargin)
+    : $target[method]();
+
+  restore();
+  // IMPORTANT, this plugin only return the value of the first element
+  return actual;
+}
