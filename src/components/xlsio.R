@@ -273,14 +273,17 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
           if(index$dim > 0L && index$cdim > 0L){
             colNamesTmp <- as.character(private$cache[[rangeInfo$range$sheet]][rangeInfo$range$ul[1], colRangeTmp])
             if(rangeInfo$range$ul[1] + 1L > rowRangeEndTmp){
-              data <- private$cache[[rangeInfo$range$sheet]][seq(rowRangeEndTmp, rowRangeEndTmp), colRangeTmp]
-              data[] <- ""
+              data <- private$cache[[rangeInfo$range$sheet]][0L, colRangeTmp]
             }else{
               data <- private$cache[[rangeInfo$range$sheet]][seq(rangeInfo$range$ul[1] + 1L, rowRangeEndTmp), colRangeTmp]
             }
             names(data)[!is.na(colNamesTmp)] <- colNamesTmp[!is.na(colNamesTmp)]
           }else{
-            data <- private$cache[[rangeInfo$range$sheet]][seq(rangeInfo$range$ul[1], rowRangeEndTmp), colRangeTmp]
+            if (rangeInfo$range$ul[1] + 1L > rowRangeEndTmp) {
+              data <- private$cache[[rangeInfo$range$sheet]][0L, colRangeTmp]
+            } else {
+              data <- private$cache[[rangeInfo$range$sheet]][seq(rangeInfo$range$ul[1], rowRangeEndTmp), colRangeTmp]
+            }
           }
           private$sheetRefCount[[rangeInfo$range$sheet]] <- private$sheetRefCount[[rangeInfo$range$sheet]] - 1L
           if(identical(private$sheetRefCount[[rangeInfo$range$sheet]], 0L)){
