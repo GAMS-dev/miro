@@ -309,9 +309,21 @@ if (buildUI) {
           tagList(
             if (length(modelIn[[i]]$label) && !identical(trimws(modelIn[[i]]$label), "")) {
               tags$div(
-                id = paste0("tableLabel_", i),
-                class = "readme-wrapper label-wrapper",
-                markdown(modelIn[[i]]$label)
+                class = "label-toggle-wrapper",
+                tags$div(
+                  id = paste0("tableLabel_", i),
+                  class = "readme-wrapper label-wrapper label-collapsed",
+                  markdown(modelIn[[i]]$label)
+                ),
+                tags$div(
+                  class = "label-toggle",
+                  tags$a(
+                    id = paste0("tableLabel_", i, "_toggle"),
+                    class = "btn toggle-label-height",
+                    href = "#",
+                    tags$i(class = "fa fa-chevron-circle-down")
+                  )
+                )
               )
             },
             tags$ul(class = "err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
@@ -334,8 +346,10 @@ if (buildUI) {
                   ),
                   tags$div(
                     class = "miro-show-on-mobile-devices", style = "display:none",
+                    dataTableOutput(paste0("in_m_", i)),
                     tags$div(
-                      style = "margin-bottom:10px;",
+                      class = "buttons-mobile-wrapper",
+                      style = "margin-top:10px;",
                       actionButton(
                         paste0("in_m_", i, "_add_row"),
                         lang$renderers$miroPivot$btAddRow
@@ -344,8 +358,7 @@ if (buildUI) {
                         lang$renderers$miroPivot$btRemoveRows,
                         class = "bt-remove"
                       )
-                    ),
-                    dataTableOutput(paste0("in_m_", i))
+                    )
                   )
                 )
               } else if (modelIn[[i]]$type == "dt") {

@@ -693,7 +693,7 @@ lapply(modelInTabularData, function(sheet) {
               ),
               tags$tr(lapply(seq_along(colnames), function(j) {
                 tags$td(
-                  style = "min-width:100px;",
+                  class = "table-add-row",
                   if (j <= noRowHeaders) {
                     serverSelectInput(session, paste0("newRow_", j), NULL,
                       unique(tableContent[[i]][[j]]),
@@ -723,10 +723,13 @@ lapply(modelInTabularData, function(sheet) {
             selected = newRowId[2]
           ),
           footer = tagList(
-            modalButton(lang$renderers$miroPivot$dialogAddRow$btCancel),
-            actionButton(paste0(htmlSelector, "_add_row_confirm"),
-              label = lang$renderers$miroPivot$btAddRow,
-              class = "bt-highlight-1 bt-gms-confirm"
+            tags$div(
+              class = "modal-footer-mobile",
+              modalButton(lang$renderers$miroPivot$dialogAddRow$btCancel),
+              actionButton(paste0(htmlSelector, "_add_row_confirm"),
+                label = lang$renderers$miroPivot$btAddRow,
+                class = "bt-highlight-1 bt-gms-confirm"
+              )
             )
           ),
           fade = TRUE, easyClose = FALSE, size = "l"

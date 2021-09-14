@@ -114,6 +114,26 @@ textarea.readme-preview-markdown:focus {
   font-size: 22px;
   padding-bottom: 5px;
 }
+.katex-display {
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+.katex-display::-webkit-scrollbar {
+  height: 5px;
+}
+.katex-display > .katex {
+  display: inline-block;
+  white-space: nowrap;
+  text-align: initial;
+}
+.katex {
+  font: normal 1.21em KaTeX_Main, Times New Roman, serif;
+  line-height: 1.2;
+  white-space: normal;
+  text-indent: 0;
+}
 .btn-default:hover {
   color: #000;
 }
@@ -2065,12 +2085,42 @@ html {
   cursor: default;
 }
 .label-wrapper {
-  max-height:150px;
-  resize:vertical;
   border-bottom: 1px dashed gray;
+  margin-bottom: 20px;
+  max-height: 60vh;
 }
-.label-wrapper[style*="height"] {
-  max-height: unset;
+.label-toggle {
+  > .toggle-label-height {
+    position: absolute;
+    left: 49%;
+    bottom: -15px;
+    border: none;
+    font-size: 20px;
+    padding: 0px 3px;
+    .responsiveDark({
+      color: @or-sign;
+      background-color: @modal-bg;
+   },
+   {
+      color: @scrollbar-dark;
+      background-color: @modal-bg-dark;
+   });
+  }
+}
+.label-toggle-wrapper {
+  position: relative;
+}
+.label-collapsed {
+  height: 50px;
+  .responsiveDark({
+    box-shadow: inset 0px -11px 8px -10px @log-border;
+ },
+ {
+  box-shadow: inset 0px -11px 8px -10px @dropdown-sidebar-bg-dark;
+ });
+}
+.label-full {
+  height: 100%;
 }
 // Color picker
 .miro-pivot-custom-colors-wrapper {
@@ -2248,4 +2298,7 @@ html {
     width: 100%;
     margin-bottom: 2px;
   }
+}
+.table-add-row {
+  min-width: 150px;
 }

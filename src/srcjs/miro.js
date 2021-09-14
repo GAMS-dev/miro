@@ -892,3 +892,10 @@ $(document).keyup((event) => {
     $('#btCompareScen').click();
   }// Activate/deactivate scenario comparison mode: CTRL + ALT + space
 });
+$(document).on('click', '.toggle-label-height', function () {
+  const buttonId = this.id;
+  let labelId = '';
+  labelId = buttonId.substring(0, buttonId.indexOf('_toggle'));
+  $(`#${buttonId} .fa`).toggleClass('fa-chevron-circle-down fa-chevron-circle-up');
+  $(`#${labelId}`).toggleClass('label-full label-collapsed', 500);
+});
