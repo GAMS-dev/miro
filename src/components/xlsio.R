@@ -273,14 +273,22 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
           if(index$dim > 0L && index$cdim > 0L){
             colNamesTmp <- as.character(private$cache[[rangeInfo$range$sheet]][rangeInfo$range$ul[1], colRangeTmp])
             if(rangeInfo$range$ul[1] + 1L > rowRangeEndTmp){
-              data <- private$cache[[rangeInfo$range$sheet]][0L, colRangeTmp]
+              if(rangeInfo$range$ul[1] > rowRangeEndTmp){
+                data <- private$cache[[rangeInfo$range$sheet]][0L, colRangeTmp]
+              } else {
+                data <- private$cache[[rangeInfo$range$sheet]][rowRangeEndTmp, colRangeTmp]
+              }
             }else{
               data <- private$cache[[rangeInfo$range$sheet]][seq(rangeInfo$range$ul[1] + 1L, rowRangeEndTmp), colRangeTmp]
             }
             names(data)[!is.na(colNamesTmp)] <- colNamesTmp[!is.na(colNamesTmp)]
           }else{
             if (rangeInfo$range$ul[1] + 1L > rowRangeEndTmp) {
-              data <- private$cache[[rangeInfo$range$sheet]][0L, colRangeTmp]
+              if (rangeInfo$range$ul[1] > rowRangeEndTmp) {
+                data <- private$cache[[rangeInfo$range$sheet]][0L, colRangeTmp]
+              } else {
+                data <- private$cache[[rangeInfo$range$sheet]][rowRangeEndTmp, colRangeTmp]
+              }
             } else {
               data <- private$cache[[rangeInfo$range$sheet]][seq(rangeInfo$range$ul[1], rowRangeEndTmp), colRangeTmp]
             }
@@ -295,6 +303,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
                                        na = private$naList, col_types = "text")
         }
         if(isSetType && index$cdim > 0L && (!nrow(data) || rowSums(is.na(data))[[1]] == ncol(data))){
+          # need to manually add (empty) set text
           data[1, ] <- ""
         }
       }
@@ -332,8 +341,8 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
             stop_custom("error_parse_config",
                         sprintf(lang$errMsg$xlsio$errors$badSymbolRange, symName), call. = FALSE)
           }else{
-            stop_custom("error_no_data",
-                        sprintf("No data for symbol: %s", symName), call. = FALSE)
+            data <- as_tibble(rep.int(list(character(0L)), index$rdim + if(isSetType) 0L else 1L),
+                              .name_repair = "minimal")
           }
         }
         names(data)[seq_len(index$rdim)] <- names(private$metadata[[symName]]$headers)[seq_len(index$rdim)]
