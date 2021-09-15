@@ -278,3 +278,80 @@ test_that("Getting index lists work (miroPivot)", {
                    list(rows = c("hdr1", "hdr2", "hdr3", "hdr4"), cols = character(),
                         filter = character(), aggregations = character()))
 })
+
+test_that("hotToR works", {
+  expect_equivalent(hotToR(list(data = list(list("a1", "b1"), list("a2", "b2")), changes = list(event = "afterChange",
+                                                                          changes = list(list(0L, 0L, "aa", "")), source = "edit"),
+                                params = list(data = list(list("", "")), rClass = list("tbl_df",
+                                                                                       "tbl", "data.frame"), rColClasses = list(uni = "character",
+                                                                                                                                text = "character"), rColnames = list("uni", "text"),
+                                              rColHeaders = list("uni", "text"), rRowHeaders = NULL,
+                                              rDataDim = list(1L, 2L), selectCallback = TRUE, colHeaders = list(
+                                                "Universal set", "Set text "), rowHeaders = "1",
+                                              columns = list(list(type = "text", default = NULL), list(
+                                                type = "text", default = NULL)), width = NULL, height = 700L,
+                                              debug = 0L, search = TRUE, stretchH = "none", comments = FALSE,
+                                              contextMenu = list(items = list(row_above = list(), row_below = list(),
+                                                                              remove_row = list(), hsep4 = list(name = "---------",
+                                                                                                                key = "hsep4"), undo = list(), redo = list(),
+                                                                              hsep5 = list(name = "---------", key = "hsep5"),
+                                                                              alignment = list())), ishighlight = TRUE, currentRowClassName = "currentRow",
+                                              currentColClassName = "currentCol", colWidths = 200L,
+                                              columnSorting = TRUE, manualColumnMove = FALSE, manualColumnResize = TRUE)),
+                           list(alias = "asd", symtype = "set", headers = list(uni = list(
+                             type = "string", alias = "Universal set"), text = list(type = "string",
+                                                                                    alias = "Set text ")),
+                             type = "hot", colTypes = "cc")),
+                    tibble(uni = c("a1", "a2"), text = c("b1", "b2")))
+
+
+  # empty table should result in empty df
+  expect_equivalent(hotToR(list(data = list(list("", "")), changes = list(event = "afterChange",
+                                                                         changes = list(list(0L, 0L, "aa", "")), source = "edit"),
+                               params = list(data = list(list("", "")), rClass = list("tbl_df",
+                                                                                      "tbl", "data.frame"), rColClasses = list(uni = "character",
+                                                                                                                               text = "character"), rColnames = list("uni", "text"),
+                                             rColHeaders = list("uni", "text"), rRowHeaders = NULL,
+                                             rDataDim = list(1L, 2L), selectCallback = TRUE, colHeaders = list(
+                                               "Universal set", "Set text "), rowHeaders = "1",
+                                             columns = list(list(type = "text", default = NULL), list(
+                                               type = "text", default = NULL)), width = NULL, height = 700L,
+                                             debug = 0L, search = TRUE, stretchH = "none", comments = FALSE,
+                                             contextMenu = list(items = list(row_above = list(), row_below = list(),
+                                                                             remove_row = list(), hsep4 = list(name = "---------",
+                                                                                                               key = "hsep4"), undo = list(), redo = list(),
+                                                                             hsep5 = list(name = "---------", key = "hsep5"),
+                                                                             alignment = list())), ishighlight = TRUE, currentRowClassName = "currentRow",
+                                             currentColClassName = "currentCol", colWidths = 200L,
+                                             columnSorting = TRUE, manualColumnMove = FALSE, manualColumnResize = TRUE)),
+                          list(alias = "asd", symtype = "set", headers = list(uni = list(
+                            type = "string", alias = "Universal set"), text = list(type = "string",
+                                                                                   alias = "Set text ")),
+                            type = "hot", colTypes = "cc")),
+                   tibble(uni = character(), text = character()))
+
+
+  expect_equivalent(hotToR(list(data = list(list("", NA_real_)), changes = list(event = "afterChange",
+                                                                          changes = list(list(0L, 0L, "aa", "")), source = "edit"),
+                                params = list(data = list(list("", "")), rClass = list("tbl_df",
+                                                                                       "tbl", "data.frame"), rColClasses = list(uni = "character",
+                                                                                                                                text = "character"), rColnames = list("uni", "text"),
+                                              rColHeaders = list("uni", "text"), rRowHeaders = NULL,
+                                              rDataDim = list(1L, 2L), selectCallback = TRUE, colHeaders = list(
+                                                "Universal set", "value"), rowHeaders = "1",
+                                              columns = list(list(type = "text", default = NULL), list(
+                                                type = "text", default = NULL)), width = NULL, height = 700L,
+                                              debug = 0L, search = TRUE, stretchH = "none", comments = FALSE,
+                                              contextMenu = list(items = list(row_above = list(), row_below = list(),
+                                                                              remove_row = list(), hsep4 = list(name = "---------",
+                                                                                                                key = "hsep4"), undo = list(), redo = list(),
+                                                                              hsep5 = list(name = "---------", key = "hsep5"),
+                                                                              alignment = list())), ishighlight = TRUE, currentRowClassName = "currentRow",
+                                              currentColClassName = "currentCol", colWidths = 200L,
+                                              columnSorting = TRUE, manualColumnMove = FALSE, manualColumnResize = TRUE)),
+                           list(alias = "asd", symtype = "parameter", headers = list(uni = list(
+                             type = "string", alias = "Universal set"), value = list(type = "string",
+                                                                                     alias = "value")),
+                             type = "hot", colTypes = "cd")),
+                    tibble(uni = character(), value = numeric()))
+})
