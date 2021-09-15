@@ -1994,6 +1994,34 @@ html {
        background: darken(@dt-row-odd-dark,3%)!important;
     });
 }
+.dtHideFixed() {
+  .DTFC_LeftWrapper,
+  .DTFC_RightWrapper {
+    display: none;
+  }
+  .odd > .tableScrollCell {
+    .responsiveDark({
+       background: @dt-row-odd!important;
+    },
+    {
+       background: @dt-row-odd-dark!important;
+    });
+  }
+  .even > .tableScrollCell {
+    .responsiveDark({
+       background: @dt-row-even!important;
+    },
+    {
+       background: @dt-row-even-dark!important;
+    });
+  }
+}
+.dt-hide-fixed {
+  .dtHideFixed();
+}
+@media only screen and (max-width: 767px){
+  .dtHideFixed();
+}
 .dt-button {
   .responsiveDark({
     },

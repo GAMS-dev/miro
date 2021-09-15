@@ -3939,6 +3939,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "headerPivotcompare": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "headerRenderers": {
                   "type": "string",
                   "minLength": 1
@@ -4012,7 +4016,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 24
+              "minProperties": 25
             },
             "modalDialog": {
               "type": "object",
@@ -7010,15 +7014,15 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "pivotCompHideEmptyColsSwitch": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "emptyUEL": {
                   "type": "string",
                   "minLength": 1
                 },
                 "hidePivotControlsSwitch": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "fixedColumnsSwitch": {
                   "type": "string",
                   "minLength": 1
                 },

@@ -1015,6 +1015,7 @@
         "tabModules": "模块",
         "tabScripts": "分析脚本",
         "headerGeneral": "通用",
+        "headerPivotcompare": "枢轴比较模式",
         "headerRenderers": "默认渲染器",
         "headerLogo": "标志",
         "headerSymbolDisplay": "Symbol display",
@@ -1755,9 +1756,9 @@
       "miroPivotOptions":{
         "infoMsg": "请直接使用右侧的预览来配置默认视图。",
         "hideEmptyColsSwitch": "激活开关以隐藏空列",
-        "pivotCompHideEmptyColsSwitch": "枢轴比较模式：激活开关以隐藏空列",
         "emptyUEL": "UEL，指示缺少值（不得为空字符串）",
         "hidePivotControlsSwitch": "默认显示演示模式",
+        "fixedColumnsSwitch": "启用固定列",
         "infoMsgDummyData": "当前，预览使用伪数据。 这意味着过滤器将具有伪值。 如果要更改它们，则必须手动编辑JSON配置文件。"
       },
       "datatableOptions":{

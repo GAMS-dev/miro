@@ -634,6 +634,78 @@ putclose log;
                         affected by the maximum decimal place set.
                       </p>
                     </div>
+                    <h4 class="pivot-compare-options">
+                      Pivot scenario comparison
+                    </h4>
+                    <h6
+                      id="enable-presentation"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Activate switch
+                      to hide empty columns
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        If enabled, this option allows to hide empty table
+                        columns of the currently visible data in pivot compare
+                        mode. Read more about this option
+                        <a href="./charts.html#hide-empty-columns">here</a>.
+                      </p>
+                    </div>
+                    <h6
+                      id="enable-presentation"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Show presentation
+                      mode by default
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        This option activates the
+                        <a href="./charts.html#presentation-mode"
+                          >presentation mode</a
+                        >
+                        by default in pivot compare mode. In this mode, all
+                        pivot controls are hidden so that the chart or table
+                        takes center stage. Only configured views and export
+                        buttons remain visible. The presentation mode can be
+                        very useful for users who do not want to play around
+                        with the data in the pivot tool, but only want to view
+                        predefined views/reports.
+                      </p>
+                      <div class="section-block" style="cursor: pointer">
+                        <img
+                          class="img-fluid"
+                          src="assets/images/configuration_mode/graphs_miropivot_presentation.png"
+                          alt="Presentation mode"
+                          onclick="window.open(this.src, '_blank');"
+                        />
+                      </div>
+                    </div>
+                    <h6
+                      id="fixed-columns"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Enable fixed
+                      columns
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        If this option is activated, the columns of the pivot
+                        table are fixed to the left side of the table and remain
+                        visible when scrolling horizontally. Note that this can
+                        cause display problems for very wide tables (e.g. with
+                        many columns), especially on small screens. For this
+                        reason, this option is automatically disabled for
+                        screens less than 768 pixels wide.
+                      </p>
+                    </div>
                     <!--//expanded-->
                     <h4 class="docu-general-header">Symbol display</h4>
                     <h6

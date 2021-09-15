@@ -377,6 +377,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         class = if (isTRUE(options[["_input_"]])) "has-edit-buttons",
         class = "col-sm-12 pivot-chart-height",
         class = if (isTRUE(options$hidePivotControls)) "col-md-12" else "col-md-10",
+        class = if (identical(options$fixedColumns, FALSE)) "dt-hide-fixed",
         style = if (isTRUE(options[["_input_"]]) && isTRUE(options$hidePivotControls)) {
           "margin-top:30px;"
         },
@@ -396,7 +397,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         ),
         genSpinner(ns("loadPivotTable"), hidden = TRUE),
         DTOutput(ns("pivotTable")),
-        tags$div(class = "miro-pivot-height", chartjsOutput(ns("pivotChart"), height = "40px"))
+        chartjsOutput(ns("pivotChart"), height = "40px")
       )
     ),
     fluidRow(
@@ -1665,7 +1666,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           noError <- FALSE
         }
         setCssEl(
-          session, paste0("#", ns("pivotChart")),
+          session, paste0("#", ns("pivotChart-container")),
           list(position = "", top = "")
         )
         if (noError) {
@@ -1824,7 +1825,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         hideEl(session, paste0("#", ns("downloadPng")))
 
         setCssEl(
-          session, paste0("#", ns("pivotChart")),
+          session, paste0("#", ns("pivotChart-container")),
           list(position = "absolute", top = "-2000pt")
         )
         showEl(session, paste0("#", ns("loadPivotTable")))

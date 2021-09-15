@@ -114,6 +114,8 @@ getPivotCompGraphConfig <- function(sheetName) {
     graphConfig$options$enableHideEmptyCols <- TRUE
     graphConfig$options$emptyUEL <- config$pivotCompSettings$emptyUEL
   }
+  graphConfig$options$hidePivotControls <- config$pivotCompSettings$hidePivotControls
+  graphConfig$options$fixedColumns <- config$pivotCompSettings$fixedColumns
   return(graphConfig)
 }
 loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE) {

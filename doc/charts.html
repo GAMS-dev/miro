@@ -1507,7 +1507,7 @@ dowVSindex(d,'index fund')     = fund(d);
                                     </code></pre>
                   </div>
                   <!--//section-block-->
-                  <div class="section-block">
+                  <div class="section-block" id="hide-empty-columns">
                     <p>
                       <b>Hide empty columns:</b><br />
                       In addition to the configuration of the default view,
@@ -1616,6 +1616,16 @@ dowVSindex(d,'index fund')     = fund(d);
                         onclick="window.open(this.src, '_blank');"
                       />
                     </div>
+                    <p id="fixed-columns">
+                      <b>Enable fixed columns:</b><br />
+                      If this option is activated, the columns of the pivot
+                      table are fixed to the left side of the table and remain
+                      visible when scrolling horizontally. Note that this can
+                      cause display problems for very wide tables (e.g. with
+                      many columns), especially on small screens. For this
+                      reason, this option is automatically disabled for screens
+                      less than 768 pixels wide.
+                    </p>
                   </div>
                   <!--//section-block-->
                 </section>

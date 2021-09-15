@@ -1015,6 +1015,7 @@
         "tabModules": "Modules",
         "tabScripts": "Analysis scripts",
         "headerGeneral": "General",
+        "headerPivotcompare": "Pivot scenario comparison",
         "headerRenderers": "Default renderers",
         "headerLogo": "Logo",
         "headerSymbolDisplay": "Symbol display",
@@ -1756,9 +1757,9 @@
       "miroPivotOptions":{
         "infoMsg": "Please use directly the preview on the right side to configure the default view.",
         "hideEmptyColsSwitch": "Activate switch to hide empty columns",
-        "pivotCompHideEmptyColsSwitch": "Pivot Compare Mode: Activate switch to hide empty columns",
         "emptyUEL": "UEL, which indicates a missing value (must not be empty string)",
         "hidePivotControlsSwitch": "Show presentation mode by default",
+        "fixedColumnsSwitch": "Enable fixed columns",
         "infoMsgDummyData": "Currently the preview uses dummy data. This means that the filters will have dummy values. If you want to change these, you have to edit the JSON configuration file manually."
       },
       "datatableOptions":{

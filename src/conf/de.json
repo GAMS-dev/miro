@@ -1015,6 +1015,7 @@
         "tabModules": "Module",
         "tabScripts": "Analyseskripte",
         "headerGeneral": "Allgemein",
+        "headerPivotcompare": "Pivot-Szenariovergleichsmodus",
         "headerRenderers": "Standard-Renderer",
         "headerLogo": "Logo",
         "headerSymbolDisplay": "Symboldarstellung",
@@ -1756,9 +1757,9 @@
       "miroPivotOptions":{
          "infoMsg": "Bitte benutzen Sie direkt die Vorschau auf der rechten Seite, um die Standardansicht zu konfigurieren.",
          "hideEmptyColsSwitch": "Schalter zum Ausblenden leerer Spalten aktivieren",
-         "pivotCompHideEmptyColsSwitch": "Pivot-Vergleichsmodus: Schalter zum Ausblenden leerer Spalten aktivieren",
          "emptyUEL": "UEL, die einen fehlenden Wert anzeigt (darf kein leerer String sein)",
          "hidePivotControlsSwitch": "Präsentationsmodus standardmäßig anzeigen",
+        "fixedColumnsSwitch": "Fixierte Spalten aktivieren",
          "infoMsgDummyData": "Derzeit verwendet die Vorschau Dummy-Daten. Das bedeutet, dass die Filter Dummy-Werte haben werden. Wenn Sie diese ändern möchten, müssen Sie die JSON-Konfigurationsdatei manuell bearbeiten."
       },
       "datatableOptions":{

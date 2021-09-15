@@ -2051,6 +2051,13 @@ observeEvent(input$miropivot_hidePivotControls, {
     rv$graphConfig$graph$options$hidePivotControls <- NULL
   }
 })
+observeEvent(input$miropivot_fixedColumns, {
+  if (isFALSE(input$miropivot_fixedColumns)) {
+    rv$graphConfig$graph$options$fixedColumns <- FALSE
+  } else {
+    rv$graphConfig$graph$options$fixedColumns <- NULL
+  }
+})
 observeEvent(input$add_array_el, {
   chart_id <- input$add_array_el[1]
   chart_label <- input$add_array_el[2]
@@ -4693,6 +4700,7 @@ observe(
           miropivotOptions$emptyUEL <- rv$graphConfig$graph$options$emptyUEL
           miropivotOptions$enableHideEmptyCols <- TRUE
           miropivotOptions$hidepivotcontrols <- rv$graphConfig$graph$options$hidepivotcontrols
+          miropivotOptions$fixedColumns <- rv$graphConfig$graph$options$fixedColumns
           isolate(callModule(renderData, "preview_output_miropivot",
             type = "miropivot",
             data = data, rendererEnv = customRendererEnv,
@@ -4871,7 +4879,8 @@ observeEvent(rv$saveGraphConfirm, {
       pivotRenderer = input[["preview_output_miropivot-miroPivot-pivotRenderer"]],
       enableHideEmptyCols = isTRUE(input$miropivot_enableHideEmptyCols),
       hideEmptyCols = isTRUE(input[["preview_output_miropivot-miroPivot-hideEmptyCols"]]),
-      hidePivotControls = isTRUE(input$miropivot_hidePivotControls)
+      hidePivotControls = isTRUE(input$miropivot_hidePivotControls),
+      fixedColumns = isTRUE(input$miropivot_fixedColumns)
     )
     if (length(rv$graphConfig$graph$options$emptyUEL)) {
       configJSON$dataRendering[[activeSymbol$name]]$options$emptyUEL <<- rv$graphConfig$graph$options$emptyUEL

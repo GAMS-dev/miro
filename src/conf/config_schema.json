@@ -79,6 +79,10 @@
             "type":"string",
             "enum": ["table", "heatmap", "line", "bar", "stackedbar", "radar"]
          },
+         "fixedColumns": {
+           "description":"Enable fixed columns (default: true).",
+           "type": "boolean"
+         },
          "emptyUEL": {
            "description":"UEL that identifies a missing value (defaults to -, must not be empty string).",
            "type": "string",
@@ -247,6 +251,14 @@
          "type":"object",
          "additionalProperties":false,
          "properties":{
+           "hidePivotControls": {
+             "description":"Enable presentation mode per default (default: false).",
+             "type": "boolean"
+           },
+           "fixedColumns": {
+             "description":"Enable fixed columns (default: true).",
+             "type": "boolean"
+           },
            "enableHideEmptyCols":{
             "description": "Enable the switch to hide empty columns",
             "type":"boolean",

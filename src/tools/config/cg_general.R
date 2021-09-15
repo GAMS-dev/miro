@@ -249,16 +249,24 @@ observeEvent(
   },
   {
     if (isTRUE(input$pivotcomp_enableHideEmptyCols)) {
-      rv$generalConfig$pivotCompSettings <- list(enableHideEmptyCols = TRUE)
+      rv$generalConfig$pivotCompSettings$enableHideEmptyCols <- TRUE
       if (length(input$pivotcomp_emptyUEL) && !identical(input$pivotcomp_emptyUEL, "")) {
         rv$generalConfig$pivotCompSettings$emptyUEL <- input$pivotcomp_emptyUEL
       }
     } else {
-      configJSON$pivotCompSettings <<- NULL
-      rv$generalConfig$pivotCompSettings <<- NULL
+      configJSON$pivotCompSettings$enableHideEmptyCols <<- NULL
+      configJSON$pivotCompSettings$emptyUEL <<- NULL
+      rv$generalConfig$pivotCompSettings$enableHideEmptyCols <<- NULL
+      rv$generalConfig$pivotCompSettings$emptyUEL <<- NULL
     }
   }
 )
+observeEvent(input$pivotcomp_hidePivotControls, {
+  rv$generalConfig$pivotCompSettings$hidePivotControls <<- input$pivotcomp_hidePivotControls
+})
+observeEvent(input$pivotcomp_fixedColumns, {
+  rv$generalConfig$pivotCompSettings$fixedColumns <<- input$pivotcomp_fixedColumns
+})
 observeEvent(input$general_act_upload, {
   rv$generalConfig$activateModules$loadLocal <<- input$general_act_upload
 })

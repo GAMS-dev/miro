@@ -810,30 +810,6 @@ font-size: 12px;
                         )
                       ),
                       tags$div(
-                        class = "option-wrapper info-position",
-                        selectInput("general_scen", tags$div(
-                          lang$adminMode$general$scen$label,
-                          tags$a("",
-                            title = lang$adminMode$general$ui$tooltipDocs, class = "info-wrapper", href = "https://gams.com/miro/start.html#scenario-comparison",
-                            tags$span(
-                              class = "fas fa-info-circle", class = "info-icon",
-                              role = "presentation",
-                              `aria-label` = "More information"
-                            ), target = "_blank"
-                          )
-                        ),
-                        choices = langSpecificUI$scen,
-                        selected = if (length(configJSON$defCompMode)) configJSON$defCompMode else config$defCompMode
-                        )
-                      ),
-                      tags$div(
-                        class = "option-wrapper",
-                        getMIROPivotOptions(configJSON$pivotCompSettings,
-                          prefix = "pivotcomp_",
-                          pivotComp = TRUE
-                        )
-                      ),
-                      tags$div(
                         class = "option-wrapper",
                         tags$label(
                           class = "cb-label", "for" = "general_auto",
@@ -873,6 +849,31 @@ font-size: 12px;
                           } else {
                             config$roundingDecimals
                           }
+                        )
+                      ),
+                      tags$div(
+                        class = "option-wrapper info-position",
+                        selectInput("general_scen", tags$div(
+                          lang$adminMode$general$scen$label,
+                          tags$a("",
+                            title = lang$adminMode$general$ui$tooltipDocs, class = "info-wrapper", href = "https://gams.com/miro/start.html#scenario-comparison",
+                            tags$span(
+                              class = "fas fa-info-circle", class = "info-icon",
+                              role = "presentation",
+                              `aria-label` = "More information"
+                            ), target = "_blank"
+                          )
+                        ),
+                        choices = langSpecificUI$scen,
+                        selected = if (length(configJSON$defCompMode)) configJSON$defCompMode else config$defCompMode
+                        )
+                      ),
+                      tags$div(
+                        class = "option-wrapper",
+                        tags$h2(lang$adminMode$general$ui$headerPivotcompare, class = "option-category"),
+                        getMIROPivotOptions(configJSON$pivotCompSettings,
+                          prefix = "pivotcomp_",
+                          pivotComp = TRUE
                         )
                       )
                     )),

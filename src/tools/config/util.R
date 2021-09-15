@@ -180,11 +180,7 @@ setInputValue <- function(session, id, value) {
 getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE) {
   tagList(
     checkboxInput_MIRO(paste0(prefix, "enableHideEmptyCols"),
-      if (pivotComp) {
-        lang$adminMode$graphs$miroPivotOptions$pivotCompHideEmptyColsSwitch
-      } else {
-        lang$adminMode$graphs$miroPivotOptions$hideEmptyColsSwitch
-      },
+      lang$adminMode$graphs$miroPivotOptions$hideEmptyColsSwitch,
       value = isTRUE(currentConfig$enableHideEmptyCols)
     ),
     conditionalPanel(
@@ -209,6 +205,10 @@ getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE) {
     checkboxInput_MIRO(paste0(prefix, "hidePivotControls"),
       lang$adminMode$graphs$miroPivotOptions$hidePivotControlsSwitch,
       value = isTRUE(currentConfig$hidePivotControls)
+    ),
+    checkboxInput_MIRO(paste0(prefix, "fixedColumns"),
+      lang$adminMode$graphs$miroPivotOptions$fixedColumnsSwitch,
+      value = !isFALSE(currentConfig$fixedColumns)
     ),
     if (!pivotComp) {
       tags$div(

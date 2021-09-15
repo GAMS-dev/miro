@@ -37,5 +37,5 @@ chartjs <- function(width = NULL, height = NULL, palette = "Paired", customColor
 
 chartjs_html <- function(id, class, ...){
   # Inside a div to ensure flexdashboards sees the widget
-  tags$div(id = paste0(id, "-container"), class = "htmlwidget_container", tags$canvas(id = id, class = class, ...))
+  tags$div(id = paste0(id, "-container"), class = "htmlwidget_container miro-pivot-height", tags$canvas(id = id, class = class, ...))
 }
