@@ -81,7 +81,7 @@ migrateMiroDatabase <- function(oldPath, newPath){
           sidsHcConfig <- dbGetQuery(conn, paste0("SELECT _sid FROM ",
                                                   dbQuoteIdentifier(conn, "_sys_metadata_"),
                                                   " WHERE _scode=-1"))
-          if(length(sidsHcConfig) && length(sidsHcConfig[[1]])){
+          if(length(sidsHcConfig) && length(sidsHcConfig[[1]]) && !dbExistsTable(conn, "_hc__scalars")){
             # copy Hypercube scalars to new _hc__scalars table
             dbExecute(conn,
                       "CREATE TABLE _hc__scalars (_sid INTEGER,scalar TEXT,description TEXT,value TEXT, CONSTRAINT foreign_key FOREIGN KEY (_sid) REFERENCES _sys_metadata_(_sid) ON DELETE CASCADE);")
