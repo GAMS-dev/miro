@@ -97,6 +97,18 @@ migrateMiroDatabase <- function(oldPath, newPath){
                                          DBI::dbQuoteIdentifier(conn, scalarTableName),
                                          " RENAME TO ",
                                          DBI::dbQuoteIdentifier(conn, paste0("_hc_", scalarTableName)))))
+              dbExecute(conn, SQL(paste0(
+                "DROP INDEX ",
+                DBI::dbQuoteIdentifier(conn, paste0("sid_index_", scalarTableName)))))
+              dbExecute(conn, paste0(
+                "CREATE INDEX ",
+                dbQuoteIdentifier(conn, paste0("sid_index__hc_", scalarTableName)),
+                " ON ",
+                dbQuoteIdentifier(conn, paste0("_hc_", scalarTableName)),
+                " (",
+                dbQuoteIdentifier(conn, "_sid"),
+                ");"
+              ))
             }
             dbExecute(conn,
                       paste0("CREATE TABLE ",
