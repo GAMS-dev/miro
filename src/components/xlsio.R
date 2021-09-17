@@ -315,14 +315,25 @@ XlsIO <- R6::R6Class("XlsIO",
           if (index$dim > 0L && index$cdim > 0L) {
             colNamesTmp <- as.character(private$cache[[rangeInfo$range$sheet]][rangeInfo$range$ul[1], colRangeTmp])
             if (rangeInfo$range$ul[1] + 1L > rowRangeEndTmp) {
-              data <- private$cache[[rangeInfo$range$sheet]][seq(rowRangeEndTmp, rowRangeEndTmp), colRangeTmp]
-              data[] <- ""
+              if (rangeInfo$range$ul[1] > rowRangeEndTmp) {
+                data <- private$cache[[rangeInfo$range$sheet]][0L, colRangeTmp]
+              } else {
+                data <- private$cache[[rangeInfo$range$sheet]][rowRangeEndTmp, colRangeTmp]
+              }
             } else {
               data <- private$cache[[rangeInfo$range$sheet]][seq(rangeInfo$range$ul[1] + 1L, rowRangeEndTmp), colRangeTmp]
             }
             names(data)[!is.na(colNamesTmp)] <- colNamesTmp[!is.na(colNamesTmp)]
           } else {
-            data <- private$cache[[rangeInfo$range$sheet]][seq(rangeInfo$range$ul[1], rowRangeEndTmp), colRangeTmp]
+            if (rangeInfo$range$ul[1] + 1L > rowRangeEndTmp) {
+              if (rangeInfo$range$ul[1] > rowRangeEndTmp) {
+                data <- private$cache[[rangeInfo$range$sheet]][0L, colRangeTmp]
+              } else {
+                data <- private$cache[[rangeInfo$range$sheet]][rowRangeEndTmp, colRangeTmp]
+              }
+            } else {
+              data <- private$cache[[rangeInfo$range$sheet]][seq(rangeInfo$range$ul[1], rowRangeEndTmp), colRangeTmp]
+            }
           }
           private$sheetRefCount[[rangeInfo$range$sheet]] <- private$sheetRefCount[[rangeInfo$range$sheet]] - 1L
           if (identical(private$sheetRefCount[[rangeInfo$range$sheet]], 0L)) {
@@ -336,6 +347,7 @@ XlsIO <- R6::R6Class("XlsIO",
           )
         }
         if (isSetType && index$cdim > 0L && (!nrow(data) || rowSums(is.na(data))[[1]] == ncol(data))) {
+          # need to manually add (empty) set text
           data[1, ] <- ""
         }
       }
@@ -375,9 +387,8 @@ XlsIO <- R6::R6Class("XlsIO",
               call. = FALSE
             )
           } else {
-            stop_custom("error_no_data",
-              sprintf("No data for symbol: %s", symName),
-              call. = FALSE
+            data <- as_tibble(rep.int(list(character(0L)), index$rdim + if (isSetType) 0L else 1L),
+              .name_repair = "minimal"
             )
           }
         }

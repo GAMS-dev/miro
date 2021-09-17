@@ -1181,6 +1181,8 @@ Worker <- R6Class("Worker", public = list(
         statusCode <- conditionMessage(e)
         if (identical(statusCode, "308")) {
           private$streamEntryQueueFinished <- TRUE
+        } else if (identical(statusCode, "404")) {
+          flog.debug("Stream entry not found.")
         } else {
           flog.warn("Problems fetching stream entry. Return code: '%s'.", statusCode)
         }

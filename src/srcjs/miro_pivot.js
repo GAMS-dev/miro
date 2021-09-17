@@ -16,7 +16,8 @@ function updatePivotPresentationData(id) {
         .filter((indexName) => $(`#${id}${item}IndexList [data-rank-id='${indexName}']`)[0].dataset.colHidden !== 'true');
     }
     domainConfig.indexHTML[item] = domainConfig.indexList[item] == null ? '' : domainConfig.indexList[item].map((indexName) => {
-      const filterElements = Shiny.shinyapp.$inputValues[`${id}filter_${indexName}`];
+      const filterNode = document.getElementById(`${id}filter_${indexName}`);
+      const filterElements = filterNode == null ? null : filterNode.selectize.getValue();
       const filterHTML = item === 'row' || filterElements == null ? ''
         : filterElements.map((filterElement) => `<div class="uel-item-presentation">${escapeHTML(filterElement)}</div>`).join('');
       const indexAlias = $(`#${id}${item}IndexList [data-rank-id='${indexName}']`).text();

@@ -209,7 +209,7 @@ if (!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))) {
   showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)
 
   # set initialisation flags for handsontables to FALSE
-  if (any(hotInit)) {
-    hotInit[] <<- FALSE
+  if (length(datasetsToFetch)) {
+    hotInit[match(tolower(datasetsToFetch), names(modelIn))] <<- FALSE
   }
 }

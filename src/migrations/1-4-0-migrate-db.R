@@ -110,7 +110,7 @@ migrateMiroDatabase <- function(oldPath, newPath) {
               dbQuoteIdentifier(conn, "_sys_metadata_"),
               " WHERE _scode=-1"
             ))
-            if (length(sidsHcConfig) && length(sidsHcConfig[[1]])) {
+            if (length(sidsHcConfig) && length(sidsHcConfig[[1]]) && !dbExistsTable(conn, "_hc__scalars")) {
               # copy Hypercube scalars to new _hc__scalars table
               dbExecute(
                 conn,
@@ -132,6 +132,19 @@ migrateMiroDatabase <- function(oldPath, newPath) {
                   " RENAME TO ",
                   DBI::dbQuoteIdentifier(conn, paste0("_hc_", scalarTableName))
                 )))
+                dbExecute(conn, SQL(paste0(
+                  "DROP INDEX ",
+                  DBI::dbQuoteIdentifier(conn, paste0("sid_index_", scalarTableName))
+                )))
+                dbExecute(conn, paste0(
+                  "CREATE INDEX ",
+                  dbQuoteIdentifier(conn, paste0("sid_index__hc_", scalarTableName)),
+                  " ON ",
+                  dbQuoteIdentifier(conn, paste0("_hc_", scalarTableName)),
+                  " (",
+                  dbQuoteIdentifier(conn, "_sid"),
+                  ");"
+                ))
               }
               dbExecute(
                 conn,
