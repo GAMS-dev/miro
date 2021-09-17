@@ -774,16 +774,73 @@ animation: none !important;
   cursor: pointer;
   align-items: center;
 }
-.dygraph-legend > span.highlight{
-  display: inline;
-  border: 2px solid grey;
-}
 .dygraph-legend {
   .responsiveDark({
   },
   {
      background-color: @modal-bg-dark !important;
   });
+}
+.dygraph-legend {
+  width: auto !important;
+  min-width: 150px;
+  padding-left:5px;
+  transition:0s 4s;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, .3);
+  border-radius: 3px;
+  .responsiveDark({
+    color: @text-color;
+    border:2px solid @readme-preview-border;
+  },
+  {
+    color: @text-color-dark;
+    border-color:2px solid @dropdown-sidebar-bg-dark;
+  });
+  @media only screen and (max-width: 767px){
+    left:0!important;
+    border-width: 1px;
+  }
+  @media only screen and (min-width: 768px){
+    .responsiveDark({
+      background-color: @scrollbar !important;
+    },
+    {
+      background-color: @scrollbar-dark !important;
+    });
+  }
+}
+.dygraph-legend > span {
+  padding-right:2px;
+  display: block;
+  .responsiveDark({
+    background-color: @modal-bg !important;
+    color: @text-color;
+  },
+  {
+    background-color: @modal-bg-dark !important;
+    color: @text-color-dark;
+  });
+  @media only screen and (max-width: 767px){
+    display: unset;
+  }
+  @media only screen and (min-width: 768px){
+    margin-left:-5px;
+    padding-left:5px;
+  }
+}
+.dygraph-legend > span.highlight{
+  .responsiveDark({
+    border-left: 2px solid @table-hover-dark;
+    background-color:@highlight-bg!important
+  },
+  {
+    border-left: 2px solid @table-hover;
+    background-color:@scrollbar-dark!important
+  });
+  padding-left:3px !important;
+}
+.dygraph-legend > span > span{
+  display: inline;
 }
 .dygraph-axis-label.dygraph-axis-label-x{
     .responsiveDark({
