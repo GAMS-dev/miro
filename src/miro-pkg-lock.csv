@@ -7,13 +7,13 @@ fansi, 0.5.0
 cli, 3.0.1
 utf8, 1.2.2
 Rcpp, 1.0.7
-R6, 2.5.0
+R6, 2.5.1
 BH, 1.75.0-0
 magrittr, 2.0.1
 rlang, 0.4.11
-later, 1.2.0
+later, 1.3.0
 promises, 1.2.0.1
-httpuv, 1.6.1
+httpuv, 1.6.3
 mime, 0.11
 jsonlite
 digest, 0.6.27
@@ -23,7 +23,7 @@ fastmap, 1.1.0
 curl, 4.3.2
 V8, 3.4.2
 base64enc, 0.1-3
-htmltools, 0.5.1.1
+htmltools, 0.5.2
 withr, 2.4.2
 leaflet.providers, 1.9.0
 commonmark, 1.7
@@ -40,7 +40,7 @@ ellipsis, 0.3.2
 vctrs, 0.3.8
 tidyselect, 1.1.1
 plogr, 0.2.0
-htmlwidgets, 1.5.3
+htmlwidgets, 1.5.4
 png, 0.1-7
 RColorBrewer, 1.1-2
 lattice, 0.20-44
@@ -56,19 +56,19 @@ DT
 gdxrrwMIRO
 leaflet
 pillar, 1.6.2
-tibble, 3.1.3
+tibble, 3.1.4
 generics, 0.1.0
 dplyr, 1.0.7
 sys, 3.4
 askpass, 1.1
 prettyunits, 1.1.1
-stringi, 1.7.3
+stringi, 1.7.4
 DBI, 1.1.1
 blob, 1.2.2
 hms, 1.1.0
 cpp11, 0.3.1
 tidyr, 1.1.3
-cachem, 1.0.5
+cachem, 1.0.6
 memoise, 2.0.0
 httr
 plotly
