@@ -391,6 +391,54 @@ inc/inc2.inc
                       created in your model directory. You can now distribute
                       this MIRO app directly to your end users!
                     </p>
+                    <h6 id="web-app-manifest">Make your app mobile friendly</h6>
+                    <p>
+                      If you plan to deploy your app on
+                      <a href="./server.html">MIRO Server</a>, you can add a
+                      custom
+                      <a
+                        href="https://developer.mozilla.org/en-US/docs/Web/Manifest"
+                        target="_blank"
+                        >web app manifest</a
+                      >. This allows you to customize the name, logo, and more
+                      when your app is added to a user's home screen. To create
+                      a custom manifest, simply create a new
+                      <kbd>manifest.json</kbd> file in the
+                      <kbd>static_&lt;modelname&gt;</kbd> directory of your app.
+                      You can use the following template:
+                    </p>
+                    <pre><code class="language-json">{
+    "theme_color": "#ffffff",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "start_url": "..",
+    "short_name": "MIRO app",
+    "name": "This is a GAMS MIRO app",
+    "icons": [
+        {
+            "src": "logo192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "logo512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
+</code></pre>
+                    <p>
+                      Make sure you also add the two icons
+                      <kbd>logo192.png</kbd> (192x192 pixels) and
+                      <kbd>logo512.png</kbd> (512x512 pixels) to the
+                      <kbd>static_&lt;modelname&gt;</kbd> directory. They will
+                      be used when adding your app to the home screen on Android
+                      devices. For iOS devices, add another icon named
+                      <kbd>apple-touch-icon.png</kbd> with a size of 180x180
+                      pixels. The <kbd>pickstock</kbd> sample application
+                      contains a manifest that you can use as a reference.
+                    </p>
                     <div class="expandable-box-outline">
                       <h3
                         id="export-cl"
