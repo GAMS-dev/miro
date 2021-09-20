@@ -43,6 +43,7 @@ these components are included below):
 - writexl https://github.com/ropensci/writexl or https://cran.r-project.org/web/packages/writexl/index.html
 - leaflet.providers https://github.com/rstudio/leaflet.providers or https://cran.r-project.org/web/packages/leaflet.providers/index.html
 - rhandsontable https://github.com/jrowen/rhandsontable or https://cran.r-project.org/web/packages/rhandsontable/index.html
+- lubridate https://github.com/tidyverse/lubridate/ or https://cran.r-project.org/web/packages/lubridate/index.html
 - shiny https://github.com/rstudio/shiny or https://cran.r-project.org/web/packages/shiny/index.html
 - shinydashboard https://github.com/rstudio/shinydashboard or https://cran.r-project.org/web/packages/shinydashboard/index.html
 - shinyAce https://github.com/trestletech/shinyAce or https://cran.r-project.org/web/packages/shinyAce/index.html
@@ -972,6 +973,17 @@ Library.
             Leon Gersen [ctb, cph] (noUiSlider in htmlwidgets/lib),
             Bartek Szopka [ctb, cph] (jquery.highlight.js in htmlwidgets/lib),
             RStudio Inc [cph]
+        - lubridate, Copyright (c) Vitalie Spinu [aut, cre],
+            Garrett Grolemund [aut],
+            Hadley Wickham [aut],
+            Ian Lyttle [ctb],
+            Imanuel Costigan [ctb],
+            Jason Law [ctb],
+            Doug Mitarotonda [ctb],
+            Joseph Larmarange [ctb],
+            Jonathan Boiser [ctb],
+            Chel Hee Lee [ctb],
+            Google Inc. [ctb, cph]
         - shiny, Copyright (c) Winston Chang [aut, cre],
             Joe Cheng [aut], JJ Allaire [aut], Yihui Xie [aut],
             Jonathan McPherson [aut], RStudio [cph],
