@@ -56,10 +56,6 @@ lapply(seq_along(modelIn), function(id) {
   if (!is.na(i)) {
     name <- names(modelInWithDep)[[i]]
   }
-  htmlSelectorPefix <- "in_"
-  if (isMobileDevice && identical(widgetType, "hot")) {
-    htmlSelectorPefix <- "in_m_"
-  }
   switch(modelIn[[id]]$type,
     checkbox = {
       dataModelIn[[id]] <<- reactive({
@@ -97,6 +93,10 @@ lapply(seq_along(modelIn), function(id) {
         # has dependency
         observe({
           k <- modelIn[[id]]$checkbox$sheetId
+          htmlSelectorPefix <- "in_"
+          if (isMobileDevice && identical(modelIn[[k]]$type, "hot")) {
+            htmlSelectorPefix <- "in_m_"
+          }
           value <- NULL
           errMsg <- NULL
           noShared <- FALSE
@@ -327,6 +327,10 @@ lapply(seq_along(modelIn), function(id) {
             j <- 2
             for (dataSheet in unique(tolower(names(ddownDep[[name]]$fw)))) {
               k <- match(dataSheet, names(modelIn))
+              htmlSelectorPefix <- "in_"
+              if (isMobileDevice && identical(modelIn[[k]]$type, "hot")) {
+                htmlSelectorPefix <- "in_m_"
+              }
               input[[htmlSelectorPefix %+% k]]
               rv[["in_" %+% k]]
               if (identical(modelIn[[k]]$type, "custom")) {
@@ -500,6 +504,10 @@ lapply(seq_along(modelIn), function(id) {
             } else {
               # retrieve externally dependent data
               k <- match(names(el)[1], tolower(names(modelIn)))[1]
+              htmlSelectorPefix <- "in_"
+              if (isMobileDevice && identical(modelIn[[k]]$type, "hot")) {
+                htmlSelectorPefix <- "in_m_"
+              }
               if (modelIn[[k]]$type == "daterange") {
                 rv[["in_" %+% k]]
                 switch(el[["$operator"]],
