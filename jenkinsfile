@@ -408,7 +408,7 @@ pipeline {
                         git config user.email 'jenkins@berlin.noreply.gams.com'
                         git checkout -B $BRANCH_NAME
                         git fetch --unshallow
-                        git pull
+                        git pull origin master
 
                         MIRO_VERSION_FULL=$(grep -e '"version": .*' package.json |cut -f4 -d"\\"")
                         pushd src > /dev/null
@@ -440,7 +440,7 @@ pipeline {
                           git pull
                           ls -la
                           sed -i -e 's/^\\( *miro_release *= *\\).*/\\1"'"${MIRO_VERSION_FULL}"'"/' ./config.toml
-                          sed -i -e 's/^\\( *miro_release_date *= *\\).*/\\1'"${MIRO_RELEASE_DATE}"'/' ./config.toml
+                          sed -i -e 's/^\\( *miro_release_date *= *\\).*/\\1"'"${MIRO_RELEASE_DATE}"'"/' ./config.toml
                           git add config.toml
                           git status
                           git config user.name 'jenkins'

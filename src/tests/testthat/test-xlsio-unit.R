@@ -540,6 +540,30 @@ test_that("Reading variables/equations works", {
   )
 })
 
+test_that("Reading symbols without data works", {
+  expect_identical(
+    xlsio$read("../data/exampleData.xlsx", "i1", indexRange = "emptySymIndex", forceInit = TRUE),
+    tibble(
+      uni = character(),
+      text = character()
+    )
+  )
+  expect_identical(
+    xlsio$read("../data/exampleData.xlsx", "i1a"),
+    tibble(
+      uni = character(),
+      text = character()
+    )
+  )
+  expect_identical(
+    xlsio$read("../data/exampleData.xlsx", "i2"),
+    tibble(
+      uni = character(),
+      text = character()
+    )
+  )
+})
+
 test_that("Reading Excel without index works", {
   expect_identical(
     xlsio$read("../data/exampleData.xlsx", "i11", forceInit = TRUE),

@@ -1,7 +1,7 @@
 # version number
-MIROVersion <- "2.1.0"
+MIROVersion <- "2.1.1"
 APIVersion <- "1"
-MIRORDate <- "Sep 07 2021"
+MIRORDate <- "Sep 17 2021"
 
 # specify CRAN mirror
 CRANMirror <- "https://cloud.r-project.org/"

@@ -1025,7 +1025,7 @@ Worker <- R6Class("Worker", public = list(
               usetz = TRUE
             )
           ),
-          timeout(metadata$timeout)
+          timeout(120L)
         )
         if (identical(status_code(ret), 201L)) {
           if (is.R6(hcubeData)) {
@@ -1181,6 +1181,8 @@ Worker <- R6Class("Worker", public = list(
         statusCode <- conditionMessage(e)
         if (identical(statusCode, "308")) {
           private$streamEntryQueueFinished <- TRUE
+        } else if (identical(statusCode, "404")) {
+          flog.debug("Stream entry not found.")
         } else {
           flog.warn("Problems fetching stream entry. Return code: '%s'.", statusCode)
         }
