@@ -102,7 +102,9 @@ these components are included below):
 - scales https://github.com/r-lib/scales or https://cran.r-project.org/web/packages/scales/index.html
 - farver https://cran.r-project.org/web/packages/farver/index.html or https://github.com/thomasp85/farver
 - httr https://github.com/r-lib/httr or https://cran.r-project.org/web/packages/httr/index.html
+- parallelly https://github.com/HenrikBengtsson/parallelly/ or https://cran.r-project.org/web/packages/parallelly/index.html
 - future https://github.com/HenrikBengtsson/future or https://cran.r-project.org/web/packages/future/index.html
+- codetools https://gitlab.com/luke-tierney/codetools or https://cran.r-project.org/web/packages/codetools/index.html
 - globals https://github.com/HenrikBengtsson/globals or https://cran.r-project.org/web/packages/globals/index.html
 - listenv https://github.com/HenrikBengtsson/listenv or https://cran.r-project.org/web/packages/listenv/index.html
 - zeallot https://github.com/nteetor/zeallot or https://cran.r-project.org/web/packages/zeallot/index.html
@@ -773,6 +775,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         - fansi [expanded from: GPL (≥ 2)], Copyright (c) Brodie Gaslam [aut, cre],
             Elliott Sales De Andrade [ctb],
             R Core Team [cph] (UTF8 byte length calcs from src/util.c)
+        - parallelly, Copyright (c) Henrik Bengtsson [aut, cre, cph]
         - future, Copyright (c) Henrik Bengtsson [aut, cre, cph]
         - globals, Copyright (c) Henrik Bengtsson [aut, cre, cph]
         - listenv, Copyright (c) Henrik Bengtsson [aut, cre, cph]
@@ -1092,6 +1095,7 @@ Library.
         - vctrs, Copyright (c)  Hadley Wickham [aut, cre], Lionel Henry [aut], Davis Vaughan [aut], RStudio [cph]
         - ellipsis, Copyright (c)  Hadley Wickham [aut, cre], RStudio [cph]
         - withr, Copyright (c) Jim Hester [aut, cre], Kirill Müller [aut], Kevin Ushey [aut], Hadley Wickham [aut], Winston Chang [aut], Richard Cotton [ctb], RStudio [cph]
+        - codetools, Copyright (c) Luke Tierney <luke-tierney at uiowa.edu>
         - gdxrrwMIRO [expanded from: EPL2 with Secondary License GPL-2.0 or greater], Copyright (c) GAMS Development Corp. [aut, cre, cph], Steve Dirkse [aut], Michael Ferris [aut], Rishabh Jain [aut], Frederik Proske [ctb]
 -----------------------------------------------------------------------------
 
