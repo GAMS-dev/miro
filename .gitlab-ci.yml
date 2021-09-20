@@ -1,20 +1,6 @@
-variables:
-  MIRO_DB_TYPE: postgres
-  MIRO_DB_HOST: postgres
-  MIRO_DB_NAME: mirotests
-  MIRO_DB_USERNAME: mirotests
-  MIRO_DB_PASSWORD: mirotests
-  POSTGRES_DB: $MIRO_DB_NAME
-  POSTGRES_USER: $MIRO_DB_USERNAME
-  POSTGRES_PASSWORD: $MIRO_DB_PASSWORD
-  POSTGRES_HOST_AUTH_METHOD: trust
-
 stages:
   - test
   - deploy
-
-services:
-  - name: postgres:12.1-alpine
 
 image:
   name: hub.gams.com:443/gamsmiro-ci:latest
@@ -38,6 +24,18 @@ test_job:
   tags:
     - linux
   stage: test
+  services:
+    - name: postgres:12.1-alpine
+  variables:
+    MIRO_DB_TYPE: postgres
+    MIRO_DB_HOST: postgres
+    MIRO_DB_NAME: mirotests
+    MIRO_DB_USERNAME: mirotests
+    MIRO_DB_PASSWORD: mirotests
+    POSTGRES_DB: $MIRO_DB_NAME
+    POSTGRES_USER: $MIRO_DB_USERNAME
+    POSTGRES_PASSWORD: $MIRO_DB_PASSWORD
+    POSTGRES_HOST_AUTH_METHOD: trust
   before_script:
     - source /etc/profile.d/ci.sh
     - yarn install --cache-folder .yarn
