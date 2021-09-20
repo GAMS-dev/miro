@@ -17,7 +17,7 @@ services:
   - name: postgres:12.1-alpine
 
 image:
-  name: hub.gams.com:443/gamsmiro-ci:latest
+  name: registry.gams.com/fproske/gmswebui/gamsmiro-ci:latest
 
 lint_job:
   tags:
