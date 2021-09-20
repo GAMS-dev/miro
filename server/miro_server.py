@@ -109,8 +109,8 @@ class MiroServer(object):
 
     dc_args_miro = ['docker-compose', 'down']
 
-    self.stop_proxies('hub.gams.com/miro-admin')
-    self.stop_proxies('hub.gams.com/miro-ui')
+    self.stop_proxies('registry.gams.com/fproske/gmswebui/miro-admin')
+    self.stop_proxies('registry.gams.com/fproske/gmswebui/miro-ui')
     self.stop_proxies('gams/miro-admin')
     self.stop_proxies('gams/miro-ui')
     self.stop_proxies('miro-admin')
@@ -229,7 +229,7 @@ class MiroServer(object):
 
   def push_image(self, image_name_local, image_name_hub, unstable=False):
     if unstable:
-      dhost = 'hub.gams.com'
+      dhost = 'registry.gams.com/fproske/gmswebui'
       version_string = 'unstable'
     else:
       dhost = 'gams'

@@ -40,7 +40,7 @@ pipeline {
             name: 'FORCE_RELEASE')
         booleanParam(
             defaultValue: false,
-            description: 'Push MIRO Server images to hub.gams.com (tagged as unstable)?',
+            description: 'Push MIRO Server images to registry.gams.com (tagged as unstable)?',
             name: 'PUSH_UNSTABLE_SERVER_IMAGES')
     }
 
@@ -261,17 +261,17 @@ pipeline {
                     steps {
                         script{
                             if (params.BUILD_CI) {
-                                withCredentials([usernamePassword(credentialsId: 'dockerhub_login', passwordVariable: 'hub_pass', usernameVariable: 'hub_user')]){
+                                withCredentials([usernamePassword(credentialsId: 'gitlab_registry', passwordVariable: 'registry_pass', usernameVariable: 'registry_user')]){
                                     sh '''
-                                        docker login hub.gams.com:443 --username="${hub_user}" --password="${hub_pass}"
-                                        docker tag gamsmiro-ci hub.gams.com/gamsmiro-ci:latest
-                                        docker push hub.gams.com/gamsmiro-ci:latest
+                                        docker login registry.gams.com --username="${registry_user}" --password="${registry_pass}"
+                                        docker tag gamsmiro-ci registry.gams.com/fproske/gmswebui/gamsmiro-ci:latest
+                                        docker push registry.gams.com/fproske/gmswebui/gamsmiro-ci:latest
                                     '''
                                 }
                             } else {
-                                withCredentials([usernamePassword(credentialsId: 'dockerhub_login', passwordVariable: 'hub_pass', usernameVariable: 'hub_user')]){
+                                withCredentials([usernamePassword(credentialsId: 'gitlab_registry', passwordVariable: 'registry_pass', usernameVariable: 'registry_user')]){
                                     sh '''
-                                        docker login hub.gams.com:443 --username="${hub_user}" --password="${hub_pass}"
+                                        docker login registry.gams.com --username="${registry_user}" --password="${registry_pass}"
                                     '''
                                 }
                             }
