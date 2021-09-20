@@ -711,11 +711,62 @@ if (buildUI) {
       logTabsetList$id <- "logFileTabsset"
       fluidRow(
         class = "box-title-mobile",
-        box(
-          class = "box-mobile",
-          title = lang$nav$gams$boxGamsOutput$title, status = "primary", solidHeader = TRUE,
-          width = 12, collapsible = TRUE,
-          do.call(tabsetPanel, logTabsetList)
+        tags$div(
+          class = "col-sm-12",
+          tags$div(
+            class = "box box-solid box-primary",
+            tags$div(
+              class = "box-header",
+              tags$h3(class = "box-title", lang$nav$gams$boxGamsOutput$title)
+            ),
+            tags$div(
+              class = "box-body box-mobile",
+              do.call(tabsetPanel, logTabsetList),
+              tags$div(
+                class = "pull-right",
+                tags$div(
+                  class = "btn-group batch-load-content dropup",
+                  tags$button(
+                    class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
+                    tags$i(class = "fas fa-download"),
+                    tags$i(class = "fas fa-caret-up"),
+                    tags$span(class = "sr-only", "toggle download dropdown")
+                  ),
+                  tags$ul(
+                    class = "dropdown-menu dropdown-menu-right",
+                    role = "menu",
+                    if (config$activateModules$logFile) {
+                      tags$li(
+                        tags$a(
+                          class = "shiny-download-link", type = "button",
+                          id = "btDownloadLogFilesLog", target = "_blank", href = "", download = NA,
+                          lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile
+                        )
+                      )
+                    },
+                    if (config$activateModules$miroLogFile) {
+                      tags$li(
+                        tags$a(
+                          class = "shiny-download-link", type = "button",
+                          id = "btDownloadLogFilesMiroLog", target = "_blank", href = "", download = NA,
+                          lang$nav$gams$boxGamsOutput$gamsOutputTabset$miroLogFile
+                        )
+                      )
+                    },
+                    if (config$activateModules$lstFile) {
+                      tags$li(
+                        tags$a(
+                          class = "shiny-download-link", type = "button",
+                          id = "btDownloadLogFilesLst", target = "_blank", href = "", download = NA,
+                          lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile
+                        )
+                      )
+                    }
+                  )
+                )
+              )
+            )
+          )
         )
       )
     }

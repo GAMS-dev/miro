@@ -360,6 +360,19 @@ observeEvent(virtualActionButton(input$btSubmitAsyncJob, rv$btSubmitAsyncJob), {
 })
 
 if (config$activateModules$lstFile) {
+  output$btDownloadLogFilesLst <- downloadHandler(paste0(modelNameRaw, ".lst"),
+    content = function(file) {
+      logPathTmp <- file.path(workDir, paste0(modelNameRaw, ".lst"))
+      if (!file.exists(logPathTmp)[1]) {
+        return(write_file("", file))
+      }
+      tryCatch(file.copy(logPathTmp, file),
+        error = function(e) {
+          flog.warn("Lst file could not be copied. Error message: '%s'.", conditionMessage(e))
+        }
+      )
+    }, contentType = "text/plain"
+  )
   output$listFileContainer <- renderText({
     req(rv$refreshLogs)
     errMsg <- NULL
@@ -389,6 +402,19 @@ if (config$activateModules$lstFile) {
   })
 }
 if (config$activateModules$miroLogFile) {
+  output$btDownloadLogFilesMiroLog <- downloadHandler(paste0(modelName, "-mirolog.log"),
+    content = function(file) {
+      logPathTmp <- file.path(workDir, config$miroLogFile)
+      if (!file.exists(logPathTmp)[1]) {
+        return(write_file("", file))
+      }
+      tryCatch(file.copy(logPathTmp, file),
+        error = function(e) {
+          flog.warn("MIRO log file could not be copied. Error message: '%s'.", conditionMessage(e))
+        }
+      )
+    }, contentType = "text/plain"
+  )
   renderMiroLogContent <- function() {
     miroLogAnnotations <<- NULL
     miroLogContent <- ""
@@ -428,6 +454,19 @@ if (config$activateModules$logFile ||
   logfileObs <- NULL
   logfile <- NULL
   if (config$activateModules$logFile) {
+    output$btDownloadLogFilesLog <- downloadHandler(paste0(modelNameRaw, ".log"),
+      content = function(file) {
+        logPathTmp <- file.path(workDir, paste0(modelNameRaw, ".log"))
+        if (!file.exists(logPathTmp)[1]) {
+          return(write_file("", file))
+        }
+        tryCatch(file.copy(logPathTmp, file),
+          error = function(e) {
+            flog.warn("Log file could not be copied. Error message: '%s'.", conditionMessage(e))
+          }
+        )
+      }, contentType = "text/plain"
+    )
     logFilePath <- file.path(workDir, modelNameRaw %+% ".log")
   } else {
     logFilePath <- file.path(workDir, config$miroLogFile)

@@ -19,4 +19,13 @@ app$snapshot(
 app$setInputs(btSolve = "click")
 Sys.sleep(10)
 expect_error(app$findElement("#outputTableView")$click(), NA)
+if (Sys.getenv("GMSMODELNAME") %in% c("pickstock")) {
+  app$findElement('a[data-value="gamsinter"]')$click()
+  Sys.sleep(1)
+  app$waitFor("$('.dropdown-toggle:visible').click();", timeout = 50)
+  Sys.sleep(1)
+  expect_download(app, "btDownloadLogFilesMiroLog", "pickstock.mirolog")
+  expect_download_size(app, "btDownloadLogFilesLog", "pickstock.log")
+  expect_download_size(app, "btDownloadLogFilesLst", "pickstock.lst")
+}
 app$stop()

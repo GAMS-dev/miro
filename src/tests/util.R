@@ -36,6 +36,26 @@ selectSelectizeOption <- function(app, selector, value) {
   return(app$waitFor(paste0("$('", selector, "')[0].selectize.addItem('", value, "');true;"), timeout = 50))
 }
 
+expect_download <- function(app, id, filename) {
+  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  req <- httr::GET(url)
+  filePath <- file.path(getwd(), "data", "downloads-expected", basename(app$getSnapshotDir()))
+  if (!file.exists(filePath)) {
+    if (!dir.create(filePath, recursive = TRUE)) {
+      stop("Could not create file downloads test directory", call. = FALSE)
+    }
+  }
+  if (file.exists(file.path(filePath, filename))) {
+    if (is.raw(req$content)) {
+      expect_identical(req$content, read_file_raw(file.path(filePath, filename)))
+    } else {
+      expect_identical(req$content, read_file(file.path(filePath, filename)))
+    }
+  } else {
+    writeBin(req$content, file.path(filePath, filename))
+  }
+}
+
 expect_download_size <- function(app, id, filename, tolerance = 100) {
   url <- app$findElement(paste0("#", id))$getAttribute("href")
   req <- httr::GET(url)
