@@ -730,10 +730,14 @@ Worker <- R6Class("Worker", public = list(
     if (private$metadata$hiddenLogFile &&
       !private$streamEntryQueueFinished &&
       !(identical(private$status, "s") || identical(private$status, "q"))) {
-      private$log <- private$readStreamEntity(
+      streamValTmp <- private$readStreamEntity(
         private$process,
         private$metadata$miroLogFile
       )
+      if (identical(streamValTmp$queue_finished, TRUE)) {
+        private$streamEntryQueueFinished <- TRUE
+      }
+      private$log <- streamValTmp$entry_value
       if (!identical(private$log, "")) {
         private$updateLog <- private$updateLog + 1L
       }
@@ -1016,7 +1020,7 @@ Worker <- R6Class("Worker", public = list(
             type = "application/zip"
           )
         }
-        ret <- POST(paste0(metadata$url, if (is.R6(hcubeData)) "/hypercube" else "/jobs", textEntities),
+        ret <- POST(paste0(metadata$url, if (is.R6(hcubeData)) "/hypercube/" else "/jobs/", textEntities),
           encode = "multipart",
           body = requestBody,
           add_headers(
@@ -1175,7 +1179,7 @@ Worker <- R6Class("Worker", public = list(
             Timestamp = as.character(Sys.time(), usetz = TRUE)
           ),
           timeout(3L)
-        ))$entry_value)
+        )))
       },
       error = function(e) {
         statusCode <- conditionMessage(e)
