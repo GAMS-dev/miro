@@ -1390,13 +1390,6 @@ showBatchLoadDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver 
               }
             ),
             tags$div(
-              style = "display:none", class = "batch-load-dl-content",
-              selectInput("selExportFiletype", lang$nav$dialogBatchLoad$selExportType,
-                c("gdx", "csv"),
-                width = "100%"
-              )
-            ),
-            tags$div(
               class = "batch-load-sb-content", style = "display:none;",
               lang$nav$dialogImport$descOverwriteInput
             ),
