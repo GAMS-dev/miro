@@ -62,7 +62,7 @@ Worker <- R6Class("Worker", public = list(
       ret <- GET(
         url = paste0(
           private$metadata$url, "/namespaces/", namespace, "/permissions?username=",
-          URLencode(username)
+          URLencode(username, reserved = TRUE)
         ),
         add_headers(
           Authorization = private$authHeader,
@@ -113,7 +113,7 @@ Worker <- R6Class("Worker", public = list(
         ret <- GET(
           url = paste0(
             private$metadata$url, "/namespaces/", namespace, "?model=",
-            URLencode(private$metadata$modelId)
+            URLencode(private$metadata$modelId, reserved = TRUE)
           ),
           add_headers(
             Authorization = private$authHeader,
@@ -984,9 +984,14 @@ Worker <- R6Class("Worker", public = list(
         } else {
           gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="', metadata$MIROGdxInName, '"'))
           if (length(metadata$text_entities)) {
-            textEntities <- URLencode(paste0("?text_entries=", paste(metadata$text_entities,
+            escapedTextEntities <- vapply(metadata$text_entities,
+              URLencode, character(1L),
+              reserved = TRUE,
+              USE.NAMES = FALSE
+            )
+            textEntities <- paste0("?text_entries=", paste(escapedTextEntities,
               collapse = "&text_entries="
-            )))
+            ))
           }
           if (metadata$hiddenLogFile) {
             requestBody$stream_entries <- metadata$miroLogFile
@@ -1069,7 +1074,7 @@ Worker <- R6Class("Worker", public = list(
       ret <- HEAD(
         paste0(
           private$metadata$url, "/jobs/", jID, "/text-entry/",
-          URLencode(text_entity)
+          URLencode(text_entity, reserved = TRUE)
         ),
         add_headers(
           Authorization = private$authHeader,
@@ -1100,7 +1105,7 @@ Worker <- R6Class("Worker", public = list(
     ret <- GET(
       paste0(
         private$metadata$url, "/jobs/", jID, "/text-entry/",
-        URLencode(text_entity),
+        URLencode(text_entity, reserved = TRUE),
         if (!is.null(teLength)) {
           paste0(
             "?start_position=", startPos,
