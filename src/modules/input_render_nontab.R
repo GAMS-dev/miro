@@ -52,6 +52,15 @@ inputInitialized <- vector(mode = "logical", length = length(modelInWithDep))
 newDefaultValue <- vector(mode = "list", length = length(modelInWithDep))
 
 lapply(seq_along(modelIn), function(id) {
+  if (length(modelIn[[id]]$definedByExternalSymbol)) {
+    dataModelIn[[id]] <<- reactive({
+      if (is.null(rv[["in_" %+% id]])) {
+        return(NULL)
+      }
+      modelInputData[[id]]
+    })
+    return()
+  }
   i <- match(names(modelIn)[[id]], names(modelInWithDep))[1]
   if (!is.na(i)) {
     name <- names(modelInWithDep)[[i]]

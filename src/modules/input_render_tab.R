@@ -44,13 +44,17 @@ getVisibleTabData <- function(id, type) {
   return(data)
 }
 
-getInputDataset <- function(id, visible = FALSE) {
+getInputDataset <- function(id, visible = FALSE, subSymName = NULL) {
   if (!length(modelIn[[id]]$pivotCols)) {
-    return(getInputDatasetRaw(id) %>%
-      mutate_if(is.character,
-        replace_na,
-        replace = ""
-      ))
+    intermDataTmp <- getInputDatasetRaw(id, subSymName = subSymName)
+    if (is_tibble(intermDataTmp)) {
+      return(intermDataTmp %>%
+        mutate_if(is.character,
+          replace_na,
+          replace = ""
+        ))
+    }
+    return(intermDataTmp)
   }
   if (visible) {
     widgetType <- modelIn[[id]]$type
@@ -69,7 +73,10 @@ getInputDataset <- function(id, visible = FALSE) {
       return(modelInTemplate[[id]])
     }
   } else {
-    intermDataTmp <- getInputDatasetRaw(id)
+    intermDataTmp <- getInputDatasetRaw(id, subSymName = subSymName)
+    if (!is_tibble(intermDataTmp)) {
+      return(intermDataTmp)
+    }
   }
   if (modelIn[[id]]$pivotCols[[1]] %in% names(intermDataTmp)) {
     # table not yet initialised (so not pivoted either)
@@ -82,7 +89,7 @@ getInputDataset <- function(id, visible = FALSE) {
 
   return(intermDataTmp)
 }
-getInputDatasetRaw <- function(id) {
+getInputDatasetRaw <- function(id, subSymName = NULL) {
   widgetType <- modelIn[[id]]$type
   htmlSelector <- paste0("in_", id)
   if (isMobileDevice && identical(widgetType, "hot")) {
@@ -125,10 +132,40 @@ getInputDatasetRaw <- function(id) {
     }
     stop("No input data found.", call. = FALSE)
   } else {
-    data <- isolate(modelInputDataVisible[[id]]())
-    if (identical(length(data), length(modelIn[[id]]$headers)) &&
-      hasValidHeaderTypes(data, modelIn[[id]]$colTypes)) {
-      names(data) <- names(modelInTemplate[[id]])
+    if (length(modelIn[[id]]$widgetSymbols)) {
+      data <- isolate(modelInputDataVisible[[id]][[subSymName]]())
+      if (!length(modelIn[[subSymName]]$headers)) {
+        return(data)
+      }
+      symIdTmp <- match(subSymName, names(modelIn))
+    } else {
+      data <- isolate(modelInputDataVisible[[id]]())
+      symIdTmp <- id
+    }
+    if (identical(scalarsFileName, names(modelIn)[[symIdTmp]])) {
+      if (length(data) < 2L || length(data) > 3L) {
+        stop("Scalars dataframe must not have less than 2 and not more than 3 columns.", call. = FALSE)
+      }
+      if (!nrow(data)) {
+        return(scalarsInTemplate)
+      }
+      scalarIdsTmp <- match(tolower(data[[1]]), scalarsInTemplate[[1]])
+      if (any(is.na(scalarIdsTmp))) {
+        stop(sprintf(
+          "Scalars dataframe contains invalid scalar(s): '%s'.",
+          paste(data[[1]][is.na(scalarIdsTmp)], collapse = ", ")
+        ), call. = FALSE)
+      }
+      dataToReturn <- scalarsInTemplate
+      if (identical(length(data), 2L)) {
+        dataToReturn[[3]][scalarIdsTmp] <- data[[2L]]
+      } else {
+        dataToReturn[[3]][scalarIdsTmp] <- data[[3L]]
+      }
+      return(dataToReturn)
+    } else if (identical(length(data), length(modelIn[[symIdTmp]]$headers)) &&
+      hasValidHeaderTypes(data, modelIn[[symIdTmp]]$colTypes)) {
+      names(data) <- names(modelInTemplate[[symIdTmp]])
       return(data)
     }
     stop("No valid input data found.", call. = FALSE)
@@ -245,10 +282,17 @@ observeEvent(input$btGraphIn, {
         return()
       }
     } else {
-      data <- tryCatch(isolate(modelInputDataVisible[[i]]()), error = function(e) {
-        flog.warn("Problems getting data from custom renderer. Error message: %s", conditionMessage(e))
-        return(modelInTemplate[[i]])
-      })
+      if (length(modelIn[[i]]$widgetSymbols)) {
+        data <- tryCatch(isolate(modelInputDataVisible[[i]][[names(modelIn)[[i]]]]()), error = function(e) {
+          flog.warn("Problems getting data from custom renderer. Error message: %s", conditionMessage(e))
+          return(modelInTemplate[[i]])
+        })
+      } else {
+        data <- tryCatch(isolate(modelInputDataVisible[[i]]()), error = function(e) {
+          flog.warn("Problems getting data from custom renderer. Error message: %s", conditionMessage(e))
+          return(modelInTemplate[[i]])
+        })
+      }
     }
     if (!dynamicUILoaded$inputGraphs[i]) {
       tryCatch(
@@ -316,7 +360,8 @@ observeEvent(input$btGraphIn, {
 lapply(modelInTabularData, function(sheet) {
   # get input element id of dataset
   i <- match(sheet, tolower(names(modelIn)))[[1]]
-  if (isTRUE(modelIn[[i]]$dropdown$multiple)) {
+  if (isTRUE(modelIn[[i]]$dropdown$multiple) ||
+    length(modelIn[[i]]$definedByExternalSymbol)) {
     return()
   }
   widgetType <- modelIn[[i]]$type
@@ -881,6 +926,10 @@ lapply(modelInTabularData, function(sheet) {
           } else {
             dataIds <- i
           }
+          if (length(modelIn[[i]]$widgetSymbols)) {
+            dataIds <- c(dataIds, match(modelIn[[i]]$widgetSymbols, names(modelIn)))
+          }
+          dataIds <- unique(dataIds)
           modelInputDataVisible[[i]] <<- callModule(generateData, paste0("data-in_", i),
             type = modelIn[[i]]$rendererName,
             data = if (length(dataIds) > 1L) {
@@ -934,9 +983,18 @@ lapply(modelInTabularData, function(sheet) {
     }
     observe({
       force(rv[[paste0("reinit_", i)]])
-      if (is.null(force(modelInputDataVisible[[i]]())) || isTRUE(skipObs[[i]])) {
-        skipObs[[i]] <<- FALSE
-        return()
+      if (length(modelIn[[i]]$widgetSymbols)) {
+        if (all(vapply(seq_along(modelInputDataVisible[[i]]), function(idx) {
+          is.null(force(modelInputDataVisible[[i]][[idx]]()))
+        }, logical(1L), USE.NAMES = FALSE)) || isTRUE(skipObs[[i]])) {
+          skipObs[[i]] <<- FALSE
+          return()
+        }
+      } else {
+        if (is.null(force(modelInputDataVisible[[i]]())) || isTRUE(skipObs[[i]])) {
+          skipObs[[i]] <<- FALSE
+          return()
+        }
       }
       if (hotInit[[i]]) {
         isolate({

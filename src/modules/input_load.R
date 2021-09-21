@@ -54,7 +54,16 @@ if (!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))) {
       # handsontable, multi dropdown, or daterange
       if (tolower(dataset) %in% modelInTabularData) {
         if (identical(overwriteInput, 2L)) {
-          dataTmp <- mergeDf(fixColTypes(getInputDataset(i), modelIn[[i]]$colTypes),
+          if (length(modelIn[[i]]$definedByExternalSymbol)) {
+            rootSymId <- match(modelIn[[i]]$definedByExternalSymbol, names(modelIn))
+          } else {
+            rootSymId <- i
+          }
+          dataTmp <- mergeDf(
+            fixColTypes(
+              getInputDataset(rootSymId, subSymName = names(modelIn)[[i]]),
+              modelIn[[i]]$colTypes
+            ),
             scenInputData[[dataset]],
             isScalarsTable = identical(names(modelIn)[[i]], scalarsFileName)
           )

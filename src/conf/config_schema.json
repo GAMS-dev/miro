@@ -1163,6 +1163,17 @@
                        "minLength":1
                     }
                    },
+                   "widgetSymbols":{
+                     "description":"Specify additional symbols for which this widget is defined.",
+                      "type":["array", "string"],
+                      "minLength":1,
+                      "minItems":1,
+                      "uniqueItems":true,
+                      "items":{
+                         "type":"string",
+                         "minLength":1
+                      }
+                   },
                    "noImport":{
                     "description":"Boolean that specifies whether data should not be imported from external source",
                     "type":"boolean"

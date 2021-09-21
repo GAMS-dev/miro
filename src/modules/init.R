@@ -303,6 +303,7 @@ if (is.null(errMsg)) {
   customPackages <- vector("list", length(modelIn))
 
   invalidWidgetsToRender <- character(0L)
+  inputSymInForeignRenderers <- character(0L)
 
   for (el in names(config$inputWidgets)) {
     i <- match(tolower(el), names(modelIn))
@@ -589,7 +590,7 @@ if (is.null(errMsg)) {
             names(config$inputWidgets),
             names(modelOut)
           )
-          if (any(invalidDsNames)) {
+          if (any(invalidDsNames) && !LAUNCHCONFIGMODE) {
             errMsg <- paste(errMsg, sprintf(
               "Invalid additional data for custom input widget: '%s' declared. The dataset(s): '%s' are not scalar input widgets. Currently, only scalar input widgets are supported as additional data for custom widgets.",
               names(modelIn)[[i]],
@@ -600,6 +601,49 @@ if (is.null(errMsg)) {
             next
           }
           modelIn[[i]]$additionalData <- widgetConfig$additionalData
+        }
+        if (length(widgetConfig$widgetSymbols)) {
+          widgetSymbolsTmp <- tolower(unique(widgetConfig$widgetSymbols))
+          if (names(modelIn)[[i]] %in% widgetSymbolsTmp) {
+            widgetSymbolsTmp <- widgetSymbolsTmp[!widgetSymbolsTmp %in% names(modelIn)[[i]]]
+          }
+          invalidDsNames <- !widgetConfig$widgetSymbols %in% c(
+            names(config$inputWidgets),
+            names(modelIn)
+          )
+          if (any(invalidDsNames) && !LAUNCHCONFIGMODE) {
+            errMsg <- paste(errMsg, sprintf(
+              "The symbol(s): %s declared for the custom widget of symbol: %s were not found in the list of input symbols.",
+              paste(widgetConfig$widgetSymbols[invalidDsNames], collapse = "', '"),
+              names(modelIn)[[i]]
+            ),
+            sep = "\n"
+            )
+            next
+          }
+          modelIn[[i]]$widgetSymbols <- widgetSymbolsTmp
+          invalidAdditionalData <- match(modelIn[[i]]$additionalData, modelIn[[i]]$widgetSymbols)
+          invalidAdditionalData <- invalidAdditionalData[!is.na(invalidAdditionalData)]
+          if (length(invalidAdditionalData) && !LAUNCHCONFIGMODE) {
+            errMsg <- paste(errMsg, sprintf(
+              "Invalid additional data for custom input widget: '%s' declared. Additional data: '%s' cannot be part of renderer symbols.",
+              names(modelIn)[[i]],
+              paste(modelIn[[i]]$additionalData[invalidAdditionalData], collapse = "', '")
+            ),
+            sep = "\n"
+            )
+            next
+          }
+          inputSymInForeignRenderers <- c(
+            inputSymInForeignRenderers,
+            setNames(
+              widgetSymbolsTmp,
+              rep.int(
+                names(modelIn)[i],
+                length(widgetSymbolsTmp)
+              )
+            )
+          )
         }
       }
       if (!widgetType %in% c("table", "custom")) {
@@ -684,10 +728,24 @@ if (is.null(errMsg)) {
   config$inputWidgets <- NULL
   # make sure two input or output data sheets dont share the same name (case insensitive)
   if (any(duplicated(names(modelIn)))) {
-    errMsg <- "Two or more input datasets share the same name. Please make sure the identifiers are unique for each input datasheet!"
+    errMsg <- paste(errMsg, "Two or more input datasets share the same name. Please make sure the identifiers are unique for each input datasheet!", sep = "\n")
   }
   if (any(duplicated(names(modelOut)))) {
-    errMsg <- "Two or more output datasets share the same name. Please make sure the identifiers are unique for each output datasheet!"
+    errMsg <- paste(errMsg, "Two or more output datasets share the same name. Please make sure the identifiers are unique for each output datasheet!", sep = "\n")
+  }
+  if (length(inputSymInForeignRenderers)) {
+    if (any(duplicated(inputSymInForeignRenderers))) {
+      errMsg <- paste(errMsg, sprintf(
+        "You cannot define the same input symbol(s) ('%s') for multiple (custom) widgets.",
+        paste(inputSymInForeignRenderers[duplicated(inputSymInForeignRenderers)],
+          collapse = "', '"
+        )
+      ), sep = "\n")
+    } else {
+      for (i in seq_along(inputSymInForeignRenderers)) {
+        modelIn[[inputSymInForeignRenderers[[i]]]]$definedByExternalSymbol <- names(inputSymInForeignRenderers)[[i]]
+      }
+    }
   }
 }
 
@@ -790,7 +848,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
     isWidgetGroup <- startsWith(config$overwriteSheetOrder$input, "_widgets")
     if (any(isWidgetGroup)) {
       isInputWidget <- vapply(modelIn, function(el) {
-        if (el$type %in% c("hot", "dt", "custom")) {
+        if (el$type %in% c("hot", "dt", "custom") || length(el$definedByExternalSymbol)) {
           return(FALSE)
         }
         return(TRUE)
@@ -877,10 +935,14 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
   } else {
     inputSheetIdsToDisplay <- seq_along(modelIn)
   }
+  if (length(inputSymInForeignRenderers)) {
+    inputSheetIdsToDisplay <- inputSheetIdsToDisplay[!inputSheetIdsToDisplay %in% match(inputSymInForeignRenderers, names(modelIn))]
+  }
 }
 if (is.null(errMsg)) {
   widgetIds <- lapply(inputSheetIdsToDisplay, function(i) {
-    if (modelIn[[i]]$type %in% c("hot", "dt", "custom")) {
+    if (modelIn[[i]]$type %in% c("hot", "dt", "custom") ||
+      length(modelIn[[i]]$definedByExternalSymbol)) {
       return(NULL)
     } else {
       return(i)
