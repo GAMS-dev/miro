@@ -219,6 +219,8 @@ if (!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))) {
 
   # set initialisation flags for handsontables to FALSE
   if (length(datasetsToFetch)) {
-    hotInit[match(tolower(datasetsToFetch), names(modelIn))] <<- FALSE
+    dsIdsModified <- match(tolower(datasetsToFetch), names(modelIn))
+    hotInit[dsIdsModified] <<- FALSE
+    widgetModifiedSkipCount[dsIdsModified] <<- widgetModifiedSkipCount[dsIdsModified] + 1L
   }
 }

@@ -1,6 +1,5 @@
 # render tabular datasets
 proxy <- vector("list", length(modelIn))
-skipObs <- vector("list", length(modelIn))
 
 getVisibleTabData <- function(id, type) {
   if (identical(type, "hot")) {
@@ -143,6 +142,9 @@ getInputDatasetRaw <- function(id, subSymName = NULL) {
       symIdTmp <- id
     }
     if (identical(scalarsFileName, names(modelIn)[[symIdTmp]])) {
+      if (is.null(data)) {
+        return(scalarsInTemplate)
+      }
       if (length(data) < 2L || length(data) > 3L) {
         stop("Scalars dataframe must not have less than 2 and not more than 3 columns.", call. = FALSE)
       }
@@ -163,6 +165,8 @@ getInputDatasetRaw <- function(id, subSymName = NULL) {
         dataToReturn[[3]][scalarIdsTmp] <- data[[3L]]
       }
       return(dataToReturn)
+    } else if (is.null(data)) {
+      return(modelInTemplate[[symIdTmp]])
     } else if (identical(length(data), length(modelIn[[symIdTmp]]$headers)) &&
       hasValidHeaderTypes(data, modelIn[[symIdTmp]]$colTypes)) {
       names(data) <- names(modelInTemplate[[symIdTmp]])
@@ -942,6 +946,7 @@ lapply(modelInTabularData, function(sheet) {
             attachments = attachments,
             views = views
           )
+          widgetModifiedSkipCount[[i]] <<- widgetModifiedSkipCount[[i]] + 1L
         },
         error = function(e) {
           flog.error(
@@ -969,7 +974,7 @@ lapply(modelInTabularData, function(sheet) {
               views = views
             )
             isolate(rv[[paste0("reinit_", i)]] <- isFALSE(rv[[paste0("reinit_", i)]]))
-            skipObs[[i]] <<- TRUE
+            widgetModifiedSkipCount[[i]] <<- widgetModifiedSkipCount[[i]] + 1L
           },
           error = function(e) {
             flog.error(
@@ -981,22 +986,40 @@ lapply(modelInTabularData, function(sheet) {
         )
       })
     }
-    observe({
-      force(rv[[paste0("reinit_", i)]])
-      if (length(modelIn[[i]]$widgetSymbols)) {
-        if (all(vapply(seq_along(modelInputDataVisible[[i]]), function(idx) {
-          is.null(force(modelInputDataVisible[[i]][[idx]]()))
-        }, logical(1L), USE.NAMES = FALSE)) || isTRUE(skipObs[[i]])) {
-          skipObs[[i]] <<- FALSE
+    if (length(modelIn[[i]]$widgetSymbols)) {
+      symIdsTmp <- c(i, match(modelIn[[i]]$widgetSymbols, names(modelIn)))
+      lapply(seq_along(symIdsTmp), function(idx) {
+        symIdTmp <- symIdsTmp[[idx]]
+        observe({
+          force(rv[[paste0("reinit_", symIdTmp)]])
+          if (is.null(force(modelInputDataVisible[[i]][[idx]]()))) {
+            return()
+          }
+          if (widgetModifiedSkipCount[[symIdTmp]] > 0L) {
+            widgetModifiedSkipCount[[symIdTmp]] <<- widgetModifiedSkipCount[[symIdTmp]] - 1L
+            return()
+          }
+          if (any(widgetModifiedSkipCount[symIdTmp] > 0L)) {
+            return()
+          }
+          isolate({
+            if (is.null(rv[[paste0("wasModified_", i)]])) {
+              rv[[paste0("wasModified_", i)]] <- 1
+            } else {
+              rv[[paste0("wasModified_", i)]] <- rv[[paste0("wasModified_", i)]] + 1L
+            }
+          })
+        })
+      })
+    } else {
+      observe({
+        force(rv[[paste0("reinit_", i)]])
+        if (is.null(force(modelInputDataVisible[[i]]()))) {
+          return()
+        } else if (widgetModifiedSkipCount[[i]] > 0L) {
+          widgetModifiedSkipCount[[i]] <<- widgetModifiedSkipCount[[i]] - 1L
           return()
         }
-      } else {
-        if (is.null(force(modelInputDataVisible[[i]]())) || isTRUE(skipObs[[i]])) {
-          skipObs[[i]] <<- FALSE
-          return()
-        }
-      }
-      if (hotInit[[i]]) {
         isolate({
           if (is.null(rv[[paste0("wasModified_", i)]])) {
             rv[[paste0("wasModified_", i)]] <- 1
@@ -1004,9 +1027,7 @@ lapply(modelInTabularData, function(sheet) {
             rv[[paste0("wasModified_", i)]] <- rv[[paste0("wasModified_", i)]] + 1L
           }
         })
-      } else {
-        hotInit[[i]] <<- TRUE
-      }
-    })
+      })
+    }
   }
 })

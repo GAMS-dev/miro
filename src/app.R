@@ -1554,6 +1554,9 @@ if (!is.null(errMsg)) {
       traceData <- data.frame()
       # boolean that specifies whether handsontable is initialised
       hotInit <- vector("logical", length = length(modelIn))
+      # counter that controls whether observer that checks whether custom widget was
+      # modified should be skipped
+      widgetModifiedSkipCount <- vector("integer", length = length(modelIn))
       # boolean that specifies whether check if data is unsaved should be skipped
       noCheck <- vector("logical", length = length(modelIn))
       noCheck[] <- TRUE

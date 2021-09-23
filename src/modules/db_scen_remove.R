@@ -9,15 +9,13 @@ closeScenario <- function(clearMeta = TRUE) {
   inputInitialized[] <<- FALSE
   noCheck[] <<- FALSE
   if (resetWidgetsOnClose) {
+    widgetModifiedSkipCount[] <<- 1L
     lapply(seq_along(modelIn), function(i) {
       switch(modelIn[[i]]$type,
         hot = {
           # set identifier that data was overwritten
           hotInit[i] <<- FALSE
           isEmptyInput[i] <<- TRUE
-        },
-        custom = {
-          hotInit[i] <<- FALSE
         },
         slider = {
           if (is.null(modelInWithDep[[names(modelIn)[[i]]]])) {
