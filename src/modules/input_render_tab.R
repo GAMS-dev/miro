@@ -287,13 +287,13 @@ observeEvent(input$btGraphIn, {
       }
     } else {
       if (length(modelIn[[i]]$widgetSymbols)) {
-        data <- tryCatch(isolate(modelInputDataVisible[[i]][[names(modelIn)[[i]]]]()), error = function(e) {
-          flog.warn("Problems getting data from custom renderer. Error message: %s", conditionMessage(e))
+        data <- tryCatch(modelInputDataVisible[[i]][[names(modelIn)[[i]]]](), error = function(e) {
+          flog.warn("Problems getting data from custom widget. Error message: %s", conditionMessage(e))
           return(modelInTemplate[[i]])
         })
       } else {
-        data <- tryCatch(isolate(modelInputDataVisible[[i]]()), error = function(e) {
-          flog.warn("Problems getting data from custom renderer. Error message: %s", conditionMessage(e))
+        data <- tryCatch(modelInputDataVisible[[i]](), error = function(e) {
+          flog.warn("Problems getting data from custom widget. Error message: %s", conditionMessage(e))
           return(modelInTemplate[[i]])
         })
       }

@@ -935,19 +935,19 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
   } else {
     inputSheetIdsToDisplay <- seq_along(modelIn)
   }
+  scenInputSheetIdsToDisplay <- inputSheetIdsToDisplay
   if (length(inputSymInForeignRenderers)) {
     inputSheetIdsToDisplay <- inputSheetIdsToDisplay[!inputSheetIdsToDisplay %in% match(inputSymInForeignRenderers, names(modelIn))]
   }
 }
 if (is.null(errMsg)) {
   widgetIds <- lapply(inputSheetIdsToDisplay, function(i) {
-    if (modelIn[[i]]$type %in% c("hot", "dt", "custom") ||
-      length(modelIn[[i]]$definedByExternalSymbol)) {
-      return(NULL)
-    } else {
-      return(i)
+    if (modelIn[[i]]$type %in% c("hot", "dt", "custom")) {
+      return(NA)
     }
+    return(i)
   })
+  widgetIds <- unlist(widgetIds[!is.na(widgetIds)], use.names = FALSE)
 
   # Hypercube Mode configuration
   if (config$activateModules$hcube) {
@@ -1013,12 +1013,6 @@ if (is.null(errMsg)) {
   }
   scalarSymbolsBase <- character(0L)
 
-  widgetIds <- unlist(widgetIds[!vapply(widgetIds, is.null,
-    numeric(1L),
-    USE.NAMES = FALSE
-  )],
-  use.names = FALSE
-  )
   config$inputGroups <- c(
     config$inputGroups,
     genWidgetGroups(names(modelIn)[widgetIds],
@@ -1037,7 +1031,7 @@ if (is.null(errMsg)) {
   inputTabs <- inputTabs$tabs
   # get input tabs where scalars are merged to single table (scenario comparison mode)
   scenInputTabs <- getTabs(names(modelIn), modelInAlias, config$inputGroups,
-    idsToDisplay = inputSheetIdsToDisplay,
+    idsToDisplay = scenInputSheetIdsToDisplay,
     widgetIds = widgetIds, scalarsTabName = lang$nav$scalarAliases$scalars,
     mergeScalars = TRUE,
     widgetIdsMultiDim = vapply(widgetIds, function(widgetId) {
