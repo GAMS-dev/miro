@@ -44,6 +44,7 @@ modelInputData <- vector("list", length(modelIn))
 modelOutputData <- vector("list", length(modelOut))
 configScalars <- tibble()
 hotInit <- vector("logical", length(modelIn))
+widgetModifiedSkipCount <- vector("integer", length = length(modelIn))
 isEmptyInput <- vector(mode = "logical", length = length(modelIn))
 isEmptyOutput <- vector(mode = "logical", length = length(modelOut))
 isEmptyOutput[] <- TRUE
