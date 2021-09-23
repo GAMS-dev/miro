@@ -1838,9 +1838,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           brks <- quantile(dataTmp[-seq_len(noRowHeaders)],
             probs = seq(.05, .95, .05), na.rm = TRUE
           )
-          clrs <- round(seq(255, 40, length.out = length(brks) + 1), 0) %>% {
-            paste0("rgb(255,", ., ",", ., ")")
-          }
+          clrs <- round(seq(255, 40, length.out = length(brks) + 1), 0) %>%
+            {
+              paste0("rgb(255,", ., ",", ., ")")
+            }
         }
         if (length(dataTmp) > 300) {
           showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "300"))
