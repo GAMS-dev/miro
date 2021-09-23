@@ -1,0 +1,193 @@
+{
+	"modelTitle":	"G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m",
+	"inputSymbols":	{
+		"i":	{
+			"alias":	"canning plants",
+			"symtype":	"set",
+			"headers":	{
+				"uni":	{
+					"type":	"string",
+					"alias":	"Universal set"
+				},
+				"text":	{
+					"type":	"string",
+					"alias":	"Set text canning plants"
+				}
+			}
+		},
+		"j":	{
+			"alias":	"markets",
+			"symtype":	"set",
+			"headers":	{
+				"uni":	{
+					"type":	"string",
+					"alias":	"Universal set"
+				},
+				"text":	{
+					"type":	"string",
+					"alias":	"Set text markets"
+				}
+			}
+		},
+		"a":	{
+			"alias":	"capacity of plant i in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"capacity of plant i in cases"
+				}
+			}
+		},
+		"b":	{
+			"alias":	"demand at market j in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"demand at market j in cases"
+				}
+			}
+		},
+		"d":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"_scalars":	{
+			"alias":	"Input Scalars",
+			"symnames":	["force_unique_sol", "test123"],
+			"symtext":	["force_unique_sol", "test123"],
+			"symtypes":	["parameter", "parameter"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		},
+		"initial_state":	{
+			"alias":	"initial_state",
+			"symtype":	"parameter",
+			"headers":	{
+				"row":	{
+					"type":	"string",
+					"alias":	"row"
+				},
+				"col1":	{
+					"type":	"numeric",
+					"alias":	"col1"
+				},
+				"col2":	{
+					"type":	"numeric",
+					"alias":	"col2"
+				},
+				"col3":	{
+					"type":	"numeric",
+					"alias":	"col3"
+				},
+				"col4":	{
+					"type":	"numeric",
+					"alias":	"col4"
+				},
+				"col5":	{
+					"type":	"numeric",
+					"alias":	"col5"
+				},
+				"col6":	{
+					"type":	"numeric",
+					"alias":	"col6"
+				},
+				"col7":	{
+					"type":	"numeric",
+					"alias":	"col7"
+				},
+				"col8":	{
+					"type":	"numeric",
+					"alias":	"col8"
+				},
+				"col9":	{
+					"type":	"numeric",
+					"alias":	"col9"
+				}
+			}
+		}
+	},
+	"outputSymbols":	{
+		"results":	{
+			"alias":	"results",
+			"symtype":	"parameter",
+			"headers":	{
+				"row":	{
+					"type":	"string",
+					"alias":	"row"
+				},
+				"col1":	{
+					"type":	"numeric",
+					"alias":	"col1"
+				},
+				"col2":	{
+					"type":	"numeric",
+					"alias":	"col2"
+				},
+				"col3":	{
+					"type":	"numeric",
+					"alias":	"col3"
+				},
+				"col4":	{
+					"type":	"numeric",
+					"alias":	"col4"
+				},
+				"col5":	{
+					"type":	"numeric",
+					"alias":	"col5"
+				},
+				"col6":	{
+					"type":	"numeric",
+					"alias":	"col6"
+				},
+				"col7":	{
+					"type":	"numeric",
+					"alias":	"col7"
+				},
+				"col8":	{
+					"type":	"numeric",
+					"alias":	"col8"
+				},
+				"col9":	{
+					"type":	"numeric",
+					"alias":	"col9"
+				}
+			}
+		}
+	}
+}
