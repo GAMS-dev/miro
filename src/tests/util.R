@@ -13,6 +13,7 @@ getSelectizeAliases <- function(app, selector) {
 getVisibleDtData <- function(app, id) {
   app$waitFor(paste0("console.log(JSON.stringify($('#", id, "').data('datatable').data().toArray()))"), timeout = 50L)
   dtData <- app$getDebugLog("browser")$message
+  dtData <- dtData[length(dtData)]
   return(tibble::as_tibble(jsonlite::fromJSON(substr(dtData, 1, nchar(dtData) - 4)),
     .name_repair = "universal"
   ))
