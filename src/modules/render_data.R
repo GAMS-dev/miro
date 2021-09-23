@@ -8,17 +8,17 @@ renderDataUI <- function(id, type, graphTool = NULL, height = NULL, customOption
     type <- "datatable"
   }
 
-  if (type == "pivot") {
+  if (identical(type, "pivot")) {
     # set default height
     if (is.null(height)) {
       height <- pivotDefaultHeight
     }
     data <- rpivotTableOutput(ns("pivottable"), height = height)
-  } else if (type == "datatable") {
+  } else if (identical(type, "datatable")) {
     data <- dataTableOutput(ns("datatable"))
   } else if (type %in% c("graph", "dtgraph")) {
     if (graphTool == "plotly") {
-      if (type == "graph") {
+      if (identical(type, "graph")) {
         dataGraph <- plotlyOutput(ns("graph"), height = "100%")
       } else {
         dataGraph <- tags$div(
@@ -27,17 +27,17 @@ renderDataUI <- function(id, type, graphTool = NULL, height = NULL, customOption
           plotlyOutput(ns("graph"), height = "100%")
         )
       }
-    } else if (graphTool == "dygraphs") {
+    } else if (identical(graphTool, "dygraphs")) {
       dataGraph <- tags$div(class = "dyGraphs-wrapper", dygraphOutput(ns("graph"), height = "70vh"))
-    } else if (graphTool == "leaflet") {
+    } else if (identical(graphTool, "leaflet")) {
       dataGraph <- leafletOutput(ns("graph"), height = "70vh")
-    } else if (graphTool == "timevis") {
+    } else if (identical(graphTool, "timevis")) {
       dataGraph <- timevisOutput(ns("graph"), height = "70vh")
     } else {
       stop(paste0("The tool you selected for: '", id, "' is not supported by the current version of GAMS MIRO."))
     }
     if (length(filterOptions$col)) {
-      data <- tagList(tags$div(
+      data <- tags$div(
         class = "data-filter-wrapper",
         if (isTRUE(filterOptions$date)) {
           dateRangeInput(
@@ -51,11 +51,11 @@ renderDataUI <- function(id, type, graphTool = NULL, height = NULL, customOption
           )
         },
         dataGraph
-      ))
+      )
     } else {
       data <- dataGraph
     }
-    if (type == "dtgraph") {
+    if (identical(type, "dtgraph")) {
       data <- tagList(
         tags$div(
           class = "dtgraph-wrapper",
@@ -64,9 +64,9 @@ renderDataUI <- function(id, type, graphTool = NULL, height = NULL, customOption
         )
       )
     }
-  } else if (type == "valuebox") {
+  } else if (identical(type, "valuebox")) {
     data <- uiOutput(ns("scalarBoxes"))
-  } else if (type == "miropivot") {
+  } else if (identical(type, "miropivot")) {
     data <- miroPivotOutput(ns("miroPivot"), height = height, options = customOptions)
   } else {
     tryCatch(
