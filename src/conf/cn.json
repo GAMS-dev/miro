@@ -1543,6 +1543,7 @@
       },
       "ui":{
         "title": "配置图表",
+        "label": "标签（支持Markdown）",
         "graphUpdateSuccess": "图表配置已更新",
         "localInput": "上传GDX文件或Excel电子表格，其中包含可用于预览的数据",
         "gamsSymbols": "选择要绘制的GAMS符号",

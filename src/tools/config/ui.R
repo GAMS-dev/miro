@@ -544,6 +544,10 @@ font-size: 12px;
             ),
             tags$div(
               class = "col-sm-6 preview-outer-wrapper", id = "config-right-graph",
+              tags$div(
+                style = "text-align: left;",
+                uiOutput("rendererLabelWrapper")
+              ),
               tags$div(id = "preview-error", class = "err-msg"),
               tags$div(
                 id = "preview-content-plotly", style = "overflow: auto;",

@@ -1544,6 +1544,7 @@
       },
       "ui":{
         "title": "Configure graphs",
+        "label": "Label (Markdown is supported)",
         "graphUpdateSuccess": "Graph configuration was updated successfully",
         "localInput": "Upload a GDX file or an Excel spreadsheet with data that will be used for preview purposes",
         "gamsSymbols": "GAMS symbol",

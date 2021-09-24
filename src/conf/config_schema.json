@@ -1334,6 +1334,10 @@
                            "datatable"
                         ]
                      },
+                     "label":{
+                        "description":"A label to be displayed above renderer (markdown supported)",
+                         "type":"string"
+                      },
                      "height":{
                         "description":"Height of the output element.",
                         "type":"integer",
@@ -1477,6 +1481,10 @@
                            "valueBox"
                         ]
                      },
+                     "label":{
+                        "description":"A label to be displayed above renderer (markdown supported)",
+                         "type":"string"
+                      },
                      "options":{
                      "oneOf":[
                         {
@@ -1587,6 +1595,10 @@
                            "pivot"
                         ]
                      },
+                     "label":{
+                        "description":"A label to be displayed above renderer (markdown supported)",
+                         "type":"string"
+                      },
                      "height":{
                         "description":"Height of the output element.",
                         "type":"integer",
@@ -1728,6 +1740,10 @@
                            "graph"
                         ]
                      },
+                     "label":{
+                        "description":"A label to be displayed above renderer (markdown supported)",
+                         "type":"string"
+                      },
                      "height":{
                         "description":"Height of the output element.",
                         "type":"integer",
@@ -1767,7 +1783,7 @@
                                    "default":false
                                 },
                                 "label":{
-                                  "description":"ALabel to be displayed above filter menu",
+                                  "description":"A label to be displayed above filter menu",
                                    "type":"string"
                                 }
                              },
@@ -1796,6 +1812,10 @@
                            "miroPivot"
                         ]
                      },
+                     "label":{
+                        "description":"A label to be displayed above renderer (markdown supported)",
+                         "type":"string"
+                      },
                      "height":{
                         "description":"Height of the output element.",
                         "type":"integer",
@@ -1828,6 +1848,10 @@
                            ]
                         }
                      },
+                     "label":{
+                        "description":"A label to be displayed above renderer (markdown supported)",
+                         "type":"string"
+                      },
                      "height":{
                         "description":"Height of the output element.",
                         "type":"integer",

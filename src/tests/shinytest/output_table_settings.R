@@ -16,4 +16,7 @@ expect_true(grepl("<th>Scalar Description</th>", jsonlite::fromJSON(app$getAllVa
 expect_identical(jsonlite::fromJSON(app$getAllValues()$output[["table_tab_1_1-datatable"]])$x$filter, "top")
 expect_identical(jsonlite::fromJSON(app$getAllValues()$output[["table_tab_1_1-datatable"]])$x$options$decimals, 4L)
 expect_identical(jsonlite::fromJSON(app$getAllValues()$output[["table_tab_1_1-datatable"]])$x$options$pageLength, 5L)
+app$setInputs(outputTabset = "outputTabset_2")
+Sys.sleep(1L)
+expect_true(app$waitFor("$('#tableOutLabel_2').html().trim()==='<h1>asd</h1>';", timeout = 50L))
 app$stop()

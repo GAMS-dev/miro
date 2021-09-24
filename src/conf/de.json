@@ -1544,6 +1544,7 @@
       },
       "ui":{
         "title": "Graphen konfigurieren",
+        "label": "Label (Markdown wird unterstützt)",
         "graphUpdateSuccess": "Die Grafikkonfiguration wurde erfolgreich aktualisiert",
         "localInput": "Laden Sie eine GDX-Datei oder eine Excel-Tabelle mit Daten hoch, die für Vorschauzwecke verwendet werden",
         "gamsSymbols": "GAMS Symbol",

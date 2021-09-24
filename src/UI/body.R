@@ -723,6 +723,13 @@ if (buildUI) {
   outputTabContent <- lapply(seq_along(outputTabs), function(tabId) {
     content <- lapply(outputTabs[[tabId]], function(i) {
       tabContent <- tagList(
+        if (length(configGraphsOut[[i]]$label) && !identical(trimws(configGraphsOut[[i]]$label), "")) {
+          tags$div(
+            id = paste0("tableOutLabel_", i),
+            class = "readme-wrapper label-wrapper",
+            markdown(configGraphsOut[[i]]$label)
+          )
+        },
         tags$div(
           id = paste0("scenGraph_1_", i), class = "render-output"
         ),

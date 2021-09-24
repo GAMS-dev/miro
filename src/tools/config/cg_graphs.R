@@ -1,6 +1,6 @@
 activeSymbol <- list(
   id = integer(1L), name = character(1L),
-  alias = character(1L), indices = c()
+  alias = character(1L), indices = c(), isInput = FALSE
 )
 activeSymbolName <- character(0L)
 customRendererEvalEnv <- new.env(parent = parent.frame())
@@ -335,6 +335,7 @@ changeActiveSymbol <- function(id) {
     activeSymbol <<- list(
       id = id, name = names(modelIn)[id],
       alias = modelInAlias[id],
+      isInput = TRUE,
       indices = setNames(
         names(headers),
         headerAliases
@@ -361,6 +362,7 @@ changeActiveSymbol <- function(id) {
     activeSymbol <<- list(
       id = id, name = names(modelOut)[id_out],
       alias = modelOutAlias[id_out],
+      isInput = FALSE,
       indices = setNames(
         names(headers),
         headerAliases
@@ -504,7 +506,23 @@ updateYAxes <- function(dyReset = NULL) {
   }
 }
 
+output$rendererLabelWrapper <- renderUI({
+  if (length(rv$graphConfig$label) && !identical(trimws(rv$graphConfigg$label), "")) {
+    tags$div(
+      id = "rendererLabel",
+      class = "readme-wrapper label-wrapper",
+      markdown(rv$graphConfig$label)
+    )
+  }
+})
 
+observe({
+  if (length(input$renderer_label) && !identical(trimws(input$renderer_label), "")) {
+    rv$graphConfig$label <- input$renderer_label
+  } else {
+    rv$graphConfig$label <- NULL
+  }
+})
 
 observeEvent(input$dbInput, {
   req(identical(length(input$scenList), 1L))
@@ -2461,16 +2479,23 @@ observe({
 
 getCurrentGraphConfig <- function() {
   currentGraphConfig <<- NULL
-  if (identical(input$gams_symbols, scalarsOutName)) {
-    currentGraphConfig <<- configJSON$dataRendering[[match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]]][["options"]]
+  chartId <- match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]
+  if (!is.na(chartId) && length(configJSON$dataRendering[[chartId]]$label) &&
+    !identical(trimws(configJSON$dataRendering[[chartId]]$label), "")) {
+    currentGraphLabel <<- configJSON$dataRendering[[chartId]]$label
   } else {
-    if (!is.na(match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1])) {
-      if (length(configJSON$dataRendering[[match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]]][["pivottable"]])) {
-        currentGraphConfig <<- configJSON$dataRendering[[match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]]][["pivottable"]]
-      } else if (length(configJSON$dataRendering[[match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]]][["graph"]])) {
-        currentGraphConfig <<- configJSON$dataRendering[[match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]]][["graph"]]
+    currentGraphLabel <<- ""
+  }
+  if (identical(input$gams_symbols, scalarsOutName)) {
+    currentGraphConfig <<- configJSON$dataRendering[[chartId]][["options"]]
+  } else {
+    if (!is.na(chartId)) {
+      if (length(configJSON$dataRendering[[chartId]][["pivottable"]])) {
+        currentGraphConfig <<- configJSON$dataRendering[[chartId]][["pivottable"]]
+      } else if (length(configJSON$dataRendering[[chartId]][["graph"]])) {
+        currentGraphConfig <<- configJSON$dataRendering[[chartId]][["graph"]]
       } else {
-        currentGraphConfig <<- configJSON$dataRendering[[match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]]]
+        currentGraphConfig <<- configJSON$dataRendering[[chartId]]
       }
     }
   }
@@ -2645,7 +2670,13 @@ observeEvent(
       if (!isTRUE(configuredWithThisTool)) {
         idLabelMap[["chart_piedata"]] <<- list()
       }
-      insertUI(selector = "#tool_options", getPieOptions(), where = "beforeEnd")
+      insertUI(selector = "#tool_options", tagList(
+        if (!activeSymbol$isInput) {
+          textAreaInput("renderer_label", lang$adminMode$graphs$ui$label,
+            value = currentGraphLabel
+          )
+        }, getPieOptions()
+      ), where = "beforeEnd")
       # check whether symbol is configured as pie (in JSON)
       tracesTmp <- currentGraphConfig[["traces"]]
       if (isTRUE(configuredWithThisTool) && length(tracesTmp)) {
@@ -2667,7 +2698,13 @@ observeEvent(
       if (!isTRUE(configuredWithThisTool)) {
         idLabelMap[["chart_ydata"]] <<- list()
       }
-      insertUI(selector = "#tool_options", getBarOptions(), where = "beforeEnd")
+      insertUI(selector = "#tool_options", tagList(
+        if (!activeSymbol$isInput) {
+          textAreaInput("renderer_label", lang$adminMode$graphs$ui$label,
+            value = currentGraphLabel
+          )
+        }, getBarOptions()
+      ), where = "beforeEnd")
       # check whether symbol is configured as bar chart (in JSON)
       if (isTRUE(configuredWithThisTool) && length(ydataTmp)) {
         addArrayEl(session, "chart_ydatabar",
@@ -2695,7 +2732,13 @@ observeEvent(
       } else {
         idLabelMap[["chart_ydata"]] <<- list()
       }
-      insertUI(selector = "#tool_options", getScatterOptions(), where = "beforeEnd")
+      insertUI(selector = "#tool_options", tagList(
+        if (!activeSymbol$isInput) {
+          textAreaInput("renderer_label", lang$adminMode$graphs$ui$label,
+            value = currentGraphLabel
+          )
+        }, getScatterOptions()
+      ), where = "beforeEnd")
       # set configured defaults
       if (isTRUE(configuredWithThisTool) && length(ydataTmp)) {
         addArrayEl(session, "chart_ydatascatter",
@@ -2723,7 +2766,13 @@ observeEvent(
       } else {
         idLabelMap[["chart_ydata"]] <<- list()
       }
-      insertUI(selector = "#tool_options", getLineOptions(), where = "beforeEnd")
+      insertUI(selector = "#tool_options", tagList(
+        if (!activeSymbol$isInput) {
+          textAreaInput("renderer_label", lang$adminMode$graphs$ui$label,
+            value = currentGraphLabel
+          )
+        }, getLineOptions()
+      ), where = "beforeEnd")
       # set configured defaults
       if (isTRUE(configuredWithThisTool) && length(ydataTmp)) {
         addArrayEl(session, "chart_ydataline",
@@ -2741,7 +2790,13 @@ observeEvent(
       if (!isTRUE(configuredWithThisTool)) {
         idLabelMap[["chart_ydata"]] <<- list()
       }
-      insertUI(selector = "#tool_options", getBubbleOptions(), where = "beforeEnd")
+      insertUI(selector = "#tool_options", tagList(
+        if (!activeSymbol$isInput) {
+          textAreaInput("renderer_label", lang$adminMode$graphs$ui$label,
+            value = currentGraphLabel
+          )
+        }, getBubbleOptions()
+      ), where = "beforeEnd")
       # set configured defaults
       indices <- activeSymbol$indices
       scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
@@ -2769,7 +2824,13 @@ observeEvent(
       if (!isTRUE(configuredWithThisTool)) {
         idLabelMap[["hist_xdata"]] <<- list()
       }
-      insertUI(selector = "#tool_options", getHistOptions(), where = "beforeEnd")
+      insertUI(selector = "#tool_options", tagList(
+        if (!activeSymbol$isInput) {
+          textAreaInput("renderer_label", lang$adminMode$graphs$ui$label,
+            value = currentGraphLabel
+          )
+        }, getHistOptions()
+      ), where = "beforeEnd")
       # set configured defaults
       xdataTmp <- currentGraphConfig[["xdata"]]
       if (isTRUE(configuredWithThisTool) && length(xdataTmp)) {
@@ -2799,7 +2860,13 @@ observeEvent(
       }
       insertUI(
         selector = "#tool_options",
-        tags$div(id = "dygraph_options", getDygraphsOptions()), where = "beforeEnd"
+        tags$div(id = "dygraph_options", tagList(
+          if (!activeSymbol$isInput) {
+            textAreaInput("renderer_label", lang$adminMode$graphs$ui$label,
+              value = currentGraphLabel
+            )
+          }, getDygraphsOptions()
+        )), where = "beforeEnd"
       )
       if (isTRUE(configuredWithThisTool)) {
         dyEventTmp <- currentGraphConfig[["dyEvent"]]
@@ -2892,7 +2959,13 @@ observeEvent(
       }
       insertUI(
         selector = "#tool_options",
-        tags$div(id = "leaflet_options", getLeafletOptions()), where = "beforeEnd"
+        tags$div(id = "leaflet_options", tagList(
+          if (!activeSymbol$isInput) {
+            textAreaInput("renderer_label", lang$adminMode$graphs$ui$label,
+              value = currentGraphLabel
+            )
+          }, getLeafletOptions()
+        )), where = "beforeEnd"
       )
       if (isTRUE(configuredWithThisTool)) {
         markersTmp <- currentGraphConfig[["markers"]]
@@ -2924,7 +2997,13 @@ observeEvent(
       }
       insertUI(
         selector = "#tool_options",
-        tags$div(id = "timevis_options", getTimevisOptions()), where = "beforeEnd"
+        tags$div(id = "timevis_options", tagList(
+          if (!activeSymbol$isInput) {
+            textAreaInput("renderer_label", lang$adminMode$graphs$ui$label,
+              value = currentGraphLabel
+            )
+          }, getTimevisOptions()
+        )), where = "beforeEnd"
       )
       if (isTRUE(configuredWithThisTool)) {
         seriesDataTmp <- currentGraphConfig[["series"]]
@@ -2946,14 +3025,27 @@ observeEvent(
       addClassEl(session, id = "#categoryPivot1", "category-btn-active")
       insertUI(
         selector = "#tool_options",
-        tags$div(id = "pivot_options", getPivotOptions()), where = "beforeEnd"
+        tags$div(id = "pivot_options", tagList(
+          if (!activeSymbol$isInput) {
+            textAreaInput("renderer_label", lang$adminMode$graphs$ui$label,
+              value = currentGraphLabel
+            )
+          }, getPivotOptions()
+        )), where = "beforeEnd"
       )
       allDataAvailable <<- TRUE
     } else if (identical(chartTool, "miropivot")) {
       # make sure pivot table is refreshed when changing symbol
       insertUI(
         selector = "#tool_options",
-        getMIROPivotOptions(currentGraphConfig$options, prefix = "miropivot_"),
+        tagList(
+          if (!activeSymbol$isInput) {
+            textAreaInput("renderer_label", lang$adminMode$graphs$ui$label,
+              value = currentGraphLabel
+            )
+          },
+          getMIROPivotOptions(currentGraphConfig$options, prefix = "miropivot_")
+        ),
         where = "beforeEnd"
       )
       rv$graphConfig$graph$symname <- activeSymbol$name
@@ -2964,7 +3056,14 @@ observeEvent(
       invalidCustomRender <<- FALSE
       insertUI(
         selector = "#tool_options",
-        tags$div(id = "custom_options", getCustomOptions()), where = "beforeEnd"
+        tagList(
+          if (!activeSymbol$isInput) {
+            textAreaInput("renderer_label", lang$adminMode$graphs$ui$label,
+              value = currentGraphLabel
+            )
+          },
+          tags$div(id = "custom_options", getCustomOptions())
+        ), where = "beforeEnd"
       )
       allDataAvailable <<- TRUE
       session$sendCustomMessage("gms-shinySetInputValue", list(
@@ -2990,7 +3089,14 @@ observeEvent(
       addClassEl(session, id = "#categoryValuebox1", "category-btn-active")
       insertUI(
         selector = "#tool_options",
-        tags$div(id = "valuebox_options", getValueboxOptions()), where = "beforeEnd"
+        tagList(
+          if (!activeSymbol$isInput) {
+            textAreaInput("renderer_label", lang$adminMode$graphs$ui$label,
+              value = currentGraphLabel
+            )
+          },
+          tags$div(id = "valuebox_options", getValueboxOptions())
+        ), where = "beforeEnd"
       )
       allDataAvailable <<- TRUE
     }
@@ -5038,6 +5144,7 @@ observeEvent(input$deleteGraphConfirm, {
   # reset to default settings and refresh rv's
   axisOptionsGlobal <<- list(y = 1, y2 = 0)
   currentGraphConfig <<- NULL
+  currentGraphLabel <- ""
   isInJSON <<- FALSE
   newChartTool <<- "pie"
   if (isTRUE(tableSymbol)) {
