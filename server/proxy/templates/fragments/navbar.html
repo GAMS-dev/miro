@@ -22,74 +22,129 @@
 -->
 <!DOCTYPE html>
 <html
-	xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
-<head></head>
-<body>
-	<div th:fragment="navbar" th:if="${showNavbar}" id="navbar">
-		<nav class="navbar navbar-inverse navbar-fixed-top">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mainNavbar" aria-expanded="false">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand" th:href="@{/}">
-                Home
-              </a>
-            </div>
-			<div class="container-fluid collapse navbar-collapse" id="mainNavbar" style="border-bottom: 4px solid #f90;">
-                <ul class="nav navbar-nav" th:if="${isAdmin}">
-                  <li><a id="navAdminPanel" th:href="@{/app/}+'admin'" th:if="${isAdmin}">Admin Panel</a></li>
-                  <li><a id="navActiveContainers" th:href="@{/admin}" th:if="${isAdmin}">Containers</a></li>
-                </ul>
-                <div class="navbar-form navbar-right" style="margin-right:0">
-                    <a role="button" class="btn btn-primary btn-sm" th:if="${isSupportEnabled}"
-                        data-toggle="modal" data-target="#reportIssueModal">Report Issue</a>
-                    <a role="button" class="btn btn-navbar" th:href="@{/logout}" th:if="${isLoggedIn}">Sign Out</a>
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+>
+  <head></head>
+  <body>
+    <div th:fragment="navbar" th:if="${showNavbar}" id="navbar">
+      <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-header">
+          <button
+            type="button"
+            class="navbar-toggle collapsed"
+            data-toggle="collapse"
+            data-target="#mainNavbar"
+            aria-expanded="false"
+          >
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" th:href="@{/}"> Home </a>
+        </div>
+        <div
+          class="container-fluid collapse navbar-collapse"
+          id="mainNavbar"
+          style="border-bottom: 4px solid #f90"
+        >
+          <ul class="nav navbar-nav" th:if="${isAdmin}">
+            <li>
+              <a
+                id="navAdminPanel"
+                th:href="@{/app/}+'admin'"
+                th:if="${isAdmin}"
+                >Admin Panel</a
+              >
+            </li>
+            <li>
+              <a id="navActiveContainers" th:href="@{/admin}" th:if="${isAdmin}"
+                >Containers</a
+              >
+            </li>
+          </ul>
+          <div class="navbar-form navbar-right" style="margin-right: 0">
+            <a
+              role="button"
+              class="btn btn-primary btn-sm"
+              th:if="${isSupportEnabled}"
+              data-toggle="modal"
+              data-target="#reportIssueModal"
+              >Report Issue</a
+            >
+            <a
+              role="button"
+              class="btn btn-navbar"
+              th:href="@{/logout}"
+              th:if="${isLoggedIn}"
+              >Sign Out</a
+            >
+          </div>
+          <div class="navbar-right" sec:authorize="isAuthenticated()">
+            <span class="navbar-text">
+              <span sec:authentication="name"></span>
+            </span>
+          </div>
+        </div>
+      </nav>
+      <div class="modal fade" id="reportIssueModal" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form role="form" method="post" th:action="@{/issue}">
+              <div class="modal-header">
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-hidden="true"
+                >
+                  &times;
+                </button>
+                <h4 class="modal-title">Report Issue</h4>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="customMessage"
+                    >Message to add to the report:</label
+                  >
+                  <textarea
+                    class="form-control"
+                    name="customMessage"
+                    placeholder="Enter message"
+                    cols="40"
+                    rows="5"
+                  ></textarea>
+                  <input type="hidden" name="currentLocation" />
                 </div>
-                <div class="navbar-right" sec:authorize="isAuthenticated()">
-                    <span class="navbar-text">
-                        <span sec:authentication="name"></span>
-                    </span>
-                </div>
-			</div>
-		</nav>
-		<div class="modal fade" id="reportIssueModal" role="dialog">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<form role="form" method="post" th:action="@{/issue}">
-						<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-							<h4 class="modal-title">Report Issue</h4>
-						</div>
-						<div class="modal-body">
-							<div class="form-group">
-								<label for="customMessage">Message to add to the report:</label>
-								<textarea class="form-control" name="customMessage" placeholder="Enter message" cols="40" rows="5"></textarea>
-								<input type="hidden" name="currentLocation"></input>
-							</div>
-						</div>
-						<div class="modal-footer">
-							<button type="submit" class="btn btn-default btn-success">Submit</button>
-							<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-		<script lang="JavaScript">
-			$(document).ready(function() {
-                const currLocation = window.location.href;
-                if ( currLocation.endsWith('app/admin') ) {
-                    $('#navAdminPanel').addClass('active').attr('href', '#');
-                } else if ( currLocation.endsWith('/admin') ) {
-                    $('#navActiveContainers').addClass('active').attr('href', '#');
-                }
-                $('input[name="currentLocation"]').val(currLocation);
-            });
-		</script>
-	</div>
-</body>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-default btn-success">
+                  Submit
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-default"
+                  data-dismiss="modal"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <script lang="JavaScript">
+        $(document).ready(function() {
+             const currLocation = window.location.href;
+             if ( currLocation.endsWith('app/admin') ) {
+                 $('#navAdminPanel').addClass('active').attr('href', '#');
+             } else if ( currLocation.endsWith('/admin') ) {
+                 $('#navActiveContainers').addClass('active').attr('href', '#');
+             }
+             $('input[name="currentLocation"]').val(currLocation);
+         });
+      </script>
+    </div>
+  </body>
 </html>

@@ -1,10 +1,4 @@
 test-out.xml
-tmp
-examples
-tools/paver/examples
-tools/paver/__pycache__
-tools/paver/results
-packrat/src/
 model/**/*.ipynb_checkpoints
 model/**/*.xlsx
 model/**/*.miroconf
@@ -22,6 +16,4 @@ model/**/*.trc
 model/**/runapp.R
 model/**/*_miro.gms
 model/**/*_hcube_jobs
-libraries/
-packages/
 gamslice.txt

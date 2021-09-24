@@ -22,8 +22,7 @@ repos:
     rev: 'v2.3.2'
     hooks:
     -   id: prettier
-        files: '^doc/.*\.html'
-        args: ['--ignore-path', 'doc/.prettierignore', '--config', 'doc/.prettierrc.json']
+        files: \.(html)$
 -   repo: https://github.com/lorenzwalthert/precommit
     rev: v0.1.3
     hooks:

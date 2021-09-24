@@ -22,74 +22,124 @@
 -->
 <!DOCTYPE html>
 <html
-	xmlns:th="//www.thymeleaf.org"
-	xmlns:sec="//www.thymeleaf.org/thymeleaf-extras-springsecurity4">
-
-<head lang="en">
+  xmlns:th="//www.thymeleaf.org"
+  xmlns:sec="//www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+>
+  <head lang="en">
     <title>GAMS MIRO Server</title>
 
     <!-- Meta -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="GAMS MIRO Server">
-    <meta name="author" content="GAMS Development Corp.">
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'sha256-7OHl+N4x5fOFpDONCYMkrPAiY0tKpkbJejeafx/FRc4=';" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GAMS MIRO Server" />
+    <meta name="author" content="GAMS Development Corp." />
 
     <!--<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />-->
     <!-- Theme CSS -->
-    <link rel="shortcut icon" href="assets/img/favicon.ico">
-    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="shortcut icon" href="assets/img/favicon.ico" />
+    <link
+      href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
+      rel="stylesheet"
+      type="text/css"
+    />
 
     <link rel="stylesheet" media="screen" href="assets/css/bootstrap.min.css" />
-    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
-    <link rel="stylesheet" media="screen" type="text/css" href="assets/css/login.css"/>
-    <link rel="stylesheet" media="screen" type="text/css" href="//cdn.jsdelivr.net/bootstrap-social/5.1.1/bootstrap-social.css"/>
-    <link rel="stylesheet" media="screen" type="text/css" href="//cdn.jsdelivr.net/fontawesome/4.7.0/css/font-awesome.min.css"/>
-</head>
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css" />
+    <link
+      rel="stylesheet"
+      media="screen"
+      type="text/css"
+      href="assets/css/login.css"
+    />
+    <link
+      rel="stylesheet"
+      media="screen"
+      type="text/css"
+      href="//cdn.jsdelivr.net/bootstrap-social/5.1.1/bootstrap-social.css"
+    />
+    <link
+      rel="stylesheet"
+      media="screen"
+      type="text/css"
+      href="//cdn.jsdelivr.net/fontawesome/4.7.0/css/font-awesome.min.css"
+    />
+  </head>
 
-<body>
-	<div class="site-wrapper">
-		<!-- ******Header****** -->
-        <header class="sub-header text-center">
-            <div class="container">
-                <div class="branding">
-                    <h1 class="logo">
-                      <img class="img-fluid" src="assets/img/logo.png" alt="Logo"/>
-                    </h1>
-                </div><!--//branding-->
-                <div class="tagline">
-                </div><!--//tagline-->
-            </div><!--//container-->
-        </header><!--//header-->
+  <body>
+    <div class="site-wrapper">
+      <!-- ******Header****** -->
+      <header class="sub-header text-center">
+        <div class="container">
+          <div class="branding">
+            <h1 class="logo">
+              <img class="img-fluid" src="assets/img/logo.png" alt="Logo" />
+            </h1>
+          </div>
+          <!--//branding-->
+          <div class="tagline"></div>
+          <!--//tagline-->
+        </div>
+        <!--//container-->
+      </header>
+      <!--//header-->
 
-        <section class="cards-section text-center">
-            <div class="container">
-		<div th:if="${@authenticationBackend.name != 'social'}">
-			<form class="form-signin" th:action="@{/login}" method="POST">
-				<h2 class="form-signin-heading">Please sign in</h2>
-				<div class="alert alert-danger" th:if="${error}">
-	  				<strong>Could not sign in!</strong><br/><span th:text="${error}"></span>
-				</div>
-				<label for="username" class="sr-only">Email address</label>
-				<input name="username" id="username" class="form-control" placeholder="User name" required="required" autofocus="autofocus"></input>
-				<label for="password" class="sr-only">Password</label>
-				<input name="password" type="password" id="password" class="form-control" placeholder="Password" required="required"></input>
-				<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-			</form>
-		</div>
+      <section class="cards-section text-center">
+        <div class="container">
+          <div th:if="${@authenticationBackend.name != 'social'}">
+            <form class="form-signin" th:action="@{/login}" method="POST">
+              <h2 class="form-signin-heading">Please sign in</h2>
+              <div class="alert alert-danger" th:if="${error}">
+                <strong>Could not sign in!</strong><br /><span
+                  th:text="${error}"
+                ></span>
+              </div>
+              <label for="username" class="sr-only">Email address</label>
+              <input
+                name="username"
+                id="username"
+                class="form-control"
+                placeholder="User name"
+                required="required"
+                autofocus="autofocus"
+              />
+              <label for="password" class="sr-only">Password</label>
+              <input
+                name="password"
+                type="password"
+                id="password"
+                class="form-control"
+                placeholder="Password"
+                required="required"
+              />
+              <button class="btn btn-lg btn-primary btn-block" type="submit">
+                Sign in
+              </button>
+            </form>
+          </div>
 
-		<div th:if="${@authenticationBackend.name == 'social'}">
-			<br/>
-			<h2 class="form-signin form-signin-heading">Please sign in:</h2>
-			<form th:each="provider : ${@socialProviders}" class="form-signin" method="POST" th:action="@{/signin/__${provider}__}">
-				<button th:class="@{btn btn-block btn-social btn-__${provider}__}" type="submit">
-					<span th:class="@{fa fa-__${provider}__}"></span> Sign in with <span th:text="${provider.label()}"></span>
-				</button>
-		        </div>
-		    </div><!--//container-->
-        </section><!--//cards-section-->
-      </div>
-</body>
-
+          <div th:if="${@authenticationBackend.name == 'social'}">
+            <br />
+            <h2 class="form-signin form-signin-heading">Please sign in:</h2>
+            <form
+              th:each="provider : ${@socialProviders}"
+              class="form-signin"
+              method="POST"
+              th:action="@{/signin/__${provider}__}"
+            >
+              <button
+                th:class="@{btn btn-block btn-social btn-__${provider}__}"
+                type="submit"
+              >
+                <span th:class="@{fa fa-__${provider}__}"></span> Sign in with
+                <span th:text="${provider.label()}"></span>
+              </button>
+            </form>
+          </div>
+        </div>
+        <!--//container-->
+      </section>
+      <!--//cards-section-->
+    </div>
+  </body>
 </html>

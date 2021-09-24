@@ -21,59 +21,87 @@
 
 -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
-<head lang="en">
-	<title th:text="${appTitle}"></title>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="GAMS MIRO Server">
-    <meta name="author" content="GAMS Development Corp.">
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'sha256-7OHl+N4x5fOFpDONCYMkrPAiY0tKpkbJejeafx/FRc4=' 'sha256-2DrbveAQtJoGspqcnMRT3UIgZtpGNQNcPbD26hvPBuw=';" />
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+>
+  <head lang="en">
+    <title th:text="${appTitle}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GAMS MIRO Server" />
+    <meta name="author" content="GAMS Development Corp." />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="script-src 'self' 'sha256-L40SkVP8pk6BzxwxCdc/0Y2mTevWlWQ7ZPn32auKRXk=' 'sha256-uOnmv9aoPAi7nymRJsrsWBS2oyb1ETYNDp4HCYDVXbA=';"
+    />
     <link rel="stylesheet" media="screen" th:href="@{${bootstrapCss}}" />
-    <link rel="stylesheet" media="screen" th:href="@{/assets/css/styles.css}"/>
-        <script th:src="@{${jqueryJs}}"></script>
-        <script th:src="@{${bootstrapJs}}"></script>
-</head>
-<body style="overflow:hidden;margin:0;padding:0;">
-    <div id="navbarHandle" class="navbar-handle-wrapper"><div class="navbar-handle"></div></div>
-    <div class="loading-screen"><div id="loadAppError" class="load-app-error">An error has occurred loading your app. Please try again later.</div>
-       <div id="loadingAnimation" class="lds-ellipsis" style="position:relative;top:50%;left:50%">
-       <div></div><div></div><div></div><div></div></div></div>
-    <div id="navbarWrapper" style="display:none;position:absolute;">
-        <div th:replace="../fragments/navbar :: navbar"></div>
+    <link rel="stylesheet" media="screen" th:href="@{/assets/css/styles.css}" />
+    <script th:src="@{${jqueryJs}}"></script>
+    <script th:src="@{${bootstrapJs}}"></script>
+  </head>
+  <body style="overflow: hidden; margin: 0; padding: 0">
+    <div id="navbarHandle" class="navbar-handle-wrapper">
+      <div class="navbar-handle"></div>
     </div>
-    <iframe id="shinyframe" th:src="${container}" width="100%" frameBorder="0" style="overflow:hidden;height:100vh;"></iframe>
-	<script type="text/javascript" th:inline="javascript">
-        var timer;
-		$("#navbarHandle").hover(function() {
-            clearTimeout(timer);
-            $("#navbarWrapper").show();
-        });
-        $("#navbarWrapper").hover(function() {
-            clearTimeout(timer);
-            $("#navbarWrapper").show();
-        });
-        $("#navbarWrapper").mouseleave(function() {
-            clearTimeout(timer);
-            timer = setTimeout(function() {
-                $("#navbarWrapper").hide();
-            }, 600);
-        });
-		$(window).on('load', function() {
-			var source = $("#shinyframe").attr("src");
-			if (source == "") {
-				$(".loading-screen").show();
-				$.post(window.location.pathname + window.location.search, function(response) {
-					$("#shinyframe").attr("src", response.containerPath);
-					$(".loading-screen").delay(1000).fadeOut(500);
-				}).fail(function(request) {
-					console.log(request.responseText);
-                    $("#loadingAnimation").hide();
-                    $("#loadAppError").show();
-				});
-			}
-		});
-	</script>
-</body>
+    <div class="loading-screen">
+      <div id="loadAppError" class="load-app-error">
+        An error has occurred loading your app. Please try again later.
+      </div>
+      <div
+        id="loadingAnimation"
+        class="lds-ellipsis"
+        style="position: relative; top: 50%; left: 50%"
+      >
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+    <div id="navbarWrapper" style="display: none; position: absolute">
+      <div th:replace="../fragments/navbar :: navbar"></div>
+    </div>
+    <iframe
+      id="shinyframe"
+      th:src="${container}"
+      width="100%"
+      frameborder="0"
+      style="overflow: hidden; height: 100vh"
+    ></iframe>
+    <script type="text/javascript" th:inline="javascript">
+      var timer;
+      $("#navbarHandle").hover(function () {
+        clearTimeout(timer);
+        $("#navbarWrapper").show();
+      });
+      $("#navbarWrapper").hover(function () {
+        clearTimeout(timer);
+        $("#navbarWrapper").show();
+      });
+      $("#navbarWrapper").mouseleave(function () {
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          $("#navbarWrapper").hide();
+        }, 600);
+      });
+      $(window).on("load", function () {
+        var source = $("#shinyframe").attr("src");
+        if (source == "") {
+          $(".loading-screen").show();
+          $.post(
+            window.location.pathname + window.location.search,
+            function (response) {
+              $("#shinyframe").attr("src", response.containerPath);
+              $(".loading-screen").delay(1000).fadeOut(500);
+            }
+          ).fail(function (request) {
+            console.log(request.responseText);
+            $("#loadingAnimation").hide();
+            $("#loadAppError").show();
+          });
+        }
+      });
+    </script>
+  </body>
 </html>

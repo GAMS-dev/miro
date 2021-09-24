@@ -1,22 +1,42 @@
 <!DOCTYPE html>
-<head>
-    <meta charset="utf-8">
+<html>
+  <head>
+    <meta charset="utf-8" />
     <meta http-equiv="Content-Security-Policy" content="script-src 'self';" />
     <meta name="color-scheme" content="dark light" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
-    <link id="theme-style" rel="stylesheet" href="../css/styles.css">
-</head>
-<body>
-<div class="site-wrapper">
-    <div style="margin:0;position:absolute;top:50%;left:50%;-ms-transform:translate(-50%, -50%);transform:translate(-50%, -50%);text-align:center;">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="../node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css"
+    />
+    <link id="theme-style" rel="stylesheet" href="../css/styles.css" />
+  </head>
+  <body>
+    <div class="site-wrapper">
+      <div
+        style="
+          margin: 0;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+          text-align: center;
+        "
+      >
         <i id="updateSpinner" class="fas fa-spinner fa-pulse"></i>
         <h6 id="updateText"></h6>
         <button id="btClose" class="btn btn-secondary">Ok</button>
+      </div>
     </div>
-  </div>
-   <script type="text/javascript" src="./update.js"></script>
-   <script type="text/javascript" src="../node_modules/@fortawesome/fontawesome-free/js/all.js"></script>
-</body>
+    <script type="text/javascript" src="./update.js"></script>
+    <script
+      type="text/javascript"
+      src="../node_modules/@fortawesome/fontawesome-free/js/all.js"
+    ></script>
+  </body>
 </html>

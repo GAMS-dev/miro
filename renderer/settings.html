@@ -1,170 +1,392 @@
 <!DOCTYPE html>
-<head>
-    <meta charset="utf-8">
+<html>
+  <head>
+    <meta charset="utf-8" />
     <meta http-equiv="Content-Security-Policy" content="script-src 'self';" />
     <meta name="color-scheme" content="dark light" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
-    <link id="theme-style" rel="stylesheet" href="../css/styles.css">
-</head>
-<body>
-  <header id="header" class="sub-header">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="../node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css"
+    />
+    <link id="theme-style" rel="stylesheet" href="../css/styles.css" />
+  </head>
+  <body>
+    <header id="header" class="sub-header">
       <div class="container">
         <div class="row">
           <div class="col-md-11 col-sm-11 text-md-center">
-              <h3 class="header-text"><p id="title" class="header-text">Preferences</p></h3>
+            <h3 class="header-text">
+              <p id="title" class="header-text">Preferences</p>
+            </h3>
           </div>
         </div>
       </div>
     </header>
     <div class="container">
-      <div class="settings-body" style="margin:20px 0;">
+      <div class="settings-body" style="margin: 20px 0">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
           <li class="nav-item">
-            <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
+            <a
+              class="nav-link active"
+              id="general-tab"
+              data-toggle="tab"
+              href="#general"
+              role="tab"
+              aria-controls="general"
+              aria-selected="true"
+              >General</a
+            >
           </li>
           <li class="nav-item">
-            <a class="nav-link" id="paths-tab" data-toggle="tab" href="#paths" role="tab" aria-controls="paths" aria-selected="false">Paths</a>
+            <a
+              class="nav-link"
+              id="paths-tab"
+              data-toggle="tab"
+              href="#paths"
+              role="tab"
+              aria-controls="paths"
+              aria-selected="false"
+              >Paths</a
+            >
           </li>
           <li class="nav-item">
-            <a class="nav-link" id="env-tab" data-toggle="tab" href="#env" role="tab" aria-controls="env" aria-selected="false">Environment</a>
+            <a
+              class="nav-link"
+              id="env-tab"
+              data-toggle="tab"
+              href="#env"
+              role="tab"
+              aria-controls="env"
+              aria-selected="false"
+              >Environment</a
+            >
           </li>
         </ul>
         <div class="tab-content" id="myTabContent">
-          <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+          <div
+            class="tab-pane fade show active"
+            id="general"
+            role="tabpanel"
+            aria-labelledby="general-tab"
+          >
             <div class="setting-wrapper">
-             <label id="launchBrowser" class="settings-label" for="launchExternal" style="margin:0">Launch MIRO apps in your browser?</label>
-             <div class="settings-item settings-checkbox">
-                 <label class="cb-label" for="launchExternal"></label>
-                 <div>
+              <label
+                id="launchBrowser"
+                class="settings-label"
+                for="launchExternal"
+                style="margin: 0"
+                >Launch MIRO apps in your browser?</label
+              >
+              <div class="settings-item settings-checkbox">
+                <label class="cb-label" for="launchExternal"></label>
+                <div>
                   <label class="checkbox-material">
                     <div class="checkbox">
                       <label>
-                        <input id="launchExternal" type="checkbox">
+                        <input id="launchExternal" type="checkbox" />
                         <span></span>
                       </label>
                     </div>
                   </label>
                 </div>
-                <small id="browserReset" class="form-text btn-reset-nonpath settings-reset reset-db-path" style="display:none;margin-top:-10px;text-align:right;" data-key="launchExternal">Reset to default</small>
-             </div>
-           </div>
-           <div class="setting-wrapper">
-             <label id="generalLanguage" class="settings-label" for="language">Language</label>
-             <div class="settings-item">
-              <select class="form-control" id="language">
-                <option>English</option>
-                <option>Deutsch</option>
-                <option>中文</option>
-              </select>
-              <small id="languageReset" class="form-text btn-reset-nonpath settings-reset reset-db-path" style="display:none;" data-key="language">Reset to default</small>
+                <small
+                  id="browserReset"
+                  class="
+                    form-text
+                    btn-reset-nonpath
+                    settings-reset
+                    reset-db-path
+                  "
+                  style="display: none; margin-top: -10px; text-align: right"
+                  data-key="launchExternal"
+                  >Reset to default</small
+                >
+              </div>
             </div>
-          </div>
-          <div class="setting-wrapper">
-             <label id="generalRemoteExec" class="settings-label" for="remoteExecution" style="margin:0">Execute model remotely?</label>
-             <div class="settings-item settings-checkbox">
-                 <label class="cb-label" for="remoteExecution"></label>
-                 <div>
+            <div class="setting-wrapper">
+              <label id="generalLanguage" class="settings-label" for="language"
+                >Language</label
+              >
+              <div class="settings-item">
+                <select class="form-control" id="language">
+                  <option>English</option>
+                  <option>Deutsch</option>
+                  <option>中文</option>
+                </select>
+                <small
+                  id="languageReset"
+                  class="
+                    form-text
+                    btn-reset-nonpath
+                    settings-reset
+                    reset-db-path
+                  "
+                  style="display: none"
+                  data-key="language"
+                  >Reset to default</small
+                >
+              </div>
+            </div>
+            <div class="setting-wrapper">
+              <label
+                id="generalRemoteExec"
+                class="settings-label"
+                for="remoteExecution"
+                style="margin: 0"
+                >Execute model remotely?</label
+              >
+              <div class="settings-item settings-checkbox">
+                <label class="cb-label" for="remoteExecution"></label>
+                <div>
                   <label class="checkbox-material">
                     <div class="checkbox">
                       <label>
-                        <input id="remoteExecution" type="checkbox">
+                        <input id="remoteExecution" type="checkbox" />
                         <span></span>
                       </label>
                     </div>
                   </label>
                 </div>
-                <small id="remoteExecReset" class="form-text btn-reset-nonpath settings-reset reset-db-path" style="display:none;margin-top:-10px;text-align:right;" data-key="remoteExecution">Reset to default</small>
-             </div>
-           </div>
-           <div class="setting-wrapper">
-             <label id="generalLogging" class="settings-label" for="logLevel">Logging level</label>
-             <div class="settings-item">
-              <select class="form-control" id="logLevel">
-                <option>TRACE</option>
-                <option>DEBUG</option>
-                <option>INFO</option>
-                <option>WARN</option>
-                <option>ERROR</option>
-                <option>FATAL</option>
-              </select>
-              <small id="loggingReset" class="form-text btn-reset-nonpath settings-reset reset-db-path" style="display:none;" data-key="logLevel">Reset to default</small>
+                <small
+                  id="remoteExecReset"
+                  class="
+                    form-text
+                    btn-reset-nonpath
+                    settings-reset
+                    reset-db-path
+                  "
+                  style="display: none; margin-top: -10px; text-align: right"
+                  data-key="remoteExecution"
+                  >Reset to default</small
+                >
+              </div>
             </div>
-          </div>
-           <div class="setting-wrapper">
-             <label id="generalLoglife" class="settings-label" for="logLifeTime">Number of days log files are stored</label>
-             <div class="settings-item">
-              <input id="logLifeTime" class="miro-launcher-input" type="number" value="-1" min="-1" max="999" step="1">
-              <small id="loglifeReset" class="form-text btn-reset-nonpath settings-reset reset-db-path" style="display:none;" data-key="logLifeTime">Reset to default</small>
-            </div>
-          </div>
-          </div>
-          <div class="tab-pane fade" id="paths" role="tabpanel" aria-labelledby="paths-tab">
             <div class="setting-wrapper">
-             <p id="pathMiroapp" class="settings-label">MIRO app path</p>
-             <div class="custom-file db-path-field settings-item">
-               <div id="btPathSelect_configpath" class="custom-file-input browseFiles app-db-path"></div>
-               <label id="pathMiroappSelect" class="custom-file-label dbpath" for="btPathSelect_configpath">Select MIRO app path</label>
-               <small id="resetPathMiroapp" class="form-text btn-reset settings-reset reset-db-path" style="display:none" data-key="configpath">Reset to default</small>
-             </div>
-           </div>
-           <div class="setting-wrapper">
-             <p id="pathGams" class="settings-label">GAMS path</p>
-             <div class="custom-file db-path-field settings-item">
-               <div id="btPathSelect_gamspath" class="custom-file-input browseFiles app-db-path"></div>
-               <label id="pathGamsSelect" class="custom-file-label dbpath" for="btPathSelect_gamspath">Select GAMS path</label>
-               <small id="pathGamsReset" class="form-text btn-reset settings-reset reset-db-path" style="display:none" data-key="gamspath">Reset to default</small>
-             </div>
-           </div>
-           <div class="setting-wrapper">
-             <p id="pathLog" class="settings-label">Log path</p>
-             <div class="custom-file db-path-field settings-item">
-               <div id="btPathSelect_logpath" class="custom-file-input browseFiles app-db-path"></div>
-               <label id="pathLogSelect" class="custom-file-label dbpath" for="btPathSelect_logpath">Select log file path</label>
-               <small id="pathLogReset" class="form-text btn-reset settings-reset reset-db-path" style="display:none" data-key="logpath">Reset to default</small>
-             </div>
-           </div>
-           <div id="rpathWrapper" class="setting-wrapper">
-             <p id="pathR" class="settings-label">R path</p>
-             <div class="custom-file db-path-field settings-item" >
-               <div id="btPathSelect_rpath" class="custom-file-input browseFiles app-db-path"></div>
-               <label id="pathRSelect" class="custom-file-label dbpath" for="btPathSelect_rpath">Select R path</label>
-               <small id="pathRReset" class="form-text btn-reset settings-reset reset-db-path" style="display:none" data-key="rpath">Reset to default</small>
-             </div>
-           </div>
-      </div>
-       <div class="tab-pane fade" id="env" role="tabpanel" aria-labelledby="env-tab">
+              <label id="generalLogging" class="settings-label" for="logLevel"
+                >Logging level</label
+              >
+              <div class="settings-item">
+                <select class="form-control" id="logLevel">
+                  <option>TRACE</option>
+                  <option>DEBUG</option>
+                  <option>INFO</option>
+                  <option>WARN</option>
+                  <option>ERROR</option>
+                  <option>FATAL</option>
+                </select>
+                <small
+                  id="loggingReset"
+                  class="
+                    form-text
+                    btn-reset-nonpath
+                    settings-reset
+                    reset-db-path
+                  "
+                  style="display: none"
+                  data-key="logLevel"
+                  >Reset to default</small
+                >
+              </div>
+            </div>
+            <div class="setting-wrapper">
+              <label
+                id="generalLoglife"
+                class="settings-label"
+                for="logLifeTime"
+                >Number of days log files are stored</label
+              >
+              <div class="settings-item">
+                <input
+                  id="logLifeTime"
+                  class="miro-launcher-input"
+                  type="number"
+                  value="-1"
+                  min="-1"
+                  max="999"
+                  step="1"
+                />
+                <small
+                  id="loglifeReset"
+                  class="
+                    form-text
+                    btn-reset-nonpath
+                    settings-reset
+                    reset-db-path
+                  "
+                  style="display: none"
+                  data-key="logLifeTime"
+                  >Reset to default</small
+                >
+              </div>
+            </div>
+          </div>
+          <div
+            class="tab-pane fade"
+            id="paths"
+            role="tabpanel"
+            aria-labelledby="paths-tab"
+          >
+            <div class="setting-wrapper">
+              <p id="pathMiroapp" class="settings-label">MIRO app path</p>
+              <div class="custom-file db-path-field settings-item">
+                <div
+                  id="btPathSelect_configpath"
+                  class="custom-file-input browseFiles app-db-path"
+                ></div>
+                <label
+                  id="pathMiroappSelect"
+                  class="custom-file-label dbpath"
+                  for="btPathSelect_configpath"
+                  >Select MIRO app path</label
+                >
+                <small
+                  id="resetPathMiroapp"
+                  class="form-text btn-reset settings-reset reset-db-path"
+                  style="display: none"
+                  data-key="configpath"
+                  >Reset to default</small
+                >
+              </div>
+            </div>
+            <div class="setting-wrapper">
+              <p id="pathGams" class="settings-label">GAMS path</p>
+              <div class="custom-file db-path-field settings-item">
+                <div
+                  id="btPathSelect_gamspath"
+                  class="custom-file-input browseFiles app-db-path"
+                ></div>
+                <label
+                  id="pathGamsSelect"
+                  class="custom-file-label dbpath"
+                  for="btPathSelect_gamspath"
+                  >Select GAMS path</label
+                >
+                <small
+                  id="pathGamsReset"
+                  class="form-text btn-reset settings-reset reset-db-path"
+                  style="display: none"
+                  data-key="gamspath"
+                  >Reset to default</small
+                >
+              </div>
+            </div>
+            <div class="setting-wrapper">
+              <p id="pathLog" class="settings-label">Log path</p>
+              <div class="custom-file db-path-field settings-item">
+                <div
+                  id="btPathSelect_logpath"
+                  class="custom-file-input browseFiles app-db-path"
+                ></div>
+                <label
+                  id="pathLogSelect"
+                  class="custom-file-label dbpath"
+                  for="btPathSelect_logpath"
+                  >Select log file path</label
+                >
+                <small
+                  id="pathLogReset"
+                  class="form-text btn-reset settings-reset reset-db-path"
+                  style="display: none"
+                  data-key="logpath"
+                  >Reset to default</small
+                >
+              </div>
+            </div>
+            <div id="rpathWrapper" class="setting-wrapper">
+              <p id="pathR" class="settings-label">R path</p>
+              <div class="custom-file db-path-field settings-item">
+                <div
+                  id="btPathSelect_rpath"
+                  class="custom-file-input browseFiles app-db-path"
+                ></div>
+                <label
+                  id="pathRSelect"
+                  class="custom-file-label dbpath"
+                  for="btPathSelect_rpath"
+                  >Select R path</label
+                >
+                <small
+                  id="pathRReset"
+                  class="form-text btn-reset settings-reset reset-db-path"
+                  style="display: none"
+                  data-key="rpath"
+                  >Reset to default</small
+                >
+              </div>
+            </div>
+          </div>
+          <div
+            class="tab-pane fade"
+            id="env"
+            role="tabpanel"
+            aria-labelledby="env-tab"
+          >
             <div class="setting-wrapper env-button-wrapper btn-group">
-              <button id="btEnvImport" class="btn btn-sm btn-outline-secondary" type="button">Import</button>
-              <button id="btEnvExport" class="btn btn-sm btn-outline-secondary" type="button">Export</button>
-              <button id="btEnvReset" class="btn btn-sm btn-outline-danger" type="button">Reset</button>
+              <button
+                id="btEnvImport"
+                class="btn btn-sm btn-outline-secondary"
+                type="button"
+              >
+                Import
+              </button>
+              <button
+                id="btEnvExport"
+                class="btn btn-sm btn-outline-secondary"
+                type="button"
+              >
+                Export
+              </button>
+              <button
+                id="btEnvReset"
+                class="btn btn-sm btn-outline-danger"
+                type="button"
+              >
+                Reset
+              </button>
             </div>
             <div id="envTableWrapper" class="setting-wrapper">
-             <table class="table table-sm table-borderless">
+              <table class="table table-sm table-borderless">
                 <thead>
-                    <tr>
-                        <th id="miroEnvHdrVar" scope="col">Variable</th>
-                        <th id="miroEnvHdrVal" scope="col">Value</th>
-                    </tr>
+                  <tr>
+                    <th id="miroEnvHdrVar" scope="col">Variable</th>
+                    <th id="miroEnvHdrVal" scope="col">Value</th>
+                  </tr>
                 </thead>
-                <tbody id="tbodyMiroEnv">
-                </tbody>
-            </table>
-           </div>
-         </div>
+                <tbody id="tbodyMiroEnv"></tbody>
+              </table>
+            </div>
+          </div>
         </div>
-         <div class="settings-footer">
-            <a id="helpLink"  class="help-footer" href="#">
-               <span id="needHelp">Need help?</span>
-             </a>
-             <input id="btCancel" class="btn btn-secondary cancel-btn" value="Cancel" type="reset">
-             <button id="btSave" class="btn btn-secondary confirm-btn btn-save-changes" type="button">Apply</button>
-         </div>
-       </div>
+        <div class="settings-footer">
+          <a id="helpLink" class="help-footer" href="#">
+            <span id="needHelp">Need help?</span>
+          </a>
+          <input
+            id="btCancel"
+            class="btn btn-secondary cancel-btn"
+            value="Cancel"
+            type="reset"
+          />
+          <button
+            id="btSave"
+            class="btn btn-secondary confirm-btn btn-save-changes"
+            type="button"
+          >
+            Apply
+          </button>
+        </div>
+      </div>
     </div>
 
-   <script type="text/javascript" src="./settings.js"></script>
-   <script type="text/javascript" src="../node_modules/@fortawesome/fontawesome-free/js/all.js"></script>
-</body>
+    <script type="text/javascript" src="./settings.js"></script>
+    <script
+      type="text/javascript"
+      src="../node_modules/@fortawesome/fontawesome-free/js/all.js"
+    ></script>
+  </body>
 </html>

@@ -5,7 +5,6 @@
 dump.rdb
 *.RData
 .Ruserdata
-packrat/lib*/
 __pycache__
 .Rprofile
 logs
