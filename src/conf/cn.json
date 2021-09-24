@@ -1276,6 +1276,7 @@
         "noWidgetConfigMsg": "当前没有为此GAMS符号配置小部件",
         "optionConfigMsg": "消息：该符号是GAMS选项：%s",
         "doubledashConfigMsg": "消息： 该符号是一个double-dash parameter：%s",
+        "widgetExternallyDefinedMsg": "消息： 你所选择的符号已经被符号 %s 的小部件所定义。为该符号配置小部件仍然很有用（例如，对于 Hypercube 模块或 Batch Load 模块）。",
         "tableWidget": "可以在以下部分中调整表格：'",
         "inputSymbol": "为哪个输入符号创建一个小部件？",
         "widgetGo": "GAMS option",

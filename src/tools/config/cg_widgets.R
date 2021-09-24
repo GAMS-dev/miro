@@ -1,5 +1,6 @@
 latest_widget_symbol_type <- NULL
 currentWidgetSymbolName <- character(0L)
+symbolsDefinedExternally <- inputSymInForeignRenderers[inputSymInForeignRenderers %in% widgetSymbols]
 
 updateSelectInputNoClear <- function(session, id, choices) {
   selected <- input[[id]]
@@ -105,6 +106,7 @@ if (length(widgetSymbols)) {
   hideEl(session, "#noWidgetConfigMsg")
   hideEl(session, "#optionConfigMsg")
   hideEl(session, "#doubledashConfigMsg")
+  hideEl(session, "#externalConfigMsg")
   noWidgetSymbols <- TRUE
 }
 
@@ -377,6 +379,16 @@ observeEvent(
     hideEl(session, "#noWidgetConfigMsg")
     hideEl(session, "#optionConfigMsg")
     hideEl(session, "#doubledashConfigMsg")
+    hideEl(session, "#externalConfigMsg")
+    if (input$widget_symbol %in% symbolsDefinedExternally) {
+      showElReplaceTxt(
+        session, "#externalConfigMsg",
+        sprintf(
+          lang$adminMode$widgets$ui$widgetExternallyDefinedMsg,
+          names(symbolsDefinedExternally)[symbolsDefinedExternally == input$widget_symbol][[1]]
+        )
+      )
+    }
     if (input$widget_symbol %in% modelInRaw[[scalarsFileName]]$symnames) {
       currentWidgetSymbolName <<- input$widget_symbol
       if (!currentWidgetSymbolName %in% names(configJSON$inputWidgets)) {
@@ -487,6 +499,7 @@ observeEvent(input$widget_symbol_type, {
     hideEl(session, "#doubledashConfigMsg")
     hideEl(session, "#noWidgetConfigMsg")
     hideEl(session, "#deleteWidget")
+    hideEl(session, "#externalConfigMsg")
     updateTextInput(session, "widget_label", value = "")
     if (identical(input$widget_symbol_type, "dd")) {
       updateTextInput(session, "widget_dd", value = "")
@@ -2259,6 +2272,7 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
       hideEl(session, "#noWidgetConfigMsg")
       hideEl(session, "#optionConfigMsg")
       hideEl(session, "#doubledashConfigMsg")
+      hideEl(session, "#externalConfigMsg")
     }
   }
   write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
@@ -2336,6 +2350,7 @@ observeEvent(input$deleteWidgetConfirm, {
   showEl(session, "#noWidgetConfigMsg")
   hideEl(session, "#optionConfigMsg")
   hideEl(session, "#doubledashConfigMsg")
+  hideEl(session, "#externalConfigMsg")
   if (!length(widgetSymbols)) {
     if (!noWidgetSymbols) {
       showEl(session, "#noSymbolMsg")

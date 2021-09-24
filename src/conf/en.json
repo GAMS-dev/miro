@@ -1277,6 +1277,7 @@
         "noWidgetConfigMsg": "Currently, there is no widget configured for this symbol",
         "optionConfigMsg": "Info: The symbol you selected is a GAMS option: %s",
         "doubledashConfigMsg": "Info: The symbol you selected is a double-dash parameter: %s",
+        "widgetExternallyDefinedMsg": "Info: The symbol you selected is already defined by the widget of symbol: '%s'. Configuring a widget for this symbol can still be useful (e.g. for the Hypercube module or the Batch Load module).",
         "tableWidget": "Table configuration is done in '",
         "inputSymbol": "Input symbol",
         "widgetGo": "GAMS option",

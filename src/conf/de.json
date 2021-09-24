@@ -1277,6 +1277,7 @@
         "noWidgetConfigMsg": "Derzeit ist kein Widget für dieses Symbol konfiguriert",
         "optionConfigMsg": "Info: Das von Ihnen gewählte Symbol ist eine GAMS-Option: %s",
         "doubledashConfigMsg": "Info: Das von Ihnen gewählte Symbol ist ein Double-Dash-Parameter: %s",
+        "widgetExternallyDefinedMsg": "Info: Das von Ihnen gewählte Symbol ist bereits durch das Widget des Symbols: '%s' definiert. Die Konfiguration eines Widgets für dieses Symbol kann dennoch nützlich sein (z. B. für das Hypercube Modul oder das Batch Load Modul).",
         "tableWidget": "Tabellen können angepasst werden unter '",
         "inputSymbol": "Wählen Sie ein Eingabesymbol",
         "widgetGo": "Name der GAMS Option (z.B.'LP' oder 'OptCR')",

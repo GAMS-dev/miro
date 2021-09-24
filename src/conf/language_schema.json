@@ -4982,6 +4982,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "widgetExternallyDefinedMsg": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "tableWidget": {
                   "type": "string",
                   "minLength": 1
@@ -5031,7 +5035,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 24
+              "minProperties": 25
             },
             "validate": {
               "type": "object",
