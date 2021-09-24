@@ -1308,8 +1308,7 @@ showDuplicatedScenDialog <- function(noDupScen, dupScenTags, noScen) {
   ))
 }
 # Batch Load module
-showBatchLoadDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver = "",
-                                exclAttribChoices = NULL, customScripts = NULL, colNamesForNaming = NULL) {
+showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesForNaming = NULL) {
   if (length(customScripts)) {
     analysisTabset <- selectInput("selHcubeAnalysisScript", lang$nav$dialogBatchLoad$selAnalysisScript,
       setNames(
@@ -1336,23 +1335,12 @@ showBatchLoadDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver 
           tags$div(
             class = "modal-body",
             tags$div(
-              class = "gmsalert gmsalert-error", id = "paverRunNoTrc",
-              lang$nav$dialogBatchLoad$noTrc
-            ),
-            tags$div(
               class = "gmsalert gmsalert-error", id = "analysisRunScriptRunning",
               lang$nav$dialogBatchLoad$analysisRunScriptRunning
             ),
             tags$div(
               class = "gmsalert gmsalert-error", id = "analysisRunUnknownError",
               lang$errMsg$unknownError
-            ),
-            tags$div(
-              class = "gmsalert gmsalert-error", id = "configPaverMaxSolversErr",
-              sprintf(
-                lang$nav$dialogBatchLoad$tooManySolvers,
-                maxSolversPaver
-              )
             ),
             tagList(
               tags$div(
@@ -1440,18 +1428,14 @@ showBatchLoadDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver 
                 tagList(
                   actionButton("btAnalysisConfig",
                     class = "batch-load-content",
-                    lang$nav$dialogBatchLoad$paverButton
+                    lang$nav$dialogBatchLoad$analysisButton
                   ),
                   tags$div(
                     style = "display:none;",
                     class = "batch-load-content batch-load-analysis-footer",
-                    actionButton("btRunPaver", lang$nav$dialogBatchLoad$runPaverButton,
-                      class = "bt-highlight-1 bt-gms-confirm",
-                      style = if (length(customScripts)) "display:none;"
-                    ),
                     actionButton("btRunHcubeScript", lang$nav$dialogBatchLoad$runScriptButton,
                       class = "bt-highlight-1 bt-gms-confirm",
-                      style = if (!length(customScripts)) "display:none;"
+                      style = "display:none;"
                     )
                   ),
                   downloadButton("btDownloadBatchLoadScript",

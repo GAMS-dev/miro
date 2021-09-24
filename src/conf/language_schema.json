@@ -2023,7 +2023,7 @@
               "type": "string",
               "minLength": 1
             },
-            "paverButton": {
+            "analysisButton": {
               "type": "string",
               "minLength": 1
             },
@@ -2035,35 +2035,7 @@
               "type": "string",
               "minLength": 1
             },
-            "tabPaver": {
-              "type": "string",
-              "minLength": 1
-            },
-            "delTrace": {
-              "type": "string",
-              "minLength": 1
-            },
-            "tooManySolvers": {
-              "type": "string",
-              "minLength": 1
-            },
-            "noTrc": {
-              "type": "string",
-              "minLength": 1
-            },
             "analysisRunScriptRunning": {
-              "type": "string",
-              "minLength": 1
-            },
-            "selPaverAttribs": {
-              "type": "string",
-              "minLength": 1
-            },
-            "selIgnoreAttribs": {
-              "type": "string",
-              "minLength": 1
-            },
-            "selClArgs": {
               "type": "string",
               "minLength": 1
             },
@@ -2072,10 +2044,6 @@
               "minLength": 1
             },
             "removeSuccess": {
-              "type": "string",
-              "minLength": 1
-            },
-            "runPaverButton": {
               "type": "string",
               "minLength": 1
             },
@@ -2116,7 +2084,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 30
+          "minProperties": 22
         },
         "hcubeMode": {
           "type": "object",

@@ -176,41 +176,6 @@ BatchLoader <- R6Class("BatchLoader",
       private$groupLabels[".rows"] <- NULL
       return(FALSE)
     },
-    genPaverTraceFiles = function(workDir, exclTraceCols = NULL) {
-      stopifnot(length(private$groupedSids) > 0L)
-      stopifnot(length(private$groupLabels) > 0L)
-      stopifnot(is.character(workDir), length(workDir) == 1L)
-
-      groupLabels <- vapply(seq_len(nrow(private$groupLabels)), function(i) {
-        paste0(as.vector(private$groupLabels[i, ], "character"), collapse = "\\")
-      }, character(1L), USE.NAMES = FALSE)
-      lapply(seq_along(private$groupedSids), function(i) {
-        fileName <- file.path(workDir, i %+% ".trc")
-        paverFile <- file(fileName, open = "wt")
-        writeLines(paste0(
-          "* Trace Record Definition\n* GamsSolve\n",
-          "* ", paste(setdiff(TRACE_COL_NAMES, exclTraceCols), collapse = ","),
-          "\n*\n* SOLVER,\n* TIMELIMIT,3600\n* NODELIMIT,2100000000\n* GAPLIMIT,0"
-        ), con = paverFile)
-        close(paverFile)
-        paverData <- private$db$importDataset("_scenTrc",
-          subsetSids = private$groupedSids[[i]]
-        )
-        if (!length(paverData) ||
-          nrow(paverData) != length(private$groupedSids[[i]])) {
-          stop("noTrc", call. = FALSE)
-        }
-        groupedNames <- gsub(",", "|", private$groupedNames[[i]], fixed = TRUE)
-        paverData <- paverData[match(private$groupedSids[[i]], paverData[[1]]), -1L]
-        paverData[[1]] <- groupedNames
-        paverData[[3]] <- rep.int(groupLabels[i], nrow(paverData))
-        if (length(exclTraceCols)) {
-          paverData[, exclTraceCols] <- NULL
-        }
-
-        write_csv(paverData, fileName, append = TRUE)
-      })
-    },
     genGdxFiles = function(scenIds, tmpDir, gdxio, progressBar = NULL,
                            genScenList = FALSE) {
       stopifnot(

@@ -523,8 +523,7 @@ observeEvent(input$batchLoadSelected, {
   }
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad <<- as.integer(batchLoadData[[1]][input$batchLoadResults_rows_selected])
-  showBatchLoadDialog(length(sidsToLoad), batchLoadFilters, maxSolversPaver,
-    exclAttribChoices = exclAttribChoices,
+  showBatchLoadDialog(length(sidsToLoad),
     customScripts = config$scripts$hcube,
     colNamesForNaming = setNames(names(batchLoadData)[-1], names(batchLoadFilters)[-1])
   )
@@ -536,8 +535,7 @@ observeEvent(input$batchLoadCurrent, {
   }
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad <<- as.integer(batchLoadData[[1]][input$batchLoadResults_rows_current])
-  showBatchLoadDialog(length(sidsToLoad), batchLoadFilters, maxSolversPaver,
-    exclAttribChoices = exclAttribChoices,
+  showBatchLoadDialog(length(sidsToLoad),
     customScripts = config$scripts$hcube,
     colNamesForNaming = setNames(names(batchLoadData)[-1], names(batchLoadFilters)[-1])
   )
@@ -549,8 +547,7 @@ observeEvent(input$batchLoadAll, {
   }
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad <<- as.integer(batchLoadData[[1]])
-  showBatchLoadDialog(length(sidsToLoad), batchLoadFilters, maxSolversPaver,
-    exclAttribChoices = exclAttribChoices,
+  showBatchLoadDialog(length(sidsToLoad),
     customScripts = config$scripts$hcube,
     colNamesForNaming = setNames(names(batchLoadData)[-1], names(batchLoadFilters)[-1])
   )

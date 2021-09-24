@@ -1932,24 +1932,6 @@ if (!is.null(errMsg)) {
           }
           return()
         }
-        if (isolate(input$sidebarMenuId) == "hcubeAnalyze") {
-          flog.trace("Navigated %d data tabs in paver output tabpanel (using shortcut).", direction)
-          # go to next data sheet
-          local({
-            tabsetName <- isolate(input$analysisResults)
-            currentSheet <- suppressWarnings(as.numeric(substr(
-              tabsetName,
-              nchar(tabsetName), nchar(tabsetName)
-            )))
-            if (is.na(currentSheet)) {
-              return()
-            }
-            updateTabsetPanel(
-              session, "analysisResults",
-              paste0("analysisResults_", currentSheet + direction)
-            )
-          })
-        }
       }
       observeEvent(input$tabsetShortcutNext, {
         navigateTabsViaShortcuts(direction = +1L)

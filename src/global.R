@@ -95,7 +95,6 @@ hcubeLoadMaxScen <- 5e5
 # maximum number of scenarios that can be loaded to scenario
 # comparison mode at the same time
 maxConcurentLoad <- 10L
-maxSolversPaver <- 15L
 TRACE_COL_NAMES <- c(
   "InputFileName", "ModelType", "SolverName", "NLP", "MIP", "JulianDate", "Direction",
   "NumberOfEquations", "NumberOfVariables", "NumberOfDiscreteVariables",
