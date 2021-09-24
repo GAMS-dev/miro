@@ -272,3 +272,13 @@ parseFunctionBody <- function(textToParse, functionName) {
   }
   return(functionBodyTmp)
 }
+aceEditorFullscreenButton <- function() {
+  tags$div(
+    style = "position: relative;",
+    tags$i(
+      id = "aceFullscreenButton",
+      class = "fas fa-expand-alt",
+      style = "float: right;position: absolute;right: 10px;cursor: pointer;z-index: 1000;top: 5px;"
+    )
+  )
+}
