@@ -2207,7 +2207,7 @@ if (!is.null(errMsg)) {
         source("./modules/download_tmp.R", local = TRUE)
       }
 
-      ####### Batch load module
+      ####### Batch Load module
       source("./modules/batch_load.R", local = TRUE)
 
       if (config$activateModules$remoteExecution) {

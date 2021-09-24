@@ -416,7 +416,7 @@ observeEvent(input$btBatchLoadSbOverwrite, {
 })
 
 observeEvent(input$btBatchLoadSb, {
-  flog.debug("Load scenario into sandbox from batch load module button clicked.")
+  flog.debug("Load scenario into sandbox from Batch Load module button clicked.")
   isInSolveMode <<- TRUE
   loadIntoSandbox <<- FALSE
   if (any(vapply(seq_along(modelIn), function(i) {
