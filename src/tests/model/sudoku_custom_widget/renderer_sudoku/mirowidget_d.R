@@ -29,7 +29,6 @@ renderMirowidget_d <- function(input, output, session, data, options = NULL, pat
     dataTmp <- unique(dataToReturn()[[1]])
     tibble(i = dataTmp, text = rep.int("", length(dataTmp)))
   }), j = reactive({
-    dataTmp <- unique(dataToReturn()[[2]])
-    tibble(j = dataTmp, text = rep.int("", length(dataTmp)))
+    return(NULL)
   })))
 }

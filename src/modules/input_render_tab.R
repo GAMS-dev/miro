@@ -143,6 +143,9 @@ getInputDatasetRaw <- function(id, subSymName = NULL) {
     }
     if (identical(scalarsFileName, names(modelIn)[[symIdTmp]])) {
       if (is.null(data)) {
+        if (length(modelInputData[[symIdTmp]])) {
+          return(modelInputData[[symIdTmp]])
+        }
         return(scalarsInTemplate)
       }
       if (length(data) < 2L || length(data) > 3L) {
@@ -166,6 +169,9 @@ getInputDatasetRaw <- function(id, subSymName = NULL) {
       }
       return(dataToReturn)
     } else if (is.null(data)) {
+      if (length(modelInputData[[symIdTmp]])) {
+        return(modelInputData[[symIdTmp]])
+      }
       return(modelInTemplate[[symIdTmp]])
     } else if (identical(length(data), length(modelIn[[symIdTmp]]$headers)) &&
       hasValidHeaderTypes(data, modelIn[[symIdTmp]]$colTypes)) {

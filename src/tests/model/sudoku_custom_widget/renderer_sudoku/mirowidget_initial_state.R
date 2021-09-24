@@ -103,11 +103,8 @@ renderMirowidget_initial_state <- function(input, output, session, data, options
         return(dataTmp)
       }
     }), `_scalars` = reactive({
-      dataTmp <- data[["_scalars"]]()
-      if (is.null(isolate(input$sudoku))) {
-        return(NULL)
-      }
-      data[["_scalars"]]()
+      force(data[["_scalars"]]())
+      return(NULL)
     })))
   }
 }

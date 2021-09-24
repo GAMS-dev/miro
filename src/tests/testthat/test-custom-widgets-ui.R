@@ -2,6 +2,8 @@ context("UI tests - Custom widgets")
 
 createTestDb()
 
+Sys.setenv("MIRO_MODE" = "base")
+
 Sys.setenv(MIRO_MODEL_PATH = file.path(
   getwd(), "..", "model", "sudoku_custom_widget",
   "sudoku.gms"
@@ -14,4 +16,4 @@ test_that(
   ))
 )
 
-Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH"))
+Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))
