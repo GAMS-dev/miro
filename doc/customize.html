@@ -3589,8 +3589,8 @@ renderMirowidget_&#x3C;symbolName&#x3E; &#x3C;- function(input, output, session,
                         <span class="code"
                           >&lt;modeldirectory&gt;/conf_&lt;modelname&gt;</span
                         >
-                        directory. To use our custom widget
-                        <kbd>sudoku</kbd> for an input symbol named
+                        directory. To use our custom widget for an input symbol
+                        named
                         <kbd>initial_state</kbd> in our model, the following
                         needs to be added to the configuration file:
                       </p>
@@ -3732,13 +3732,41 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
     }
   }</code></pre>
                       <p>
-                        The full version of the custom renderer described here
-                        as well as the corresponding GAMS model
+                        The full version of the custom widget described here as
+                        well as the corresponding GAMS model
                         <i>Sudoku</i> can be found in the MIRO model library.
-                        There you will also find an example of how to access
-                        values of (other) scalar input widgets from within your
-                        code. Note that MIRO currently supports only scalar
-                        input widgets as
+                        There you will also find an example of how to create a
+                        widget that defines multiple symbols. In this case, the
+                        <kbd>data</kbd> argument is a named list of reactive
+                        expressions, where the names are the lowercase names of
+                        the GAMS symbols. Similarly, you must also return a
+                        named list of reactive expressions. Defining a custom
+                        input widget for multiple GAMS symbols is as simple as
+                        listing all the additional symbols you want your widget
+                        to define in the
+                        <code class="language-json">"widgetSymbols"</code> array
+                        of your widget configuration. Below you find the
+                        configuration for the <kbd>initial_state</kbd> widget as
+                        used in the Sudoku example.
+                      </p>
+                      <pre><code class="language-json">"initial_state": {
+  "widgetType": "custom",
+  "rendererName": "mirowidget_initial_state",
+  "alias": "Initial state",
+  "apiVersion": 2,
+  "widgetSymbols": ["force_unique_sol"],
+  "options": {
+    "isInput": true
+  }
+}</code></pre>
+                      <p>
+                        In addition to defining a widget for multiple symbols,
+                        MIRO also allows you to access values from (other)
+                        scalar input widgets from your code. To do this, you
+                        must list the symbols you want to access in the
+                        <code class="language-json">"additionalData"</code>
+                        array of your configuration. Note that MIRO currently
+                        supports only scalar input widgets as
                         <code class="language-json">"additionalData"</code>.
                       </p>
                     </div>

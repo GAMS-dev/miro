@@ -1,17 +1,24 @@
 mirowidget_initial_stateOutput <- function(id, height = NULL, options = NULL, path = NULL) {
   ns <- NS(id)
   if (isTRUE(options$isInput)) {
-    return(tagList(span(textOutput(ns("uniqueSolWarning")),
-      style = "color:red"
-    ), rHandsontableOutput(ns("sudoku"))))
+    return(tagList(
+      rHandsontableOutput(ns("sudoku")),
+      checkboxInput(ns("force_unique_sol"), label = "Force unique solution", value = TRUE),
+      span(textOutput(ns("uniqueSolWarning")),
+        style = "color:red"
+      )
+    ))
   }
   return(rHandsontableOutput(ns("sudoku")))
 }
 
 renderMirowidget_initial_state <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
   if (isTRUE(options$isInput)) {
+    observe({
+      updateCheckboxInput(session, "force_unique_sol", value = !identical(data$force_unique_sol(), "0"))
+    })
     output$uniqueSolWarning <- renderText({
-      if (isTRUE(data$force_unique_sol())) {
+      if (isTRUE(input$force_unique_sol)) {
         "Model will abort if more than one solution exists."
       }
     })
@@ -80,16 +87,25 @@ renderMirowidget_initial_state <- function(input, output, session, data, options
     )
   }) %>% hot_rows(rowHeights = 50) %>% hot_col(1:9, valign = "htMiddle htCenter"))
   if (isTRUE(options$isInput)) {
-    return(reactive({
-      if (is.null(input$sudoku)) {
-        return(NULL)
-      }
-      dataTmp <- hot_to_r(input$sudoku) %>% mutate_all(as.integer)
-      if (length(dataTmp) && nrow(dataTmp) == 9L) {
-        return(bind_cols(row = paste0("row", 1:9), dataTmp))
-      } else {
-        return(dataTmp)
-      }
-    }))
+    return(list(
+      initial_state = reactive({
+        if (is.null(input$sudoku)) {
+          return(NULL)
+        }
+        dataTmp <- hot_to_r(input$sudoku) %>% mutate_all(as.integer)
+        if (length(dataTmp) && nrow(dataTmp) == 9L) {
+          return(bind_cols(row = paste0("row", 1:9), dataTmp))
+        } else {
+          return(dataTmp)
+        }
+      }),
+      force_unique_sol = reactive({
+        force(input$force_unique_sol)
+        if (is.null(isolate(input$sudoku))) {
+          return(NULL)
+        }
+        input$force_unique_sol
+      })
+    ))
   }
 }

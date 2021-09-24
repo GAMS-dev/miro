@@ -13,7 +13,8 @@
     "lstFile": false,
     "loadLocal": true,
     "attachments": true,
-    "downloadTempFiles": false
+    "downloadTempFiles": false,
+    "hcube": false
   },
   "autoGenInputGraphs": true,
   "aggregateWidgets": true,
@@ -35,7 +36,7 @@
       "rendererName": "mirowidget_initial_state",
       "alias": "Initial state",
       "apiVersion": 2,
-      "additionalData": "force_unique_sol",
+      "widgetSymbols": "force_unique_sol",
       "options": {
         "isInput": true
       }
@@ -57,6 +58,9 @@
     },
     "results": {
       "newAlias": "results"
+    },
+    "force_unique_sol": {
+      "newAlias": "force_unique_sol"
     }
   },
   "defaultRendererOutput": "miroPivot",
