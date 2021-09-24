@@ -1195,7 +1195,7 @@ Worker <- R6Class("Worker", public = list(
         } else {
           flog.warn("Problems fetching stream entry. Return code: '%s'.", statusCode)
         }
-        return("")
+        return(list(entry_value = "", queue_finished = FALSE))
       }
     )
   },
