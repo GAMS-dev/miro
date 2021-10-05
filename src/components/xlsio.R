@@ -234,7 +234,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
 
         if(index$rdim > 0L){
           cols <- seq(headerRange$ul[2], headerRange$ul[2] + index$rdim + length(colsToIgnore) + 1L)
-          headerRange$ul[2] <- cols[!cols %in% colsToIgnore][index$rdim]
+          headerRange$ul[2] <- cols[!cols %in% colsToIgnore][1]
         }
       }
       return(list(range = range, rowsToIgnore = rowsToIgnore,
