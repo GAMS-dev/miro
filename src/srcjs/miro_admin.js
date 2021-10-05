@@ -647,6 +647,14 @@ function setColorTheme(darkMode = false) {
 }
 
 $(document).ready(() => {
+  $(document).on('click', '#aceFullscreenButton', function () {
+    const aceContainer = $(this).parent().next().data('aceEditor').container;
+    if (aceContainer.requestFullscreen) {
+      aceContainer.requestFullscreen();
+    } else if (aceContainer.webkitRequestFullscreen) {
+      aceContainer.webkitRequestFullscreen();
+    }
+  });
   if (typeof window.matchMedia('(prefers-color-scheme: dark)').addEventListener !== 'undefined') {
     // browser supports listening to matchMedia change
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
