@@ -639,7 +639,12 @@
      "miroPivot":{
       "btDownloadCsv": "Download CSV",
       "btDownloadPng": "Download PNG",
+      "btDownloadCsvShort": "CSV",
+      "btDownloadPngShort": "PNG",
       "btHidePivotControls": "Hide pivot controls (presentation mode)",
+      "btHidePivotControlsShort": "Presentation mode",
+      "btShowPivotControls": "Show pivot controls",
+      "btShowPivotControlsShort": "Controls",
       "btLoadView": "Load view",
       "btNewView": "Add view",
       "btEnableEdit": "Enable editing",

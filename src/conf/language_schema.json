@@ -2487,7 +2487,27 @@
               "type": "string",
               "minLength": 1
             },
+            "btDownloadCsvShort": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btDownloadPngShort": {
+              "type": "string",
+              "minLength": 1
+            },
             "btHidePivotControls": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btHidePivotControlsShort": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btShowPivotControls": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btShowPivotControlsShort": {
               "type": "string",
               "minLength": 1
             },
@@ -2744,7 +2764,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 40
+          "minProperties": 45
         },
         "datatable": {
           "type": "object",

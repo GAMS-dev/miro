@@ -1659,6 +1659,57 @@ html {
   color: #F39619;
   background-color: unset;
 }
+.pivot-btn-custom {
+  margin-bottom: 5px;
+  width:38.25px;
+}
+.miro-pivot-btn-text {
+  display: none;
+}
+@media (max-width: 991px) {
+  .custom-order {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .pivot-btn-custom:first-child{
+    order: 1;
+  }
+  .pivot-btn-custom:nth-child(2){
+    order: 3;
+  }
+  .pivot-btn-custom:nth-child(3){
+    order: 4;
+  }
+  .pivot-btn-custom:nth-child(4){
+    order: 2;
+  }
+  .presentation-hide .pivot-btn-custom {
+    width: 49.25%;
+    float: left;
+    transition-duration: 0s;
+  }
+  .presentation-hide .pivot-btn-custom:nth-child(-n+2){
+    margin-right: 1.5%;
+  }
+  .presentation-show .pivot-btn-custom {
+    width: 32.66667%;
+    float: left;
+    transition-duration: 0s;
+  }
+  .pivot-btn-custom.pivot-btn-width {
+    width: 49.5%;
+    transition-duration: 0s;
+  }
+  .presentation-show .pivot-btn-custom:nth-child(-n+2){
+    margin-right: 1%;
+  }
+  .miro-pivot-btn-text {
+    display: inline-block;
+  }
+  .pivot-btn-custom .fa {
+    display: inline-block;
+  }
+}
 .drop-index-header {
     font-size: 14px;
     font-weight: 700;
@@ -1845,6 +1896,7 @@ html {
 @media (max-width: 991px) {
   .presentation-on > .row-agg-filter > .col-md-10.presentation-show {
     padding-left: 0;
+    padding-right: 0;
     padding-top: 5px;
   }
   .pivot-chart-height {

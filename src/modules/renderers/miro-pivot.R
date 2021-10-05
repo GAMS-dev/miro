@@ -167,38 +167,59 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         if (!isFALSE(options$enablePersistentViews)) {
           tagList(
             tags$div(
-              class = "presentation-hide", style = if (isTRUE(options$hidePivotControls)) "display:none;",
+              class = "presentation-hide custom-order", style = if (isTRUE(options$hidePivotControls)) "display:none;",
               actionButton(ns("saveView"),
-                label = NULL, icon = icon("plus-square"),
+                label = tags$div(
+                  icon("plus-square"),
+                  tags$div(
+                    class = "miro-pivot-btn-text",
+                    lang$renderers$miroPivot$btNewView
+                  )
+                ),
                 title = lang$renderers$miroPivot$btNewView,
-                class = "btn-custom",
-                style = "margin-bottom: 5px;width:38.25px;"
+                class = "btn-custom pivot-btn-custom"
               ),
               tags$a(
                 id = ns("downloadCsv"),
-                class = "btn btn-default shiny-download-link btn-custom",
-                style = "margin-bottom: 5px;width:38.25px;",
+                class = "btn btn-default shiny-download-link btn-custom pivot-btn-custom",
                 href = "",
                 target = "_blank",
                 download = NA,
                 title = lang$renderers$miroPivot$btDownloadCsv,
-                tags$i(class = "fa fa-file-csv")
+                tags$div(
+                  tags$i(class = "fa fa-file-csv"),
+                  tags$div(
+                    class = "miro-pivot-btn-text",
+                    lang$renderers$miroPivot$btDownloadCsv
+                  )
+                )
               ),
               tags$a(
                 id = ns("downloadPng"),
-                class = "btn btn-default bt-export-canvas btn-custom",
-                style = "margin-bottom: 5px;width:38.25px;",
+                class = "btn btn-default bt-export-canvas btn-custom pivot-btn-custom",
                 download = "chart.png",
                 href = "#",
                 `data-canvasid` = ns("pivotChart"),
-                tags$i(class = "fa fa-file-image"),
+                tags$div(
+                  tags$i(class = "fa fa-file-image"),
+                  tags$div(
+                    class = "miro-pivot-btn-text",
+                    lang$renderers$miroPivot$btDownloadPng
+                  )
+                ),
                 title = lang$renderers$miroPivot$btDownloadPng,
                 style = "display:none;"
               ),
               tags$div(
-                id = ns("hidePivotControls"), class = "btn btn-default btn-custom activate-pivot-controls",
-                style = "margin-bottom: 5px;width:38.25px;",
-                icon("table"), title = lang$renderers$miroPivot$btHidePivotControls, `data-id` = ns("")
+                id = ns("hidePivotControls"), class = "btn btn-default btn-custom pivot-btn-custom activate-pivot-controls",
+                tags$div(
+                  icon("table"),
+                  tags$div(
+                    class = "miro-pivot-btn-text",
+                    lang$renderers$miroPivot$btHidePivotControlsShort
+                  )
+                ),
+                title = lang$renderers$miroPivot$btHidePivotControls, `data-id` = ns("")
               )
             ),
             tags$div(
@@ -226,28 +247,47 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
             class = "presentation-hide",
             tags$a(
               id = ns("downloadCsv"),
-              class = "btn btn-default shiny-download-link btn-custom",
+              class = "btn btn-default shiny-download-link btn-custom pivot-btn-custom",
               style = if (isTRUE(options$hidePivotControls)) "display:none;",
               href = "",
               target = "_blank",
               download = NA,
               title = lang$renderers$miroPivot$btDownloadCsv,
-              tags$i(class = "fa fa-file-csv")
+              tags$div(
+                tags$i(class = "fa fa-file-csv"),
+                tags$div(
+                  class = "miro-pivot-btn-text",
+                  lang$renderers$miroPivot$btDownloadCsv
+                )
+              )
             ),
             tags$a(
               id = ns("downloadPng"),
-              class = "btn btn-default bt-export-canvas btn-custom",
+              class = "btn btn-default bt-export-canvas btn-custom pivot-btn-custom",
               download = "chart.png",
               href = "#",
               `data-canvasid` = ns("pivotChart"),
-              tags$i(class = "fa fa-file-image"),
+              tags$div(
+                tags$i(class = "fa fa-file-image"),
+                tags$div(
+                  class = "miro-pivot-btn-text",
+                  lang$renderers$miroPivot$btDownloadPng
+                )
+              ),
               title = lang$renderers$miroPivot$btDownloadPng,
               style = "display:none;"
             ),
             tags$div(
-              id = ns("hidePivotControls"), class = "btn btn-default btn-custom activate-pivot-controls",
+              id = ns("hidePivotControls"), class = "btn btn-default btn-custom pivot-btn-custom activate-pivot-controls",
               style = if (isTRUE(options$hidePivotControls)) "display:none;",
-              icon("table"), title = "Hide pivot Controls", `data-id` = ns("")
+              tags$div(
+                icon("table"),
+                tags$div(
+                  class = "miro-pivot-btn-text",
+                  lang$renderers$miroPivot$btHidePivotControlsShort
+                )
+              ),
+              title = lang$renderers$miroPivot$btHidePivotControls, `data-id` = ns("")
             )
           )
         }
@@ -257,23 +297,42 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         style = if (!isTRUE(options$hidePivotControls)) "display:none;",
         tags$a(
           `data-proxy-id` = ns("downloadCsv"),
-          class = "btn btn-default shiny-download-link btn-custom btn-proxy",
-          href = "#", tags$i(class = "fa fa-file-csv"),
+          class = "btn btn-default shiny-download-link btn-custom btn-proxy pivot-btn-custom",
+          href = "#", tags$div(
+            tags$i(class = "fa fa-file-csv"),
+            tags$div(
+              class = "miro-pivot-btn-text",
+              lang$renderers$miroPivot$btDownloadCsvShort
+            )
+          ),
           title = lang$renderers$miroPivot$btDownloadCsv
         ),
         tags$a(
-          class = "btn btn-default bt-export-canvas btn-custom",
+          class = "btn btn-default bt-export-canvas btn-custom pivot-btn-custom",
           style = "display:none;",
           download = "chart.png",
           href = "#",
           `data-canvasid` = ns("pivotChart"),
-          tags$i(class = "fa fa-file-image"),
+          tags$div(
+            tags$i(class = "fa fa-file-image"),
+            tags$div(
+              class = "miro-pivot-btn-text",
+              lang$renderers$miroPivot$btDownloadPngShort
+            )
+          ),
           title = lang$renderers$miroPivot$btDownloadPng
         ),
         tags$div(
           id = ns("showPivotControls"),
-          class = "btn btn-default btn-custom deactivate-pivot-controls presentation-show",
-          icon("table"), title = "Show pivot Controls", `data-id` = ns("")
+          class = "btn btn-default btn-custom pivot-btn-custom deactivate-pivot-controls presentation-show",
+          tags$div(
+            icon("table"),
+            tags$div(
+              class = "miro-pivot-btn-text",
+              lang$renderers$miroPivot$btShowPivotControlsShort
+            )
+          ),
+          title = lang$renderers$miroPivot$btShowPivotControls, `data-id` = ns("")
         )
       ),
       tags$div(
@@ -1838,10 +1897,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           brks <- quantile(dataTmp[-seq_len(noRowHeaders)],
             probs = seq(.05, .95, .05), na.rm = TRUE
           )
-          clrs <- round(seq(255, 40, length.out = length(brks) + 1), 0) %>%
-            {
-              paste0("rgb(255,", ., ",", ., ")")
-            }
+          clrs <- round(seq(255, 40, length.out = length(brks) + 1), 0) %>% {
+            paste0("rgb(255,", ., ",", ., ")")
+          }
         }
         if (length(dataTmp) > 300) {
           showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "300"))

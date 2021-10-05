@@ -680,7 +680,12 @@
     "miroPivot":{
       "btDownloadCsv": "下载CSV",
       "btDownloadPng": "下载PNG",
+      "btDownloadCsvShort": "CSV",
+      "btDownloadPngShort": "PNG",
       "btHidePivotControls": "隐藏枢纽控制（演示模式）。",
+      "btHidePivotControlsShort": "演示模式",
+      "btShowPivotControls": "显示枢纽控制（演示模式）。",
+      "btShowPivotControlsShort": "显示枢纽控制",
       "btLoadView": "加载视图",
       "btNewView": "添加视图",
       "btEnableEdit": "激活编辑",

@@ -680,7 +680,11 @@
     "miroPivot":{
       "btDownloadCsv": "CSV herunterladen",
       "btDownloadPng": "PNG herunterladen",
-      "btHidePivotControls": "Pivot-Steuerelemente ausblenden (Präsentationsmodus)",
+      "btDownloadCsvShort": "CSV",
+      "btDownloadPngShort": "PNG",
+      "btHidePivotControls": "Pivot-Steuerelemente ausblenden",
+      "btHidePivotControlsShort": "Präsentationsmodus",
+      "btShowPivotControls": "Steuerelemente",
       "btLoadView": "View laden",
       "btNewView": "View hinzufügen",
       "btEnableEdit": "Bearbeitung aktivieren",
