@@ -1223,6 +1223,7 @@ Worker <- R6Class("Worker", public = list(
       on.exit(unlink(resultsPath))
     }
     timeout <- FALSE
+    errMsg <- NULL
     tryCatch(
       ret <- GET(url = paste0(private$metadata$url, "/jobs/", jID, "/result"),
                  write_disk(resultsPath),
@@ -1230,10 +1231,15 @@ Worker <- R6Class("Worker", public = list(
                              Timestamp = as.character(Sys.time(), usetz = TRUE)),
                  timeout(36000)),
       error = function(e){
-        timeout <<- TRUE
+        errMsg <<- conditionMessage(e)
+        if (startsWith(errMsg, "Timeout was")) {
+          timeout <<- TRUE
+        }
       })
     if(timeout){
       return(-100L)
+    } else if(!is.null(errMsg)) {
+      return(errMsg)
     }
     private$removeJobResults(jID, isHcJob = FALSE)
 
