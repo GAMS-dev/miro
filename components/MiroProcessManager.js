@@ -166,7 +166,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
         : path.join(this.appDataPath, appData.id, `${appData.id}.gms`),
     });
     if (process.platform === 'linux') {
-      procEnv['R_BROWSER'] = 'xdg-open';
+      procEnv.R_BROWSER = 'xdg-open';
     }
     if (appData.customEnv) {
       Object.keys(appData.customEnv).forEach((envName) => {
