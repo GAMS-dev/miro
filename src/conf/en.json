@@ -1099,7 +1099,8 @@
     "saveAttachments": {
       "title": "Problems saving attachments",
       "noFileAccess": "The attachments: '%s' could not be saved because the files are not accessible.",
-      "fileSizeExceeded": "The attachments: '%s' could not be saved because they exceed the maximum allowed size."
+      "fileSizeExceeded": "The attachments: '%s' could not be saved because they exceed the maximum allowed size.",
+      "maxNoExceeded": "The maximum number of attachments (%s) has been exceeded."
     }
   },
   "adminMode":{

@@ -1099,7 +1099,8 @@
     "saveAttachments": {
       "title": "Probleme beim Speichern von Anhängen",
       "noFileAccess": "Die Anhänge: '%s' konnten nicht gespeichert werden, da die Dateien nicht zugänglich sind.",
-      "fileSizeExceeded": "Die Anhänge: '%s' konnten nicht gespeichert werden, da sie die maximal zulässige Größe überschreiten."
+      "fileSizeExceeded": "Die Anhänge: '%s' konnten nicht gespeichert werden, da sie die maximal zulässige Größe überschreiten.",
+      "maxNoExceeded": "Die maximale Anzahl von Anhängen (%s) wurde überschritten."
     }
   },
   "adminMode":{

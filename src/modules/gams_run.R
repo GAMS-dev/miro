@@ -75,6 +75,10 @@ storeGAMSOutputFiles <- function(workDir){
       }
       attachments$add(session = NULL, filesToStore[!filesTooLarge], overwrite = TRUE,
                       execPerm = fileAccessPerm[!filesTooLarge])
+    }, error_max_no = function(e){
+      flog.info("Maximum number of attachments (%s) has been exceeded.", attachMaxNo)
+      errMsg <<- sprintf(lang$errMsg$saveAttachments$maxNoExceeded,
+                         attachMaxNo)
     }, error = function(e){
       switch(conditionMessage(e),
              fileAccessException = {
