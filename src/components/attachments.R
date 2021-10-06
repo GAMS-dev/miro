@@ -182,13 +182,16 @@ Attachments <- R6Class("Attachments",
                                stop_custom("error_duplicate_files",
                                            "Some of the files already exist and overwrite is set to FALSE", call. = FALSE)
                              existingFileNames <- existingFileNames[!existingFileNames %in% fileNames]
-                             private$.remove(fileNames[fnToOverwrite],
-                                             removeLocal = FALSE)
                            }
 
                            if(length(existingFileNames) + length(filePaths) > private$config[["maxNo"]]){
                              stop_custom("error_max_no",
                                          "The maximum number of attachment was exceeded", call. = FALSE)
+                           }
+
+                           if(any(fnToOverwrite)){
+                             private$.remove(fileNames[fnToOverwrite],
+                                             removeLocal = FALSE)
                            }
 
                            filesNeedRelocation <- dirname(filePaths) != private$workDir | basename(filePaths) != fileNames
