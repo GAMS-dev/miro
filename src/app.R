@@ -881,7 +881,8 @@ if(is.null(errMsg)){
                            username = credConfigTmp$username,
                            password = credConfigTmp$password,
                            namespace = credConfigTmp$namespace,
-                           useRegistered = credConfigTmp$reg)
+                           useRegistered = credConfigTmp$reg,
+                           refreshToken = TRUE)
       }
     }, error = function(e){
       errMsgTmp <- "Problems reading JSON file: '%s'. Please make sure you have sufficient access permissions."
