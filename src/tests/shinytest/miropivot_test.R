@@ -65,7 +65,7 @@ expect_true(app$waitFor("$('#tab_1_1-miroPivot-aggregationIndexList').is(':visib
 expect_true(app$waitFor("$('#tab_1_1-miroPivot-container .row.col-filter').is(':visible');", 50))
 # table row
 expect_true(app$waitFor("$('#tab_1_1-miroPivot-rowIndexList').is(':visible');", 50))
-expect_true(app$waitFor("$('#tab_1_1-miroPivot-container .row.table-chart').children('.col-sm-10').is(':visible');", 50))
+expect_true(app$waitFor("$('#tab_1_1-miroPivot-container .row.table-chart').children('.col-md-10').is(':visible');", 50))
 # data-section row
 expect_true(app$waitFor("$('#tab_1_1-miroPivot-container .row.data-section').is(':hidden');", 50))
 
