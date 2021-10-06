@@ -430,6 +430,8 @@ sep = "\n")
       errMsg <- paste(errMsg, paste0("No model assembly file ('", modelName, "_files.txt') found."),
                       sep = "\n")
       attr(errMsg, "noMA") <- TRUE
+    }else if(config$activateModules$remoteExecution){
+      flog.warn("No model assembly file ('%s_files.txt') found.", modelName)
     }
     if(miroDeploy){
       if(file.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))){
