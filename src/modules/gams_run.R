@@ -364,6 +364,7 @@ if (config$activateModules$lstFile) {
     content = function(file) {
       logPathTmp <- file.path(workDir, paste0(modelNameRaw, ".lst"))
       if (!file.exists(logPathTmp)[1]) {
+        showNotification(lang$nav$notificationFileNotFound$lst, type = "error")
         return(write_file("", file))
       }
       tryCatch(file.copy(logPathTmp, file),
@@ -406,6 +407,7 @@ if (config$activateModules$miroLogFile) {
     content = function(file) {
       logPathTmp <- file.path(workDir, config$miroLogFile)
       if (!file.exists(logPathTmp)[1]) {
+        showNotification(lang$nav$notificationFileNotFound$mirolog, type = "error")
         return(write_file("", file))
       }
       tryCatch(file.copy(logPathTmp, file),
@@ -458,6 +460,7 @@ if (config$activateModules$logFile ||
       content = function(file) {
         logPathTmp <- file.path(workDir, paste0(modelNameRaw, ".log"))
         if (!file.exists(logPathTmp)[1]) {
+          showNotification(lang$nav$notificationFileNotFound$log, type = "error")
           return(write_file("", file))
         }
         tryCatch(file.copy(logPathTmp, file),

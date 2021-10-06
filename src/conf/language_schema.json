@@ -658,6 +658,25 @@
           },
           "minProperties": 2
         },
+        "notificationFileNotFound": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "lst": {
+              "type": "string",
+              "minLength": 1
+            },
+            "log": {
+              "type": "string",
+              "minLength": 1
+            },
+            "mirolog": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 3
+        },
         "dialogExportScen": {
           "type": "object",
           "additionalProperties": false,
@@ -2457,7 +2476,7 @@
           }
         }
       },
-      "minProperties": 47
+      "minProperties": 48
     },
     "renderers": {
       "description": "language specific objects of renderers",

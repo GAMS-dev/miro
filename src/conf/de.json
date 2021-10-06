@@ -168,6 +168,11 @@
       "new":"%s Datensätze importiert.",
       "noNew":"Keine neuen Datensätze importiert."
     },
+    "notificationFileNotFound":{
+      "lst": "Die GAMS-Listendatei konnte nicht gefunden werden.",
+      "log": "Die GAMS-Logdatei konnte nicht gefunden werden.",
+      "mirolog": "Die Logdatei konnte nicht gefunden werden."
+    },
     "dialogExportScen":{
       "title": "Szenario exportieren",
       "desc": "Wählen Sie einen Dateityp aus",

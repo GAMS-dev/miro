@@ -168,6 +168,11 @@
       "new":"%s datasets imported.",
       "noNew":"No dataset was imported."
     },
+    "notificationFileNotFound":{
+      "lst": "The GAMS listing file could not be found.",
+      "log": "The GAMS log file could not be found.",
+      "mirolog": "The log file could not be found."
+    },
     "dialogExportScen":{
       "title": "Export scenario",
       "desc": "Select a file type",

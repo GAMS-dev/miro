@@ -168,6 +168,11 @@
       "new":"已导入%s个数据集。",
       "noNew":"未导入任何数据集。"
     },
+    "notificationFileNotFound":{
+      "lst": "找不到 GAMS 列表文件。",
+      "log": "找不到 GAMS 日志文件。",
+      "mirolog": "找不到日志文件。"
+    },
     "dialogExportScen":{
       "title":"导出场景",
       "desc":"选择文件类型",
