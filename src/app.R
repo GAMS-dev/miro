@@ -1730,7 +1730,7 @@ if (!is.null(errMsg)) {
           ),
           MIROGdxInName = MIROGdxInName,
           clArgs = GAMSClArgs,
-          text_entities = c(
+          textEntries = c(
             if (config$activateModules$logFile) paste0(modelNameRaw, ".log"),
             if (config$activateModules$lstFile) paste0(modelNameRaw, ".lst"),
             if (config$activateModules$miroLogFile) config$miroLogFile

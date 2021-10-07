@@ -72,7 +72,7 @@ observeEvent(
     }
     logContent <- tryCatch(
       {
-        worker$readTextEntity(fileToFetch,
+        worker$readTextEntry(fileToFetch,
           pID,
           getSize = TRUE
         )
@@ -112,9 +112,9 @@ observeEvent(
   }
 )
 
-observeEvent(input$loadTextEntityChunk, {
-  fileType <- input$loadTextEntityChunk$type
-  flog.debug("New textentity chunk requested.")
+observeEvent(input$loadTextEntryChunk, {
+  fileType <- input$loadTextEntryChunk$type
+  flog.debug("New text entry chunk requested.")
   if (identical(fileType, "log")) {
     fileToFetch <- paste0(modelNameRaw, ".log")
     containerID <- "#asyncLogContainer"
@@ -134,9 +134,9 @@ observeEvent(input$loadTextEntityChunk, {
   }
   logContent <- tryCatch(
     {
-      worker$readTextEntity(fileToFetch,
-        worker$getPid(input$loadTextEntityChunk$jID),
-        chunkNo = input$loadTextEntityChunk$chunkCount
+      worker$readTextEntry(fileToFetch,
+        worker$getPid(input$loadTextEntryChunk$jID),
+        chunkNo = input$loadTextEntryChunk$chunkCount
       )
     },
     error = function(e) {

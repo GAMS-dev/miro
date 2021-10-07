@@ -691,9 +691,9 @@ Worker <- R6Class("Worker", public = list(
 
     return(max(5L, round(bytesDownloaded / private$resultFileSize[[jIDChar]] * 100)))
   },
-  readTextEntity = function(name, jID, chunkNo = 0L, getSize = FALSE) {
+  readTextEntry = function(name, jID, chunkNo = 0L, getSize = FALSE) {
     req(private$remote)
-    return(private$readRemoteTextEntity(name, jID,
+    return(private$readRemoteTextEntry(name, jID,
       saveDisk = FALSE,
       maxSize = private$metadata$maxSizeToRead,
       chunkNo = chunkNo, getSize = getSize
@@ -951,7 +951,7 @@ Worker <- R6Class("Worker", public = list(
             dataFilesToFetch <- c(dataFilesToFetch, traceFileName)
           }
         }
-        textEntities <- ""
+        textEntries <- ""
         if (is.R6(hcubeData)) {
           gamsArgs <- c(gamsArgs, paste0(
             'IDCGDXInput="',
@@ -962,19 +962,19 @@ Worker <- R6Class("Worker", public = list(
           )
           filesToInclude <- c(
             dataFilesToFetch,
-            metadata$text_entities,
+            metadata$textEntries,
             requestBody$stdout_filename
           )
           filesToInclude <- filesToInclude[!filesToInclude %in% metadata$MIROGdxInName]
         } else {
           gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="', metadata$MIROGdxInName, '"'))
-          if (length(metadata$text_entities)) {
-            escapedTextEntities <- vapply(metadata$text_entities,
+          if (length(metadata$textEntries)) {
+            escapedTextEntries <- vapply(metadata$textEntries,
               URLencode, character(1L),
               reserved = TRUE,
               USE.NAMES = FALSE
             )
-            textEntities <- paste0("?text_entries=", paste(escapedTextEntities,
+            textEntries <- paste0("?text_entries=", paste(escapedTextEntries,
               collapse = "&text_entries="
             ))
           }
@@ -984,7 +984,7 @@ Worker <- R6Class("Worker", public = list(
           requestBody$stdout_filename <- paste0(metadata$modelNameRaw, ".log")
           filesToInclude <- c(
             dataFilesToFetch,
-            metadata$text_entities,
+            metadata$textEntries,
             requestBody$stdout_filename,
             "_miro_ws_/*"
           )
@@ -1010,7 +1010,7 @@ Worker <- R6Class("Worker", public = list(
             type = "application/zip"
           )
         }
-        ret <- POST(paste0(metadata$url, if (is.R6(hcubeData)) "/hypercube/" else "/jobs/", textEntities),
+        ret <- POST(paste0(metadata$url, if (is.R6(hcubeData)) "/hypercube/" else "/jobs/", textEntries),
           encode = "multipart",
           body = requestBody,
           add_headers(
@@ -1050,8 +1050,8 @@ Worker <- R6Class("Worker", public = list(
     )
     return(self)
   },
-  readRemoteTextEntity = function(text_entity, jID = NULL, saveDisk = TRUE, maxSize = NULL,
-                                  workDir = private$workDir, chunkNo = 0L, getSize = FALSE) {
+  readRemoteTextEntry = function(textEntry, jID = NULL, saveDisk = TRUE, maxSize = NULL,
+                                 workDir = private$workDir, chunkNo = 0L, getSize = FALSE) {
     if (is.null(jID)) {
       jID <- private$process
     }
@@ -1059,7 +1059,7 @@ Worker <- R6Class("Worker", public = list(
       ret <- HEAD(
         paste0(
           private$metadata$url, "/jobs/", jID, "/text-entry/",
-          URLencode(text_entity, reserved = TRUE)
+          URLencode(textEntry, reserved = TRUE)
         ),
         add_headers(
           Authorization = private$authHeader,
@@ -1090,7 +1090,7 @@ Worker <- R6Class("Worker", public = list(
     ret <- GET(
       paste0(
         private$metadata$url, "/jobs/", jID, "/text-entry/",
-        URLencode(text_entity, reserved = TRUE),
+        URLencode(textEntry, reserved = TRUE),
         if (!is.null(teLength)) {
           paste0(
             "?start_position=", startPos,
@@ -1107,13 +1107,13 @@ Worker <- R6Class("Worker", public = list(
 
     if (identical(status_code(ret), 200L)) {
       if (saveDisk) {
-        entityContent <- content(ret, encoding = "utf-8")$entry_value
-        if (!length(entityContent)) {
-          entityContent <- ""
+        entryContent <- content(ret, encoding = "utf-8")$entry_value
+        if (!length(entryContent)) {
+          entryContent <- ""
         }
         writeLines(
-          entityContent,
-          file.path(workDir, text_entity)
+          entryContent,
+          file.path(workDir, textEntry)
         )
         return(200L)
       }
@@ -1156,7 +1156,7 @@ Worker <- R6Class("Worker", public = list(
     }
     return(private$updateLog)
   },
-  readStreamEntity = function(jID, name) {
+  readStreamEntry = function(jID, name) {
     tryCatch(
       {
         return(private$validateAPIResponse(DELETE(
@@ -1323,7 +1323,7 @@ Worker <- R6Class("Worker", public = list(
         if (private$streamEntryQueueFinished) {
           return(private$status)
         }
-        responseContent <- private$readStreamEntity(
+        responseContent <- private$readStreamEntry(
           private$process,
           private$metadata$miroLogFile
         )

@@ -477,7 +477,7 @@ font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
            < $(data.id).outerHeight() + 200
           && isLoading === false) {
         isLoading = true;
-        Shiny.setInputValue('loadTextEntityChunk',
+        Shiny.setInputValue('loadTextEntryChunk',
           {
             jID: data.jID,
             chunkCount: counter,

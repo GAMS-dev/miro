@@ -12,7 +12,7 @@ worker <- Worker$new(
       paste0("execMode=", gamsExecMode),
       paste0('IDCGDXOutput="', MIROGdxOutName, '"')
     ),
-    text_entities = c("pickstock.lst"),
+    textEntries = c("pickstock.lst"),
     gamsExecMode = gamsExecMode,
     extraClArgs = "MIP=CBC",
     saveTraceFile = TRUE,
