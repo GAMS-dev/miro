@@ -727,21 +727,6 @@ Worker <- R6Class("Worker", public = list(
     if (inherits(private$process, "process")) {
       return(private$pingLocalLog())
     }
-    if (private$metadata$hiddenLogFile &&
-      !private$streamEntryQueueFinished &&
-      !(identical(private$status, "s") || identical(private$status, "q"))) {
-      streamValTmp <- private$readStreamEntity(
-        private$process,
-        private$metadata$miroLogFile
-      )
-      if (identical(streamValTmp$queue_finished, TRUE)) {
-        private$streamEntryQueueFinished <- TRUE
-      }
-      private$log <- streamValTmp$entry_value
-      if (!identical(private$log, "")) {
-        private$updateLog <- private$updateLog + 1L
-      }
-    }
     return(private$updateLog)
   },
   pingProcess = function() {
@@ -1189,7 +1174,7 @@ Worker <- R6Class("Worker", public = list(
       error = function(e) {
         statusCode <- conditionMessage(e)
         if (identical(statusCode, "308")) {
-          private$streamEntryQueueFinished <- TRUE
+          return(list(entry_value = "", queue_finished = TRUE))
         } else if (identical(statusCode, "404")) {
           flog.debug("Stream entry not found.")
         } else {
@@ -1334,14 +1319,25 @@ Worker <- R6Class("Worker", public = list(
       } else {
         private$status <- NULL
       }
-      if (!private$metadata$hiddenLogFile) {
-        private$log <- responseContent$message
-        if (!identical(private$log, "")) {
-          private$updateLog <- private$updateLog + 1L
+      if (private$metadata$hiddenLogFile) {
+        if (private$streamEntryQueueFinished) {
+          return(private$status)
         }
+        responseContent <- private$readStreamEntity(
+          private$process,
+          private$metadata$miroLogFile
+        )
+        private$streamEntryQueueFinished <- responseContent$queue_finished
+        private$log <- responseContent$entry_value
+      } else {
+        private$log <- responseContent$message
+      }
+      if (!identical(private$log, "")) {
+        private$updateLog <- private$updateLog + 1L
       }
       return(private$status)
-    } else if (identical(statusCode, 308L)) {
+    }
+    if (identical(statusCode, 308L)) {
       # job finished, get full log
       ret <- private$getRemoteStatus(private$process)
       gamsRetCode <- content(ret)$gams_return_code
@@ -1351,14 +1347,18 @@ Worker <- R6Class("Worker", public = list(
       } else {
         private$status <- gamsRetCode
       }
-    } else if (identical(statusCode, 403L)) {
+      return(private$status)
+    }
+    if (identical(statusCode, 403L)) {
       private$wait <- bitwShiftL(2L, private$waitCnt)
       if (private$waitCnt < private$metadata$timeout) {
         private$waitCnt <- private$waitCnt + 1L
       } else {
         private$status <- -404L
       }
-    } else if (identical(statusCode, 410L)) {
+      return(private$status)
+    }
+    if (identical(statusCode, 410L)) {
       # job canceled while queued.
       private$status <- -9L
     } else {
