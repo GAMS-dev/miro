@@ -378,6 +378,10 @@ test_that("Reading symbols without data works", {
   expect_identical(xlsio$read("../data/exampleData.xlsx", "i1", indexRange = "emptySymIndex", forceInit = TRUE),
                    tibble(uni = character(),
                           text = character()))
+  expect_identical(xlsio$read("../data/exampleData.xlsx", "i10"),
+                   tibble(uni1 = character(), uni2 = character(), text = character()))
+  expect_identical(xlsio$read("../data/exampleData.xlsx", "modedistance"),
+                   tibble(uni1 = character(), uni2 = character(), uni3 = character(), value = numeric()))
   expect_identical(xlsio$read("../data/exampleData.xlsx", "i1a"),
                    tibble(uni = character(),
                           text = character()))
