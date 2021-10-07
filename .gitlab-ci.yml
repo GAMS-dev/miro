@@ -27,9 +27,7 @@ test_job:
   services:
     - name: postgres:12.1-alpine
   variables:
-    MIRO_STOP_TESTS_ON_FAILURE:
-      value: "false"
-      description: "Stop tests after first failure"
+    MIRO_STOP_TESTS_ON_FAILURE: "false"
     MIRO_DB_TYPE: postgres
     MIRO_DB_HOST: postgres
     MIRO_DB_NAME: mirotests
