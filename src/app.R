@@ -444,6 +444,10 @@ sep = "\n")
       if(file.exists(customRendererDir)){
         modelFiles <- c(modelFiles, paste0("renderer_", modelName))
       }
+      if(file.exists(file.path(currentModelDir,
+                               paste0("scripts_", modelName)))){
+        modelFiles <- c(modelFiles, paste0("scripts_", modelName))
+      }
       if(is.null(errMsg) && identical(Sys.getenv("MIRO_TEST_DEPLOY"), "true")){
         modelPath <<- file.path(tmpFileDir, modelName, "test_deploy")
         if(dir.exists(modelPath) &&

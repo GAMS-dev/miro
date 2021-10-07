@@ -84,6 +84,9 @@ expect_deploy_works <- function(useTemp = TRUE, buildArchive = TRUE, miroMode = 
   expect_true(file.exists(miroappPath))
   unzip(miroappPath, exdir = unzipDir)
 
+  miroAppFiles <- c("scripts_pickstock/hcube_analysis.ipynb", "static_pickstock/example.png",
+                    "static_pickstock/model.png")
+  expect_true(all(miroAppFiles %in% zip_list(miroappPath)[[1L]]))
   if(buildArchive){
     expect_true(file.exists(file.path(unzipDir, paste0(modelToTest, ".zip"))))
     unzip(file.path(unzipDir, paste0(modelToTest, ".zip")), exdir = unzipDir)
