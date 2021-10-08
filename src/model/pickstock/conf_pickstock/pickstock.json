@@ -397,7 +397,7 @@
   },
   "readme": {
     "tabTitle": "Readme",
-    "filename": "Readme.md",
+    "filename": "README.md",
     "enableMath": true
   },
   "inputWidgetGroups": [
