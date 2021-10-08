@@ -415,6 +415,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             hideEl(session, paste0("#", ns("enableEdit")))
             showEl(session, paste0("#", ns("btAddRow")))
             showEl(session, paste0("#", ns("btRemoveRows")))
+            isolate({
+              newVal <- updateFilter() + 1L
+              updateFilter(newVal)
+            })
           })
         }
       }
