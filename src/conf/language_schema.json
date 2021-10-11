@@ -3868,9 +3868,13 @@
             "fileSizeExceeded": {
               "type": "string",
               "minLength": 1
+            },
+            "maxNoExceeded": {
+              "type": "string",
+              "minLength": 1
             }
           },
-          "minProperties": 3
+          "minProperties": 4
         }
       },
       "minProperties": 38

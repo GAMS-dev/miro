@@ -217,15 +217,18 @@ Attachments <- R6Class("Attachments",
           )
         }
         existingFileNames <- existingFileNames[!existingFileNames %in% fileNames]
-        private$.remove(fileNames[fnToOverwrite],
-          removeLocal = FALSE
-        )
       }
 
       if (length(existingFileNames) + length(filePaths) > private$config[["maxNo"]]) {
         stop_custom("error_max_no",
           "The maximum number of attachment was exceeded",
           call. = FALSE
+        )
+      }
+
+      if (any(fnToOverwrite)) {
+        private$.remove(fileNames[fnToOverwrite],
+          removeLocal = FALSE
         )
       }
 

@@ -145,9 +145,10 @@ test_that("Adding attachments work", {
     fileNames = "def.json", overwrite = FALSE, execPerm = NULL
   ), class = "error_file_not_found")
   expect_error(attachments$add(
-    session = NULL, file.path(testDir, "data", "bad-views2.json"),
-    fileNames = "def.json", overwrite = FALSE, execPerm = NULL
+    session = NULL, file.path(testDir, "data", c("_scalars.csv", "bad-views2.json")),
+    fileNames = c("_scalars.csv", "def.json"), overwrite = FALSE, execPerm = NULL
   ), class = "error_max_no")
+  expect_true("_scalars.csv" %in% attachments$getMetadata()[[1]])
 })
 
 test_that("Flushing opQueue works", {

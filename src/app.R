@@ -1,7 +1,7 @@
 # version number
 MIROVersion <- "2.1.999"
 APIVersion <- "1"
-MIRORDate <- "Sep 17 2021"
+MIRORDate <- "Oct 11 2021"
 
 # specify CRAN mirror
 CRANMirror <- "https://cloud.r-project.org/"
@@ -469,6 +469,8 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
         sep = "\n"
       )
       attr(errMsg, "noMA") <- TRUE
+    } else if (config$activateModules$remoteExecution) {
+      flog.warn("No model assembly file ('%s_files.txt') found.", modelName)
     }
     if (miroDeploy) {
       if (file.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) {
@@ -482,6 +484,12 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
       }
       if (file.exists(customRendererDir)) {
         modelFiles <- c(modelFiles, paste0("renderer_", modelName))
+      }
+      if (file.exists(file.path(
+        currentModelDir,
+        paste0("scripts_", modelName)
+      ))) {
+        modelFiles <- c(modelFiles, paste0("scripts_", modelName))
       }
       if (is.null(errMsg) && identical(Sys.getenv("MIRO_TEST_DEPLOY"), "true")) {
         modelPath <<- file.path(tmpFileDir, modelName, "test_deploy")
@@ -999,7 +1007,8 @@ if (is.null(errMsg)) {
             username = credConfigTmp$username,
             password = credConfigTmp$password,
             namespace = credConfigTmp$namespace,
-            useRegistered = credConfigTmp$reg
+            useRegistered = credConfigTmp$reg,
+            refreshToken = TRUE
           )
         }
       },

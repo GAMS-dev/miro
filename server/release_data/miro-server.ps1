@@ -58,7 +58,7 @@ function install
         (Get-Content -Path data_raw/application.yml) -replace "authentication: .*", "authentication: webservice" | Set-Content data_raw/application.yml
     }
 
-    "Installing GAMS MIRO server. Please wait..."
+    "Installing GAMS MIRO Server. Please wait..."
 
     pull_images
 
@@ -79,7 +79,7 @@ function install
         mkdir models
     }
 
-    "GAMS MIRO server installed successfully! Use './miro-server.cmd start' to start now."
+    "GAMS MIRO Server installed successfully! Use './miro-server.cmd start' to start now."
 }
 
 function build
@@ -98,10 +98,10 @@ function pull_images
 
 function launch
 {
-    "Starting GAMS MIRO server"
+    "Starting GAMS MIRO Server"
     docker-compose -f docker-compose.yml up -d
     if (!$?) { exit 1 }
-    "GAMS MIRO server started."
+    "GAMS MIRO Server started."
 }
 
 function stop_proxies
@@ -121,25 +121,25 @@ function stop_proxies
 
 function stop
 {
-    "Stopping GAMS MIRO server"
+    "Stopping GAMS MIRO Server"
     stop_proxies
     & docker-compose -f docker-compose.yml down
     if (!$?) { exit 1 }
-    "GAMS MIRO server stopped."
+    "GAMS MIRO Server stopped."
 }
 
 function restart
 {
-    "Restarting GAMS MIRO server"
+    "Restarting GAMS MIRO Server"
     docker-compose -f docker-compose.yml restart
     if (!$?) { exit 1 }
-    "GAMS MIRO server restarted."
+    "GAMS MIRO Server restarted."
 }
 
 function uninstall
 {
-    "Uninstalling GAMS MIRO server"
-    $uninstall_confirm = Read-Host -Prompt "Are you sure you want to remove all data of GAMS MIRO server? This cannot be undone! (yes)"
+    "Uninstalling GAMS MIRO Server"
+    $uninstall_confirm = Read-Host -Prompt "Are you sure you want to remove all data of GAMS MIRO Server? This cannot be undone! (yes)"
 
     if ($uninstall_confirm -ne "yes") {
         echo "Uninstalling GAMS MIRO Server was interrupted."
@@ -153,7 +153,7 @@ function uninstall
         'Could not remove "data" and/or "models" directory. Check your permissions'
         exit 1
     }
-    "GAMS MIRO server uninstalled."
+    "GAMS MIRO Server uninstalled."
 }
 
 switch -Exact ($action)

@@ -272,7 +272,7 @@ XlsIO <- R6::R6Class("XlsIO",
 
         if (index$rdim > 0L) {
           cols <- seq(headerRange$ul[2], headerRange$ul[2] + index$rdim + length(colsToIgnore) + 1L)
-          headerRange$ul[2] <- cols[!cols %in% colsToIgnore][index$rdim]
+          headerRange$ul[2] <- cols[!cols %in% colsToIgnore][1]
         }
       }
       return(list(
@@ -292,64 +292,22 @@ XlsIO <- R6::R6Class("XlsIO",
           .name_repair = "unique"
         ))
       } else {
-        if (rangeInfo$range$sheet %in% names(private$cache)) {
-          if (!length(private$cache[[rangeInfo$range$sheet]])) {
-            rangeTmp <- suppressWarnings(cellranger::as.cell_limits(paste0(rangeInfo$range$sheet, "!A1")))
-            rangeTmp$lr <- c(NA, NA)
-            private$cache[[rangeInfo$range$sheet]] <- private$readInternal(private$rpath,
-              range = rangeTmp,
-              col_names = FALSE, na = private$naList,
-              col_types = "text"
-            )
-          }
-          if (is.na(rangeInfo$range$lr[1])) {
-            rowRangeEndTmp <- nrow(private$cache[[rangeInfo$range$sheet]])
-          } else {
-            rowRangeEndTmp <- min(nrow(private$cache[[rangeInfo$range$sheet]]), rangeInfo$range$lr[1])
-          }
-          if (is.na(rangeInfo$range$lr[2])) {
-            colRangeTmp <- seq(rangeInfo$range$ul[2], length(private$cache[[rangeInfo$range$sheet]]))
-          } else {
-            colRangeTmp <- seq(rangeInfo$range$ul[2], min(length(private$cache[[rangeInfo$range$sheet]]), rangeInfo$range$lr[2]))
-          }
-          if (index$dim > 0L && index$cdim > 0L) {
-            colNamesTmp <- as.character(private$cache[[rangeInfo$range$sheet]][rangeInfo$range$ul[1], colRangeTmp])
-            if (rangeInfo$range$ul[1] + 1L > rowRangeEndTmp) {
-              if (rangeInfo$range$ul[1] > rowRangeEndTmp) {
-                data <- private$cache[[rangeInfo$range$sheet]][0L, colRangeTmp]
-              } else {
-                data <- private$cache[[rangeInfo$range$sheet]][rowRangeEndTmp, colRangeTmp]
-              }
-            } else {
-              data <- private$cache[[rangeInfo$range$sheet]][seq(rangeInfo$range$ul[1] + 1L, rowRangeEndTmp), colRangeTmp]
-            }
-            names(data)[!is.na(colNamesTmp)] <- colNamesTmp[!is.na(colNamesTmp)]
-          } else {
-            if (rangeInfo$range$ul[1] + 1L > rowRangeEndTmp) {
-              if (rangeInfo$range$ul[1] > rowRangeEndTmp) {
-                data <- private$cache[[rangeInfo$range$sheet]][0L, colRangeTmp]
-              } else {
-                data <- private$cache[[rangeInfo$range$sheet]][rowRangeEndTmp, colRangeTmp]
-              }
-            } else {
-              data <- private$cache[[rangeInfo$range$sheet]][seq(rangeInfo$range$ul[1], rowRangeEndTmp), colRangeTmp]
-            }
-          }
-          private$sheetRefCount[[rangeInfo$range$sheet]] <- private$sheetRefCount[[rangeInfo$range$sheet]] - 1L
-          if (identical(private$sheetRefCount[[rangeInfo$range$sheet]], 0L)) {
-            private$cache[[rangeInfo$range$sheet]] <- NULL
-          }
-        } else {
-          data <- private$readInternal(private$rpath,
-            range = rangeInfo$range,
-            col_names = index$dim > 0L && index$cdim > 0L,
-            na = private$naList, col_types = "text"
-          )
-        }
+        data <- private$getDataRaw(index, rangeInfo)
         if (isSetType && index$cdim > 0L && (!nrow(data) || rowSums(is.na(data))[[1]] == ncol(data))) {
           # need to manually add (empty) set text
           data[1, ] <- ""
         }
+      }
+      if (length(data) < 1L || nrow(data) < 1L) {
+        data <- rep.int(list(character(0L)), length(private$metadata[[symName]]$headers))
+        if (!isSetType) {
+          data[[length(data)]] <- numeric(0L)
+        }
+        data <- as_tibble(data,
+          .name_repair = "minimal"
+        )
+        names(data) <- names(private$metadata[[symName]]$headers)
+        return(data)
       }
       colsToIgnore <- rangeInfo$colsToIgnore - rangeInfo$range$ul[2] + 1L
 
@@ -1194,6 +1152,71 @@ XlsIO <- R6::R6Class("XlsIO",
           dim = symDim + if (isTable) 1L else 0L
         ))
       })))
+    },
+    getDataRaw = function(index, rangeInfo) {
+      if (!rangeInfo$range$sheet %in% names(private$cache)) {
+        return(private$readInternal(private$rpath,
+          range = rangeInfo$range,
+          col_names = index$dim > 0L && index$cdim > 0L,
+          na = private$naList, col_types = "text"
+        ))
+      }
+      if (is.null(private$cache[[rangeInfo$range$sheet]])) {
+        rangeTmp <- suppressWarnings(cellranger::as.cell_limits(paste0(rangeInfo$range$sheet, "!A1")))
+        rangeTmp$lr <- c(NA, NA)
+        private$cache[[rangeInfo$range$sheet]] <- private$readInternal(private$rpath,
+          range = rangeTmp,
+          col_names = FALSE, na = private$naList,
+          col_types = "text"
+        )
+      }
+      if (!length(private$cache[[rangeInfo$range$sheet]]) || !nrow(private$cache[[rangeInfo$range$sheet]])) {
+        # empty sheet
+        private$decrementSheetRefCount(rangeInfo$range$sheet)
+        return(private$cache[[rangeInfo$range$sheet]])
+      }
+      if (is.na(rangeInfo$range$lr[1])) {
+        rowRangeEndTmp <- nrow(private$cache[[rangeInfo$range$sheet]])
+      } else {
+        rowRangeEndTmp <- min(nrow(private$cache[[rangeInfo$range$sheet]]), rangeInfo$range$lr[1])
+      }
+      if (is.na(rangeInfo$range$lr[2])) {
+        colRangeTmp <- seq(rangeInfo$range$ul[2], length(private$cache[[rangeInfo$range$sheet]]))
+      } else {
+        colRangeTmp <- seq(rangeInfo$range$ul[2], min(length(private$cache[[rangeInfo$range$sheet]]), rangeInfo$range$lr[2]))
+      }
+      if (index$dim > 0L && index$cdim > 0L) {
+        colNamesTmp <- as.character(private$cache[[rangeInfo$range$sheet]][rangeInfo$range$ul[1], colRangeTmp])
+        if (rangeInfo$range$ul[1] + 1L > rowRangeEndTmp) {
+          if (rangeInfo$range$ul[1] > rowRangeEndTmp) {
+            data <- private$cache[[rangeInfo$range$sheet]][0L, colRangeTmp]
+          } else {
+            data <- private$cache[[rangeInfo$range$sheet]][rowRangeEndTmp, colRangeTmp]
+          }
+        } else {
+          data <- private$cache[[rangeInfo$range$sheet]][seq(rangeInfo$range$ul[1] + 1L, rowRangeEndTmp), colRangeTmp]
+        }
+        names(data)[!is.na(colNamesTmp)] <- colNamesTmp[!is.na(colNamesTmp)]
+      } else {
+        if (rangeInfo$range$ul[1] + 1L > rowRangeEndTmp) {
+          if (rangeInfo$range$ul[1] > rowRangeEndTmp) {
+            data <- private$cache[[rangeInfo$range$sheet]][0L, colRangeTmp]
+          } else {
+            data <- private$cache[[rangeInfo$range$sheet]][rowRangeEndTmp, colRangeTmp]
+          }
+        } else {
+          data <- private$cache[[rangeInfo$range$sheet]][seq(rangeInfo$range$ul[1], rowRangeEndTmp), colRangeTmp]
+        }
+      }
+      private$decrementSheetRefCount(rangeInfo$range$sheet)
+      return(data)
+    },
+    decrementSheetRefCount = function(sheetName) {
+      private$sheetRefCount[[sheetName]] <- private$sheetRefCount[[sheetName]] - 1L
+      if (identical(private$sheetRefCount[[sheetName]], 0L)) {
+        private$cache[[sheetName]] <- NULL
+      }
+      return(invisible(self))
     }
   )
 )

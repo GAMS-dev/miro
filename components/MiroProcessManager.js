@@ -164,6 +164,9 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       MIRO_MODEL_PATH: this.inDevelopmentMode ? appData.modelPath
         : path.join(this.appDataPath, appData.id, `${appData.id}.gms`),
     });
+    if (process.platform === 'linux') {
+      procEnv.R_BROWSER = 'xdg-open';
+    }
     if (appData.customEnv) {
       Object.keys(appData.customEnv).forEach((envName) => {
         procEnv[envName] = appData.customEnv[envName];

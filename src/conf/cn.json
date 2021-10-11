@@ -996,7 +996,8 @@
     "saveAttachments": {
       "title": "保存附件的问题",
       "noFileAccess": "附件。'%s'无法保存，因为文件无法访问。",
-      "fileSizeExceeded": "附件。'%s'无法保存，因为它们超过了允许的最大尺寸。"
+      "fileSizeExceeded": "附件。'%s'无法保存，因为它们超过了允许的最大尺寸。",
+      "maxNoExceeded": "已超出最大附件数 (%s)。"
     }
   },
   "adminMode":{

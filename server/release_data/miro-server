@@ -60,7 +60,7 @@ install (){
             ;;
     esac
 
-    printf "Installing GAMS MIRO server. Please wait...\n\n\n"
+    printf "Installing GAMS MIRO Server. Please wait...\n\n\n"
 
     pull_images
 
@@ -92,7 +92,7 @@ install (){
         }
     fi
 
-    printf "GAMS MIRO server installed successfully!\nUse './miro-server start' to start now.\n"
+    printf "GAMS MIRO Server installed successfully!\nUse './miro-server start' to start now.\n"
     return 0
 }
 
@@ -107,9 +107,9 @@ pull_images (){
 }
 
 start (){
-    echo "Starting GAMS MIRO server"
+    echo "Starting GAMS MIRO Server"
     docker-compose -f docker-compose.yml up -d || exit 1
-    echo "GAMS MIRO server started."
+    echo "GAMS MIRO Server started."
 }
 
 stop_proxies (){
@@ -127,22 +127,22 @@ stop_proxies (){
 }
 
 stop (){
-    echo "Stopping GAMS MIRO server"
+    echo "Stopping GAMS MIRO Server"
     stop_proxies
     docker-compose -f docker-compose.yml down || exit 1
-    echo "GAMS MIRO server stopped."
+    echo "GAMS MIRO Server stopped."
 }
 
 restart (){
-    echo "Restarting GAMS MIRO server"
+    echo "Restarting GAMS MIRO Server"
     export COMPOSE_IGNORE_ORPHANS=True
     docker-compose -f docker-compose.yml restart || exit 1
-    echo "GAMS MIRO server restarted."
+    echo "GAMS MIRO Server restarted."
 }
 
 uninstall (){
-    echo "Uninstalling GAMS MIRO server"
-    read -p 'Are you sure you want to remove all data of GAMS MIRO server? This cannot be undone! (yes)' uninstall_confirm
+    echo "Uninstalling GAMS MIRO Server"
+    read -p 'Are you sure you want to remove all data of GAMS MIRO Server? This cannot be undone! (yes)' uninstall_confirm
     [ "${uninstall_confirm}" != "yes" ] && {
         echo "Uninstalling GAMS MIRO Server was interrupted."
         exit 0
@@ -153,7 +153,7 @@ uninstall (){
         echo "Could not remove \"data\" and/or \"models\" directory. Check your permissions"
         exit 1
     }
-    echo "GAMS MIRO server uninstalled."
+    echo "GAMS MIRO Server uninstalled."
 }
 
 case "$1" in

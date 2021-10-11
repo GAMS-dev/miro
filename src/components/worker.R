@@ -25,7 +25,8 @@ Worker <- R6Class("Worker", public = list(
     unlink(private$metadata$rememberMeFileName, force = TRUE)
   },
   setCredentials = function(url, username, password, namespace,
-                            useRegistered, useBearer = TRUE) {
+                            useRegistered, useBearer = TRUE,
+                            refreshToken = FALSE) {
     engineUrl <- trimws(url, which = "right", whitespace = "/")
     if (!endsWith(engineUrl, "/api")) {
       engineUrl <- paste0(engineUrl, "/api")
@@ -37,6 +38,21 @@ Worker <- R6Class("Worker", public = list(
     private$metadata$namespace <- namespace
 
     private$authHeader <- private$buildAuthHeader(useBearer)
+    if (refreshToken) {
+      future(
+        {
+          library(httr)
+          library(jsonlite)
+          try(private$saveLoginCredentials(
+            private$metadata$url,
+            private$metadata$username,
+            private$metadata$namespace,
+            private$metadata$useRegistered
+          ))
+        },
+        globals = list(private = private)
+      )
+    }
     return(invisible(self))
   },
   login = function(url, username, password, namespace,
@@ -1381,6 +1397,7 @@ Worker <- R6Class("Worker", public = list(
       on.exit(unlink(resultsPath))
     }
     timeout <- FALSE
+    errMsg <- NULL
     tryCatch(
       ret <- GET(
         url = paste0(private$metadata$url, "/jobs/", jID, "/result"),
@@ -1392,11 +1409,16 @@ Worker <- R6Class("Worker", public = list(
         timeout(36000)
       ),
       error = function(e) {
-        timeout <<- TRUE
+        errMsg <<- conditionMessage(e)
+        if (startsWith(errMsg, "Timeout was")) {
+          timeout <<- TRUE
+        }
       }
     )
     if (timeout) {
       return(-100L)
+    } else if (!is.null(errMsg)) {
+      return(errMsg)
     }
     private$removeJobResults(jID, isHcJob = FALSE)
 
@@ -1619,13 +1641,14 @@ Worker <- R6Class("Worker", public = list(
   saveLoginCredentials = function(url, username, namespace, useRegistered) {
     # create token that expires in a week
     sessionToken <- private$validateAPIResponse(POST(
-      url = paste0(url, "/auth/login"),
+      url = paste0(url, "/auth/"),
       body = list(
-        expires_in = 604800,
-        username = username,
-        password = private$metadata$password
+        expires_in = 604800
       ),
-      add_headers(Timestamp = as.character(Sys.time(), usetz = TRUE)),
+      add_headers(
+        Authorization = private$authHeader,
+        Timestamp = as.character(Sys.time(), usetz = TRUE)
+      ),
       timeout(2L)
     ))$token
 

@@ -75,6 +75,13 @@ ioConfig <<- list(
         value = list()
       )
     ),
+    modedistanceb = list(
+      symtype = "parameter", colTypes = "ccccd",
+      headers = list(
+        uni1 = list(), uni2 = list(), uni3 = list(), uni4 = list(),
+        value = list()
+      )
+    ),
     modedistancea = list(
       symtype = "parameter", colTypes = "cccd",
       headers = list(
@@ -260,6 +267,16 @@ test_that("Reading parameters works", {
       uni1 = c("ship", "truck"),
       uni2 = c("brussels", "brussels"),
       uni3 = c("cleveland", "cleveland"),
+      value = c(100, 200)
+    )
+  )
+  expect_identical(
+    xlsio$read("../data/exampleData.xlsx", "modedistanceb", indexRange = "index!A1"),
+    tibble(
+      uni1 = c("a", "a"),
+      uni2 = c("ship", "truck"),
+      uni3 = c("brussels", "brussels"),
+      uni4 = c("cleveland", "cleveland"),
       value = c(100, 200)
     )
   )
@@ -547,6 +564,14 @@ test_that("Reading symbols without data works", {
       uni = character(),
       text = character()
     )
+  )
+  expect_identical(
+    xlsio$read("../data/exampleData.xlsx", "i10"),
+    tibble(uni1 = character(), uni2 = character(), text = character())
+  )
+  expect_identical(
+    xlsio$read("../data/exampleData.xlsx", "modedistance"),
+    tibble(uni1 = character(), uni2 = character(), uni3 = character(), value = numeric())
   )
   expect_identical(
     xlsio$read("../data/exampleData.xlsx", "i1a"),
