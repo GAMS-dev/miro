@@ -104,7 +104,7 @@ pipeline {
                         sshagent(['a2576ca5-f8e0-4e28-9d42-b0c5603b213d']) {
                             sh '''#!/bin/bash -xe
                                git status
-                               git add ./main.js ./package.json ./scripts/globals.R ./server/ui/Dockerfile ./server/admin/Dockerfile
+                               git add ./main.js ./package.json ./scripts/globals.R ./server/ui/Dockerfile ./server/admin/Dockerfile ./server/admin/global.R
                                git status
                                git config user.name 'jenkins'
                                git config user.email 'jenkins@berlin.noreply.gams.com'
