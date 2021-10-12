@@ -23,11 +23,13 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
       private$runQuery(paste0("ALTER USER ",
         dbQuoteIdentifier(private$conn, dbAppId),
         " WITH PASSWORD ",
-        dbQuoteString(private$conn, appDbCredentials$password), ";"))
+        dbQuoteString(private$conn, appDbCredentials$password), ";"),
+        mask = appDbCredentials$password)
     }else{
       private$runQuery(paste0("CREATE ROLE ",
         dbQuoteIdentifier(private$conn, dbAppId), " LOGIN PASSWORD ",
-        dbQuoteString(private$conn, appDbCredentials$password), ";"))
+        dbQuoteString(private$conn, appDbCredentials$password), ";"),
+        mask = appDbCredentials$password)
     }
     private$runQuery(paste0("CREATE SCHEMA IF NOT EXISTS AUTHORIZATION ",
       dbQuoteIdentifier(private$conn, dbAppId), ";"))
@@ -48,7 +50,12 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
     dbDisconnect(private$conn)
   }), private = list(
     conn = NULL,
-    runQuery = function(query){
+    runQuery = function(query, mask = NULL){
+        if (is.null(mask)) {
+          queryToLog <- query
+        } else {
+          queryToLog <- gsub(mask, "xxx", query, fixed = TRUE)
+        }
         flog.trace("Running query: '%s'", query)
         return(dbExecute(private$conn, SQL(query)))
     },
