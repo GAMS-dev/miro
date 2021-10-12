@@ -270,4 +270,111 @@ for(dbType in c("sqlite", "postgres")){
   })
 }
 
+# test that moving text column of set to different dimension works
+modelName <- "indus89"
+
+modelPathTmp <- file.path(getwd(), "..", "model", "indus89")
+file.copy(file.path(modelPathTmp, "conf_indus89", "indus89_io.json"),
+          file.path(modelPathTmp, "conf_indus89", "indus89_io_tmp.json"),
+          overwrite = TRUE)
+file.rename(file.path(modelPathTmp, "data_indus89", "default.gdx"),
+            file.path(modelPathTmp, "abc.gdx"))
+file.copy(file.path(getwd(), "..", "data", "indus89.gdx"),
+          file.path(modelPathTmp, "data_indus89", "default.gdx"),
+          overwrite = TRUE)
+
+skipPostgres <- TRUE
+if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
+  skipPostgres <- FALSE
+  createTestDb()
+}
+ioConfigTmp <- jsonlite::read_json(file.path(modelPathTmp, "conf_indus89", "indus89_io.json"),
+                                   simplifyDataFrame = FALSE,
+                                   simplifyMatrix = FALSE)
+ioConfigTmp$inputSymbols$c <- list(alias = "crops", symtype = "set", headers = list(cq = list(
+  type = "string", alias = "crop and livestock products"),
+  text = list(type = "string", alias = "Set text crops")))
+write_json(ioConfigTmp, file.path(modelPathTmp, "conf_indus89", "indus89_io.json"),
+           pretty = TRUE, auto_unbox = TRUE, null = "null")
+ioConfig <<- list(modelOut = list(techc = NULL),
+                  inputDsNames = character(),
+                  hcubeScalars = character())
+
+dbSchema <<- DbSchema$new(list(schema = list(c = list(tabName = "c",
+                                                      colNames = c("cq", "bla", "text"),
+                                                      colTypes = "ccc"),
+                                             techc = list(tabName = "techc",
+                                                          colNames = c("z", "cq", "text", "text2"),
+                                                          colTypes = "cccc")),
+                               views = list()))
+
+for(dbType in c("sqlite", "postgres")){
+  if(dbType == "postgres" && skipPostgres){
+    skip("Skipping Postgres tests as MIRO_DB_TYPE is not set to 'postgres'")
+  }
+  procEnv <- list(R_LIBS_USER = Sys.getenv("LIB_PATH"),
+                  GAMS_SYS_DIR = Sys.getenv("GAMS_SYS_DIR"))
+
+  if(identical(dbType, "sqlite")){
+    dbPath <- file.path(testDir, "indus89.sqlite3")
+    procEnv$MIRO_DB_PATH <- dirname(dbPath)
+
+    unlink(dbPath)
+
+    dbConfig <- list(type = "sqlite",
+                     name = dbPath)
+  }else{
+    procEnv$MIRO_DB_TYPE <- "postgres"
+    procEnv$MIRO_DB_SCHEMA <- "mirotests"
+    procEnv$MIRO_DB_USERNAME <- Sys.getenv("MIRO_DB_USERNAME", "postgres")
+    procEnv$MIRO_DB_PASSWORD <-Sys.getenv("MIRO_DB_PASSWORD", "")
+    procEnv$MIRO_DB_NAME <- Sys.getenv("MIRO_DB_NAME", "postgres")
+    procEnv$MIRO_DB_HOST <- Sys.getenv("MIRO_DB_HOST", "localhost")
+    procEnv$MIRO_DB_PORT <- as.integer(Sys.getenv("MIRO_DB_PORT", "5432"))
+
+    dbConfig <- list(type = "postgres",
+                     username = procEnv$MIRO_DB_USERNAME,
+                     password = procEnv$MIRO_DB_PASSWORD,
+                     name = procEnv$MIRO_DB_NAME,
+                     host = procEnv$MIRO_DB_HOST,
+                     port = procEnv$MIRO_DB_PORT,
+                     schema = "mirotests")
+  }
+  populateDb(procEnv, "indus89", modelPath = modelPathTmp)
+  #db$finalize()
+  db <- Db$new(uid = "user", dbConf = dbConfig,
+               slocktimeLimit = 20, modelName = modelName,
+               hcubeActive = FALSE, ugroups = "users", forceNew = TRUE)
+  conn <- db$getConn()
+  dbSchema$setConn(conn)
+
+  dbMigrator <- DbMigrator$new(db)
+
+  test_that(paste0("Migrating tables works (", dbType, "), indus89"), {
+    migrationConfig <- list(c = list(oldTableName  = "c",
+                                     colNames = c("cq", "text", "-")),
+                            techc = list(oldTableName = "techc",
+                                         colNames = c("z", "cq", "text", "-")))
+    expect_error(dbMigrator$migrateDb(migrationConfig,
+                                      forceRemove = TRUE), NA)
+    expect_identical(dbReadTable(conn, "c")[1:4, -1],
+                     data.frame(cq = c("basmati", "irri", "cotton",
+                                       "rab-fod"),
+                                bla = c("rice crop", "rice crop", "",
+                                        "fodder crop"),
+                                text = NA_character_))
+    expect_identical(dbReadTable(conn, "techc")[1:4, -1],
+                     data.frame(z = c("nwfp", "nwfp", "nwfp",
+                                      "nwfp"),
+                                cq = c("gram", "maize", "mus+rap",
+                                       "sc-mill"),
+                                text = "",
+                                text2 = NA_character_))
+    expect_false(dbExistsTable(conn, "x"))
+  })
+}
+file.rename(file.path(modelPathTmp, "conf_indus89", "indus89_io_tmp.json"),
+            file.path(modelPathTmp, "conf_indus89", "indus89_io.json"))
+file.rename(file.path(modelPathTmp, "abc.gdx"),
+            file.path(modelPathTmp, "data_indus89", "default.gdx"))
 db$finalize()
