@@ -109,8 +109,14 @@ Attachments <- R6Class("Attachments",
         name
       ))
     },
-    save = function(filePaths, fileNames, overwrite = TRUE, fullPath = NULL) {
+    save = function(filePaths, fileNames, overwrite = TRUE) {
       # stores file(s) at given location(s)
+      #
+      # Args:
+      #   filePaths:     character vector where to save files
+      #                  either directory name or directory+filename where to store files
+      #   fileNames:     character vector with names of the files to download (optional)
+      #   overwrite:     Wether to overwrite existing files
       #
       # Returns:
       #   filepaths of downloaded files
