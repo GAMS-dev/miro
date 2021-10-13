@@ -5472,6 +5472,313 @@ updateCallback <- function(){
 views$registerUpdateCallback(session, updateCallback)
                                         </code></pre>
                     </div>
+                    <h5 id="custom-renderer-attachments">Attachments</h5>
+                    <p>
+                      Custom renderers and custom input widgets can access
+                      existing
+                      <a href="./start.html#file-attachments">attachments</a> as
+                      well as add new ones. So, for example, if your model run
+                      depends on the existence of a certain attachment, the user
+                      can be shown a hint in the custom widget whether this
+                      attachment already exists or not. Furthermore, a
+                      corresponding upload field can be displayed, which can be
+                      used to add missing attachments. This is just one of many
+                      possibilities offered by the attachments interface.
+                      Attachments are bound to a MIRO scenario and each
+                      attachment has a unique id.
+                    </p>
+                    <p>
+                      Attachments can be retrieved, downloaded, added and
+                      removed via the <kbd>attachments</kbd> argument of a
+                      custom renderer function. As with the
+                      <kbd>views</kbd> argument, this is a reference to an
+                      instance of the attachments R6 class. The following
+                      section explains how to use the API.
+                    </p>
+                    <h5>Get attachment ids</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+attachments$getIds()
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Value</h6>
+                    <p>
+                      Character vector with the attachment ids that are part of
+                      the sandbox scenario.
+                    </p>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      Retrieves the attachment ids that are currently registered
+                      for the scenario.
+                    </p>
+                    <h6 class="api-header">Example</h6>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+attachments$getIds()
+#> [1] "file1.txt" "file2.gdx" "file3.xls"
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h5>Add Attachment</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+attachmenets$add(session, filePaths, fileNames = NULL, overwrite = FALSE, execPerm = NULL)
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Arguments</h6>
+                    <table class="api-arguments">
+                      <tbody>
+                        <tr>
+                          <th>session</th>
+                          <td>
+                            The <kbd>session</kbd> object passed to the custom
+                            renderer
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>filePaths</th>
+                          <td>
+                            Character vector with file paths to read data from
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>fileNames</th>
+                          <td>Custom name(s) of the file(s) (optional)</td>
+                        </tr>
+                        <tr>
+                          <th>overwrite</th>
+                          <td>
+                            Boolean that specifies whether existing files should
+                            be overwritten
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>execPerm</th>
+                          <td>
+                            Vector with execute permissions (must be NULL or
+                            logical vector with the same length as
+                            <kbd>filePaths</kbd>)
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      Adds/registers new attchment(s). These can be files from
+                      the local file system, files created in the renderer
+                      itself, files accessed from a REST API call or any others.
+                      Attachments can be saved under a new name. If an
+                      attachment with the same name already exists, it can be
+                      overwritten. In addition, it can be specified whether the
+                      attachment may be
+                      <a href="./start.html#file-attachments"
+                        >read by the underlying GAMS model</a
+                      >. In case the current renderer is read-only (not a
+                      sandbox scenario), an error is thrown. You can test
+                      whether the renderer is read-only with the method
+                      <code class="language-r"
+                        >attachments$isReadonly(session)</code
+                      >.
+                    </p>
+                    <h6 class="api-header">Example</h6>
+                    <p>
+                      In the example below, an attachment is added using the
+                      shiny
+                      <a
+                        href="https://shiny.rstudio.com/reference/shiny/latest/fileInput.html"
+                        ,
+                        target="_blank"
+                        >fileInput</a
+                      >
+                      widget that triggers an observer when the user uploads a
+                      local file.
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+observeEvent(input$fileInput, {
+  file <- input$fileInput
+  filePath <- file$datapath
+  attachments$add(session, filePath, "custom_attachment.txt", overwrite = TRUE, execPerm = FALSE)
+})
+
+attachments$getIds()
+#> [1] "custom_attachment.txt"
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h5>Save attachments</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+attachments$save(filePaths, fileNames, overwrite = TRUE)
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Arguments</h6>
+                    <table class="api-arguments">
+                      <tbody>
+                        <tr>
+                          <th>filePaths</th>
+                          <td>
+                            Character vector where to save files. Either
+                            directory name or directory + filename (in the
+                            latter case the length of <kbd>fileNames</kbd> must
+                            be 1).
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>fileNames</th>
+                          <td>
+                            Character vector with names of the files to download
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>overwrite</th>
+                          <td>Whether to overwrite existing files.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      Stores file(s) at given location(s). If the user should be
+                      able to download attachments directly in the custom
+                      renderer, this is possible with the
+                      <kbd>save</kbd> method. Also, it can be used to access the
+                      data of an attachment in the custom renderer and process
+                      it further. For this purpose the attachment can be saved
+                      to disk and read from there.
+                    </p>
+                    <h6 class="api-header">Example</h6>
+                    <p>
+                      In the example below, a
+                      <a
+                        href="https://shiny.rstudio.com/reference/shiny/latest/downloadHandler.html"
+                        >download handler</a
+                      >
+                      is used to write an attachment <i>file.txt</i> to disk. If
+                      the <i>file.txt</i> is not found in the attachments, an
+                      <i>error.txt</i> file is downloaded instead.
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+output$downloadButton <- downloadHandler(
+  filename = function(){
+    if(!"file.txt" %in% attachments$getIds()){
+      return("error.txt")
+    }
+    return("file.txt")
+  },
+  content = function(file){
+    if(!"file.txt" %in% attachments$getIds()){
+      return(writeLines("error", file))
+    }
+    attachments$save(file, "file.txt")
+  }
+)
+                                        </code></pre>
+                    </div>
+                    <h5>Set execution permission</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+attachments$setExecPerm(session, fileNames, execPerm)
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Arguments</h6>
+                    <table class="api-arguments">
+                      <tbody>
+                        <tr>
+                          <th>session</th>
+                          <td>
+                            The <kbd>session</kbd> object passed to the custom
+                            renderer
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>fileNames</th>
+                          <td>Vector of file names</td>
+                        </tr>
+                        <tr>
+                          <th>execPerm</th>
+                          <td>
+                            Logical vector (same length as
+                            <kbd>fileNames</kbd> or length 1) that specifies
+                            whether files can be read/executed by GAMS
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      Sets read/execute permission for particular attachment(s).
+                      Note that all files that you allow your model to read must
+                      first be downloaded to the working directory before GAMS
+                      is run. It is therefore advisable to select as readable
+                      only those files that are actually relevant for the
+                      optimization run.
+                    </p>
+                    <h6 class="api-header">Example</h6>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+attachments$getIds()
+#> [1] "file1.txt" "file2.gdx" "file3.xls"
+
+attachments$setExecPerm(session, "file1.txt", execPerm = TRUE)
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h5>Remove attachment</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+attachments$remove(session, fileNames, removeLocal = TRUE)
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Arguments</h6>
+                    <table class="api-arguments">
+                      <tbody>
+                        <tr>
+                          <th>session</th>
+                          <td>
+                            The <kbd>session</kbd> object passed to the custom
+                            renderer
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>fileNames</th>
+                          <td>File name(s) of attachment(s) to remove</td>
+                        </tr>
+                        <tr>
+                          <th>removeLocal</th>
+                          <td>Whether to remove file(s) from disk</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      Removes attachment(s) with the specified filename(s). If
+                      no attachment with this name exists, an error is thrown.
+                      In case the current renderer is read-only (not a sandbox
+                      scenario), an error is thrown. You can test whether the
+                      renderer is read-only with the method
+                      <code class="language-r"
+                        >attachments$isReadonly(session)</code
+                      >.
+                    </p>
+                    <h6 class="api-header">Example</h6>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+attachments$getIds()
+#> [1] "file1.txt" "file2.gdx" "file3.xls"
+
+attachments$remove("file1.txt", removeLocal = FALSE)
+
+attachments$getIds()
+#> [1] "file2.gdx" "file3.xls"
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
                     <!--//code-block-->
                     <h4 id="migrate-custom-renderers">
                       Migrate renderers from MIRO 1.x
@@ -5633,6 +5940,11 @@ views$registerUpdateCallback(session, updateCallback)
                       >
                       <a class="nav-link scrollto" href="#custom-renderer-views"
                         >Views</a
+                      >
+                      <a
+                        class="nav-link scrollto"
+                        href="#custom-renderer-attachments"
+                        >Attachments</a
                       >
                       <a
                         class="nav-link scrollto"
