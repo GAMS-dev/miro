@@ -1423,7 +1423,18 @@ Worker <- R6Class("Worker", public = list(
     private$removeJobResults(jID, isHcJob = FALSE)
 
     if (identical(status_code(ret), 200L)) {
-      unzip(resultsPath, exdir = workDir)
+      tryCatch(
+        zip::unzip(resultsPath, exdir = workDir),
+        error = function(e) {
+          errMsg <<- sprintf(
+            "Problems extracting results archive. Error message: %s",
+            conditionMessage(e)
+          )
+        }
+      )
+      if (!is.null(errMsg)) {
+        return(errMsg)
+      }
     } else {
       return(content(ret)$message)
     }
