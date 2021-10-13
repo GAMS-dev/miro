@@ -725,7 +725,7 @@
                           class="tab-pane fade show active"
                           id="linux"
                           role="tabpanel"
-                          aria-labelledby="win-tab"
+                          aria-labelledby="linux-tab"
                         >
                           <ol>
                             <li>
@@ -808,10 +808,15 @@
                                     >http://&lt;IP extracted from previous
                                     step&gt;/&lt;engine location&gt;/api</kbd
                                   >
-                                  (<i>engine location</i> is root/empty per
-                                  default). If you specified a port when
-                                  installing GAMS Engine, this port must also be
-                                  specified here:
+                                  . The <i>Engine location</i> is root/empty per
+                                  default. Note that the MIRO Server location is
+                                  also root/empty per default. Thus, you need to
+                                  make sure that there is no conflict between
+                                  the two services (i.e. one of them has a
+                                  different location).
+                                  <br />
+                                  If you specified a port when installing GAMS
+                                  Engine, this port must also be specified here:
                                   <kbd
                                     >http://&lt;IP extracted from previous
                                     step&gt;:&lt;engine port&gt;/&lt;engine
@@ -976,10 +981,15 @@
                                     >http://host.docker.internal/&lt;engine
                                     location&gt;/api</kbd
                                   >
-                                  (<i>engine location</i> is root/empty per
-                                  default). If you specified a port when
-                                  installing GAMS Engine, this port must also be
-                                  specified here:
+                                  . The <i>Engine location</i> is root/empty per
+                                  default. Note that the MIRO Server location is
+                                  also root/empty per default. Thus, you need to
+                                  make sure that there is no conflict between
+                                  the two services (i.e. one of them has a
+                                  different location).
+                                  <br />
+                                  If you specified a port when installing GAMS
+                                  Engine, this port must also be specified here:
                                   <kbd
                                     >http://host.docker.internal:&lt;engine
                                     port&gt;/&lt;engine location&gt;/api</kbd
