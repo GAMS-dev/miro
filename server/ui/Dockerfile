@@ -3,7 +3,7 @@
 FROM ubuntu:focal
 
 LABEL com.gamsmiro.vendor="GAMS Development Corp."\
-com.gamsmiro.version="2.1.2"\
+com.gamsmiro.version="2.1.3"\
 com.gamsmiro.license="GPL-3.0"\
 com.gamsmiro.description="GAMS MIRO Docker image"\
 maintainer="rschuchmann@gams.com"
