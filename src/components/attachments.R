@@ -115,8 +115,8 @@ Attachments <- R6Class("Attachments",
       # Args:
       #   filePaths:     character vector where to save files
       #                  either directory name or directory+filename where to store files
-      #   fileNames:     character vector with names of the files to download (optional)
-      #   overwrite:     Wether to overwrite existing files
+      #   fileNames:     character vector with names of the files to download
+      #   overwrite:     Whether to overwrite existing files
       #
       # Returns:
       #   filepaths of downloaded files
