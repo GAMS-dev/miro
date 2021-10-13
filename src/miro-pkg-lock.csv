@@ -1,4 +1,5 @@
 data.table, 1.14.0
+cpp11, 0.4.0
 backports, 1.2.1
 assertthat, 0.2.1
 crayon, 1.4.1
@@ -67,7 +68,6 @@ stringi, 1.7.5
 DBI, 1.1.1
 blob, 1.2.2
 hms, 1.1.0
-cpp11, 0.4.0
 tidyr, 1.1.4
 cachem, 1.0.6
 memoise, 2.0.0
