@@ -6,36 +6,38 @@ CRANMirrors <- c(
 )
 
 RLibPath <- Sys.getenv("LIB_PATH")
-packageVersionMap <- list(c("data.table", "1.14.0"), c("backports", "1.2.1"), c("assertthat",
-"0.2.1"), c("crayon", "1.4.1"), c("glue", "1.4.2"), c("fansi",
-"0.5.0"), c("cli", "3.0.1"), c("utf8", "1.2.2"), c("Rcpp", "1.0.7"
-), c("R6", "2.5.1"), c("BH", "1.75.0-0"), c("magrittr", "2.0.1"
-), c("rlang", "0.4.11"), c("later", "1.3.0"), c("promises", "1.2.0.1"
-), c("httpuv", "1.6.3"), c("mime", "0.11"), "jsonlite", c("digest",
-"0.6.27"), c("sourcetools", "0.1.7"), c("xtable", "1.8-4"), c("fastmap",
-"1.1.0"), c("curl", "4.3.2"), c("V8", "3.4.2"), c("base64enc",
-"0.1-3"), c("htmltools", "0.5.2"), c("withr", "2.4.2"), c("leaflet.providers",
-"1.9.0"), c("commonmark", "1.7"), "shiny", c("shinyAce", "0.4.1"
-), c("colorspace", "2.0-2"), c("purrr", "0.3.4"), c("yaml", "2.2.1"
-), c("labeling", "0.4.2"), c("munsell", "0.5.0"), c("lazyeval",
-"0.2.2"), c("pkgconfig", "2.0.3"), c("ellipsis", "0.3.2"), c("vctrs",
-"0.3.8"), c("tidyselect", "1.1.1"), c("plogr", "0.2.0"), c("htmlwidgets",
-"1.5.4"), c("png", "0.1-7"), c("RColorBrewer", "1.1-2"), c("lattice",
-"0.20-44"), c("sp", "1.4-5"), c("viridisLite", "0.4.0"), c("raster",
-"3.4-13"), c("farver", "2.1.0"), c("lifecycle", "1.0.0"), c("scales",
-"1.1.1"), c("zeallot", "0.1.0"), c("crosstalk", "1.1.1"), "DT",
-    "gdxrrwMIRO", "leaflet", c("pillar", "1.6.2"), c("tibble",
-    "3.1.4"), c("generics", "0.1.0"), c("lubridate", "1.7.10"
-    ), c("dplyr", "1.0.7"), c("sys", "3.4"), c("askpass", "1.1"
-    ), c("prettyunits", "1.1.1"), c("stringi", "1.7.4"), c("DBI",
-    "1.1.1"), c("blob", "1.2.2"), c("hms", "1.1.0"), c("cpp11",
-    "0.3.1"), c("tidyr", "1.1.3"), c("cachem", "1.0.6"), c("memoise",
-    "2.0.0"), "httr", "plotly", "shinydashboard", "timevis",
-    c("rematch", "1.0.1"), c("formatR", "1.11"), c("ps", "1.6.0"
-    ), c("clipr", "0.7.1"), c("cellranger", "1.1.0"), c("progress",
-    "1.2.2"), c("lambda.r", "1.2.4"), c("futile.options", "1.0.1"
-    ), c("zoo", "1.8-9"), c("globals", "0.14.0"), c("listenv",
-    "0.8.0"), c("processx", "3.5.2"), c("readr", "1.3.1"), c("readxl",
+packageVersionMap <- list(c("data.table", "1.14.0"), c("cpp11", "0.4.0"), c("backports",
+"1.2.1"), c("assertthat", "0.2.1"), c("crayon", "1.4.1"), c("glue",
+"1.4.2"), c("fansi", "0.5.0"), c("cli", "3.0.1"), c("utf8", "1.2.2"
+), c("Rcpp", "1.0.7"), c("R6", "2.5.1"), c("BH", "1.75.0-0"),
+    c("magrittr", "2.0.1"), c("rlang", "0.4.11"), c("later",
+    "1.3.0"), c("promises", "1.2.0.1"), c("httpuv", "1.6.3"),
+    c("mime", "0.11"), "jsonlite", c("digest", "0.6.27"), c("sourcetools",
+    "0.1.7"), c("xtable", "1.8-4"), c("fastmap", "1.1.0"), c("curl",
+    "4.3.2"), c("V8", "3.4.2"), c("base64enc", "0.1-3"), c("htmltools",
+    "0.5.2"), c("withr", "2.4.2"), c("leaflet.providers", "1.9.0"
+    ), c("commonmark", "1.7"), "shiny", c("shinyAce", "0.4.1"
+    ), c("colorspace", "2.0-2"), c("purrr", "0.3.4"), c("yaml",
+    "2.2.1"), c("labeling", "0.4.2"), c("munsell", "0.5.0"),
+    c("lazyeval", "0.2.2"), c("pkgconfig", "2.0.3"), c("ellipsis",
+    "0.3.2"), c("vctrs", "0.3.8"), c("tidyselect", "1.1.1"),
+    c("plogr", "0.2.0"), c("htmlwidgets", "1.5.4"), c("png",
+    "0.1-7"), c("RColorBrewer", "1.1-2"), c("lattice", "0.20-44"
+    ), c("sp", "1.4-5"), c("viridisLite", "0.4.0"), c("raster",
+    "3.4-13"), c("farver", "2.1.0"), c("lifecycle", "1.0.0"),
+    c("scales", "1.1.1"), c("zeallot", "0.1.0"), c("crosstalk",
+    "1.1.1"), "DT", "gdxrrwMIRO", "leaflet", c("pillar", "1.6.2"
+    ), c("tibble", "3.1.5"), c("generics", "0.1.0"), c("lubridate",
+    "1.8.0"), c("dplyr", "1.0.7"), c("sys", "3.4"), c("askpass",
+    "1.1"), c("prettyunits", "1.1.1"), c("stringi", "1.7.5"),
+    c("DBI", "1.1.1"), c("blob", "1.2.2"), c("hms", "1.1.0"),
+    c("tidyr", "1.1.4"), c("cachem", "1.0.6"), c("memoise", "2.0.0"
+    ), "httr", "plotly", "shinydashboard", "timevis", c("rematch",
+    "1.0.1"), c("formatR", "1.11"), c("ps", "1.6.0"), c("clipr",
+    "0.7.1"), c("cellranger", "1.1.0"), c("progress", "1.2.2"
+    ), c("lambda.r", "1.2.4"), c("futile.options", "1.0.1"),
+    c("zoo", "1.8-9"), c("globals", "0.14.0"), c("listenv", "0.8.0"
+    ), c("processx", "3.5.2"), c("readr", "1.3.1"), c("readxl",
     "1.3.1"), c("writexl", "1.4.0"), c("rpivotTable", "0.3.0"
     ), c("futile.logger", "1.4.3"), c("zip", "2.2.0"), c("leaflet.minicharts",
     "0.6.0"), c("xts", "0.12.1"), c("dygraphs", "1.1.1.6"), c("parallelly",
