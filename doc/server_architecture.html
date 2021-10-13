@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+  <!--<![endif]-->
+  <head>
+    <title>GAMS MIRO Server - Architecture</title>
+    <!-- Meta -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GAMS MIRO documentation" />
+    <meta name="author" content="GAMS Development Corp." />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <!-- FontAwesome JS -->
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.1.1/js/all.js"
+      integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Global CSS -->
+    <link
+      rel="stylesheet"
+      href="assets/plugins/bootstrap/css/bootstrap.min.css"
+    />
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css" />
+    <link rel="stylesheet" href="assets/plugins/prism/prism-diff-yaml.css" />
+    <link
+      rel="stylesheet"
+      href="assets/plugins/lightbox/dist/ekko-lightbox.css"
+    />
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css" />
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css" />
+    <!--#include virtual="/wheader.html" -->
+  </head>
+
+  <body class="body-orange">
+    <!--#include virtual="/wbody.html" -->
+    <div class="page-wrapper">
+      <!--#include virtual="/mirover.html" -->
+
+      <!-- ******Header****** -->
+      <header id="header" class="sub-header">
+        <div class="container">
+          <div class="branding">
+            <h1 class="logo">
+              <a href="index.html">
+                <img
+                  class="img-fluid"
+                  style="height: 75px"
+                  src="assets/images/logo.svg"
+                  onerror="this.onerror=null; this.src='assets/images/logo.png'"
+                  alt="GAMS MIRO"
+                />
+              </a>
+            </h1>
+          </div>
+          <!--//branding-->
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item active">
+              GAMS MIRO Server - Architecture
+            </li>
+          </ol>
+        </div>
+        <!--//container-->
+      </header>
+      <!--//header-->
+      <div class="doc-wrapper">
+        <div class="container">
+          <div class="row justify-content-end search-box-wrapper">
+            <div class="float-right">
+              <input
+                class="form-control search-box"
+                id="miroSearch"
+                type="text"
+                placeholder="Search"
+                aria-label="Search"
+              />
+              <ul id="miroSearchResults" class="list-group"></ul>
+            </div>
+          </div>
+          <div id="doc-header" class="doc-header text-center">
+            <h1 class="doc-title">
+              <span aria-hidden="true" class="icon fas fa-cloud"></span> GAMS
+              MIRO Server - Architecture
+            </h1>
+          </div>
+          <!--//doc-header-->
+          <div class="doc-body row">
+            <div class="doc-content col-md-9 col-12 order-1">
+              <div class="content-inner">
+                <section id="server-introduction" class="doc-section">
+                  <h2 class="section-title">Introduction</h2>
+                  <div class="section-block">
+                    <p>
+                      <a href="./server.html">GAMS MIRO Server</a> is a
+                      containerized application that provides a web interface
+                      that can be accessed by any modern web browser ("client")
+                      that supports communication via WebSockets. It consists of
+                      several components that run in Docker containers. They
+                      communicate with each other via Docker networks. The data
+                      is kept in Docker volumes.
+                    </p>
+
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 400pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                          cursor: pointer;
+                        "
+                        src="assets/images/server/miro_server_architecture.png"
+                        alt="GAMS MIRO Server architecture"
+                        onclick="window.open(this.src, '_blank');"
+                      />
+                    </div>
+                    <p>
+                      The above illustration shows all components. We will
+                      discuss these in detail below.
+                    </p>
+                  </div>
+                </section>
+                <section id="shinyproxy" class="doc-section">
+                  <h2 class="section-title">ShinyProxy</h2>
+                  <div class="section-block">
+                    <p>
+                      <a href="https://www.shinyproxy.io">ShinyProxy</a> is an
+                      open source project developed to spawn Shiny applications
+                      that run in Docker containers (in MIRO Server we use a
+                      <a href="https://github.com/GAMS-dev/shinyproxy/tree/v2.5"
+                        >custom version</a
+                      >
+                      of this project). It provides an option to authenticate
+                      users via a REST API (implemented in the Auth proxy
+                      container described below). <br />
+                      A new Docker container is created for each user requesting
+                      access to a MIRO application. All traffic (HTTP/WebSocket)
+                      from these containers is then forwarded to the client via
+                      ShinyProxy. This architecture results in each MIRO session
+                      running in its own container. Requests to the Docker API
+                      are proxied via the Socket proxy. Logs (stdout/stderr) of
+                      containers spawned by ShinyProxy are written to a Docker
+                      volume.
+                    </p>
+                  </div>
+                </section>
+                <section id="auth-proxy" class="doc-section">
+                  <h2 class="section-title">Auth proxy</h2>
+                  <div class="section-block">
+                    <p>
+                      The Auth proxy provides a REST API that is used by the
+                      ShinyProxy container to authenticate users. Authentication
+                      requests are then forwarded to the GAMS Engine REST API
+                      (user management is done in GAMS Engine). If the
+                      authentication is successful, the user groups are queried
+                      from GAMS Engine and returned to the ShinyProxy container.
+                    </p>
+                    <p>
+                      This REST API can also be used for registering/updating
+                      MIRO applications or for uploading/downloading MIRO
+                      scenarios.
+                    </p>
+                  </div>
+                </section>
+                <section id="socket-proxy" class="doc-section">
+                  <h2 class="section-title">Socket proxy</h2>
+                  <div class="section-block">
+                    <p>
+                      The socket proxy is used to deny requests to any Docker
+                      API endpoints that ShinyProxy does not need access to
+                      (e.g. the volumes API). The socket proxy is only
+                      accessible from the ShinyProxy container (ensured by an
+                      internal Docker network).
+                    </p>
+                  </div>
+                </section>
+                <section id="admin-panel" class="doc-section">
+                  <h2 class="section-title">MIRO Admin Panel</h2>
+                  <div class="section-block">
+                    <p>
+                      The MIRO Admin Panel container is accessible only to
+                      admins (ensured by ShinyProxy's authorization system). It
+                      can be used to register new MIRO apps as well as to update
+                      or remove existing ones. It has read/write access to a
+                      Docker volume to write app data as well as the database to
+                      store scenarios. It communicates with GAMS Engine to
+                      register/update/remove models.
+                    </p>
+                  </div>
+                </section>
+                <section id="miro-ui" class="doc-section">
+                  <h2 class="section-title">MIRO UI</h2>
+                  <div class="section-block">
+                    <p>
+                      The MIRO UI container hosts the MIRO UI. App configuration
+                      is read from a Docker volume that the UI container has
+                      read-only access. All scenario data is stored in a
+                      PostgreSQL database. The MIRO UI container is based on
+                      <a href="https://shiny.rstudio.com">R/Shiny</a> and uses
+                      websockets to communicate with the client. Static
+                      resources (JS/CSS/images/...) are sent over HTTP. It
+                      communicates with GAMS Engine to run jobs and retrieve
+                      results.
+                    </p>
+                  </div>
+                </section>
+                <section id="database" class="doc-section">
+                  <h2 class="section-title">Database</h2>
+                  <div class="section-block">
+                    <p>
+                      A PostgreSQL database is used to store MIRO scenario data.
+                      A new Postgres schema and a user with read/write access to
+                      this schema is created for each MIRO application. When a
+                      new MIRO UI container is created, the database credentials
+                      of this user are communicated with the container via
+                      environment variables. This means that if a MIRO UI
+                      container is compromised, only the data of this MIRO app
+                      can be accessed.
+                    </p>
+                  </div>
+                </section>
+              </div>
+              <!--//content-inner-->
+            </div>
+            <!--//doc-content-->
+            <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+              <div id="doc-nav" class="doc-nav">
+                <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                  <a class="nav-link scrollto" href="#server-introduction"
+                    >Introduction</a
+                  >
+                  <a class="nav-link scrollto" href="#shinyproxy">ShinyProxy</a>
+                  <a class="nav-link scrollto" href="#auth-proxy">Auth proxy</a>
+                  <a class="nav-link scrollto" href="#socket-proxy"
+                    >Socket proxy</a
+                  >
+                  <a class="nav-link scrollto" href="#admin-panel"
+                    >MIRO Admin Panel</a
+                  >
+                  <a class="nav-link scrollto" href="#miro-ui">MIRO UI</a>
+                  <a class="nav-link scrollto" href="#database">Database</a>
+                  <!--//nav-->
+                </nav>
+                <!--//doc-menu-->
+              </div>
+            </div>
+            <!--//doc-sidebar-->
+          </div>
+          <!--//doc-body-->
+        </div>
+        <!--//container-->
+      </div>
+      <!--//doc-wrapper-->
+    </div>
+    <!--//page-wrapper-->
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-3.3.1.min.js"
+    ></script>
+    <!--#include virtual="/footer_miro.html" -->
+
+    <!-- Main Javascript -->
+    <script
+      type="text/javascript"
+      src="assets/plugins/prism/min/prism-min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/prism/min/prism-diff-yaml.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/stickyfill/dist/stickyfill.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/markjs/jquery.mark.min.js"
+    ></script>
+
+    <script type="text/javascript" src="assets/js/main.js"></script>
+  </body>
+</html>
