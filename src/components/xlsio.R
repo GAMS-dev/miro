@@ -286,17 +286,10 @@ XlsIO <- R6::R6Class("XlsIO",
 
       rangeInfo <- private$getRangeSymbol(symName)
 
-      if (isSetType && index$dim > 0L && !is.na(rangeInfo$range$lr[2]) &&
-        identical(rangeInfo$range$ul[1], rangeInfo$range$lr[1])) {
-        data <- suppressMessages(as_tibble(as.list(vector("character", rangeInfo$range$lr[2] - rangeInfo$range$ul[2] + 1L)),
-          .name_repair = "unique"
-        ))
-      } else {
-        data <- private$getDataRaw(index, rangeInfo)
-        if (isSetType && index$cdim > 0L && (!nrow(data) || rowSums(is.na(data))[[1]] == ncol(data))) {
-          # need to manually add (empty) set text
-          data[1, ] <- ""
-        }
+      data <- private$getDataRaw(index, rangeInfo)
+      if (isSetType && index$cdim > 0L && (!nrow(data) || rowSums(is.na(data))[[1]] == ncol(data))) {
+        # need to manually add (empty) set text
+        data[1, ] <- ""
       }
       if (length(data) < 1L || nrow(data) < 1L) {
         data <- rep.int(list(character(0L)), length(private$metadata[[symName]]$headers))
@@ -665,7 +658,11 @@ XlsIO <- R6::R6Class("XlsIO",
             sprintf(lang$errMsg$xlsio$errors$badSymbolDim, symName),
             call. = FALSE
           )
-        } else if (length(data) < index$dim + 1L) {
+        }
+        if (index$dset) {
+          data <- distinct(data, !!as.symbol(names(data)[1]), .keep_all = TRUE)
+        }
+        if (length(data) < index$dim + 1L) {
           if (symName %in% c(scalarsFileName, scalarsOutName)) {
             return(data)
           }
@@ -689,6 +686,10 @@ XlsIO <- R6::R6Class("XlsIO",
         data <- data[!is.na(data[[length(data)]]), ]
       } else {
         data[is.na(data[[length(data)]]), length(data)] <- ""
+        if (index$dset) {
+          # dSet with dSetText set to yes
+          data <- distinct(data, !!as.symbol(names(data)[1]), .keep_all = TRUE)
+        }
       }
       return(data)
     },
@@ -770,6 +771,17 @@ XlsIO <- R6::R6Class("XlsIO",
 
       if (!nrow(indexDf)) {
         return(list())
+      }
+      typeColId <- match(c("type", "datatype"), colNames)
+      typeCol <- NULL
+      if (all(is.na(typeColId))) {
+        if (identical(symColId, 2L)) {
+          typeCol <- indexDf[[1L]]
+        }
+      } else {
+        typeColId <- typeColId[!is.na(typeColId)][1]
+        typeCol <- indexDf[[typeColId]]
+        names(indexDf)[typeColId] <- "datatype"
       }
       if (symColId > 1L) {
         indexDf <- indexDf[, -seq_len(symColId - 1L)]
@@ -879,8 +891,18 @@ XlsIO <- R6::R6Class("XlsIO",
       } else {
         indexDf[["squeeze"]] <- "1"
       }
+      hasDsets <- FALSE
+      indexDf[["dset"]] <- FALSE
+      if (!is.null(typeCol)) {
+        isDsetTmp <- tolower(as.character(typeCol)) == "dset"
+        indexDf[["dset"]][isDsetTmp] <- TRUE
+        hasDsets <- any(isDsetTmp)
+      }
       invalidKeys <- !tolower(names(indexDf)) %in%
-        c("symbol", "range", "cdim", "rdim", "dim", "values", "ignorerows", "ignorecols", "se", "squeeze")
+        c(
+          "symbol", "range", "cdim", "rdim", "dim", "values", "ignorerows", "ignorecols", "se", "squeeze", "dset",
+          "datatype", "dsettext"
+        )
       if (any(invalidKeys)) {
         private$warnings$push(sprintf(
           lang$errMsg$xlsio$warnings$invalidOptions,
@@ -994,6 +1016,23 @@ XlsIO <- R6::R6Class("XlsIO",
       } else {
         indexDf[["values"]] <- "auto"
       }
+
+      if (hasDsets) {
+        invalidDsets <- indexDf[["dset"]] & indexDf[["dim"]] > 1L
+        if (any(invalidDsets)) {
+          indexDf[["dset"]][invalidDsets] <- FALSE
+          private$warnings$push(sprintf(
+            lang$errMsg$xlsio$warnings$invalidDsets,
+            paste(symbolsInExcel[invalidDsets], collapse = "', '")
+          ))
+        }
+        indexDf[["values"]][indexDf[["dset"]]] <- "nodata"
+        if ("dsettext" %in% names(indexDf)) {
+          indexDf[["values"]][tolower(as.character(indexDf[["dsettext"]])) %in% c("y", "yes", "1")] <- "dense"
+          indexDf[["dsettext"]] <- NULL
+        }
+      }
+
       if (any(private$scalars %in% symbolsInExcel) &&
         any(c(scalarsFileName, scalarsOutName) %in% symbolsInExcel)) {
         # need to throw warning if scalars both in table and declared individually

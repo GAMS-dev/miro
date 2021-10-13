@@ -210,24 +210,25 @@ test_that("Parsing cell range works", {
 test_that("Test that initialising index works", {
   xlsio$readIndex("../data/exampleData.xlsx", "index", forceInit = TRUE)
   rWarnings <- xlsio$getWarnings()
-  expect_length(rWarnings, 3L)
+  expect_length(rWarnings, 4L)
   expect_true(any(grepl("'bla'", rWarnings, fixed = TRUE)))
   expect_true(any(grepl("non-empty rows", rWarnings, fixed = TRUE)))
   expect_true(any(grepl("Key=value", rWarnings, fixed = TRUE)))
+  expect_true(any(grepl("Data type: 'dSet'.*'i10'", rWarnings)))
   expect_equal(xlsioPrivate$rIndex[["i10"]], tibble(
     symbol = "i10", range = "testIndex!B26:E27",
-    rdim = 0L, cdim = 2L, dim = 2L, values = "noData", ignorerows = NA_character_, ignorecols = NA_character_, se = "1", squeeze = "1"
+    rdim = 0L, cdim = 2L, dim = 2L, values = "noData", ignorerows = NA_character_, ignorecols = NA_character_, se = "1", squeeze = "1", dset = FALSE
   ))
   expect_equal(xlsioPrivate$rIndex[["modedistance"]], tibble(
     symbol = "modedistance", range = "testIndex!A26:E31",
     rdim = 1L, cdim = 2L, dim = 3L, values = "auto", ignorerows = NA_character_,
     ignorecols = NA_character_,
-    se = "1", squeeze = "1"
+    se = "1", squeeze = "1", dset = FALSE
   ))
   expect_equal(xlsioPrivate$rIndex[["distance2"]], tibble(
     symbol = "distance2", range = "testIndex!A26:E31",
     rdim = 1L, cdim = 1L, dim = 2L, values = "auto", ignorerows = "27",
-    ignorecols = "C, E", se = "1", squeeze = "1"
+    ignorecols = "C, E", se = "1", squeeze = "1", dset = FALSE
   ))
 })
 
@@ -341,6 +342,41 @@ test_that("Reading sets works", {
     tibble(
       uni = c("brussels", "san francisco", "boston"),
       text = c("", "", "")
+    )
+  )
+  expect_identical(
+    xlsio$read("../data/exampleData.xlsx", "i6"),
+    tibble(
+      uni = c("cleveland", "chicago", "dallas"),
+      text = c("", "", "")
+    )
+  )
+  expect_identical(
+    xlsio$read("../data/exampleData.xlsx", "i6a"),
+    tibble(
+      uni = c("cleveland", "chicago", "dallas"),
+      text = c("", "", "")
+    )
+  )
+  expect_identical(
+    xlsio$read("../data/exampleData.xlsx", "i6b"),
+    tibble(
+      uni = c("cleveland", "chicago", "dallas"),
+      text = c("5000", "6000", "0")
+    )
+  )
+  expect_identical(
+    xlsio$read("../data/exampleData.xlsx", "i7"),
+    tibble(
+      uni = c("brussels", "san francisco"),
+      text = c("", "")
+    )
+  )
+  expect_identical(
+    xlsio$read("../data/exampleData.xlsx", "i8"),
+    tibble(
+      uni = c("cleveland", "chicago"),
+      text = c("5000", "6000")
     )
   )
   expect_identical(

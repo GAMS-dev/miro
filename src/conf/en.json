@@ -810,7 +810,8 @@
         "invalidSkipEmpty": "WARNING: skipEmpty greater than 1 is not supported in MIRO (symbol(s): '%s'). Invalid values have been set to 1.",
         "invalidSqueeze": "WARNING: Invalid value for squeeze option (symbol(s): '%s'). Allowed values are: 1, y, 0, n. Invalid values were set to 1.",
         "invalidOptions": "WARNING: Invalid options unknown to MIRO found in index: '%s'.",
-        "scalarDeclarations": "WARNING: Both scalar table declaration and single scalar declaration found in index. Single declaration is ignored if scalar is already part of the table!"
+        "scalarDeclarations": "WARNING: Both scalar table declaration and single scalar declaration found in index. Single declaration is ignored if scalar is already part of the table!",
+        "invalidDsets": "WARNING: Data type: 'dSet' is not supported for sets with more than one dimension (symbol(s): '%s')."
       },
       "errors":{
         "badFormat": "ERROR: file is not a valid Excel file.",

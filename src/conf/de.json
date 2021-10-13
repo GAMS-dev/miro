@@ -810,7 +810,8 @@
         "invalidSkipEmpty": "WARNUNG: skipEmpty größer als 1 wird in MIRO nicht unterstützt (Symbol(e): '%s'). Ungültige Werte wurden auf 1 gesetzt.",
         "invalidSqueeze": "WARNUNG: Ungültiger Wert für squeeze-Option (Symbol(e): '%s'). Erlaubte Werte sind: 1, y, 0, n. Ungültige Werte wurden auf 1 gesetzt.",
         "invalidOptions": "WARNUNG: Ungültige, MIRO unbekannte Optionen in Index gefunden: '%s'",
-        "scalarDeclarations": "WARNUNG: Sowohl skalare Tabellendeklaration als auch einzelne skalare Deklaration im Index gefunden. Einzeldeklaration wird ignoriert, wenn Skalar bereits Teil der Tabelle ist!"
+        "scalarDeclarations": "WARNUNG: Sowohl skalare Tabellendeklaration als auch einzelne skalare Deklaration im Index gefunden. Einzeldeklaration wird ignoriert, wenn Skalar bereits Teil der Tabelle ist!",
+        "invalidDsets": "WARNUNG: Datentyp: 'dSet' wird für Sets mit mehr als einer Dimension nicht unterstützt (Symbol(e): '%s')."
       },
       "errors":{
         "badFormat": "FEHLER: Datei ist keine gültige Excel-Datei.",

@@ -970,9 +970,10 @@
                           The first three columns of the index range have a
                           fixed interpretation: dataType, symbol identifier and
                           dataRange. Even though MIRO does not need and ignores
-                          the dataType information, it is a good practice to
-                          specify it because it allows your worksheet to be read
-                          by both MIRO and GDXXRW.
+                          the dataType information (except <kbd>dSet</kbd>, see
+                          info box below), it is a good practice to specify it
+                          because it allows your worksheet to be read by both
+                          MIRO and GDXXRW.
                         </p>
                         <p>
                           The fourth and subsequent columns can be used for
@@ -982,6 +983,41 @@
                           in a comma-separated option=value format, MIRO does
                           not support this.
                         </p>
+                        <div class="callout-block callout-warning">
+                          <div class="icon-holder">
+                            <i class="fas fa-info-circle"></i>
+                          </div>
+                          <!--//icon-holder-->
+                          <div class="content">
+                            <b class="callout-title">Domain Sets (dSet):</b>
+                            <p>
+                              Just like GDXXRW, MIRO supports reading a set as
+                              <i>domain set</i> by specifying it as type
+                              <kbd>dSet</kbd>. This option is supported only for
+                              one-dimensional sets. Duplicates and set text are
+                              ignored. The
+                              <a
+                                href="https://www.gams.com/latest/docs/T_GDXXRW.html#GDXXRW_OPTIONS_DSETTEXT"
+                                target="_blank"
+                                ><kbd>dSetText</kbd></a
+                              >
+                              option is also supported by MIRO.
+                            </p>
+                            <p>
+                              Note that in most cases, it is preferred to use
+                              the
+                              <a
+                                href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition"
+                                target="_blank"
+                                >Implicit Set Definition</a
+                              >
+                              feature of GAMS! This avoids domain violations
+                              caused by having to maintain two tables in MIRO.
+                            </p>
+                          </div>
+                          <!--//content-->
+                        </div>
+                        <!--//callout-block-->
                         <p>Let's look at an example:</p>
                         <div
                           class="section-block"
@@ -1162,6 +1198,18 @@
                                 <td>
                                   Controls whether zeros are squeezed
                                   out/removed
+                                </td>
+                                <td><i>y</i>, <i>1</i>, <i>n</i>, <i>0</i></td>
+                              </tr>
+                              <tr>
+                                <td>dSetText</td>
+                                <td>
+                                  This controls the reading of explanatory text
+                                  for set elements of domain sets. By default,
+                                  no text is read for domain sets. If this
+                                  option is activated this is changed. If an
+                                  element appears more than once, the first one
+                                  defines the explanatory text read.
                                 </td>
                                 <td><i>y</i>, <i>1</i>, <i>n</i>, <i>0</i></td>
                               </tr>

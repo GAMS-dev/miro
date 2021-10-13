@@ -3148,9 +3148,13 @@
                 "scalarDeclarations": {
                   "type": "string",
                   "minLength": 1
+                },
+                "invalidDsets": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 7
+              "minProperties": 8
             },
             "errors": {
               "type": "object",

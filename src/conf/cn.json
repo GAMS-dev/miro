@@ -806,7 +806,8 @@
         "invalidSkipEmpty": "警告：MIRO不支持大于1的 skipEmpty (符号：'%s')。无效值已被设置为1。",
         "invalidSqueeze": "警告：挤压选项的值无效（符号：'%s'）。 允许值为：1，y，0，n。 无效值设置为1。",
         "invalidOptions": "警告：MIRO未知的无效选项在索引'%s'中找到。",
-        "scalarDeclarations": "警告：在索引中发现标量表声明和单个标量声明。如果标量已经是表的一部分，单个声明将被忽略。"
+        "scalarDeclarations": "警告：在索引中发现标量表声明和单个标量声明。如果标量已经是表的一部分，单个声明将被忽略。",
+        "invalidDsets": "警告：数据类型：'dSet'不支持多于一个维度的集合（符号：'%s'）。"
       },
       "errors":{
         "badFormat": "错误：文件不是有效的Excel文件。",
