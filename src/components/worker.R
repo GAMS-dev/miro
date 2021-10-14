@@ -1394,7 +1394,6 @@ Worker <- R6Class("Worker", public = list(
     }
     if (!length(resultsPath)) {
       resultsPath <- tempfile(pattern = "res_", fileext = ".zip")
-      on.exit(unlink(resultsPath))
     }
     timeout <- FALSE
     errMsg <- NULL
@@ -1416,15 +1415,17 @@ Worker <- R6Class("Worker", public = list(
       }
     )
     if (timeout) {
+      unlink(resultsPath)
       return(-100L)
     } else if (!is.null(errMsg)) {
+      unlink(resultsPath)
       return(errMsg)
     }
     private$removeJobResults(jID, isHcJob = FALSE)
 
     if (identical(status_code(ret), 200L)) {
       tryCatch(
-        zip::unzip(resultsPath, exdir = workDir),
+        unzip(resultsPath, exdir = workDir),
         error = function(e) {
           errMsg <<- sprintf(
             "Problems extracting results archive. Error message: %s",
@@ -1433,11 +1434,14 @@ Worker <- R6Class("Worker", public = list(
         }
       )
       if (!is.null(errMsg)) {
+        unlink(resultsPath)
         return(errMsg)
       }
     } else {
+      unlink(resultsPath)
       return(content(ret)$message)
     }
+    unlink(resultsPath)
     return(0L)
   },
   getRemoteStatus = function(jID) {
