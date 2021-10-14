@@ -2634,6 +2634,10 @@
               "type": "string",
               "minLength": 1
             },
+            "domainFilterShowAllTitle": {
+              "type": "string",
+              "minLength": 1
+            },
             "errUniqueViewName": {
               "type": "string",
               "minLength": 1
@@ -2783,7 +2787,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 45
+          "minProperties": 46
         },
         "datatable": {
           "type": "object",

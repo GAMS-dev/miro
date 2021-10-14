@@ -51,7 +51,7 @@
             }
          },
          "domainFilter":{
-           "description":"Domain filter that will be displayed as tabs and filter a domain by all elements except for the empty string",
+           "description":"Domain filter that will be displayed as tabs and filter a domain by all elements except for the filter value",
             "type":"object",
             "additionalProperties":false,
             "properties":{
@@ -65,12 +65,16 @@
                   }
                },
                "default":{
-                 "description":"Domain that is filtered on startup. (optional)",
+                 "description":"Domain that is filtered on startup. If you want to show all data per default, set showAll to true and default to _none. (optional)",
                   "type":"string"
                },
                "filterVal":{
                  "description":"String (UEL) to filter by (optional)",
                   "type":"string"
+               },
+               "showAll": {
+                 "description":"Add option to show unfiltered table (default: false).",
+                 "type":"boolean"
                }
             }
          },

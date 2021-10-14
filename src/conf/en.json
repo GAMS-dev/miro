@@ -676,6 +676,7 @@
       "newViewBtSave": "Save",
       "newViewBtCancelOverwrite": "No",
       "newViewBtOverwrite": "Yes",
+      "domainFilterShowAllTitle": "Show All",
       "errUniqueViewName": "The view name you entered already exists. Do you want to overwrite the view?",
       "duplicateRecordTitle": "Duplicate record",
       "duplicateRecordDesc": "The record you entered already exists.",

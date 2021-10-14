@@ -717,6 +717,7 @@
       "newViewBtSave": "保存",
       "newViewBtCancelOverwrite": "不",
       "newViewBtOverwrite": "是的",
+      "domainFilterShowAllTitle": "显示所有数据",
       "errUniqueViewName": "您输入的视图名称已经存在。您要覆盖视图吗？",
       "duplicateRecordTitle": "双重记录",
       "duplicateRecordDesc": "您输入的记录已经存在。",

@@ -717,6 +717,7 @@
       "newViewBtSave": "Speichern",
       "newViewBtCancelOverwrite": "Nein",
       "newViewBtOverwrite": "Ja",
+      "domainFilterShowAllTitle": "Alles zeigen",
       "errUniqueViewName": "Der von Ihnen eingegebene Viewname existiert bereits. Wollen Sie den View überschreiben?",
       "duplicateRecordTitle": "Doppelter Datensatz",
       "duplicateRecordDesc": "Der von Ihnen eingegebene Datensatz ist bereits vorhanden.",

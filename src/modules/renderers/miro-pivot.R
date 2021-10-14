@@ -123,6 +123,22 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
     id = ns("container"), style = "overflow:hidden;",
     tags$div(id = ns("customError"), class = "gmsalert gmsalert-error"),
     if (length(options$domainFilter$domains)) {
+      domainFilterTabs <- lapply(options$domainFilter$domains, function(domain) {
+        domainId <- match(domain, unassignedSetIndices)
+        return(tabPanel(
+          title = names(unassignedSetIndices)[domainId],
+          value = domain
+        ))
+      })
+      if (identical(options$domainFilter$showAll, TRUE)) {
+        domainFilterTabs <- c(
+          domainFilterTabs,
+          list(tabPanel(
+            title = lang$renderers$miroPivot$domainFilterShowAllTitle,
+            value = "_none"
+          ))
+        )
+      }
       fluidRow(
         class = "domain-filter",
         style = "margin:0",
@@ -131,13 +147,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
           c(
             id = ns("domainFilter"),
             selected = options$domainFilter$default,
-            lapply(options$domainFilter$domains, function(domain) {
-              domainId <- match(domain, unassignedSetIndices)
-              return(tabPanel(
-                title = names(unassignedSetIndices)[domainId],
-                value = domain
-              ))
-            })
+            domainFilterTabs
           )
         ),
         tags$div(class = "small-space")
@@ -759,11 +769,21 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         )
       }
 
+      if (length(options$domainFilter$domains)) {
+        if (identical(options$domainFilter$showAll, TRUE)) {
+          domainFilterDomains <- c(options$domainFilter$domains, "_none")
+        } else {
+          domainFilterDomains <- options$domainFilter$domains
+        }
+      } else {
+        domainFilterDomains <- NULL
+      }
+
       if (isTRUE(options$hidePivotControls)) {
         session$sendCustomMessage("gms-activateMiroPivotPresentationObservers", ns(""))
       }
 
-      resetView <- function(viewOptions, domainFilterDomains, interfaceInitialized = TRUE) {
+      resetView <- function(viewOptions, interfaceInitialized = TRUE) {
         unassignedSetIndices <- setNames(
           setIndices,
           setIndexAliases
@@ -845,7 +865,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         })
       }
       if (isTRUE(options$resetOnInit)) {
-        resetView(options, options[["domainFilter"]]$domains, interfaceInitialized = FALSE)
+        resetView(options, interfaceInitialized = FALSE)
       }
       if (is.null(input$aggregationFunction) || identical(input$aggregationFunction, "")) {
         # interface has not been initialised, do it now
@@ -1230,7 +1250,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           miroPivotState$triggerEditViewDialog <<- TRUE
           currentView <<- views$get(session, viewId)
           currentView$name <<- viewId
-          resetView(currentView, options[["domainFilter"]]$domains)
+          resetView(currentView)
         })
         rendererEnv[[ns("deleteView")]] <- observe({
           if (is.null(input$deleteView) || initData || readonlyViews) {
@@ -1266,7 +1286,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             views$get(session, viewId)
           }
           currentView$name <<- viewId
-          resetView(currentView, options[["domainFilter"]]$domains)
+          resetView(currentView)
         })
       }
 
@@ -1420,6 +1440,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           if (initFilter && length(currentView$domainFilter[["default"]]) &&
             !identical(input$domainFilter, currentView$domainFilter[["default"]])) {
             return()
+          }
+          if (identical(newFilters$domainFilter, "_none")) {
+            newFilters$domainFilter <- NULL
           }
         }
 

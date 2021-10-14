@@ -47,7 +47,7 @@ validateGraphConfig <- function(graphConfig, skipOutTypeCheck = FALSE) {
     }
   }
   if (length(graphConfig$options$domainFilter$default) &&
-    !graphConfig$options$domainFilter$default %in% graphConfig$options$domainFilter$domains) {
+    !graphConfig$options$domainFilter$default %in% c("_none", graphConfig$options$domainFilter$domains)) {
     errMsgTmp <- paste(
       errMsgTmp,
       paste0(
