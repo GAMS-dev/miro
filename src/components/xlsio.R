@@ -1035,6 +1035,11 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         private$decrementSheetRefCount(rangeInfo$range$sheet)
         return(private$cache[[rangeInfo$range$sheet]])
       }
+      if (rangeInfo$range$ul[2] > length(private$cache[[rangeInfo$range$sheet]])) {
+        # range outside of sheet bounds
+        private$decrementSheetRefCount(rangeInfo$range$sheet)
+        return(tibble())
+      }
       if(is.na(rangeInfo$range$lr[1])){
         rowRangeEndTmp <- nrow(private$cache[[rangeInfo$range$sheet]])
       }else{
