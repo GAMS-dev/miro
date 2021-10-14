@@ -362,9 +362,9 @@ Sys.sleep(0.5)
 
 # discard test1 job
 app$findElements("#jImport_output button[onclick*='discardJob']")[[1]]$click()
-Sys.sleep(0.5)
-app$findElement("#confirmModal .bt-gms-confirm")$click()
 Sys.sleep(1)
+app$findElement("#confirmModal .bt-gms-confirm")$click()
+Sys.sleep(1.5)
 expect_true(app$waitFor("$('#jImport_output td').length===0"))
 
 # check job history
