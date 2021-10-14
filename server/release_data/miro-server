@@ -60,6 +60,18 @@ install (){
             ;;
     esac
 
+    CURRENT_DIR_NAME=${PWD##*/}
+    MIRO_SERVER_NETWORK_NAME="${CURRENT_DIR_NAME}-network"
+
+    sed -i -E "s/container-network: .*/container-network: ${MIRO_SERVER_NETWORK_NAME}/" data_raw/application.yml || {
+        echo "Problems updating container network in data_raw/application.yml."
+        exit 1
+    }
+    sed -i -E "/gamsmiro-network:/{n;s/name:.*/name: ${MIRO_SERVER_NETWORK_NAME}/}" docker-compose.yml || {
+        echo "Problems updating container network in docker-compose.yml."
+        exit 1
+    }
+
     printf "Installing GAMS MIRO Server. Please wait...\n\n\n"
 
     pull_images

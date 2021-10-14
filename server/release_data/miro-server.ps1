@@ -58,6 +58,31 @@ function install
         (Get-Content -Path data_raw/application.yml) -replace "authentication: .*", "authentication: webservice" | Set-Content data_raw/application.yml
     }
 
+    $current_dir_name = Split-Path -Path "$pwd" -Leaf -Resolve
+    $miro_server_network_name="${CURRENT_DIR_NAME}-network"
+
+    (Get-Content -Path data_raw/application.yml) -replace "container-network: .*", "container-network: $miro_server_network_name" | Set-Content data_raw/application.yml
+
+    $start_replace = $false
+    (Get-Content docker-compose.yml) |
+    Foreach-Object {
+        if ($start_replace -eq $true){
+            $start_replace= $false
+            if ($_ -match " name:") {
+            "    name: $miro_server_network_name"
+            } else {
+                $_
+            }
+        }
+        elseif($_ -match " gamsmiro-network:"){
+            $start_replace = $true
+            $_
+        }
+        else {
+            $_
+        }
+    } | Set-Content docker-compose.yml
+
     "Installing GAMS MIRO Server. Please wait..."
 
     pull_images
