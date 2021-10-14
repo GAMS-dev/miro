@@ -1,3 +1,68 @@
+validateGraphConfig <- function(graphConfig, skipOutTypeCheck = FALSE) {
+  if (!skipOutTypeCheck && !identical(graphConfig$outType, "miroPivot")) {
+    return(TRUE)
+  }
+  errMsgTmp <- NULL
+  if (length(graphConfig$options$aggregationFunction) &&
+    identical(graphConfig$options[["_metadata_"]]$symtype, "set") &&
+    !graphConfig$options$aggregationFunction %in% c("count", "min")) {
+    errMsgTmp <- "Sets can only have 'count' or 'min' as aggregation function."
+  }
+  noNumericHeaders <- sum(vapply(graphConfig$options[["_metadata_"]]$headers,
+    function(header) {
+      identical(header$type, "numeric")
+    }, logical(1L),
+    USE.NAMES = FALSE
+  ))
+  validHeaders <- names(graphConfig$options[["_metadata_"]]$headers)
+  if (noNumericHeaders > 1L) {
+    validHeaders <- c(
+      validHeaders[seq_len(length(validHeaders) - noNumericHeaders)],
+      "Hdr"
+    )
+  } else {
+    validHeaders <- validHeaders[-length(validHeaders)]
+  }
+  for (id in c("rows", "cols", "aggregations", "filter", "domainFilter")) {
+    if (length(graphConfig$options[[id]])) {
+      if (identical(id, "rows")) {
+        indices <- graphConfig$options[[id]]
+      } else if (identical(id, "domainFilter")) {
+        indices <- graphConfig$options$domainFilter$domains
+      } else {
+        indices <- names(graphConfig$options[[id]])
+      }
+      invalidIndices <- !indices %in% validHeaders
+      if (any(invalidIndices)) {
+        errMsgTmp <- paste(
+          errMsgTmp,
+          paste0(
+            "\nInvalid ", id, ": ",
+            paste(indices[invalidIndices],
+              collapse = ", "
+            )
+          )
+        )
+      }
+    }
+  }
+  if (length(graphConfig$options$domainFilter$default) &&
+    !graphConfig$options$domainFilter$default %in% graphConfig$options$domainFilter$domains) {
+    errMsgTmp <- paste(
+      errMsgTmp,
+      paste0(
+        "\nDefault domain filter: ",
+        graphConfig$options$domainFilter$default,
+        " must be among the list of domains."
+      )
+    )
+  }
+  if (is.null(errMsgTmp)) {
+    return(TRUE)
+  }
+  return(errMsgTmp)
+}
+
 errMsg <- installAndRequirePackages("V8", installedPackages, RLibPath, CRANMirror, miroWorkspace)
 # check whether there exists a config file and if not create an empty one
 if (is.null(errMsg)) {
@@ -365,6 +430,14 @@ if (is.null(errMsg)) {
               )
             )
           )
+          validGraphConfig <- validateGraphConfig(modelIn[[i]], skipOutTypeCheck = TRUE)
+          if (!identical(validGraphConfig, TRUE)) {
+            errMsg <- paste(errMsg, paste0(
+              "Invalid widget config for symbol '", names(modelIn)[i],
+              "': ", validGraphConfig, "."
+            ), sep = "\n")
+            next
+          }
           if (is.null(config$dataRendering[[names(modelIn)[i]]])) {
             if (length(config$dataRendering)) {
               config$dataRendering[[names(modelIn)[i]]] <- list(outType = "datatable")
@@ -1710,71 +1783,6 @@ if (is.null(errMsg)) {
 
   configGraphsIn <- vector(mode = "list", length = length(modelIn))
   configGraphsOut <- vector(mode = "list", length = length(modelOut))
-
-  validateGraphConfig <- function(graphConfig) {
-    if (!identical(graphConfig$outType, "miroPivot")) {
-      return(TRUE)
-    }
-    errMsgTmp <- NULL
-    if (length(graphConfig$options$aggregationFunction) &&
-      identical(graphConfig$options[["_metadata_"]]$symtype, "set") &&
-      !graphConfig$options$aggregationFunction %in% c("count", "min")) {
-      errMsgTmp <- "Sets can only have 'count' or 'min' as aggregation function."
-    }
-    noNumericHeaders <- sum(vapply(graphConfig$options[["_metadata_"]]$headers,
-      function(header) {
-        identical(header$type, "numeric")
-      }, logical(1L),
-      USE.NAMES = FALSE
-    ))
-    validHeaders <- names(graphConfig$options[["_metadata_"]]$headers)
-    if (noNumericHeaders > 1L) {
-      validHeaders <- c(
-        validHeaders[seq_len(length(validHeaders) - noNumericHeaders)],
-        "Hdr"
-      )
-    } else {
-      validHeaders <- validHeaders[-length(validHeaders)]
-    }
-    for (id in c("rows", "cols", "aggregations", "filter", "domainFilter")) {
-      if (length(graphConfig$options[[id]])) {
-        if (identical(id, "rows")) {
-          indices <- graphConfig$options[[id]]
-        } else if (identical(id, "domainFilter")) {
-          indices <- graphConfig$options$domainFilter$domains
-        } else {
-          indices <- names(graphConfig$options[[id]])
-        }
-        invalidIndices <- !indices %in% validHeaders
-        if (any(invalidIndices)) {
-          errMsgTmp <- paste(
-            errMsgTmp,
-            paste0(
-              "\nInvalid ", id, ": ",
-              paste(indices[invalidIndices],
-                collapse = ", "
-              )
-            )
-          )
-        }
-      }
-    }
-    if (length(graphConfig$options$domainFilter$default) &&
-      !graphConfig$options$domainFilter$default %in% graphConfig$options$domainFilter$domains) {
-      errMsgTmp <- paste(
-        errMsgTmp,
-        paste0(
-          "\nDefault domain filter: ",
-          graphConfig$options$domainFilter$default,
-          " must be among the list of domains."
-        )
-      )
-    }
-    if (is.null(errMsgTmp)) {
-      return(TRUE)
-    }
-    return(errMsgTmp)
-  }
 
   invalidGraphsToRender <- character(0L)
 
