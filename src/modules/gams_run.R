@@ -147,6 +147,7 @@ prepareModelRun <- function(async = FALSE) {
 
   prog$inc(amount = 0.5, detail = lang$progressBar$prepRun$sendInput)
   # save input data
+  errMsgTmp <- NULL
   if (tryCatch(
     {
       dataTmp <- getInputDataFromSandbox()
@@ -214,11 +215,11 @@ prepareModelRun <- function(async = FALSE) {
       prog$close()
     },
     error = function(e) {
-      errMsg <<- lang$errMsg$gamsExec$desc
+      errMsgTmp <<- lang$errMsg$gamsExec$desc
       flog.error("Attachment data could not be downloaded. Error message: %s.", conditionMessage(e))
     }
   )
-  if (is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))) {
+  if (is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsgTmp))) {
     return(NULL)
   }
   return(inputData)
