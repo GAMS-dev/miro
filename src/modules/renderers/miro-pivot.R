@@ -140,7 +140,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         )
       }
       fluidRow(
-        class = "domain-filter",
+        class = "domain-filter tabs-ul-mobile-helper",
         style = "margin:0",
         do.call(
           tabsetPanel,
@@ -450,23 +450,23 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         style = if (isTRUE(options[["_input_"]]) && isTRUE(options$hidePivotControls)) {
           "margin-top:30px;"
         },
-        if (isTRUE(options[["_input_"]])) {
-          tags$div(
-            style = "position: absolute; top: -10px;z-index: 1;",
-            actionButton(ns("btAddRow"), lang$renderers$miroPivot$btAddRow),
-            actionButton(ns("btRemoveRows"), lang$renderers$miroPivot$btRemoveRows, class = "bt-highlight-1"),
-            actionButton(ns("enableEdit"), lang$renderers$miroPivot$btEnableEdit,
-              style = "display:none"
-            )
-          )
-        },
         tags$div(
           id = ns("errMsg"), class = "gmsalert gmsalert-error",
           style = "position:static;margin-bottom:5px;"
         ),
         genSpinner(ns("loadPivotTable"), hidden = TRUE),
         DTOutput(ns("pivotTable")),
-        chartjsOutput(ns("pivotChart"), height = "40px")
+        chartjsOutput(ns("pivotChart"), height = "40px"),
+        if (isTRUE(options[["_input_"]])) {
+          tags$div(
+            class = "pivot-edit-btn-wrapper",
+            actionButton(ns("btAddRow"), lang$renderers$miroPivot$btAddRow),
+            actionButton(ns("btRemoveRows"), lang$renderers$miroPivot$btRemoveRows, class = "bt-highlight-1"),
+            actionButton(ns("enableEdit"), lang$renderers$miroPivot$btEnableEdit,
+              style = "display:none"
+            )
+          )
+        }
       )
     ),
     fluidRow(

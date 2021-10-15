@@ -1712,6 +1712,7 @@ html {
   }
   .miro-pivot-btn-text {
     display: inline-block;
+    white-space: normal;
   }
   .pivot-btn-custom .fa {
     display: inline-block;
@@ -1912,6 +1913,9 @@ html {
     padding-left: 0;
     padding-right: 0;
   }
+  .has-edit-buttons.pivot-chart-height {
+    margin-top: 15pt;
+  }
   .pivot-chart-height > div[id*="pivotChart-container"] {
     min-width:400px;
   }
@@ -2039,6 +2043,17 @@ html {
   .miro-pivot-height:not(.presentation-on > .miro-pivot-height) {
     height:250px;
     height:50vh;
+  }
+  .pivot-edit-btn-wrapper {
+    margin-top: 5pt;
+    margin-bottom: 5pt;
+  }
+}
+@media (min-width: 992px) {
+  .pivot-edit-btn-wrapper {
+    position: absolute;
+    top: -10px;
+    z-index: 1;
   }
 }
 .dropdown-item-wrapper {
@@ -2353,6 +2368,7 @@ html {
   }
   .tabs-ul-mobile .tabs-li-mobile:not(.maxTabsDropdown > .tabs-li-mobile),
   .tabs-ul-mobile-helper .tabs-li-mobile:not(.maxTabsDropdown > .tabs-li-mobile),
+  .domain-filter > div > ul > li,
   .tabs-ul-mobile-helper #scenTabsetAdd,
   .tabs-ul-mobile .max-tabs-dropdown-label:not(.maxTabsDropdown > .tabs-li-mobile) ,
   #tpEditMeta > li  {
