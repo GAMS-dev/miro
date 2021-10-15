@@ -546,6 +546,7 @@ function createSettingsWindow() {
     titleBarStyle: 'hidden',
     show: false,
     frame: false,
+    icon: process.platform === 'linux' ? path.join(__dirname, 'static', 'icon_64x64.png') : undefined,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -590,6 +591,7 @@ function openAboutDialog() {
     resizable: false,
     show: false,
     frame: false,
+    icon: process.platform === 'linux' ? path.join(__dirname, 'static', 'icon_64x64.png') : undefined,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -632,6 +634,7 @@ function openCheckUpdateWindow() {
     titleBarStyle: 'hidden',
     show: false,
     frame: false,
+    icon: process.platform === 'linux' ? path.join(__dirname, 'static', 'icon_64x64.png') : undefined,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -901,6 +904,7 @@ Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
       minWidth: 800,
       minHeight: 600,
       show: false,
+      icon: process.platform === 'linux' ? path.join(__dirname, 'static', 'icon_64x64.png') : undefined,
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true,
@@ -1552,6 +1556,7 @@ app.on('ready', async () => {
       show: false,
       width: 0,
       height: 0,
+      icon: process.platform === 'linux' ? path.join(__dirname, 'static', 'icon_64x64.png') : undefined,
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: false,
