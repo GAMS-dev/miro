@@ -358,14 +358,15 @@ Sys.sleep(1)
 # no error message in log
 expect_true(app$waitFor("/^An unexpected error occurred/.test($('#asyncMiroLogContainer')[0].textContent)===false", timeout = 50))
 app$findElement("#shiny-modal .btn-default")$click()
-Sys.sleep(0.5)
+Sys.sleep(1)
 
 # discard test1 job
+expect_true(app$waitFor("$('#jImport_output td').length===1", timeout = 50))
 app$findElements("#jImport_output button[onclick*='discardJob']")[[1]]$click()
 Sys.sleep(1)
 app$findElement("#confirmModal .bt-gms-confirm")$click()
 Sys.sleep(1.5)
-expect_true(app$waitFor("$('#jImport_output td').length===0"))
+expect_true(app$waitFor("$('#jImport_output td').length===0", timeout = 50))
 
 # check job history
 app$findElement("#btShowHistory")$click()
