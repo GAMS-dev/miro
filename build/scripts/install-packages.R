@@ -347,7 +347,7 @@ local({
   adminConfig <- readLines("./server/admin/global.R", warn = FALSE)
   adminConfig <- gsub(
     'MIRO_VERSION[[:space:]]*<-[[:space:]]*"[^"]+"',
-    paste0('MIRO_VERSION      <- "', MIROVersion, '"'), adminConfig
+    paste0('MIRO_VERSION <- "', MIROVersion, '"'), adminConfig
   )
   adminConfig <- gsub(
     "REQUIRED_API_VERSION[[:space:]]*<-.*",
