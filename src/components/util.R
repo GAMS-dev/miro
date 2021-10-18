@@ -1239,8 +1239,10 @@ hotToR <- function(data, metaData, fixType = TRUE) {
   dataTmp <- suppressWarnings(as_tibble(
     data.table::rbindlist(data$data, use.names = FALSE)
   ))
-  rowsWithContent <- unite(dataTmp, "test", sep = "", remove = TRUE, na.rm = TRUE)[[1]] != ""
-  dataTmp <- dataTmp[rowsWithContent, ]
+  if (length(dataTmp)) {
+    rowsWithContent <- unite(dataTmp, "test", sep = "", remove = TRUE, na.rm = TRUE)[[1]] != ""
+    dataTmp <- dataTmp[rowsWithContent, ]
+  }
   if (length(metaData[["pivotCols"]])) {
     if (!length(dataTmp)) {
       dataTmp <- suppressMessages(

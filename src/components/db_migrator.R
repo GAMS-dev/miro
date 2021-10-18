@@ -255,35 +255,38 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
         return()
       }
 
-      colsToAdd <- migrationLayout$colNames == "-"
-      if (all(colsToAdd)) {
+      if (all(migrationLayout$colNames == "-")) {
         # just remove old table
         flog.debug("Removing table: %s", dbTableName)
         self$removeTablesModel(dbTableName)
         return()
       }
 
-      if (any(colsToAdd) &&
-        identical(sum(colsToAdd), length(newSchema$colNames) - min(which(colsToAdd)) + 1L)) {
-        # all columns to add are at the end
-        if (any(colsToRemove)) {
+      colsToModify <- migrationLayout$colNames != "-" & migrationLayout$colNames != newSchema$colNames
+      if (!any(colsToModify)) {
+        colsToAdd <- migrationLayout$colNames == "-" & !newSchema$colNames %in% currentLayout$colNames
+        if (any(colsToAdd) &&
+          identical(sum(colsToAdd), length(newSchema$colNames) - min(which(colsToAdd)) + 1L)) {
+          # all columns to add are at the end
+          if (any(colsToRemove)) {
+            flog.debug(
+              "Removing columns: %s from table: %s",
+              paste(currentLayout$colNames[colsToRemove], collapse = ", "),
+              dbTableName
+            )
+            private$dropColumns(dbTableName, currentLayout$colNames[colsToRemove])
+          }
           flog.debug(
-            "Removing columns: %s from table: %s",
-            paste(currentLayout$colNames[colsToRemove], collapse = ", "),
-            dbTableName
+            "Adding column(s): %s to the end of table: %s",
+            newSchema$colNames[colsToAdd], dbTableName
           )
-          private$dropColumns(dbTableName, currentLayout$colNames[colsToRemove])
+          private$addColumns(
+            dbTableName,
+            newSchema$colNames[colsToAdd],
+            dbSchema$getColTypesSQL(newSchema$colTypes)[colsToAdd]
+          )
+          return()
         }
-        flog.debug(
-          "Adding column(s): %s to the end of table: %s",
-          newSchema$colNames[colsToAdd], dbTableName
-        )
-        private$addColumns(
-          dbTableName,
-          newSchema$colNames[colsToAdd],
-          dbSchema$getColTypesSQL(newSchema$colTypes)[colsToAdd]
-        )
-        return()
       }
       # seems we are out of luck/no shortcuts
       # need to recreate table and copy data over
