@@ -361,7 +361,7 @@ app$findElement("#shiny-modal .btn-default")$click()
 Sys.sleep(1)
 
 # discard test1 job
-expect_true(app$waitFor("$('#jImport_output td').length===1", timeout = 50))
+expect_true(app$waitFor("$('#jImport_output tr').length===2", timeout = 50))
 app$findElements("#jImport_output button[onclick*='discardJob']")[[1]]$click()
 Sys.sleep(1)
 app$findElement("#confirmModal .bt-gms-confirm")$click()
