@@ -53,7 +53,7 @@ test_that("Generating hashes works", {
   inDataInst$push("_scalars", scalarDf)
   inDataInst$pushClArgs(clArgsDf)
   inDataInst$addFilePaths(file.path(getwd(), "..", "data", c("bad-views.json", "pickstock_negative_price.gdx")))
-  expectedHash <- "2d325cdb5b8b3866643fa12c1d74aa050536ce7ed3195b85cd092b5baff0e0a8"
+  expectedHash <- "7546dec8b27546a2a1fd48ea58f8ca2f314c3b70ba9b6bb8acbdf79da82352d4"
   expect_identical(inDataInst$generateScenHash(), expectedHash)
 
   # order of cl args should not matter

@@ -123,7 +123,7 @@ InputDataInstance <- R6Class("InputDataInstance", public = list(
     } else {
       private$dataHashes[[datasetName]] <- paste0(
         "--HCUBE_STATIC_", datasetName, "= ",
-        digest::digest(data, algo = "md5")
+        digest::digest(as.list(data), algo = "md5")
       )
     }
     return(invisible(self))
