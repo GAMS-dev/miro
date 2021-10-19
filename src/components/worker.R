@@ -1323,6 +1323,31 @@ Worker <- R6Class("Worker", public = list(
       if (identical(responseContent, -1L)) {
         return(private$status)
       }
+      if (private$metadata$hiddenLogFile) {
+        if (private$streamEntryQueueFinished) {
+          if (identical(responseContent$queue_finished, TRUE)) {
+            private$gamsRet <- responseContent$gams_return_code
+            private$wait <- 0L
+            private$waitCnt <- 0L
+            private$fRemoteRes <- future({
+              library(httr)
+              private$readRemoteOutput()
+            })
+            private$status <- "d"
+          } else {
+            private$status <- NULL
+          }
+          return(private$status)
+        }
+        responseContentStream <- private$readStreamEntry(
+          private$process,
+          private$metadata$miroLogFile
+        )
+        private$streamEntryQueueFinished <- responseContentStream$queue_finished
+        private$log <- responseContentStream$entry_value
+      } else {
+        private$log <- responseContent$message
+      }
       if (identical(responseContent$queue_finished, TRUE)) {
         private$gamsRet <- responseContent$gams_return_code
         private$wait <- 0L
@@ -1334,19 +1359,6 @@ Worker <- R6Class("Worker", public = list(
         private$status <- "d"
       } else {
         private$status <- NULL
-      }
-      if (private$metadata$hiddenLogFile) {
-        if (private$streamEntryQueueFinished) {
-          return(private$status)
-        }
-        responseContent <- private$readStreamEntry(
-          private$process,
-          private$metadata$miroLogFile
-        )
-        private$streamEntryQueueFinished <- responseContent$queue_finished
-        private$log <- responseContent$entry_value
-      } else {
-        private$log <- responseContent$message
       }
       if (!identical(private$log, "")) {
         private$updateLog <- private$updateLog + 1L
