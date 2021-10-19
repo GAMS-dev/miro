@@ -64,7 +64,8 @@ repeat{
   Sys.sleep(4L)
   timeout <- timeout - 4L
   if (timeout <= 0L) {
-    stop("Timeout reached. Engine server seems busy. Try again later.", call. = FALSE)
+    app$snapshot()
+    stop("Timeout reached. Engine server seems busy (1). Try again later.", call. = FALSE)
   }
 }
 app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
@@ -83,7 +84,8 @@ repeat{
   Sys.sleep(4L)
   timeout <- timeout - 4L
   if (timeout <= 0L) {
-    stop("Timeout reached. Engine server seems busy. Try again later.", call. = FALSE)
+    app$snapshot()
+    stop("Timeout reached. Engine server seems busy (2). Try again later.", call. = FALSE)
   }
 }
 app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
@@ -160,7 +162,8 @@ repeat{
   Sys.sleep(4L)
   timeout <- timeout - 4L
   if (timeout <= 0L) {
-    stop("Timeout reached. Engine server seems busy. Try again later.", call. = FALSE)
+    app$snapshot()
+    stop("Timeout reached. Engine server seems busy (3). Try again later.", call. = FALSE)
   }
 }
 Sys.sleep(1)
@@ -173,6 +176,7 @@ repeat{
   Sys.sleep(2L)
   timeout <- timeout - 2L
   if (timeout <= 0L) {
+    app$snapshot()
     stop("Timeout reached. Could not import HC job.", call. = FALSE)
   }
 }
@@ -297,7 +301,7 @@ repeat{
   timeout <- timeout - 2L
   if (timeout <= 0L) {
     app$snapshot()
-    stop("Timeout reached. Engine server seems busy. Try again later.", call. = FALSE)
+    stop("Timeout reached. Engine server seems busy (4). Try again later.", call. = FALSE)
   }
 }
 expect_error(app$findElements("#jImport_output button[onclick*='downloadJobData']")[[1]]$click(), NA)

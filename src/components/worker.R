@@ -1427,9 +1427,18 @@ Worker <- R6Class("Worker", public = list(
       tryCatch(
         unzip(resultsPath, exdir = workDir),
         error = function(e) {
+          contentPreview <- tryCatch(paste(as.character(readBin(resultsPath,
+            what = "raw", n = 20L
+          )),
+          collapse = " "
+          ),
+          error = function(e2) {
+            return(conditionMessage(e2))
+          }
+          )
           errMsg <<- sprintf(
-            "Problems extracting results archive. Error message: %s",
-            conditionMessage(e)
+            "Problems extracting results archive. Error message: %s. Preview of content received: %s.",
+            conditionMessage(e), contentPreview
           )
         }
       )
