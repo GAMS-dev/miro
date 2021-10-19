@@ -16,10 +16,11 @@ expect_false(any(is.na(scenData[[20]])))
 expect_false(any(is.na(scenData[[21]])))
 
 if (.Platform$OS.type == "windows") {
+  # scenario wtih lstTitleLeftAligned (checkbox tab) = 0 and maxstock = 6
   # CRLF in dowjones2016.csv results in different hash
-  scenHashTmp <- "e54c36e3fb4340624db0436bae4561a29afb2404cb6fa2fa859a6c22e89ce154"
+  scenHashTmp <- "543b744bb7d6f1116d3f95bf8c1656e4d0039f13d096f929edde05cff46bcbb1"
 } else {
-  scenHashTmp <- "5b34e4e1bdcf2ef45d5e95dbc3635bf8c3c5f0d193d4de1312f499da9462ed3c"
+  scenHashTmp <- "16717a4fd5c24e8a054410dc20f6e6b57ee8903db21ea3e48164716e10471c5f"
 }
 scenToCompare <- match(c("default", scenHashTmp), scenData[[2]])
 expect_false(any(is.na(scenToCompare)))
