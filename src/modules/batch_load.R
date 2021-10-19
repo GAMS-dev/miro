@@ -502,12 +502,14 @@ output$batchLoadResults <- renderDataTable(
     ) %>%
       formatDate(3L, method = "toLocaleString")
     if (length(data) > 4L) {
-      return(dtObj %>% formatRound(seq(5L, length(data))[vapply(data[, seq(5L, length(data))],
+      numericCols <- seq(5L, length(data))[vapply(data[, seq(5L, length(data))],
         is.numeric, logical(1L),
         USE.NAMES = FALSE
-      )],
-      digits = roundPrecision
-      ))
+      )]
+      if (!length(numericCols)) {
+        return(dtObj)
+      }
+      return(formatRound(dtObj, numericCols, digits = roundPrecision))
     }
     return(dtObj)
   }
