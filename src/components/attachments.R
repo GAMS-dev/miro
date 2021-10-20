@@ -212,6 +212,7 @@ Attachments <- R6Class("Attachments",
         )
       }
       existingFileNames <- self$getIds()
+      existingFileNames <- existingFileNames[!existingFileNames %in% private$attachmentsToRemove]
 
       fnToOverwrite <- fileNames %in% existingFileNames
 
@@ -339,9 +340,6 @@ Attachments <- R6Class("Attachments",
                 overwrite = TRUE
               )
             }
-            if (allExecPerm) {
-              private$attachmentsToClean <- c(private$attachmentsToClean, localPaths)
-            }
           }
         } else {
           stopifnot(is.character(fileNames))
@@ -376,9 +374,6 @@ Attachments <- R6Class("Attachments",
               )
             }
 
-            if (allExecPerm) {
-              private$attachmentsToClean <- c(private$attachmentsToClean, localPaths)
-            }
             if (length(localPaths) == length(filePaths)) {
               return(filePaths)
             }
@@ -404,10 +399,7 @@ Attachments <- R6Class("Attachments",
           }
           fileNames <- fileNames[execPerm == TRUE]
           if (length(private$attachmentsToRemove)) {
-            fileNames <- fileNames[!fileNames %in% setdiff(
-              private$attachmentsToRemove,
-              basename(private$localAttachments$filePaths)
-            )]
+            fileNames <- fileNames[!fileNames %in% private$attachmentsToRemove]
           }
           if (!length(fileNames)) {
             return(localPaths)
@@ -431,9 +423,6 @@ Attachments <- R6Class("Attachments",
           remotePaths <- filePaths[match(data[["fileName"]], fileNames)]
         }
         Map(writeBin, data[["fileContent"]], remotePaths)
-        if (allExecPerm && is.null(scenId)) {
-          private$attachmentsToClean <- c(private$attachmentsToClean, remotePaths)
-        }
       }
       return(c(remotePaths, localPaths))
     },
@@ -610,23 +599,8 @@ Attachments <- R6Class("Attachments",
       private$resetOpQueue()
       private$sid <- NULL
       if (cleanLocal) {
-        self$cleanLocal()
+        private$removeLocalFiles()
       }
-      return(invisible(self))
-    },
-    cleanLocal = function() {
-      if (length(private$attachmentsToClean)) {
-        removedLocalFiles <- file.remove(private$attachmentsToClean)
-        if (any(!removedLocalFiles)) {
-          flog.warn(
-            "Some local attachments could not be removed: '%s' (Attachments.cleanLocal).",
-            paste(private$attachmentsToClean[!removedLocalFiles],
-              collapse = "', '"
-            )
-          )
-        }
-      }
-      private$attachmentsToClean <- character(0L)
       return(invisible(self))
     },
     removeExpired = function(fileNames, maxDuration) {
@@ -678,32 +652,37 @@ Attachments <- R6Class("Attachments",
     config = NULL,
     attachmentData = NULL,
     workDir = NULL,
-    attachmentsToClean = character(0),
     localAttachments = list(
       filePaths = character(0L),
       execPerm = logical(0L)
     ),
+    localAttachmentsNotCleaned = character(0L),
     attachmentsToRemove = character(0L),
     attachmentsUpdateExec = list(
       name = character(0L),
       execPerm = logical(0L)
     ),
     removeLocalFiles = function() {
-      if (length(private$localAttachments$filePaths)) {
-        removedLocalFiles <- file.remove(private$localAttachments$filePaths)
+      if (length(private$localAttachmentsNotCleaned)) {
+        removedLocalFiles <- file.remove(unique(private$localAttachmentsNotCleaned))
         if (any(!removedLocalFiles)) {
           flog.warn(
             "Some local attachments could not be removed: '%s' (Attachments.removeLocalFiles).",
-            paste(private$localAttachments$filePaths[!removedLocalFiles],
+            paste(private$localAttachmentsNotCleaned[!removedLocalFiles],
               collapse = "', '"
             )
           )
         }
+        private$localAttachmentsNotCleaned <- character(0L)
       }
       return(invisible(self))
     },
     resetOpQueue = function() {
       private$attachmentsToRemove <- character(0L)
+      private$localAttachmentsNotCleaned <- c(
+        private$localAttachmentsNotCleaned,
+        private$localAttachments$filePaths
+      )
       private$localAttachments <- list(
         filePaths = character(0L),
         execPerm = logical(0L)
