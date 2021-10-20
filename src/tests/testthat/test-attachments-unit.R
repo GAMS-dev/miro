@@ -184,7 +184,6 @@ test_that("Saving/downloading attachments work", {
   expect_error(attachments$download(workDir, allExecPerm = TRUE), NA)
   expect_true(all(file.exists(file.path(workDir, c("_scalars.csv", "bad-views2.json")))))
   expect_false(file.exists(file.path(workDir, c("scalars.csv"))))
-  unlink(file.path(workDir, c("_scalars.csv", "bad-views2.json", "scalars.csv")))
 })
 
 test_that("Overwriting attachments work", {
@@ -204,7 +203,6 @@ test_that("Overwriting attachments work", {
   expect_true(file.exists(file.path(workDir, "asd.csv")))
   expect_identical(readBin(file.path(workDir, "asd.csv"), "raw"), as.raw(0x2e))
   expect_identical(callbackCounter, 4L)
-  unlink(file.path(workDir, c("asd.csv")))
 })
 
 test_that("Updating attachments works", {
@@ -225,10 +223,16 @@ test_that("Updating attachments works", {
   ), NA)
   expect_error(attachments$remove(session = NULL, "_scalars.csv"), NA)
   expect_error(attachments$remove(session = NULL, "_scalars.csv"), class = "error_file_not_found")
+
+  unlink(file.path(workDir, "bad-views2.json"))
   expect_error(attachments$download(workDir, allExecPerm = TRUE), NA)
 
   expect_false(any(file.exists(file.path(workDir, c("_scalars.csv", "bad-views2.json")))))
   expect_true(file.exists(file.path(workDir, c("scalars.csv"))))
+  file.copy(
+    file.path(testDir, "data", "bad-views2.json"),
+    file.path(workDir, "bad-views2.json")
+  )
   expect_error(attachments$add(
     session = NULL, file.path(testDir, "data", c("_scalars.csv")),
     fileNames = c("_scalars.csv"), overwrite = TRUE, execPerm = NULL
@@ -237,18 +241,21 @@ test_that("Updating attachments works", {
     file.path(workDir, "_scalars.csv"),
     file.path(testDir, "data", "_scalars.csv")
   )
-  unlink(file.path(workDir, c("bad-views2.json")))
 })
 
 test_that("Download multiple attachments works", {
   expect_identical(length(attachments$download(workDir, fileNames = c("_scalars.csv", "scalars.csv"))), 2L)
-  expect_true(file.exists(file.path(workDir, c("_scalars.csv"))))
-  unlink(file.path(workDir, c("_scalars.csv", "scalars.csv")))
+  expect_true(all(file.exists(file.path(workDir, c("_scalars.csv", "scalars.csv")))))
+  unlink(file.path(workDir, c("scalars.csv")))
 })
 
 test_that("Saving already deleted attachment should result in warning in log", {
   expect_output(opQueue <- attachments$flushOpQueue(), regexp = "Problems reading file:.* No such file or directory")
-  expect_identical(opQueue$save$fileContent, blob::new_blob(list(raw(0), raw(0))))
+  expect_identical(opQueue$save$fileName, c("scalars.csv", "_scalars.csv"))
+  expect_identical(opQueue$save$fileContent, blob::new_blob(list(
+    raw(0),
+    charToRaw("scalar,description,value\nmaxstock,maximum number of stocks to select,4\ntrainingdays,number of days for training,100\nsolver,MIP-Solver,CPLEX\n")
+  )))
 })
 
 db$finalize()

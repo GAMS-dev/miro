@@ -423,6 +423,12 @@ Attachments <- R6Class("Attachments",
           remotePaths <- filePaths[match(data[["fileName"]], fileNames)]
         }
         Map(writeBin, data[["fileContent"]], remotePaths)
+        if (allExecPerm && is.null(scenId)) {
+          private$localAttachmentsNotCleaned <- unique(c(
+            private$localAttachmentsNotCleaned,
+            remotePaths
+          ))
+        }
       }
       return(c(remotePaths, localPaths))
     },
@@ -664,7 +670,7 @@ Attachments <- R6Class("Attachments",
     ),
     removeLocalFiles = function() {
       if (length(private$localAttachmentsNotCleaned)) {
-        removedLocalFiles <- file.remove(unique(private$localAttachmentsNotCleaned))
+        removedLocalFiles <- file.remove(private$localAttachmentsNotCleaned)
         if (any(!removedLocalFiles)) {
           flog.warn(
             "Some local attachments could not be removed: '%s' (Attachments.removeLocalFiles).",
@@ -679,10 +685,10 @@ Attachments <- R6Class("Attachments",
     },
     resetOpQueue = function() {
       private$attachmentsToRemove <- character(0L)
-      private$localAttachmentsNotCleaned <- c(
+      private$localAttachmentsNotCleaned <- unique(c(
         private$localAttachmentsNotCleaned,
         private$localAttachments$filePaths
-      )
+      ))
       private$localAttachments <- list(
         filePaths = character(0L),
         execPerm = logical(0L)
@@ -764,19 +770,8 @@ Attachments <- R6Class("Attachments",
       localFilesToRemoveId <- localFiles[!is.na(localFiles)]
 
       if (length(localFilesToRemoveId)) {
-        localFilesToRemove <- private$localAttachments$
-          filePaths[localFilesToRemoveId]
-
         if (removeLocal) {
-          removedLocalFiles <- file.remove(localFilesToRemove)
-          if (any(!removedLocalFiles)) {
-            flog.warn(
-              "Some local attachments could not be removed: '%s'.",
-              paste(localFilesToRemove[!removedLocalFiles],
-                collapse = "', '"
-              )
-            )
-          }
+          private$.removeLocalFiles(private$localAttachments$filePaths[localFilesToRemoveId])
         }
 
         private$localAttachments$filePaths <- private$localAttachments$filePaths[-localFilesToRemoveId]
@@ -794,8 +789,28 @@ Attachments <- R6Class("Attachments",
 
         fileNames <- fileNames[is.na(localFiles)]
       }
+      if (removeLocal) {
+        localFilesToRemoveId <- match(fileNames, basename(private$localAttachmentsNotCleaned))
+        localFilesToRemoveId <- localFilesToRemoveId[!is.na(localFilesToRemoveId)]
+        if (length(localFilesToRemoveId)) {
+          private$.removeLocalFiles(private$localAttachmentsNotCleaned[localFilesToRemoveId])
+        }
+      }
       private$attachmentsToRemove <- c(private$attachmentsToRemove, fileNames)
       invisible(self)
+    },
+    .removeLocalFiles = function(filePaths) {
+      removedLocalFiles <- file.remove(filePaths)
+      if (any(!removedLocalFiles)) {
+        flog.warn(
+          "Some local attachments could not be removed: '%s'.",
+          paste(filePaths[!removedLocalFiles],
+            collapse = "', '"
+          )
+        )
+      }
+      private$localAttachmentsNotCleaned <- private$localAttachmentsNotCleaned[!private$localAttachmentsNotCleaned %in% filePaths]
+      return(invisible(self))
     }
   )
 )
