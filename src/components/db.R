@@ -458,11 +458,14 @@ Db <- R6Class("Db",
 
       subsetRows <- NULL
       if (!is.null(colNames)) {
-        subsetRows <- paste(paste(DBI::dbQuoteIdentifier(private$conn, colNames),
-          DBI::dbQuoteLiteral(private$conn, values),
-          sep = " = "
-        ),
-        collapse = paste0(" ", conditionSep, " ")
+        subsetRows <- paste0(
+          "(",
+          paste(paste(DBI::dbQuoteIdentifier(private$conn, colNames),
+            DBI::dbQuoteLiteral(private$conn, values),
+            sep = " = "
+          ),
+          collapse = paste0(" ", conditionSep, " ")
+          ), ")"
         )
       }
       if (!is.null(subsetSids) && length(subsetSids) >= 1L) {
