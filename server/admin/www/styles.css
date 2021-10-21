@@ -14,7 +14,7 @@
 #expandedAddAppWrapper{
   position: relative;
 }
-#addAppSpinner {
+.app-spinner {
   background-color: rgba(0,0,0,0.8);
   z-index: 1000;
   display: none;
@@ -23,6 +23,16 @@
   position: absolute;
   top: 0;
   left: 0;
+}
+.app-data-file-input {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.app-data-file-input .drag-drop-area-text {
+  padding: 0;
 }
 html,
 body {

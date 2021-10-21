@@ -14,7 +14,8 @@ repos:
                 src/tests/shinytest/views_metadata_test-expected/views2.json|
                 src/tests/shinytest/views_import_test-expected/views.json|
                 src/www/skin_.*|
-                src/www/miro.*\.js.*
+                src/www/miro.*\.js.*|
+                server/admin/www/model_update\.js.*
             )$
     -   id: trailing-whitespace
     -   id: check-merge-conflict

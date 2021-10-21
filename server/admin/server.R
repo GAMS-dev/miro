@@ -494,6 +494,24 @@ server <- function(input, output, session) {
     flog.info("Request to add miroscen received (Overwrite: true).")
     addMiroscen(input$miroDataFiles$datapath, TRUE)
   })
+  observeEvent(input$updateAppRequest, {
+    appId <- input$updateAppRequest$id
+    overwriteData <- identical(input$updateAppRequest$overwrite, TRUE)
+    flog.info(
+      "Request to update app data of app: '%s' received (Overwrite: '%s').",
+      appId, overwriteData
+    )
+    filePath <- input[[paste0("appFiles_", appId)]]$datapath
+  })
+  observeEvent(input$updateAppDataRequest, {
+    appId <- input$updateAppDataRequest$id
+    overwriteData <- identical(input$updateAppDataRequest$overwrite, TRUE)
+    flog.info(
+      "Request to update app data of app: '%s' received (Overwrite: '%s').",
+      appId, overwriteData
+    )
+    filePath <- input[[paste0("appFiles_", appId)]]$datapath
+  })
   # database migration manager
   migrationObs <- NULL
   observe({

@@ -489,7 +489,7 @@ async function updateMIROApp(newApp, appIdToUpdate = null) {
   mainWindow.setProgressBar(0);
   const appDir = path.join(appDataPath, appConf.id);
   const appDirTmp = path.join(appDataPath, `~$${appConf.id}`);
-  const appDirTmp2 = path.join(appDataPath, `~$~${appConf.id}`);
+  const appDirTmp2 = path.join(appDataPath, `~$~$${appConf.id}`);
   try {
     [appDirTmp, appDirTmp2].forEach((dirName) => {
       if (fs.existsSync(dirName)) {

@@ -37,6 +37,7 @@ const appDescPlaceholder = 'Short model description (optional)';
 const appEnvPlaceholder = 'App environment (JSON, optional)';
 const appGroupsPlaceholder = 'Access groups (optional)';
 const appLogoPlaceholder = 'Different app logo? Drop your MIRO app logo here.';
+const overwriteAppData = {};
 let reorderAppsMode = false;
 let currentConfigList = null;
 let currentGroupList = [];
@@ -54,6 +55,8 @@ const addAppWrapperHTML = `<div id="addAppBox" class="add-app-box app-box-fixed-
                              </div>
                             <a class="btn-add-app" id="addApp"><i class="fas fa-plus-circle"></i></a>
                           </div>`;
+
+const supportedDataFileTypes = ['gdx', 'miroscen', 'xlsx', 'xlsm', 'xls', 'zip'];
 
 function validateAppEnv(envContentRaw) {
   if (envContentRaw.trim() === '') {
@@ -189,6 +192,22 @@ function refreshConfigList() {
     }
     return `${html}<div class="col-xxl-3 col-lg-4 col-sm-6 col-12 miro-app-item" data-id="${id}">
         <div id="appBox_${id}" class="app-box app-box-draggable launch-app-box app-box-fixed-height" data-id="${id}" data-index="${index}" draggable="true">
+          <div id="appSpinner_${id}" class="app-spinner">
+            <div class="progress" style="position:relative;top:50%;margin-left:auto;margin-right:auto;width:90%">
+              <div id="appProgress_${id}" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+          <div class="input-group app-data-file-input">
+            <label for="appFiles_${id}" style="width:100%;height:100%;">
+              <div class="drag-drop-area-text empty">
+              </div>
+            </label>
+            <input class="input-btn app-data-file-input-el" style="margin-top:1rem;" type="file"
+              name="appFiles_${id}" id="appFiles_${id}" data-restore="" multiple="multiple" accept=".miroapp,${supportedDataFileTypes.map((el) => `.${el}`).join(',')}">
+          </div>
+          <div id="appFiles_${id}_progress" class="progress active shiny-file-input-progress">
+            <div class="progress-bar"></div>
+          </div>
           <div>
             <div style="height:200px;">
               <div id="appLogo_${id}" class="app-logo" style="background-image:url(${configData.logob64});" data-id="${id}">
@@ -234,7 +253,7 @@ function expandAddAppForm() {
   $('#addAppWrapper').css('z-index', 11);
   $overlay.data('current', $('#addAppWrapper')).fadeIn(300);
   $('#addAppWrapper').html(`<div class="app-box" id="expandedAddAppWrapper">
-                        <div id="addAppSpinner">
+                        <div id="addAppSpinner" class="app-spinner">
                           <div class="progress" style="position:relative;top:50%;margin-left:auto;margin-right:auto;width:90%">
                             <div id="addAppProgress" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                           </div>
@@ -300,9 +319,6 @@ $appsWrapper.on('drop', '.app-logo', (e) => {
   $('.btn-save-changes').attr('disabled', true);
   $('#btAddApp').attr('disabled', true);
 });
-$appsWrapper.on('dragenter', '#addAppBox', () => {
-  expandAddAppForm();
-});
 $appsWrapper.on('dragover', '#addAppBox', (e) => {
   e.preventDefault();
   e.stopPropagation();
@@ -362,9 +378,6 @@ $appsWrapper.on('dragstart', '.app-box-draggable', (e) => {
   e.originalEvent.target.style.opacity = 0.5;
 });
 $appsWrapper.on('dragenter', '.app-box-draggable', function (e) {
-  if (!reorderAppsMode) {
-    return;
-  }
   e.preventDefault();
   e.stopPropagation();
   dragAddAppCounter += 1;
@@ -375,9 +388,6 @@ $appsWrapper.on('dragover', '.app-box-draggable', (e) => {
   e.stopPropagation();
 });
 $appsWrapper.on('dragleave', '.app-box-draggable', function (e) {
-  if (!reorderAppsMode) {
-    return;
-  }
   e.preventDefault();
   e.stopPropagation();
   dragAddAppCounter -= 1;
@@ -386,42 +396,117 @@ $appsWrapper.on('dragleave', '.app-box-draggable', function (e) {
   }
 });
 $appsWrapper.on('dragend', '.app-box-draggable', (e) => {
-  if (!reorderAppsMode) {
-    return;
-  }
   e.preventDefault();
   e.stopPropagation();
   reorderAppsMode = false;
   e.originalEvent.dataTransfer.clearData();
   $('.app-box-draggable').removeClass('drag-drop-area-dragover').css('opacity', '');
 });
-$appsWrapper.on('drop', '.app-box-draggable', function (e) {
-  if (!reorderAppsMode) {
+
+function sendUpdateAppShinyEvent(appId, fileTypes) {
+  if (overwriteAppData[appId] == null) {
     return;
   }
+  const spinnerId = `#appSpinner_${appId}`;
+  $(spinnerId).show();
+  $(`#appFiles_${appId}_progress`).css('visibility', '');
+  if (fileTypes.length === 1 && fileTypes[0] === 'miroapp') {
+    Shiny.setInputValue('updateAppRequest', { id: appId, overwrite: overwriteAppData[appId] }, {
+      priority: 'event',
+    });
+    return;
+  }
+  const invalidFileTypes = fileTypes
+    .filter((fileType) => !supportedDataFileTypes.includes(fileType));
+  if (invalidFileTypes.length === 0) {
+    Shiny.setInputValue('updateAppDataRequest', { id: appId, overwrite: overwriteAppData[appId] }, {
+      priority: 'event',
+    });
+    return;
+  }
+  $(spinnerId).hide();
+}
+
+$(document).on('shiny:inputchanged', (event) => {
+  const eventName = event.name;
+  if (eventName.startsWith('appFiles_') && event.value != null && event.value.length > 0) {
+    const appId = eventName.substring(9);
+    const fileTypes = event.value.map((fileTmp) => fileTmp.name.split('.').pop().toLowerCase());
+    sendUpdateAppShinyEvent(appId, fileTypes);
+  }
+});
+$appsWrapper.on('drop', '.app-box-draggable', function (e) {
   e.preventDefault();
+  let filesDropped = false;
+  if (!reorderAppsMode) {
+    if (!e.originalEvent.dataTransfer.files) {
+      return;
+    }
+    filesDropped = true;
+  }
   reorderAppsMode = false;
   dragAddAppCounter = 0;
   $('.app-box-draggable').removeClass('drag-drop-area-dragover').css('opacity', '');
 
-  const idFromRaw = e.originalEvent.dataTransfer.getData('text/plain');
-  const idFrom = idFromRaw.slice(7);
   const idToRaw = $(this).attr('id');
   const idTo = idToRaw.slice(7);
+  if (filesDropped) {
+    const filesTmp = [...e.originalEvent.dataTransfer.files];
+    const fileTypes = filesTmp.map((fileTmp) => fileTmp.name.split('.').pop().toLowerCase());
+    const showOverwriteDialog = () => bootbox.confirm({
+      message: 'Do you want to overwrite existing scenario data?',
+      buttons: {
+        cancel: {
+          label: 'No, keep existing data',
+        },
+        confirm: {
+          label: 'Yes, overwrite',
+        },
+      },
+      centerVertical: true,
+      onEscape: false,
+      callback: (overwriteConfirmed) => {
+        overwriteAppData[idTo] = overwriteConfirmed;
+        sendUpdateAppShinyEvent(idTo, fileTypes);
+      },
+    });
+    if (fileTypes.length === 1 && fileTypes[0] === 'miroapp') {
+      showOverwriteDialog();
+      return;
+    }
+    const invalidFileTypes = fileTypes
+      .filter((fileType) => !supportedDataFileTypes.includes(fileType));
+    if (invalidFileTypes.length === 0) {
+      showOverwriteDialog();
+      return;
+    }
+    bootbox.alert({
+      title: 'Invalid file',
+      message: `The file you dropped is not supported. Please drop either a new MIRO app (.miroapp) to update the current version or a valid data file (${supportedDataFileTypes.join(',')}).`,
+      centerVertical: true,
+    });
+    return;
+  }
+
+  const idFromRaw = e.originalEvent.dataTransfer.getData('text/plain');
+  const idFrom = idFromRaw.slice(7);
   if (idFrom !== idTo) {
     sendUpdateAppOrderRequest(idFrom, idTo, idFromRaw, idToRaw);
   }
 });
 
 $appsWrapper.on('click', '.app-box', function (e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const $this = $(this);
+  $this.children('.app-data-file-input').hide();
   const $target = $(e.target);
   if ($overlay.is(':visible')
-      || $target.hasClass('cancel-btn')
-      || $target.hasClass('delete-app-button')
-      || $target.parents('.delete-app-button').length) {
+    || $target.hasClass('cancel-btn')
+    || $target.hasClass('delete-app-button')
+    || $target.parents('.delete-app-button').length) {
     return;
   }
-  const $this = $(this);
   const appID = this.dataset.id;
   const appIndex = this.dataset.index;
   if (appIndex) {
@@ -539,7 +624,7 @@ $(document).ready(() => {
   $(document).keyup((event) => {
     if (event.keyCode === 13 && !event.ctrlKey) {
       if ($('#shiny-modal').find('.selectize-input.input-active').length > 0
-          || $('#shiny-modal').find('*[data-dismiss="modal"]').is(':focus')) {
+        || $('#shiny-modal').find('*[data-dismiss="modal"]').is(':focus')) {
         return;
       }
 
