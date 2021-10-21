@@ -71,6 +71,11 @@ if (is.null(errMsg)) {
       "The MIRO app name: '%s' is too long! A maximum length of 60 characters is allowed!",
       modelName
     )
+  } else if (startsWith(modelName, "~$")) {
+    errMsg <- sprintf(
+      "The MIRO app name: '%s' must not start with: '~$'!",
+      modelName
+    )
   } else if (!file.exists(paste0(
     currentModelDir, .Platform$file.sep, "conf_", modelName,
     .Platform$file.sep, modelName, ".json"

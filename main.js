@@ -23,6 +23,9 @@ const AppDataStore = require('./components/AppDataStore');
 const ConfigManager = require('./components/ConfigManager');
 const unzip = util.promisify(require('./components/Unzip'));
 const MiroProcessManager = require('./components/MiroProcessManager');
+const {
+  getAppDbPath,
+} = require('./components/util');
 
 const isMac = process.platform === 'darwin';
 const DEVELOPMENT_MODE = !app.isPackaged;
@@ -124,196 +127,212 @@ function hideZoomMenu() {
 
 let newAppConf;
 
-function validateMIROApp(filePathArg) {
+function validateMIROApp(filePathArg, sendToRendererProc = true) {
   log.debug(`Validating new MIRO app (filePath: ${filePathArg.join(',')}).`);
-  const filePath = filePathArg.filter((el) => el.toLowerCase().endsWith('.miroapp'));
-  if (filePath.length === 0) {
-    log.error('Validation of MIRO app failed due to invalid file path.');
-    return showErrorMsg({
-      type: 'info',
-      title: lang.main.ErrorInvalidHdr,
-      message: lang.main.ErrorInvalidMsg,
-    });
-  } if (filePath.length > 1) {
-    log.error('Validation of MIRO app failed due to invalid file path.');
-    return showErrorMsg({
-      type: 'info',
-      title: lang.main.ErrorInvalidHdr,
-      message: lang.main.ErrorInvalidTwoMsg,
-    });
-  }
-  yauzl.open(filePath[0], (err, zipfile) => {
-    const showZipfileError = (e) => {
-      log.debug(`Problems extracting and validating new MIRO app. Error message: ${e.message}`);
-      if (mainWindow) {
-        mainWindow.setProgressBar(-1);
-      }
+  return new Promise((resolve) => {
+    const filePath = filePathArg.filter((el) => el.toLowerCase().endsWith('.miroapp'));
+    if (filePath.length === 0) {
+      log.error('Validation of MIRO app failed due to invalid file path.');
       showErrorMsg({
-        type: 'error',
-        title: lang.main.ErrorUnexpectedHdr,
-        message: `${lang.main.ErrorReadMsg} '${e.message}'`,
+        type: 'info',
+        title: lang.main.ErrorInvalidHdr,
+        message: lang.main.ErrorInvalidMsg,
       });
-    };
-    if (err) {
-      return showZipfileError(err);
+      resolve(false);
     }
-    const appFileNames = [];
-    const incAmt = 0.8 / zipfile.entryCount;
-    let fileCnt = 0;
-    let skipCntAppInfo = 0;
-    newAppConf = {
-      modesAvailable: [],
-      usetmpdir: true,
-    };
-    zipfile.on('error', (error) => {
-      log.error(`MIRO app could not be extracted. Error message: ${error.message}.`);
-      return showZipfileError(error);
-    });
-    zipfile.on('entry', (entry) => {
-      if (!mainWindow) {
-        zipfile.close();
+    if (filePath.length > 1) {
+      log.error('Validation of MIRO app failed due to invalid file path.');
+      showErrorMsg({
+        type: 'info',
+        title: lang.main.ErrorInvalidHdr,
+        message: lang.main.ErrorInvalidTwoMsg,
+      });
+      resolve(false);
+    }
+    yauzl.open(filePath[0], (err, zipfile) => {
+      const showZipfileError = (e) => {
+        log.debug(`Problems extracting and validating new MIRO app. Error message: ${e.message}`);
+        if (mainWindow) {
+          mainWindow.setProgressBar(-1);
+        }
+        showErrorMsg({
+          type: 'error',
+          title: lang.main.ErrorUnexpectedHdr,
+          message: `${lang.main.ErrorReadMsg} '${e.message}'`,
+        });
+        resolve(false);
+      };
+      if (err) {
+        resolve(showZipfileError(err));
       }
-      fileCnt += 1;
-      mainWindow.setProgressBar(fileCnt * incAmt);
-      appFileNames.push(entry.fileName);
-      if (skipCntAppInfo < 2) {
-        if (path.dirname(entry.fileName).startsWith('static_')) {
-          if (path.basename(entry.fileName.toLowerCase()) === 'app_info.json') {
-            log.debug('App info file in new MIRO app found.');
-            skipCntAppInfo += 1;
-            zipfile.openReadStream(entry, (error, readStream) => {
-              if (error) {
-                return showZipfileError(error);
-              }
-              const appInfoData = [];
-              readStream.on('data', (chunk) => {
-                appInfoData.push(chunk);
-              });
-              readStream.on('end', () => {
-                try {
-                  const appInfo = JSON.parse(Buffer
-                    .concat(appInfoData)
-                    .toString('utf8'));
-                  newAppConf.title = appInfo.title;
-                  newAppConf.description = appInfo.description;
-                } catch (e) {
-                  if (e instanceof SyntaxError) {
-                    log.debug(`Invalid JSON syntax in app info file. File will be ignored. Error message: ${e.message}`);
-                  } else {
-                    log.warn(`Unexpected error occurred while reading app info file. Error message: ${e.message}`);
+      const appFileNames = [];
+      const incAmt = 0.8 / zipfile.entryCount;
+      let fileCnt = 0;
+      let skipCntAppInfo = 0;
+      newAppConf = {
+        modesAvailable: [],
+        usetmpdir: true,
+      };
+      zipfile.on('error', (error) => {
+        log.error(`MIRO app could not be extracted. Error message: ${error.message}.`);
+        resolve(showZipfileError(error));
+      });
+      zipfile.on('entry', (entry) => {
+        if (!mainWindow) {
+          zipfile.close();
+        }
+        fileCnt += 1;
+        mainWindow.setProgressBar(fileCnt * incAmt);
+        appFileNames.push(entry.fileName);
+        if (skipCntAppInfo < 2) {
+          if (path.dirname(entry.fileName).startsWith('static_')) {
+            if (path.basename(entry.fileName.toLowerCase()) === 'app_info.json') {
+              log.debug('App info file in new MIRO app found.');
+              skipCntAppInfo += 1;
+              zipfile.openReadStream(entry, (error, readStream) => {
+                if (error) {
+                  resolve(showZipfileError(error));
+                }
+                const appInfoData = [];
+                readStream.on('data', (chunk) => {
+                  appInfoData.push(chunk);
+                });
+                readStream.on('end', () => {
+                  try {
+                    const appInfo = JSON.parse(Buffer
+                      .concat(appInfoData)
+                      .toString('utf8'));
+                    newAppConf.title = appInfo.title;
+                    newAppConf.description = appInfo.description;
+                  } catch (e) {
+                    if (e instanceof SyntaxError) {
+                      log.debug(`Invalid JSON syntax in app info file. File will be ignored. Error message: ${e.message}`);
+                    } else {
+                      log.warn(`Unexpected error occurred while reading app info file. Error message: ${e.message}`);
+                    }
                   }
-                }
+                });
+                resolve(false);
               });
-              return null;
-            });
-            return;
-          }
-          const logoExt = entry.fileName.toLowerCase().match(/.*_logo\.(jpg|jpeg|png)$/);
-          if (logoExt) {
-            newAppConf.logoPath = entry.fileName;
-            log.debug('Logo in new MIRO app found.');
-            const logoPathTmp = path.join(app.getPath('temp'), `logo.${logoExt[1]}`);
-            zipfile.openReadStream(entry, (error, readStream) => {
-              if (error) {
-                return showZipfileError(error);
-              }
-              readStream.pipe(fs.createWriteStream(logoPathTmp));
-              readStream.on('end', () => {
-                newAppConf.logoPathTmp = logoPathTmp;
-                if (mainWindow) {
-                  mainWindow.webContents.send('validated-logo-received', { path: logoPathTmp });
+              resolve(false);
+            }
+            const logoExt = entry.fileName.toLowerCase().match(/.*_logo\.(jpg|jpeg|png)$/);
+            if (logoExt) {
+              newAppConf.logoPath = entry.fileName;
+              log.debug('Logo in new MIRO app found.');
+              const logoPathTmp = path.join(app.getPath('temp'), `logo.${logoExt[1]}`);
+              zipfile.openReadStream(entry, (error, readStream) => {
+                if (error) {
+                  resolve(showZipfileError(error));
                 }
+                readStream.pipe(fs.createWriteStream(logoPathTmp));
+                readStream.on('end', () => {
+                  newAppConf.logoPathTmp = logoPathTmp;
+                  if (mainWindow && sendToRendererProc) {
+                    mainWindow.webContents.send('validated-logo-received', { path: logoPathTmp });
+                  }
+                });
               });
-              return null;
-            });
-            skipCntAppInfo += 1;
+              skipCntAppInfo += 1;
+            }
           }
         }
-      }
-    });
-    zipfile.once('end', () => {
-      log.debug('New MIRO app extracted successfully.');
-      if (!mainWindow) {
-        return;
-      }
-      let invalidMiroApp = false;
-      const errMsgTemplate = 'The MIRO app you want to add is invalid. Please make sure to upload a valid MIRO app!';
-      const miroConfFormat = /(.*)_(\d)_(\d+)_(\d+\.\d+\.\d+)(_hcube)?\.miroconf$/;
-      // eslint-disable-next-line no-restricted-syntax
-      for (const fileName of appFileNames) {
-        if (path.dirname(fileName) === '.' && fileName.endsWith('.miroconf')) {
-          const miroConfMatch = fileName.match(miroConfFormat);
-          if (miroConfMatch && miroConfMatch[1].length) {
-            if (miroConfMatch[5]) {
-              log.warn('Hypercube configuration found in app bundle. It will be ignored because the Hypercube Mode is no longer supported as of MIRO 2.2.');
-            } else {
-              if (newAppConf.modesAvailable.includes('base')) {
-                log.warn('Multiple base configurations found in app bundle. Invalid app.');
-                invalidMiroApp = true;
-                break;
-              }
-              log.debug('Base mode configuration in new MIRO app found.');
-              newAppConf.modesAvailable.push('base');
-              newAppConf.usetmpdir = miroConfMatch[2] === '1';
-              [newAppConf.path] = filePath;
-              [, newAppConf.id, , , newAppConf.miroversion] = miroConfMatch;
-              newAppConf.apiversion = parseInt(miroConfMatch[3], 10);
-              log.info(`New MIRO app successfully identified. Id: ${newAppConf.id}, \
+      });
+      zipfile.once('end', () => {
+        log.debug('New MIRO app extracted successfully.');
+        let invalidMiroApp = false;
+        const errMsgTemplate = 'The MIRO app you want to add is invalid. Please make sure to upload a valid MIRO app!';
+        const miroConfFormat = /(.*)_(\d)_(\d+)_(\d+\.\d+\.\d+)(_hcube)?\.miroconf$/;
+        // eslint-disable-next-line no-restricted-syntax
+        for (const fileName of appFileNames) {
+          if (path.dirname(fileName) === '.' && fileName.endsWith('.miroconf')) {
+            const miroConfMatch = fileName.match(miroConfFormat);
+            if (miroConfMatch && miroConfMatch[1].length) {
+              if (miroConfMatch[5]) {
+                log.warn('Hypercube configuration found in app bundle. It will be ignored because the Hypercube Mode is no longer supported as of MIRO 2.2.');
+              } else {
+                if (newAppConf.modesAvailable.includes('base')) {
+                  log.warn('Multiple base configurations found in app bundle. Invalid app.');
+                  invalidMiroApp = true;
+                  break;
+                }
+                log.debug('Base mode configuration in new MIRO app found.');
+                newAppConf.modesAvailable.push('base');
+                newAppConf.usetmpdir = miroConfMatch[2] === '1';
+                [newAppConf.path] = filePath;
+                [, newAppConf.id, , , newAppConf.miroversion] = miroConfMatch;
+                newAppConf.apiversion = parseInt(miroConfMatch[3], 10);
+                if (newAppConf.id.startsWith('~$')) {
+                  log.warn("App ID starts with illegal characters ('~$'). Invalid app.");
+                  invalidMiroApp = true;
+                  break;
+                }
+                log.info(`New MIRO app successfully identified. Id: ${newAppConf.id}, \
   API version: ${newAppConf.apiversion}, \
   MIRO version: ${newAppConf.miroversion}.`);
+              }
+            } else {
+              log.debug(`Invalid MIROconf file found in new MIRO app: ${fileName}.`);
+              invalidMiroApp = true;
+              break;
             }
-          } else {
-            log.debug(`Invalid MIROconf file found in new MIRO app: ${fileName}.`);
-            invalidMiroApp = true;
-            break;
           }
         }
-      }
-      mainWindow.setProgressBar(0.9);
-      if (!mainWindow) {
-        return;
-      }
-      if (!newAppConf.id || invalidMiroApp) {
-        mainWindow.setProgressBar(-1);
-        showErrorMsg({
-          type: 'info',
-          title: lang.main.ErrorInvalidThreeMsg,
-          message: errMsgTemplate,
-        });
-        return;
-      }
-      if (!ConfigManager.vComp(miroVersion, newAppConf.miroversion)) {
-        mainWindow.setProgressBar(-1);
-        showErrorMsg({
-          type: 'info',
-          title: lang.main.ErrorAPIHdr,
-          message: lang.main.ErrorVersionMsg,
-        });
-        return;
-      }
-      if (!newAppConf.apiversion
-        || newAppConf.apiversion !== requiredAPIVersion) {
-        mainWindow.setProgressBar(-1);
-        showErrorMsg({
-          type: 'info',
-          title: lang.main.ErrorAPIHdr,
-          message: lang.main.ErrorAPIMsg,
-        });
-        return;
-      }
-      if (!mainWindow) {
-        return;
-      }
+        if (mainWindow) {
+          mainWindow.setProgressBar(0.9);
+        }
+        if (!newAppConf.id || invalidMiroApp) {
+          if (mainWindow) {
+            mainWindow.setProgressBar(-1);
+          }
+          showErrorMsg({
+            type: 'info',
+            title: lang.main.ErrorInvalidThreeMsg,
+            message: errMsgTemplate,
+          });
+          resolve(false);
+        }
+        if (!ConfigManager.vComp(miroVersion, newAppConf.miroversion)) {
+          if (mainWindow) {
+            mainWindow.setProgressBar(-1);
+          }
+          showErrorMsg({
+            type: 'info',
+            title: lang.main.ErrorAPIHdr,
+            message: lang.main.ErrorVersionMsg,
+          });
+          resolve(false);
+        }
+        if (!newAppConf.apiversion
+          || newAppConf.apiversion !== requiredAPIVersion) {
+          if (mainWindow) {
+            mainWindow.setProgressBar(-1);
+          }
+          showErrorMsg({
+            type: 'info',
+            title: lang.main.ErrorAPIHdr,
+            message: lang.main.ErrorAPIMsg,
+          });
+          resolve(false);
+        }
 
-      mainWindow.setProgressBar(-1);
-      if (mainWindow) {
-        log.debug('New MIRO app configuration sent to renderer process.');
-        mainWindow.webContents.send('app-validated', newAppConf);
-      }
+        if (mainWindow) {
+          mainWindow.setProgressBar(-1);
+        }
+        if (sendToRendererProc) {
+          if (mainWindow) {
+            log.debug('New MIRO app configuration sent to renderer process.');
+            mainWindow.webContents.send('app-validated', newAppConf);
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        } else {
+          resolve(newAppConf);
+        }
+      });
     });
-    return null;
   });
-  return null;
 }
 
 function validateAppLogo(filePath, id = null) {
@@ -422,6 +441,171 @@ ${path.join(miroResourcePath, 'examples')} to: ${appDataPath}. Error mesage: ${e
   }
   return null;
 }
+function activateEditMode(openNewAppForm = false, scrollToBottom = false) {
+  log.debug(`Activating edit mode. Open 'new app' form: ${openNewAppForm}.`);
+  if (mainWindow) {
+    mainWindow.send('activate-edit-mode', openNewAppForm, scrollToBottom);
+  }
+}
+async function updateMIROApp(newApp, appIdToUpdate = null) {
+  if (newApp === false) {
+    log.debug('Error updating app (validation failed).');
+    return;
+  }
+  if (appIdToUpdate != null && appIdToUpdate !== newApp.id) {
+    log.info('Error updating app (app was dropped on app with different ID).');
+    showErrorMsg({
+      type: 'info',
+      title: lang.main.AppIdConflictHdr,
+      message: util.format(lang.main.AppIdConflictMsg, newApp.id, appIdToUpdate),
+    });
+    return;
+  }
+  const overwriteData = dialog.showMessageBoxSync(mainWindow,
+    {
+      type: 'info',
+      title: lang.main.OverwriteDataHdr,
+      message: lang.main.OverwriteDataMsg,
+      buttons: [lang.main.BtnCancel, lang.main.OverwriteDataBtnYes, lang.main.OverwriteDataBtnNo],
+      cancelId: 0,
+    });
+  if (overwriteData === 0) {
+    log.debug('Updating app interrupted.');
+    return;
+  }
+  let appConf;
+  try {
+    appConf = appsData.getAppConfig(newApp.id);
+  } catch (err) {
+    log.error('The app to be updated does not exist. This should not happen!');
+    showErrorMsg({
+      type: 'error',
+      title: lang.main.ErrorUnexpectedHdr,
+      message: `${lang.main.ErrorUnexpectedMsg2} '${err.message}'`,
+    });
+    return;
+  }
+  mainWindow.send('add-app-progress', 0, newApp.id);
+  mainWindow.setProgressBar(0);
+  const appDir = path.join(appDataPath, appConf.id);
+  const appDirTmp = path.join(appDataPath, `~$${appConf.id}`);
+  const appDirTmp2 = path.join(appDataPath, `~$~${appConf.id}`);
+  try {
+    [appDirTmp, appDirTmp2].forEach((dirName) => {
+      if (fs.existsSync(dirName)) {
+        fs.rmSync(dirName, { recursive: true });
+      }
+    });
+  } catch (err) {
+    mainWindow.send('add-app-progress', -1, newApp.id);
+    mainWindow.setProgressBar(-1);
+    log.error(`Problems moving existing app to temporary directory. Error message: ${err.message}.`);
+    showErrorMsg({
+      type: 'error',
+      title: lang.main.ErrorUnexpectedHdr,
+      message: `${lang.main.ErrorUnexpectedMsg2} '${err.message}'`,
+    });
+    return;
+  }
+  try {
+    await unzip(newApp.path, appDirTmp);
+    appConf.miroversion = newApp.miroversion;
+    appConf.usetmpdir = newApp.usetmpdir;
+    await addModelData(
+      miroProcessManager,
+      {
+        libPath,
+        dbpath: appConf.dbpath,
+        appDir: appDirTmp,
+      },
+      appConf.id,
+      appConf.miroversion,
+      appConf.usetmpdir,
+      mainWindow,
+      '',
+      'add-app-progress',
+      overwriteData === 1,
+      true,
+    );
+  } catch (err) {
+    mainWindow.send('add-app-progress', -1, newApp.id);
+    mainWindow.setProgressBar(-1);
+    try {
+      if (fs.existsSync(appDirTmp)) {
+        fs.rmSync(appDirTmp, { recursive: true });
+      }
+    } catch (errRm) {
+      log.error(`Problems removing temporary app directory: ${appDirTmp}. Error message: ${errRm.message}.`);
+    }
+    if (err.message === 'suppress') {
+      return;
+    }
+    log.error(`Update app request failed. Error message: ${err.message}`);
+    if (err.code === 'EACCES') {
+      showErrorMsg({
+        type: 'error',
+        title: lang.main.ErrorWriteHdr,
+        message: `${lang.main.ErrorWritePerm2Msg} '${configData.getConfigPath()}.'`,
+      });
+      return;
+    }
+    showErrorMsg({
+      type: 'error',
+      title: lang.main.ErrorUnexpectedHdr,
+      message: `${lang.main.ErrorUnexpectedMsg2} '${err.message}'`,
+    });
+    return;
+  }
+  try {
+    fs.renameSync(appDir, appDirTmp2);
+    fs.renameSync(appDirTmp, appDir);
+    appsData.updateApp(appConf);
+    try {
+      const cacheContent = await fs.promises.readdir(path.join(miroWorkspaceDir, 'cache'));
+      const removeCacheFilePromises = cacheContent
+        .filter((cacheFile) => cacheFile.startsWith(`${newApp.id}_`))
+        .forEach((cacheFile) => fs.promises.unlink(path.join(miroWorkspaceDir, 'cache', cacheFile)));
+      if (removeCacheFilePromises != null) {
+        await Promise.all(removeCacheFilePromises);
+      }
+    } catch (err) {
+      if (err.code !== 'ENOENT') {
+        log.error(`Problems removing cache! Error message: '${err.message}'.`);
+      }
+    }
+    const promiseRmTmpDir = fs.promises.rm(appDirTmp2, { recursive: true });
+    mainWindow.send('apps-received', appsData.getApps(), appDataPath);
+    await promiseRmTmpDir;
+  } catch (err) {
+    log.error(`Problems replacing app directory. Error message: ${err.message}.`);
+    showErrorMsg({
+      type: 'error',
+      title: lang.main.ErrorUnexpectedHdr,
+      message: `${lang.main.ErrorUnexpectedMsg2} '${err.message}'`,
+    });
+    return;
+  } finally {
+    mainWindow.send('add-app-progress', -1, newApp.id);
+    mainWindow.setProgressBar(-1);
+  }
+}
+async function addOrUpdateMIROApp(filePath) {
+  const newApp = await validateMIROApp([filePath], false);
+  if (newApp === false) {
+    log.debug('Error adding/updating app (validation failed).');
+    return;
+  }
+  if (appsData.isUniqueId(newApp.id)) {
+    log.debug(`Received MIROAPP file for new MIRO app with ID: ${newApp.id}.`);
+    activateEditMode(false, true);
+    if (mainWindow) {
+      mainWindow.webContents.send('app-validated', newApp);
+    }
+    return;
+  }
+  log.debug(`Received MIROAPP file for already existing MIRO app with ID: ${newApp.id}.`);
+  await updateMIROApp(newApp);
+}
 async function addMiroscenFile(filePath) {
   let miroscenPath = filePath;
   if (!miroscenPath) {
@@ -467,12 +651,6 @@ async function addMiroscenFile(filePath) {
       mainWindow.setProgressBar(-1);
       mainWindow.send('toggle-loading-screen-progress', 'hide');
     }
-  }
-}
-function activateEditMode(openNewAppForm = false, scrollToBottom = false) {
-  log.debug(`Activating edit mode. Open 'new app' form: ${openNewAppForm}.`);
-  if (mainWindow) {
-    mainWindow.send('activate-edit-mode', openNewAppForm, scrollToBottom);
   }
 }
 
@@ -668,7 +846,7 @@ if (!miroDevelopMode) {
   if (!gotTheLock) {
     app.quit();
   } else {
-    app.on('second-instance', async (event, argv) => {
+    app.on('second-instance', async (_, argv) => {
       log.debug('Second MIRO instance launched.');
       if (mainWindow) {
         if (mainWindow.isMinimized()) mainWindow.restore();
@@ -685,8 +863,7 @@ if (!miroDevelopMode) {
             return;
           }
           log.debug(`MIRO launcher opened by double clicking MIRO app at path: ${associatedFile}.`);
-          activateEditMode(false, true);
-          validateMIROApp([associatedFile]);
+          await addOrUpdateMIROApp(associatedFile);
         }
       }
     });
@@ -746,8 +923,7 @@ function createMainWindow(showRunningApps = false, onSuccess = null) {
         return;
       }
       log.debug(`MIRO launcher opened by double clicking MIRO app at path: ${associatedFile}.`);
-      activateEditMode(false, true);
-      validateMIROApp([associatedFile]);
+      await addOrUpdateMIROApp(associatedFile);
     } else if (fileToOpen) {
       const associatedFile = fileToOpen;
       if (associatedFile.toLowerCase().endsWith('.miroscen')) {
@@ -755,9 +931,8 @@ function createMainWindow(showRunningApps = false, onSuccess = null) {
         await addMiroscenFile(associatedFile);
         return;
       }
-      activateEditMode(false, true);
       log.debug(`MIRO launcher opened by double clicking MIRO app at path: ${associatedFile}.`);
-      validateMIROApp([associatedFile]);
+      await addOrUpdateMIROApp(associatedFile);
     }
   });
   mainWindow.setTouchBar(mainWindowTouchBar);
@@ -1058,7 +1233,7 @@ async function searchLibPath(devMode = false) {
           await fs.promises.writeFile(path.join(libPath, 'INSTALLING'),
             '', 'utf8');
         } catch (e) {
-          fs.rmdirSync(libPath);
+          fs.rmSync(libPath);
           log.error(`Could not write INSTALLING metadata file to: ${libPath}.\
      Error message: ${e.message}.`);
           return;
@@ -1239,6 +1414,18 @@ ipcMain.on('add-app', async (e, newApp) => {
     }
     await unzip(appConf.path, appDir);
 
+    let overwriteData = true;
+    const dbPath = path.join(getAppDbPath(appConf.dbpath), `${appConf.id}.sqlite3`);
+    if (fs.existsSync(dbPath)) {
+      overwriteData = dialog.showMessageBoxSync(mainWindow,
+        {
+          type: 'info',
+          title: lang.main.OverwriteDataHdr,
+          message: lang.main.OverwriteDataMsg,
+          buttons: [lang.main.OverwriteDataBtnYes, lang.main.OverwriteDataBtnNo],
+        }) === 0;
+    }
+
     await addModelData(
       miroProcessManager,
       {
@@ -1250,6 +1437,9 @@ ipcMain.on('add-app', async (e, newApp) => {
       appConf.miroversion,
       appConf.usetmpdir,
       mainWindow,
+      '',
+      'add-app-progress',
+      overwriteData,
     );
 
     delete appConf.path;
@@ -1301,6 +1491,81 @@ ipcMain.on('add-app', async (e, newApp) => {
       message: `${lang.main.ErrorUnexpectedMsg2} '${err.message}'`,
     });
   }
+});
+ipcMain.on('update-app', async (_, filePaths, appIdToUpdate) => {
+  log.debug('Update app request received.');
+  const newApp = await validateMIROApp(filePaths, false);
+  updateMIROApp(newApp, appIdToUpdate);
+});
+ipcMain.on('update-app-data', async (_, filePaths, appId) => {
+  log.debug('Request to update app data received.');
+  const overwriteData = dialog.showMessageBoxSync(mainWindow,
+    {
+      type: 'info',
+      title: lang.main.OverwriteDataHdr,
+      message: lang.main.OverwriteDataMsg,
+      buttons: [lang.main.BtnCancel, lang.main.OverwriteDataBtnYes, lang.main.OverwriteDataBtnNo],
+      cancelId: 0,
+    });
+  if (overwriteData === 0) {
+    log.debug('Request to add data to app interrupted.');
+    mainWindow.send('add-app-progress', -1, appId);
+    return;
+  }
+  let appConf;
+  try {
+    appConf = appsData.getAppConfig(appId);
+  } catch (err) {
+    log.error('The app to be updated does not exist. This should not happen!');
+    showErrorMsg({
+      type: 'error',
+      title: lang.main.ErrorUnexpectedHdr,
+      message: `${lang.main.ErrorUnexpectedMsg2} '${err.message}'`,
+    });
+    mainWindow.send('add-app-progress', -1, appId);
+    return;
+  }
+  let progress = 0;
+  const progressIncrement = 1 / filePaths.length;
+  mainWindow.setProgressBar(progress);
+  mainWindow.send('add-app-progress', progress, appId);
+  const appDir = path.join(appDataPath, appId);
+  for (let i = 0; i < filePaths.length; i += 1) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      await addModelData(
+        miroProcessManager,
+        {
+          libPath,
+          dbpath: appConf.dbpath,
+          appDir,
+        },
+        appId,
+        appConf.miroversion,
+        appConf.usetmpdir,
+        mainWindow,
+        filePaths[i],
+        'add-app-progress',
+        overwriteData === 1,
+        true,
+      );
+      progress += progressIncrement;
+      mainWindow.setProgressBar(progress);
+      mainWindow.send('add-app-progress', progress, appId);
+    } catch (err) {
+      if (err.message !== 'suppress') {
+        log.info(`Problems adding MIRO scenario data. Error message: ${err.toString()}.`);
+        showErrorMsg({
+          type: 'error',
+          title: lang.main.ErrorNewScenHdr,
+          message: lang.main.ErrorNewScenMsg + err.toString(),
+        });
+      }
+      break;
+    }
+  }
+  mainWindow.setProgressBar(-1);
+  mainWindow.send('add-app-progress', -1, appId);
 });
 ipcMain.on('add-example-apps', () => {
   log.debug('Received request to add example apps.');
@@ -1412,7 +1677,7 @@ ipcMain.on('delete-app', async (e, appId) => {
   }) === 1;
 
   try {
-    const rmPromise = fs.remove(path.join(appDataPath, appId));
+    const rmPromise = fs.promises.rm(path.join(appDataPath, appId), { recursive: true });
     try {
       const cacheContent = await fs.promises.readdir(path.join(miroWorkspaceDir, 'cache'));
       const removeCacheFilePromises = cacheContent
@@ -1426,7 +1691,6 @@ ipcMain.on('delete-app', async (e, appId) => {
         log.error(`Problems removing cache! Error message: '${err.message}'.`);
       }
     }
-    fs.remove(path.join(appDataPath, appId));
     const updatedApps = appsData.deleteApp(appId).apps;
     await rmPromise;
     mainWindow.send('apps-received', updatedApps, appDataPath, false, false);

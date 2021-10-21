@@ -7,14 +7,12 @@ const log = require('electron-log');
 
 async function addModelData(miroProcessManager, paths, modelName,
   miroVersion, usetmpdir,
-  windowObj, dataDir, progressEvent = 'add-app-progress') {
+  windowObj, dataDir, progressEvent = 'add-app-progress', overwrite = null,
+  sendAppIdWithProgress = false) {
   let restartRProc;
-  let overwriteData = false;
   let confirmInstallPackages = false;
   let migrationWizardWindow;
-  if (progressEvent === 'add-app-progress') {
-    overwriteData = true;
-  }
+  let overwriteData = overwrite === true;
   const runRProc = async function fRunRProc() {
     restartRProc = false;
     const appId = modelName.toLowerCase();
@@ -30,7 +28,7 @@ async function addModelData(miroProcessManager, paths, modelName,
         MIRO_FORCE_SCEN_IMPORT: 'true',
         MIRO_BUILD: 'false',
         MIRO_BUILD_ARCHIVE: 'false',
-        MIRO_OVERWRITE_SCEN_IMPORT: overwriteData,
+        MIRO_OVERWRITE_SCEN_IMPORT: overwrite == null ? 'ask' : overwriteData,
         MIRO_AGREE_INSTALL_PACKAGES: confirmInstallPackages,
         MIRO_POPULATE_DB: 'true',
         LAUNCHINBROWSER: 'false',
@@ -131,7 +129,7 @@ async function addModelData(miroProcessManager, paths, modelName,
           windowObj.setProgressBar(progress >= 100 ? -1 : progress / 100);
         }
         if (progressEvent) {
-          windowObj.send(progressEvent, progress);
+          windowObj.send(progressEvent, progress, sendAppIdWithProgress === true ? appId : null);
         }
       }
     }

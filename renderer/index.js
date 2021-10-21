@@ -1,12 +1,14 @@
 const { ipcRenderer, shell } = require('electron');
 const path = require('path');
 const { pathToFileURL } = require('url');
+const util = require('util');
 const querystring = require('querystring');
 window.Bootstrap = require('bootstrap');
 const jQuery = require('jquery');
 const $ = require('jquery');
 
 let lang = {};
+const supportedDataFileTypes = ['gdx', 'miroscen', 'xlsx', 'xlsm', 'xls', 'zip'];
 const appPath = querystring.parse(global.location.search)['?appPath'];
 const appsWrapper = $('#appsWrapper');
 const noAppsNotice = $('#noAppsDiv');
@@ -139,7 +141,7 @@ function expandAddAppForm() {
   addAppWrapper.css('z-index', 11);
   $overlay.data('current', addAppWrapper).fadeIn(300);
   addAppWrapper.html(`<div class="app-box" id="expandedAddAppWrapper">
-                        <div id="addAppSpinner">
+                        <div id="addAppSpinner" class="app-spinner">
                           <div class="progress" style="position:relative;top:50%;margin-left:auto;margin-right:auto;width:90%">
                             <div id="addAppProgress" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                           </div>
@@ -175,15 +177,15 @@ function expandAddAppForm() {
 $body.on('click', '.app-box', function appBoxClick(e) {
   const $target = $(e.target);
   if (!isInEditMode || $overlay.is(':visible')
-      || $target.hasClass('cancel-btn')
-      || $target.hasClass('delete-app-button')
-      || $target.parents('.delete-app-button').length) {
+    || $target.hasClass('cancel-btn')
+    || $target.hasClass('delete-app-button')
+    || $target.parents('.delete-app-button').length) {
     return;
   }
   const $this = $(this);
   const appID = this.dataset.id;
   if (appID) {
-    newAppConfig = $.extend(true, { }, appData.find((app) => app.id === appID));
+    newAppConfig = $.extend(true, {}, appData.find((app) => app.id === appID));
     if (!newAppConfig) {
       ipcRenderer.send('show-error-msg', {
         type: 'error',
@@ -425,9 +427,6 @@ appsWrapper.on('dragstart', '.app-box', (e) => {
   e.originalEvent.target.style.opacity = 0.5;
 });
 appsWrapper.on('dragenter', '.app-box', function appBoxEnterHandler(e) {
-  if (!isInEditMode || !reorderAppsMode) {
-    return;
-  }
   e.preventDefault();
   e.stopPropagation();
   dragAddAppCounter += 1;
@@ -438,9 +437,6 @@ appsWrapper.on('dragover', '.app-box', (e) => {
   e.stopPropagation();
 });
 appsWrapper.on('dragleave', '.app-box', function appBoxLeaveHandler(e) {
-  if (!isInEditMode || !reorderAppsMode) {
-    return;
-  }
   e.preventDefault();
   e.stopPropagation();
   dragAddAppCounter -= 1;
@@ -449,9 +445,6 @@ appsWrapper.on('dragleave', '.app-box', function appBoxLeaveHandler(e) {
   }
 });
 appsWrapper.on('dragend', '.app-box', (e) => {
-  if (!isInEditMode || !reorderAppsMode) {
-    return;
-  }
   e.preventDefault();
   e.stopPropagation();
   reorderAppsMode = false;
@@ -459,17 +452,46 @@ appsWrapper.on('dragend', '.app-box', (e) => {
   $('.app-box').removeClass('drag-drop-area-dragover').css('opacity', '');
 });
 appsWrapper.on('drop', '.app-box', function appBoxDropHandler(e) {
-  if (!isInEditMode || !reorderAppsMode) {
-    return;
-  }
   e.preventDefault();
+  let filesDropped = false;
+  if (!isInEditMode || !reorderAppsMode) {
+    if (!e.originalEvent.dataTransfer.files) {
+      return;
+    }
+    filesDropped = true;
+  }
   reorderAppsMode = false;
   dragAddAppCounter = 0;
   $('.app-box').removeClass('drag-drop-area-dragover').css('opacity', '');
+  const idTo = $(this).attr('id').slice(7);
+
+  if (filesDropped) {
+    const spinnerId = `#appSpinner_${idTo}`;
+    $(spinnerId).show();
+    const filesTmp = [...e.originalEvent.dataTransfer.files];
+    const filePaths = filesTmp.map((el) => el.path);
+    const fileTypes = filesTmp.map((fileTmp) => fileTmp.name.split('.').pop().toLowerCase());
+    if (fileTypes.length === 1 && fileTypes[0] === 'miroapp') {
+      ipcRenderer.send('update-app', filePaths, idTo);
+      return;
+    }
+    const invalidFileTypes = fileTypes
+      .filter((fileType) => !supportedDataFileTypes.includes(fileType));
+    if (invalidFileTypes.length === 0) {
+      ipcRenderer.send('update-app-data', filePaths, idTo);
+      return;
+    }
+    $(spinnerId).hide();
+    ipcRenderer.send('show-error-msg', {
+      type: 'info',
+      title: lang.dialogBadFileTypeHdr,
+      message: util.format(lang.dialogBadFileTypeMsg, supportedDataFileTypes.join(',')),
+    });
+    return;
+  }
 
   const idFromRaw = e.originalEvent.dataTransfer.getData('text/plain');
   const idFrom = idFromRaw.slice(7);
-  const idTo = $(this).attr('id').slice(7);
   const idxFrom = appData.findIndex((el) => el.id === idFrom);
   const idxTo = appData.findIndex((el) => el.id === idTo);
   [appData[idxFrom], appData[idxTo]] = [appData[idxTo], appData[idxFrom]];
@@ -532,6 +554,11 @@ ipcRenderer.on('apps-received', (e, apps, appDataPath, startup = false, deactiva
                data-usetmp="${app.usetmpdir}" data-mode="${app.modesAvailable[0]}"
                data-apiver="${app.apiversion}" data-mirover="${app.miroversion}">
                  <div id="appBox_${app.id}" class="app-box launch-app-box app-box-fixed-height" data-id="${app.id}">
+                   <div id="appSpinner_${app.id}" class="app-spinner">
+                      <div class="progress" style="position:relative;top:50%;margin-left:auto;margin-right:auto;width:90%">
+                        <div id="appProgress_${app.id}" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                   </div>
                    <div id="appLoadingScreen_${app.id}" class="app-loading-screen" style="display:none">
                     <div class="lds-ellipsis">
                       <div>
@@ -676,17 +703,26 @@ ipcRenderer.on('app-validated', (e, appConf) => {
     }
   }
   if (appConf.description
-      && appDescField.text().trim() === lang.appDescPlaceholder) {
+    && appDescField.text().trim() === lang.appDescPlaceholder) {
     appDescField.text(appConf.description);
   }
   $('#newAppFiles').css('display', 'none');
   $('#newAppLogo').css('display', 'block');
 });
-ipcRenderer.on('add-app-progress', (e, progress) => {
+ipcRenderer.on('add-app-progress', (_, progress, appId) => {
+  let spinnerId = '#addAppSpinner';
+  let progressId = '#addAppProgress';
+  if (appId != null) {
+    spinnerId = `#appSpinner_${appId}`;
+    progressId = `#appProgress_${appId}`;
+  }
   if (progress === -1) {
-    $('#addAppSpinner').hide();
+    $(spinnerId).hide();
   } else {
-    $('#addAppProgress').css('width', `${progress}%`).attr('aria-valuenow', progress);
+    if (progress === 0) {
+      $(spinnerId).show();
+    }
+    $(progressId).css('width', `${progress}%`).attr('aria-valuenow', progress);
   }
 });
 ipcRenderer.on('toggle-loading-screen-progress', (e, toggle) => {
