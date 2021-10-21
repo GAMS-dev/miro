@@ -83,6 +83,14 @@ class AppDataStore extends Store {
     return this.saveApps();
   }
 
+  getAppConfig(id) {
+    const appIdx = this.apps.findIndex((t) => t.id === id);
+    if (appIdx === -1) {
+      throw new Error('App ID not found');
+    }
+    return this.apps[appIdx];
+  }
+
   getApps() {
     this.apps = this.get('apps') || [];
     return this.apps;
@@ -91,7 +99,7 @@ class AppDataStore extends Store {
   getAppConfigValue(id, key) {
     const appIdx = this.apps.findIndex((t) => t.id === id);
     if (appIdx === -1) {
-      throw Error('App ID not found');
+      throw new Error('App ID not found');
     }
     return this.apps[appIdx][key];
   }
