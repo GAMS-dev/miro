@@ -1045,7 +1045,9 @@ Worker <- R6Class("Worker", public = list(
         } else {
           msg <- tryCatch(content(ret, type = "application/json")$message,
             error = function(e) {
-              return("")
+              return(tryCatch(content(ret), error = function(e) {
+                return("")
+              }))
             }
           )
           statusCode <- status_code(ret)
