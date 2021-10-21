@@ -1203,6 +1203,9 @@ if (!is.null(errMsg)) {
       miroDataFilesRaw <- list.files(miroDataDir)
     }
     dataFileExt <- tolower(tools::file_ext(miroDataFilesRaw))
+    # IMPORTANT!!!!!!
+    # if list of valid data file types is updated, it also has to be updated in
+    # supportedDataFileTypes array in /renderer/index.js
     miroDataFiles <- miroDataFilesRaw[dataFileExt %in% c(if (useGdx) c("gdx", "miroscen"), "xlsx", "xlsm", "xls", "zip")]
     dataFileExt <- tolower(tools::file_ext(miroDataFiles))
     newScen <- NULL
@@ -1239,7 +1242,9 @@ if (!is.null(errMsg)) {
               newDataHashes <- currentDataHashes
             }
           }
-          overwriteScenToImport <- !identical(Sys.getenv("MIRO_OVERWRITE_SCEN_IMPORT"), "false")
+          overwriteScenToImport <- Sys.getenv("MIRO_OVERWRITE_SCEN_IMPORT")
+          abortIfScenExists <- identical(overwriteScenToImport, "ask")
+          overwriteScenToImport <- !(abortIfScenExists || identical(overwriteScenToImport, "false"))
           xlsio <- NULL
           attachments <- NULL
 
@@ -1401,10 +1406,22 @@ if (!is.null(errMsg)) {
                 "Scenario: %s already exists and overwrite is set to FALSE. Skipping...",
                 newScen$getScenName()
               )
-              stop_custom("error_file_exists",
-                newScen$getScenName(),
-                call. = FALSE
-              )
+              if (miroStoreDataOnly) {
+                if (abortIfScenExists) {
+                  flog.info("Scenario already exists and overwrite is set to FALSE. Aborting...")
+                  write("\n", stderr())
+                  write(paste0("merr:::418:::", newScen$getScenName()), stderr())
+                  if (interactive()) {
+                    stop()
+                  }
+                  quit("no", 0L)
+                } else {
+                  if (removeDataFile && !file.remove(file.path(miroDataDir, miroDataFiles[i]))) {
+                    flog.info("Could not remove file: '%s'.", miroDataFiles[i])
+                  }
+                }
+              }
+              next
             }
 
             dataOut <- loadScenData(modelOut, tmpDir,
@@ -1471,18 +1488,6 @@ if (!is.null(errMsg)) {
             )
           }
         }
-      },
-      error_file_exists = function(e) {
-        if (miroStoreDataOnly) {
-          flog.info("Scenario already exists and overwrite is set to FALSE. Aborting...")
-          write("\n", stderr())
-          write(paste0("merr:::418:::", conditionMessage(e)), stderr())
-          if (interactive()) {
-            stop()
-          }
-          quit("no", 0L)
-        }
-        gc()
       },
       error = function(e) {
         flog.error(
