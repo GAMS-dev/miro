@@ -129,7 +129,7 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
     flog.trace("App: %s successfully registered at Engine", appId)
     return(invisible(self))
   },
-  updateModel = function(appId, userGroups = NULL) {
+  updateModel = function(appId, userGroups = NULL, modelDataPath = NULL) {
     if (appId %in% private$appIdsNotOnEngine) {
       flog.info("Can't update app: %s as it does not exist on Engine.", appId)
       return(invisible(self))
@@ -142,10 +142,18 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
       return(invisible(self))
     }
     flog.trace("Updating app: %s at Engine", appId)
-    if (length(userGroups)) {
-      requestData <- private$getGroupLabelsEngine(userGroups)
-    } else {
-      requestData <- list(delete_user_groups = TRUE)
+    requestData <- list()
+
+    if (length(modelDataPath)) {
+      requestData[["data"]] <- upload_file(modelDataPath,
+        type = "application/zip"
+      )
+    }
+
+    if (is.character(userGroups) && length(userGroups)) {
+      requestData <- c(requestData, private$getGroupLabelsEngine(userGroups))
+    } else if (!identical(userGroups, FALSE)) {
+      requestData[["delete_user_groups"]] <- TRUE
     }
     ret <- httr::PATCH(paste0(
       ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/models/",
@@ -159,7 +167,7 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
         usetz = TRUE
       )
     ),
-    timeout(4)
+    timeout(600)
     )
     if (status_code(ret) != 200) {
       stop(sprintf(

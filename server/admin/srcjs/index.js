@@ -121,7 +121,7 @@ function sendUpdateRequest(index) {
     return;
   }
   $loadingScreen.fadeIn(200);
-  Shiny.setInputValue('updateApp', {
+  Shiny.setInputValue('updateAppMeta', {
     index,
     title: newAppTitle,
     desc: newAppDesc,
@@ -351,14 +351,6 @@ $(document).on('dragleave', '.drag-drop-area', function (e) {
     $(this).removeClass('drag-drop-area-dragover');
   }
 });
-$(document).on('drop', '#miroDataFilesWrapper', function (e) {
-  e.preventDefault();
-  e.stopPropagation();
-  dragAddAppCounter = 0;
-  $('#loadingScreenProgress').css('width', '10%').attr('aria-valuenow', '10');
-  $('#loadingScreenProgressWrapper').show();
-  $(this).removeClass('drag-drop-area-dragover');
-});
 $appsWrapper.on('drop', '#newAppFiles', function (e) {
   if (reorderAppsMode) {
     return;
@@ -407,11 +399,14 @@ function sendUpdateAppShinyEvent(appId, fileTypes) {
   if (overwriteAppData[appId] == null) {
     return;
   }
+  const overwriteData = overwriteAppData[appId];
+  overwriteAppData[appId] = null;
   const spinnerId = `#appSpinner_${appId}`;
+  $('#overlayScreen').show();
   $(spinnerId).show();
   $(`#appFiles_${appId}_progress`).css('visibility', '');
   if (fileTypes.length === 1 && fileTypes[0] === 'miroapp') {
-    Shiny.setInputValue('updateAppRequest', { id: appId, overwrite: overwriteAppData[appId] }, {
+    Shiny.setInputValue('updateAppRequest', { id: appId, overwrite: overwriteData }, {
       priority: 'event',
     });
     return;
@@ -419,7 +414,7 @@ function sendUpdateAppShinyEvent(appId, fileTypes) {
   const invalidFileTypes = fileTypes
     .filter((fileType) => !supportedDataFileTypes.includes(fileType));
   if (invalidFileTypes.length === 0) {
-    Shiny.setInputValue('updateAppDataRequest', { id: appId, overwrite: overwriteAppData[appId] }, {
+    Shiny.setInputValue('updateAppDataRequest', { id: appId, overwrite: overwriteData }, {
       priority: 'event',
     });
     return;
@@ -472,6 +467,14 @@ $appsWrapper.on('drop', '.app-box-draggable', function (e) {
     });
     if (fileTypes.length === 1 && fileTypes[0] === 'miroapp') {
       showOverwriteDialog();
+      return;
+    }
+    if (fileTypes.length > 10) {
+      bootbox.alert({
+        title: 'Too many files',
+        message: 'Only up to 10 files can be added at once.',
+        centerVertical: true,
+      });
       return;
     }
     const invalidFileTypes = fileTypes
@@ -613,7 +616,7 @@ $('body').on('click', '#btLogin', () => {
   });
 });
 
-$(document).ready(() => {
+$(() => {
   registerSelectizeInputs();
   if ($('.select-app-groups').length > 0) {
     currentGroupList = [];
@@ -621,14 +624,13 @@ $(document).ready(() => {
       currentGroupList.push($(this).val());
     });
   }
-  $(document).keyup((event) => {
-    if (event.keyCode === 13 && !event.ctrlKey) {
+  $(document).on('keyup', (event) => {
+    if (event.key === 'Enter' && !event.ctrlKey) {
       if ($('#shiny-modal').find('.selectize-input.input-active').length > 0
         || $('#shiny-modal').find('*[data-dismiss="modal"]').is(':focus')) {
         return;
       }
-
-      $('.bt-gms-confirm:visible:enabled').click();
+      $('.bt-gms-confirm:visible:enabled').trigger('click');
     } // ENTER will confirm modal dialogues
   });
   Shiny.addCustomMessageHandler('onInit', (data) => {
@@ -671,9 +673,10 @@ $(document).ready(() => {
       $('#addAppSpinner').hide();
       $('#addAppProgress').css('width', '0%').attr('aria-valuenow', '0');
       $('#btAddApp').attr('disabled', false);
-    } else if (data.requestType === 'addScen') {
-      $('#loadingScreenProgressWrapper').hide();
-      $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');
+    } else if (data.requestType === 'updateApp') {
+      $(data.spinnerSelector).hide();
+      $('#overlayScreen').hide();
+      $(data.progressSelector).css('width', '0%').attr('aria-valuenow', '0');
       return;
     } else if (data.requestType === 'migrateDb') {
       $('#loadingScreenProgressWrapper').hide();
@@ -717,27 +720,6 @@ $(document).ready(() => {
     } else {
       $(selector).css('width', `${data.progress}%`).attr('aria-valuenow', data.progress);
     }
-  });
-  Shiny.addCustomMessageHandler('onScenarioExists', (scenName) => {
-    $('#loadingScreenProgressWrapper').hide();
-    $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');
-    bootbox.confirm({
-      message: `A scenario: '${scenName}' already exists. Do you want to overwrite it?`,
-      centerVertical: true,
-      onEscape: false,
-      callback: (removeScenConfirmed) => {
-        if (!removeScenConfirmed) {
-          return;
-        }
-        $('#loadingScreenProgress').css('width', '10%').attr('aria-valuenow', '10');
-        $('#loadingScreenProgressWrapper').show();
-        Shiny.setInputValue('addMiroscen', {
-          overwrite: true,
-        }, {
-          priority: 'event',
-        });
-      },
-    });
   });
   Shiny.addCustomMessageHandler('onAddAppLogo', (data) => {
     if (!currentAppId) {
@@ -786,9 +768,10 @@ $(document).ready(() => {
       $('#loginLoadingIndicator').hide();
       $('#loginError').show();
       return;
-    } else if (e.requestType === 'addScen') {
-      $('#loadingScreenProgressWrapper').hide();
-      $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');
+    } else if (e.requestType === 'updateApp') {
+      $(e.spinnerSelector).hide();
+      $('#overlayScreen').hide();
+      $(e.progressSelector).css('width', '0%').attr('aria-valuenow', '0');
     } else if (e.requestType === 'migrateDb') {
       $('#loadingScreenProgressWrapper').hide();
       $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');

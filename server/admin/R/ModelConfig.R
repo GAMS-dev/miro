@@ -55,6 +55,14 @@ ModelConfig <- R6::R6Class("ModelConfig",
     getAppId = function(appIndex) {
       return(private$currentModelConfigs[[appIndex]]$id)
     },
+    getAppIndex = function(appId) {
+      for (appIndex in seq_along(private$currentModelConfigs)) {
+        if (identical(private$currentModelConfigs[[appIndex]][["id"]], appId)) {
+          return(appIndex)
+        }
+      }
+      stop("App id not found (error 1789236).", call. = FALSE)
+    },
     getModelName = function(appIndex) {
       return(tools::file_path_sans_ext(basename(private$currentModelConfigs[[appIndex]][["containerEnv"]][["MIRO_MODEL_PATH"]])))
     },

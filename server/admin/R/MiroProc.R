@@ -21,7 +21,7 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
   },
   run = function(appId, modelName, miroVersion, appDir, dataDir,
                  progressSelector, successCallback, overwriteScen = TRUE, requestType = "addApp",
-                 migrationConfigPath = NULL, launchDbMigrationManager = NULL) {
+                 migrationConfigPath = NULL, launchDbMigrationManager = NULL, additionalDataOnError = NULL) {
     private$errorRaised <- FALSE
     private$migrationInfo <- NULL
     private$stdErr <- ""
@@ -36,7 +36,13 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
     procEnv$MIRO_VERSION_STRING <- miroVersion
     procEnv$MIRO_MODEL_PATH <- file.path(appDir, modelName)
     procEnv$MIRO_DATA_DIR <- dataDir
-    procEnv$MIRO_OVERWRITE_SCEN_IMPORT <- if (!identical(overwriteScen, TRUE)) "false" else "true"
+    if (identical(overwriteScen, NULL)) {
+      procEnv$MIRO_OVERWRITE_SCEN_IMPORT <- "ask"
+    } else if (identical(overwriteScen, TRUE)) {
+      procEnv$MIRO_OVERWRITE_SCEN_IMPORT <- "true"
+    } else {
+      procEnv$MIRO_OVERWRITE_SCEN_IMPORT <- "false"
+    }
     if (is.null(migrationConfigPath)) {
       procEnv$MIRO_MIGRATION_CONFIG_PATH <- file.path(tempdir(check = TRUE), "mig_conf.json")
     } else {
@@ -86,22 +92,22 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
             private$showMigrationModal(launchDbMigrationManager)
             private$errorRaised <- TRUE
           } else if (error[1] == "418") {
-            flog.info("MIRO signalled that the scenario to import already exists.")
-            private$session$sendCustomMessage("onScenarioExists", error[2])
-            private$errorRaised <- TRUE
+            flog.warn("MIRO signalled that the scenario to import already exists. This should not happen!")
           }
         } else if (startsWith(line, "mprog:::")) {
           progress <- suppressWarnings(as.integer(substring(line, 9)))
           if (is.na(progress)) {
             flog.warn("Bad progress message received from MIRO: %s", line)
           } else {
-            private$session$sendCustomMessage(
-              "onProgress",
-              list(
-                selector = progressSelector,
-                progress = if (progress >= 100) -1 else progress
+            if (length(progressSelector)) {
+              private$session$sendCustomMessage(
+                "onProgress",
+                list(
+                  selector = progressSelector,
+                  progress = if (progress >= 100) -1 else progress
+                )
               )
-            )
+            }
           }
         } else if (startsWith(line, "mmigprog:::")) {
           progress <- suppressWarnings(as.integer(substring(line, 12)))
@@ -140,7 +146,14 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
               "Unexpected error when starting MIRO process. Stderr: %s",
               private$stdErr
             )
-            private$session$sendCustomMessage("onError", list(requestType = requestType, message = "Internal error. Check log for more information."))
+            if (length(additionalDataOnError)) {
+              dataToSend <- additionalDataOnError
+              dataToSend[["requestType"]] <- requestType
+              dataToSend[["message"]] <- "Internal error. Check log for more information."
+            } else {
+              dataToSend <- list(requestType = requestType, message = "Internal error. Check log for more information.")
+            }
+            private$session$sendCustomMessage("onError", dataToSend)
           }
           private$miroProc <- NULL
         }

@@ -2,7 +2,7 @@ getLogoName <- function(modelId, logoFile) {
   return(paste0(modelId, "_logo.", tools::file_ext(logoFile)))
 }
 
-extractAppData <- function(miroAppPath, appId, modelId, logoFile = NULL) {
+extractAppData <- function(miroAppPath, appId, modelId) {
   modelPath <- file.path(MIRO_MODEL_DIR, appId)
   dataPath <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
 
@@ -36,7 +36,6 @@ extractAppData <- function(miroAppPath, appId, modelId, logoFile = NULL) {
       flog.warn("Problems removing directory: %s", dataDirSource)
     }
   }
-  addAppLogo(appId, modelId, logoFile)
 }
 
 addAppLogo <- function(appId, modelId, logoFile = NULL) {

@@ -240,9 +240,9 @@ server <- function(input, output, session) {
         modelId <- miroAppValidator$getModelId()
 
         extractAppData(
-          isolate(input$miroAppFile$datapath), appId, modelId,
-          logoPath
+          input$miroAppFile$datapath, appId, modelId
         )
+        addAppLogo(appId, modelId, logoPath)
 
         miroProc$
           setDbCredentials(
@@ -341,21 +341,21 @@ server <- function(input, output, session) {
       }
     )
   })
-  observeEvent(input$updateApp, {
+  observeEvent(input$updateAppMeta, {
     if (loginRequired(session, isLoggedIn)) {
       return()
     }
     flog.info("Request to update MIRO app received.")
     tryCatch(
       {
-        appIndex <- suppressWarnings(as.integer(input$updateApp$index))
+        appIndex <- suppressWarnings(as.integer(input$updateAppMeta$index))
         if (is.na(appIndex)) {
           stop(sprintf("Invalid app index: %s", appIndex), call. = FALSE)
         }
         appId <- modelConfig$getAppId(appIndex)
 
         newLogoName <- NULL
-        if (isTRUE(input$updateApp$newLogo)) {
+        if (isTRUE(input$updateAppMeta$newLogo)) {
           logoPath <- input$updateMiroAppLogo$datapath
           if (!length(logoPath)) {
             stop("Logo file not found.", call. = FALSE)
@@ -365,11 +365,11 @@ server <- function(input, output, session) {
         }
 
         newAppEnv <- NULL
-        if (identical(length(input$updateApp$env), 1L) && !identical(trimws(input$updateApp$env), "")) {
-          if (!jsonlite::validate(input$updateApp$env)) {
+        if (identical(length(input$updateAppMeta$env), 1L) && !identical(trimws(input$updateAppMeta$env), "")) {
+          if (!jsonlite::validate(input$updateAppMeta$env)) {
             stop("Argument 'txt' is not a valid JSON string.")
           }
-          newAppEnv <- jsonlite::fromJSON(input$updateApp$env)
+          newAppEnv <- jsonlite::fromJSON(input$updateAppMeta$env)
           for (envName in names(newAppEnv)) {
             if (length(newAppEnv[[envName]]) != 1L) {
               stop("Invalid environment variable value for variable: %s.", envName)
@@ -378,13 +378,13 @@ server <- function(input, output, session) {
             }
           }
         }
-        newGroups <- csv2Vector(input$updateApp$groups)
+        newGroups <- csv2Vector(input$updateAppMeta$groups)
         engineClient$updateModel(appId, userGroups = newGroups)
         modelConfig$update(appIndex, list(
-          displayName = input$updateApp$title,
+          displayName = input$updateAppMeta$title,
           logoURL = newLogoName,
           containerEnv = newAppEnv,
-          description = input$updateApp$desc,
+          description = input$updateAppMeta$desc,
           accessGroups = newGroups
         ))
 
@@ -392,7 +392,7 @@ server <- function(input, output, session) {
         session$sendCustomMessage(
           "onSuccess",
           list(
-            requestType = "updateApp",
+            requestType = "updateAppMeta",
             configList = modelConfig$getConfigList(),
             groupList = modelConfig$getAccessGroupUnion()
           )
@@ -404,7 +404,7 @@ server <- function(input, output, session) {
           conditionMessage(e)
         )
         flog.info(errMsg)
-        session$sendCustomMessage("onError", list(requestType = "updateApp", message = errMsg))
+        session$sendCustomMessage("onError", list(requestType = "updateAppMeta", message = errMsg))
       }
     )
   })
@@ -439,78 +439,249 @@ server <- function(input, output, session) {
       }
     )
   })
-  addMiroscen <- function(dataPath, overwriteExisting = FALSE) {
+  addDataFiles <- function(appId, filePaths, progressSelector, requestType, overwriteExisting = FALSE,
+                           additionalData = NULL, appConfig = NULL, customCallback = NULL) {
     tryCatch(
       {
-        modelName <- miroscenParser$getModelName(dataPath)
-        appId <- modelName[[1]]
-        modelName <- modelName[[2]]
-        appConfig <- modelConfig$getAppConfigFull(appId)
+        if (is.null(appConfig)) {
+          appConfig <- modelConfig$getAppConfigFull(appId)
+        }
         appModelName <- tools::file_path_sans_ext(basename(
           appConfig$containerEnv[["MIRO_MODEL_PATH"]]
         ))
-        if (!identical(modelName, appModelName)) {
-          flog.warn(
-            "The main gms file name in the MIRO scenario is different from the one uploaded to MIRO server (MIRO scen: %s, App: %s).",
-            modelName, appModelName
-          )
-        }
         appDbCredentials <- modelConfig$getAppDbConf(appId)
         miroProc$
           setDbCredentials(
           appDbCredentials$user,
           appDbCredentials$password
-        )$run(appId, appModelName,
-          appConfig$containerEnv[["MIRO_VERSION_STRING"]],
-          file.path(getwd(), MIRO_MODEL_DIR, appId), dataPath,
-          progressSelector = "#loadingScreenProgress",
-          requestType = "addScen", overwriteScen = overwriteExisting, function() {
-            flog.info("MIRO scenario added for app: %s.", appId)
-            session$sendCustomMessage(
-              "onSuccess",
-              list(requestType = "addScen")
+        )
+        progress <- 0
+        if (length(additionalData)) {
+          dataToSend <- additionalData
+          dataToSend[["requestType"]] <- requestType
+        } else {
+          dataToSend <- list(requestType = requestType)
+        }
+        for (i in seq_along(filePaths)) {
+          miroProc$run(appId, appModelName,
+            appConfig$containerEnv[["MIRO_VERSION_STRING"]],
+            file.path(getwd(), MIRO_MODEL_DIR, appId), filePaths[[i]],
+            progressSelector = if (length(filePaths) > 1) progressSelector else NULL,
+            requestType = requestType, overwriteScen = overwriteExisting,
+            additionalDataOnError = additionalData,
+            successCallback = if (length(customCallback)) {
+              customCallback
+            } else {
+              function() {
+                if (identical(i, length(filePaths))) {
+                  flog.info("Scenario data added for app: %s.", appId)
+                  session$sendCustomMessage(
+                    "onSuccess",
+                    dataToSend
+                  )
+                } else if (length(filePaths) > 1) {
+                  progress <<- progress + i / length(filePaths)
+                  private$session$sendCustomMessage(
+                    "onProgress",
+                    list(
+                      selector = progressSelector,
+                      progress = progress
+                    )
+                  )
+                }
+              }
+            }
+          )
+        }
+      },
+      error = function(e) {
+        errMsg <- sprintf(
+          "Invalid data files uploaded. Error message: %s",
+          conditionMessage(e)
+        )
+        flog.info(errMsg)
+        dataToSend$message <- errMsg
+        session$sendCustomMessage("onError", dataToSend)
+      }
+    )
+  }
+  observeEvent(input$updateAppRequest, {
+    if (loginRequired(session, isLoggedIn)) {
+      return()
+    }
+    appId <- ""
+    progressSelector <- ""
+    tryCatch(
+      {
+        appId <- input$updateAppRequest$id
+        overwriteData <- identical(input$updateAppRequest$overwrite, TRUE)
+        flog.info(
+          "Request to update app: '%s' received (Overwrite: '%s').",
+          appId, overwriteData
+        )
+
+        progressSelector <- paste0("#appProgress_", appId)
+        filePath <- input[[paste0("appFiles_", appId)]]$datapath
+
+        appConfig <- modelConfig$getAppConfigFull(appId)
+
+        newAppId <- miroAppValidator$
+          validate(filePath)$
+          getAppId()
+
+        modelId <- miroAppValidator$getModelId()
+        appConfig$containerEnv[["MIRO_VERSION_STRING"]] <- miroAppValidator$getMIROVersion()
+
+        if (!identical(appId, newAppId)) {
+          stop(sprintf(
+            "The app ID of the new app (%s) does not match that of the app you dropped it on (%s).",
+            newAppId, appId
+          ), call. = FALSE)
+        }
+
+        appDir <- file.path(getwd(), MIRO_MODEL_DIR, appId)
+        appDirTmp <- file.path(getwd(), MIRO_MODEL_DIR, paste0("~$", appId))
+        appDirTmp2 <- file.path(getwd(), MIRO_MODEL_DIR, paste0("~$~$", appId))
+
+        dataDir <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_", appId))
+        dataDirTmp <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_~$", appId))
+        dataDirTmp2 <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_~$~$", appId))
+
+        for (dirPath in c(appDirTmp, appDirTmp2, dataDirTmp, dataDirTmp2)) {
+          if (!identical(unlink(dirPath, recursive = TRUE), 0L)) {
+            stop(sprintf("Could not remove directory: %s. Please try again or contact your system administrator.", dirPath),
+              call. = FALSE
+            )
+          }
+        }
+
+        extractAppData(filePath, paste0("~$", appId), modelId)
+
+        engineClient$updateModel(appId, userGroups = FALSE, modelDataPath = file.path(appDir, paste0(modelId, ".zip")))
+
+        addDataFiles(appId, dataDirTmp, progressSelector,
+          "updateApp",
+          overwriteExisting = overwriteData,
+          additionalData = list(progressSelector = progressSelector, spinnerSelector = paste0("#appSpinner_", appId)),
+          appConfig = appConfig, customCallback = function() {
+            tryCatch(
+              {
+                if (!file.rename(appDir, appDirTmp2)) {
+                  stop(sprintf(
+                    "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
+                    appDir, appDirTmp2
+                  ), call. = FALSE)
+                }
+                if (!file.rename(appDirTmp, appDir)) {
+                  stop(sprintf(
+                    "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
+                    appDirTmp, appDir
+                  ), call. = FALSE)
+                }
+                if (file.exists(dataDir) && !file.rename(dataDir, dataDirTmp2)) {
+                  stop(sprintf(
+                    "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
+                    dataDir, dataDirTmp2
+                  ), call. = FALSE)
+                }
+                if (file.exists(dataDirTmp) && !file.rename(dataDirTmp, dataDir)) {
+                  stop(sprintf(
+                    "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
+                    dataDirTmp, dataDir
+                  ), call. = FALSE)
+                }
+                modelConfig$update(modelConfig$getAppIndex(appId), list(
+                  containerEnv = appConfig$containerEnv
+                ))
+                if (!identical(unlink(appDirTmp2, recursive = TRUE), 0L)) {
+                  flog.warn("Could not remove directory: %s", appDirTmp2)
+                }
+                if (!identical(unlink(dataDirTmp2, recursive = TRUE), 0L)) {
+                  flog.warn("Could not remove directory: %s", dataDirTmp2)
+                }
+                session$sendCustomMessage(
+                  "onSuccess",
+                  list(
+                    requestType = "updateApp", progressSelector = progressSelector,
+                    spinnerSelector = paste0("#appSpinner_", appId)
+                  )
+                )
+              },
+              error = function(e) {
+                errMsg <- sprintf(
+                  "Problems updating app. Error message: %s",
+                  conditionMessage(e)
+                )
+                flog.info(errMsg)
+                session$sendCustomMessage("onError", list(
+                  requestType = "updateApp", message = errMsg,
+                  progressSelector = progressSelector, spinnerSelector = paste0("#appSpinner_", appId)
+                ))
+              }
             )
           }
         )
       },
       error = function(e) {
         errMsg <- sprintf(
-          "Invalid miroscen file uploaded. Error message: %s",
+          "Problems updating app. Error message: %s",
           conditionMessage(e)
         )
         flog.info(errMsg)
-        session$sendCustomMessage("onError", list(requestType = "addScen", message = errMsg))
+        session$sendCustomMessage("onError", list(
+          requestType = "updateApp", message = errMsg,
+          progressSelector = progressSelector, spinnerSelector = paste0("#appSpinner_", appId)
+        ))
       }
     )
-  }
-  observeEvent(input$miroDataFiles, {
+  })
+  observeEvent(input$updateAppDataRequest, {
     if (loginRequired(session, isLoggedIn)) {
       return()
     }
-    flog.info("Request to add miroscen received (Overwrite: false).")
-    addMiroscen(input$miroDataFiles$datapath, FALSE)
-  })
-  observeEvent(input$addMiroscen, {
-    flog.info("Request to add miroscen received (Overwrite: true).")
-    addMiroscen(input$miroDataFiles$datapath, TRUE)
-  })
-  observeEvent(input$updateAppRequest, {
-    appId <- input$updateAppRequest$id
-    overwriteData <- identical(input$updateAppRequest$overwrite, TRUE)
-    flog.info(
-      "Request to update app data of app: '%s' received (Overwrite: '%s').",
-      appId, overwriteData
+    appId <- ""
+    progressSelector <- ""
+    tryCatch(
+      {
+        appId <- input$updateAppDataRequest$id
+        overwriteData <- identical(input$updateAppDataRequest$overwrite, TRUE)
+        flog.info(
+          "Request to update app data of app: '%s' received (Overwrite: '%s').",
+          appId, overwriteData
+        )
+        progressSelector <- paste0("#appProgress_", appId)
+        filePath <- input[[paste0("appFiles_", appId)]]$datapath
+        fileName <- input[[paste0("appFiles_", appId)]]$name
+        if (!endsWith(tolower(fileName), ".miroapp")) {
+          # we should rename data files since they get random name by Shiny
+          # and MIRO determines scenario name by filename
+          newPath <- file.path(dirname(filePath), fileName)
+          if (!file.rename(filePath, newPath)) {
+            stop(sprintf(
+              "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
+              filePath, newPath
+            ), call. = FALSE)
+          }
+          filePath <- newPath
+        }
+        addDataFiles(appId, filePath, progressSelector,
+          "updateApp",
+          overwriteExisting = overwriteData,
+          additionalData = list(progressSelector = progressSelector, spinnerSelector = paste0("#appSpinner_", appId))
+        )
+      },
+      error = function(e) {
+        errMsg <- sprintf(
+          "Problems updating app data. Error message: %s",
+          conditionMessage(e)
+        )
+        flog.info(errMsg)
+        session$sendCustomMessage("onError", list(
+          requestType = "updateApp", message = errMsg,
+          progressSelector = progressSelector, spinnerSelector = paste0("#appSpinner_", appId)
+        ))
+      }
     )
-    filePath <- input[[paste0("appFiles_", appId)]]$datapath
-  })
-  observeEvent(input$updateAppDataRequest, {
-    appId <- input$updateAppDataRequest$id
-    overwriteData <- identical(input$updateAppDataRequest$overwrite, TRUE)
-    flog.info(
-      "Request to update app data of app: '%s' received (Overwrite: '%s').",
-      appId, overwriteData
-    )
-    filePath <- input[[paste0("appFiles_", appId)]]$datapath
   })
   # database migration manager
   migrationObs <- NULL
