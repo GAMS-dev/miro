@@ -131,6 +131,9 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     if (nchar(private$appId) > 60L) {
       stop("The App ID must not be longer than 60 characters!", call. = FALSE)
     }
+    if (startsWith(private$appId, "~$")) {
+      stop("The App ID must not start with the characters: '~$'!", call. = FALSE)
+    }
     return(invisible(self))
   }
 ), private = list(
