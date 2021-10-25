@@ -2110,9 +2110,13 @@
             "removeButton": {
               "type": "string",
               "minLength": 1
+            },
+            "removeIncompleteError": {
+              "type": "string",
+              "minLength": 1
             }
           },
-          "minProperties": 29
+          "minProperties": 30
         },
         "hcubeMode": {
           "type": "object",

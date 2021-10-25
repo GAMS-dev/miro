@@ -670,8 +670,12 @@ observeEvent(input$btBatchRemove, {
         errMsg <<- TRUE
       }
     )
-    if (!is.null(errMsg) || affectedRows < length(sidsToLoad)) {
-      showHideEl(session, "#batchRemoveError", 4000L)
+    if (!is.null(errMsg)) {
+      showHideEl(session, "#batchRemoveError", 4000L, lang$errMsg$unknownError)
+      return(NULL)
+    }
+    if (affectedRows < length(sidsToLoad)) {
+      showHideEl(session, "#batchRemoveError", 6000L, lang$nav$dialogBatchLoad$removeIncompleteError)
       return(NULL)
     }
     showHideEl(session, "#batchRemoveSuccess", 2000L)

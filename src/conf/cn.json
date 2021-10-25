@@ -540,7 +540,8 @@
       "interactiveButtonPivot": "比较(枢轴检视)",
       "interactiveButtonSplit": "比较(拆分视图)",
       "downloadButton":"下载数据",
-      "removeButton":"删除场景"
+      "removeButton":"删除场景",
+      "removeIncompleteError": "并非所有选定的场景都可以删除。 这可能是因为它们是只读的，或者在此期间已被其他人删除。"
     },
     "hcubeMode":{
       "sliderAllCombinations":"所有组合？",

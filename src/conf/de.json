@@ -540,7 +540,8 @@
       "interactiveButtonPivot":"Vergleichen (Pivot)",
       "interactiveButtonSplit": "Vergleichen (Split)",
       "downloadButton":"Daten herunterladen",
-      "removeButton": "Szenarien löschen"
+      "removeButton": "Szenarien löschen",
+      "removeIncompleteError": "Nicht alle der ausgewählten Szenarien konnten entfernt werden. Dies könnte daran liegen, dass sie schreibgeschützt sind oder in der Zwischenzeit bereits von jemand anderem entfernt wurden."
     },
     "hcubeMode":{
       "sliderAllCombinations": "Alle Kombinationen?",
