@@ -94,12 +94,14 @@ server <- function(input, output, session) {
     tryCatch(
       {
         miroAppValidator$validate(input$miroAppFile$datapath)
+
         session$sendCustomMessage(
           "onNewAppValidated",
           list(
             appTitle = htmltools::htmlEscape(miroAppValidator$getAppTitle()),
             appDesc = htmltools::htmlEscape(miroAppValidator$getAppDesc()),
-            logoB64 = miroAppValidator$getLogoB64()
+            logoB64 = miroAppValidator$getLogoB64(),
+            dataExists = db$schemaExists(miroAppValidator$getAppId())
           )
         )
       },
@@ -174,6 +176,8 @@ server <- function(input, output, session) {
         newAppDesc <- trimws(input$addApp$desc)
         newAppEnv <- trimws(input$addApp$env)
         newGroups <- csv2Vector(input$addApp$groups)
+        overwriteData <- identical(input$addApp$overwrite, TRUE)
+        flog.info("Overwrite data: %s", overwriteData)
         if (!length(newAppTitle) || nchar(newAppTitle) == 0) {
           flog.error("Add app request with empty app title received. This should never happen and is likely an attempt to tamper with the app.")
           stop("App title must not be empty!", call. = FALSE)
@@ -252,7 +256,7 @@ server <- function(input, output, session) {
           run(appId, modelName, miroAppValidator$getMIROVersion(),
           appDir, dataDir,
           progressSelector = "#addAppProgress",
-          overwriteScen = TRUE, requestType = "addApp",
+          overwriteScen = overwriteData, requestType = "addApp",
           launchDbMigrationManager = launchDbMigrationManager, function() {
             flog.trace("Data for app: %s added successfully", appId)
             tryCatch(

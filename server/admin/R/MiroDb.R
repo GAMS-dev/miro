@@ -12,6 +12,13 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
     flog.debug("Db: MiroDb initialized.")
     return(invisible(self))
   },
+  schemaExists = function(appId) {
+    schemaExistsQuery <- paste0(
+      "SELECT schema_name FROM information_schema.schemata WHERE schema_name=",
+      dbQuoteString(private$conn, private$getDbAppId(appId))
+    )
+    return(length(dbGetQuery(private$conn, SQL(schemaExistsQuery))[[1]]) > 0L)
+  },
   createAppSchema = function(appId) {
     if (nchar(appId) > 60L) {
       stop("App ID must not exceed 60 characters!", call. = FALSE)

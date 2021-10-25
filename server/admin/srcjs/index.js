@@ -101,9 +101,11 @@ function sendAddRequest() {
     desc: document.getElementById('newAppDesc').value,
     env: appEnv,
     groups: $('#newAppGroups').val(),
+    overwrite: overwriteAppData['~$_newApp'] === true,
   }, {
     priority: 'event',
   });
+  overwriteAppData['~$_newApp'] = null;
 }
 
 function sendUpdateRequest(index) {
@@ -309,6 +311,7 @@ $appsWrapper.on('click', '.cancel-btn', () => {
 });
 
 let dragAddAppCounter = 0;
+let dragTimerAddAppBox = null;
 $appsWrapper.on('drop', '.app-logo', (e) => {
   if (reorderAppsMode) {
     return;
@@ -318,6 +321,27 @@ $appsWrapper.on('drop', '.app-logo', (e) => {
   dragAddAppCounter = 0;
   $('.btn-save-changes').attr('disabled', true);
   $('#btAddApp').attr('disabled', true);
+});
+$appsWrapper.on('dragenter', '#addAppBox', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dragAddAppCounter += 1;
+  if (dragTimerAddAppBox == null) {
+    dragTimerAddAppBox = setTimeout(() => {
+      dragAddAppCounter = 0;
+      dragTimerAddAppBox = null;
+      expandAddAppForm();
+    }, 700);
+  }
+});
+$appsWrapper.on('dragleave', '#addAppBox', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dragAddAppCounter -= 1;
+  if (dragAddAppCounter === 0) {
+    clearTimeout(dragTimerAddAppBox);
+    dragTimerAddAppBox = null;
+  }
 });
 $appsWrapper.on('dragover', '#addAppBox', (e) => {
   e.preventDefault();
@@ -422,6 +446,26 @@ function sendUpdateAppShinyEvent(appId, fileTypes) {
   $(spinnerId).hide();
 }
 
+const showOverwriteDialog = (appId, sendUpdateEvent = true, fileTypes = []) => bootbox.confirm({
+  message: 'Do you want to overwrite existing scenario data?',
+  buttons: {
+    cancel: {
+      label: 'No, keep existing data',
+    },
+    confirm: {
+      label: 'Yes, overwrite',
+    },
+  },
+  centerVertical: true,
+  onEscape: false,
+  callback: (overwriteConfirmed) => {
+    overwriteAppData[appId] = overwriteConfirmed;
+    if (sendUpdateEvent) {
+      sendUpdateAppShinyEvent(appId, fileTypes);
+    }
+  },
+});
+
 $(document).on('shiny:inputchanged', (event) => {
   const eventName = event.name;
   if (eventName.startsWith('appFiles_') && event.value != null && event.value.length > 0) {
@@ -448,25 +492,8 @@ $appsWrapper.on('drop', '.app-box-draggable', function (e) {
   if (filesDropped) {
     const filesTmp = [...e.originalEvent.dataTransfer.files];
     const fileTypes = filesTmp.map((fileTmp) => fileTmp.name.split('.').pop().toLowerCase());
-    const showOverwriteDialog = () => bootbox.confirm({
-      message: 'Do you want to overwrite existing scenario data?',
-      buttons: {
-        cancel: {
-          label: 'No, keep existing data',
-        },
-        confirm: {
-          label: 'Yes, overwrite',
-        },
-      },
-      centerVertical: true,
-      onEscape: false,
-      callback: (overwriteConfirmed) => {
-        overwriteAppData[idTo] = overwriteConfirmed;
-        sendUpdateAppShinyEvent(idTo, fileTypes);
-      },
-    });
     if (fileTypes.length === 1 && fileTypes[0] === 'miroapp') {
-      showOverwriteDialog();
+      showOverwriteDialog(idTo, true, fileTypes);
       return;
     }
     if (fileTypes.length > 10) {
@@ -480,7 +507,7 @@ $appsWrapper.on('drop', '.app-box-draggable', function (e) {
     const invalidFileTypes = fileTypes
       .filter((fileType) => !supportedDataFileTypes.includes(fileType));
     if (invalidFileTypes.length === 0) {
-      showOverwriteDialog();
+      showOverwriteDialog(idTo, true, fileTypes);
       return;
     }
     bootbox.alert({
@@ -748,6 +775,11 @@ $(() => {
       if (newAppDesc == null || newAppDesc.trim() === '') {
         document.getElementById('newAppDesc').value = data.appDesc;
       }
+    }
+    if (data.dataExists !== true) {
+      overwriteAppData['~$_newApp'] = true;
+    } else {
+      showOverwriteDialog('~$_newApp', false);
     }
     $('#newAppFiles').hide();
     $('#miroAppFile_progress').hide();

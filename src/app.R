@@ -1205,7 +1205,7 @@ if (!is.null(errMsg)) {
     dataFileExt <- tolower(tools::file_ext(miroDataFilesRaw))
     # IMPORTANT!!!!!!
     # if list of valid data file types is updated, it also has to be updated in
-    # supportedDataFileTypes array in /renderer/index.js and in /server/admin/srcjs/index.js
+    # supportedDataFileTypes array in /renderer/index.js
     miroDataFiles <- miroDataFilesRaw[dataFileExt %in% c(if (useGdx) c("gdx", "miroscen"), "xlsx", "xlsm", "xls", "zip")]
     dataFileExt <- tolower(tools::file_ext(miroDataFiles))
     newScen <- NULL
