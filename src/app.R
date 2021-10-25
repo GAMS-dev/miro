@@ -773,8 +773,47 @@ if (miroBuildOnly) {
         c(modelFiles, basename(rSaveFilePath)), currentModelDir
       )
       zipr_append(miroAppPath, appMetadataFile, mode = "cherry-pick")
+      privKeyPath <- Sys.getenv("MIRO_PRIVATE_KEY_PATH", unset = "")
+      passFilePath <- NULL
+      if (identical(privKeyPath, "") && file.exists(file.path(miroWorkspace, "signature", "private-key.pem"))) {
+        privKeyPath <- file.path(miroWorkspace, "signature", "private-key.pem")
+      }
+      if (!identical(privKeyPath, "")) {
+        passFilePath <- Sys.getenv("MIRO_PRIVATE_KEY_PASSWORD_PATH", unset = "")
+        if (identical(passFilePath, "") && file.exists(file.path(miroWorkspace, "signature", "key-passphrase"))) {
+          passFilePath <- file.path(miroWorkspace, "signature", "key-passphrase")
+        }
+        source("./components/sign_app.R")
+        tryCatch(
+          {
+            sigFiles <- trySignAppBundle(list(
+              list(
+                rootDir = currentModelDir,
+                files = c(modelFiles, basename(rSaveFilePath))
+              ),
+              list(
+                rootDir = dirname(appMetadataFile),
+                files = basename(appMetadataFile)
+              )
+            ),
+            privKeyPath = privKeyPath,
+            passFilePath = passFilePath
+            )
+            # adding multiple files via cherry-pick at once seems to break the zip file
+            zipr_append(miroAppPath, sigFiles[1], mode = "cherry-pick")
+            zipr_append(miroAppPath, sigFiles[2], mode = "cherry-pick")
+            zipr_append(miroAppPath, sigFiles[3], mode = "cherry-pick")
+            flog.info("Successfully signed MIRO app (fingerprint: %s)", sigFiles[4])
+          },
+          error = function(e) {
+            flog.warn("Could not sign MIRO app. Error message: %s", conditionMessage(e))
+          }
+        )
+      }
+      flog.info("Successfully deployed MIRO app to: %s", miroAppPath)
     },
     error = function(e) {
+      unlink(miroAppPath)
       stop(sprintf(
         "Problems creating app bundle. Error message: '%s'.",
         conditionMessage(e)

@@ -74,6 +74,7 @@ these components are included below):
 - withr http://withr.r-lib.org or http://github.com/r-lib/withr or https://cran.r-project.org/web/packages/withr/index.html
 - DBI https://github.com/r-dbi/DBI or https://cran.r-project.org/web/packages/DBI/index.html
 - askpass https://github.com/jeroen/askpass or https://cran.r-project.org/web/packages/askpass/index.html
+- openssl https://github.com/jeroen/openssl or https://cran.r-project.org/web/packages/openssl/index.html
 - timevis https://github.com/daattali/timevis or https://cran.r-project.org/web/packages/timevis/index.html
 - tzdb https://github.com/r-lib/tzdb or https://cran.r-project.org/web/packages/tzdb/index.html
 - vroom https://github.com/r-lib/vroom or https://cran.r-project.org/web/packages/vroom/index.html
@@ -138,6 +139,7 @@ these components are included below):
 - pillar https://github.com/r-lib/pillar or https://cran.r-project.org/web/packages/pillar/index.html
 - fansi https://github.com/brodieG/fansi or https://cran.r-project.org/web/packages/fansi/index.html
 - utf8 https://github.com/patperry/r-utf8 or https://cran.r-project.org/web/packages/utf8/index.html
+- openssl https://www.openssl.org/source/license.html
 - progress https://github.com/r-lib/progress or https://cran.r-project.org/web/packages/progress/index.html
 - rematch https://github.com/MangoTheCat/rematch or https://cran.r-project.org/web/packages/rematch/index.html
 - prettyunits https://github.com/gaborcsardi/prettyunits or https://cran.r-project.org/web/packages/prettyunits/index.html
@@ -871,6 +873,7 @@ Section 8 -- Interpretation.
         - ps, Copyright (c) 2009-2020 Jay Loden, Dave Daeschler, Giampaolo Rodola', RStudio
         - processx, Copyright (c) 2016-2019 Mango Solutions, RStudio, Gábor Csárdi
         - askpass, Copyright (c) 2018 Jeroen Ooms
+        - openssl, Copyright (c) 2019 Jeroen Ooms
         - timevis, Copyright (c) 2016 Dean Attali [aut, cre] (R interface), Almende B.V. [aut, cph] (vis.js library, http://visjs.org, http://www.almende.com/home)
         - generics, Copyright (c) 2020 Hadley Wickham [aut, cre], Max Kuhn [aut], Davis Vaughan [aut], RStudio [cph]
         - dplyr, Copyright (c) 2013-2020 Hadley Wickham [aut, cre], Romain François [aut], Lionel Henry [aut], Kirill Müller [aut], RStudio [cph, fnd]
@@ -2142,6 +2145,7 @@ DEALINGS IN THE SOFTWARE.
        - bootstrap-datepicker
        - selectize.js
        - grisu3, Jukka Jylänki (Modifcations to dtoa_grisu3() referenced mikkelfj Copyright (c) 2016 Mikkel F. Jørgensen, dvide.com)
+       - openssl, Copyright (c) 1998-2021 The OpenSSL Project, Copyright (c) 1995-1998 Eric A. Young, Tim J. Hudson
 -----------------------------------------------------------------------------
 
                                  Apache License

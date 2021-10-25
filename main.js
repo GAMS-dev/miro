@@ -18,6 +18,7 @@ const libVersion = '2.2';
 const exampleAppsData = require('./components/example-apps')(miroVersion, requiredAPIVersion);
 const LangParser = require('./components/LangParser');
 const addModelData = require('./components/import-data');
+const verifyApp = require('./components/verify-app');
 const addMiroscen = require('./components/miroscen-parser');
 const AppDataStore = require('./components/AppDataStore');
 const ConfigManager = require('./components/ConfigManager');
@@ -523,7 +524,7 @@ async function updateMIROApp(newApp, appIdToUpdate = null) {
   } catch (err) {
     mainWindow.send('add-app-progress', -1, newApp.id);
     mainWindow.setProgressBar(-1);
-    log.error(`Problems moving existing app to temporary directory. Error message: ${err.message}.`);
+    log.error(`Problems removing existing temporary app directories. Error message: ${err.message}.`);
     showErrorMsg({
       type: 'error',
       title: lang.main.ErrorUnexpectedHdr,
@@ -533,6 +534,12 @@ async function updateMIROApp(newApp, appIdToUpdate = null) {
   }
   try {
     await unzip(newApp.path, appDirTmp);
+
+    const appValid = await verifyApp(configData, libPath, miroResourcePath, mainWindow, appDirTmp);
+    if (appValid !== true) {
+      log.info(`The app: ${newApp.id} could not be validated. Aborting.`);
+      throw new Error('suppress');
+    }
     appConf.miroversion = newApp.miroversion;
     appConf.usetmpdir = newApp.usetmpdir;
     await addModelData(
@@ -1592,7 +1599,29 @@ ipcMain.on('add-app', async (e, newApp) => {
     if (!appsData.isUniqueId(newApp.id)) {
       throw new Error('DuplicatedId');
     }
+    try {
+      if (fs.existsSync(appDir)) {
+        log.warn('An existing app directory was found, although the app was no longer registered. The orphaned app directory is removed.');
+        fs.rmSync(appDir, { recursive: true });
+      }
+    } catch (err) {
+      mainWindow.send('add-app-progress', -1);
+      mainWindow.setProgressBar(-1);
+      log.error(`Problems removing existing app directory. Error message: ${err.message}.`);
+      showErrorMsg({
+        type: 'error',
+        title: lang.main.ErrorUnexpectedHdr,
+        message: `${lang.main.ErrorUnexpectedMsg2} '${err.message}'`,
+      });
+      return;
+    }
     await unzip(appConf.path, appDir);
+
+    const appValid = await verifyApp(configData, libPath, miroResourcePath, mainWindow, appDir);
+    if (appValid !== true) {
+      log.info(`The app: ${newApp.id} could not be validated. Aborting.`);
+      throw new Error('suppress');
+    }
 
     let overwriteData = true;
     const dbPath = path.join(getAppDbPath(appConf.dbpath), `${appConf.id}.sqlite3`);
