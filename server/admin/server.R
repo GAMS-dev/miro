@@ -654,21 +654,23 @@ server <- function(input, output, session) {
           appId, overwriteData
         )
         progressSelector <- paste0("#appProgress_", appId)
-        filePath <- input[[paste0("appFiles_", appId)]]$datapath
-        fileName <- input[[paste0("appFiles_", appId)]]$name
-        if (!endsWith(tolower(fileName), ".miroapp")) {
+        filePaths <- input[[paste0("appFiles_", appId)]]$datapath
+        fileNames <- input[[paste0("appFiles_", appId)]]$name
+        isMIROAPPFile <- endsWith(tolower(fileNames), ".miroapp")
+        if (!all(isMIROAPPFile)) {
           # we should rename data files since they get random name by Shiny
           # and MIRO determines scenario name by filename
-          newPath <- file.path(dirname(filePath), fileName)
-          if (!file.rename(filePath, newPath)) {
+          newPaths <- file.path(dirname(filePaths[!isMIROAPPFile]), fileNames[!isMIROAPPFile])
+          renameStatus <- file.rename(filePaths[!isMIROAPPFile], newPaths)
+          if (!all(renameStatus)) {
             stop(sprintf(
               "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
-              filePath, newPath
+              filePaths[!isMIROAPPFile][!renameStatus], newPaths[!renameStatus]
             ), call. = FALSE)
           }
-          filePath <- newPath
+          filePaths[!isMIROAPPFile] <- newPaths
         }
-        addDataFiles(appId, filePath, progressSelector,
+        addDataFiles(appId, filePaths, progressSelector,
           "updateApp",
           overwriteExisting = overwriteData,
           additionalData = list(progressSelector = progressSelector, spinnerSelector = paste0("#appSpinner_", appId))
