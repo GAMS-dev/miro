@@ -199,6 +199,13 @@ server <- function(input, output, session) {
         } else {
           logoPath <- NULL
         }
+
+        modelId <- miroAppValidator$getModelId()
+
+        extractAppData(
+          input$miroAppFile$datapath, appId, modelId, miroProc
+        )
+        addAppLogo(appId, modelId, logoPath)
         modelName <- miroAppValidator$getModelName()
         newAppConfig <- list(
           id = appId, displayName = newAppTitle, description = newAppDesc,
@@ -243,13 +250,6 @@ server <- function(input, output, session) {
 
         appDir <- file.path(getwd(), MIRO_MODEL_DIR, appId)
         dataDir <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_", appId))
-
-        modelId <- miroAppValidator$getModelId()
-
-        extractAppData(
-          input$miroAppFile$datapath, appId, modelId
-        )
-        addAppLogo(appId, modelId, logoPath)
 
         miroProc$
           setDbCredentials(
@@ -572,7 +572,7 @@ server <- function(input, output, session) {
           }
         }
 
-        extractAppData(filePath, paste0("~$", appId), modelId)
+        extractAppData(filePath, paste0("~$", appId), modelId, miroProc)
 
         engineClient$updateModel(appId, userGroups = FALSE, modelDataPath = file.path(appDirTmp, paste0(modelId, ".zip")))
 

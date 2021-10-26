@@ -10,7 +10,7 @@ proxy:
   heartbeat-timeout: 120000
   admin-groups: admins
   container-log-path: /logs/container-logs
-  api-version: 1
+  force-signed-apps: false
   authentication: webservice
   webservice:
     authentication-url: http://auth:1234/login

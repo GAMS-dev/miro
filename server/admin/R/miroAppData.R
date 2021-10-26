@@ -24,7 +24,39 @@ createAppDir <- function(appId) {
   }
 }
 
-extractAppData <- function(miroAppPath, appId, modelId) {
+validateAppSignature <- function(appPath, pubKeyPaths = character(0L)) {
+  pubKeyArgs <- unlist(lapply(pubKeyPaths, function(pubKeyPath) {
+    c("-p", pubKeyPath)
+  }), use.names = FALSE)
+  procArgs <- c(
+    "--no-echo", "--no-restore", "--vanilla", "-f",
+    file.path(MIRO_APP_PATH, "tools", "verify_app", "verify.R"),
+    "--args", "-m", appPath, pubKeyArgs
+  )
+  procResult <- processx::run("R", procArgs,
+    env = character(0L), wd = MIRO_APP_PATH, stderr = "|", stdout = "|",
+    timeout = 30L, error_on_status = FALSE
+  )
+  flog.info(
+    "Process to verify app signature ended with return code: %s (timeout: %s).\nStdout: %s\nStderr: %s",
+    procResult$status, procResult$timeout, procResult$stdout, procResult$stderr
+  )
+  if (!identical(procResult$timeout, FALSE) || is.na(procResult$status)) {
+    stop("Validating app signature timed out after 30 seconds.", call. = FALSE)
+  }
+  if (identical(procResult$status, 0L)) {
+    return()
+  }
+  if (identical(procResult$status, 1L)) {
+    stop("Unexpected error while verifying the signature of the app! Check the logs for more information.", call. = FALSE)
+  }
+  if (identical(procResult$status, 3L)) {
+    stop("App is not signed!", call. = FALSE)
+  }
+  stop("App signature invalid!", call. = FALSE)
+}
+
+extractAppData <- function(miroAppPath, appId, modelId, miroProc) {
   modelPath <- file.path(MIRO_MODEL_DIR, appId)
   dataPath <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
 
@@ -35,6 +67,17 @@ extractAppData <- function(miroAppPath, appId, modelId) {
     }
   }
   unzip(miroAppPath, overwrite = FALSE, exdir = modelPath)
+  if (ENFORCE_SIGNED_APPS) {
+    pubKeyPaths <- character(0L)
+    workDirTmp <- getwd()
+    if (dir.exists(file.path(MIRO_DATA_DIR, "known_keys"))) {
+      pubKeyPaths <- list.files(file.path(workDirTmp, MIRO_DATA_DIR, "known_keys"),
+        all.files = TRUE, full.names = TRUE, no.. = TRUE
+      )
+      pubKeyPaths <- pubKeyPaths[!vapply(pubKeyPaths, dir.exists, logical(1L), USE.NAMES = FALSE)]
+    }
+    validateAppSignature(file.path(workDirTmp, modelPath), pubKeyPaths)
+  }
   dataDirSource <- file.path(modelPath, paste0("data_", modelId))
   if (dir.exists(dataDirSource)) {
     dir.create(dataPath)

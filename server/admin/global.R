@@ -20,6 +20,8 @@ MIRO_DATA_DIR <- "data/"
 
 MIRO_APP_PATH <- "/home/miro/app"
 
+ENFORCE_SIGNED_APPS <- identical(Sys.getenv("MIRO_ENFORCE_SIGNED_APPS"), "true")
+
 DEFAULT_LOGO_B64 <- character(0L)
 
 flog.appender("appender.console")
