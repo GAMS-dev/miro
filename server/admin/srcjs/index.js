@@ -183,14 +183,14 @@ function refreshConfigList() {
     const appEnvSafe = escapeHtml(configData.appEnv);
     const { id } = configData;
     const index = indexRaw + 1;
-    let groupOptions = configData.groups != null ? configData.groups.reduce((optionsHTML, groupName) => (`${optionsHTML}<option value="${groupName}" selected>${groupName}</option>`), '') : '';
+    let groupOptions = configData.groups != null ? configData.groups.reduce((optionsHTML, groupName) => (`${optionsHTML}<option value="${groupName}" selected>${groupName.toLowerCase()}</option>`), '') : '';
     if (currentGroupList.length > 0) {
       let nonSelectedGroups = currentGroupList;
       if (configData.groups != null) {
         nonSelectedGroups = currentGroupList
           .filter((groupName) => !configData.groups.includes(groupName));
       }
-      groupOptions += nonSelectedGroups.reduce((optionsHTML, groupName) => (`${optionsHTML}<option value="${groupName}">${groupName}</option>`), '');
+      groupOptions += nonSelectedGroups.reduce((optionsHTML, groupName) => (`${optionsHTML}<option value="${groupName}">${groupName.toLowerCase()}</option>`), '');
     }
     return `${html}<div class="col-xxl-3 col-lg-4 col-sm-6 col-12 miro-app-item" data-id="${id}">
         <div id="appBox_${id}" class="app-box app-box-draggable launch-app-box app-box-fixed-height" data-id="${id}" data-index="${index}" draggable="true">
@@ -250,7 +250,7 @@ function expandAddAppForm() {
   if ($('#expandedAddAppWrapper').is(':visible')) {
     return;
   }
-  const groupOptions = currentGroupList.reduce((optionsHTML, groupName) => (`${optionsHTML}<option value="${groupName}">${groupName}</option>`), '');
+  const groupOptions = currentGroupList.reduce((optionsHTML, groupName) => (`${optionsHTML}<option value="${groupName}">${groupName.toLowerCase()}</option>`), '');
 
   $('#addAppWrapper').css('z-index', 11);
   $overlay.data('current', $('#addAppWrapper')).fadeIn(300);
