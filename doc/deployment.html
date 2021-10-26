@@ -825,6 +825,71 @@ inc/inc2.inc
 }</code></pre>
                   </div>
                   <!--//section-block-->
+                  <div class="section-block" id="sbs-sign-app">
+                    <h3>Sign your MIRO apps</h3>
+                    <p>
+                      MIRO applications contain a lot of code (the GAMS model,
+                      custom renderers, etc.) that can be used for malicious
+                      purposes. To better protect you from these harmful apps,
+                      MIRO allows you to sign apps so you can be sure they come
+                      from developers you trust. To ensure the authenticity of
+                      an app, MIRO uses asymmetric encryption. The first time
+                      you import an app from an untrusted developer, you are
+                      asked if you want to trust that developer. To identify the
+                      developer, the fingerprint of the developer's
+                      <a
+                        href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)"
+                        target="_blank"
+                        >RSA</a
+                      >
+                      public key is displayed. This fingerprint can be
+                      transmitted through a different channel than the one you
+                      used to get the app.
+                    </p>
+                    <p>
+                      In the following section we will explain how developers of
+                      MIRO apps can sign their apps.
+                    </p>
+                    <p>
+                      To sign your apps, you need to have an RSA keypair. If you
+                      do not already have one, you can create one e.g. using
+                      your SSH client: on macOS/Linux you can use
+                      <a href="https://www.openssh.com" target="_blank"
+                        >OpenSSH</a
+                      >:
+                      <code class="console-content console-box-inline"
+                        ><span class="console-mark">&gt;</span>ssh-keygen -t
+                        rsa</code
+                      >
+                      or
+                      <a href="https://www.putty.org" target="_blank">PuTTY</a>
+                      on Windows: open the PuTTYgen tool, select RSA with a size
+                      of at least 2048 bits, follow the instructions and store
+                      the private key. Afterwards, you will need to convert your
+                      key to the PEM format. To do so, load the private key with
+                      PuTTYgen, go to the <i>Conversions</i> menu and select
+                      <i>Export OpenSSH key (force new file format)</i>.
+                    </p>
+                    <p>
+                      Once you have your private key, you should create a
+                      directory called <kbd>signature</kbd> in the
+                      <i>MIRO app path</i>. The location of the
+                      <i>MIRO app path</i> can be found in the
+                      <i>Preferences</i> window. Inside the
+                      <kbd>signature</kbd> directory, place your key file and
+                      name it <kbd>private-key.pem</kbd>. If you have encrypted
+                      your key with a passphrase, place a file named
+                      <kbd>key-passphrase</kbd> (no extension) next to your
+                      private key. This file should contain only the passphrase
+                      for your key.
+                    </p>
+                    <p>
+                      Public keys that you have trusted are stored (in PEM
+                      format) in a directory named: <kbd>known_keys</kbd> in
+                      your <i>MIRO app path</i>.
+                    </p>
+                  </div>
+                  <!--//section-block-->
                 </section>
                 <!--//doc-section-->
                 <section id="deployment-collaboration" class="doc-section">
@@ -1098,6 +1163,9 @@ inc/inc2.inc
                     >
                     <a class="nav-link scrollto" href="#sbs-customize-app"
                       >Customize your installed MIRO apps</a
+                    >
+                    <a class="nav-link scrollto" href="#sbs-sign-app"
+                      >Sign your MIRO apps</a
                     >
                   </nav>
                   <!--//nav-->

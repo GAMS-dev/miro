@@ -1290,13 +1290,21 @@ body{
 .custom-table td:nth-child(odd) {
   text-align:center;
 }
-.console-box {
+.page-wrapper .console-box {
   background-color: #000000;
   width: 100%;
   height: 100%;
   padding: 1em;
 }
-.console-content {
+.page-wrapper .console-box-inline {
+  background-color: #000000;
+}
+.page-wrapper .console-mark {
+  user-select: none;
+  cursor: text;
+  padding-right: 0.5em;
+}
+.page-wrapper .console-content {
   color: #fff;
   font-family: monospace;
 }

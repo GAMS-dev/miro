@@ -666,7 +666,7 @@
   heartbeat-timeout: 120000
   admin-groups: admins
   container-log-path: /logs/container-logs
-  api-version: 1
+  force-signed-apps: false
   authentication: webservice
   webservice:
     authentication-url: http://auth:1234/login
@@ -775,6 +775,28 @@ server:
                             >how to change the language for an individual
                             app.</a
                           >
+                        </p>
+                      </li>
+                      <li>
+                        <b
+                          >Force apps to be signed
+                          (<i>proxy.force-signed-apps</i>):</b
+                        >
+                        <a id="config-enforce-signed" class="anchor"></a>
+                        <p>
+                          MIRO apps can be
+                          <a href="./deployment.html#sbs-sign-app">signed</a>
+                          to guarantee the authenticity of the developer. This
+                          can protect you from accidentally importing apps that
+                          have been tampered with by a malicious actor. By
+                          default, MIRO Server imports all apps. No signature
+                          verification is enforced. To enable signature
+                          verification, set this option to:
+                          <i>true</i>. MIRO will then issue an error in case you
+                          try to import an app that is not signed by a trusted
+                          developer. You should store all public keys (in PEM
+                          format) of the developers you trust in the directory:
+                          <i>miro_server/data/known_keys</i>.
                         </p>
                       </li>
                       <li>
