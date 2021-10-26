@@ -1022,7 +1022,7 @@ ${requiredAPIVersion}.`);
   }
 
   const onErrorStartup = async (appID, e) => {
-    log.warn(`Error during startup of MIRO app with ID: ${appID}. Eror message: ${e}`);
+    log.warn(`Error during startup of MIRO app with ID: ${appID}. Error message: ${e}`);
 
     if (miroAppWindows[appID]) {
       miroAppWindows[appID].destroy();
@@ -1127,10 +1127,16 @@ Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
     });
   };
 
+  let cancelTermination = false;
+
   const onProcessFinished = async (appID) => {
     log.debug(`Process of MIRO app: ${appID} ended.`);
     if (miroDevelopMode || miroBuildMode) {
       // in development mode terminate when R process finished
+      if (cancelTermination) {
+        cancelTermination = false;
+        return;
+      }
       app.exit(0);
       return;
     }
@@ -1142,10 +1148,51 @@ Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
       miroAppWindows[appID] = null;
     }
   };
+  const onMIROError = async (error) => {
+    if (error[1] === '426') {
+      log.info(`MIRO signalled that custom packages need to be installed: ${error[3]}`);
+      cancelTermination = true;
+      mainWindow.show();
+      if (dialog.showMessageBoxSync(mainWindow, {
+        type: 'info',
+        title: lang.main.ErrorCustomPackagesHdr,
+        message: util.format(lang.main.ErrorCustomPackagesMsg, error[3], error[2]),
+        buttons: [lang.main.BtnCancel, lang.main.BtnOk],
+      }) === 1) {
+        if (miroDevelopMode) {
+          mainWindow.hide();
+        }
+        log.debug('Installing custom packages');
+        try {
+          if (appData.customEnv == null) {
+            appData.customEnv = {
+              MIRO_AGREE_INSTALL_PACKAGES: true,
+            }
+          } else {
+            appData.customEnv.MIRO_AGREE_INSTALL_PACKAGES = true;
+          }
+          await miroProcessManager.createNew(appData, libPath,
+            progressCallback, onErrorStartup, onErrorLater,
+            onSuccess, onProcessFinished);
+        } catch (e) {
+          try {
+            await onErrorStartup(appData.id, `${lang.main.ErrorMsgLaunch} ${e.message}.`);
+          } catch (err) {
+            // continue regardless of error
+          }
+        }
+        return;
+      }
+      if (miroDevelopMode || miroBuildMode) {
+        app.exit(0);
+        return;
+      }
+    }
+  }
   try {
     await miroProcessManager.createNew(appData, libPath,
       progressCallback, onErrorStartup, onErrorLater,
-      onSuccess, onProcessFinished);
+      onSuccess, onProcessFinished, miroDevelopMode? onMIROError: null);
   } catch (e) {
     try {
       await onErrorStartup(appData.id, `${lang.main.ErrorMsgLaunch} ${e.message}.`);

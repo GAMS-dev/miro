@@ -56,9 +56,9 @@ class MiroProcessManager {
   }
 
   async createNew(appData, libPath, progressCallback, onErrorStartup, onErrorLater,
-    onSuccess, onProcessFinished) {
+    onSuccess, onProcessFinished, onMIROError = null) {
     const internalPid = await this.createNewMiroProc(appData, libPath, onErrorStartup,
-      onErrorLater, onProcessFinished);
+      onErrorLater, onProcessFinished, onMIROError);
     if (internalPid != null) {
       await progressCallback({ internalPid, code: 'start' });
       await waitFor(1500);
@@ -67,7 +67,7 @@ class MiroProcessManager {
     }
   }
 
-  async createNewMiroProc(appData, libPath, onErrorStartup, onErrorLater, onProcessFinished) {
+  async createNewMiroProc(appData, libPath, onErrorStartup, onErrorLater, onProcessFinished, onMIROError = null) {
     if (appData.allowMultiple !== true && this.processIdMap[appData.id]) {
       log.error('Process for this model already running. This should not happen. Reference not freed.');
       return null;
@@ -115,8 +115,6 @@ class MiroProcessManager {
     let stdErrPipe = 'pipe';
     if (appData.stdErr != null) {
       stdErrPipe = appData.stdErr;
-    } else if (this.inDevelopmentMode) {
-      stdErrPipe = 'inherit';
     }
 
     log.info(`MIRO app: ${appData.id} launched at port: ${shinyPort} with dbPath: ${dbPath}, \
@@ -181,6 +179,18 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
         stderr: stdErrPipe,
         cleanup: false,
       });
+    if (onMIROError != null) {
+      for await (const data of this.miroProcesses[internalPid].stderr) {
+        const msg = data.toString().trim();
+        if (msg.startsWith('merr:::')) {
+          log.debug(`MIRO error message received: ${msg}`);
+          const error = msg.trim().split(':::');
+          onMIROError(error);
+        } else {
+          process.stderr.write(msg);
+        }
+      }
+    }
     this.miroProcesses[internalPid].catch(async (e) => {
       log.debug(`Process of MIRO app with pid: ${internalPid} stopped.`);
       this.miroProcesses[internalPid] = null;
