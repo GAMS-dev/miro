@@ -473,6 +473,7 @@ server <- function(input, output, session) {
             progressSelector = if (length(filePaths) > 1) progressSelector else NULL,
             requestType = requestType, overwriteScen = overwriteExisting,
             additionalDataOnError = additionalData,
+            parallelSessionId = "addData", newSession = identical(i, 1L),
             successCallback = if (length(customCallback)) {
               customCallback
             } else {

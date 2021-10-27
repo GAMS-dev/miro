@@ -21,16 +21,30 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
   },
   run = function(appId, modelName, miroVersion, appDir, dataDir,
                  progressSelector, successCallback, overwriteScen = TRUE, requestType = "addApp",
-                 migrationConfigPath = NULL, launchDbMigrationManager = NULL, additionalDataOnError = NULL) {
+                 migrationConfigPath = NULL, launchDbMigrationManager = NULL, additionalDataOnError = NULL,
+                 parallelSessionId = NULL, newSession = FALSE) {
     private$errorRaised <- FALSE
     private$migrationInfo <- NULL
     private$stdErr <- ""
-    if (length(private$miroProc) &&
-      private$miroProc$is_alive()) {
-      private$miroProc$kill()
+    if (length(parallelSessionId)) {
+      stopifnot(is.character(parallelSessionId), identical(length(parallelSessionId), 1L))
+      if (identical(newSession, TRUE) && length(private$parallelPidMap[[parallelSessionId]])) {
+        # terminate remaining proceses of old session
+        self$terminateParallelSession(parallelSessionId)
+      }
+      procId <- as.character(private$procCount)
+      private$procCount <- private$procCount + 1L
+      private$parallelPidMap[[parallelSessionId]] <- c(private$parallelPidMap[[parallelSessionId]], procId)
+    } else {
+      procId <- "main"
     }
-    if (length(private$procObs)) {
-      private$procObs$destroy()
+    if (length(private$miroProc[[procId]]) &&
+      private$miroProc[[procId]]$is_alive()) {
+      flog.info("A process with pid: %s is still running. It will be killed.", procId)
+      private$miroProc[[procId]]$kill()
+    }
+    if (length(private$procObs[[procId]])) {
+      private$procObs[[procId]]$destroy()
     }
     procEnv <- private$procEnv
     procEnv$MIRO_VERSION_STRING <- miroVersion
@@ -50,25 +64,26 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
       procEnv$MIRO_MIGRATE_DB <- "true"
     }
     flog.trace("Adding data for app: %s", appId)
-    private$miroProc <- processx::process$new("R", c(
-      "-e",
+    private$miroProc[[procId]] <- processx::process$new("R", c(
+      "--no-echo", "--no-restore", "--vanilla", "-e",
       paste0("shiny::runApp('", MIRO_APP_PATH, "',port=3839,host='0.0.0.0')")
     ),
     env = unlist(procEnv), wd = MIRO_APP_PATH, stderr = "|", stdout = "|"
     )
 
-    private$procObs <- observe({
-      procExitStatus <- private$miroProc$get_exit_status()
-      outputLines <- tryCatch(private$miroProc$read_error_lines(), error = function(e) {
+    private$procObs[[procId]] <- observe({
+      procExitStatus <- private$miroProc[[procId]]$get_exit_status()
+      outputLines <- tryCatch(private$miroProc[[procId]]$read_error_lines(), error = function(e) {
         flog.warn(
-          "Problems fetching stderr from MIRO process. Error message: %s",
+          "Problems fetching stderr from MIRO process (pid: %s). Error message: %s",
+          procId,
           conditionMessage(e)
         )
         return("")
       })
       if (length(procExitStatus)) {
         # somehow we have to call this twice in case process already finished..
-        outputLines <- c(outputLines, private$miroProc$read_error_lines())
+        outputLines <- c(outputLines, private$miroProc[[procId]]$read_error_lines())
       }
       for (line in outputLines) {
         private$stdErr <- paste(private$stdErr, line, sep = "\n")
@@ -121,29 +136,32 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
           }
         }
       }
-      # flog.debug(private$miroProc$read_output())
+      # flog.debug(private$miroProc[[procId]]$read_output())
       if (length(procExitStatus)) {
-        if (length(private$procObs)) {
-          private$procObs$destroy()
-          private$procObs <- NULL
+        if (length(private$procObs[[procId]])) {
+          private$procObs[[procId]]$destroy()
+          private$procObs[[procId]] <- NULL
         }
         if (procExitStatus == 0) {
-          flog.debug("MIRO process finished successfully. Stderr: %s", private$stdErr)
-          private$miroProc <- NULL
+          flog.debug("MIRO process (pid: %s) finished successfully. Stderr: %s", procId, private$stdErr)
+          private$miroProc[[procId]] <- NULL
           successCallback()
         } else {
           if (private$errorRaised) {
             flog.debug(
-              "MIRO process finished with exit code: %s.",
+              "MIRO process (pid: %s) finished with exit code: %s.",
+              procId,
               as.character(procExitStatus)
             )
           } else {
             flog.warn(
-              "MIRO process finished with exit code: %s.",
+              "MIRO process (pid: %s) finished with exit code: %s.",
+              procId,
               as.character(procExitStatus)
             )
             flog.error(
-              "Unexpected error when starting MIRO process. Stderr: %s",
+              "Unexpected error when starting MIRO process (pid: %s). Stderr: %s",
+              procId,
               private$stdErr
             )
             if (length(additionalDataOnError)) {
@@ -155,7 +173,7 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
             }
             private$session$sendCustomMessage("onError", dataToSend)
           }
-          private$miroProc <- NULL
+          private$miroProc[[procId]] <- NULL
         }
       } else {
         invalidateLater(500, private$session)
@@ -163,21 +181,45 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
     })
     return(invisible(self))
   },
+  terminateParallelSession = function(parallelSessionId) {
+    if (!length(private$parallelPidMap[[parallelSessionId]])) {
+      return(invisible(self))
+    }
+    lapply(private$parallelPidMap[[parallelSessionId]], function(pid) {
+      if (length(private$miroProc[[pid]]) && private$miroProc[[pid]]$is_alive()) {
+        flog.info("Miro process (pid: %s) forcefully terminated.", pid)
+        private$miroProc[[pid]]$kill()
+      }
+      if (length(private$procObs[[pid]])) {
+        private$procObs[[pid]]$destroy()
+      }
+    })
+    private$parallelPidMap[[parallelSessionId]] <- NULL
+    return(invisible(self))
+  },
   finalize = function() {
     flog.debug("MiroProc: destructor called.")
-    if (length(private$miroProc) &&
-      private$miroProc$is_alive()) {
-      private$miroProc$kill()
+    if (length(private$miroProc)) {
+      lapply(names(private$miroProc), function(pid) {
+        if (private$miroProc[[pid]]$is_alive()) {
+          flog.info("Miro process (pid: %s) forcefully terminated.", pid)
+          private$miroProc[[pid]]$kill()
+        }
+      })
     }
     if (length(private$procObs)) {
-      private$procObs$destroy()
+      lapply(private$procObs, function(obs) {
+        obs$destroy()
+      })
     }
   }
 ), private = list(
   session = NULL,
   procEnv = NULL,
-  miroProc = NULL,
-  procObs = NULL,
+  miroProc = list(),
+  procObs = list(),
+  procCount = 1L,
+  parallelPidMap = list(),
   stdErr = "",
   errorRaised = FALSE,
   migrationInfo = NULL,

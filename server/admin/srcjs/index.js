@@ -502,6 +502,7 @@ $appsWrapper.on('drop', '.app-box-draggable', function (e) {
         message: 'Only up to 10 files can be added at once.',
         centerVertical: true,
       });
+      $(`#appFiles_${idTo}_progress`).css('visibility', '');
       return;
     }
     const invalidFileTypes = fileTypes
@@ -512,9 +513,10 @@ $appsWrapper.on('drop', '.app-box-draggable', function (e) {
     }
     bootbox.alert({
       title: 'Invalid file',
-      message: `The file you dropped is not supported. Please drop either a new MIRO app (.miroapp) to update the current version or a valid data file (${supportedDataFileTypes.join(',')}).`,
+      message: `The file you dropped (${invalidFileTypes.join(',')}) is not supported. Please drop either a new MIRO app (.miroapp) to update the current version or a valid data file (${supportedDataFileTypes.join(',')}).`,
       centerVertical: true,
     });
+    $(`#appFiles_${idTo}_progress`).css('visibility', '');
     return;
   }
 
