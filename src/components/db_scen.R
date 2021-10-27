@@ -294,48 +294,59 @@ Scenario <- R6Class("Scenario",
         # increment progress bar
         updateProgress(detail = msgProgress$attachments)
       }
-      # write scenario metadata
-      private$writeMetadata()
-      if (!is.null(private$attachments) && addScenIdAttach) {
-        private$attachments$setSid(private$sid)
-      }
+      tryCatch(
+        {
+          DBI::dbBegin(private$conn)
+          # write scenario metadata
+          private$writeMetadata()
+          if (!is.null(private$attachments) && addScenIdAttach) {
+            private$attachments$setSid(private$sid)
+          }
 
-      private$saveAttachmentData()
+          private$saveAttachmentData()
 
-      Map(function(dataset, symNameScenario) {
-        if (!is.null(dataset) && nrow(dataset)) {
-          super$exportScenDataset(
-            private$bindSidCol(dataset),
-            symNameScenario
-          )
+          Map(function(dataset, symNameScenario) {
+            if (!is.null(dataset) && nrow(dataset)) {
+              super$exportScenDataset(
+                private$bindSidCol(dataset),
+                symNameScenario
+              )
+            }
+            if (!is.null(msgProgress)) {
+              # increment progress bar
+              updateProgress(detail = msgProgress$progress)
+            }
+          }, datasets, symNamesScenario)
+
+          private$saveViewData()
+
+          DBI::dbCommit(private$conn)
+
+          private$saveHash()
+
+          if (!is.na(private$inDataSid)) {
+            hcubeRefCount <- self$importDataset("_scenMeta",
+              tibble(
+                "_scode",
+                private$inDataSid + 10000L
+              ),
+              count = TRUE, limit = 1L
+            )[[1]][1]
+            if (identical(hcubeRefCount, 0L)) {
+              private$deleteBySid(private$inDataSid)
+            }
+            private$inDataSid <- NA_integer_
+          }
+
+          private$scenSaved <- TRUE
+          # refresh lock for scenario
+          private$lock()
+        },
+        error = function(e) {
+          DBI::dbRollback(private$conn)
+          stop(e)
         }
-        if (!is.null(msgProgress)) {
-          # increment progress bar
-          updateProgress(detail = msgProgress$progress)
-        }
-      }, datasets, symNamesScenario)
-
-      private$saveViewData()
-      private$saveHash()
-
-      if (!is.na(private$inDataSid)) {
-        hcubeRefCount <- self$importDataset("_scenMeta",
-          tibble(
-            "_scode",
-            private$inDataSid + 10000L
-          ),
-          count = TRUE, limit = 1L
-        )[[1]][1]
-        if (identical(hcubeRefCount, 0L)) {
-          private$deleteBySid(private$inDataSid)
-        }
-        private$inDataSid <- NA_integer_
-      }
-
-      private$scenSaved <- TRUE
-      # refresh lock for scenario
-      private$lock()
-
+      )
       invisible(self)
     },
     saveTraceData = function(traceData) {
