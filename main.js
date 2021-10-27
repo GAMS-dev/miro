@@ -1164,14 +1164,15 @@ Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
         }
         log.debug('Installing custom packages');
         try {
-          if (appData.customEnv == null) {
-            appData.customEnv = {
+          const appDataAgreeInstall = appData;
+          if (appDataAgreeInstall.customEnv == null) {
+            appDataAgreeInstall.customEnv = {
               MIRO_AGREE_INSTALL_PACKAGES: true,
-            }
+            };
           } else {
-            appData.customEnv.MIRO_AGREE_INSTALL_PACKAGES = true;
+            appDataAgreeInstall.customEnv.MIRO_AGREE_INSTALL_PACKAGES = true;
           }
-          await miroProcessManager.createNew(appData, libPath,
+          await miroProcessManager.createNew(appDataAgreeInstall, libPath,
             progressCallback, onErrorStartup, onErrorLater,
             onSuccess, onProcessFinished);
         } catch (e) {
@@ -1185,14 +1186,13 @@ Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
       }
       if (miroDevelopMode || miroBuildMode) {
         app.exit(0);
-        return;
       }
     }
-  }
+  };
   try {
     await miroProcessManager.createNew(appData, libPath,
       progressCallback, onErrorStartup, onErrorLater,
-      onSuccess, onProcessFinished, miroDevelopMode? onMIROError: null);
+      onSuccess, onProcessFinished, miroDevelopMode ? onMIROError : null);
   } catch (e) {
     try {
       await onErrorStartup(appData.id, `${lang.main.ErrorMsgLaunch} ${e.message}.`);

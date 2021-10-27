@@ -67,7 +67,8 @@ class MiroProcessManager {
     }
   }
 
-  async createNewMiroProc(appData, libPath, onErrorStartup, onErrorLater, onProcessFinished, onMIROError = null) {
+  async createNewMiroProc(appData, libPath, onErrorStartup, onErrorLater,
+    onProcessFinished, onMIROError = null) {
     if (appData.allowMultiple !== true && this.processIdMap[appData.id]) {
       log.error('Process for this model already running. This should not happen. Reference not freed.');
       return null;
@@ -180,6 +181,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
         cleanup: false,
       });
     if (onMIROError != null) {
+      // eslint-disable-next-line no-restricted-syntax
       for await (const data of this.miroProcesses[internalPid].stderr) {
         const msg = data.toString().trim();
         if (msg.startsWith('merr:::')) {
