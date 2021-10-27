@@ -2014,7 +2014,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
     });
 }")),
             scrollY = 400, scrollX = TRUE, scrollCollapse = TRUE,
-            scroller = list(loadingIndicator = FALSE), dom = "Bfrtip",
+            scroller = list(loadingIndicator = FALSE), dom = "frtip",
             fixedColumns = list(leftColumns = noRowHeaders),
             columnDefs = columnDefsTmp
           ), rownames = FALSE
