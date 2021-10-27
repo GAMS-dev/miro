@@ -120,7 +120,7 @@ async function addModelData(miroProcessManager, paths, modelName,
             throw new Error('suppress');
           }
         } else {
-          throw new Error(msg);
+          throw new Error(global.lang.main.ErrorUnexpectedMsg3);
         }
       } else if (msg.startsWith('mprog:::')) {
         // MIRO progress
