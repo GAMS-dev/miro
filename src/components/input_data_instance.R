@@ -231,15 +231,15 @@ InputDataInstance <- R6Class("InputDataInstance", public = list(
     if (!length(private$filePaths)) {
       stop("Nothing to compress.", call. = FALSE)
     }
-    zipr(fileName, private$filePaths, recurse = recurse, compression_level = 9L)
     if (length(private$dirPaths)) {
-      if (any(duplicated(dirname(private$dirPaths)))) {
-        stop("Multiple directories with different root currently not supported!", call. = FALSE)
+      filesToZip <- c(private$filePaths, private$dirPaths)
+      rootPath <- unique(dirname(filesToZip))
+      if (length(rootPath) > 1L) {
+        stop("Zipping files and directories with different root currently not supported!", call. = FALSE)
       }
-      zipr_append(fileName, private$dirPaths,
-        root = dirname(private$dirPaths[[1]]),
-        recurse = TRUE, compression_level = 9L
-      )
+      zipr(fileName, basename(filesToZip), recurse = TRUE, compression_level = 9L, mode = "mirror", root = rootPath)
+    } else {
+      zipr(fileName, private$filePaths, recurse = recurse, compression_level = 9L)
     }
     return(invisible(fileName))
   }
