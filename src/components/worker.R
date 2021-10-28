@@ -1345,7 +1345,7 @@ Worker <- R6Class("Worker", public = list(
           private$process,
           private$metadata$miroLogFile
         )
-        private$streamEntryQueueFinished <- responseContentStream$queue_finished
+        private$streamEntryQueueFinished <- identical(responseContentStream$queue_finished, TRUE)
         private$log <- responseContentStream$entry_value
       } else {
         private$log <- responseContent$message
