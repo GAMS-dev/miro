@@ -186,7 +186,11 @@ getInputDataFromSandbox <- function() {
         addScalarVal(scalar, description, value)
       },
       dropdown = {
-        if (!length(modelIn[[i]]$definedByExternalSymbol)) {
+        if (length(modelIn[[i]]$definedByExternalSymbol)) {
+          if ("data.frame" %in% class(valTmp)) {
+            valTmp <- valTmp[[1L]]
+          }
+        } else {
           valTmp <- isolate(input[[paste0("dropdown_", i)]])
         }
         if (!is.null(valTmp)) {
