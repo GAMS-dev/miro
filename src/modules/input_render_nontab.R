@@ -55,7 +55,7 @@ lapply(seq_along(modelIn), function(id) {
   if (length(modelIn[[id]]$definedByExternalSymbol)) {
     dataModelIn[[id]] <<- reactive({
       if (is.null(rv[["in_" %+% id]])) {
-        return(NULL)
+        return(modelInTemplate[[id]])
       }
       modelInputData[[id]]
     })
