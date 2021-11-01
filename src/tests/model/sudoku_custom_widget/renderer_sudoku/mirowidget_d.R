@@ -5,6 +5,7 @@ mirowidget_dOutput <- function(id, height = NULL, options = NULL, path = NULL) {
 
 renderMirowidget_d <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
   output$sudoku <- renderRHandsontable(rhandsontable(data[["d"]]()))
+  outputOptions(output, "sudoku", suspendWhenHidden = FALSE)
   output$i <- renderText({
     if (length(data[["i"]]())) {
       stopifnot(length(data[["i"]]()) == 2L)
