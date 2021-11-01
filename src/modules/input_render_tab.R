@@ -952,6 +952,19 @@ lapply(modelInTabularData, function(sheet) {
             attachments = attachments,
             views = views
           )
+          if (length(modelIn[[i]]$widgetSymbols)) {
+            if (!identical(length(names(modelInputDataVisible[[i]])), length(modelIn[[i]]$widgetSymbols) + 1L)) {
+              stop(sprintf(
+                "Custom input widget for symbol: %s has invalid return value. It should return a named list of reactive expressions.",
+                names(modelIn)[[i]]
+              ), call. = FALSE)
+            }
+          } else if (!identical(length(modelInputDataVisible[[i]]), 1L) || !"reactiveExpr" %in% class(modelInputDataVisible[[i]])) {
+            stop(sprintf(
+              "Custom input widget for symbol: %s has invalid return value. It should return a single reactive expression.",
+              names(modelIn)[[i]]
+            ), call. = FALSE)
+          }
           widgetModifiedSkipCount[[i]] <<- widgetModifiedSkipCount[[i]] + 1L
         },
         error = function(e) {
