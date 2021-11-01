@@ -321,10 +321,10 @@ if (is.null(errMsg)) {
       if (!is.na(j)) {
         modelIn[[el_l]] <- list()
 
-        if (is.null(widgetConfig$alias)) {
+        if (is.null(widgetConfig[["alias"]])) {
           modelIn[[el_l]]$alias <- modelIn[[scalarsFileName]]$symtext[j]
         } else {
-          modelIn[[el_l]]$alias <- widgetConfig$alias
+          modelIn[[el_l]]$alias <- widgetConfig[["alias"]]
           widgetConfig$alias <- NULL
         }
         if (!is.null(widgetConfig$noHcube)) {
@@ -358,8 +358,8 @@ if (is.null(errMsg)) {
         elL <- tolower(el)
         modelIn[[elL]] <- list()
 
-        if (!is.null(widgetConfig$alias)) {
-          modelIn[[elL]]$alias <- widgetConfig$alias
+        if (!is.null(widgetConfig[["alias"]])) {
+          modelIn[[elL]]$alias <- widgetConfig[["alias"]]
           widgetConfig$alias <- NULL
         } else if (startsWith(elL, prefixGMSOpt)) {
           modelIn[[elL]]$alias <- substr(toupper(el), 9L, nchar(el))
@@ -553,8 +553,8 @@ if (is.null(errMsg)) {
           widgetConfig$dropdownCols <- NULL
         }
       }
-      if (!is.null(widgetConfig$alias)) {
-        modelIn[[i]]$alias <- widgetConfig$alias
+      if (!is.null(widgetConfig[["alias"]])) {
+        modelIn[[i]]$alias <- widgetConfig[["alias"]]
         widgetConfig$alias <- NULL
       }
       if (!is.null(widgetConfig$noHcube)) {
