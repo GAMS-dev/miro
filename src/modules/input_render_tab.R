@@ -937,7 +937,11 @@ lapply(modelInTabularData, function(sheet) {
             dataIds <- i
           }
           if (length(modelIn[[i]]$widgetSymbols)) {
-            dataIds <- c(dataIds, match(modelIn[[i]]$widgetSymbols, names(modelIn)))
+            widgetSymbolIds <- match(modelIn[[i]]$widgetSymbols, names(modelIn))
+            dataIds <- c(dataIds, widgetSymbolIds)
+            widgetModifiedSkipCount[c(i, widgetSymbolIds)] <<- widgetModifiedSkipCount[c(i, widgetSymbolIds)] + 1L
+          } else {
+            widgetModifiedSkipCount[[i]] <<- widgetModifiedSkipCount[[i]] + 1L
           }
           dataIds <- unique(dataIds)
           modelInputDataVisible[[i]] <<- callModule(generateData, paste0("data-in_", i),
@@ -965,7 +969,6 @@ lapply(modelInTabularData, function(sheet) {
               names(modelIn)[[i]]
             ), call. = FALSE)
           }
-          widgetModifiedSkipCount[[i]] <<- widgetModifiedSkipCount[[i]] + 1L
         },
         error = function(e) {
           flog.error(
