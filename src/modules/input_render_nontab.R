@@ -115,7 +115,19 @@ lapply(seq_along(modelIn), function(id) {
 
           tryCatch(
             {
-              value <- getInputDataset(k, visible = TRUE)[[modelIn[[id]]$checkbox$max]]
+              symIdToFetch <- k
+              if (length(modelIn[[k]]$definedByExternalSymbol)) {
+                symIdTmp <- match(modelIn[[i]]$definedByExternalSymbol, names(modelIn))
+                symIdToFetch <- symIdTmp
+              }
+              if (identical(modelIn[[k]]$type, "custom")) {
+                if (length(modelIn[[k]]$widgetSymbols)) {
+                  force(modelInputDataVisible[[symIdToFetch]][[names(modelIn)[k]]]())
+                } else {
+                  force(modelInputDataVisible[[k]]())
+                }
+              }
+              value <- getInputDataset(symIdToFetch, visible = TRUE, subSymName = names(modelIn)[[k]])[[modelIn[[id]]$checkbox$max]]
             },
             error = function(e) {
               flog.error(
@@ -342,15 +354,24 @@ lapply(seq_along(modelIn), function(id) {
               }
               input[[htmlSelectorPefix %+% k]]
               rv[["in_" %+% k]]
+              symIdToFetch <- k
+              if (length(modelIn[[k]]$definedByExternalSymbol)) {
+                symIdTmp <- match(modelIn[[i]]$definedByExternalSymbol, names(modelIn))
+                symIdToFetch <- symIdTmp
+              }
               if (identical(modelIn[[k]]$type, "custom")) {
-                force(modelInputDataVisible[[k]]())
+                if (length(modelIn[[k]]$widgetSymbols)) {
+                  force(modelInputDataVisible[[symIdToFetch]][[names(modelIn)[k]]]())
+                } else {
+                  force(modelInputDataVisible[[k]]())
+                }
               } else if (identical(modelIn[[k]]$type, "dt") ||
                 (isMobileDevice && identical(modelIn[[k]]$type, "hot"))) {
                 force(rv[[paste0("wasModified_", k)]])
               }
               tryCatch(
                 {
-                  dataTmp <- getInputDataset(k, visible = TRUE)
+                  dataTmp <- getInputDataset(symIdToFetch, visible = TRUE, subSymName = names(modelIn)[[k]])
                 },
                 error = function(e) {
                   flog.error(
@@ -537,10 +558,19 @@ lapply(seq_along(modelIn), function(id) {
                 !isEmptyInput[k]) {
                 tryCatch(
                   {
-                    if (identical(modelIn[[k]]$type, "custom")) {
-                      force(modelInputDataVisible[[k]]())
+                    symIdToFetch <- k
+                    if (length(modelIn[[k]]$definedByExternalSymbol)) {
+                      symIdTmp <- match(modelIn[[i]]$definedByExternalSymbol, names(modelIn))
+                      symIdToFetch <- symIdTmp
                     }
-                    dataTmp <- unique(getInputDataset(k, visible = TRUE)[[el[[1]][1]]])
+                    if (identical(modelIn[[k]]$type, "custom")) {
+                      if (length(modelIn[[k]]$widgetSymbols)) {
+                        force(modelInputDataVisible[[symIdToFetch]][[names(modelIn)[k]]]())
+                      } else {
+                        force(modelInputDataVisible[[k]]())
+                      }
+                    }
+                    dataTmp <- unique(getInputDataset(symIdToFetch, visible = TRUE, subSymName = names(modelIn)[[k]])[[el[[1]][1]]])
                   },
                   error = function(e) {
                     flog.error(
