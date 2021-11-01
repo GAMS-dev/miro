@@ -29,6 +29,40 @@
 				}
 			}
 		},
+		"_scalars":	{
+			"alias":	"Input Scalars",
+			"symnames":	["test", "force_unique_sol", "test123"],
+			"symtext":	["test", "force_unique_sol", "test123"],
+			"symtypes":	["set", "parameter", "parameter"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		},
+		"ii":	{
+			"alias":	"canning plant subset",
+			"symtype":	"set",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"text":	{
+					"type":	"string",
+					"alias":	"Set text canning plant subset"
+				}
+			}
+		},
 		"a":	{
 			"alias":	"capacity of plant i in cases",
 			"symtype":	"parameter",
@@ -72,26 +106,6 @@
 				"value":	{
 					"type":	"numeric",
 					"alias":	"distance in thousands of miles"
-				}
-			}
-		},
-		"_scalars":	{
-			"alias":	"Input Scalars",
-			"symnames":	["force_unique_sol", "test123"],
-			"symtext":	["force_unique_sol", "test123"],
-			"symtypes":	["parameter", "parameter"],
-			"headers":	{
-				"scalar":	{
-					"type":	"string",
-					"alias":	"Scalar Name"
-				},
-				"description":	{
-					"type":	"string",
-					"alias":	"Scalar Description"
-				},
-				"value":	{
-					"type":	"string",
-					"alias":	"Scalar Value"
 				}
 			}
 		},

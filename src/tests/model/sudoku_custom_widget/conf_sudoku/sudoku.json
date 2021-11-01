@@ -41,12 +41,22 @@
         "isInput": true
       }
     },
+    "ii": {
+      "widgetType": "dropdown",
+      "choices": ["seattle", "san-diego"],
+      "aliases": ["Seattle", "San-Diego"],
+      "multiple": true
+    },
+    "test": {
+      "widgetType": "dropdown",
+      "choices": "$ii$i"
+    },
     "d": {
       "widgetType": "custom",
       "rendererName": "mirowidget_d",
       "alias": "Distance",
       "apiVersion": 2,
-      "widgetSymbols": ["i", "j"]
+      "widgetSymbols": ["i", "j", "ii"]
     },
     "test123": {
       "widgetType": "numericinput",

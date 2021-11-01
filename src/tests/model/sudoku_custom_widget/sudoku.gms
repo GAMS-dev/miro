@@ -17,7 +17,8 @@ $onExternalInput
 Set
    i 'canning plants' / seattle,  san-diego /
    j 'markets'        / new-york, chicago, topeka /;
-
+Singleton Set test(i) /san-diego 'San-Diego'/;
+Set ii(i) 'canning plant subset' /seattle/;
 Parameter
    a(i) 'capacity of plant i in cases'
         / seattle    350

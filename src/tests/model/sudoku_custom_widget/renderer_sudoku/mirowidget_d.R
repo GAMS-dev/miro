@@ -21,14 +21,15 @@ renderMirowidget_d <- function(input, output, session, data, options = NULL, pat
   })
   dataToReturn <- reactive({
     if (is.null(input$sudoku)) {
-      return(data[["d"]]())
+      return(NULL)
     }
     dataTmp <- hot_to_r(input$sudoku)
   })
   return(list(d = dataToReturn, i = reactive({
+    if (is.null(input$sudoku)) {
+      return(NULL)
+    }
     dataTmp <- unique(dataToReturn()[[1]])
     tibble(i = dataTmp, text = rep.int("", length(dataTmp)))
-  }), j = reactive({
-    return(NULL)
-  })))
+  }), j = data[["j"]], ii = data[["ii"]]))
 }

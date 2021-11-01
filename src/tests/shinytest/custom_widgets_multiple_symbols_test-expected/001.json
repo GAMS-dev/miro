@@ -1,7 +1,7 @@
 {
   "output": {
     "inputDataTitle": {
-      "html": "<i>&lt;New Scenario&gt; (*)<\/i>",
+      "html": "<i>&lt;New Scenario&gt;<\/i>",
       "deps": [
 
       ]
