@@ -111,9 +111,9 @@
                     <p>
                       First of all you should make sure that GAMS and MIRO know
                       about each other. If you work with GAMS Studio, then go to
-                      <i>File</i> &rarr; <i>Settings</i> &rarr; <i>MIRO</i> and
-                      check whether the MIRO installation location is correct,
-                      e.g.:
+                      <i>File</i> &rarr; <i>Settings</i> &rarr;
+                      <i>Remote</i> and check whether the MIRO installation
+                      location is correct, e.g.:
                     </p>
                     <div
                       class="section-block"
@@ -125,6 +125,28 @@
                         src="assets/images/studio/miro_path.png"
                         alt="MIRO installation location"
                       />
+                    </div>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          In GAMS Studio v1.7.3 or earlier there is a bug in
+                          specifying the MIRO location on MacOS. If you use this
+                          version, make sure that the path does not stop at
+                          <kbd>/Applications/GAMS MIRO.app</kbd>, but points to
+                          the executable inside the AppImage:
+                          <kbd
+                            >/Applications/GAMS MIRO.app/Contents/MacOS/GAMS
+                            MIRO</kbd
+                          >. The <kbd>/Contents/MacOS/GAMS MIRO</kbd> part is
+                          always the same.
+                        </p>
+                      </div>
+                      <!--//content-->
                     </div>
                     <p>
                       On the MIRO side, open MIRO and go to
