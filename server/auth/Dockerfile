@@ -1,10 +1,10 @@
-FROM miro-ui
+FROM miro-admin
 
 LABEL com.gamsmiauth.vendor="GAMS Development Corp."\
-com.gamsmiauth.version="1.3.99"\
-com.gamsmiauth.license="GPL-3.0"\
-com.gamsmiauth.description="GAMS MIRO Docker image for auth container"\
-maintainer="fproske@gams.com"
+    com.gamsmiauth.version="1.3.99"\
+    com.gamsmiauth.license="GPL-3.0"\
+    com.gamsmiauth.description="GAMS MIRO Docker image for auth container"\
+    maintainer="fproske@gams.com"
 
 USER root
 
@@ -12,7 +12,7 @@ ENV APP /app
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        python3-pip
+    python3-pip
 
 COPY --chown=1000:1000 ./start.sh /start.sh
 RUN chmod +x /start.sh

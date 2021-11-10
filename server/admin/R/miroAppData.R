@@ -2,16 +2,25 @@ getLogoName <- function(modelId, logoFile) {
   return(paste0(modelId, "_logo.", tools::file_ext(logoFile)))
 }
 
+createAppDir <- function(appId) {
+  modelPath <- file.path(MIRO_MODEL_DIR, appId)
+  failedDirCreate <- !dir.create(modelPath)
+  if (exists("last.warning") && endsWith(names(last.warning)[1], "already exists")) {
+    flog.info(
+      "App with id: %s is found on the file system but not in specs.yaml. This is either because another process is currently adding an app with this id or because it was not properly cleaned up. In the latter case, please remove the directory: '%s' manually.",
+      appId, paste0("./models/", appId)
+    )
+    stop_custom("error_model_dir_exists", "An app with this id already exists", call. = FALSE)
+  }
+  if (failedDirCreate) {
+    stop(sprintf("Could not create directory: %s", modelPath), call. = FALSE)
+  }
+}
+
 extractAppData <- function(miroAppPath, appId, modelId) {
   modelPath <- file.path(MIRO_MODEL_DIR, appId)
   dataPath <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
 
-  if (dir.exists(modelPath)) {
-    flog.info("The model files for the app: %s already exists. They will be removed.", appId)
-    if (unlink(modelPath, recursive = TRUE, force = TRUE) == 1) {
-      stop("Removing existing app data failed", call. = FALSE)
-    }
-  }
   if (dir.exists(dataPath)) {
     flog.info("Data files for the app: %s already exist. They will be removed.", appId)
     if (unlink(dataPath, recursive = TRUE, force = TRUE) == 1) {

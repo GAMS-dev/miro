@@ -14,21 +14,28 @@ services:
     build: ./admin/
     restart: "no"
     command: /bin/true
-  auth:
-    image: miro-auth
-    build: ./auth/
+  auth_test:
+    image: miro-auth-test
+    build:
+      context: ./auth/
+      dockerfile: Dockerfile.test
     ports:
       - 8081:1234
     environment:
       PORT: 1234
       ENGINE_URL: ${GMS_MIRO_ENGINE_HOST}
       ENGINE_NS: ${GMS_MIRO_ENGINE_NS}
+      ENGINE_USER: ${ENGINE_USER}
+      ENGINE_PASSWORD: ${ENGINE_PASSWORD}
       GMS_MIRO_DATABASE: gamsmiro
+      GMS_MIRO_DATABASE_HOST: miroserver-db
       GMS_MIRO_DATABASE_USER: GMSMASTER
       GMS_MIRO_DATABASE_PWD:  ${GMS_MIRO_DATABASE_PWD}
       SESSION_TIMEOUT: 43200
     restart: always
     volumes:
+      - ../src:/home/miro/app
+      - ./admin:/home/miro/admin
       - ./data:/home/miro/admin/data
       - ./models:/home/miro/admin/models
     networks:

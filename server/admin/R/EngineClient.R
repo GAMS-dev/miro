@@ -10,8 +10,8 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
     )[1]
     return(invisible(self))
   },
-  setAuthHeader = function(authToken) {
-    private$authHeader <- paste0("Bearer ", authToken)
+  setAuthHeader = function(authHeader) {
+    private$authHeader <- authHeader
     return(invisible(self))
   },
   loginUser = function(username, password) {
@@ -31,7 +31,7 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
           type = "application/json",
           encoding = "utf-8"
         )[["token"]]
-        self$setAuthHeader(authToken)
+        self$setAuthHeader(paste0("Bearer ", authToken))
         ret <- httr::GET(
           paste0(ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/permissions?username=", URLencode(username)),
           add_headers(

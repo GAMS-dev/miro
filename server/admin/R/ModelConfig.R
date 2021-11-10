@@ -70,6 +70,9 @@ ModelConfig <- R6::R6Class("ModelConfig",
       return(private$currentModelConfigs[[appIndex]]$logoURL)
     },
     add = function(newConfig) {
+      if ("accessGroups" %in% names(newConfig)) {
+        newConfig[["accessGroups"]] <- as.list(toupper(newConfig[["accessGroups"]]))
+      }
       private$currentModelConfigs <- c(private$currentModelConfigs, list(newConfig))
 
       private$writeConfig()

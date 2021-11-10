@@ -82,7 +82,7 @@ server <- function(input, output, session) {
       ))
     })
   } else {
-    engineClient$setAuthHeader(ENGINE_TOKEN)
+    engineClient$setAuthHeader(paste0("Bearer ", ENGINE_TOKEN))
     initCallback(session, modelConfig$getAllAppIds())
   }
 
@@ -165,6 +165,7 @@ server <- function(input, output, session) {
       return()
     }
     flog.info("Request to add new MIRO app received.")
+    appId <- NULL
     tryCatch(
       {
         if (!length(miroAppValidator$getAppTitle())) {
@@ -188,6 +189,8 @@ server <- function(input, output, session) {
         if (appId %in% modelConfig$getAllAppIds(includeNoAccess = TRUE)) {
           stop("A MIRO app with the same name already exists.", call. = FALSE)
         }
+
+        createAppDir(appId)
 
         logoPath <- miroAppValidator$getLogoFile()
         logoURL <- "default_logo.png"
@@ -289,6 +292,9 @@ server <- function(input, output, session) {
         )
       },
       error = function(e) {
+        if (!is.null(appId)) {
+          unlink(file.path(MIRO_MODEL_DIR, appId), recursive = TRUE, force = TRUE)
+        }
         errMsg <- sprintf(
           "Invalid MIRO app. Error message: %s",
           conditionMessage(e)
@@ -321,9 +327,9 @@ server <- function(input, output, session) {
 
         removeAppData(appId, modelConfig$getAppLogo(appIndex))
 
-        engineClient$deregisterModel(appId)
-
         modelConfig$remove(appIndex)
+
+        engineClient$deregisterModel(appId)
 
         flog.info("MIRO app: %s removed successfully.", appId)
         session$sendCustomMessage(

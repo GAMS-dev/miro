@@ -72,7 +72,7 @@ class MiroServer(object):
     parser.add_argument('--module',
       type=str,
       help='Module to build',
-      choices=['dockerproxy', 'proxy', 'auth', 'admin', 'ui'])
+      choices=['dockerproxy', 'proxy', 'auth', 'admin', 'ui', 'auth_test'])
 
     parser.add_argument('--no-prep', help='Skips downloading required R packages (e.g. because they are already downloaded)',
       action='store_true')
@@ -86,10 +86,14 @@ class MiroServer(object):
       if not args.no_prep:
         subprocess.check_call(['yarn', 'docker-prepare'], cwd='..')
       subprocess.check_call(['docker-compose', 'build'], env=self.__compose_env)
+      subprocess.check_call(['docker-compose', '-f', 'docker-compose.test.yml', 'build', 'auth_test'], env=self.__compose_env)
     else:
       if args.module == 'ui' and not args.no_prep:
         subprocess.check_call(['yarn', 'docker-prepare'], cwd='..')
-      subprocess.check_call(['docker-compose', 'build', args.module], env=self.__compose_env)
+      if args.module == 'auth_test':
+        subprocess.check_call(['docker-compose', '-f', 'docker-compose.test.yml', 'build', 'auth_test'], env=self.__compose_env)
+      else:
+        subprocess.check_call(['docker-compose', 'build', args.module], env=self.__compose_env)
 
 
   def up(self):
@@ -139,6 +143,9 @@ class MiroServer(object):
                   ('miro-admin', 'miro-admin'),
                   ('miro-ui', 'miro-ui')]:
       self.push_image(*image, unstable=args.unstable, custom_tag=args.custom_tag)
+
+    if args.unstable:
+      self.push_image('miro-auth-test', 'miro-auth-test', unstable=args.unstable)
 
 
   def release(self):

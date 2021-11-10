@@ -20,6 +20,39 @@ lint_job:
     - if: $CI_MERGE_REQUEST_ID
       when: always
 
+test_job_api:
+  tags:
+    - linux
+  stage: test
+  image: docker:20.10
+  services:
+    - name: docker:20.10-dind
+    - name: postgres:12.1-alpine
+      alias: postgres
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
+    FF_NETWORK_PER_BUILD: "true"
+    GMS_MIRO_DATABASE_HOST: postgres
+    GMS_MIRO_DATABASE: miroapitests
+    GMS_MIRO_DATABASE_USER: mirotests
+    GMS_MIRO_DATABASE_PWD: mirotests
+    POSTGRES_DB: $GMS_MIRO_DATABASE
+    POSTGRES_USER: $GMS_MIRO_DATABASE_USER
+    POSTGRES_PASSWORD: $GMS_MIRO_DATABASE_PWD
+    POSTGRES_HOST_AUTH_METHOD: trust
+  before_script:
+    # this is to be able to pull and push images
+    - mkdir -p $HOME/.docker
+    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+  script:
+    - docker pull ${CI_REGISTRY_IMAGE}/miro-auth-test:unstable && docker tag ${CI_REGISTRY_IMAGE}/miro-auth-test:unstable miro-auth-test || exit 1
+    - ./test/run-api-tests.sh
+  rules:
+    - if: $CI_MERGE_REQUEST_TITLE =~ /^Draft:/
+      when: manual
+    - if: $CI_MERGE_REQUEST_ID
+
 test_job:
   tags:
     - linux

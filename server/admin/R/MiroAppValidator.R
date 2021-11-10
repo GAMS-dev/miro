@@ -122,7 +122,7 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     private$appTitle <- appInfo$title
     private$appDesc <- paste(appInfo$description, collapse = "\n")
 
-    appIdTmp <- private$validateAppId(appInfo$appId)
+    appIdTmp <- self$validateAppId(appInfo$appId)
     if (is.null(appIdTmp)) {
       private$appId <- self$getModelId()
     } else {
@@ -135,6 +135,27 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
       stop("The App ID must not start with the characters: '~$'!", call. = FALSE)
     }
     return(invisible(self))
+  },
+  validateAppId = function(appIdRaw) {
+    if (is.null(appIdRaw)) {
+      return(NULL)
+    }
+    if (!identical(length(appIdRaw), 1L) || !is.character(appIdRaw)) {
+      stop("Invalid app id in app_info.json", call. = FALSE)
+    }
+    if (!identical(gsub("[/\\\\\\?%*:|\"<>]", "", appIdRaw), appIdRaw)) {
+      stop("Invalid app id in app_info.json", call. = FALSE)
+    }
+    if (!identical(appIdRaw, tolower(appIdRaw))) {
+      stop("App ID must not contain capital letters", call. = FALSE)
+    }
+    if (!identical(trimws(appIdRaw), appIdRaw)) {
+      stop("App ID must not contain leading or trailing spaces", call. = FALSE)
+    }
+    if (identical(appIdRaw, "admin")) {
+      stop("You cannot add an app with this ID", call. = FALSE)
+    }
+    return(appIdRaw)
   }
 ), private = list(
   appId = NULL,
@@ -217,17 +238,5 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
       stop("Invalid model name found in MIRO metadata file!", call. = FALSE)
     }
     return(modelNameRaw)
-  },
-  validateAppId = function(appIdRaw) {
-    if (is.null(appIdRaw)) {
-      return(NULL)
-    }
-    if (!identical(length(appIdRaw), 1L) || !is.character(appIdRaw)) {
-      stop("Invalid app id in app_info.json", call. = FALSE)
-    }
-    if (!identical(gsub("[/\\\\\\?%*:|\"<>]", "", appIdRaw), appIdRaw)) {
-      stop("Invalid app id in app_info.json", call. = FALSE)
-    }
-    return(appIdRaw)
   }
 ))
