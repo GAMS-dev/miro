@@ -378,15 +378,14 @@ getSymbolHotOptions <- function() {
     conditionalPanel(
       condition = "input.inputTable_type!=='pivot'",
       checkboxInput_MIRO("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$tableWidgetConfig$readonly),
-      if (length(pivotCols)) {
-        tags$div(
-          class = "option-wrapper",
-          selectInput("table_pivotCols", lang$adminMode$widgets$table$pivotCols,
-            choices = c(`_` = "_", pivotCols),
-            selected = if (length(rv$tableWidgetConfig$pivotCols)) rv$tableWidgetConfig$pivotCols else "_"
-          )
+      tags$div(
+        class = "option-wrapper",
+        style = if (!length(pivotCols)) "display:none",
+        selectInput("table_pivotCols", lang$adminMode$widgets$table$pivotCols,
+          choices = c(`_` = "_", pivotCols),
+          selected = if (length(rv$tableWidgetConfig$pivotCols)) rv$tableWidgetConfig$pivotCols else "_"
         )
-      }
+      )
     ),
     conditionalPanel(
       condition = paste0("input.inputTable_type==='default' && ((input.table_pivotCols!=null && input.table_pivotCols!=='_')
@@ -465,12 +464,13 @@ getOutputTableOptions <- reactive({
   tagList(
     tags$div(
       class = "shiny-input-container option-wrapper", style = "max-width:400px;",
-      if (length(pivotCols)) {
+      tags$div(
+        style = if (!length(pivotCols)) "display:none",
         selectInput("outputTable_pivotCols", lang$adminMode$widgets$table$pivotCols,
           choices = c(`_` = "_", pivotCols),
           selected = if (length(rv$tableWidgetConfig$pivotCols)) rv$tableWidgetConfig$pivotCols else "_"
         )
-      },
+      ),
       selectInput("outputTable_class", lang$adminMode$tables$dt$class$label,
         choices = langSpecificTable$class,
         selected = rv$tableWidgetConfig$class
