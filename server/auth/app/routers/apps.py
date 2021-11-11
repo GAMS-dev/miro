@@ -53,10 +53,10 @@ class AppConfig(BaseModel):
     accessGroups: List[str]
 
 
-def app_is_invisible(app_id: str, auth_header: str) -> bool:
+def app_is_invisible(user_groups: List[str], app_id: str) -> bool:
     return not os.path.isdir(os.path.join(settings.model_dir, app_id)) or \
         app_id not in [app["id"] for app in get_apps_raw(
-            user_groups=get_user_groups(auth_header, is_admin=True))]
+            user_groups=user_groups)]
 
 
 def get_apps_raw(user_groups: Optional[List[str]] = None, all_apps: bool = False) -> List[AppConfig]:
@@ -82,7 +82,7 @@ def get_apps_raw(user_groups: Optional[List[str]] = None, all_apps: bool = False
     return visible_apps
 
 
-def get_miro_proc_env(auth_header):
+def get_miro_proc_env(user_info, auth_header):
     proc_env = {}
     proc_env.update(os.environ)
     proc_env.update({"MIRO_DB_HOST": settings.gms_miro_database_host,
@@ -94,7 +94,9 @@ def get_miro_proc_env(auth_header):
                      "MIRO_ENGINE_NAMESPACE": settings.engine_ns,
                      "MIRO_ENGINE_AUTH_HEADER": auth_header,
                      "ADD_DATA_TIMEOUT": str(settings.add_data_timeout),
-                     "MIRO_ENFORCE_SIGNED_APPS": settings.force_signed_apps})
+                     "MIRO_ENFORCE_SIGNED_APPS": settings.force_signed_apps,
+                     "SHINYPROXY_USERNAME": user_info.name,
+                     "SHINYPROXY_USERGROUPS": ",".join(user_info.groups).upper()})
     return proc_env
 
 
@@ -103,10 +105,7 @@ async def add_or_update_app(user_info: UserInfo, app_config: AppConfig, data: Up
         while content := await data.read(1024):
             await out_file.write(content)
         await out_file.flush()
-        proc_env = get_miro_proc_env(auth_header)
-        proc_env.update({
-            "SHINYPROXY_USERNAME": user_info.name,
-            "SHINYPROXY_USERGROUPS": ",".join(user_info.groups).upper()})
+        proc_env = get_miro_proc_env(user_info, auth_header)
         proc_out = subprocess.run(["R", "--no-echo", "--no-restore", "--vanilla",
                                    "-f", os.path.join(settings.admin_app_dir, "scripts", "addApp.R")],
                                   capture_output=True,
@@ -135,6 +134,9 @@ async def add_or_update_app(user_info: UserInfo, app_config: AppConfig, data: Up
                 except IndexError:
                     logger.warning(
                         "Invalid error message received from addApp.R subprocess: %s", line)
+                if err_code == 500:
+                    logger.info("Stderr of addApp.R subprocess: %s",
+                                proc_out.stderr.decode())
                 raise HTTPException(
                     status_code=err_code, detail=err_details
                 )
@@ -147,8 +149,8 @@ async def add_or_update_app(user_info: UserInfo, app_config: AppConfig, data: Up
     return True
 
 
-async def delete_app_internal(app_id: str, auth_header: str, delete_data: bool = False) -> bool:
-    proc_env = get_miro_proc_env(auth_header)
+async def delete_app_internal(user_info: UserInfo, app_id: str, auth_header: str, delete_data: bool = False) -> bool:
+    proc_env = get_miro_proc_env(user_info, auth_header)
     proc_out = subprocess.run(["R", "--no-echo", "--no-restore", "--vanilla",
                                "-f", os.path.join(settings.admin_app_dir, "scripts", "deleteApp.R")],
                               capture_output=True,
@@ -172,6 +174,9 @@ async def delete_app_internal(app_id: str, auth_header: str, delete_data: bool =
             except IndexError:
                 logger.warning(
                     "Invalid error message received from deleteApp.R subprocess: %s", line)
+            if err_code == 500:
+                logger.info("Stderr of deleteApp.R subprocess: %s",
+                            proc_out.stderr.decode())
             raise HTTPException(
                 status_code=err_code, detail=err_details
             )
@@ -240,7 +245,7 @@ async def update_app(app_id: str = Path(..., description="The ID of the app to u
             detail="Invalid user group(s): {}".format(
                 ",".join(invalid_user_groups))
         )
-    if app_is_invisible(app_id, auth_header=admin_user.auth_header):
+    if app_is_invisible(user_groups, app_id):
         logger.info("%s is not visible", app_id)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -339,14 +344,17 @@ async def delete_app(app_id: str = Path(..., description="The ID of the app to d
                      admin_user: AdminUser = Depends(get_current_admin_user)):
     logger.info(
         "%s requested to add remove app with ID: %s", admin_user.name, app_id)
-    if app_is_invisible(app_id, auth_header=admin_user.auth_header):
+    user_groups = get_user_groups(
+        admin_user.auth_header, is_admin=True)
+    if app_is_invisible(user_groups, app_id):
         logger.info("%s is not visible", app_id)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="An app with this ID does not exist"
         )
+    user_info = UserInfo(name=admin_user.name, groups=user_groups)
     try:
-        await delete_app_internal(app_id, admin_user.auth_header, delete_data)
+        await delete_app_internal(user_info, app_id, admin_user.auth_header, delete_data)
     except HTTPException as e:
         logger.info(
             "Problems deleting MIRO app with id: %s. Status code: %s. Details: %s", app_id, e.status_code, e.detail)
