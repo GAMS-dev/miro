@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPBasic, HTTPBasicCredentials
 from fastapi.logger import logger
 
-from config import settings
+from app.config import settings
 
 bearer_auth = HTTPBearer(auto_error=False)
 basic_auth = HTTPBasic(auto_error=False)

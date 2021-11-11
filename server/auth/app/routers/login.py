@@ -3,8 +3,8 @@ from pydantic import BaseModel
 from fastapi import APIRouter, Response, HTTPException, status
 from fastapi.logger import logger
 
-from config import settings
-from dependencies import get_user_groups
+from app.config import settings
+from app.dependencies import get_user_groups
 
 router = APIRouter(
     prefix="/login",

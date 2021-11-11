@@ -423,7 +423,13 @@ pipeline {
                         popd > /dev/null
                         ./scripts/fix_docs.sh
 
-                        git add ./doc/release.html ./doc/index.html
+                        # update MIRO Server API OpenAPI schema
+                        pushd server > /dev/null
+                            python3 miro_server.py dump_schema ../doc/miro_server_api.json
+                        popd > /dev/null
+
+                        git add ./doc/release.html ./doc/index.html ./doc/miro_server_api.json
+
                         git commit -m "[CI skip] Update documentation" && {
                             git push origin HEAD:$BRANCH_NAME || true
                         }

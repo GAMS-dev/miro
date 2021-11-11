@@ -51,7 +51,7 @@ class MiroServer(object):
     parser.add_argument('command',
       type=str,
       help='Subcommand to run',
-      choices=['build', 'up', 'down', 'push', 'release'])
+      choices=['build', 'up', 'down', 'push', 'release', 'dump_schema'])
 
     args = parser.parse_args(sys.argv[1:2])
 
@@ -278,6 +278,34 @@ class MiroServer(object):
                               f'gams/{DOCKERHUB_IMAGE_CONFIG[image_name_hub]["short_desc"]}',
                               '--debug',
                               f'gams/{image_name_hub}'])
+
+  def dump_schema(self):
+    parser = argparse.ArgumentParser(
+          description='Dumps MIRO Server OpenAPI schema')
+
+    parser.add_argument('path', help='Path where to dump schema')
+
+    args = parser.parse_args(sys.argv[2:])
+
+    dump_result = subprocess.run(
+        [
+            'docker-compose',
+            'run',
+            '--no-deps',
+            '--rm',
+            '-v',
+            f'{os.getcwd()}/auth/utils/dump_api.py:/app/dump_api.py',
+            'auth',
+            'python3',
+            'dump_api.py'
+        ],
+        check=True, stdout=subprocess.PIPE
+    )
+
+    with open(args.path, 'w', newline='\n') as oai_schema:
+      parsed = json.loads(dump_result.stdout.decode())
+      json.dump(parsed, oai_schema, indent=4)
+      oai_schema.write('\n')
 
 
 if __name__ == '__main__':

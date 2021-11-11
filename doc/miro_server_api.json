@@ -1,0 +1,413 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "FastAPI",
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/apps/": {
+            "get": {
+                "tags": [
+                    "apps"
+                ],
+                "summary": "Get Apps",
+                "operationId": "get_apps_apps__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "title": "Response Get Apps Apps  Get",
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/AppConfig"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBasic": []
+                    },
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "apps"
+                ],
+                "summary": "Add App",
+                "operationId": "add_app_apps__post",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_add_app_apps__post"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "App successfully added",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "400": {
+                        "description": "You cannot add an app with this ID"
+                    },
+                    "409": {
+                        "description": "An app with this id already exists"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBasic": []
+                    },
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
+        "/apps/{app_id}": {
+            "put": {
+                "tags": [
+                    "apps"
+                ],
+                "summary": "Update App",
+                "operationId": "update_app_apps__app_id__put",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "App Id",
+                            "type": "string"
+                        },
+                        "name": "app_id",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_update_app_apps__app_id__put"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "App successfully updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "An app with this ID does not exist"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "400": {
+                        "description": "You cannot update an app with this ID"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBasic": []
+                    },
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "apps"
+                ],
+                "summary": "Delete App",
+                "operationId": "delete_app_apps__app_id__delete",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "App Id",
+                            "type": "string"
+                        },
+                        "name": "app_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Delete Data",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "name": "delete_data",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "App successfully deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "An app with this ID does not exist"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBasic": []
+                    },
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AppConfig": {
+                "title": "AppConfig",
+                "required": [
+                    "accessGroups"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "displayName": {
+                        "title": "Displayname",
+                        "type": "string"
+                    },
+                    "description": {
+                        "title": "Description",
+                        "type": "string"
+                    },
+                    "accessGroups": {
+                        "title": "Accessgroups",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "Body_add_app_apps__post": {
+                "title": "Body_add_app_apps__post",
+                "required": [
+                    "app_data"
+                ],
+                "type": "object",
+                "properties": {
+                    "app_id": {
+                        "title": "App Id",
+                        "type": "string"
+                    },
+                    "display_name": {
+                        "title": "Display Name",
+                        "type": "string"
+                    },
+                    "description": {
+                        "title": "Description",
+                        "type": "string"
+                    },
+                    "access_groups": {
+                        "title": "Access Groups",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": []
+                    },
+                    "overwrite_data": {
+                        "title": "Overwrite Data",
+                        "type": "boolean",
+                        "default": false
+                    },
+                    "app_data": {
+                        "title": "App Data",
+                        "type": "string",
+                        "format": "binary"
+                    }
+                }
+            },
+            "Body_update_app_apps__app_id__put": {
+                "title": "Body_update_app_apps__app_id__put",
+                "required": [
+                    "app_data"
+                ],
+                "type": "object",
+                "properties": {
+                    "display_name": {
+                        "title": "Display Name",
+                        "type": "string"
+                    },
+                    "description": {
+                        "title": "Description",
+                        "type": "string"
+                    },
+                    "access_groups": {
+                        "title": "Access Groups",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "default": []
+                    },
+                    "overwrite_data": {
+                        "title": "Overwrite Data",
+                        "type": "boolean",
+                        "default": false
+                    },
+                    "app_data": {
+                        "title": "App Data",
+                        "type": "string",
+                        "format": "binary"
+                    }
+                }
+            },
+            "HTTPValidationError": {
+                "title": "HTTPValidationError",
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "title": "Detail",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        }
+                    }
+                }
+            },
+            "ValidationError": {
+                "title": "ValidationError",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "type": "object",
+                "properties": {
+                    "loc": {
+                        "title": "Location",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "msg": {
+                        "title": "Message",
+                        "type": "string"
+                    },
+                    "type": {
+                        "title": "Error Type",
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "HTTPBasic": {
+                "type": "http",
+                "scheme": "basic"
+            },
+            "HTTPBearer": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    }
+}

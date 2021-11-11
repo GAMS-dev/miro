@@ -3,7 +3,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.logger import logger
 
-from routers import login, apps
+from app.routers import login, apps
 
 gunicorn_logger = logging.getLogger('gunicorn.error')
 
@@ -17,7 +17,21 @@ else:
 
 app = FastAPI()
 
-public_api = FastAPI()
+public_api = FastAPI(
+    title="MIRO Server API",
+    description="REST API for managing MIRO apps and scenario data",
+    version="1.0.0",
+    contact={
+        "name": "GAMS Support",
+        "url": "https://gams.com/miro",
+        "email": "support@gams.com",
+    },
+    license_info={
+        "name": "GPL-3",
+        "url": "https://www.gnu.org/licenses/gpl-3.0.de.html",
+    },
+    redoc_url=None
+)
 
 app.include_router(login.router)
 public_api.include_router(apps.router)
