@@ -13,6 +13,13 @@ createAppDir <- function(appId) {
     stop_custom("error_model_dir_exists", "An app with this id already exists", call. = FALSE)
   }
   if (failedDirCreate) {
+    if (dir.exists(modelPath)) {
+      flog.info(
+        "App with id: %s is found on the file system but not in specs.yaml. This is either because another process is currently adding an app with this id or because it was not properly cleaned up. In the latter case, please remove the directory: '%s' manually.",
+        appId, paste0("./models/", appId)
+      )
+      stop_custom("error_model_dir_exists", "An app with this id already exists", call. = FALSE)
+    }
     stop(sprintf("Could not create directory: %s", modelPath), call. = FALSE)
   }
 }
