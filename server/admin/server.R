@@ -562,7 +562,7 @@ server <- function(input, output, session) {
 
         extractAppData(filePath, paste0("~$", appId), modelId)
 
-        engineClient$updateModel(appId, userGroups = FALSE, modelDataPath = file.path(appDir, paste0(modelId, ".zip")))
+        engineClient$updateModel(appId, userGroups = FALSE, modelDataPath = file.path(appDirTmp, paste0(modelId, ".zip")))
 
         addDataFiles(appId, dataDirTmp, progressSelector,
           "updateApp",
