@@ -183,6 +183,33 @@ class TestApps:
                 'description': '', 'accessGroups': []},
             {'id': 'transport_test', 'displayName': 'My custom transport', 'description': 'This is my custom transport app', 'accessGroups': ["MYGROUP"]}]
         assert len(get_scen_metadata("transport_test")) == 1
+
+        # adding same app twice should cause 400
+        response = client.post("/api/apps/",
+                               files={"app_data": open(
+                                   "tests/data/pickstock.miroapp", "rb")},
+                               data={
+                                   "app_id": "transport_test",
+                                   "display_name": "asd",
+                                   "description": "def",
+                                   "access_groups": [],
+                                   "overwrite_data": True
+                               },
+                               auth=VALID_AUTH_TUPLE)
+        print(response.json())
+        assert response.status_code == 400
+        response = client.get("/api/apps/",
+                              auth=VALID_AUTH_TUPLE)
+        assert response.json() == [
+            {'id': 'transport', 'displayName': 'transport',
+                'description': '', 'accessGroups': []},
+            {'id': 'transport_test', 'displayName': 'My custom transport', 'description': 'This is my custom transport app', 'accessGroups': ["MYGROUP"]}]
+        assert len(get_scen_metadata("transport_test")) == 1
+
+        response = client.delete(
+            "/api/apps/transport_test", auth=VALID_AUTH_TUPLE)
+        print(response.json())
+        assert response.status_code == 200
         # migrating database currently not possible
         response = client.post("/api/apps/",
                                files={"app_data": open(
@@ -201,9 +228,8 @@ class TestApps:
                               auth=VALID_AUTH_TUPLE)
         assert response.json() == [
             {'id': 'transport', 'displayName': 'transport',
-                'description': '', 'accessGroups': []},
-            {'id': 'transport_test', 'displayName': 'My custom transport', 'description': 'This is my custom transport app', 'accessGroups': ["MYGROUP"]}]
-        assert len(get_scen_metadata("transport_test")) == 1
+                'description': '', 'accessGroups': []}]
+        assert len(get_scen_metadata("transport")) == 1
 
     def test_delete_app(self, cleanup):
         response = client.get("/api/apps/",
@@ -320,3 +346,20 @@ class TestApps:
         assert len(scen_data) == 1
         new_creation_time = scen_data[0][3]
         assert new_creation_time > creation_time
+
+        response = client.put("/api/apps/transport",
+                              files={"app_data": open(
+                                  "tests/data/pickstock.miroapp", "rb")},
+                              data={
+                                  "display_name": "asd",
+                                  "description": "def",
+                                  "overwrite_data": True
+                              },
+                              auth=VALID_AUTH_TUPLE)
+        print(response.json())
+        assert response.status_code == 409
+
+        response = client.get("/api/apps/",
+                              auth=VALID_AUTH_TUPLE)
+        assert response.json() == [
+            {'id': 'transport', 'displayName': 'Test123', 'description': 'This is my custom transport app', 'accessGroups': []}]

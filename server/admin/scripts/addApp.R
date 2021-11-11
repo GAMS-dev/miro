@@ -94,17 +94,11 @@ tryCatch(
           )
         }
       }
-      newAppId <- miroAppValidator$getAppId()
-      if (!identical(appId, newAppId)) {
-        stop(sprintf(
-          "The app ID of the new app (%s) does not match that of the app you dropped it on (%s).",
-          newAppId, appId
-        ), call. = FALSE)
-      }
       appConfig <- modelConfig$getAppConfigFull(appId)
       appDbCredentials <- modelConfig$getAppDbConf(appId)
 
       appConfig$containerEnv[["MIRO_VERSION_STRING"]] <- miroAppValidator$getMIROVersion()
+      appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0("/home/miro/app/model/", appId, "/", modelName)
       for (key in c("displayName", "description", "accessGroups")) {
         if (length(metadata[[key]])) {
           valueTrimmed <- trimws(metadata[[key]])
@@ -119,7 +113,7 @@ tryCatch(
         }
       }
       extractAppData(appPath, paste0("~$", appId), modelId)
-      engineClient$updateModel(appId, userGroups = FALSE, modelDataPath = file.path(appDir, paste0(modelId, ".zip")))
+      engineClient$updateModel(appId, userGroups = FALSE, modelDataPath = file.path(appDirTmp, paste0(modelId, ".zip")))
     } else {
       tryCatch(
         {
@@ -181,10 +175,16 @@ tryCatch(
     procEnv[["MIRO_DB_SCHEMA"]] <- appDbCredentials$user
     procEnv[["MIRO_POPULATE_DB"]] <- "true"
     procEnv[["MIRO_VERSION_STRING"]] <- miroAppValidator$getMIROVersion()
-    procEnv[["MIRO_MODEL_PATH"]] <- file.path(appDir, modelName)
-    procEnv[["MIRO_DATA_DIR"]] <- dataDir
+    if (updateApp) {
+      procEnv[["MIRO_MODEL_PATH"]] <- file.path(appDirTmp, modelName)
+      procEnv[["MIRO_DATA_DIR"]] <- dataDirTmp
+    } else {
+      procEnv[["MIRO_MODEL_PATH"]] <- file.path(appDir, modelName)
+      procEnv[["MIRO_DATA_DIR"]] <- dataDir
+    }
     procEnv[["MIRO_OVERWRITE_SCEN_IMPORT"]] <- if (!identical(overwriteScen, TRUE)) "false" else "true"
-
+    migrationConfigPath <- tempfile(fileext = ".json")
+    procEnv[["MIRO_MIGRATION_CONFIG_PATH"]] <- migrationConfigPath
     procResult <- processx::run("R", c(
       "--no-echo", "--no-restore", "--vanilla", "-e",
       paste0("shiny::runApp('", MIRO_APP_PATH, "',port=3839,host='0.0.0.0')")
@@ -210,10 +210,10 @@ tryCatch(
     }
 
     if (!identical(procResult$status, 0L)) {
-      stdErrLines <- strsplit(stdErr, "\n", fixed = TRUE)
+      stdErrLines <- strsplit(stdErr, "\n", fixed = TRUE)[[1]]
       for (line in stdErrLines) {
         if (startsWith(line, "merr:::")) {
-          if (startsWith(line, "merr:::409:::")) {
+          if (startsWith(line, "merr:::409")) {
             write("merr:::409:::Database needs to be migrated. This is currently not supported in non-interactive mode", stderr())
           }
           cleanup()
@@ -224,7 +224,7 @@ tryCatch(
       cleanup()
       write(sprintf(
         "merr:::500:::Unexpected error while adding data for app: %s. Stderr: %s. Stdout: %s",
-        appId, gsub("[\r\n]", "", stdErr), gsub("[\r\n]", "", stdOut)
+        appId, gsub("[\r\n]", "|||", stdErr), gsub("[\r\n]", "|||", stdOut)
       ), stderr())
       quit("no", 1L, FALSE)
     }
