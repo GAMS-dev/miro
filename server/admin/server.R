@@ -444,7 +444,7 @@ server <- function(input, output, session) {
     )
   })
   addDataFiles <- function(appId, filePaths, progressSelector, requestType, overwriteExisting = FALSE,
-                           additionalData = NULL, appConfig = NULL, customCallback = NULL) {
+                           additionalData = NULL, appConfig = NULL, customCallback = NULL, appDir = NULL) {
     tryCatch(
       {
         if (is.null(appConfig)) {
@@ -466,10 +466,13 @@ server <- function(input, output, session) {
         } else {
           dataToSend <- list(requestType = requestType)
         }
+        if (is.null(appDir)) {
+          appDir <- file.path(getwd(), MIRO_MODEL_DIR, appId)
+        }
         for (i in seq_along(filePaths)) {
           miroProc$run(appId, appModelName,
             appConfig$containerEnv[["MIRO_VERSION_STRING"]],
-            file.path(getwd(), MIRO_MODEL_DIR, appId), filePaths[[i]],
+            appDir, filePaths[[i]],
             progressSelector = if (length(filePaths) > 1) progressSelector else NULL,
             requestType = requestType, overwriteScen = overwriteExisting,
             additionalDataOnError = additionalData,
@@ -535,7 +538,9 @@ server <- function(input, output, session) {
           getAppId()
 
         modelId <- miroAppValidator$getModelId()
+        modelName <- miroAppValidator$getModelName()
         appConfig$containerEnv[["MIRO_VERSION_STRING"]] <- miroAppValidator$getMIROVersion()
+        appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0("/home/miro/app/model/", appId, "/", modelName)
 
         if (!identical(appId, newAppId)) {
           stop(sprintf(
@@ -566,6 +571,7 @@ server <- function(input, output, session) {
 
         addDataFiles(appId, dataDirTmp, progressSelector,
           "updateApp",
+          appDir = appDirTmp,
           overwriteExisting = overwriteData,
           additionalData = list(progressSelector = progressSelector, spinnerSelector = paste0("#appSpinner_", appId)),
           appConfig = appConfig, customCallback = function() {
