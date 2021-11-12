@@ -1263,6 +1263,7 @@ Worker <- R6Class("Worker", public = list(
         if (private$waitCnt < private$metadata$timeout) {
           private$waitCnt <- private$waitCnt + 1L
         } else {
+          flog.warn("Pinging remote process timed out (error: 126318).")
           private$status <- -404L
         }
       }
@@ -1286,6 +1287,7 @@ Worker <- R6Class("Worker", public = list(
         if (private$waitCnt < private$metadata$timeout) {
           private$waitCnt <- private$waitCnt + 1L
         } else {
+          flog.warn("Pinging remote process timed out (error: 7126360).")
           private$status <- -404L
         }
       }
@@ -1318,6 +1320,10 @@ Worker <- R6Class("Worker", public = list(
           )
         },
         error = function(e) {
+          flog.info(
+            "Invalid JSON reponse received from server: %s",
+            conditionMessage(e)
+          )
           private$status <- -404L
           return(-1L)
         }
@@ -1384,6 +1390,7 @@ Worker <- R6Class("Worker", public = list(
       if (private$waitCnt < private$metadata$timeout) {
         private$waitCnt <- private$waitCnt + 1L
       } else {
+        flog.warn("Pinging remote process timed out (error: 0127837).")
         private$status <- -404L
       }
       return(private$status)
