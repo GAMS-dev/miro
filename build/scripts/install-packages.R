@@ -129,6 +129,7 @@ installPackage <- function(package, attempt = 0) {
         downloadPackage(package)
       } else if (isMac && identical(package[1], "V8")) {
         # use binary from CRAN to avoid having absolute path to v8 dylib compiled into binary
+        options(install.packages.check.source = "no")
         install.packages(package[1], if (CIBuild) RlibPathTmp else RLibPath,
           repos = CRANMirrors[attempt + 1],
           dependencies = FALSE, INSTALL_opts = "--no-multiarch"
