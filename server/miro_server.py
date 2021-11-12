@@ -294,10 +294,10 @@ class MiroServer(object):
             '--no-deps',
             '--rm',
             '-v',
-            f'{os.getcwd()}/auth/utils/dump_api.py:/app/dump_api.py',
+            f'{os.getcwd()}/auth/utils/dump_api.py:/dump_api.py',
             'auth',
             'python3',
-            'dump_api.py'
+            '/dump_api.py'
         ],
         check=True, stdout=subprocess.PIPE
     )

@@ -1,5 +1,5 @@
 from fastapi.openapi.utils import get_openapi
-from main import public_api
+from app.main import public_api
 import json
 
 print(json.dumps(get_openapi(
