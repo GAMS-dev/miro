@@ -170,7 +170,16 @@ generateMiroScenMeta <- function(path, metadata, attachments, views,
   if (!dir.create(file.path(path, "attachments"))) {
     stop(sprintf("Could not create (temporary) directory: %s", path), call. = FALSE)
   }
-  scenId <- if (length(scenId) && scenId != 1L) metadata[[1]][1]
+  if (length(scenId) && scenId != 1L) {
+    if (length(metadata[["_scode"]]) && metadata[["_scode"]][1] > 10000L) {
+      # Hypercube scenario with shared input data
+      attachmentSids <- c(metadata[[1]][1], metadata[["_scode"]][1] - 10000L)
+    } else {
+      attachmentSids <- metadata[[1]][1]
+    }
+  } else {
+    attachmentSids <- NULL
+  }
   if (length(metadata[["_scode"]]) && metadata[["_scode"]][1] > 10000L) {
     # Hypercube scenario with shared input data
     attachmentSids <- c(scenId, metadata[["_scode"]][1] - 10000L)
