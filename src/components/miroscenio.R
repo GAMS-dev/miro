@@ -180,12 +180,6 @@ generateMiroScenMeta <- function(path, metadata, attachments, views,
   } else {
     attachmentSids <- NULL
   }
-  if (length(metadata[["_scode"]]) && metadata[["_scode"]][1] > 10000L) {
-    # Hypercube scenario with shared input data
-    attachmentSids <- c(scenId, metadata[["_scode"]][1] - 10000L)
-  } else {
-    attachmentSids <- scenId
-  }
   attachmentMetadata <- attachments$getMetadata(attachmentSids)
   if (length(attachmentMetadata) && length(attachmentMetadata[[1]])) {
     if (length(attachments$download(file.path(path, "attachments"),
