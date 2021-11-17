@@ -134,7 +134,7 @@ in a sepeare LICENSE filed located in src/LICENSE or online at: https://gams.com
 "electron-osx-sign@0.5.0","BSD-2-Clause","https://github.com/electron-userland/electron-osx-sign","https://github.com/electron-userland/electron-osx-sign/raw/master/LICENSE","com.gams.miro"
 "electron-publish@22.13.1","MIT","https://github.com/electron-userland/electron-builder","https://github.com/electron-userland/electron-builder/raw/master/LICENSE","com.gams.miro"
 "electron-store@8.0.1","MIT","https://github.com/sindresorhus/electron-store","https://github.com/sindresorhus/electron-store/raw/master/license","com.gams.miro"
-"electron@15.2.0","MIT","https://github.com/electron/electron","https://github.com/electron/electron/raw/master/LICENSE","com.gams.miro"
+"electron@15.3.1","MIT","https://github.com/electron/electron","https://github.com/electron/electron/raw/master/LICENSE","com.gams.miro"
 "emoji-regex@7.0.3","MIT","https://github.com/mathiasbynens/emoji-regex","https://github.com/mathiasbynens/emoji-regex/raw/master/LICENSE-MIT.txt","ansi-align:com.gams.miro"
 "emoji-regex@8.0.0","MIT","https://github.com/mathiasbynens/emoji-regex","https://github.com/mathiasbynens/emoji-regex/raw/master/LICENSE-MIT.txt","com.gams.miro"
 "encodeurl@1.0.2","MIT","https://github.com/pillarjs/encodeurl","https://github.com/pillarjs/encodeurl/raw/master/LICENSE","com.gams.miro"
