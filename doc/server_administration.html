@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+  <!--<![endif]-->
+  <head>
+    <title>GAMS MIRO Server</title>
+    <!-- Meta -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GAMS MIRO documentation" />
+    <meta name="author" content="GAMS Development Corp." />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <!-- FontAwesome JS -->
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.1.1/js/all.js"
+      integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Global CSS -->
+    <link
+      rel="stylesheet"
+      href="assets/plugins/bootstrap/css/bootstrap.min.css"
+    />
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css" />
+    <link rel="stylesheet" href="assets/plugins/prism/prism-diff-yaml.css" />
+    <link
+      rel="stylesheet"
+      href="assets/plugins/lightbox/dist/ekko-lightbox.css"
+    />
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css" />
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css" />
+    <!--#include virtual="/wheader.html" -->
+  </head>
+
+  <body class="body-orange">
+    <!--#include virtual="/navbar_full.html" -->
+    <div class="page-wrapper">
+      <!--#include virtual="/mirover.html" -->
+
+      <!-- ******Header****** -->
+      <header id="header" class="sub-header">
+        <div class="container">
+          <div class="branding">
+            <h1 class="logo">
+              <a href="index.html">
+                <img
+                  class="img-fluid"
+                  style="height: 75px"
+                  src="assets/images/logo.svg"
+                  onerror="this.onerror=null; this.src='assets/images/logo.png'"
+                  alt="GAMS MIRO"
+                />
+              </a>
+            </h1>
+          </div>
+          <!--//branding-->
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item">
+              <a href="server.html">MIRO Server</a>
+            </li>
+            <li class="breadcrumb-item active">Administration</li>
+          </ol>
+        </div>
+        <!--//container-->
+      </header>
+      <!--//header-->
+      <div class="doc-wrapper">
+        <div class="container">
+          <div class="row justify-content-end search-box-wrapper">
+            <div class="float-right">
+              <input
+                class="form-control search-box"
+                id="miroSearch"
+                type="text"
+                placeholder="Search"
+                aria-label="Search"
+              />
+              <ul id="miroSearchResults" class="list-group"></ul>
+            </div>
+          </div>
+          <div id="doc-header" class="doc-header text-center">
+            <h1 class="doc-title">
+              <span aria-hidden="true" class="icon fas fa-users-cog"></span>
+              Administration
+            </h1>
+          </div>
+          <!--//doc-header-->
+          <div class="doc-body row">
+            <div class="doc-content col-md-9 col-12 order-1">
+              <div class="content-inner">
+                <section class="doc-section">
+                  <h2 id="authentication-user-management" class="section-title">
+                    User Management
+                  </h2>
+                  <div class="section-block">
+                    <p>
+                      MIRO Server uses the authentication service of GAMS
+                      Engine. Everyone who wants to use MIRO Server needs a GAMS
+                      Engine user account with at least execute permissions on
+                      the
+                      <a
+                        href="https://gams.com/engine/administration.html#namespaces"
+                        >namespace</a
+                      >
+                      to be used. Or the other way around: Once you are a
+                      registered GAMS Engine user with the required permissions,
+                      you can use MIRO Server. Users without permissions in the
+                      namespace can log in if they can see a user group
+                      associated with a model.
+                    </p>
+                    <p>
+                      If you are GAMS Engine administrator or inviter, you can
+                      manage users and namespaces for MIRO Server directly in
+                      the Engine UI. Read more about this in the
+                      <a
+                        href="https://www.gams.com/engine/administration.html#user-management"
+                        >GAMS Engine documentation</a
+                      >.
+                    </p>
+                    <p>
+                      If you decide to use MIRO Server without authentication
+                      (e.g. to showcase applications as in the case of the
+                      <a href="https://miro.gams.com">MIRO Gallery</a>), you
+                      need to register one GAMS Engine user with execute
+                      permissions on the namespace to be used, e.g. a user
+                      <kbd>anonymous</kbd>. Anyone accessing your MIRO apps will
+                      then use this GAMS Engine user under the hood for
+                      authentication. You will need the credentials of that user
+                      in
+                      <a href="./server_setup.html#step6" class="scrollto"
+                        >step 6 of the installation</a
+                      >. You can also provide the credentials of this user via
+                      the `.env` file in the <i>miro_server</i> directory:
+                    </p>
+                    <div class="table-responsive" style="margin: 15px auto">
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th style="width: 30%">
+                              Environment Variable Name
+                            </th>
+                            <th>Environment Variable Value</th>
+                            <th>Example</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>GMS_MIRO_ENGINE_ANONYMOUS_USER</td>
+                            <td>Username of anonymous user</td>
+                            <td>miro_server_anonymous</td>
+                          </tr>
+                          <tr>
+                            <td>GMS_MIRO_ENGINE_ANONYMOUS_PWD</td>
+                            <td>Password of anonymous user</td>
+                            <td>t@qHwt%3Mh</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <p>
+                        If you do not provide the credentials of the anonymous
+                        Engine user, the apps can be launched but not
+                        solved/submitted to Engine.
+                      </p>
+                    </div>
+                    <!--//table-responsive-->
+                  </div>
+                </section>
+                <section class="doc-section">
+                  <h2 id="admin-panel" class="section-title">
+                    The admin panel
+                  </h2>
+                  <div id="admin-access" class="section-block">
+                    <h3 class="block-title">Access</h3>
+                    <p>
+                      In the Admin panel of MIRO Server you can add new MIRO
+                      apps and delete existing ones. Among other things, access
+                      to individual apps can also be controlled here via a user
+                      group system.
+                    </p>
+                    <p>
+                      A user with
+                      <a
+                        href="https://www.gams.com/engine/administration.html#namespaces"
+                        >read, write and execute permissions</a
+                      >
+                      on the namespace that MIRO Server uses will be considered
+                      as a MIRO Server administrator. As an administrator, the
+                      tabs 'Admin Panel' and 'Containers' are additionally
+                      displayed next to the 'Home' tab:
+                    </p>
+                    <div class="callout-block callout-success">
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Tip:</b>
+                        <p>
+                          In addition to interactively managing apps and
+                          scenarios via the admin panel, this can also be done
+                          via a <a href="./server_api.html">REST API</a>.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 400pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                          cursor: pointer;
+                        "
+                        src="assets/images/server/header.png"
+                        alt="Administrator header bar"
+                        onclick="window.open(this.src, '_blank');"
+                      />
+                    </div>
+                    <p>
+                      A click on <i>Admin Panel</i> opens a overview with all
+                      deployed apps:
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 400pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                          cursor: pointer;
+                        "
+                        src="assets/images/server/admin-panel.png"
+                        alt="MIRO Server admin panel"
+                        onclick="window.open(this.src, '_blank');"
+                      />
+                    </div>
+                    <b
+                      >How to access the admin panel when using MIRO Server
+                      without authentication:</b
+                    ><br />
+                    <p>
+                      When MIRO Server is used without authentication, there is
+                      no login screen anymore. Everyone accessing the MIRO
+                      Server landing page will end up on the
+                      <a
+                        href="./server_general.html#app-overview"
+                        class="scrollto"
+                        >library</a
+                      >. Accordingly, there is no longer a distinction between
+                      admininistrator and normal user (i.e. there is no admin
+                      panel button). In this case you can reach the admin panel
+                      via a
+                      <a href="#direct-app-link" class="scrollto">direct link</a
+                      >, just like with MIRO apps. The app id is <i>admin</i> in
+                      this case:
+                      <a href="mydomain.com/app_direct/admin/" target="_blank"
+                        >mydomain.com/app_direct/admin/</a
+                      >
+                    </p>
+                  </div>
+                  <div id="add-app" class="section-block">
+                    <h3 class="block-title">Add apps</h3>
+                    <p>
+                      As with the local MIRO Desktop library, a new MIRO app (<a
+                        href="./deployment.html#sbs-create-app"
+                        >miroapp</a
+                      >
+                      file) can be added easily via drag &amp; drop or by
+                      clicking on the last tile:
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 400pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                          cursor: pointer;
+                        "
+                        src="assets/images/server/add-app.png"
+                        alt="Add a MIRO app"
+                        onclick="window.open(this.src, '_blank');"
+                      />
+                    </div>
+                    <p>
+                      The dialog that opens shows a preview of the deployed app
+                      including logo, title and description, which can be
+                      modified. Note that the maximum file size for the logo is
+                      1 mb.
+                    </p>
+                    <p>
+                      Further settings that can be made before adding the app:
+                    </p>
+                    <ul>
+                      <li>
+                        Access groups (optional):<br />
+                        By default, any Engine user who has access to the
+                        namespace used by MIRO Server can see all apps. To limit
+                        who is allowed to use the app you want to add, you can
+                        optionally assign <i>access groups</i>. A user who is
+                        not a member of one (or more) of the assigned access
+                        groups does not see the app in the app overview and
+                        cannot reach it via direct link (see an
+                        <a href="#user-groups" class="scrollto">example</a>).
+                        All GAMS Engine groups of the namespace used by MIRO
+                        Server in which the MIRO administrator is a member or
+                        has access rights are available for selection.
+                        <a
+                          href="https://www.gams.com/engine/administration.html#user-groups"
+                          >Learn how to create groups and add users in GAMS
+                          Engine</a
+                        >.
+                      </li>
+                      <li>
+                        App environment (JSON, optional):<br />
+                        <a id="admin-panel-lang" class="anchor"></a>
+                        <p>
+                          Here you can define a customized environment to be
+                          used by the MIRO app in JSON syntax. This can be
+                          useful/mandatory, for example, if you want to run
+                          custom analysis scripts that require external software
+                          not in the PATH or to store credentials to be used by
+                          remote data exchange modules. A detailed description
+                          including an example can be found in the
+                          <a href="./deployment.html#custom-environments"
+                            >MIRO Desktop documentation</a
+                          >. The only difference to the local version is that
+                          with MIRO Server you can specify a separate
+                          environment for each app, while with MIRO Desktop this
+                          applies globally to all apps.
+                        </p>
+                        <p>
+                          While the
+                          <a
+                            href="./server_setup.html#global-language"
+                            class="scrollto"
+                            >global language setting</a
+                          >
+                          applies to all apps, the app environment can be used
+                          to change the language of an individual app. This
+                          allows the use of apps in different languages within
+                          one MIRO Server instance. The environment variable
+                          <kbd>MIRO_LANG</kbd> specifies the language. Available
+                          languages currently are English ('en'), Chinese ('cn')
+                          and German ('de'). Example:
+                          <kbd>{"MIRO_LANG":"de"}</kbd>.
+                        </p>
+                        <div class="section-block">
+                          <img
+                            class="img-fluid"
+                            style="
+                              max-height: 400pt;
+                              display: block;
+                              margin-left: auto;
+                              margin-right: auto;
+                              cursor: pointer;
+                            "
+                            src="assets/images/server/miro-lang.png"
+                            alt="Change the language for one app"
+                            onclick="window.open(this.src, '_blank');"
+                          />
+                        </div>
+                      </li>
+                    </ul>
+                    <p>
+                      When all settings are done, add the app by clicking on
+                      'Save'. The app is then validated and added to the
+                      library.
+                    </p>
+                    <p id="scenario-data">
+                      <b>Scenario data:</b> All scenarios that are
+                      <a href="./deployment.html#bundle-scenarios"
+                        >bundled with the app</a
+                      >
+                      are stored in the MIRO Server database. The user who adds
+                      the app will become the scenario owner. All users with
+                      access to the app have read and execute permissions for
+                      these scenarios.
+                    </p>
+                  </div>
+                  <div id="edit-remove-app" class="section-block">
+                    <h3 class="block-title">Edit and remove apps</h3>
+                    <p>
+                      <b>Edit apps:</b><br />
+                      You can edit existing apps by clicking on an app tile.
+                      This opens the same dialog as when you add a new app.
+                    </p>
+                    <p>
+                      <b>Remove apps:</b><br />
+                      To remove an app, click on the
+                      <span style="color: red; font-weight: 800">&#215;</span>
+                      icon in the upper right corner of an app tile. If you want
+                      to keep the database with all the scenario data of the app
+                      you want to delete, you can specify this in the following
+                      step.
+                    </p>
+                  </div>
+                  <div id="add-scenarios" class="section-block">
+                    <h3 class="block-title">Add scenario data</h3>
+                    <p>
+                      In addition to the possibility of
+                      <a href="./deployment.html#bundle-scenarios"
+                        >bundling scenario data with an app</a
+                      >, scenarios can also be added subsequently by dragging
+                      and dropping the data files (<i>gdx</i>, <i>miroscen</i>,
+                      <i>xlsx</i>, <i>xlsm</i>, <i>xls</i>, <i>zip</i>) onto the
+                      respective app.
+                    </p>
+                    <p>The following rules apply:</p>
+                    <ul>
+                      <li>Up to 10 scenarios can be added at once.</li>
+                      <li>Scenarios are assigned to the user who adds them.</li>
+                      <li>
+                        The scenarios are made available (read and execute
+                        permissions) to all users who have access to the app.
+                      </li>
+                    </ul>
+                  </div>
+                </section>
+                <section class="doc-section">
+                  <h2 id="access-apps" class="section-title">
+                    Access MIRO apps
+                  </h2>
+                  <div id="app-library" class="section-block">
+                    <h3 class="block-title">MIRO Server library</h3>
+                    <p>
+                      The landing page of MIRO Server shows the MIRO Server
+                      library. It lists all apps that a user has access to and
+                      is very similar to the app
+                      <a href="./deployment.html#sbs-install-app"
+                        >library of MIRO Desktop</a
+                      >. Each app is displayed in a separate tile and can be
+                      launched from there:
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 400pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                          cursor: pointer;
+                        "
+                        src="assets/images/server/library.png"
+                        alt="MIRO Server library"
+                        onclick="window.open(this.src, '_blank');"
+                      />
+                    </div>
+                  </div>
+                  <div id="direct-app-link" class="section-block">
+                    <h3 class="block-title">Direct links</h3>
+                    <p>
+                      In addition to the app overview of the MIRO Server
+                      library, apps can also be accessed via a direct link.
+                      There are two slightly different variants. In both
+                      variants the <i>app id</i> is part of the link. This id is
+                      by default the lowercase name of the main GAMS (.gms)
+                      file.
+                    </p>
+                    <ul>
+                      <li>
+                        &lt;miro_server_url&gt;/app/&lt;app_id&gt; (e.g.
+                        <a
+                          href="https://miro.gams.com/gallery/app/transport/"
+                          target="_blank"
+                          >https://miro.gams.com/gallery/app/transport/</a
+                        >):<br />
+                        When accessing a MIRO app under this link, the app
+                        itself will be available via an iframe. The top of the
+                        page contains the navigation bar which brings you back
+                        to the landing page of MIRO Server (library).
+                      </li>
+                      <li>
+                        &lt;miro_server_url&gt;/app_direct/&lt;app_id&gt; (e.g.
+                        <a
+                          href="https://miro.gams.com/gallery/app_direct/transport/"
+                          target="_blank"
+                          >https://miro.gams.com/gallery/app_direct/transport/</a
+                        >):<br />
+                        Directly access the MIRO app without the iframe and
+                        navigation bar.
+                        <div class="callout-block callout-success">
+                          <div class="icon-holder">
+                            <i class="fas fa-thumbs-up"></i>
+                          </div>
+                          <!--//icon-holder-->
+                          <div class="content">
+                            <b class="callout-title">Info:</b>
+                            <p>
+                              Within the iframe that is displayed under
+                              /app/&lt;app_id&gt;, the
+                              /app_direct/&lt;app_id&gt; link is used to display
+                              the MIRO app.
+                            </p>
+                          </div>
+                          <!--//content-->
+                        </div>
+                        <!--//callout-block-->
+                      </li>
+                    </ul>
+                  </div>
+                </section>
+                <section class="doc-section">
+                  <h2 id="app-access" class="section-title">
+                    Controlling app access
+                  </h2>
+                  <p>
+                    If several MIRO apps are used, it may make sense to make
+                    certain apps accessible only to certain users. There are two
+                    possible ways to do this.
+                  </p>
+                  <div id="user-groups" class="section-block">
+                    <h3 class="block-title">User Groups</h3>
+                    <p>
+                      In GAMS Engine users can be assigned to groups (read more
+                      about user groups in the
+                      <a
+                        href="https://www.gams.com/engine/administration.html#user-groups"
+                        >GAMS Engine documentation</a
+                      >). These groups can be used to control who can see which
+                      MIRO app hosted on MIRO Server. In the following example,
+                      there are three groups A, B and C. Users in group A have
+                      access to 4 apps, users in group B have access to 3 other
+                      apps. Group C users can access 2 apps, one of which is
+                      also used by another group.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 282px;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                          cursor: pointer;
+                        "
+                        src="assets/images/server/groups-library-2.png"
+                        alt="Using user groups"
+                        onclick="window.open(this.src, '_blank');"
+                      />
+                    </div>
+                    <p>
+                      All users access MIRO Server via the same URL. However, as
+                      a member of a group, you don't see anything from other
+                      apps from other groups.
+                    </p>
+                    <div class="callout-block callout-success">
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Tip:</b>
+                        <p>A user can also be a member of multiple groups.</p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <p>
+                      Creating user groups and assigning users to them is done
+                      quickly. So it's very easy to control who can access which
+                      apps with this approach.
+                    </p>
+                    <ul>
+                      <li>
+                        <a
+                          href="https://www.gams.com/engine/administration.html#user-groups"
+                          >Learn how to create groups and add users in GAMS
+                          Engine</a
+                        >
+                      </li>
+                      <li>
+                        <a href="#add-app"
+                          >Learn how to control which group can see which app on
+                          MIRO Server.</a
+                        >
+                      </li>
+                    </ul>
+                  </div>
+                  <div id="multiple-instances" class="section-block">
+                    <h3 class="block-title">Multiple MIRO Server instances</h3>
+                    <p>
+                      In this approach, users are separated from each other not
+                      by groups, but by separate MIRO Server instances. The
+                      example setup is as follows: There are 3 different MIRO
+                      Server instances, each accessible under a different URL.
+                      The MIRO server instances all access the same GAMS Engine
+                      instance, but use different namespaces. Using groups is of
+                      course still possible, but not necessary in this example.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 400pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                          cursor: pointer;
+                        "
+                        src="assets/images/server/groups-library-3.png"
+                        alt="Using several MIRO Server instances"
+                        onclick="window.open(this.src, '_blank');"
+                      />
+                    </div>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          Note that in this setup it is not possible to share
+                          individual apps with multiple groups. Apps have to be
+                          added and maintained separately in each MIRO Server
+                          instance. Except that they use the same GAMS Engine,
+                          the three instances have nothing to do with each
+                          other.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                </section>
+              </div>
+              <!--//content-inner-->
+            </div>
+            <!--//doc-content-->
+            <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+              <div id="doc-nav" class="doc-nav">
+                <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                  <a
+                    class="nav-link scrollto"
+                    href="#authentication-user-management"
+                    >User management</a
+                  >
+                  <a class="nav-link scrollto" href="#admin-panel"
+                    >The admin panel</a
+                  >
+                  <nav class="doc-sub-menu nav flex-column">
+                    <a class="nav-link scrollto" href="#admin-access">Access</a>
+                    <a class="nav-link scrollto" href="#add-app">Add apps</a>
+                    <a class="nav-link scrollto" href="#edit-remove-app"
+                      >Edit and remove apps</a
+                    >
+                    <a class="nav-link scrollto" href="#add-scenarios"
+                      >Add scenario data</a
+                    >
+                  </nav>
+                  <a class="nav-link scrollto" href="#access-apps"
+                    >Access MIRO apps</a
+                  >
+                  <nav class="doc-sub-menu nav flex-column">
+                    <a class="nav-link scrollto" href="#app-library"
+                      >MIRO Server library</a
+                    >
+                    <a class="nav-link scrollto" href="#direct-app-link"
+                      >Direct links</a
+                    >
+                  </nav>
+                  <a class="nav-link scrollto" href="#app-access"
+                    >Controlling app access</a
+                  >
+                  <nav class="doc-sub-menu nav flex-column">
+                    <a class="nav-link scrollto" href="#user-groups"
+                      >User groups</a
+                    >
+                    <a class="nav-link scrollto" href="#multiple-instances"
+                      >Multiple MIRO Server instances</a
+                    >
+                  </nav>
+                  <!--//nav-->
+                </nav>
+                <!--//doc-menu-->
+              </div>
+            </div>
+            <!--//doc-sidebar-->
+          </div>
+          <!--//doc-body-->
+        </div>
+        <!--//container-->
+      </div>
+      <!--//doc-wrapper-->
+    </div>
+    <!--//page-wrapper-->
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-3.3.1.min.js"
+    ></script>
+    <!--#include virtual="/footer_miro.html" -->
+
+    <!-- Main Javascript -->
+    <script
+      type="text/javascript"
+      src="assets/plugins/prism/min/prism-min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/prism/min/prism-diff-yaml.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/stickyfill/dist/stickyfill.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/markjs/jquery.mark.min.js"
+    ></script>
+
+    <script type="text/javascript" src="assets/js/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+  <!--<![endif]-->
+  <head>
+    <title>GAMS MIRO Server</title>
+    <!-- Meta -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GAMS MIRO documentation" />
+    <meta name="author" content="GAMS Development Corp." />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <!-- FontAwesome JS -->
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.1.1/js/all.js"
+      integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Global CSS -->
+    <link
+      rel="stylesheet"
+      href="assets/plugins/bootstrap/css/bootstrap.min.css"
+    />
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css" />
+    <link rel="stylesheet" href="assets/plugins/prism/prism-diff-yaml.css" />
+    <link
+      rel="stylesheet"
+      href="assets/plugins/lightbox/dist/ekko-lightbox.css"
+    />
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css" />
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css" />
+    <!--#include virtual="/wheader.html" -->
+  </head>
+
+  <body class="body-orange">
+    <!--#include virtual="/navbar_full.html" -->
+    <div class="page-wrapper">
+      <!--#include virtual="/mirover.html" -->
+
+      <!-- ******Header****** -->
+      <header id="header" class="sub-header">
+        <div class="container">
+          <div class="branding">
+            <h1 class="logo">
+              <a href="index.html">
+                <img
+                  class="img-fluid"
+                  style="height: 75px"
+                  src="assets/images/logo.svg"
+                  onerror="this.onerror=null; this.src='assets/images/logo.png'"
+                  alt="GAMS MIRO"
+                />
+              </a>
+            </h1>
+          </div>
+          <!--//branding-->
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item">
+              <a href="server.html">MIRO Server</a>
+            </li>
+            <li class="breadcrumb-item active">Moving to the cloud</li>
+          </ol>
+        </div>
+        <!--//container-->
+      </header>
+      <!--//header-->
+      <div class="doc-wrapper">
+        <div class="container">
+          <div class="row justify-content-end search-box-wrapper">
+            <div class="float-right">
+              <input
+                class="form-control search-box"
+                id="miroSearch"
+                type="text"
+                placeholder="Search"
+                aria-label="Search"
+              />
+              <ul id="miroSearchResults" class="list-group"></ul>
+            </div>
+          </div>
+          <div id="doc-header" class="doc-header text-center">
+            <h1 class="doc-title">
+              <span aria-hidden="true" class="icon fas fa-globe"></span> Moving
+              to the cloud
+            </h1>
+          </div>
+          <!--//doc-header-->
+          <div class="doc-body row">
+            <div class="doc-content col-md-9 col-12 order-1">
+              <div class="content-inner">
+                <section id="miro-server" class="doc-section">
+                  <h2 class="section-title">GAMS MIRO Server</h2>
+                  <div class="section-block">
+                    <p>
+                      With GAMS MIRO Server, the model calculations and the MIRO
+                      applications themselves are moved to the cloud. Apps
+                      deployed with MIRO Server can be accessed from any device
+                      with a modern web browser. Local MIRO or GAMS
+                      installations are no longer necessary. This makes MIRO
+                      Server the most convenient solution when it comes to
+                      making apps available to end users all over the world. All
+                      you need as a user is a URL, valid credentials (optional)
+                      and you are ready to go.
+                    </p>
+                    <p>
+                      A detailed overview of the MIRO Server architecture can be
+                      found <a href="./server_architecture.html">here</a>.
+                    </p>
+                    <div class="section-block" id="app-overview">
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 400pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                          cursor: pointer;
+                        "
+                        src="assets/images/server/library.png"
+                        alt="MIRO Server library"
+                        onclick="window.open(this.src, '_blank');"
+                      />
+                    </div>
+                    <p>
+                      Besides the benefits of making them easily accessible,
+                      central hosting of MIRO apps also brings other aspects
+                      into focus:
+                    </p>
+                    <ul>
+                      <li>
+                        <a href="#solve-async" class="scrollto"
+                          >Asynchronous solving</a
+                        >: Submit jobs and log back in later to get the results.
+                      </li>
+                      <li>
+                        <a href="#scenario-sharing" class="scrollto"
+                          >Scenario sharing</a
+                        >: Share scenarios of your MIRO application(s) with
+                        other users easily from within the app.
+                      </li>
+                      <li>
+                        <a
+                          href="./server_administration.html#user-groups"
+                          class="scrollto"
+                          >User- and group management</a
+                        >: Map structures of your work environment by dividing
+                        MIRO users into groups with different privileges. Decide
+                        who can see which apps and/or who has control over
+                        adding new ones.
+                      </li>
+                      <li>
+                        App updates: Update MIRO apps without the risk of
+                        interrupting running applications.
+                      </li>
+                    </ul>
+                  </div>
+                  <div id="solve-async" class="section-block">
+                    <h3 class="block-title">Asynchronous Solving</h3>
+                    <p>
+                      Jobs that are solved with GAMS Engine in the cloud are
+                      always processed asynchronously. This has the following
+                      advantages:
+                    </p>
+                    <ul>
+                      <li>
+                        You can submit several jobs in a row without having to
+                        wait for the results of previous jobs.
+                      </li>
+                      <li>
+                        A MIRO application does not have to keep running during
+                        the calculations, i.e. you can close the application and
+                        return at a later time to view the results.
+                      </li>
+                    </ul>
+                    <p>
+                      Instead of a normal 'Solve Model' button like in MIRO
+                      Desktop, a dropdown menu appears in a MIRO app running
+                      under MIRO Server:
+                    </p>
+                    <div>
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 400pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                          cursor: pointer;
+                        "
+                        src="assets/images/server/solve-button.png"
+                        alt="Solve button"
+                        onclick="window.open(this.src, '_blank');"
+                      />
+                    </div>
+                    <p>The choices are:</p>
+                    <ul>
+                      <li>
+                        <b>Solve model:</b><br />
+                        <p>
+                          The workflow is identical to the synchronous solving
+                          in MIRO Desktop. After clicking on
+                          <i>Solve model</i> the view changes to the
+                          <i>GAMS interaction</i> section, where log and listing
+                          files are shown during the calculations (if they are
+                          not hidden). After solving the view changes to the
+                          output section.
+                        </p>
+                        <p>
+                          Note that unlike MIRO Desktop, the job is now executed
+                          asynchronously. You can therefore close the MIRO app
+                          during the calculations. From the moment you log out
+                          and log back in, the job will be treated as a job that
+                          you submitted by clicking <i>submit job</i> rather
+                          than <i>solve model</i>. This means no log will be
+                          displayed anymore in the
+                          <i>GAMS interaction</i> section. Also, the results are
+                          not loaded automatically after solving. Instead the
+                          job is moved to the
+                          <a href="#job-list" class="scrollto">job list</a>.
+                          From there you can get the results after finishing the
+                          calculations.
+                        </p>
+                      </li>
+                      <li>
+                        <b>Submit job:</b><br />
+                        A submitted job is put directly into the
+                        <a href="#job-list" class="scrollto">job list</a>. No
+                        log is displayed, and results are not automatically
+                        loaded into the interface. Instead, the results can be
+                        imported later. Submitting a job in this way makes sense
+                        especially if you want to solve multiple jobs in a row
+                        without waiting for the results to come in.
+                      </li>
+                    </ul>
+                  </div>
+                  <!--//section-block-->
+                  <div id="job-list" class="section-block">
+                    <h3 class="block-title">Job list</h3>
+                    <p>
+                      The job list in the GAMS interaction section lists all
+                      submitted jobs that are still running or whose results
+                      have not yet been imported. It shows for each submitted
+                      job the owner, the submission date and the specified job
+                      name. In addition, the current status (<i>scheduled</i>,
+                      <i>running</i> or <i>completed</i>) is visible.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 400pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                          cursor: pointer;
+                        "
+                        src="assets/images/server/job-list.png"
+                        alt="Job list"
+                        onclick="window.open(this.src, '_blank');"
+                      />
+                    </div>
+                    <p>
+                      Results that have not yet been imported or are still
+                      pending can be discarded. As soon as a job has finished,
+                      the results can be loaded into the sandbox with a click on
+                      <i>Download results</i>. Note that this does not save a
+                      scenario in the database.
+                    </p>
+                    <p>
+                      If you want to see jobs that previously have been imported
+                      or discarded, you can do so by clicking on
+                      <i>Show history</i>:
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 400pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                          cursor: pointer;
+                        "
+                        src="assets/images/server/job-history.png"
+                        alt="Job history"
+                        onclick="window.open(this.src, '_blank');"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                  <div id="scenario-sharing" class="section-block">
+                    <h3 class="block-title">Scenario Sharing</h3>
+                    <div id="share-rules" class="section-block">
+                      <h5 class="block-title">Rules for scenario sharing</h5>
+                      <p>
+                        If several users have access to the same MIRO Server
+                        app, they can share scenarios. Shared scenarios can be
+                        loaded from the database into the sandbox in the same
+                        way as your own scenarios.
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="
+                            max-height: 350pt;
+                            display: block;
+                            margin-left: auto;
+                            margin-right: auto;
+                            cursor: pointer;
+                          "
+                          src="assets/images/server/shared-scenarios.png"
+                          alt="Shared scenarios"
+                          onclick="window.open(this.src, '_blank');"
+                        />
+                      </div>
+                      <p>The following rules apply:</p>
+                      <ul>
+                        <li>
+                          Scenarios can be shared with individual users and/or
+                          with user groups.
+                        </li>
+                        <li>
+                          Scenarios can only be shared with groups or users of a
+                          group in which you are a member yourself.
+                          <a
+                            href="https://www.gams.com/engine/administration.html#user-management"
+                            >Inviters</a
+                          >
+                          can also see users in groups of invitees of which they
+                          themselves are not members. Admins can see all users
+                          and groups.
+                        </li>
+                        <li>
+                          The user who shares a scenario with others is the
+                          scenario owner. The scenario owner is displayed to
+                          other users when they load a shared scenario into
+                          their sandbox.
+                        </li>
+                        <li>
+                          Scenarios can be stored under the same name in the
+                          database if the owner is different.
+                        </li>
+                        <li>
+                          Access permissions are assigned to a shared scenario.
+                          As scenario owner you decide about who has read, write
+                          and/or execute permissions. Users with read
+                          permissions can load the owner's scenario but are not
+                          authorized to edit or execute it. The scenario is
+                          marked with a lock symbol (<i class="fas fa-lock"></i
+                          >). Write permissions give you the right to change the
+                          scenario (data) and save it again. With execute
+                          permissions you are authorized to solve the scenario.
+                        </li>
+                        <li>
+                          It is not possible to revoke the owner's access
+                          permissions.
+                        </li>
+                        <li>
+                          Users with read access can duplicate the scenario via
+                          the "Save as" button. They become the owner of this
+                          new scenario.
+                        </li>
+                        <li>
+                          For the time a scenario is opened in MIRO, it is
+                          locked for other users. This prevents conflicts
+                          arising when a scenario is used concurrently. Locked
+                          scenarios can be opened in readonly mode by others
+                          (and also saved under a new name). A lock symbol (<i
+                            class="fas fa-lock"
+                          ></i
+                          >) next to the scenario name indicates the readonly
+                          status. Users with write permissions for the scenario
+                          are additionally informed about this via a
+                          notification in the lower right corner of the screen.
+                          <div class="row">
+                            <div
+                              class="col-sm-12 col-md-12 col-lg-6"
+                              style="padding: 10pt"
+                            >
+                              <img
+                                class="img-fluid center-image-lg"
+                                style="max-height: 100pt; display: block"
+                                src="assets/images/readonly_scenario.png"
+                                alt="Scenario in readonly mode"
+                              />
+                            </div>
+                            <div
+                              class="col-sm-12 col-md-12 col-lg-6"
+                              style="padding: 10pt"
+                            >
+                              <img
+                                class="img-fluid center-image-lg"
+                                style="max-height: 100pt; display: block"
+                                src="assets/images/locked_scenario.png"
+                                alt="Locked scenario notification"
+                              />
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                    <div id="share-scenario" class="section-block">
+                      <h5 class="block-title">Share a scenario</h5>
+                      <p>
+                        The information about whether a scenario should be
+                        shared with others is controlled in the 'Access
+                        permissions' tab under Scenario &rarr; Edit metadata.
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="
+                            max-height: 135pt;
+                            display: block;
+                            margin-left: auto;
+                            margin-right: auto;
+                            cursor: pointer;
+                          "
+                          src="assets/images/server/edit-metadata.png"
+                          alt="Edit metadata"
+                          onclick="window.open(this.src, '_blank');"
+                        />
+                      </div>
+                      <p>
+                        In the example below, Rebecca is scenario owner. She
+                        gives the single user 'rschuchmann' and the group 'group
+                        1' read permission for her scenario. Since she does not
+                        want her scenario data to be changed, she decides not to
+                        give write permissions to any other user. Members of
+                        'group 1' usually only look at results and do not want
+                        to start optimization runs. Therefore, Rebecca only
+                        grants execution rights to "rschuchmann".
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="
+                            max-height: 310pt;
+                            display: block;
+                            margin-left: auto;
+                            margin-right: auto;
+                            cursor: pointer;
+                          "
+                          src="assets/images/server/access-permissions.png"
+                          alt="Access permissions"
+                          onclick="window.open(this.src, '_blank');"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <section id="miro-desktop-remote" class="doc-section">
+                  <h2 class="section-title">
+                    GAMS MIRO Desktop - Boosted by GAMS Engine
+                  </h2>
+                  <div class="section-block">
+                    <p>
+                      With <i>GAMS MIRO Desktop - Boosted by GAMS Engine</i>,
+                      you can solve GAMS jobs in the cloud with your locally
+                      running MIRO applications. This setup requires GAMS Engine
+                      (read more about the installation of GAMS Engine
+                      <a href="https://www.gams.com/engine/installation.html"
+                        >here</a
+                      >). To switch from running your optimization jobs on your
+                      local machine to solving them in the cloud, open your MIRO
+                      library, go to <i>Preferences</i> &rarr;
+                      <i>General</i> and check the "Execution of models on GAMS
+                      Engine" checkbox. This setting affects all deployed MIRO
+                      apps (started via the MIRO library) and all MIRO apps in
+                      development (started via GAMS Studio or the command line).
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 400pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                          cursor: pointer;
+                        "
+                        src="assets/images/remote/remote_enable.png"
+                        alt="Enable remote execution"
+                        onclick="window.open(this.src, '_blank');"
+                      />
+                    </div>
+                    <p>
+                      If you are a developer and want to use a not yet deployed
+                      MIRO app with Engine, you need to create the
+                      <i>model assembly file</i> first. With this you tell MIRO
+                      which files belong to the GAMS model. This is primarily
+                      the main model file, but also all files necessary to
+                      calculate all inputs and outputs, e.g. files that are
+                      included in the model. Read more about the model assembly
+                      file
+                      <a href="./deployment.html#model-assembly-file">here</a>.
+                    </p>
+                    <p>
+                      The next time you launch a MIRO application, a login
+                      dialog appears. To connect to GAMS Engine, the following
+                      information is required:
+                    </p>
+                    <ul>
+                      <li>
+                        <b>Engine URL</b>: URL where GAMS Engine is hosted, e.g.
+                        <kbd>http(s)://mydomain.com/engine/api</kbd>.
+                      </li>
+                      <li>
+                        <b>Username &amp; password</b>: Your GAMS Engine
+                        credentials. More about the user management of GAMS
+                        Engine can be found
+                        <a
+                          href="https://www.gams.com/engine/administration.html#user-management"
+                          >here</a
+                        >.
+                      </li>
+                      <li>
+                        <b>Namespace</b>: The <i>namespace</i> to solve the
+                        model in. Engine uses these namespaces to organize GAMS
+                        models. Your user account needs at least
+                        <i>execute</i> permissions on the namespace to run a
+                        registered model, or write and execute permissions to
+                        run an unregistered model. Further information can be
+                        found
+                        <a
+                          href="https://www.gams.com/engine/administration.html#namespaces"
+                          >here</a
+                        >.
+                      </li>
+                      <li>
+                        <b>Is your model registered in the namespace</b>: If a
+                        model is registered in an Engine namespace, the model
+                        files are stored on Engine. This avoids having to send
+                        the same model files to Engine for each job you submit.
+                        Only the scenario data is communicated in this case.
+                        Read more
+                        <a
+                          href="https://www.gams.com/engine/administration.html#models"
+                          >here</a
+                        >.
+                      </li>
+                      <li>
+                        <b>Remember me</b>: Your credentials will be saved so
+                        that you will not have to log in again the next time you
+                        start the application.
+                      </li>
+                    </ul>
+                    <p>
+                      If a MIRO application runs with GAMS Engine backend, jobs
+                      are solved
+                      <a href="#solve-async">asynchronously</a>. All submitted
+                      jobs can be found and imported in the
+                      <a href="#job-list">joblist</a> in the GAMS interaction
+                      section.
+                    </p>
+                  </div>
+                </section>
+              </div>
+              <!--//content-inner-->
+            </div>
+            <!--//doc-content-->
+            <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+              <div id="doc-nav" class="doc-nav">
+                <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                  <a class="nav-link scrollto" href="#miro-server"
+                    >GAMS MIRO Server</a
+                  >
+                  <nav class="doc-sub-menu nav flex-column">
+                    <a class="nav-link scrollto" href="#solve-async"
+                      >Asynchronous Solving</a
+                    >
+                    <a class="nav-link scrollto" href="#job-list">Job list</a>
+                    <a
+                      class="nav-link scrollto has-sub-sub"
+                      href="#scenario-sharing"
+                      >Scenario Sharing</a
+                    >
+                    <nav class="sub-sub-menu nav flex-column">
+                      <a class="nav-link scrollto" href="#share-rules"
+                        >Rules for scenario sharing</a
+                      >
+                      <a class="nav-link scrollto" href="#share-scenario"
+                        >Share a scenario</a
+                      >
+                    </nav>
+                  </nav>
+                  <a class="nav-link scrollto" href="#miro-desktop-remote"
+                    >GAMS MIRO Desktop - Boosted by GAMS Engine</a
+                  >
+                  <!--//nav-->
+                </nav>
+                <!--//doc-menu-->
+              </div>
+            </div>
+            <!--//doc-sidebar-->
+          </div>
+          <!--//doc-body-->
+        </div>
+        <!--//container-->
+      </div>
+      <!--//doc-wrapper-->
+    </div>
+    <!--//page-wrapper-->
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-3.3.1.min.js"
+    ></script>
+    <!--#include virtual="/footer_miro.html" -->
+
+    <!-- Main Javascript -->
+    <script
+      type="text/javascript"
+      src="assets/plugins/prism/min/prism-min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/prism/min/prism-diff-yaml.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/stickyfill/dist/stickyfill.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/markjs/jquery.mark.min.js"
+    ></script>
+
+    <script type="text/javascript" src="assets/js/main.js"></script>
+  </body>
+</html>
