@@ -68,12 +68,14 @@ def register_transport(client, access_groups=[]):
     assert response.status_code == 201
 
 
-def invite_user(name, permissions, group=None):
+def invite_user(name, permissions, group=None, inviter=False):
     payload = {}
     if permissions:
         payload["namespace_permissions"] = f"{permissions}@{settings['ENGINE_NS']}"
     if group:
         payload["user_groups"] = f"{group}@{settings['ENGINE_NS']}"
+    if inviter:
+        payload["roles"] = "inviter"
 
     response = requests.post(f"{settings['ENGINE_URL']}/users/invitation",
                              data=payload,

@@ -82,8 +82,13 @@ def get_user_groups(auth_header: str, is_admin: bool) -> List[str]:
                 detail=r.json()["message"],
             )
 
-        user_groups = [x["label"] for x in r.json() if x["label"].lower() not in [
-            "admins", "users"]]
+        # MIRO Server doesn't support group labels with uppercase letters
+        # because Shinyproxy converts group labels to uppercase before
+        # setting the environment variable.
+        # We might want to lift this limitation at some point by adjusting
+        # Shinyproxy.
+        user_groups = [x["label"] for x in r.json() if x["label"].lower(
+        ) == x["label"] and x["label"] not in ["admins", "users"]]
 
         user_groups.append("users")
 

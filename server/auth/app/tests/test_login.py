@@ -36,6 +36,8 @@ def cleanup():
     conn.close()
     requests.delete(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups/?label=mygroup",
                     auth=settings["VALID_AUTH_TUPLE"])
+    requests.delete(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups/?label=Mygroup",
+                    auth=settings["VALID_AUTH_TUPLE"])
     delete_user("mirotests_auth_1", allow_fail=True)
 
 
@@ -93,4 +95,18 @@ class TestApps:
                                json={"username": settings["ENGINE_USER"],
                                      "password": settings["ENGINE_PASSWORD"]})
         print(response.json())
+        assert response.status_code == 200
+
+    def test_user_groups(self, cleanup):
+        # groups with uppercase letters in labels should not be accepted by MIRO Server
+        invite_user("mirotests_auth_1", 7, "mygroup", inviter=True)
+        response = requests.post(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups?label=Mygroup",
+                                 auth=("mirotests_auth_1", "mirotests_auth_1"))
+        assert response.status_code == 201
+        response = client.post("/login",
+                               json={"username": "mirotests_auth_1",
+                                     "password": "mirotests_auth_1"})
+        response_data = response.json()
+        print(response_data)
+        assert response_data["roles"] == ['mygroup', 'users', 'admins']
         assert response.status_code == 200
