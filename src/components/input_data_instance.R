@@ -217,7 +217,7 @@ InputDataInstance <- R6Class("InputDataInstance", public = list(
     }
     generateMiroScenMeta(miroMetaDir, private$activeScen$getMetadata(),
       private$attachments, private$views,
-      scenId = 1L, clArgs = private$clArgsDf, jobName = jobName
+      tabsetId = 1L, clArgs = private$clArgsDf, jobName = jobName
     )
     private$addDirPaths(miroMetaDir)
     return(invisible(self))

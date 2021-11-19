@@ -88,7 +88,7 @@ test_that("Writing miroscen files works", {
       )
     ),
     attachmentsDummy, viewsDummy,
-    scenId = NULL
+    tabsetId = NULL
   )
   expect_true(file.exists(file.path(tmpd, "test.miroscen")))
   expect_identical(
@@ -126,7 +126,7 @@ test_that("Writing miroscen files works", {
       )
     ),
     attachmentsDummy, viewsDummy,
-    scenId = 2L
+    tabsetId = 2L
   )
   on.exit(unlink(file.path(tmpd, "views.json")), add = TRUE)
   unzip(file.path(tmpd, "test.miroscen"), "views.json", exdir = tmpd)
@@ -174,7 +174,7 @@ test_that("Reading miroscen files works", {
       )
     ),
     attachmentsDummy, viewsDummy,
-    scenId = NULL
+    tabsetId = NULL
   )
   expect_output(f <- loadMiroScen(
     file.path(tmpd, "test.miroscen"), scenDummy, attachmentsDummy, viewsDummy,

@@ -166,11 +166,11 @@ loadMiroScen <- function(path, activeScen, attachments, views, inputNames, exdir
   return(dfClArgs)
 }
 generateMiroScenMeta <- function(path, metadata, attachments, views,
-                                 scenId = NULL, clArgs = character(0L), jobName = NULL) {
+                                 tabsetId = NULL, clArgs = character(0L), jobName = NULL) {
   if (!dir.create(file.path(path, "attachments"))) {
     stop(sprintf("Could not create (temporary) directory: %s", path), call. = FALSE)
   }
-  if (length(scenId) && scenId != 1L) {
+  if (length(tabsetId) && tabsetId != 1L) {
     if (length(metadata[["_scode"]]) && metadata[["_scode"]][1] > 10000L) {
       # Hypercube scenario with shared input data
       attachmentSids <- c(metadata[[1]][1], metadata[["_scode"]][1] - 10000L)
@@ -180,6 +180,7 @@ generateMiroScenMeta <- function(path, metadata, attachments, views,
   } else {
     attachmentSids <- NULL
   }
+
   attachmentMetadata <- attachments$getMetadata(attachmentSids)
   if (length(attachmentMetadata) && length(attachmentMetadata[[1]])) {
     if (length(attachments$download(file.path(path, "attachments"),
@@ -204,11 +205,11 @@ generateMiroScenMeta <- function(path, metadata, attachments, views,
     auto_unbox = TRUE, null = "null"
   )
   write_file(
-    views$getJSON(NULL, if (length(scenId)) scenId else "1"),
+    views$getJSON(NULL, if (length(tabsetId)) tabsetId else "1"),
     file.path(path, "views.json")
   )
 }
-generateMiroScen <- function(path, metadata, data, attachments, views, scenId = NULL) {
+generateMiroScen <- function(path, metadata, data, attachments, views, tabsetId = NULL) {
   tmpd <- file.path(tempdir(check = TRUE), "miroscen")
   if (file.exists(tmpd) &&
     !identical(unlink(tmpd, recursive = TRUE, force = TRUE), 0L)) {
@@ -224,7 +225,7 @@ generateMiroScen <- function(path, metadata, data, attachments, views, scenId = 
   } else {
     clArgs <- character()
   }
-  generateMiroScenMeta(tmpd, metadata, attachments, views, scenId, clArgs)
+  generateMiroScenMeta(tmpd, metadata, attachments, views, tabsetId, clArgs)
 
   gdxio$wgdx(file.path(tmpd, "data.gdx"), data, squeezeZeros = "n")
   return(zipMiro(path,
