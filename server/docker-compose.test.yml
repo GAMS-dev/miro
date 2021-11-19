@@ -38,6 +38,7 @@ services:
       - ./admin:/home/miro/admin
       - ./data:/home/miro/admin/data
       - ./models:/home/miro/admin/models
+      - ./auth/app:/app
     networks:
       - gamsmiro-network
   dockerproxy:
