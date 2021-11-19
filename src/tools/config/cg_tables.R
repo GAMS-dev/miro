@@ -286,6 +286,11 @@ observeEvent(
           label = currentConfig$label,
           readonly = checkLength(configuredTable, currentConfig[["readonly"]], FALSE),
           readonlyCols = checkLength(configuredTable, currentConfig[["readonlyCols"]], NULL),
+          colWidths = if (configuredTable && !is.null(currentConfig[["colWidths"]]) && length(currentConfig[["colWidths"]]) > 1) {
+            "custom"
+          } else {
+            checkLength(configuredTable, currentConfig[["colWidths"]], NULL)
+          },
           hideIndexCol = checkLength(configuredTable, currentConfig$hideIndexCol, FALSE),
           heatmap = checkLength(configuredTable, currentConfig$heatmap, FALSE),
           pivotCols = checkLength(configuredTable, currentConfig$pivotCols, "_"),
@@ -405,6 +410,29 @@ getSymbolHotOptions <- function() {
         selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols,
           choices = inputSymHeaders[[input$table_symbol]],
           selected = rv$tableWidgetConfig$readonlyCols, multiple = TRUE
+        ),
+        numericInput("table_colWidths",
+          tags$div(
+            lang$adminMode$widgets$table$colWidths,
+            tags$a("",
+              title = lang$adminMode$widgets$table$colWidthsTooltip, class = "info-wrapper",
+              href = "https://gams.com/miro/customize.html#table-colwidths",
+              tags$span(
+                class = "fas fa-info-circle", class = "info-icon",
+                role = "presentation",
+                `aria-label` = "More information"
+              ), target = "_blank"
+            )
+          ),
+          value = if (!identical(rv$tableWidgetConfig$colWidths, "custom")) {
+            rv$tableWidgetConfig$colWidths
+          } else {
+            NULL
+          }, min = 0, step = 1
+        ),
+        tags$div(
+          id = "customColWidths", class = "config-message", style = if (identical(rv$tableWidgetConfig$colWidths, "custom")) "display:block;",
+          lang$adminMode$widgets$table$customColWidths
         )
       ),
       tags$div(
@@ -455,6 +483,16 @@ getSymbolHotOptions <- function() {
           lang$adminMode$widgets$table$heatmap,
           value = rv$tableWidgetConfig$heatmap
         )
+      ),
+      tags$div(
+        tags$h4(
+          style = "font-weight: 600;",
+          lang$adminMode$widgets$table$dropdownColsTitle
+        ),
+        tags$div(lang$adminMode$widgets$table$dropdownColsDesc, tags$a("https://gams.com/miro/customize.html#table-dropdown",
+          title = lang$adminMode$general$ui$tooltipDocs,
+          href = "https://gams.com/miro/customize.html#table-dropdown", target = "_blank"
+        )),
       )
     )
   )
@@ -627,6 +665,11 @@ output$hot_preview <- renderRHandsontable({
   data <- data$data
   colsReadonly <- match(rv$tableWidgetConfig$readonlyCols, headersUnnamed)
   colsReadonly <- colsReadonly[!is.na(colsReadonly)]
+  colWidths <- if (!is.null(rv$tableWidgetConfig$colWidths) && !identical(rv$tableWidgetConfig$colWidths, "custom")) {
+    rv$tableWidgetConfig$colWidths
+  } else {
+    200
+  }
   fixedColumnsLeft <- isolate(rv$tableWidgetConfig$fixedColumnsLeft)
   if (is.null(fixedColumnsLeft)) fixedColumnsLeft <- 0
 
@@ -656,7 +699,10 @@ output$hot_preview <- renderRHandsontable({
   if (!pivotTable && length(colsReadonly)) {
     ht <- hot_col(ht, colsReadonly, readOnly = TRUE)
   }
-  ht <- hot_cols(ht, fixedColumnsLeft = fixedColumnsLeft)
+  ht <- hot_cols(ht,
+    fixedColumnsLeft = fixedColumnsLeft,
+    colWidths = colWidths
+  )
   if (isTRUE(input$table_heatmap)) {
     return(hot_heatmap(ht))
   } else {
@@ -955,13 +1001,18 @@ refreshTableType <- function(refreshSameSymbol = FALSE) {
     hideEl(session, "#inputTable_pivot-data")
     if (refreshSameSymbol) {
       rv$tableWidgetConfig <<- list(
-        widgetType   = "table",
-        tableType    = "default",
-        readonly     = input$table_readonly,
-        pivotCols    = input$table_pivotCols,
+        widgetType = "table",
+        tableType = "default",
+        readonly = input$table_readonly,
+        pivotCols = input$table_pivotCols,
         readonlyCols = input$table_readonlyCols,
+        colWidths = if (!is.na(input$table_colWidths) && input$table_colWidths != 0) {
+          input$table_colWidths
+        } else {
+          NULL
+        },
         hideIndexCol = input$table_hideIndexCol,
-        heatmap      = input$table_heatmap
+        heatmap = input$table_heatmap
       )
       numericColsTmp <- sum(vapply(modelIn[[input$table_symbol]]$headers,
         function(header) identical(header$type, "numeric"),
@@ -985,6 +1036,12 @@ refreshTableType <- function(refreshSameSymbol = FALSE) {
         tableType = "default",
         readonly = checkLength(configuredTable, configJSON$inputWidgets[[currentTableSymbolName]][["readonly"]], FALSE),
         readonlyCols = checkLength(configuredTable, configJSON$inputWidgets[[currentTableSymbolName]][["readonlyCols"]], NULL),
+        colWidths = if (configuredTable && length(configJSON$inputWidgets[[currentTableSymbolName]][["colWidths"]]) &&
+          length(configJSON$inputWidgets[[currentTableSymbolName]][["colWidths"]]) > 1) {
+          "custom"
+        } else {
+          checkLength(configuredTable, configJSON$inputWidgets[[currentTableSymbolName]][["colWidths"]], NULL)
+        },
         hideIndexCol = checkLength(configuredTable, configJSON$inputWidgets[[currentTableSymbolName]]$hideIndexCol, FALSE),
         heatmap = checkLength(configuredTable, configJSON$inputWidgets[[currentTableSymbolName]]$heatmap, FALSE),
         pivotCols = checkLength(configuredTable, configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols, "_")
@@ -1027,10 +1084,21 @@ observeEvent(input$table_readonlyCols, ignoreNULL = FALSE, {
   }
   rv$tableWidgetConfig$readonlyCols <<- input$table_readonlyCols
 })
+observeEvent(input$table_colWidths, ignoreNULL = FALSE, {
+  if (!identical(rv$tableWidgetConfig$colWidths, "custom") &&
+    (is.null(input$table_colWidths) || is.na(input$table_colWidths) || input$table_colWidths == 0)) {
+    configJSON$tableWidgetConfig$colWidths <<- NULL
+    rv$tableWidgetConfig$colWidths <<- NULL
+    return()
+  }
+  rv$tableWidgetConfig$colWidths <<- input$table_colWidths
+  hideEl(session, "#customColWidths")
+})
 observeEvent(input$table_pivotCols, {
   rv$tableWidgetConfig$pivotCols <<- input$table_pivotCols
   if (!identical(input$table_pivotCols, "_")) {
     rv$tableWidgetConfig$readonlyCols <<- NULL
+    rv$tableWidgetConfig$colWidths <<- NULL
     numericColsTmp <- sum(vapply(modelIn[[input$table_symbol]]$headers,
       function(header) identical(header$type, "numeric"),
       logical(1L),
@@ -1044,6 +1112,11 @@ observeEvent(input$table_pivotCols, {
     rv$tableWidgetConfig$fixedColumnsLeft <<- fixedColumnsLeftTmp
   } else {
     rv$tableWidgetConfig$readonlyCols <<- input$table_readonlyCols
+    rv$tableWidgetConfig$colWidths <<- if (!is.na(input$table_colWidths) && input$table_colWidths != 0) {
+      input$table_colWidths
+    } else {
+      NULL
+    }
     rv$tableWidgetConfig$fixedColumnsLeft <<- NULL
   }
 })
@@ -1229,6 +1302,9 @@ observeEvent(virtualActionButton(input$saveTableConfirm, rv$saveTableConfirm), {
       configJSON$inputWidgets[[currentTableSymbolName]] <<- rv$tableWidgetConfig
       if (!length(configJSON$inputWidgets[[currentTableSymbolName]]$readonlyCols)) {
         configJSON$inputWidgets[[currentTableSymbolName]]$readonlyCols <<- NULL
+      }
+      if (!length(configJSON$inputWidgets[[currentTableSymbolName]]$colWidths)) {
+        configJSON$inputWidgets[[currentTableSymbolName]]$colWidths <<- NULL
       }
       if (is.null(configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols) ||
         identical(configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols, "_")) {

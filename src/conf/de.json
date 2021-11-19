@@ -1362,10 +1362,15 @@
         "hideIndexCol": "Indexierungsspalte ausblenden?",
         "readonly": "Soll die Tabelle schreibgeschützt sein?",
         "readonlyCols": "Wählen Sie Spalten aus, die schreibgeschützt sein sollen",
+        "colWidths": "Spaltenbreiten in px",
+        "colWidthsTooltip": "Der Konfigurationsmodus unterstützt die Angabe einer Spaltenbreite für alle Spalten der Tabelle. Um die Breite jeder Spalte einzeln festzulegen, muss die JSON-Konfigurationsdatei manuell geändert werden. Dokumentation öffnen",
+        "customColWidths": "Benutzerdefinierte Spaltenbreitenkonfiguration in JSON-Datei gefunden (im Konfigurationsmodus nicht unterstützt). Beachten Sie, dass eine Änderung der Spaltenbreiten im Konfigurationsmodus die benutzerdefinierten Breiten überschreibt.",
         "pivotCols": "Wählen Sie eine Spalte, die pivotiert werden soll",
         "fixedColumnsLeft": "Spalten fixieren, die nicht pivotiert sind?",
         "heatmap": "Die Tabelle in eine Heatmap wandeln?",
-        "colDecimals": "Geben Sie die Anzahl der Dezimalstellen für die Spalte: '%s' an"
+        "colDecimals": "Geben Sie die Anzahl der Dezimalstellen für die Spalte: '%s' an",
+        "dropdownColsTitle": "Drop-down menu in input table",
+        "dropdownColsDesc": "An input table can be configured so that the cells are not freely editable by the user, but can only be modified via a drop-down menu. This option is not available in the Configuration Mode but needs to be configured manually. Read more here: "
       },
       "slider":{
         "label": "Wählen Sie eine Widget-Beschriftung",

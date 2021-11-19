@@ -1012,8 +1012,13 @@
                         "description":"Width of columns.",
                          "type":[
                             "string",
-                            "integer"
+                            "integer",
+                            "array"
                          ],
+                         "items":{
+                            "type":"integer",
+                            "exclusiveMinimum":0
+                         },
                          "exclusiveMinimum":0
                     },
                     "readonlyCols":{

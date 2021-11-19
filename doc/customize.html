@@ -2055,6 +2055,29 @@ $offExternalInput
                       </div>
                     </div>
                     <h6
+                      id="table-option-colwidths"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Column widths
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        Sets the column width (in pixels) of each column in the
+                        table. The Configuration Mode supports the specification
+                        of one column width for all columns of the table. To
+                        specify the width of each column individually, the
+                        <a href="./faqs.html#file-config"
+                          ><i>&lt;modelname&gt;.json</i></a
+                        >
+                        file must be
+                        <a href="#table-colwidths" class="scrollto"
+                          >modified manually</a
+                        >.
+                      </p>
+                    </div>
+                    <h6
                       id="table-option-decimals"
                       class="block-title"
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
@@ -3961,7 +3984,7 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i>Advanced: JSON
+                      <i class="fas fa-plus slide-toggle"></i> Advanced: JSON
                       validation schema for dropdown menu columns
                     </h6>
                     <div class="expanded">
@@ -4051,8 +4074,19 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                       <p>
                         With the <i>colWidths</i> option it is possible to
                         adjust the column width of individual tables (in
-                        pixels). Note that this a configuration always affects
-                        all columns of a table.
+                        pixels). The Configuration Mode supports the
+                        specification of one column width for all columns of the
+                        table. To specify the width of each column individually,
+                        the
+                        <a href="./faqs.html#file-config"
+                          ><i>&lt;modelname&gt;.json</i></a
+                        >
+                        file must be modified manually. Note that using
+                        individual column widths is not compatible with the
+                        <a href="#table-option-pivot" class="scrollto"
+                          >pivotCols</a
+                        >
+                        option.
                       </p>
                       <p>Example:</p>
                       <div class="code-block">
@@ -4060,33 +4094,15 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
   &#x22;inputWidgets&#x22;: {
     "d": {
       "widgetType": "table",
-      "alias": "distance in thousands of miles",
-	  "pivotCols": "j",
-	  "dropdownCols": {
-        "i": {
-          "symbol": "a",
-          "column": "i",
-		  "colType": "dropdown"
-        }
-      }
+      "tableType": "default",
+      "readonly": false,
+      "hideIndexCol": false,
+      "heatmap": false,
+      "colWidths": [165, 200, 50]
     }
 }</code></pre>
                       </div>
                       <!--//code-block-->
-                      <p>Results in:</p>
-                      <div class="section-block">
-                        <img
-                          class="img-fluid"
-                          style="
-                            max-height: 350pt;
-                            display: block;
-                            margin-left: auto;
-                            margin-right: auto;
-                          "
-                          src="assets/images/configuration_mode/colwidths.png"
-                          alt="Custom column widths"
-                        />
-                      </div>
                     </div>
                     <!--//expanded-->
                   </div>

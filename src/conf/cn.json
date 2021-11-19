@@ -1361,10 +1361,15 @@
         "hideIndexCol": "隐藏索引列？",
         "readonly": "设定表格为只读吗？",
         "readonlyCols": "设定表格的某些列为只读",
+        "colWidths": "列的宽度，单位是px",
+        "colWidthsTooltip": "配置模式支持为表格的所有列指定一个列的宽度。要单独指定每一列的宽度，必须手动修改JSON配置文件。打开文件",
+        "customColWidths": "在JSON文件中发现的自定义列宽配置（在配置模式下不支持）。注意，在配置模式下改变列宽会覆盖自定义列宽。",
 		"pivotCols": "选择要旋转的列",
         "fixedColumnsLeft": "是否应该将所有非枢轴列固定下来？",
         "heatmap": "把表格转换成热图？",
-        "colDecimals": "指定列“%s”列的小数位数"
+        "colDecimals": "指定列“%s”列的小数位数",
+        "dropdownColsTitle": "Drop-down menu in input table",
+        "dropdownColsDesc": "An input table can be configured so that the cells are not freely editable by the user, but can only be modified via a drop-down menu. This option is not available in the Configuration Mode but needs to be configured manually. Read more here: "
       },
       "slider":{
         "label": "选择一个标签",
