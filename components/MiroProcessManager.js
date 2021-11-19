@@ -137,15 +137,22 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       miroEnv = {};
     }
 
+    let libPathForwardSlashes;
+    if (process.platform === 'win32') {
+      libPathForwardSlashes = libPath.replace(/\\/g, '/');
+    } else {
+      libPathForwardSlashes = libPath;
+    }
+
     const procEnv = Object.assign(miroEnv, {
       WITHIN_ELECTRON: '1',
       R_HOME_DIR: await rpath,
       RE_SHINY_PORT: shinyPort,
       RE_SHINY_PATH: this.miroResourcePath,
-      R_LIBS: libPath,
-      R_LIBS_USER: libPath,
-      R_LIBS_SITE: libPath,
-      R_LIB_PATHS: libPath,
+      R_LIBS: libPathForwardSlashes,
+      R_LIBS_USER: libPathForwardSlashes,
+      R_LIBS_SITE: libPathForwardSlashes,
+      R_LIB_PATHS: libPathForwardSlashes,
       MIRO_NO_DEBUG: !this.inDevelopmentMode,
       MIRO_FORCE_SCEN_IMPORT: this.inDevelopmentMode && appData.forceScenImport,
       MIRO_USE_TMP: !isFalse(appData.usetmpdir),
