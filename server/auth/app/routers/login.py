@@ -3,23 +3,13 @@ from pydantic import BaseModel
 from fastapi import APIRouter
 from fastapi.logger import logger
 
-from app.config import settings
+from app.utils.models import AuthRequest, AuthResponse
 from app.dependencies import get_authenticated_user, get_bearer_token
 
 router = APIRouter(
     prefix="/login",
     tags=["login"]
 )
-
-
-class AuthRequest(BaseModel):
-    username: str
-    password: str
-
-
-class AuthResponse(BaseModel):
-    token: str
-    roles: List[str]
 
 
 @router.post("", status_code=200, response_model=AuthResponse, include_in_schema=False)
