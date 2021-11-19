@@ -1,10 +1,10 @@
-import requests
+from typing import List
 from pydantic import BaseModel
-from fastapi import APIRouter, Response, HTTPException, status
+from fastapi import APIRouter
 from fastapi.logger import logger
 
 from app.config import settings
-from app.dependencies import get_user_groups
+from app.dependencies import get_authenticated_user, get_bearer_token
 
 router = APIRouter(
     prefix="/login",
@@ -17,75 +17,18 @@ class AuthRequest(BaseModel):
     password: str
 
 
-@router.post("", status_code=200, include_in_schema=False)
-async def login(auth_request: AuthRequest, response: Response):
+class AuthResponse(BaseModel):
+    token: str
+    roles: List[str]
+
+
+@router.post("", status_code=200, response_model=AuthResponse, include_in_schema=False)
+async def login(auth_request: AuthRequest):
     logger.info("Login request received for user: %s.", auth_request.username)
-    try:
-        r = requests.post(f"{settings.engine_url}/auth/login",
-                          data={"expires_in": settings.session_timeout,
-                                "username": auth_request.username,
-                                "password": auth_request.password})
-        if r.status_code != 200:
-            logger.info("Invalid return code (%s) when requesting token from GAMS Engine",
-                        str(r.status_code))
-            response.status_code = r.status_code
-            return r.json()
-        token = r.json()["token"]
-        auth_header = "Bearer " + r.json()["token"]
-    except requests.exceptions.ConnectionError:
-        logger.info("ConnectionError when requesting token from GAMS Engine.")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message="Internal server error",
-        )
-    except:
-        logger.exception(
-            "Internal error when requesting token from GAMS Engine")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message="Internal server error",
-        )
-
-    try:
-        r = requests.get(
-            f"{settings.engine_url}/namespaces/{settings.engine_ns}/permissions",
-            params={"username": auth_request.username},
-            headers={"Authorization": auth_header})
-        if r.status_code == 200:
-            namespace_permissions = r.json()["permission"]
-        else:
-            namespace_permissions = 0
-
-        if namespace_permissions == 0:
-            logger.info("User '%s' has no permissions on namespace: %s",
-                        auth_request.username, settings.engine_ns)
-            # if user can see models in namespace, she is still authenticated
-            r = requests.get(
-                f"{settings.engine_url}/namespaces/{settings.engine_ns}",
-                headers={"X-Fields": "name", "Authorization": auth_header})
-            if r.status_code != 200:
-                logger.info("Invalid return code (%s) when requesting models in namespace: %s",
-                            str(r.status_code), settings.engine_ns)
-                response.status_code = r.status_code
-                return r.json()
-
-            models = r.json()
-            if not models:
-                response.status_code = status.HTTP_403_FORBIDDEN
-                return {"message": "Unauthorized access"}
-
-        is_admin = namespace_permissions == 7
-    except requests.exceptions.ConnectionError:
-        logger.info(
-            "ConnectionError when requesting permissions for namespace: %s.", settings.engine_ns)
-        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {"message": "Internal server error"}
-    except:
-        logger.exception(
-            "Internal error when requesting permissions for namespace: %s.", settings.engine_ns)
-        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {"message": "Internal server error"}
-
+    bearer_token = get_bearer_token(
+        auth_request.username, auth_request.password)
+    authenticated_user = get_authenticated_user(
+        bearer_token, auth_request.username)
     logger.info("User: %s successfully logged in (is_admin:%s).",
-                auth_request.username, str(is_admin))
-    return {"token": token, "roles": get_user_groups(auth_header, is_admin)}
+                auth_request.username, str(authenticated_user.is_admin))
+    return AuthResponse(token=bearer_token, roles=authenticated_user.groups)
