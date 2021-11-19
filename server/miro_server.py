@@ -128,6 +128,8 @@ class MiroServer(object):
     parser.add_argument('--unstable',
       help='Unstable build',
       action='store_true')
+    parser.add_argument('--custom-tag',
+      help='Custom image tag')
 
     args = parser.parse_args(sys.argv[2:])
 
@@ -136,7 +138,7 @@ class MiroServer(object):
                   ('miro-auth', 'miro-auth'),
                   ('miro-admin', 'miro-admin'),
                   ('miro-ui', 'miro-ui')]:
-      self.push_image(*image, unstable=args.unstable)
+      self.push_image(*image, unstable=args.unstable, custom_tag=args.custom_tag)
 
 
   def release(self):
@@ -227,10 +229,13 @@ class MiroServer(object):
         f.writelines(content)
 
 
-  def push_image(self, image_name_local, image_name_hub, unstable=False):
+  def push_image(self, image_name_local, image_name_hub, unstable=False, custom_tag=None):
     if unstable:
       dhost = 'registry.gams.com/fproske/gmswebui'
-      version_string = 'unstable'
+      if custom_tag:
+        version_string = custom_tag
+      else:
+        version_string = 'unstable'
     else:
       dhost = 'gams'
       with open(os.path.join('..', 'package.json'), 'r') as f:

@@ -40,7 +40,7 @@ pipeline {
             name: 'FORCE_RELEASE')
         booleanParam(
             defaultValue: false,
-            description: 'Push MIRO Server images to registry.gams.com (tagged as unstable)?',
+            description: 'Push MIRO Server images to registry.gams.com (tagged as unstable on develop and feature on feature branches)?',
             name: 'PUSH_UNSTABLE_SERVER_IMAGES')
     }
 
@@ -303,11 +303,18 @@ pipeline {
                                        }
                                     '''
                                 }
-                            } else if (params.PUSH_UNSTABLE_SERVER_IMAGES || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
+                            } else if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
                                 sh '''#!/bin/bash -xe
                                     ## build MIRO server images
                                     pushd server > /dev/null
                                         python3 miro_server.py push --unstable
+                                    popd > /dev/null
+                                '''
+                            } else if (params.PUSH_UNSTABLE_SERVER_IMAGES) {
+                                sh '''#!/bin/bash -xe
+                                    ## build MIRO server images
+                                    pushd server > /dev/null
+                                        python3 miro_server.py push --unstable --custom-tag feature
                                     popd > /dev/null
                                 '''
                             }
