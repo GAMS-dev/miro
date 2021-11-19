@@ -260,7 +260,7 @@ appsWrapper.on('click', '.btn-save-changes', function saveChangesHandler() {
   if (appDescription && appDescription !== lang.appDescPlaceholder) {
     newAppConfig.description = appDescription;
   }
-  ipcRenderer.send('update-app', newAppConfig);
+  ipcRenderer.send('update-app-meta', newAppConfig);
 });
 appsWrapper.on('click', '.reset-db-path', function resetDbPathHandler() {
   const appID = this.dataset.id;

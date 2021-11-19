@@ -210,11 +210,15 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
                     } else {
                       log.warn(`Unexpected error occurred while reading app info file. Error message: ${e.message}`);
                     }
+                    showErrorMsg({
+                      type: 'error',
+                      title: lang.main.ErrorUnexpectedHdr,
+                      message: `${lang.main.ErrorReadMsg} '${e.message}'`,
+                    });
+                    resolve(false);
                   }
                 });
-                resolve(false);
               });
-              resolve(false);
             }
             const logoExt = entry.fileName.toLowerCase().match(/.*_logo\.(jpg|jpeg|png)$/);
             if (logoExt) {
@@ -1630,8 +1634,8 @@ ipcMain.on('update-apps', (e, apps) => {
     });
   }
 });
-ipcMain.on('update-app', (e, updatedApp) => {
-  log.debug('Update app request received.');
+ipcMain.on('update-app-meta', (e, updatedApp) => {
+  log.debug(`Request to update metadata of app: ${updatedApp.id} received.`);
   try {
     const appConf = updatedApp;
     if (appConf.logoNeedsMove) {
