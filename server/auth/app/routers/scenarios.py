@@ -10,7 +10,7 @@ from fastapi.logger import logger
 from app.config import settings
 from app.dependencies import get_current_app_user
 from app.utils.models import ScenarioPermissions, User, ScenarioConfig, ExportFileType
-from app.utils.scen_utils import get_scen_list, download_data, add_data
+from app.utils.scen_utils import delete_data, get_scen_list, download_data, add_data
 
 router = APIRouter(
     prefix="/scenarios/{app_id}",
@@ -26,6 +26,7 @@ metadata = {
     "summary": {
         "get": "Get list of all visible scenarios",
         "post": "Add a new scenario",
+        "delete": "Delete an existing scenario",
         "download": "Download a scenario"
     },
     "description": {
@@ -70,13 +71,43 @@ async def get_scenario_list(app_id: str = Path(..., description=metadata['descri
             "Problems adding new MIRO scenario. Status code: %s. Details: %s", e.status_code, e.detail)
         raise e
     except Exception as e:
-        print(e)
         logger.info(
             "Problems adding new MIRO scenario. Details: %s", str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal Server Error"
         )
+
+
+@ router.delete("/", summary=metadata["summary"]["delete"],  responses={
+    201: {"description": "Scenario successfully deleted"},
+    404: {"description": "A scenario with this name does not exist"},
+    423: {"description": "The scenario is locked and cannot be deleted"}})
+async def delete_scenario(app_id: str = Path(..., description=metadata['description']['app_id']),
+                          user: User = Depends(get_current_app_user),
+                          name: str = Query(...,
+                                            description=metadata['description']['name']),
+                          owner: str = Query(None, description=metadata['description']['owner'])):
+    """
+    Delete an existing scenario.
+    """
+    logger.info("%s requested to delete scenario: %s of app: %s",
+                user.name, name, app_id)
+    try:
+        await delete_data(user, app_id, name, owner)
+    except HTTPException as e:
+        logger.info(
+            "Problems deleting MIRO scenario. Status code: %s. Details: %s", e.status_code, e.detail)
+        raise e
+    except Exception as e:
+        logger.info(
+            "Problems deleting MIRO scenario. Details: %s", str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal Server Error"
+        )
+    logger.info("%s: Scenario successfully deleted", user.name)
+    return {"detail": "Scenario successfully deleted"}
 
 
 @ router.get("/download", summary=metadata["summary"]["download"], responses={
@@ -120,7 +151,6 @@ async def download_scenario(app_id: str = Path(..., description=metadata['descri
             "Problems downloading MIRO scenario. Status code: %s. Details: %s", e.status_code, e.detail)
         raise e
     except Exception as e:
-        print(e)
         cleanup()
         logger.info(
             "Problems downloading MIRO scenario. Details: %s", str(e))
@@ -159,7 +189,6 @@ async def add_scenario(app_id: str = Path(..., description=metadata['description
             "Problems adding new MIRO scenario. Status code: %s. Details: %s", e.status_code, e.detail)
         raise e
     except Exception as e:
-        print(e)
         logger.info(
             "Problems adding new MIRO scenario. Details: %s", str(e))
         raise HTTPException(

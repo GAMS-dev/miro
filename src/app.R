@@ -1208,6 +1208,27 @@ if (!is.null(errMsg)) {
         stop()
       }
       quit("no", 0L)
+    } else if (identical(Sys.getenv("MIRO_API_DELETE_SCEN"), "true")) {
+      source("./tools/api/util.R")
+      tryCatch(
+        deleteMIROScenario(db, uid),
+        error_not_found = function(e) {
+          write("\n", stderr())
+          write("merr:::404:::Scenario not found", stderr())
+          if (interactive()) {
+            stop()
+          }
+          quit("no", 1L)
+        },
+        error_scen_locked = function(e) {
+          write("\n", stderr())
+          write("merr:::423:::Scenario is locked", stderr())
+          if (interactive()) {
+            stop()
+          }
+          quit("no", 1L)
+        }
+      )
     }
   }
   local({

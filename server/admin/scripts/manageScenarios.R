@@ -56,6 +56,11 @@ if (identical(metadata[["mode"]], "download")) {
   writeLines(stdinContent, tmpFile)
   stdin <- tmpFile
   procEnv[["MIRO_API_DOWNLOAD_SCEN"]] <- "true"
+} else if (identical(metadata[["mode"]], "delete")) {
+  procEnv[["MIRO_API_DELETE_SCEN"]] <- "true"
+  tmpFile <- tempfile()
+  writeLines(stdinContent, tmpFile)
+  stdin <- tmpFile
 } else if (identical(metadata[["mode"]], "getList")) {
   procEnv[["MIRO_API_GET_SCEN_LIST"]] <- "true"
   forwardStderr <- TRUE

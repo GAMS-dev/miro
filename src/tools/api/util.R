@@ -8,6 +8,24 @@ scenMetaTibbleToJSON <- function(metadata) {
   return(toJSON(metaTmp, dataframe = "rows"))
 }
 
+deleteMIROScenario <- function(db, uid) {
+  stdin <- file("stdin")
+  on.exit(close(stdin))
+  metadata <- fromJSON(suppressWarnings(readLines(stdin)))
+  scenOwner <- trimws(metadata[["deleteScenOwner"]])
+  if (!length(scenOwner) || identical(scenOwner, "")) {
+    scenOwner <- uid
+  }
+  if (!db$checkSnameExists(metadata[["deleteScenName"]], scenOwner)) {
+    stop_custom("error_not_found", "Scenario does not exist", call. = FALSE)
+  }
+  scen <- Scenario$new(
+    db = db, sname = metadata[["deleteScenName"]],
+    uid = scenOwner
+  )
+  scen$delete()
+}
+
 downloadMIROScenario <- function(uid, excelConfig = NULL) {
   xlsio <- XlsIO$new()
   stdin <- file("stdin")

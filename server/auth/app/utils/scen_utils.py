@@ -76,6 +76,16 @@ async def add_data(user_info: User, app_id: str, data: UploadFile, permissions: 
                 status_code=e.status_code, detail=e.detail)
 
 
+async def delete_data(user_info: User, app_id: str, scen_name: str, scen_owner: str) -> None:
+    proc_input = json.dumps({
+        "mode": "delete",
+        "appId": app_id,
+        "deleteScenName": scen_name,
+        "deleteScenOwner": scen_owner
+    }).encode()
+    run_miro_proc(user_info, "manageScenarios.R", input=proc_input)
+
+
 async def download_data(user_info: User, app_id: str, file_path: str, file_type: ExportFileType, scen_name: str, scen_owner: str) -> None:
     proc_input = json.dumps({
         "mode": "download",

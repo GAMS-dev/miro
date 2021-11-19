@@ -387,7 +387,7 @@ Scenario <- R6Class("Scenario",
       stopifnot(length(private$sid) > 0L)
       # END error checks
       if (private$isReadonly()) {
-        stop("Scenario could not be removed as it is readonly (Scenario.delete).", call. = FALSE)
+        stop_custom("error_scen_locked", "Scenario could not be removed as it is readonly (Scenario.delete).", call. = FALSE)
       }
       noErr <- TRUE
       private$deleteBySid(private$sid)

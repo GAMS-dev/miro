@@ -351,3 +351,95 @@ class TestScenarios:
                 metadata_tmp = json.loads(zf.read(fileinfo).decode('ascii'))
 
         assert metadata_tmp["uid"] == "mirotests_auth_1"
+
+    def test_delete_scenario(self, cleanup):
+        register_transport(client)
+        invite_user("mirotests_auth_1", 1, group="mygroup")
+        response = client.post("/api/scenarios/transport/",
+                               files={'scenario_data': open(
+                                   "tests/data/transport.miroscen", 'rb')},
+                               data={
+                                   'overwrite_data': True,
+                               },
+                               auth=settings["VALID_AUTH_TUPLE"])
+        print(response.json())
+        assert response.status_code == 201
+
+        response = client.delete("/api/scenarios/transport/?name=idontexist",
+                                 auth=settings["VALID_AUTH_TUPLE"])
+        print(response.json())
+        assert response.status_code == 404
+
+        response = client.delete("/api/scenarios/transport/?name=My%20test",
+                                 auth=settings["VALID_AUTH_TUPLE"])
+        print(response.json())
+        assert response.status_code == 200
+
+        response = client.delete("/api/scenarios/transport/?name=My%20test",
+                                 auth=settings["VALID_AUTH_TUPLE"])
+        print(response.json())
+        assert response.status_code == 404
+
+        response = client.post("/api/scenarios/transport/",
+                               files={'scenario_data': open(
+                                   "tests/data/transport.miroscen", 'rb')},
+                               data={
+                                   'overwrite_data': True,
+                                   'read_perm': ["mirotests_auth_1"],
+                                   'write_perm': ["mirotests_auth_1"],
+                                   'execPerm': ["mirotests_auth_1"]
+                               },
+                               auth=("mirotests_auth_1", "mirotests_auth_1"))
+        print(response.json())
+        assert response.status_code == 201
+
+        response = client.delete("/api/scenarios/transport/?name=My%20test&owner=mirotests_auth_1",
+                                 auth=settings["VALID_AUTH_TUPLE"])
+        print(response.json())
+        assert response.status_code == 404
+
+        response = client.delete("/api/scenarios/transport/?name=My%20test&owner=mirotests_auth_1",
+                                 auth=("mirotests_auth_1", "mirotests_auth_1"))
+        print(response.json())
+        assert response.status_code == 200
+
+        response = client.delete("/api/scenarios/transport/?name=My%20test&owner=mirotests_auth_1",
+                                 auth=("mirotests_auth_1", "mirotests_auth_1"))
+        print(response.json())
+        assert response.status_code == 404
+
+        response = client.post("/api/scenarios/transport/",
+                               files={'scenario_data': open(
+                                   "tests/data/transport.miroscen", 'rb')},
+                               data={
+                                   'overwrite_data': True,
+                                   'read_perm': ["mirotests_auth_1", "#mygroup"],
+                                   'write_perm': ["mirotests_auth_1", "#mygroup"],
+                                   'execPerm': ["mirotests_auth_1", "#mygroup"]
+                               },
+                               auth=("mirotests_auth_1", "mirotests_auth_1"))
+        print(response.json())
+        assert response.status_code == 201
+
+        response = client.delete("/api/scenarios/transport/?name=My%20test&owner=mirotests_auth_1",
+                                 auth=settings["VALID_AUTH_TUPLE"])
+        print(response.json())
+        assert response.status_code == 200
+
+        response = client.post("/api/scenarios/transport/",
+                               files={'scenario_data': open(
+                                   "tests/data/transport.miroscen", 'rb')},
+                               data={
+                                   'overwrite_data': True,
+                               },
+                               auth=settings["VALID_AUTH_TUPLE"])
+        print(response.json())
+        assert response.status_code == 201
+
+        # deleting locked scenario should throw error
+        lock_scenario("transport", "My test",
+                      settings["VALID_AUTH_TUPLE"][0], "test123")
+        response = client.delete("/api/scenarios/transport/?name=My%20test",
+                                 auth=settings["VALID_AUTH_TUPLE"])
+        print(response.json())
+        assert response.status_code == 423
