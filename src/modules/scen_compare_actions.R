@@ -143,10 +143,6 @@ output[["scenExportHandler"]] <- downloadHandler(
     return(fileName)
   },
   content = function(file) {
-    prog <- Progress$new()
-    on.exit(suppressWarnings(prog$close()))
-    prog$set(message = lang$progressBar$exportScen$title, value = 0.1)
-
     tabsetId <- suppressWarnings(as.integer(input[["scenExportId"]]))
     if (is.na(tabsetId) || tabsetId < 1L) {
       flog.error(
@@ -207,84 +203,13 @@ output[["scenExportHandler"]] <- downloadHandler(
       outputDataToExport <- names(modelOut)
       inputDataToExport <- inputDsNames
     }
-    noDatasets <- length(data)
-    prog$set(value = 0.2)
-
-    if (identical(exportFileType, "gdx")) {
-      return(tryCatch(
-        {
-          gdxio$wgdx(file, data, squeezeZeros = "n")
-          if (!suppressRemoveModal) {
-            removeModal()
-          }
-        },
-        error_duplicate_records = function(e) {
-          flog.info("Duplicate records found when writing GDX file: %s", conditionMessage(e))
-          showElReplaceTxt(session, "#scenExportError", conditionMessage(e))
-          downloadHandlerError(file, conditionMessage(e))
-        }
-      ))
-    }
-    if (identical(exportFileType, "miroscen")) {
-      return(tryCatch(
-        {
-          generateMiroScen(
-            file, scenData$getById("meta", refId = refId, drop = TRUE),
-            data, attachments, views, tabsetId
-          )
-          if (!suppressRemoveModal) {
-            removeModal()
-          }
-        },
-        error_duplicate_records = function(e) {
-          flog.info(
-            "Duplicate records found when writing GDX file (in miroscen file): %s",
-            conditionMessage(e)
-          )
-          showElReplaceTxt(session, "#scenExportError", conditionMessage(e))
-          downloadHandlerError(file, conditionMessage(e))
-        },
-        error = function(e) {
-          flog.info("Unexpected error while creating miroscen file for export: %s", conditionMessage(e))
-          showElReplaceTxt(session, "#scenExportError", lang$errMsg$unknownError)
-          downloadHandlerError(file, lang$errMsg$unknownError)
-        }
-      ))
-    }
-    if (identical(exportFileType, "csv")) {
-      if (!suppressRemoveModal) {
-        removeModal()
-      }
-      if (length(data) == 0L) {
-        return(readr::write_csv(tibble(), file))
-      } else if (length(data) == 1L) {
-        return(readr::write_csv(data[[1L]], file))
-      }
-      tmpDir <- file.path(tempdir(), paste0(uid, "_exp_tmp_dir"))
-      if (file.exists(tmpDir) && !identical(unlink(tmpDir, recursive = TRUE), 0L)) {
-        flog.error("Could not remove temporary directory: '%s'.", tmpDir)
-        return(downloadHandlerError(file, "Directory could not be removed"))
-      }
-      if (!dir.create(tmpDir, recursive = TRUE)) {
-        flog.error("Could not create temporary directory: '%s'.", tmpDir)
-        return(downloadHandlerError(file, "Directory could not be created"))
-      }
-      on.exit(unlink(tmpDir, recursive = TRUE), add = TRUE)
-      for (i in seq_along(data)) {
-        dsName <- names(data)[i]
-        prog$inc(amount = 0.8 / noDatasets, detail = sprintf(lang$progressBar$exportScen$exportDs, i, noDatasets))
-        readr::write_csv(data[[dsName]], file.path(tmpDir, paste0(dsName, ".csv")))
-      }
-      return(suppressWarnings(zip::zipr(file, list.files(tmpDir, full.names = TRUE),
-        recurse = FALSE, include_directories = FALSE
-      )))
-    }
-    if (!suppressRemoveModal) {
-      removeModal()
-    }
-    return(xlsio$write(file, data, scenData$getById("meta", refId = tabIdToRef(tabsetId), drop = TRUE),
-      includeMetadataSheet = config$excelIncludeMeta,
-      includeEmptySheets = config$excelIncludeEmptySheets
+    return(exportScenario(file, data, exportFileType, refId, tabsetId, attachments, views,
+      scenData, xlsio,
+      suppressRemoveModal = suppressRemoveModal, session = session,
+      excelConfig = list(
+        includeMeta = config$excelIncludeMeta,
+        includeEmpty = config$excelIncludeEmptySheets
+      )
     ))
   }
 )

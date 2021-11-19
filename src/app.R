@@ -64,7 +64,7 @@ filesToInclude <- c(
   "./components/load_scen_data.R", "./components/localfileio.R",
   "./components/xlsio.R", "./components/csvio.R",
   "./components/input_data_instance.R", "./components/worker.R",
-  "./components/dataio.R",
+  "./components/dataio.R", "./components/scen_export.R",
   "./components/miro_tabsetpanel.R", "./modules/render_data.R",
   "./modules/generate_data.R", "./components/script_output.R",
   "./components/js_util.R", "./components/scen_data.R", "./components/batch_loader.R"
