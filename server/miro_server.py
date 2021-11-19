@@ -44,7 +44,7 @@ DOCKERHUB_IMAGE_CONFIG = {
 class MiroServer(object):
   def __init__(self):
     parser = argparse.ArgumentParser(prog='miro_server.py',
-      usage='miro_server [-h] {build,up,down,push,release} [<args>]',
+      usage='miro_server [-h] {build,up,down,push,release,dump_schema} [<args>]',
       description='GAMS MIRO Server build script')
 
     # Add the arguments
