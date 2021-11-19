@@ -1,4 +1,5 @@
 import os
+from typing import List
 import yaml
 from pydantic import BaseSettings, Field
 
@@ -20,6 +21,8 @@ class Settings(BaseSettings):
     session_timeout: int = 3600*12
     add_data_timeout: int = 3600
     force_signed_apps: str = Field(FORCE_SIGNED_APPS, const=True)
+    supported_data_filetypes: List[str] = [
+        'gdx', 'miroscen', 'xlsx', 'xlsm', 'xls', 'zip']
     model_dir: str = '/home/miro/admin/models'
     data_dir: str = '/home/miro/admin/data'
     admin_app_dir: str = '/home/miro/admin'

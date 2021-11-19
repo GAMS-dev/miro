@@ -6,7 +6,7 @@ Scenario <- R6Class("Scenario",
                           readPerm = NULL, writePerm = NULL, execPerm = NULL,
                           tags = NULL, overwrite = FALSE, isNewScen = FALSE,
                           duplicatedMetadata = NULL, uid = NULL, views = NULL,
-                          attachments = NULL, scode = NULL) {
+                          attachments = NULL, scode = NULL, forceOverwrite = FALSE) {
       # Initialize scenario class
       #
       # Args:
@@ -24,6 +24,7 @@ Scenario <- R6Class("Scenario",
       #   views:             views object
       #   attachments:       attachments object
       #   scode:             scenario code (optional)
+      #   forceOverwrite:    Whether scenario should be overwritten even if it is locked.
 
       # BEGIN error checks
       stopifnot(is.R6(db), is.logical(isNewScen), length(isNewScen) == 1L)
@@ -74,6 +75,7 @@ Scenario <- R6Class("Scenario",
       private$execPerm <- vector2Csv(execPerm)
       private$views <- views
       private$attachments <- attachments
+      private$forceOverwrite <- forceOverwrite
 
       savedAttachConfig <- NULL
 
@@ -265,6 +267,9 @@ Scenario <- R6Class("Scenario",
       if (!length(private$sid)) {
         addScenIdAttach <- TRUE
         try(private$fetchMetadata(sname = private$sname, uid = private$uid), silent = TRUE)
+        if (!private$forceOverwrite) {
+          private$lock()
+        }
       }
       if (length(names(datasets))) {
         symNamesScenario <- names(datasets)
@@ -564,6 +569,7 @@ Scenario <- R6Class("Scenario",
     attachments = NULL,
     duplicateAttachmentsOnNextSave = FALSE,
     removeAllExistingAttachments = FALSE,
+    forceOverwrite = FALSE,
     sidToDuplicate = integer(0L),
     fetchMetadata = function(sid = NULL, sname = NULL, uid = NULL) {
       # fetches scenario metadata from database
@@ -736,7 +742,7 @@ Scenario <- R6Class("Scenario",
       #   throws exception in case of error
       if (length(private$sid)) {
         if (private$isReadonly()) {
-          stop("Db: Metadata could not be overwritten as scenario is readonly (Scenario.writeMetadata).",
+          stop_custom("error_scen_locked", "Db: Metadata could not be overwritten as scenario is readonly (Scenario.writeMetadata).",
             call. = FALSE
           )
         }

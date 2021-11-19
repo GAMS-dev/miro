@@ -1189,18 +1189,64 @@ if (!is.null(errMsg)) {
   shinyApp(ui = ui_initError, server = server_initError)
 } else {
   uidAdmin <<- if (identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) "admin" else uid
+  if (isShinyProxy && miroStoreDataOnly) {
+    if (identical(Sys.getenv("MIRO_API_GET_SCEN_LIST"), "true")) {
+      source("./tools/api/util.R")
+      write("merr:::200:::", stderr())
+      write(scenMetaTibbleToJSON(db$fetchScenList(scode = SCODEMAP[["scen"]])), stderr())
+      if (interactive()) {
+        stop()
+      }
+      quit("no", 0L)
+    } else if (identical(Sys.getenv("MIRO_API_DOWNLOAD_SCEN"), "true")) {
+      source("./tools/api/util.R", local = TRUE)
+      downloadMIROScenario(uid, excelConfig = list(
+        includeMeta = config$excelIncludeMeta,
+        includeEmpty = config$excelIncludeEmptySheets
+      ))
+      if (interactive()) {
+        stop()
+      }
+      quit("no", 0L)
+    }
+  }
   local({
     miroDataDir <- Sys.getenv("MIRO_DATA_DIR")
     removeDataFile <- !debugMode
+    scenImportConfig <- list()
     if (identical(miroDataDir, "")) {
       miroDataDir <- file.path(currentModelDir, paste0(miroDataDirPrefix, modelName))
       miroDataFilesRaw <- list.files(miroDataDir)
     } else if (isFALSE(file.info(miroDataDir)$isdir)) {
       miroDataFilesRaw <- basename(miroDataDir)
       miroDataDir <- dirname(miroDataDir)
+      stdin <- NULL
+      scenImportConfig <- tryCatch(
+        {
+          stdin <- file("stdin")
+          fromJSON(suppressWarnings(readLines(stdin)))
+        },
+        error = function(e) {
+          return(list())
+        },
+        finally = {
+          if (!is.null(stdin)) {
+            close(stdin)
+          }
+        }
+      )
       removeDataFile <- FALSE
     } else {
       miroDataFilesRaw <- list.files(miroDataDir)
+    }
+    if (is.null(scenImportConfig[["readPerm"]])) {
+      scenImportConfig[["readPerm"]] <- c(uidAdmin, db$getUserAccessGroups()[-1])
+    }
+    if (is.null(scenImportConfig[["writePerm"]])) {
+      scenImportConfig[["writePerm"]] <- uidAdmin
+    }
+    if (is.null(scenImportConfig[["execPerm"]])) {
+      scenImportConfig[["execPerm"]] <- c(uidAdmin, db$getUserAccessGroups()[-1])
     }
     dataFileExt <- tolower(tools::file_ext(miroDataFilesRaw))
     # IMPORTANT!!!!!!
@@ -1258,7 +1304,11 @@ if (!is.null(errMsg)) {
                 algo = "sha1", serialize = FALSE
               )
               if (!identical(dataFileExt[i], "miroscen")) {
-                scenName <- tools::file_path_sans_ext(miroDataFile)
+                if (is.null(scenImportConfig[["scenNameOverwrite"]])) {
+                  scenName <- tools::file_path_sans_ext(miroDataFile)
+                } else {
+                  scenName <- scenImportConfig[["scenNameOverwrite"]]
+                }
                 viewsFileId <- match(
                   paste0(scenName, "_views.json"),
                   miroDataFilesRaw
@@ -1283,7 +1333,7 @@ if (!is.null(errMsg)) {
               }
               newDataHashes[[miroDataFile]] <- dataHash
             }
-            flog.info("New data: '%s' is stored in the database. Please wait until the import is finished.", miroDataFile)
+            flog.info("New data: '%s' is stored in the database. Please wait until the import is completed.", miroDataFile)
             if (dataFileExt[i] %in% c("xls", "xlsx", "xlsm")) {
               method <- "xls"
               tmpDir <- miroDataDir
@@ -1344,11 +1394,12 @@ if (!is.null(errMsg)) {
 
               newScen <- Scenario$new(
                 db = db, sname = lang$nav$dialogNewScen$newScenName, isNewScen = TRUE,
-                readPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
-                writePerm = uidAdmin,
-                execPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
+                readPerm = scenImportConfig[["readPerm"]],
+                writePerm = scenImportConfig[["writePerm"]],
+                execPerm = scenImportConfig[["execPerm"]],
                 uid = uidAdmin,
-                views = views, attachments = attachments
+                views = views, attachments = attachments,
+                forceOverwrite = !identical(scenImportConfig[["forceOverwrite"]], FALSE)
               )
               if (!tryCatch(validateMiroScen(file.path(miroDataDir, miroDataFile)), error = function(e) {
                 flog.error("Invalid miroscen file. Error message: '%s'.", conditionMessage(e))
@@ -1372,11 +1423,20 @@ if (!is.null(errMsg)) {
               if (isFALSE(dfClArgs)) {
                 next
               }
+              if (!is.null(scenImportConfig[["scenNameOverwrite"]])) {
+                activeScen$updateMetadata(
+                  newName = scenImportConfig[["scenNameOverwrite"]]
+                )
+              }
               miroDataFile <- "data.gdx"
             } else {
               views <- NULL
               if (is.null(viewsFileId)) {
-                scenName <- tools::file_path_sans_ext(miroDataFile)
+                if (is.null(scenImportConfig[["scenNameOverwrite"]])) {
+                  scenName <- tools::file_path_sans_ext(miroDataFile)
+                } else {
+                  scenName <- scenImportConfig[["scenNameOverwrite"]]
+                }
                 viewsFileId <- match(
                   paste0(scenName, "_views.json"),
                   miroDataFilesRaw
@@ -1395,10 +1455,11 @@ if (!is.null(errMsg)) {
               }
               newScen <- Scenario$new(
                 db = db, sname = scenName, isNewScen = TRUE,
-                readPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
-                writePerm = uidAdmin,
-                execPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
-                uid = uidAdmin, views = views
+                readPerm = scenImportConfig[["readPerm"]],
+                writePerm = scenImportConfig[["writePerm"]],
+                execPerm = scenImportConfig[["execPerm"]],
+                uid = uidAdmin, views = views,
+                forceOverwrite = !identical(scenImportConfig[["forceOverwrite"]], FALSE)
               )
             }
             if (!overwriteScenToImport && db$checkSnameExists(newScen$getScenName(), newScen$getScenUid())) {
@@ -1487,6 +1548,20 @@ if (!is.null(errMsg)) {
               )
             )
           }
+        }
+      },
+      error_scen_locked = function(e) {
+        flog.warn(
+          "Problems saving MIRO data to database: Scenario is locked"
+        )
+        gc()
+        if (miroStoreDataOnly) {
+          write("\n", stderr())
+          write("merr:::423:::Scenario is locked", stderr())
+          if (interactive()) {
+            stop()
+          }
+          quit("no", 1L)
         }
       },
       error = function(e) {

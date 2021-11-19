@@ -3,7 +3,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.logger import logger
 
-from app.routers import login, apps
+from app.routers import login, apps, scenarios
 
 gunicorn_logger = logging.getLogger('gunicorn.error')
 
@@ -35,5 +35,6 @@ public_api = FastAPI(
 
 app.include_router(login.router)
 public_api.include_router(apps.router)
+public_api.include_router(scenarios.router)
 
 app.mount("/api", public_api)
