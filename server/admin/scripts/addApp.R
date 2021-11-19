@@ -185,49 +185,7 @@ tryCatch(
     procEnv[["MIRO_OVERWRITE_SCEN_IMPORT"]] <- if (!identical(overwriteScen, TRUE)) "false" else "true"
     migrationConfigPath <- tempfile(fileext = ".json")
     procEnv[["MIRO_MIGRATION_CONFIG_PATH"]] <- migrationConfigPath
-    procResult <- processx::run("R", c(
-      "--no-echo", "--no-restore", "--vanilla", "-e",
-      paste0("shiny::runApp('", MIRO_APP_PATH, "',port=3839,host='0.0.0.0')")
-    ),
-    timeout = ADD_DATA_TIMEOUT,
-    env = unlist(procEnv), wd = MIRO_APP_PATH, stderr = "|", stdout = "|",
-    error_on_status = FALSE
-    )
-
-    stdErr <- procResult$stderr
-    stdOut <- procResult$stdout
-
-    print(sprintf("Stdout: %s", stdOut))
-    print(sprintf("stdErr: %s", stdErr))
-
-    if (identical(procResult$timeout, TRUE) || is.na(procResult$status)) {
-      cleanup()
-      write(sprintf(
-        "merr:::408:::Adding data for MIRO app: %s timed out after %s seconds",
-        appId, ADD_DATA_TIMEOUT
-      ), stderr())
-      quit("no", 1L, FALSE)
-    }
-
-    if (!identical(procResult$status, 0L)) {
-      stdErrLines <- strsplit(stdErr, "\n", fixed = TRUE)[[1]]
-      for (line in stdErrLines) {
-        if (startsWith(line, "merr:::")) {
-          if (startsWith(line, "merr:::409")) {
-            write("merr:::409:::Database needs to be migrated. This is currently not supported in non-interactive mode", stderr())
-          }
-          cleanup()
-          write(line, stderr())
-          quit("no", 1L, FALSE)
-        }
-      }
-      cleanup()
-      write(sprintf(
-        "merr:::500:::Unexpected error while adding data for app: %s. Stderr: %s. Stdout: %s",
-        appId, gsub("[\r\n]", "|||", stdErr), gsub("[\r\n]", "|||", stdOut)
-      ), stderr())
-      quit("no", 1L, FALSE)
-    }
+    runMiroProcAPI(appId, procEnv, MIRO_APP_PATH, ADD_DATA_TIMEOUT, cleanupFn = cleanup)
 
     if (updateApp) {
       if (!file.rename(appDir, appDirTmp2)) {

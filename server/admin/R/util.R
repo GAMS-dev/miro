@@ -275,3 +275,60 @@ enableEl <- function(session, id) {
 disableEl <- function(session, id) {
   session$sendCustomMessage("gms-disableEl", id)
 }
+
+runMiroProcAPI <- function(appId, procEnv, miroAppPath, addDataTimeout = 60, cleanupFn = NULL, stdin = NULL,
+                           forwardStderr = FALSE) {
+  procResult <- processx::run("R", c(
+    "--no-echo", "--no-restore", "--vanilla", "-e",
+    paste0("shiny::runApp('", miroAppPath, "',port=3839,host='0.0.0.0')")
+  ),
+  timeout = addDataTimeout,
+  env = unlist(procEnv), wd = miroAppPath, stderr = "|", stdout = "|",
+  error_on_status = FALSE, stdin = stdin
+  )
+
+  stdErr <- procResult$stderr
+  stdOut <- procResult$stdout
+
+  print(sprintf("Stdout: %s", stdOut))
+  print(sprintf("stdErr: %s", stdErr))
+
+  if (identical(procResult$timeout, TRUE) || is.na(procResult$status)) {
+    if (!is.null(cleanupFn)) {
+      cleanupFn()
+    }
+    write(sprintf(
+      "merr:::408:::Adding data for MIRO app: %s timed out after %s seconds",
+      appId, addDataTimeout
+    ), stderr())
+    quit("no", 1L, FALSE)
+  }
+
+  if (!identical(procResult$status, 0L)) {
+    stdErrLines <- strsplit(stdErr, "\n", fixed = TRUE)[[1]]
+    for (line in stdErrLines) {
+      if (startsWith(line, "merr:::")) {
+        if (startsWith(line, "merr:::409")) {
+          write("merr:::409:::Database needs to be migrated. This is currently not supported in non-interactive mode", stderr())
+        }
+        if (!is.null(cleanupFn)) {
+          cleanupFn()
+        }
+        write(line, stderr())
+        quit("no", 1L, FALSE)
+      }
+    }
+    if (!is.null(cleanupFn)) {
+      cleanupFn()
+    }
+    write(sprintf(
+      "merr:::500:::Unexpected error while adding data for app: %s. Stderr: %s. Stdout: %s",
+      appId, gsub("[\r\n]", "|||", stdErr), gsub("[\r\n]", "|||", stdOut)
+    ), stderr())
+    quit("no", 1L, FALSE)
+  }
+
+  if (forwardStderr) {
+    write(stdErr, stderr())
+  }
+}
