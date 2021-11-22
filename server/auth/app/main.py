@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.logger import logger
 
 from app.routers import login, apps, scenarios
+from app.config import settings_yml
 
 gunicorn_logger = logging.getLogger('gunicorn.error')
 
@@ -34,7 +35,10 @@ public_api = FastAPI(
 )
 
 app.include_router(login.router)
-public_api.include_router(apps.router)
-public_api.include_router(scenarios.router)
-
-app.mount("/api", public_api)
+if settings_yml:
+    public_api.include_router(apps.router)
+    public_api.include_router(scenarios.router)
+    app.mount("/api", public_api)
+else:
+    logger.warning(
+        "MIRO Server REST API could not be enabled because an outdated docker-compose file was found. Please download the latest docker-compose file to activate the MIRO Server REST API.")
