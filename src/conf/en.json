@@ -1364,7 +1364,7 @@
         "readonlyCols": "Select columns to be readonly",
         "colWidths": "Column widths in px",
         "colWidthsTooltip": "The Configuration Mode supports the specification of one column width for all columns of the table. To specify the width of each column individually, the JSON configuration file must be modified manually. - Open documentation",
-        "customColWidths": "Custom column width configuration found in JSON file (not supported in Configuration Mode). Note that changing column widths in configuration mode overwrites custom widths.",
+        "customColWidths": "Custom column width configuration found in JSON file (not supported in Configuration Mode). Note that changing column widths in Configuration Mode overwrites custom widths.",
         "pivotCols": "Select a column to pivot",
         "fixedColumnsLeft": "Fix columns that are not pivoted?",
         "heatmap": "Turn table into a heatmap?",

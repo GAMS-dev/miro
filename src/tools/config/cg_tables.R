@@ -452,10 +452,6 @@ getSymbolHotOptions <- function() {
       condition = "input.inputTable_type==='default'",
       tags$div(
         class = "option-wrapper",
-        selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols,
-          choices = inputSymHeaders[[input$table_symbol]],
-          selected = rv$tableWidgetConfig$readonlyCols, multiple = TRUE
-        ),
         numericInput("table_colWidths",
           tags$div(
             lang$adminMode$widgets$table$colWidths,
@@ -1300,7 +1296,15 @@ observeEvent(virtualActionButton(input$saveTableConfirm, rv$saveTableConfirm), {
       }
       configJSON$inputWidgets[[currentTableSymbolName]] <<- newConfig
     } else {
-      configJSON$inputWidgets[[currentTableSymbolName]] <<- rv$tableWidgetConfig
+      if (identical(rv$tableWidgetConfig$tableType, configJSON$inputWidgets[[currentTableSymbolName]]$tableType)) {
+        tableConfigTmp <- configJSON$inputWidgets[[currentTableSymbolName]]
+        for (key in names(rv$tableWidgetConfig)) {
+          tableConfigTmp[[key]] <- rv$tableWidgetConfig[[key]]
+        }
+      } else {
+        tableConfigTmp <- rv$tableWidgetConfig
+      }
+      configJSON$inputWidgets[[currentTableSymbolName]] <<- tableConfigTmp
       if (!length(configJSON$inputWidgets[[currentTableSymbolName]]$readonlyCols)) {
         configJSON$inputWidgets[[currentTableSymbolName]]$readonlyCols <<- NULL
       }
