@@ -311,6 +311,7 @@ $appsWrapper.on('click', '.cancel-btn', () => {
 });
 
 let dragAddAppCounter = 0;
+let openAddAppCounter = 0;
 let dragTimerAddAppBox = null;
 $appsWrapper.on('drop', '.app-logo', (e) => {
   if (reorderAppsMode) {
@@ -325,10 +326,10 @@ $appsWrapper.on('drop', '.app-logo', (e) => {
 $appsWrapper.on('dragenter', '#addAppBox', (e) => {
   e.preventDefault();
   e.stopPropagation();
-  dragAddAppCounter += 1;
+  openAddAppCounter += 1;
   if (dragTimerAddAppBox == null) {
     dragTimerAddAppBox = setTimeout(() => {
-      dragAddAppCounter = 0;
+      openAddAppCounter = 0;
       dragTimerAddAppBox = null;
       expandAddAppForm();
     }, 700);
@@ -337,8 +338,8 @@ $appsWrapper.on('dragenter', '#addAppBox', (e) => {
 $appsWrapper.on('dragleave', '#addAppBox', (e) => {
   e.preventDefault();
   e.stopPropagation();
-  dragAddAppCounter -= 1;
-  if (dragAddAppCounter === 0) {
+  openAddAppCounter -= 1;
+  if (openAddAppCounter === 0) {
     clearTimeout(dragTimerAddAppBox);
     dragTimerAddAppBox = null;
   }
