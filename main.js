@@ -569,6 +569,12 @@ async function updateMIROApp(newApp, appIdToUpdate = null) {
   try {
     fs.renameSync(appDir, appDirTmp2);
     fs.renameSync(appDirTmp, appDir);
+    if (appConf.logoPath != null) {
+      if (!fs.existsSync(path.dirname(path.join(appDir, appConf.logoPath)))) {
+        fs.mkdirSync(path.dirname(path.join(appDir, appConf.logoPath)));
+      }
+      fs.copyFileSync(path.join(appDirTmp2, appConf.logoPath), path.join(appDir, appConf.logoPath));
+    }
     appsData.updateApp(appConf);
     try {
       const cacheContent = await fs.promises.readdir(path.join(miroWorkspaceDir, 'cache'));
