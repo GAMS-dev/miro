@@ -30,6 +30,9 @@ def get_apps_raw(user_groups: Optional[List[str]] = None, all_apps: bool = False
             visible_apps.append(app)
             app["access_groups"] = []
             continue
+        if not len(app["access_groups"]):
+            visible_apps.append(app)
+            continue
         access_groups_lowercase = [access_group.lower()
                                    for access_group in app["access_groups"]]
         app["access_groups"] = list(set(
