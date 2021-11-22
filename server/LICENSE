@@ -11,7 +11,8 @@ these components are included below). For information about third-party software
 - PostgreSQL, https://www.postgresql.org
 - Python 3, https://www.python.org
 - pip, https://github.com/pypa/pip
-- autopep8, https://github.com/hhatto/autopep8
+- aiofiles, https://github.com/Tinche/aiofiles
+- attrs, https://github.com/python-attrs/attrs
 - python-certifi, https://github.com/certifi/python-certifi
 - click, https://github.com/pallets/click
 - fastapi, https://github.com/tiangolo/fastapi
@@ -20,17 +21,22 @@ these components are included below). For information about third-party software
 - httptools, https://github.com/MagicStack/httptools
 - toml, https://github.com/uiri/toml
 - urllib3, https://github.com/urllib3/urllib3
-- watchgod, https://github.com/samuelcolvin/watchgod
 - websockets, https://github.com/aaugustin/websockets
 - uvloop, https://github.com/MagicStack/uvloop
 - uvicorn, https://github.com/encode/uvicorn
-- pycodestyle, https://github.com/PyCQA/pycodestyle
 - python-dotenv, https://github.com/theskumar/python-dotenv
+- python-multipart, https://github.com/andrew-d/python-multipart
 - PyYAML, https://github.com/yaml/pyyaml
 - requests, https://github.com/psf/requests
+- requests-unixsocket, https://github.com/msabramo/requests-unixsocket
 - starlette, https://github.com/encode/starlette
 - pydantic, https://github.com/samuelcolvin/pydantic
 - idna, https://github.com/kjd/idna
+- iniconfig, https://github.com/pytest-dev/iniconfig
+- packaging, https://github.com/pypa/packaging
+- pluggy, https://github.com/pytest-dev/pluggy
+- pyparsing, https://github.com/pyparsing/pyparsing/
+- six, https://github.com/benjaminp/six
 - chardet, https://github.com/chardet/chardet
 - HAProxy, https://hub.docker.com/_/haproxy
 - Bootbox, https://github.com/makeusabrew/bootbox
@@ -43,6 +49,10 @@ these components are included below). For information about third-party software
        - Containerproxy, Copyright (C) 2016-2019 Open Analytics
        - Docker Socket Proxy, Copyright (C) 2017-2019 Tecnativa
        - requests, Copyright (c) 2012 by Kenneth Reitz.
+       - requests-unixsocket, Copyright (c) Marc Abramowitz
+       - python-multipart, Copyright (c) 2012, Andrew Dunham
+       - aiofiles, Copyright (c) Tin Tvrtkovic
+       - packaging, Copyright (c) Donald Stufft and individual contributors
 -----------------------------------------------------------------------------
 
                                  Apache License
@@ -1544,18 +1554,17 @@ That's all there is to it!
        - core-js, Copyright (c) 2014-2021 Denis Pushkarev
        - Bootbox, Copyright (C) 2011-2020 by Nick Payne nick@kurai.co.uk
        - pip, Copyright (c) 2008-2021 The pip developers
-       - autopep8, Copyright (C) 2010-2011 Hideo Hattori
-                   Copyright (C) 2011-2013 Hideo Hattori, Steven Myint
-                   Copyright (C) 2013-2016 Hideo Hattori, Steven Myint, Bill Wendling
+       - attrs, Copyright (c) 2015 Hynek Schlawack
        - fastapi, Copyright (c) 2018 Sebastián Ramírez
        - gunicorn, Copyright (c) 2009-2018 Benoît Chesneau <benoitc@e-engura.org>
                    Copyright (c) 2009-2015 Paul J. Davis <paul.joseph.davis@gmail.com>
        - h11, Copyright (c) 2016 Nathaniel J. Smith <njs@pobox.com> and other contributors
        - httptools, Copyright (c) 2015 MagicStack Inc.  http://magic.io
-       - pycodestyle, Copyright (c) 2006-2009 Johann C. Rocholl <johann@rocholl.net>
-                      Copyright (c) 2009-2014 Florent Xicluna <florent.xicluna@gmail.com>
-                      Copyright (c) 2014-2020 Ian Lee <IanLee1521@gmail.com>
        - pydantic, Copyright (c) 2017, 2018, 2019, 2020, 2021 Samuel Colvin and other contributors
+       - iniconfig, Copyright (c) Ronny Pfannschmidt, Holger Krekel
+       - pluggy, Copyright (c) 2015 holger krekel (rather uses bitbucket/hpk42)
+       - pyparsing, Copyright (c) Paul McGuire
+       - six, Copyright (c) 2010-2020 Benjamin Peterson
        - PyYAML, Copyright (c) 2017-2021 Ingy döt Net
                  Copyright (c) 2006-2016 Kirill Simonov
        - toml, Copyright 2013-2019 William Pearson
@@ -1567,7 +1576,6 @@ That's all there is to it!
                Copyright 2019 Filippo Broggini
        - urllib3, Copyright (c) 2008-2020 Andrey Petrov and contributors
        - uvloop, Copyright (c) 2015-present MagicStack Inc.  http://magic.io
-       - watchgod, Copyright (c) 2017, 2018, 2019, 2020 Samuel Colvin
 -----------------------------------------------------------------------------
 
 Based on <http://opensource.org/licenses/MIT>

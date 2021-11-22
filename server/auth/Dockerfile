@@ -1,4 +1,18 @@
-FROM miro-admin
+FROM miro-admin as base
+
+FROM base as builder
+
+USER root
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    python3-pip
+
+COPY requirements.txt /requirements.txt
+RUN pip install --no-cache-dir --upgrade --user -r /requirements.txt
+
+
+FROM base
 
 LABEL com.gamsmiauth.vendor="GAMS Development Corp."\
     com.gamsmiauth.version="1.3.99"\
@@ -8,30 +22,20 @@ LABEL com.gamsmiauth.vendor="GAMS Development Corp."\
 
 USER root
 
-ENV APP /app
+ENV APP /app/app
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-    python3-pip
+COPY --chown=1000:1000 --from=builder /root/.local /home/miro/.local
+ENV PATH=/home/miro/.local/bin:$PATH
 
 COPY --chown=1000:1000 ./start.sh /start.sh
 RUN chmod +x /start.sh
 
 COPY --chown=1000:1000 ./gunicorn_conf.py /gunicorn_conf.py
 
-COPY --chown=1000:1000 ./requirements.txt /requirements.txt
-
-RUN pip3 install --no-cache-dir \
-    -r /requirements.txt
-
 COPY --chown=1000:1000 ./app $APP
-
-RUN chown -R miro:miro $APP
-
-ENV PYTHONPATH=$APP
 
 EXPOSE 1234
 
 USER miro
-WORKDIR $APP
+WORKDIR /app
 CMD ["/start.sh"]
