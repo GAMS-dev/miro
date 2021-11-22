@@ -453,10 +453,14 @@ function activateEditMode(openNewAppForm = false, scrollToBottom = false) {
 }
 async function updateMIROApp(newApp, appIdToUpdate = null) {
   if (newApp === false) {
+    if (appIdToUpdate != null) {
+      mainWindow.send('add-app-progress', -1, appIdToUpdate);
+    }
     log.debug('Error updating app (validation failed).');
     return;
   }
   if (appIdToUpdate != null && appIdToUpdate !== newApp.id) {
+    mainWindow.send('add-app-progress', -1, appIdToUpdate);
     log.info('Error updating app (app was dropped on app with different ID).');
     showErrorMsg({
       type: 'info',
@@ -474,6 +478,7 @@ async function updateMIROApp(newApp, appIdToUpdate = null) {
       cancelId: 0,
     });
   if (overwriteData === 0) {
+    mainWindow.send('add-app-progress', -1, newApp.id);
     log.debug('Updating app interrupted.');
     return;
   }
@@ -482,6 +487,7 @@ async function updateMIROApp(newApp, appIdToUpdate = null) {
     appConf = appsData.getAppConfig(newApp.id);
   } catch (err) {
     log.error('The app to be updated does not exist. This should not happen!');
+    mainWindow.send('add-app-progress', -1, newApp.id);
     showErrorMsg({
       type: 'error',
       title: lang.main.ErrorUnexpectedHdr,
