@@ -69,6 +69,15 @@ server {
         proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
         proxy_set_header  X-Forwarded-Proto $scheme;
     }
+    location /api {
+        proxy_pass http://127.0.0.1:8081;
+
+        proxy_redirect    off;
+        proxy_set_header  Host             $http_host;
+        proxy_set_header  X-Real-IP        $remote_addr;
+        proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
+        proxy_set_header  X-Forwarded-Proto $scheme;
+    }
     location /engine {
         proxy_pass http://127.0.0.1:5000/engine;
 
@@ -87,6 +96,18 @@ Note that even though both GAMS Engine and MIRO Server run on the same host, the
 
 # Host MIRO Server on a different path than root
 You may want to host MIRO Server on a different path. To do this, you must adjust the context path in the file 'application.yml' accordingly (`server.servlet.context-path`). This path must be identical to the location specified in the nginx configuration.
+Note that this has no effect on the MIRO Server REST API. To also change the root path of the REST API, you must specify the root path via the `SCRIPT_NAME` environment variable in the *docker-compose.yml* file:
+
+```diff
+  auth:
+    image: miro-auth
+    build: ./auth/
+    ports:
+      - 8081:1234
+    environment:
++     SCRIPT_NAME: /miroapps
+      PORT: 1234
+```
 
 # Extending the MIRO Docker image
 In case your MIRO applications need additional packages, you have to extend the [MIRO UI Docker image](https://github.com/GAMS-dev/miro/tree/master/server/ui/Dockerfile). You can do so by adding the additional packages required by your custom renderers to the file `additional_packages` located inside this directory. Each package name must be on a new line. Once all packages are added to this file, run `./miro-server build`.

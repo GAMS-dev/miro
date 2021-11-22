@@ -554,11 +554,13 @@
                       >.
                     </div>
                     <p>
-                      GAMS MIRO Server will now listen on port 8080. You can log
-                      in with any GAMS Engine user who either has some
-                      permission or can see models in the specified namespace.
-                      Users without permissions in the namespace can see a model
-                      if they can see a user group associated with that model.
+                      GAMS MIRO Server will now listen on port 8080 and the
+                      <a href="./server_api.html">MIRO Server REST API</a> on
+                      port 8081 . You can log in with any GAMS Engine user who
+                      either has some permission or can see models in the
+                      specified namespace. Users without permissions in the
+                      namespace can see a model if they can see a user group
+                      associated with that model.
                     </p>
                     <p>
                       To directly access a MIRO application that has been added
@@ -793,7 +795,22 @@ server:
                           class="scrollto"
                           >Nginx</a
                         >: <i>location</i> property) has to be adjusted as well.
+                        Note that this has no effect on the
+                        <a href="./server_api.html">MIRO Server REST API</a>. To
+                        also change the root path of the REST API, you must
+                        specify the root path via the
+                        <i>SCRIPT_NAME</i> environment variable in the
+                        <i>docker-compose.yml</i> file:
                       </li>
+                      <pre><code class="diff-highlight language-diff">  auth:
+    image: miro-auth
+    build: ./auth/
+    ports:
+      - 8081:1234
+    environment:
++     SCRIPT_NAME: /miroapps
+      PORT: 1234
+</code></pre>
                     </ul>
                     <p>Other settings:</p>
                     <ul>
@@ -1038,6 +1055,15 @@ server {
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
         proxy_read_timeout 600s;
+
+        proxy_redirect    off;
+        proxy_set_header  Host             $http_host;
+        proxy_set_header  X-Real-IP        $remote_addr;
+        proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
+        proxy_set_header  X-Forwarded-Proto $scheme;
+    }
+    location /api {
+        proxy_pass http://127.0.0.1:8081;
 
         proxy_redirect    off;
         proxy_set_header  Host             $http_host;
