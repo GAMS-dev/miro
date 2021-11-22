@@ -86,7 +86,7 @@ ModelConfig <- R6::R6Class("ModelConfig",
 
       return(invisible(self))
     },
-    update = function(appIndex, newConfig) {
+    update = function(appIndex, newConfig, allowUpdateRestrictedEnv = FALSE) {
       if (length(appIndex) != 1 || is.na(appIndex) ||
         appIndex > length(private$currentModelConfigs)) {
         stop("Invalid app index.", call. = FALSE)
@@ -103,7 +103,7 @@ ModelConfig <- R6::R6Class("ModelConfig",
         names(newConfig[["containerEnv"]]),
         names(private$currentModelConfigs[[appIndex]][["containerEnv"]])
       )) {
-        if (envKey %in% private$restrictedEnvKeys) {
+        if (!allowUpdateRestrictedEnv && envKey %in% private$restrictedEnvKeys) {
           if (envKey %in% names(newConfig[["containerEnv"]])) {
             flog.warn("Invalid environment variable name: %s in custom environment file. It was ignored.", envKey)
           }

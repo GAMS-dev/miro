@@ -603,7 +603,7 @@ server <- function(input, output, session) {
                 }
                 modelConfig$update(modelConfig$getAppIndex(appId), list(
                   containerEnv = appConfig$containerEnv
-                ))
+                ), allowUpdateRestrictedEnv = TRUE)
                 if (!identical(unlink(appDirTmp2, recursive = TRUE), 0L)) {
                   flog.warn("Could not remove directory: %s", appDirTmp2)
                 }
