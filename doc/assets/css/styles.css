@@ -579,15 +579,15 @@ body{
 .page-wrapper .doc-wrapper [id]::before {
   display: block;
   content: " ";
-  margin-top: -60.3px; /* header offset */
-  height: 60.3px;
+  margin-top: -80px; /* header offset */
+  height: 80px;
   visibility: hidden;
   pointer-events: none;
 }
 .page-wrapper .doc-wrapper a.anchor {
   display: block;
   position: relative;
-  top: -60.3px;
+  top: -80px;
   visibility: hidden;
 }
 .page-wrapper .doc-body {
@@ -1102,7 +1102,7 @@ body{
 .page-wrapper .sticky {
   position: -webkit-sticky;
   position: sticky;
-  top: 70px;
+  top: 80px;
 }
 .page-wrapper .sticky:before,
 .page-wrapper .sticky:after {
