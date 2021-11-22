@@ -195,11 +195,11 @@ class TestScenarios:
         for scenario in scen_metadata:
             if scenario["owner"] == settings["VALID_AUTH_TUPLE"][0] and scenario["name"] == "My test":
                 assert set(scenario["read_perm"]) == {
-                    "admin", "#users", "#admins", "#mygroup"}
+                    settings["VALID_AUTH_TUPLE"][0], "#users", "#admins", "#mygroup"}
                 assert set(scenario["write_perm"]) == {
-                    "admin"}
+                    settings["VALID_AUTH_TUPLE"][0]}
                 assert set(scenario["exec_perm"]) == {
-                    "admin", "#users", "#admins", "#mygroup"}
+                    settings["VALID_AUTH_TUPLE"][0], "#users", "#admins", "#mygroup"}
                 scen_found = True
 
         assert scen_found == True
@@ -228,7 +228,7 @@ class TestScenarios:
         for scenario in scen_metadata:
             if scenario["owner"] == settings["VALID_AUTH_TUPLE"][0] and scenario["name"] == "My test":
                 assert set(scenario["read_perm"]) == {
-                    "admin", "#users", "#admins", "#mygroup"}
+                    settings["VALID_AUTH_TUPLE"][0], "#users", "#admins", "#mygroup"}
                 scen_found = True
 
         assert scen_found == True
@@ -254,20 +254,21 @@ class TestScenarios:
         assert scen_metadata[1]['tags'] == ['tag1', 'tag2']
         assert scen_metadata[0]['tags'] == []
         assert scen_metadata[1]['owner'] == 'mirotests_auth_1'
-        assert scen_metadata[0]['owner'] == 'admin'
+        assert scen_metadata[0]['owner'] == settings["VALID_AUTH_TUPLE"][0]
         assert scen_metadata[1]['last_modified'].startswith(
             datetime.date.today().strftime("%Y-%m-%dT"))
         assert scen_metadata[1]['last_modified'].endswith("+00:00")
         assert scen_metadata[1]['read_perm'] == [
             'mirotests_auth_1', '#mygroup', '#users']
         assert scen_metadata[0]['read_perm'] == [
-            'admin', '#mygroup', '#users', '#admins']
+            settings["VALID_AUTH_TUPLE"][0], '#mygroup', '#users', '#admins']
         assert scen_metadata[1]['write_perm'] == ['mirotests_auth_1']
-        assert scen_metadata[0]['write_perm'] == ['admin']
+        assert scen_metadata[0]['write_perm'] == [
+            settings["VALID_AUTH_TUPLE"][0]]
         assert scen_metadata[1]['exec_perm'] == [
             'mirotests_auth_1', '#mygroup', '#users']
         assert scen_metadata[0]['exec_perm'] == [
-            'admin', '#mygroup', '#users', '#admins']
+            settings["VALID_AUTH_TUPLE"][0], '#mygroup', '#users', '#admins']
 
         assert response.status_code == 200
 
