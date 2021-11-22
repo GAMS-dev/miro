@@ -316,7 +316,9 @@ appsWrapper.on('drop', '.app-logo', function newLogoHandler(e) {
   dragAddAppCounter = 0;
 
   const $this = $(this);
-  $this.removeClass('index-dragover').text(lang.appLogoPlaceholder);
+  $('.app-box').removeClass('drag-drop-area-dragover');
+  $this.removeClass('index-dragover').removeClass('drag-drop-area-dragover');
+  $this.children('.drag-drop-area-text').text(lang.appLogoPlaceholder);
   const filePath = [...e.originalEvent.dataTransfer.files].map((el) => el.path);
   ipcRenderer.send('validate-logo', filePath, this.dataset.id);
 });
