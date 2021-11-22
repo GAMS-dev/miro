@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.logger import logger
 
 from app.routers import login, apps, scenarios
-from app.config import settings_yml
+from app.config import settings_yml, settings
 
 gunicorn_logger = logging.getLogger('gunicorn.error')
 
@@ -16,7 +16,7 @@ else:
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
 
-app = FastAPI()
+app = FastAPI(root_path=settings.script_name)
 
 public_api = FastAPI(
     title="MIRO Server API",
