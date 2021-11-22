@@ -410,29 +410,6 @@ getSymbolHotOptions <- function() {
         selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols,
           choices = inputSymHeaders[[input$table_symbol]],
           selected = rv$tableWidgetConfig$readonlyCols, multiple = TRUE
-        ),
-        numericInput("table_colWidths",
-          tags$div(
-            lang$adminMode$widgets$table$colWidths,
-            tags$a("",
-              title = lang$adminMode$widgets$table$colWidthsTooltip, class = "info-wrapper",
-              href = "https://gams.com/miro/customize.html#table-colwidths",
-              tags$span(
-                class = "fas fa-info-circle", class = "info-icon",
-                role = "presentation",
-                `aria-label` = "More information"
-              ), target = "_blank"
-            )
-          ),
-          value = if (!identical(rv$tableWidgetConfig$colWidths, "custom")) {
-            rv$tableWidgetConfig$colWidths
-          } else {
-            NULL
-          }, min = 0, step = 1
-        ),
-        tags$div(
-          id = "customColWidths", class = "config-message", style = if (identical(rv$tableWidgetConfig$colWidths, "custom")) "display:block;",
-          lang$adminMode$widgets$table$customColWidths
         )
       ),
       tags$div(
@@ -473,6 +450,36 @@ getSymbolHotOptions <- function() {
     ),
     conditionalPanel(
       condition = "input.inputTable_type==='default'",
+      tags$div(
+        class = "option-wrapper",
+        selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols,
+          choices = inputSymHeaders[[input$table_symbol]],
+          selected = rv$tableWidgetConfig$readonlyCols, multiple = TRUE
+        ),
+        numericInput("table_colWidths",
+          tags$div(
+            lang$adminMode$widgets$table$colWidths,
+            tags$a("",
+              title = lang$adminMode$widgets$table$colWidthsTooltip, class = "info-wrapper",
+              href = "https://gams.com/miro/customize.html#table-colwidths",
+              tags$span(
+                class = "fas fa-info-circle", class = "info-icon",
+                role = "presentation",
+                `aria-label` = "More information"
+              ), target = "_blank"
+            )
+          ),
+          value = if (!identical(rv$tableWidgetConfig$colWidths, "custom")) {
+            rv$tableWidgetConfig$colWidths
+          } else {
+            NULL
+          }, min = 0, step = 1
+        ),
+        tags$div(
+          id = "customColWidths", class = "config-message", style = if (identical(rv$tableWidgetConfig$colWidths, "custom")) "display:block;",
+          lang$adminMode$widgets$table$customColWidths
+        )
+      ),
       tags$div(
         class = "option-wrapper",
         checkboxInput_MIRO("table_hideIndexCol",
@@ -1098,7 +1105,6 @@ observeEvent(input$table_pivotCols, {
   rv$tableWidgetConfig$pivotCols <<- input$table_pivotCols
   if (!identical(input$table_pivotCols, "_")) {
     rv$tableWidgetConfig$readonlyCols <<- NULL
-    rv$tableWidgetConfig$colWidths <<- NULL
     numericColsTmp <- sum(vapply(modelIn[[input$table_symbol]]$headers,
       function(header) identical(header$type, "numeric"),
       logical(1L),
@@ -1112,11 +1118,6 @@ observeEvent(input$table_pivotCols, {
     rv$tableWidgetConfig$fixedColumnsLeft <<- fixedColumnsLeftTmp
   } else {
     rv$tableWidgetConfig$readonlyCols <<- input$table_readonlyCols
-    rv$tableWidgetConfig$colWidths <<- if (!is.na(input$table_colWidths) && input$table_colWidths != 0) {
-      input$table_colWidths
-    } else {
-      NULL
-    }
     rv$tableWidgetConfig$fixedColumnsLeft <<- NULL
   }
 })
