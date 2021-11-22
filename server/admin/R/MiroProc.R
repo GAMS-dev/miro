@@ -73,6 +73,10 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
 
     private$procObs[[procId]] <- observe({
       procExitStatus <- private$miroProc[[procId]]$get_exit_status()
+      procOutTmp <- private$miroProc[[procId]]$read_output()
+      if (length(procOutTmp) && !identical(procOutTmp, "")) {
+        flog.debug("%s: Stdout of add data process (pid: %s): %s", appId, procId, procOutTmp)
+      }
       outputLines <- tryCatch(private$miroProc[[procId]]$read_error_lines(), error = function(e) {
         flog.warn(
           "Problems fetching stderr from MIRO process (pid: %s). Error message: %s",
