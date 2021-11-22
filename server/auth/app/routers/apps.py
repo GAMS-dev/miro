@@ -59,11 +59,11 @@ async def get_apps(admin_user: User = Depends(get_current_user)):
         400: {"description": "You cannot update an app with this ID"},
         404: {"description": "An app with this ID does not exist"}}
 )
-async def update_app(app_id: str = Path(..., description="The ID of the app to update."),
+async def update_app(app_id: str = Path(..., description="The ID of the app to update.", max_length=60),
                      display_name: Optional[str] = Form(
-                         None, description=metadata["description"]["display_name"]),
+                         None, description=metadata["description"]["display_name"], max_length=40),
                      description: Optional[str] = Form(
-                         None, description=metadata["description"]["description"]),
+                         None, description=metadata["description"]["description"], max_length=200),
                      access_groups: Optional[List[str]] = Form(
                          [], description=metadata["description"]["access_groups"]),
                      overwrite_data: bool = Form(
@@ -125,11 +125,11 @@ async def update_app(app_id: str = Path(..., description="The ID of the app to u
         409: {"description": "An app with this id already exists"}},
     status_code=status.HTTP_201_CREATED
 )
-async def add_app(app_id: Optional[str] = Form(None, description=metadata["description"]["app_id"]),
+async def add_app(app_id: Optional[str] = Form(None, description=metadata["description"]["app_id"], max_length=60),
                   display_name: Optional[str] = Form(
-                      None, description=metadata["description"]["display_name"]),
+                      None, description=metadata["description"]["display_name"], max_length=40),
                   description: Optional[str] = Form(
-                      None, description=metadata["description"]["description"]),
+                      None, description=metadata["description"]["description"], max_length=200),
                   access_groups: Optional[List[str]] = Form(
                       [], description=metadata["description"]["access_groups"]),
                   overwrite_data: bool = Form(
@@ -179,7 +179,7 @@ async def add_app(app_id: Optional[str] = Form(None, description=metadata["descr
         200: {"description": "App successfully deleted"},
         404: {"description": "An app with this ID does not exist"}}
 )
-async def delete_app(app_id: str = Path(..., description="The ID of the app to delete."),
+async def delete_app(app_id: str = Path(..., description="The ID of the app to delete.", max_length=60),
                      delete_data: Optional[bool] = Query(
                          False, description="Whether to delete all scenario data of this app."),
                      admin_user: User = Depends(get_current_admin_user)):

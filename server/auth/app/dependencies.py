@@ -195,7 +195,7 @@ async def get_current_user(credentials_basic: HTTPBasicCredentials = Depends(bas
 async def get_current_app_user(credentials_basic: HTTPBasicCredentials = Depends(basic_auth),
                                credentials_bearer: HTTPBasicCredentials = Depends(
                                bearer_auth),
-                               app_id: str = Path(..., description="The ID of the app whose data you want to operate on.")) -> User:
+                               app_id: str = Path(..., description="The ID of the app whose data you want to operate on.", max_length=60)) -> User:
     current_user = await get_current_user(credentials_basic, credentials_bearer)
     if app_is_invisible(current_user.groups, app_id):
         logger.info("%s is not visible", app_id)

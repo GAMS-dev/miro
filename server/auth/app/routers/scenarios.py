@@ -44,7 +44,7 @@ metadata = {
 
 
 @ router.get("/", summary=metadata["summary"]["get"], response_model=List[ScenarioConfig])
-async def get_scenario_list(app_id: str = Path(..., description=metadata['description']['app_id']),
+async def get_scenario_list(app_id: str = Path(..., description=metadata['description']['app_id'], max_length=60),
                             user: User = Depends(get_current_app_user)):
     """
     Get all scenarios for this app that are visible to you.
@@ -83,11 +83,11 @@ async def get_scenario_list(app_id: str = Path(..., description=metadata['descri
     201: {"description": "Scenario successfully deleted"},
     404: {"description": "A scenario with this name does not exist"},
     423: {"description": "The scenario is locked and cannot be deleted"}})
-async def delete_scenario(app_id: str = Path(..., description=metadata['description']['app_id']),
+async def delete_scenario(app_id: str = Path(..., description=metadata['description']['app_id'], max_length=60),
                           user: User = Depends(get_current_app_user),
                           name: str = Query(...,
-                                            description=metadata['description']['name']),
-                          owner: str = Query(None, description=metadata['description']['owner'])):
+                                            description=metadata['description']['name'], max_length=63),
+                          owner: str = Query(None, description=metadata['description']['owner'], max_length=70)):
     """
     Delete an existing scenario.
     """
@@ -113,12 +113,12 @@ async def delete_scenario(app_id: str = Path(..., description=metadata['descript
 @ router.get("/download", summary=metadata["summary"]["download"], responses={
     422: {"description": "Duplicate records found when writing GDX file"}
 }, response_class=FileResponse)
-async def download_scenario(app_id: str = Path(..., description=metadata['description']['app_id']),
+async def download_scenario(app_id: str = Path(..., description=metadata['description']['app_id'], max_length=60),
                             user: User = Depends(get_current_app_user),
                             name: str = Query(...,
-                                              description=metadata['description']['name']),
+                                              description=metadata['description']['name'], max_length=63),
                             owner: str = Query(
-                                None, description=metadata['description']['owner']),
+                                None, description=metadata['description']['owner'], max_length=70),
                             file_type: ExportFileType = Query(ExportFileType.miroscen, description=metadata['description']['file_type'])):
     """
     Download a scenario.
@@ -165,7 +165,7 @@ async def download_scenario(app_id: str = Path(..., description=metadata['descri
     409: {"description": "A scenario with this name already exists"},
     423: {"description": "The scenario is locked and cannot be overwritten"}},
     status_code=status.HTTP_201_CREATED)
-async def add_scenario(app_id: str = Path(..., description=metadata['description']['app_id']),
+async def add_scenario(app_id: str = Path(..., description=metadata['description']['app_id'], max_length=60),
                        user: User = Depends(get_current_app_user),
                        scenario_data: UploadFile = File(
                            ..., description=metadata["description"]["scenario_data"]),
