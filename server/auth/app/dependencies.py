@@ -12,10 +12,10 @@ bearer_auth = HTTPBearer(auto_error=False)
 basic_auth = HTTPBasic(auto_error=False)
 
 
-def get_bearer_token(username: str, password: str) -> str:
+def get_bearer_token(username: str, password: str, expires_in=3600) -> str:
     try:
         r = requests.post(f"{settings.engine_url}/auth/login",
-                          data={"expires_in": 60,
+                          data={"expires_in": expires_in,
                                 "username": username,
                                 "password": password})
     except requests.exceptions.ConnectionError:

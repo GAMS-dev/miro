@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from fastapi import APIRouter
 from fastapi.logger import logger
 
+from app.config import settings
 from app.utils.models import AuthRequest, AuthResponse
 from app.dependencies import get_authenticated_user, get_bearer_token
 
@@ -16,7 +17,7 @@ router = APIRouter(
 async def login(auth_request: AuthRequest):
     logger.info("Login request received for user: %s.", auth_request.username)
     bearer_token = get_bearer_token(
-        auth_request.username, auth_request.password)
+        auth_request.username, auth_request.password, expires_in=settings.session_timeout)
     authenticated_user = get_authenticated_user(
         bearer_token, auth_request.username)
     logger.info("User: %s successfully logged in (is_admin:%s).",
