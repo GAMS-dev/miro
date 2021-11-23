@@ -134,8 +134,7 @@
              const currLocation = window.location.href;
              if ( currLocation.endsWith('app/admin') ) {
                  $('#navAdminPanel').addClass('active').attr('href', '#');
-             } else if ( currLocation.endsWith('/admin') ) {
-                 $('#navActiveContainers').addClass('active').attr('href', '#');
+                 $("#navbarWrapper").show().attr('href', '#');
              }
              $('input[name="currentLocation"]').val(currLocation);
          });

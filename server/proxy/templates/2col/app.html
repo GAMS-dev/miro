@@ -33,7 +33,7 @@
     <meta name="author" content="GAMS Development Corp." />
     <meta
       http-equiv="Content-Security-Policy"
-      content="script-src 'self' 'sha256-L40SkVP8pk6BzxwxCdc/0Y2mTevWlWQ7ZPn32auKRXk=' 'sha256-uOnmv9aoPAi7nymRJsrsWBS2oyb1ETYNDp4HCYDVXbA=';"
+      content="script-src 'self' 'sha256-rI6IBZgcWkZAZgn8EPKq8ljhpULQ8YbtFK19t4Ub+LY=' 'sha256-1ZgF24MmNrsjyWWH/N9bxKdRkfpD5qOrKO3v4tv1TEE=';"
     />
     <link rel="stylesheet" media="screen" th:href="@{${bootstrapCss}}" />
     <link rel="stylesheet" media="screen" th:href="@{/assets/css/styles.css}" />
@@ -89,20 +89,23 @@
     ></iframe>
     <script type="text/javascript" th:inline="javascript">
       var timer;
-      $("#navbarHandle").hover(function () {
-        clearTimeout(timer);
-        $("#navbarWrapper").show();
-      });
-      $("#navbarWrapper").hover(function () {
-        clearTimeout(timer);
-        $("#navbarWrapper").show();
-      });
-      $("#navbarWrapper").mouseleave(function () {
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-          $("#navbarWrapper").hide();
-        }, 600);
-      });
+      const currLocation = window.location.href;
+      if (!currLocation.endsWith("app/admin")) {
+        $("#navbarHandle").hover(function () {
+          clearTimeout(timer);
+          $("#navbarWrapper").show();
+        });
+        $("#navbarWrapper").hover(function () {
+          clearTimeout(timer);
+          $("#navbarWrapper").show();
+        });
+        $("#navbarWrapper").mouseleave(function () {
+          clearTimeout(timer);
+          timer = setTimeout(function () {
+            $("#navbarWrapper").hide();
+          }, 600);
+        });
+      }
       $(window).on("load", function () {
         var source = $("#shinyframe").attr("src");
         if (source == "") {
