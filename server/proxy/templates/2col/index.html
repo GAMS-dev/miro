@@ -47,10 +47,14 @@
     <link
       rel="stylesheet"
       media="screen"
-      th:href="@{assets/css/bootstrap.min.css}"
+      th:href="@{/assets/css/bootstrap.min.css}"
     />
     <link rel="stylesheet" media="screen" th:href="@{/css/default.css}" />
-    <link id="theme-style" rel="stylesheet" href="./assets/css/styles.css" />
+    <link
+      id="theme-style"
+      rel="stylesheet"
+      th:href="@{/assets/css/styles.css}"
+    />
     <script th:src="@{${jqueryJs}}"></script>
   </head>
 
@@ -111,8 +115,14 @@
         }
       });
     </script>
-    <script type="text/javascript" src="assets/js/main.js"></script>
-    <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="assets/js/stickyfill.min.js"></script>
+    <script type="text/javascript" th:src="@{/assets/js/main.js}"></script>
+    <script
+      type="text/javascript"
+      th:src="@{/assets/js/bootstrap.min.js}"
+    ></script>
+    <script
+      type="text/javascript"
+      th:src="@{/assets/js/stickyfill.min.js}"
+    ></script>
   </body>
 </html>
