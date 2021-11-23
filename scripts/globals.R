@@ -14,7 +14,7 @@ packageVersionMap <- list(c("data.table", "1.14.0"), c("cpp11", "0.4.0"), c("bac
     "1.3.0"), c("promises", "1.2.0.1"), c("httpuv", "1.6.3"),
     c("mime", "0.11"), "jsonlite", c("digest", "0.6.27"), c("sourcetools",
     "0.1.7"), c("xtable", "1.8-4"), c("fastmap", "1.1.0"), c("curl",
-    "4.3.2"), c("V8", "3.4.2"), c("base64enc", "0.1-3"), c("htmltools",
+    "4.3.2"), c("V8", "3.5.0"), c("base64enc", "0.1-3"), c("htmltools",
     "0.5.2"), c("withr", "2.4.2"), c("leaflet.providers", "1.9.0"
     ), c("commonmark", "1.7"), "shiny", c("shinyAce", "0.4.1"
     ), c("colorspace", "2.0-2"), c("purrr", "0.3.4"), c("yaml",
