@@ -307,7 +307,7 @@ pipeline {
                                 sh '''#!/bin/bash -xe
                                     ## build MIRO server images
                                     pushd server > /dev/null
-                                        python3 miro_server.py push --unstable
+                                        python3 miro_server.py push --unstable --custom-tag develop
                                     popd > /dev/null
                                 '''
                             } else if (params.PUSH_UNSTABLE_SERVER_IMAGES) {
