@@ -33,7 +33,7 @@
     <meta name="author" content="GAMS Development Corp." />
     <meta
       http-equiv="Content-Security-Policy"
-      content="script-src 'self' 'sha256-rI6IBZgcWkZAZgn8EPKq8ljhpULQ8YbtFK19t4Ub+LY=' 'sha256-1ZgF24MmNrsjyWWH/N9bxKdRkfpD5qOrKO3v4tv1TEE=';"
+      content="script-src 'self' 'sha256-rI6IBZgcWkZAZgn8EPKq8ljhpULQ8YbtFK19t4Ub+LY=';"
     />
     <link rel="stylesheet" media="screen" th:href="@{${bootstrapCss}}" />
     <link rel="stylesheet" media="screen" th:href="@{/assets/css/styles.css}" />
@@ -87,42 +87,6 @@
       frameborder="0"
       style="overflow: hidden; height: 100vh"
     ></iframe>
-    <script type="text/javascript" th:inline="javascript">
-      var timer;
-      const currLocation = window.location.href;
-      if (!currLocation.endsWith("app/admin")) {
-        $("#navbarHandle").hover(function () {
-          clearTimeout(timer);
-          $("#navbarWrapper").show();
-        });
-        $("#navbarWrapper").hover(function () {
-          clearTimeout(timer);
-          $("#navbarWrapper").show();
-        });
-        $("#navbarWrapper").mouseleave(function () {
-          clearTimeout(timer);
-          timer = setTimeout(function () {
-            $("#navbarWrapper").hide();
-          }, 600);
-        });
-      }
-      $(window).on("load", function () {
-        var source = $("#shinyframe").attr("src");
-        if (source == "") {
-          $(".loading-screen").show();
-          $.post(
-            window.location.pathname + window.location.search,
-            function (response) {
-              $("#shinyframe").attr("src", response.containerPath);
-              $(".loading-screen").delay(1000).fadeOut(500);
-            }
-          ).fail(function (request) {
-            console.log(request.responseText);
-            $("#loadingAnimation").hide();
-            $("#loadAppError").show();
-          });
-        }
-      });
-    </script>
+    <script type="text/javascript" th:src="@{/assets/js/app.js}"></script>
   </body>
 </html>

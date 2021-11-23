@@ -118,6 +118,12 @@
     transform: translate(19px, 0);
   }
 }
+@media screen and (max-width: 767px) {
+  .navbar-collapse.collapse.in > .navbar-right {
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+}
 .navbar-handle-wrapper{
   height: 50px;
   right: 173px;

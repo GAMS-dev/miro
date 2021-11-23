@@ -1,4 +1,7 @@
 $(document).ready(function() {
+    if ($(".app-wrapper .app-box").length === 0) {
+      $("#noAppsInfo").show();
+    }
 
     /* ===== Stickyfill ===== */
     /* Ref: https://github.com/wilddeer/stickyfill */
