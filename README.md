@@ -43,4 +43,4 @@ To style R code automatically as part of our `pre-commit` hook, we require R and
 ## License
 
 GAMS MIRO as a whole is distributed under GPL-3 (GNU GENERAL PUBLIC LICENSE version 3).
-Each MIRO component has its own license information. Information about the Electron based MIRO Library can be found in the file [LICENSE](LICENSE). More details about the software used for the R/Shiny application can be found in the file [src/LICENSE](src/LICENSE).
+Each MIRO component has its own license information. Information about the Electron based MIRO Library can be found in the file [LICENSE](LICENSE). More details about the software used for the R/Shiny application can be found in the file [src/LICENSE](src/LICENSE). The license information for GAMS MIRO Server can be found in the [server/LICENSE](server/LICENSE) file.
