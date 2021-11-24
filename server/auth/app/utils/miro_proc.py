@@ -35,7 +35,6 @@ def run_miro_proc(user_info: User, script_name: str, input: bytes = b"", cwd: st
                               capture_output=True,
                               input=input,
                               cwd=cwd, env=proc_env)
-    print(proc_out.stdout.decode())
     logger.info("Stdout of %s subprocess: %s",
                 script_name,
                 proc_out.stdout.decode()[:3000])

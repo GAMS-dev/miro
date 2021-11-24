@@ -1,4 +1,5 @@
 import os
+import re
 import datetime
 import zipfile
 import io
@@ -16,8 +17,10 @@ client = TestClient(app)
 
 @pytest.fixture()
 def cleanup():
-    requests.post(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups?label=mygroup",
-                  auth=settings["VALID_AUTH_TUPLE"])
+    group_labels = ["mygroup", "another_group"]
+    for group_label in group_labels:
+        requests.post(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups?label={group_label}",
+                    auth=settings["VALID_AUTH_TUPLE"])
     os.remove(settings["SPECS_FILE_PATH"])
     with open(settings["SPECS_FILE_PATH"], "w") as f:
         f.write("specs:\n- accessGroups:\n  - admins\n  containerEnv:\n    MIRO_API_VERSION: '1'\n  containerVolumes:\n  - :/home/miro/admin/models\n  - :/home/miro/admin/data\n  description: MIRO Server Admin Panel\n  displayName: Admin\n  id: admin\n  logoURL: ~\n")
@@ -38,8 +41,9 @@ def cleanup():
     conn.commit()
     cur.close()
     conn.close()
-    requests.delete(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups/?label=mygroup",
-                    auth=settings["VALID_AUTH_TUPLE"])
+    for group_label in group_labels:
+        requests.delete(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups/?label={group_label}",
+                        auth=settings["VALID_AUTH_TUPLE"])
     delete_user("mirotests_auth_1", allow_fail=True)
 
 
@@ -195,11 +199,11 @@ class TestScenarios:
         for scenario in scen_metadata:
             if scenario["owner"] == settings["VALID_AUTH_TUPLE"][0] and scenario["name"] == "My test":
                 assert set(scenario["read_perm"]) == {
-                    settings["VALID_AUTH_TUPLE"][0], "#users", "#admins", "#mygroup"}
+                    settings["VALID_AUTH_TUPLE"][0], "#users", "#admins", "#mygroup", "#another_group"}
                 assert set(scenario["write_perm"]) == {
                     settings["VALID_AUTH_TUPLE"][0]}
                 assert set(scenario["exec_perm"]) == {
-                    settings["VALID_AUTH_TUPLE"][0], "#users", "#admins", "#mygroup"}
+                    settings["VALID_AUTH_TUPLE"][0], "#users", "#admins", "#mygroup", "#another_group"}
                 scen_found = True
 
         assert scen_found == True
@@ -211,7 +215,7 @@ class TestScenarios:
                                files={'scenario_data': open(
                                    "tests/data/transport.miroscen", 'rb')},
                                data={
-                                   'read_perm': ["#users", "#mygroup"],
+                                   'read_perm': ["#users", "#mygroup", "#another_group"],
                                    'overwrite_data': True,
                                },
                                auth=settings["VALID_AUTH_TUPLE"])
@@ -228,7 +232,7 @@ class TestScenarios:
         for scenario in scen_metadata:
             if scenario["owner"] == settings["VALID_AUTH_TUPLE"][0] and scenario["name"] == "My test":
                 assert set(scenario["read_perm"]) == {
-                    settings["VALID_AUTH_TUPLE"][0], "#users", "#admins", "#mygroup"}
+                    settings["VALID_AUTH_TUPLE"][0], "#users", "#admins", "#mygroup", "#another_group"}
                 scen_found = True
 
         assert scen_found == True
@@ -261,14 +265,14 @@ class TestScenarios:
         assert scen_metadata[1]['read_perm'] == [
             'mirotests_auth_1', '#mygroup', '#users']
         assert scen_metadata[0]['read_perm'] == [
-            settings["VALID_AUTH_TUPLE"][0], '#mygroup', '#users', '#admins']
+            settings["VALID_AUTH_TUPLE"][0], '#mygroup', '#another_group', '#users', '#admins']
         assert scen_metadata[1]['write_perm'] == ['mirotests_auth_1']
         assert scen_metadata[0]['write_perm'] == [
             settings["VALID_AUTH_TUPLE"][0]]
         assert scen_metadata[1]['exec_perm'] == [
             'mirotests_auth_1', '#mygroup', '#users']
         assert scen_metadata[0]['exec_perm'] == [
-            settings["VALID_AUTH_TUPLE"][0], '#mygroup', '#users', '#admins']
+            settings["VALID_AUTH_TUPLE"][0], '#mygroup', '#another_group', '#users', '#admins']
 
         assert response.status_code == 200
 
@@ -299,6 +303,9 @@ class TestScenarios:
                               auth=settings["VALID_AUTH_TUPLE"])
         assert response.status_code == 200
         gdx_content_gdx = response.content
+        d = response.headers['content-disposition']
+        print(d)
+        assert re.findall('filename="(.+)"', d)[0] == "transport_default.gdx"
 
         assert gdx_content_gdx == gdx_content_miroscen
 

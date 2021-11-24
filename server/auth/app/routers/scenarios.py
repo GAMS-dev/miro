@@ -142,7 +142,7 @@ async def download_scenario(app_id: str = Path(..., description=metadata['descri
                     user.name, name, app_id)
         return FileResponse(
             temp_file.name,
-            filename=app_id + name + "." + file_type,
+            filename=f"{app_id}_{name}.{file_type}",
             background=BackgroundTask(cleanup),
         )
     except HTTPException as e:

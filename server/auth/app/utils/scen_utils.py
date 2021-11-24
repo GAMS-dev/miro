@@ -1,6 +1,6 @@
 import os
 import json
-from typing import List, Optional
+from typing import List
 import aiofiles
 from fastapi import UploadFile
 from fastapi.logger import logger
