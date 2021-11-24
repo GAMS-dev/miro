@@ -79,7 +79,7 @@ async def update_app(app_id: str = Path(..., description="The ID of the app to u
     This will result in it being visible to everyone.
     """
     logger.info(
-        "%s requested to add new app", admin_user.name)
+        "%s requested to update existing app: %s", admin_user.name, app_id)
     nonempty_access_groups = [group for group in access_groups if group != ""]
     invalid_user_groups = list(filter(
         lambda access_group: access_group in ["admins", "users"] or access_group not in admin_user.groups, nonempty_access_groups))
