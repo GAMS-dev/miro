@@ -1368,7 +1368,7 @@
         "fixedColumnsLeft": "是否应该将所有非枢轴列固定下来？",
         "heatmap": "把表格转换成热图？",
         "colDecimals": "指定列“%s”列的小数位数",
-        "dropdownColsTitle": "Drop-down menu in input table",
+        "dropdownColsTitle": "输入表中的下拉菜单",
         "dropdownColsDesc": "可以对输入表进行配置，使其单元格不能被用户自由编辑，而只能通过下拉菜单修改。这个选项在配置模式中是不可用的，需要手动配置。在此阅读更多信息。 "
       },
       "slider":{

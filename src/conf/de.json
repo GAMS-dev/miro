@@ -1369,7 +1369,7 @@
         "fixedColumnsLeft": "Spalten fixieren, die nicht pivotiert sind?",
         "heatmap": "Die Tabelle in eine Heatmap wandeln?",
         "colDecimals": "Geben Sie die Anzahl der Dezimalstellen für die Spalte: '%s' an",
-        "dropdownColsTitle": "Drop-down menu in input table",
+        "dropdownColsTitle": "Dropdown-Menü in der Eingabetabelle",
         "dropdownColsDesc": "Eine Eingabetabelle kann so konfiguriert werden, dass die Zellen für den Benutzer nicht frei editierbar sind, sondern nur über ein Dropdown-Menü geändert werden können. Diese Option ist nicht im Konfigurationsmodus verfügbar, sondern muss manuell konfiguriert werden. Mehr Informationen: "
       },
       "slider":{
