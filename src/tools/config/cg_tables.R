@@ -599,12 +599,13 @@ createTableData <- function(symbol, pivotCol = NULL, createColNames = FALSE) {
   if (symbol %in% inputSymMultiDimChoices) {
     headersRaw <- inputSymHeaders[[symbol]]
     headersTmp <- names(headersRaw)
+    noNumericCols <- sum(vapply(modelIn[[symbol]]$headers, function(hdr) identical(hdr$type, "numeric"), logical(1), USE.NAMES = FALSE))
   }
   if (symbol %in% outputSymMultiDimChoices) {
     headersRaw <- outputSymHeaders[[symbol]]
     headersTmp <- headersRaw
+    noNumericCols <- sum(vapply(modelOut[[symbol]]$headers, function(hdr) identical(hdr$type, "numeric"), logical(1), USE.NAMES = FALSE))
   }
-  noNumericCols <- sum(vapply(modelIn[[symbol]]$headers, function(hdr) identical(hdr$type, "numeric"), logical(1), USE.NAMES = FALSE))
   numericColValues <- c(
     1.123456789, 2.123456789, 3.123456789, 4.123456789,
     5.123456789, 6.123456789, 7.123456789, 8.123456789,
@@ -626,7 +627,16 @@ createTableData <- function(symbol, pivotCol = NULL, createColNames = FALSE) {
   isPivotTable <- FALSE
   if (length(pivotCol) && pivotCol != "_") {
     isPivotTable <- TRUE
-    pivotIdx <- match(pivotCol, inputSymHeaders[[input$table_symbol]])[[1L]]
+    if (symbol %in% inputSymMultiDimChoices) {
+      pivotIdx <- match(pivotCol, inputSymHeaders[[input$table_symbol]])[[1L]]
+    }
+    if (symbol %in% outputSymMultiDimChoices) {
+      pivotIdx <- match(pivotCol, outputSymHeadersFull[[input$table_symbol]])[[1L]]
+      return(list(
+        data = data, headers = headersTmp, headersRaw = headersRaw,
+        isPivotTable = isPivotTable
+      ))
+    }
     if (is.na(pivotIdx)) {
       return(list(
         data = data, headers = headersTmp, headersRaw = headersRaw,
@@ -744,8 +754,7 @@ output$dt_preview <- renderDT({
 output$outputTable_preview <- renderDT({
   req(input$table_symbol %in% outputSymMultiDimChoices)
 
-  data <- createTableData(input$table_symbol, "_")
-
+  data <- createTableData(input$table_symbol, input$outputTable_pivotCols)
   headersTmp <- unname(data$headers)
   data <- as_tibble(data$data)
   showEl(session, "#outputTable_preview")

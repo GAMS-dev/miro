@@ -89,7 +89,16 @@ if (length(inputSymHeaders)) {
 } else {
   inputSymHeaders <- character(0L)
 }
-
+outputSymHeadersFull <- lapply(modelOut, function(el) {
+  headers <- el$headers
+  return(setNames(
+    names(headers),
+    vapply(headers,
+      "[[", character(1L), "alias",
+      USE.NAMES = FALSE
+    )
+  ))
+})
 outputSymHeaders <- lapply(modelOut, function(el) {
   vapply(el$headers, "[[",
     character(1L), "alias",
