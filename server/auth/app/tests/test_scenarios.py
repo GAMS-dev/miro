@@ -304,7 +304,6 @@ class TestScenarios:
         assert response.status_code == 200
         gdx_content_gdx = response.content
         d = response.headers['content-disposition']
-        print(d)
         assert re.findall('filename="(.+)"', d)[0] == "transport_default.gdx"
 
         assert gdx_content_gdx == gdx_content_miroscen
@@ -312,6 +311,8 @@ class TestScenarios:
         response = client.get("/api/scenarios/transport/download?name=default&file_type=csv",
                               auth=settings["VALID_AUTH_TUPLE"])
         assert response.status_code == 200
+        d = response.headers['content-disposition']
+        assert re.findall('filename="(.+)"', d)[0] == "transport_default.zip"
         zf = zipfile.ZipFile(io.BytesIO(response.content), "r")
         files_in_zip = []
         for fileinfo in zf.infolist():

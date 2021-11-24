@@ -112,7 +112,7 @@ async def delete_scenario(app_id: str = Path(..., description=metadata['descript
 
 @ router.get("/download", summary=metadata["summary"]["download"], responses={
     422: {"description": "Duplicate records found when writing GDX file"}
-}, response_class=FileResponse)
+})
 async def download_scenario(app_id: str = Path(..., description=metadata['description']['app_id'], max_length=60),
                             user: User = Depends(get_current_app_user),
                             name: str = Query(...,
@@ -126,24 +126,27 @@ async def download_scenario(app_id: str = Path(..., description=metadata['descri
     logger.info("%s requested to download scenario: %s of app: %s",
                 user.name, name, app_id)
 
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix="."+file_type)
-    temp_file.close()
+    file_extension = file_type.value
+    if file_type == ExportFileType.csv:
+        file_extension = "zip"
+    _, temp_file_name = tempfile.mkstemp(suffix="."+file_extension)
 
     def cleanup():
         try:
-            os.remove(temp_file.name)
+            os.remove(temp_file_name)
         except OSError:
             pass
 
     try:
-        await download_data(user, app_id, temp_file.name, file_type, name, owner)
+        await download_data(user, app_id, temp_file_name, file_type, name, owner)
 
         logger.info("%s: Scenario: %s of app: %s successfully downloaded",
                     user.name, name, app_id)
         return FileResponse(
-            temp_file.name,
-            filename=f"{app_id}_{name}.{file_type}",
+            temp_file_name,
+            filename=f"{app_id}_{name}.{file_extension}",
             background=BackgroundTask(cleanup),
+            media_type="application/octet-stream"
         )
     except HTTPException as e:
         cleanup()
