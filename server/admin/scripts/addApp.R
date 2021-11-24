@@ -108,7 +108,7 @@ tryCatch(
           }
         } else if (key == "accessGroups") {
           appConfig[[key]] <- c()
-        } else {
+        } else if (key == "description") {
           appConfig[[key]] <- ""
         }
       }
