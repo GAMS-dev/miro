@@ -5,6 +5,7 @@ from fastapi.logger import logger
 
 from app.routers import login, apps, scenarios
 from app.config import settings_yml, settings
+from app.utils.utils import use_route_names_as_operation_ids
 
 gunicorn_logger = logging.getLogger('gunicorn.error')
 
@@ -38,6 +39,7 @@ app.include_router(login.router)
 if settings_yml:
     public_api.include_router(apps.router)
     public_api.include_router(scenarios.router)
+    use_route_names_as_operation_ids(public_api)
     app.mount("/api", public_api)
 else:
     logger.warning(
