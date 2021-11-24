@@ -717,7 +717,7 @@ Worker <- R6Class("Worker", public = list(
   },
   getRemoteAccessGroups = function() {
     stopifnot(private$remote)
-    ret <- private$validateAPIResponse(GET(
+    groupsTmp <- private$validateAPIResponse(GET(
       url = paste0(
         private$metadata$url,
         "/namespaces/",
@@ -729,15 +729,19 @@ Worker <- R6Class("Worker", public = list(
       ),
       timeout(5L)
     ))
-    groupsTmp <- unlist(lapply(content(ret), function(accessGroup) {
+    groupsTmp <- unlist(lapply(groupsTmp, function(accessGroup) {
+      if (!identical(accessGroup$label, tolower(accessGroup$label))) {
+        flog.warn("Remote access group: %s ignored as it contains uppercase letters. Currently, MIRO does not support group labels that include uppercase letters.", accessGroup$label)
+        return(NULL)
+      }
       return(c(
-        paste0("#", tolower(accessGroup$label)),
+        paste0("#", accessGroup$label),
         vapply(accessGroup$members, "[[", character(1L), "username", USE.NAMES = FALSE)
       ))
     }), use.names = FALSE)
     groupsTmp <- groupsTmp[!groupsTmp %in% c("#admins", "#users")]
     groupsTmp <- groupsTmp[!duplicated(groupsTmp)]
-    return(c("#users", if ("#admins" %in% tolower(private$db$getUserAccessGroups())) "#admins", groupsTmp))
+    return(c("#users", if ("#admins" %in% private$db$getUserAccessGroups()) "#admins", groupsTmp))
   },
   pingLog = function() {
     if (inherits(private$process, "process")) {
