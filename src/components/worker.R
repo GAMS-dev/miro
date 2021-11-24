@@ -717,7 +717,7 @@ Worker <- R6Class("Worker", public = list(
   },
   getRemoteAccessGroups = function() {
     stopifnot(private$remote)
-    ret <- GET(
+    ret <- private$validateAPIResponse(GET(
       url = paste0(
         private$metadata$url,
         "/namespaces/",
@@ -728,7 +728,7 @@ Worker <- R6Class("Worker", public = list(
         Timestamp = as.character(Sys.time(), usetz = TRUE)
       ),
       timeout(5L)
-    )
+    ))
     groupsTmp <- unlist(lapply(content(ret), function(accessGroup) {
       return(c(
         paste0("#", tolower(accessGroup$label)),
