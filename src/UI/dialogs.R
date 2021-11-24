@@ -29,6 +29,12 @@ showInconsistentOutputDialog <- function() {
 }
 
 showLoginDialog <- function(cred, forwardOnSuccess = NULL) {
+  if (isShinyProxy) {
+    return(showModal(modalDialog(
+      title = lang$errMsg$sessionExpired$title,
+      lang$errMsg$sessionExpired$desc
+    )))
+  }
   showModal(modalDialog(
     title = lang$nav$dialogRemoteLogin$title,
     tags$div(

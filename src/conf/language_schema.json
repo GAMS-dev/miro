@@ -3480,6 +3480,21 @@
           },
           "minProperties": 2
         },
+        "sessionExpired": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "desc": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 2
+        },
         "jobRunning": {
           "type": "object",
           "additionalProperties": false,
@@ -3857,7 +3872,7 @@
           "minProperties": 4
         }
       },
-      "minProperties": 38
+      "minProperties": 39
     },
     "adminMode": {
       "description": "language specific objects of the MIRO admin mode",

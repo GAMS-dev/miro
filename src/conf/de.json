@@ -894,6 +894,10 @@
       "title":"Fehler beim Ausführen von GAMS",
       "desc":"Konnte GAMS nicht ausführen. Haben Sie vergessen, den GAMS-Installationspfad anzugeben?"
     },
+    "sessionExpired": {
+      "title": "Sitzung abgelaufen",
+      "desc": "Das Session-Token für die Kommunikation mit GAMS Engine ist abgelaufen. Bitte melden Sie sich ab und melden Sie sich erneut an."
+    },
     "jobRunning":{
       "title":"Aktiver Job",
       "desc": "Ein GAMS-Job läuft derzeit. Sie müssen diesen Job stoppen oder warten, bis er beendet ist, bevor Sie einen anderen Job ausführen können."

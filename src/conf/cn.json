@@ -894,6 +894,10 @@
       "title":"执行GAMS中出错",
       "desc":"执行GAMS过程中出现错误。"
     },
+    "sessionExpired": {
+      "title": "会话已过期",
+      "desc": "用于与 GAMS Engine 通信的会话令牌已过期。 请注销并重新登录。"
+    },
 	"jobRunning": {
       "title": "正在求解的作业",
       "desc": "正在求解一个GAMS作业。只有停止求解该作业或等待该作业完成后，才能运行其他的作业。"

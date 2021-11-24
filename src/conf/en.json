@@ -894,6 +894,10 @@
       "title":"GAMS could not be run",
       "desc":"Could not run GAMS. Did you forget to specify the GAMS installation path?"
     },
+    "sessionExpired": {
+      "title": "Session expired",
+      "desc": "The session token for communication with GAMS Engine has expired. Please log out and log in again."
+    },
     "jobRunning": {
       "title": "Active job",
       "desc": "A GAMS job is currently running. You must stop or wait for this job to finish before you can run another job."
