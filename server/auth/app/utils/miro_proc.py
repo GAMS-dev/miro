@@ -56,6 +56,10 @@ def run_miro_proc(user_info: User, script_name: str, input: bytes = b"", cwd: st
                 logger.info("Stderr of %s subprocess: %s",
                             script_name,
                             proc_out.stderr.decode())
+            if err_code >= 500:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error"
+                )
             if err_code >= 300:
                 raise HTTPException(
                     status_code=err_code, detail=err_details

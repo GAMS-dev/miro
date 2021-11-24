@@ -68,10 +68,11 @@ async def add_data(user_info: User, app_id: str, data: UploadFile, permissions: 
             run_miro_proc(user_info, "manageScenarios.R",
                           input=json.dumps(proc_input).encode())
         except HTTPException as e:
+            logger.info("Problems adding data to app: %s. Detail: %s", app_id, e.detail)
             if e.status_code == 418:
                 # need to change status code when scenario already exists
                 raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT, detail=e.detail)
+                    status_code=status.HTTP_409_CONFLICT, detail="A scenario with this name already exists")
             raise HTTPException(
                 status_code=e.status_code, detail=e.detail)
 
