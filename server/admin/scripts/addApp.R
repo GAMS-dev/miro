@@ -217,7 +217,7 @@ tryCatch(
         displayName = appConfig$displayName,
         description = appConfig$description,
         accessGroups = appConfig$accessGroups
-      ))
+      ), allowUpdateRestrictedEnv = TRUE)
       if (!identical(unlink(appDirTmp2, recursive = TRUE), 0L)) {
         flog.warn("Could not remove directory: %s", appDirTmp2)
       }
