@@ -5362,7 +5362,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 13
+              "minProperties": 15
             },
             "slider": {
               "type": "object",

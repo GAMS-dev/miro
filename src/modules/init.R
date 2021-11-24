@@ -684,7 +684,7 @@ if (is.null(errMsg)) {
         if (length(widgetConfig[["colWidths"]]) > 1) {
           if (length(modelIn[[i]]$pivotCols)) {
             errMsg <- paste(errMsg, sprintf(
-              "invalid configuration for input symbol '%s'. For a symbol with pivot columns (pivotCols) only one column width may be specified, which is valid for all columns.",
+              "Invalid configuration for input symbol '%s'. For a symbol with pivot columns (pivotCols) only one column width may be specified, which is valid for all columns.",
               names(modelIn)[[i]]
             ),
             sep = "\n"
@@ -693,7 +693,7 @@ if (is.null(errMsg)) {
           }
           if (length(widgetConfig[["colWidths"]]) != length(modelIn[[i]]$headers)) {
             errMsg <- paste(errMsg, sprintf(
-              "invalid configuration for input symbol '%s'. The number of defined column widths (%s) does not match the number of symbol headers (%s).",
+              "Invalid configuration for input symbol '%s'. The number of defined column widths (%s) does not match the number of symbol headers (%s).",
               names(modelIn)[[i]],
               length(widgetConfig[["colWidths"]]),
               length(modelIn[[i]]$headers)

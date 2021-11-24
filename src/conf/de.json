@@ -1370,7 +1370,7 @@
         "heatmap": "Die Tabelle in eine Heatmap wandeln?",
         "colDecimals": "Geben Sie die Anzahl der Dezimalstellen für die Spalte: '%s' an",
         "dropdownColsTitle": "Drop-down menu in input table",
-        "dropdownColsDesc": "An input table can be configured so that the cells are not freely editable by the user, but can only be modified via a drop-down menu. This option is not available in the Configuration Mode but needs to be configured manually. Read more here: "
+        "dropdownColsDesc": "Eine Eingabetabelle kann so konfiguriert werden, dass die Zellen für den Benutzer nicht frei editierbar sind, sondern nur über ein Dropdown-Menü geändert werden können. Diese Option ist nicht im Konfigurationsmodus verfügbar, sondern muss manuell konfiguriert werden. Mehr Informationen: "
       },
       "slider":{
         "label": "Wählen Sie eine Widget-Beschriftung",
