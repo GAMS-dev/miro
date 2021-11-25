@@ -8,21 +8,9 @@ ModelConfig <- R6::R6Class("ModelConfig",
       private$accessGroups <- accessGroupsTmp[!accessGroupsTmp %in% c("USERS", "ADMINS")]
 
       if (file.exists(configPath)) {
-        configTmp <- tryCatch(yaml::read_yaml(configPath),
-          error = function(e) {
-            stop(sprintf(
-              "Faulty yaml syntax in configuration file: %s. Error message: %s",
-              configPath, conditionMessage(e)
-            ), call. = FALSE)
-          }
-        )
-        configTmp <- lapply(configTmp[["specs"]], function(appConfig) {
-          appConfig[["accessGroups"]] <- as.list(appConfig[["accessGroups"]])
-          return(appConfig)
-        })
+        configTmp <- private$readConfig()
         modelConfigsHasAccess <- vapply(configTmp, function(appConfig) {
-          return(!identical(appConfig[["id"]], "admin") &&
-            (!length(appConfig[["accessGroups"]]) || any(appConfig[["accessGroups"]] %in% private$accessGroups)))
+          return(private$appIsVisible(appConfig))
         }, logical(1L), USE.NAMES = FALSE)
         private$currentModelConfigs <- configTmp[modelConfigsHasAccess]
         private$modelConfigsNoAccess <- configTmp[!modelConfigsHasAccess]
@@ -48,6 +36,7 @@ ModelConfig <- R6::R6Class("ModelConfig",
     },
     getAllAppIds = function(includeNoAccess = FALSE) {
       if (includeNoAccess) {
+        private$refreshModelConfigsNoAccess()
         return(vapply(c(private$modelConfigsNoAccess, private$currentModelConfigs), "[[", character(1L), "id", USE.NAMES = FALSE))
       }
       return(vapply(private$currentModelConfigs, "[[", character(1L), "id", USE.NAMES = FALSE))
@@ -84,8 +73,9 @@ ModelConfig <- R6::R6Class("ModelConfig",
           call. = FALSE
         )
       }
+      visibleAppIds <- self$getAllAppIds()
       private$currentModelConfigs[[appIndex]] <- NULL
-      private$writeConfig()
+      private$writeConfig(visibleAppIds)
 
       return(invisible(self))
     },
@@ -217,9 +207,51 @@ ModelConfig <- R6::R6Class("ModelConfig",
       "MIRO_VERSION_STRING", "MIRO_DB_USERNAME", "MIRO_DB_PASSWORD", "MIRO_DB_SCHEMA",
       "MIRO_ENGINE_MODELNAME"
     ),
-    writeConfig = function() {
+    appIsVisible = function(appConfig) {
+      return(!identical(appConfig[["id"]], "admin") &&
+        (!length(appConfig[["accessGroups"]]) || any(appConfig[["accessGroups"]] %in% private$accessGroups)))
+    },
+    refreshModelConfigsNoAccess = function(visibleAppIds = NULL) {
+      configTmp <- private$readConfig()
+      if (is.null(visibleAppIds)) {
+        visibleAppIds <- self$getAllAppIds()
+      }
+      modelConfigsHasAccess <- vapply(configTmp, function(appConfig) {
+        return(appConfig[["id"]] %in% visibleAppIds)
+      }, logical(1L), USE.NAMES = FALSE)
+      private$modelConfigsNoAccess <- configTmp[!modelConfigsHasAccess]
+      return(invisible(self))
+    },
+    readConfig = function() {
+      configTmp <- tryCatch(yaml::read_yaml(private$configPath),
+        error = function(e) {
+          stop(sprintf(
+            "Faulty yaml syntax in configuration file: %s. Error message: %s",
+            private$configPath, conditionMessage(e)
+          ), call. = FALSE)
+        }
+      )
+      return(lapply(configTmp[["specs"]], function(appConfig) {
+        appConfig[["accessGroups"]] <- as.list(appConfig[["accessGroups"]])
+        return(appConfig)
+      }))
+    },
+    writeConfig = function(visibleAppIds = NULL) {
+      private$refreshModelConfigsNoAccess(visibleAppIds)
+      appSpecsTmp <- list(specs = c(private$modelConfigsNoAccess, private$currentModelConfigs))
+      allAppIds <- vapply(appSpecsTmp[["specs"]], "[[", character(1L), "id", USE.NAMES = FALSE)
+      duplicatedAppIds <- duplicated(allAppIds)
+      if (any(duplicatedAppIds)) {
+        stop_custom("error_bad_config",
+          sprintf(
+            "Duplicated app id(s): %s found when trying to save specs.yaml file.",
+            allAppIds[duplicatedAppIds]
+          ),
+          call. = FALSE
+        )
+      }
       yaml::write_yaml(
-        list(specs = c(private$modelConfigsNoAccess, private$currentModelConfigs)),
+        appSpecsTmp,
         private$configPath
       )
     }
