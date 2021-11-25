@@ -2,6 +2,8 @@ import os
 import json
 from typing import List, Optional
 from fastapi import UploadFile
+from fastapi.exceptions import HTTPException
+from starlette import status
 import aiofiles
 import yaml
 
@@ -50,6 +52,13 @@ def app_is_invisible(user_groups: List[str], app_id: str) -> bool:
 
 
 async def add_or_update_app(user_info: User, app_config: AppConfig, data: UploadFile, overwrite_data: bool = False, update=False) -> None:
+    _, file_extension = os.path.splitext(data.filename)
+    file_extension = file_extension.lower()
+    if file_extension != ".miroapp":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid file extension: {}. Please upload a valid miroapp file.".format(
+                file_extension)
+        )
     async with aiofiles.tempfile.NamedTemporaryFile("wb", suffix=".miroapp") as out_file:
         while content := await data.read(1024):
             await out_file.write(content)
