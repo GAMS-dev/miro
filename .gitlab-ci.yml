@@ -74,7 +74,6 @@ test_job:
     - source /etc/profile.d/ci.sh
     - yarn install --cache-folder .yarn
   script:
-    - yarn run eslint .
     - mchecklic
     - mtestall
   interruptible: true
