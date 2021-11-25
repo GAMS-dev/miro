@@ -262,17 +262,17 @@ class TestScenarios:
         assert scen_metadata[1]['last_modified'].startswith(
             datetime.date.today().strftime("%Y-%m-%dT"))
         assert scen_metadata[1]['last_modified'].endswith("+00:00")
-        assert scen_metadata[1]['read_perm'] == [
-            'mirotests_auth_1', '#mygroup', '#users']
-        assert scen_metadata[0]['read_perm'] == [
-            settings["VALID_AUTH_TUPLE"][0], '#mygroup', '#another_group', '#users', '#admins']
+        assert set(scen_metadata[1]['read_perm']) == {
+            'mirotests_auth_1', '#mygroup', '#users'}
+        assert set(scen_metadata[0]['read_perm']) == {
+            settings["VALID_AUTH_TUPLE"][0], '#mygroup', '#another_group', '#users', '#admins'}
         assert scen_metadata[1]['write_perm'] == ['mirotests_auth_1']
         assert scen_metadata[0]['write_perm'] == [
             settings["VALID_AUTH_TUPLE"][0]]
-        assert scen_metadata[1]['exec_perm'] == [
-            'mirotests_auth_1', '#mygroup', '#users']
-        assert scen_metadata[0]['exec_perm'] == [
-            settings["VALID_AUTH_TUPLE"][0], '#mygroup', '#another_group', '#users', '#admins']
+        assert set(scen_metadata[1]['exec_perm']) == {
+            'mirotests_auth_1', '#mygroup', '#users'}
+        assert set(scen_metadata[0]['exec_perm']) == {
+            settings["VALID_AUTH_TUPLE"][0], '#mygroup', '#another_group', '#users', '#admins'}
 
         assert response.status_code == 200
 
