@@ -122,6 +122,14 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
   tags$div(
     id = ns("container"), style = "overflow:hidden;",
     tags$div(id = ns("customError"), class = "gmsalert gmsalert-error"),
+    tags$a(
+      id = ns("downloadCsv"),
+      class = "shiny-download-link",
+      style = "visibility:hidden;",
+      href = "",
+      target = "_blank",
+      download = NA
+    ),
     if (length(options$domainFilter$domains)) {
       domainFilterTabs <- lapply(options$domainFilter$domains, function(domain) {
         domainId <- match(domain, unassignedSetIndices)
@@ -190,19 +198,16 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
                 class = "btn-custom pivot-btn-custom"
               ),
               tags$a(
-                id = ns("downloadCsv"),
-                class = "btn btn-default shiny-download-link btn-custom pivot-btn-custom",
-                href = "",
-                target = "_blank",
-                download = NA,
-                title = lang$renderers$miroPivot$btDownloadCsv,
-                tags$div(
+                `data-proxy-id` = ns("downloadCsv"),
+                class = "btn btn-default shiny-download-link btn-custom btn-proxy pivot-btn-custom",
+                href = "#/", tags$div(
                   tags$i(class = "fa fa-file-csv"),
                   tags$div(
                     class = "miro-pivot-btn-text",
                     lang$renderers$miroPivot$btDownloadCsv
                   )
-                )
+                ),
+                title = lang$renderers$miroPivot$btDownloadCsv
               ),
               tags$a(
                 id = ns("downloadPng"),
@@ -256,20 +261,17 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
           tags$div(
             class = "presentation-hide",
             tags$a(
-              id = ns("downloadCsv"),
-              class = "btn btn-default shiny-download-link btn-custom pivot-btn-custom",
+              `data-proxy-id` = ns("downloadCsv"),
+              class = "btn btn-default shiny-download-link btn-custom btn-proxy pivot-btn-custom",
               style = if (isTRUE(options$hidePivotControls)) "display:none;",
-              href = "",
-              target = "_blank",
-              download = NA,
-              title = lang$renderers$miroPivot$btDownloadCsv,
-              tags$div(
+              href = "#/", tags$div(
                 tags$i(class = "fa fa-file-csv"),
                 tags$div(
                   class = "miro-pivot-btn-text",
                   lang$renderers$miroPivot$btDownloadCsv
                 )
-              )
+              ),
+              title = lang$renderers$miroPivot$btDownloadCsv
             ),
             tags$a(
               id = ns("downloadPng"),
@@ -308,7 +310,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         tags$a(
           `data-proxy-id` = ns("downloadCsv"),
           class = "btn btn-default shiny-download-link btn-custom btn-proxy pivot-btn-custom",
-          href = "#", tags$div(
+          href = "#/", tags$div(
             tags$i(class = "fa fa-file-csv"),
             tags$div(
               class = "miro-pivot-btn-text",
