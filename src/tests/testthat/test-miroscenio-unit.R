@@ -142,6 +142,7 @@ test_that("Validating miroscen files works", {
     regexp = "metadata\\.json",
     class = "error_badformat"
   )
+  expect_error(validateMiroScen(file.path("..", "data", "good1.miroscen")), NA)
 })
 test_that("Reading miroscen files works", {
   tmpd <- tempdir(check = TRUE)
@@ -184,6 +185,45 @@ test_that("Reading miroscen files works", {
   )
   expect_identical(f, tibble::tibble(scalar = character(), description = character(), value = character()))
   expect_true(file.exists(file.path(tmpd, "data.gdx")))
+  generateMiroScen(file.path(tmpd, "test.miroscen"),
+    tibble::tibble(
+      sid = 1, uid = "conner", name = "test", stime = Sys.time(),
+      tags = vector2Csv(letters)
+    ),
+    list(
+      i = tibble::tibble("1" = c("seattle", "san-diego"), "2" = rep.int(NA_character_, 2L)),
+      a = tibble::tibble("1" = c("seattle", "san-diego"), "2" = c(350, 600)),
+      x = tibble::tibble(
+        "1" = c(
+          "seattle", "seattle", "seattle",
+          "san-diego", "san-diego", "san-diego"
+        ),
+        "2" = c(
+          "new-york", "chicago", "topeka",
+          "new-york", "chicago", "topeka"
+        ),
+        l = c(50, 300, 0, 275, 0, 275),
+        m = c(0, 0, 0.036, 0, 0.009, 0),
+        lo = rep.int(0, 6L), up = rep.int(Inf, 6L), s = rep.int(1, 6L)
+      ),
+      `_scalars` = tibble::tibble(
+        scalar = c("_gmsopt_a", "_gmspar_b"),
+        description = c("bla", "blubb"),
+        value = c(NA_character_, NA_character_)
+      )
+    ),
+    attachmentsDummy, viewsDummy,
+    tabsetId = NULL
+  )
+  expect_silent(f <- loadMiroScen(
+    file.path(tmpd, "test.miroscen"), scenDummy, attachmentsDummy, viewsDummy,
+    c(names(modelIn), "_gmsopt_a", "_gmspar_b")
+  ))
+  expect_identical(f, tibble::tibble(
+    scalar = c("_gmsopt_a", "_gmspar_b"),
+    description = c("", ""),
+    value = c(NA_character_, NA_character_)
+  ))
 })
 test_that("Loading MIRO scenario into specified directory works", {
   tmpd <- tempdir(check = TRUE)

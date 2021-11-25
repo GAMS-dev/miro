@@ -45,7 +45,11 @@ validateMiroScen <- function(path) {
   }
   if (length(metadata[["cl_args"]])) {
     dfClArgs <- as_tibble(metadata[["cl_args"]])
-    if (length(dfClArgs) != 2L) {
+    if (identical(length(dfClArgs), 1L) && !"value" %in% names(dfClArgs)) {
+      # all cl args are NA
+      dfClArgs <- add_column(dfClArgs, value = NA_character_)
+    }
+    if (!identical(length(dfClArgs), 2L)) {
       stop_custom("error_badformat", "Invalid command line arguments format in miroscen file.",
         call. = FALSE
       )
@@ -82,7 +86,12 @@ loadMiroScenMeta <- function(path, activeScen, attachments, views, inputNames, z
   ))
   dfClArgs <- NULL
   if (length(metadata[["cl_args"]])) {
-    dfClArgs <- as_tibble(metadata[["cl_args"]]) %>% add_column(description = "", .after = 1)
+    dfClArgs <- as_tibble(metadata[["cl_args"]])
+    if (identical(length(dfClArgs), 1L) && !"value" %in% names(dfClArgs)) {
+      # all cl args are NA
+      dfClArgs <- add_column(dfClArgs, value = NA_character_)
+    }
+    dfClArgs <- add_column(dfClArgs, description = "", .after = 1)
     clArgIds <- match(dfClArgs[[1]], inputNames)
     if (any(is.na(clArgIds))) {
       flog.info(
