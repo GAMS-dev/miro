@@ -34,10 +34,9 @@ def cleanup():
     cur.close()
     conn.close()
     reset_app_config_file()
-    requests.delete(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups/?label=mygroup",
-                    auth=settings["VALID_AUTH_TUPLE"])
-    requests.delete(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups/?label=Mygroup",
-                    auth=settings["VALID_AUTH_TUPLE"])
+    for group_label in ["mygroup", "Mygroup"]:
+        requests.delete(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups?label={group_label}",
+                        auth=settings["VALID_AUTH_TUPLE"])
     delete_user("mirotests_auth_1", allow_fail=True)
 
 
@@ -102,6 +101,7 @@ class TestApps:
         invite_user("mirotests_auth_1", 7, "mygroup", inviter=True)
         response = requests.post(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups?label=Mygroup",
                                  auth=("mirotests_auth_1", "mirotests_auth_1"))
+        print(response.json())
         assert response.status_code == 201
         response = client.post("/login",
                                json={"username": "mirotests_auth_1",

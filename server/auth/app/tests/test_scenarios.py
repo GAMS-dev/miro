@@ -42,7 +42,7 @@ def cleanup():
     conn.close()
     reset_app_config_file()
     for group_label in group_labels:
-        requests.delete(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups/?label={group_label}",
+        requests.delete(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups?label={group_label}",
                         auth=settings["VALID_AUTH_TUPLE"])
     delete_user("mirotests_auth_1", allow_fail=True)
 
