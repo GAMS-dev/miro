@@ -4,63 +4,93 @@
   "excelIncludeEmptySheets": true,
   "autoGenInputGraphs": true,
   "storeLogFilesDuration": 7,
-  "defCompMode": "split",
+  "defCompMode": "pivot",
   "activateModules": {
     "loadLocal": true,
     "logFile": true,
     "lstFile": true,
     "attachments": true,
-    "downloadTempFiles": false
+    "downloadTempFiles": false,
+    "hcube": false
   },
+  "miroLogFile": "report.lst",
   "aggregateWidgets": true,
   "overwriteSheetOrder": {
-    "input": ["nursedata", "shiftdata", "nurseskills", "skillrequirements", "vacation", "nurseassoc", "nurseincompat", "_scalars", "_widgets"]
+    "input": ["nursedata", "shiftdata", "nurseskills", "skillrequirements", "vacation", "nurseassoc", "nurseincompat", "_widgets"],
+    "output": ["nurseassignments", "nurseworktime", "_scalars_out", "costbydepartments_miro", "nursemorethanavghours", "nurselessthanavghours"]
   },
   "overwriteAliases": {
     "nursedata": {
       "newAlias": "Nurse Data"
     },
     "shiftdata": {
-      "newAlias": "Nurse Data"
+      "newAlias": "Shift Data"
     },
     "nurseskills": {
       "newAlias": "Nurse has particular skill"
     },
     "skillrequirements": {
-      "newAlias": "skillrequirements"
+      "newAlias": "Department skill requirements"
     },
     "vacation": {
-      "newAlias": "vacation"
+      "newAlias": "Vacation"
     },
     "nurseassoc": {
-      "newAlias": "nurseassoc"
+      "newAlias": "Nurse association"
     },
     "nurseincompat": {
-      "newAlias": "cannot work together"
+      "newAlias": "Nurse incompatibility"
     },
     "_scalars": {
       "newAlias": "Scalars"
     },
     "nurseassignments": {
-      "newAlias": "assign nurse to shift"
+      "newAlias": "Working plans"
     },
     "nurseworktime": {
-      "newAlias": "working time in hours by nurse"
-    },
-    "_scalarsve_out": {
-      "newAlias": "Output Variable/Equation Scalars"
+      "newAlias": "Working times"
     },
     "nursemorethanavghours": {
-      "newAlias": "overtime"
+      "newAlias": "Overtime"
     },
     "nurselessthanavghours": {
-      "newAlias": "undertime"
+      "newAlias": "Undertime"
     },
-    "costbydepartments": {
-      "newAlias": "cost by department"
+    "costbydepartments_miro": {
+      "newAlias": "Costs by departments"
     },
-    "kpi": {
-      "newAlias": "kpi"
+    "maxworktime": {
+      "newAlias": "maxworktime"
+    },
+    "fairnessweight": {
+      "newAlias": "fairnessweight"
+    },
+    "assignmentweight": {
+      "newAlias": "assignmentweight"
+    },
+    "nurseavghours_miro": {
+      "newAlias": "average working hours"
+    },
+    "fairness_miro": {
+      "newAlias": "aggregation of all over- and undertime"
+    },
+    "obj_miro": {
+      "newAlias": "objective variable"
+    },
+    "salarycost": {
+      "newAlias": "Total salary cost"
+    },
+    "numberassignments": {
+      "newAlias": "Total number of assignments"
+    },
+    "overaveragework": {
+      "newAlias": "Total over-average worktime"
+    },
+    "underaveragework": {
+      "newAlias": "Total under-average worktime"
+    },
+    "_scalars_out": {
+      "newAlias": "Totals"
     }
   },
   "saveTraceFile": true,
@@ -68,8 +98,212 @@
   "dataRendering": {
     "nurseassignments": {
       "outType": "mirorenderer_nurseassignments",
-      "packages": ["dplyr", "timevis"],
       "additionalData": "shiftdata"
+    },
+    "nurseworktime": {
+      "outType": "miroPivot",
+      "height": 700,
+      "options": {
+        "aggregationFunction": "sum",
+        "pivotRenderer": "table",
+        "enableHideEmptyCols": false,
+        "hideEmptyCols": false,
+        "hidePivotControls": true,
+        "fixedColumns": true,
+        "emptyUEL": "-",
+        "rows": "nurse",
+        "cols": {
+          "Hdr": ["level", "upper"]
+        }
+      }
+    },
+    "nursemorethanavghours": {
+      "outType": "miroPivot",
+      "height": 700,
+      "options": {
+        "aggregationFunction": "sum",
+        "pivotRenderer": "table",
+        "enableHideEmptyCols": false,
+        "hideEmptyCols": false,
+        "hidePivotControls": true,
+        "fixedColumns": true,
+        "emptyUEL": "-",
+        "rows": "nurse",
+        "cols": {
+          "Hdr": "level"
+        }
+      }
+    },
+    "nurselessthanavghours": {
+      "outType": "miroPivot",
+      "height": 700,
+      "options": {
+        "aggregationFunction": "sum",
+        "pivotRenderer": "table",
+        "enableHideEmptyCols": false,
+        "hideEmptyCols": false,
+        "hidePivotControls": true,
+        "fixedColumns": true,
+        "emptyUEL": "-",
+        "rows": "nurse",
+        "cols": {
+          "Hdr": "level"
+        }
+      }
+    },
+    "_scalars_out": {
+      "outType": "valueBox",
+      "options": [
+        {
+          "obj_miro": {
+            "description": "Objective variable",
+            "color": "aqua",
+            "icon": {
+              "name": "_",
+              "lib": "font-awesome"
+            },
+            "round": 0
+          },
+          "salarycost": {
+            "description": "Total salary cost",
+            "color": "yellow",
+            "icon": {
+              "name": "wallet",
+              "lib": "font-awesome"
+            },
+            "round": 0
+          },
+          "numberassignments": {
+            "description": "Total number of assignments",
+            "color": "light-blue",
+            "icon": {
+              "name": "check-circle",
+              "lib": "font-awesome"
+            },
+            "round": 0
+          }
+        },
+        {
+          "nurseavghours_miro": {
+            "description": "Average working hours",
+            "color": "green",
+            "icon": {
+              "name": "_",
+              "lib": "font-awesome"
+            },
+            "round": 2
+          },
+          "fairness_miro": {
+            "description": "Aggregation of all over- and undertime",
+            "color": "green",
+            "icon": {
+              "name": "_",
+              "lib": "font-awesome"
+            },
+            "round": 2
+          },
+          "overaveragework": {
+            "description": "Total over-average worktime",
+            "color": "red",
+            "icon": {
+              "name": "_",
+              "lib": "font-awesome"
+            },
+            "round": 2
+          },
+          "underaveragework": {
+            "description": "Total under-average worktime",
+            "color": "orange",
+            "icon": {
+              "name": "_",
+              "lib": "font-awesome"
+            },
+            "round": 2
+          }
+        }
+      ]
+    },
+    "costbydepartments_miro": {
+      "outType": "dtGraph",
+      "graph": {
+        "tool": "plotly",
+        "type": "pie",
+        "traces": {
+          "1": {
+            "labels": "department",
+            "values": "value",
+            "hole": 0.5,
+            "name": "costbydepartments_miro"
+          }
+        },
+        "title": "cost by department",
+        "showlegend": true,
+        "staticPlot": false,
+        "ydata": {
+          "value": {
+            "label": "Departments",
+            "mode": "lines",
+            "marker": {
+              "line": {
+                "width": 0
+              }
+            }
+          }
+        }
+      },
+      "height": 700
+    }
+  },
+  "defaultScenName": "default",
+  "defaultRendererOutput": "miroPivot",
+  "pivotCompSettings": {
+    "hidePivotControls": false,
+    "fixedColumns": true
+  },
+  "inputWidgets": {
+    "maxworktime": {
+      "widgetType": "slider",
+      "min": 0,
+      "max": 70,
+      "default": 40,
+      "step": 1,
+      "ticks": true,
+      "noHcube": false,
+      "label": "Maximum working hours"
+    },
+    "fairnessweight": {
+      "widgetType": "slider",
+      "min": 0,
+      "max": 250,
+      "default": 100,
+      "step": 1,
+      "ticks": true,
+      "noHcube": false,
+      "label": "Fairness weight: Penalty for different hour assignments for nurses"
+    },
+    "assignmentweight": {
+      "widgetType": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 10,
+      "step": 1,
+      "ticks": false,
+      "noHcube": false,
+      "label": "Assignment weight: Shift Assignment Penalty"
+    },
+    "nurseincompat": {
+      "widgetType": "table",
+      "tableType": "default",
+      "readonly": false,
+      "hideIndexCol": false,
+      "heatmap": false
+    },
+    "nurseassoc": {
+      "widgetType": "table",
+      "tableType": "default",
+      "readonly": false,
+      "hideIndexCol": false,
+      "heatmap": false
     }
   },
   "handsontable": {
@@ -83,5 +317,24 @@
     },
     "height": 700,
     "colWidths": 200
-  }
+  },
+  "inputGroups": [
+    {
+      "name": "Nurse association & incompatibility",
+      "members": ["nurseassoc", "nurseincompat"],
+      "sameTab": false
+    },
+    {
+      "name": "Skill data",
+      "members": ["nurseskills", "skillrequirements"],
+      "sameTab": false
+    }
+  ],
+  "outputGroups": [
+    {
+      "name": "Over- & Undertime",
+      "members": ["nursemorethanavghours", "nurselessthanavghours"],
+      "sameTab": false
+    }
+  ]
 }

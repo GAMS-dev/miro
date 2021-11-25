@@ -83,7 +83,7 @@ Zoe, 8, 3, 29
 $offDelim
 ;
 
-Table shiftData(shift<,department<,day,sh) 'Nurse Data'
+Table shiftData(shift<,department<,day,sh) 'Shift Data'
 $onDelim
 Shift, Department, Day, 'Start time', 'End time', 'Minimum requirement', 'Maximum requirement'
 s1, Emergency, monday, 2, 8, 3, 5
@@ -217,7 +217,7 @@ Set nurseIncompat(nurse,nurse) 'cannot work together' /
 /;
 
 Scalar
-  maxWorkTime      /  40 /
+  maxWorkTime      /  25 /
   fairnessWeight   / 100 /
   assignmentWeight /  10 /;
 
@@ -240,19 +240,20 @@ Parameter startTime(shift,department,day), endTime(shift,department,day);
 startTime(s(shift,d,day)) = shiftData(s,'Start time') + (ord(day)-1)*24;
 endTime(s) = startTime(s) + duration(s);
 
-$onExternalOutput
+
 Variable
+$onExternalOutput
   nurseAssignments(nurse,shift,department,day)  'assign nurse to shift'
   nurseWorkTime(nurse)                          'working time in hours by nurse'
-  nurseAvgHours                                 'average working hours'
   nurseMoreThanAvgHours(nurse)                  'overtime'
   nurseLessThanAvgHours(nurse)                  'undertime'
-  fairness                                      'aggregation of all over- and undertime'
+$offExternalOutput
   costByDepartments(department)                 'cost by department'
+  nurseAvgHours                                 'average working hours'
+  fairness                                      'aggregation of all over- and undertime'
   totalAssignments                              'total number of shift assignments'
   obj                                           'objective variable'
 ;
-$offExternalOutput
 Binary variable nurseAssignments;
 Positive variable nurseMoreThanAvgHours, nurseLessThanAvgHours;
 
@@ -270,7 +271,7 @@ Equations
   defOverUnderTime(nurse)                                      'define under- and overtime of the average working hours per nurse'
   defFairness                                                  'aggration of all over- and undertime'
   defTotalAssign                                               'total number of assignments'
-;  
+;
 
 * composite objective to be minimized
 defObj.. obj =e= sum(d, costByDepartments[d]) + fairnessWeight*fairness + assignmentWeight*totalAssignments;
@@ -278,7 +279,7 @@ defObj.. obj =e= sum(d, costByDepartments[d]) + fairnessWeight*fairness + assign
 * cost by department
 defCostDep{d}.. costByDepartments[d] =e= sum{(n,s(shift,d,day)), nurseAssignments[n,s]*duration(s)*nurseData[n,'Pay rate']};
 
-* a shift require between min and max Nurses 
+* a shift require between min and max Nurses
 defShiftReqMin(s)..
   sum(n, nurseAssignments[n,s]) =g= shiftData(s,'Minimum requirement');
 
@@ -295,7 +296,7 @@ nurseWorkTime.up[n] = MaxWorkTime;
 * two shifts at the same time are incompatible
 defOneShift(n,sPairs(s,t))$(startTime(t) >= startTime(s) and startTime(t) < endTime(s))..
   nurseAssignments[n,s] + nurseAssignments[n,t] =l= 1;
-  
+
 * Nurse-Nurse incompatibility
 defNurseIncompat(nurseIncompat(n,nurse),s)..
   nurseAssignments[n,s] + nurseAssignments[nurse,s] =l= 1;
@@ -303,29 +304,29 @@ defNurseIncompat(nurseIncompat(n,nurse),s)..
 * Nurse association
 defNurseAssoc(nurseAssoc(n,nurse),s)..
   nurseAssignments[n,s] =e= nurseAssignments[nurse,s];
- 
+
 * Skill requirements
 defSkillReq(d,skill,s(shift,d,day))$skillRequirements(d, skill)..
   sum(nurseSkills(n,skill), nurseAssignments[n,s]) =g= skillRequirements(d, skill);
-  
+
 * compute average hours
 defAvgHours..
   card(nurse)*nurseAvgHours =e= sum(n, nurseWorkTime(n));
-  
-* fairness: want each nurse's allocated hours to be similar (there is an objetive penalty if not) 
+
+* fairness: want each nurse's allocated hours to be similar (there is an objetive penalty if not)
 defOverUnderTime(n)..
   nurseWorkTime[n] =e= nurseAvgHours + nurseMoreThanAvgHours[n] - nurseLessThanAvgHours[n];
- 
+
 defFairness..
   fairness =e= sum(n, NurseMoreThanAvgHours[n] + NurseLessThanAvgHours[n]);
-  
+
 * total assignments
 defTotalAssign..
   totalAssignments =e= sum((n,s), nurseAssignments[n,s]);
 
 $if not set onduty $set ONDUTY 0
 $ifThen %ONDUTY%==0
-* Nurse vacations 
+* Nurse vacations
 nurseAssignments.fx[n,s(shift,d,day)]$vacation(n,day) = 0;
 
 model nurseScheduling / all /;
@@ -365,17 +366,30 @@ solve nurseScheduling min obj us mip;
 abort.noError$(nurseScheduling.modelStat<>%modelStat.optimal% and
                nurseScheduling.modelStat<>%modelStat.integerSolution%) 'no solution';
 
-$onExternalOutput            
-Parameter kpi;
+$onExternalOutput
+Scalar
+  nurseAvgHours_miro     'average working hours'
+  fairness_miro          'aggregation of all over- and undertime'
+  obj_miro               'objective variable'
+  salaryCost             'Total salary cost'
+  numberAssignments      'Total number of assignments'
+  overAverageWork        'Total over-average worktime'
+  underAverageWork       'Total under-average worktime'
+;
+Parameter
+  costByDepartments_miro(department)
+;
 $offExternalOutput
 $onDotL
-kpi("Total salary cost") = sum(d, CostByDepartments[d]);
-kpi("Total number of assignments") = TotalAssignments;
-kpi("Average work time") = NurseAvgHours;
-kpi("Total over-average worktime") = sum(n, NurseMoreThanAvgHours[n]);
-kpi("Total under-average worktime") = sum(n, NurseLessThanAvgHours[n]);
-kpi("Total fairness") = fairness;
-display kpi;
+costByDepartments_miro(department) = costByDepartments(department);
+
+nurseAvgHours_miro    = nurseAvgHours;
+fairness_miro         = fairness;
+obj_miro              = obj;
+salaryCost            = sum(d, CostByDepartments[d]);
+numberAssignments     = TotalAssignments;
+overAverageWork       = sum(n, NurseMoreThanAvgHours[n]);
+underAverageWork      = sum(n, NurseLessThanAvgHours[n]);
 
 file frep / report.lst /;
 put frep 'Allocation By Department:';
@@ -391,4 +405,3 @@ loop(n,
 );
 
 * Create a parameter containing shiftData and and nurseAssignment
-
