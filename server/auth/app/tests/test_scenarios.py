@@ -10,7 +10,7 @@ import requests
 from fastapi.testclient import TestClient
 
 from ..main import app
-from .util import delete_user, get_scen_metadata, lock_scenario, settings, get_db_cursor, register_transport, invite_user, delete_user
+from .util import delete_user, get_scen_metadata, lock_scenario, settings, get_db_cursor, register_transport, invite_user, delete_user, reset_app_config_file
 
 client = TestClient(app)
 
@@ -22,8 +22,7 @@ def cleanup():
         requests.post(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups?label={group_label}",
                     auth=settings["VALID_AUTH_TUPLE"])
     os.remove(settings["SPECS_FILE_PATH"])
-    with open(settings["SPECS_FILE_PATH"], "w") as f:
-        f.write("specs:\n- accessGroups:\n  - admins\n  containerEnv:\n    MIRO_API_VERSION: '1'\n  containerVolumes:\n  - :/home/miro/admin/models\n  - :/home/miro/admin/data\n  description: MIRO Server Admin Panel\n  displayName: Admin\n  id: admin\n  logoURL: ~\n")
+    reset_app_config_file()
     yield
     conn, cur = get_db_cursor()
     for app_id in ["transport", "transport_test"]:
@@ -41,6 +40,7 @@ def cleanup():
     conn.commit()
     cur.close()
     conn.close()
+    reset_app_config_file()
     for group_label in group_labels:
         requests.delete(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups/?label={group_label}",
                         auth=settings["VALID_AUTH_TUPLE"])
