@@ -9,8 +9,14 @@ lint_job:
   tags:
    - linux
   stage: test
+  before_script:
+    - yarn install --cache-folder .yarn
   script:
    - pre-commit run --all-files
+  cache:
+    paths:
+      - node_modules/
+      - .yarn
   variables:
     PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
   cache:
