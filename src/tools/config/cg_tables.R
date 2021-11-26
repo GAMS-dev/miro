@@ -600,11 +600,12 @@ createTableData <- function(symbol, pivotCol = NULL, createColNames = FALSE) {
     headersRaw <- inputSymHeaders[[symbol]]
     headersTmp <- names(headersRaw)
     noNumericCols <- sum(vapply(modelIn[[symbol]]$headers, function(hdr) identical(hdr$type, "numeric"), logical(1), USE.NAMES = FALSE))
-  }
-  if (symbol %in% outputSymMultiDimChoices) {
+  } else if (symbol %in% outputSymMultiDimChoices) {
     headersRaw <- outputSymHeaders[[symbol]]
     headersTmp <- headersRaw
     noNumericCols <- sum(vapply(modelOut[[symbol]]$headers, function(hdr) identical(hdr$type, "numeric"), logical(1), USE.NAMES = FALSE))
+  } else {
+    noNumericCols <- sum(vapply(modelIn[[symbol]]$headers, function(hdr) identical(hdr$type, "numeric"), logical(1), USE.NAMES = FALSE))
   }
   numericColValues <- c(
     1.123456789, 2.123456789, 3.123456789, 4.123456789,
@@ -627,9 +628,6 @@ createTableData <- function(symbol, pivotCol = NULL, createColNames = FALSE) {
   isPivotTable <- FALSE
   if (length(pivotCol) && pivotCol != "_") {
     isPivotTable <- TRUE
-    if (symbol %in% inputSymMultiDimChoices) {
-      pivotIdx <- match(pivotCol, inputSymHeaders[[input$table_symbol]])[[1L]]
-    }
     if (symbol %in% outputSymMultiDimChoices) {
       pivotIdx <- match(pivotCol, outputSymHeadersFull[[input$table_symbol]])[[1L]]
       return(list(
@@ -637,6 +635,7 @@ createTableData <- function(symbol, pivotCol = NULL, createColNames = FALSE) {
         isPivotTable = isPivotTable
       ))
     }
+    pivotIdx <- match(pivotCol, inputSymHeaders[[input$table_symbol]])[[1L]]
     if (is.na(pivotIdx)) {
       return(list(
         data = data, headers = headersTmp, headersRaw = headersRaw,
