@@ -363,7 +363,7 @@ $endIf
 nurseScheduling.resLim = 100;
 solve nurseScheduling min obj us mip;
 
-abort.noError$(nurseScheduling.modelStat<>%modelStat.optimal% and
+abort$(nurseScheduling.modelStat<>%modelStat.optimal% and
                nurseScheduling.modelStat<>%modelStat.integerSolution%) 'no solution';
 
 $onExternalOutput
