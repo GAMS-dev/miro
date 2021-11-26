@@ -95,14 +95,14 @@ renderMirorenderer_nurseassignments <- function(input, output, session, data, op
     content = names(vec_nurses_id)
   )
 
-  output$tvis_shifts_nurse <- renderTimevis({
+  output$tvis_shifts_nurse <- timevis::renderTimevis({
     if (length(input$si_employee)) {
       nurseTmp <- nurseTmp %>% filter(group %in% vec_nurses_id[input$si_employee])
       groupTmp <- groupTmp %>%
         filter(id %in% vec_nurses_id[input$si_employee])
     }
 
-    timevis(nurseTmp,
+    timevis::timevis(nurseTmp,
       groups = groupTmp,
       options = list(stack = FALSE)
     )
@@ -117,7 +117,7 @@ renderMirorenderer_nurseassignments <- function(input, output, session, data, op
     id = vec_departments_id,
     content = names(vec_departments_id)
   )
-  output$tvis_shifts_department <- renderTimevis({
+  output$tvis_shifts_department <- timevis::renderTimevis({
     if (length(input$si_department)) {
       dataTmp <- dataTmp %>%
         filter(group %in% vec_departments_id[input$si_department])
@@ -125,7 +125,7 @@ renderMirorenderer_nurseassignments <- function(input, output, session, data, op
       groupsTmp <- groupsTmp %>%
         filter(id %in% vec_departments_id[input$si_department])
     }
-    timevis(
+    timevis::timevis(
       dataTmp,
       groups = groupsTmp,
       options = list(stack = TRUE)
