@@ -3,31 +3,27 @@ mirorenderer_nurseassignmentsOutput <- function(id, height = NULL, options = NUL
   fluidPage(tabsetPanel(
     tabPanel("Employee View",
       value = ns("employeeView"),
-      fluidRow(
+      tags$div(
+        style = "margin-top: 15px;",
         selectInput(ns("si_employee"),
           "Select Employee(s)", NULL,
           multiple = TRUE
-        ),
-        actionButton(
-          ns("ab_employee"),
-          "Update View"
         )
       ),
-      timevis::timevisOutput(ns("tvis_shifts_nurse"))
+      tags$div(timevis::timevisOutput(ns("tvis_shifts_nurse")))
     ),
-    tabPanel("Department View",
-      value = ns("departmentView"),
-      fluidRow(
-        selectInput(ns("si_department"),
-          "Select Department(s)", NULL,
-          multiple = TRUE
-        ),
-        actionButton(
-          ns("ab_department"),
-          "Update View"
+    tabPanel(
+      "Department View",
+      tags$div(
+        style = "margin-top: 15px;",
+        selectInput(
+          ns("si_department"),
+          "Select Department(s)", NULL
         )
       ),
-      timevis::timevisOutput(ns("tvis_shifts_department"))
+      tags$div(
+        timevis::timevisOutput(ns("tvis_shifts_department"))
+      )
     ),
     type = "tabs"
   ))
@@ -67,7 +63,7 @@ renderMirorenderer_nurseassignments <- function(input, output, session, data, op
   vec_departments_id <- seq_along(vec_departments)
   names(vec_departments_id) <- vec_departments
   updateSelectInput(session, inputId = "si_employee", choices = vec_nurses, selected = NULL)
-  updateSelectInput(session, inputId = "si_department", choices = vec_departments, selected = NULL)
+  updateSelectInput(session, inputId = "si_department", choices = vec_departments)
   data_full <- data_full %>% mutate(
     content = department,
     Date = case_when(
