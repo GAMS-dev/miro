@@ -1012,11 +1012,11 @@
                         "description":"Width of columns.",
                          "type":[
                             "string",
-                            "integer",
+                            "number",
                             "array"
                          ],
                          "items":{
-                            "type":"integer",
+                            "type":"number",
                             "exclusiveMinimum":0
                          },
                          "exclusiveMinimum":0
@@ -2008,7 +2008,7 @@
                "description":"Width of columns.",
                "type":[
                   "string",
-                  "integer"
+                  "number"
                ],
                "exclusiveMinimum":0,
                "default":200
