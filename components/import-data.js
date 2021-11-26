@@ -5,10 +5,18 @@ const path = require('path');
 const { format } = require('util');
 const log = require('electron-log');
 
-async function addModelData(miroProcessManager, paths, modelName,
-  miroVersion, usetmpdir,
-  windowObj, dataDir, progressEvent = 'add-app-progress', overwrite = null,
-  sendAppIdWithProgress = false) {
+async function addModelData(
+  miroProcessManager,
+  paths,
+  modelName,
+  miroVersion,
+  usetmpdir,
+  windowObj,
+  dataDir,
+  progressEvent = 'add-app-progress',
+  overwrite = null,
+  sendAppIdWithProgress = false,
+) {
   let restartRProc;
   let confirmInstallPackages = false;
   let migrationWizardWindow;
@@ -86,10 +94,16 @@ async function addModelData(miroProcessManager, paths, modelName,
         const error = msg.trim().split(':::');
         if (error[1] === '409') {
           log.debug('MIRO signalled that database needs to be migrated. Waiting for user to migrate database.');
-          miroProcessManager.waitForResponse(appId, true, procPid,
+          miroProcessManager.waitForResponse(
+            appId,
+            true,
+            procPid,
             async (event) => {
               log.info(event);
-            }, null, openMigrationWizard);
+            },
+            null,
+            openMigrationWizard,
+          );
           restartRProc = true;
         } else if (error[1] === '418') {
           log.info('MIRO signalled that the scenario already exists.');

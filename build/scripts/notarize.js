@@ -12,8 +12,11 @@ exports.default = async function notarizing(context) {
   }
   const appFile = `"${context.artifactPaths.filter((el) => el.endsWith('.dmg'))[0]}"`;
   try {
-    const notarizeProc = execa(path.join('.', 'build', 'scripts', 'notarize.sh'),
-      [appFile], { shell: true });
+    const notarizeProc = execa(
+      path.join('.', 'build', 'scripts', 'notarize.sh'),
+      [appFile],
+      { shell: true },
+    );
     notarizeProc.stderr.pipe(process.stderr);
     notarizeProc.stdout.pipe(process.stderr);
     await notarizeProc;

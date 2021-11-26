@@ -613,8 +613,11 @@ data-id="${app.id}" class="app-logo">
   if (appItems.length !== 0) {
     appsWrapper.html(`${appItems}${addAppWrapperHTMLFull}<div class="edit-info" style="display:none;">
                         <p class="edit-info-text"><img class="edit-info-img img-fluid"
-                        src="${pathToFileURL(path.join(appPath,
-    'static', 'arrow.png'))}" width="45px" align="middle" alt="arrow">${lang.editAppInfoText}</p>
+                        src="${pathToFileURL(path.join(
+    appPath,
+    'static',
+    'arrow.png',
+  ))}" width="45px" align="middle" alt="arrow">${lang.editAppInfoText}</p>
                     </div>`);
     noAppsNotice.hide();
   } else {
@@ -783,18 +786,24 @@ ipcRenderer.on('install-r-packages', () => {
   });
   $('#installRPkgModal').modal('show');
 });
-ipcRenderer.on('install-r-packages-stdout',
+ipcRenderer.on(
+  'install-r-packages-stdout',
   (e, data) => {
     const logBox = $('#updateRPkgStatusLog');
     logBox.append(document.createTextNode(data));
-    setTimeout(() => {
-      logBox[0].scrollTop = logBox[0].scrollHeight;
-    },
-    200);
-  });
+    setTimeout(
+      () => {
+        logBox[0].scrollTop = logBox[0].scrollHeight;
+      },
+      200,
+    );
+  },
+);
 ipcRenderer.on('install-r-packages-installed', () => {
-  setTimeout(() => $('#installRPkgModal').modal('hide'),
-    1000);
+  setTimeout(
+    () => $('#installRPkgModal').modal('hide'),
+    1000,
+  );
 });
 $('#cancelInstallRPkgBtn').click(() => {
   ipcRenderer.send('kill-r-pkg-install');

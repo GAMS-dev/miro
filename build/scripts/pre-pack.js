@@ -24,13 +24,16 @@ const tryInstallRPackages = async (attempt = 0) => {
     if (process.platform === 'win32') {
       rPath = path.join('.', 'r', 'bin', 'Rscript');
     }
-    const subproc = execa(rPath, [path.join('.', 'build', 'scripts', 'install-packages.R')],
+    const subproc = execa(
+      rPath,
+      [path.join('.', 'build', 'scripts', 'install-packages.R')],
       {
         env: {
           LIB_PATH: path.join('.', 'r', 'library'),
           BUILD_DOCKER: buildDocker ? 'true' : 'false',
         },
-      });
+      },
+    );
     subproc.stderr.pipe(process.stderr);
     subproc.stdout.pipe(process.stderr);
     await subproc;
@@ -53,8 +56,11 @@ const tryInstallRPackages = async (attempt = 0) => {
 
         file.on('finish', () => {
           file.close(async () => {
-            const subproc = execa('innoextract', ['-e', 'latest_r.exe'],
-              { cwd: path.join('.', 'r') });
+            const subproc = execa(
+              'innoextract',
+              ['-e', 'latest_r.exe'],
+              { cwd: path.join('.', 'r') },
+            );
             subproc.stderr.pipe(process.stderr);
             subproc.stdout.pipe(process.stderr);
             await subproc;
@@ -97,13 +103,15 @@ const tryInstallRPackages = async (attempt = 0) => {
   } else {
     if (process.platform === 'darwin' && !rExists) {
       try {
-        const subproc = execa(path.join('.', 'build', 'scripts', 'get-r-mac.sh'),
+        const subproc = execa(
+          path.join('.', 'build', 'scripts', 'get-r-mac.sh'),
           {
             shell: true,
             env: {
               R_BASE_VERSION: buildConfig.rVersion,
             },
-          });
+          },
+        );
         subproc.stderr.pipe(process.stderr);
         subproc.stdout.pipe(process.stderr);
         await subproc;

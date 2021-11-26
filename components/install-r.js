@@ -23,7 +23,8 @@ async function installRPackages(rpath, apppath, libpath, mainWindow, devMode = f
     return false;
   }
   const scriptsPath = path.join(apppath, 'scripts');
-  const rproc = execa(path.join(rpath, 'bin', 'Rscript'),
+  const rproc = execa(
+    path.join(rpath, 'bin', 'Rscript'),
     [path.join(scriptsPath, 'install_source.R')],
     {
       env: {
@@ -31,7 +32,8 @@ async function installRPackages(rpath, apppath, libpath, mainWindow, devMode = f
         SCRIPTS_PATH: scriptsPath,
       },
       all: !devMode,
-    });
+    },
+  );
   mainWindow.send('install-r-packages');
 
   ipcMain.on('kill-r-pkg-install', () => {

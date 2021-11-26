@@ -101,9 +101,7 @@ class ConfigManager extends Store {
           'logLifeTime', 'language', 'logLevel', 'miroEnv'].forEach((el) => {
           this[el] = superPathConfigData.get(el, '');
         });
-        this.important = superPathConfigData.get(
-          'important', [],
-        );
+        this.important = superPathConfigData.get('important', []);
       } catch (e) {
         // continue regardless of error
       }
@@ -121,7 +119,6 @@ class ConfigManager extends Store {
       }
       this[el] = super.get(el, this[el] == null ? '' : this[el]);
     });
-    return this;
   }
 
   validate(key, val) {
@@ -281,11 +278,14 @@ class ConfigManager extends Store {
       if (!this.rpathDefault
         || !fs.existsSync(this.rpathDefault)) {
         if (process.platform === 'darwin') {
-          const rPathRoot = path.join('/', 'Library', 'Frameworks',
-            'R.framework', 'Versions');
-          const rVersionsAvailable = fs.readdirSync(
-            rPathRoot, { withFileTypes: true },
-          )
+          const rPathRoot = path.join(
+            '/',
+            'Library',
+            'Frameworks',
+            'R.framework',
+            'Versions',
+          );
+          const rVersionsAvailable = fs.readdirSync(rPathRoot, { withFileTypes: true })
             .filter((el) => (el.isDirectory()))
             .map((el) => (el.name))
             .filter((el) => {
@@ -297,8 +297,11 @@ class ConfigManager extends Store {
               }
             });
           if (rVersionsAvailable.length) {
-            this.rpathDefault = path.join(rPathRoot,
-              rVersionsAvailable[0], 'Resources');
+            this.rpathDefault = path.join(
+              rPathRoot,
+              rVersionsAvailable[0],
+              'Resources',
+            );
           }
         } else {
           let rpathTmp = which.sync('Rscript', { nothrow: true });
@@ -330,8 +333,10 @@ class ConfigManager extends Store {
       // Directory was selected, so scan it
       let contentRDir;
       try {
-        contentRDir = await fs.promises.readdir(rpathTmp,
-          { withFileTypes: true });
+        contentRDir = await fs.promises.readdir(
+          rpathTmp,
+          { withFileTypes: true },
+        );
       } catch (e) {
         log.error(e);
         return false;
@@ -403,8 +408,10 @@ class ConfigManager extends Store {
       let isFramework;
       if (fs.existsSync('/Library/Frameworks/GAMS.framework/Versions')) {
         isFramework = true;
-        latestGamsInstalled = fs.readdirSync('/Library/Frameworks/GAMS.framework/Versions',
-          { withFileTypes: true })
+        latestGamsInstalled = fs.readdirSync(
+          '/Library/Frameworks/GAMS.framework/Versions',
+          { withFileTypes: true },
+        )
           .filter((el) => el.isDirectory());
         if (latestGamsInstalled.length > 0) {
           latestGamsInstalled = latestGamsInstalled
@@ -413,8 +420,10 @@ class ConfigManager extends Store {
         }
       } else {
         isFramework = false;
-        latestGamsInstalled = fs.readdirSync('/Applications',
-          { withFileTypes: true })
+        latestGamsInstalled = fs.readdirSync(
+          '/Applications',
+          { withFileTypes: true },
+        )
           .filter((el) => el.isDirectory() && gamsDirNameRegex.test(el.name));
         if (latestGamsInstalled.length > 0) {
           latestGamsInstalled = latestGamsInstalled
@@ -426,13 +435,19 @@ class ConfigManager extends Store {
       if (latestGamsInstalled.length > 0
         && ConfigManager.vComp(latestGamsInstalled, minGams)) {
         if (isFramework) {
-          this.gamspathDefault = path.join('/Library/Frameworks/GAMS.framework/Versions',
+          this.gamspathDefault = path.join(
+            '/Library/Frameworks/GAMS.framework/Versions',
             latestGamsInstalled,
-            'Resources');
+            'Resources',
+          );
         } else {
-          this.gamspathDefault = path.join('/Applications',
+          this.gamspathDefault = path.join(
+            '/Applications',
             `GAMS${latestGamsInstalled}`,
-            'GAMS Terminal.app', 'Contents', 'MacOS');
+            'GAMS Terminal.app',
+            'Contents',
+            'MacOS',
+          );
         }
       } else if (latestGamsInstalled.length > 0) {
         log.info(`Latest installed GAMS version found: \
@@ -440,8 +455,10 @@ ${latestGamsInstalled}`);
       }
     } else {
       try {
-        this.gamspathDefault = path.dirname(which.sync('gams',
-          { nothrow: true }));
+        this.gamspathDefault = path.dirname(which.sync(
+          'gams',
+          { nothrow: true },
+        ));
       } catch (e) {
         // continue regardless of error
       }
@@ -449,8 +466,10 @@ ${latestGamsInstalled}`);
 
     if (!this.gamspathDefault && process.platform === 'win32') {
       let GAMSRootPath = 'C:\\GAMS';
-      let latestGamsInstalled = fs.readdirSync(GAMSRootPath,
-        { withFileTypes: true })
+      let latestGamsInstalled = fs.readdirSync(
+        GAMSRootPath,
+        { withFileTypes: true },
+      )
         .filter((el) => {
           if (!el.isDirectory()) {
             return false;
@@ -464,8 +483,10 @@ ${latestGamsInstalled}`);
         .map((el) => el.name);
       if (latestGamsInstalled.length === 0) {
         GAMSRootPath = 'C:\\GAMS\\win64';
-        latestGamsInstalled = fs.readdirSync(GAMSRootPath,
-          { withFileTypes: true })
+        latestGamsInstalled = fs.readdirSync(
+          GAMSRootPath,
+          { withFileTypes: true },
+        )
           .filter((el) => el.isDirectory() && gamsDirNameRegex.test(el.name))
           .map((el) => el.name);
       }
@@ -476,8 +497,10 @@ ${latestGamsInstalled}`);
 
       if (latestGamsInstalled.length > 0
         && ConfigManager.vComp(latestGamsInstalled, minGams)) {
-        this.gamspathDefault = path.join(GAMSRootPath,
-          latestGamsInstalled);
+        this.gamspathDefault = path.join(
+          GAMSRootPath,
+          latestGamsInstalled,
+        );
       } else if (latestGamsInstalled.length > 0) {
         log.info(`Latest installed GAMS version found: \
   ${latestGamsInstalled}`);
@@ -498,8 +521,10 @@ ${latestGamsInstalled}`);
     let contentGamsDir;
     let gamsExecDir;
     try {
-      contentGamsDir = await fs.promises.readdir(gamsDir,
-        { withFileTypes: true });
+      contentGamsDir = await fs.promises.readdir(
+        gamsDir,
+        { withFileTypes: true },
+      );
     } catch (e) {
       log.error(e);
       return false;
@@ -522,8 +547,14 @@ ${latestGamsInstalled}`);
         if (process.platform === 'win32') {
           gamsExecDir = path.join(gamsDir, gamsDirName, 'sysdir', 'gams.exe');
         } else if (process.platform === 'darwin') {
-          gamsExecDir = path.join(gamsDir, gamsDirName, 'GAMS Terminal.app',
-            'Contents', 'MacOS', 'gams');
+          gamsExecDir = path.join(
+            gamsDir,
+            gamsDirName,
+            'GAMS Terminal.app',
+            'Contents',
+            'MacOS',
+            'gams',
+          );
         } else {
           log.info('System is neither Windows nor MacOS. On Linux, must select sysdir directly.');
           return false;
@@ -533,8 +564,13 @@ ${latestGamsInstalled}`);
         gamsExecDir = path.join(gamsDir, 'sysdir', 'gams.exe');
       } else if (process.platform === 'darwin') {
         if (contentGamsDir.find((el) => el.name === 'GAMS Terminal.app')) {
-          gamsExecDir = path.join(gamsDir, 'GAMS Terminal.app',
-            'Contents', 'MacOS', 'gams');
+          gamsExecDir = path.join(
+            gamsDir,
+            'GAMS Terminal.app',
+            'Contents',
+            'MacOS',
+            'gams',
+          );
         } else if (contentGamsDir.find((el) => el.name === 'GAMS.framework')) {
           gamsExecDir = path.join(gamsDir, 'GAMS.framework', 'Resources', 'gams');
         } else if (contentGamsDir.find((el) => el.name === 'Current')) {
@@ -550,9 +586,12 @@ ${latestGamsInstalled}`);
     }
 
     try {
-      let { stdout } = await execa(gamsExecDir, ['/??', 'lo=3',
-        `curdir=${tmpdir}`],
-      process.platform === 'linux' ? { env: { XDG_DATA_DIRS: '' } } : {});
+      let { stdout } = await execa(
+        gamsExecDir,
+        ['/??', 'lo=3',
+          `curdir=${tmpdir}`],
+        process.platform === 'linux' ? { env: { XDG_DATA_DIRS: '' } } : {},
+      );
       stdout = stdout.split('\n');
       if (stdout.length < 2) {
         log.info(`Invalid stdout from GAMS: ${stdout.slice(0, 5).join('\n')}`);

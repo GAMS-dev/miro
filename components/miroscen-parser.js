@@ -39,8 +39,13 @@ miroscen file as no metadata was found.')));
     return null;
   });
 }
-function addMiroscen(miroProcessManager, scenFilePath, windowObj,
-  paths, appsData) {
+function addMiroscen(
+  miroProcessManager,
+  scenFilePath,
+  windowObj,
+  paths,
+  appsData,
+) {
   return new Promise((resolve, reject) => {
     const onSuccess = async (modelName) => {
       let miroVersion;
@@ -62,7 +67,8 @@ function addMiroscen(miroProcessManager, scenFilePath, windowObj,
           miroVersion,
           appsData.getAppConfigValue(modelName, 'usetmpdir'),
           windowObj,
-          scenFilePath, 'loading-screen-progress',
+          scenFilePath,
+          'loading-screen-progress',
         );
       } catch (err) {
         if (err.message !== 'suppress') {

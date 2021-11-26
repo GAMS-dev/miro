@@ -63,8 +63,10 @@ if (!errMsg) {
     if (!fs.existsSync(logPath)) {
       fs.mkdirSync(logPath, { recursive: true });
     }
-    log.transports.file.resolvePath = () => (path.join(logPath,
-      'launcher.log'));
+    log.transports.file.resolvePath = () => (path.join(
+      logPath,
+      'launcher.log',
+    ));
     log.info(`MIRO launcher (version ${miroVersion} is being started (execPath: ${appRootDir}, \
 pid: ${process.pid}, Log path: ${logPath}, \
 platform: ${process.platform}, arch: ${process.arch}, \
@@ -90,8 +92,13 @@ let libPath = isMac && !DEVELOPMENT_MODE
 const miroResourcePath = DEVELOPMENT_MODE ? path.join(app.getAppPath(), 'src')
   : path.join(process.resourcesPath, 'src');
 
-const miroProcessManager = new MiroProcessManager(configData,
-  miroDevelopMode, miroBuildMode, miroResourcePath, appDataPath);
+const miroProcessManager = new MiroProcessManager(
+  configData,
+  miroDevelopMode,
+  miroBuildMode,
+  miroResourcePath,
+  appDataPath,
+);
 
 log.info(`MIRO launcher is being started (rootDir: ${appRootDir}, pid: ${process.pid}, \
 platform: ${process.platform}, arch: ${process.arch}, \
@@ -372,8 +379,10 @@ function validateAppLogo(filePath, id = null) {
     return;
   }
   log.info('MIRO app logo successfully validate.');
-  mainWindow.webContents.send('validated-logopath-received',
-    { id, path: filteredPath[0] });
+  mainWindow.webContents.send(
+    'validated-logopath-received',
+    { id, path: filteredPath[0] },
+  );
 }
 function addExampleApps() {
   const examplesToAdd = exampleAppsData
@@ -391,8 +400,10 @@ function addExampleApps() {
     });
   }
 
-  fs.copy(path.join(miroResourcePath, 'examples'),
-    appDataPath, (e) => {
+  fs.copy(
+    path.join(miroResourcePath, 'examples'),
+    appDataPath,
+    (e) => {
       if (e) {
         log.error(`Unexpected error while copying example apps from: \
 ${path.join(miroResourcePath, 'examples')} to: ${appDataPath}. Error mesage: ${e.message}`);
@@ -434,7 +445,8 @@ ${path.join(miroResourcePath, 'examples')} to: ${appDataPath}. Error mesage: ${e
           message: `${lang.main.ErrorUnexpectedMsg2} '${err.message}'`,
         });
       }
-    });
+    },
+  );
   log.debug(`Example models: ${examplesToAddNames.toString()} added to library.`);
   if (examplesSkipped.length) {
     return showErrorMsg({
@@ -469,14 +481,16 @@ async function updateMIROApp(newApp, appIdToUpdate = null) {
     });
     return;
   }
-  const overwriteData = dialog.showMessageBoxSync(mainWindow,
+  const overwriteData = dialog.showMessageBoxSync(
+    mainWindow,
     {
       type: 'info',
       title: lang.main.OverwriteDataHdr,
       message: lang.main.OverwriteDataMsg,
       buttons: [lang.main.BtnCancel, lang.main.OverwriteDataBtnYes, lang.main.OverwriteDataBtnNo],
       cancelId: 0,
-    });
+    },
+  );
   if (overwriteData === 0) {
     mainWindow.send('add-app-progress', -1, newApp.id);
     log.debug('Updating app interrupted.');
@@ -651,11 +665,16 @@ async function addMiroscenFile(filePath) {
     }
     mainWindow.send('toggle-loading-screen-progress', 'show');
     try {
-      await addMiroscen(miroProcessManager,
-        miroscenPath, mainWindow, {
+      await addMiroscen(
+        miroProcessManager,
+        miroscenPath,
+        mainWindow,
+        {
           libPath,
           appDataPath,
-        }, appsData);
+        },
+        appsData,
+      );
     } catch (e) {
       log.info(`Problems adding MIRO scenario. Error message: ${e.toString()}.`);
       showErrorMsg({
@@ -748,14 +767,20 @@ function createSettingsWindow() {
     },
   });
 
-  settingsWindow.loadFile(path.join(__dirname,
-    'renderer', 'settings.html'));
+  settingsWindow.loadFile(path.join(
+    __dirname,
+    'renderer',
+    'settings.html',
+  ));
 
   settingsWindow.once('ready-to-show', async () => {
     log.debug('Settings window ready to show.');
-    settingsWindow.webContents.send('settings-loaded',
+    settingsWindow.webContents.send(
+      'settings-loaded',
       await configData.getAll(),
-      await configData.getAll(true), lang.settings);
+      await configData.getAll(true),
+      lang.settings,
+    );
     log.debug('Settings window settings loaded.');
     settingsWindow.show();
   });
@@ -792,15 +817,20 @@ function openAboutDialog() {
       enableRemoteModule: false,
     },
   });
-  aboutDialogWindow.loadFile(path.join(__dirname,
-    'renderer', 'about.html'),
-  {
-    query: {
-      miroVersion,
-      miroRelease,
-      btClose: lang.update.btClose,
+  aboutDialogWindow.loadFile(
+    path.join(
+      __dirname,
+      'renderer',
+      'about.html',
+    ),
+    {
+      query: {
+        miroVersion,
+        miroRelease,
+        btClose: lang.update.btClose,
+      },
     },
-  });
+  );
   aboutDialogWindow.once('ready-to-show', async () => {
     log.debug('About dialog ready to show.');
     aboutDialogWindow.show();
@@ -835,8 +865,11 @@ function openCheckUpdateWindow() {
       enableRemoteModule: false,
     },
   });
-  checkForUpdateWindow.loadFile(path.join(__dirname,
-    'renderer', 'update.html'), { query: { miroVersion } });
+  checkForUpdateWindow.loadFile(path.join(
+    __dirname,
+    'renderer',
+    'update.html',
+  ), { query: { miroVersion } });
   checkForUpdateWindow.once('ready-to-show', async () => {
     log.debug('Check for Update window ready to show.');
     checkForUpdateWindow.send('lang-data-received', lang.update);
@@ -920,8 +953,15 @@ function createMainWindow(showRunningApps = false, onSuccess = null) {
     if (showRunningApps) {
       appsActive = miroProcessManager.getActiveApps();
     }
-    mainWindow.webContents.send('apps-received',
-      appsData.apps, appDataPath, true, true, appsActive, lang.general);
+    mainWindow.webContents.send(
+      'apps-received',
+      appsData.apps,
+      appDataPath,
+      true,
+      true,
+      appsActive,
+      lang.general,
+    );
     log.debug(`App data (${appsData.apps.length} app(s)) loaded into main window.`);
     if (onSuccess) {
       onSuccess();
@@ -1032,8 +1072,12 @@ ${requiredAPIVersion}.`);
   if (process.platform === 'linux' && rPackagesInstalled !== true) {
     log.info('MIRO app launch requested without packages being installed.');
     mainWindow.send('hide-loading-screen', appData.id);
-    rPackagesInstalled = await installRPackages(rpath, appRootDir,
-      libPath, mainWindow);
+    rPackagesInstalled = await installRPackages(
+      rpath,
+      appRootDir,
+      libPath,
+      mainWindow,
+    );
     return;
   }
 
@@ -1188,9 +1232,15 @@ Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
           } else {
             appDataAgreeInstall.customEnv.MIRO_AGREE_INSTALL_PACKAGES = true;
           }
-          await miroProcessManager.createNew(appDataAgreeInstall, libPath,
-            progressCallback, onErrorStartup, onErrorLater,
-            onSuccess, onProcessFinished);
+          await miroProcessManager.createNew(
+            appDataAgreeInstall,
+            libPath,
+            progressCallback,
+            onErrorStartup,
+            onErrorLater,
+            onSuccess,
+            onProcessFinished,
+          );
         } catch (e) {
           try {
             await onErrorStartup(appData.id, `${lang.main.ErrorMsgLaunch} ${e.message}.`);
@@ -1206,9 +1256,16 @@ Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
     }
   };
   try {
-    await miroProcessManager.createNew(appData, libPath,
-      progressCallback, onErrorStartup, onErrorLater,
-      onSuccess, onProcessFinished, miroDevelopMode ? onMIROError : null);
+    await miroProcessManager.createNew(
+      appData,
+      libPath,
+      progressCallback,
+      onErrorStartup,
+      onErrorLater,
+      onSuccess,
+      onProcessFinished,
+      miroDevelopMode ? onMIROError : null,
+    );
   } catch (e) {
     try {
       await onErrorStartup(appData.id, `${lang.main.ErrorMsgLaunch} ${e.message}.`);
@@ -1293,8 +1350,11 @@ async function searchLibPath(devMode = false) {
       }
       if (!libsInstalled) {
         try {
-          await fs.promises.writeFile(path.join(libPath, 'INSTALLING'),
-            '', 'utf8');
+          await fs.promises.writeFile(
+            path.join(libPath, 'INSTALLING'),
+            '',
+            'utf8',
+          );
         } catch (e) {
           fs.rmSync(libPath);
           log.error(`Could not write INSTALLING metadata file to: ${libPath}.\
@@ -1306,8 +1366,11 @@ async function searchLibPath(devMode = false) {
     if (!libsInstalled) {
       try {
         rPackagesInstalled = await installRPackages(
-          await configData.get('rpath'), appRootDir,
-          libPath, mainWindow, devMode,
+          await configData.get('rpath'),
+          appRootDir,
+          libPath,
+          mainWindow,
+          devMode,
         );
       } catch (e) {
         log.error(`Problems creating prompt to install R packages. \
@@ -1359,8 +1422,11 @@ ipcMain.on('export-miroenv', async () => {
   }
   try {
     const currentEnv = await configData.get('miroEnv');
-    await fs.writeFile(pathSelected,
-      JSON.stringify(currentEnv == null ? {} : currentEnv, null, 2), 'utf-8');
+    await fs.writeFile(
+      pathSelected,
+      JSON.stringify(currentEnv == null ? {} : currentEnv, null, 2),
+      'utf-8',
+    );
   } catch (err) {
     log.info(`Problems fetching current environment. Error message: '${err.message}'`);
     showErrorMsg({
@@ -1426,26 +1492,30 @@ ipcMain.on('settings-select-new-path', async (e, id, defaultPath) => {
           settingsWindow.webContents.send('settings-new-path-selected', id, validatedPath);
         } else {
           log.debug(`${idUpper} path is invalid!`);
-          dialog.showMessageBoxSync(settingsWindow,
+          dialog.showMessageBoxSync(
+            settingsWindow,
             {
               type: 'error',
               title: `${idUpper} ${lang.main.ErrorInvalidPathHdr}`,
               message: `${idUpper}${configId === 'r' && process.platform === 'darwin' ? lang.main.ErrorInvalidPathMsgMac
                 : lang.main.ErrorInvalidPathMsg} ${ConfigManager.getMinimumVersion(configId)}`,
               buttons: [lang.main.BtnOk],
-            });
+            },
+          );
           return;
         }
       } catch (err) {
         log.error(`Error while validating ${idUpper} version. Error message: ${err.message}`);
         if (settingsWindow) {
-          dialog.showMessageBoxSync(settingsWindow,
+          dialog.showMessageBoxSync(
+            settingsWindow,
             {
               type: 'error',
               title: lang.main.ErrorUnexpectedHdr,
               message: `${lang.main.ErrorInvalidPathMsg2} ${idUpper} ${lang.main.ErrorMessage} ${err.message}.`,
               buttons: [lang.main.BtnOk],
-            });
+            },
+          );
         }
       }
     } else {
@@ -1480,13 +1550,15 @@ ipcMain.on('add-app', async (e, newApp) => {
     let overwriteData = true;
     const dbPath = path.join(getAppDbPath(appConf.dbpath), `${appConf.id}.sqlite3`);
     if (fs.existsSync(dbPath)) {
-      overwriteData = dialog.showMessageBoxSync(mainWindow,
+      overwriteData = dialog.showMessageBoxSync(
+        mainWindow,
         {
           type: 'info',
           title: lang.main.OverwriteDataHdr,
           message: lang.main.OverwriteDataMsg,
           buttons: [lang.main.OverwriteDataBtnYes, lang.main.OverwriteDataBtnNo],
-        }) === 0;
+        },
+      ) === 0;
     }
 
     await addModelData(
@@ -1507,8 +1579,10 @@ ipcMain.on('add-app', async (e, newApp) => {
 
     delete appConf.path;
     if (appConf.logoNeedsMove) {
-      const newLogoPath = path.join(`static_${appConf.id}`,
-        `${appConf.id}_logo${path.extname(appConf.logoPath)}`);
+      const newLogoPath = path.join(
+        `static_${appConf.id}`,
+        `${appConf.id}_logo${path.extname(appConf.logoPath)}`,
+      );
       if (!fs.existsSync(path.dirname(path.join(appDir, newLogoPath)))) {
         fs.mkdirSync(path.dirname(path.join(appDir, newLogoPath)));
       }
@@ -1562,14 +1636,16 @@ ipcMain.on('update-app', async (_, filePaths, appIdToUpdate) => {
 });
 ipcMain.on('update-app-data', async (_, filePaths, appId) => {
   log.debug('Request to update app data received.');
-  const overwriteData = dialog.showMessageBoxSync(mainWindow,
+  const overwriteData = dialog.showMessageBoxSync(
+    mainWindow,
     {
       type: 'info',
       title: lang.main.OverwriteDataHdr,
       message: lang.main.OverwriteDataMsg,
       buttons: [lang.main.BtnCancel, lang.main.OverwriteDataBtnYes, lang.main.OverwriteDataBtnNo],
       cancelId: 0,
-    });
+    },
+  );
   if (overwriteData === 0) {
     log.debug('Request to add data to app interrupted.');
     mainWindow.send('add-app-progress', -1, appId);
@@ -1651,8 +1727,10 @@ ipcMain.on('update-app-meta', (e, updatedApp) => {
   try {
     const appConf = updatedApp;
     if (appConf.logoNeedsMove) {
-      const newLogoPath = path.join(`static_${appConf.id}`,
-        `${appConf.id}_logo${path.extname(appConf.logoPath)}`);
+      const newLogoPath = path.join(
+        `static_${appConf.id}`,
+        `${appConf.id}_logo${path.extname(appConf.logoPath)}`,
+      );
       const newLogoPathFull = path.join(appDataPath, appConf.id, newLogoPath);
       if (!fs.existsSync(path.dirname(newLogoPathFull))) {
         fs.mkdirSync(path.dirname(newLogoPathFull));
@@ -1687,33 +1765,39 @@ ipcMain.on('save-general-config', async (e, newConfigData, needRestart) => {
     configData.set(newConfigData);
     if (settingsWindow) {
       if (needRestart === true) {
-        if (dialog.showMessageBoxSync(settingsWindow,
+        if (dialog.showMessageBoxSync(
+          settingsWindow,
           {
             type: 'info',
             title: lang.main.SuccessUpdateHdr,
             message: lang.main.SuccessUpdateMsg,
             buttons: [lang.main.BtnCancel, lang.main.BtnOk],
             cancelId: 0,
-          }) === 1) {
+          },
+        ) === 1) {
           app.relaunch();
           app.quit();
         }
       } else {
-        settingsWindow.webContents.send('settings-loaded',
+        settingsWindow.webContents.send(
+          'settings-loaded',
           await configData.getAll(),
-          await configData.getAll(true));
+          await configData.getAll(true),
+        );
       }
     }
   } catch (err) {
     log.info(`Save path config request failed. Error message: ${err.message}`);
     if (settingsWindow) {
-      dialog.showMessageBoxSync(settingsWindow,
+      dialog.showMessageBoxSync(
+        settingsWindow,
         {
           type: 'error',
           title: lang.main.ErrorUnexpectedHdr,
           message: `${lang.main.ErrorUnexpectedWriteMsg} ${configData.getConfigPath()}?`,
           buttons: [lang.main.BtnOk],
-        });
+        },
+      );
     }
   }
 });
@@ -1776,9 +1860,11 @@ ipcMain.on('delete-app', async (e, appId) => {
   } finally {
     if (deleteAppData) {
       const rmPromises = [];
-      rmPromises.push(fs.remove(path.join(miroWorkspaceDir, 'app_data', `${appId}.sqlite3`)),
+      rmPromises.push(
+        fs.remove(path.join(miroWorkspaceDir, 'app_data', `${appId}.sqlite3`)),
         fs.remove(path.join(miroWorkspaceDir, 'hcube_jobs', appId)),
-        fs.remove(path.join(miroWorkspaceDir, `.cred_${appId}`)));
+        fs.remove(path.join(miroWorkspaceDir, `.cred_${appId}`)),
+      );
       const deleteAppDataStatus = await Promise.allSettled(rmPromises);
       const errorMsg = deleteAppDataStatus
         .filter((value) => value.status === 'rejected')
@@ -1835,8 +1921,11 @@ app.on('ready', async () => {
       if (!rPathTmp) {
         throw new Error(`R${lang.main.ErrorInvalidPathMsg} ${ConfigManager.getMinimumVersion('r')}`);
       }
-      libPath = path.join(rPathTmp,
-        'miro-library', libVersion);
+      libPath = path.join(
+        rPathTmp,
+        'miro-library',
+        libVersion,
+      );
       log.debug(`Lib path set to: ${libPath}`);
     } catch (err) {
       errMsg = `Couldn't retrieve R path. Error message: ${err.message}.`;
@@ -1870,12 +1959,14 @@ app.on('ready', async () => {
   session.defaultSession.setPermissionRequestHandler((_1, _2, callback) => {
     callback(false);
   });
-  applicationMenu = menu(addExampleApps,
+  applicationMenu = menu(
+    addExampleApps,
     activateEditMode,
     addMiroscenFile,
     createSettingsWindow,
     openCheckUpdateWindow,
-    openAboutDialog);
+    openAboutDialog,
+  );
   Menu.setApplicationMenu(applicationMenu);
 
   if (miroDevelopMode) {

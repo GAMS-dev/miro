@@ -55,20 +55,47 @@ class MiroProcessManager {
     return this.miroProcesses[internalPid];
   }
 
-  async createNew(appData, libPath, progressCallback, onErrorStartup, onErrorLater,
-    onSuccess, onProcessFinished, onMIROError = null) {
-    const internalPid = await this.createNewMiroProc(appData, libPath, onErrorStartup,
-      onErrorLater, onProcessFinished, onMIROError);
+  async createNew(
+    appData,
+    libPath,
+    progressCallback,
+    onErrorStartup,
+    onErrorLater,
+    onSuccess,
+    onProcessFinished,
+    onMIROError = null,
+  ) {
+    const internalPid = await this.createNewMiroProc(
+      appData,
+      libPath,
+      onErrorStartup,
+      onErrorLater,
+      onProcessFinished,
+      onMIROError,
+    );
     if (internalPid != null) {
       await progressCallback({ internalPid, code: 'start' });
       await waitFor(1500);
-      await this.waitForResponse(appData.id, appData.allowMultiple,
-        internalPid, progressCallback, onErrorStartup, onSuccess, appData.timeout);
+      await this.waitForResponse(
+        appData.id,
+        appData.allowMultiple,
+        internalPid,
+        progressCallback,
+        onErrorStartup,
+        onSuccess,
+        appData.timeout,
+      );
     }
   }
 
-  async createNewMiroProc(appData, libPath, onErrorStartup, onErrorLater,
-    onProcessFinished, onMIROError = null) {
+  async createNewMiroProc(
+    appData,
+    libPath,
+    onErrorStartup,
+    onErrorLater,
+    onProcessFinished,
+    onMIROError = null,
+  ) {
     if (appData.allowMultiple !== true && this.processIdMap[appData.id]) {
       log.error('Process for this model already running. This should not happen. Reference not freed.');
       return null;
@@ -178,7 +205,8 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
         procEnv[envName] = appData.customEnv[envName];
       });
     }
-    this.miroProcesses[internalPid] = execa(path.join(await rpath, 'bin', 'R'),
+    this.miroProcesses[internalPid] = execa(
+      path.join(await rpath, 'bin', 'R'),
       ['--no-echo', '--no-restore', '--vanilla',
         '-f', path.join(this.miroResourcePath, 'start-shiny.R')],
       {
@@ -186,7 +214,8 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
         stdout: stdOutPipe,
         stderr: stdErrPipe,
         cleanup: false,
-      });
+      },
+    );
     if (onMIROError != null) {
       // eslint-disable-next-line no-restricted-syntax
       for await (const data of this.miroProcesses[internalPid].stderr) {
@@ -227,8 +256,15 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
     return internalPid;
   }
 
-  async waitForResponse(appId, allowMultiple, internalPid,
-    progressCallback, onError, onSuccess, timeout) {
+  async waitForResponse(
+    appId,
+    allowMultiple,
+    internalPid,
+    progressCallback,
+    onError,
+    onSuccess,
+    timeout,
+  ) {
     const shinyPort = this.pidPortMap[internalPid.toString()];
     if (!shinyPort) {
       return;

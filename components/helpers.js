@@ -44,10 +44,15 @@ const waitFor = (milliseconds) => new Promise((resolve) => {
   setTimeout(resolve, milliseconds);
 });
 
-const kill = (pid, signal = 'SIGTERM') => new Promise((resolve, reject) => treeKill(pid, signal, (killErr) => {
-  if (killErr) return reject(killErr);
-  return resolve({ pid });
-}));
+const kill = (pid, signal = 'SIGTERM') => new Promise((resolve, reject) => {
+  treeKill(pid, signal, (killErr) => {
+    if (killErr) {
+      reject(killErr);
+    } else {
+      resolve({ pid });
+    }
+  });
+});
 
 module.exports = {
   waitFor,

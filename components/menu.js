@@ -2,12 +2,14 @@ const { app, Menu, shell } = require('electron');
 
 const isMac = process.platform === 'darwin';
 
-module.exports = (addExampleAppsCallback,
+module.exports = (
+  addExampleAppsCallback,
   activateEditCallback,
   addMiroscenCallback,
   showSettingsCallback,
   openCheckUpdateWindow,
-  openAboutDialog) => {
+  openAboutDialog,
+) => {
   const lang = global.lang.menu;
   return Menu.buildFromTemplate([
     // { role: 'appMenu' }

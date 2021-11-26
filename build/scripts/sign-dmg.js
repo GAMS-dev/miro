@@ -16,9 +16,11 @@ exports.default = async function signing(context) {
     return;
   }
 
-  // eslint-disable-next-line no-underscore-dangle
-  const entitlementsFile = path.join(context.packager.info._buildResourcesDir,
-    'entitlements.mac.plist');
+  const entitlementsFile = path.join(
+    // eslint-disable-next-line no-underscore-dangle
+    context.packager.info._buildResourcesDir,
+    'entitlements.mac.plist',
+  );
   const appFile = path.join(appOutDir, `${appName}.app`);
   const contentDir = path.join(appFile, 'Contents');
 
@@ -35,8 +37,11 @@ exports.default = async function signing(context) {
   }
 
   try {
-    const signProc = execa(path.join('.', 'build', 'scripts', 'sign-dmg.sh'),
-      [`"${contentDir}"`, codesignIdentity, `"${entitlementsFile}"`], { shell: true });
+    const signProc = execa(
+      path.join('.', 'build', 'scripts', 'sign-dmg.sh'),
+      [`"${contentDir}"`, codesignIdentity, `"${entitlementsFile}"`],
+      { shell: true },
+    );
     signProc.stderr.pipe(process.stderr);
     signProc.stdout.pipe(process.stderr);
     await signProc;

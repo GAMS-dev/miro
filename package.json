@@ -111,18 +111,18 @@
   "author": "GAMS Development Corp.",
   "license": "GPL-3.0-only",
   "devDependencies": {
-    "electron": "^15.3.2",
+    "electron": "^16.0.2",
     "electron-builder": "22.13.1",
-    "eslint": "^7.32.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.25.2",
-    "prettier": "2.4.1"
+    "eslint": "^8.3.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.3",
+    "prettier": "2.5.0"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.3",
-    "ajv": "^8.6.3",
-    "axios": "^0.23.0",
-    "bootstrap": "^4.6.0",
+    "@fortawesome/fontawesome-free": "^5.15.4",
+    "ajv": "^8.8.2",
+    "axios": "^0.24.0",
+    "bootstrap": "^4.6.1",
     "electron-log": "^4.4.1",
     "electron-store": "^8.0.1",
     "execa": "^5.1.1",
