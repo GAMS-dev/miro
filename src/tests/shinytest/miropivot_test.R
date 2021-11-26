@@ -32,8 +32,6 @@ app$snapshot(
 )
 # filter row
 expect_true(app$waitFor("$('#tab_1_1-miroPivot-toggleViewButton').is(':visible')"))
-expect_true(app$waitFor("$(\"a[data-proxy-id='tab_1_1-miroPivot-downloadCsv']\").is(':visible')", 50))
-expect_true(app$waitFor("$('#tab_1_1-miroPivot-downloadCsv').is(':hidden')", 50))
 expect_true(app$waitFor("$('#tab_1_1-miroPivot-filterIndexList').is(':hidden');", 50))
 expect_true(app$waitFor("$('#tab_1_1-miroPivot-saveView').is(':hidden');", 50))
 expect_true(app$waitFor("$('#tab_1_1-miroPivot-filter_Hdr').next().is(':hidden');", 50))
@@ -54,8 +52,6 @@ Sys.sleep(3)
 
 # filter row
 expect_true(app$waitFor("$('#tab_1_1-miroPivot-toggleViewButton').is(':visible')"))
-expect_true(app$waitFor("$(\"a[data-proxy-id='tab_1_1-miroPivot-downloadCsv']\").is(':hidden')", 50))
-expect_true(app$waitFor("$('#tab_1_1-miroPivot-downloadCsv').is(':visible')", 50))
 expect_true(app$waitFor("$('#tab_1_1-miroPivot-filterIndexList').is(':visible');", 50))
 expect_true(app$waitFor("$('#tab_1_1-miroPivot-saveView').is(':visible');", 50))
 expect_true(app$waitFor("$('#tab_1_1-miroPivot-filter_Hdr').next().is(':visible');", 50))
