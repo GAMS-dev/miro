@@ -44,14 +44,14 @@ DOCKERHUB_IMAGE_CONFIG = {
 class MiroServer(object):
   def __init__(self):
     parser = argparse.ArgumentParser(prog='miro_server.py',
-      usage='miro_server [-h] {build,up,down,push,release,dump_schema} [<args>]',
+      usage='miro_server [-h] {build,up,down,scan,push,release,dump_schema} [<args>]',
       description='GAMS MIRO Server build script')
 
     # Add the arguments
     parser.add_argument('command',
       type=str,
       help='Subcommand to run',
-      choices=['build', 'up', 'down', 'push', 'release', 'dump_schema'])
+      choices=['build', 'up', 'down', 'scan', 'push', 'release', 'dump_schema'])
 
     args = parser.parse_args(sys.argv[1:2])
 
@@ -124,6 +124,12 @@ class MiroServer(object):
       dc_args_miro.append('-v')
 
     subprocess.check_call(dc_args_miro, env=self.__compose_env)
+
+
+  def scan(self):
+    for image_name in DOCKERHUB_IMAGE_CONFIG:
+      print(f"Scanning image: {image_name}:latest")
+      subprocess.check_call(['docker', 'scan', f'{image_name}:latest'])
 
 
   def push(self):
