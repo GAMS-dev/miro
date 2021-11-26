@@ -398,6 +398,32 @@
       }
     }
   },
+  "handsontable": {
+    "stretchH": "none",
+    "readonly": false,
+    "manualColumnResize": true,
+    "contextMenu": {
+      "enabled": true,
+      "allowRowEdit": true,
+      "allowColEdit": true
+    },
+    "height": 700,
+    "colWidths": 200
+  },
+  "overwriteHeaderAliases": {
+    "nurseskills": {
+      "newHeaders": ["Nurses", "Nurse skills", " "]
+    },
+    "vacation": {
+      "newHeaders": ["Nurses", "Days of the week", " "]
+    },
+    "nurseassoc": {
+      "newHeaders": ["Nurses", "Nurses", " "]
+    },
+    "nurseincompat": {
+      "newHeaders": ["Nurses", "Nurses", " "]
+    }
+  },
   "inputGroups": [
     {
       "name": "Nurse association & incompatibility",
