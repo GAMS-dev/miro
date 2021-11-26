@@ -69,6 +69,8 @@ these components are included below):
 - DBI https://github.com/r-dbi/DBI or https://cran.r-project.org/web/packages/DBI/index.html
 - askpass https://github.com/jeroen/askpass or https://cran.r-project.org/web/packages/askpass/index.html
 - timevis https://github.com/daattali/timevis or https://cran.r-project.org/web/packages/timevis/index.html
+- tzdb https://github.com/r-lib/tzdb or https://cran.r-project.org/web/packages/tzdb/index.html
+- vroom https://github.com/r-lib/vroom or https://cran.r-project.org/web/packages/vroom/index.html
 - readr https://github.com/tidyverse/readr or https://cran.r-project.org/web/packages/readr/index.html
 - blob https://github.com/tidyverse/blob or https://cran.r-project.org/web/packages/blob/index.html
 - hms https://github.com/tidyverse/hms or https://cran.r-project.org/web/packages/hms/index.html
@@ -719,6 +721,22 @@ Section 8 -- Interpretation.
         - showdown.js, Copyright (c) 2018 ShowdownJS
         - autoNumeric, Copyright (c) 2009 Robert J. Knothe <bob@decorplanit.com> and contributors
         - showdown, Copyright (c) 2018 ShowdownJS
+        - tzdb, Copyright (c) 2021 Davis Vaughan [aut, cre], Howard Hinnant [cph] (Author of the included date library), RStudio [cph, fnd]
+        - vroom, Copyright (c) 2021
+          Jim Hester [aut, cre],
+          Hadley Wickham [aut],
+          https://github.com/mandreyel/ [cph] (mio library),
+          Jukka Jylänki [cph] (grisu3 implementation),
+          Mikkel Jørgensen [cph] (grisu3 implementation),
+          RStudio [cph, fnd]
+        - readr, Copyright (c) 2021
+          Hadley Wickham [aut],
+          Jim Hester [aut, cre],
+          Romain Francois [ctb],
+          RStudio [cph, fnd],
+          https://github.com/mandreyel/ [cph] (mio library),
+          Jukka Jylänki [ctb, cph] (grisu3 implementation),
+          Mikkel Jørgensen [ctb, cph] (grisu3 implementation)
 
 -----------------------------------------------------------------------------
 Based on <http://opensource.org/licenses/MIT>
@@ -1009,14 +1027,6 @@ Library.
             John Gruber [ctb, cph] (showdown.js library),
             Ivan Sagalaev [ctb, cph] (highlight.js library),
             R Core Team [ctb, cph] (tar implementation from R)
-        - readr [expanded from: GPL (≥ 2)], Copyright (c)
-            Hadley Wickham [aut],
-            Jim Hester [aut, cre],
-            Romain Francois [aut],
-            R Core Team [ctb] (Date time code adapted from R),
-            RStudio [cph, fnd],
-            Jukka Jylänki [ctb, cph] (grisu3 implementation),
-            Mikkel Jørgensen [ctb, cph] (grisu3 implementation)
         - blob, Copyright (c)
             Hadley Wickham [aut],
             Kirill Müller [cre],
@@ -1902,6 +1912,7 @@ DEALINGS IN THE SOFTWARE.
             Unicode, Inc. [cph, dtc] (Unicode Character Database)
        - bootstrap-datepicker
        - selectize.js
+       - grisu3, Jukka Jylänki (Modifcations to dtoa_grisu3() referenced mikkelfj Copyright (c) 2016 Mikkel F. Jørgensen, dvide.com)
 -----------------------------------------------------------------------------
 
                                  Apache License
