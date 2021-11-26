@@ -25,6 +25,7 @@ renderDTable <- function(data, options, roundPrecision = 2, render = TRUE, metad
       names_sort = isTRUE(options$sortPivotCols)
     )
     options[["pivotCols"]] <- NULL
+    options[["sortPivotCols"]] <- NULL
     if (length(aliasesTmp)) {
       names(data)[seq_along(aliasesTmp)] <- aliasesTmp
     }
