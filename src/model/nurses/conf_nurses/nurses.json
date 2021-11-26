@@ -304,19 +304,109 @@
       "readonly": false,
       "hideIndexCol": false,
       "heatmap": false
-    }
-  },
-  "handsontable": {
-    "stretchH": "none",
-    "readonly": false,
-    "manualColumnResize": true,
-    "contextMenu": {
-      "enabled": true,
-      "allowRowEdit": true,
-      "allowColEdit": true
     },
-    "height": 700,
-    "colWidths": 200
+    "shiftdata": {
+      "widgetType": "table",
+      "tableType": "default",
+      "readonly": false,
+      "hideIndexCol": false,
+      "heatmap": false,
+      "dropdownCols": {
+        "day": {
+          "static": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+          "colType": "dropdown"
+        }
+      }
+    },
+    "nurseskills": {
+      "widgetType": "table",
+      "tableType": "default",
+      "readonly": false,
+      "hideIndexCol": false,
+      "heatmap": false,
+      "dropdownCols": {
+        "nurse": {
+          "symbol": "nursedata",
+          "column": "nurse",
+          "colType": "dropdown"
+        }
+      }
+    },
+    "vacation": {
+      "widgetType": "table",
+      "tableType": "default",
+      "readonly": false,
+      "hideIndexCol": false,
+      "heatmap": false,
+      "dropdownCols": {
+        "nurse": {
+          "symbol": "nursedata",
+          "column": "nurse",
+          "colType": "dropdown"
+        },
+        "day": {
+          "static": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+          "colType": "dropdown"
+        }
+      }
+    },
+    "skillrequirements": {
+      "widgetType": "table",
+      "tableType": "default",
+      "readonly": false,
+      "hideIndexCol": false,
+      "heatmap": false,
+      "dropdownCols": {
+        "department": {
+          "symbol": "shiftdata",
+          "column": "department",
+          "colType": "dropdown"
+        },
+        "skill": {
+          "symbol": "nurseskills",
+          "column": "skill",
+          "colType": "dropdown"
+        }
+      }
+    },
+    "nurseassoc": {
+      "widgetType": "table",
+      "tableType": "default",
+      "readonly": false,
+      "hideIndexCol": false,
+      "heatmap": false,
+      "dropdownCols": {
+        "nurse": {
+          "symbol": "nursedata",
+          "column": "nurse",
+          "colType": "dropdown"
+        },
+        "nurse#1": {
+          "symbol": "nursedata",
+          "column": "nurse",
+          "colType": "dropdown"
+        }
+      }
+    },
+    "nurseincompat": {
+      "widgetType": "table",
+      "tableType": "default",
+      "readonly": false,
+      "hideIndexCol": false,
+      "heatmap": false,
+      "dropdownCols": {
+        "nurse": {
+          "symbol": "nursedata",
+          "column": "nurse",
+          "colType": "dropdown"
+        },
+        "nurse#1": {
+          "symbol": "nursedata",
+          "column": "nurse",
+          "colType": "dropdown"
+        }
+      }
+    }
   },
   "inputGroups": [
     {
@@ -336,5 +426,17 @@
       "members": ["nursemorethanavghours", "nurselessthanavghours"],
       "sameTab": false
     }
-  ]
+  ],
+  "handsontable": {
+    "stretchH": "none",
+    "readonly": false,
+    "manualColumnResize": true,
+    "contextMenu": {
+      "enabled": true,
+      "allowRowEdit": true,
+      "allowColEdit": true
+    },
+    "height": 700,
+    "colWidths": 200
+  }
 }
