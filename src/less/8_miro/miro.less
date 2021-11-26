@@ -1249,8 +1249,42 @@ html {
   });
 }
 /* set background color for Gantt charts independent of theme selected (timevis) */
-.vis-timeline {
-    background-color: #fff;
+.vis-timeline,
+.vis-time-axis .grid.vis-odd,
+.vis-time-axis .grid.vis-even,
+.vis-time-axis .vis-grid,
+.timevis.html-widget .vis-background .vis-minor.vis-odd,
+.timevis.html-widget .vis-background .vis-minor.vis-even {
+  .responsiveDark({
+  },
+  {
+    background-color: @modal-bg-dark !important;
+  });
+}
+.vis-labelset .vis-label,
+.vis-time-axis .vis-text {
+  .responsiveDark({
+ },
+ {
+    color: @text-color-dark !important;
+ });
+}
+.timevis.html-widget .zoom-menu .btn{
+  .responsiveDark({
+  },
+  {
+    background-color: @widget-bg-dark !important;
+    border-color: @modal-bg-dark !important;
+  });
+}
+.vis-item {
+  .responsiveDark({
+  },
+  {
+    background-color: @pivot-presentation-uel-dark !important;
+    border-color: @light-blue-dark !important;
+    color: @text-color-dark !important;
+  });
 }
 /* PAVER */
 .dataframe {
