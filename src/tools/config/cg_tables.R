@@ -616,7 +616,7 @@ createTableData <- function(symbol, pivotCol = NULL, createColNames = FALSE) {
     c(
       replicate(
         length(headersTmp) - noNumericCols,
-        letters[1:10]
+        paste0(letters[1:10], " ")
       ),
       if (noNumericCols > 0L) replicate(noNumericCols, numericColValues)
     ),
