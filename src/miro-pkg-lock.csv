@@ -100,6 +100,7 @@ future, 1.23.0
 bit, 4.0.4
 bit64, 4.0.5
 tzdb, 0.2.0
+vroom, 1.5.6
 readr, 2.1.0
 miro.util
 rhandsontable
