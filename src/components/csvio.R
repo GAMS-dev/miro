@@ -7,7 +7,7 @@ CsvIO <- R6::R6Class("CsvIO", inherit = LocalFileIO, public = list(
     private$rColsToSkip <- NULL
     private$decimalSep <- "."
     sampleTmp <- read_lines(path, n_max = 3L)
-    if (!all(validUTF8(sampleTmp))) {
+    if (identical(sampleTmp, character(0L)) || !all(validUTF8(sampleTmp))) {
       stop_custom("error_bad_encoding",
         lang$errMsg$csvio$errors$badEncoding,
         call. = FALSE
