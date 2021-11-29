@@ -129,7 +129,7 @@ repeat{
   Sys.sleep(0.5)
   timeout <- timeout - 0.5
   if (timeout <= 0L) {
-    stop("Engine seems to be busy. Try again later..")
+    stop("Engine seems to be busy. Try again later.. (1)")
   }
 }
 app$findElement("#btInterrupt")$click()
@@ -145,7 +145,7 @@ repeat{
   Sys.sleep(2L)
   timeout <- timeout - 2L
   if (timeout <= 0L) {
-    stop("Engine seems to be busy. Try again later..")
+    stop("Engine seems to be busy. Try again later.. (2)")
   }
 }
 app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()
@@ -166,14 +166,24 @@ repeat{
   Sys.sleep(2L)
   timeout <- timeout - 2L
   if (timeout <= 0L) {
-    stop("Engine seems to be busy. Try again later..")
+    stop("Engine seems to be busy. Try again later.. (3)")
   }
 }
 expect_error(app$findElement("#outputTableView")$click(), NA)
 app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
 app$findElement(".btSolve .dropdown-toggle")$click()
 app$findElement(".sidebar-menu a[onclick*='Solve model']")$click()
-Sys.sleep(3)
+timeout <- 30
+repeat{
+  if (identical(app$waitFor("$('#modelStatus').is(':visible')", timeout = 50L), TRUE)) {
+    break
+  }
+  Sys.sleep(0.5)
+  timeout <- timeout - 0.5
+  if (timeout <= 0) {
+    stop("Engine seems to be busy. Try again later.. (4)")
+  }
+}
 app$stop()
 token <- getLatestJobToken()
 timeout <- 600L
@@ -187,7 +197,7 @@ repeat{
   Sys.sleep(2L)
   timeout <- timeout - 2L
   if (timeout <= 0L) {
-    stop("Engine seems to be busy. Try again later..")
+    stop("Engine seems to be busy. Try again later.. (5)")
   }
 }
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
@@ -275,7 +285,7 @@ repeat{
   Sys.sleep(4L)
   timeout <- timeout - 4L
   if (timeout <= 0L) {
-    stop("Engine seems to be busy. Try again later..")
+    stop("Engine seems to be busy. Try again later.. (6)")
   }
 }
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
