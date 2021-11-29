@@ -1,7 +1,7 @@
 $(document).ready(function() {
-    let timer;
-    const currLocation = window.location.href;
-    if (!currLocation.endsWith("app/admin")) {
+    const currLocation = window.location.pathname;
+    if (!(currLocation.endsWith("app/admin") || currLocation.endsWith("app/admin/"))) {
+      let timer;
       $("#navbarHandle").hover(function () {
         clearTimeout(timer);
         $("#navbarWrapper").show();
@@ -18,19 +18,19 @@ $(document).ready(function() {
       });
     }
 
-    const source = $("#shinyframe").attr("src");
-    if (source == "") {
-      $(".loading-screen").show();
-      $.post(
-        window.location.pathname + window.location.search,
-        function (response) {
-          $("#shinyframe").attr("src", response.containerPath);
-          $(".loading-screen").delay(1000).fadeOut(500);
-        }
-      ).fail(function (request) {
-        console.log(request.responseText);
-        $("#loadingAnimation").hide();
-        $("#loadAppError").show();
-      });
-    }
+    $('.btn-restart-app').on('click', () => {
+      window.location.reload();
+    });
+    const appConfig = document.getElementById('appConfig').dataset;
+    window.Shiny.common.init(appConfig.context_path, appConfig.application_name);
+    window.Shiny.app.start(
+        appConfig.container_path == null? '': appConfig.container_path,
+        appConfig.websocket_reconnection_mode == null? '': appConfig.websocket_reconnection_mode,
+        appConfig.proxy_id == null? '': appConfig.proxy_id,
+        appConfig.heartbeat_rate,
+        appConfig.app_name,
+        appConfig.app_instance,
+        appConfig.max_instances,
+        false,
+    );
 });

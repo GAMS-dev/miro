@@ -43,6 +43,7 @@ logging:
     /logs/miroproxy.log
 
 spring:
+  application.name: GAMS MIRO Server
   servlet:
     multipart:
       max-file-size: 200MB

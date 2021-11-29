@@ -162,6 +162,14 @@
   display:none;
   color:#fff;
 }
+.load-app-error.load-app-error-absolute{
+  position:absolute;
+}
+@media (prefers-color-scheme: light) {
+  .load-app-error.load-app-error-absolute{
+    color:#000;
+  }
+}
 .app-wrapper {
     position: relative;
     display: flex;

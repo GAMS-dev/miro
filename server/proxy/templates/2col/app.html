@@ -19,6 +19,8 @@
     You should have received a copy of the Apache License
     along with this program.  If not, see <http://www.apache.org/licenses/>
 
+
+    Modifications copyright (C) GAMS Development Corp. <support@gams.com>
 -->
 <!DOCTYPE html>
 <html
@@ -39,6 +41,11 @@
     <link rel="stylesheet" media="screen" th:href="@{/assets/css/styles.css}" />
     <script th:src="@{/assets/js/jquery.min.js}"></script>
     <script th:src="@{${bootstrapJs}}"></script>
+    <script th:src="@{${cookieJs}}"></script>
+    <script th:src="@{/js/shiny.app.js}"></script>
+    <script th:src="@{/js/shiny.connections.js}"></script>
+    <script th:src="@{/js/shiny.ui.js}"></script>
+    <script th:src="@{/js/shiny.common.js}"></script>
   </head>
   <body style="overflow: hidden; margin: 0; padding: 0">
     <div class="navbar-handle-wrapper">
@@ -62,7 +69,7 @@
         </div>
       </div>
     </div>
-    <div class="loading-screen">
+    <div id="loading" class="loading-screen">
       <div id="loadAppError" class="load-app-error">
         An error has occurred loading your app. Please try again later.
       </div>
@@ -77,16 +84,27 @@
         <div></div>
       </div>
     </div>
+    <div id="appStopped" class="load-app-error load-app-error-absolute">
+      This app has been stopped, you can now close this tab.<br /><br />
+      <button class="btn btn-default btn-restart-app">Restart app</button>
+    </div>
+    <div id="userLoggedOut" class="load-app-error load-app-error-absolute">
+      You logged out using another browser tab, you can now close this tab.<br /><br />
+      <a th:href="@{/}" class="btn btn-default">Login again</a>
+    </div>
+    <div id="reloadFailed" class="load-app-error load-app-error-absolute">
+      An error has occurred reloading your app.<br /><br />
+      <button class="btn btn-default btn-restart-app">Refresh page</button>
+    </div>
     <div id="navbarWrapper" style="display: none; position: absolute">
       <div th:replace="../fragments/navbar :: navbar"></div>
     </div>
-    <iframe
-      id="shinyframe"
-      th:src="${container}"
-      width="100%"
-      frameborder="0"
-      style="overflow: hidden; height: 100vh"
-    ></iframe>
+    <div
+      id="appConfig"
+      style="display: none"
+      th:attr="data-context_path=${contextPath},data-application_name=${application_name},data-container_path=${containerPath},data-websocket_reconnection_mode=${webSocketReconnectionMode},data-proxy_id=${proxyId},data-heartbeat_rate=${heartbeatRate},data-app_name=${appName},data-app_instance=${appInstance},data-max_instances=${maxInstances}"
+    ></div>
+    <div id="iframeinsert"></div>
     <script type="text/javascript" th:src="@{/assets/js/app.js}"></script>
   </body>
 </html>

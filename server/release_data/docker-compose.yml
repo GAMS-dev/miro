@@ -15,7 +15,7 @@ services:
       PORT: 1234
       ENGINE_URL: ${GMS_MIRO_ENGINE_HOST}
       ENGINE_NS: ${GMS_MIRO_ENGINE_NS}
-      SESSION_TIMEOUT: 43200
+      SESSION_TIMEOUT: 172800
     restart: always
     networks:
       - gamsmiro-network
