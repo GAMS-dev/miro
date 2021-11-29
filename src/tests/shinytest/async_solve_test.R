@@ -175,7 +175,7 @@ app$findElement(".btSolve .dropdown-toggle")$click()
 app$findElement(".sidebar-menu a[onclick*='Solve model']")$click()
 timeout <- 30
 repeat{
-  if (identical(app$waitFor("$('#modelStatus').is(':visible')", timeout = 50L), TRUE)) {
+  if (identical(app$waitFor("$('#modelStatus').text()==='Model queued'||$('#modelStatus').text()==='Model execution phase'", timeout = 50L), TRUE)) {
     break
   }
   Sys.sleep(0.5)
@@ -201,7 +201,7 @@ repeat{
   }
 }
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
-Sys.sleep(5)
+expect_true(app$waitFor("$(\"#shiny-modal button[onclick*='showJobsDialog']\").is(':visible')", timeout = 20000))
 expect_error(app$findElement("#shiny-modal button[onclick*='showJobsDialog']")$click(), NA)
 Sys.sleep(2)
 expect_error(app$findElements("#jImport_output button[onclick*='discardJob']")[[1]]$click(), NA)
