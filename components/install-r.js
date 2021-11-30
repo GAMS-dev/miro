@@ -5,7 +5,7 @@ const path = require('path');
 
 async function installRPackages(rpath, apppath, libpath, mainWindow, devMode = false) {
   if (!rpath) {
-    dialog.showMessageBoxSync(mainWindow, {
+    await dialog.showMessageBox(mainWindow, {
       type: 'error',
       title: 'R not found',
       message: 'No R installation was found on your machine. Please install R or specify the location of your existing R installation in the Preferences window (F7).',
@@ -13,12 +13,12 @@ async function installRPackages(rpath, apppath, libpath, mainWindow, devMode = f
     });
     return false;
   }
-  const selection = dialog.showMessageBoxSync(mainWindow, {
+  const selection = (await dialog.showMessageBox(mainWindow, {
     type: 'question',
     title: 'Install R packages',
     message: 'Would you like to install the required R packages now?\n\nNote that before doing so, you have to install the system libraries V8 and libcurl.\nOn Debian / Ubuntu you need libcurl4-gnutls-dev and either libv8-dev or libnode-dev, on Fedora use libcurl-devel and v8-devel.',
     buttons: ['Yes', 'No'],
-  });
+  })).response;
   if (selection !== 0) {
     return false;
   }

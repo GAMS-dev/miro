@@ -1279,7 +1279,51 @@ async function searchLibPath(devMode = false) {
   if (process.platform === 'linux') {
     let libPathFiles = [];
     let libsInstalled = true;
-    if (fs.existsSync(libPath)) {
+
+    const getExistingLibDirs = async (libRoot) => {
+      let existingLibDirs = [];
+      try {
+        existingLibDirs = (await fs.promises.readdir(libRoot, { withFileTypes: true }))
+          .filter((dirent) => dirent.isDirectory())
+          .map((dirent) => path.join(libRoot, dirent.name));
+      } catch (e) {
+        if (e.code !== 'ENOENT') {
+          log.error(`Problems reading libPath. Error message: ${e.message}.`);
+          showErrorMsg({
+            type: 'error',
+            title: lang.main.ErrorUnexpectedHdr,
+            message: lang.main.ErrorInstallStartMsg,
+          });
+          return false;
+        }
+      }
+      return existingLibDirs;
+    };
+
+    const removeUnusedLibDirs = (existingLibPaths, currentLibPath) => {
+      const unusedLibDirs = existingLibPaths
+        .filter((existingLibPath) => existingLibPath !== currentLibPath);
+      if (unusedLibDirs.length > 0 && dialog.showMessageBoxSync(mainWindow, {
+        type: 'info',
+        title: lang.main.RemoveUnusedLibDirsHdr,
+        message: util.format(lang.main.RemoveUnusedLibDirsMsg, unusedLibDirs.join(',')),
+        buttons: [lang.main.RemoveUnusedLibDirsBtnYes, lang.main.RemoveUnusedLibDirsBtnNo],
+      }) === 0) {
+        unusedLibDirs.forEach((libDirPath) => {
+          fs.rm(libDirPath, { recursive: true }).then(() => {
+            log.info(`Successfully removed libDir path: ${libDirPath}`);
+          }, (error) => {
+            log.error(`Problems removing libDir path: ${libDirPath}. Error message: ${error.message}`);
+          });
+        });
+      }
+    };
+
+    const existingLibDirs = await getExistingLibDirs(path.dirname(libPath));
+
+    removeUnusedLibDirs(existingLibDirs, libPath);
+
+    if (existingLibDirs.includes(libPath)) {
       try {
         libPathFiles = await fs.promises.readdir(libPath);
         if (libPathFiles.find((item) => item === 'INSTALLING')) {
@@ -1300,7 +1344,10 @@ async function searchLibPath(devMode = false) {
         await fs.promises.mkdir(libPath, { recursive: true });
       } catch (e) {
         const libPathTmp = path.join(app.getPath('appData'), 'miro-library', libVersion);
-        if (fs.existsSync(libPathTmp)) {
+        const existingLibDirsTmp = await getExistingLibDirs(path.dirname(libPathTmp));
+
+        removeUnusedLibDirs(existingLibDirsTmp, libPathTmp);
+        if (existingLibDirsTmp.includes(libPathTmp)) {
           try {
             libPathFiles = await fs.promises.readdir(libPathTmp);
             if (libPathFiles.find((item) => item === 'INSTALLING')) {
@@ -1323,12 +1370,12 @@ async function searchLibPath(devMode = false) {
           libsInstalled = false;
         }
         if (!libsInstalled) {
-          const installType = dialog.showMessageBoxSync(mainWindow, {
+          const installType = (await dialog.showMessageBox(mainWindow, {
             type: 'info',
             title: lang.main.ErrorInstallPermHdr,
             message: `${lang.main.ErrorInstallPerm1Msg} ${libPath}${lang.main.ErrorInstallPerm2Msg} (${libPathTmp})${lang.main.ErrorInstallPerm3Msg}${miroVersion}${lang.main.ErrorInstallPerm4Msg}`,
             buttons: [lang.main.ErrorInstallPermBtnYes, lang.main.ErrorInstallPermBtnNo],
-          });
+          })).response;
           if (installType === 1) {
             app.exit(0);
             return;
