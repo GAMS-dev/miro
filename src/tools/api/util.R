@@ -9,7 +9,7 @@ scenMetaTibbleToJSON <- function(metadata) {
 }
 
 deleteMIROScenario <- function(db, uid) {
-  stdin <- file("stdin")
+  stdin <- file("stdin", blocking = FALSE)
   on.exit(close(stdin))
   metadata <- fromJSON(suppressWarnings(readLines(stdin)))
   scenOwner <- trimws(metadata[["deleteScenOwner"]])
@@ -28,7 +28,7 @@ deleteMIROScenario <- function(db, uid) {
 
 downloadMIROScenario <- function(uid, excelConfig = NULL) {
   xlsio <- XlsIO$new()
-  stdin <- file("stdin")
+  stdin <- file("stdin", blocking = FALSE)
   on.exit(close(stdin))
   metadata <- fromJSON(suppressWarnings(readLines(stdin)))
   exportFileType <- metadata[["downloadFileType"]]

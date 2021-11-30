@@ -1238,7 +1238,7 @@ if (!is.null(errMsg)) {
       stdin <- NULL
       scenImportConfig <- tryCatch(
         {
-          stdin <- file("stdin")
+          stdin <- file("stdin", blocking = FALSE)
           fromJSON(suppressWarnings(readLines(stdin)))
         },
         error = function(e) {
