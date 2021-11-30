@@ -16,7 +16,7 @@ async function installRPackages(rpath, apppath, libpath, mainWindow, devMode = f
   const selection = (await dialog.showMessageBox(mainWindow, {
     type: 'question',
     title: 'Install R packages',
-    message: 'Would you like to install the required R packages now?\n\nNote that before doing so, you have to install the system libraries V8 and libcurl.\nOn Debian / Ubuntu you need libcurl4-gnutls-dev and either libv8-dev or libnode-dev, on Fedora use libcurl-devel and v8-devel.',
+    message: 'Would you like to install the required R packages now?\n\nNote that before doing so, you have to install the system libraries libcurl and libpng.\nOn Debian / Ubuntu you need libcurl4-gnutls-dev and libpng-dev, on Fedora use libcurl-devel and libpng-devel.',
     buttons: ['Yes', 'No'],
   })).response;
   if (selection !== 0) {
@@ -30,6 +30,7 @@ async function installRPackages(rpath, apppath, libpath, mainWindow, devMode = f
       env: {
         LIB_PATH: libpath,
         SCRIPTS_PATH: scriptsPath,
+        DOWNLOAD_STATIC_LIBV8: 'true',
       },
       all: !devMode,
     },
