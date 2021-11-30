@@ -108,7 +108,7 @@ app$setInputs(remoteCredReg = FALSE)
 app$setInputs(remoteCredRemember = TRUE)
 Sys.sleep(1)
 app$findElement("#shiny-modal .bt-gms-confirm")$click()
-expect_false(app$waitFor("$('#shiny-modal .btn-default').is(':visible');", timeout = 5000))
+expect_true(app$waitFor("$('#shiny-modal .btn-default').is(':hidden');", timeout = 5000))
 
 # solve 3 jobs synchronous, interrupt first one, stop app before last one finishes
 app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
