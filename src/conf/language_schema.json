@@ -4113,6 +4113,17 @@
               },
               "minProperties": 2
             },
+            "customCss": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 1
+            },
             "pageTitle": {
               "type": "object",
               "additionalProperties": false,
@@ -4631,7 +4642,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 38
+          "minProperties": 39
         },
         "tables": {
           "type": "object",

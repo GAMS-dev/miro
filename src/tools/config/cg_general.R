@@ -120,6 +120,9 @@ observeEvent(input$general_pageTitle, {
 observeEvent(input$general_theme, {
   rv$generalConfig$theme <<- input$general_theme
 })
+observeEvent(input$general_customCss, {
+  rv$generalConfig$customCss <<- input$general_customCss
+})
 observeEvent(input$general_meta, {
   rv$generalConfig$excelIncludeMeta <<- input$general_meta
 })

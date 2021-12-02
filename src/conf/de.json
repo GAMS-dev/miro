@@ -1057,6 +1057,9 @@
         "label": "Zu verwendendes Farbschema",
         "choices": ["System/Browser Einstellungen", "Heller Modus", "Dunkler Modus"]
       },
+      "customCss": {
+        "label": "Eine benutzerdefinierte CSS-Datei einbinden? Die Datei muss 'custom.css' heißen und sich im Verzeichnis static_<modelName> befinden."
+      },
       "pageTitle":{
         "label": "Titel der Applikation (im Browser Tab sichtbar)"
       },

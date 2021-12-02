@@ -163,6 +163,11 @@
             "dark"
          ]
       },
+      "customCss": {
+        "description": "Should a custom css file be included? This file must be named custom.css and must be located in the static_<modelname> directory.",
+        "type":"boolean",
+        "default":false
+      },
       "fileExchange":{
         "description":"Method used to exchange files with GAMS",
         "type":"string",

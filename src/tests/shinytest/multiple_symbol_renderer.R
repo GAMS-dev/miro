@@ -8,6 +8,8 @@ app$setInputs(btLoadScenConfirm = "click")
 Sys.sleep(2L)
 app$setInputs(sidebarMenuId = "outputData")
 Sys.sleep(2)
+# check that custom styles were applied
+expect_true(app$waitFor("$('#tab_1_1-custom-path').css('color')==='rgb(255, 192, 203)';", timeout = 50L))
 customRendererPath <- app$getAllValues()$output[["tab_1_1-custom-path"]]
 expect_true(file.exists(file.path(customRendererPath, "model_transport_customRenderer_trnsport_custom.R")))
 flowData <- jsonlite::fromJSON(app$getAllValues()$output[["tab_1_1-custom-trnsport"]])$x$calls$args[[4]][[1]]

@@ -309,6 +309,29 @@
                       <p></p>
                     </div>
                     <h6
+                      id="custom-css"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Include custom
+                      CSS
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        Allows you to include a custom
+                        <a
+                          href="https://en.wikipedia.org/wiki/CSS"
+                          target="_blank"
+                          >CSS</a
+                        >
+                        file in your MIRO app. The file must be named
+                        <i>custom.css</i> and located in the
+                        <i>static_&lt;modelname&gt;</i> directory.
+                      </p>
+                      <p></p>
+                    </div>
+                    <h6
                       id="show-log"
                       class="block-title"
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"

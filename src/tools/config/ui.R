@@ -764,6 +764,11 @@ font-size: 12px;
                           selected = if (length(configJSON$theme)) configJSON$theme else config$theme
                         )
                       ),
+                      tags$div(
+                        checkboxInput_MIRO("general_customCss", lang$adminMode$general$customCss$label,
+                          value = identical(configJSON$customCss, TRUE)
+                        )
+                      ),
                       tags$label(class = "cb-label", "for" = "general_act_log", lang$adminMode$general$actLog$label),
                       tags$div(
                         tags$label(

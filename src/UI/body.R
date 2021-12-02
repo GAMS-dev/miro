@@ -1021,23 +1021,28 @@ if (buildUI) {
         tags$meta(name = "msapplication-TileColor", content = "#ff9900"),
         # styles that depend on data from config JSON file
         # Logo ratio should be 4,6 (width/height)
-        tags$style(HTML(
-          paste0(
-            '
+        tags$style(
+          HTML(
+            paste0(
+              '
 .main-header .logo {
   background-image: url("',
-            if (!identical(config$UILogo, "gams_logo.png") &&
-              staticDirExists) {
-              "static_"
-            }, modelName, "/", config$UILogo, '") ',
-            if (!identical(config$UILogo, "gams_logo.png") &&
-              staticDirExists) {
-              "!important;
+              if (!identical(config$UILogo, "gams_logo.png") &&
+                staticDirExists) {
+                "static_"
+              }, modelName, "/", config$UILogo, '") ',
+              if (!identical(config$UILogo, "gams_logo.png") &&
+                staticDirExists) {
+                "!important;
   background-size: contain;
 }"
-            }
+              }
+            )
           )
-        ))
+        ),
+        if (staticDirExists && identical(config$customCss, TRUE)) {
+          tags$link(type = "text/css", rel = "stylesheet", href = paste0("static_", modelName, "/custom.css"))
+        }
       ),
       HTML(paste0(
         '<!-- Creates modal dialog for confirm messages -->

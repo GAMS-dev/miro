@@ -1057,6 +1057,9 @@
         "label": "选择颜色主题",
         "choices": ["使用系统或浏览器的设置", "浅色模式", "深色模式"]
       },
+      "customCss": {
+        "label": "包含自定义 CSS 文件？ 该文件必须命名为“custom.css”并位于 static_<modelname> 目录中。"
+      },
       "pageTitle":{
         "label": "应用程序标题（在浏览器选项卡中可见）"
       },
