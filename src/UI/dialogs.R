@@ -1440,8 +1440,7 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
                     style = "display:none;",
                     class = "batch-load-content batch-load-analysis-footer",
                     actionButton("btRunHcubeScript", lang$nav$dialogBatchLoad$runScriptButton,
-                      class = "bt-highlight-1 bt-gms-confirm",
-                      style = "display:none;"
+                      class = "bt-highlight-1 bt-gms-confirm"
                     )
                   ),
                   downloadButton("btDownloadBatchLoadScript",
