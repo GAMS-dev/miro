@@ -487,6 +487,8 @@ BatchLoader <- R6Class("BatchLoader",
     groupedSids = list(),
     scenIdNameMap = character(),
     buildQuery = function(subsetList, colNames, limit) {
+      nonEmptySubsetConditions <- vapply(subsetList, length, integer(1L), USE.NAMES = FALSE) > 0L
+      subsetList <- subsetList[nonEmptySubsetConditions]
       escapedMetaTableName <- dbQuoteIdentifier(
         private$conn,
         dbSchema$getDbTableName("_scenMeta")
@@ -519,7 +521,7 @@ BatchLoader <- R6Class("BatchLoader",
         "._scode >= ", as.integer(SCODEMAP[["scen"]]),
         " AND (", private$db$getAccessPermSubQuery("_accessr"), ")"
       )
-      if (length(subsetList) > 1L || length(subsetList[[1L]])) {
+      if (length(subsetList) > 0L) {
         subsetRows <- paste(
           subsetRows, "AND (",
           private$db$buildRowSubsetSubquery(
