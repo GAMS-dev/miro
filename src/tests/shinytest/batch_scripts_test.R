@@ -1,0 +1,30 @@
+app <- ShinyDriver$new("../../", loadTimeout = 20000)
+app$snapshotInit("batch_scripts_test")
+
+app$snapshot(items = list(output = "outputDataTitle"), screenshot = TRUE)
+
+app$setInputs(btImport = "click")
+expect_true(app$waitFor("$('#tb_importData').is(':visible');", timeout = 2000))
+app$setInputs(tb_importData = "tb_importData_local")
+app$uploadFile(localInput = paste0("../data/transport2.gdx"))
+app$setInputs(btImportLocal = "click")
+app$setInputs(btSaveAs = "click")
+Sys.sleep(1)
+app$setInputs(scenName = "New Scenario2")
+Sys.sleep(1)
+app$findElement("#shiny-modal .bt-gms-confirm")$click()
+Sys.sleep(1)
+app$findElement("a[data-value='loadResults']")$click()
+Sys.sleep(0.5)
+app$setInputs(btSendQuery = "click")
+app$setInputs(batchLoadAll = "click")
+expect_true(app$waitFor("$('#btAnalysisConfig').is(':visible');", timeout = 2000))
+app$setInputs(btAnalysisConfig = "click")
+expect_identical(getSelectizeAliases(app, "#selHcubeAnalysisScript"), c("bla123"))
+expect_true(app$waitFor("$('#btRunHcubeScript').is(':visible');", timeout = 2000))
+app$setInputs(btRunHcubeScript = "click")
+expect_true(app$waitFor("$('#scriptOutput_hcube .script-output').contents().find('body').html().replace(/\\\\s/g,'')==='<h1>Totaltransportationcost:NA</h1><p><strong>Totalfreightcost:189.00</strong></p>'",
+  timeout = 10000
+))
+
+app$stop()

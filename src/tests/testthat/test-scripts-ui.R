@@ -49,12 +49,26 @@ configJSON$scripts <- list(base = list(
     outputFile = "test.md",
     markdown = TRUE
   )
+), hcube = list(
+  list(
+    title = "bla123", id = "batch1", command = "gams",
+    args = c("script_batch.gms", licenseFileArg),
+    outputFile = "test.md",
+    markdown = TRUE
+  )
 ))
 jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
 
 test_that(
   "Analysis scripts in Base Mode work",
   expect_pass(testApp(file.path(testDir, ".."), "base_mode_scripts_test",
+    compareImages = FALSE
+  ))
+)
+
+test_that(
+  "Batch analysis scripts work",
+  expect_pass(testApp(file.path(testDir, ".."), "batch_scripts_test",
     compareImages = FALSE
   ))
 )
