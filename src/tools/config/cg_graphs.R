@@ -607,10 +607,10 @@ observeEvent(input$localInput, {
   errMsg <- NULL
   if (identical(fileType, "gdx") && useGdx) {
     loadMode <- "gdx"
-    datasetsToFetch <- c(modelInTabularData, scalarsFileName)
+    datasetsToFetch <- modelInTabularData
   } else if (fileType %in% xlsio$getValidExtensions()) {
     loadMode <- "xls"
-    datasetsToFetch <- c(modelInTabularData, scalarsFileName)
+    datasetsToFetch <- modelInTabularData
   } else {
     errMsg <- lang$errMsg$GAMSInput$desc
   }
@@ -668,7 +668,7 @@ observeEvent(input$localInput, {
           modelOutputData[[scalarsOutName]]
         )
         if (length(config$hiddenOutputScalars)) {
-          rowsToFiler <- !modelOutputData[[scalarsOutName]] %in% config$hiddenOutputScalars
+          rowsToFiler <- !modelOutputData[[scalarsOutName]][[1]] %in% config$hiddenOutputScalars
           modelOutputData[[scalarsOutName]] <<- modelOutputData[[scalarsOutName]][rowsToFiler, ]
         }
       }
