@@ -806,19 +806,11 @@ animation: none !important;
   @media only screen and (max-width: 767px){
     left:0!important;
     border-width: 1px;
-  }
-  @media only screen and (min-width: 768px){
-    .responsiveDark({
-      background-color: @scrollbar !important;
-    },
-    {
-      background-color: @scrollbar-dark !important;
-    });
+    z-index: 11!important;
   }
 }
 .dygraph-legend > span {
   padding-right:2px;
-  display: block;
   .responsiveDark({
     background-color: @modal-bg !important;
     color: @text-color;
@@ -830,10 +822,6 @@ animation: none !important;
   @media only screen and (max-width: 767px){
     display: unset;
   }
-  @media only screen and (min-width: 768px){
-    margin-left:-5px;
-    padding-left:5px;
-  }
 }
 .dygraph-legend > span.highlight{
   .responsiveDark({
@@ -844,6 +832,8 @@ animation: none !important;
     border-left: 2px solid @table-hover;
     background-color:@scrollbar-dark!important
   });
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
   padding-left:3px !important;
 }
 .dygraph-legend > span > span{
