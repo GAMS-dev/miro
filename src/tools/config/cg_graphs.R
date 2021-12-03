@@ -5050,9 +5050,9 @@ observeEvent(rv$saveGraphConfirm, {
       rendererFilePathTmp <- file.path(customRendererDir, paste0(customRendererName, ".R"))
       if (tryCatch(
         {
-          con <- file(rendererFilePathTmp, open = "w", encoding = "UTF-8")
+          con <- file(rendererFilePathTmp, open = "wb", encoding = "UTF-8")
           readr::write_file(
-            x = enc2utf8(paste0(
+            enc2utf8(paste0(
               customOutputFunctionName(),
               " <- function(id, height = NULL, options = NULL, path = NULL){\n    ns <- NS(id)\n",
               isolate(input$customOutputFunction),
@@ -5062,7 +5062,7 @@ observeEvent(rv$saveGraphConfirm, {
               input$customRenderFunction,
               "\n}\n"
             )),
-            path = con
+            con
           )
           FALSE
         },
