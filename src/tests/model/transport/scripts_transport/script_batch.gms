@@ -4,9 +4,9 @@ scalar z_sum, f_sum;
 $onEmbeddedCode Python:
 import os
 with open('hcube_file_names.txt', 'r') as f:
-   files = f.readlines()
-   file_names = [os.path.splitext(x)[0] for x in files]
-   os.environ["GDX_FILENAMES"]='"' + '" "'.join(files) + '"'
+   files = f.read().splitlines()
+file_names = [os.path.splitext(x)[0] for x in files]
+os.environ["GDX_FILENAMES"]='"' + '" "'.join(files) + '"'
 gams.set("fil", file_names)
 $offEmbeddedCode fil
 
