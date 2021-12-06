@@ -367,6 +367,12 @@ local({
     paste0('com.gamsmiroadmin.version="', MIROVersion, '"'), dockerImageAdmin
   )
   writeLines(dockerImageAdmin, "./server/admin/Dockerfile")
+  dockerImageAuth <- readLines("./server/auth/Dockerfile", warn = FALSE)
+  dockerImageAuth <- gsub(
+    'com\\.gamsmiroauth\\.version="[^"]+"',
+    paste0('com.gamsmiroauth.version="', MIROVersion, '"'), dockerImageAuth
+  )
+  writeLines(dockerImageAuth, "./server/auth/Dockerfile")
   aboutDialog <- readLines("./renderer/about.js", warn = FALSE)
   aboutDialog <- gsub("__HASH__",
     substr(Sys.getenv("GIT_COMMIT", "__HASH__"), 1, 8), aboutDialog,
