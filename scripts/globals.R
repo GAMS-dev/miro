@@ -6,16 +6,16 @@ CRANMirrors <- c(
 )
 
 RLibPath <- Sys.getenv("LIB_PATH")
-packageVersionMap <- list(c("data.table", "1.14.2"), c("cpp11", "0.4.1"), c("backports",
+packageVersionMap <- list(c("data.table", "1.14.2"), c("cpp11", "0.4.2"), c("backports",
 "1.4.0"), c("assertthat", "0.2.1"), c("crayon", "1.4.2"), c("glue",
-"1.5.0"), c("fansi", "0.5.0"), c("cli", "3.1.0"), c("utf8", "1.2.2"
+"1.5.1"), c("fansi", "0.5.0"), c("cli", "3.1.0"), c("utf8", "1.2.2"
 ), c("Rcpp", "1.0.7"), c("R6", "2.5.1"), c("BH", "1.75.0-0"),
     c("magrittr", "2.0.1"), c("rlang", "0.4.12"), c("later",
     "1.3.0"), c("promises", "1.2.0.1"), c("httpuv", "1.6.3"),
-    c("mime", "0.12"), "jsonlite", c("digest", "0.6.28"), c("sourcetools",
+    c("mime", "0.12"), "jsonlite", c("digest", "0.6.29"), c("sourcetools",
     "0.1.7"), c("xtable", "1.8-4"), c("fastmap", "1.1.0"), c("curl",
     "4.3.2"), c("V8", "3.5.0"), c("base64enc", "0.1-3"), c("htmltools",
-    "0.5.2"), c("withr", "2.4.2"), c("leaflet.providers", "1.9.0"
+    "0.5.2"), c("withr", "2.4.3"), c("leaflet.providers", "1.9.0"
     ), c("commonmark", "1.7"), "shiny", c("shinyAce", "0.4.1"
     ), c("colorspace", "2.0-2"), c("purrr", "0.3.4"), c("yaml",
     "2.2.1"), c("labeling", "0.4.2"), c("munsell", "0.5.0"),
@@ -29,9 +29,9 @@ packageVersionMap <- list(c("data.table", "1.14.2"), c("cpp11", "0.4.1"), c("bac
     "1.1.1"), "DT", "gdxrrwMIRO", "leaflet", c("pillar", "1.6.4"
     ), c("tibble", "3.1.6"), c("generics", "0.1.1"), c("lubridate",
     "1.8.0"), c("dplyr", "1.0.7"), c("sys", "3.4"), c("askpass",
-    "1.1"), c("prettyunits", "1.1.1"), c("stringi", "1.7.5"),
+    "1.1"), c("prettyunits", "1.1.1"), c("stringi", "1.7.6"),
     c("DBI", "1.1.1"), c("blob", "1.2.2"), c("hms", "1.1.1"),
-    c("tidyr", "1.1.4"), c("cachem", "1.0.6"), c("memoise", "2.0.0"
+    c("tidyr", "1.1.4"), c("cachem", "1.0.6"), c("memoise", "2.0.1"
     ), "httr", "plotly", "shinydashboard", "timevis", c("rematch",
     "1.0.1"), c("formatR", "1.11"), c("ps", "1.6.0"), c("clipr",
     "0.7.1"), c("cellranger", "1.1.0"), c("progress", "1.2.2"
@@ -42,9 +42,9 @@ packageVersionMap <- list(c("data.table", "1.14.2"), c("cpp11", "0.4.1"), c("bac
     ), c("zip", "2.2.0"), c("leaflet.minicharts", "0.6.0"), c("xts",
     "0.12.1"), c("dygraphs", "1.1.1.6"), c("parallelly", "1.29.0"
     ), c("future", "1.23.0"), c("bit", "4.0.4"), c("bit64", "4.0.5"
-    ), c("tzdb", "0.2.0"), c("vroom", "1.5.6"), c("readr", "2.1.0"
+    ), c("tzdb", "0.2.0"), c("vroom", "1.5.7"), c("readr", "2.1.1"
     ), "miro.util", "rhandsontable", "sortable", "chartjs", c("RSQLite",
-    "2.2.8"))
+    "2.2.9"))
 
 isMac <- Sys.info()["sysname"] == "Darwin" || grepl("^darwin", R.version$os)
 isWindows <- .Platform$OS.type == "windows"
