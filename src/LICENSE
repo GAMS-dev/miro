@@ -682,7 +682,7 @@ Section 8 -- Interpretation.
         - crosstalk, Copyright (c) 2016 RStudio, Inc.
         - curl, Copyright (c) 2017 Jeroen Ooms; RStudio
         - bindrcpp, Copyright (c) 2016 RStudio
-        - glue, Copyright (c) 2016 Jim Hester
+        - glue, Copyright (c) 2021 glue authors
         - pkgconfig, Copyright (c) 2014-2017 Gábor Csárdi
         - tibble, Copyright (c) 2013-2017 RStudio
         - cellranger, Copyright (c) 2018 RStudio
@@ -724,16 +724,18 @@ Section 8 -- Interpretation.
         - showdown, Copyright (c) 2018 ShowdownJS
         - tzdb, Copyright (c) 2021 Davis Vaughan [aut, cre], Howard Hinnant [cph] (Author of the included date library), RStudio [cph, fnd]
         - vroom, Copyright (c) 2021
-          Jim Hester [aut, cre],
+          Jim Hester [aut],
           Hadley Wickham [aut],
+          Jennifer Bryan [aut, cre],
           https://github.com/mandreyel/ [cph] (mio library),
           Jukka Jylänki [cph] (grisu3 implementation),
           Mikkel Jørgensen [cph] (grisu3 implementation),
           RStudio [cph, fnd]
         - readr, Copyright (c) 2021
           Hadley Wickham [aut],
-          Jim Hester [aut, cre],
+          Jim Hester [aut],
           Romain Francois [ctb],
+          Jennifer Bryan ORCID [aut, cre],
           RStudio [cph, fnd],
           https://github.com/mandreyel/ [cph] (mio library),
           Jukka Jylänki [ctb, cph] (grisu3 implementation),
@@ -1063,10 +1065,7 @@ Library.
             Matthieu Stigler [ctb], Robert Castelo [ctb], Seth Falcon [ctb],
             Stefan Edwards [ctb], Sven Garbade [ctb], Uwe Ligges [ctb]
         - digest [expanded from: GPL (≥ 2)], Copyright (c)
-            Dirk Eddelbuettel with contributions by Antoine Lucas, Jarek Tuszynski,
-            Henrik Bengtsson, Simon Urbanek, Mario Frasca, Bryan Lewis, Murray Stokely,
-            Hannes Muehleisen, Duncan Murdoch, Jim Hester, Wush Wu, Qiang Kou,
-            Thierry Onkelinx, Michel Lang, Viliam Simko, Kurt Hornik and Radford Neal
+            Dirk Eddelbuettel with contributions by Antoine Lucas, Jarek Tuszynski, Henrik Bengtsson, Simon Urbanek, Mario Frasca, Bryan Lewis, Murray Stokely, Hannes Muehleisen, Duncan Murdoch, Jim Hester, Wush Wu, Qiang Kou, Thierry Onkelinx, Michel Lang, Viliam Simko, Kurt Hornik, Radford Neal, Kendon Bell, Matthew de Queljoe, Ion Suruceanu, Bill Denney, Dirk Schumacher, and Winston Chang.
         - htmltools [expanded from: GPL (≥ 2)], Copyright (c) RStudio, Inc.
         - later [expanded from: GPL (≥ 2)], Copyright (c)
             Joe Cheng [aut, cre], RStudio [cph],
@@ -1117,7 +1116,7 @@ Library.
         - bit64, Copyright (c) Jens Oehlschlägel [aut, cre], Leonardo Silvestri [ctb]
         - vctrs, Copyright (c)  Hadley Wickham [aut, cre], Lionel Henry [aut], Davis Vaughan [aut], RStudio [cph]
         - ellipsis, Copyright (c)  Hadley Wickham [aut, cre], RStudio [cph]
-        - withr, Copyright (c) Jim Hester [aut, cre], Kirill Müller [aut], Kevin Ushey [aut], Hadley Wickham [aut], Winston Chang [aut], Richard Cotton [ctb], RStudio [cph]
+        - withr, Jim Hester [aut], Lionel Henry [aut, cre], Kirill Müller [aut], Kevin Ushey [aut], Hadley Wickham [aut], Winston Chang [aut], Jennifer Bryan [ctb], Richard Cotton [ctb], RStudio [cph]
         - codetools, Copyright (c) Luke Tierney <luke-tierney at uiowa.edu>
         - gdxrrwMIRO [expanded from: EPL2 with Secondary License GPL-2.0 or greater], Copyright (c) GAMS Development Corp. [aut, cre, cph], Steve Dirkse [aut], Michael Ferris [aut], Rishabh Jain [aut], Frederik Proske [ctb]
 -----------------------------------------------------------------------------
