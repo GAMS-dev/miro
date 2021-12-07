@@ -11,12 +11,20 @@ services:
     command: /bin/true
   auth:
     image: gams/miro-auth:latest
+    ports:
+      - 8081:1234
     environment:
       PORT: 1234
       ENGINE_URL: ${GMS_MIRO_ENGINE_HOST}
       ENGINE_NS: ${GMS_MIRO_ENGINE_NS}
+      GMS_MIRO_DATABASE: gamsmiro
+      GMS_MIRO_DATABASE_USER: GMSMASTER
+      GMS_MIRO_DATABASE_PWD:  ${GMS_MIRO_DATABASE_PWD}
       SESSION_TIMEOUT: 172800
     restart: always
+    volumes:
+      - ./data:/home/miro/admin/data
+      - ./models:/home/miro/admin/models
     networks:
       - gamsmiro-network
   dockerproxy:
