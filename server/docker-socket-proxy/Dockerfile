@@ -1,5 +1,6 @@
-FROM haproxy:2.5.0-alpine3.14
+FROM haproxy:2.5.0-alpine3.15
 
+USER root
 EXPOSE 2375
 ENV ALLOW_RESTARTS=0 \
     AUTH=0 \
