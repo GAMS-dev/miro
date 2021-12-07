@@ -17,7 +17,7 @@ else:
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
 
-app = FastAPI(root_path=settings.script_name)
+app = FastAPI()
 
 public_api = FastAPI(
     title="MIRO Server API",
@@ -40,7 +40,7 @@ if settings_yml:
     public_api.include_router(apps.router)
     public_api.include_router(scenarios.router)
     use_route_names_as_operation_ids(public_api)
-    app.mount("/api", public_api)
+    app.mount(f"{settings.script_name}/api", public_api)
 else:
     logger.warning(
         "MIRO Server REST API could not be enabled because an outdated docker-compose file was found. Please download the latest docker-compose file to activate the MIRO Server REST API.")
