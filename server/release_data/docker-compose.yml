@@ -33,7 +33,7 @@ services:
     networks:
       - gamsmiro-internal-network
   db:
-    image: postgres:12.1-alpine
+    image: postgres:12.9-alpine
     restart: always
     environment:
       POSTGRES_USER: GMSMASTER
