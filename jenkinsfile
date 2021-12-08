@@ -282,6 +282,8 @@ pipeline {
                                         ## build MIRO server images
                                         pushd server > /dev/null
                                             python3 miro_server.py push
+                                            docker tag gams/miro-ui registry.gams.com/fproske/gmswebui/miro-ui:latest
+                                            docker push registry.gams.com/fproske/gmswebui/miro-ui:latest
                                         popd > /dev/null
                                     '''
                                 }
