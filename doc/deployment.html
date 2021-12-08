@@ -210,12 +210,10 @@ inc/inc2.inc
                     </div>
                     <p>
                       In GAMS Studio, select <i>Assembly and Deploy</i>. In the
-                      <i>Deploy Configuration</i> section specify which MIRO
-                      modes you want to support in your MIRO app (Base
-                      Mode/Hypercube Mode or both). If the Base Mode is
-                      selected, you also need to decide how your model shall be
-                      executed (<i>execution environment</i>). There are three
-                      options:
+                      <i>Deploy Configuration</i> section, you need to decide
+                      how your model shall be executed (<i
+                        >execution environment</i
+                      >). There are three options:
                     </p>
                     <ol>
                       <li>
@@ -276,27 +274,6 @@ inc/inc2.inc
                         option unless you know what you are doing!
                       </li>
                     </ol>
-                    <div class="callout-block callout-warning">
-                      <div class="icon-holder">
-                        <i class="fas fa-info-circle"></i>
-                      </div>
-                      <!--//icon-holder-->
-                      <div class="content">
-                        <b class="callout-title">Note</b>
-                        <p>
-                          With MIRO version 2.1, the Hypercube Mode is
-                          deprecated and and no longer exists as a separate
-                          module. You can now submit Hypercube jobs from the
-                          Base Mode if you are using GAMS MIRO with a
-                          <a href="./server.html">GAMS Engine backend</a> (GAMS
-                          MIRO Server or GAMS MIRO Desktop - boosted by GAMS
-                          Engine). You can find the most recent documentation
-                          <a href="./hc-module.html">here</a>.
-                        </p>
-                      </div>
-                      <!--//content-->
-                    </div>
-                    <!--//callout-block-->
                     <div class="callout-block callout-warning">
                       <div class="icon-holder">
                         <i class="fas fa-info-circle"></i>
@@ -475,9 +452,8 @@ inc/inc2.inc
                           <a href="./start.html#start-miro">here</a> for more
                           information on how to set these environment variables
                           on your operating system). The environment variables
-                          used to control what execution mode to choose and what
-                          MIRO modes to export are listed in the following
-                          tables:
+                          used to control what execution mode to choose are
+                          listed in the following table:
                         </p>
                         <div class="table-responsive">
                           <table class="table table-striped">
@@ -516,37 +492,6 @@ inc/inc2.inc
                                   <span class="code"
                                     >MIRO_BUILD_ARCHIVE=false</span
                                   >
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                        <!--//table-responsive-->
-                        <div class="table-responsive">
-                          <table class="table table-striped">
-                            <thead>
-                              <tr>
-                                <th style="width: 35%">MIRO mode to export</th>
-                                <th>Environment variables</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td>Base Mode</td>
-                                <td>
-                                  <span class="code">MIRO_MODE=base</span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Hypercube Mode</td>
-                                <td>
-                                  <span class="code">MIRO_MODE=hcube</span>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Base Mode and Hypercube Mode</td>
-                                <td>
-                                  <span class="code">MIRO_MODE=full</span>
                                 </td>
                               </tr>
                             </tbody>
@@ -626,35 +571,8 @@ inc/inc2.inc
                       Once you are happy with the setup, click on
                       <i>Add app</i>. Your app is now installed in your library
                       and you can launch it by clicking the
-                      <i>Launch</i> button. In case your app supports both the
-                      Base Mode and the Hypercube Mode, the <i>Launch</i> button
-                      turns into a dropdown menu that lets you select which mode
-                      to launch.
+                      <i>Launch</i> button.
                     </p>
-                    <div class="section-block" style="text-align: center">
-                      <img
-                        class="img-fluid"
-                        style="max-height: 100pt"
-                        src="assets/images/deployment/launch-mode.png"
-                        alt="Launch Base or Hypercube Mode"
-                      />
-                    </div>
-                    <div class="callout-block callout-warning">
-                      <div class="icon-holder">
-                        <i class="fas fa-info-circle"></i>
-                      </div>
-                      <!--//icon-holder-->
-                      <div class="content">
-                        <b class="callout-title">Note</b>
-                        <p>
-                          It is not possible to start MIRO applications in
-                          development mode (via GAMS Studio or command line)
-                          when the MIRO library is open!
-                        </p>
-                      </div>
-                      <!--//content-->
-                    </div>
-                    <!--//callout-block-->
                   </div>
                   <!--//section-block-->
                   <div class="section-block" id="sbs-customize-app">
@@ -757,10 +675,9 @@ inc/inc2.inc
                             <td><b>Paths</b></td>
                             <td>MIRO app path</td>
                             <td>
-                              Path to the working directory of GAMS MIRO. There
-                              deployed apps are stored, Hypercube Jobs are
-                              executed and log files are written. On Windows the
-                              default location is
+                              Path to the working directory of GAMS MIRO.
+                              Deployed apps, scenario data and log files are
+                              stored here. On Windows the default location is
                               <span class="code"
                                 >C:\Users\&lt;username&gt;\.miro</span
                               >
