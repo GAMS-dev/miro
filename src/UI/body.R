@@ -1006,7 +1006,7 @@ if (buildUI) {
         } else {
           tags$link(rel = "manifest", href = "manifest.json", crossorigin = "use-credentials")
         },
-        if (staticDirExists && file.exists(file.path(currentModelDir, paste0("static_", modelName), "apple-touch-icon.png"))) {
+        if (!isShinyProxy && staticDirExists && file.exists(file.path(currentModelDir, paste0("static_", modelName), "apple-touch-icon.png"))) {
           tags$link(rel = "apple-touch-icon", sizes = "180x180", href = paste0("static_", modelName, "/apple-touch-icon.png"))
         } else {
           tags$link(rel = "apple-touch-icon", sizes = "180x180", href = paste0(staticDir, "apple-touch-icon.png"))
