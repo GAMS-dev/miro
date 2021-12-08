@@ -997,9 +997,9 @@ if (buildUI) {
         tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
         tags$script(src = "miro.js", type = "application/javascript"),
         if (staticDirExists && file.exists(file.path(currentModelDir, paste0("static_", modelName), "manifest.json"))) {
-          tags$link(rel = "manifest", href = paste0("static_", modelName, "/manifest.json"))
+          tags$link(rel = "manifest", href = paste0("static_", modelName, "/manifest.json"), crossorigin = "use-credentials")
         } else {
-          tags$link(rel = "manifest", href = "manifest.json")
+          tags$link(rel = "manifest", href = "manifest.json", crossorigin = "use-credentials")
         },
         if (staticDirExists && file.exists(file.path(currentModelDir, paste0("static_", modelName), "apple-touch-icon.png"))) {
           tags$link(rel = "apple-touch-icon", sizes = "180x180", href = paste0("static_", modelName, "/apple-touch-icon.png"))
