@@ -4888,11 +4888,11 @@ observe(
             )
             additionalDataIds[is.na(additionalDataIds)] <- match(
               rv$graphConfig$additionalData[is.na(additionalDataIds)],
-              inputDsNames
+              names(modelIn)
             ) + length(modelOut)
             additionalDataIds <- c(activeSymbol$id - length(modelIn), additionalDataIds)
             data <- c(modelOutputData, modelInputData)[additionalDataIds]
-            names(data) <- c(names(modelOut), inputDsNames)[additionalDataIds]
+            names(data) <- c(names(modelOut), names(modelIn))[additionalDataIds]
           }
           local({
             customRendererFunction <- eval(parse(text = isolate(paste0(
