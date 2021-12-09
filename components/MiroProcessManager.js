@@ -217,8 +217,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       },
     );
     if (onMIROError != null) {
-      // eslint-disable-next-line no-restricted-syntax
-      for await (const data of this.miroProcesses[internalPid].stderr) {
+      this.miroProcesses[internalPid].stderr.on('data', (data) => {
         const msg = data.toString().trim();
         if (msg.startsWith('merr:::')) {
           log.debug(`MIRO error message received: ${msg}`);
@@ -227,7 +226,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
         } else {
           process.stderr.write(msg);
         }
-      }
+      });
     }
     this.miroProcesses[internalPid].catch(async (e) => {
       log.debug(`Process of MIRO app with pid: ${internalPid} stopped.`);
