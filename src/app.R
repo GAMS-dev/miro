@@ -1826,7 +1826,7 @@ if (!is.null(errMsg)) {
         metadata = list(
           uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
           modelId = remoteModelId,
-          maxSizeToRead = 5000,
+          maxSizeToRead = 100000,
           modelDataFiles = c(
             if (identical(config$fileExchange, "gdx")) {
               c(MIROGdxInName, MIROGdxOutName)
