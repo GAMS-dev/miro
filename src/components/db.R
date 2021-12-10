@@ -860,7 +860,7 @@ Db <- R6Class("Db",
 
       # BEGIN error checks
       if (!hasContent(dataset)) {
-        flog.debug("Db: Nothing was written to table '%s' as no data was provided.", tableNameDb)
+        flog.debug("Db: Nothing was written to table '%s' as no data was provided.", dbSchema$getDbTableName(tableName))
         return(invisible(self))
       }
       stopifnot(inherits(dataset, "data.frame") || is.null(dataset))

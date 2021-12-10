@@ -1,0 +1,21 @@
+{
+	"modelTitle":	"G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m",
+	"inputSymbols":	{
+	},
+	"outputSymbols":	{
+		"dat":	{
+			"alias":	"dat",
+			"symtype":	"parameter",
+			"headers":	{
+				"a":	{
+					"type":	"string",
+					"alias":	"a"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"dat"
+				}
+			}
+		}
+	}
+}
