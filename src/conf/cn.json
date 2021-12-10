@@ -418,6 +418,7 @@
       "title": "提交作业",
       "desc": "提交一个要异步解决的新作业。",
       "jobName": "为当前作业指定名称（可选）",
+      "workerInstance": "选择在其上运行作业的实例",
       "descWait": "正在提交作业，请等待",
       "badName": "请指定一个有效的作业名称",
       "cancelButton":"取消",

@@ -1089,7 +1089,7 @@ showHashExistsDialog <- function(scenData, uid) {
     fade = TRUE, easyClose = TRUE
   ))
 }
-showJobSubmissionDialog <- function(jobName = "", hashExistsData = NULL) {
+showJobSubmissionDialog <- function(jobName = "", hashExistsData = NULL, instanceInfo = NULL) {
   if (length(hashExistsData) && nrow(hashExistsData)) {
     if (length(hashExistsData[["_stag"]]) && !is.na(hashExistsData[["_stag"]]) &&
       nchar(hashExistsData[["_stag"]])) {
@@ -1161,6 +1161,24 @@ showJobSubmissionDialog <- function(jobName = "", hashExistsData = NULL) {
           width = "100%"
         )
       ),
+      if (!length(instanceInfo)) {
+        tags$div(
+          id = "selWorkerInstanceSpinner",
+          style = "text-align:center;",
+          tags$div(class = "space"),
+          genSpinner(hidden = FALSE, absolute = FALSE, extraClasses = "gen-spinner-black")
+        )
+      },
+      tags$div(
+        id = "selWorkerInstanceWrapper",
+        class = "input-form-mobile",
+        style = if (!length(instanceInfo) || !identical(instanceInfo[["instancesSupported"]], TRUE)) "display:none;",
+        selectInput("selWorkerInstance",
+          lang$nav$dialogJobSubmission$workerInstance,
+          choices = instanceInfo$choices, selected = instanceInfo$selected,
+          width = "100%"
+        )
+      ),
       tags$div(class = "small-space")
     ),
     title = lang$nav$dialogJobSubmission$title,
@@ -1174,143 +1192,6 @@ showJobSubmissionDialog <- function(jobName = "", hashExistsData = NULL) {
       )
     ),
     fade = TRUE, easyClose = TRUE
-  ))
-}
-######## HYPERCUBE MODE
-showHcubeSubmitDialog <- function(noIdsToSolve, noIdsExist) {
-  showModal(modalDialog(
-    tags$div(
-      class = "gmsalert gmsalert-success", style = "position:relative;",
-      id = "hcubeSubmitSuccess",
-      lang$nav$dialogHcube$successMsg
-    ),
-    tags$div(
-      class = "gmsalert gmsalert-error", id = "hcubeSubmitUnknownHost",
-      style = "position:relative;",
-      lang$nav$dialogRemoteLogin$hostNotFound
-    ),
-    tags$div(
-      class = "gmsalert gmsalert-error", id = "hcubeSubmitUnauthorized",
-      style = "position:relative;",
-      lang$nav$dialogRemoteLogin$invalidCred
-    ),
-    tags$div(
-      class = "gmsalert gmsalert-error", id = "hcubeSubmitWait",
-      lang$nav$dialogHcube$waitTime
-    ),
-    tags$div(
-      class = "gmsalert gmsalert-error", id = "hcubeSubmitUnknownError",
-      style = "position:relative;",
-      lang$errMsg$unknownError
-    ),
-    tags$div(
-      id = "jobSubmissionLoad", style = "display:none;text-align:center;",
-      lang$nav$dialogHcube$descJobSubmission,
-      tags$div(class = "space"),
-      genSpinner(hidden = FALSE, absolute = FALSE, extraClasses = "gen-spinner-black")
-    ),
-    tags$div(
-      id = "jobSubmissionWrapper",
-      tags$div(paste0(sprintf(
-        lang$nav$dialogHcube$desc, noIdsToSolve,
-        noIdsExist
-      ), if (!identical(noIdsExist, noIdsToSolve)) {
-        lang$nav$dialogHcube$descSolveAgain
-      })),
-      tags$div(class = "small-space"),
-      conditionalPanel(
-        condition = "input.hcubeSolve_dl == 0",
-        selectizeInput("newHcubeTags", lang$nav$dialogHcube$newTags, c(),
-          multiple = TRUE, options = list(
-            "create" = TRUE,
-            "persist" = FALSE
-          )
-        )
-      )
-    ),
-    title = lang$nav$dialogHcube$title,
-    footer = tagList(
-      tags$div(
-        style = "text-align:left;",
-        tags$i(
-          class = "fas fa-arrow-down",
-          role = "presentation",
-          `aria-label` = "More options",
-          onclick = "$(this).next().slideToggle();$(this).toggleClass('fa-arrow-up');$(this).toggleClass('fa-arrow-down');",
-          style = "cursor: pointer;"
-        ),
-        tags$div(
-          style = "display:none;",
-          tags$label(
-            class = "cb-label", "for" = "hcubeSolve_dl",
-            lang$nav$dialogHcube$manualSwitch
-          ),
-          tags$div(
-            tags$label(
-              class = "checkbox-material", "for" = "hcubeSolve_dl",
-              checkboxInput("hcubeSolve_dl", label = NULL)
-            )
-          )
-        )
-      ),
-      conditionalPanel(
-        condition = "input.hcubeSolve_dl == 1",
-        modalButton(lang$nav$dialogHcube$cancelButton),
-        tags$a(
-          id = "btHcubeAll_dl", class = "btn btn-default shiny-download-link",
-          href = "", target = "_blank", download = NA, lang$nav$dialogHcube$processAllButton
-        ),
-        if (noIdsExist > 0L && !identical(noIdsExist, noIdsToSolve)) {
-          tags$a(
-            id = "btHcubeNew_dl", class = "btn btn-default shiny-download-link bt-highlight-1",
-            href = "", target = "_blank", download = NA, lang$nav$dialogHcube$processUnsolvedButton
-          )
-        }
-      ),
-      conditionalPanel(
-        condition = "input.hcubeSolve_dl == 0",
-        modalButton(lang$nav$dialogHcube$cancelButton),
-        actionButton("btHcubeAll", lang$nav$dialogHcube$processAllButton),
-        if (noIdsExist > 0L && !identical(noIdsExist, noIdsToSolve)) {
-          actionButton("btHcubeNew", lang$nav$dialogHcube$processUnsolvedButton,
-            class = "bt-highlight-1 bt-gms-confirm"
-          )
-        }
-      )
-    ),
-    fade = TRUE, easyClose = TRUE
-  ))
-}
-showInvalidScenIdsDialog <- function(invalidScenIds) {
-  showModal(modalDialog(
-    title = lang$nav$hcubeMode$invalidScenDialog$title,
-    sprintf(
-      lang$nav$hcubeMode$invalidScenDialog$desc,
-      length(invalidScenIds), paste(invalidScenIds, collapse = ", ")
-    ),
-    footer = tagList(
-      modalButton(lang$nav$hcubeMode$invalidScenDialog$cancelButton),
-      actionButton("btHcubeImportInvalid", label = lang$nav$hcubeMode$invalidScenDialog$okButton)
-    ),
-    fade = TRUE, easyClose = FALSE
-  ))
-}
-showDuplicatedScenDialog <- function(noDupScen, dupScenTags, noScen) {
-  showModal(modalDialog(
-    title = lang$nav$hcubeMode$duplicatedScenDialog$title,
-    if (noScen == noDupScen) {
-      sprintf(lang$nav$hcubeMode$duplicatedScenDialog$allDuplicated, dupScenTags)
-    } else {
-      sprintf(lang$nav$hcubeMode$duplicatedScenDialog$someDuplicated, noDupScen, dupScenTags)
-    },
-    footer = tagList(
-      modalButton(lang$nav$hcubeMode$duplicatedScenDialog$cancelButton),
-      if (noScen != noDupScen) {
-        actionButton("btHcubeImportNew", label = lang$nav$hcubeMode$duplicatedScenDialog$importNewButton)
-      },
-      actionButton("btHcubeImportAll", label = lang$nav$hcubeMode$duplicatedScenDialog$importAllButton)
-    ),
-    fade = TRUE, easyClose = FALSE
   ))
 }
 # Batch Load module

@@ -1632,6 +1632,10 @@
               "type": "string",
               "minLength": 1
             },
+            "workerInstance": {
+              "type": "string",
+              "minLength": 1
+            },
             "descWait": {
               "type": "string",
               "minLength": 1
@@ -1653,7 +1657,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 8
+          "minProperties": 9
         },
         "dialogHcube": {
           "type": "object",

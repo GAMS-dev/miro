@@ -15,6 +15,129 @@ Worker <- R6Class("Worker", public = list(
     }
     return(invisible(self))
   },
+  fetchInstancesAsync = function(session, selectizeId) {
+    stopifnot(length(private$authHeader) > 0L)
+    fetchInstancesFuture <- future(
+      {
+        tryCatch(
+          {
+            if (length(apiInfoGlobal)) {
+              apiInfo <- apiInfoGlobal
+            } else {
+              apiInfo <- httr::content(httr::GET(url = paste0(metadata$url, "/version"), httr::timeout(4L)),
+                type = "application/json",
+                encoding = "utf-8"
+              )
+              apiInfo$apiVersionInt <- suppressWarnings(
+                as.integer(gsub(".", "", apiInfo[["version"]], fixed = TRUE))
+              )[1]
+            }
+            if (!identical(apiInfo[["in_kubernetes"]], TRUE)) {
+              return(list(error = FALSE, instancesSupported = FALSE, apiInfo = apiInfo))
+            }
+            instances <- httr::GET(
+              url = paste0(metadata$url, "/usage/instances/", URLencode(metadata$username, reserved = TRUE)),
+              httr::add_headers(
+                Authorization = authHeader,
+                Timestamp = as.character(Sys.time(), usetz = TRUE)
+              ),
+              httr::timeout(6L)
+            )
+            if (!identical(httr::status_code(instances), 200L)) {
+              errMsg <- httr::content(instances,
+                type = "application/json",
+                encoding = "utf-8"
+              )
+              stop(paste0(
+                "Invalid status code when fetching instances: %s. Error message: %s",
+                httr::status_code(instances), errMsg[["message"]]
+              ), call. = FALSE)
+            }
+            instances <- httr::content(instances,
+              type = "application/json",
+              encoding = "utf-8"
+            )
+            return(list(
+              error = FALSE, instancesSupported = TRUE, apiInfo = apiInfo,
+              instances = instances[["instances_available"]],
+              default = instances[["default_instance"]]
+            ))
+          },
+          error = function(e) {
+            return(list(error = TRUE, message = conditionMessage(e)))
+          }
+        )
+      },
+      globals = list(
+        metadata = private$metadata, authHeader = private$authHeader, apiInfoGlobal = private$apiInfo
+      )
+    )
+    getInstances <- function(instanceInfo) {
+      if (!identical(instanceInfo[["error"]], FALSE)) {
+        flog.error("Error fetching instances. Error message: %s", instanceInfo[["message"]])
+        return(list(valid = FALSE))
+      }
+      if (!length(private$apiInfo)) {
+        private$apiInfo <- instanceInfo[["apiInfo"]]
+      }
+      instanceToStr <- function(instance) {
+        return(paste0(
+          instance[["label"]], " (", instance[["cpu_request"]], " vCPU, ",
+          instance[["memory_request"]], " MiB RAM, ", instance[["multiplier"]], "x)"
+        ))
+      }
+      if (identical(instanceInfo[["instancesSupported"]], FALSE)) {
+        flog.info("Engine backend does not support instances.")
+        return(list(valid = TRUE, instancesSupported = FALSE))
+      }
+      if (identical(length(instanceInfo[["instances"]]), 0L)) {
+        flog.info("No instances found for user: %s.", private$metadata$username)
+        return(list(valid = TRUE, instancesSupported = FALSE))
+      }
+      availableInstances <- setNames(
+        vapply(instanceInfo[["instances"]], "[[", character(1L), "label", USE.NAMES = FALSE),
+        vapply(instanceInfo[["instances"]], instanceToStr, character(1L), USE.NAMES = FALSE)
+      )
+      defaultInstance <- instanceInfo[["default"]][["label"]]
+      if (!identical(length(defaultInstance), 1L) || !defaultInstance %in% availableInstances) {
+        flog.error("Default instance: %s not in list of available instances. This should never happen and is likely an issue with GAMS Engine. Please report to support@gams.com.", defaultInstance)
+        return(list(valid = FALSE, instancesSupported = FALSE))
+      }
+      return(list(valid = TRUE, instancesSupported = TRUE, choices = availableInstances, selected = defaultInstance))
+    }
+    obs <- observe({
+      tryCatch(
+        {
+          if (resolved(fetchInstancesFuture)) {
+            instanceInfo <- getInstances(value(fetchInstancesFuture))
+            if (instanceInfo[["valid"]]) {
+              private$instanceInfo <- instanceInfo
+              if (identical(instanceInfo[["instancesSupported"]], TRUE)) {
+                showEl(session, paste0("#", selectizeId, "Wrapper"))
+                hideEl(session, paste0("#", selectizeId, "Spinner"))
+                updateSelectInput(session, selectizeId,
+                  choices = instanceInfo[["choices"]],
+                  selected = instanceInfo[["selected"]]
+                )
+              } else {
+                hideEl(session, paste0("#", selectizeId, "Spinner"))
+              }
+            }
+            obs$destroy()
+          }
+          invalidateLater(500L, session)
+        },
+        error = function(e) {
+          flog.error("Unexpected error fetching instances. Error message: %s", conditionMessage(e))
+          obs$destroy()
+        }
+      )
+    })
+    return(invisible(self))
+  },
+  getInstanceInfo = function() {
+    return(private$instanceInfo)
+  },
   logout = function() {
     private$metadata$url <- ""
     private$metadata$username <- ""
@@ -22,6 +145,7 @@ Worker <- R6Class("Worker", public = list(
     private$metadata$namespace <- ""
     private$metadata$useRegistered <- FALSE
     private$authHeader <- character(0L)
+    private$instanceInfo <- NULL
     unlink(private$metadata$rememberMeFileName, force = TRUE)
   },
   setCredentials = function(url, username, password, namespace,
@@ -39,7 +163,7 @@ Worker <- R6Class("Worker", public = list(
 
     private$authHeader <- private$buildAuthHeader(useBearer)
     if (refreshToken) {
-      future(
+      private$fRefreshToken <- future(
         {
           library(httr)
           library(jsonlite)
@@ -229,10 +353,10 @@ Worker <- R6Class("Worker", public = list(
     return(0L)
   },
   runAsync = function(sid = NULL, tags = NULL,
-                      dynamicPar = NULL, name = NULL) {
+                      dynamicPar = NULL, name = NULL, solveOptions = NULL) {
     stopifnot(private$remote)
 
-    private$runRemote(dynamicPar, name = name)
+    private$runRemote(dynamicPar, name = name, solveOptions = solveOptions)
     tryCatch(
       {
         remoteSubValue <- as.character(value(private$fRemoteSub))
@@ -279,7 +403,7 @@ Worker <- R6Class("Worker", public = list(
     return(private$process)
   },
   runHcube = function(dynamicPar = NULL, sid = NULL, tags = NULL,
-                      attachmentFilePaths = NULL) {
+                      attachmentFilePaths = NULL, solveOptions = NULL) {
     stopifnot(private$remote)
     req(length(private$db) > 0L)
 
@@ -287,7 +411,9 @@ Worker <- R6Class("Worker", public = list(
 
     pID <- self$runAsync(
       sid = sid,
-      tags = tags, dynamicPar = dynamicPar
+      tags = tags,
+      dynamicPar = dynamicPar,
+      solveOptions = solveOptions
     )
 
     self$updateJobStatus(status = JOBSTATUSMAP[["running"]], updatePid = !private$remote)
@@ -889,6 +1015,7 @@ Worker <- R6Class("Worker", public = list(
   sid = NULL,
   metadata = NULL,
   apiInfo = NULL,
+  instanceInfo = NULL,
   inputData = NULL,
   log = character(1L),
   authHeader = character(1L),
@@ -902,6 +1029,7 @@ Worker <- R6Class("Worker", public = list(
   wait = integer(1L),
   fRemoteSub = NULL,
   fJobRes = list(),
+  fRefreshToken = NULL,
   jobResultsFile = list(),
   resultFileSize = list(),
   fRemoteRes = NULL,
@@ -931,7 +1059,7 @@ Worker <- R6Class("Worker", public = list(
     )
     return(self)
   },
-  runRemote = function(hcubeData = NULL, name = NULL) {
+  runRemote = function(hcubeData = NULL, name = NULL, solveOptions = NULL) {
     stopifnot(!is.null(private$inputData))
     private$status <- "s"
     private$inputData$writeDisk(private$workDir,
@@ -1030,6 +1158,9 @@ Worker <- R6Class("Worker", public = list(
             type = "application/zip"
           )
         }
+        if (length(solveOptions) && length(solveOptions$selectedInstance)) {
+          requestBody$labels <- paste0("instance=", solveOptions$selectedInstance)
+        }
         ret <- POST(paste0(metadata$url, if (is.R6(hcubeData)) "/hypercube/" else "/jobs/", textEntries),
           encode = "multipart",
           body = requestBody,
@@ -1067,7 +1198,7 @@ Worker <- R6Class("Worker", public = list(
         inputData = private$inputData,
         authHeader = private$authHeader,
         gmsFilePath = gmsFilePath,
-        isWindows = isWindows, hcubeData = hcubeData
+        isWindows = isWindows, hcubeData = hcubeData, solveOptions = solveOptions
       )
     )
     return(self)

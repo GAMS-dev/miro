@@ -418,6 +418,7 @@
       "title": "Job senden",
       "desc": "Einen neuen Job zum asynchronen Lösen senden.",
       "jobName": "Geben Sie einen Namen für Ihren Job an (optional)",
+      "workerInstance": "Bitte wählen Sie eine Instanz, auf der Ihr Auftrag ausgeführt werden soll",
       "descWait": "Bitte warten Sie, während der Job gesendet wird...",
       "badName": "Bitte wählen Sie einen gültigen Namen für den neuen Job.",
       "cancelButton":"Abbrechen",

@@ -315,7 +315,11 @@ observeEvent(virtualActionButton(input$btSubmitJob, rv$btSubmitJob), {
   if (is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))) {
     return(NULL)
   }
-  showJobSubmissionDialog(jobNameTmp, scenWithSameHash)
+  instanceInfo <- worker$getInstanceInfo()
+  showJobSubmissionDialog(jobNameTmp, scenWithSameHash, instanceInfo = instanceInfo)
+  if (!length(instanceInfo)) {
+    worker$fetchInstancesAsync(session, "selWorkerInstance")
+  }
 })
 observeEvent(virtualActionButton(input$btSubmitAsyncJob, rv$btSubmitAsyncJob), {
   flog.debug("Confirm new asynchronous job button clicked.")
@@ -336,13 +340,18 @@ observeEvent(virtualActionButton(input$btSubmitAsyncJob, rv$btSubmitAsyncJob), {
     flog.error("User has no valid credentials. This looks like an attempt to tamper with the app!")
     return(NULL)
   }
+  solveOptions <- NULL
+  instanceInfo <- worker$getInstanceInfo()
+  if (length(instanceInfo) && identical(instanceInfo[["instancesSupported"]], TRUE)) {
+    solveOptions <- list(selectedInstance = input$selWorkerInstance)
+  }
   # submit job
   tryCatch(
     {
       disableEl(session, "#btSubmitAsyncJob")
       hideEl(session, "#jobSubmissionWrapper")
       showEl(session, "#jobSubmissionLoad")
-      worker$runAsync(sid, name = jobName)
+      worker$runAsync(sid, name = jobName, solveOptions = solveOptions)
       showHideEl(session, "#jobSubmitSuccess", 2000)
     },
     error = function(e) {
@@ -1122,6 +1131,8 @@ if (identical(config$activateModules$hcube, TRUE)) {
     }
     rv$refreshHcubeHashes <- rv$refreshHcubeHashes + 1L
 
+    instanceInfo <- worker$getInstanceInfo()
+
     showModal(modalDialog(
       class = "hc-modal",
       title = lang$nav$hcModule$submissionDialog$title,
@@ -1131,11 +1142,34 @@ if (identical(config$activateModules$hcube, TRUE)) {
       ),
       tags$div(id = "newHcJobInfo", class = "shiny-text-output lead"),
       tags$div(
-        class = "hc-tags-row",
-        selectizeInput("newHcubeTags", lang$nav$dialogHcube$newTags, c(),
-          multiple = TRUE, options = list(
-            "create" = TRUE,
-            "persist" = FALSE
+        class = "row hc-tags-row",
+        tags$div(
+          class = "col-md-6",
+          selectizeInput("newHcubeTags", lang$nav$dialogHcube$newTags, c(),
+            multiple = TRUE, width = "100%", options = list(
+              "create" = TRUE,
+              "persist" = FALSE
+            )
+          )
+        ),
+        tags$div(
+          class = "col-md-6",
+          if (!length(instanceInfo)) {
+            tags$div(
+              id = "selHcWorkerInstanceSpinner",
+              style = "text-align:center;",
+              tags$div(class = "space"),
+              genSpinner(hidden = FALSE, absolute = FALSE, extraClasses = "gen-spinner-black")
+            )
+          },
+          tags$div(
+            id = "selHcWorkerInstanceWrapper",
+            style = if (!length(instanceInfo) || !identical(instanceInfo[["instancesSupported"]], TRUE)) "display:none;",
+            selectInput("selHcWorkerInstance",
+              lang$nav$dialogJobSubmission$workerInstance,
+              choices = instanceInfo$choices, selected = instanceInfo$selected,
+              width = "100%"
+            )
           )
         )
       ),
@@ -1159,6 +1193,11 @@ if (identical(config$activateModules$hcube, TRUE)) {
         modalButton(lang$nav$hcModule$submissionDialog$btCancel)
       )
     ))
+
+    if (!length(instanceInfo)) {
+      worker$fetchInstancesAsync(session, "selHcWorkerInstance")
+    }
+
     emptyEl(session, "#newHcWrapper")
     tryCatch(
       {
@@ -1274,9 +1313,15 @@ if (identical(config$activateModules$hcube, TRUE)) {
           "_hcScalars"
         )
         hcJobConfig$finalize()
+        solveOptions <- NULL
+        instanceInfo <- worker$getInstanceInfo()
+        if (length(instanceInfo) && identical(instanceInfo[["instancesSupported"]], TRUE)) {
+          solveOptions <- list(selectedInstance = input$selHcWorkerInstance)
+        }
         worker$runHcube(
           dynamicPar = hcubeBuilder,
-          sid = sid, tags = input$newHcubeTags
+          sid = sid, tags = input$newHcubeTags,
+          solveOptions = solveOptions
         )
         prog$inc(amount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
         removeModal()
