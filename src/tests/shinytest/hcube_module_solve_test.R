@@ -6,15 +6,13 @@ context("UI tests - Hypercube module - solve/discard/import")
 # load base scenario
 Sys.sleep(3)
 app$setInputs(remoteCredUrl = Sys.getenv("ENGINE_URL"))
-app$setInputs(remoteCredUser = Sys.getenv("ENGINE_USER"))
+app$setInputs(remoteCredUser = Sys.getenv("ENGINE_USER_INVITEE"))
 app$setInputs(remoteCredPass = Sys.getenv("ENGINE_PASSWORD"))
 app$setInputs(remoteCredNs = Sys.getenv("ENGINE_NS"))
 app$setInputs(remoteCredReg = FALSE)
 app$setInputs(remoteCredRemember = TRUE)
-Sys.sleep(0.5)
 app$findElement("#shiny-modal .bt-gms-confirm")$click()
-Sys.sleep(1)
-expect_false(app$waitFor("$('#shiny-modal .btn-default').is(':visible');", timeout = 50))
+expect_true(app$waitFor("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L))
 
 app$snapshot(items = list(output = "outputDataTitle"), screenshot = TRUE)
 
@@ -96,10 +94,9 @@ Sys.sleep(2L)
 # if we try solving again now, we should get hash exists dialog
 app$findElement(".btSolve .dropdown-toggle")$click()
 app$findElement(".sidebar-menu a[onclick*='Solve model']")$click()
-Sys.sleep(4)
-expect_true(app$waitFor("$('.modal-body:visible').text().includes('default')===true;", timeout = 50L))
+expect_true(app$waitFor("$('.modal-body:visible').text().includes('default')===true;", timeout = 6000L))
 app$waitFor('$(\'button[data-dismiss="modal"]:visible\').click();true;', timeout = 50)
-Sys.sleep(2L)
+expect_true(app$waitFor("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L))
 
 # Submit HC, check that defaults are correct and that hash exists
 app$findElement(".btSolve .dropdown-toggle")$click()
@@ -147,9 +144,9 @@ repeat{
 app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()
 app$findElement('#shiny-tab-gamsinter a[data-value="joblist"]')$click()
 app$findElement("#refreshActiveJobs")$click()
-Sys.sleep(3)
+Sys.sleep(3.5)
 
-expect_true(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().includes('badge-info\">HC')", timeout = 50))
+expect_true(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().includes('badge-info\">HC')", timeout = 5000))
 expect_true(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().startsWith('bla,blub')", timeout = 50))
 expect_error(app$findElements("#jImport_output button[onclick*='showJobProgress']")[[1]]$click(), NA)
 Sys.sleep(1)
@@ -225,17 +222,14 @@ repeat{
 app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()
 app$findElement('#shiny-tab-gamsinter a[data-value="joblist"]')$click()
 app$findElement("#refreshActiveJobs")$click()
-Sys.sleep(3)
-expect_true(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().includes('badge-info\">HC')", timeout = 50))
-expect_true(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().startsWith('&lt;&gt;,&amp;&amp;');", timeout = 50))
+Sys.sleep(3L)
+expect_true(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().startsWith('&lt;&gt;,&amp;&amp;')===true&&$('#jImport_output td').get(2).innerHTML.trim().includes('badge-info\">HC')===true;", timeout = 5000))
 expect_error(app$findElements("#jImport_output button[onclick*='discardJob']")[[1]]$click(), NA)
 Sys.sleep(2)
 app$findElement("#confirmModal .bt-gms-confirm")$click()
 Sys.sleep(2)
 app$setInputs(btShowHistory = "click")
-Sys.sleep(2L)
-expect_true(app$waitFor("$('.cJob-wrapper td').get(2).innerHTML.trim().includes('badge-info\">HC')", timeout = 50))
-expect_true(app$waitFor("$('.cJob-wrapper td').get(2).innerHTML.trim().startsWith('&lt;&gt;,&amp;&amp;');", timeout = 50))
+expect_true(app$waitFor("$('.cJob-wrapper td').get(2).innerHTML.trim().includes('badge-info\">HC')===true&&$('.cJob-wrapper td').get(2).innerHTML.trim().startsWith('&lt;&gt;,&amp;&amp;')===true;", timeout = 50000))
 expect_true(app$waitFor("$('.cJob-wrapper td').get(3).textContent.trim().startsWith('Discarded') && $('.cJob-wrapper td').get(3).textContent.trim().endsWith('The job was still active.')", timeout = 50))
 app$waitFor('$(\'button[data-dismiss="modal"]:visible\').click();true;', timeout = 50)
 Sys.sleep(2L)
@@ -316,5 +310,36 @@ repeat{
     stop("Timeout reached. Could not import HC job.", call. = FALSE)
   }
 }
+
+app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
+Sys.sleep(0.5)
+app$findElement(".btSolve .dropdown-toggle")$click()
+app$findElement(".sidebar-menu a[onclick*='Submit Hypercube']")$click()
+expect_true(app$waitFor("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L))
+expect_true(app$waitFor("$('#btSubmitHcJobConfirm').is(':enabled')", timeout = 5000L))
+Sys.sleep(0.5)
+app$findElement("#btSubmitHcJobConfirm")$click()
+expect_true(app$waitFor("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L))
+expect_true(app$waitFor("$('.shiny-notification-content').is(':visible');", timeout = 50L))
+expect_true(app$waitFor("$('.shiny-notification-content').text().includes('Quota warning');", timeout = 50L))
+
+expect_identical(httr::status_code(httr::PUT(
+  paste0(Sys.getenv("ENGINE_URL"), "/usage/quota"),
+  body = list(
+    username = Sys.getenv("ENGINE_USER_INVITEE"),
+    volume_quota = 0
+  ),
+  httr::authenticate(Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")),
+  httr::timeout(2L)
+)), 200L)
+app$findElement(".btSolve .dropdown-toggle")$click()
+app$findElement(".sidebar-menu a[onclick*='Submit Hypercube']")$click()
+expect_true(app$waitFor("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L))
+expect_true(app$waitFor("$('#btSubmitHcJobConfirm').is(':enabled')", timeout = 5000L))
+Sys.sleep(0.5)
+app$findElement("#btSubmitHcJobConfirm")$click()
+expect_true(app$waitFor("$('#newHcJobError').text().includes('quota was exceeded')", timeout = 5000L))
+expect_true(app$waitFor("$('.shiny-notification-content').text().includes('Quota exceeded');", timeout = 50L))
+expect_true(app$waitFor("/volume quota: -?\\\\d+ s/.test($('.shiny-notification-content').text())", timeout = 50L))
 
 app$stop()

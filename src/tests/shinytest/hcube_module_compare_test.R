@@ -58,7 +58,7 @@ graphData <- jsonlite::fromJSON(app$getAllValues()$output[["tab_5_3-graph"]], si
 expect_identical(length(graphData), 756L)
 expect_identical(graphData[, 1], c("2016-01-04T00:00:00.000Z", "100.572928794899", "101.703327363261"))
 app$setInputs(contentScen_5 = "contentScen_5_11")
-expect_true(app$waitFor("$('.small-box:visible')[0].textContent.trim().startsWith('6')", timeout = 50L))
+expect_true(app$waitFor("$('.small-box:visible')[0].textContent.trim().startsWith('6')", timeout = 1000L))
 expect_true(app$waitFor("$('.small-box:visible')[1].textContent.trim().startsWith('99')", timeout = 50))
 
 # Download HC and normal scenario while remapping scenario names

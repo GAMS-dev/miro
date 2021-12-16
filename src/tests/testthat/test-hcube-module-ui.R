@@ -18,6 +18,19 @@ skip_if(
 
 createTestDb()
 
+apiURL <- Sys.getenv("ENGINE_URL")
+inviterUser <- Sys.getenv("ENGINE_USER")
+inviterPass <- Sys.getenv("ENGINE_PASSWORD")
+namespace <- Sys.getenv("ENGINE_NS")
+
+inviteeName <- paste0(Sys.getenv("ENGINE_USER"), "_", round(runif(1, 1, 100000)))
+Sys.setenv(ENGINE_USER_INVITEE = inviteeName)
+
+createUser(apiURL, inviterUser, inviterPass, namespace,
+  inviteeName, inviterPass,
+  volumeQuota = 80L
+)
+
 modelToTest <- "pickstock_configuration"
 testModelDir <- file.path(testDir, "model", modelToTest)
 modelDataPath <- file.path(testModelDir, paste0("data_", modelToTest))
@@ -89,5 +102,7 @@ test_that(
     compareImages = FALSE
   ))
 )
+
+removeUser(apiURL, inviterUser, inviterPass, inviteeName)
 
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_REMOTE_EXEC"))

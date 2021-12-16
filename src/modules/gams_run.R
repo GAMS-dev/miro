@@ -1337,9 +1337,14 @@ if (identical(config$activateModules$hcube, TRUE)) {
         prog$inc(amount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
         removeModal()
         showHideEl(session, "#hcubeSubmitSuccess", 2000)
+        showQuotaWarnings(session, worker$getQuotaWarning())
       },
       error = function(e) {
         errMsg <- conditionMessage(e)
+        if (identical(errMsg, "401")) {
+          flog.info("Could not generate Hypercube job (unauthorized).")
+          return(showElReplaceTxt(session, "#newHcJobError", lang$errMsg$sessionExpired$desc))
+        }
         if (identical(errMsg, "402")) {
           flog.info("Could not generate Hypercube job (quota exceeded).")
           showQuotaWarnings(session, worker$getQuotaWarning())

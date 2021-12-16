@@ -145,9 +145,11 @@ tryCatch(
       "SELECT * FROM ",
       DBI::dbQuoteIdentifier(conn, "_sys_metadata_"),
       " WHERE ",
-      DBI::dbQuoteIdentifier(conn, "_scode"), "=-2"
+      DBI::dbQuoteIdentifier(conn, "_scode"), "=-2 AND ",
+      DBI::dbQuoteIdentifier(conn, "_stag"), "=",
+      DBI::dbQuoteString(conn, ",woff,")
     ))
-    expect_identical(nrow(hcJobData), 1L)
+    expect_identical(nrow(hcJobData), 0L)
   },
   error = function(e) {
     warning(conditionMessage(e), call. = FALSE)
