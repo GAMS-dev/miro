@@ -3484,6 +3484,33 @@
           },
           "minProperties": 2
         },
+        "quotaWarning": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "titleWarning": {
+              "type": "string",
+              "minLength": 1
+            },
+            "titleError": {
+              "type": "string",
+              "minLength": 1
+            },
+            "quotaExceeded": {
+              "type": "string",
+              "minLength": 1
+            },
+            "remainingVolume": {
+              "type": "string",
+              "minLength": 1
+            },
+            "remainingDisk": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 5
+        },
         "sessionExpired": {
           "type": "object",
           "additionalProperties": false,
@@ -3876,7 +3903,7 @@
           "minProperties": 4
         }
       },
-      "minProperties": 39
+      "minProperties": 40
     },
     "adminMode": {
       "description": "language specific objects of the MIRO admin mode",

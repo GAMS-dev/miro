@@ -138,6 +138,9 @@ Worker <- R6Class("Worker", public = list(
   getInstanceInfo = function() {
     return(private$instanceInfo)
   },
+  getQuotaWarning = function() {
+    return(private$quotaWarning)
+  },
   logout = function() {
     private$metadata$url <- ""
     private$metadata$username <- ""
@@ -146,6 +149,7 @@ Worker <- R6Class("Worker", public = list(
     private$metadata$useRegistered <- FALSE
     private$authHeader <- character(0L)
     private$instanceInfo <- NULL
+    private$quotaWarning <- NULL
     unlink(private$metadata$rememberMeFileName, force = TRUE)
   },
   setCredentials = function(url, username, password, namespace,
@@ -359,7 +363,7 @@ Worker <- R6Class("Worker", public = list(
     private$runRemote(dynamicPar, name = name, solveOptions = solveOptions)
     tryCatch(
       {
-        remoteSubValue <- as.character(value(private$fRemoteSub))
+        remoteSubValue <- value(private$fRemoteSub)
       },
       error = function(e) {
         errMsg <- conditionMessage(e)
@@ -371,16 +375,25 @@ Worker <- R6Class("Worker", public = list(
         }
       }
     )
-    if (startsWith(remoteSubValue, "error:")) {
-      flog.info(paste0("Could not execute model remotely: ", remoteSubValue))
-      errCode <- suppressWarnings(as.integer(substring(remoteSubValue, 7L, 9L)))
-      if (is.na(errCode)) {
-        stop(500L, call. = FALSE)
+    if (identical(remoteSubValue$statusCode, 201L)) {
+      if (identical(remoteSubValue$hcJob, TRUE)) {
+        tokenTmp <- as.character(remoteSubValue$response$hypercube_token)[1]
       } else {
-        stop(errCode, call. = FALSE)
+        tokenTmp <- as.character(remoteSubValue$response$token)[1]
       }
-    } else {
-      private$process <- remoteSubValue
+      if (!length(tokenTmp)) {
+        flog.error(
+          "Invalid response received from Engine server when posting job. Reponse: %s",
+          remoteSubValue$response
+        )
+        private$fRemoteSub <- NULL
+        stop(500L, call. = FALSE)
+      }
+      private$process <- tokenTmp
+      if (length(remoteSubValue$response$quota_warning)) {
+        private$quotaWarning <- calcRemainingQuota(remoteSubValue$response$quota_warning)
+        private$quotaWarning$error <- FALSE
+      }
       if (length(private$db)) {
         tryCatch(
           {
@@ -397,6 +410,17 @@ Worker <- R6Class("Worker", public = list(
           }
         )
       }
+    } else {
+      flog.info(
+        "Could not execute model remotely. Status code: %s. Error message: %s",
+        remoteSubValue$statusCode, remoteSubValue$response$message
+      )
+      if (identical(remoteSubValue$statusCode, 402L) && length(remoteSubValue$response$exceeded_quotas)) {
+        private$quotaWarning <- calcRemainingQuota(remoteSubValue$response$exceeded_quotas)
+        private$quotaWarning$error <- TRUE
+      }
+      private$fRemoteSub <- NULL
+      stop(remoteSubValue$statusCode, call. = FALSE)
     }
     flog.trace("Job submitted successfuly. Job process ID: '%s'.", private$process)
     private$fRemoteSub <- NULL
@@ -1016,6 +1040,7 @@ Worker <- R6Class("Worker", public = list(
   metadata = NULL,
   apiInfo = NULL,
   instanceInfo = NULL,
+  quotaWarning = NULL,
   inputData = NULL,
   log = character(1L),
   authHeader = character(1L),
@@ -1069,6 +1094,7 @@ Worker <- R6Class("Worker", public = list(
       private$jobName <- name
       private$inputData$copyMiroWs(private$workDir, jobName = name)
     }
+    private$quotaWarning <- NULL
     private$fRemoteSub <- future(
       {
         suppressWarnings(suppressMessages({
@@ -1172,25 +1198,16 @@ Worker <- R6Class("Worker", public = list(
           ),
           timeout(120L)
         )
-        if (identical(status_code(ret), 201L)) {
-          if (is.R6(hcubeData)) {
-            return(content(ret)$hypercube_token)
-          }
-          return(content(ret)$token)
-        } else {
-          msg <- tryCatch(content(ret, type = "application/json")$message,
-            error = function(e) {
-              return(tryCatch(content(ret), error = function(e) {
-                return("")
-              }))
-            }
-          )
-          statusCode <- status_code(ret)
-          if (identical(msg, "")) {
-            statusCode <- 404L
-          }
-          return(paste0("error:", statusCode, msg))
-        }
+        return(list(
+          statusCode = status_code(ret),
+          hcJob = is.R6(hcubeData),
+          response = tryCatch(content(ret,
+            type = "application/json",
+            encoding = "utf-8"
+          ), error = function(e) {
+            sprintf("No valid UTF-8 encoded JSON received. Error message: %s", conditionMessage(e))
+          })
+        ))
       },
       globals = list(
         metadata = private$metadata, workDir = private$workDir,
@@ -1365,16 +1382,26 @@ Worker <- R6Class("Worker", public = list(
         }
         private$wait <- 0L
         private$waitCnt <- 0L
-        if (startsWith(remoteSubValue, "error:")) {
-          flog.info(paste0("Could not execute model remotely: ", remoteSubValue))
-          errCode <- suppressWarnings(as.integer(substring(remoteSubValue, 7L, 9L)))
-          if (is.na(errCode)) {
-            private$status <- -500L
+        if (identical(remoteSubValue$statusCode, 201L)) {
+          if (identical(remoteSubValue$hcJob, TRUE)) {
+            tokenTmp <- as.character(remoteSubValue$response$hypercube_token)[1]
           } else {
-            private$status <- -errCode
+            tokenTmp <- as.character(remoteSubValue$response$token)[1]
           }
-        } else {
-          private$process <- value(private$fRemoteSub)
+          if (!length(tokenTmp)) {
+            flog.error(
+              "Invalid response received from Engine server when posting job. Reponse: %s",
+              remoteSubValue$response
+            )
+            private$status <- -500L
+            private$fRemoteSub <- NULL
+            return(private$status)
+          }
+          private$process <- tokenTmp
+          if (length(remoteSubValue$response$quota_warning)) {
+            private$quotaWarning <- calcRemainingQuota(remoteSubValue$response$quota_warning)
+            private$quotaWarning$error <- FALSE
+          }
           if (length(private$db)) {
             tryCatch(
               {
@@ -1391,6 +1418,16 @@ Worker <- R6Class("Worker", public = list(
             )
           }
           private$status <- "q"
+        } else {
+          flog.info(
+            "Could not execute model remotely. Status code: %s. Error message: %s",
+            remoteSubValue$statusCode, remoteSubValue$response$message
+          )
+          if (identical(remoteSubValue$statusCode, 402L) && length(remoteSubValue$response$exceeded_quotas)) {
+            private$quotaWarning <- calcRemainingQuota(remoteSubValue$response$exceeded_quotas)
+            private$quotaWarning$error <- TRUE
+          }
+          private$status <- -remoteSubValue$statusCode
         }
         private$fRemoteSub <- NULL
       } else {

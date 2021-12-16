@@ -18,6 +18,19 @@ skip_if(
 
 createTestDb()
 
+apiURL <- Sys.getenv("ENGINE_URL")
+inviterUser <- Sys.getenv("ENGINE_USER")
+inviterPass <- Sys.getenv("ENGINE_PASSWORD")
+namespace <- Sys.getenv("ENGINE_NS")
+
+inviteeName <- paste0(Sys.getenv("ENGINE_USER"), "_", round(runif(1, 1, 100000)))
+Sys.setenv(ENGINE_USER_INVITEE = inviteeName)
+
+createUser(apiURL, inviterUser, inviterPass, namespace,
+  inviteeName, inviterPass,
+  volumeQuota = 165L
+)
+
 modelToTest <- "transport"
 modelToTestUpper <- paste0(toupper(substr(modelToTest, 1, 1)), substring(modelToTest, 2))
 testModelDir <- file.path(testDir, "model", modelToTest)
@@ -74,6 +87,8 @@ test_that(
     compareImages = FALSE
   ))
 )
+
+removeUser(apiURL, inviterUser, inviterPass, inviteeName)
 
 file.rename(
   file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), "_tmp.json")),

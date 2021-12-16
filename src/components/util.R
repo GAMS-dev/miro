@@ -1935,3 +1935,76 @@ mergeDf <- function(a, b, isScalarsTable = FALSE) {
     mutate(!!valueColName := coalesce(!!!syms(paste0(valueColName, c(".y", ".x"))))) %>%
     select(-c(paste0(valueColName, c(".x", ".y")))))
 }
+calcRemainingQuota <- function(quotaList) {
+  calcRemaining <- function(quotaObj, quotaKey, usedKey) {
+    if (length(quotaObj[[quotaKey]])) {
+      quota <- quotaObj[[quotaKey]]
+    } else {
+      quota <- Inf
+    }
+    return(as.numeric(quota - quotaObj[[usedKey]]))
+  }
+  return(list(
+    volume = min(vapply(quotaList, calcRemaining, numeric(1L), "volume_quota", "volume_used")) / 3600,
+    disk = min(vapply(quotaList, calcRemaining, numeric(1L), "disk_quota", "disk_used")) / 1e6
+  ))
+}
+showQuotaWarnings <- function(session, quotaList) {
+  if (!length(quotaList)) {
+    return()
+  }
+  if (quotaList$volume <= 0L) {
+    remainingVolumeStr <- paste0("**", format(round(quotaList$volume * 3600), big.mark = ","), "** s")
+  } else if (quotaList$volume < 10000L) {
+    remainingVolumeStr <- paste0(format(round(quotaList$volume * 3600), big.mark = ","), " s")
+  } else {
+    remainingVolumeStr <- paste0(format(round(quotaList$volume, digits = 1L), big.mark = ","), " h")
+  }
+  if (quotaList$disk <= 0L) {
+    remainingDiskStr <- paste0("**", format(round(quotaList$disk, digits = 3L), big.mark = ","), "** MB")
+  } else if (quotaList$disk < 10L) {
+    remainingDiskStr <- paste0(format(round(quotaList$disk, digits = 3L), big.mark = ","), " MB")
+  } else {
+    remainingDiskStr <- paste0(format(round(quotaList$disk), big.mark = ","), " MB")
+  }
+  if (identical(quotaList$error, TRUE)) {
+    return(showNotification(lang$errMsg$quotaWarning$titleError,
+      action = tagList(
+        if (is.finite(quotaList$volume)) {
+          markdown(sprintf(
+            lang$errMsg$quotaWarning$remainingVolume,
+            remainingVolumeStr
+          ))
+        },
+        if (is.finite(quotaList$disk)) {
+          markdown(sprintf(
+            lang$errMsg$quotaWarning$remainingDisk,
+            remainingDiskStr
+          ))
+        }
+      ),
+      duration = NULL,
+      type = "error",
+      session = session
+    ))
+  }
+  return(showNotification(lang$errMsg$quotaWarning$titleWarning,
+    action = tagList(
+      if (is.finite(quotaList$volume)) {
+        markdown(sprintf(
+          lang$errMsg$quotaWarning$remainingVolume,
+          remainingVolumeStr
+        ))
+      },
+      if (is.finite(quotaList$disk)) {
+        markdown(sprintf(
+          lang$errMsg$quotaWarning$remainingDisk,
+          remainingDiskStr
+        ))
+      }
+    ),
+    duration = 10L,
+    type = "warning",
+    session = session
+  ))
+}

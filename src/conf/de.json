@@ -418,7 +418,7 @@
       "title": "Job senden",
       "desc": "Einen neuen Job zum asynchronen Lösen senden.",
       "jobName": "Geben Sie einen Namen für Ihren Job an (optional)",
-      "workerInstance": "Bitte wählen Sie eine Instanz, auf der Ihr Auftrag ausgeführt werden soll",
+      "workerInstance": "Bitte wählen Sie eine Instanz, auf der Ihr Job ausgeführt werden soll",
       "descWait": "Bitte warten Sie, während der Job gesendet wird...",
       "badName": "Bitte wählen Sie einen gültigen Namen für den neuen Job.",
       "cancelButton":"Abbrechen",
@@ -430,13 +430,13 @@
       "desc": "Sie haben %d Szenarien zum Lösen im Hypercube-Modus ausgewählt. Von diesen sind bereits %d Szenarien gelöst worden.",
       "descSolveAgain": "Möchten Sie alle Szenarien wieder lösen oder nur die, die noch nicht gelöst sind?",
       "descJobSubmission": "Bitte warten Sie, während der Job gesendet wird...",
-      "newTags": "Weisen Sie dem Auftrag einen oder mehrere Tags zu:",
+      "newTags": "Weisen Sie dem Job einen oder mehrere Tags zu:",
       "manualSwitch": "Job manuell verarbeiten?",
       "cancelButton":"Abbrechen",
       "processAllButton": "Alle Verarbeiten",
       "processUnsolvedButton": "Nur die ungelösten verarbeiten",
-      "successMsg": "Ihr Hypercube-Job wurde erfolgreich übermittelt. Sie können die Ergebnisse abrufen, sobald der Auftrag ausgeführt wurde.",
-      "waitTime": "Bitte warten Sie einige Sekunden bevor Sie einen neuen Auftrag ausführen.",
+      "successMsg": "Ihr Hypercube-Job wurde erfolgreich übermittelt. Sie können die Ergebnisse abrufen, sobald der Job ausgeführt wurde.",
+      "waitTime": "Bitte warten Sie einige Sekunden bevor Sie einen neuen Job ausführen.",
       "waitDialog":{
         "title": "Hypercube-Job wird konfiguriert",
         "desc": "Bitte warten Sie, während der Hypercube-Job konfiguriert wird."
@@ -894,6 +894,13 @@
     "gamsExec":{
       "title":"Fehler beim Ausführen von GAMS",
       "desc":"Konnte GAMS nicht ausführen. Haben Sie vergessen, den GAMS-Installationspfad anzugeben?"
+    },
+    "quotaWarning":{
+      "titleWarning": "Kontingentwarnung",
+      "titleError": "Kontingent überschritten",
+      "quotaExceeded": "Der Job konnte nicht übermittelt werden, da Ihr Kontingent überschritten wurde. Bitte erhöhen Sie Ihr Kontingent und versuchen Sie es erneut.",
+      "remainingVolume": "Verbleibendes *Volumen*-Kontingent: %s",
+      "remainingDisk": "Verbleibendes *Festplatten*-Kontingent: %s"
     },
     "sessionExpired": {
       "title": "Sitzung abgelaufen",

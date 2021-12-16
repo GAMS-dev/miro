@@ -353,19 +353,28 @@ observeEvent(virtualActionButton(input$btSubmitAsyncJob, rv$btSubmitAsyncJob), {
       showEl(session, "#jobSubmissionLoad")
       worker$runAsync(sid, name = jobName, solveOptions = solveOptions)
       showHideEl(session, "#jobSubmitSuccess", 2000)
+      showQuotaWarnings(session, worker$getQuotaWarning())
     },
     error = function(e) {
       errMsg <- conditionMessage(e)
-      flog.error("Some problem occurred while executing job. Error message: '%s'.", errMsg)
 
       if (identical(errMsg, "404") || startsWith(errMsg, "Could not") ||
         startsWith(errMsg, "Timeout")) {
+        flog.warn("Some problem occurred while executing job. Error message: '%s'.", errMsg)
         return(showHideEl(session, "#jobSubmitUnknownHost", 6000))
       }
 
+      if (identical(errMsg, "402")) {
+        flog.info("Some problem occurred while executing job. Error message: '%s'.", errMsg)
+        showQuotaWarnings(session, worker$getQuotaWarning())
+        return(showHideEl(session, "#jobSubmitUnknownError", msg = lang$errMsg$quotaWarning$quotaExceeded))
+      }
+
       if (errMsg %in% c(401L, 403L)) {
+        flog.info("Some problem occurred while executing job. Error message: '%s'.", errMsg)
         return(showHideEl(session, "#jobSubmitUnauthorized", 6000))
       }
+      flog.error("Some problem occurred while executing job. Error message: '%s'.", errMsg)
 
       showHideEl(session, "#jobSubmitUnknownError", 6000)
     },
@@ -553,6 +562,8 @@ output$modelStatus <- renderUI({
       setContent(session, containerId, renderMiroLogContent())
     }
   }
+
+  showQuotaWarnings(session, worker$getQuotaWarning())
 
   if (currModelStat < 0) {
     returnCodeText <- GAMSRCMAP[as.character(currModelStat)]
@@ -1328,9 +1339,15 @@ if (identical(config$activateModules$hcube, TRUE)) {
         showHideEl(session, "#hcubeSubmitSuccess", 2000)
       },
       error = function(e) {
+        errMsg <- conditionMessage(e)
+        if (identical(errMsg, "402")) {
+          flog.info("Could not generate Hypercube job (quota exceeded).")
+          showQuotaWarnings(session, worker$getQuotaWarning())
+          return(showElReplaceTxt(session, "#newHcJobError", lang$errMsg$quotaWarning$quotaExceeded))
+        }
         flog.error(
           "Unexpected error while generating new Hypercube job. Error message: '%s'",
-          conditionMessage(e)
+          errMsg
         )
         enableEl(session, "#btSubmitHcJobConfirm")
         hasUnsolvedHcScen <- noHcubeScenSolved() < noHcubeScen()

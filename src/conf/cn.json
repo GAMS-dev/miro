@@ -895,6 +895,13 @@
       "title":"执行GAMS中出错",
       "desc":"执行GAMS过程中出现错误。"
     },
+    "quotaWarning":{
+      "titleWarning": "配额警告",
+      "titleError": "超出配额",
+      "quotaExceeded": "由于超出了您的配额，因此无法提交订单。 请增加您的配额，然后重试。",
+      "remainingVolume": "剩余 *数量* 配额：%s",
+      "remainingDisk": "剩余 *磁盘* 配额：%s"
+    },
     "sessionExpired": {
       "title": "会话已过期",
       "desc": "用于与 GAMS Engine 通信的会话令牌已过期。 请注销并重新登录。"

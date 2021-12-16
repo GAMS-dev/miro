@@ -895,6 +895,13 @@
       "title":"GAMS could not be run",
       "desc":"Could not run GAMS. Did you forget to specify the GAMS installation path?"
     },
+    "quotaWarning":{
+      "titleWarning": "Quota warning",
+      "titleError": "Quota exceeded",
+      "quotaExceeded": "The job could not be submitted because your quota was exceeded. Please increase your quota and try again.",
+      "remainingVolume": "Remaining *volume* quota: %s",
+      "remainingDisk": "Remaining *disk* quota: %s"
+    },
     "sessionExpired": {
       "title": "Session expired",
       "desc": "The session token for communication with GAMS Engine has expired. Please log out and log in again."

@@ -311,3 +311,46 @@ populateDb <- function(procEnv, modelName, modelPath = NULL) {
     print(miroProc$stderr)
   }
 }
+createUser <- function(apiURL, inviterUser, inviterPass, namespace,
+                       username, password, roles = NULL, volumeQuota = NULL, diskQuota = NULL, deleteIfExists = TRUE) {
+  requestBody <- list(namespace_permissions = paste0("7@", namespace))
+  if (length(roles)) {
+    requestBody$roles <- roles
+  }
+  if (length(volumeQuota)) {
+    requestBody$volume_quota <- volumeQuota
+  }
+  if (length(diskQuota)) {
+    requestBody$disk_quota <- diskQuota
+  }
+  resp <- httr::POST(paste0(apiURL, "/users/invitation"),
+    body = requestBody, httr::timeout(10L),
+    httr::authenticate(inviterUser, inviterPass)
+  )
+  stopifnot(identical(httr::status_code(resp), 201L))
+  token <- httr::content(resp)$invitation_token
+  resp <- httr::POST(paste0(apiURL, "/users/"), body = list(
+    username = username,
+    password = password,
+    invitation_code = token
+  ), httr::timeout(10L), httr::authenticate(inviterUser, inviterPass))
+  if (deleteIfExists && identical(httr::status_code(resp), 400L)) {
+    removeUser(apiURL, inviterUser, inviterPass, username)
+    resp <- httr::POST(paste0(apiURL, "/users/"), body = list(
+      username = username,
+      password = password,
+      invitation_code = token
+    ), httr::timeout(10L))
+  }
+  stopifnot(identical(httr::status_code(resp), 201L))
+}
+removeUser <- function(apiURL, inviterUser, inviterPass, username) {
+  resp <- httr::DELETE(
+    paste0(
+      apiURL, "/users/?username=", URLencode(username, reserved = TRUE),
+      "&delete_results=true&delete_children=true"
+    ), httr::timeout(10L),
+    httr::authenticate(inviterUser, inviterPass)
+  )
+  stopifnot(identical(httr::status_code(resp), 200L))
+}
