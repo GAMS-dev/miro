@@ -450,7 +450,7 @@ server <- function(input, output, session) {
     )
   })
   addDataFiles <- function(appId, filePaths, progressSelector, requestType, overwriteExisting = FALSE,
-                           additionalData = NULL, appConfig = NULL, customCallback = NULL, appDir = NULL) {
+                           additionalData = NULL, appConfig = NULL, customCallback = NULL, appDir = NULL, launchDbMigrationManager = NULL) {
     tryCatch(
       {
         if (is.null(appConfig)) {
@@ -479,9 +479,10 @@ server <- function(input, output, session) {
           miroProc$run(appId, appModelName,
             appConfig$containerEnv[["MIRO_VERSION_STRING"]],
             appDir, filePaths[[i]],
-            progressSelector = if (length(filePaths) > 1) progressSelector else NULL,
+            progressSelector = progressSelector,
             requestType = requestType, overwriteScen = overwriteExisting,
             additionalDataOnError = additionalData,
+            launchDbMigrationManager = launchDbMigrationManager,
             parallelSessionId = "addData", newSession = identical(i, 1L),
             successCallback = if (length(customCallback)) {
               customCallback
@@ -579,6 +580,7 @@ server <- function(input, output, session) {
           "updateApp",
           appDir = appDirTmp,
           overwriteExisting = overwriteData,
+          launchDbMigrationManager = launchDbMigrationManager,
           additionalData = list(progressSelector = progressSelector, spinnerSelector = paste0("#appSpinner_", appId)),
           appConfig = appConfig, customCallback = function() {
             tryCatch(
@@ -686,7 +688,7 @@ server <- function(input, output, session) {
         addDataFiles(appId, filePaths, progressSelector,
           "updateApp",
           overwriteExisting = overwriteData,
-          additionalData = list(progressSelector = progressSelector, spinnerSelector = paste0("#appSpinner_", appId))
+          additionalData = list(progressSelector = if (length(filePaths) > 1) progressSelector, spinnerSelector = paste0("#appSpinner_", appId))
         )
       },
       error = function(e) {
@@ -715,6 +717,9 @@ server <- function(input, output, session) {
       standalone = FALSE
     )
     migrationObs <- observe({
+      if (loginRequired(session, isLoggedIn)) {
+        return()
+      }
       if (!is.null(migrationConfig())) {
         try(
           {
@@ -743,8 +748,9 @@ server <- function(input, output, session) {
           migrationInfo$miroVersion,
           migrationInfo$appDir, migrationInfo$dataDir,
           migrationConfigPath = migrationConfigPath,
-          progressSelector = "#addAppProgress",
-          overwriteScen = TRUE, requestType = "migrateDb", function() {
+          progressSelector = migrationInfo$progressSelector,
+          additionalDataOnError = migrationInfo$additionalDataOnError,
+          overwriteScen = migrationInfo$overwriteScen, requestType = "migrateDb", function() {
             flog.debug(
               "Database for app: %s migrated successfully.",
               migrationInfo$appId
@@ -754,12 +760,18 @@ server <- function(input, output, session) {
               "onSuccess",
               list(requestType = "migrateDb")
             )
+            if (length(migrationInfo$successCallback)) {
+              migrationInfo$successCallback()
+            }
           }
         )
       }
     })
   })
   observeEvent(input$btCloseMigForm, {
+    if (loginRequired(session, isLoggedIn)) {
+      return()
+    }
     try(
       {
         migrationObs$destroy()

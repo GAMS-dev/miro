@@ -104,7 +104,9 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
               list(
                 appId = appId, modelName = modelName,
                 miroVersion = miroVersion, appDir = appDir,
-                dataDir = dataDir
+                dataDir = dataDir, additionalDataOnError = additionalDataOnError,
+                progressSelector = progressSelector, overwriteScen = overwriteScen,
+                successCallback = successCallback
               )
             )
             private$session$sendCustomMessage("onHideAddAppProgress", list())
