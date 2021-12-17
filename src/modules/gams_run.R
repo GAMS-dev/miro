@@ -354,33 +354,35 @@ observeEvent(virtualActionButton(input$btSubmitAsyncJob, rv$btSubmitAsyncJob), {
       worker$runAsync(sid, name = jobName, solveOptions = solveOptions)
       showHideEl(session, "#jobSubmitSuccess", 2000)
       showQuotaWarnings(session, worker$getQuotaWarning())
+      hideModal(session, 2L)
     },
     error = function(e) {
       errMsg <- conditionMessage(e)
+      hideEl(session, "#btSubmitAsyncJob")
+      hideModal(session, 6L)
 
       if (identical(errMsg, "404") || startsWith(errMsg, "Could not") ||
         startsWith(errMsg, "Timeout")) {
         flog.warn("Some problem occurred while executing job. Error message: '%s'.", errMsg)
-        return(showHideEl(session, "#jobSubmitUnknownHost", 6000))
+        return(showEl(session, "#jobSubmitUnknownHost"))
       }
 
       if (identical(errMsg, "402")) {
         flog.info("Some problem occurred while executing job. Error message: '%s'.", errMsg)
         showQuotaWarnings(session, worker$getQuotaWarning())
-        return(showHideEl(session, "#jobSubmitUnknownError", msg = lang$errMsg$quotaWarning$quotaExceeded))
+        return(showElReplaceTxt(session, "#jobSubmitUnknownError", lang$errMsg$quotaWarning$quotaExceeded))
       }
 
       if (errMsg %in% c(401L, 403L)) {
         flog.info("Some problem occurred while executing job. Error message: '%s'.", errMsg)
-        return(showHideEl(session, "#jobSubmitUnauthorized", 6000))
+        return(showEl(session, "#jobSubmitUnauthorized"))
       }
       flog.error("Some problem occurred while executing job. Error message: '%s'.", errMsg)
 
-      showHideEl(session, "#jobSubmitUnknownError", 6000)
+      showEl(session, "#jobSubmitUnknownError")
     },
     finally = {
       hideEl(session, "#jobSubmissionLoad")
-      hideModal(session, 2L)
     }
   )
 })

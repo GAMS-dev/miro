@@ -1142,6 +1142,7 @@ showJobSubmissionDialog <- function(jobName = "", hashExistsData = NULL, instanc
     ),
     tags$div(
       class = "gmsalert gmsalert-error", id = "jobSubmitUnknownError",
+      style = "position:relative;",
       lang$errMsg$unknownError
     ),
     tags$div(
