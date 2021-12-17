@@ -38,6 +38,7 @@ const appEnvPlaceholder = 'App environment (JSON, optional)';
 const appGroupsPlaceholder = 'Access groups (optional)';
 const appLogoPlaceholder = 'Different app logo? Drop your MIRO app logo here.';
 const overwriteAppData = {};
+const uploadAppDataFinished = {};
 let reorderAppsMode = false;
 let currentConfigList = null;
 let currentGroupList = [];
@@ -421,11 +422,12 @@ $appsWrapper.on('dragend', '.app-box-draggable', (e) => {
 });
 
 function sendUpdateAppShinyEvent(appId, fileTypes) {
-  if (overwriteAppData[appId] == null) {
+  if (overwriteAppData[appId] == null || uploadAppDataFinished[appId] == null) {
     return;
   }
   const overwriteData = overwriteAppData[appId];
   overwriteAppData[appId] = null;
+  uploadAppDataFinished[appId] = null;
   const spinnerId = `#appSpinner_${appId}`;
   $('#overlayScreen').show();
   $(spinnerId).show();
@@ -472,7 +474,8 @@ $(document).on('shiny:inputchanged', (event) => {
   if (eventName.startsWith('appFiles_') && event.value != null && event.value.length > 0) {
     const appId = eventName.substring(9);
     const fileTypes = event.value.map((fileTmp) => fileTmp.name.split('.').pop().toLowerCase());
-    sendUpdateAppShinyEvent(appId, fileTypes);
+    uploadAppDataFinished[appId] = true;
+    setTimeout(() => sendUpdateAppShinyEvent(appId, fileTypes), 800);
   }
 });
 $appsWrapper.on('drop', '.app-box-draggable', function (e) {
