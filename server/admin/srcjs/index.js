@@ -820,11 +820,13 @@ $(() => {
     } else if (e.requestType === 'updateLogo') {
       $('.btn-save-changes').attr('disabled', false);
     }
-    bootbox.alert({
-      title: 'Error',
-      message: e.message,
-      centerVertical: true,
-    });
+    if (e.message != null) {
+      bootbox.alert({
+        title: 'Error',
+        message: e.message,
+        centerVertical: true,
+      });
+    }
   });
   Shiny.addCustomMessageHandler('gms-showEl', (id) => {
     $(id).show();
