@@ -1054,8 +1054,7 @@ if (is.null(errMsg) && (debugMode || miroStoreDataOnly)) {
       source("./tools/db_migration/ui.R", local = TRUE)
       if (isShinyProxy) {
         if (identical(Sys.getenv("MIRO_MIGRATE_DB"), "true")) {
-          migrateFromConfig(Sys.getenv("MIRO_MIGRATION_CONFIG_PATH"))
-          quit("no", 0L)
+          quit("no", migrateFromConfig(Sys.getenv("MIRO_MIGRATION_CONFIG_PATH")))
         } else {
           write_json(list(
             inconsistentTablesInfo = inconsistentTablesInfo,

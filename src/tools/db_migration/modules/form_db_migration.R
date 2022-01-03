@@ -477,18 +477,20 @@ migrateFromConfig <- function(path) {
     )
     noTablesMigrated <<- noTablesMigrated + 1L
   }
-  tryCatch(
+  return(tryCatch(
     {
       dbMigrator$migrateDb(migrationConfig,
         forceRemove = TRUE, callback = updateProgress
       )
       write("\n", stderr())
       write("mmigprog:::200", stderr())
+      0L
     },
     error = function(e) {
       flog.error("Problems migrating database. Error message: %s", conditionMessage(e))
       write("\n", stderr())
       write("merr:::500", stderr())
+      return(1L)
     }
-  )
+  ))
 }
