@@ -82,7 +82,7 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
     } else {
       queryToLog <- gsub(mask, "xxx", query, fixed = TRUE)
     }
-    flog.trace("Running query: '%s'", query)
+    flog.trace("Running query: '%s'", queryToLog)
     return(dbExecute(private$conn, SQL(query)))
   },
   getDbAppId = function(appId) {
