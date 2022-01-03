@@ -5,6 +5,7 @@
 <!--[if gt IE 8]><!-->
 <html class="no-js" lang="">
   <!--<![endif]-->
+
   <head>
     <title>GAMS MIRO - Download & installation</title>
     <!-- Meta -->
@@ -311,18 +312,28 @@
                             >.
                           </li>
                           <li>
-                            For MIRO to work, the system libraries libpng and
-                            libcurl need to be installed. On Debian / Ubuntu you
-                            need <i>libcurl4-gnutls-dev</i> and
-                            <i>libpng-dev</i>, on Fedora use
-                            <i>libcurl-devel</i> and <i>libpng-devel</i>. For
-                            example, to install both libraries on Ubuntu, run:
+                            For MIRO to work, compilers as well as the system
+                            libraries libpng and libcurl need to be installed.
+                            On Debian / Ubuntu you need
+                            <i>libcurl4-gnutls-dev</i> and <i>libpng-dev</i>, on
+                            Fedora use <i>libcurl-devel</i> and
+                            <i>libpng-devel</i>. For example, to install both
+                            libraries on Ubuntu, run:
                             <div class="console-box">
                               <span class="console-content"
                                 >&gt; sudo apt install libcurl4-gnutls-dev
                                 libpng-dev</span
                               >
                             </div>
+                            If there are no compilers installed on your system
+                            yet, we recommend installing build tools via:
+                            <kbd>&gt; sudo apt install build-essential</kbd> on
+                            Ubuntu or:
+                            <kbd
+                              >&gt; sudo dnf groupinstall "Development
+                              Tools"</kbd
+                            >
+                            on Fedora.
                           </li>
                           <li>
                             The first time you launch the GAMS MIRO AppImage,
