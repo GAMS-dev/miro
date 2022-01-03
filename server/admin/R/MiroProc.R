@@ -57,6 +57,9 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
     } else {
       procEnv$MIRO_OVERWRITE_SCEN_IMPORT <- "false"
     }
+    if (length(launchDbMigrationManager)) {
+      procEnv$MIRO_MIGRATE_DB_FORM_ID <- paste0("migrationForm", isolate(launchDbMigrationManager()) + 1L)
+    }
     if (is.null(migrationConfigPath)) {
       procEnv$MIRO_MIGRATION_CONFIG_PATH <- file.path(tempdir(check = TRUE), "mig_conf.json")
     } else {
@@ -103,7 +106,7 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
               ),
               list(
                 appId = appId, modelName = modelName,
-                miroVersion = miroVersion, appDir = appDir,
+                miroVersion = miroVersion, appDir = appDir, requestType = requestType,
                 dataDir = dataDir, additionalDataOnError = additionalDataOnError,
                 progressSelector = progressSelector, overwriteScen = overwriteScen,
                 successCallback = successCallback

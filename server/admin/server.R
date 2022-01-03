@@ -711,7 +711,7 @@ server <- function(input, output, session) {
       return()
     }
     migrationInfo <- miroProc$getMigrationInfo()
-    migrationConfig <- dbMigrationServer("migrationForm",
+    migrationConfig <- dbMigrationServer(paste0("migrationForm", launchDbMigrationManager()),
       migrationInfo$inconsistentTablesInfo,
       migrationInfo$orphanedTablesInfo,
       standalone = FALSE

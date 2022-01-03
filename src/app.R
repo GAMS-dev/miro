@@ -1060,7 +1060,7 @@ if (is.null(errMsg) && (debugMode || miroStoreDataOnly)) {
             inconsistentTablesInfo = inconsistentTablesInfo,
             orphanedTablesInfo = orphanedTablesInfo,
             uiContent = as.character(
-              dbMigrationForm("migrationForm",
+              dbMigrationForm(Sys.getenv("MIRO_MIGRATE_DB_FORM_ID", "migrationForm"),
                 inconsistentTablesInfo,
                 orphanedTablesInfo,
                 standalone = FALSE
