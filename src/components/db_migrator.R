@@ -222,26 +222,26 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
         currentColNamesTmp[newNamesExist] <- paste0("_", currentColNamesTmp[newNamesExist])
         for (colIdToRename in which(newNamesExist)) {
           flog.debug(
-            "Renaming columns: %s to: %s (table: %s)",
-            paste(currentColNames[colIdToRename], collapse = ", "),
-            paste(currentColNamesTmp[colIdToRename], collapse = ", "),
+            "Renaming column: %s to: %s (table: %s)",
+            paste(currentColNames[[colIdToRename]], collapse = ", "),
+            paste(currentColNamesTmp[[colIdToRename]], collapse = ", "),
             dbTableName
           )
           private$renameColumn(dbTableName,
-            oldName = currentColNames[colIdToRename],
-            newName = currentColNamesTmp[colIdToRename]
+            oldName = currentColNames[[colIdToRename]],
+            newName = currentColNamesTmp[[colIdToRename]]
           )
         }
         for (colIdToRename in which(colsToRename)) {
           flog.debug(
-            "Renaming columns: %s to: %s (table: %s)",
-            paste(currentColNamesTmp[colIdToRename], collapse = ", "),
-            paste(newSchema$colNames[colIdToRename], collapse = ", "),
+            "Renaming column: %s to: %s (table: %s)",
+            paste(currentColNamesTmp[[colIdToRename]], collapse = ", "),
+            paste(newSchema$colNames[[colIdToRename]], collapse = ", "),
             dbTableName
           )
           private$renameColumn(dbTableName,
-            oldName = currentColNamesTmp[colIdToRename],
-            newName = newSchema$colNames[colIdToRename]
+            oldName = currentColNamesTmp[[colIdToRename]],
+            newName = newSchema$colNames[[colIdToRename]]
           )
         }
         newColTypes <- tolower(dbSchema$getColTypesSQL(newSchema$colTypes))

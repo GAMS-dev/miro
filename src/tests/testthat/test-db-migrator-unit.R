@@ -2,6 +2,7 @@ context("Unit tests - DbMigrator class")
 library(futile.logger)
 library(DBI)
 library(RSQLite)
+library(jsonlite)
 
 source("../../components/db_schema.R")
 source("../../components/db.R")
@@ -117,7 +118,7 @@ for (dbType in c("sqlite", "postgres")) {
   test_that(paste0("Validating migration config works (", dbType, ")"), {
     migrationConfig <- list(results = list(
       oldTableName = "schedule1",
-      colNames = c(
+      colNames = list(
         "i", "j", "cap",
         "demand", "quantities", "-"
       )
@@ -128,21 +129,21 @@ for (dbType in c("sqlite", "postgres")) {
     migrationConfig <- list(
       results = list(
         oldTableName = "schedule",
-        colNames = c(
+        colNames = list(
           "i", "j", "cap",
           "demand", "quantities", "-"
         )
       ),
-      a = list(oldTableName = "schedule", colNames = c("i", "-", "demand"))
+      a = list(oldTableName = "schedule", colNames = list("i", "-", "demand"))
     )
     expect_error(dbMigrator$migrateDb(migrationConfig,
       forceRemove = FALSE
     ), class = "error_config", regex = "duplicate")
-    migrationConfig <- list(a = list(oldTableName = "a", colNames = c("i", "-", "demand", "-")))
+    migrationConfig <- list(a = list(oldTableName = "a", colNames = list("i", "-", "demand", "-")))
     expect_error(dbMigrator$migrateDb(migrationConfig,
       forceRemove = FALSE
     ), class = "error_config", regex = "Length of column names")
-    migrationConfig <- list(aa = list(oldTableName = "a", colNames = c("i", "-", "demand", "-")))
+    migrationConfig <- list(aa = list(oldTableName = "a", colNames = list("i", "-", "demand", "-")))
     expect_error(dbMigrator$migrateDb(migrationConfig,
       forceRemove = FALSE
     ), class = "error_config", regex = "aa")
@@ -152,14 +153,14 @@ for (dbType in c("sqlite", "postgres")) {
     migrationConfig <- list(
       results = list(
         oldTableName = "schedule",
-        colNames = c(
+        colNames = list(
           "i", "j", "cap",
           "demand", "quantities", "-"
         )
       ),
-      a = list(oldTableName = "a", colNames = c("i", "-", "value")),
-      b = list(oldTableName = "b", colNames = c("j", "value")),
-      total_cost = list(oldTableName = "total_cost", colNames = "total_cost")
+      a = list(oldTableName = "a", colNames = list("i", "-", "value")),
+      b = list(oldTableName = "b", colNames = list("j", "value")),
+      total_cost = list(oldTableName = "total_cost", colNames = list("total_cost"))
     )
     expect_error(dbMigrator$migrateDb(migrationConfig,
       forceRemove = FALSE
@@ -197,7 +198,7 @@ for (dbType in c("sqlite", "postgres")) {
         value = c(325, 300, 275)
       )
     )
-    migrationConfig <- list(a = list(oldTableName = "a", colNames = c("-", "-", "value")))
+    migrationConfig <- list(a = list(oldTableName = "a", colNames = list("-", "-", "value")))
     expect_error(dbMigrator$migrateDb(migrationConfig,
       forceRemove = FALSE
     ), class = "error_data_loss", regex = "forceRemove")
@@ -215,7 +216,7 @@ for (dbType in c("sqlite", "postgres")) {
     # swap columns
     migrationConfig <- list(ilocdata = list(
       oldTableName = "ilocdata",
-      colNames = c("i", "lat", "lng")
+      colNames = list("i", "lat", "lng")
     ))
     expect_error(dbMigrator$migrateDb(migrationConfig,
       forceRemove = FALSE
@@ -230,7 +231,7 @@ for (dbType in c("sqlite", "postgres")) {
     )
     migrationConfig <- list(ilocdata = list(
       oldTableName = "ilocdata",
-      colNames = c("i", "lat", "lng")
+      colNames = list("i", "lat", "lng")
     ))
     expect_error(dbMigrator$migrateDb(migrationConfig,
       forceRemove = FALSE
@@ -245,7 +246,7 @@ for (dbType in c("sqlite", "postgres")) {
     )
     migrationConfig <- list(d = list(
       oldTableName = "d",
-      colNames = c("i", "j", "j", "value")
+      colNames = list("i", "j", "j", "value")
     ))
     expect_error(dbMigrator$migrateDb(migrationConfig,
       forceRemove = FALSE
@@ -271,11 +272,11 @@ for (dbType in c("sqlite", "postgres")) {
     migrationConfig <- list(
       ilocdata = list(
         oldTableName = "jlocdata",
-        colNames = c("j", "lng", "lat")
+        colNames = list("j", "lng", "lat")
       ),
       jlocdata = list(
         oldTableName = "ilocdata",
-        colNames = c("i", "lng", "lat")
+        colNames = list("i", "lng", "lat")
       )
     )
     expect_error(dbMigrator$migrateDb(migrationConfig,
@@ -389,15 +390,15 @@ for (dbType in c("sqlite", "postgres")) {
     migrationConfig <- list(
       dowvsindex = list(
         oldTableName = "dowvsindex",
-        colNames = c("date", "index fund")
+        colNames = list("date", "index fund")
       ),
       stock_weight = list(
         oldTableName = "stock_weight",
-        colNames = c("-", "-")
+        colNames = list("-", "-")
       ),
       error_train2 = list(
         oldTableName = "error_train",
-        colNames = "-"
+        colNames = list("-")
       )
     )
     expect_error(dbMigrator$migrateDb(migrationConfig,
@@ -462,22 +463,6 @@ ioConfig <<- list(
   hcubeScalars = character()
 )
 
-dbSchema <<- DbSchema$new(list(
-  schema = list(
-    c = list(
-      tabName = "c",
-      colNames = c("cq", "bla", "text"),
-      colTypes = "ccc"
-    ),
-    techc = list(
-      tabName = "techc",
-      colNames = c("z", "cq", "text", "text2"),
-      colTypes = "cccc"
-    )
-  ),
-  views = list()
-))
-
 for (dbType in c("sqlite", "postgres")) {
   if (dbType == "postgres" && skipPostgres) {
     skip("Skipping Postgres tests as MIRO_DB_TYPE is not set to 'postgres'")
@@ -524,6 +509,21 @@ for (dbType in c("sqlite", "postgres")) {
     ugroups = "users", forceNew = TRUE
   )
   conn <- db$getConn()
+  dbSchema <<- DbSchema$new(list(
+    schema = list(
+      c = list(
+        tabName = "c",
+        colNames = c("cq", "bla", "text"),
+        colTypes = "ccc"
+      ),
+      techc = list(
+        tabName = "techc",
+        colNames = c("z", "cq", "text", "text2"),
+        colTypes = "cccc"
+      )
+    ),
+    views = list()
+  ))
   dbSchema$setConn(conn)
 
   dbMigrator <- DbMigrator$new(db)
@@ -532,11 +532,11 @@ for (dbType in c("sqlite", "postgres")) {
     migrationConfig <- list(
       c = list(
         oldTableName = "c",
-        colNames = c("cq", "text", "-")
+        colNames = list("cq", "text", "-")
       ),
       techc = list(
         oldTableName = "techc",
-        colNames = c("z", "cq", "text", "-")
+        colNames = list("z", "cq", "text", "-")
       )
     )
     expect_error(dbMigrator$migrateDb(migrationConfig,
@@ -572,6 +572,49 @@ for (dbType in c("sqlite", "postgres")) {
       )
     )
     expect_false(dbExistsTable(conn, "x"))
+  })
+
+  # Test migrating when columns only need to be renamed
+  dbSchema <<- DbSchema$new(list(
+    schema = list(
+      c = list(
+        tabName = "c",
+        colNames = c("c", "bla", "text"),
+        colTypes = "ccc"
+      ),
+      techc = list(
+        tabName = "techc",
+        colNames = c("z", "cq", "text", "text2"),
+        colTypes = "cccc"
+      )
+    ),
+    views = list()
+  ))
+  dbSchema$setConn(conn)
+  test_that(paste0("Renaming columns works (", dbType, "), indus89"), {
+    migrationConfig <- list(
+      c = list(
+        oldTableName = "c",
+        colNames = list("cq", "bla", "text")
+      )
+    )
+    expect_error(dbMigrator$migrateDb(migrationConfig,
+      forceRemove = TRUE
+    ), NA)
+    expect_identical(
+      dbReadTable(conn, "c")[1:4, -1],
+      data.frame(
+        c = c(
+          "basmati", "irri", "cotton",
+          "rab-fod"
+        ),
+        bla = c(
+          "rice crop", "rice crop", "",
+          "fodder crop"
+        ),
+        text = NA_character_
+      )
+    )
   })
 }
 file.rename(
