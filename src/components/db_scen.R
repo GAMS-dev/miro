@@ -29,6 +29,7 @@ Scenario <- R6Class("Scenario",
       # BEGIN error checks
       stopifnot(is.R6(db), is.logical(isNewScen), length(isNewScen) == 1L)
       private$conn <- db$getConn()
+      private$connectionInfo <- db$getInfo()
       if (length(uid) == 1L && is.character(uid)) {
         private$uid <- uid
         private$userAccessGroups <- uid
