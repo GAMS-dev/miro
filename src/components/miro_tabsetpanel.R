@@ -181,7 +181,7 @@ MIRObuildTabItem <- function(index, tabsetId, tabs = NULL,
       divTag$attribs$title,
       if (!is.null(scenID)) {
         tags$button(
-          class = "btn btn-default bt-icon", type = "button",
+          class = "btn btn-default bt-icon bt-cmp-close-scen", type = "button",
           title = scenButtonLang[["tooltip"]], style = "margin-bottom:3px;margin-left:10px;",
           onclick = paste0(
             "Miro.confirmModalShow('",

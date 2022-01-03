@@ -1,7 +1,7 @@
 # UI sidebar
 sidebar <- dashboardSidebar(
   sidebarMenu(
-    id = "sidebarMenuId",
+    id = "miroSidebar",
     menuItem(lang$nav$sidebarMenu$inputScreen, tabName = "inputData", icon = icon("sliders-h")),
     menuItem(lang$nav$sidebarMenu$outputScreen, tabName = "outputData", icon = icon("chart-pie")),
     menuItem(lang$nav$sidebarMenu$gams, tabName = "gamsinter", icon = icon("cog")),

@@ -379,7 +379,7 @@ observeEvent(input$btRefreshComp, {
 observeEvent(input$btLoadScenConfirm, {
   flog.debug("Confirm load scenario button clicked.")
   sandboxScenId <- NULL
-  if (identical(isolate(input$sidebarMenuId), "scenarios") &&
+  if (identical(isolate(input$miroSidebar), "scenarios") &&
     identical(isolate(input$tabsetLoadScen), "loadScenUI")) {
     scenSelected <- isolate(input$selLoadScenUI)
   } else {
@@ -882,7 +882,6 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     if (identical(currentCompMode, "tab")) {
       lastImportedTabsetId <<- scenId
       occupiedSidSlots[scenId - 3] <<- TRUE
-      sidCompOrder <<- c(sidCompOrder, scenId)
     }
   })
   switchTab(session, "scenComp")

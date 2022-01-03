@@ -1813,9 +1813,6 @@ if (!is.null(errMsg)) {
         }
       })
 
-      # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
-      sidCompOrder <- NULL
-
       if (config$activateModules$remoteExecution) {
         remoteModelId <- Sys.getenv("MIRO_ENGINE_MODELNAME", modelName)
       } else {
@@ -1869,171 +1866,6 @@ if (!is.null(errMsg)) {
       occupiedSidSlots <- vector("logical", length = maxNumberScenarios)
       loadInLeftBoxSplit <- TRUE
       pivotCompRefreshAll <- FALSE
-      # trigger navigation through tabs by shortcuts
-      shortcutNest <- 0L
-      nestTabsetsViaShortcuts <- function(direction) {
-        shortcutNest <<- min(2L, shortcutNest + direction)
-      }
-      observeEvent(input$tabsetShortcutNest, {
-        nestTabsetsViaShortcuts(direction = +1L)
-      })
-      observeEvent(input$tabsetShortcutUnnest, {
-        nestTabsetsViaShortcuts(direction = -1L)
-      })
-      navigateTabsViaShortcuts <- function(direction) {
-        if (isolate(input$sidebarMenuId) == "inputData") {
-          flog.trace("Navigated %d input tab (using shortcut).", direction)
-          currentGroup <- as.numeric(gsub("\\D", "", isolate(input$inputTabset)))
-          if (shortcutNest && length(inputTabs[[currentGroup]]) > 1L) {
-            currentSheet <- as.integer(strsplit(isolate(input[[paste0(
-              "inputTabset",
-              currentGroup
-            )]]), "_")[[1]][2])
-            updateTabsetPanel(
-              session, paste0("inputTabset", currentGroup),
-              paste0(
-                "inputTabset", currentGroup, "_",
-                currentSheet + direction
-              )
-            )
-          } else {
-            updateTabsetPanel(session, "inputTabset", paste0(
-              "inputTabset_",
-              currentGroup + direction
-            ))
-          }
-          return()
-        }
-        if (isolate(input$sidebarMenuId) == "outputData") {
-          flog.trace("Navigated %d output tabs (using shortcut).", direction)
-          currentGroup <- as.numeric(gsub("\\D", "", isolate(input$outputTabset)))
-          if (shortcutNest && length(outputTabs[[currentGroup]]) > 1L) {
-            currentSheet <- as.integer(strsplit(isolate(input[[paste0(
-              "outputTabset_",
-              currentGroup
-            )]]), "_")[[1]][3])
-            updateTabsetPanel(
-              session, paste0("outputTabset_", currentGroup),
-              paste0(
-                "outputTabset_",
-                currentGroup, "_", currentSheet + direction
-              )
-            )
-          } else {
-            updateTabsetPanel(
-              session, "outputTabset",
-              paste0("outputTabset_", currentGroup + direction)
-            )
-          }
-          return()
-        }
-        if (isolate(input$sidebarMenuId) == "scenarios") {
-          if (currentCompMode %in% c("split", "pivot")) {
-            flog.trace(
-              "Navigated %d data tabs in %s view scenario comparison view (using shortcut).",
-              direction, currentCompMode
-            )
-            currentScen <- if (identical(currentCompMode, "pivot")) 0L else 2L
-            currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
-              "_",
-              fixed = TRUE
-            )[[1L]][[3L]])
-            if (shortcutNest > 0L && isGroupOfSheets[[currentSheet]]) {
-              # nest to group of sheets
-              currentGroup <- currentSheet
-              currentSheet <- as.integer(strsplit(isolate(input[[paste0(
-                "contentScen_", currentScen, "_",
-                currentGroup
-              )]]),
-              "_",
-              fixed = TRUE
-              )[[1L]][[4L]])
-              updateTabsetPanel(
-                session, paste0(
-                  "contentScen_", currentScen,
-                  "_", currentGroup
-                ),
-                paste0(
-                  "contentScen_", currentScen, "_",
-                  currentGroup, "_", currentSheet + direction
-                )
-              )
-              if (identical(currentScen, 2L)) {
-                updateTabsetPanel(
-                  session, paste0(
-                    "contentScen_", currentScen + 1L,
-                    "_", currentGroup
-                  ),
-                  paste0(
-                    "contentScen_", currentScen + 1L, "_",
-                    currentGroup, "_", currentSheet + direction
-                  )
-                )
-              }
-            } else {
-              # switch to next group
-              updateTabsetPanel(
-                session, paste0("contentScen_", currentScen),
-                paste0("contentScen_", currentScen, "_", currentSheet + direction)
-              )
-              if (identical(currentScen, 2L)) {
-                updateTabsetPanel(
-                  session, paste0("contentScen_", currentScen + 1L),
-                  paste0("contentScen_", currentScen + 1L, "_", currentSheet + direction)
-                )
-              }
-            }
-            return()
-          }
-          if (is.null(sidCompOrder)) {
-            return()
-          }
-          currentScen <- as.integer(strsplit(isolate(input$scenTabset), "_", fixed = TRUE)[[1L]][[2L]])
-          if (shortcutNest > 0L) {
-            flog.trace("Navigated %d data tabs in scenario comparison view (using shortcut).", direction)
-            currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
-              "_",
-              fixed = TRUE
-            )[[1L]][[3L]])
-            if (shortcutNest > 1L && isGroupOfSheets[[currentSheet]]) {
-              # nest to group of sheets
-              currentGroup <- currentSheet
-              currentSheet <- as.integer(strsplit(isolate(input[[paste0(
-                "contentScen_", currentScen, "_",
-                currentGroup
-              )]]),
-              "_",
-              fixed = TRUE
-              )[[1L]][[4L]])
-              updateTabsetPanel(
-                session, paste0("contentScen_", currentScen, "_", currentGroup),
-                paste0(
-                  "contentScen_", currentScen, "_",
-                  currentGroup, "_", currentSheet + direction
-                )
-              )
-            } else {
-              # switch to next group
-              updateTabsetPanel(
-                session, paste0("contentScen_", currentScen),
-                paste0("contentScen_", currentScen, "_", currentSheet + direction)
-              )
-            }
-          } else {
-            flog.trace("Navigated %d scenario tabs in scenario comparison view (using shortcut).", direction)
-            # go to next scenario tab
-            idx <- which(sidCompOrder == currentScen)[1]
-            updateTabsetPanel(session, "scenTabset", paste0("scen_", sidCompOrder[idx + direction], "_"))
-          }
-          return()
-        }
-      }
-      observeEvent(input$tabsetShortcutNext, {
-        navigateTabsViaShortcuts(direction = +1L)
-      })
-      observeEvent(input$tabsetShortcutPrev, {
-        navigateTabsViaShortcuts(direction = -1L)
-      })
 
       # initially set rounding precision to default
       roundPrecision <- config$roundingDecimals
@@ -2109,13 +1941,11 @@ if (!is.null(errMsg)) {
       # boolean that specifies whether input data should be overridden
       inputOverwriteConfirmed <- FALSE
 
-      observeEvent(input$sidebarMenuId, {
-        flog.debug("Sidebar menu item: '%s' selected.", isolate(input$sidebarMenuId))
-        # reset nest level
-        shortcutNest <<- 0L
-        if (identical(input$sidebarMenuId, "scenarios")) {
+      observeEvent(input$miroSidebar, {
+        flog.debug("Sidebar menu item: '%s' selected.", isolate(input$miroSidebar))
+        if (identical(input$miroSidebar, "scenarios")) {
           isInSolveMode <<- FALSE
-        } else if (identical(input$sidebarMenuId, "importData")) {
+        } else if (identical(input$miroSidebar, "importData")) {
           rv$jobListPanel <- rv$jobListPanel + 1L
         }
       })

@@ -89,7 +89,7 @@ header_admin <- dashboardHeader(
 
 sidebar_admin <- dashboardSidebar(
   sidebarMenu(
-    id = "sidebarMenuId",
+    id = "miroSidebar",
     menuItem(lang$adminMode$uiR$general, tabName = "new_gen", icon = icon("cogs")),
     menuItem(lang$adminMode$uiR$table, tabName = "tables_gen", icon = icon("table")),
     menuItem(lang$adminMode$uiR$widgets, tabName = "new_widget", icon = icon("sliders-h")),

@@ -9,6 +9,8 @@ import {
   changeTheme, LoadingScreen, colorPickerBinding, getActualHeight,
 } from './util';
 
+import ShortcutHandler from './shortcut_handler';
+
 import {
   activateMiroPivotPresentation, deactivateMiroPivotPresentation,
   activateMiroPivotPresentationObservers,
@@ -474,8 +476,8 @@ font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
     let isLoading = false;
     $(data.id).on('scroll', () => {
       if ($(data.id)[0].scrollHeight - $(data.id).scrollTop()
-           < $(data.id).outerHeight() + 200
-          && isLoading === false) {
+        < $(data.id).outerHeight() + 200
+        && isLoading === false) {
         isLoading = true;
         Shiny.setInputValue('loadTextEntryChunk',
           {
@@ -570,7 +572,7 @@ font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
       return;
     }
     const percentCompleted = Math.round((parseInt(data.progress.noCompleted, 10)
-          / parseInt(data.progress.noTotal, 10)) * 100);
+      / parseInt(data.progress.noTotal, 10)) * 100);
     $(data.id)
       .css('width', `${percentCompleted}%`)
       .attr('aria-valuenow', percentCompleted)
@@ -761,146 +763,7 @@ checked="checked">
   Shiny.inputBindings.register(autoNumericBinding);
   Shiny.inputBindings.register(colorPickerBinding);
 });
-
-// counter
-let count = 1; // maximum number of scenarios that can be loaded in compare view
-
-const maxNumScen = 50;
-$(document).keyup((event) => {
-  if (event.keyCode === 13 && !event.ctrlKey) {
-    if ($('#shiny-modal').find('.selectize-input.input-active').length > 0
-      || $('#shiny-modal').find('*[data-dismiss="modal"]').is(':focus')) {
-      return;
-    }
-
-    $('.bt-gms-confirm:visible:enabled').click();
-    return;
-  } // ENTER will confirm modal dialogues
-
-  if (!event.ctrlKey || !event.altKey) {
-    return;
-  }
-
-  if (event.keyCode === 73) {
-    if ($('#btImport').is(':visible')) {
-      $('#btImport').click();
-    } else if ($('#btLoadScen').is(':visible')) {
-      $('#btLoadScen').click();
-    }
-    return;
-  } // Import shortcut: CTRL + ALT + I
-
-  if (event.keyCode === 83) {
-    Shiny.setInputValue('btSave', 1, {
-      priority: 'event',
-    });
-    return;
-  } // SAVE shortcut: CTRL + ALT + S
-
-  if (event.keyCode === 13) {
-    $('#btSolve:visible:enabled').click();
-    return;
-  } // Solve shortcut: CTRL + ALT + ENTER
-
-  if (event.keyCode === 82) {
-    Shiny.setInputValue('btDelete', 1, {
-      priority: 'event',
-    });
-    return;
-  } // Remove shortcut: CTRL + ALT + R
-
-  if (event.keyCode === 67) {
-    $('.btRemove:visible').click();
-    return;
-  } // Close shortcut (remove button in input sheet): CTRL + ALT + C
-
-  if (event.keyCode === 67) {
-    for (let i = 2; i <= maxNumScen; i += 1) {
-      $(`#close_${i}:visible`).click();
-    }
-    return;
-  } // Close shortcut (remove button in output sheet): CTRL + ALT + C
-
-  if (event.keyCode === 70) {
-    $('body').toggleClass('sidebar-collapse');
-    rerenderHot(400);
-    return;
-  } // Fullscreen mode (hide sidebar) shortcut: CTRL + ALT + F
-
-  if (event.keyCode === 49) {
-    $('a[href="#shiny-tab-inputData"]').click();
-    return;
-  } // Select input menu shortcut: CTRL + ALT + 1
-
-  if (event.keyCode === 50) {
-    const tab = $('a[href="#shiny-tab-outputData"]');
-
-    if (tab.length > 0) {
-      tab.click();
-    } else {
-      $('a[href="#shiny-tab-importData"]').click();
-    }
-    return;
-  } // Select output menu shortcut: CTRL + ALT + 2
-
-  if (event.keyCode === 51) {
-    const tab = $('a[href="#shiny-tab-gamsinter"]');
-
-    if (tab.length > 0) {
-      tab.click();
-    } else {
-      $('a[href="#shiny-tab-loadResults"]').click();
-    }
-    return;
-  } // Select gams interaction menu shortcut: CTRL + ALT + 3
-
-  if (event.keyCode === 52) {
-    $('a[href="#shiny-tab-scenarios"]').click();
-    return;
-  }// Select scenario menu shortcut: CTRL + ALT + 4
-
-  if (event.keyCode === 84) {
-    if ($('#btGraphIn').is(':visible')) {
-      $('#btGraphIn:enabled').click();
-      return;
-    }
-
-    if ($('#outputTableView').is(':visible')) {
-      $('#outputTableView').click();
-      return;
-    }
-
-    for (let i = 2; i <= maxNumScen + 3; i += 1) {
-      $(`#table_${i}:visible`).click();
-    }
-    return;
-  } // Table view (scenario compare mode) shortcut: CTRL + ALT + T
-
-  if (event.keyCode === 39) {
-    Shiny.onInputChange('tabsetShortcutNext', count);
-    count += 1;
-    return;
-  } // Select next tab shortcut: CTRL + ALT + arrow right
-
-  if (event.keyCode === 37) {
-    Shiny.onInputChange('tabsetShortcutPrev', count);
-    count += 1;
-    return;
-  } // Select previous tab shortcut: CTRL + ALT + arrow left
-
-  if (event.keyCode === 40) {
-    Shiny.onInputChange('tabsetShortcutNest', count);
-    count += 1;
-    return;
-  } // Nest to next lower tabset shortcut: CTRL + ALT + arrow down
-
-  if (event.keyCode === 38) {
-    Shiny.onInputChange('tabsetShortcutUnnest', count);
-    count += 1;
-    return;
-  } // Unnest to next higher tabset shortcut: CTRL + ALT + arrow up
-
-  if (event.keyCode === 32 && $('#btCompareScen').is(':enabled') && $('#btCompareScen').is(':visible')) {
-    $('#btCompareScen').click();
-  }// Activate/deactivate scenario comparison mode: CTRL + ALT + space
+const shortcutHandler = new ShortcutHandler(50);
+$(document).on('keyup', (event) => {
+  shortcutHandler.applyShortcut(event);
 });
