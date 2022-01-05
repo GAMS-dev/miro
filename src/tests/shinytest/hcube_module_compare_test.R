@@ -164,7 +164,7 @@ Sys.sleep(2L)
 expect_true(app$waitFor(paste0(
   "$('#cmpScenTitle_5').text()==='",
   scenHashTmp, "'"
-), timeout = 50L))
+), timeout = 2000L))
 expect_true(app$waitFor("$('.small-box:visible')[0].textContent.trim().startsWith('12')", timeout = 50L))
 expect_true(app$waitFor("$('.small-box:visible')[1].textContent.trim().startsWith('99')", timeout = 50))
 app$setInputs(contentScen_5 = "contentScen_5_1")
