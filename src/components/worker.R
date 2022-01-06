@@ -1800,7 +1800,11 @@ Worker <- R6Class("Worker", public = list(
         ),
         timeout(10L)
       )
-    )$results[[1]]
+    )$results
+    if (length(jobProgress) < 1L) {
+      stop(404L)
+    }
+    jobProgress <- jobProgress[[1]]
     return(c(jobProgress$finished, jobProgress$job_count, jobProgress$successfully_finished))
   },
   getHcubeJobStatusRemote = function(pID, jID) {
