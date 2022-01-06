@@ -1000,7 +1000,7 @@ XlsIO <- R6::R6Class("XlsIO",
           ), call. = FALSE)
         }
       } else {
-        indexDf[["cdim"]] <- indexDf[["dim"]] - 1L
+        indexDf[["rdim"]] <- indexDf[["dim"]] - 1L
         indexDf[["cdim"]] <- 1L
       }
       if ("values" %in% names(indexDf)) {

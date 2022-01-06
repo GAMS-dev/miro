@@ -632,6 +632,16 @@ test_that("Reading symbols without data works", {
   )
 })
 
+test_that("Reading index with neither rdim nor cdim works", {
+  expect_identical(
+    xlsio$read("../data/exampleData.xlsx", "i5", indexRange = "minimalIndex", forceInit = TRUE),
+    tibble(
+      uni = c("cleveland", "chicago", "boston", "san francisco", "dallas"),
+      text = c("city1", "city2", "city3", "city4", "city5")
+    )
+  )
+})
+
 test_that("Reading Excel without index works", {
   expect_identical(
     xlsio$read("../data/exampleData.xlsx", "i11", forceInit = TRUE),
