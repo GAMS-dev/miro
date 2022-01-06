@@ -1296,7 +1296,8 @@
         "widgetType": "Wählen Sie ein Widget",
         "alias": "Beschriftung für den Reiter des Elements (keine Live-Vorschau)",
         "pivotColsRestriction": "Hinweis: Es ist nicht möglich, Spalten in der Symboltabelle hinzuzufügen oder zu löschen, wenn sie schreibgeschützt ist oder als Heatmap dargestellt wird.",
-		"notConfigurable": "Die in Ihrer JSON-Datei gefundene Widgetkonfiguration wird derzeit für den ausgewählten Symboltyp im Konfigurationsmodus nicht unterstützt! Dies bedeutet nicht, dass die Konfiguration ungültig ist. Symbol: '%s'; Konfiguriertes Widget: '%s'"
+		"notConfigurable": "Die in Ihrer JSON-Datei gefundene Widgetkonfiguration wird derzeit für den ausgewählten Symboltyp im Konfigurationsmodus nicht unterstützt! Dies bedeutet nicht, dass die Konfiguration ungültig ist. Symbol: '%s'; Konfiguriertes Widget: '%s'",
+        "tooltip": "Anmerkung / Tooltip (optional)"
       },
       "validate":{
         "val1": "Der Alias des Elements darf nicht leer sein!",

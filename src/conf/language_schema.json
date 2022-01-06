@@ -5058,9 +5058,13 @@
                 "notConfigurable": {
                   "type": "string",
                   "minLength": 1
+                },
+                "tooltip": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 25
+              "minProperties": 26
             },
             "validate": {
               "type": "object",

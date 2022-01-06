@@ -54,6 +54,22 @@ checkNotFALSE <- function(configuredWithThisTool = FALSE, el = NULL) {
   }
 }
 labelTooltip <- function(label = NULL, tooltip = NULL, href = NULL) {
+  if (is.null(href)) {
+    return(
+      tags$span(
+        label,
+        tags$span(
+          `data-tooltip` = tooltip,
+          class = "info-wrapper tooltip-mobile",
+          tags$span(
+            class = "fas fa-info-circle", class = "info-icon",
+            role = "presentation",
+            `aria-label` = "More information"
+          )
+        )
+      )
+    )
+  }
   return(
     tags$div(
       label,

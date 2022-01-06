@@ -94,10 +94,14 @@ if (buildUI) {
       hasDependency <- !is.null(modelInWithDep[[names(modelIn)[[i]]]])
       tabContent <- switch(modelIn[[i]]$type,
         slider = {
+          widgetlabel <- modelIn[[i]]$slider$label
+          if (!is.null(modelIn[[i]]$slider$tooltip)) {
+            widgetlabel <- widgetTooltip(widgetlabel, modelIn[[i]]$slider$tooltip)
+          }
           if (hasDependency) {
             sliderStepSize <- 1L
             slider <- sliderInput(paste0("slider_", i),
-              label = modelIn[[i]]$slider$label, min = NULL, max = NULL,
+              label = widgetlabel, min = NULL, max = NULL,
               value = if (length(modelIn[[i]]$slider$default) > 1) {
                 numeric(2L)
               } else {
@@ -120,7 +124,7 @@ if (buildUI) {
             slider <- tagList(
               tags$ul(class = "err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
               sliderInput(paste0("slider_", i),
-                label = modelIn[[i]]$slider$label,
+                label = widgetlabel,
                 min = sliderValues[[sliderName]]$min,
                 max = sliderValues[[sliderName]]$max,
                 value = sliderValues[[sliderName]]$def,
@@ -133,11 +137,15 @@ if (buildUI) {
           slider
         },
         dropdown = {
+          widgetlabel <- modelIn[[i]]$dropdown$label
+          if (!is.null(modelIn[[i]]$dropdown$tooltip)) {
+            widgetlabel <- widgetTooltip(widgetlabel, modelIn[[i]]$dropdown$tooltip)
+          }
           if (hasDependency) {
             tagList(
               tags$ul(class = "err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
               tagAppendAttributes(selectInput(paste0("dropdown_", i),
-                label = modelIn[[i]]$dropdown$label,
+                label = widgetlabel,
                 choices = character(0), selected = character(0),
                 multiple = isTRUE(modelIn[[i]]$dropdown$multiple)
               ),
@@ -157,7 +165,7 @@ if (buildUI) {
             tagList(
               tags$ul(class = "err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
               selectInput(paste0("dropdown_", i),
-                label = modelIn[[i]]$dropdown$label,
+                label = widgetlabel,
                 choices = choices,
                 selected = modelIn[[i]]$dropdown$selected,
                 multiple = if (identical(
@@ -173,10 +181,14 @@ if (buildUI) {
           }
         },
         dropdowne = {
+          widgetlabel <- modelIn[[i]]$dropdowne$label
+          if (!is.null(modelIn[[i]]$dropdowne$tooltip)) {
+            widgetlabel <- widgetTooltip(widgetlabel, modelIn[[i]]$dropdowne$tooltip)
+          }
           tagList(
             tags$ul(class = "err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
             selectInput(paste0("dropdowne_", i),
-              label = modelIn[[i]]$dropdowne$label,
+              label = widgetlabel,
               choices = character(0), selected = character(0),
               multiple = if (identical(
                 modelIn[[i]]$dropdowne$multiple,
@@ -190,10 +202,14 @@ if (buildUI) {
           )
         },
         daterange = {
+          widgetlabel <- modelIn[[i]]$daterange$label
+          if (!is.null(modelIn[[i]]$daterange$tooltip)) {
+            widgetlabel <- widgetTooltip(widgetlabel, modelIn[[i]]$daterange$tooltip)
+          }
           tagList(
             tags$ul(class = "err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
             dateRangeInput(paste0("daterange_", i),
-              label = modelIn[[i]]$daterange$label,
+              label = widgetlabel,
               start = modelIn[[i]]$daterange$start,
               end = modelIn[[i]]$daterange$end,
               min = modelIn[[i]]$daterange$min,
@@ -223,10 +239,14 @@ if (buildUI) {
           )
         },
         date = {
+          widgetlabel <- modelIn[[i]]$date$label
+          if (!is.null(modelIn[[i]]$date$tooltip)) {
+            widgetlabel <- widgetTooltip(widgetlabel, modelIn[[i]]$date$tooltip)
+          }
           tagList(
             tags$ul(class = "err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
             dateInput(paste0("date_", i),
-              label = modelIn[[i]]$date$label,
+              label = widgetlabel,
               value = modelIn[[i]]$date$value, min = modelIn[[i]]$date$min,
               max = modelIn[[i]]$date$max, format = modelIn[[i]]$date$format,
               startview = modelIn[[i]]$date$startview,
@@ -237,6 +257,10 @@ if (buildUI) {
           )
         },
         checkbox = {
+          widgetlabel <- modelIn[[i]]$checkbox$label
+          if (!is.null(modelIn[[i]]$checkbox$tooltip)) {
+            widgetlabel <- widgetTooltip(widgetlabel, modelIn[[i]]$checkbox$tooltip)
+          }
           if (hasDependency) {
             tagList(
               tags$ul(class = "err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
@@ -244,7 +268,7 @@ if (buildUI) {
                 id = paste0("cbDiv_", i), style = "display:none;",
                 tags$label(
                   class = "cb-label", "for" = paste0("cb_", i),
-                  modelIn[[i]]$checkbox$label
+                  widgetlabel
                 ),
                 tags$div(
                   tags$label(
@@ -265,7 +289,7 @@ if (buildUI) {
           } else {
             tagList(
               tags$ul(class = "err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-              tags$label(class = "cb-label", "for" = paste0("cb_", i), modelIn[[i]]$checkbox$label),
+              tags$label(class = "cb-label", "for" = paste0("cb_", i), widgetlabel),
               tags$div(
                 tags$label(
                   class = modelIn[[i]]$checkbox$class, "for" = paste0("cb_", i),
@@ -280,10 +304,14 @@ if (buildUI) {
           }
         },
         textinput = {
+          widgetlabel <- modelIn[[i]]$textinput$label
+          if (!is.null(modelIn[[i]]$textinput$tooltip)) {
+            widgetlabel <- widgetTooltip(widgetlabel, modelIn[[i]]$textinput$tooltip)
+          }
           tagList(
             tags$ul(class = "err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
             textInput(paste0("text_", i),
-              label = modelIn[[i]]$textinput$label,
+              label = widgetlabel,
               value = modelIn[[i]]$textinput$value,
               width = modelIn[[i]]$textinput$width,
               placeholder = modelIn[[i]]$textinput$placeholder
@@ -291,10 +319,14 @@ if (buildUI) {
           )
         },
         numericinput = {
+          widgetlabel <- modelIn[[i]]$numericinput$label
+          if (!is.null(modelIn[[i]]$numericinput$tooltip)) {
+            widgetlabel <- widgetTooltip(widgetlabel, modelIn[[i]]$numericinput$tooltip)
+          }
           tagList(
             tags$ul(class = "err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
             autoNumericInput(paste0("numeric_", i),
-              label = modelIn[[i]]$numericinput$label,
+              label = widgetlabel,
               value = modelIn[[i]]$numericinput$value,
               min = modelIn[[i]]$numericinput$min,
               max = modelIn[[i]]$numericinput$max,

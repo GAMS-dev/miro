@@ -478,6 +478,11 @@
                      "type":["string","null"],
                      "minLength":1
                    },
+                   "tooltip":{
+                     "description":"Widget tooltip",
+                     "type":["string","null"],
+                     "minLength":1
+                   },
                    "min":{
                      "description":"Minimum value of inputdata",
                      "type":[
@@ -552,6 +557,11 @@
                       "type":["string","null"],
                       "minLength":1
                     },
+                   "tooltip":{
+                     "description":"Widget tooltip",
+                     "type":["string","null"],
+                     "minLength":1
+                   },
                     "choices":{
                       "description":"List of values to select from.",
                       "type":[
@@ -627,6 +637,11 @@
                    },
                    "label":{
                      "description":"display label for the date selector",
+                     "type":["string","null"],
+                     "minLength":1
+                   },
+                   "tooltip":{
+                     "description":"Widget tooltip",
                      "type":["string","null"],
                      "minLength":1
                    },
@@ -735,6 +750,11 @@
                      "type":["string","null"],
                      "minLength":1
                    },
+                   "tooltip":{
+                     "description":"Widget tooltip",
+                     "type":["string","null"],
+                     "minLength":1
+                   },
                    "start":{
                      "description":"initial start date",
                      "type":["string","null"],
@@ -829,6 +849,11 @@
                      "type":["string","null"],
                      "minLength":1
                    },
+                   "tooltip":{
+                     "description":"Widget tooltip",
+                     "type":["string","null"],
+                     "minLength":1
+                   },
                    "value":{
                      "description":"default value",
                      "type": "integer",
@@ -881,6 +906,11 @@
                      "type":["string","null"],
                      "minLength":1
                    },
+                   "tooltip":{
+                     "description":"Widget tooltip",
+                     "type":["string","null"],
+                     "minLength":1
+                   },
                    "value":{
                      "description":"default value",
                      "type":["string","null"]
@@ -926,6 +956,11 @@
                    },
                    "label":{
                      "description":"display label for the numericinput",
+                     "type":["string","null"],
+                     "minLength":1
+                   },
+                   "tooltip":{
+                     "description":"Widget tooltip",
                      "type":["string","null"],
                      "minLength":1
                    },

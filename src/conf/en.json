@@ -1296,7 +1296,8 @@
         "widgetType": "Select widget type",
         "alias": "Name of the widget tab (no live preview)",
         "pivotColsRestriction": "Note: It is not possible to add or delete columns in the symbol table if it is set to readonly or displayed as a heatmap.",
-		"notConfigurable": "The widget configuration found in your JSON file is currently not supported for the selected symbol type in Configuration Mode! This does not imply that the configuration is invalid. Symbol: '%s'; Configured widget type: '%s'"
+		"notConfigurable": "The widget configuration found in your JSON file is currently not supported for the selected symbol type in Configuration Mode! This does not imply that the configuration is invalid. Symbol: '%s'; Configured widget type: '%s'",
+        "tooltip": "Tooltip (optional)"
       },
       "validate":{
         "val1": "The alias of the element must not be empty!",

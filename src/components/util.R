@@ -758,6 +758,23 @@ checkboxInput_MIRO <- function(inputId, label, value = FALSE) {
     )
   )
 }
+widgetTooltip <- function(label = NULL, tooltip = NULL, mobile = FALSE) {
+  return(
+    tags$span(
+      label,
+      tags$span(
+        `data-tooltip` = tooltip,
+        class = "info-wrapper tooltip-mobile",
+        class = if (mobile) "always-mobile",
+        tags$span(
+          class = "fas fa-info-circle", class = "info-icon",
+          role = "presentation",
+          `aria-label` = "More information"
+        )
+      )
+    )
+  )
+}
 autoNumericInput <- function(id, label = NULL, value = NULL, min = NULL, max = NULL,
                              sign = NULL, decimal = NULL, decimalCharacter = NULL, digitGroupSeparator = NULL) {
   HTML(paste0(

@@ -2496,3 +2496,80 @@ html {
 .table-add-row {
   min-width: 150px;
 }
+[data-tooltip] {
+  cursor: pointer;
+  display: inline-block;
+  line-height: 1;
+  position: relative;
+  &::after {
+    border-radius: .3rem;
+    content: attr(data-tooltip);
+    font-size: 85%;
+    font-weight: normal;
+    padding: .25rem .5rem;
+    position: absolute;
+    text-align: center;
+    visibility: hidden;
+    z-index: 811; /*sidebar has 810 */
+    .responsiveDark({
+       background-color: fade(@log-text, 90%);
+       color: @btn-icon-color;
+    },
+    {
+       background-color: fade(@log-text-dark, 90%);
+       color: @text-color-dark;
+    });
+    margin-right: 3px;
+    right: calc(110% - .3rem);
+    margin-top: -.3rem;
+    max-width: 30rem;
+    width: max-content;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &.tooltip-mobile {
+    @media (max-width: 767px) {
+      &::before {
+        display: none;
+      }
+
+      &:after {
+        font-size: 100%;
+        line-height: 100%;
+        max-width: 20rem;
+        position: fixed;
+        bottom: auto;
+        top: 50%;
+        right: 50%;
+        transform: translate(50%);
+        text-align: left;
+        white-space: normal;
+      }
+    }
+  }
+  &.always-mobile {
+      &::before {
+        display: none;
+      }
+
+      &:after {
+        font-size: 100%;
+        line-height: 100%;
+        max-width: 20rem;
+        position: fixed;
+        bottom: auto;
+        top: 50%;
+        right: 50%;
+        transform: translate(50%);
+        text-align: left;
+        white-space: normal;
+      }
+  }
+
+  &:hover::after,
+  &[class=tooltip-mobile]:hover::before {
+    visibility: visible;
+    opacity: 1;
+  }
+}

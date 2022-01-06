@@ -501,6 +501,7 @@ observeEvent(input$widget_symbol_type, {
     hideEl(session, "#deleteWidget")
     hideEl(session, "#externalConfigMsg")
     updateTextInput(session, "widget_label", value = "")
+    updateTextInput(session, "widget_tooltip", value = "")
     if (identical(input$widget_symbol_type, "dd")) {
       updateTextInput(session, "widget_dd", value = "")
       updateSelectInput(session, "widget_type",
@@ -611,6 +612,7 @@ observeEvent(
         }
         rv$widgetConfig$minStep <- currentConfig$minStep
         rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
+        rv$widgetConfig$tooltip <- checkLength(TRUE, currentConfig$tooltip, NULL)
         dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
         dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
         dynamicDef <- getWidgetDependencies("slider", rv$widgetConfig$default)
@@ -636,7 +638,8 @@ observeEvent(
           tagList(
             tags$div(
               class = "shiny-input-container",
-              textInput("widget_label", lang$adminMode$widgets$slider$label, value = rv$widgetConfig$label)
+              textInput("widget_label", lang$adminMode$widgets$slider$label, value = rv$widgetConfig$label),
+              textInput("widget_tooltip", lang$adminMode$widgets$ui$tooltip, value = rv$widgetConfig$tooltip)
             ),
             tags$div(
               class = "shiny-input-container highlight-block",
@@ -873,7 +876,11 @@ observeEvent(
           where = "beforeEnd"
         )
         output$widget_preview <- renderUI({
-          sliderInput("slider_preview", rv$widgetConfig$label,
+          widgetlabel <- rv$widgetConfig$label
+          if (!is.null(rv$widgetConfig$tooltip)) {
+            widgetlabel <- labelTooltip(widgetlabel, rv$widgetConfig$tooltip)
+          }
+          sliderInput("slider_preview", widgetlabel,
             min = if (is.numeric(rv$widgetConfig$min)) rv$widgetConfig$min else 0L,
             max = if (is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max else 10L,
             value = if (is.numeric(rv$widgetConfig$default)) rv$widgetConfig$default else 2L,
@@ -904,6 +911,7 @@ observeEvent(
         }
         rv$widgetConfig$minStep <- currentConfig$minStep
         rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
+        rv$widgetConfig$tooltip <- checkLength(TRUE, currentConfig$tooltip, NULL)
         dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
         dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
         staticMinInput <- numericInput("slider_min", lang$adminMode$widgets$sliderrange$min,
@@ -918,7 +926,8 @@ observeEvent(
           tagList(
             tags$div(
               class = "shiny-input-container",
-              textInput("widget_label", lang$adminMode$widgets$sliderrange$label, value = rv$widgetConfig$label)
+              textInput("widget_label", lang$adminMode$widgets$sliderrange$label, value = rv$widgetConfig$label),
+              textInput("widget_tooltip", lang$adminMode$widgets$ui$tooltip, value = rv$widgetConfig$tooltip)
             ),
             tags$div(
               class = "shiny-input-container highlight-block",
@@ -1093,7 +1102,11 @@ observeEvent(
           where = "beforeEnd"
         )
         output$widget_preview <- renderUI({
-          sliderInput("slider_preview", rv$widgetConfig$label,
+          widgetlabel <- rv$widgetConfig$label
+          if (!is.null(rv$widgetConfig$tooltip)) {
+            widgetlabel <- labelTooltip(widgetlabel, rv$widgetConfig$tooltip)
+          }
+          sliderInput("slider_preview", widgetlabel,
             min = if (is.numeric(rv$widgetConfig$min)) rv$widgetConfig$min else 0L,
             max = if (is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max else 10L,
             value = rv$widgetConfig$default,
@@ -1116,6 +1129,7 @@ observeEvent(
           rv$widgetConfig$alias <- widgetAlias
         }
         rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
+        rv$widgetConfig$tooltip <- checkLength(TRUE, currentConfig$tooltip, NULL)
         rv$widgetConfig$aliases <- currentConfig$aliases
         dynamicChoices <- getWidgetDependencies("dropdown", rv$widgetConfig$choices)
         singletonSetId <- NA_integer_
@@ -1150,7 +1164,8 @@ observeEvent(
           tagList(
             tags$div(
               class = "shiny-input-container",
-              textInput("widget_label", lang$adminMode$widgets$dropdown$label, value = rv$widgetConfig$label)
+              textInput("widget_label", lang$adminMode$widgets$dropdown$label, value = rv$widgetConfig$label),
+              textInput("widget_tooltip", lang$adminMode$widgets$ui$tooltip, value = rv$widgetConfig$tooltip)
             ),
             tags$div(
               class = "shiny-input-container conditional highlight-block",
@@ -1270,7 +1285,11 @@ observeEvent(
             req(identical(length(rv$widgetConfig$choices), length(rv$widgetConfig$aliases)))
             choices <- setNames(rv$widgetConfig$choices, rv$widgetConfig$aliases)
           }
-          selectInput("dropdown_preview", rv$widgetConfig$label,
+          widgetlabel <- rv$widgetConfig$label
+          if (!is.null(rv$widgetConfig$tooltip)) {
+            widgetlabel <- labelTooltip(widgetlabel, rv$widgetConfig$tooltip)
+          }
+          selectInput("dropdown_preview", widgetlabel,
             choices = choices,
             selected = rv$widgetConfig$selected, multiple = rv$widgetConfig$multiple
           )
@@ -1287,12 +1306,14 @@ observeEvent(
           rv$widgetConfig$alias <- widgetAlias
         }
         rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
+        rv$widgetConfig$tooltip <- checkLength(TRUE, currentConfig$tooltip, NULL)
         insertUI(
           selector = "#widget_options",
           tagList(
             tags$div(
               class = "shiny-input-container",
-              textInput("widget_label", lang$adminMode$widgets$checkbox$label, value = rv$widgetConfig$label)
+              textInput("widget_label", lang$adminMode$widgets$checkbox$label, value = rv$widgetConfig$label),
+              textInput("widget_tooltip", lang$adminMode$widgets$ui$tooltip, value = rv$widgetConfig$tooltip)
             ),
             tags$div(
               class = "shiny-input-container",
@@ -1315,10 +1336,14 @@ observeEvent(
         )
 
         output$widget_preview <- renderUI({
+          widgetlabel <- rv$widgetConfig$label
+          if (!is.null(rv$widgetConfig$tooltip)) {
+            widgetlabel <- labelTooltip(widgetlabel, rv$widgetConfig$tooltip)
+          }
           tagList(
             checkboxInput_MIRO(
               "checkbox_preview",
-              rv$widgetConfig$label,
+              widgetlabel,
               rv$widgetConfig$value
             )
           )
@@ -1338,6 +1363,7 @@ observeEvent(
         }
         rv$widgetConfig$value <- currentConfig$value
         rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
+        rv$widgetConfig$tooltip <- checkLength(TRUE, currentConfig$tooltip, NULL)
         rv$widgetConfig$min <- currentConfig$min
         rv$widgetConfig$max <- currentConfig$max
         rv$widgetConfig$daysofweekdisabled <- currentConfig$daysofweekdisabled
@@ -1346,7 +1372,8 @@ observeEvent(
           tagList(
             tags$div(
               class = "shiny-input-container",
-              textInput("widget_label", lang$adminMode$widgets$date$label, value = rv$widgetConfig$label)
+              textInput("widget_label", lang$adminMode$widgets$date$label, value = rv$widgetConfig$label),
+              textInput("widget_tooltip", lang$adminMode$widgets$ui$tooltip, value = rv$widgetConfig$tooltip)
             ),
             tags$div(
               class = "shiny-input-container",
@@ -1498,8 +1525,12 @@ observeEvent(
           where = "beforeEnd"
         )
         output$widget_preview <- renderUI({
+          widgetlabel <- rv$widgetConfig$label
+          if (!is.null(rv$widgetConfig$tooltip)) {
+            widgetlabel <- labelTooltip(widgetlabel, rv$widgetConfig$tooltip)
+          }
           dateInput("date_preview",
-            label = rv$widgetConfig$label,
+            label = widgetlabel,
             value = rv$widgetConfig$value, min = rv$widgetConfig$min, max = rv$widgetConfig$max,
             format = rv$widgetConfig$format, startview = rv$widgetConfig$startview,
             weekstart = rv$widgetConfig$weekstart, daysofweekdisabled = rv$widgetConfig$daysofweekdisabled,
@@ -1522,6 +1553,7 @@ observeEvent(
         }
         rv$widgetConfig[["start"]] <- currentConfig[["start"]]
         rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
+        rv$widgetConfig$tooltip <- checkLength(TRUE, currentConfig$tooltip, NULL)
         rv$widgetConfig$end <- currentConfig$end
         rv$widgetConfig$min <- currentConfig$min
         rv$widgetConfig$max <- currentConfig$max
@@ -1531,7 +1563,8 @@ observeEvent(
           tagList(
             tags$div(
               class = "shiny-input-container",
-              textInput("widget_label", lang$adminMode$widgets$daterange$label, value = rv$widgetConfig$label)
+              textInput("widget_label", lang$adminMode$widgets$daterange$label, value = rv$widgetConfig$label),
+              textInput("widget_tooltip", lang$adminMode$widgets$ui$tooltip, value = rv$widgetConfig$tooltip)
             ),
             tags$div(
               class = "shiny-input-container",
@@ -1716,8 +1749,12 @@ observeEvent(
           where = "beforeEnd"
         )
         output$widget_preview <- renderUI({
+          widgetlabel <- rv$widgetConfig$label
+          if (!is.null(rv$widgetConfig$tooltip)) {
+            widgetlabel <- labelTooltip(widgetlabel, rv$widgetConfig$tooltip)
+          }
           dateRangeInput("daterange_preview",
-            label = rv$widgetConfig$label,
+            label = widgetlabel,
             start = rv$widgetConfig$start, end = rv$widgetConfig$end,
             min = rv$widgetConfig$min, max = rv$widgetConfig$max,
             format = rv$widgetConfig$format, startview = rv$widgetConfig$startview,
@@ -1737,6 +1774,7 @@ observeEvent(
           rv$widgetConfig$alias <- widgetAlias
         }
         rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
+        rv$widgetConfig$tooltip <- checkLength(TRUE, currentConfig$tooltip, NULL)
         singletonSetId <- NA_integer_
         if (scalarsFileName %in% names(modelInRaw)) {
           singletonSetId <- match(currentWidgetSymbolName, modelInRaw[[scalarsFileName]]$symnames)[1L]
@@ -1746,7 +1784,8 @@ observeEvent(
           tagList(
             tags$div(
               class = "shiny-input-container",
-              textInput("widget_label", lang$adminMode$widgets$textinput$label, value = rv$widgetConfig$label)
+              textInput("widget_label", lang$adminMode$widgets$textinput$label, value = rv$widgetConfig$label),
+              textInput("widget_tooltip", lang$adminMode$widgets$ui$tooltip, value = rv$widgetConfig$tooltip)
             ),
             tags$div(
               class = "shiny-input-container two-col-wrapper",
@@ -1780,7 +1819,11 @@ observeEvent(
         )
 
         output$widget_preview <- renderUI({
-          textInput("textinput_preview", rv$widgetConfig$label,
+          widgetlabel <- rv$widgetConfig$label
+          if (!is.null(rv$widgetConfig$tooltip)) {
+            widgetlabel <- labelTooltip(widgetlabel, rv$widgetConfig$tooltip)
+          }
+          textInput("textinput_preview", widgetlabel,
             value = rv$widgetConfig$value,
             placeholder = rv$widgetConfig$placeholder
           )
@@ -1801,12 +1844,14 @@ observeEvent(
           rv$widgetConfig$alias <- widgetAlias
         }
         rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
+        rv$widgetConfig$tooltip <- checkLength(TRUE, currentConfig$tooltip, NULL)
         insertUI(
           selector = "#widget_options",
           tagList(
             tags$div(
               class = "shiny-input-container",
-              textInput("widget_label", lang$adminMode$widgets$numericinput$label, value = rv$widgetConfig$label)
+              textInput("widget_label", lang$adminMode$widgets$numericinput$label, value = rv$widgetConfig$label),
+              textInput("widget_tooltip", lang$adminMode$widgets$ui$tooltip, value = rv$widgetConfig$tooltip)
             ),
             tags$div(
               class = "shiny-input-container two-col-wrapper",
@@ -1868,8 +1913,12 @@ observeEvent(
         )
 
         output$widget_preview <- renderUI({
+          widgetlabel <- rv$widgetConfig$label
+          if (!is.null(rv$widgetConfig$tooltip)) {
+            widgetlabel <- labelTooltip(widgetlabel, rv$widgetConfig$tooltip)
+          }
           autoNumericInput("numericinput_preview",
-            label = rv$widgetConfig$label,
+            label = widgetlabel,
             value = rv$widgetConfig$value,
             min = rv$widgetConfig$min,
             max = rv$widgetConfig$max,
@@ -1904,6 +1953,13 @@ observeEvent(input$widget_label, {
     rv$widgetConfig$label <<- input$widget_label
   } else {
     rv$widgetConfig$label <<- NULL
+  }
+})
+observeEvent(input$widget_tooltip, {
+  if (nchar(input$widget_tooltip)) {
+    rv$widgetConfig$tooltip <<- input$widget_tooltip
+  } else {
+    rv$widgetConfig$tooltip <<- NULL
   }
 })
 observeEvent(input$widget_multiple, {

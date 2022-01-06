@@ -917,6 +917,10 @@ if (identical(config$activateModules$hcube, TRUE)) {
             scalarConfig <- config$hcModule$scalarsConfig[[widgetId]]
             symId <- match(scalarConfig$name, names(modelIn))
             dependencyId <- match(scalarConfig$name, names(modelInWithDep))
+            widgetlabel <- scalarConfig$label
+            if (!is.null(scalarConfig$tooltip)) {
+              widgetlabel <- widgetTooltip(widgetlabel, scalarConfig$tooltip, mobile = TRUE)
+            }
             tags$div(class = "col-md-6 hc-widget-row", {
               if (identical(scalarConfig$type, "dropdown")) {
                 if (identical(scalarConfig$baseType, "checkbox")) {
@@ -928,7 +932,7 @@ if (identical(config$activateModules$hcube, TRUE)) {
                   scalarConfig$choices <- isolate(getData[[dependencyId]]())
                 }
                 selectInput(paste0("hcWidget_", widgetId),
-                  label = scalarConfig$label,
+                  label = widgetlabel,
                   choices = scalarConfig$choices,
                   selected = dropdownVal,
                   multiple = TRUE,
@@ -952,7 +956,7 @@ if (identical(config$activateModules$hcube, TRUE)) {
                   tags$div(
                     class = if (scalarConfig$single) "col-sm-10" else "col-sm-8",
                     sliderInput(paste0("hcWidget_", widgetId),
-                      label = scalarConfig$label,
+                      label = widgetlabel,
                       min = scalarConfig$min,
                       max = scalarConfig$max,
                       value = sliderVal,
