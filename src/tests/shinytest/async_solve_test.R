@@ -366,6 +366,8 @@ app$findElements("#jImport_output button[onclick*='showJobLog']")[[1]]$click()
 Sys.sleep(1)
 # no error message in log
 expect_true(app$waitFor("/^An unexpected error occurred/.test($('#asyncMiroLogContainer')[0].textContent)===false", timeout = 50))
+app$waitFor("$('#asyncLogFileTabsset a[data-value^=\"mirolog_\"').click()")
+expect_true(app$waitFor("$('#asyncMiroLogContainer')[0].textContent.startsWith('ABC')===true", timeout = 2000))
 app$findElement("#shiny-modal .btn-default")$click()
 Sys.sleep(1)
 

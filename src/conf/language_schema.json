@@ -3253,9 +3253,13 @@
             "desc": {
               "type": "string",
               "minLength": 1
+            },
+            "tooLarge": {
+              "type": "string",
+              "minLength": 1
             }
           },
-          "minProperties": 2
+          "minProperties": 3
         },
         "invalidFileType": {
           "type": "object",

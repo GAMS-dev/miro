@@ -778,7 +778,8 @@
     "permErr": "Die Operation ist fehlgeschlagen, weil Sie nicht über ausreichende Berechtigungen verfügen.",
     "fileRead":{
       "title":"Fehler beim Lesen von Datei",
-      "desc":"Beim Lesen der Datei: '%s' ist ein Fehler aufgetreten."
+      "desc":"Beim Lesen der Datei: '%s' ist ein Fehler aufgetreten.",
+      "tooLarge": "Die Datei, auf die Sie zuzugreifen versuchen, ist zu groß, um angezeigt zu werden."
     },
     "csvio":{
       "warnings":{

@@ -778,7 +778,8 @@
     "permErr": "The operation failed because you do not have sufficient permissions.",
     "fileRead":{
       "title":"Error reading file",
-      "desc":"Some error occurred reading file: '%s'."
+      "desc":"Some error occurred reading file: '%s'.",
+      "tooLarge": "The file you are trying to access is too large to be displayed."
     },
     "csvio":{
       "warnings":{

@@ -48,7 +48,7 @@ Worker <- R6Class("Worker", public = list(
                 type = "application/json",
                 encoding = "utf-8"
               )
-              stop(paste0(
+              stop(sprintf(
                 "Invalid status code when fetching instances: %s. Error message: %s",
                 httr::status_code(instances), errMsg[["message"]]
               ), call. = FALSE)
@@ -114,15 +114,13 @@ Worker <- R6Class("Worker", public = list(
               private$instanceInfo <- instanceInfo
               if (identical(instanceInfo[["instancesSupported"]], TRUE)) {
                 showEl(session, paste0("#", selectizeId, "Wrapper"))
-                hideEl(session, paste0("#", selectizeId, "Spinner"))
                 updateSelectInput(session, selectizeId,
                   choices = instanceInfo[["choices"]],
                   selected = instanceInfo[["selected"]]
                 )
-              } else {
-                hideEl(session, paste0("#", selectizeId, "Spinner"))
               }
             }
+            hideEl(session, paste0("#", selectizeId, "Spinner"))
             obs$destroy()
           }
           invalidateLater(500L, session)
@@ -1257,17 +1255,31 @@ Worker <- R6Class("Worker", public = list(
       teLength <- NULL
     }
 
+    requestURL <- tryCatch(paste0(
+      private$metadata$url, "/jobs/", jID, "/text-entry/",
+      URLencode(textEntry, reserved = TRUE),
+      if (!is.null(teLength)) {
+        sprintf(
+          "?start_position=%d&length=%d",
+          startPos, min(teLength - startPos, maxSize)
+        )
+      }
+    ), error = function(e) {
+      if (!endsWith(conditionMessage(e), "for numeric objects")) {
+        flog.warn(
+          "Unexpected error while building request URL to fetch text entry. Error message: %s",
+          conditionMessage(e)
+        )
+      }
+      return(413L)
+    })
+
+    if (identical(requestURL, 413L)) {
+      return(413L)
+    }
+
     ret <- GET(
-      paste0(
-        private$metadata$url, "/jobs/", jID, "/text-entry/",
-        URLencode(textEntry, reserved = TRUE),
-        if (!is.null(teLength)) {
-          paste0(
-            "?start_position=", startPos,
-            "&length=", min(teLength - startPos, maxSize)
-          )
-        }
-      ),
+      requestURL,
       add_headers(
         Authorization = private$authHeader,
         Timestamp = as.character(Sys.time(), usetz = TRUE)

@@ -71,7 +71,7 @@ configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName,
   simplifyDataFrame = FALSE,
   simplifyMatrix = FALSE
 ))
-configJSON$extraClArgs <- c(configJSON$extraClArgs, "--sleep=1")
+configJSON$extraClArgs <- c(configJSON$extraClArgs, "--sleep=1", "--largeLog=1")
 configJSON$activateModules$logFile <- FALSE
 configJSON$activateModules$lstFile <- FALSE
 jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")

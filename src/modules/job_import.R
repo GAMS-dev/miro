@@ -91,10 +91,12 @@ observeEvent(
     )
     if (is.integer(logContent)) {
       flog.info("Could not retrieve job log. Return code: '%s'.", logContent)
-      if (logContent == 401L || logContent == 403L) {
+      if (identical(logContent, 401L) || identical(logContent, 403L)) {
         return(showElReplaceTxt(session, containerID, lang$nav$dialogRemoteLogin$insuffPerm))
-      } else if (logContent == 404L) {
+      } else if (identical(logContent, 404L)) {
         return(showElReplaceTxt(session, containerID, lang$nav$dialogRemoteLogin$contentNotFoundError))
+      } else if (identical(logContent, 413L)) {
+        return(showElReplaceTxt(session, containerID, lang$errMsg$fileRead$tooLarge))
       } else {
         return(showElReplaceTxt(session, containerID, lang$errMsg$unknownError))
       }
@@ -149,10 +151,12 @@ observeEvent(input$loadTextEntryChunk, {
   )
   if (is.integer(logContent)) {
     flog.info("Could not retrieve job log. Return code: '%s'.", logContent)
-    if (logContent == 401L || logContent == 403L) {
+    if (identical(logContent, 401L) || identical(logContent, 403L)) {
       return(showElReplaceTxt(session, containerID, lang$nav$dialogRemoteLogin$insuffPerm))
-    } else if (logContent == 404L) {
+    } else if (identical(logContent, 404L)) {
       return(showElReplaceTxt(session, containerID, lang$nav$dialogRemoteLogin$contentNotFoundError))
+    } else if (identical(logContent, 413L)) {
+      return(showElReplaceTxt(session, containerID, lang$errMsg$fileRead$tooLarge))
     } else {
       return(showElReplaceTxt(session, containerID, lang$errMsg$unknownError))
     }

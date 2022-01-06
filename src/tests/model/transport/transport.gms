@@ -55,6 +55,12 @@ c(i,j) = f*d(i,j)/1000;
 
 
 * input validataion
+$ifthen set largeLog
+embeddedCode Python:
+with open('miro.log', 'w') as f:
+   f.write('ABC\n'*int(1e5))
+endEmbeddedCode
+$else
 file log / miro.log /;
 put log '------------------------------------'/;
 put log '        Validating data'/;
@@ -65,6 +71,7 @@ else
   put log 'OK'/;
 );
 putclose log;
+$endif
 
 Variable
    x(i,j) 'shipment quantities in cases'
