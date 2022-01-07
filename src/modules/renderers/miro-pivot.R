@@ -384,7 +384,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         class = "col-sm-12 col-md-2 col-charttype-wrapper",
         selectInput(ns("pivotRenderer"), "",
           setNames(
-            c("table", "heatmap", "bar", "stackedbar", "line", "scatter", "area", "stackedarea", "radar"),
+            c("table", "heatmap", "bar", "stackedbar", "line", "scatter", "area", "stackedarea", "radar", "timeseries"),
             c(
               lang$renderers$miroPivot$renderer$table,
               lang$renderers$miroPivot$renderer$heatmap,
@@ -394,7 +394,8 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
               lang$renderers$miroPivot$renderer$scatter,
               lang$renderers$miroPivot$renderer$area,
               lang$renderers$miroPivot$renderer$stackedarea,
-              lang$renderers$miroPivot$renderer$radar
+              lang$renderers$miroPivot$renderer$radar,
+              lang$renderers$miroPivot$renderer$timeseries
             )
           ),
           selected = if (length(options$pivotRenderer)) {
@@ -811,7 +812,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
 
         if (length(viewOptions[["pivotRenderer"]]) &&
-          viewOptions[["pivotRenderer"]] %in% c("table", "heatmap", "line", "scatter", "area", "stackedarea", "bar", "stackedbar", "radar")) {
+          viewOptions[["pivotRenderer"]] %in% c(
+            "table", "heatmap", "line", "scatter", "area", "stackedarea",
+            "bar", "stackedbar", "radar", "timeseries"
+          )) {
           updateSelectInput(session, "pivotRenderer", selected = viewOptions[["pivotRenderer"]])
         } else {
           updateSelectInput(session, "pivotRenderer", selected = "table")
@@ -949,9 +953,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         showAddViewDialog <- function(pivotRenderer, viewOptions = NULL) {
           miroPivotState$editView <<- length(viewOptions) > 0L
           if (length(pivotRenderer) &&
-            pivotRenderer %in% c("line", "scatter", "area", "stackedarea", "bar", "stackedbar", "radar")) {
+            pivotRenderer %in% c("line", "scatter", "area", "stackedarea", "bar", "stackedbar", "radar", "timeseries")) {
             moreOptions <- NULL
-            if (pivotRenderer %in% c("bar", "stackedbar", "line", "scatter", "area", "stackedarea")) {
+            if (pivotRenderer %in% c("bar", "stackedbar", "line", "scatter", "area", "stackedarea", "timeseries")) {
               moreOptions <- tagList(
                 tags$div(
                   class = "row",
@@ -1125,7 +1129,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             }
             refreshRequired <- FALSE
             if (length(isolate(input$pivotRenderer)) &&
-              isolate(input$pivotRenderer) %in% c("line", "scatter", "area", "stackedarea", "bar", "stackedbar", "radar")) {
+              isolate(input$pivotRenderer) %in% c(
+                "line", "scatter", "area", "stackedarea",
+                "bar", "stackedbar", "radar", "timeseries"
+              )) {
               for (advancedOption in list(
                 list(
                   inputId = "advancedTitle",
@@ -1745,7 +1752,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             return()
           }
         }
-        if (!pivotRenderer %in% c("line", "scatter", "area", "stackedarea", "bar", "stackedbar", "radar")) {
+        if (!pivotRenderer %in% c(
+          "line", "scatter", "area", "stackedarea", "bar",
+          "stackedbar", "radar", "timeseries"
+        )) {
           return()
         }
         showEl(session, paste0("#", ns("loadPivotTable")))
@@ -1760,13 +1770,22 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         rowHeaderLen <- attr(dataTmp, "noRowHeaders")
         noSeries <- length(dataTmp) - rowHeaderLen
         noError <- TRUE
+        if (identical(pivotRenderer, "timeseries")) {
+          if (nrow(dataTmp) > 2e4) {
+            showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$rowTruncationWarning, "20 000"))
+            dataTmp <- slice(dataTmp, 1:20000L)
+            noError <- FALSE
+          }
+          dataTmp <- dataTmp[stri_order(dataTmp[[1]], numeric = TRUE), ]
+        } else {
+          if (nrow(dataTmp) > 500L) {
+            showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$rowTruncationWarning, "500"))
+            dataTmp <- slice(dataTmp, 1:500L)
+            noError <- FALSE
+          }
+        }
         if (noSeries > 40L) {
           showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "40"))
-          noError <- FALSE
-        }
-        if (nrow(dataTmp) > 500L) {
-          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$rowTruncationWarning, "500"))
-          dataTmp <- slice(dataTmp, 1:500L)
           noError <- FALSE
         }
         setCssEl(
@@ -1839,7 +1858,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         } else {
           chartColorsToUse <- customChartColors
         }
-        if (pivotRenderer %in% c("line", "scatter", "area", "stackedarea", "area", "stackedarea")) {
+        if (pivotRenderer %in% c(
+          "line", "scatter", "area", "stackedarea",
+          "area", "stackedarea", "timeseries"
+        )) {
           chartJsObj <- chartjs(
             customColors = chartColorsToUse,
             title = currentView$chartOptions$title
@@ -1853,6 +1875,19 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             chartJsObj$x$options$showLine <- FALSE
           } else if (identical(pivotRenderer, "stackedarea")) {
             chartJsObj$x$scales$y$stacked <- TRUE
+          } else if (identical(pivotRenderer, "timeseries")) {
+            chartJsObj$x$options$normalized <- TRUE
+            chartJsObj$x$options$animation <- FALSE
+            chartJsObj$x$options$elements <- list(
+              point = list(
+                radius = 0L,
+                hitRadius = 4L
+              )
+            )
+            chartJsObj$x$options$plugins$tooltip <- list(
+              mode = "index",
+              position = "average"
+            )
           }
         } else if (identical(pivotRenderer, "stackedbar")) {
           chartJsObj <- chartjs(

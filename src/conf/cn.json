@@ -745,7 +745,8 @@
         "line": "折线图",
         "scatter": "散点图",
         "area": "面积图",
-        "stackedarea": "堆积面积图"
+        "stackedarea": "堆积面积图",
+        "timeseries": "时间序列图"
       },
       "invalidFilters":{
         "title": "由于数据中不存在这些值，因此无法应用某些过滤器。",

@@ -704,7 +704,8 @@
         "line": "Line chart",
         "scatter": "Scatter chart",
         "area": "Area chart",
-        "stackedarea": "Stacked area chart"
+        "stackedarea": "Stacked area chart",
+        "timeseries": "Time series chart"
       },
       "invalidFilters":{
         "title": "Some filters could not be applied because the values are not present in the data.",

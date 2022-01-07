@@ -745,7 +745,8 @@
         "line": "Liniendiagramm",
         "scatter": "Streudiagramm",
         "area": "Flächendiagramm",
-        "stackedarea": "Gestapeltes Flächendiagramm"
+        "stackedarea": "Gestapeltes Flächendiagramm",
+        "timeseries": "Zeitreihendiagramm"
       },
       "invalidFilters":{
         "title": "Einige Filter konnten nicht angewendet werden, weil die Werte in den Daten nicht vorhanden sind.",

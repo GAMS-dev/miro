@@ -2747,9 +2747,13 @@
                 "radar": {
                   "type": "string",
                   "minLength": 1
+                },
+                "timeseries": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 9
+              "minProperties": 10
             },
             "invalidFilters": {
               "type": "object",
