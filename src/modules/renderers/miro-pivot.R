@@ -1865,6 +1865,22 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               yTitle = currentView$chartOptions$yTitle
             )
         }
+        chartJsObj$x$options$plugins$zoom <- list(
+          zoom = list(
+            wheel = list(
+              enabled = TRUE
+            ),
+            pinch = list(
+              enabled = TRUE
+            ),
+            mode = "xy",
+            overScaleMode = "y"
+          ),
+          pan = list(
+            enabled = TRUE,
+            mode = "xy"
+          )
+        )
         if (length(currentView$chartOptions)) {
           # reset chart options
           rendererEnv[[ns("chartOptions")]] <- currentView$chartOptions

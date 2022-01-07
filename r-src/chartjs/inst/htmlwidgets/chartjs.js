@@ -84,6 +84,21 @@ HTMLWidgets.widget({
           data: data,
           options: chartOptions
           });
+    if (canvas.onclick == null) {
+      var lastClicked = null;
+      canvas.onclick = function() {
+        if (lastClicked == null) {
+          lastClicked = new Date().getTime();
+        } else {
+          if (((new Date().getTime()) - lastClicked) < 500) {
+            instance.cjs.resetZoom();
+            lastClicked = null;
+          } else {
+            lastClicked = new Date().getTime();
+          }
+        }
+      }
+    }
     if (x.debug) console.log(instance.cjs);
   },
 
