@@ -1,9 +1,15 @@
 dependencies:
+  - name: hammer.js
+    version: 2.0.8
+    src: htmlwidgets/lib/hammer.js
+    script:
+      - hammer.min.js
   - name: Chart.js
-    version: 3.5.1
-    src: htmlwidgets/lib/Chart.js-3.5.1
+    version: 3.7.0
+    src: htmlwidgets/lib/Chart.js
     script:
       - chart.min.js
+      - chartjs-plugin-zoom.min.js
   - name: chartjs
     version: 0.3.3
     src: htmlwidgets

@@ -137,6 +137,7 @@ these components are included below):
 - prettyunits https://github.com/gaborcsardi/prettyunits or https://cran.r-project.org/web/packages/prettyunits/index.html
 - chartjs (R link) https://github.com/Tutuchan/chartjs
 - Chart.js https://github.com/chartjs/Chart.js or https://www.chartjs.org/
+- hammer.js https://github.com/hammerjs/hammer.js or http://hammerjs.github.io
 - sortable https://github.com/rstudio/sortable or https://cran.r-project.org/web/packages/sortable/index.html
 - yaml https://github.com/viking/r-yaml/ or https://cran.r-project.org/web/packages/yaml/index.html
 - formatR https://github.com/yihui/formatR or https://cran.r-project.org/web/packages/formatR/index.html
@@ -690,6 +691,7 @@ Section 8 -- Interpretation.
         - farver, Copyright (c) 2018 Thomas Lin Pedersen [cre, aut], Berendea Nicolae [aut] (Author of the ColorSpace C++ library), Romain François ORCID iD [aut]
         - chartjs (R link), Copyright (c) 2015-2016 Pierre Formont
         - Chart.js, Copyright (c) 2014-2021 Chart.js Contributors
+        - hammer.js, Copyright (c) 2011-2017 by Jorik Tangelder (Eight Media)
         - sortable, Copyright (c) 2019 Andrie de Vries [cre, aut], Barret Schloerke [aut], Kenton Russell [aut, ccp] (Original author), Lebedev Konstantin [cph] ('SortableJS', http://sortablejs.github.io/Sortable/)
         - httr, Copyright (c) 2014 Hadley Wickham; RStudio
         - viridisLite, Copyright (c) 2015 Simon Garnier
