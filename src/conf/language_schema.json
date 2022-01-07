@@ -2586,6 +2586,10 @@
               "type": "string",
               "minLength": 1
             },
+            "newViewyLogScale": {
+              "type": "string",
+              "minLength": 1
+            },
             "newViewCbCustomColors": {
               "type": "string",
               "minLength": 1
@@ -2763,7 +2767,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 46
+          "minProperties": 47
         },
         "datatable": {
           "type": "object",

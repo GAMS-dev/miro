@@ -664,6 +664,7 @@
       "newViewChartTitle": "Chart title (optional)",
       "newViewxTitle": "X-axis label (optional)",
       "newViewyTitle": "Y-axis label (optional)",
+      "newViewyLogScale": "Use logarithmic scale on y-axis?",
       "newViewCbCustomColors": "Use custom colors?",
       "newViewCbManualColors": "Enter colors manually?",
       "newViewBtCancel": "Cancel",

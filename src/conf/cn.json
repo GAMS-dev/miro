@@ -705,6 +705,7 @@
       "newViewChartTitle": "图表标题（可选的）",
       "newViewxTitle": "X轴标签（可选的）",
       "newViewyTitle": "Y轴标签（可选的）",
+      "newViewyLogScale": "在 y 轴上使用对数刻度？",
       "newViewCbCustomColors": "使用自定义颜色？",
       "newViewCbManualColors": "手动输入颜色？",
       "newViewBtCancel": "取消",

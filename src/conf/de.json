@@ -705,6 +705,7 @@
       "newViewChartTitle": "Diagrammtitel (optional)",
       "newViewxTitle": "X-Achsen-Beschriftung (optional)",
       "newViewyTitle": "Y-Achsen-Beschriftung (optional)",
+      "newViewyLogScale": "Logarithmische Skala auf der y-Achse verwenden?",
       "newViewCbCustomColors": "Benutzerdefinierte Farben verwenden?",
       "newViewCbManualColors": "Farben manuell eingeben?",
       "newViewBtCancel": "Abbrechen",

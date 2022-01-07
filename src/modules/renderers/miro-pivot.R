@@ -949,33 +949,45 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         showAddViewDialog <- function(pivotRenderer, viewOptions = NULL) {
           miroPivotState$editView <<- length(viewOptions) > 0L
           if (length(pivotRenderer) &&
-            pivotRenderer %in% c("line", "scatter", "area", "stackedarea", "area", "stackedarea", "bar", "stackedbar", "radar")) {
+            pivotRenderer %in% c("line", "scatter", "area", "stackedarea", "bar", "stackedbar", "radar")) {
             moreOptions <- NULL
             if (pivotRenderer %in% c("bar", "stackedbar", "line", "scatter", "area", "stackedarea")) {
-              moreOptions <- tags$div(
-                class = "row",
+              moreOptions <- tagList(
                 tags$div(
-                  class = "col-sm-12",
-                  textInput(ns("advancedTitle"),
-                    width = "100%",
-                    lang$renderers$miroPivot$newViewChartTitle,
-                    value = viewOptions$chartOptions$title
+                  class = "row",
+                  tags$div(
+                    class = "col-sm-12",
+                    textInput(ns("advancedTitle"),
+                      width = "100%",
+                      lang$renderers$miroPivot$newViewChartTitle,
+                      value = viewOptions$chartOptions$title
+                    )
+                  ),
+                  tags$div(
+                    class = "col-sm-6",
+                    textInput(ns("advancedxTitle"),
+                      width = "100%",
+                      lang$renderers$miroPivot$newViewxTitle,
+                      value = viewOptions$chartOptions$xTitle
+                    )
+                  ),
+                  tags$div(
+                    class = "col-sm-6",
+                    textInput(ns("advancedyTitle"),
+                      width = "100%",
+                      lang$renderers$miroPivot$newViewyTitle,
+                      value = viewOptions$chartOptions$yTitle
+                    )
                   )
                 ),
                 tags$div(
-                  class = "col-sm-6",
-                  textInput(ns("advancedxTitle"),
-                    width = "100%",
-                    lang$renderers$miroPivot$newViewxTitle,
-                    value = viewOptions$chartOptions$xTitle
-                  )
-                ),
-                tags$div(
-                  class = "col-sm-6",
-                  textInput(ns("advancedyTitle"),
-                    width = "100%",
-                    lang$renderers$miroPivot$newViewyTitle,
-                    value = viewOptions$chartOptions$yTitle
+                  class = "row",
+                  tags$div(
+                    class = "col-sm-6",
+                    checkboxInput_MIRO(ns("useLogScaleY"),
+                      label = lang$renderers$miroPivot$newViewyLogScale,
+                      value = identical(viewOptions$chartOptions$yLogScale, TRUE)
+                    )
                   )
                 )
               )
@@ -1157,6 +1169,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                     return(c(seriesColor, hoverColor))
                   }), miroPivotState$currentSeriesLabels
                 )
+              }
+              if (isTRUE(input[["useLogScaleY"]])) {
+                refreshRequired <- TRUE
+                newViewConfig$chartOptions$yLogScale <- TRUE
               }
             }
             if (overwrite) {
@@ -1864,6 +1880,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               xTitle = currentView$chartOptions$xTitle,
               yTitle = currentView$chartOptions$yTitle
             )
+        }
+        if (identical(currentView$chartOptions$yLogScale, TRUE) &&
+          identical(chartJsObj$x$scales$y$type, "linear")) {
+          chartJsObj$x$scales$y$type <- "logarithmic"
         }
         chartJsObj$x$options$plugins$zoom <- list(
           zoom = list(
