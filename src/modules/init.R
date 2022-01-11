@@ -557,6 +557,70 @@ if (is.null(errMsg)) {
           modelIn[[i]]$dropdownCols <- widgetConfig$dropdownCols
           widgetConfig$dropdownCols <- NULL
         }
+        if (identical(widgetConfig$tableType, "default")) {
+          colNames <- names(widgetConfig$validateCols)
+          if (any(!colNames %in% names(modelIn[[i]]$headers))) {
+            errMsg <- paste(errMsg, sprintf(
+              "GAMS symbol: '%s': Invalid column name(s): '%s' in configuration for columns to validate.",
+              names(modelIn)[i], paste(colNames[!colNames %in% names(modelIn[[i]]$headers)], collapse = "', '")
+            ),
+            sep = "\n"
+            )
+            next
+          }
+          if (length(widgetConfig$pivotCols) && any(colNames %in% widgetConfig$pivotCols)) {
+            errMsg <- paste(errMsg, sprintf(
+              "The column: '%s' of the GAMS symbol: '%s': cannot be declared both as a pivot column and a column to validate!",
+              paste(colNames[colNames %in% widgetConfig$pivotCols], collapse = "', '"),
+              names(modelIn)[i]
+            ),
+            sep = "\n"
+            )
+          }
+          hasErr <- FALSE
+          widgetConfig$validateCols <- lapply(names(widgetConfig$validateCols), function(validateCol) {
+            validateConf <- widgetConfig$validateCols[[validateCol]]
+            colId <- match(validateCol, names(modelIn[[i]]$headers))
+            if (length(widgetConfig$pivotCols) &&
+              match(widgetConfig$pivotCols[1], names(modelIn[[i]]$headers)) <= colId) {
+              # need to adjust id in case column before is pivoted
+              colId <- colId - 1L
+            }
+            if (length(validateConf$min) && length(validateConf$max) && as.numeric(validateConf$min) > as.numeric(validateConf$max)) {
+              errMsg <<- paste(errMsg, sprintf(
+                "Column: '%s' of the GAMS symbol: '%s': For the column validation a minimum value was specified, that is larger than the specified maximum value!",
+                validateCol, names(modelIn)[i]
+              ),
+              sep = "\n"
+              )
+              hasErr <<- TRUE
+              return(NULL)
+            }
+            if (length(validateConf$choices) && length(validateConf$exclude) && any(validateConf$choices %in% validateConf$exclude)) {
+              errMsg <<- paste(errMsg, sprintf(
+                "Column: '%s' of the GAMS symbol: '%s': The column validation has values declared as choices and to be excluded at the same time!",
+                validateCol, names(modelIn)[i]
+              ),
+              sep = "\n"
+              )
+              hasErr <<- TRUE
+              return(NULL)
+            }
+            return(list(
+              colId = colId,
+              min = validateConf$min,
+              max = validateConf$max,
+              choices = validateConf$choices,
+              exclude = validateConf$exclude,
+              allowInvalid = validateConf$allowInvalid
+            ))
+          })
+          if (hasErr) {
+            next
+          }
+          modelIn[[i]]$validateCols <- widgetConfig$validateCols
+          widgetConfig$validateCols <- NULL
+        }
       }
       if (!is.null(widgetConfig[["alias"]])) {
         modelIn[[i]]$alias <- widgetConfig[["alias"]]

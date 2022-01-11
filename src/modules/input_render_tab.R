@@ -712,6 +712,15 @@ lapply(modelInTabularData, function(sheet) {
       if (identical(modelIn[[i]]$heatmap, TRUE)) {
         return(hot_heatmap(ht))
       }
+      for (colValidation in modelIn[[i]]$validateCols) {
+        ht <- hot_validate_numeric(ht, colValidation$colId,
+          min = colValidation$min,
+          max = colValidation$max,
+          choices = colValidation$choices,
+          exclude = colValidation$exclude,
+          allowInvalid = colValidation$allowInvalid
+        )
+      }
       return(ht)
     })
     observe({

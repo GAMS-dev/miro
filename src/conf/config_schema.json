@@ -1143,6 +1143,45 @@
                           }
                        }
                     },
+                    "validateCols":{
+                      "description":"Column values are validated against custom user criteria (only supported for default tables)",
+                      "type":"object",
+                       "additionalProperties":{
+                          "type":"object",
+                          "properties":{
+                            "min":{
+                              "description": "Minimum value allowed for this column",
+                              "type":["number"]
+                            },
+                            "max":{
+                              "description": "Maximum value allowed for this column",
+                              "type":["number"]
+                            },
+                            "choices":{
+                              "description": "Array of acceptable numeric values for this column",
+                              "type":["array", "number"],
+                              "minLength":1,
+                              "items":{
+                                "type":"number",
+                                "minLength":1
+                              }
+                            },
+                            "exclude":{
+                              "description": "Array of unacceptable numeric values for this column",
+                              "type":["array", "number"],
+                              "minLength":1,
+                              "items":{
+                                "type":"number",
+                                "minLength":1
+                              }
+                            },
+                            "allowInvalid":{
+                             "description":"Boolean that specifies whether invalid data will be accepted. Invalid data cells will be colored red.",
+                             "type":"boolean"
+                            }
+                          }
+                       }
+                    },
                     "options":{
                       "$ref": "#/definitions/miroPivotOptions"
                     }
