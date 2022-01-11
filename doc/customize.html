@@ -4016,19 +4016,17 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                           </p>
                         </li>
                       </ul>
-                    </div>
-                    <!--//expanded-->
-                    <h6
-                      id="dropdownCols-json-schema"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Advanced: JSON
-                      validation schema for dropdown menu columns
-                    </h6>
-                    <div class="expanded">
-                      <pre><code class="language-json">"dropdownCols":{
+                      <h6
+                        id="dropdownCols-json-schema"
+                        class="block-title"
+                        onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                        style="cursor: pointer"
+                      >
+                        <i class="fas fa-plus slide-toggle"></i> Advanced: JSON
+                        validation schema for dropdown menu columns
+                      </h6>
+                      <div class="expanded">
+                        <pre><code class="language-json">"dropdownCols":{
   "description":"Columns where only certain values are allowed to be selected (only supported for default tables)",
   "type":"object",
    "additionalProperties":{
@@ -4061,6 +4059,8 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
       }
    }
 }</code></pre>
+                      </div>
+                      <!--//expanded-->
                       <div class="callout-block callout-warning">
                         <div class="icon-holder">
                           <i class="fas fa-info-circle"></i>
@@ -4091,6 +4091,202 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                                 ></a
                               >
                               file, you should not use the Configuration mode
+                              for this symbol anymore. This could overwrite your
+                              manual edits!
+                            </li>
+                          </ul>
+                        </div>
+                        <!--//content-->
+                      </div>
+                      <!--//callout-block-->
+                    </div>
+                    <!--//expanded-->
+                    <h6
+                      id="table-validate-columns"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Column validation
+                      in input table
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        In addition to using
+                        <a href="#table-dropdown" class="scrollto"
+                          >dropdown menus</a
+                        >, numeric columns of an input table can be configured
+                        to validate manual edits by the user against predefined
+                        criteria. As with dropdown menu columns, the
+                        configuration is done column by column. The following
+                        criteria are available:
+                      </p>
+                      <ul>
+                        <li>min: Minimum value to accept</li>
+                        <li>max: Maximum value to accept</li>
+                        <li>
+                          choices: A vector of acceptable numeric choices. It
+                          will be evaluated after min and max if specified.
+                        </li>
+                        <li>
+                          exclude: A vector of unacceptable numeric values
+                        </li>
+                        <li>
+                          allowInvalid: Logical specifying whether invalid data
+                          will be accepted. Invalid data cells will then be
+                          colored red.
+                        </li>
+                      </ul>
+                      <p>
+                        The configuration is done in section
+                        <code class="language-json">inputWidgets</code> for each
+                        input table separately. In
+                        <code class="language-json">validateCols</code> the
+                        individual table columns are specified, which should be
+                        validated. In the following example a symbol
+                        <code class="language-gams">d</code> is used. Column
+                        'new-york' has been configured so that only values
+                        between 1-10 are considered valid, excluding 9. If the
+                        user enters a non-valid value, MIRO accepts it, but
+                        highlights the corresponding cell in red. In the column
+                        'topeka' only the values 11, 12 and 14 are accepted.
+                      </p>
+                      <div class="code-block">
+                        <pre><code class="language-json">  "inputWidgets": {
+    "d": {
+      "widgetType": "table",
+      "tableType": "default",
+      "readonly": false,
+      "hideIndexCol": false,
+      "heatmap": false,
+      "validateCols": {
+        "new-york": {
+          "min": 1,
+          "max": 10,
+          "exclude": 9,
+          "allowInvalid": true
+        },
+        "topeka": {
+          "choices": [11, 12, 14],
+          "allowInvalid": false
+        }
+      }
+    }
+  }</code></pre>
+                      </div>
+                      <!--//code-block-->
+                      <div class="callout-block callout-success">
+                        <div class="icon-holder">
+                          <i class="fas fa-thumbs-up"></i>
+                        </div>
+                        <!--//icon-holder-->
+                        <div class="content">
+                          <b class="callout-title">Tip:</b>
+                          <p>
+                            If your configuration file does not yet have any
+                            entries for the table to be configured, you can
+                            simply create an initial configuration using the
+                            Configuration Mode. Select the desired symbol under
+                            "Configure tables" &rarr; "Symbol tables" and click
+                            on save. Make sure that "default" is selected as
+                            table type to be used.
+                          </p>
+                          <div class="section-block">
+                            <img
+                              class="img-fluid"
+                              style="
+                                max-height: 350pt;
+                                display: block;
+                                margin-left: auto;
+                                margin-right: auto;
+                              "
+                              src="assets/images/configuration_mode/table-config.png"
+                              alt="Table configuration"
+                            />
+                          </div>
+                        </div>
+                        <!--//content-->
+                      </div>
+                      <!--//callout-block-->
+                      <h6
+                        id="dropdownCols-json-schema"
+                        class="block-title"
+                        onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                        style="cursor: pointer"
+                      >
+                        <i class="fas fa-plus slide-toggle"></i> Advanced: JSON
+                        validation schema for column validation
+                      </h6>
+                      <div class="expanded">
+                        <pre><code class="language-json">"validateCols":{
+  "description":"Column values are validated against custom user criteria (only supported for default tables)",
+  "type":"object",
+   "additionalProperties":{
+      "type":"object",
+      "properties":{
+        "min":{
+          "description": "Minimum value allowed for this column",
+          "type":["number"]
+        },
+        "max":{
+          "description": "Maximum value allowed for this column",
+          "type":["number"]
+        },
+        "choices":{
+          "description": "Array of acceptable numeric values for this column",
+          "type":["array", "number"],
+          "minLength":1,
+          "items":{
+            "type":"number",
+            "minLength":1
+          }
+        },
+        "exclude":{
+          "description": "Array of unacceptable numeric values for this column",
+          "type":["array", "number"],
+          "minLength":1,
+          "items":{
+            "type":"number",
+            "minLength":1
+          }
+        },
+        "allowInvalid":{
+         "description":"Boolean that specifies whether invalid data will be accepted. Invalid data cells will be colored red.",
+         "type":"boolean"
+        }
+      }
+   }
+}</code></pre>
+                      </div>
+                      <!--//expanded-->
+                      <div class="callout-block callout-warning">
+                        <div class="icon-holder">
+                          <i class="fas fa-info-circle"></i>
+                        </div>
+                        <!--//icon-holder-->
+                        <div class="content">
+                          <b class="callout-title">Note:</b>
+                          <ul>
+                            <li>
+                              The column validation feature is only supported
+                              for the default input table type, not for big data
+                              tables or pivot tables.
+                            </li>
+                            <li>
+                              User data is validated only during manual edits,
+                              i.e. when the user directly edits the values of
+                              individual cells. Data imported from external
+                              files or the database is not validated.
+                            </li>
+                            <li>
+                              If you have edited the table configuration of a
+                              symbol manually in the
+                              <a href="#jsonfiles" class="scrollto"
+                                ><span class="code"
+                                  >&lt;modelname&gt;.json</span
+                                ></a
+                              >
+                              file, you should not use the Configuration Mode
                               for this symbol anymore. This could overwrite your
                               manual edits!
                             </li>

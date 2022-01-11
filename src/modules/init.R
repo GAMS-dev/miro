@@ -553,7 +553,6 @@ if (is.null(errMsg)) {
           if (hasErr) {
             next
           }
-          list(j = list(symbol = 1, column = 1))
           modelIn[[i]]$dropdownCols <- widgetConfig$dropdownCols
           widgetConfig$dropdownCols <- NULL
         }
