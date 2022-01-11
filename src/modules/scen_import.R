@@ -205,6 +205,9 @@ observeEvent(input$btImportLocal, {
     flog.error("Try to load local data even though the loadLocal module is disabled! This is most likely because the user is trying to tamper with the app!")
     return()
   }
+  if (!length(input$localInput$datapath)) {
+    return()
+  }
   flog.debug("Load local data button clicked.")
 
   fileExt <- tolower(tools::file_ext(basename(input$localInput$datapath)))
