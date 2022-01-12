@@ -1860,7 +1860,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         if (pivotRenderer %in% c(
           "line", "scatter", "area", "stackedarea",
-          "area", "stackedarea", "timeseries"
+          "timeseries"
         )) {
           chartJsObj <- chartjs(
             customColors = chartColorsToUse,
@@ -1875,6 +1875,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             chartJsObj$x$options$showLine <- FALSE
           } else if (identical(pivotRenderer, "stackedarea")) {
             chartJsObj$x$scales$y$stacked <- TRUE
+            chartJsObj$x$options$plugins$tooltip <- list(
+              mode = "index",
+              position = "nearest"
+            )
           } else if (identical(pivotRenderer, "timeseries")) {
             chartJsObj$x$options$normalized <- TRUE
             chartJsObj$x$options$animation <- FALSE
@@ -1886,7 +1890,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             )
             chartJsObj$x$options$plugins$tooltip <- list(
               mode = "index",
-              position = "average"
+              position = "nearest"
             )
           }
         } else if (identical(pivotRenderer, "stackedbar")) {
@@ -1899,6 +1903,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               xTitle = currentView$chartOptions$xTitle,
               yTitle = currentView$chartOptions$yTitle
             )
+          chartJsObj$x$options$plugins$tooltip <- list(
+            mode = "index",
+            position = "nearest"
+          )
         } else if (identical(pivotRenderer, "radar")) {
           chartJsObj <- chartjs(
             customColors = chartColorsToUse,
