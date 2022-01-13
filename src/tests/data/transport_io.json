@@ -1,0 +1,29 @@
+{
+	"modelTitle":	"A Transportation Problem (TRNSPORT,SEQ=1)",
+	"inputSymbols":	{
+		"d":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"new-york":	{
+					"type":	"numeric",
+					"alias":	"new-york"
+				},
+				"chicago":	{
+					"type":	"numeric",
+					"alias":	"chicago"
+				},
+				"topeka":	{
+					"type":	"numeric",
+					"alias":	"topeka"
+				}
+			}
+		}
+	},
+	"outputSymbols":	{
+	}
+}

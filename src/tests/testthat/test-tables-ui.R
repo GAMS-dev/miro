@@ -64,4 +64,32 @@ file.move(
   file.path("..", "model", "transport", "conf_transport", "transport.json")
 )
 
+file.copy2(
+  file.path("..", "model", "transport", "conf_transport", "transport.json"),
+  file.path("..", "model", "transport", "conf_transport", "bk_transport.json")
+)
+file.copy2(
+  file.path("..", "model", "transport", "conf_transport", "transport_io.json"),
+  file.path("..", "model", "transport", "conf_transport", "bk_transport_io.json")
+)
+file.copy2(
+  file.path("..", "data", "transport_io.json"),
+  file.path("..", "model", "transport", "conf_transport", "transport_io.json")
+)
+createTestDb()
+test_that(
+  "Input table column validation works",
+  expect_pass(testApp(file.path(testDir, ".."), "input_table_validate_cols_test",
+    compareImages = FALSE
+  ))
+)
+file.move(
+  file.path("..", "model", "transport", "conf_transport", "bk_transport.json"),
+  file.path("..", "model", "transport", "conf_transport", "transport.json")
+)
+file.move(
+  file.path("..", "model", "transport", "conf_transport", "bk_transport_io.json"),
+  file.path("..", "model", "transport", "conf_transport", "transport_io.json")
+)
+
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))
