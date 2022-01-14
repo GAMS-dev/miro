@@ -127,7 +127,7 @@ lapply(seq_along(modelIn), function(id) {
                   force(modelInputDataVisible[[k]]())
                 }
               }
-              value <- getInputDataset(symIdToFetch, visible = TRUE, subSymName = names(modelIn)[[k]])[[modelIn[[id]]$checkbox$max]]
+              value <- getTabularInputDataset(symIdToFetch, visible = TRUE, subSymName = names(modelIn)[[k]])[[modelIn[[id]]$checkbox$max]]
             },
             error = function(e) {
               flog.error(
@@ -371,7 +371,7 @@ lapply(seq_along(modelIn), function(id) {
               }
               tryCatch(
                 {
-                  dataTmp <- getInputDataset(symIdToFetch, visible = TRUE, subSymName = names(modelIn)[[k]])
+                  dataTmp <- getTabularInputDataset(symIdToFetch, visible = TRUE, subSymName = names(modelIn)[[k]])
                 },
                 error = function(e) {
                   flog.error(
@@ -570,7 +570,7 @@ lapply(seq_along(modelIn), function(id) {
                         force(modelInputDataVisible[[k]]())
                       }
                     }
-                    dataTmp <- unique(getInputDataset(symIdToFetch, visible = TRUE, subSymName = names(modelIn)[[k]])[[el[[1]][1]]])
+                    dataTmp <- unique(getTabularInputDataset(symIdToFetch, visible = TRUE, subSymName = names(modelIn)[[k]])[[el[[1]][1]]])
                   },
                   error = function(e) {
                     flog.error(

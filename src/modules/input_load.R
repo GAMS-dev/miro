@@ -61,7 +61,7 @@ if (!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))) {
           }
           dataTmp <- mergeDf(
             fixColTypes(
-              getInputDataset(rootSymId, subSymName = names(modelIn)[[i]]),
+              getTabularInputDataset(rootSymId, subSymName = names(modelIn)[[i]]),
               modelIn[[i]]$colTypes
             ),
             scenInputData[[dataset]],

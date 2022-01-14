@@ -43,9 +43,9 @@ getVisibleTabData <- function(id, type) {
   return(data)
 }
 
-getInputDataset <- function(id, visible = FALSE, subSymName = NULL) {
+getTabularInputDataset <- function(id, visible = FALSE, subSymName = NULL) {
   if (!length(modelIn[[id]]$pivotCols)) {
-    intermDataTmp <- getInputDatasetRaw(id, subSymName = subSymName)
+    intermDataTmp <- getTabularInputDatasetRaw(id, subSymName = subSymName)
     if (is_tibble(intermDataTmp)) {
       return(intermDataTmp %>%
         mutate_if(is.character,
@@ -72,7 +72,7 @@ getInputDataset <- function(id, visible = FALSE, subSymName = NULL) {
       return(modelInTemplate[[id]])
     }
   } else {
-    intermDataTmp <- getInputDatasetRaw(id, subSymName = subSymName)
+    intermDataTmp <- getTabularInputDatasetRaw(id, subSymName = subSymName)
     if (!is_tibble(intermDataTmp)) {
       return(intermDataTmp)
     }
@@ -88,7 +88,7 @@ getInputDataset <- function(id, visible = FALSE, subSymName = NULL) {
 
   return(intermDataTmp)
 }
-getInputDatasetRaw <- function(id, subSymName = NULL) {
+getTabularInputDatasetRaw <- function(id, subSymName = NULL) {
   widgetType <- modelIn[[id]]$type
   htmlSelector <- paste0("in_", id)
   if (isMobileDevice && identical(widgetType, "hot")) {
@@ -268,41 +268,27 @@ observeEvent(input$btGraphIn, {
       flog.debug("Graph view for model input in sheet: %d activated.", i)
       modelInputGraphVisible[[i]] <<- TRUE
     }
-
     if (is.null(configGraphsIn[[i]])) {
       return()
-    } else if (modelIn[[i]]$type %in% c("hot", "dt")) {
-      errMsg <- NULL
-      tryCatch(
-        {
-          data <- getInputDataset(i, visible = TRUE)
-        },
-        error = function(e) {
-          flog.error(
-            "Dataset: '%s' could not be loaded. Error message: '%s'.",
-            modelInAlias[i], conditionMessage(e)
-          )
-          errMsg <<- sprintf(
-            lang$errMsg$GAMSInput$noData,
-            modelInAlias[i]
-          )
-        }
-      )
-      if (is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))) {
-        return()
+    }
+    errMsg <- NULL
+    tryCatch(
+      {
+        data <- getInputDataset(i, visible = TRUE)[["value"]]
+      },
+      error = function(e) {
+        flog.error(
+          "Dataset: '%s' could not be loaded. Error message: '%s'.",
+          modelInAlias[i], conditionMessage(e)
+        )
+        errMsg <<- sprintf(
+          lang$errMsg$GAMSInput$noData,
+          modelInAlias[i]
+        )
       }
-    } else {
-      if (length(modelIn[[i]]$widgetSymbols)) {
-        data <- tryCatch(modelInputDataVisible[[i]][[names(modelIn)[[i]]]](), error = function(e) {
-          flog.warn("Problems getting data from custom widget. Error message: %s", conditionMessage(e))
-          return(modelInTemplate[[i]])
-        })
-      } else {
-        data <- tryCatch(modelInputDataVisible[[i]](), error = function(e) {
-          flog.warn("Problems getting data from custom widget. Error message: %s", conditionMessage(e))
-          return(modelInTemplate[[i]])
-        })
-      }
+    )
+    if (is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))) {
+      return()
     }
     if (!dynamicUILoaded$inputGraphs[i]) {
       tryCatch(
@@ -609,7 +595,7 @@ lapply(modelInTabularData, function(sheet) {
             identical(widgetType, "custom") && length(modelInputDataVisible[[k]]))) {
           tryCatch(
             {
-              source <- unique(getInputDataset(k)[[colSourceConfig$colId]])
+              source <- unique(getTabularInputDataset(k)[[colSourceConfig$colId]])
             },
             error = function(e) {
               flog.error(
