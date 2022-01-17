@@ -91,6 +91,7 @@
       "scenNameSandboxSuffix": "(沙盒)",
       "tooltips":{
         "btExport":"导出场景",
+        "btRefreshGraph": "刷新数据",
         "btTableView":"切换视图",
 		"btSymbolLink": "作为输入数据",
         "btClose":"关闭场景",

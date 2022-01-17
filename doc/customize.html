@@ -5157,12 +5157,14 @@ renderMirorenderer_optsched &#x3C;- function(input, output, session, data, optio
                     </p>
                     <h5 id="additional-datasets">Additional datasets</h5>
                     <p>
-                      A custom renderer for an output symbol can use the data of
-                      other GAMS symbols. For example - let's stay with the
-                      above example of a map - the geographical information can
-                      come from other symbols than the transport data. For a
-                      custom renderer to access this data, the corresponding
-                      symbols must be specified in the
+                      A custom renderer can use the data of other GAMS symbols
+                      (a renderer for an output symbol can use the data from
+                      both input and output symbols, while a renderer for an
+                      input symbol can only access other input symbols). For
+                      example - let's stay with the above example of a map - the
+                      geographical information can come from other symbols than
+                      the transport data. For a custom renderer to access this
+                      data, the corresponding symbols must be specified in the
                       <span class="code">&lt;modelname&gt;.json</span> file
                       under <code class="language-json">"additionalData"</code>:
                     </p>
@@ -5193,6 +5195,24 @@ renderMirorenderer_optsched &#x3C;- function(input, output, session, data, optio
                           included in the GAMS/MIRO
                           <a href="./model.html#data-contract">data contract</a
                           >.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          Custom renderers always receive the full,
+                          <a href="#widgets-dependencies" class="scrollto"
+                            >unfiltered</a
+                          >
+                          data.
                         </p>
                       </div>
                       <!--//content-->

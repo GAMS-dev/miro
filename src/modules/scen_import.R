@@ -483,6 +483,8 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
     hideEl(session, "#graph-in_" %+% i)
     showEl(session, "#data-in_" %+% i)
   })
+  hideEl(session, "#btRefreshGraphIn")
+
 
   loadErrors <- character(0L)
   source("./modules/input_load.R", local = TRUE)

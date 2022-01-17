@@ -523,14 +523,23 @@ if (buildUI) {
             tags$div(
               class = "out-buttons-wrapper",
               tags$div(
+                title = lang$nav$scen$tooltips$btRefreshGraph, class = "scen-button-tt",
+                tags$button(
+                  class = "btn btn-default action-button scen-button",
+                  type = "button",
+                  style = "display:none",
+                  id = "btRefreshGraphIn",
+                  icon("refresh")
+                )
+              ),
+              tags$div(
                 title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
-                tagAppendAttributes(
-                  actionButton(
-                    inputId = "btGraphIn",
-                    icon = icon("chart-bar"), label = NULL,
-                    class = "scen-button"
-                  ),
-                  disabled = ""
+                tags$button(
+                  class = "btn btn-default action-button scen-button",
+                  type = "button",
+                  disabled = "",
+                  id = "btGraphIn",
+                  icon("chart-bar")
                 )
               )
             )

@@ -91,6 +91,7 @@
       "scenNameSandboxSuffix": "(Sandbox)",
       "tooltips":{
         "btExport":"Exportiere Szenariodaten",
+        "btRefreshGraph": "Daten aktualisieren",
         "btTableView":"Ansicht wechseln",
         "btSymbolLink": "Als Eingabedaten verwenden",
         "btClose":"Szenario schließen",

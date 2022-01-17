@@ -101,6 +101,7 @@ closeScenario <- function(clearMeta = TRUE) {
     hideEl(session, "#graph-in_" %+% i)
     showEl(session, "#data-in_" %+% i)
   })
+  hideEl(session, "#btRefreshGraphIn")
 
   # reset model output data
   if (length(activeScen)) {

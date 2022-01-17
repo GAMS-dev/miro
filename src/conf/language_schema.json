@@ -361,6 +361,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "btRefreshGraph": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "btTableView": {
                   "type": "string",
                   "minLength": 1
@@ -406,7 +410,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 12
+              "minProperties": 13
             },
             "split": {
               "type": "object",
