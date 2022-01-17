@@ -37,12 +37,12 @@ renderMirowidget_initial_state <- function(input, output, session, data, options
     }
     dataTmp <- dataTmp[-1L]
     if (isTRUE(options$isInput)) {
-      dataTmp <- dataTmp %>% mutate_if(is.numeric, as.character)
+      dataTmp <- dataTmp %>% mutate(across(where(is.numeric), as.character))
       dataTmp[is.na(dataTmp)] <- ""
     } else {
       initialData <<- which(dataTmp < 0)
       dataTmp <- abs(dataTmp)
-      dataTmp <- dataTmp %>% mutate_if(is.numeric, as.character)
+      dataTmp <- dataTmp %>% mutate(across(where(is.numeric), as.character))
       dataTmp[is.na(dataTmp)] <- ""
     }
     return(dataTmp)
@@ -92,7 +92,7 @@ renderMirowidget_initial_state <- function(input, output, session, data, options
         if (is.null(input$sudoku)) {
           return(NULL)
         }
-        dataTmp <- hot_to_r(input$sudoku) %>% mutate_all(as.integer)
+        dataTmp <- hot_to_r(input$sudoku) %>% mutate(across(everything(), as.integer))
         if (length(dataTmp) && nrow(dataTmp) == 9L) {
           return(bind_cols(row = paste0("row", 1:9), dataTmp))
         } else {

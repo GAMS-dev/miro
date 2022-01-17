@@ -367,10 +367,10 @@ HcubeImport <- R6Class("HcubeImport",
               } else if (symName %in% c(scalarsFileName, scalarsOutName)) {
                 names(scenData) <- c("scalar", "description", "value")
               }
-              return(scenData %>% mutate_if(is.character,
-                replace_na,
-                replace = ""
-              ))
+              return(mutate(scenData, across(
+                where(is.character),
+                ~ replace_na(.x, replace = "")
+              )))
             }))
           },
           error = function(e) {

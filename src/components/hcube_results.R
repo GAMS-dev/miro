@@ -225,10 +225,10 @@ HcubeResults <- R6Class("HcubeResults",
                     ),
                     scenData
                   ) %>%
-                    mutate_if(is.character,
-                      replace_na,
-                      replace = ""
-                    ),
+                    mutate(across(
+                      where(is.character),
+                      ~ replace_na(.x, replace = "")
+                    )),
                   symName,
                   isHcJobConfig = FALSE
                 )

@@ -17,10 +17,10 @@ testData <- tibble(
   e = rep.int(c("e2", "e10"), 5L), f = "f10",
   value = 1:10
 )
-testDataFactor <- testData %>% mutate_if(is.character, as.factor)
+testDataFactor <- testData %>% mutate(across(where(is.character), as.factor))
 
 convert_to_df <- function(df) {
-  data.frame(df %>% ungroup() %>% mutate_if(is.factor, as.character))
+  data.frame(df %>% ungroup() %>% mutate(across(where(is.factor), as.character)))
 }
 
 test_that("MIRO pivot renderer handles filtering", {

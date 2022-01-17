@@ -166,16 +166,14 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
           values_to = "value", values_drop_na = TRUE
         )
       }
-      df[seq_len(length(df) - 1L)] <- dplyr::mutate_if(
+      df[seq_len(length(df) - 1L)] <- dplyr::mutate(
         df[seq_len(length(df) - 1L)],
-        function(el) {
+        across(where(function(el) {
           if (is.numeric(el)) {
             return(FALSE)
           }
           return(TRUE)
-        }, function(el) {
-          factor(el, levels = unique(el))
-        }
+        }), ~ factor(.x, levels = unique(.x)))
       )
       ret <- list(
         name = symName, type = symType,
@@ -441,7 +439,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     dflist[[symDim + 1L]] <- sym$val[, symDim + 1L]
     names(dflist) <- seq_along(dflist)
     symDF <- tibble::as_tibble(dflist)
-    symDF <- dplyr::mutate_if(symDF, is.factor, as.character)
+    symDF <- dplyr::mutate(symDF, across(where(is.factor), as.character))
     if (length(pivotHeaders)) {
       dfDim <- length(symDF)
       symDF <- tidyr::pivot_wider(symDF,
@@ -526,7 +524,8 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     dflist[[symDim + 1L]] <- sym$te
     names(dflist) <- seq_along(dflist)
     symDF <- tibble::as_tibble(dflist)
-    symDF <- dplyr::mutate_if(symDF, is.factor, as.character)
+
+    symDF <- dplyr::mutate(symDF, across(where(is.factor), as.character))
     if (symName %in% ioConfig$textOnlySymbols) {
       symDF <- symDF[, c(2, 1)]
     }

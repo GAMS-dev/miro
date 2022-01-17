@@ -182,7 +182,10 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
         `_hash` = names(private$parValCombinations),
         staticScalars[rep(1, nrow(allParValCombinationsRaw)), ]
       ) %>%
-      mutate_if(~ !is.character(.), as.character) %>%
+      mutate(across(
+        where(~ !is.character(.x)),
+        as.character
+      )) %>%
       pivot_longer(!`_hash`,
         names_to = "scalar", values_to = "value"
       ))

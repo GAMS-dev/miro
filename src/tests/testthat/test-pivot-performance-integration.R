@@ -18,7 +18,7 @@ load("data/emp-bigdata.testData")
 dataHeaders <- names(data)
 
 convert_to_df <- function(df) {
-  data.frame(df %>% ungroup() %>% mutate_if(is.factor, as.character))
+  data.frame(df %>% ungroup() %>% mutate(across(where(is.factor), as.character)))
 }
 pr <- PerformanceReporter$new()
 lang <<- list()

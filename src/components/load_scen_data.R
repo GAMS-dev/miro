@@ -153,10 +153,10 @@ loadScenData <- function(metaData, workDir,
         ret$tabular[[i]] <<- bind_rows(ret$tabular[[i]], setNames(dfClArgs, names(metaData[[i]]$headers)))
       }
     } else {
-      ret$tabular[[i]] <<- ret$tabular[[i]] %>% mutate_if(is.character,
-        replace_na,
-        replace = ""
-      )
+      ret$tabular[[i]] <<- ret$tabular[[i]] %>% mutate(across(
+        where(is.character),
+        ~ replace_na(.x, replace = "")
+      ))
     }
     if (!hasValidHeaderTypes(ret$tabular[[i]], metaData[[i]]$colTypes)) {
       flog.warn(

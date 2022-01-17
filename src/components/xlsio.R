@@ -477,14 +477,14 @@ XlsIO <- R6::R6Class("XlsIO",
           length(data)
         )
         data <- suppressWarnings(
-          mutate_at(data, numericalCols, as.numeric)
+          mutate(data, across(all_of(numericalCols), as.numeric))
         )
         if (tolower(index[["squeeze"]]) %in% c("1", "y")) {
           data[data == 0] <- NA_real_
           data <- data[rowSums(is.na(data[numericalCols])) != length(numericalCols), ]
         }
       } else {
-        data <- suppressWarnings(mutate_at(data, length(data), as.numeric))
+        data <- suppressWarnings(mutate(data, across(all_of(length(data)), as.numeric)))
         if (tolower(index[["squeeze"]]) %in% c("1", "y")) {
           data <- data[is.na(data[[length(data)]]) | data[[length(data)]] != 0, ]
         }

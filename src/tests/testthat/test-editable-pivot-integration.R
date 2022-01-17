@@ -19,7 +19,7 @@ testData <- tibble(
 )
 
 convert_to_df <- function(df) {
-  data.frame(df %>% ungroup() %>% mutate_if(is.factor, as.character))
+  data.frame(df %>% ungroup() %>% mutate(across(where(is.factor), as.character)))
 }
 lang <<- list()
 

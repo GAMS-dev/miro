@@ -26,10 +26,13 @@ getVisibleTabData <- function(id, type) {
       return(modelInTemplate[[id]])
     }
     return(select(pivot_longer(suppressWarnings(
-      mutate_at(data, seq(
-        length(modelIn[[id]]$headers) - 1L,
-        length(data)
-      ), as.numeric)
+      mutate(
+        data,
+        across(all_of(seq(
+          length(modelIn[[id]]$headers) - 1L,
+          length(data)
+        )), as.numeric)
+      )
     ),
     cols = seq(
       length(modelIn[[id]]$headers) - 1L,
@@ -48,10 +51,10 @@ getTabularInputDataset <- function(id, visible = FALSE, subSymName = NULL) {
     intermDataTmp <- getTabularInputDatasetRaw(id, subSymName = subSymName)
     if (is_tibble(intermDataTmp)) {
       return(intermDataTmp %>%
-        mutate_if(is.character,
-          replace_na,
-          replace = ""
-        ))
+        mutate(across(
+          where(is.character),
+          ~ replace_na(.x, replace = "")
+        )))
     }
     return(intermDataTmp)
   }
@@ -79,10 +82,10 @@ getTabularInputDataset <- function(id, visible = FALSE, subSymName = NULL) {
   if (modelIn[[id]]$pivotCols[[1]] %in% names(intermDataTmp)) {
     # table not yet initialised (so not pivoted either)
     return(intermDataTmp %>%
-      mutate_if(is.character,
-        replace_na,
-        replace = ""
-      ))
+      mutate(across(
+        where(is.character),
+        ~ replace_na(.x, replace = "")
+      )))
   }
 
   return(intermDataTmp)
@@ -497,10 +500,10 @@ lapply(modelInTabularData, function(sheet) {
       if (identical(widgetType, "hot")) {
         if (!nrow(data)) {
           data[1, ] <- NA
-          data <- mutate_if(data, is.character,
-            replace_na,
-            replace = ""
-          )
+          data <- mutate(data, across(
+            where(is.character),
+            ~ replace_na(.x, replace = "")
+          ))
           if (!is.null(configGraphsIn[[i]]) &&
             length(inputTabs[[tabSheetMap$input[[i]]]]) == 1L) {
             disableEl(session, "#btGraphIn")
@@ -552,10 +555,10 @@ lapply(modelInTabularData, function(sheet) {
           }
         } else {
           modelInputData[[i]][1, ] <<- NA
-          modelInputData[[i]] <- mutate_if(modelInputData[[i]], is.character,
-            replace_na,
-            replace = ""
-          )
+          modelInputData[[i]] <- mutate(modelInputData[[i]], across(
+            where(is.character),
+            ~ replace_na(.x, replace = "")
+          ))
           if (!is.null(configGraphsIn[[i]]) &&
             length(inputTabs[[tabSheetMap$input[[i]]]]) == 1L) {
             disableEl(session, "#btGraphIn")

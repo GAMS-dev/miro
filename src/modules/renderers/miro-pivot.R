@@ -651,7 +651,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           data[, length(data)] <- 1L
         }
       }
-      data <- mutate_if(data, is.character, as.factor)
+      data <- mutate(data, across(where(is.character), as.factor))
 
       noColDim <- 1L
       setIndices <- names(data)[-length(data)]
@@ -2387,9 +2387,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               colIndices,
               filterIndices
             ))
-            rowsToRemove <- mutate_if(
+            rowsToRemove <- mutate(
               slice(dataToRender(), idsToRemove)[seq_len(noRowHeaders)],
-              is.factor, as.character
+              across(where(is.factor), as.character)
             )
             if (tryCatch(
               {

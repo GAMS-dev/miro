@@ -1244,9 +1244,9 @@ Db <- R6Class("Db",
       coerceToFloat <- which(symtypes[!is.na(scalarOrder)] == "parameter") + 1L
 
       return(suppressWarnings(
-        mutate_at(
+        mutate(
           select(dataset, c(1L, scalarOrder[!is.na(scalarOrder)])),
-          coerceToFloat, as.numeric
+          across(all_of(coerceToFloat), as.numeric)
         )
       ))
     },
@@ -1265,7 +1265,7 @@ Db <- R6Class("Db",
       } else {
         symtext <- ioConfig$modelOut[[scalarsOutName]]$symtext
       }
-      return(mutate(add_column(pivot_longer(mutate_all(dataset, as.character),
+      return(mutate(add_column(pivot_longer(mutate(dataset, across(everything(), as.character)),
         cols = dbSchema$getDbViews(tableName),
         names_to = "scalar",
         values_to = "value"
