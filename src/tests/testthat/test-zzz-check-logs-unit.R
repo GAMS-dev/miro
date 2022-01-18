@@ -4,7 +4,9 @@ validFatals <- c(
   "GAMS symbol: 'd': Invalid column name(s): 'bla' in configuration for dropdown columns",
   "The column: 'i' of the GAMS symbol: 'd': cannot be declared both as a pivot column and a drop-down column",
   "The column(s): 'value2' of table: 'd' specified in colFormat does not exist.",
-  "colFormat is not supported when pivotCols are active (table: d)."
+  "colFormat is not supported when pivotCols are active (table: d).",
+  "Column: 'topeka' of the GAMS symbol: 'd': For the column validation, a minimum value was specified that is greater than the specified maximum value!",
+  "Column: 'topeka' of the GAMS symbol: 'd': The column validation has values that are declared as choices and should be excluded at the same time!"
 )
 validErrors <- c("Confirm download of temporary files button clicked without any files specified.")
 validWarnings <- c("Hypercube job directory: '")

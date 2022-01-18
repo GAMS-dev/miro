@@ -64,7 +64,7 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
 
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 Sys.sleep(1)
-expect_true(app$waitFor("$('#errorMessages').html().includes('larger than the specified maximum value');", timeout = 50))
+expect_true(app$waitFor("$('#errorMessages').html().includes('greater than the specified maximum value');", timeout = 50))
 app$stop()
 
 configNew <- configWorking
@@ -78,5 +78,5 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
 
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 Sys.sleep(1)
-expect_true(app$waitFor("$('#errorMessages').html().includes('values declared as choices and to be excluded');", timeout = 50))
+expect_true(app$waitFor("$('#errorMessages').html().includes('declared as choices and should be excluded');", timeout = 50))
 app$stop()

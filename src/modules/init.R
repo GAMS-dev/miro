@@ -587,7 +587,7 @@ if (is.null(errMsg)) {
             }
             if (length(validateConf$min) && length(validateConf$max) && as.numeric(validateConf$min) > as.numeric(validateConf$max)) {
               errMsg <<- paste(errMsg, sprintf(
-                "Column: '%s' of the GAMS symbol: '%s': For the column validation a minimum value was specified, that is larger than the specified maximum value!",
+                "Column: '%s' of the GAMS symbol: '%s': For the column validation, a minimum value was specified that is greater than the specified maximum value!",
                 validateCol, names(modelIn)[i]
               ),
               sep = "\n"
@@ -597,7 +597,7 @@ if (is.null(errMsg)) {
             }
             if (length(validateConf$choices) && length(validateConf$exclude) && any(validateConf$choices %in% validateConf$exclude)) {
               errMsg <<- paste(errMsg, sprintf(
-                "Column: '%s' of the GAMS symbol: '%s': The column validation has values declared as choices and to be excluded at the same time!",
+                "Column: '%s' of the GAMS symbol: '%s': The column validation has values that are declared as choices and should be excluded at the same time!",
                 validateCol, names(modelIn)[i]
               ),
               sep = "\n"
