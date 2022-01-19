@@ -443,9 +443,15 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
             modelFiles <- paste0(modelName, ".zip")
           },
           error = function(e) {
+            errMsgTmp <- conditionMessage(e)
+            if (identical(errMsgTmp, "Some files do not exist")) {
+              errMsgTmp <- paste0("Some files do not exist: ", paste(modelFiles[!file.exists(file.path(currentModelDir, modelFiles))],
+                collapse = ", "
+              ))
+            }
             errMsg <<- paste(errMsg, sprintf(
               "Problems creating file: '%s'. Error message: '%s'.",
-              paste0(modelName, ".zip"), conditionMessage(e)
+              paste0(modelName, ".zip"), errMsgTmp
             ),
             sep = "\n"
             )
