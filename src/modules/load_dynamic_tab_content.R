@@ -154,6 +154,10 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
     } else {
       tabId <- match(sheetName, scenTableNamesToDisplay)
     }
+    if (is.na(tabId)) {
+      flog.error("Issue loading tab content for dataset: '%s'. It is not a sheet that should be displayed. This should never happen.", sheetName)
+      return()
+    }
     if (isInPivotComp) {
       graphConfig <- getPivotCompGraphConfig(sheetName)
     } else {
