@@ -1975,6 +1975,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
           initRenderer <<- FALSE
         }
+        dataTmp <- dataToRender()
         isEditableTable <- isEditable
         isHeatmap <- FALSE
         if (!identical(pivotRenderer, "table")) {
@@ -1996,7 +1997,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           list(position = "absolute", top = "-2000pt")
         )
         showEl(session, paste0("#", ns("loadPivotTable")))
-        dataTmp <- dataToRender()
         if (!length(dataTmp)) {
           return()
         }

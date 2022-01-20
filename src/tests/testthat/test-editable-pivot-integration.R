@@ -632,3 +632,95 @@ test_that("Adding rows to empty table works", {
     )
   )
 })
+
+test_that("Editing with aggregated columns does not work", {
+  testServer(renderMiroPivot,
+    {
+      session$setInputs(
+        rowIndexList = c("b", "e", "f"), colIndexList = c("c"),
+        filterIndexList = "a", filter_a = "a2", aggregationIndexList = c("d"),
+        aggregationFunction = "sum"
+      )
+      expect_identical(
+        convert_to_df(dataToRender()),
+        data.frame(
+          b = character(),
+          e = character(),
+          f = character(),
+          value = integer()
+        )
+      )
+      session$setInputs(filter_a = "a1", btAddRow = 1L)
+      session$setInputs(
+        newRow_1 = "a1", newRow_2 = "b1", newRow_3 = "c1",
+        newRow_4 = "d6", newRow_5 = "e2", newRow_6 = "f10", newRow_7 = 1.2,
+        btAddRowConfirm = 1L
+      )
+      expect_identical(
+        convert_to_df(dataToRender()),
+        data.frame(
+          b = character(),
+          e = character(),
+          f = character(),
+          value = integer()
+        )
+      )
+      session$setInputs(
+        colIndexList = c("c", "d"),
+        aggregationIndexList = character()
+      )
+      session$setInputs(filter_a = "a1", btAddRow = 1L)
+      session$setInputs(
+        newRow_1 = "a1", newRow_2 = "b1", newRow_3 = "c1",
+        newRow_4 = "d6", newRow_5 = "e2", newRow_6 = "f10", newRow_7 = 1.2,
+        btAddRowConfirm = 1L
+      )
+      expect_identical(
+        convert_to_df(dataToRender()),
+        data.frame(
+          b = "b1",
+          e = "e2",
+          f = "f10",
+          c1.d6 = 1.2
+        )
+      )
+      session$setInputs(pivotTable_cell_edit = list(col = 3L, row = 1L, value = 2))
+      expect_identical(
+        convert_to_df(session$returned()),
+        data.frame(
+          a = "a1",
+          b = "b1",
+          c = "c1",
+          d = "d6",
+          e = "e2",
+          f = "f10",
+          value = 2
+        )
+      )
+      session$setInputs(
+        colIndexList = c("c"),
+        aggregationIndexList = c("d")
+      )
+      session$setInputs(pivotTable_cell_edit = list(col = 3L, row = 1L, value = 3))
+      expect_identical(
+        convert_to_df(session$returned()),
+        data.frame(
+          a = "a1",
+          b = "b1",
+          c = "c1",
+          d = "d6",
+          e = "e2",
+          f = "f10",
+          value = 2
+        )
+      )
+    },
+    args = list(
+      data = testData[0, ],
+      options = list(
+        enablePersistentViews = FALSE, `_input_` = TRUE,
+        "_metadata_" = list(symtype = "parameter")
+      )
+    )
+  )
+})
