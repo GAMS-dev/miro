@@ -76,13 +76,13 @@ Sys.sleep(1)
 expect_identical(
   getVisibleDtData(app, "tab_2_9-datatable"),
   structure(list(
-    ...1 = c("1", "2", "3"),
-    ...2 = c("force_unique_sol", "test", "test123"),
-    ...3 = c("force_unique_sol", "test", "test 123"),
-    ...4 = c("1", "seattle", "2.3")
+    ...1 = c("1", "2", "3", "4"),
+    ...2 = c("force_unique_sol", "test", "test123", "test124"),
+    ...3 = c("force_unique_sol", "test", "test 123", "test 124"),
+    ...4 = c("1", "seattle", "2.3", "3.3")
   ),
   class = c("tbl_df", "tbl", "data.frame"),
-  row.names = c(NA, -3L)
+  row.names = c(NA, -4L)
   )
 )
 app$setInputs(contentScen_2 = "contentScen_2_4")
@@ -122,6 +122,6 @@ app$setInputs(exportFileType = "gdx")
 Sys.sleep(2L)
 expect_symbols_in_gdx(app, "scenExportHandler", c(
   "a", "b", "d", "force_unique_sol", "i", "ii", "test", "j", "initial_state",
-  "test123", "results"
+  "test123", "test124", "results"
 ))
 app$stop()

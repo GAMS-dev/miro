@@ -31,9 +31,9 @@
 		},
 		"_scalars":	{
 			"alias":	"Input Scalars",
-			"symnames":	["test", "force_unique_sol", "test123"],
-			"symtext":	["test", "force_unique_sol", "test123"],
-			"symtypes":	["set", "parameter", "parameter"],
+			"symnames":	["test", "force_unique_sol", "test123", "test124"],
+			"symtext":	["test", "force_unique_sol", "test123", "test124"],
+			"symtypes":	["set", "parameter", "parameter", "parameter"],
 			"headers":	{
 				"scalar":	{
 					"type":	"string",

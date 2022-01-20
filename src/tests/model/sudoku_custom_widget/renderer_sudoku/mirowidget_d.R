@@ -32,5 +32,5 @@ renderMirowidget_d <- function(input, output, session, data, options = NULL, pat
     }
     dataTmp <- unique(dataToReturn()[[1]])
     tibble(i = dataTmp, text = rep.int("", length(dataTmp)))
-  }), j = data[["j"]], ii = data[["ii"]]))
+  }), j = data[["j"]], ii = data[["ii"]], test124 = data[["test124"]]))
 }

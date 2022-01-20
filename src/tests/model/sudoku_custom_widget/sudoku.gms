@@ -34,7 +34,8 @@ Table d(i,j) 'distance in thousands of miles'
    seattle         2.5      1.7     1.8
    san-diego       2.5      1.8     1.4;
 scalar force_unique_sol /1/
-       test123 /2.3/;
+       test123 /2.3/
+       test124 /3.3/;
 table initial_state(row,col)
      col1 col2 col3 col4 col5 col6 col7 col8 col9
 row1                     8    6

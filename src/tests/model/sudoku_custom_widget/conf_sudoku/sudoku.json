@@ -56,13 +56,19 @@
       "rendererName": "mirowidget_d",
       "alias": "Distance",
       "apiVersion": 2,
-      "widgetSymbols": ["i", "j", "ii"]
+      "widgetSymbols": ["i", "j", "ii", "test124"]
     },
     "test123": {
       "widgetType": "numericinput",
       "alias": "test 123",
       "value": 1.1,
       "label": "Test 123?"
+    },
+    "test124": {
+      "widgetType": "numericinput",
+      "alias": "test 124",
+      "value": 1.2,
+      "label": "Test 124?"
     }
   },
   "pageTitle": "Sudoku solver",
