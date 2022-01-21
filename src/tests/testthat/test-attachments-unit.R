@@ -71,6 +71,46 @@ callbackFunction <- function() {
   callbackCounter <<- callbackCounter + 1L
 }
 
+writeToDb <- function(attachmentOpQueue, sid = 1L) {
+  if (length(attachmentOpQueue$remove)) {
+    db$deleteRows("_scenAttach", "fileName",
+      attachmentOpQueue$remove,
+      conditionSep = "OR", subsetSids = sid
+    )
+  }
+  if (length(attachmentOpQueue$updateExec$name)) {
+    fnHasExecPerm <- attachmentOpQueue$updateExec$
+      name[attachmentOpQueue$updateExec$execPerm]
+    fnHasNoExecPerm <- attachmentOpQueue$updateExec$
+      name[!attachmentOpQueue$updateExec$execPerm]
+    if (length(fnHasExecPerm)) {
+      db$updateRows("_scenAttach",
+        tibble::tibble("fileName", fnHasExecPerm),
+        colNames = "execPerm",
+        values = TRUE,
+        subsetSids = sid, innerSepAND = FALSE
+      )
+    }
+    if (length(fnHasNoExecPerm)) {
+      db$updateRows("_scenAttach",
+        tibble::tibble("fileName", fnHasNoExecPerm),
+        colNames = "execPerm",
+        values = FALSE,
+        subsetSids = sid, innerSepAND = FALSE
+      )
+    }
+  }
+  if (length(attachmentOpQueue$save)) {
+    db$exportScenDataset(
+      dplyr::bind_cols(
+        "_sid" = rep.int(sid, nrow(attachmentOpQueue$save)),
+        attachmentOpQueue$save
+      ),
+      "_scenAttach"
+    )
+  }
+}
+
 test_that("Adding attachments work", {
   fakeSessionIn1 <- FakeSession$new("in_1")
   fakeSessionScen3Out2 <- FakeSession$new("tab_3_2")
@@ -152,14 +192,7 @@ test_that("Adding attachments work", {
 })
 
 test_that("Flushing opQueue works", {
-  data <- attachments$flushOpQueue()$save
-  expect_error(db$exportScenDataset(
-    dplyr::bind_cols(
-      "_sid" = rep.int(1, nrow(data)),
-      data
-    ),
-    "_scenAttach"
-  ), NA)
+  expect_error(writeToDb(attachments$flushOpQueue()), NA)
 })
 
 test_that("Initializing scen data works", {
@@ -203,6 +236,15 @@ test_that("Adding attachments works after storing in db", {
       execPerm = if (identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")) c(TRUE, FALSE, FALSE) else c(1L, 0L, 0L)
     )
   )
+  expect_error(attachments$setExecPerm(fakeSessionIn1, "bad-views2.json", TRUE), NA)
+  expect_equal(
+    attachments$getMetadata(),
+    tibble(
+      name = c("_scalars.csv", "bad-views2.json", "scalars.csv"),
+      execPerm = if (identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")) c(TRUE, TRUE, FALSE) else c(1L, 1L, 0L)
+    )
+  )
+  expect_error(writeToDb(attachments$flushOpQueue()), NA)
   file.move(
     file.path("data", c("_scalars.csv", "bad-views2.json")),
     file.path(testDir, "data", c("_scalars.csv", "bad-views2.json"))
@@ -210,10 +252,7 @@ test_that("Adding attachments works after storing in db", {
 })
 
 test_that("Saving/downloading attachments work", {
-  unlink(file.path(workDir, c(
-    "_scalars.csv", "bad-views2.json",
-    file.path("_miro_attach_", "scalars.csv")
-  )))
+  expect_false(file.exists(file.path(workDir, "scalars.csv")))
   expect_error(attachments$save(workDir, "scalars.csv"), NA)
   expect_true(file.exists(file.path(workDir, "scalars.csv")))
   expect_identical(readBin(file.path(workDir, "scalars.csv"), "raw"), as.raw(0x73))
@@ -245,7 +284,7 @@ test_that("Overwriting attachments work", {
   expect_error(attachments$save(file.path(workDir, "asd.csv"), "scalars.csv"), NA)
   expect_true(file.exists(file.path(workDir, "asd.csv")))
   expect_identical(readBin(file.path(workDir, "asd.csv"), "raw"), as.raw(0x2e))
-  expect_identical(callbackCounter, 4L)
+  expect_identical(callbackCounter, 7L)
 })
 
 test_that("Updating attachments works", {

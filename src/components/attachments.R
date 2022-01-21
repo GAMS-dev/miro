@@ -321,6 +321,7 @@ Attachments <- R6Class("Attachments",
       localPaths <- character(0L)
       remotePaths <- character(0L)
       unmodifiedData <- TRUE
+      fileNamesRemote <- fileNames
 
       if (is.null(scenId)) {
         if (allExecPerm) {
@@ -386,23 +387,39 @@ Attachments <- R6Class("Attachments",
           return(localPaths)
         }
 
-        if (length(private$attachmentsUpdateExec$name) ||
-          length(private$attachmentsToRemove)) {
-          unmodifiedData <- FALSE
-          fileNames <- self$getMetadata()
-          execPerm <- fileNames[["execPerm"]]
-          fileNames <- fileNames[["name"]]
+        if (is.null(private$attachmentData)) {
+          private$attachmentData <- private$fetchDataFromDb(scenId)
+        }
+        fileNamesRemote <- private$attachmentData[["fileName"]]
+        if (allExecPerm) {
+          execPerm <- private$attachmentData[["execPerm"]]
           if (length(private$attachmentsUpdateExec$name)) {
-            updateExecId <- match(private$attachmentsUpdateExec$name, fileNames)
-            execPerm[updateExecId] <- private$attachmentsUpdateExec$execPerm
+            allExecPerm <- FALSE
+            updateExecId <- match(private$attachmentsUpdateExec$name, fileNamesRemote)
+            invalidExecId <- is.na(updateExecId)
+            if (any(invalidExecId)) {
+              flog.warn(
+                "Invalid attachments marked to be updated (execPerm): %s. This should never happen!",
+                paste(private$attachmentsUpdateExec$name[invalidExecId], collapse = ", ")
+              )
+              updateExecId <- updateExecId[!invalidExecId]
+              if (length(updateExecId)) {
+                execPerm[updateExecId] <- private$attachmentsUpdateExec$execPerm[!invalidExecId]
+              }
+            } else {
+              execPerm[updateExecId] <- private$attachmentsUpdateExec$execPerm
+            }
           }
-          fileNames <- fileNames[execPerm == TRUE]
-          if (length(private$attachmentsToRemove)) {
-            fileNames <- fileNames[!fileNames %in% private$attachmentsToRemove]
-          }
-          if (!length(fileNames)) {
-            return(localPaths)
-          }
+          fileNamesRemote <- fileNamesRemote[execPerm == TRUE]
+        } else {
+          fileNamesRemote <- fileNamesRemote[fileNamesRemote %in% fileNames]
+        }
+        if (length(private$attachmentsToRemove)) {
+          allExecPerm <- FALSE
+          fileNamesRemote <- fileNamesRemote[!fileNamesRemote %in% private$attachmentsToRemove]
+        }
+        if (!length(fileNamesRemote)) {
+          return(localPaths)
         }
       }
 
@@ -410,13 +427,13 @@ Attachments <- R6Class("Attachments",
         if (allExecPerm && unmodifiedData) {
           tibble("execPerm", if (inherits(private$conn, "PqConnection")) TRUE else 1)
         } else {
-          tibble(rep.int("fileName", length(fileNames)), fileNames)
+          tibble(rep.int("fileName", length(fileNamesRemote)), fileNamesRemote)
         },
         colNames = c("fileName", "fileContent"), innerSepAND = FALSE,
         subsetSids = if (is.null(scenId)) private$sid else scenId
       )
       if (length(data)) {
-        if (allExecPerm) {
+        if (allExecPerm && unmodifiedData) {
           remotePaths <- file.path(filePath, data[["fileName"]])
         } else {
           remotePaths <- filePaths[match(data[["fileName"]], fileNames)]
@@ -683,7 +700,6 @@ Attachments <- R6Class("Attachments",
       return(invisible(self))
     },
     resetOpQueue = function() {
-      private$attachmentsToRemove <- character(0L)
       private$localAttachmentsNotCleaned <- unique(c(
         private$localAttachmentsNotCleaned,
         private$localAttachments$filePaths
@@ -776,16 +792,6 @@ Attachments <- R6Class("Attachments",
         private$localAttachments$filePaths <- private$localAttachments$filePaths[-localFilesToRemoveId]
         private$localAttachments$execPerm <- private$localAttachments$execPerm[-localFilesToRemoveId]
 
-        updatesToRemove <- match(fileNames, basename(private$attachmentsUpdateExec$name))
-        updatesToRemove <- updatesToRemove[!is.na(updatesToRemove)]
-
-        if (length(updatesToRemove)) {
-          private$attachmentsUpdateExec$name <- private$
-            attachmentsUpdateExec$name[-updatesToRemove]
-          private$attachmentsUpdateExec$execPerm <- private$
-            attachmentsUpdateExec$execPerm[-updatesToRemove]
-        }
-
         fileNames <- fileNames[is.na(localFiles)]
       }
       if (removeLocal) {
@@ -794,6 +800,15 @@ Attachments <- R6Class("Attachments",
         if (length(localFilesToRemoveId)) {
           private$.removeLocalFiles(private$localAttachmentsNotCleaned[localFilesToRemoveId])
         }
+      }
+      updatesToRemove <- match(fileNames, basename(private$attachmentsUpdateExec$name))
+      updatesToRemove <- updatesToRemove[!is.na(updatesToRemove)]
+
+      if (length(updatesToRemove)) {
+        private$attachmentsUpdateExec$name <- private$
+          attachmentsUpdateExec$name[-updatesToRemove]
+        private$attachmentsUpdateExec$execPerm <- private$
+          attachmentsUpdateExec$execPerm[-updatesToRemove]
       }
       private$attachmentsToRemove <- c(private$attachmentsToRemove, fileNames)
       invisible(self)
