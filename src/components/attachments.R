@@ -212,7 +212,6 @@ Attachments <- R6Class("Attachments",
         )
       }
       existingFileNames <- self$getIds()
-      existingFileNames <- existingFileNames[!existingFileNames %in% private$attachmentsToRemove]
 
       fnToOverwrite <- fileNames %in% existingFileNames
 

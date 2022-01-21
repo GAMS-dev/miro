@@ -166,6 +166,49 @@ test_that("Initializing scen data works", {
   expect_error(attachments$initScenData(1), NA)
 })
 
+test_that("Adding attachments works after storing in db", {
+  fakeSessionIn1 <- FakeSession$new("in_1")
+  file.copy(
+    c(
+      file.path(testDir, "data", "_scalars.csv"),
+      file.path(testDir, "data", "bad-views2.json")
+    ),
+    c(file.path("data", "_scalars.csv"), file.path("data", "bad-views2.json"))
+  )
+  expect_error(attachments$add(
+    session = fakeSessionIn1, c(
+      file.path(testDir, "data", "_scalars.csv"),
+      file.path(testDir, "data", "bad-views2.json")
+    ),
+    fileNames = NULL, overwrite = TRUE, execPerm = NULL
+  ), NA)
+  file.copy(
+    c(file.path("data", "_scalars.csv"), file.path("data", "bad-views2.json")),
+    c(
+      file.path(testDir, "data", "_scalars.csv"),
+      file.path(testDir, "data", "bad-views2.json")
+    )
+  )
+  expect_error(attachments$add(
+    session = fakeSessionIn1, c(
+      file.path(testDir, "data", "_scalars.csv"),
+      file.path(testDir, "data", "bad-views2.json")
+    ),
+    fileNames = NULL, overwrite = TRUE, execPerm = c(TRUE, FALSE)
+  ), NA)
+  expect_equal(
+    attachments$getMetadata(),
+    tibble(
+      name = c("_scalars.csv", "bad-views2.json", "scalars.csv"),
+      execPerm = if (identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")) c(TRUE, FALSE, FALSE) else c(1L, 0L, 0L)
+    )
+  )
+  file.move(
+    file.path("data", c("_scalars.csv", "bad-views2.json")),
+    file.path(testDir, "data", c("_scalars.csv", "bad-views2.json"))
+  )
+})
+
 test_that("Saving/downloading attachments work", {
   unlink(file.path(workDir, c(
     "_scalars.csv", "bad-views2.json",
