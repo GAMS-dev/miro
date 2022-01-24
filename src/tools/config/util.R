@@ -227,10 +227,34 @@ getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE) {
       value = !isFALSE(currentConfig$fixedColumns)
     ),
     if (!pivotComp) {
-      tags$div(
-        id = "miroPivotInfoMsg", class = "config-message",
-        style = "display:block;",
-        lang$adminMode$graphs$miroPivotOptions$infoMsg
+      tagList(
+        checkboxInput_MIRO(paste0(prefix, "useExternalDefaultView"),
+          lang$adminMode$graphs$miroPivotOptions$externalDefaultViewSwitch,
+          value = length(currentConfig$externalDefaultView)
+        ),
+        conditionalPanel(
+          paste0("input.", prefix, "useExternalDefaultView===true"),
+          tags$div(
+            class = "form-group shiny-input-container",
+            tags$label(
+              class = "control-label", "for" = paste0(prefix, "externalDefaultView"),
+              lang$adminMode$graphs$miroPivotOptions$externalDefaultViewName
+            ),
+            tags$input(
+              id = paste0(prefix, "externalDefaultView"), class = "form-control must-not-be-empty",
+              type = "text",
+              value = currentConfig$externalDefaultView
+            )
+          )
+        ),
+        conditionalPanel(
+          paste0("input.", prefix, "useExternalDefaultView!==true"),
+          tags$div(
+            id = "miroPivotInfoMsg", class = "config-message",
+            style = "display:block;",
+            lang$adminMode$graphs$miroPivotOptions$infoMsg
+          )
+        )
       )
     }
   )

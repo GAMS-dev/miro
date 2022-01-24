@@ -1788,6 +1788,8 @@
         }
       },
       "miroPivotOptions":{
+        "externalDefaultViewSwitch": "Use external default view",
+        "externalDefaultViewName": "Name of the view to use as default",
         "infoMsg": "Please use directly the preview on the right side to configure the default view.",
         "hideEmptyColsSwitch": "Activate switch to hide empty columns",
         "emptyUEL": "UEL, which indicates a missing value (must not be empty string)",

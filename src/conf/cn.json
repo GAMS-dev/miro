@@ -1787,6 +1787,8 @@
         }
       },
       "miroPivotOptions":{
+        "externalDefaultViewSwitch": "使用外部默认视图",
+        "externalDefaultViewName": "用作默认视图的名称",
         "infoMsg": "请直接使用右侧的预览来配置默认视图。",
         "hideEmptyColsSwitch": "激活开关以隐藏空列",
         "emptyUEL": "UEL，指示缺少值（不得为空字符串）",

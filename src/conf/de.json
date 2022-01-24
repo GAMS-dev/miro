@@ -1788,6 +1788,8 @@
         }
       },
       "miroPivotOptions":{
+         "externalDefaultViewSwitch": "Externe Standardansicht verwenden",
+         "externalDefaultViewName": "Name der als Standard zu verwendenden Ansicht",
          "infoMsg": "Bitte benutzen Sie direkt die Vorschau auf der rechten Seite, um die Standardansicht zu konfigurieren.",
          "hideEmptyColsSwitch": "Schalter zum Ausblenden leerer Spalten aktivieren",
          "emptyUEL": "UEL, die einen fehlenden Wert anzeigt (darf kein leerer String sein)",

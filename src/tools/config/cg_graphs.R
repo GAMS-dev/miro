@@ -2102,6 +2102,18 @@ observeEvent(input$miropivot_emptyUEL, {
     rv$graphConfig$graph$options$emptyUEL <- input$miropivot_emptyUEL
   }
 })
+observe({
+  if (!isTRUE(input$miropivot_useExternalDefaultView) || !length(input$miropivot_externalDefaultView)) {
+    rv$graphConfig$graph$options$externalDefaultView <- NULL
+    return()
+  }
+  externalViewTmp <- trimws(input$miropivot_externalDefaultView)
+  if (identical(externalViewTmp, "")) {
+    rv$graphConfig$graph$options$externalDefaultView <- NULL
+  } else {
+    rv$graphConfig$graph$options$externalDefaultView <- externalViewTmp
+  }
+})
 observeEvent(input$miropivot_hidePivotControls, {
   if (isTRUE(input$miropivot_hidePivotControls)) {
     rv$graphConfig$graph$options$hidePivotControls <- TRUE
@@ -4851,6 +4863,7 @@ observe(
           miropivotOptions$enableHideEmptyCols <- TRUE
           miropivotOptions$hidepivotcontrols <- rv$graphConfig$graph$options$hidepivotcontrols
           miropivotOptions$fixedColumns <- rv$graphConfig$graph$options$fixedColumns
+          miropivotOptions$externalDefaultView <- rv$graphConfig$graph$options$externalDefaultView
           isolate(callModule(renderData, "preview_output_miropivot",
             type = "miropivot",
             data = data, rendererEnv = customRendererEnv,
@@ -5034,6 +5047,9 @@ observeEvent(rv$saveGraphConfirm, {
     )
     if (length(rv$graphConfig$graph$options$emptyUEL)) {
       configJSON$dataRendering[[activeSymbol$name]]$options$emptyUEL <<- rv$graphConfig$graph$options$emptyUEL
+    }
+    if (length(rv$graphConfig$graph$options$externalDefaultView)) {
+      configJSON$dataRendering[[activeSymbol$name]]$options$externalDefaultView <<- rv$graphConfig$graph$options$externalDefaultView
     }
     for (indexEl in list(c("rows", "rowIndexList"))) {
       indexVal <- input[[paste0("preview_output_miropivot-miroPivot-", indexEl[[2]])]]
