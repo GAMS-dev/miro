@@ -118,11 +118,14 @@ Set scheduleHdr 'schedule header' / 'cap', 'demand', 'quantities' /;
 $onExternalOutput
 Parameter
    schedule(i,j,scheduleHdr) 'shipment quantities in cases'
+   schedule2(i,j,scheduleHdr) 'shipment quantities in cases'
    total_cost                'total transportation costs in thousands of dollars';
-Table schedule;
+Table schedule, schedule2;
 $offExternalOutput
 
 total_cost = z.l;
 schedule(i,j, 'cap')        = a(i);
 schedule(i,j, 'demand')     = b(j);
 schedule(i,j, 'quantities') = x.l(i,j);
+
+schedule2(i,j,scheduleHdr) = schedule(i,j,scheduleHdr);

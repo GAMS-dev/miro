@@ -67,6 +67,21 @@
       },
       "height": 700
     },
+    "schedule2": {
+      "outType": "miroPivot",
+      "options": {
+        "externalDefaultView": "test123",
+        "rows": "i",
+        "cols": {
+          "j": null
+        },
+        "filter": {
+          "Hdr": "quantities"
+        },
+        "pivotRenderer": "bar"
+      },
+      "height": 700
+    },
     "_scalars_out": {
       "outType": "valueBox",
       "options": {

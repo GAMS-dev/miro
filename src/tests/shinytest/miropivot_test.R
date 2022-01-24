@@ -1,8 +1,8 @@
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("miropivot_test")
 
-getData <- function() {
-  return(jsonlite::fromJSON(app$getAllValues()$output[["tab_1_1-miroPivot-pivotChart"]])$x$data$datasets$data)
+getData <- function(id = "tab_1_1") {
+  return(jsonlite::fromJSON(app$getAllValues()$output[[paste0(id, "-miroPivot-pivotChart")]])$x$data$datasets$data)
 }
 Sys.sleep(2)
 app$findElement("a[data-value='outputData']")$click()
@@ -65,5 +65,30 @@ expect_true(app$waitFor("$('#tab_1_1-miroPivot-container .row.table-chart').chil
 # data-section row
 expect_true(app$waitFor("$('#tab_1_1-miroPivot-container .row.data-section').is(':hidden');", 50))
 
-
+app$setInputs(outputTabset = "outputTabset_2")
+Sys.sleep(0.5)
+expect_equal(getData("tab_1_2"), list(c(NA, 300), c(275, 50), c(275, NA)))
+app$setInputs(btEditMeta = "click")
+Sys.sleep(1)
+app$findElement('#editMetaUI a[data-value="Views"]')$click()
+app$uploadFile(file_addViews = "../data/transport_views.json")
+expect_identical(length(app$findElements("#currentViewsTable tbody tr")), 1L)
+app$findElement('button[data-dismiss="modal"]')$click()
+Sys.sleep(1)
+app$findElement("#tab_1_2-miroPivot-toggleViewButton")$click()
+Sys.sleep(0.5)
+# load new default view (external view)
+expect_true(app$waitFor("$('#tab_1_2-miroPivot-savedViewsDD li').eq(0).children('.dropdown-item').click();true;", timeout = 50))
+Sys.sleep(1)
+expect_equal(getData("tab_1_2"), list(c(950, 950, 950), c(600, 650, 550)))
+# delete view and load old default again
+app$findElement("#tab_1_2-miroPivot-toggleViewButton")$click()
+Sys.sleep(0.5)
+expect_true(app$waitFor("$('#tab_1_2-miroPivot-savedViewsDD li').eq(1).children('.miro-pivot-view-button').eq(1).click();true;", timeout = 50))
+Sys.sleep(0.5)
+app$findElement("#tab_1_2-miroPivot-toggleViewButton")$click()
+Sys.sleep(0.5)
+expect_true(app$waitFor("$('#tab_1_2-miroPivot-savedViewsDD li').eq(0).children('.dropdown-item').click();true;", timeout = 50))
+Sys.sleep(0.5)
+expect_equal(getData("tab_1_2"), list(c(NA, 300), c(275, 50), c(275, NA)))
 app$stop()

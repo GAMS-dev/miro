@@ -131,6 +131,32 @@
 				}
 			}
 		},
+		"schedule2":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"cap":	{
+					"type":	"numeric",
+					"alias":	"cap"
+				},
+				"demand":	{
+					"type":	"numeric",
+					"alias":	"demand"
+				},
+				"quantities":	{
+					"type":	"numeric",
+					"alias":	"quantities"
+				}
+			}
+		},
 		"_scalars_out":	{
 			"alias":	"Output Scalars",
 			"symnames":	["total_cost"],

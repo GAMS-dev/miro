@@ -870,17 +870,23 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
         })
       }
-      if (isTRUE(options$resetOnInit)) {
-        resetView(options, interfaceInitialized = FALSE)
+      currentView <- options
+      if (isTRUE(options$resetOnInit) || (length(options$externalDefaultView) && options$externalDefaultView %in% views$getIds(session))) {
+        if (length(options$externalDefaultView) && options$externalDefaultView %in% views$getIds(session)) {
+          currentView <- views$get(session, options$externalDefaultView)
+          options$resetOnInit <- TRUE
+          resetFilters <- TRUE
+        }
+        resetView(currentView, interfaceInitialized = FALSE)
       }
       if (is.null(input$aggregationFunction) || identical(input$aggregationFunction, "")) {
         # interface has not been initialised, do it now
         resetFilters <- TRUE
-        if (length(options[["aggregationFunction"]]) &&
-          options[["aggregationFunction"]] %in% aggregationFunctions) {
+        if (length(currentView[["aggregationFunction"]]) &&
+          currentView[["aggregationFunction"]] %in% aggregationFunctions) {
           updateSelectInput(session, "aggregationFunction",
             choices = aggregationFunctions,
-            selected = options[["aggregationFunction"]]
+            selected = currentView[["aggregationFunction"]]
           )
         } else {
           updateSelectInput(session, "aggregationFunction",
@@ -892,7 +898,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
       setIndexAliases <- as.list(setIndexAliases)
       names(setIndexAliases) <- setIndices
-      currentView <- options
       if (!is.null(rendererEnv[[ns("chartOptions")]])) {
         if (isTRUE(options$resetOnInit)) {
           rendererEnv[[ns("chartOptions")]] <- NULL
@@ -1297,8 +1302,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             return()
           }
           viewId <- htmlIdDec(input$savedViews)
+          externalViewIds <- views$getIds(session)
           if (length(viewId) != 1L ||
-            !viewId %in% c("default", views$getIds(session))) {
+            !viewId %in% c("default", externalViewIds)) {
             flog.error(
               "Invalid view id: '%s' attempted to be loaded. This looks like an attempt to tamper with the app!",
               input$savedViews
@@ -1306,7 +1312,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             return()
           }
           currentView <<- if (identical(viewId, "default")) {
-            options
+            if (length(options$externalDefaultView) && options$externalDefaultView %in% externalViewIds) {
+              views$get(session, options$externalDefaultView)
+            } else {
+              options
+            }
           } else {
             views$get(session, viewId)
           }

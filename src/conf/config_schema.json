@@ -108,6 +108,11 @@
            "description":"Show pivot presentation mode/hide pivot controls per default.",
            "type": "boolean"
          },
+         "externalDefaultView": {
+           "description":"Name of an external view (either global or scenario specific) to be used as default view. If this view does not exist, the default configuration for this symbol is used.",
+           "type": "string",
+           "minLength": 1
+         },
          "customChartColors": {
            "description": "Custom color palette. Every second color is the hover color of previous one.",
            "type":"array"

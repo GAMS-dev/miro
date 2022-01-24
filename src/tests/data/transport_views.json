@@ -1,0 +1,1 @@
+{"schedule2":{"test123":{"aggregationFunction":"sum","pivotRenderer":"stackedbar","domainFilter":{"default":null},"rows":"j","aggregations":{"i":null},"cols":{"Hdr":["cap","demand"]}}}}
