@@ -170,6 +170,24 @@ server_admin <- function(input, output, session) {
     scenDataTemplate = scenDataTemplate,
     hiddenOutputScalars = config$hiddenOutputScalars
   )
+  views <- Views$new(
+    names(modelIn),
+    names(modelOut),
+    ioConfig$inputDsNamesBase
+  )
+  attachments <- Attachments$new(
+    db, list(
+      maxSize = attachMaxFileSize, maxNo = attachMaxNo,
+      forbiddenFNames = c(
+        MIROGdxInName, MIROGdxOutName,
+        paste0(modelNameRaw, c(".log", ".lst"))
+      )
+    ),
+    tempdir(TRUE),
+    names(modelIn),
+    names(modelOut),
+    ioConfig$inputDsNamesBase
+  )
   session$sendCustomMessage(
     "gms-setGAMSSymbols",
     list(

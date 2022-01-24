@@ -590,6 +590,45 @@ observeEvent(input$dbInput, {
   isEmptyOutput <<- isNonemptyDataset(modelOutputData)
   tabularOutputWithData <- outputSymMultiDimChoices[!isEmptyOutput]
 
+  tryCatch(
+    {
+      views$clearConf()
+      views$loadConf(
+        db$importDataset(
+          tableName = "_scenViews",
+          subsetSids = sidToLoad
+        ), TRUE,
+        1L, sidToLoad
+      )
+    },
+    error = function(e) {
+      flog.error(
+        "Some error occurred loading view data for scenario: '%s' from database. Error message: %s.",
+        sidToLoad, conditionMessage(e)
+      )
+      errMsg <<- lang$errMsg$loadScen$desc
+    }
+  )
+  if (is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))) {
+    return(NULL)
+  }
+  tryCatch(
+    {
+      attachments$clear(cleanLocal = TRUE)
+      attachments$initScenData(sidToLoad)
+    },
+    error = function(e) {
+      flog.error(
+        "Some error occurred loading attachment data for scenario: '%s' from database. Error message: %s.",
+        sidToLoad, conditionMessage(e)
+      )
+      errMsg <<- lang$errMsg$loadScen$desc
+    }
+  )
+  if (is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))) {
+    return(NULL)
+  }
+
   updatePreviewData(
     tabularInputWithData,
     tabularOutputWithData,
@@ -2512,6 +2551,8 @@ observeEvent(input$gams_symbols, {
   if (is.na(symbolID)) {
     symbolID <- match(isolate(input$gams_symbols), names(modelOut)) + length(modelIn)
   }
+  updateTextInput(session, "preview_output_miropivot-miroPivot-symbol_name", value = input$gams_symbols)
+  updateTextInput(session, "preview_output_custom-symbol_name", value = input$gams_symbols)
   changeActiveSymbol(symbolID)
   newChartTool <<- character(0L)
   if (identical(input$gams_symbols, scalarsFileName)) {
@@ -4820,7 +4861,7 @@ observe(
               ),
               miropivotOptions
             ),
-            roundPrecision = 2, modelDir = modelDir
+            roundPrecision = 2, modelDir = modelDir, views = views
           ))
           showEl(session, "#preview-content-miropivot")
           hideEl(session, "#preview-content-pivot")
@@ -4905,7 +4946,7 @@ observe(
               data,
               options = rv$graphConfig$options,
               path = customRendererDir, rendererEnv = customRendererEnv,
-              views = NULL, attachments = NULL,
+              views = views, attachments = attachments,
               outputScalarsFull = configScalars
             )
           })

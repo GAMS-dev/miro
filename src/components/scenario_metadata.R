@@ -85,6 +85,9 @@ ScenarioMetadata <- R6Class("ScenarioMetadata",
             scenId
           ))
         }
+      } else if (startsWith(id[1], "preview")) {
+        # config mode
+        return(session$input[["symbol_name"]])
       } else {
         stop(sprintf("Invalid id: %s", paste(id, collapse = "_")), call. = FALSE)
       }

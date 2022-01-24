@@ -591,6 +591,10 @@ font-size: 12px;
               ),
               tags$div(
                 id = "preview-content-miropivot", style = "display:none; overflow:auto;text-align:left;",
+                tags$div(
+                  style = "display:none",
+                  tags$input(id = "preview_output_miropivot-miroPivot-symbol_name", type = "text")
+                ),
                 renderDataUI("preview_output_miropivot",
                   type = "miropivot",
                   height = 400, customOptions = list(enableHideEmptyCols = TRUE)
@@ -622,6 +626,10 @@ font-size: 12px;
                   class = "btn btn-default", type = "button",
                   onclick = "Shiny.setInputValue('btUpdateCustomRendererOutput',1,{priority:'event'});",
                   lang$adminMode$graphs$customOptions$btUpdate
+                ),
+                tags$div(
+                  style = "display:none",
+                  tags$input(id = "preview_output_custom-symbol_name", type = "text")
                 ),
                 uiOutput("preview_custom_renderer")
               ),
