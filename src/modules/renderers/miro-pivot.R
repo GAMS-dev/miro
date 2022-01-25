@@ -916,14 +916,25 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         updateViewList <- function() {
           removeUI(paste0("#", ns("savedViewsDD"), " .dropdown-item-wrapper"), multiple = TRUE)
 
+          localViewIds <- views$getIds(session, "local")
+
           viewChoices <- lapply(sort(views$getIds(session)), function(viewId) {
-            createBootstrapDropdownChoices(
+            if (viewId %in% localViewIds) {
+              return(createBootstrapDropdownChoices(
+                list(
+                  id = htmlIdEnc(viewId),
+                  alias = viewId
+                ),
+                ns("savedViews"), ns("editView"), ns("deleteView")
+              ))
+            }
+            return(createBootstrapDropdownChoices(
               list(
                 id = htmlIdEnc(viewId),
                 alias = viewId
               ),
-              ns("savedViews"), ns("editView"), ns("deleteView")
-            )
+              ns("savedViews")
+            ))
           })
           insertUI(paste0("#", ns("savedViewsDD")),
             c(
@@ -1100,7 +1111,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         })
         deleteView <- function(viewId) {
           views$remove(session, viewId)
-          removeUI(paste0("#", ns("savedViews"), "_", htmlIdEnc(viewId)))
+          updateViewList()
         }
         addNewView <- function(viewName, overwrite = FALSE) {
           isolate({
@@ -1270,7 +1281,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
           viewId <- htmlIdDec(input$editView)
           if (length(viewId) != 1L ||
-            !viewId %in% views$getIds(session)) {
+            !viewId %in% views$getIds(session, "local")) {
             flog.error(
               "Invalid view id: '%s' attempted to be edited. This looks like an attempt to tamper with the app!",
               input$editView
@@ -1288,7 +1299,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
           viewId <- htmlIdDec(input$deleteView)
           if (length(viewId) != 1L ||
-            !viewId %in% views$getIds(session)) {
+            !viewId %in% views$getIds(session, "local")) {
             flog.error(
               "Invalid view id: '%s' attempted to be removed. This looks like an attempt to tamper with the app!",
               input$deleteView
