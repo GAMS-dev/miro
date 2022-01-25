@@ -1736,7 +1736,7 @@ if (!is.null(errMsg)) {
         names(modelIn),
         names(modelOut),
         ioConfig$inputDsNamesBase, rv
-      )
+      )$setGlobalViews(config$globalViews)
       attachments <- Attachments$new(
         db, list(
           maxSize = attachMaxFileSize, maxNo = attachMaxNo,

@@ -106,9 +106,14 @@ if (is.null(errMsg)) {
       currentModelDir, .Platform$file.sep,
       "conf_", modelName, .Platform$file.sep,
       modelName, "_io.json"
+    ),
+    file.path(
+      currentModelDir,
+      paste0("conf_", modelName),
+      "views.json"
     )
   )
-  jsonFilesMissing <- !file.exists(jsonFilesWithSchema)
+  jsonFilesMissing <- !file.exists(jsonFilesWithSchema[1:2])
   if (any(jsonFilesMissing)) {
     errMsg <- paste(errMsg, paste0(
       "JSON file(s): '", basename(jsonFilesWithSchema[jsonFilesMissing]),
@@ -130,6 +135,10 @@ Note that GAMS will not create the directories 'conf_", modelName, "' and 'data_
     io_config = c(
       jsonFilesWithSchema[2],
       file.path(getwd(), "conf", "io_config_schema.json")
+    ),
+    views = c(
+      jsonFilesWithSchema[3],
+      file.path(getwd(), "conf", "views_schema.json")
     )
   )
 }
@@ -140,22 +149,25 @@ if (is.null(errMsg)) {
   config <- NULL
   jsonValidator <- JSONValidator$new()
   lapply(seq_along(jsonSchemaMap), function(i) {
-    tryCatch(
+    if (tryCatch(
       {
         valid <- jsonValidator$validate(
           jsonSchemaMap[[i]][1],
           jsonSchemaMap[[i]][2]
         )
+        FALSE
       },
       error = function(e) {
-        errMsg <<- paste(errMsg, paste0(
-          "Some error occurred validating JSON file: '",
-          basename(jsonFilesWithSchema[i]), "'. Error message: ",
-          conditionMessage(e)
-        ), sep = "\n")
+        if (!names(jsonSchemaMap)[[i]] %in% c("views")) {
+          errMsg <<- paste(errMsg, paste0(
+            "Some error occurred validating JSON file: '",
+            basename(jsonFilesWithSchema[i]), "'. Error message: ",
+            conditionMessage(e)
+          ), sep = "\n")
+        }
+        return(TRUE)
       }
-    )
-    if (!is.null(errMsg)) {
+    )) {
       return()
     }
 
@@ -164,6 +176,8 @@ if (is.null(errMsg)) {
         config <<- valid$data
       } else if (identical(names(jsonSchemaMap)[[i]], "io_config")) {
         config <<- c(config, valid$data)
+      } else if (identical(names(jsonSchemaMap)[[i]], "views")) {
+        config$globalViews <<- valid$data
       }
     } else {
       errMsg <<- paste(errMsg,
@@ -2309,4 +2323,17 @@ if (is.null(errMsg)) {
     logical(1L),
     USE.NAMES = FALSE
   )]
+}
+
+if (is.null(errMsg)) {
+  invalidViewSymbols <- !names(config$globalViews) %in% c(
+    inputDsNames, paste0("_pivotcomp_", inputDsNames),
+    names(modelOut), paste0("_pivotcomp_", names(modelOut))
+  )
+  if (any(invalidViewSymbols)) {
+    errMsg <- sprintf(
+      "Invalid global views found. Symbol(s): %s don't exist.",
+      paste(names(config$globalViews)[invalidViewSymbols], collapse = ", ")
+    )
+  }
 }

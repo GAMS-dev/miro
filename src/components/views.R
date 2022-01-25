@@ -1,6 +1,12 @@
 Views <- R6Class("Views",
   inherit = ScenarioMetadata,
   public = list(
+    setGlobalViews = function(globalViews) {
+      if (length(globalViews)) {
+        private$globalViews <- globalViews
+      }
+      return(invisible(self))
+    },
     getDuplicatedViews = function() {
       return(private$duplicatedViews)
     },
@@ -282,36 +288,59 @@ Views <- R6Class("Views",
       private$scenViewConf[["1"]][[symName]][[private$makeIds(id)]] <- viewConf
       return(invisible(self))
     },
-    getIds = function(session) {
+    getIds = function(session, filter = c("all", "global", "local")) {
+      match.arg(filter)
       symName <- private$getSymbolName(session)
       if (length(symName) != 2) {
         symName <- c(symName, "1")
+      }
+      viewIdsTmp <- character()
+      if (!identical(filter, "local")) {
+        if (symName[[1]] %in% names(private$globalViews)) {
+          viewIdsTmp <- names(private$globalViews[[symName[[1]]]])
+        }
+        if (identical(filter, "global")) {
+          return(viewIdsTmp)
+        }
       }
       if (!length(private$scenViewConf) ||
         !symName[[2]] %in% names(private$scenViewConf) ||
         !symName[[1]] %in% names(private$scenViewConf[[symName[[2]]]])) {
-        return(character())
+        return(viewIdsTmp)
       }
-      return(names(private$scenViewConf[[symName[[2]]]][[symName[[1]]]]))
+      return(unique(c(viewIdsTmp, names(private$scenViewConf[[symName[[2]]]][[symName[[1]]]]))))
     },
-    get = function(session, id = NULL) {
+    get = function(session, id = NULL, filter = c("all", "global", "local")) {
+      match.arg(filter)
       if (length(id)) {
         id <- private$makeIds(id)
       }
       symName <- private$getSymbolName(session)
-      viewConfTmp <- NULL
       if (length(symName) != 2) {
         symName <- c(symName, "1")
       }
-      if (!length(private$scenViewConf) ||
-        !symName[[2]] %in% names(private$scenViewConf)) {
-        return()
+      viewConfTmp <- NULL
+      if (!identical(filter, "local") && symName[[1]] %in% names(private$globalViews)) {
+        viewConfTmp <- private$globalViews[[symName[[1]]]]
       }
-      viewConfTmp <- private$scenViewConf[[symName[[2]]]]
-      if (!symName[[1]] %in% names(viewConfTmp)) {
-        return()
+      if (!identical(filter, "global") && length(private$scenViewConf) &&
+        symName[[2]] %in% names(private$scenViewConf) && symName[[1]] %in% names(private$scenViewConf[[symName[[2]]]])) {
+        if (length(id)) {
+          if (id %in% names(private$scenViewConf[[symName[[2]]]][[symName[[1]]]])) {
+            return(private$scenViewConf[[symName[[2]]]][[symName[[1]]]][[id]])
+          }
+          if (id %in% names(viewConfTmp)) {
+            return(viewConfTmp[[id]])
+          }
+          stop(sprintf("View with id: %s could not be found.", id),
+            call. = FALSE
+          )
+        }
+        # need to merge local and global views. Local views shadow global views
+        for (viewName in names(private$scenViewConf[[symName[[2]]]][[symName[[1]]]])) {
+          viewConfTmp[[viewName]] <- private$scenViewConf[[symName[[2]]]][[symName[[1]]]][[viewName]]
+        }
       }
-      viewConfTmp <- viewConfTmp[[symName[[1]]]]
       if (length(id)) {
         if (id %in% names(viewConfTmp)) {
           return(viewConfTmp[[id]])
@@ -344,6 +373,7 @@ Views <- R6Class("Views",
   ),
   private = list(
     scenViewConf = list("1" = list()),
+    globalViews = list(),
     symbolAliases = NULL,
     duplicatedViews = NULL,
     invalidViews = NULL,
