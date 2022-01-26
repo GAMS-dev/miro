@@ -1066,8 +1066,12 @@
         "choices": ["Englisch", "Deutsch", "Chinesisch"]
       },
       "theme":{
-        "label": "Zu verwendendes Farbschema",
+        "label": "Zu verwendender Modus",
         "choices": ["System/Browser Einstellungen", "Heller Modus", "Dunkler Modus"]
+      },
+      "colortheme":{
+        "label": "Zu verwendendes Farbschema",
+        "choices": ["Standard Farbschema", "Schwarzweiß"]
       },
       "customCss": {
         "label": "Eine benutzerdefinierte CSS-Datei einbinden? Die Datei muss 'custom.css' heißen und sich im Verzeichnis static_<modelName> befinden."

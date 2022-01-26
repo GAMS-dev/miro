@@ -4,8 +4,10 @@
   "description": "GAMS MIRO",
   "main": "miro.js",
   "scripts": {
-    "build": "webpack --progress --mode=production",
-    "watch": "webpack --progress --watch",
+    "build": "webpack --progress --mode=development",
+    "build-full": "webpack --progress --mode=production",
+    "watch": "webpack --progress --watch --mode=development",
+    "watch-full": "webpack --progress --watch --mode=production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

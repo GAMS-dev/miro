@@ -1,0 +1,47 @@
+////dark
+@hot-cell-color-dark:               #444342;//#4e545d;           //before: #fff;
+@header-color-dark:                 @widget-bg-dark;//#848991;
+@hot-cell-color-dark:               darken(@header-color-dark, 39%, relative);
+@header-textcolor-dark:             @text-color-dark;           //before: #222;
+@header-textcolor-active-dark:      #fff;              //before: #000;
+@marked-column-dark:                lighten(@hot-cell-color-dark, 10%, relative);//#5c646e;
+@marked-row-dark:                   darken(@hot-cell-color-dark, 11%, relative);//#464b52;
+@marked-header-dark:                lighten(@hot-cell-color-dark, 6%, relative);//#585f69;
+@textinput-dark:                    @text-color-dark;              //before: #000;
+@textinput-bg-dark:                 @main-bg-dark; //#393e46;           //before: #fff;
+@readonly-cell-dark:                lighten(@hot-cell-color-dark, 54%, relative);//#aab0b9;
+@context-menu-dark:                 @main-bg-dark; //#393e46;           //before: #fff;
+//@text-color-dark:                   #eeeeee;           //before: #eeeeee;
+@context-highlight-dark:            darken(@text-color-dark, 20%);         //before: #f3f3f3;
+@context-disabled-highlight-dark:   lighten(@context-highlight-dark, 5%);  //before: #fff;
+@light-blue-dark:                   @primary-color-dark;           //before: #8eb0e7;
+@marked-background-dark:            @light-blue-dark;  //before: #005eff;
+@box-shadow-color-dark:             @light-blue-dark;  //before: #5292f7;
+@current-cell-dark:                 @light-blue-dark;  //new! delete in classes for light mode
+@row-selected-dark:                 @primary-color-dark;           //before: #34a9db;
+@cell-dropdown-dark:                if(@primary-dark-has-no-color, hsl(hue(@primary-color-dark), 0%, 45%), hsl(hue(@primary-color-dark), 34%, 60%));      //before: #eee;
+@heatmap-color-dark:                #979a9f;           //new - only for dark mode
+
+
+//light
+@hot-cell-color: #fff;
+@header-color: #f0f0f0;
+@header-textcolor: #222;
+@header-textcolor-active: #000;
+@marked-column: #F9F9FB;
+@marked-row: #E7E8EF;
+@marked-header: #dcdcdc;
+@textinput: #000;
+@textinput-bg: #fff;
+@readonly-cell: #777;
+@context-menu: #fff;
+@text-color: #eeeeee;
+@context-highlight: #f3f3f3;
+@context-disabled-highlight: #fff;
+@light-blue: if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 51%), hsl(hue(@primary-color), 66%, 74%)); //#8eb0e7;
+@marked-background: if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 40%), hsl(hue(@primary-color), 100%, 45%)); //#005eff;
+@box-shadow-color: if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 44%), hsl(hue(@primary-color), 100%, 49%)); //#5292f7;
+@row-selected: if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 50%), hsl(hue(@primary-color), 69%, 57%)); //#34a9db;
+@cell-dropdown: #eee;
+@current-cell: @light-blue;        //new! delete in classes for light mode
+@import "../../5_hot/hot.less";

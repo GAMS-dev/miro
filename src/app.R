@@ -1135,7 +1135,11 @@ if (!is.null(errMsg)) {
       if (!is.list(config) || !is.character(config$theme)) {
         tags$link(type = "text/css", rel = "stylesheet", href = "skin_light.css")
       } else {
-        tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css"))
+        tags$link(type = "text/css", rel = "stylesheet", href = if (is.null(config$colortheme) || identical(config$colortheme, "default")) {
+          paste0("skin_", config$theme, ".css")
+        } else {
+          paste0(config$colortheme, "_", config$theme, ".css")
+        })
       },
       tags$script(src = "miro.js", type = "application/javascript")
     ),

@@ -29,7 +29,12 @@
     &:hover,
     &:focus,
     &.focus {
-      color: @color;
+      .responsiveDark({
+        color: if(@sidebar-light-is-light, #333, @color); //@color;
+      },
+      {
+       color: if(@sidebar-dark-is-light, #333, @color); //@color;
+      });
       background-color: darken(@background, 17%);
           border-color: darken(@border, 25%);
     }

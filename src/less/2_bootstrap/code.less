@@ -47,13 +47,13 @@ pre {
   word-break: break-all;
   word-wrap: break-word;
   .responsiveDark({
-     color: @pre-color;
+     color: if(abs(luma(@pre-bg) - luma(@pre-color)) < 15, contrast(@pre-bg), @pre-color);
      background-color: @pre-bg;
      border: 1px solid @pre-border-color;
   },
   {
+     color: if(abs(luma(@pre-bg-dark) - luma(@pre-color-dark)) < 15, contrast(@pre-bg-dark, #000, #cdcdcd), @pre-color-dark);
      background-color: @pre-bg-dark;
-     color: @pre-color-dark;
      border: 1px solid @pre-border-color-dark;
   });
   border-radius: @border-radius-base;

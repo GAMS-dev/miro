@@ -120,6 +120,9 @@ observeEvent(input$general_pageTitle, {
 observeEvent(input$general_theme, {
   rv$generalConfig$theme <<- input$general_theme
 })
+observeEvent(input$general_colortheme, {
+  rv$generalConfig$colortheme <<- input$general_colortheme
+})
 observeEvent(input$general_customCss, {
   rv$generalConfig$customCss <<- input$general_customCss
 })

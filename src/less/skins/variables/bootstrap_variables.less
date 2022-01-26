@@ -1,13 +1,13 @@
 //dark
 
-@light-blue-dark:             #00adb5;                         //new variable
+@light-blue-dark:             @primary-color-dark;                         //new variable
 //** Border color for inputs on focus
 @input-border-focus-dark:     @light-blue-dark;                // before: #66afe9;
 //also an adminLTE less variable
-@body-bg-dark:                #292D33;                         //before: #fff;
+@body-bg-dark:                if(@main-bg-dark-has-no-color, hsl(hue(@main-bg-dark), 0%, 15%), hsl(hue(@main-bg-dark), 10%, 18%));//#292D33;                         //before: #fff;
 //modal-bg: box-background color from AdminLTE
-@modal-bg-dark:               #393e46;                         //before: #fff;
-@dropdown-background-dark:    #848991;                         //before: unset
+@modal-bg-dark:               @main-bg-dark; //#393e46;                         //before: #fff;
+@dropdown-background-dark:    @widget-bg-dark;//#848991;                         //before: unset
 @dropdown-hover-dark:         #000;                            //before: unset
 @dt-search-bg-dark:           @modal-bg-dark;                  //before: #fff;
 
@@ -28,12 +28,12 @@
 //code
 @log-bg-dark:                 darken(@modal-bg-dark, 20%);     //before: #f5f5f5;
 @pre-bg-dark:                 @log-bg-dark;                    //before: #f5f5f5;
-@pre-color-dark:              #3c8dbc;                         //before: @gray-darken;
-@pre-border-color-dark:       #3c8dbc;                         //before: #ccc;
+@pre-color-dark:              @log-color-dark;                         //before: @gray-darken;
+@pre-border-color-dark:       @log-color-dark;                         //before: #ccc;
 
 
 //** Global text color on `<body>`.
-@text-color-dark:             #eeeeee;                         //before: @gray-darken;
+//@text-color-dark:             #eeeeee;                         //before: @gray-darken;
 
 @btn-color-custom-darken-dark: darken(@text-color-dark, 13.5%);
 @btn-default-color-dark:      @btn-color-custom-darken-dark;   //before: #333;
@@ -64,7 +64,7 @@
 
 //@light-blue:           #00adb5;                    //new variable
 //** Border color for inputs on focus
-@input-border-focus:     #66afe9;
+@input-border-focus:     if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 35%), hsl(hue(@primary-color), 76%, 62%));//#66afe9
 //also an adminLTE less variable
 @body-bg:                #fff;
 //modal-bg: box-background color from AdminLTE
@@ -84,7 +84,7 @@
 @gray-light:             lighten(@gray-base, 46.7%);
 @gray-lighter:           lighten(@gray-base, 93.5%);
 
-@brand-primary-color:    darken(#428bca, 6.5%);
+@brand-primary-color:    darken(@primary-color, 6.5%);
 @brand-primary:          @brand-primary-color;
 
 //code
@@ -225,7 +225,7 @@
 @btn-primary-border-dark:                   darken(@btn-primary-bg-dark, 5%);
 @btn-link-disabled-color-dark:              @gray-light-dark;
 //** Text color for `<input>`s
-@input-color-dark:                          #eeeeee; //before: #000;
+@input-color-dark:                          @text-color-dark; //before: #000;
 //** `<input disabled>` background color
 @input-bg-disabled-dark:                    @gray-lighter-dark;
 @legend-color-dark:                         @gray-darken-dark;
@@ -248,7 +248,7 @@
 @nav-link-hover-bg-dark:                    @gray-lighter-dark;
 @nav-disabled-link-color-dark:              @gray-light-dark;
 @nav-disabled-link-hover-color-dark:        @gray-light-dark;
-@nav-tabs-link-hover-border-color-dark:     lighten(#393e46, 5%);  //before: @gray-lighter-dark;
+@nav-tabs-link-hover-border-color-dark:     lighten(@main-bg-dark, 5%);  //before: @gray-lighter-dark;
 @nav-tabs-active-link-hover-color-dark:     @gray-dark;
 @nav-tabs-justified-active-link-border-color-dark:     @body-bg-dark;
 @nav-pills-active-link-hover-bg-dark:       @component-active-bg-dark;

@@ -155,10 +155,10 @@ h6,
 /* General Links */
 a {
   .responsiveDark({
-     color: @link-color;
+     color: if(abs(luma(@box-bg) - luma(@link-color)) < 15, contrast(@box-bg), @link-color);
   },
   {
-     color: @link-color-dark;
+     color: if(abs(luma(@box-bg-dark) - luma(@link-color-dark)) < 15, contrast(@box-bg-dark), @link-color-dark);//@link-color-dark,
   });
 }
 

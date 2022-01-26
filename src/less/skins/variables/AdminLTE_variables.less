@@ -23,37 +23,37 @@
 //COLORS
 //--------------------------------------------------------
 //main color
-@light-blue-dark:                #00adb5;                         //before: #3c8dbc;
+@light-blue-dark:                @primary-color-dark;                         //before: #3c8dbc;
 @light-blue-darken-dark:         darken(@light-blue-dark, 5%);    //before: darken(@light-blue, 5%);
-@body-bg-dark:                   #292D33;                         //before: #ecf0f5;
-@box-bg-dark:                    #393e46;                         //before: #fff;
+@body-bg-dark:                   if(@main-bg-dark-has-no-color, hsl(hue(@main-bg-dark), 0%, 12%), hsl(hue(@main-bg-dark), 10%, 18%));//#292D33;                         //before: #ecf0f5;
+@box-bg-dark:                    @main-bg-dark; //#393e46;                         //before: #fff;
 @box-bg-light-dark:              lighten(@box-bg-dark, 5%);       //before: #f7f7f7;
-@text-color-dark:                #eeeeee;                         //before: #f4f4f4;
+//@text-color-dark:                #eeeeee;                         //before: #f4f4f4;
 @text-color-trans-dark:          @text-color-dark;                //before: rgba(0, 0, 0, .1);
 @text-color-darken1-dark:        @text-color-dark;                //before: #444;
-@text-color-darken2-dark:         darken(@text-color-dark, 5%);    //before: #444;
+@text-color-darken2-dark:        darken(@text-color-dark, 5%);    //before: #444;
 @text-color-darken3-dark:        darken(@text-color-dark, 13.5%); // before: #444;
 @dropdown-text-color-dark:       @text-color-dark;                //before: #777;
 @box-boxshadow-dark:             0 1px 1px @text-color-trans-dark;
-@date-range-middle-dark:         #848991;                         //before: #fff
+@date-range-middle-dark:         @widget-bg-dark; //#848991;                         //before: #fff
 //Warning color
-@yellow-dark:                    #f39c12;                         //before: 3c8dbc;
-@yellow-dark-gamsinter:          #3c8dbc;                         //before: @yellow-dark (#f39c12;) - used for gams-interaction boxes
+@yellow-dark:                    @gams-color-dark;                         //before: 3c8dbc;
+@yellow-dark-gamsinter:          #030303;                         //before: @yellow-dark (#f39c12;) - used for gams-interaction boxes
 
 //Link colors (Aka: <a> tags)
 @link-color-dark:                @light-blue-dark;
 @link-hover-color-dark:          lighten(@link-color-dark, 15%);
 
 //navbar colors
-@navbar-main-dark:               #222d32;                         //before: #fff;
+@navbar-main-dark:               if(@primary-dark-has-no-color, hsl(hue(@primary-color-dark), 0%, 10%), hsl(hue(@primary-color-dark), 6%, 12%));//#222d32;                         //before: #fff;
 @navbar-icons-dark:              @text-color-dark;                //before: #333;
 @navbar-hover-dark:              lighten(@sidebar-dark-bg-dark, 60%);  //before: #999;
 
 //Dark sidebar
-@sidebar-dark-bg-dark:           #1d2121;                         //before: #222d32;
-@sidebar-dark-hover-bg-dark:     lighten(@sidebar-dark-bg-dark, 2%); //before: darken(@sidebar-dark-bg, 2%);
-@sidebar-dark-color-dark:        #9499a0;                         //before: lighten(@sidebar-dark-bg, 60%);
-@sidebar-dark-hover-color-dark:  #fff;
+@sidebar-dark-bg-dark:           @sidebar-bg-dark;                         //before: #222d32;
+@sidebar-dark-hover-bg-dark:     if(@sidebar-dark-is-light, darken(@sidebar-dark-bg-dark, 2%), lighten(@sidebar-dark-bg-dark, 2%)); //lighten(@sidebar-dark-bg-dark, 2%); //before: darken(@sidebar-dark-bg, 2%);
+@sidebar-dark-color-dark:        if(@sidebar-dark-is-light, #333, lighten(@sidebar-dark-bg-dark, 60%)); //#9499a0;  //before: lighten(@sidebar-dark-bg, 60%);
+@sidebar-dark-hover-color-dark:  if(@sidebar-dark-is-light, #222, #fff); //#fff;
 @sidebar-dark-submenu-bg-dark:   lighten(@sidebar-dark-bg-dark, 5%);
 @sidebar-dark-submenu-color-dark: lighten(@sidebar-dark-submenu-bg-dark, 40%);
 @sidebar-dark-submenu-hover-color-dark: #fff;
@@ -64,10 +64,10 @@
 //COLORS
 //--------------------------------------------------------
 //main color
-@light-blue:                     #3c8dbc;
+@light-blue:                     @primary-color; //#3c8dbc;
 @light-blue-darken:              darken(@light-blue, 5%);
 
-@body-bg:                        #ecf0f5;
+@body-bg:                        if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 80%), hsl(hue(@primary-color), 26%, 94%)); //#ecf0f5;
 @box-bg:                         #fff;
 @box-bg-light:                   #f7f7f7;
 
@@ -80,7 +80,7 @@
 @box-boxshadow:                  0 1px 1px @text-color-trans;
 
 //Warning color
-@yellow:                         #f39c12;
+@yellow:                         @gams-color;
 
 //Link colors (Aka: <a> tags)
 @link-color:                     @light-blue;
@@ -92,10 +92,10 @@
 @navbar-hover:                   #999;
 
 //Dark sidebar
-@sidebar-dark-bg:                #222d32;
-@sidebar-dark-hover-bg:          darken(@sidebar-dark-bg, 2%);
-@sidebar-dark-color:             lighten(@sidebar-dark-bg, 60%);
-@sidebar-dark-hover-color:       #fff;
+@sidebar-dark-bg:                @sidebar-bg;//hsl(hue(@primary-color), 21%, 16%);//#222d32;
+@sidebar-dark-hover-bg:          if(@sidebar-light-is-light, darken(@sidebar-dark-bg, 2%), lighten(@sidebar-dark-bg, 2%)); //darken(@sidebar-dark-bg, 2%);
+@sidebar-dark-color:             if(@sidebar-light-is-light, #333, lighten(@sidebar-dark-bg, 60%)); //lighten(@sidebar-dark-bg, 60%);
+@sidebar-dark-hover-color:       if(@sidebar-light-is-light, #222, #fff); //#fff;
 @sidebar-dark-submenu-bg:        lighten(@sidebar-dark-bg, 5%);
 @sidebar-dark-submenu-color:     lighten(@sidebar-dark-submenu-bg, 40%);
 @sidebar-dark-submenu-hover-color: #fff;

@@ -1,5 +1,4 @@
-///////////////////////////////////////////////////////
-//change mode for static/browser-responsive css compilation
+/* change mode for static/browser-responsive css compilation */
 @mode: "browser";
 
 .responsiveDark(@rules;@rulesDark) when (@mode = "dark"){
@@ -14,4 +13,44 @@
         @rulesDark();
     }
 }
-///////////////////////////////////////////////////////////
+
+/* global variables */
+@primary-color:    #3c8dbc;
+@log-color:        #3c8dbc;
+@gams-color:       #F39619;
+@remove-color:      #d11a2a;
+@sidebar-bg:       #1d2121;
+@main-bg:          #fff; // background in dialogs, tables, ... body-bg is calculated from primary-color (since default main-bg is white)
+
+@primary-color-dark:#00adb5;
+@log-color-dark:    #3c8dbc;
+@gams-color-dark:   #F39619;
+@remove-color-dark: #d11a2a;
+@sidebar-bg-dark:     hsl(hue(@primary-color), 6%, 12%);
+@main-bg-dark:      #393e46; //from main-bg-dark also the body-bg is calculated (only in dark mode)
+@widget-bg-dark:    #848991; //only in dark mode
+
+
+/* booleans for all packages */
+@sidebar-light-is-light: boolean(luma(@sidebar-bg) > 50%);
+@sidebar-dark-is-light: boolean(luma(@sidebar-bg-dark) > 50%);
+@primary-light-is-light: boolean(luma(@primary-color) > 50%);
+@primary-dark-is-light: boolean(luma(@primary-color-dark) > 50%);
+
+@primary-has-no-color: boolean(hue(@primary-color) = 0 and saturation(@primary-color) = 0);
+@log-has-no-color: boolean(hue(@log-color) = 0 and saturation(@log-color) = 0);
+@sidebar-has-no-color: boolean(hue(@sidebar-bg) = 0 and saturation(@sidebar-bg) = 0);
+@main-bg-has-no-color: boolean(hue(@main-bg) = 0 and saturation(@main-bg) = 0);
+@gams-has-no-color: boolean(hue(@gams-color) = 0 and saturation(@gams-color) = 0);
+@remove-has-no-color: boolean(hue(@remove-color) = 0 and saturation(@remove-color) = 0);
+
+@primary-dark-has-no-color: boolean(hue(@primary-color-dark) = 0 and saturation(@primary-color-dark) = 0);
+@log-dark-has-no-color: boolean(hue(@log-color-dark) = 0 and saturation(@log-color-dark) = 0);
+@sidebar-dark-has-no-color: boolean(hue(@sidebar-bg-dark) = 0 and saturation(@sidebar-bg-dark) = 0);
+@main-bg-dark-has-no-color: boolean(hue(@main-bg-dark) = 0 and saturation(@main-bg-dark) = 0);
+@gams-dark-has-no-color: boolean(hue(@gams-color) = 0 and saturation(@gams-color) = 0);
+@remove-dark-has-no-color: boolean(hue(@remove-color) = 0 and saturation(@remove-color) = 0);
+
+/* do not change */
+@text-color:        #eee;
+@text-color-dark:   #eee;

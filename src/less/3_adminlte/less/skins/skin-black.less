@@ -67,14 +67,24 @@
     > .logo {
       .responsiveDark({
          .logo-variant(#fff; #333);
+         background-color: @navbar-main;
       },
       {
          .logo-variant(@sidebar-dark-bg; #333);
+         background-color: @navbar-main-dark;
       });
       @media (max-width: @screen-header-collapse) {
         .logo-variant(#222; #fff);
         border-right: none;
         display: none;
+      }
+      &:hover {
+        .responsiveDark({
+          background-color: @navbar-main;
+        },
+        {
+          background-color: @navbar-main-dark;
+        });
       }
     }
 

@@ -19,7 +19,7 @@ header.main-header {
   font-size: 14pt;
 }
 .btn-default{
-  border: 2px solid #ADADAD;
+  border: 2px solid @btn-border;
   background-color: rgba(0,0,0,0);
   transition: all 500ms ease;
 }
@@ -74,7 +74,7 @@ header.main-header {
   padding-top: 15px;
   padding-bottom: 10px;
   .responsiveDark({
-     background: #fff;
+     background: @background-color;
   },
   {
      background: @modal-bg-dark;
@@ -82,11 +82,11 @@ header.main-header {
 }
 .readme-wrapper code {
   .responsiveDark({
-     color: @light-blue;
+     color: @primary-color;
      background-color: @highlight-bg;
   },
   {
-     color: @light-blue-dark;
+     color: @primary-color-dark;
      background-color: @highlight-bg-dark;
   });
 }
@@ -103,9 +103,10 @@ header.main-header {
 }
 textarea.readme-preview-markdown:focus {
   .responsiveDark({
+    outline-color: @primary-color;
   },
   {
-     outline-color: @light-blue-dark;
+     outline-color: @primary-color-dark;
   });
 }
 .readme-preview-output {
@@ -148,8 +149,13 @@ textarea.readme-preview-markdown:focus {
 }
 .err-msg, .config-array-err{
   margin: 5px;
-  color: #F39619;
   font-weight: bold;
+  .responsiveDark({
+    color: @gams-color;
+  },
+  {
+   color: @gams-color-dark;
+  })
 }
 .input-validation-error{
   cursor: default;
@@ -202,19 +208,19 @@ textarea.readme-preview-markdown:focus {
 ::selection {
   .responsiveDark({
      color: #fff;
-     background: @light-blue;
+     background: @primary-color;
   },
   {
-     background: @light-blue-dark;
+     background: @primary-color-dark;
   })
 }
 ::-moz-selection {
   .responsiveDark({
      color: #fff;
-     background: @light-blue;
+     background: @primary-color;
   },
   {
-     background: @light-blue-dark;
+     background: @primary-color-dark;
   })
 }
 .box-header ::selection {
@@ -284,15 +290,20 @@ textarea.readme-preview-markdown:focus {
 .gmsalert-success{
   .responsiveDark({
      color: #fff;
-     background-color: #3c8dbc;
+     background-color: @primary-color;
   },
   {
      color: #fff;
-     background-color: @light-blue-dark;
+     background-color: @primary-color-dark;
   });
 }
 .gmsalert-error{
-  background-color: #F39619;
+  .responsiveDark({
+    background-color: @gams-color;
+  },
+  {
+    background-color: @gams-color-dark;
+  })
 }
 .center-alert{
   position: fixed;
@@ -302,7 +313,12 @@ textarea.readme-preview-markdown:focus {
   transform: translate(-50%, -50%);
 }
 .invalidInput{
-  border: 2px solid #F39619;
+  .responsiveDark({
+    border: 2px solid @gams-color;
+  },
+  {
+    border: 2px solid @gams-color-dark;
+  })
 }
 /* title field in boxes */
 .box-title{
@@ -409,30 +425,60 @@ animation: none !important;
 }
 /* sidebar*/
 .bt-highlight-1{
-  border: 2px solid #F39619;
+  .responsiveDark({
+    border: 2px solid @gams-color;
+    border-color: if(abs(luma(@dropdown-sidebar-bg) - luma(@gams-color)) < 15, contrast(@dropdown-sidebar-bg), @gams-color);
+  },
+  {
+    border: 2px solid @gams-color-dark;
+    border-color: if(abs(luma(@dropdown-sidebar-bg-dark) - luma(@gams-color-dark)) < 15, contrast(@dropdown-sidebar-bg-dark), @gams-color-dark);
+  });
 }
 .bt-highlight-2{
-  border: 2px solid #F39619;
-  background-color: #222d32;
+  .responsiveDark({
+    border: 2px solid @gams-color;
+    border-color: if(abs(luma(@dropdown-sidebar-bg) - luma(@gams-color)) < 15, contrast(@dropdown-sidebar-bg), @gams-color);
+  },
+  {
+    border: 2px solid @gams-color-dark;
+    border-color: if(abs(luma(@dropdown-sidebar-bg-dark) - luma(@gams-color-dark)) < 15, contrast(@dropdown-sidebar-bg-dark), @gams-color-dark);
+  });
+  background-color: @bt-highlight-2-bg;
   background-color: rgba(0,0,0,0);
   color: #fff;
   transition: all 350ms ease;
 }
 .bt-highlight-2:hover{
-  border: 2px solid #ADADAD;
+  border: 2px solid @btn-border;
 }
 .bt-highlight-3{
-  border: 2px solid #ADADAD;
-  background-color: #222D32;
+  border: 2px solid @btn-border;
+  .responsiveDark({
+    border-color: if(abs(luma(@dropdown-sidebar-bg) - luma(@gams-color)) < 15, contrast(@dropdown-sidebar-bg), @btn-border);
+  },
+  {
+    border-color: if(abs(luma(@dropdown-sidebar-bg-dark) - luma(@gams-color-dark)) < 15, contrast(@dropdown-sidebar-bg-dark), @btn-border);
+  });
+  background-color: @bt-highlight-2-bg;
   background-color: rgba(0,0,0,0);
   color: #fff;
   transition: all 350ms ease;
 }
 .bt-highlight-3:hover{
-  border: 2px solid #F39619;
+  .responsiveDark({
+    border: 2px solid @gams-color;
+  },
+  {
+    border: 2px solid @gams-color-dark;
+  });
 }
 .bt-remove{
-  border: 2px solid #d11a2a;
+  .responsiveDark({
+    border: 2px solid @remove-color;
+  },
+  {
+    border: 2px solid @remove-color-dark;
+  });
 }
 /* model input */
 .bt-icon{
@@ -483,12 +529,12 @@ animation: none !important;
   }
 }
 .log-tab-color{
-    .responsiveDark({
-       color: @log-tab;
-    },
-    {
-       color: @log-tab-dark;
-    });
+  .responsiveDark({
+    color: if(abs(luma(@main-bg) - luma(@log-tab)) < 15, contrast(@main-bg), @log-tab);
+  },
+  {
+    color: if(abs(luma(@main-bg-dark) - luma(@log-tab-dark)) < 15, contrast(@main-bg-dark), @log-tab-dark);
+  });
 }
 .miro-log-mark{
   color: inherit;
@@ -502,11 +548,11 @@ animation: none !important;
   font-size: 13px;
   line-height: 1.42857143;
   .responsiveDark({
-     color: @log-text;
+     color: if(abs(luma(@log-bg) - luma(@log-text)) < 15, contrast(@log-bg), @log-text);
      background-color: @log-bg;
   },
   {
-     color: @log-text-dark;
+     color: if(abs(luma(@log-bg-dark) - luma(@log-text-dark)) < 15, contrast(@log-bg-dark, #000, #cdcdcd), @log-text-dark);
      background-color: @log-bg-dark;
      border: unset;
   });
@@ -640,14 +686,14 @@ animation: none !important;
 }
 .scen-button, .scen-button:focus{
   .responsiveDark({
-     color: @btn-icon-color;
+     color: if(abs(luma(@btn-bg) - luma(@btn-icon-color)) < 15, contrast(@btn-bg), @btn-icon-color);
      background-color: @btn-bg;
-     border-color: @darker-blue;
+     border-color: @darker-primary-color;
   },
   {
-     color: @btn-icon-color-dark;
-     background-color: @btn-bg-dark;
-     border-color: @darker-blue-dark;
+     color: if(abs(luma(@btn-bg-dark) - luma(@btn-icon-color-dark)) < 15, contrast(@btn-bg-dark), @btn-icon-color-dark);
+     background-color: @btn-bg-dark;//@primary-color-dark;
+     border-color: @darker-primary-color-dark;
   });
 }
 #scen-split-view .col-sm-6{
@@ -783,6 +829,7 @@ animation: none !important;
 }
 .dygraph-legend {
   .responsiveDark({
+    background-color: @modal-bg !important;
   },
   {
      background-color: @modal-bg-dark !important;
@@ -801,7 +848,7 @@ animation: none !important;
   },
   {
     color: @text-color-dark;
-    border-color:2px solid @dropdown-sidebar-bg-dark;
+    border:2px solid @dropdown-sidebar-bg-dark;
   });
   @media only screen and (max-width: 767px){
     left:0!important;
@@ -963,11 +1010,21 @@ html {
   > .btn-custom:not(.item-delete > button[id*="btRemoveBlock"]) {
     border: none;
     box-shadow: none;
-    color: #d11a2a;
     font-size: 18px;
+    .responsiveDark({
+      color: @remove-color;
+    },
+    {
+      color: @remove-color-dark;
+    });
   }
   > .btn-custom:hover:not(.item-delete > button[id*="btRemoveBlock"]) {
-    color: #b11421;
+    .responsiveDark({
+      color: darken(@remove-color, 16%, relative);
+    },
+    {
+      color: darken(@remove-color-dark, 16%, relative);
+    });
     background-color: transparent;
   }
 }
@@ -975,12 +1032,13 @@ html {
   padding-left: 5px;
 }
 .btn-remove-block {
-  border-color: #d11a2a;
   margin-bottom: 10px;
   .responsiveDark({
     background-color: @modal-bg;
+    border-color: @remove-color;
  },
  {
+  border-color: @remove-color-dark;
   background-color: @modal-bg-dark;
  });
 }
@@ -1003,10 +1061,10 @@ html {
 .and-wrapper{
   padding-left:5px;
   .responsiveDark({
-     background-color: fade(@light-blue, 6%);
+     background-color: fade(@primary-color, 6%);
   },
   {
-     background-color: fade(@light-blue-dark, 6%);
+     background-color: fade(@primary-color-dark, 6%);
   });
 }
 .miro-dropdown-filter{
@@ -1029,9 +1087,6 @@ html {
 .and-sign{
   font-size:18px;
   padding: 5px;
-}
-.and-button{
-  color: #737373;
 }
 .or-sign{
   position: absolute;
@@ -1133,7 +1188,7 @@ html {
   padding-bottom: 10px;
   font-size: 15px;
   .responsiveDark({
-     background: #fff;
+     background: @background-color;
   },
   {
      background: @modal-bg-dark;
@@ -1168,7 +1223,7 @@ html {
   height: 11px;
   border-radius: 50%;
   .responsiveDark({
-     background: #fff;
+     background: @background-color;
   },
   {
      background: @table-row-odd-dark;
@@ -1235,7 +1290,7 @@ html {
   .responsiveDark({
   },
   {
-     fill: @plotly-text-dark !important;
+     fill: @text-color-dark !important;
   });
 }
 /* set background color for Gantt charts independent of theme selected (timevis) */
@@ -1243,12 +1298,20 @@ html {
 .vis-time-axis .grid.vis-odd,
 .vis-time-axis .grid.vis-even,
 .vis-time-axis .vis-grid,
-.timevis.html-widget .vis-background .vis-minor.vis-odd,
 .timevis.html-widget .vis-background .vis-minor.vis-even {
   .responsiveDark({
+    background-color: @modal-bg !important;
   },
   {
     background-color: @modal-bg-dark !important;
+  });
+}
+.timevis.html-widget .vis-background .vis-minor.vis-odd {
+  .responsiveDark({
+    background-color: darken(@modal-bg, 1%, relative) !important;
+  },
+  {
+    background-color: darken(@modal-bg-dark, 1%, relative) !important;
   });
 }
 .vis-labelset .vis-label,
@@ -1261,6 +1324,7 @@ html {
 }
 .timevis.html-widget .zoom-menu .btn{
   .responsiveDark({
+    border-color: darken(@modal-bg, 20%, relative) !important;
   },
   {
     background-color: @widget-bg-dark !important;
@@ -1269,11 +1333,22 @@ html {
 }
 .vis-item {
   .responsiveDark({
+    background-color: @pivot-presentation-uel !important;
+    border-color: @primary-color !important;
+    color: @text-color !important;
   },
   {
     background-color: @pivot-presentation-uel-dark !important;
-    border-color: @light-blue-dark !important;
+    border-color: @primary-color-dark !important;
     color: @text-color-dark !important;
+  });
+}
+.vis-current-time {
+  .responsiveDark({
+    background-color: @primary-color !important;
+  },
+  {
+    background-color: @primary-color-dark !important;
   });
 }
 /* PAVER */
@@ -1288,7 +1363,7 @@ html {
      background:#f0f0f0;
   },
   {
-     background: lighten(#393e46, 5%);
+     background: lighten(@modal-bg-dark, 5%);
   });
   padding:10px;
   border: 1px solid #c2c2c2;
@@ -1418,10 +1493,10 @@ html {
   text-align: center;
   font-size: 12pt;
   .responsiveDark({
-     background: #3c8dbcb0;
+     background: fade(@primary-color, 69%);
   },
   {
-     background: #00adb5b0;
+     background: fade(@primary-color-dark, 69%);
   });
   display: none;
 }
@@ -1432,10 +1507,10 @@ html {
   text-align: center;
   font-size: 12pt;
   .responsiveDark({
-     background: #3c8dbcb0;
+     background: fade(@primary-color, 69%);
   },
   {
-     background: #00adb5b0;
+     background: fade(@primary-color, 69%);
   });
 }
 .side-tab {
@@ -1491,7 +1566,7 @@ html {
   left: 5%;right: 5%;
 }
 .save-delete-hr {
-  border: 1px dashed #222d32;
+  border: 1px dashed @bt-highlight-2-bg;
   margin-bottom:5px;
 }
 .toggle-fullscreen-btn{
@@ -1585,7 +1660,7 @@ html {
 ::-webkit-scrollbar-track {
   .responsiveDark({
      box-shadow: inset 0 0 5px @scrollbar-shadow;
-     background: #fff;
+     background: @background-color;
   },
   {
      box-shadow: inset 0 0 5px @scrollbar-shadow-dark;
@@ -1631,7 +1706,7 @@ html {
      color: darken(@tabset-group-out, 10%) !important;
   },
   {
-     color: darken(@tabset-group-out-dark, 10%) !important;
+     color: darken(@tabset-group-out-dark, 3%) !important;
   });
 }
 ::placeholder {
@@ -1659,14 +1734,30 @@ html {
     border-color: @text-color-dark;
   });
 }
-.shiny-notification-error {
+.shiny-notification-warning {
   .responsiveDark({
+    color: if(abs(luma(@warning-bg) - luma(@gams-color)) < 15, contrast(@warning-bg), @gams-color);//#8a6d3b;
+    background-color: @warning-bg; //#fcf8e3;
+    border: 1px solid darken(@warning-bg, 15%);//#faebcc;
   },
   {
-    background-color: @highlight-bg-delete-dark;
+    color: if(abs(luma(@warning-bg-dark) - luma(@gams-color-dark)) < 15, contrast(@warning-bg-dark), @gams-color-dark);
+    background-color: @warning-bg-dark;
+    border: 1px solid darken(@warning-bg-dark, 15%);
   });
 }
-
+.shiny-notification-error {
+  .responsiveDark({
+    color: if(abs(luma(@highlight-bg-delete) - luma(@remove-color)) < 15, contrast(@highlight-bg-delete), @remove-color);
+    background-color: @highlight-bg-delete;
+    border: 1px solid darken(@highlight-bg-delete, 15%); //#ebccd1;
+  },
+  {
+    color: if(abs(luma(@highlight-bg-delete-dark) - luma(@remove-color-dark)) < 15, contrast(@highlight-bg-delete-dark), @remove-color-dark);
+    background-color: @highlight-bg-delete-dark;
+    border: 1px solid darken(@highlight-bg-delete-dark, 15%); //#ebccd1;
+  });
+}
 // MIRO pivot table styles
 .vertical-index-list .drop-index-item {
 }
@@ -1690,7 +1781,12 @@ html {
   padding-left: 10px;
 }
 .dropdown-menu .miro-pivot-view-button:hover {
-  color: #F39619;
+  .responsiveDark({
+    color: @gams-color;
+  },
+  {
+    color: @gams-color-dark;
+  });
   background-color: unset;
 }
 .pivot-btn-custom {
@@ -1805,7 +1901,7 @@ html {
 .drop-index-item-selected {
   color: #000;
   background-color: #e7e7e7;
-  border-color: #adadad;
+  border-color: @btn-border;
   transition: all .5s ease;
 }
 .drop-index-item:hover {
@@ -2251,7 +2347,12 @@ html {
 }
 // numeric input
 .miro-auto-numeric:invalid {
-  border: 2px solid #F39619;
+  .responsiveDark({
+    border: 2px solid @gams-color;
+  },
+  {
+    border: 2px solid @gams-color-dark;
+  })
 }
 // Tab Compare
 .close-all-tabs {
@@ -2572,4 +2673,13 @@ html {
     visibility: visible;
     opacity: 1;
   }
+}
+.sidebar-menu .bt-highlight-3,
+.sidebar-menu .bt-highlight-2 {
+  .responsiveDark({
+    color: if(@sidebar-light-is-light, #333, white);
+  },
+  {
+    color: if(@sidebar-dark-is-light, #333, white);
+  });
 }

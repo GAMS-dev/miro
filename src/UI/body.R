@@ -581,7 +581,7 @@ if (buildUI) {
           ),
           genSpinner(id = "hyperQueryLoad", hidden = TRUE, absolute = FALSE),
           tags$div(id = "queryBuilderError", class = "gmsalert gmsalert-error"),
-          tags$div(style = "min-height: 80px;", dataTableOutput("batchLoadResults")),
+          tags$div(style = "min-height: 80px;margin-top: 15px;", dataTableOutput("batchLoadResults")),
           tags$div(
             id = "batchLoadNoData",
             style = "text-align:center;font-size:16px;font-weight:bold;margin:20px;display:none;",
@@ -1040,7 +1040,11 @@ if (buildUI) {
           content = if (identical(config$theme, "browser")) "dark light" else "normal"
         ),
         tags$meta(name = "apple-mobile-web-app-capable", content = "yes"),
-        tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
+        tags$link(type = "text/css", rel = "stylesheet", href = if (is.null(config$colortheme) || identical(config$colortheme, "default")) {
+          paste0("skin_", config$theme, ".css")
+        } else {
+          paste0(config$colortheme, "_", config$theme, ".css")
+        }),
         tags$script(src = "miro.js", type = "application/javascript"),
         if (staticDirExists && file.exists(file.path(currentModelDir, paste0("static_", modelName), "manifest.json"))) {
           tags$link(rel = "manifest", href = paste0("static_", modelName, "/manifest.json"), crossorigin = "use-credentials")

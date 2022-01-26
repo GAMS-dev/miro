@@ -159,13 +159,26 @@
         "type":"string"
       },
       "theme":{
-         "description":"Color theme used for MIRO",
+         "description":"Theme / mode (light, dark or browser mode) used for MIRO",
          "type":"string",
          "default":"browser",
          "enum":[
             "browser",
             "light",
             "dark"
+         ]
+      },
+      "colortheme":{
+         "description":"Color theme to use.",
+         "type":"string",
+         "default":"browser",
+         "enum":[
+            "default",
+            "blackandwhite",
+            "forest",
+            "tawny",
+            "darkblue",
+            "custom"
          ]
       },
       "customCss": {

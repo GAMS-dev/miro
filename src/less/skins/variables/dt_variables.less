@@ -1,0 +1,24 @@
+//dark
+@light-blue-dark:    @primary-color-dark;
+@row-even-dark:      @main-bg-dark; //#393e46;   //before: #ffffff;
+@table-cell-color-dark: darken(@widget-bg-dark, 39%, relative);
+@row-odd-dark:       @table-cell-color-dark;//#4e545d;
+@hover-row-dark:     lighten(@table-cell-color-dark, 10%, relative);//#5f6771;
+@row-selected-dark:  @primary-color-dark;   //before: #acbad4;
+@textinput-dark:     #d3d3d3;
+@textinput-background-dark: @main-bg-dark; //#393e46; //dark mode only
+@row-selected-extra-dark: if(@primary-dark-has-no-color, hsl(hue(@primary-color-dark), 0%, 45%), hsl(hue(@primary-color-dark), 34%, 60%));//#76b8bb;  //before: #acbad4;
+@body-bg-dark:       if(@main-bg-dark-has-no-color, hsl(hue(@main-bg-dark), 0%, 12%), hsl(hue(@main-bg-dark), 10%, 18%));//#292D33;       //new, dark mode only
+//@text-color-dark:    #eee;          //new, dark mode only
+@fixed-column-dark:  fade(@widget-bg-dark, 17%);//#84899117;
+
+//light
+@row-even:           #ffffff;
+@row-odd:            #f9f9f9;
+@text-color:         #333;
+@hover-row:          #f6f6f6;
+@row-selected:       if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 50%), hsl(hue(@primary-color), 32%, 73%));//#acbad4
+@textinput:          #d3d3d3;
+@row-selected-extra: if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 50%), hsl(hue(@primary-color), 32%, 73%));//#acbad4
+@import "../../6_dt/dt.less";
+@fixed-column:       #84899117;

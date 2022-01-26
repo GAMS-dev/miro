@@ -12,6 +12,11 @@ langSpecificUI$theme <- c(
   "Light mode" = "light", "Dark mode" = "dark"
 )
 names(langSpecificUI$theme) <- lang$adminMode$general$theme$choices
+langSpecificUI$colortheme <- c(
+  "Default theme" = "default",
+  "Black and white" = "blackandwhite"
+)
+names(langSpecificUI$colortheme) <- lang$adminMode$general$colortheme$choices
 langSpecificUI$scen <- c(
   "Split view (suited for 2 scenarios to compare)" = "split",
   "Tab view (suited for > 2 scenarios to compare)" = "tab",
@@ -112,7 +117,11 @@ body_admin <- dashboardBody({
         name = "color-scheme",
         content = if (identical(config$theme, "browser")) "dark light" else "normal"
       ),
-      tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
+      tags$link(type = "text/css", rel = "stylesheet", href = if (is.null(config$colortheme) || identical(config$colortheme, "default")) {
+        paste0("skin_", config$theme, ".css")
+      } else {
+        paste0(config$colortheme, "_", config$theme, ".css")
+      }),
       tags$script(`defer src` = "showdown.min.js", type = "application/javascript"),
       tags$script(`defer src` = "mathjax-extension.js", type = "application/javascript"),
       tags$script(`defer src` = "miro_admin.js", type = "application/javascript"),
@@ -764,6 +773,13 @@ font-size: 12px;
                         class = "option-wrapper",
                         textInput("general_pageTitle", lang$adminMode$general$pageTitle$label,
                           value = if (!is.null(configJSON$pageTitle) && nchar(configJSON$pageTitle)) configJSON$pageTitle else configJSON$modelTitle
+                        )
+                      ),
+                      tags$div(
+                        class = "option-wrapper",
+                        selectInput("general_colortheme", lang$adminMode$general$colortheme$label,
+                          choices = langSpecificUI$colortheme,
+                          selected = if (length(configJSON$colortheme)) configJSON$colortheme else config$colortheme
                         )
                       ),
                       tags$div(

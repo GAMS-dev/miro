@@ -46,20 +46,20 @@
   border: 1px solid @color;
   > .box-header {
     .responsiveDark({
-       color: @text-color;
+      color: if(abs(luma(@color) - luma(@text-color)) < 15, contrast(@color), @text-color);
     },
     {
-       color: @text-color-dark;
+      color: if(abs(luma(@color) - luma(@text-color-dark)) < 15, contrast(@color), @text-color-dark);
     });
     background: @color;
     background-color: @color;
     a,
     .btn {
       .responsiveDark({
-         color: @text-color;
+        color: if(abs(luma(@color) - luma(@text-color)) < 15, contrast(@color), @text-color);
       },
       {
-         color: @text-color-dark;
+        color: if(abs(luma(@color) - luma(@text-color-dark)) < 15, contrast(@color), @text-color-dark);
       });
     }
   }
@@ -69,20 +69,20 @@
   border: 1px solid @color;
   > .box-header {
     .responsiveDark({
-       color: @text-color;
+      color: if(abs(luma(@color) - luma(@text-color)) < 15, contrast(@color), @text-color);
     },
     {
-       color: @text-color-dark;
+      color: if(abs(luma(@color) - luma(@text-color-dark)) < 15, contrast(@color), @text-color-dark);
     });
     background: @color;
     background-color: @color;
     a,
     .btn {
       .responsiveDark({
-         color: @text-color;
+        color: if(abs(luma(@color) - luma(@text-color)) < 15, contrast(@color), @text-color);
       },
       {
-         color: @text-color-dark;
+        color: if(abs(luma(@color) - luma(@text-color-dark)) < 15, contrast(@color), @text-color-dark);
       });
     }
   }
@@ -169,12 +169,13 @@
       .responsiveDark({
          color: @sidebar-dark-hover-color;
          background: @sidebar-dark-hover-bg;
+         border-left-color: if(@sidebar-light-is-light, #333, lighten(@sidebar-dark-bg, 60%));
       },
       {
          color: @sidebar-dark-hover-color-dark;
          background: @sidebar-dark-hover-bg-dark;
+         border-left-color: if(@sidebar-dark-is-light, #333, lighten(@sidebar-dark-bg-dark, 60%));
       });
-      border-left-color: @link-hover-border-color;
     }
     //First Level Submenu
     > .treeview-menu {
@@ -190,10 +191,10 @@
   //All links within the sidebar menu
   .sidebar a {
     .responsiveDark({
-       color: @sidebar-dark-color;
+       color: if(@sidebar-light-is-light, #333, white); //@sidebar-dark-color;
     },
     {
-       color: @sidebar-dark-color-dark;
+      color: if(@sidebar-dark-is-light, #333, white); //@sidebar-dark-color-dark;
     });
     &:hover {
       text-decoration: none;

@@ -16,11 +16,26 @@ const plugins = [
     fix: true
   })]
 module.exports = (env, argv) => ({
-    mode: 'development',
-    entry: {
-      skin_browser: './less/skins/browser.js',
-      skin_light: './less/skins/light.js',
-      skin_dark: './less/skins/dark.js',
+    entry: argv.mode === 'development' ? {
+      skin_browser: './less/skins/default/browser.js',
+      miro: ['./srcjs/miro.js'],
+      miro_admin: ['./srcjs/miro_admin.js']
+    } : {
+      skin_browser: './less/skins/default/browser.js',
+      skin_light: './less/skins/default/light.js',
+      skin_dark: './less/skins/default/dark.js',
+      blackandwhite_light: './less/skins/blackandwhite/light.js',
+      blackandwhite_dark: './less/skins/blackandwhite/dark.js',
+      blackandwhite_browser: './less/skins/blackandwhite/browser.js',
+      forest_light: './less/skins/forest/light.js',
+      forest_dark: './less/skins/forest/dark.js',
+      forest_browser: './less/skins/forest/browser.js',
+      tawny_light: './less/skins/tawny/light.js',
+      tawny_dark: './less/skins/tawny/dark.js',
+      tawny_browser: './less/skins/tawny/browser.js',
+      darkblue_light: './less/skins/darkblue/light.js',
+      darkblue_dark: './less/skins/darkblue/dark.js',
+      darkblue_browser: './less/skins/darkblue/browser.js',
       miro: ['./srcjs/miro.js'],
       miro_admin: ['./srcjs/miro_admin.js']
     },

@@ -1,0 +1,98 @@
+/* DARK MODE COLORS */
+
+/* primary */
+@info-color-dark:         @primary-color-dark;             //before: #f39619;
+@checkbox-color-dark:     @primary-color-dark;             //before: #f39619;
+@progress-bar-dark:       @primary-color-dark;             //before: #f39619;
+@focus-color-dark:        @primary-color-dark;
+@row-selected-dark:       @primary-color-dark;
+@darker-primary-color-dark: darken(@primary-color-dark, 2%); // before: #2e6da4;
+@tabset-group-out-dark:   darken(@primary-color-dark, 10%); //merge #5ea7aa;                      //new - text color for output tabs in compare mode
+@pivot-presentation-uel-dark:  darken(@primary-color-dark, 36%, relative); //merge #006F75;
+@btn-bg-dark:             if(@primary-dark-has-no-color, #1d2121, if(@primary-dark-is-light, hsl(hue(@primary-color-dark), 84%, 40%), hsl(hue(@primary-color-dark), 40%, 40%)));
+
+/* log */
+@log-tab-dark:            @log-color-dark;                //before: #3c8dbc;
+@log-text-dark:           @log-color-dark;                //before: #333;
+@log-border-dark:         @log-color-dark;                //before: #ccc;
+
+@dropdown-sidebar-bg-dark:@sidebar-bg-dark;
+@modal-bg-dark:           @main-bg-dark;                       //used in dygraph-legend (new) (before: #fff;?)
+
+
+@table-row-even-dark:     @modal-bg-dark;                  //before: #f2f2f2;
+@log-bg-dark:             darken(@modal-bg-dark, 20%);     //before: #f5f5f5;
+
+@highlight-bg-save-dark:  #4a614a;
+@highlight-bg-delete-dark: if(@remove-dark-has-no-color, hsl(hue(@remove-color-dark), 0%, 20%), hsl(hue(@remove-color-dark), 50%, 25%));//
+
+@table-cell-color-dark:   darken(@widget-bg-dark, 39%, relative);
+@table-row-odd-dark:      @table-cell-color-dark;//#4e545d;
+@dt-row-odd-dark:         @table-row-odd-dark;
+@dt-row-even-dark:        @table-row-even-dark;
+@table-hover-dark:        lighten(@table-cell-color-dark, 10%, relative);//#5f6771;
+@dt-row-hover-dark:       @table-hover-dark;
+
+//@widget-bg-dark:          #848991;
+@checkbox-unchecked-dark: @widget-bg-dark;
+@scrollbar-dark:          @widget-bg-dark;                //before: #c0c0c0;
+@readme-preview-dark:     if(@main-bg-dark-has-no-color, hsl(hue(@main-bg-dark), 0%, 12%), hsl(hue(@main-bg-dark), 10%, 18%));//#292D33;
+
+@readme-preview-border-dark: #A9A9A9;
+@btn-icon-color-dark:     #333;
+@scrollbar-shadow-dark:   grey;                         //before: #c0c0c0;
+@placeholder-color-dark:  #c9c9c9;                      //only for dark mode
+@highlight-bg-dark:       @readme-preview-dark;
+@gray-base-dark:          #fff;                         // from bootstrap variables
+@or-sign-dark:            darken(@gray-base-dark, 93.5%); //from bootstrap variables
+@shiny-notification-dark: #070808;                      //new
+@pivot-presentation-bg-dark:   fade(@highlight-bg-dark, 56%);
+@logo-background-dark:    if(@primary-dark-has-no-color, hsl(hue(@primary-color-dark), 0%, 10%), hsl(hue(@primary-color-dark), 6%, 12%));// #222d32;  //config mode
+@warning-bg-dark:         if(@gams-dark-has-no-color, hsl(hue(@gams-color-dark), 0%, 20%), hsl(hue(@gams-color-dark), 50%, 25%));
+
+/* LIGHT MODE COLORS */
+@log-tab:                 @primary-color;
+@darker-primary-color:    if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 20%), hsl(hue(@primary-color), 96%, 34%));//#2e6da4;
+@btn-bg:                  if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 30%), if(@primary-light-is-light, hsl(hue(@primary-color), 84%, 40%), hsl(hue(@primary-color), 40%, 35%)));//hsl(hue(@primary-color), 84%, 40%);//#337ab7;
+@tabset-group-out:        if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 45%), hsl(hue(@primary-color), 39%, 51%));//#458fb8;                      //new - text color for output tabs in compare mode
+@focus-color:             if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 35%), hsl(hue(@primary-color), 76%, 62%));//#66afe9; //!
+@row-selected:            if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 50%), hsl(hue(@primary-color), 32%, 73%));//#acbad4; //!
+@pivot-presentation-uel:  if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 76%), hsl(hue(@primary-color), 52%, 88%));//#d8e0ec;
+@highlight-bg:            if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 80%), hsl(hue(@primary-color), 26%, 94%));//#ecf0f5; //!
+@dropdown-sidebar-bg:     @sidebar-bg;//#222d32; //!
+@bt-highlight-2-bg:       if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 13%), hsl(hue(@primary-color), 21%, 16%));//#222d32; //@dropdown-sidebar-bg;
+
+@log-bg:                  #f5f5f5;
+@dt-row-odd:              #f9f9f9;
+@table-row-even:          #f2f2f2;
+@readme-preview:          #efefef;
+@table-hover:             #ddd;
+@log-border:              #ccc;
+@pivot-presentation-bg:   #f1f1f18f;
+@scrollbar:               #c0c0c0;
+@scrollbar-shadow:        @scrollbar;
+
+@btn-border:              #ADADAD;
+@readme-preview-border:   @btn-border;
+@or-sign:                 @btn-border;
+
+
+@background-color:        #fff;
+@modal-bg:                @background-color;
+@btn-icon-color:          @background-color;
+@table-row-odd:           @background-color;
+@dt-row-even:             @background-color;                  // before: #fff;
+@logo-background:         @background-color;
+
+@text-color:              #333;
+@log-text:                @text-color;
+
+@info-color:              @gams-color;
+@checkbox-color:          @info-color;
+@progress-bar:            @info-color;
+
+@highlight-bg-save:       #d9f1d9;
+@highlight-bg-delete:     if(@remove-has-no-color, hsl(hue(@remove-color), 0%, 85%), hsl(hue(@remove-color), 77%, 90%));//#ffd6d6;
+@warning-bg:              if(@gams-has-no-color, hsl(hue(@gams-color), 0%, 85%), hsl(hue(@gams-color), 77%, 90%));
+
+@import "../../8_miro/miro.less";
