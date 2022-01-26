@@ -1071,7 +1071,7 @@
       },
       "colortheme":{
         "label": "Zu verwendendes Farbschema",
-        "choices": ["Standard Farbschema", "Schwarzweiß"]
+        "choices": ["Standard Farbschema", "Schwarzweiß", "Waldgrün", "Gelbbraun", "Dunkelblau", "Rotwein"]
       },
       "customCss": {
         "label": "Eine benutzerdefinierte CSS-Datei einbinden? Die Datei muss 'custom.css' heißen und sich im Verzeichnis static_<modelName> befinden."

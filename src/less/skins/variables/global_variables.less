@@ -1,0 +1,19 @@
+/* booleans for all packages */
+@sidebar-light-is-light: boolean(luma(@sidebar-bg) > 50%);
+@sidebar-dark-is-light: boolean(luma(@sidebar-bg-dark) > 50%);
+@primary-light-is-light: boolean(luma(@primary-color) > 50%);
+@primary-dark-is-light: boolean(luma(@primary-color-dark) > 50%);
+
+@primary-has-no-color: boolean(hue(@primary-color) = 0 and saturation(@primary-color) = 0);
+@log-has-no-color: boolean(hue(@log-color) = 0 and saturation(@log-color) = 0);
+@sidebar-has-no-color: boolean(hue(@sidebar-bg) = 0 and saturation(@sidebar-bg) = 0);
+@main-bg-has-no-color: boolean(hue(@main-bg) = 0 and saturation(@main-bg) = 0);
+@gams-has-no-color: boolean(hue(@gams-color) = 0 and saturation(@gams-color) = 0);
+@remove-has-no-color: boolean(hue(@remove-color) = 0 and saturation(@remove-color) = 0);
+
+@primary-dark-has-no-color: boolean(hue(@primary-color-dark) = 0 and saturation(@primary-color-dark) = 0);
+@log-dark-has-no-color: boolean(hue(@log-color-dark) = 0 and saturation(@log-color-dark) = 0);
+@sidebar-dark-has-no-color: boolean(hue(@sidebar-bg-dark) = 0 and saturation(@sidebar-bg-dark) = 0);
+@main-bg-dark-has-no-color: boolean(hue(@main-bg-dark) = 0 and saturation(@main-bg-dark) = 0);
+@gams-dark-has-no-color: boolean(hue(@gams-color) = 0 and saturation(@gams-color) = 0);
+@remove-dark-has-no-color: boolean(hue(@remove-color) = 0 and saturation(@remove-color) = 0);

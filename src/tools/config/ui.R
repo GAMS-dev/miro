@@ -14,7 +14,11 @@ langSpecificUI$theme <- c(
 names(langSpecificUI$theme) <- lang$adminMode$general$theme$choices
 langSpecificUI$colortheme <- c(
   "Default theme" = "default",
-  "Black and white" = "blackandwhite"
+  "Black and white" = "blackandwhite",
+  "Green forest" = "forest",
+  "Tawny" = "tawny",
+  "Dark blue" = "darkblue",
+  "Red wine" = "redwine"
 )
 names(langSpecificUI$colortheme) <- lang$adminMode$general$colortheme$choices
 langSpecificUI$scen <- c(

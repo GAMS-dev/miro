@@ -36,6 +36,9 @@ module.exports = (env, argv) => ({
       darkblue_light: './less/skins/darkblue/light.js',
       darkblue_dark: './less/skins/darkblue/dark.js',
       darkblue_browser: './less/skins/darkblue/browser.js',
+      redwine_light: './less/skins/redwine/light.js',
+      redwine_dark: './less/skins/redwine/dark.js',
+      redwine_browser: './less/skins/redwine/browser.js',
       miro: ['./srcjs/miro.js'],
       miro_admin: ['./srcjs/miro_admin.js']
     },
