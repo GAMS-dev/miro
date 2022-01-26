@@ -2392,10 +2392,13 @@
                         />
                       </div>
                       <p>
-                        Views are tied to a scenario just like attachments. You
-                        can import and export view configurations in the form of
-                        JSON files. Each view has an id that has to be unique
-                        per GAMS symbol.
+                        Views can either be bound to a scenario like attachments
+                        or registered app-wide. From now on, scenario-specific
+                        views will be referred to as <kbd>local</kbd> views,
+                        while app-wide views will be referred to as
+                        <kbd>global</kbd> views. You can import and export view
+                        configurations in the form of JSON files. Each view has
+                        an id that has to be unique per GAMS symbol.
                       </p>
                       <div class="callout-block callout-success">
                         <div class="icon-holder">
@@ -2435,8 +2438,9 @@
                         shows how a few actions draw a bar chart of the
                         distances between canning plants and markets. By
                         clicking the <code>Add View</code> button we can attach
-                        a view to the current scenario. This allows us to return
-                        to a configuration later in our analysis.
+                        a <kbd>local</kbd> view to the current scenario. This
+                        allows us to return to a configuration later in our
+                        analysis.
                       </p>
                       <div
                         class="section-block"
@@ -2455,12 +2459,30 @@
                         />
                       </div>
                       <p>
-                        We can import, download, and remove views by navigating
-                        to the <i>Scenario</i> &rarr;
-                        <i>Edit metadata</i> &rarr; <i>Views</i> dialog. By
-                        clicking the <i>Export</i> button, the selected views
-                        are saved in the <i>Download</i> folder as a JSON file
-                        that we can use to share them with others.
+                        We can import, download, and remove
+                        <kbd>local</kbd> views by navigating to the
+                        <i>Scenario</i> &rarr; <i>Edit metadata</i> &rarr;
+                        <i>Views</i> dialog. By clicking the
+                        <i>Export</i> button, the selected views are saved in
+                        the <i>Download</i> folder as a JSON file, which we can
+                        use to share with others or to include as global views
+                        in the app.
+                      </p>
+                      <p>
+                        Global views are bundled with a MIRO app and are
+                        scenario-independent. A local view can <i>shadow</i> a
+                        global view if it has the same name as the global view.
+                        This means that when you apply this view, the
+                        configuration of the local view is applied. When the
+                        local view is removed, the global view is applied again.
+                      </p>
+                      <p>
+                        Global views can be bundled with an application by
+                        placing a JSON file with the filename
+                        <kbd>views.json</kbd> in the
+                        <i>conf_&lt;modelname&gt;</i> directory. This file can
+                        also be created automatically by configuring the views
+                        via the configuration mode.
                       </p>
                       <div
                         class="section-block"

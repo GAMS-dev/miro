@@ -5495,7 +5495,7 @@ renderMirorenderer_optsched &#x3C;- function(input, output, session, data, optio
                     <h5>Get view data</h5>
                     <div class="code-block">
                       <pre><code class="language-r">
-views$get(session, id = NULL)
+views$get(session, id = NULL, filter = c("all", "global", "local"))
                                         </code></pre>
                     </div>
                     <!--//code-block-->
@@ -5512,6 +5512,14 @@ views$get(session, id = NULL)
                         <tr>
                           <th>id</th>
                           <td>id of the view to load</td>
+                        </tr>
+                        <tr>
+                          <th>filter</th>
+                          <td>
+                            Whether to retrieve app-wide <kbd>global</kbd> views
+                            only, scenario-specific <kbd>local</kbd> views only,
+                            or <kbd>all</kbd> views.
+                          </td>
                         </tr>
                       </tbody>
                     </table>
@@ -5572,7 +5580,7 @@ views$get(session, "filter3")
                     <h5>Get view ids</h5>
                     <div class="code-block">
                       <pre><code class="language-r">
-views$getIds(session)
+views$getIds(session, filter = c("all", "global", "local"))
                                         </code></pre>
                     </div>
                     <!--//code-block-->
@@ -5584,6 +5592,14 @@ views$getIds(session)
                           <td>
                             The <kbd>session</kbd> object passed to the custom
                             renderer
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>filter</th>
+                          <td>
+                            Whether to retrieve app-wide <kbd>global</kbd> views
+                            only, scenario-specific <kbd>local</kbd> views only,
+                            or <kbd>all</kbd> views.
                           </td>
                         </tr>
                       </tbody>
@@ -5682,12 +5698,13 @@ views$remove(session, id)
                     </table>
                     <h6 class="api-header">Description</h6>
                     <p>
-                      Removes a view with the specified id. If no view with this
-                      id exists, an error is thrown. In case the current
-                      renderer is read-only (not a sandbox scenario), an error
-                      is thrown. You can test whether the renderer is read-only
-                      with the method
+                      Removes a local view with the specified id. If no view
+                      with this id exists, an error is thrown. In case the
+                      current renderer is read-only (not a sandbox scenario), an
+                      error is thrown. You can test whether the renderer is
+                      read-only with the method
                       <code class="language-r">views$isReadonly(session)</code>.
+                      Note that global views cannot be removed.
                     </p>
                     <h6 class="api-header">Example</h6>
                     <div class="code-block">
