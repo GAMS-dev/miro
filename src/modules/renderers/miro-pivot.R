@@ -1634,6 +1634,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       })
 
       dataToRender <- reactive({
+        if (identical(input$aggregationFunction, "")) {
+          return()
+        }
         dataTmp <- filteredData()$data
         rowIndexList <- input$rowIndexList
         initData <<- FALSE
