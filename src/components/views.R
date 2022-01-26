@@ -105,7 +105,7 @@ Views <- R6Class("Views",
           dataset <- datasetSid[symNames == symName, ]
           viewIds <- private$makeIds(dataset$id)
           viewData <- lapply(dataset$data, function(data) {
-            fromJSON(data, simplifyDataFrame = FALSE, simplifyVector = FALSE)
+            safeFromJSON(data, simplifyDataFrame = FALSE, simplifyVector = FALSE)
           })
           names(viewData) <- viewIds
           return(viewData)
