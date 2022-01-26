@@ -219,6 +219,63 @@ langSpecificGraphs$graphOptionsSet <- setNames(
   )
 )
 
+setViews <- function(viewData = list(), sidToLoad = NULL) {
+  globalViewsFilePath <- file.path(dirname(configJSONFileName), "views.json")
+  viewsTmp <- tryCatch(
+    {
+      fromJSON(globalViewsFilePath, simplifyDataFrame = FALSE, simplifyVector = FALSE)
+    },
+    error = function(e) {
+      flog.error("Could not read views file: %s. Error message: %s.", globalViewsFilePath, conditionMessage(e))
+      showErrorMsg(
+        lang$errMsg$fileRead$title,
+        sprintf(lang$errMsg$fileRead$desc, globalViewsFilePath)
+      )
+      return(list())
+    }
+  )
+  views$.__enclos_env__$private$scenViewConf[["1"]] <- viewsTmp
+}
+saveGlobalViews <- function() {
+  globalViews <- views$getScenViewConf(scenId = "1", symName = activeSymbol$name)
+  if (length(globalViews)) {
+    globalViewsFilePath <- file.path(dirname(configJSONFileName), "views.json")
+    if (file.exists(globalViewsFilePath)) {
+      globalViewsTmp <- tryCatch(
+        {
+          fromJSON(globalViewsFilePath, simplifyDataFrame = FALSE, simplifyVector = FALSE)
+        },
+        error = function(e) {
+          flog.error("Could not read views file: %s. Error message: %s.", globalViewsFilePath, conditionMessage(e))
+          showErrorMsg(
+            lang$errMsg$fileRead$title,
+            sprintf(lang$errMsg$fileRead$desc, globalViewsFilePath)
+          )
+          return(NA)
+        }
+      )
+    } else {
+      globalViewsTmp <- list()
+    }
+    if (is.list(globalViewsTmp)) {
+      globalViewsTmp[[activeSymbol$name]] <- globalViews
+      tryCatch(
+        {
+          write_json(globalViewsTmp, globalViewsFilePath, pretty = TRUE, auto_unbox = TRUE, null = "null")
+        },
+        error = function(e) {
+          flog.error("Could not write views file: %s. Error message: %s.", globalViewsFilePath, conditionMessage(e))
+          showErrorMsg(
+            lang$errMsg$fileWrite$title,
+            sprintf(lang$errMsg$fileWrite$desc, globalViewsFilePath)
+          )
+        }
+      )
+    }
+  }
+}
+setViews()
+
 hideFilter <- function() {
   hideEl(session, "#preview_output_plotly-data_filter")
   hideEl(session, "#preview_output_dygraphs-data_filter")
@@ -590,28 +647,6 @@ observeEvent(input$dbInput, {
   isEmptyOutput <<- isNonemptyDataset(modelOutputData)
   tabularOutputWithData <- outputSymMultiDimChoices[!isEmptyOutput]
 
-  tryCatch(
-    {
-      views$clearConf()
-      views$loadConf(
-        db$importDataset(
-          tableName = "_scenViews",
-          subsetSids = sidToLoad
-        ), TRUE,
-        1L, sidToLoad
-      )
-    },
-    error = function(e) {
-      flog.error(
-        "Some error occurred loading view data for scenario: '%s' from database. Error message: %s.",
-        sidToLoad, conditionMessage(e)
-      )
-      errMsg <<- lang$errMsg$loadScen$desc
-    }
-  )
-  if (is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))) {
-    return(NULL)
-  }
   tryCatch(
     {
       attachments$clear(cleanLocal = TRUE)
@@ -5072,6 +5107,7 @@ observeEvent(rv$saveGraphConfirm, {
       }
     }
     configJSON$dataRendering[[activeSymbol$name]]$outType <<- "miroPivot"
+    saveGlobalViews()
   } else if (rv$graphConfig$graph$tool == "pivot") {
     configJSON$dataRendering[[activeSymbol$name]]$graph <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$options <<- NULL

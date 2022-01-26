@@ -174,7 +174,7 @@ server_admin <- function(input, output, session) {
     names(modelIn),
     names(modelOut),
     ioConfig$inputDsNamesBase
-  )$setGlobalViews(config$globalViews)
+  )
   attachments <- Attachments$new(
     db, list(
       maxSize = attachMaxFileSize, maxNo = attachMaxNo,
