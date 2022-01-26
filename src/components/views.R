@@ -13,6 +13,12 @@ Views <- R6Class("Views",
     getInvalidViews = function() {
       return(private$invalidViews)
     },
+    getScenViewConf = function(scenId = "1", symName = NULL) {
+      if (is.null(symName)) {
+        return(private$scenViewConf[[scenId]])
+      }
+      return(private$scenViewConf[[scenId]][[symName]])
+    },
     cleanConf = function(viewConf, sandbox = TRUE, removeDuplicates = FALSE, scenId = "1") {
       if (!length(viewConf)) {
         return(list())
