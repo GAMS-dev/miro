@@ -221,6 +221,9 @@ langSpecificGraphs$graphOptionsSet <- setNames(
 
 setViews <- function(viewData = list(), sidToLoad = NULL) {
   globalViewsFilePath <- file.path(dirname(configJSONFileName), "views.json")
+  if (!file.exists(globalViewsFilePath)) {
+    return()
+  }
   viewsTmp <- tryCatch(
     {
       fromJSON(globalViewsFilePath, simplifyDataFrame = FALSE, simplifyVector = FALSE)
