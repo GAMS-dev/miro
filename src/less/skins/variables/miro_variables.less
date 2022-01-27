@@ -9,7 +9,7 @@
 @darker-primary-color-dark: darken(@primary-color-dark, 2%); // before: #2e6da4;
 @tabset-group-out-dark:   darken(@primary-color-dark, 10%); //merge #5ea7aa;                      //new - text color for output tabs in compare mode
 @pivot-presentation-uel-dark:  darken(@primary-color-dark, 36%, relative); //merge #006F75;
-@btn-bg-dark:             if(@primary-dark-has-no-color, #1d2121, if(@primary-dark-is-light, hsl(hue(@primary-color-dark), 84%, 40%), hsl(hue(@primary-color-dark), 40%, 40%)));
+@btn-bg-dark:             if(@primary-dark-has-no-color, #1d2121, if(@primary-dark-is-light, hsl(hue(@primary-color-dark), 84%, 40%), @darker-primary-color-dark));
 
 /* log */
 @log-tab-dark:            @log-color-dark;                //before: #3c8dbc;

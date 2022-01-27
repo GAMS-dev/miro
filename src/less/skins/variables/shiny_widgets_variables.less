@@ -10,8 +10,8 @@
 @datepicker-hover2-dark:   @widget-bg-dark;
 @datepicker-border-dark:   darken(@datepicker-selected-dark, 10%);
 @dropdown-group-header-dark: #ffffff;
-@btn-bg-dark:              if(@primary-dark-has-no-color,  #1d2121, if(@primary-dark-is-light, hsl(hue(@primary-color-dark), 84%, 40%), hsl(hue(@primary-color-dark), 40%, 40%)));//#337ab7;
 @darker-primary-color-dark: darken(@primary-color-dark, 2%);
+@btn-bg-dark:               if(@primary-dark-has-no-color, #1d2121, if(@primary-dark-is-light, hsl(hue(@primary-color-dark), 84%, 40%), @darker-primary-color-dark));
 
 ///////////////////////////////////////////////////////
 
