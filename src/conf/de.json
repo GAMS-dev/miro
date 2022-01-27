@@ -1066,7 +1066,7 @@
         "choices": ["Englisch", "Deutsch", "Chinesisch"]
       },
       "theme":{
-        "label": "Zu verwendender Modus",
+        "label": "Zu verwendender Farbmodus",
         "choices": ["System/Browser Einstellungen", "Heller Modus", "Dunkler Modus"]
       },
       "colortheme":{

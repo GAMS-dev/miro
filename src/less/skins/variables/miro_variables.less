@@ -4,10 +4,14 @@
 @info-color-dark:         @primary-color-dark;             //before: #f39619;
 @checkbox-color-dark:     @primary-color-dark;             //before: #f39619;
 @progress-bar-dark:       @primary-color-dark;             //before: #f39619;
+@progress-bar-text-dark: if(abs(luma(@progress-bar-dark) - luma(@text-color-dark)) < 8, contrast(@progress-bar-dark), @text-color-dark);
+@config-message-bg-dark:  fade(@primary-color-dark, 69%);
+@config-message-text-dark:if(abs(luma(@config-message-bg-dark) - luma(@text-color-dark)) < 8, contrast(@config-message-bg-dark), @text-color-dark);
 @focus-color-dark:        @primary-color-dark;
 @row-selected-dark:       @primary-color-dark;
 @darker-primary-color-dark: darken(@primary-color-dark, 2%); // before: #2e6da4;
-@tabset-group-out-dark:   darken(@primary-color-dark, 10%); //merge #5ea7aa;                      //new - text color for output tabs in compare mode
+@tabset-group-out-dark:   if(abs(luma(@main-bg-dark) - luma(darken(@primary-color-dark, 10%))) < 8, lighten(@primary-color-dark, 50%), darken(@primary-color-dark, 10%)); //merge #5ea7aa;
+@tabset-group-out-hover-dark:   if(abs(luma(@main-bg-dark) - luma(darken(@tabset-group-out-dark, 10%))) < 8, lighten(@tabset-group-out-dark, 10%), darken(@tabset-group-out-dark, 10%));
 @pivot-presentation-uel-dark:  darken(@primary-color-dark, 36%, relative); //merge #006F75;
 @btn-bg-dark:             if(@primary-dark-has-no-color, #1d2121, if(@primary-dark-is-light, hsl(hue(@primary-color-dark), 84%, 40%), @darker-primary-color-dark));
 
@@ -18,7 +22,7 @@
 
 @dropdown-sidebar-bg-dark:@sidebar-bg-dark;
 @modal-bg-dark:           @main-bg-dark;                       //used in dygraph-legend (new) (before: #fff;?)
-
+@sidebar-btn-border-dark: if(@sidebar-dark-is-light, #333, white);
 
 @table-row-even-dark:     @modal-bg-dark;                  //before: #f2f2f2;
 @log-bg-dark:             darken(@modal-bg-dark, 20%);     //before: #f5f5f5;
@@ -75,7 +79,7 @@
 @btn-border:              #ADADAD;
 @readme-preview-border:   @btn-border;
 @or-sign:                 @btn-border;
-
+@sidebar-btn-border:      if(@sidebar-light-is-light, #333, white);
 
 @background-color:        #fff;
 @modal-bg:                @background-color;
@@ -90,7 +94,9 @@
 @info-color:              @gams-color;
 @checkbox-color:          @info-color;
 @progress-bar:            @info-color;
-
+@progress-bar-text:       if(abs(luma(@progress-bar) - luma(@text-color)) < 8, contrast(@progress-bar), @text-color);
+@config-message-bg:       fade(@primary-color, 69%);
+@config-message-text:     if(abs(luma(@config-message-bg) - luma(@text-color)) < 8, contrast(@config-message-bg), @text-color);
 @highlight-bg-save:       #d9f1d9;
 @highlight-bg-delete:     if(@remove-has-no-color, hsl(hue(@remove-color), 0%, 85%), hsl(hue(@remove-color), 77%, 90%));//#ffd6d6;
 @warning-bg:              if(@gams-has-no-color, hsl(hue(@gams-color), 0%, 85%), hsl(hue(@gams-color), 77%, 90%));

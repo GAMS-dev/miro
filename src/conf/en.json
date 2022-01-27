@@ -1066,7 +1066,7 @@
         "choices": ["English", "German", "Chinese"]
       },
       "theme":{
-        "label": "Mode to use",
+        "label": "Color mode to use",
         "choices": ["Use system/browser settings", "Light mode", "Dark mode"]
       },
       "colortheme":{

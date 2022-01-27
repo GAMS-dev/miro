@@ -274,7 +274,7 @@
                       <p></p>
                     </div>
                     <h6
-                      id="dark-mode"
+                      id="colorthemes"
                       class="block-title"
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
@@ -284,13 +284,28 @@
                     </h6>
                     <div class="expanded">
                       <p>
+                        Allows you to choose between several color themes for
+                        the MIRO app.
+                      </p>
+                      <p></p>
+                    </div>
+                    <h6
+                      id="dark-mode"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Color mode to use
+                    </h6>
+                    <div class="expanded">
+                      <p>
                         Allows you to choose between MIRO light and dark mode as
                         well as the dynamic adaptation of the theme based on the
                         user's system settings.
                       </p>
                       <div class="row">
                         <div class="col-md-6">
-                          <p>Light mode:</p>
+                          <p>Default light mode:</p>
                           <img
                             class="img-fluid"
                             src="assets/images/configuration_mode/light.png"
@@ -298,7 +313,7 @@
                           />
                         </div>
                         <div class="col-md-6">
-                          <p>Dark mode:</p>
+                          <p>Default dark mode:</p>
                           <img
                             class="img-fluid"
                             src="assets/images/configuration_mode/dark.png"

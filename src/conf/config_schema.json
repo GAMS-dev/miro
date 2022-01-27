@@ -171,7 +171,7 @@
       "colortheme":{
          "description":"Color theme to use.",
          "type":"string",
-         "default":"browser",
+         "default":"default",
          "enum":[
             "default",
             "blackandwhite",

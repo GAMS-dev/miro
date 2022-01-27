@@ -332,9 +332,11 @@ textarea.readme-preview-markdown:focus {
 .progress-bar{
     .responsiveDark({
        background-color: @progress-bar;
+       color: @progress-bar-text;
     },
     {
        background-color: @progress-bar-dark;
+       color: @progress-bar-text-dark;
     });
 }
 .no-animations {
@@ -872,11 +874,11 @@ animation: none !important;
 }
 .dygraph-legend > span.highlight{
   .responsiveDark({
-    border-left: 2px solid @table-hover-dark;
+    border-left: 2px solid @table-hover;
     background-color:@highlight-bg!important
   },
   {
-    border-left: 2px solid @table-hover;
+    border-left: 2px solid @table-hover-dark;
     background-color:@scrollbar-dark!important
   });
   -webkit-box-decoration-break: clone;
@@ -1493,10 +1495,12 @@ html {
   text-align: center;
   font-size: 12pt;
   .responsiveDark({
-     background: fade(@primary-color, 69%);
+     background: @config-message-bg;
+     color: @config-message-text;
   },
   {
-     background: fade(@primary-color-dark, 69%);
+     background: @config-message-bg-dark;
+     color: @config-message-text-dark;
   });
   display: none;
 }
@@ -1507,10 +1511,12 @@ html {
   text-align: center;
   font-size: 12pt;
   .responsiveDark({
-     background: fade(@primary-color, 69%);
+    background: @config-message-bg;
+    color: @config-message-text;
   },
   {
-     background: fade(@primary-color, 69%);
+    background: @config-message-bg-dark;
+    color: @config-message-text-dark;
   });
 }
 .side-tab {
@@ -1693,7 +1699,8 @@ html {
     overflow: auto;
     z-index:3000;
 }
-.miro-tabset-group-1 {
+.miro-tabset-group-1,
+.readme-wrapper a {
   .responsiveDark({
      color: @tabset-group-out !important;
   },
@@ -1701,12 +1708,13 @@ html {
      color: @tabset-group-out-dark !important;
   });
 }
-.miro-tabset-group-1:hover {
+.miro-tabset-group-1:hover,
+.readme-wrapper a:hover {
   .responsiveDark({
      color: darken(@tabset-group-out, 10%) !important;
   },
   {
-     color: darken(@tabset-group-out-dark, 3%) !important;
+     color: @tabset-group-out-hover-dark !important;
   });
 }
 ::placeholder {
@@ -2677,9 +2685,9 @@ html {
 .sidebar-menu .bt-highlight-3,
 .sidebar-menu .bt-highlight-2 {
   .responsiveDark({
-    color: if(@sidebar-light-is-light, #333, white);
+    color: @sidebar-btn-border;
   },
   {
-    color: if(@sidebar-dark-is-light, #333, white);
+    color: @sidebar-btn-border-dark;
   });
 }
