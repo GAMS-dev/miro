@@ -2601,6 +2601,12 @@ observeEvent(input$gams_symbols, {
   if (is.na(symbolID)) {
     symbolID <- match(isolate(input$gams_symbols), names(modelOut)) + length(modelIn)
   }
+  # destroy old observers
+  for (el in ls(envir = customRendererEnv)) {
+    if ("Observer" %in% class(customRendererEnv[[el]])) {
+      customRendererEnv[[el]]$destroy()
+    }
+  }
   updateTextInput(session, "preview_output_miropivot-miroPivot-symbol_name", value = input$gams_symbols)
   updateTextInput(session, "preview_output_custom-symbol_name", value = input$gams_symbols)
   changeActiveSymbol(symbolID)
@@ -4902,6 +4908,9 @@ observe(
           miropivotOptions$hidepivotcontrols <- rv$graphConfig$graph$options$hidepivotcontrols
           miropivotOptions$fixedColumns <- rv$graphConfig$graph$options$fixedColumns
           miropivotOptions$externalDefaultView <- rv$graphConfig$graph$options$externalDefaultView
+          if (!identical(input[["preview_output_miropivot-miroPivot-symbol_name"]], activeSymbol$name)) {
+            return()
+          }
           isolate(callModule(renderData, "preview_output_miropivot",
             type = "miropivot",
             data = data, rendererEnv = customRendererEnv,
@@ -4985,6 +4994,9 @@ observe(
             additionalDataIds <- c(activeSymbol$id - length(modelIn), additionalDataIds)
             data <- c(modelOutputData, modelInputData)[additionalDataIds]
             names(data) <- c(names(modelOut), names(modelIn))[additionalDataIds]
+          }
+          if (!identical(input[["preview_output_custom-symbol_name"]], activeSymbol$name)) {
+            return()
           }
           local({
             customRendererFunction <- eval(parse(text = isolate(paste0(
