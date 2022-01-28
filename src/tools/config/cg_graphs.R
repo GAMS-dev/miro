@@ -241,27 +241,32 @@ setViews <- function(viewData = list(), sidToLoad = NULL) {
 }
 saveGlobalViews <- function() {
   globalViews <- views$getScenViewConf(scenId = "1", symName = activeSymbol$name)
-  if (length(globalViews)) {
-    globalViewsFilePath <- file.path(dirname(configJSONFileName), "views.json")
-    if (file.exists(globalViewsFilePath)) {
-      globalViewsTmp <- tryCatch(
-        {
-          fromJSON(globalViewsFilePath, simplifyDataFrame = FALSE, simplifyVector = FALSE)
-        },
-        error = function(e) {
-          flog.error("Could not read views file: %s. Error message: %s.", globalViewsFilePath, conditionMessage(e))
-          showErrorMsg(
-            lang$errMsg$fileRead$title,
-            sprintf(lang$errMsg$fileRead$desc, globalViewsFilePath)
-          )
-          return(NA)
-        }
-      )
-    } else {
-      globalViewsTmp <- list()
-    }
-    if (is.list(globalViewsTmp)) {
+  globalViewsFilePath <- file.path(dirname(configJSONFileName), "views.json")
+  globalViewsFileExists <- file.exists(globalViewsFilePath)
+  if (globalViewsFileExists) {
+    globalViewsTmp <- tryCatch(
+      {
+        fromJSON(globalViewsFilePath, simplifyDataFrame = FALSE, simplifyVector = FALSE)
+      },
+      error = function(e) {
+        flog.error("Could not read views file: %s. Error message: %s.", globalViewsFilePath, conditionMessage(e))
+        showErrorMsg(
+          lang$errMsg$fileRead$title,
+          sprintf(lang$errMsg$fileRead$desc, globalViewsFilePath)
+        )
+        return(NA)
+      }
+    )
+  } else {
+    globalViewsTmp <- list()
+  }
+  if (is.list(globalViewsTmp)) {
+    if (length(globalViews)) {
       globalViewsTmp[[activeSymbol$name]] <- globalViews
+    } else {
+      globalViewsTmp[[activeSymbol$name]] <- NULL
+    }
+    if (length(globalViewsTmp)) {
       tryCatch(
         {
           write_json(globalViewsTmp, globalViewsFilePath, pretty = TRUE, auto_unbox = TRUE, null = "null")
@@ -274,8 +279,66 @@ saveGlobalViews <- function() {
           )
         }
       )
+    } else if (globalViewsFileExists) {
+      # remove file if no more views
+      if (!identical(unlink(globalViewsFilePath), 0L)) {
+        flog.error("Could not remove file: %s. Do you lack write permissions?", globalViewsFilePath)
+        showErrorMsg(
+          lang$errMsg$fileWrite$title,
+          sprintf(lang$errMsg$fileWrite$desc, globalViewsFilePath)
+        )
+      }
+      flog.debug("Global views file removed successfully.")
     }
   }
+}
+removeGlobalViews <- function() {
+  globalViewsFilePath <- file.path(dirname(configJSONFileName), "views.json")
+  if (!file.exists(globalViewsFilePath)) {
+    return()
+  }
+  globalViewsTmp <- tryCatch(
+    {
+      fromJSON(globalViewsFilePath, simplifyDataFrame = FALSE, simplifyVector = FALSE)
+    },
+    error = function(e) {
+      flog.error("Could not read views file: %s. Error message: %s.", globalViewsFilePath, conditionMessage(e))
+      showErrorMsg(
+        lang$errMsg$fileRead$title,
+        sprintf(lang$errMsg$fileRead$desc, globalViewsFilePath)
+      )
+      return(NA)
+    }
+  )
+  if (!is.list(globalViewsTmp)) {
+    return()
+  }
+  globalViewsTmp[[activeSymbol$name]] <- NULL
+  if (!length(globalViewsTmp)) {
+    # remove file if no more views
+    if (!identical(unlink(globalViewsFilePath), 0L)) {
+      flog.error("Could not remove file: %s. Do you lack write permissions?", globalViewsFilePath)
+      showErrorMsg(
+        lang$errMsg$fileWrite$title,
+        sprintf(lang$errMsg$fileWrite$desc, globalViewsFilePath)
+      )
+    }
+    flog.debug("Global views file removed successfully.")
+    return()
+  }
+  tryCatch(
+    {
+      write_json(globalViewsTmp, globalViewsFilePath, pretty = TRUE, auto_unbox = TRUE, null = "null")
+      flog.debug("Global views successfully removed from global views file.")
+    },
+    error = function(e) {
+      flog.error("Could not write views file: %s. Error message: %s.", globalViewsFilePath, conditionMessage(e))
+      showErrorMsg(
+        lang$errMsg$fileWrite$title,
+        sprintf(lang$errMsg$fileWrite$desc, globalViewsFilePath)
+      )
+    }
+  )
 }
 setViews()
 
@@ -5245,6 +5308,7 @@ observeEvent(input$deleteGraphConfirm, {
     ))
     existingRendererFiles <<- existingRendererFiles[existingRendererFiles != customRendererName]
   }
+  removeGlobalViews()
   configJSON$dataRendering[[graphId]] <<- NULL
   write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
   removeModal()
