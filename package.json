@@ -10,7 +10,7 @@
     "test": "node ./test/run-ui-tests.js",
     "start": "electron .",
     "pack": "node ./build/scripts/pre-pack.js && electron-builder --dir --publish never",
-    "dist": "node ./build/scripts/pre-pack.js && electron-builder --publish never",
+    "dist": "npm run build-full --prefix src && node ./build/scripts/pre-pack.js && electron-builder --publish never",
     "docker-prepare": "node ./build/scripts/pre-pack.js --docker",
     "docker-build-ci": "node ./build/scripts/pre-pack.js --docker --ci"
   },
