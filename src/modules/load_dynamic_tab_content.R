@@ -42,70 +42,84 @@ getSheetnamesByTabsetId <- function(tabsetId) {
   return(sheetNames[tabId])
 }
 getPivotCompGraphConfig <- function(sheetName) {
+  if (sheetName %in% names(config$pivotCompSettings$symbolConfig)) {
+    graphOptionsTmp <- config$pivotCompSettings$symbolConfig[[sheetName]]
+  } else {
+    graphOptionsTmp <- NULL
+  }
   if (sheetName %in% names(ioConfig$modelOut)) {
     graphConfig <- list(
       outType = "miroPivot",
-      options = list(
-        resetOnInit = isFALSE(isInRefreshMode),
-        "_metadata_" = list(
-          symname = sheetName,
-          headers = c(
-            list("_scenName" = list(
-              alias = lang$nav$scen$pivot$scenColName,
-              type = "string"
-            )),
-            ioConfig$modelOut[[sheetName]]$headers
-          ),
-          symtype = if (identical(sheetName, scalarsOutName)) "parameter" else ioConfig$modelOut[[sheetName]]$symtype
+      options = c(
+        graphOptionsTmp,
+        list(
+          resetOnInit = isFALSE(isInRefreshMode),
+          "_metadata_" = list(
+            symname = sheetName,
+            headers = c(
+              list("_scenName" = list(
+                alias = lang$nav$scen$pivot$scenColName,
+                type = "string"
+              )),
+              ioConfig$modelOut[[sheetName]]$headers
+            ),
+            symtype = if (identical(sheetName, scalarsOutName)) "parameter" else ioConfig$modelOut[[sheetName]]$symtype
+          )
         )
       )
     )
   } else if (!sheetName %in% names(ioConfig$modelIn[[sheetName]]) && identical(sheetName, scalarsFileName)) {
     graphConfig <- list(
       outType = "miroPivot",
-      options = list(
-        resetOnInit = isFALSE(isInRefreshMode),
-        "_metadata_" = list(
-          symname = sheetName,
-          headers = c(
-            list("_scenName" = list(
-              alias = lang$nav$scen$pivot$scenColName,
-              type = "string"
-            )),
-            list(
-              scalar = list(
-                alias = lang$nav$scalarAliases$cols$name,
+      options = c(
+        graphOptionsTmp,
+        list(
+          resetOnInit = isFALSE(isInRefreshMode),
+          "_metadata_" = list(
+            symname = sheetName,
+            headers = c(
+              list("_scenName" = list(
+                alias = lang$nav$scen$pivot$scenColName,
                 type = "string"
-              ),
-              description = list(
-                alias = lang$nav$scalarAliases$cols$desc,
-                type = "string"
-              ),
-              value = list(
-                alias = lang$nav$scalarAliases$cols$value,
-                type = "string"
+              )),
+              list(
+                scalar = list(
+                  alias = lang$nav$scalarAliases$cols$name,
+                  type = "string"
+                ),
+                description = list(
+                  alias = lang$nav$scalarAliases$cols$desc,
+                  type = "string"
+                ),
+                value = list(
+                  alias = lang$nav$scalarAliases$cols$value,
+                  type = "string"
+                )
               )
-            )
-          ),
-          symtype = "parameter"
+            ),
+            symtype = "parameter"
+          )
         )
       )
     )
   } else {
     graphConfig <- list(
       outType = "miroPivot",
-      options = list(
-        resetOnInit = isFALSE(isInRefreshMode),
-        "_metadata_" = list(
-          symname = sheetName,
-          headers = c(
-            list("_scenName" = list(
-              alias = lang$nav$scen$pivot$scenColName,
-              type = "string"
-            )),
-            ioConfig$modelIn[[sheetName]]$headers
-          ),
-          symtype = ioConfig$modelIn[[sheetName]]$symtype
+      options = c(
+        graphOptionsTmp,
+        list(
+          resetOnInit = isFALSE(isInRefreshMode),
+          "_metadata_" = list(
+            symname = sheetName,
+            headers = c(
+              list("_scenName" = list(
+                alias = lang$nav$scen$pivot$scenColName,
+                type = "string"
+              )),
+              ioConfig$modelIn[[sheetName]]$headers
+            ),
+            symtype = ioConfig$modelIn[[sheetName]]$symtype
+          )
         )
       )
     )

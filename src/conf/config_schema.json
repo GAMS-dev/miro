@@ -282,6 +282,22 @@
              "description":"UEL that identifies a missing value (defaults to -, must not be empty string).",
              "type": "string",
              "minLength": 1
+           },
+           "symbolConfig": {
+             "description":"Symbol-specific settings for the Pivot Comparison Mode",
+             "type":"object",
+             "additionalProperties": {
+               "type":"object",
+               "description": "Symbol configuration",
+               "additionalProperties": false,
+               "properties": {
+                 "externalDefaultView": {
+                    "description":"Name of an external view (either global or scenario specific) to be used as default view. If this view is not available, a tabular list view is displayed.",
+                    "type": "string",
+                    "minLength": 1
+                  }
+               }
+             }
            }
          }
       },

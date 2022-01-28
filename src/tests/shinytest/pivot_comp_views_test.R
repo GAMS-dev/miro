@@ -178,5 +178,21 @@ expect_true(app$waitFor("$('#currentViewsTable tbody td')[3].innerHTML==='&lt;sc
 expect_true(app$waitFor("$('#currentViewsTable tbody td')[5].innerHTML==='new test view'",
   timeout = 50
 ))
+app$setInputs(btUpdateMeta = "click")
+Sys.sleep(0.5)
+
+# check default view
+app$setInputs(contentScen_0 = "contentScen_0_1")
+Sys.sleep(1)
+expect_chartjs(
+  "tab_0_1-miroPivot-pivotChart",
+  list(
+    c(NA, 275, 275, 300, 50, NA),
+    c(NA, 275, 275, 300, 50, NA)
+  ),
+  c(
+    "San-Diego.Chicago", "San-Diego.New-york", "San-Diego.Topeka", "Seattle.Chicago", "Seattle.New-york", "Seattle.Topeka"
+  )
+)
 
 app$stop()

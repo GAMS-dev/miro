@@ -4328,14 +4328,90 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                       <div class="code-block">
                         <pre><code class="language-json">{
   &#x22;inputWidgets&#x22;: {
-    "d": {
-      "widgetType": "table",
-      "tableType": "default",
-      "readonly": false,
-      "hideIndexCol": false,
-      "heatmap": false,
-      "colWidths": [165, 200, 50]
+    &#x22;d&#x22;: {
+      &#x22;widgetType&#x22;: &#x22;table&#x22;,
+      &#x22;tableType&#x22;: &#x22;default&#x22;,
+      &#x22;readonly&#x22;: false,
+      &#x22;hideIndexCol&#x22;: false,
+      &#x22;heatmap&#x22;: false,
+      &#x22;colWidths&#x22;: [165, 200, 50]
     }
+}</code></pre>
+                      </div>
+                      <!--//code-block-->
+                    </div>
+                    <!--//expanded-->
+                    <h6
+                      id="pivot-compare-default-view"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Default Views in
+                      Pivot Compare Mode
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        Just as you can configure an
+                        <a href="./charts.html#external-default-view"
+                          >external default view</a
+                        >
+                        for an input/output symbol with a
+                        <a href="./charts.html#pivot-chart"
+                          >MIRO Pivot renderer</a
+                        >, you can also select a default view for the same
+                        symbol in
+                        <a href="./start.html#compare-pivot"
+                          >Pivot compare mode</a
+                        >. The external view can be either a local
+                        (scenario-specific) or a global (app-wide)
+                        <a href="./start.html#metadata-views">view</a>.
+                      </p>
+                      <p>
+                        Note that the symbol name has to be prefixed with
+                        <i>_pivotcomp_</i> to indicate that it is a Pivot
+                        comparison mode view configuration. Also note that the
+                        symbol has an additional dimension with the special name
+                        <i>_scenName</i>, where the information about the
+                        scenario name is stored.
+                      </p>
+                      <p>
+                        Below is an example configuration for the output symbol
+                        <i>schedule</i> of the <i>transport</i> example:
+                      </p>
+                      <div class="code-block">
+                        <pre><code class="language-json">{
+  &#x22;_pivotcomp_schedule&#x22;: {
+    &#x22;test&#x22; {
+      &#x22;rows&#x22;: [&#x22;i&#x22;, &#x22;j&#x22;],
+      &#x22;cols&#x22;: {
+        &#x22;_scenName&#x22;: null
+      },
+      &#x22;filter&#x22;: {
+        &#x22;Hdr&#x22;: &#x22;quantities&#x22;
+      },
+      &#x22;pivotRenderer&#x22;: &#x22;bar&#x22;
+    }
+  }
+}</code></pre>
+                      </div>
+                      <!--//code-block-->
+                      To make this the default view, store the view
+                      configuration either as a scenario-specific
+                      <i>local</i> view or as a <i>global</i> view in the
+                      <kbd>conf_transport/views.json</kbd> file. Then, simply
+                      add the following configuration to your
+                      <kbd>conf_transport/transport.json</kbd> configuration
+                      file:
+                      <div class="code-block">
+                        <pre><code class="language-json">{
+  &#x22;pivotCompSettings&#x22;: {
+    &#x22;symbolConfig&#x22;: {
+      &#x22;schedule&#x22;: {
+        &#x22;externalDefaultView&#x22;: &#x22;test&#x22;
+      }
+    }
+  }
 }</code></pre>
                       </div>
                       <!--//code-block-->
