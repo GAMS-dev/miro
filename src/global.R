@@ -86,8 +86,6 @@ defaultGroup <- "users"
 standardRenderers <- c("datatable", "dtgraph", "pivot", "graph", "valuebox", "miropivot")
 # name of the folder where hcube jobs will be executed
 hcubeDirName <- "hcube_jobs"
-# filename of hcube submission file (will be called when hypercube jobs are to be launched)
-hcubeSubmissionFile <- "hcube_submission"
 # maximum number of scenarios that can be solved per hcube run
 MAX_NO_HCUBE <- 10000L
 # maximum number of scenarios to fetch when querying the database
