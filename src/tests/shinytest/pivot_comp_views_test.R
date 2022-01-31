@@ -79,8 +79,8 @@ Sys.sleep(1)
 
 app$findElement("#tab_0_3-miroPivot-toggleViewButton")$click()
 Sys.sleep(0.5)
-expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(3).text()==='abc';", timeout = 50))
-expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(3).click();true;", timeout = 50))
+expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).text()==='abc';", timeout = 50))
+expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).click();true;", timeout = 50))
 expect_chartjs(
   "tab_0_3-miroPivot-pivotChart",
   list(350, 200),
@@ -114,8 +114,8 @@ expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item'
 Sys.sleep(0.5)
 app$findElement("#tab_0_3-miroPivot-toggleViewButton")$click()
 Sys.sleep(0.5)
-expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(3).text()==='abc';", timeout = 50))
-expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(3).click();true;", timeout = 50))
+expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).text()==='abc';", timeout = 50))
+expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).click();true;", timeout = 50))
 Sys.sleep(1)
 expect_chartjs(
   "tab_0_3-miroPivot-pivotChart",
@@ -129,7 +129,7 @@ expect_chartjs(
 # edit 'abc' view
 app$findElement("#tab_0_3-miroPivot-toggleViewButton")$click()
 Sys.sleep(0.5)
-expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .miro-pivot-view-button').eq(4).click();", timeout = 50))
+expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .miro-pivot-view-button').eq(2).click();", timeout = 50))
 Sys.sleep(1)
 app$setInputs("tab_0_3-miroPivot-saveViewConfirm" = "click")
 Sys.sleep(1)
@@ -137,7 +137,7 @@ expect_true(app$waitFor("$('#tab_0_3-miroPivot-errUniqueName').is(':visible')===
 
 app$findElement("#tab_0_3-miroPivot-toggleViewButton")$click()
 Sys.sleep(0.5)
-expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .miro-pivot-view-button').eq(4).click();", timeout = 50))
+expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .miro-pivot-view-button').eq(2).click();", timeout = 50))
 Sys.sleep(1)
 app$setInputs("tab_0_3-miroPivot-newViewName" = "new test view")
 app$setInputs("tab_0_3-miroPivot-saveViewConfirm" = "click")

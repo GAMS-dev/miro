@@ -919,7 +919,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           localViewIds <- views$getIds(session, "local")
 
           viewChoices <- lapply(sort(views$getIds(session)), function(viewId) {
-            if (viewId %in% localViewIds) {
+            if (viewId %in% localViewIds && !readonlyViews) {
               return(createBootstrapDropdownChoices(
                 list(
                   id = htmlIdEnc(viewId),
@@ -958,8 +958,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             where = "beforeEnd"
           )
         }
-        updateViewList()
         readonlyViews <- views$isReadonly(session)
+        updateViewList()
         if (readonlyViews) {
           disableEl(session, paste0("#", ns("saveView")))
         } else {
@@ -1198,25 +1198,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 newViewConfig$chartOptions$yLogScale <- TRUE
               }
             }
-            if (overwrite) {
-              views$add(session, viewName, newViewConfig)
-            } else {
-              insertUI(paste0("#", ns("savedViewsDD")),
-                createBootstrapDropdownChoices(
-                  list(
-                    id = htmlIdEnc(viewName),
-                    alias = viewName
-                  ),
-                  ns("savedViews"), ns("editView"), ns("deleteView")
-                ),
-                where = "beforeEnd"
-              )
-              views$add(session, viewName, newViewConfig)
-            }
+            views$add(session, viewName, newViewConfig)
+
             if (miroPivotState$editView &&
               !identical(viewName, currentView$name)) {
               # view was renamed
               deleteView(currentView$name)
+            } else {
+              updateViewList()
             }
             if (refreshRequired) {
               currentView <<- newViewConfig
