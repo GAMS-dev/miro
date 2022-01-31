@@ -39,6 +39,12 @@ module.exports = (env, argv) => ({
       redwine_light: './less/skins/redwine/light.js',
       redwine_dark: './less/skins/redwine/dark.js',
       redwine_browser: './less/skins/redwine/browser.js',
+      '../../server/proxy/templates/2col/assets/css/themes/default': '../server/proxy/less/themes/default/styles.js',
+      '../../server/proxy/templates/2col/assets/css/themes/redwine': '../server/proxy/less/themes/redwine/styles.js',
+      '../../server/proxy/templates/2col/assets/css/themes/tawny': '../server/proxy/less/themes/tawny/styles.js',
+      '../../server/proxy/templates/2col/assets/css/themes/blackandwhite': '../server/proxy/less/themes/blackandwhite/styles.js',
+      '../../server/proxy/templates/2col/assets/css/themes/darkblue': '../server/proxy/less/themes/darkblue/styles.js',
+      '../../server/proxy/templates/2col/assets/css/themes/forest': '../server/proxy/less/themes/forest/styles.js',
       miro: ['./srcjs/miro.js'],
       miro_admin: ['./srcjs/miro_admin.js']
     },
@@ -65,7 +71,14 @@ module.exports = (env, argv) => ({
                   return new RegExp(/skin_.+\.js(\.map)?$/, 'm').test(filePath) ||
                     filePath.endsWith('.js.LICENSE.txt');
               }
-            }]
+            },
+            {
+              folder: path.resolve(__dirname, "..", "server", "proxy", "templates", "2col", "assets", "css", "themes"),
+              method: (filePath) => {
+                  return new RegExp(/.js(\.map)?$/, 'm').test(filePath);
+              }
+            }],
+            allowRootAndOutside: true
           }
       })
     ]: [...plugins],

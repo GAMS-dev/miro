@@ -38,23 +38,13 @@
       http-equiv="Content-Security-Policy"
       content="script-src 'self' 'sha256-rI6IBZgcWkZAZgn8EPKq8ljhpULQ8YbtFK19t4Ub+LY=';"
     />
-
-    <link
-      href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
-      rel="stylesheet"
-      type="text/css"
-    />
     <link
       rel="stylesheet"
       media="screen"
       th:href="@{/assets/css/bootstrap.min.css}"
     />
     <link rel="stylesheet" media="screen" th:href="@{/css/default.css}" />
-    <link
-      id="theme-style"
-      rel="stylesheet"
-      th:href="@{/assets/css/styles.css}"
-    />
+    <link id="theme-style" rel="stylesheet" th:href="@{${themeCss}}" />
     <script th:src="@{${jqueryJs}}"></script>
   </head>
 

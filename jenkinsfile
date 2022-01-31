@@ -84,6 +84,7 @@ pipeline {
                         sh '''
                                yarn install --non-interactive
                                ./build/scripts/update-licenses.sh
+                               npm install --prefix src
                                yarn dist
                         '''
                         script{
@@ -163,6 +164,10 @@ pipeline {
                                    yarn install --non-interactive
                                 '''
                                 bat '''
+                                   cd src
+                                   npm install
+                                '''
+                                bat '''
                                    copy %WIN_CERT_FILE% cert.p12
                                    set CSC_LINK=cert.p12
                                    echo %CSC_LINK%
@@ -180,6 +185,7 @@ pipeline {
                     steps {
                         sh '''
                            yarn install --non-interactive
+                           npm install --prefix src
                         '''
                         withCredentials([usernamePassword(credentialsId: '4568bda5-894f-4fa1-b9c5-a8d42f6e61ac', passwordVariable: 'APPLEIDPASS', usernameVariable: 'APPLEID'),
                             string(credentialsId: '2e590f95-5e30-4101-93be-31a1b7402da4', variable: 'MACOS_KEYCHAIN_PASSWD')]) {

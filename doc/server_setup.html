@@ -655,6 +655,7 @@
                     <div class="expanded">
                       <pre><code class="language-yaml">proxy:
   title: GAMS MIRO Server
+  theme: forest
   template-path: ./templates/2col
   favicon-path: ./favicon.ico
   model-dir: ${GMS_MIRO_MODEL_DIR}
@@ -720,6 +721,43 @@ server:
                         that is visible in the browser tab.
                       </li>
                       <li>
+                        <b>Color theme (<i>proxy.theme</i>):</b>
+                        <a id="global-colortheme" class="anchor"></a>
+                        For MIRO Server the same
+                        <a href="./deployment.html#sbs-customize-app"
+                          >color themes</a
+                        >
+                        are available as for MIRO Desktop:
+                        <ul>
+                          <li>Default theme (YAML value: "default")</li>
+                          <li>Black and white ("blackandwhite")</li>
+                          <li>Green forest ("forest")</li>
+                          <li>Tawny ("tawny")</li>
+                          <li>Dark blue ("darkblue")</li>
+                          <li>Red wine ("redwine")</li>
+                        </ul>
+                        <p>
+                          This global color theme setting initially applies to
+                          all apps, the app overview page and the login screen.
+                          You can set a different color theme individually for
+                          each app, which overrides the global setting. Read
+                          more about the app environment
+                          <a
+                            href="./server_administration.html#app-environment"
+                            class="scrollto"
+                            >here</a
+                          >.
+                        </p>
+                        <p>
+                          Note that in addition to the predefined themes, you
+                          can also include a
+                          <a href="#custom-css" , calss="Scroll"
+                            >customized css</a
+                          >
+                          file.
+                        </p>
+                      </li>
+                      <li>
                         <b>Language (<i>proxy.miro-lang</i>):</b>
                         <a id="global-language" class="anchor"></a>
                         <p>
@@ -732,7 +770,7 @@ server:
                           the global setting. This allows to host apps in
                           different languages. Read more about
                           <a
-                            href="./server_administration.html#admin-panel-lang"
+                            href="./server_administration.html#app-environment"
                             class="scrollto"
                             >how to change the language for an individual
                             app.</a
@@ -824,7 +862,7 @@ server:
                         <i>miro_server</i> directory.
                       </li>
                       <li>
-                        <b>Color styles:</b><br />
+                        <b id="custom-css">Custom styles:</b><br />
                         <p>
                           The CSS styles of MIRO Server can be customized. For
                           example, you can use predefined company colors in the

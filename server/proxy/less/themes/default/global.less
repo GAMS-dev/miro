@@ -1,0 +1,37 @@
+/* change mode for static/browser-responsive css compilation */
+@mode: "browser";
+
+.responsiveDark(@rules;@rulesDark) when (@mode = "dark"){
+    @rulesDark();
+}
+.responsiveDark(@rules;@rulesDark) when not (@mode = "dark"){
+    @rules();
+}
+.responsiveDark(@rules;@rulesDark) when (@mode = "browser") {
+    @rules();
+    @media (prefers-color-scheme: dark) {
+        @rulesDark();
+    }
+}
+
+/* global variables */
+@primary-color: #f90;
+@gams-color: @primary-color;
+@gams-color-dark: @primary-color;
+@main-bg-dark: #393e46;
+@login-header-bg: #494d55;
+@login-header-bg-dark: #494d55;
+@body-bg: #e2e3e8;
+@body-bg-dark: if(boolean(hue(@main-bg-dark) = 0 and saturation(@main-bg-dark) = 0), hsl(hue(@main-bg-dark), 0%, 12%), hsl(hue(@main-bg-dark), 10%, 18%));//#292D33;
+
+/* No need to change */
+@main-bg: #fff;
+@gams-color-focus: darken(@gams-color, 15%, relative);
+@gams-color-focus-dark: darken(@gams-color-dark, 15%, relative);
+@gams-color-fade: fade(@gams-color, 40%);
+@gams-color-fade-dark: fade(@gams-color-dark, 40%);
+@main-bg-lighten-dark: lighten(@main-bg-dark, 9%, relative);
+@btn-text: #eee;
+@btn-text-dark: #fff;
+
+@import "../../styles.less";

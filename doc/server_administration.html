@@ -330,7 +330,7 @@
                       </li>
                       <li>
                         App environment (JSON, optional):<br />
-                        <a id="admin-panel-lang" class="anchor"></a>
+                        <a id="app-environment" class="anchor"></a>
                         <p>
                           Here you can define a customized environment to be
                           used by the MIRO app in JSON syntax. This can be
@@ -347,7 +347,7 @@
                           applies globally to all apps.
                         </p>
                         <p>
-                          While the
+                          <b>Language</b>: While the
                           <a href="./server_setup.html#global-language"
                             >global language setting</a
                           >
@@ -375,6 +375,24 @@
                             onclick="window.open(this.src, '_blank');"
                           />
                         </div>
+                        <p>
+                          <b>Color theme</b>: The same applies to color themes.
+                          The environment variable <kbd>MIRO_THEME</kbd> can be
+                          used to overwrite the
+                          <a href="./server_setup.html#global-colortheme"
+                            >global color theme</a
+                          >
+                          of an individual app. Available themes are listed
+                          below. Example: <kbd>{"MIRO_THEME":"darkblue"}</kbd>.
+                        </p>
+                        <ul>
+                          <li>Default theme (value: "default")</li>
+                          <li>Black and white ("blackandwhite")</li>
+                          <li>Green forest ("forest")</li>
+                          <li>Tawny ("tawny")</li>
+                          <li>Dark blue ("darkblue")</li>
+                          <li>Red wine ("redwine")</li>
+                        </ul>
                       </li>
                     </ul>
                     <p>
