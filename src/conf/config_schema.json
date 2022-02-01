@@ -168,19 +168,10 @@
             "dark"
          ]
       },
-      "colortheme":{
-         "description":"Color theme to use.",
-         "type":"string",
-         "default":"default",
-         "enum":[
-            "default",
-            "blackandwhite",
-            "forest",
-            "tawny",
-            "darkblue",
-            "redwine",
-            "custom"
-         ]
+      "customColorTheme": {
+         "description":"Should a custom color theme be used? If true, MIRO will try to include a stylesheet named custom_theme.css from the static_<modelName> directory. Please use this feature with caution, as a new version of MIRO may be incompatible with your stylesheet and destroy the layout of your application.",
+         "type":"boolean",
+         "default":false
       },
       "customCss": {
         "description": "Should a custom css file be included? This file must be named custom.css and must be located in the static_<modelname> directory.",

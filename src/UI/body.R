@@ -62,7 +62,8 @@ if (!debugMode) {
   miroCacheFile <- paste0(
     modelNameRaw, "_",
     MIROVersion, "_0_",
-    miroLanguage,
+    miroLanguage, "_",
+    miroColorTheme,
     if (config$activateModules$remoteExecution) "_1" else "_0"
   )
   if (isShinyProxy) {
@@ -1040,10 +1041,10 @@ if (buildUI) {
           content = if (identical(config$theme, "browser")) "dark light" else "normal"
         ),
         tags$meta(name = "apple-mobile-web-app-capable", content = "yes"),
-        tags$link(type = "text/css", rel = "stylesheet", href = if (is.null(config$colortheme) || identical(config$colortheme, "default")) {
-          paste0("skin_", config$theme, ".css")
+        tags$link(type = "text/css", rel = "stylesheet", href = if (identical(config$customColorTheme, TRUE)) {
+          paste0("static_", modelName, "/custom_theme.css")
         } else {
-          paste0(config$colortheme, "_", config$theme, ".css")
+          paste0(miroColorTheme, "_", config$theme, ".css")
         }),
         tags$script(src = "miro.js", type = "application/javascript"),
         if (staticDirExists && file.exists(file.path(currentModelDir, paste0("static_", modelName), "manifest.json"))) {

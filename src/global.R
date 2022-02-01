@@ -71,6 +71,7 @@ reservedGMSOpt <- c("idir1", "trace", "traceopt", "curdir")
 CLARG_MISSING_VALUES <- c("_", "system.empty", "")
 
 miroLanguage <- Sys.getenv("MIRO_LANG", "en")
+miroColorTheme <- Sys.getenv("MIRO_THEME", "default")
 # get maximum number of lines to read for files
 maxSizeToRead <- 5e5
 # Limits on external programs that are allowed to be executed

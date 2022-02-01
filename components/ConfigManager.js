@@ -42,6 +42,10 @@ const schema = {
     type: 'string',
     enum: ['en', 'de', 'cn'],
   },
+  colorTheme: {
+    type: 'string',
+    enum: ['default', 'blackandwhite', 'forest', 'tawny', 'darkblue', 'redwine'],
+  },
   logLevel: {
     type: 'string',
     enum: ['TRACE', 'DEBUG', 'INFO',
@@ -68,6 +72,7 @@ const schema = {
         'remoteExecution',
         'logLifeTime',
         'language',
+        'colorTheme',
         'logLevel',
         'miroEnv',
       ],
@@ -98,7 +103,7 @@ class ConfigManager extends Store {
           name: 'settings',
         });
         ['gamspath', 'rpath', 'logpath', 'launchExternal', 'remoteExecution',
-          'logLifeTime', 'language', 'logLevel', 'miroEnv'].forEach((el) => {
+          'logLifeTime', 'language', 'colorTheme', 'logLevel', 'miroEnv'].forEach((el) => {
           this[el] = superPathConfigData.get(el, '');
         });
         this.important = superPathConfigData.get('important', []);
@@ -113,7 +118,7 @@ class ConfigManager extends Store {
     this.logpathDefault = path.join(miroWorkspaceDir, 'logs');
 
     ['gamspath', 'rpath', 'logpath', 'launchExternal', 'remoteExecution',
-      'logLifeTime', 'language', 'logLevel', 'miroEnv'].forEach((el) => {
+      'logLifeTime', 'language', 'colorTheme', 'logLevel', 'miroEnv'].forEach((el) => {
       if (this.important.find((iel) => iel === el)) {
         return;
       }
@@ -140,6 +145,7 @@ class ConfigManager extends Store {
        || (key === 'remoteExecution' && value === false)
        || (key === 'logLifeTime' && value === -1)
        || (key === 'language' && value === 'en')
+       || (key === 'colorTheme' && value === 'default')
        || (key === 'logLevel' && value === 'INFO')) {
         this[key] = '';
         super.delete(key);
@@ -191,6 +197,8 @@ class ConfigManager extends Store {
       return -1;
     } if (key === 'language') {
       return 'en';
+    } if (key === 'colorTheme') {
+      return 'default';
     } if (key === 'logLevel') {
       return 'INFO';
     } if (key === 'launchExternal') {

@@ -129,6 +129,7 @@ class MiroProcessManager {
       launchExternal: this.configData.get('launchExternal'),
       remoteExecution: this.configData.get('remoteExecution'),
       language: this.configData.get('language'),
+      colorTheme: this.configData.get('colorTheme'),
       logLevel: this.configData.get('logLevel'),
     };
 
@@ -192,6 +193,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       LAUNCHINBROWSER: await generalConfig.launchExternal,
       MIRO_REMOTE_EXEC: await generalConfig.remoteExecution,
       MIRO_LANG: await generalConfig.language,
+      MIRO_THEME: await generalConfig.colorTheme,
       MIRO_LOG_LEVEL: await generalConfig.logLevel,
       MIRO_VERSION_STRING: appData.miroversion,
       MIRO_MODEL_PATH: this.inDevelopmentMode ? appData.modelPath

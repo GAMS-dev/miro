@@ -17,13 +17,13 @@ const plugins = [
   })]
 module.exports = (env, argv) => ({
     entry: argv.mode === 'development' ? {
-      skin_browser: './less/skins/default/browser.js',
+      default_browser: './less/skins/default/browser.js',
       miro: ['./srcjs/miro.js'],
       miro_admin: ['./srcjs/miro_admin.js']
     } : {
-      skin_browser: './less/skins/default/browser.js',
-      skin_light: './less/skins/default/light.js',
-      skin_dark: './less/skins/default/dark.js',
+      default_browser: './less/skins/default/browser.js',
+      default_light: './less/skins/default/light.js',
+      default_dark: './less/skins/default/dark.js',
       blackandwhite_light: './less/skins/blackandwhite/light.js',
       blackandwhite_dark: './less/skins/blackandwhite/dark.js',
       blackandwhite_browser: './less/skins/blackandwhite/browser.js',
@@ -61,14 +61,14 @@ module.exports = (env, argv) => ({
     externals: {
       jquery: 'jQuery'
     },
-    plugins: argv.mode === 'production'? [
+    plugins: [
       ...plugins,
       new RemovePlugin({
           after: {
             test: [{
               folder: path.resolve(__dirname, "www"),
               method: (filePath) => {
-                  return new RegExp(/skin_.+\.js(\.map)?$/, 'm').test(filePath) ||
+                  return new RegExp(/default_.+\.js(\.map)?$/, 'm').test(filePath) ||
                     filePath.endsWith('.js.LICENSE.txt');
               }
             },
@@ -81,7 +81,7 @@ module.exports = (env, argv) => ({
             allowRootAndOutside: true
           }
       })
-    ]: [...plugins],
+    ],
     module: {
         rules: [
           {

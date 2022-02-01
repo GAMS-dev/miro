@@ -134,6 +134,38 @@
             </div>
             <div class="setting-wrapper">
               <label
+                id="generalColorTheme"
+                class="settings-label"
+                for="colorTheme"
+                >Color theme</label
+              >
+              <div class="settings-item">
+                <select class="form-control" id="colorTheme">
+                  <option id="colorThemeOptionDefault">Default theme</option>
+                  <option id="colorThemeOptionBlackWhite">
+                    Black and white
+                  </option>
+                  <option id="colorThemeOptionForest">Green forest</option>
+                  <option id="colorThemeOptionTawny">Tawny</option>
+                  <option id="colorThemeOptionDarkBlue">Dark blue</option>
+                  <option id="colorThemeOptionRedWine">Red wine</option>
+                </select>
+                <small
+                  id="colorThemeReset"
+                  class="
+                    form-text
+                    btn-reset-nonpath
+                    settings-reset
+                    reset-db-path
+                  "
+                  style="display: none"
+                  data-key="colorTheme"
+                  >Reset to default</small
+                >
+              </div>
+            </div>
+            <div class="setting-wrapper">
+              <label
                 id="generalRemoteExec"
                 class="settings-label"
                 for="remoteExecution"

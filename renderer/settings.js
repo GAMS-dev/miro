@@ -6,6 +6,7 @@ const cbLaunchExternal = $('#launchExternal');
 const cbRemoteExecution = $('#remoteExecution');
 const inputLogLifetime = $('#logLifeTime');
 const inputLanguage = $('#language');
+const inputColorTheme = $('#colorTheme');
 const inputLogLevel = $('#logLevel');
 const saveButton = $('#btSave');
 const btEnvReset = $('#btEnvReset');
@@ -29,6 +30,14 @@ const optionAliasMap = {
     Deutsch: 'de',
     中文: 'cn',
   },
+  colorTheme: {
+    'Default theme': 'default',
+    'Black and white': 'blackandwhite',
+    'Green forest': 'forest',
+    Tawny: 'tawny',
+    'Dark blue': 'darkblue',
+    'Red wine': 'redwine',
+  },
 };
 
 const pathConfig = {
@@ -43,7 +52,7 @@ const pathConfig = {
   },
 };
 
-[inputLogLifetime, inputLanguage, inputLogLevel,
+[inputLogLifetime, inputLanguage, inputColorTheme, inputLogLevel,
   cbLaunchExternal, cbRemoteExecution].forEach((el) => {
   el.on('change', () => {
     saveButton.attr('disabled', false);
@@ -96,6 +105,7 @@ saveButton.on('click', () => {
   newConfig.remoteExecution = cbRemoteExecution.is(':checked');
 
   newConfig.language = optionAliasMap.language[inputLanguage.val()];
+  newConfig.colorTheme = optionAliasMap.colorTheme[inputColorTheme.val()];
   let oldLanguage = defaultValues.language;
   if (oldConfig.language) {
     oldLanguage = oldConfig.language;
@@ -172,9 +182,9 @@ $('.btn-reset-nonpath').click(function resetClickNonPath() {
     cbRemoteExecution.prop('checked', defaultValues[elKey]);
   } else if (elKey === 'logLifeTime') {
     inputLogLifetime.val(defaultValues[elKey]);
-  } else if (elKey === 'language') {
-    inputLanguage.val(Object.keys(optionAliasMap.language)
-      .find((key) => optionAliasMap.language[key] === defaultValues[elKey]));
+  } else if (Object.keys(optionAliasMap).includes(elKey)) {
+    inputLanguage.val(Object.keys(optionAliasMap[elKey])
+      .find((key) => optionAliasMap[elKey][key] === defaultValues[elKey]));
   } else if (elKey === 'logLevel') {
     inputLogLevel.val(defaultValues[elKey]);
   }
@@ -188,7 +198,8 @@ ipcRenderer.on('settings-loaded', (e, data, defaults, langData) => {
       'generalRemoteExec', 'remoteExecReset', 'generalLogging', 'loggingReset', 'generalLoglife', 'loglifeReset',
       'pathMiroapp', 'pathMiroappSelect', 'resetPathMiroapp', 'pathGams', 'pathGamsSelect', 'pathGamsReset', 'pathLog',
       'pathLogSelect', 'pathLogReset', 'pathR', 'pathRSelect', 'pathRReset', 'needHelp', 'btSave', 'btEnvImport',
-      'btEnvExport', 'btEnvReset', 'miroEnvHdrVar', 'miroEnvHdrVal'].forEach((id) => {
+      'btEnvExport', 'btEnvReset', 'miroEnvHdrVar', 'miroEnvHdrVal', 'generalColorTheme', 'colorThemeReset', 'colorThemeOptionDefault', 'colorThemeOptionBlackWhite',
+      'colorThemeOptionForest', 'colorThemeOptionTawny', 'colorThemeOptionDarkBlue', 'colorThemeOptionRedWine'].forEach((id) => {
       const el = document.getElementById(id);
       if (el) {
         el.innerText = lang[id];
@@ -227,7 +238,7 @@ ipcRenderer.on('settings-loaded', (e, data, defaults, langData) => {
       newValue = defaultValues[key];
     } else if (!isImportant) {
       if (['launchExternal', 'remoteExecution', 'logLifeTime',
-        'language', 'logLevel'].find((el) => el === key)) {
+        'language', 'colorTheme', 'logLevel'].includes(key)) {
         if (newValue !== defaultValues[key]) {
           $(`[data-key="${key}"]`).show();
         }
@@ -245,9 +256,9 @@ ipcRenderer.on('settings-loaded', (e, data, defaults, langData) => {
       if (isImportant) {
         cbRemoteExecution.attr('disabled', true);
       }
-    } else if (['logLifeTime', 'logLevel', 'language'].find((el) => el === key)) {
-      $(`#${key}`).val(key === 'language' ? Object.keys(optionAliasMap.language)
-        .find((keyp) => optionAliasMap.language[keyp] === newValue) : newValue);
+    } else if (['logLifeTime', 'logLevel', 'language', 'colorTheme'].find((el) => el === key)) {
+      $(`#${key}`).val(Object.keys(optionAliasMap).includes(key) ? Object.keys(optionAliasMap[key])
+        .find((keyp) => optionAliasMap[key][keyp] === newValue) : newValue);
       if (isImportant) {
         $(`#${key}`).attr('disabled', true);
       }
