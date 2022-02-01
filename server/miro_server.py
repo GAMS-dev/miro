@@ -13,7 +13,6 @@ import re
 import platform
 import string
 import json
-from distutils.dir_util import copy_tree
 
 ZIP_IGNORE_FILES = ['.DS_Store']
 
@@ -181,7 +180,7 @@ class MiroServer(object):
     if platform.system() == 'Windows':
       python_binary = 'python'
 
-    copy_tree('release_data', 'release')
+    shutil.copytree('release_data', 'release')
 
     shutil.copy('LICENSE', os.path.join('release', 'LICENSE'))
 
