@@ -515,14 +515,13 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
       }
     }
   }
-  overwriteLang <- Sys.getenv("MIRO_LANG")
-  if (!identical(overwriteLang, "") && !identical(overwriteLang, config$language)) {
-    if (file.exists(file.path(".", "conf", paste0(overwriteLang, ".json")))) {
-      lang <<- fromJSON(file.path(".", "conf", paste0(overwriteLang, ".json")),
+  if (!identical(miroLanguage, "") && !identical(miroLanguage, config$language)) {
+    if (file.exists(file.path(".", "conf", paste0(miroLanguage, ".json")))) {
+      lang <<- fromJSON(file.path(".", "conf", paste0(miroLanguage, ".json")),
         simplifyDataFrame = FALSE,
         simplifyMatrix = FALSE
       )
-      config$language <- overwriteLang
+      config$language <- miroLanguage
     }
   }
 }
@@ -1135,10 +1134,10 @@ if (!is.null(errMsg)) {
       if (!is.list(config) || !is.character(config$theme)) {
         tags$link(type = "text/css", rel = "stylesheet", href = "skin_light.css")
       } else {
-        tags$link(type = "text/css", rel = "stylesheet", href = if (is.null(config$colortheme) || identical(config$colortheme, "default")) {
-          paste0("skin_", config$theme, ".css")
+        tags$link(type = "text/css", rel = "stylesheet", href = if (identical(config$customColorTheme, TRUE)) {
+          paste0("static_", modelName, "/custom_theme.css")
         } else {
-          paste0(config$colortheme, "_", config$theme, ".css")
+          paste0(miroColorTheme, "_", config$theme, ".css")
         })
       },
       tags$script(src = "miro.js", type = "application/javascript")

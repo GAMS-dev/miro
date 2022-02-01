@@ -1069,10 +1069,6 @@
         "label": "使用的颜色模式",
         "choices": ["使用系统或浏览器的设置", "浅色模式", "深色模式"]
       },
-      "colortheme":{
-        "label": "使用的颜色主题",
-        "choices": ["默认颜色主题", "黑与白", "绿色森林", "黄褐色", "幽蓝", "红葡萄酒"]
-      },
       "customCss": {
         "label": "包含自定义 CSS 文件？ 该文件必须命名为“custom.css”并位于 static_<modelname> 目录中。"
       },

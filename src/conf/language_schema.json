@@ -4160,27 +4160,6 @@
               },
               "minProperties": 2
             },
-            "colortheme": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "label": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "choices": {
-                  "type": "array",
-                  "uniqueItems": true,
-                  "minItems": 6,
-                  "maxItems": 6,
-                  "items": {
-                    "type": "string",
-                    "minLength": 1
-                  }
-                }
-              },
-              "minProperties": 2
-            },
             "customCss": {
               "type": "object",
               "additionalProperties": false,
@@ -4710,7 +4689,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 40
+          "minProperties": 39
         },
         "tables": {
           "type": "object",
