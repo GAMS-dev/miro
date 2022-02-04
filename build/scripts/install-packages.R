@@ -23,6 +23,10 @@ local({
 })
 
 source("./scripts/globals.R")
+print("Library paths:")
+print(.libPaths())
+print("Development library path:")
+print(RlibPathDevel)
 if (CIBuild) {
   installedPackages <- installedPackagesTmp
   customPackages <- packageVersionMap[vapply(packageVersionMap, function(package) {
