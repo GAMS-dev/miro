@@ -158,10 +158,6 @@
           "obj_miro": {
             "description": "Objective variable",
             "color": "aqua",
-            "icon": {
-              "name": "_",
-              "lib": "font-awesome"
-            },
             "round": 0
           },
           "salarycost": {
@@ -187,37 +183,21 @@
           "nurseavghours_miro": {
             "description": "Average working hours",
             "color": "green",
-            "icon": {
-              "name": "_",
-              "lib": "font-awesome"
-            },
             "round": 2
           },
           "fairness_miro": {
             "description": "Aggregation of all over- and undertime",
             "color": "green",
-            "icon": {
-              "name": "_",
-              "lib": "font-awesome"
-            },
             "round": 2
           },
           "overaveragework": {
             "description": "Total over-average worktime",
             "color": "red",
-            "icon": {
-              "name": "_",
-              "lib": "font-awesome"
-            },
             "round": 2
           },
           "underaveragework": {
             "description": "Total under-average worktime",
             "color": "orange",
-            "icon": {
-              "name": "_",
-              "lib": "font-awesome"
-            },
             "round": 2
           }
         }

@@ -2617,12 +2617,16 @@ observe({
       as.integer(boxId[2])
     }, integer(1L), USE.NAMES = FALSE)
     ret <- lapply(scalarIds, function(i) {
-      list(
+      ret <- list(
         description = input[[paste0("valueBoxDesc_", i)]],
         color = input[[paste0("valueBoxColor_", i)]],
-        icon = list(name = input[[paste0("valueBoxIcon_", i)]], lib = "font-awesome"),
         round = if (!is.na(input[[paste0("valueBoxRound_", i)]])) input[[paste0("valueBoxRound_", i)]] else 0L
       )
+      if (length(input[[paste0("valueBoxIcon_", i)]]) &&
+        !identical(input[[paste0("valueBoxIcon_", i)]], "_")) {
+        ret$icon <- list(name = input[[paste0("valueBoxIcon_", i)]], lib = "font-awesome")
+      }
+      return(ret)
     })
     names(ret) <- scalarNames[scalarIds]
     return(ret)
