@@ -530,7 +530,7 @@ if (buildUI) {
                   type = "button",
                   style = "display:none",
                   id = "btRefreshGraphIn",
-                  icon("refresh")
+                  icon("sync")
                 )
               ),
               tags$div(
@@ -916,7 +916,7 @@ if (buildUI) {
                       actionButton(
                         inputId = "refreshActiveJobs",
                         class = "bt-icon",
-                        icon = icon("refresh"), label = NULL
+                        icon = icon("sync"), label = NULL
                       )
                     )
                   ),

@@ -1,165 +1,188 @@
-/* Ion.RangeSlider
-// css version 2.0.3
-// © 2013-2014 Denis Ineshin | IonDen.com
-// ===================================================================================================================*/
-
-/* =====================================================================================================================
-// RangeSlider */
-
+@charset "UTF-8";
+/* 'shiny' skin for Ion.RangeSlider, largely based on the 'big' skin, but with smaller dimensions, grayscale grid text, and without gradients
+© RStudio, Inc, 2014
+© Denis Ineshin, 2014  https://github.com/IonDen
+© guybowden, 2014  https://github.com/guybowden
+*/
 .irs {
-    position: relative; display: block;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-     -khtml-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none;
+  position: relative;
+  display: block;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* https://github.com/rstudio/shiny/issues/3443 */
+  /* https://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice/ */
+  box-sizing: border-box;
 }
-    .irs-line {
-        position: relative; display: block;
-        overflow: hidden;
-        outline: none !important;
-    }
-        .irs-line-left, .irs-line-mid, .irs-line-right {
-            position: absolute; display: block;
-            top: 0;
-        }
-        .irs-line-left {
-            left: 0; width: 11%;
-        }
-        .irs-line-mid {
-            left: 9%; width: 82%;
-        }
-        .irs-line-right {
-            right: 0; width: 11%;
-        }
 
-    .irs-bar {
-        position: absolute; display: block;
-        left: 0; width: 0;
-    }
-        .irs-bar-edge {
-            position: absolute; display: block;
-            top: 0; left: 0;
-        }
+.irs *, .irs *:before, .irs *:after {
+  box-sizing: inherit;
+}
 
-    .irs-shadow {
-        position: absolute; display: none;
-        left: 0; width: 0;
-    }
+.irs-line {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  outline: none !important;
+}
 
-    .irs-slider {
-        position: absolute; display: block;
-        cursor: default;
-        z-index: 1;
-    }
-        .irs-slider.single {
+.irs-bar {
+  position: absolute;
+  display: block;
+  left: 0;
+  width: 0;
+}
 
-        }
-        .irs-slider.from i {
-            position: absolute;
-            display: block;
-            bottom: 5%;
-            left: -16px;
-            width: 0;
-            height: 14px;
-            border: 8px solid transparent;
-            border-right-color: #aaa;
-        }
-        .irs-slider.to i {
-            position: absolute;
-            display: block;
-            top: 15%;
-            left: 20px;
-            width: 0;
-            height: 14px;
-            border: 8px solid transparent;
-            border-left-color: #aaa;
-        }
+.irs-shadow {
+  position: absolute;
+  display: none;
+  left: 0;
+  width: 0;
+}
 
-        .irs-slider.type_last {
-            z-index: 2;
-        }
+.irs-handle {
+  position: absolute;
+  display: block;
+  box-sizing: border-box;
+  cursor: pointer;
+  z-index: 1;
+}
 
-    .irs-min {
-        position: absolute; display: block;
-        left: 0;
-        cursor: default;
-    }
-    .irs-max {
-        position: absolute; display: block;
-        right: 0;
-        cursor: default;
-    }
+.irs-handle.type_last {
+  z-index: 2;
+}
 
-    .irs-from, .irs-to, .irs-single {
-        position: absolute; display: block;
-        top: 0; left: 0;
-        cursor: default;
-        white-space: nowrap;
-    }
+.irs-min, .irs-max {
+  position: absolute;
+  display: block;
+  cursor: default;
+}
+
+.irs-min {
+  left: 0;
+}
+
+.irs-max {
+  right: 0;
+}
+
+.irs-from, .irs-to, .irs-single {
+  position: absolute;
+  display: block;
+  top: 0;
+  left: 0;
+  cursor: default;
+  white-space: nowrap;
+}
 
 .irs-grid {
-    position: absolute; display: none;
-    bottom: 0; left: 0;
-    width: 100%; height: 20px;
+  position: absolute;
+  display: none;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 20px;
 }
+
 .irs-with-grid .irs-grid {
-    display: block;
+  display: block;
 }
-    .irs-grid-pol {
-        position: absolute;
-        top: 0; left: 0;
-        width: 1px; height: 8px;
-        background: #000;
-    }
-    .irs-grid-pol.small {
-        height: 4px;
-    }
-    .irs-grid-text {
-        position: absolute;
-        bottom: 0; left: 0;
-        white-space: nowrap;
-        text-align: center;
-        font-size: 9px; line-height: 9px;
-        padding: 0 3px;
-        color: #000;
-    }
+
+.irs-grid-pol {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 8px;
+}
+
+.irs-grid-pol.small {
+  height: 4px;
+}
+
+.irs-grid-text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  white-space: nowrap;
+  text-align: center;
+  font-size: 9px;
+  line-height: 9px;
+  padding: 0 3px;
+}
 
 .irs-disable-mask {
-    position: absolute; display: block;
-    top: 0; left: -1%;
-    width: 102%; height: 100%;
-    cursor: default;
-    background: rgba(0,0,0,0.0);
-    z-index: 2;
+  position: absolute;
+  display: block;
+  top: 0;
+  left: -1%;
+  width: 102%;
+  height: 100%;
+  cursor: default;
+  background: rgba(0, 0, 0, 0);
+  z-index: 2;
 }
+
 .lt-ie9 .irs-disable-mask {
-    background: #000;
-    filter: alpha(opacity=0);
-    cursor: not-allowed;
+  background: #000;
+  filter: alpha(opacity=0);
+  cursor: not-allowed;
 }
 
 .irs-disabled {
-    opacity: 0.4;
+  opacity: 0.4;
 }
 
-
 .irs-hidden-input {
-    position: absolute !important;
-    display: block !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    font-size: 0 !important;
-    line-height: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    overflow: hidden;
-    outline: none !important;
-    z-index: -9999 !important;
-    background: none !important;
-    border-style: solid !important;
-    border-color: transparent !important;
+  position: absolute !important;
+  display: block !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden;
+  outline: none !important;
+  z-index: -9999 !important;
+  background: none !important;
+  border-style: solid !important;
+  border-color: transparent !important;
+}
+
+.irs {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.irs--shiny {
+  height: 40px;
+}
+
+.irs--shiny.irs-with-grid {
+  height: 60px;
+}
+.irs-handle.from i {
+    position: absolute;
+    display: block;
+    bottom: 5%;
+    left: -16px;
+    width: 0;
+    height: 14px;
+    border: 8px solid transparent;
+    border-right-color: #aaa;
+}
+.irs-handle.to i {
+    position: absolute;
+    display: block;
+    top: 15%;
+    left: 20px;
+    width: 0;
+    height: 14px;
+    border: 8px solid transparent;
+    border-left-color: #aaa;
 }

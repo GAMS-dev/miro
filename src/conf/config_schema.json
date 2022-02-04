@@ -1344,7 +1344,7 @@
                "autoHideNavigation":{
                   "description":"Boolean that specifies whether to automatically hide navigation elements when number of total records is less than page size",
                   "type":"boolean",
-                  "default":true
+                  "default":false
                },
                "extensions":{
                   "description":"For a list of supported extensions see: https://rstudio.github.io/DT/extensions.html",
@@ -1508,7 +1508,7 @@
                      "autoHideNavigation":{
                         "description":"Boolean that specifies whether to automatically hide navigation elements when number of total records is less than page size",
                         "type":"boolean",
-                        "default":true
+                        "default":false
                      },
                      "extensions":{
                         "description":"For a list of supported extensions see: https://rstudio.github.io/DT/extensions.html",
@@ -2172,7 +2172,7 @@
       "datatable":{
          "description":"Parameters used to customize datatable (used to render output data).",
          "type":"object",
-         "default": {"class": "display", "filter": "bottom", "rownames": false, "autoHideNavigation": true},
+         "default": {"class": "display", "filter": "bottom", "rownames": false, "autoHideNavigation": false},
          "additionalProperties":false,
          "properties":{
             "class":{
@@ -2202,7 +2202,7 @@
             "autoHideNavigation":{
                "description":"Boolean that specifies whether to automatically hide navigation elements when number of total records is less than page size",
                "type":"boolean",
-               "default":true
+               "default":false
             },
             "extensions":{
                "description":"For a list of supported extensions see: https://rstudio.github.io/DT/extensions.html",

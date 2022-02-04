@@ -44,6 +44,11 @@ these components are included below):
 - leaflet.providers https://github.com/rstudio/leaflet.providers or https://cran.r-project.org/web/packages/leaflet.providers/index.html
 - rhandsontable https://github.com/jrowen/rhandsontable or https://cran.r-project.org/web/packages/rhandsontable/index.html
 - lubridate https://github.com/tidyverse/lubridate/ or https://cran.r-project.org/web/packages/lubridate/index.html
+- fs https://github.com/r-lib/fs or https://cran.r-project.org/web/packages/fs/index.html
+- rappdirs https://github.com/r-lib/rappdirs or https://cran.r-project.org/web/packages/rappdirs/index.html
+- bslib, https://github.com/rstudio/bslib or https://cran.r-project.org/web/packages/bslib/index.html
+- sass, https://github.com/rstudio/sass or https://cran.r-project.org/web/packages/sass/index.html
+- jquerylib, https://github.com/rstudio/jquerylib or https://cran.r-project.org/web/packages/jquerylib/index.html
 - shiny https://github.com/rstudio/shiny or https://cran.r-project.org/web/packages/shiny/index.html
 - shinydashboard https://github.com/rstudio/shinydashboard or https://cran.r-project.org/web/packages/shinydashboard/index.html
 - shinyAce https://github.com/trestletech/shinyAce or https://cran.r-project.org/web/packages/shinyAce/index.html
@@ -78,11 +83,11 @@ these components are included below):
 - BH https://github.com/eddelbuettel/bh or https://cran.r-project.org/web/packages/BH/index.html
 - plogr https://github.com/krlmlr/plogr or https://cran.r-project.org/web/packages/plogr/index.html
 - httpuv https://github.com/rstudio/httpuv or https://cran.r-project.org/web/packages/httpuv/index.html
-- fs https://github.com/r-lib/fs or https://cran.r-project.org/web/packages/fs/index.html
 - mime https://github.com/yihui/mime or https://cran.r-project.org/web/packages/mime/index.html
 - xtable https://github.com/cran/xtable or https://cran.r-project.org/web/packages/xtable/index.html
 - digest https://github.com/eddelbuettel/digest or https://cran.r-project.org/web/packages/digest/index.html
 - htmltools https://github.com/rstudio/htmltools or https://cran.r-project.org/web/packages/htmltools/index.html
+- jquerylib https://cran.r-project.org/web/packages/jquerylib/index.html
 - sourcetools https://github.com/kevinushey/sourcetools or https://cran.r-project.org/web/packages/sourcetools/index.html
 - later https://github.com/r-lib/later or https://cran.r-project.org/web/packages/later/index.html
 - promises https://github.com/rstudio/promises or https://cran.r-project.org/web/packages/promises/index.html
@@ -193,6 +198,216 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+Bootstrap License
+----------------------------------------------------------------------
+The MIT License (MIT)
+
+Copyright (c) 2011-2019 Twitter, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+
+bootstrap-accessibility-plugin (BSD-3-Clause License)
+----------------------------------------------------------------------
+Copyright (c) 2014, PayPal
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice, this
+  list of conditions and the following disclaimer in the documentation and/or
+  other materials provided with the distribution.
+
+* Neither the name of the PayPal nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+selectize-plugin-a11y License
+----------------------------------------------------------------------
+
+The MIT License (MIT)
+
+Copyright 2018-present Salmen Bejaoui
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+ion.rangeSlider License
+----------------------------------------------------------------------
+
+Copyright (C) 2014 by Denis Ineshin
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+strftime for Javascript License
+----------------------------------------------------------------------
+
+The MIT License (MIT)
+Copyright Â© 2015 Sami Samhuri, http://samhuri.net <sami@samhuri.net>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the â€œSoftwareâ€), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED â€œAS ISâ€, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+DataTables License
+----------------------------------------------------------------------
+
+Copyright (c) 2008-2013 SpryMedia Limited
+http://datatables.net
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+
+showdown.js License
+----------------------------------------------------------------------
+
+Copyright (c) 2007, John Fraser
+<http://www.attacklab.net/>
+All rights reserved.
+
+Original Markdown copyright (c) 2004, John Gruber
+<http://daringfireball.net/>
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
+
+* Neither the name "Markdown" nor the names of its contributors may
+  be used to endorse or promote products derived from this software
+  without specific prior written permission.
+
+This software is provided by the copyright holders and contributors "as
+is" and any express or implied warranties, including, but not limited
+to, the implied warranties of merchantability and fitness for a
+particular purpose are disclaimed. In no event shall the copyright owner
+or contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to,
+procurement of substitute goods or services; loss of use, data, or
+profits; or business interruption) however caused and on any theory of
+liability, whether in contract, strict liability, or tort (including
+negligence or otherwise) arising in any way out of the use of this
+software, even if advised of the possibility of such damage.
+
+
+highlight.js license
+----------------------------------------------------------------------
+
+Copyright (c) 2006, Ivan Sagalaev
+All rights reserved.
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of highlight.js nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 Font Awesome (CSS files are MIT licensed; fonts have SIL Open Font License 1.1, svgs have CC BY 4.0 License)
@@ -665,6 +880,12 @@ Section 8 -- Interpretation.
           Kent Russell and Jonathan Owen
         - natural.js (DataTables plugin), Copyright (c) Jim Palmer (based on chunking idea from Dave Koelle), Mike Grier (mgrier.com), Clint Priest, Kyle Adams, guillermo
         - plotly, Copyright (c) 2017 Plotly, Inc.
+        - rappdirs, Copyright (c) 2001, 2014-2016 Hadley Wickham; RStudio; ActiveState Software Inc
+        - fs, Copyright (c) 2020 fs authors
+        - sass, Copyright (c) 2019 Joe Cheng [aut], Timothy Mastny [aut], Richard Iannone ORCID iD [aut], Barret Schloerke ORCID iD [aut], Carson Sievert ORCID iD [aut, cre], Christophe Dervieux  ORCID iD [ctb], RStudio [cph, fnd], Sass Open Source Foundation [ctb, cph] (LibSass library), Greter Marcel [ctb, cph] (LibSass library), Mifsud Michael [ctb, cph] (LibSass library), Hampton Catlin [ctb, cph] (LibSass library), Natalie Weizenbaum [ctb, cph] (LibSass library), Chris Eppstein [ctb, cph] (LibSass library), Adams Joseph [ctb, cph] (json.cpp), Trifunovic Nemanja [ctb, cph] (utf8.h)
+        - bslib, Copyright (c) 2021 Carson Sievert ORCID iD [aut, cre], Joe Cheng [aut], RStudio [cph], Bootstrap contributors [ctb] (Bootstrap library), Twitter, Inc [cph] (Bootstrap library), Javi Aguilar [ctb, cph] (Bootstrap colorpicker library), Thomas Park [ctb, cph] (Bootswatch library), PayPal [ctb, cph] (Bootstrap accessibility plugin)
+        - jquerylib, Copyright (c) 2020 Carson Sievert ORCID iD [aut, cre], Joe Cheng [aut], RStudio [cph], jQuery Foundation [cph] (jQuery library and jQuery UI library), jQuery contributors [ctb, cph] (jQuery library; authors listed in inst/lib/jquery-AUTHORS.txt)
+        - libsass, Copyright (c) 2012-2016 by the Sass Open Source Foundation
         - shinyAce, Copyright (c) 2016 Vincent Nijs [aut, cre], Forest Fang [aut], Trestle Technology, LLC [aut], Jeff Allen [aut], Institut de Radioprotection et de Surete Nucleaire [cph], Ajax.org B.V. [ctb, cph] (Ace)
         - V8 (R package), Copyright (c) 2017 Jeroen Ooms
         - jsonlite, Copyright (c) 2020 Jeroen Ooms
@@ -683,6 +904,7 @@ Section 8 -- Interpretation.
         - crosstalk, Copyright (c) 2016 RStudio, Inc.
         - curl, Copyright (c) 2017 Jeroen Ooms; RStudio
         - bindrcpp, Copyright (c) 2016 RStudio
+        - jquerylib, Copyright (c) 2020 Carson Sievert
         - glue, Copyright (c) 2021 glue authors
         - pkgconfig, Copyright (c) 2014-2017 Gábor Csárdi
         - tibble, Copyright (c) 2013-2017 RStudio
@@ -733,7 +955,7 @@ Section 8 -- Interpretation.
           Jukka Jylänki [cph] (grisu3 implementation),
           Mikkel Jørgensen [cph] (grisu3 implementation),
           RStudio [cph, fnd]
-        - readr, Copyright (c) 2021
+        - readr, Copyright (c) 2022
           Hadley Wickham [aut],
           Jim Hester [aut],
           Romain Francois [ctb],
@@ -995,7 +1217,7 @@ Library.
             Brian Reavis [ctb, cph] (selectize.js in htmlwidgets/lib),
             Leon Gersen [ctb, cph] (noUiSlider in htmlwidgets/lib),
             Bartek Szopka [ctb, cph] (jquery.highlight.js in htmlwidgets/lib),
-            RStudio Inc [cph]
+            Alex Pickering [ctb], RStudio Inc [cph]
         - lubridate, Copyright (c) Vitalie Spinu [aut, cre],
             Garrett Grolemund [aut],
             Hadley Wickham [aut],
@@ -1007,31 +1229,34 @@ Library.
             Jonathan Boiser [ctb],
             Chel Hee Lee [ctb],
             Google Inc. [ctb, cph]
-        - shiny, Copyright (c) Winston Chang [aut, cre],
-            Joe Cheng [aut], JJ Allaire [aut], Yihui Xie [aut],
-            Jonathan McPherson [aut], RStudio [cph],
-            jQuery Foundation [cph] (jQuery library and jQuery UI library),
-            jQuery contributors [ctb, cph]
-            (jQuery library; authors listed in inst/www/shared/jquery-AUTHORS.txt),
-            jQuery UI contributors [ctb, cph]
-            (jQuery UI library; authors listed in inst/www/shared/jqueryui/AUTHORS.txt),
-            Mark Otto [ctb] (Bootstrap library), Jacob Thornton [ctb] (Bootstrap library),
-            Bootstrap contributors [ctb] (Bootstrap library), Twitter,
-            Inc [cph] (Bootstrap library), Alexander Farkas [ctb, cph] (html5shiv library),
-            Scott Jehl [ctb, cph] (Respond.js library),
-            Stefan Petre [ctb, cph] (Bootstrap-datepicker library),
-            Andrew Rowls [ctb, cph] (Bootstrap-datepicker library),
-            Dave Gandy [ctb, cph] (Font-Awesome font),
-            Brian Reavis [ctb, cph] (selectize.js library),
-            Kristopher Michael Kowal [ctb, cph] (es5-shim library),
-            es5-shim contributors [ctb, cph] (es5-shim library),
-            Denis Ineshin [ctb, cph] (ion.rangeSlider library),
-            ami Samhuri [ctb, cph] (Javascript strftime library),
-            SpryMedia Limited [ctb, cph] (DataTables library),
-            John Fraser [ctb, cph] (showdown.js library),
-            John Gruber [ctb, cph] (showdown.js library),
-            Ivan Sagalaev [ctb, cph] (highlight.js library),
-            R Core Team [ctb, cph] (tar implementation from R)
+        - shiny, Copyright (c) Winston Chang ORCID iD [aut, cre], Joe Cheng [aut],
+           JJ Allaire [aut], Carson Sievert ORCID iD [aut], Barret Schloerke ORCID iD [aut],
+           Yihui Xie [aut], Jeff Allen [aut], Jonathan McPherson [aut], Alan Dipert [aut],
+           Barbara Borges [aut], RStudio [cph],
+           jQuery Foundation [cph] (jQuery library and jQuery UI library),
+           jQuery contributors [ctb, cph] (jQuery library; authors listed in inst/www/shared/jquery-AUTHORS.txt),
+           jQuery UI contributors [ctb, cph] (jQuery UI library; authors listed in inst/www/shared/jqueryui/AUTHORS.txt),
+           Mark Otto [ctb] (Bootstrap library),
+           Jacob Thornton [ctb] (Bootstrap library),
+           Bootstrap contributors [ctb] (Bootstrap library),
+           Twitter, Inc [cph] (Bootstrap library),
+           Prem Nawaz Khan [ctb] (Bootstrap accessibility plugin),
+           Victor Tsaran [ctb] (Bootstrap accessibility plugin),
+           Dennis Lembree [ctb] (Bootstrap accessibility plugin),
+           Srinivasu Chakravarthula [ctb] (Bootstrap accessibility plugin),
+           Cathy O'Connor [ctb] (Bootstrap accessibility plugin),
+           PayPal, Inc [cph] (Bootstrap accessibility plugin),
+           Stefan Petre [ctb, cph] (Bootstrap-datepicker library),
+           Andrew Rowls [ctb, cph] (Bootstrap-datepicker library),
+           Brian Reavis [ctb, cph] (selectize.js library),
+           Salmen Bejaoui [ctb, cph] (selectize-plugin-a11y library),
+           Denis Ineshin [ctb, cph] (ion.rangeSlider library),
+           Sami Samhuri [ctb, cph] (Javascript strftime library),
+           SpryMedia Limited [ctb, cph] (DataTables library),
+           John Fraser [ctb, cph] (showdown.js library),
+           John Gruber [ctb, cph] (showdown.js library),
+           Ivan Sagalaev [ctb, cph] (highlight.js library),
+           R Core Team [ctb, cph] (tar implementation from R)
         - blob, Copyright (c)
             Hadley Wickham [aut],
             Kirill Müller [cre],
@@ -2670,7 +2895,446 @@ The externally maintained libraries used by libuv are:
     Inc, Kenneth MacKay and Emergya (Cloud4all, FP7/2007-2013, grant agreement
     nÂ° 289016). Three clause BSD license.
 
+Additional copyrights in libuv which do not appear above:
 
+Copyright Fedor Indutny. All rights reserved.
+Copyright (c) 2015 SaÃºl Ibarra CorretgÃ© <saghul@gmail.com>.
+Copyright (c) 2013, Ben Noordhuis
+Copyright StrongLoop, Inc.
+Copyright (c) 2016, Kari Tristan Helgason <kthelgason@gmail.com>
+
+The files in src/bsd are from libbsd (https://cgit.freedesktop.org/libbsd) and
+use one of the following licenses:
+
+The rest of the licenses apply to code and/or man pages.
+
+
+    Copyright Â© 2004-2006, 2008-2013 Guillem Jover <guillem@hadrons.org>
+    Copyright Â© 2005 Hector Garcia Alvarez
+    Copyright Â© 2005 Aurelien Jarno
+    Copyright Â© 2006 Robert Millan
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+    1. Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+    3. The name of the author may not be used to endorse or promote products
+       derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
+    INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL
+    THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+    OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+    OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+    ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    --
+
+    Copyright Â© 1980, 1982, 1986, 1989-1994
+	The Regents of the University of California.  All rights reserved.
+    Copyright Â© 2001 Mike Barcroft <mike@FreeBSD.org>
+
+    Some code is derived from software contributed to Berkeley by
+    the American National Standards Committee X3, on Information
+    Processing Systems.
+
+    Some code is derived from software contributed to Berkeley by
+    Peter McIlroy.
+
+    Some code is derived from software contributed to Berkeley by
+    Ronnie Kon at Mindcraft Inc., Kevin Lew and Elmer Yglesias.
+
+    Some code is derived from software contributed to Berkeley by
+    Dave Borman at Cray Research, Inc.
+
+    Some code is derived from software contributed to Berkeley by
+    Paul Vixie.
+
+    Some code is derived from software contributed to Berkeley by
+    Chris Torek.
+
+    Â© UNIX System Laboratories, Inc.
+    All or some portions of this file are derived from material licensed
+    to the University of California by American Telephone and Telegraph
+    Co. or Unix System Laboratories, Inc. and are reproduced herein with
+    the permission of UNIX System Laboratories, Inc.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+    1. Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+    3. Neither the name of the University nor the names of its contributors
+       may be used to endorse or promote products derived from this software
+       without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+    ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+    OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+    LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+    OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+    SUCH DAMAGE.
+
+    --
+
+    Copyright Â© 1996  Peter Wemm <peter@FreeBSD.org>.
+    All rights reserved.
+    Copyright Â© 2002 Networks Associates Technology, Inc.
+    All rights reserved.
+
+    Portions of this software were developed for the FreeBSD Project by
+    ThinkSec AS and NAI Labs, the Security Research Division of Network
+    Associates, Inc.  under DARPA/SPAWAR contract N66001-01-C-8035
+    ("CBOSS"), as part of the DARPA CHATS research program.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, is permitted provided that the following conditions
+    are met:
+    1. Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+    3. The name of the author may not be used to endorse or promote
+       products derived from this software without specific prior written
+       permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+    ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+    OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+    LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+    OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+    SUCH DAMAGE.
+
+    --
+
+    Copyright Â© 1995 Peter Wemm <peter@FreeBSD.org>
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, is permitted provided that the following conditions
+    are met:
+    1. Redistributions of source code must retain the above copyright
+       notice immediately at the beginning of the file, without modification,
+       this list of conditions, and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+    3. This work was done expressly for inclusion into FreeBSD.  Other use
+       is permitted provided this notation is included.
+    4. Absolutely no warranty of function or purpose is made by the author
+       Peter Wemm.
+    5. Modifications may be freely made to this file providing the above
+       conditions are met.
+
+    --
+
+    Copyright Â© 1994, 1997-2000, 2002, 2008 The NetBSD Foundation, Inc.
+    All rights reserved.
+
+    Some code was contributed to The NetBSD Foundation by Allen Briggs.
+
+    Some code was contributed to The NetBSD Foundation by Luke Mewburn.
+
+    Some code is derived from software contributed to The NetBSD Foundation
+    by Jason R. Thorpe of the Numerical Aerospace Simulation Facility,
+    NASA Ames Research Center, by Luke Mewburn and by Tomas Svensson.
+
+    Some code is derived from software contributed to The NetBSD Foundation
+    by Julio M. Merino Vidal, developed as part of Google's Summer of Code
+    2005 program.
+
+    Some code is derived from software contributed to The NetBSD Foundation
+    by Christos Zoulas.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+    1. Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+
+    THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+    ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+    TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+    PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+    BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+    CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+    SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+    INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+    CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+
+    --
+
+    Copyright Â© 1998, M. Warner Losh <imp@freebsd.org>
+    All rights reserved.
+
+    Copyright Â© 2001 Dima Dorfman.
+    All rights reserved.
+
+    Copyright Â© 2001 FreeBSD Inc.
+    All rights reserved.
+
+    Copyright Â© 2002 Thomas Moestl <tmm@FreeBSD.org>
+    All rights reserved.
+
+    Copyright Â© 2005 Pawel Jakub Dawidek <pjd@FreeBSD.org>
+    All rights reserved.
+
+    Copyright Â© 2007 Eric Anderson <anderson@FreeBSD.org>
+    Copyright Â© 2007 Pawel Jakub Dawidek <pjd@FreeBSD.org>
+    All rights reserved.
+
+    Copyright Â© 2007 Dag-Erling CoÃ¯dan SmÃ¸rgrav
+    All rights reserved.
+
+    Copyright Â© 2009 Advanced Computing Technologies LLC
+    Written by: John H. Baldwin <jhb@FreeBSD.org>
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+    1. Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+
+    THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+    ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+    OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+    LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+    OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+    SUCH DAMAGE.
+
+    --
+
+    Copyright Â© 1997 Christos Zoulas.
+    All rights reserved.
+
+    Copyright Â© 2002 Niels Provos <provos@citi.umich.edu>
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+    1. Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+
+    THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+    IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+    OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+    IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+    NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+    THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    --
+
+    Copyright Â© 2007 Dag-Erling CoÃ¯dan SmÃ¸rgrav
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+    1. Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer
+       in this position and unchanged.
+    2. Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+
+    THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+    ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+    OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+    LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+    OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+    SUCH DAMAGE.
+
+    --
+
+    Copyright Â© 1998, 2000 Todd C. Miller <Todd.Miller@courtesan.com>
+    Copyright Â© 2004 Ted Unangst
+
+    Copyright Â© 2004 Ted Unangst and Todd Miller
+    All rights reserved.
+
+    Copyright Â© 2008 Otto Moerbeek <otto@drijf.net>
+
+    Permission to use, copy, modify, and distribute this software for any
+    purpose with or without fee is hereby granted, provided that the above
+    copyright notice and this permission notice appear in all copies.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+    ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+    --
+
+    Copyright Â© 2000-2002, 2004-2005, 2007, 2010
+        Todd C. Miller <Todd.Miller@courtesan.com>
+
+    Permission to use, copy, modify, and distribute this software for any
+    purpose with or without fee is hereby granted, provided that the above
+    copyright notice and this permission notice appear in all copies.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+    ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+    Sponsored in part by the Defense Advanced Research Projects
+    Agency (DARPA) and Air Force Research Laboratory, Air Force
+    Materiel Command, USAF, under agreement number F39502-99-1-0512
+
+    --
+
+    Copyright Â© 1996 by Internet Software Consortium.
+
+    Permission to use, copy, modify, and distribute this software for any
+    purpose with or without fee is hereby granted, provided that the above
+    copyright notice and this permission notice appear in all copies.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM DISCLAIMS
+    ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES
+    OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL INTERNET SOFTWARE
+    CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
+    DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
+    PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
+    ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
+    SOFTWARE.
+
+    --
+
+    Copyright Â© 1996, David Mazieres <dm@uun.org>
+    Copyright Â© 2008, Damien Miller <djm@openbsd.org>
+
+    Permission to use, copy, modify, and distribute this software for any
+    purpose with or without fee is hereby granted, provided that the above
+    copyright notice and this permission notice appear in all copies.
+
+    Modification and redistribution in source and binary forms is
+    permitted provided that due credit is given to the author and the
+    OpenBSD project (for instance by leaving this copyright notice
+    intact).
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+    ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+    This code is derived from section 17.1 of Applied Cryptography,
+    second edition, which describes a stream cipher allegedly
+    compatible with RSA Labs "RC4" cipher (the actual description of
+    which is a trade secret).  The same algorithm is used as a stream
+    cipher called "arcfour" in Tatu Ylonen's ssh package.
+
+    Here the stream cipher has been modified always to include the time
+    when initializing the state.  That makes it impossible to
+    regenerate the same random sequence twice, so this can't be used
+    for encryption, but will generate good random numbers.
+
+    RC4 is a registered trademark of RSA Laboratories.
+
+    --
+
+    Copyright Â© 2010 William Ahern
+    Copyright Â© 2012 Guillem Jover <guillem@hadrons.org>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to permit
+    persons to whom the Software is furnished to do so, subject to the
+    following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+    NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+    DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+    OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+    USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+    --
+
+    This code implements the MD5 message-digest algorithm.
+    The algorithm is due to Ron Rivest. This code was
+    written by Colin Plumb in 1993, no copyright is claimed.
+    This code is in the public domain; do with it what you wish.
+
+    Equivalent code is available from RSA Data Security, Inc.
+    This code has been tested against that, and is equivalent,
+    except that you don't need to include two pages of legalese
+    with every copy.
+
+    To compute the message digest of a chunk of bytes, declare an
+    MD5Context structure, pass it to MD5Init, call MD5Update as
+    needed on buffers full of bytes, and then call MD5Final, which
+    will fill a supplied 16-byte array with the digest.
+
+    --
+
+    "THE BEER-WARE LICENSE" (Revision 42):
+    <phk@login.dkuug.dk> wrote this file.  As long as you retain this notice you
+    can do whatever you want with this stuff. If we meet some day, and you think
+    this stuff is worth it, you can buy me a beer in return.   Poul-Henning Kamp
 
 
 http_parser.c is based on src/http/ngx_http_parse.c from NGINX copyright
@@ -3148,11 +3812,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 V8 is licensed for use as follows:
 
-Copyright 2014, the V8 project authors. All rights reserved.
+Copyright 2006-2011, the V8 project authors. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
-
     * Redistributions of source code must retain the above copyright
       notice, this list of conditions and the following disclaimer.
     * Redistributions in binary form must reproduce the above
@@ -3162,7 +3825,6 @@ met:
     * Neither the name of Google Inc. nor the names of its
       contributors may be used to endorse or promote products derived
       from this software without specific prior written permission.
-
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -3174,6 +3836,7 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 
 
 -----------------------------------------------------------------------------
@@ -3404,3 +4067,21 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-----------------------------------------------------------------------------
+vis-timeline and vis-graph2d (https://visjs.github.io/vis-timeline/)
+-----------------------------------------------------------------------------
+
+Create a fully customizable, interactive timeline with items and ranges.
+@version 7.4.9
+@date    2021-06-05T17:20:46.148Z
+@copyright (c) 2011-2017 Almende B.V, http://almende.com
+@copyright (c) 2017-2019 visjs contributors, https://github.com/visjs
+@license
+vis.js is dual licensed under both
+ 1. The Apache 2.0 License
+    http://www.apache.org/licenses/LICENSE-2.0
+ and
+ 2. The MIT License
+    http://opensource.org/licenses/MIT
+vis.js may be distributed under either license.

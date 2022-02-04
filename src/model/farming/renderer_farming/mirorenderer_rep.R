@@ -277,7 +277,7 @@ renderMirorenderer_rep <- function(input, output, session, data, options = NULL,
   # Boxes for  KPIs (custom infobox)
   infoBoxCustom <- function(value = NULL, symbol = NULL, position = "end",
                             title, subtitle = NULL,
-                            icon = shiny::icon("bar-chart"), color = "aqua", width = 4, href = NULL,
+                            icon = shiny::icon("chart-bar"), color = "aqua", width = 4, href = NULL,
                             fill = FALSE, customColor = NULL, hasChart = TRUE) {
     shinydashboard:::validateColor(color)
     shinydashboard:::tagAssert(icon, type = "i")
