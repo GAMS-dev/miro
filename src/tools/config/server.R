@@ -141,8 +141,8 @@ inputWidgets <- names(modelIn)[vapply(modelIn, function(el) {
 }, logical(1L), USE.NAMES = FALSE)]
 inputWidgetAliases <- vapply(seq_along(configJSON$inputWidgets)[match(inputWidgets, names(configJSON$inputWidgets))],
   function(widgetId) {
-    if (length(configJSON$inputWidgets[[widgetId]]$alias)) {
-      return(configJSON$inputWidgets[[widgetId]]$alias)
+    if (length(configJSON$inputWidgets[[widgetId]][["alias"]])) {
+      return(configJSON$inputWidgets[[widgetId]][["alias"]])
     }
     return(names(configJSON$inputWidgets)[widgetId])
   }, character(1L),

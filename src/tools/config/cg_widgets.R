@@ -577,8 +577,8 @@ observeEvent(
       currentConfig <- configJSON$inputWidgets[[currentWidgetSymbolName]]
     }
     widgetAlias <- ""
-    if (length(currentConfig$alias) && nchar(currentConfig$alias)) {
-      widgetAlias <- currentConfig$alias
+    if (length(currentConfig[["alias"]]) && nchar(currentConfig[["alias"]])) {
+      widgetAlias <- currentConfig[["alias"]]
       setAlias <- TRUE
     } else {
       setAlias <- FALSE
