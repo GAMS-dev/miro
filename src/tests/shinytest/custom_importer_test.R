@@ -1,0 +1,40 @@
+app <- ShinyDriver$new("../../", loadTimeout = 20000)
+app$snapshotInit("custom_importer_test")
+
+app$snapshot(
+  items = list(output = "inputDataTitle"),
+  screenshot = TRUE
+)
+
+app$setInputs(btImport = "click")
+Sys.sleep(0.5)
+app$setInputs(tb_importData = "tb_importData_external")
+expect_identical(
+  getSelectizeOptions(app, "#selExternalSource"),
+  c("Importer with file", "Importer without file")
+)
+Sys.sleep(0.5)
+expect_true(app$waitFor("$('#externalSourceFile_2').is(':hidden')", timeout = 50L))
+app$setInputs(selExternalSource = "Importer with file")
+Sys.sleep(0.5)
+expect_true(app$waitFor("$('#externalSourceFile_2').is(':visible')", timeout = 50L))
+expect_true(app$waitFor("$('#externalSourceFile_2').attr('multiple')==='multiple'", timeout = 50L))
+expect_true(app$waitFor("$('#externalSourceFile_2').attr('accept')==='.csv,text/csv'", timeout = 50L))
+app$setInputs(selExternalSource = "Importer without file")
+Sys.sleep(0.1)
+expect_true(app$waitFor("$('#externalSourceFile_2').is(':hidden')", timeout = 50L))
+app$setInputs(btImportExternal = "click")
+Sys.sleep(1)
+expect_equivalent(getHotData(app, "in_1"), tibble(i = "isBadA", value = 0L))
+app$setInputs(inputTabset = "inputTabset_2")
+expect_equivalent(getHotData(app, "in_2"), tibble(j = "isBadB", value = 0L))
+app$setInputs(btImport = "click")
+Sys.sleep(0.5)
+app$setInputs(tb_importData = "tb_importData_external")
+app$setInputs(selExternalSource = "Importer with file")
+app$uploadFile(externalSourceFile_2 = "../data/a.csv")
+Sys.sleep(0.5)
+app$setInputs(btImportExternal = "click")
+Sys.sleep(1)
+expect_equivalent(getHotData(app, "in_2"), tibble(j = "isGoodB", value = 1L))
+app$stop()

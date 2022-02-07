@@ -1195,6 +1195,9 @@ if (is.null(errMsg)) {
           return(exportConfig)
         })
         externalDataConfig[[direction]][[i]] <- unlist(remoteConfigs, recursive = FALSE, use.names = TRUE)
+        if (length(config[[direction]][[i]]$localFileInput)) {
+          externalDataConfig[[direction]][[i]]$localFileInput <- config[[direction]][[i]]$localFileInput
+        }
       }
       names(externalDataConfig[[direction]]) <- vapply(config[[direction]], "[[",
         character(1L), "name",

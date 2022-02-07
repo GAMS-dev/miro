@@ -57,6 +57,12 @@ observeEvent(input$btImportExternal, {
     datasetsToImport <- datasetsToImport[datasetsToImport %in%
       tolower(input$selInputDataExt)]
   }
+  if (length(extConf$localFileInput)) {
+    extConfId <- match(externalSource, names(externalInputConfig))[[1]]
+    localFile <- input[[paste0("externalSourceFile_", extConfId)]]
+  } else {
+    localFile <- NULL
+  }
 
   scenInputData <- lapply(datasetsToImport, function(inputName) {
     extIdx <- match(inputName, names(extConf))[1L]
@@ -72,7 +78,7 @@ observeEvent(input$btImportExternal, {
     # load from database
     tryCatch(
       {
-        externalInputData[[i]] <<- dataio$import(item, inputName)
+        externalInputData[[i]] <<- dataio$import(item, inputName, localFile = localFile)
       },
       error = function(e) {
         flog.error("Problems fetching external data. Error message: %s.", conditionMessage(e))

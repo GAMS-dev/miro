@@ -2405,6 +2405,27 @@
               "type":"string",
               "minLength":1
              },
+            "localFileInput": {
+              "description":"Only relevent if source==customFunction. Enable user to provide local file.",
+              "type":"object",
+              "properties": {
+                "label": {
+                  "description":"Label of the local file input.",
+                  "type": "string"
+                },
+                "multiple": {
+                  "description":"Whether user is allowed to upload multiple files.",
+                  "type": "boolean"
+                },
+                "accept": {
+                  "description":"A character vector of unique file type specifiers which gives the browser a hint as to the type of file the server expects. Many browsers use this prevent the user from selecting an invalid file.",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
              "templates":{
                "description":"Import templates",
                "type": "array",
@@ -2435,7 +2456,7 @@
                       ]
                     },
                     "functionName":{
-                      "description":"Only relevent if source==customFunction. Name of custom R function to call (required function signature: importCustom(symbolName, ...), must return data frame with correct number/type of columns).",
+                      "description":"Only relevent if source==customFunction. Name of custom R function to call (required function signature: importCustom(symbolName, localFile = NULL, ...), must return data frame with correct number/type of columns).",
                       "type":"string",
                       "default": "importCustom",
                       "minLength": 1

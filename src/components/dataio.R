@@ -10,7 +10,7 @@ DataIO <- R6Class("DataIO", public = list(
     )]
     private$db <- db
   },
-  import = function(item, dsName) {
+  import = function(item, dsName, localFile = NULL) {
     stopifnot(length(item) > 0L, is.list(item))
     data <- NULL
     if (identical(item$source, "customFunction")) {
@@ -30,7 +30,7 @@ DataIO <- R6Class("DataIO", public = list(
       )
       tryCatch(
         {
-          remoteData <- fetchFunction(dsName)
+          remoteData <- fetchFunction(dsName, localFile = localFile)
         },
         error = function(e) {
           stop(sprintf(

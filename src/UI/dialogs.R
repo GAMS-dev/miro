@@ -327,7 +327,7 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL, selectLocalTab = FA
 
   if (length(externalInputConfig)) {
     tabLoadFromExternalSource <- tabPanel(lang$nav$dialogImport$tabExternal,
-      vale = "tb_importData_external",
+      value = "tb_importData_external",
       tags$div(class = "space"),
       fluidRow(
         column(
@@ -335,7 +335,31 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL, selectLocalTab = FA
           selectInput("selExternalSource", lang$nav$dialogImport$selExternalSource,
             names(externalInputConfig),
             multiple = FALSE, width = "100%"
-          )
+          ),
+          lapply(seq_along(externalInputConfig), function(configId) {
+            if (!length(externalInputConfig[[configId]]$localFileInput)) {
+              return()
+            }
+            return(
+              conditionalPanel(
+                condition = paste0(
+                  "input.selExternalSource===",
+                  toJSON(names(externalInputConfig)[[configId]], auto_unbox = TRUE)
+                ),
+                fileInput(paste0("externalSourceFile_", configId),
+                  if (length(externalInputConfig[[configId]]$localFileInput$label) &&
+                    !identical(externalInputConfig[[configId]]$localFileInput$label, "")) {
+                    externalInputConfig[[configId]]$localFileInput$label
+                  } else {
+                    NULL
+                  },
+                  multiple = identical(externalInputConfig[[configId]]$localFileInput$multiple, TRUE),
+                  accept = externalInputConfig[[configId]]$localFileInput$accept,
+                  width = "100%"
+                )
+              )
+            )
+          })
         )
       ),
       fluidRow(
