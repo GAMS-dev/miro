@@ -242,13 +242,7 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL) {
         idx2 <- match(el[[2]], names(modelIn[[idx1]]$headers))[1]
         if (is.na(idx2)) {
           if (identical(el[[1]], name)) {
-            # first index is element itself, thus it is a reference to a shared database
-            if (length(el) > 1) {
-              ddownDep$shared <<- el[[2]]
-            } else {
-              ddownDep$shared <<- el[[1]]
-            }
-            return(ddownDep)
+            stop("Dropdowns cannot have dependencies on themselves.", call. = FALSE)
           } else if (!is.na(idx1) &&
             identical(modelIn[[idx1]]$type, "dropdown") &&
             length(el) > 1 && forwardDep[i]) {

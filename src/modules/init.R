@@ -1264,33 +1264,6 @@ if (is.null(errMsg)) {
           }
         }
 
-        # check whether dropdown menu uses shared data
-        if (length(choices$shared > 0) && length(choices$shared) != 1) {
-          errMsg <<- paste(errMsg, paste0(
-            "The dropdown menu : '", modelInAlias[i],
-            "' refers to a shared database. However, currently a maximum of 1 column from an external source is supported."
-          ), sep = "\n")
-          return(NULL)
-        } else if (length(choices$shared) == 1) {
-          if (length(aliases$shared) > 0 && length(aliases$shared) != 1) {
-            errMsg <<- paste(errMsg, paste0(
-              "The choices for dropdown menu '", modelInAlias[i],
-              "' do not match the number of aliases."
-            ), sep = "\n")
-            return(NULL)
-          } else if (length(aliases$shared) > 0) {
-            ddownDep[[name]]$aliases <<- aliases$shared
-          }
-          # remove identifier string from dropdown that specifies where shared data comes from
-          ddownDep[[name]]$shared <<- choices$shared
-
-          colSubset <- character(0L)
-          if (!identical(name, choices$shared)) {
-            # only subset of columns will be imported
-            colSubset <- c(tolower(ddownDep[[name]]$shared), tolower(ddownDep[[name]]$aliases))
-          }
-          externalInputConfig[[i]] <<- list(colSubset = colSubset)
-        }
         # in case dropdown menu has aliases, validate that they are of matching length as choices
         if (!is.null(aliases)) {
           if (length(aliases$strings) != length(choices$strings)) {
