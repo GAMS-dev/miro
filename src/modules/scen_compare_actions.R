@@ -231,7 +231,14 @@ observeEvent(input[["scenRemoteExportHandler"]], {
   exportId <- match(input$exportFileType, names(datasetsRemoteExport))[[1L]]
   if (!is.na(exportId)) {
     expConfig <- datasetsRemoteExport[[input$exportFileType]]
-    dsToExport <- names(expConfig)
+
+    if (length(expConfig$symNames)) {
+      dsToExport <- expConfig$symNames
+    } else {
+      # old config (remoteExport)
+      # FIXME: remove when removing remoteExport
+      dsToExport <- names(expConfig)
+    }
 
     if (isTRUE(input$cbSelectManuallyExp)) {
       dsToExport <- dsToExport[dsToExport %in% input$selDataToExport]
@@ -286,31 +293,29 @@ observeEvent(input[["scenRemoteExportHandler"]], {
 
     noDatasets <- length(dsToExport)
     errMsg <- NULL
-    for (expId in seq_along(dsToExport)) {
-      dataId <- match(dsToExport[expId], names(data))
-      if (is.na(dataId)) {
-        next
-      }
-      dsName <- names(data)[dataId]
-      prog$inc(
-        amount = 0.8 / noDatasets,
-        detail = sprintf(
-          lang$progressBar$exportScen$exportDs,
-          expId, noDatasets
+    customDataIO$setConfig(expConfig)
+    dataIds <- match(dsToExport, names(data))
+    dataIds <- dataIds[!is.na(dataIds)]
+    dsNames <- names(data)[dataIds]
+    tryCatch(customDataIO$write(dsNames, data[dsNames]),
+      error_custom = function(e) {
+        flog.debug(
+          "Custom exporter: %s reported a custom error: %s",
+          input$exportFileType,
+          conditionMessage(e)
         )
-      )
-      tryCatch(dataio$export(data[[dsName]], expConfig[[expId]], dsName),
-        error = function(e) {
-          flog.warn(
-            "Problems exporting data (export name: '%s', dataset: '%s'). Error message: '%s'.",
-            input$exportFileType, dsName, conditionMessage(e)
-          )
-          errMsg <<- lang$errMsg$saveScen$desc
-        }
-      )
-      if (is.null(showErrorMsg(lang$errMsg$saveScen$title, errMsg))) {
-        break
+        errMsg <<- conditionMessage(e)
+      },
+      error = function(e) {
+        flog.warn(
+          "Problems exporting data (export name: '%s'). Error message: '%s'.",
+          input$exportFileType, conditionMessage(e)
+        )
+        errMsg <<- lang$errMsg$saveScen$desc
       }
+    )
+    if (is.null(showErrorMsg(lang$errMsg$saveScen$title, errMsg))) {
+      return()
     }
     flog.debug("Data exported successfully.")
     if (!suppressRemoveModal) {

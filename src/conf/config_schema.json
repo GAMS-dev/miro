@@ -2390,23 +2390,37 @@
            }
          }
       },
-      "remoteImport":{
-        "description": "Import data from a remote service",
+      "customDataImport": {
+        "description": "Import data using a custom function",
         "type": "array",
-        "uniqueItems":true,
-        "minItems":1,
         "items":{
           "type":"object",
           "additionalProperties":false,
-          "required": ["name", "templates"],
+          "required": ["label", "symNames", "functionName"],
           "properties":{
-            "name":{
-              "description":"Specify a name for the remote import option",
+            "label":{
+              "description":"Label that is displayed when selecting the custom importer",
               "type":"string",
               "minLength":1
              },
-            "localFileInput": {
-              "description":"Only relevent if source==customFunction. Enable user to provide local file.",
+             "symNames":{
+               "description":"Names of the symbols to import",
+               "type":["array", "string"],
+               "minLength":1,
+               "uniqueItems":true,
+               "items":{
+                 "type":"string",
+                 "minLength":1
+               }
+              },
+              "functionName":{
+                "description":"Name of custom R function to call (required function signature: importCustom(symNames, localFile = NULL, ...), must return named list of data frames with correct number/type of columns). The names of the list must be identical to the names provided by symNames argument.",
+                "type":"string",
+                "default": "importCustom",
+                "minLength": 1
+              },
+             "localFileInput": {
+              "description":"Enable user to provide local file.",
               "type":"object",
               "properties": {
                 "label": {
@@ -2425,7 +2439,57 @@
                   }
                 }
               }
-            },
+            }
+          }
+        }
+      },
+      "customDataExport": {
+        "description": "Export data using a custom function",
+        "type": "array",
+        "items":{
+          "type":"object",
+          "additionalProperties":false,
+          "required": ["label", "symNames", "functionName"],
+          "properties":{
+            "label":{
+              "description":"Label that is displayed when selecting the custom exporter",
+              "type":"string",
+              "minLength":1
+             },
+             "symNames":{
+               "description":"Names of the symbols to export",
+               "type":["array", "string"],
+               "minLength":1,
+               "uniqueItems":true,
+               "items":{
+                 "type":"string",
+                 "minLength":1
+               }
+              },
+              "functionName":{
+                "description":"Name of custom R function to call (required function signature: exportCustom(data, ...) where data is a named list of data frames, where the names are the names of the symbols).",
+                "type":"string",
+                "default": "exportCustom",
+                "minLength": 1
+              }
+          }
+        }
+      },
+      "remoteImport":{
+        "description": "DEPRECATED: Please use customDataImport instead",
+        "type": "array",
+        "uniqueItems":true,
+        "minItems":1,
+        "items":{
+          "type":"object",
+          "additionalProperties":false,
+          "required": ["name", "templates"],
+          "properties":{
+            "name":{
+              "description":"Specify a name for the remote import option",
+              "type":"string",
+              "minLength":1
+             },
              "templates":{
                "description":"Import templates",
                "type": "array",
@@ -2451,15 +2515,8 @@
                       "type":"string",
                       "default": "REST",
                       "enum":[
-                        "customFunction",
                         "REST"
                       ]
-                    },
-                    "functionName":{
-                      "description":"Only relevent if source==customFunction. Name of custom R function to call (required function signature: importCustom(symbolName, localFile = NULL, ...), must return data frame with correct number/type of columns).",
-                      "type":"string",
-                      "default": "importCustom",
-                      "minLength": 1
                     },
                     "url":{
                       "description":"URL of REST API",
@@ -2564,7 +2621,7 @@
          }
       },
       "remoteExport":{
-        "description": "Export data to a remote service",
+        "description": "DEPRECATED: Please use customDataExport instead",
         "type": "array",
         "uniqueItems":true,
         "minItems":1,
@@ -2603,15 +2660,8 @@
                       "type":"string",
                       "default": "REST",
                       "enum":[
-                        "customFunction",
                         "REST"
                       ]
-                    },
-                    "functionName":{
-                      "description":"Only relevent if method==customFunction. Name of custom R function to call (required function signature: exportCustom(symbolName, data, ...) ).",
-                      "type":"string",
-                      "default": "exportCustom",
-                      "minLength": 1
                     },
                     "url":{
                        "description":"URL of REST API",

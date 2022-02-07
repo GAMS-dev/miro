@@ -1157,7 +1157,10 @@ if (is.null(errMsg)) {
   config$activateModules$miroLogFile <- length(config$miroLogFile) > 0L &&
     nchar(config$miroLogFile) > 2L
   # get remote import/export options
-  externalDataConfig <- list(remoteImport = NULL, remoteExport = NULL)
+  externalDataConfig <- list(
+    remoteImport = NULL, remoteExport = NULL,
+    customDataImport = NULL, customDataExport = NULL
+  )
 
   for (direction in c("remoteImport", "remoteExport")) {
     if (length(config[[direction]])) {
@@ -1198,9 +1201,6 @@ if (is.null(errMsg)) {
           return(exportConfig)
         })
         externalDataConfig[[direction]][[i]] <- unlist(remoteConfigs, recursive = FALSE, use.names = TRUE)
-        if (length(config[[direction]][[i]]$localFileInput)) {
-          externalDataConfig[[direction]][[i]]$localFileInput <- config[[direction]][[i]]$localFileInput
-        }
       }
       names(externalDataConfig[[direction]]) <- vapply(config[[direction]], "[[",
         character(1L), "name",
@@ -1209,8 +1209,39 @@ if (is.null(errMsg)) {
       config[[direction]] <- NULL
     }
   }
-  externalInputConfig <- externalDataConfig[["remoteImport"]]
-  datasetsRemoteExport <- externalDataConfig[["remoteExport"]]
+  for (direction in c("customDataImport", "customDataExport")) {
+    if (length(config[[direction]])) {
+      externalDataConfig[[direction]] <- vector("list", length(config[[direction]]))
+      for (i in seq_along(config[[direction]])) {
+        symNames <- tolower(config[[direction]][["symNames"]])
+        symIds <- match(symNames, c(names(modelIn), names(modelOut)))
+        if (any(is.na(symIds))) {
+          errMsg <- paste(errMsg, sprintf(
+            "Some of the datasets you selected for your custom importer/exporter: '%s' are not valid: '%s'.",
+            config[[direction]][[i]]$name,
+            paste(symNames[is.na(symIds)],
+              collapse = "', '"
+            )
+          ))
+          next
+        }
+      }
+      externalDataConfig[[direction]] <- config[[direction]]
+      names(externalDataConfig[[direction]]) <- vapply(config[[direction]], "[[",
+        character(1L), "label",
+        USE.NAMES = FALSE
+      )
+      config[[direction]] <- NULL
+    }
+  }
+  externalInputConfig <- c(
+    externalDataConfig[["customDataImport"]],
+    externalDataConfig[["remoteImport"]]
+  )
+  datasetsRemoteExport <- c(
+    externalDataConfig[["customDataExport"]],
+    externalDataConfig[["remoteExport"]]
+  )
   rm(externalDataConfig)
 
   # get input sheets with dependencies on other sheets

@@ -322,22 +322,56 @@ observeEvent(input$btOverwriteScenLocal, {
 })
 
 observeEvent(virtualActionButton(rv$btOverwriteInput), {
-  if (is.null(input$localInput$datapath)) {
-    return(NULL)
-  }
-  if (identical(config$activateModules$loadLocal, FALSE)) {
-    flog.error("Try to load local data even though the loadLocal module is disabled! This is most likely because the user is trying to tamper with the app!")
-    return()
+  if (identical(input$tb_importData, "tb_importData_external")) {
+    # import via custom function
+    externalSource <- input$selExternalSource
+    if (!length(externalSource) ||
+      !externalSource %in% names(externalInputConfig)) {
+      flog.info(
+        "Invalid remote importer: '%s'. This should not happen! Possible attempt of user tampering with the app!",
+        externalSource
+      )
+      return(NULL)
+    }
+    extConf <- externalInputConfig[[externalSource]]
+
+    if (length(externalInputConfig[[externalSource]]$symNames)) {
+      datasetsToFetch <- externalInputConfig[[externalSource]]$symNames
+    } else {
+      # old config (remoteImport)
+      # FIXME: remove when removing remoteImport
+      datasetsToFetch <- names(externalInputConfig[[externalSource]])
+    }
+    if (input$cbSelectManuallyExt) {
+      if (!length(input$selInputDataExt)) {
+        return()
+      }
+      datasetsToFetch <- datasetsToFetch[datasetsToFetch %in%
+        tolower(input$selInputDataExt)]
+    }
+    extConf$datasetsToFetch <- datasetsToFetch
+    extConf$label <- externalSource
+    customDataIO$setConfig(extConf)
+    loadModeFileName <- NULL
+    loadModeWorkDir <- NULL
+    fileType <- "_ext_"
+  } else {
+    if (is.null(input$localInput$datapath)) {
+      return(NULL)
+    }
+    if (identical(config$activateModules$loadLocal, FALSE)) {
+      flog.error("Try to load local data even though the loadLocal module is disabled! This is most likely because the user is trying to tamper with the app!")
+      return()
+    }
+    loadModeFileName <- basename(input$localInput$datapath)
+    loadModeWorkDir <- dirname(input$localInput$datapath)
+    fileType <- tolower(tools::file_ext(loadModeFileName))
   }
 
   # initialize new imported sheets counter
   newInputCount <- 0L
   errMsg <- NULL
   scalarDataset <- NULL
-
-  loadModeFileName <- basename(input$localInput$datapath)
-  loadModeWorkDir <- dirname(input$localInput$datapath)
-  fileType <- tolower(tools::file_ext(loadModeFileName))
 
   prog <- Progress$new()
   on.exit(suppressWarnings(prog$close()))
@@ -431,6 +465,8 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
   } else if (fileType %in% xlsio$getValidExtensions()) {
     loadMode <- "xls"
     datasetsToFetch <- xlsio$getSymbolNames()
+  } else if (identical(fileType, "_ext_")) {
+    loadMode <- "custom"
   } else {
     removeModal()
     showErrorMsg(
@@ -455,7 +491,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
   # extract scalar sheets
   if (!identical(loadMode, "gdx") &&
     (length(modelIn) > length(modelInTabularData) || !scalarsFileName %in% names(modelIn))) {
-    # atleast one scalar input element that is not in tabular form
+    # at least one scalar input element that is not in tabular form
     i <- match(scalarsFileName, tolower(datasetsToFetch))[[1]]
     if (!is.na(i)) {
       # scalar table in workbook
@@ -510,7 +546,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
           templates = modelOutTemplate,
           method = loadMode,
           fileName = loadModeFileName,
-          xlsio = xlsio, csvio = csvio
+          xlsio = xlsio, csvio = csvio, customDataIO = customDataIO
         )
         loadErrors <- c(loadErrors, outputData$errors)
       },
@@ -543,3 +579,97 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
     showErrorMsg(lang$errMsg$dataError$title, paste(loadErrors, collapse = "\n"))
   }
 })
+if (length(externalInputConfig)) {
+  lapply(seq_along(externalInputConfig), function(extConfId) {
+    if (length(externalInputConfig[[extConfId]]$localFileInput)) {
+      observe({
+        localFile <- input[[paste0("externalSourceFile_", extConfId)]]
+        if (length(localFile) && length(localFile$datapath)) {
+          customDataIO$setLocalFile(localFile)
+        }
+      })
+    }
+  })
+  observe({
+    req(isTRUE(input$cbSelectManuallyExt))
+    if (length(input$selExternalSource) != 1L) {
+      flog.error(
+        "Bad external source: '%s'. This looks like an attempt to tamper with the app!",
+        input$selExternalSource
+      )
+      return()
+    }
+    extSourceID <- match(input$selExternalSource, names(externalInputConfig))
+    if (is.na(extSourceID)) {
+      flog.error(
+        "Invalid external source: '%s'. This looks like an attempt to tamper with the app!",
+        input$selExternalSource
+      )
+      return()
+    }
+    if (length(externalInputConfig[[extSourceID]]$symNames)) {
+      datasetsToImport <- externalInputConfig[[extSourceID]]$symNames
+    } else {
+      # old config (remoteImport)
+      # FIXME: remove when removing remoteImport
+      datasetsToImport <- names(externalInputConfig[[extSourceID]])
+    }
+    extSourceDatasheets <- match(
+      datasetsToImport,
+      names(modelInToImport)
+    )
+    updateSelectInput(session, "selInputDataExt",
+      choices = setNames(
+        names(modelInToImport)[extSourceDatasheets],
+        modelInToImportAlias[extSourceDatasheets]
+      )
+    )
+  })
+  observeEvent(input$btImportExternal, {
+    externalSource <- input$selExternalSource
+    flog.trace(
+      "Import external data button clicked with remote importer: '%s' selected.",
+      externalSource
+    )
+
+    if (!identical(length(externalSource), 1L) ||
+      !externalSource %in% names(externalInputConfig)) {
+      flog.info(
+        "Invalid remote importer: '%s'. This should not happen! Possible attempt of user tampering with the app!",
+        externalSource
+      )
+      return(NULL)
+    }
+    if (length(externalInputConfig[[externalSource]]$symNames)) {
+      datasetsToImport <- externalInputConfig[[externalSource]]$symNames
+    } else {
+      # old config (remoteImport)
+      # FIXME: remove when removing remoteImport
+      datasetsToImport <- names(externalInputConfig[[externalSource]])
+    }
+    if (input$cbSelectManuallyExt) {
+      if (!length(input$selInputDataExt)) {
+        return()
+      }
+      datasetsToImport <- datasetsToImport[datasetsToImport %in%
+        tolower(input$selInputDataExt)]
+    }
+    datasetsImported <- vapply(match(datasetsToImport, names(modelIn)), function(i) {
+      if (length(isolate(rv[[paste0("in_", i)]]))) {
+        return(TRUE)
+      } else {
+        return(FALSE)
+      }
+    }, logical(1L))
+
+    if (any(datasetsImported)) {
+      hideEl(session, "#importDataTabset")
+      showEl(session, "#btReplaceInputData")
+      showEl(session, "#btMergeInputData")
+      showEl(session, "#importDataOverwrite")
+    } else {
+      overwriteInput <<- 0L
+      rv$btOverwriteInput <<- rv$btOverwriteInput + 1L
+    }
+  })
+}

@@ -1,4 +1,4 @@
-context("UI tests - Custom importer")
+context("UI tests - Custom dataio")
 skip_if(
   identical(Sys.getenv("GAMS_SYS_DIR"), ""),
   "GAMS_SYS_DIR environment variable not set. Skipping tests."
@@ -26,31 +26,28 @@ configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName,
   simplifyDataFrame = FALSE,
   simplifyMatrix = FALSE
 ))
-configJSON$remoteImport <- list(
+configJSON$customDataImport <- list(
   list(
-    name = "Importer without file",
-    templates = list(
-      list(
-        symNames = c("a", "b"),
-        source = "customFunction",
-        functionName = "customImporter"
-      )
-    )
+    label = "Importer without file",
+    symNames = c("a", "b"),
+    functionName = "customImporter"
   ),
   list(
-    name = "Importer with file",
+    label = "Importer with file",
     localFileInput = list(
       label = "Please upload your files here",
       multiple = TRUE,
       accept = c(".csv", "text/csv")
     ),
-    templates = list(
-      list(
-        symNames = "b",
-        source = "customFunction",
-        functionName = "customImporterWithFile"
-      )
-    )
+    symNames = "b",
+    functionName = "customImporterWithFile"
+  )
+)
+configJSON$customDataExport <- list(
+  list(
+    label = "My custom exporter",
+    symNames = c("a", "schedule"),
+    functionName = "customExporter"
   )
 )
 jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
@@ -58,6 +55,13 @@ jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox =
 test_that(
   "Custom importer functions work",
   expect_pass(testApp(file.path(testDir, ".."), "custom_importer_test",
+    compareImages = FALSE
+  ))
+)
+
+test_that(
+  "Custom exporter functions work",
+  expect_pass(testApp(file.path(testDir, ".."), "custom_exporter_test",
     compareImages = FALSE
   ))
 )

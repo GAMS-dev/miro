@@ -1,7 +1,7 @@
 loadScenData <- function(metaData, workDir,
                          templates, method = "csv", csvDelim = ",",
                          fileName = character(0L), DDPar = character(0L), GMSOpt = character(0L),
-                         dfClArgs = NULL, xlsio = NULL, csvio = NULL) {
+                         dfClArgs = NULL, xlsio = NULL, csvio = NULL, customDataIO = NULL) {
   ret <- list(tabular = NULL, scalar = NULL, errors = character())
   loadDataErrors <- CharArray$new()
   if (length(method) == 1L && method %in% c("xls", "gdx", "scsv")) {
@@ -12,7 +12,7 @@ loadScenData <- function(metaData, workDir,
     if (!file.exists(dataFilePath)) {
       stop(sprintf("File: '%s' could not be found.", dataFilePath), call. = FALSE)
     }
-  } else if (!identical(method, "csv")) {
+  } else if (!identical(length(method), 1L) || !method %in% c("csv", "custom")) {
     stop("Method is not suported for loading data.", call. = FALSE)
   }
   # read scalar data in case it exists
@@ -123,6 +123,33 @@ loadScenData <- function(metaData, workDir,
                   stop("Compressed GDX is not supported. Please remove the GDXCOMPRESS environment variable.")
                 }
                 ret$tabular[[i]] <<- templates[[i]]
+              }
+            )
+          },
+          custom = {
+            tryCatch(
+              {
+                ret$tabular[[i]] <<- customDataIO$read(names(metaData)[[i]])
+              },
+              error_custom = function(e) {
+                flog.debug(
+                  "Custom importer: %s reported a custom error: %s",
+                  customDataIO$getLabel(),
+                  conditionMessage(e)
+                )
+                loadDataErrors$push(conditionMessage(e))
+                ret$tabular[[i]] <<- templates[[i]]
+              },
+              error_notfound = function(e) {
+                ret$tabular[[i]] <<- templates[[i]]
+              },
+              error = function(e) {
+                stop(sprintf(
+                  "Unexpected error running custom importer function: %s. Error message: %s",
+                  customDataIO$getLabel(), conditionMessage(e)
+                ),
+                call. = FALSE
+                )
               }
             )
           }

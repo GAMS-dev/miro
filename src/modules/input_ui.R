@@ -46,6 +46,7 @@ observeEvent(input$btImport, {
       desc = TRUE
     )
   }
+  customDataIO$setLocalFile(NULL)
   showLoadDataDialog(
     scenListDb = scenListDb, dbTagList = dbTagList,
     selectLocalTab = identical(length(scenListDb), 0L)

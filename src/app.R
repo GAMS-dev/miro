@@ -58,7 +58,7 @@ filesToInclude <- c(
   "./components/load_scen_data.R", "./components/localfileio.R",
   "./components/xlsio.R", "./components/csvio.R",
   "./components/input_data_instance.R", "./components/worker.R",
-  "./components/dataio.R", "./components/scen_export.R",
+  "./components/custom_dataio.R", "./components/scen_export.R",
   "./components/miro_tabsetpanel.R", "./modules/render_data.R",
   "./modules/generate_data.R", "./components/script_output.R",
   "./components/js_util.R", "./components/scen_data.R", "./components/batch_loader.R"
@@ -794,6 +794,7 @@ if (is.null(errMsg)) {
   if (config$activateModules$remoteExecution) {
     requiredPackages <- c("future", "httr")
   } else if (length(externalInputConfig) || length(datasetsRemoteExport)) {
+    # FIXME: get rid of this when removing remoteImport/remoteExport feature
     requiredPackages <- "httr"
   } else {
     requiredPackages <- character(0L)
@@ -885,21 +886,7 @@ if (is.null(errMsg)) {
       errMsg <<- paste(errMsg, conditionMessage(e), sep = "\n")
     }
   )
-  tryCatch(
-    {
-      dataio <- DataIO$new(
-        config = list(
-          modelIn = modelIn, modelOut = modelOut,
-          modelName = modelName
-        ),
-        db = db
-      )
-    },
-    error = function(e) {
-      flog.error("Problems initialising dataio class. Error message: %s", conditionMessage(e))
-      errMsg <<- paste(errMsg, conditionMessage(e), sep = "\n")
-    }
-  )
+  customDataIO <- CustomDataIO$new()
 
   if (identical(config$activateModules$hcube, TRUE)) {
     source("./components/hcube_builder.R")
@@ -2139,8 +2126,6 @@ if (!is.null(errMsg)) {
       # scenario module
       # render scenarios (comparison mode)
       source("./modules/scen_render.R", local = TRUE)
-      # load shared datasets
-      source("./modules/db_external_load.R", local = TRUE)
       # load scenario
       source("./modules/db_scen_load.R", local = TRUE)
       # save scenario
