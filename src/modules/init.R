@@ -1161,6 +1161,9 @@ if (is.null(errMsg)) {
 
   for (direction in c("remoteImport", "remoteExport")) {
     if (length(config[[direction]])) {
+      warningMsgTmp <- "Remote importers/exporter ('remoteImport'/'remoteExport') are deprecated. Please use 'customDataImport'/'customDataExport' instead. The remoteImport/remoteExport feature will be removed in a future release!"
+      warning(warningMsgTmp, call. = FALSE)
+      warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
       externalDataConfig[[direction]] <- vector("list", length(config[[direction]]))
       for (i in seq_along(config[[direction]])) {
         remoteConfigs <- lapply(config[[direction]][[i]]$templates, function(remoteConfig) {
