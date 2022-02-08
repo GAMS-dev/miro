@@ -30,7 +30,7 @@ configJSON$customDataImport <- list(
   list(
     label = "Importer without file",
     symNames = c("a", "b"),
-    functionName = "customImporter"
+    functionName = "miroimport_noFile"
   ),
   list(
     label = "Importer with file",
@@ -40,14 +40,31 @@ configJSON$customDataImport <- list(
       accept = c(".csv", "text/csv")
     ),
     symNames = "b",
-    functionName = "customImporterWithFile"
+    functionName = "miroimport_withFile"
+  ),
+  list(
+    label = "JSON import",
+    localFileInput = list(
+      label = "Please upload your JSON file here",
+      multiple = FALSE,
+      accept = c(".json", "application/json")
+    ),
+    functionName = "miroimport_JSON"
   )
 )
 configJSON$customDataExport <- list(
   list(
     label = "My custom exporter",
     symNames = c("a", "schedule"),
-    functionName = "customExporter"
+    functionName = "miroexport_test"
+  ),
+  list(
+    label = "JSON export",
+    functionName = "miroexport_JSON",
+    localFileOutput = list(
+      filename = "output.json",
+      contentType = "application/json"
+    )
   )
 )
 jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")

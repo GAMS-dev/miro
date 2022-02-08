@@ -335,8 +335,12 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
     }
     extConf <- externalInputConfig[[externalSource]]
 
-    if (length(externalInputConfig[[externalSource]]$symNames)) {
-      datasetsToFetch <- externalInputConfig[[externalSource]]$symNames
+    if (length(externalInputConfig[[externalSource]]$functionName)) {
+      if (length(externalInputConfig[[externalSource]]$symNames)) {
+        datasetsToFetch <- externalInputConfig[[externalSource]]$symNames
+      } else {
+        datasetsToFetch <- c(inputDsNames, names(modelOut))
+      }
     } else {
       # old config (remoteImport)
       # FIXME: remove when removing remoteImport
@@ -607,8 +611,12 @@ if (length(externalInputConfig)) {
       )
       return()
     }
-    if (length(externalInputConfig[[extSourceID]]$symNames)) {
-      datasetsToImport <- externalInputConfig[[extSourceID]]$symNames
+    if (length(externalInputConfig[[extSourceID]]$functionName)) {
+      if (length(externalInputConfig[[extSourceID]]$symNames)) {
+        datasetsToImport <- externalInputConfig[[extSourceID]]$symNames
+      } else {
+        datasetsToImport <- names(modelInToImport)
+      }
     } else {
       # old config (remoteImport)
       # FIXME: remove when removing remoteImport
@@ -618,6 +626,7 @@ if (length(externalInputConfig)) {
       datasetsToImport,
       names(modelInToImport)
     )
+    extSourceDatasheets <- extSourceDatasheets[!is.na(extSourceDatasheets)]
     updateSelectInput(session, "selInputDataExt",
       choices = setNames(
         names(modelInToImport)[extSourceDatasheets],
@@ -640,8 +649,12 @@ if (length(externalInputConfig)) {
       )
       return(NULL)
     }
-    if (length(externalInputConfig[[externalSource]]$symNames)) {
-      datasetsToImport <- externalInputConfig[[externalSource]]$symNames
+    if (length(externalInputConfig[[externalSource]]$functionName)) {
+      if (length(externalInputConfig[[externalSource]]$symNames)) {
+        datasetsToImport <- externalInputConfig[[externalSource]]$symNames
+      } else {
+        datasetsToImport <- names(modelInToImport)
+      }
     } else {
       # old config (remoteImport)
       # FIXME: remove when removing remoteImport

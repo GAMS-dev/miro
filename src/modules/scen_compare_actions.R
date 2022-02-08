@@ -102,6 +102,11 @@ observeEvent(input[["btScenClose"]], {
 
 # export scenario data
 output[["scenExportHandler"]] <- downloadHandler(
+  contentType = if (is.integer(exportFileType)) {
+    datasetsRemoteExport[[exportFileType]][["localFileOutput"]][["contentType"]]
+  } else {
+    NA
+  },
   filename = function() {
     tabsetId <- suppressWarnings(as.integer(input[["scenExportId"]]))
     if (is.na(tabsetId) || tabsetId < 1L) {
@@ -113,6 +118,9 @@ output[["scenExportHandler"]] <- downloadHandler(
     }
     isolate({
       fileExt <- exportFileType
+      if (is.integer(fileExt)) {
+        return(datasetsRemoteExport[[fileExt]][["localFileOutput"]][["filename"]])
+      }
       if (identical(fileExt, "csv")) {
         if (isTRUE(input$cbSelectManuallyExp)) {
           if (length(input$selDataToExport) > 1L) {
@@ -186,28 +194,42 @@ output[["scenExportHandler"]] <- downloadHandler(
     if (scalarsOutName %in% names(data)) {
       data[[scalarsOutName]] <- scenData$getScalars(refId, outputScalarsOnly = TRUE)
     }
+    dsToExport <- NULL
+
+    if (is.integer(exportFileType)) {
+      # custom export function
+      customDataIO$setConfig(datasetsRemoteExport[[exportFileType]])
+      if (length(datasetsRemoteExport[[exportFileType]][["symNames"]])) {
+        # custom export function defined only for certain data sets
+        dsToExport <- c(names(modelOut), inputDsNames)
+        dsToExport <- dsToExport[dsToExport %in% datasetsRemoteExport[[exportFileType]][["symNames"]]]
+      }
+    }
 
     if (isTRUE(input$cbSelectManuallyExp)) {
-      outputDataToExport <- names(modelOut)[names(modelOut) %in% input$selDataToExport]
-      inputDataToExport <- inputDsNames[inputDsNames %in% input$selDataToExport]
+      if (is.null(dsToExport)) {
+        dsToExport <- c(names(modelOut), inputDsNames)
+      }
+      dsToExport <- dsToExport[dsToExport %in% input$selDataToExport]
 
-      if (!length(outputDataToExport) && !length(inputDataToExport)) {
+      if (!length(dsToExport)) {
         flog.info("No datasets selected. Nothing will be exported.")
         showElReplaceTxt(session, "#scenExportError", lang$nav$dialogExportScen$noDsSelected)
         return(downloadHandlerError(file, lang$nav$dialogExportScen$noDsSelected))
       }
-      data <- data[names(data) %in% c(outputDataToExport, inputDataToExport)]
-    } else {
-      outputDataToExport <- names(modelOut)
-      inputDataToExport <- inputDsNames
     }
+
+    if (!is.null(dsToExport)) {
+      data <- data[names(data) %in% dsToExport]
+    }
+
     return(exportScenario(file, data, exportFileType, refId, tabsetId, attachments, views,
       scenData, xlsio,
       suppressRemoveModal = suppressRemoveModal, session = session,
       excelConfig = list(
         includeMeta = config$excelIncludeMeta,
         includeEmpty = config$excelIncludeEmptySheets
-      )
+      ), customDataIO = customDataIO
     ))
   }
 )
@@ -221,106 +243,119 @@ observeEvent(input[["scenRemoteExportHandler"]], {
     )
     return()
   }
-  if (!length(datasetsRemoteExport) || !length(input$exportFileType)) {
+  if (!length(datasetsRemoteExport) || !identical(length(input$exportFileType), 1L) ||
+    !startsWith(input$exportFileType, "custom_")) {
     flog.error(
       "Remote export button clicked but export file type: '%s' does not exist.",
       input$exportFileType
     )
     return()
   }
-  exportId <- match(input$exportFileType, names(datasetsRemoteExport))[[1L]]
-  if (!is.na(exportId)) {
-    expConfig <- datasetsRemoteExport[[input$exportFileType]]
+  exportId <- suppressWarnings(as.integer(substring(input$exportFileType, 8L)))
+  if (is.na(exportId) || exportId < 1L || exportId > length(datasetsRemoteExport) ||
+    length(datasetsRemoteExport[[exportId]]$localFileOutput)) {
+    flog.error("Invalid export file type selected. This looks like an attempt to tamper with the app!")
+  }
+  expConfig <- datasetsRemoteExport[[exportId]]
 
-    if (length(expConfig$symNames)) {
-      dsToExport <- expConfig$symNames
-    } else {
-      # old config (remoteExport)
-      # FIXME: remove when removing remoteExport
-      dsToExport <- names(expConfig)
-    }
+  dsToExport <- NULL
 
-    if (isTRUE(input$cbSelectManuallyExp)) {
-      dsToExport <- dsToExport[dsToExport %in% input$selDataToExport]
-      if (!length(dsToExport)) {
-        flog.info("No datasets selected. Nothing will be exported.")
-        showElReplaceTxt(session, "#scenExportError", lang$nav$dialogExportScen$noDsSelected)
-        return()
-      }
-    }
-    prog <- Progress$new()
-    on.exit(suppressWarnings(prog$close()))
-    prog$set(message = lang$progressBar$exportScen$title, value = 0.2)
-    if (tabsetId == 1) {
-      # active scenario (editable)
-      if (tryCatch(
-        {
-          scenData$loadSandbox(
-            getInputDataFromSandbox(),
-            modelInFileNames, activeScen$getMetadata()
-          )
-          FALSE
-        },
-        no_data = function(e) {
-          flog.error(conditionMessage(e))
-          showElReplaceTxt(session, "#scenExportError", conditionMessage(e))
-          return(TRUE)
-        },
-        error = function(e) {
-          flog.error("Unexpected error while fetching input data from sandbox. Error message: '%s'", conditionMessage(e))
-          showElReplaceTxt(session, "#scenExportError", lang$errMsg$unknownError)
-          return(TRUE)
-        }
-      )) {
-        return()
-      }
-    }
-    refId <- tabIdToRef(tabsetId)
-    if (identical(refId, "cmpPivot")) {
-      stop("not implemented", call. = FALSE)
-    }
-    suppressRemoveModal <- FALSE
-    data <- scenData$get(refId, includeHiddenScalars = TRUE)
-    if (identical(scenData$getById("dirty", refId = refId, drop = TRUE), TRUE)) {
-      showElReplaceTxt(session, "#scenExportError", lang$errMsg$loadScen$inconsistentDataWarning)
-      suppressRemoveModal <- TRUE
-    }
+  if (length(expConfig$functionName) &&
+    length(expConfig$symNames)) {
+    dsToExport <- c(names(modelOut), inputDsNames)
+    dsToExport <- dsToExport[dsToExport %in% expConfig$symNames]
+  } else {
+    # old config (remoteExport)
+    # FIXME: remove when removing remoteExport
+    dsToExport <- c(names(modelOut), inputDsNames)
+    dsToExport <- dsToExport[dsToExport %in% names(expConfig)]
+  }
 
-    if (scalarsOutName %in% names(data) && length(config$hiddenOutputScalars)) {
-      # we want to export hidden output scalars as well
-      data[[scalarsOutName]] <- scenData$getScalars(refId, outputScalarsOnly = TRUE)
+  if (isTRUE(input$cbSelectManuallyExp)) {
+    if (is.null(dsToExport)) {
+      dsToExport <- c(names(modelOut), inputDsNames)
     }
+    dsToExport <- dsToExport[dsToExport %in% input$selDataToExport]
 
-    noDatasets <- length(dsToExport)
-    errMsg <- NULL
-    customDataIO$setConfig(expConfig)
-    dataIds <- match(dsToExport, names(data))
-    dataIds <- dataIds[!is.na(dataIds)]
-    dsNames <- names(data)[dataIds]
-    tryCatch(customDataIO$write(dsNames, data[dsNames]),
-      error_custom = function(e) {
-        flog.debug(
-          "Custom exporter: %s reported a custom error: %s",
-          input$exportFileType,
-          conditionMessage(e)
-        )
-        errMsg <<- conditionMessage(e)
-      },
-      error = function(e) {
-        flog.warn(
-          "Problems exporting data (export name: '%s'). Error message: '%s'.",
-          input$exportFileType, conditionMessage(e)
-        )
-        errMsg <<- lang$errMsg$saveScen$desc
-      }
-    )
-    if (is.null(showErrorMsg(lang$errMsg$saveScen$title, errMsg))) {
+    if (!length(dsToExport)) {
+      flog.info("No datasets selected. Nothing will be exported.")
+      showElReplaceTxt(session, "#scenExportError", lang$nav$dialogExportScen$noDsSelected)
       return()
     }
-    flog.debug("Data exported successfully.")
-    if (!suppressRemoveModal) {
-      removeModal()
+  }
+
+  prog <- Progress$new()
+  on.exit(suppressWarnings(prog$close()))
+  prog$set(message = lang$progressBar$exportScen$title, value = 0.2)
+  if (tabsetId == 1) {
+    # active scenario (editable)
+    if (tryCatch(
+      {
+        scenData$loadSandbox(
+          getInputDataFromSandbox(),
+          modelInFileNames, activeScen$getMetadata()
+        )
+        FALSE
+      },
+      no_data = function(e) {
+        flog.error(conditionMessage(e))
+        showElReplaceTxt(session, "#scenExportError", conditionMessage(e))
+        return(TRUE)
+      },
+      error = function(e) {
+        flog.error("Unexpected error while fetching input data from sandbox. Error message: '%s'", conditionMessage(e))
+        showElReplaceTxt(session, "#scenExportError", lang$errMsg$unknownError)
+        return(TRUE)
+      }
+    )) {
+      return()
     }
+  }
+  refId <- tabIdToRef(tabsetId)
+  if (identical(refId, "cmpPivot")) {
+    stop("not implemented", call. = FALSE)
+  }
+  suppressRemoveModal <- FALSE
+  data <- scenData$get(refId, includeHiddenScalars = TRUE)
+  if (identical(scenData$getById("dirty", refId = refId, drop = TRUE), TRUE)) {
+    showElReplaceTxt(session, "#scenExportError", lang$errMsg$loadScen$inconsistentDataWarning)
+    suppressRemoveModal <- TRUE
+  }
+
+  if (scalarsOutName %in% names(data) && length(config$hiddenOutputScalars)) {
+    # we want to export hidden output scalars as well
+    data[[scalarsOutName]] <- scenData$getScalars(refId, outputScalarsOnly = TRUE)
+  }
+
+  errMsg <- NULL
+  customDataIO$setConfig(expConfig)
+
+  if (!is.null(dsToExport)) {
+    data <- data[names(data) %in% dsToExport]
+  }
+  tryCatch(customDataIO$write(data),
+    error_custom = function(e) {
+      flog.debug(
+        "Custom exporter: %s reported a custom error: %s",
+        input$exportFileType,
+        conditionMessage(e)
+      )
+      errMsg <<- conditionMessage(e)
+    },
+    error = function(e) {
+      flog.warn(
+        "Problems exporting data (export name: '%s'). Error message: '%s'.",
+        input$exportFileType, conditionMessage(e)
+      )
+      errMsg <<- lang$errMsg$saveScen$desc
+    }
+  )
+  if (is.null(showErrorMsg(lang$errMsg$saveScen$title, errMsg))) {
     return()
   }
+  flog.debug("Data exported successfully.")
+  if (!suppressRemoveModal) {
+    removeModal()
+  }
+  return()
 })

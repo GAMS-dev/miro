@@ -16,9 +16,9 @@ CustomDataIO <- R6Class("CustomDataIO", public = list(
   },
   read = function(dsName) {
     data <- NULL
-    if (length(private$config$symNames)) {
+    if (length(private$config$functionName)) {
       # custom
-      if (!dsName %in% private$config$symNames) {
+      if (length(private$config$symNames) && !dsName %in% private$config$symNames) {
         stop_custom(
           "error_notfound",
           sprintf(
@@ -81,8 +81,8 @@ CustomDataIO <- R6Class("CustomDataIO", public = list(
     data <- as_tibble(safeFromJSON(private$sendHTTPRequest(item)))
     return(data)
   },
-  write = function(dsNames, data) {
-    if (length(private$config$symNames)) {
+  write = function(data, path = NULL) {
+    if (length(private$config$functionName)) {
       tryCatch(
         {
           exportFunction <- match.fun(private$config$functionName)
@@ -94,10 +94,10 @@ CustomDataIO <- R6Class("CustomDataIO", public = list(
           ), call. = FALSE)
         }
       )
-      exportFunction(data)
+      exportFunction(data, path = path)
       return(invisible(self))
     }
-    for (dsName in dsNames) {
+    for (dsName in names(data)) {
       # FIXME: Remove deprecated REST calls when removing remoteExport feature
       item <- private$config[[dsName]]
       if (!length(item$method)) {

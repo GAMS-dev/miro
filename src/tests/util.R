@@ -77,6 +77,12 @@ expect_download_size <- function(app, id, filename, tolerance = 100) {
   }
 }
 
+get_file_content <- function(app, id) {
+  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  req <- httr::GET(url)
+  return(req$content)
+}
+
 expect_files_in_zip <- function(app, id, files) {
   url <- app$findElement(paste0("#", id))$getAttribute("href")
   req <- httr::GET(url)

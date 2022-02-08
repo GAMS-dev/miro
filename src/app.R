@@ -2270,28 +2270,35 @@ if (!is.null(errMsg)) {
         }
         if (length(datasetsRemoteExport)) {
           exportTypes <- c(exportTypes, setNames(
-            names(datasetsRemoteExport),
+            paste0("custom_", seq_along(datasetsRemoteExport)),
             names(datasetsRemoteExport)
           ))
         }
         showScenExportDialog(input$btExportScen, exportTypes)
       })
       observeEvent(input$exportFileType, {
-        stopifnot(length(input$exportFileType) > 0L)
+        stopifnot(identical(length(input$exportFileType), 1L))
 
-        if (length(datasetsRemoteExport) &&
-          input$exportFileType %in% names(datasetsRemoteExport)) {
-          hideEl(session, ".file-export")
-          showEl(session, ".remote-export")
-          return()
+        if (startsWith(input$exportFileType, "custom_")) {
+          exportId <- suppressWarnings(as.integer(substring(input$exportFileType, 8L)))
+          if (is.na(exportId) || exportId < 1L || exportId > length(datasetsRemoteExport)) {
+            flog.error("Invalid export file type selected. This looks like an attempt to tamper with the app!")
+          }
+          if (!length(datasetsRemoteExport[[exportId]]$localFileOutput)) {
+            hideEl(session, ".file-export")
+            showEl(session, ".remote-export")
+            return()
+          }
+          exportFileType <<- exportId
         }
+        showEl(session, ".file-export")
+        hideEl(session, ".remote-export")
 
         switch(input$exportFileType,
           xls = exportFileType <<- "xlsx",
           gdx = exportFileType <<- "gdx",
           csv = exportFileType <<- "csv",
-          miroscen = exportFileType <<- "miroscen",
-          flog.warn("Unknown export file type: '%s'.", input$exportFileType)
+          miroscen = exportFileType <<- "miroscen"
         )
       })
       hideEl(session, "#loading-screen")

@@ -2396,7 +2396,7 @@
         "items":{
           "type":"object",
           "additionalProperties":false,
-          "required": ["label", "symNames", "functionName"],
+          "required": ["label", "functionName"],
           "properties":{
             "label":{
               "description":"Label that is displayed when selecting the custom importer",
@@ -2404,7 +2404,7 @@
               "minLength":1
              },
              "symNames":{
-               "description":"Names of the symbols to import",
+               "description":"Names of the symbols to import. Defaults to all symbols (input and output) if not provided or empty.",
                "type":["array", "string"],
                "minLength":1,
                "uniqueItems":true,
@@ -2414,14 +2414,16 @@
                }
               },
               "functionName":{
-                "description":"Name of custom R function to call (required function signature: importCustom(symNames, localFile = NULL, ...), must return named list of data frames with correct number/type of columns). The names of the list must be identical to the names provided by symNames argument.",
+                "description":"Name of custom R function to call (required function signature: miroimport(symNames, localFile = NULL, ...), must return named list of data frames with correct number/type of columns). The names of the list must be identical to the names provided by symNames argument.",
                 "type":"string",
-                "default": "importCustom",
+                "default": "miroimport",
                 "minLength": 1
               },
              "localFileInput": {
               "description":"Enable user to provide local file.",
               "type":"object",
+              "additionalProperties": false,
+              "required": ["label"],
               "properties": {
                 "label": {
                   "description":"Label of the local file input.",
@@ -2449,7 +2451,7 @@
         "items":{
           "type":"object",
           "additionalProperties":false,
-          "required": ["label", "symNames", "functionName"],
+          "required": ["label", "functionName"],
           "properties":{
             "label":{
               "description":"Label that is displayed when selecting the custom exporter",
@@ -2457,7 +2459,7 @@
               "minLength":1
              },
              "symNames":{
-               "description":"Names of the symbols to export",
+               "description":"Names of the symbols to export. Defaults to all symbols (input and output) if not provided or empty.",
                "type":["array", "string"],
                "minLength":1,
                "uniqueItems":true,
@@ -2467,11 +2469,29 @@
                }
               },
               "functionName":{
-                "description":"Name of custom R function to call (required function signature: exportCustom(data, ...) where data is a named list of data frames, where the names are the names of the symbols).",
+                "description":"Name of custom R function to call (required function signature: miroexport(data, ...) where data is a named list of data frames, where the names are the names of the symbols).",
                 "type":"string",
-                "default": "exportCustom",
+                "default": "miroexport",
                 "minLength": 1
-              }
+              },
+              "localFileOutput": {
+                "description":"Enable user to download file.",
+                "type":"object",
+                "additionalProperties": false,
+                "required": ["filename"],
+                "properties": {
+                  "filename": {
+                    "description":"Name of the file (including extension) that users web browser should default to.",
+                    "type":"string",
+                    "minLength":1
+                  },
+                  "contentType": {
+                    "description":"MIME type of the file to download. Defaults to application/octet-stream if file extension is unknown.",
+                    "type":"string",
+                    "minLength":1
+                  }
+                }
+            }
           }
         }
       },

@@ -1,4 +1,5 @@
-exportScenario <- function(file, data, exportFileType, refId, tabsetId, attachments, views, scenData, xlsio, suppressRemoveModal = FALSE, session = NULL, excelConfig = NULL) {
+exportScenario <- function(file, data, exportFileType, refId, tabsetId, attachments, views, scenData, xlsio, suppressRemoveModal = FALSE, session = NULL, excelConfig = NULL,
+                           customDataIO = NULL) {
   interactiveMode <- !is.null(session)
   if (interactiveMode) {
     prog <- Progress$new()
@@ -120,6 +121,46 @@ exportScenario <- function(file, data, exportFileType, refId, tabsetId, attachme
     return(suppressWarnings(zip::zipr(file, list.files(tmpDir, full.names = TRUE),
       recurse = FALSE, include_directories = FALSE
     )))
+  }
+  if (is.integer(exportFileType)) {
+    # custom export function
+    return(tryCatch(
+      {
+        customDataIO$
+          write(data, path = file)
+        if (interactiveMode && !suppressRemoveModal) {
+          removeModal()
+        }
+      },
+      error_custom = function(e) {
+        flog.debug(
+          "Custom exporter: %s reported a custom error: %s",
+          customDataIO$getLabel(),
+          conditionMessage(e)
+        )
+        if (interactiveMode) {
+          showElReplaceTxt(session, "#scenExportError", conditionMessage(e))
+          downloadHandlerError(file, conditionMessage(e))
+        } else {
+          write(paste0("merr:::400:::", conditionMessage(e)), stderr())
+          quit("no", 1L)
+        }
+      },
+      error = function(e) {
+        flog.info(
+          "Unexpected error while executing the custom export function: %s. Error message: %s",
+          customDataIO$getLabel(),
+          conditionMessage(e)
+        )
+        if (interactiveMode) {
+          showElReplaceTxt(session, "#scenExportError", lang$errMsg$unknownError)
+          downloadHandlerError(file, lang$errMsg$unknownError)
+        } else {
+          write("merr:::500:::Unexpected error while executing the custom export function.", stderr())
+          quit("no", 1L)
+        }
+      }
+    ))
   }
   return(tryCatch(
     {

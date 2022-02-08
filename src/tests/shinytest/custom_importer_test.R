@@ -11,7 +11,7 @@ Sys.sleep(0.5)
 app$setInputs(tb_importData = "tb_importData_external")
 expect_identical(
   getSelectizeOptions(app, "#selExternalSource"),
-  c("Importer with file", "Importer without file")
+  c("JSON import", "Importer with file", "Importer without file")
 )
 Sys.sleep(0.5)
 expect_true(app$waitFor("$('#externalSourceFile_2').is(':hidden')", timeout = 50L))

@@ -1744,6 +1744,9 @@ stop_custom <- function(.subclass, message, call = NULL, ...) {
   )
   stop(err)
 }
+abortSafe <- function(msg = "") {
+  stop_custom("error_custom", msg, call. = FALSE)
+}
 formatScenList <- function(scenList, uid, orderBy = NULL, desc = FALSE, limit = 100L) {
   # returns list of scenarios (formatted for dropdown menu)
   #
