@@ -3342,6 +3342,413 @@ $offExternalInput
                       describes these options.
                     </p>
                     <h6
+                      id="custom-import-export"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Custom data
+                      connectors
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        MIRO allows you to
+                        <a href="./start.html#import-data">import</a> and
+                        <a href="./start.html#save-export-delete">export</a>
+                        scenario data in a number of file formats. However, you
+                        may have data in a custom format that MIRO does not
+                        support, or you may want to pull and push data directly
+                        from an external database. In these cases, you need to
+                        write your own data connector in the form of an R
+                        function that you can connect to MIRO. Custom data
+                        connectors should be saved as <i>miroimport.R</i> or
+                        <i>miroexport.R</i> files and placed in the
+                        <i>renderer_&lt;modelname&gt;</i>
+                        directory.
+                      </p>
+                      <p>
+                        MIRO allows you to define multiple import and multiple
+                        export functions. They are accessible via the
+                        <i>Load data</i> and <i>Export scenario</i> dialogs.
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="
+                            max-height: 350pt;
+                            display: block;
+                            margin-left: auto;
+                            margin-right: auto;
+                          "
+                          src="assets/images/configuration_mode/custom-dataio.png"
+                          alt="Custom data import and export functions displayed in the data load and export dialogs"
+                        />
+                      </div>
+                      <h6>Custom import functions</h6>
+                      <p>
+                        The custom import function should have the following
+                        signature:
+                      </p>
+                      <div class="code-block">
+                        <pre><code class="language-r">
+miroimport_&#x3C;importerName&#x3E; &#x3C;- function(symNames, localFile = NULL, ...) {
+
+}</code></pre>
+                      </div>
+                      <!--//code-block-->
+                      <p>
+                        where <i>importerName</i> can be any name of your choice
+                        to identify the importer, <i>symNames</i> is a character
+                        vector with the names of the symbols to fetch data for
+                        and <i>localFile</i> is an optional data frame with one
+                        row for each uploaded file and the columns:
+                        <i>name</i> that specifies the name of the uploaded
+                        file, <i>size</i> that specifies the file size in bytes,
+                        <i>type</i> that provides the MIME type reported by the
+                        browser and <i>datapath</i> with the temporary path
+                        where the file was uploaded to.
+                      </p>
+                      <p>
+                        The custom import function should return a named list of
+                        data frames or tibbles, where the names are the symbol
+                        names. Any errors thrown by your custom import function
+                        will be caught by MIRO and a generic error message will
+                        be displayed to the user. If you want to give the user a
+                        more informative error message, you can trigger a custom
+                        error with the
+                        <span class="code">abortSafe(msg = "")</span> function.
+                        The <i>msg</i> will be displayed to the user.
+                      </p>
+                      <p>
+                        Let's create a custom import function for our
+                        <i>transport</i> example that allows us to upload data
+                        in the form of JSON files. We will use the
+                        <i>jsonlite</i> package to parse the JSON data. First,
+                        we create a file
+                        <span class="code">miroimport.R</span> in the
+                        <span class="code">renderer_transport</span> directory.
+                        Second, we write our own import function:
+                      </p>
+                      <div class="code-block">
+                        <pre><code class="language-r">miroimport_JSON &#x3C;- function(symbolNames, localFile = NULL, ...) {
+  if (is.null(localFile) || !identical(length(localFile$datapath), 1L)) {
+    abortSafe("Please upload a single, valid JSON file")
+  }
+  tryCatch(
+    {
+      jsonData &#x3C;- jsonlite::read_json(localFile$datapath, simplifyVector = TRUE)
+    },
+    error = function(e) {
+      abortSafe("Could not parse JSON file. Is the syntax correct?")
+    }
+  )
+  dataTmp &#x3C;- lapply(symbolNames, function(symbolName) {
+    if (!symbolName %in% names(jsonData)) {
+      return(NULL)
+    }
+    tryCatch(
+      {
+        return(tibble::as_tibble(jsonData[[symbolName]]))
+      },
+      error = function(e) {
+        abortSafe("Could not parse JSON file. It does not seem to follow the expected structure.")
+      }
+    )
+  })
+  names(dataTmp) &#x3C;- symbolNames
+  return(dataTmp)
+}</code></pre>
+                      </div>
+                      <!--//code-block-->
+                      <p>
+                        To use our newly created custom import function, we need
+                        to add the following configuration to our
+                        <i>transport.json</i> file:
+                      </p>
+                      <div class="code-block">
+                        <pre><code class="language-json">{
+  "customDataImport": [
+    {
+      "label": "JSON import",
+      "functionName": "miroimport_JSON",
+      "symNames": ["a", "b"],
+      "localFileInput": {
+        "label": "Please upload your JSON file here",
+        "multiple": false,
+        "accept": [".json", "application/json"]
+      }
+    }
+  ]
+}</code></pre>
+                      </div>
+                      <!--//code-block-->
+                      <p>
+                        The <i>label</i> is used in the Data Import section as
+                        the identifier for our custom importer.
+                        <i>functionName</i> must be set to the name of the
+                        import function, in our case: <i>miroimport_JSON</i>.
+                      </p>
+                      <p></p>
+                      <p>
+                        Also, we can use the <i>symNames</i> setting to restrict
+                        which symbols our import function supports. If we omit
+                        this setting, MIRO assumes that our import function
+                        supports any input and output symbol.
+                      </p>
+                      <p>
+                        The optional <i>localFileInput</i> object tells MIRO
+                        that our custom import function expects a local file to
+                        be uploaded. If the importer does not need a file (e.g.
+                        if it only fetches current values from a remote
+                        database), we can omit this object.
+                      </p>
+                      <p>
+                        To learn more about the different configuration options
+                        for custom import functions, below is the full schema
+                        against which your configuration will be validated.
+                      </p>
+                      <h6
+                        id="customDataImport-json-schema"
+                        class="block-title"
+                        onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                        style="cursor: pointer"
+                      >
+                        <i class="fas fa-plus slide-toggle"></i> JSON validation
+                        schema for custom import functions
+                      </h6>
+                      <div class="expanded">
+                        <div class="code-block">
+                          <pre><code class="language-json">"customDataImport": {
+  "description": "Import data using a custom function",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "label",
+      "functionName"
+    ],
+    "properties": {
+      "label": {
+        "description": "Label that is displayed when selecting the custom importer",
+        "type": "string",
+        "minLength": 1
+      },
+      "symNames": {
+        "description": "Names of the symbols to import. Defaults to all symbols (input and output) if not provided or empty.",
+        "type": [
+          "array",
+          "string"
+        ],
+        "minLength": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "functionName": {
+        "description": "Name of custom R function to call (required function signature: miroimport(symNames, localFile = NULL, ...), must return named list of data frames with correct number/type of columns). The names of the list must be identical to the names provided by symNames argument.",
+        "type": "string",
+        "default": "miroimport",
+        "minLength": 1
+      },
+      "localFileInput": {
+        "description": "Enable user to provide local file.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label"
+        ],
+        "properties": {
+          "label": {
+            "description": "Label of the local file input.",
+            "type": "string"
+          },
+          "multiple": {
+            "description": "Whether user is allowed to upload multiple files.",
+            "type": "boolean"
+          },
+          "accept": {
+            "description": "A character vector of unique file type specifiers which gives the browser a hint as to the type of file the server expects. Many browsers use this to prevent the user from selecting an invalid file.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}</code></pre>
+                        </div>
+                        <!--//code-block-->
+                      </div>
+                      <!--//expanded-->
+                      <h6>Custom export functions</h6>
+                      <p>
+                        For exporting data, a custom export function with the
+                        following signature should be used:
+                      </p>
+                      <div class="code-block">
+                        <pre><code class="language-r">
+miroexport_&#x3C;exporterName&#x3E; &#x3C;- function(data, path = NULL, ...) {
+
+}</code></pre>
+                      </div>
+                      <!--//code-block-->
+                      <p>
+                        where <i>data</i> is a named list of tibbles, where the
+                        names are the names of the symbols (the same structure
+                        as the return value of a custom import function), and
+                        <i>path</i> is the file path of the (temporary) file
+                        provided to the user for download (optional).
+                      </p>
+                      <p>
+                        Let's write a JSON export function that creates JSON
+                        files that can be re-imported using the custom import
+                        function from earlier. To do so, we first create a file
+                        <span class="code">miroexport.R</span> in the
+                        <span class="code">renderer_transport</span> directory.
+                        Then we write the custom export function:
+                      </p>
+                      <div class="code-block">
+                        <pre><code class="language-r">miroexport_JSON &#x3C;- function(data, path = NULL, ...) {
+  jsonlite::write_json(data, path = path, dataframe = "columns")
+}</code></pre>
+                      </div>
+                      <!--//code-block-->
+                      <p>
+                        and add the following to the <i>transport.json</i> file:
+                      </p>
+                      <div class="code-block">
+                        <pre><code class="language-json">{
+  "customDataExport": [
+    {
+      "label": "JSON export",
+      "functionName": "miroexport_JSON",
+      "localFileOutput": {
+        "filename": "output.json",
+        "contentType": "application/json"
+      }
+    }
+  ]
+}</code></pre>
+                      </div>
+                      <!--//code-block-->
+                      <p>
+                        You will notice that the configuration object is very
+                        similar to that of the custom import functions, except
+                        that the optional <i>localFileOutput</i> object now
+                        specifies the properties of the file to be downloaded.
+                        We can omit this object if our export function does not
+                        create a file to be downloaded, but forwards the data to
+                        a remote service, for example.
+                      </p>
+                      <p>
+                        Below is the validation schema for custom exporters:
+                      </p>
+                      <h6
+                        id="customDataExport-json-schema"
+                        class="block-title"
+                        onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                        style="cursor: pointer"
+                      >
+                        <i class="fas fa-plus slide-toggle"></i> JSON validation
+                        schema for custom export functions
+                      </h6>
+                      <div class="expanded">
+                        <div class="code-block">
+                          <pre><code class="language-json">"customDataExport": {
+  "description": "Export data using a custom function",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "label",
+      "functionName"
+    ],
+    "properties": {
+      "label": {
+        "description": "Label that is displayed when selecting the custom exporter",
+        "type": "string",
+        "minLength": 1
+      },
+      "symNames": {
+        "description": "Names of the symbols to export. Defaults to all symbols (input and output) if not provided or empty.",
+        "type": [
+          "array",
+          "string"
+        ],
+        "minLength": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "functionName": {
+        "description": "Name of custom R function to call (required function signature: miroexport(data, ...) where data is a named list of data frames, where the names are the names of the symbols).",
+        "type": "string",
+        "default": "miroexport",
+        "minLength": 1
+      },
+      "localFileOutput": {
+        "description": "Enable user to download file.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "filename"
+        ],
+        "properties": {
+          "filename": {
+            "description": "Name of the file (including extension) that users web browser should default to.",
+            "type": "string",
+            "minLength": 1
+          },
+          "contentType": {
+            "description": "MIME type of the file to download. Defaults to application/octet-stream if file extension is unknown.",
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}</code></pre>
+                        </div>
+                        <!--//code-block-->
+                      </div>
+                      <!--//expanded-->
+                      <div class="callout-block callout-warning">
+                        <div class="icon-holder">
+                          <i class="fas fa-info-circle"></i>
+                        </div>
+                        <!--//icon-holder-->
+                        <div class="content">
+                          <b class="callout-title">Note:</b>
+                          <p>
+                            If you need to use credentials in your custom
+                            import/export functions (for example, to connect to
+                            a remote database service), you can provide them
+                            using environment variables (<a
+                              href="./deployment.html#custom-environments"
+                              >MIRO Desktop</a
+                            >
+                            /
+                            <a
+                              href="./server_administration.html#admin-panel-lang"
+                              >MIRO Server</a
+                            >).
+                          </p>
+                        </div>
+                        <!--//content-->
+                      </div>
+                      <!--//callout-block-->
+                    </div>
+                    <!--//expanded-->
+                    <h6
                       id="remote-import-export"
                       class="block-title"
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
@@ -3361,7 +3768,11 @@ $offExternalInput
                           <p>
                             This function is deprecated as of MIRO 2.3 and
                             should no longer be used. It will be removed in one
-                            of the next MIRO versions!
+                            of the next MIRO versions! Please use the
+                            <a href="#custom-import-export" class="scrollto"
+                              >custom data connectors</a
+                            >
+                            instead.
                           </p>
                         </div>
                         <!--//content-->

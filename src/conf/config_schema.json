@@ -2434,7 +2434,7 @@
                   "type": "boolean"
                 },
                 "accept": {
-                  "description":"A character vector of unique file type specifiers which gives the browser a hint as to the type of file the server expects. Many browsers use this prevent the user from selecting an invalid file.",
+                  "description":"A character vector of unique file type specifiers which gives the browser a hint as to the type of file the server expects. Many browsers use this to prevent the user from selecting an invalid file.",
                   "type": "array",
                   "items": {
                     "type": "string"
