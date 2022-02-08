@@ -862,7 +862,7 @@ fixColTypes <- function(data, colTypes) {
       (is.numeric(data[[i]]) || is.logical(data[[i]]))) {
       return(as.character(data[[i]]))
     } else if (identical(colType, "d") &&
-      (is.character(data[[i]]) || is.logical(data[[i]]))) {
+      (is.character(data[[i]]) || is.logical(data[[i]]) || is.integer(data[[i]]))) {
       return(suppressWarnings(as.numeric(data[[i]])))
     } else {
       return(data[[i]])
