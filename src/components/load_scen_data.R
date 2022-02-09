@@ -129,7 +129,7 @@ loadScenData <- function(metaData, workDir,
           custom = {
             tryCatch(
               {
-                ret$tabular[[i]] <<- customDataIO$read(names(metaData)[[i]])
+                ret$tabular[i] <<- list(customDataIO$read(names(metaData)[[i]]))
                 if (is.null(ret$tabular[[i]])) {
                   ret$tabular[[i]] <<- templates[[i]]
                 }
