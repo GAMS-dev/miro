@@ -46,7 +46,8 @@ these components are included below):
 - lubridate https://github.com/tidyverse/lubridate/ or https://cran.r-project.org/web/packages/lubridate/index.html
 - fs https://github.com/r-lib/fs or https://cran.r-project.org/web/packages/fs/index.html
 - rappdirs https://github.com/r-lib/rappdirs or https://cran.r-project.org/web/packages/rappdirs/index.html
-- bslib, https://github.com/rstudio/bslib or https://cran.r-project.org/web/packages/bslib/index.html
+- bslib https://github.com/rstudio/fontawesome or https://github.com/rstudio/bslib or https://cran.r-project.org/web/packages/bslib/index.html
+- fontawesome https://cran.r-project.org/web/packages/fontawesome/index.html
 - sass, https://github.com/rstudio/sass or https://cran.r-project.org/web/packages/sass/index.html
 - jquerylib, https://github.com/rstudio/jquerylib or https://cran.r-project.org/web/packages/jquerylib/index.html
 - shiny https://github.com/rstudio/shiny or https://cran.r-project.org/web/packages/shiny/index.html
@@ -884,6 +885,7 @@ Section 8 -- Interpretation.
         - fs, Copyright (c) 2020 fs authors
         - sass, Copyright (c) 2019 Joe Cheng [aut], Timothy Mastny [aut], Richard Iannone ORCID iD [aut], Barret Schloerke ORCID iD [aut], Carson Sievert ORCID iD [aut, cre], Christophe Dervieux  ORCID iD [ctb], RStudio [cph, fnd], Sass Open Source Foundation [ctb, cph] (LibSass library), Greter Marcel [ctb, cph] (LibSass library), Mifsud Michael [ctb, cph] (LibSass library), Hampton Catlin [ctb, cph] (LibSass library), Natalie Weizenbaum [ctb, cph] (LibSass library), Chris Eppstein [ctb, cph] (LibSass library), Adams Joseph [ctb, cph] (json.cpp), Trifunovic Nemanja [ctb, cph] (utf8.h)
         - bslib, Copyright (c) 2021 Carson Sievert ORCID iD [aut, cre], Joe Cheng [aut], RStudio [cph], Bootstrap contributors [ctb] (Bootstrap library), Twitter, Inc [cph] (Bootstrap library), Javi Aguilar [ctb, cph] (Bootstrap colorpicker library), Thomas Park [ctb, cph] (Bootswatch library), PayPal [ctb, cph] (Bootstrap accessibility plugin)
+        - fontawesome, Copyright (c) 2018-2021 Richard Iannone ORCID iD [aut, cre], Christophe Dervieux  ORCID iD [ctb], Winston Chang [ctb], Dave Gandy [ctb, cph] (Font-Awesome font), RStudio [cph, fnd]
         - jquerylib, Copyright (c) 2020 Carson Sievert ORCID iD [aut, cre], Joe Cheng [aut], RStudio [cph], jQuery Foundation [cph] (jQuery library and jQuery UI library), jQuery contributors [ctb, cph] (jQuery library; authors listed in inst/lib/jquery-AUTHORS.txt)
         - libsass, Copyright (c) 2012-2016 by the Sass Open Source Foundation
         - shinyAce, Copyright (c) 2016 Vincent Nijs [aut, cre], Forest Fang [aut], Trestle Technology, LLC [aut], Jeff Allen [aut], Institut de Radioprotection et de Surete Nucleaire [cph], Ajax.org B.V. [ctb, cph] (Ace)
