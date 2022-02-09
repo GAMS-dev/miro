@@ -591,8 +591,7 @@ test_that("Adding rows to empty table works", {
         data.frame(
           b = character(),
           e = character(),
-          f = character(),
-          value = integer()
+          f = character()
         )
       )
       session$setInputs(filter_a = "a1", btAddRow = 1L)
@@ -646,8 +645,7 @@ test_that("Editing with aggregated columns does not work", {
         data.frame(
           b = character(),
           e = character(),
-          f = character(),
-          value = integer()
+          f = character()
         )
       )
       session$setInputs(filter_a = "a1", btAddRow = 1L)
@@ -661,8 +659,7 @@ test_that("Editing with aggregated columns does not work", {
         data.frame(
           b = character(),
           e = character(),
-          f = character(),
-          value = integer()
+          f = character()
         )
       )
       session$setInputs(
