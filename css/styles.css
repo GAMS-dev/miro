@@ -1004,3 +1004,8 @@ select.form-control, select.form-control:focus {
   color: unset;
   background-color: unset;
 }
+@media (prefers-color-scheme: dark) {
+    select.form-control, select.form-control:focus {
+      background-color: #393e46;
+    }
+}
