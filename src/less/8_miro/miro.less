@@ -300,9 +300,12 @@ textarea.readme-preview-markdown:focus {
 .gmsalert-error{
   .responsiveDark({
     background-color: @gams-color;
+    color: @gmsalert-error-text;
   },
   {
     background-color: @gams-color-dark;
+    color: @gmsalert-error-text-dark;
+
   })
 }
 .center-alert{
@@ -604,12 +607,6 @@ animation: none !important;
   font-weight: bold;
   font-size: 12pt;
   text-align: center;
-}
-.shiny-output-error {
-  visibility: hidden;
-}
-.shiny-output-error:before {
-  visibility: hidden;
 }
 .render-output{
   padding: 1px;
