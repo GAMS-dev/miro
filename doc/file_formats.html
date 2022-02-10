@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+  <!--<![endif]-->
+  <head>
+    <title>GAMS MIRO - File formats</title>
+    <!-- Meta -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GAMS MIRO documentation" />
+    <meta name="author" content="GAMS Development Corp." />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <!-- FontAwesome JS -->
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.1.1/js/all.js"
+      integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Global CSS -->
+    <link
+      rel="stylesheet"
+      href="assets/plugins/bootstrap/css/bootstrap.min.css"
+    />
+    <!-- Plugins CSS -->
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css" />
+    <link
+      rel="stylesheet"
+      href="assets/plugins/lightbox/dist/ekko-lightbox.css"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/plugins/lightbox/dist/ekko-lightbox.css"
+    />
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css" />
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css" />
+    <!--#include virtual="/wheader.html" -->
+  </head>
+
+  <body class="body-orange">
+    <!--#include virtual="/navbar_full.html" -->
+    <div class="page-wrapper">
+      <!--#include virtual="/mirover.html" -->
+
+      <!-- ******Header****** -->
+      <header id="header" class="sub-header">
+        <div class="container">
+          <div class="branding">
+            <h1 class="logo">
+              <a href="index.html">
+                <img
+                  class="img-fluid"
+                  style="height: 75px"
+                  src="assets/images/logo.svg"
+                  onerror="this.onerror=null; this.src='assets/images/logo.png'"
+                  alt="GAMS MIRO"
+                />
+              </a>
+            </h1>
+          </div>
+          <!--//branding-->
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item">
+              <a href="./deployment.html">Deployment</a>
+            </li>
+            <li class="breadcrumb-item active">File formats</li>
+          </ol>
+        </div>
+        <!--//container-->
+      </header>
+      <!--//header-->
+      <div class="doc-wrapper">
+        <div class="container">
+          <div class="row justify-content-end search-box-wrapper">
+            <div class="float-right">
+              <input
+                class="form-control search-box"
+                id="miroSearch"
+                type="text"
+                placeholder="Search"
+                aria-label="Search"
+              />
+              <ul id="miroSearchResults" class="list-group"></ul>
+            </div>
+          </div>
+          <div id="doc-header" class="doc-header text-center">
+            <h1 class="doc-title">
+              <span aria-hidden="true" class="icon fas fa-file"></span> File
+              formats
+            </h1>
+          </div>
+          <!--//doc-header-->
+          <div class="doc-body row">
+            <div class="doc-content col-md-9 col-12 order-1">
+              <div class="content-inner">
+                <section id="file-formats" class="doc-section">
+                  <h2 class="section-title">Introduction</h2>
+                  <div class="section-block">
+                    <p>
+                      The following section describes the custom file formats
+                      used in GAMS MIRO, namely <i>.miroapp</i> for app bundles
+                      and <i>.miroscen</i> for MIRO scenarios.
+                    </p>
+                    <p>
+                      The section is intended for people with a technical
+                      background who want to implement their own tools for
+                      handling these files, or just better understand how MIRO
+                      works under the hood.
+                    </p>
+                    <p>
+                      <i>.miroapp</i> files are used to bundle a MIRO app
+                      including all the model files. <i>.miroscen</i> files
+                      bundle all the data that belongs to a MIRO scenario (data
+                      as well as metadata). Both file formats are (unencrypted)
+                      ZIP files (using
+                      <a href="https://zlib.net" target="_blank">zlib</a>).
+                    </p>
+                  </div>
+                  <!--//section-block-->
+                  <div id="miroapp-file" class="section-block">
+                    <h3 class="block-title">MIROAPP</h3>
+                    <p>
+                      The table below lists all the files contained in a
+                      <i>.miroapp</i> file:
+                    </p>
+                    <div class="table-responsive">
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th>filename</th>
+                            <th>description</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><i>miroapp.json</i></td>
+                            <td>
+                              A JSON file containing the app metadata. The
+                              schema for this file is given below.
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><i>.miroconf</i></td>
+                            <td>
+                              An .RData file that contains the validated app
+                              configuration in binary form.
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><i>&lt;modelName&gt;.zip</i></td>
+                            <td>
+                              An (unencrypted) ZIP file (zlib) containing all
+                              the model files specified in the
+                              <a href="./deployment.html#model-assembly-file"
+                                >model assembly file</a
+                              >. Here <i>modelName</i> is the lowercase filename
+                              of the main GMS file without the file extension.
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><i>data_&lt;modelName&gt;/</i></td>
+                            <td>
+                              (optional) Directory with scenario data that will
+                              be imported to the MIRO database when adding this
+                              app.
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><i>static_&lt;modelName&gt;/</i></td>
+                            <td>
+                              (optional) Directory with static files such as
+                              images and stylesheets. This directory will be
+                              added to the Shiny web server so that all files in
+                              this directory are accessible from the browser.
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><i>renderer_&lt;modelName&gt;/</i></td>
+                            <td>
+                              (optional) Directory with custom renderer and
+                              custom importer/exporter files.
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><i>scripts_&lt;modelName&gt;/</i></td>
+                            <td>
+                              (optional) Directory with custom analysis scripts.
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <p>
+                      The JSON schema used to validate the
+                      <i>miroapp.json</i> is included below:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-json">{
+    "$schema":"http://json-schema.org/draft-07/schema#",
+    "title":"MIROAPP metadata schema",
+    "type":"object",
+    "properties": {
+        "version": {
+        "description":"The version of the MIROAPP file (current: 1)",
+        "type":"integer",
+        "minimum": 1
+        },
+        "api_version": {
+        "description":"The MIRO API version that was used to deploy this application. When adding a new MIRO app, the system checks whether the MIRO API version matches the API version of this app. If this is not the case, the app is rejected.",
+        "type":"string"
+        },
+        "miro_version": {
+        "description":"The MIRO version that was used to deploy this application. When adding a new MIRO app, the system checks whether the MIRO version is greater than the MIRO version with which this app was deployed. If this is not the case, the app is rejected.",
+        "type":"string"
+        },
+        "main_gms_name": {
+        "description":"The (case-sensitive) filename of the main GMS file including the file extension.",
+        "type":"string"
+        },
+        "timestamp": {
+        "description":"The time the app was deployed. Format: yyyy-MM-dd hh:mm:ss zzz (e.g.: 2021-12-15 10:28:33 UTC).",
+        "type":"string"
+        },
+        "host_os": {
+        "description":"The operating system that was used to deploy this application.",
+        "type":"string",
+        "enum": ["windows", "osx", "linux"]
+        },
+        "modes_included": {
+        "description":"The modes included in this app. Since MIRO version 2.2 only base is allowed.",
+        "type":"string",
+        "enum": ["base"]
+        },
+        "use_temp_dir": {
+        "description":"Whether to run the model in a temporary directory. MIRO Server will reject apps where this flag is false.",
+        "type":"string"
+        },
+        "created_by": {
+        "description":"Human-readable string indicating which tool was used to create this MIROAPP file.",
+        "type":"string"
+        }
+    }
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h5 class="block-title" id="signed-miroapp-file">
+                      Signed MIROAPP
+                    </h5>
+                    <p>
+                      <i>.miroapp</i> files can be optionally signed to verify
+                      the integrity of the app and the authenticity of the
+                      author.
+                      <a
+                        href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)"
+                        target="_blank"
+                        >RSA</a
+                      >
+                      keys with a minimum length of 2048 bits are supported for
+                      signing MIRO apps. Signing a MIRO app works as follows:
+                    </p>
+                    <ol>
+                      <li>
+                        A file <i>.miro_hashes</i> is created that contains the
+                        SHA-256 hashes of all the files in the app bundle. Each
+                        line of this file identifies a file in the bundle as
+                        follows:
+                        <span class="code"
+                          >&lt;fileName&gt;\/\&lt;sha256Hash&gt;</span
+                        >
+                        where <i>fileName</i> is the full path of the file
+                        relative to the root of the <i>.miroapp</i> archive. The
+                        lines are sorted in ascending order.
+                      </li>
+                      <li>
+                        The file <i>.miro_hashes</i> created in 1) is hashed
+                        using the SHA-512 algorithm and then signed with the RSA
+                        private key using the <i>EVP_PKEY_sign</i> function of
+                        openssl. The resulting signature is written to the
+                        binary file: <i>.miro_sig</i>.
+                      </li>
+                      <li>
+                        The RSA public key is written to a file
+                        <i>.miro_pubkey</i>.
+                      </li>
+                      <li>
+                        The files <i>.miro_hashes</i>, <i>.miro_sig</i> and
+                        <i>.miro_pubkey</i> are appended to the root of the
+                        .miroapp ZIP archive.
+                      </li>
+                    </ol>
+                    <p>
+                      To validate the authenticity of the app, it is first
+                      checked whether the app is signed (the files
+                      <i>.miro_hashes</i> and <i>.miro_sig</i> exist). If this
+                      is the case, the integrity of the MIRO app is checked as
+                      follows:
+                    </p>
+                    <ol>
+                      <li>
+                        All files of the archive are listed, except the
+                        signature files ( <i>.miro_hashes</i>,
+                        <i>.miro_sig</i> and <i>.miro_pubkey</i>).
+                      </li>
+                      <li>
+                        The signatures of all files found in the archive are
+                        calculated and a <i>.miro_hashes_actual</i> file is
+                        created using the same scheme as described in step 1).
+                      </li>
+                      <li>
+                        The <i>.miro_hashes</i> file is compared with the
+                        <i>.miro_hashes_actual</i> file. If they are not
+                        identical, MIRO reports an invalid signature.
+                      </li>
+                      <li>
+                        The SHA-512 hash of the <i>.miro_hashes</i> file is
+                        computed and the signature <i>.miro_sig</i> is verified
+                        using the <i>EEVP_PKEY_verify</i> function of openssl.
+                        To verify the signature, all public keys registered on
+                        the computer where MIRO is installed are tried. If none
+                        of the public keys work, the <i>.miro_pubkey</i> public
+                        key included in the archive is tried. If this does not
+                        work either, MIRO reports an invalid signature. If it
+                        works, MIRO computes the OpenSSH fingerprint (using the
+                        SHA256 hashing algorithm) of this key and the user is
+                        asked if she wants to trust this key. If the user
+                        agrees, the <i>.miro_pubkey</i> public key is added to
+                        the list of known public keys and the app is imported.
+                      </li>
+                    </ol>
+                  </div>
+                  <!--//section-block-->
+                  <div id="miroscen-file" class="section-block">
+                    <h3 class="block-title">MIROSCEN</h3>
+                    <p>
+                      The table below lists all the files contained in a
+                      <i>.miroscen</i> file:
+                    </p>
+                    <div class="table-responsive">
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th>filename</th>
+                            <th>description</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><i>metadata.json</i></td>
+                            <td>
+                              A JSON file containing the scenario metadata. The
+                              schema for this file is given below.
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><i>data.gdx</i></td>
+                            <td>
+                              A GDX file containing the input and output data of
+                              all symbols specified in the GAMS/MIRO data
+                              contract.
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><i>views.json</i></td>
+                            <td>
+                              (optional) A file containing
+                              scenario-specific/local views.
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><i>attachments/</i></td>
+                            <td>
+                              (optional) Directory with files attached to the
+                              scenario. The metadata of the attachments must be
+                              contained in the <i>metadata.json</i> file (see
+                              schema below).
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <p>
+                      The JSON schema used to validate the
+                      <i>metadata.json</i> is included below:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-json">{
+    "$schema":"http://json-schema.org/draft-07/schema#",
+    "title":"MIROSCEN metadata schema",
+    "type":"object",
+    "properties": {
+        "version": {
+        "description":"The version of the MIROSCEN file (current: 1)",
+        "type":"integer",
+        "minimum": 1
+        },
+        "scen_name": {
+        "description":"The name of the scenario as specified by the user.",
+        "type":"string",
+        "minLength": 1,
+        "maxLength": 63
+        },
+        "scen_tags": {
+        "description":"Tags assigned to the scenario. The total number of characters when combining the array into a comma-separated string must not exceed 1000.",
+        "type":"array",
+        "uniqueItems":true,
+        "items":{
+            "type":"string",
+            "minLength": 1
+        }
+        },
+        "cl_args": {
+        "description":"Scenario-specific command line arguments (dollar control options as well as GAMS options).",
+        "type":"array",
+        "uniqueItems":true,
+        "items":{
+            "type":"string",
+            "minLength": 1
+        }
+        },
+        "attachments": {
+        "description":"Attachment metadata.",
+        "type":"array",
+        "items": {
+            "type": "object",
+            "properties": {
+            "name": {
+                "description":"The filename of the attachment (including extension).",
+                "type":"string"
+            },
+            "execPerm": {
+                "description":"Whether the model can see the scenario (the attachment is downloaded to the working directory before a run).",
+                "type":"boolean"
+            }
+            }
+        }
+        },
+        "model_raw": {
+        "description":"The (case-sensitive) filename of the main GMS file excluding the file extension.",
+        "type":"string"
+        },
+        "uid": {
+        "description":"The user ID of the owner of the scenario.",
+        "type":"string",
+        "minLength": 1
+        },
+        "time_created": {
+        "description":"The time the MIROSCEN file was created. Format: yyyy-MM-dd hh:mm:ss zzz (e.g.: 2021-12-15 10:28:33 UTC).",
+        "type":"string"
+        },
+        "created_by": {
+        "description":"Human-readable string indicating which tool was used to create this MIROSCEN file.",
+        "type":"string"
+        }
+    }
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                  </div>
+                  <!--//section-block-->
+                </section>
+              </div>
+              <!--//content-inner-->
+            </div>
+            <!--//doc-content-->
+            <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+              <div id="doc-nav" class="doc-nav">
+                <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                  <a class="nav-link scrollto" href="#file-formats"
+                    >Introduction</a
+                  >
+                  <a class="nav-link scrollto" href="#miroapp-file">MIROAPP</a>
+                  <nav class="doc-sub-menu nav flex-column">
+                    <a class="nav-link scrollto" href="#miroapp-file"
+                      >General MIROAPP structure</a
+                    >
+                    <a class="nav-link scrollto" href="#signed-miroapp-file"
+                      >Signed MIROAPP file</a
+                    >
+                  </nav>
+                  <a class="nav-link scrollto" href="#miroscen-file"
+                    >MIROSCEN</a
+                  >
+                  <!--//nav-->
+                </nav>
+                <!--//doc-menu-->
+              </div>
+            </div>
+            <!--//doc-sidebar-->
+          </div>
+          <!--//doc-body-->
+        </div>
+        <!--//container-->
+      </div>
+      <!--//doc-wrapper-->
+    </div>
+    <!--//page-wrapper-->
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-3.3.1.min.js"
+    ></script>
+    <!--#include virtual="/footer_miro.html" -->
+
+    <!-- Main Javascript -->
+    <script
+      type="text/javascript"
+      src="assets/plugins/prism/min/prism-min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/stickyfill/dist/stickyfill.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/markjs/jquery.mark.min.js"
+    ></script>
+
+    <script type="text/javascript" src="assets/js/main.js"></script>
+  </body>
+</html>

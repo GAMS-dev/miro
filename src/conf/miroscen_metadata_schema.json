@@ -1,0 +1,70 @@
+{
+  "$schema":"http://json-schema.org/draft-07/schema#",
+  "title":"MIROSCEN metadata schema",
+  "type":"object",
+  "properties": {
+    "version": {
+      "description":"The version of the MIROSCEN file (current: 1)",
+      "type":"integer",
+      "minimum": 1
+    },
+    "scen_name": {
+      "description":"The name of the scenario as specified by the user.",
+      "type":"string",
+      "minLength": 1,
+      "maxLength": 63
+    },
+    "scen_tags": {
+      "description":"Tags assigned to the scenario. The total number of characters when combining the array into a comma-separated string must not exceed 1000.",
+      "type":"array",
+      "uniqueItems":true,
+      "items":{
+        "type":"string",
+        "minLength": 1
+      }
+    },
+    "cl_args": {
+      "description":"Scenario-specific command line arguments (dollar control options as well as GAMS options).",
+      "type":"array",
+      "uniqueItems":true,
+      "items":{
+        "type":"string",
+        "minLength": 1
+      }
+    },
+    "attachments": {
+      "description":"Attachment metadata.",
+      "type":"array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description":"The filename of the attachment (including extension).",
+            "type":"string"
+          },
+          "execPerm": {
+            "description":"Whether the model can see the scenario (the attachment is downloaded to the working directory before a run).",
+            "type":"boolean"
+          }
+        }
+      }
+    },
+    "model_raw": {
+      "description":"The (case-sensitive) filename of the main GMS file excluding the file extension.",
+      "type":"string"
+    },
+    "uid": {
+      "description":"The user ID of the owner of the scenario.",
+      "type":"string",
+      "minLength": 1
+    },
+    "time_created": {
+      "description":"The time the MIROSCEN file was created. Format: yyyy-MM-dd hh:mm:ss zzz (e.g.: 2021-12-15 10:28:33 UTC).",
+      "type":"string"
+    },
+    "created_by": {
+      "description":"Human-readable string indicating which tool was used to create this MIROSCEN file.",
+      "type":"string"
+    }
+  }
+}

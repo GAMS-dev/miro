@@ -1,0 +1,46 @@
+{
+  "$schema":"http://json-schema.org/draft-07/schema#",
+  "title":"MIROAPP metadata schema",
+  "type":"object",
+  "properties": {
+    "version": {
+      "description":"The version of the MIROAPP file (current: 1)",
+      "type":"integer",
+      "minimum": 1
+    },
+    "api_version": {
+      "description":"The MIRO API version that was used to deploy this application. When adding a new MIRO app, the system checks whether the MIRO API version matches the API version of this app. If this is not the case, the app is rejected.",
+      "type":"string"
+    },
+    "miro_version": {
+      "description":"The MIRO version that was used to deploy this application. When adding a new MIRO app, the system checks whether the MIRO version is greater than the MIRO version with which this app was deployed. If this is not the case, the app is rejected.",
+      "type":"string"
+    },
+    "main_gms_name": {
+      "description":"The (case-sensitive) filename of the main GMS file including the file extension.",
+      "type":"string"
+    },
+    "timestamp": {
+      "description":"The time the app was deployed. Format: yyyy-MM-dd hh:mm:ss zzz (e.g.: 2021-12-15 10:28:33 UTC).",
+      "type":"string"
+    },
+    "host_os": {
+      "description":"The operating system that was used to deploy this application.",
+      "type":"string",
+      "enum": ["windows", "osx", "linux"]
+    },
+    "modes_included": {
+      "description":"The modes included in this app. Since MIRO version 2.2 only base is allowed.",
+      "type":"string",
+      "enum": ["base"]
+    },
+    "use_temp_dir": {
+      "description":"Whether to run the model in a temporary directory. MIRO Server will reject apps where this flag is false.",
+      "type":"string"
+    },
+    "created_by": {
+      "description":"Human-readable string indicating which tool was used to create this MIROAPP file.",
+      "type":"string"
+    }
+  }
+}
