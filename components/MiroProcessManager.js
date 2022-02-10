@@ -279,7 +279,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       }
       await waitFor(Math.min(i * 100, 1000));
       try {
-        const res = await http.head(`${url}/shared/shiny.css`, { timeout: 10000 });
+        const res = await http.head(`${url}/manifest.json`, { timeout: 10000 });
         if (res.status === 200) {
           await progressCallback({ code: 'success', port: shinyPort });
           onSuccess(url, this.miroProcesses[internalPid]);
