@@ -1243,7 +1243,7 @@ Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
           );
         } catch (e) {
           try {
-            await onErrorStartup(appData.id, `${lang.main.ErrorMsgLaunch} ${e.message}.`);
+            await onErrorStartup(appData.id, `${lang.main.ErrorMsgLaunch} ${e?.message}.`);
           } catch (err) {
             // continue regardless of error
           }
@@ -1268,7 +1268,7 @@ Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
     );
   } catch (e) {
     try {
-      await onErrorStartup(appData.id, `${lang.main.ErrorMsgLaunch} ${e.message}.`);
+      await onErrorStartup(appData.id, `${lang.main.ErrorMsgLaunch} ${e?.message}.`);
     } catch (err) {
       // continue regardless of error
     }
