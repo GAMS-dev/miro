@@ -1132,7 +1132,7 @@ if (!is.null(errMsg)) {
   ui_initError <- fluidPage(
     tags$head(
       if (!is.list(config) || !is.character(config$theme)) {
-        tags$link(type = "text/css", rel = "stylesheet", href = "skin_light.css")
+        tags$link(type = "text/css", rel = "stylesheet", href = "default_light.css")
       } else {
         tags$link(type = "text/css", rel = "stylesheet", href = if (identical(config$customColorTheme, TRUE)) {
           paste0("static_", modelName, "/custom_theme.css")
