@@ -1202,10 +1202,12 @@ if (is.null(errMsg)) {
         })
         externalDataConfig[[direction]][[i]] <- unlist(remoteConfigs, recursive = FALSE, use.names = TRUE)
       }
-      names(externalDataConfig[[direction]]) <- vapply(config[[direction]], "[[",
-        character(1L), "name",
-        USE.NAMES = FALSE
-      )
+      if (!length(errMsg)) {
+        names(externalDataConfig[[direction]]) <- vapply(config[[direction]], "[[",
+          character(1L), "name",
+          USE.NAMES = FALSE
+        )
+      }
       config[[direction]] <- NULL
     }
   }
