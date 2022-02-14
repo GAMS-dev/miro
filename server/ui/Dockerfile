@@ -6,9 +6,10 @@ LABEL com.gamsmiro.vendor="GAMS Development Corp."\
 com.gamsmiro.version="2.2.999"\
 com.gamsmiro.license="GPL-3.0"\
 com.gamsmiro.description="GAMS MIRO Docker image"\
-maintainer="rschuchmann@gams.com"
+maintainer="fproske@gams.com"
 
 ARG R_BASE_VERSION=4.0.5
+ARG OPENSSL_VERSION=3.0.1
 ARG BUILD_DOCKER=true
 ARG SCRIPTS_PATH=/home/miro/scripts
 
@@ -65,6 +66,19 @@ RUN apt-get update && apt-get install -y \
     libcurl4-gnutls-dev \
     libv8-dev \
     libpq-dev
+
+# install openssl3 from source
+RUN wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz && \
+    tar -xvzf openssl-${OPENSSL_VERSION}.tar.gz && \
+    cd openssl-${OPENSSL_VERSION} && \
+    ./config no-shared && \
+    make && \
+    sudo make install && \
+    cd .. && \
+    rm -rf openssl-${OPENSSL_VERSION} openssl-${OPENSSL_VERSION}.tar.gz
+
+# make sure the openssl R package finds the libraries
+ARG OPENSSL_PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig
 
 # install custom packages
 RUN mkdir /home/miro/r

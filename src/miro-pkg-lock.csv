@@ -71,7 +71,7 @@ lubridate, 1.8.0
 dplyr, 1.0.8
 sys, 3.4
 askpass, 1.1
-openssl, 1.4.5
+openssl
 prettyunits, 1.1.1
 stringi, 1.7.6
 DBI, 1.1.2

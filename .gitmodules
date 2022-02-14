@@ -42,3 +42,6 @@
 [submodule "server/containerproxy"]
 	path = server/containerproxy
 	url = https://github.com/GAMS-dev/containerproxy.git
+[submodule "r-src/openssl"]
+	path = r-src/openssl
+	url = https://github.com/GAMS-dev/openssl.git
