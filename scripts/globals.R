@@ -31,21 +31,22 @@ packageVersionMap <- list(c("data.table", "1.14.2"), c("cpp11", "0.4.2"), c("bac
     "DT", "gdxrrwMIRO", "leaflet", c("pillar", "1.7.0"), c("tibble",
     "3.1.6"), c("generics", "0.1.2"), c("lubridate", "1.8.0"),
     c("dplyr", "1.0.8"), c("sys", "3.4"), c("askpass", "1.1"),
-    c("prettyunits", "1.1.1"), c("stringi", "1.7.6"), c("DBI",
-    "1.1.2"), c("blob", "1.2.2"), c("hms", "1.1.1"), c("tidyr",
-    "1.2.0"), c("memoise", "2.0.1"), "httr", "plotly", "shinydashboard",
-    "timevis", c("rematch", "1.0.1"), c("formatR", "1.11"), c("ps",
-    "1.6.0"), c("clipr", "0.7.1"), c("cellranger", "1.1.0"),
-    c("progress", "1.2.2"), c("lambda.r", "1.2.4"), c("futile.options",
-    "1.0.1"), c("zoo", "1.8-9"), c("globals", "0.14.0"), c("listenv",
-    "0.8.0"), c("processx", "3.5.2"), c("readxl", "1.3.1"), c("writexl",
-    "1.4.0"), c("rpivotTable", "0.3.0"), c("futile.logger", "1.4.3"
-    ), c("zip", "2.2.0"), c("leaflet.minicharts", "0.6.0"), c("xts",
-    "0.12.1"), c("dygraphs", "1.1.1.6"), c("parallelly", "1.30.0"
-    ), c("future", "1.23.0"), c("bit", "4.0.4"), c("bit64", "4.0.5"
-    ), c("tzdb", "0.2.0"), c("vroom", "1.5.7"), c("readr", "2.1.2"
-    ), "miro.util", "rhandsontable", "sortable", "chartjs", c("RSQLite",
-    "2.2.9"))
+    "openssl", c("prettyunits", "1.1.1"), c("stringi", "1.7.6"
+    ), c("DBI", "1.1.2"), c("blob", "1.2.2"), c("hms", "1.1.1"
+    ), c("tidyr", "1.2.0"), c("memoise", "2.0.1"), "httr", "plotly",
+    "shinydashboard", "timevis", c("rematch", "1.0.1"), c("formatR",
+    "1.11"), c("ps", "1.6.0"), c("clipr", "0.7.1"), c("cellranger",
+    "1.1.0"), c("progress", "1.2.2"), c("lambda.r", "1.2.4"),
+    c("futile.options", "1.0.1"), c("zoo", "1.8-9"), c("globals",
+    "0.14.0"), c("listenv", "0.8.0"), c("processx", "3.5.2"),
+    c("readxl", "1.3.1"), c("writexl", "1.4.0"), c("rpivotTable",
+    "0.3.0"), c("futile.logger", "1.4.3"), c("zip", "2.2.0"),
+    c("leaflet.minicharts", "0.6.0"), c("xts", "0.12.1"), c("dygraphs",
+    "1.1.1.6"), c("parallelly", "1.30.0"), c("future", "1.23.0"
+    ), c("bit", "4.0.4"), c("bit64", "4.0.5"), c("tzdb", "0.2.0"
+    ), c("vroom", "1.5.7"), c("readr", "2.1.2"), "miro.util",
+    "rhandsontable", "sortable", "chartjs", c("RSQLite", "2.2.9"
+    ))
 
 isMac <- Sys.info()["sysname"] == "Darwin" || grepl("^darwin", R.version$os)
 isWindows <- .Platform$OS.type == "windows"
