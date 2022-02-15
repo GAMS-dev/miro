@@ -39,6 +39,9 @@ Scenario <- R6Class("Scenario",
       }
       if (is.null(sid)) {
         stopifnot(is.character(sname), length(sname) == 1)
+        if (isBadScenName(sname)) {
+          stop_custom("invalid_name", "Invalid scenario name", call. = FALSE)
+        }
       } else {
         sid <- suppressWarnings(as.integer(sid))
         stopifnot(!is.na(sid), length(sid) == 1)
@@ -424,6 +427,7 @@ Scenario <- R6Class("Scenario",
       stopifnot(is.character(newReadPerm))
       stopifnot(is.character(newWritePerm))
       stopifnot(is.character(newExecPerm))
+      stopifnot(!isBadScenName(newName), !isBadScenTags(newTags))
       # END error checks
       if (private$isReadonly() && sum(
         length(newReadPerm),
