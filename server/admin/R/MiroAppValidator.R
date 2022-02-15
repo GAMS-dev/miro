@@ -106,7 +106,10 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     }, logical(1L), USE.NAMES = FALSE)]
 
     if (!length(miroconfFiles)) {
-      stop("No valid miroconf file found in bundle.", call. = FALSE)
+      miroconfFiles <- filesInBundle[filesInBundle == ".miroconf"]
+      if (!length(miroconfFiles)) {
+        stop("No valid miroconf file found in bundle.", call. = FALSE)
+      }
     }
     if (length(miroconfFiles) > 2) {
       stop("Invalid MIRO app uploaded: too many miroconf files were found.", call. = FALSE)

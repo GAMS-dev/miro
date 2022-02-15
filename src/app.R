@@ -3,6 +3,8 @@ MIROVersion <- "2.2.999"
 APIVersion <- "1"
 MIRORDate <- "Jan 05 2022"
 
+MIROVersionString <<- paste0("GAMS MIRO v.", MIROVersion)
+
 # specify CRAN mirror
 CRANMirror <- "https://cloud.r-project.org/"
 errMsg <- NULL
@@ -215,20 +217,26 @@ if (!miroDeploy &&
   LAUNCHCONFIGMODE <- TRUE
 }
 if (is.null(errMsg)) {
-  rSaveFilePath <- file.path(
-    currentModelDir,
-    paste0(
-      modelNameRaw, "_",
-      if (useTempDir) "1_" else "0_",
-      APIVersion, "_",
-      if (identical(Sys.getenv("MIRO_VERSION_STRING"), "")) {
-        MIROVersion
-      } else {
-        Sys.getenv("MIRO_VERSION_STRING")
-      },
-      ".miroconf"
+  saveFileVersion <- stringi::stri_split_fixed(Sys.getenv("MIRO_VERSION_STRING"), ".")[[1]]
+  if (debugMode || (saveFileVersion[[1]] >= 2 && saveFileVersion[[2]] >= 3)) {
+    # use new format (info contained in miroapp.json)
+    rSaveFilePath <- file.path(currentModelDir, ".miroconf")
+  } else {
+    rSaveFilePath <- file.path(
+      currentModelDir,
+      paste0(
+        modelNameRaw, "_",
+        if (useTempDir) "1_" else "0_",
+        APIVersion, "_",
+        if (identical(Sys.getenv("MIRO_VERSION_STRING"), "")) {
+          MIROVersion
+        } else {
+          Sys.getenv("MIRO_VERSION_STRING")
+        },
+        ".miroconf"
+      )
     )
-  )
+  }
   lang <<- fromJSON(file.path(".", "conf", paste0(miroLanguage, ".json")),
     simplifyDataFrame = FALSE,
     simplifyMatrix = FALSE
@@ -677,7 +685,7 @@ if (is.null(errMsg) && debugMode) {
   rm(listOfCustomRenderers)
 }
 aboutDialogText <- paste0(
-  "<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
+  "<b>", MIROVersionString, "</b><br/><br/>",
   "Release Date: ", MIRORDate, "<br/>",
   "Copyright (c) 2020 GAMS Software GmbH &lt;support@gams.com&gt;<br/>",
   "Copyright (c) 2020 GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>",

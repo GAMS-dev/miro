@@ -55,9 +55,12 @@ expect_deploy_works <- function(useTemp = TRUE, buildArchive = TRUE, manipulate 
     #         RE_SHINY_PORT = "9876",
     #         R_LIB_PATHS = .libPaths()[[1]])
   )
-  print(deployProc$read_all_error())
   deployProc$wait()
   expect_identical(deployProc$get_exit_status(), 0L)
+  if (!identical(deployProc$get_exit_status(), 0L)) {
+    print(deployProc$read_all_output())
+    print(deployProc$read_all_error())
+  }
 
   # unzip .miroapp file and check contents
   testModelDir <- dirname(Sys.getenv("MIRO_MODEL_PATH"))
@@ -103,9 +106,9 @@ expect_deploy_works <- function(useTemp = TRUE, buildArchive = TRUE, manipulate 
 
   if (length(pubkeys)) {
     if (length(manipulate)) {
-      expect_false(verifyAppSignature(unzipDir, pubKeyPaths = pubkeys))
+      expect_false(verifyAppSignature(unzipDir, pubKeyPaths = pubkeys, printFingerprint = FALSE))
     } else {
-      expect_true(verifyAppSignature(unzipDir, pubKeyPaths = pubkeys))
+      expect_true(verifyAppSignature(unzipDir, pubKeyPaths = pubkeys, printFingerprint = FALSE))
     }
   }
 
@@ -131,11 +134,14 @@ expect_deploy_works <- function(useTemp = TRUE, buildArchive = TRUE, manipulate 
     MIROVersion <<- MIROVersion
     APIVersion <<- APIVersion
   })
-  if (useTemp) tempIdent <- 1L else tempIdent <- 0L
-  miroconfFile <- paste0(modelToTest, "_", tempIdent, "_", APIVersion, "_", MIROVersion, ".miroconf")
-  miroconfFileHcube <- paste0(modelToTest, "_1_", APIVersion, "_", MIROVersion, "_hcube.miroconf")
-  expect_true(file.exists(file.path(unzipDir, miroconfFile)))
-  expect_false(file.exists(file.path(unzipDir, miroconfFileHcube)))
+  expect_true(all(file.exists(file.path(unzipDir, c(".miroconf", "miroapp.json")))))
+  appConf <- read_json(file.path(unzipDir, "miroapp.json"))
+  expect_identical(appConf$miro_version, MIROVersion)
+  expect_identical(appConf$api_version, APIVersion)
+  expect_identical(appConf$main_gms_name, paste0(modelToTest, ".gms"))
+  expect_identical(appConf$modes_included, "base")
+  expect_identical(appConf$use_temp_dir, if (useTemp) TRUE else FALSE)
+
   unlink(testModelPath, recursive = TRUE, force = TRUE)
 }
 

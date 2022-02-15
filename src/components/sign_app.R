@@ -89,7 +89,7 @@ appIsSigned <- function(pathToApp, isExtracted = FALSE) {
   return(all(c(".miro_hashes", ".miro_sig") %in% zip::zip_list(pathToApp)$filename))
 }
 
-verifyAppSignature <- function(appDir, pubKeyPaths) {
+verifyAppSignature <- function(appDir, pubKeyPaths, printFingerprint = TRUE) {
   fileWithHashes <- file.path(appDir, ".miro_hashes")
   fileWithSig <- file.path(appDir, ".miro_sig")
   if (!file.exists(fileWithHashes) || !file.exists(fileWithSig)) {
@@ -131,9 +131,11 @@ verifyAppSignature <- function(appDir, pubKeyPaths) {
   if (!length(validPubKey)) {
     return(FALSE)
   }
-  write(
-    paste0("mfprnt:::", genKeyFingerprint(validPubKey)),
-    stderr()
-  )
+  if (printFingerprint) {
+    write(
+      paste0("mfprnt:::", genKeyFingerprint(validPubKey)),
+      stderr()
+    )
+  }
   return(TRUE)
 }

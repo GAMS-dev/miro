@@ -177,6 +177,7 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
       const incAmt = 0.8 / zipfile.entryCount;
       let fileCnt = 0;
       let skipCntAppInfo = 0;
+      const appInfoContentPromises = [];
       newAppConf = {
         modesAvailable: [],
         usetmpdir: true,
@@ -192,11 +193,13 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
         fileCnt += 1;
         mainWindow.setProgressBar(fileCnt * incAmt);
         appFileNames.push(entry.fileName);
-        if (skipCntAppInfo < 2) {
-          if (path.dirname(entry.fileName).startsWith('static_')) {
-            if (path.basename(entry.fileName.toLowerCase()) === 'app_info.json') {
-              log.debug('App info file in new MIRO app found.');
-              skipCntAppInfo += 1;
+        if (skipCntAppInfo < 3) {
+          const filenameInZip = path.basename(entry.fileName.toLowerCase());
+          const isInStaticDir = path.dirname(entry.fileName).startsWith('static_');
+          if (filenameInZip === 'miroapp.json' || (isInStaticDir && filenameInZip === 'app_info.json')) {
+            log.debug(`${filenameInZip} file in new MIRO app found.`);
+            skipCntAppInfo += 1;
+            appInfoContentPromises.push(new Promise((resolveData) => {
               zipfile.openReadStream(entry, (error, readStream) => {
                 if (error) {
                   resolve(showZipfileError(error));
@@ -207,16 +210,15 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
                 });
                 readStream.on('end', () => {
                   try {
-                    const appInfo = JSON.parse(Buffer
+                    const jsonData = JSON.parse(Buffer
                       .concat(appInfoData)
                       .toString('utf8'));
-                    newAppConf.title = appInfo.title;
-                    newAppConf.description = appInfo.description;
+                    resolveData({ file: filenameInZip, data: jsonData });
                   } catch (e) {
                     if (e instanceof SyntaxError) {
-                      log.debug(`Invalid JSON syntax in app info file. File will be ignored. Error message: ${e.message}`);
+                      log.debug(`Invalid JSON syntax in ${filenameInZip}. File will be ignored. Error message: ${e.message}`);
                     } else {
-                      log.warn(`Unexpected error occurred while reading app info file. Error message: ${e.message}`);
+                      log.warn(`Unexpected error occurred while reading ${filenameInZip}. Error message: ${e.message}`);
                     }
                     showErrorMsg({
                       type: 'error',
@@ -227,7 +229,9 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
                   }
                 });
               });
-            }
+            }));
+          }
+          if (isInStaticDir) {
             const logoExt = entry.fileName.toLowerCase().match(/.*_logo\.(jpg|jpeg|png)$/);
             if (logoExt) {
               newAppConf.logoPath = entry.fileName;
@@ -250,45 +254,110 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
           }
         }
       });
-      zipfile.once('end', () => {
+      zipfile.once('end', async () => {
         log.debug('New MIRO app extracted successfully.');
         let invalidMiroApp = false;
         const errMsgTemplate = 'The MIRO app you want to add is invalid. Please make sure to upload a valid MIRO app!';
-        const miroConfFormat = /(.*)_(\d)_(\d+)_(\d+\.\d+\.\d+)(_hcube)?\.miroconf$/;
-        // eslint-disable-next-line no-restricted-syntax
-        for (const fileName of appFileNames) {
-          if (path.dirname(fileName) === '.' && fileName.endsWith('.miroconf')) {
-            const miroConfMatch = fileName.match(miroConfFormat);
-            if (miroConfMatch && miroConfMatch[1].length) {
-              if (miroConfMatch[5]) {
-                log.warn('Hypercube configuration found in app bundle. It will be ignored because the Hypercube Mode is no longer supported as of MIRO 2.2.');
+        let appMetadata = null;
+        const appInfoContent = await Promise.all(appInfoContentPromises);
+        appInfoContent.forEach((content) => {
+          if (content.file === 'miroapp.json') {
+            appMetadata = content.data;
+            return;
+          }
+          if (content.file === 'app_info.json') {
+            newAppConf.title = content.data.title;
+            newAppConf.description = content.data.description;
+          }
+        });
+        if (appMetadata == null) {
+          // old app (< MIRO 2.3)
+          const miroConfFormat = /(.*)_(\d)_(\d+)_(\d+\.\d+\.\d+)(_hcube)?\.miroconf$/;
+          // eslint-disable-next-line no-restricted-syntax
+          for (const fileName of appFileNames) {
+            if (path.dirname(fileName) === '.' && fileName.endsWith('.miroconf')) {
+              const miroConfMatch = fileName.match(miroConfFormat);
+              if (miroConfMatch && miroConfMatch[1].length) {
+                if (miroConfMatch[5]) {
+                  log.warn('Hypercube configuration found in app bundle. It will be ignored because the Hypercube Mode is no longer supported as of MIRO 2.2.');
+                } else {
+                  if (newAppConf.modesAvailable.includes('base')) {
+                    log.warn('Multiple base configurations found in app bundle. Invalid app.');
+                    invalidMiroApp = true;
+                    break;
+                  }
+                  log.debug('Base mode configuration in new MIRO app found.');
+                  newAppConf.modesAvailable.push('base');
+                  newAppConf.usetmpdir = miroConfMatch[2] === '1';
+                  [newAppConf.path] = filePath;
+                  [, newAppConf.id, , , newAppConf.miroversion] = miroConfMatch;
+                  newAppConf.apiversion = parseInt(miroConfMatch[3], 10);
+                  if (newAppConf.id.startsWith('~$')) {
+                    log.warn("App ID starts with illegal characters ('~$'). Invalid app.");
+                    invalidMiroApp = true;
+                    break;
+                  }
+                  log.info(`New MIRO app successfully identified. Id: ${newAppConf.id}, \
+    API version: ${newAppConf.apiversion}, \
+    MIRO version: ${newAppConf.miroversion}.`);
+                }
               } else {
-                if (newAppConf.modesAvailable.includes('base')) {
-                  log.warn('Multiple base configurations found in app bundle. Invalid app.');
-                  invalidMiroApp = true;
-                  break;
-                }
-                log.debug('Base mode configuration in new MIRO app found.');
-                newAppConf.modesAvailable.push('base');
-                newAppConf.usetmpdir = miroConfMatch[2] === '1';
-                [newAppConf.path] = filePath;
-                [, newAppConf.id, , , newAppConf.miroversion] = miroConfMatch;
-                newAppConf.apiversion = parseInt(miroConfMatch[3], 10);
-                if (newAppConf.id.startsWith('~$')) {
-                  log.warn("App ID starts with illegal characters ('~$'). Invalid app.");
-                  invalidMiroApp = true;
-                  break;
-                }
-                log.info(`New MIRO app successfully identified. Id: ${newAppConf.id}, \
-  API version: ${newAppConf.apiversion}, \
-  MIRO version: ${newAppConf.miroversion}.`);
+                log.debug(`Invalid MIROconf file found in new MIRO app: ${fileName}.`);
+                invalidMiroApp = true;
+                break;
               }
-            } else {
-              log.debug(`Invalid MIROconf file found in new MIRO app: ${fileName}.`);
-              invalidMiroApp = true;
-              break;
             }
           }
+        } else {
+          // new app (MIRO >=2.3)
+          if (!['use_temp_dir', 'miro_version', 'api_version', 'modes_included', 'main_gms_name'].every((requiredKey) => Object.prototype.hasOwnProperty.call(appMetadata, requiredKey))) {
+            log.warn('App info file does not contain all the required information.');
+            if (mainWindow) {
+              mainWindow.setProgressBar(-1);
+            }
+            showErrorMsg({
+              type: 'info',
+              title: lang.main.ErrorInvalidThreeMsg,
+              message: errMsgTemplate,
+            });
+            resolve(false);
+          }
+          const miroConfFormatBase = /(.*)_(\d)_(\d+)_(\d+\.\d+\.\d+)\.miroconf$/;
+          if (!appFileNames.includes('.miroconf')
+            && appFileNames.findIndex((fileName) => fileName.match(miroConfFormatBase)) === -1) {
+            log.warn('No valid miroconf file found.');
+            if (mainWindow) {
+              mainWindow.setProgressBar(-1);
+            }
+            showErrorMsg({
+              type: 'info',
+              title: lang.main.ErrorInvalidThreeMsg,
+              message: errMsgTemplate,
+            });
+            resolve(false);
+            return;
+          }
+          newAppConf.modesAvailable.push('base');
+          newAppConf.usetmpdir = appMetadata.use_temp_dir === true;
+          newAppConf.miroversion = appMetadata.miro_version;
+          newAppConf.apiversion = parseInt(appMetadata.api_version, 10);
+          newAppConf.id = path.parse(appMetadata.main_gms_name).name;
+          [newAppConf.path] = filePath;
+          if (newAppConf.id.startsWith('~$')) {
+            log.warn("App ID starts with illegal characters ('~$'). Invalid app.");
+            if (mainWindow) {
+              mainWindow.setProgressBar(-1);
+            }
+            showErrorMsg({
+              type: 'info',
+              title: lang.main.ErrorInvalidThreeMsg,
+              message: errMsgTemplate,
+            });
+            resolve(false);
+          }
+          log.info(`New MIRO app successfully identified. Id: ${newAppConf.id}, \
+API version: ${newAppConf.apiversion}, \
+MIRO version: ${newAppConf.miroversion}.`);
         }
         if (mainWindow) {
           mainWindow.setProgressBar(0.9);
@@ -303,6 +372,7 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
             message: errMsgTemplate,
           });
           resolve(false);
+          return;
         }
         if (!ConfigManager.vComp(miroVersion, newAppConf.miroversion)) {
           if (mainWindow) {
@@ -314,6 +384,7 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
             message: lang.main.ErrorVersionMsg,
           });
           resolve(false);
+          return;
         }
         if (!newAppConf.apiversion
           || newAppConf.apiversion !== requiredAPIVersion) {
@@ -326,6 +397,7 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
             message: lang.main.ErrorAPIMsg,
           });
           resolve(false);
+          return;
         }
 
         if (mainWindow) {
