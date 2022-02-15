@@ -25,11 +25,7 @@ trySignAppBundle <- function(miroAppFiles, privKeyPath, passFilePath = "") {
           TRUE
         },
         error = function(e) {
-          if (grepl("wrong password", conditionMessage(e), fixed = TRUE)) {
-            return(FALSE)
-          } else {
-            stop(conditionMessage(e), call. = FALSE)
-          }
+          return(FALSE)
         }
       )) {
         break
