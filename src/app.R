@@ -767,7 +767,8 @@ if (miroBuildOnly) {
         timestamp = as.character(as.POSIXlt(Sys.time(), tz = "UTC"), usetz = TRUE),
         host_os = getOS(),
         modes_included = "base",
-        use_temp_dir = useTempDir
+        use_temp_dir = useTempDir,
+        created_by = sprintf("%s (%s)", MIROVersionString, getOS())
       )
       appMetadataFile <- file.path(tmpd, "miroapp.json")
       write_json(metadataContent, appMetadataFile,

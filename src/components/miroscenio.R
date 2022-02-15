@@ -208,7 +208,8 @@ generateMiroScenMeta <- function(path, metadata, attachments, views,
     uid = metadata[[2]][1], last_modified = metadata[[4]][1],
     time_created = as.character(Sys.time(),
       usetz = TRUE, tz = "GMT"
-    )
+    ),
+    created_by = sprintf("%s (%s)", MIROVersionString, getOS())
   )
   write_json(metadataContent, file.path(path, "metadata.json"),
     auto_unbox = TRUE, null = "null"
