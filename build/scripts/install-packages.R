@@ -40,9 +40,7 @@ for (libPath in c(RLibPath, RlibPathDevel, RlibPathTmp)) {
   }
 }
 if (isLinux) {
-  # workaround since electron builder does
-  # not include empty directories in app image
-  writeLines("", file.path(RLibPath, "EMPTY"))
+  writeLines("", file.path(RLibPath, "INSTALLING"))
 } else if (isWindows) {
   # make sure Rtools compilers are used on Windows
   RtoolsHome <- "C:/rtools40"
@@ -218,12 +216,15 @@ for (package in packageVersionMap) {
         packagePath,
         file.path(RlibPathSrc, basename(packagePath))
       )
-    } else {
-      install.packages(packagePath,
-        lib = if (CIBuild) RlibPathTmp else RLibPath, repos = NULL,
-        type = "source", dependencies = FALSE, INSTALL_opts = "--no-multiarch"
-      )
+      if (!identical(package, "openssl")) {
+        # we should include binary openssl linked against openssl3 in AppImage
+        next
+      }
     }
+    install.packages(packagePath,
+      lib = if (CIBuild && !isLinux) RlibPathTmp else RLibPath, repos = NULL,
+      type = "source", dependencies = FALSE, INSTALL_opts = "--no-multiarch"
+    )
   } else {
     installPackage(package)
     if (CIBuild) {

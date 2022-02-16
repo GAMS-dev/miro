@@ -1421,6 +1421,7 @@ async function searchLibPath(devMode = false) {
       libsInstalled = false;
       try {
         await fs.promises.mkdir(libPath, { recursive: true });
+        await fs.copy(path.join(appRootDir, 'r', 'library'), libPath);
       } catch (e) {
         const libPathTmp = path.join(app.getPath('appData'), 'miro-library', libVersion);
         const existingLibDirsTmp = await getExistingLibDirs(path.dirname(libPathTmp));
@@ -1461,6 +1462,7 @@ async function searchLibPath(devMode = false) {
           }
           try {
             await fs.promises.mkdir(libPathTmp, { recursive: true });
+            await fs.copy(path.join(appRootDir, 'r', 'library'), libPathTmp);
           } catch (err) {
             log.error(`Problems creating libPath: ${libPathTmp}. Error message: ${err.message}.`);
             showErrorMsg({
@@ -1472,20 +1474,6 @@ async function searchLibPath(devMode = false) {
           }
           libPath = libPathTmp;
           log.debug(`Libpath set to: ${libPath}`);
-        }
-      }
-      if (!libsInstalled) {
-        try {
-          await fs.promises.writeFile(
-            path.join(libPath, 'INSTALLING'),
-            '',
-            'utf8',
-          );
-        } catch (e) {
-          fs.rmSync(libPath);
-          log.error(`Could not write INSTALLING metadata file to: ${libPath}.\
-     Error message: ${e.message}.`);
-          return;
         }
       }
     }

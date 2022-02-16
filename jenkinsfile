@@ -80,6 +80,9 @@ pipeline {
                         expression { params.BUILD_LINUX  || params.BUILD_CI || params.PUSH_UNSTABLE_SERVER_IMAGES }
                     }
                     agent { label 'docker' }
+                    environment {
+                        OPENSSL_PKG_CONFIG_PATH = '/usr/local/lib64/pkgconfig'
+                    }
                     steps {
                         sh '''
                                yarn install --non-interactive
