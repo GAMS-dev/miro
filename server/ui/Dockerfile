@@ -1,18 +1,8 @@
 ## largely based on rocker r-base image (GPL >= 2.0)
 
-FROM ubuntu:focal
-
-LABEL com.gamsmiro.vendor="GAMS Development Corp."\
-com.gamsmiro.version="2.2.999"\
-com.gamsmiro.license="GPL-3.0"\
-com.gamsmiro.description="GAMS MIRO Docker image"\
-maintainer="fproske@gams.com"
+FROM ubuntu:focal AS miro-base
 
 ARG R_BASE_VERSION=4.0.5
-ARG OPENSSL_VERSION=3.0.1
-ARG BUILD_DOCKER=true
-ARG SCRIPTS_PATH=/home/miro/scripts
-
 
 RUN groupadd -g 1000 miro && \
     useradd -r -u 1000 -g miro miro
@@ -25,11 +15,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         software-properties-common \
         dirmngr \
-        ed \
-        less \
         locales \
-        vim-tiny \
-        wget \
         ca-certificates \
     && add-apt-repository --enable-source --yes "ppa:marutter/rrutter4.0"
 
@@ -49,23 +35,28 @@ ENV TZ UTC
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
 		r-base=${R_BASE_VERSION}* \
-		r-base-dev=${R_BASE_VERSION}* \
 		r-recommended=${R_BASE_VERSION}* \
         && echo 'options(repos = c(CRAN = "https://cloud.r-project.org/"), download.file.method = "libcurl")' >> /etc/R/Rprofile.site \
 	&& rm -rf /tmp/downloaded_packages/ /tmp/*.rds \
 	&& rm -rf /var/lib/apt/lists/*
 
+RUN mkdir /home/miro/r
 
-########
 
-# system libraries of general use
-RUN add-apt-repository ppa:deadsnakes/ppa
+
+
+FROM miro-base AS miro-pkg-builder
+
+ARG R_BASE_VERSION=4.0.5
+ARG BUILD_DOCKER=true
+ARG SCRIPTS_PATH=/home/miro/scripts
 
 RUN apt-get update && apt-get install -y \
     sudo \
-    libcurl4-gnutls-dev \
-    libv8-dev \
-    libpq-dev
+    wget \
+    r-base-dev=${R_BASE_VERSION}*
+
+ARG OPENSSL_VERSION=3.0.1
 
 # install openssl3 from source
 RUN wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz && \
@@ -73,21 +64,68 @@ RUN wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz && \
     cd openssl-${OPENSSL_VERSION} && \
     ./config no-shared && \
     make && \
-    sudo make install && \
-    cd .. && \
-    rm -rf openssl-${OPENSSL_VERSION} openssl-${OPENSSL_VERSION}.tar.gz
+    sudo make install
 
 # make sure the openssl R package finds the libraries
 ARG OPENSSL_PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig
 
-# install custom packages
-RUN mkdir /home/miro/r
+ARG CURL_VERSION=7.81.0
+
+# install curl from source
+RUN wget https://curl.se/download/curl-${CURL_VERSION}.tar.gz && \
+    tar -xvzf curl-${CURL_VERSION}.tar.gz && \
+    cd curl-${CURL_VERSION} && \
+    env PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig ./configure --with-openssl --disable-shared && \
+    make && \
+    sudo make install
+
+ARG PQ_VERSION=14.2
+
+# install libpq from source
+RUN wget https://ftp.postgresql.org/pub/source/v14.2/postgresql-${PQ_VERSION}.tar.gz && \
+    tar -xvzf postgresql-${PQ_VERSION}.tar.gz && \
+    cd postgresql-${PQ_VERSION} && \
+    ./configure --with-openssl --with-includes=/usr/local/lib64/include --with-libraries=/usr/local/lib64 CFLAGS='-Wl,-rpath=/usr/local/lib64' && \
+    make && \
+    sudo make -C src/bin install && \
+    sudo make -C src/include install && \
+    sudo make -C src/interfaces install && \
+    sudo make -C doc install
+
+ARG LD_LIBRARY_PATH=/usr/local/pgsql/lib
+
+# make sure the RPostgres R package finds the libraries
+ARG PKG_CONFIG_PATH="/usr/local/pgsql/lib/pkgconfig:${OPENSSL_PKG_CONFIG_PATH}"
+
+# install custom R packages
 COPY r/library_src /home/miro/r/library_src
 COPY scripts /home/miro/scripts
 
 RUN Rscript ./home/miro/scripts/install_source.R
 
-RUN rm -rf /home/miro/r /home/miro/scripts
+
+# install custom packages
+COPY r/library_src /home/miro/r/library_src
+COPY scripts /home/miro/scripts
+
+RUN Rscript ./home/miro/scripts/install_source.R
+
+
+
+
+FROM miro-base
+
+LABEL com.gamsmiro.vendor="GAMS Development Corp."\
+com.gamsmiro.version="2.2.999"\
+com.gamsmiro.license="GPL-3.0"\
+com.gamsmiro.description="GAMS MIRO Docker image"\
+maintainer="fproske@gams.com"
+
+# copy R packages from miro-pkg-builder
+COPY --from=miro-pkg-builder /usr/local/pgsql/lib/libpq.so.5 /usr/local/lib/libpq.so.5
+COPY --from=miro-pkg-builder /usr/local/lib/R/site-library /usr/local/lib/R/site-library
+
+ENV LD_LIBRARY_PATH=/usr/local/lib
 
 # copy MIRO to the image
 COPY src /home/miro/app/

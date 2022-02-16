@@ -134,6 +134,7 @@ const tryInstallRPackages = async (attempt = 0) => {
         '--build-arg', `GAMS_MAJOR=${buildConfig.gamsVersion.split('.')[0]}`,
         '--build-arg', `GAMS_MINOR=${buildConfig.gamsVersion.split('.')[1]}`,
         '--build-arg', `GAMS_MAINT=${buildConfig.gamsVersion.split('.')[2]}`,
+        '--build-arg', `R_BASE_VERSION=${buildConfig.rVersion}`,
         '-t', 'gamsmiro-ci', '-f', 'ci/Dockerfile', '.']);
       subprocCi.stderr.pipe(process.stderr);
       subprocCi.stdout.pipe(process.stderr);

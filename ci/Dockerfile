@@ -1,3 +1,24 @@
+FROM miro-ui:latest AS miro-pkg-builder
+
+USER root
+
+ARG R_BASE_VERSION=4.0.5
+
+RUN apt-get update && apt-get install -y \
+    sudo \
+    wget \
+    libxml2-dev \
+    r-base-dev=${R_BASE_VERSION}*
+
+RUN R -e "install.packages(c('testthat', 'shinytest', 'xml2', 'precommit', 'docopt', 'styler'));"
+
+# need to install Rcpp, plogr, BH again as we removed header files in miroui image
+COPY r/library_src /home/miro/r/library_src
+COPY ci/install_pkg.R /home/miro/r/install_pkg.R
+RUN Rscript /home/miro/r/install_pkg.R
+
+
+
 FROM miro-ui:latest
 
 LABEL com.gamsmiroci.vendor="GAMS Development Corp."\
@@ -20,20 +41,13 @@ RUN wget https://d37drm4t2jghv5.cloudfront.net/distributions/${GAMS_MAJOR}.${GAM
     rm linux_x64_64_sfx.exe && \
     mv "gams${GAMS_MAJOR}.${GAMS_MINOR}_linux_x64_64_sfx" "/opt/gams"
 
-RUN R -e "install.packages(c('testthat', 'shinytest', 'xml2', 'precommit', 'docopt', 'styler'));"
-
-# need to install Rcpp, plogr, BH again as we removed header files in miroui image
-RUN mkdir /home/miro/r
-COPY r/library_src /home/miro/r/library_src
-COPY ci/install_pkg.R /home/miro/r/install_pkg.R
-RUN Rscript /home/miro/r/install_pkg.R
-RUN rm -rf /home/miro/r
+COPY --from=miro-pkg-builder /usr/local/lib/R/site-library /usr/local/lib/R/site-library
 
 # install nodejs, yarn and eslint
-RUN curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-RUN sudo apt-get install -y nodejs
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash -
+RUN apt-get install -y nodejs
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update && apt-get install -y yarn python3-pip git
 RUN pip3 install pre-commit
 
