@@ -9,7 +9,7 @@ import {
   changeTheme, LoadingScreen, colorPickerBinding, getActualHeight,
 } from './util';
 
-import ShortcutHandler from './shortcut_handler';
+import ShortcutManager from './shortcut_manager';
 
 import {
   activateMiroPivotPresentation, deactivateMiroPivotPresentation,
@@ -216,6 +216,11 @@ export function modal(msg, okButton, cancelButton,
     });
   }
 }
+
+const shortcutManager = new ShortcutManager(50);
+$(document).on('keyup', (event) => {
+  shortcutManager.handleKeyPressEvent(event);
+});
 
 $(document).ready(() => {
   if (typeof window.matchMedia('(prefers-color-scheme: dark)').addEventListener !== 'undefined') {
@@ -762,8 +767,13 @@ checked="checked">
   });
   Shiny.inputBindings.register(autoNumericBinding);
   Shiny.inputBindings.register(colorPickerBinding);
-});
-const shortcutHandler = new ShortcutHandler(50);
-$(document).on('keyup', (event) => {
-  shortcutHandler.applyShortcut(event);
+  $('#commandPalette').on('shown.bs.modal', () => {
+    $('#cpSearchInput').focus();
+  });
+  $('#commandPalette').on('hidden.bs.modal', () => {
+    shortcutManager.triggerActiveShortcut();
+  });
+  $('#btShowCommandPalette').on('click', () => {
+    shortcutManager.openCommandPalette();
+  });
 });

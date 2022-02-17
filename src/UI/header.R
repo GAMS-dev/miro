@@ -52,18 +52,46 @@ header <- dashboardHeader(
       class = "dropdown-menu", role = "menu",
       tags$li(tags$a(
         href = "https://www.gams.com/miro/",
-        target = "_blank", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-book"></i></div> ', lang$nav$header$help$doc))
+        target = "_blank",
+        tags$div(
+          class = "menu-icon-align",
+          tags$i(class = "fa fa-book")
+        ),
+        lang$nav$header$help$doc
       )),
       tags$li(tags$a(
         href = "https://forum.gamsworld.org/viewforum.php?f=14",
-        target = "_blank", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-globe"></i></div> ', lang$nav$header$help$forum))
+        target = "_blank",
+        tags$div(
+          class = "menu-icon-align",
+          tags$i(class = "fa fa-globe")
+        ),
+        lang$nav$header$help$forum
       )),
-      tags$li(HTML(paste0(
-        '<a href="#" class="action-button" onclick="Miro.confirmModalShow(\'',
-        "About GAMS MIRO', '",
-        htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\');">',
-        '<div class="menu-icon-align"><i class="fa fa-question"></i></div> ', lang$nav$header$help$about, "</a>"
-      )))
+      tags$li(tags$a(
+        href = "#", class = "action-button", id = "btShowCommandPalette",
+        tags$div(
+          class = "menu-icon-align",
+          tags$i(class = "fa fa-terminal")
+        ),
+        lang$nav$header$help$commandPalette
+      )),
+      tags$li(
+        tags$a(
+          hred = "#",
+          class = "action-button",
+          onclick = paste0(
+            "Miro.confirmModalShow('About GAMS MIRO','",
+            aboutDialogText,
+            "', 'Cancel');"
+          ),
+          tags$div(
+            class = "menu-icon-align",
+            tags$i(class = "fa fa-question")
+          ),
+          lang$nav$header$help$about
+        )
+      )
     )
   ),
   title = config$pageTitle, disable = FALSE

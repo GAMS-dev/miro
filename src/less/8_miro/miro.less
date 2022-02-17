@@ -2688,3 +2688,27 @@ html {
     color: @sidebar-btn-border-dark;
   });
 }
+
+/* command palette */
+#cpScListWrapper {
+  margin-top: 1rem;
+  max-height: 500px;
+  max-height: 60vh;
+  overflow: auto;
+}
+.cp-shortcut-list-item {
+  padding: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.cp-shortcut-list-item-highlight, .cp-shortcut-list-item:hover {
+  .responsiveDark({
+     background-color: @table-hover;
+  },
+  {
+     background-color: @table-hover-dark;
+  });
+}
+.cp-shortcut-list-badge {
+  margin-left: 0.5rem;
+}

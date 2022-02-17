@@ -277,6 +277,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
 })
 editMetaRemoteAccessPermLoaded <- FALSE
 observeEvent(input$btEditMeta, {
+  flog.debug("Button to open metadata dialog clicked.")
   req(activeScen)
 
   editMetaRemoteAccessPermLoaded <<- FALSE
@@ -293,7 +294,8 @@ observeEvent(input$btEditMeta, {
     viewsMetadata = viewsMetadata,
     attachAllowExec = attachAllowExec,
     ugroups = csv2Vector(db$getUserAccessGroups()),
-    isLocked = length(activeScen) != 0L && length(activeScen$getLockUid()) > 0L
+    isLocked = length(activeScen) != 0L && length(activeScen$getLockUid()) > 0L,
+    selectedTab = input$btEditMeta
   )
 })
 

@@ -218,12 +218,16 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "commandPalette": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "about": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 4
+              "minProperties": 5
             }
           },
           "minProperties": 3

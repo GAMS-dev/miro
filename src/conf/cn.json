@@ -53,6 +53,7 @@
         "title":"帮助",
         "doc":"文档",
         "forum": "GAMS World Forum",
+        "commandPalette": "命令调色板",
         "about":"关于"
       }
     },

@@ -1097,7 +1097,7 @@ if (buildUI) {
       ),
       HTML(paste0(
         '<!-- Creates modal dialog for confirm messages -->
-<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -1106,6 +1106,14 @@ if (buildUI) {
       <div class="modal-body">
       </div>
       <div class="modal-footer modal-footer-mobile">
+      </div>
+    </div>
+</div>
+</div>
+<div class="modal fade" id="commandPalette" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
       </div>
     </div>
 </div>

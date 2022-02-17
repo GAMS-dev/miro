@@ -53,6 +53,7 @@
         "title": "Hilfe",
         "doc": "Dokumentation",
         "forum": "GAMS World Forum",
+        "commandPalette": "Befehlspalette",
         "about": "Über"
       }
     },

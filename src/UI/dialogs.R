@@ -745,7 +745,9 @@ showEditMetaDialog <- function(metadata,
                                attachmentMetadata = character(0L),
                                viewsMetadata = character(0L),
                                attachAllowExec = FALSE,
-                               isLocked = FALSE) {
+                               isLocked = FALSE,
+                               selectedTab = NULL) {
+  supportedTabs <- "general"
   scenTags <- csv2Vector(metadata[["_stag"]][[1]])
 
   contentAccessPerm <- NULL
@@ -782,6 +784,7 @@ showEditMetaDialog <- function(metadata,
   )
   writePerm <- csv2Vector(metadata[["_accessw"]][[1]])
   if (!isLocked && length(ugroups) && any(ugroups %in% writePerm)) {
+    supportedTabs <- c("general", "accessPerm")
     contentAccessPerm <- tabPanel(lang$nav$dialogEditMeta$categoryAccessPerm,
       value = "accessPerm",
       tags$div(
@@ -808,8 +811,10 @@ showEditMetaDialog <- function(metadata,
     )
   }
   if (allowAttachments) {
+    supportedTabs <- c(supportedTabs, "attachments", "views")
     contentAttachments <- tabPanel(
       lang$nav$dialogEditMeta$categoryAttachments,
+      value = "attachments",
       tags$div(
         class = "gmsalert gmsalert-success", id = "attachSuccess",
         lang$nav$dialogEditMeta$attachSuccess
@@ -880,6 +885,7 @@ showEditMetaDialog <- function(metadata,
     )
     contentViews <- tabPanel(
       lang$nav$dialogEditMeta$categoryViews,
+      value = "views",
       tags$div(
         class = "gmsalert gmsalert-success", id = "viewsSuccess",
         lang$nav$dialogEditMeta$viewsSuccess
@@ -978,11 +984,15 @@ showEditMetaDialog <- function(metadata,
       id = "tpEditMeta",
       tabPanel(
         lang$nav$dialogEditMeta$categoryGeneral,
+        value = "general",
         content
       ), contentAttachments, contentViews
     )
     if (length(contentAccessPerm)) {
       contentList[[5L]] <- contentAccessPerm
+    }
+    if (length(selectedTab) && selectedTab %in% supportedTabs) {
+      contentList$selected <- selectedTab
     }
     content <- do.call(tabsetPanel, contentList)
   } else if (length(contentAccessPerm)) {
@@ -990,9 +1000,11 @@ showEditMetaDialog <- function(metadata,
       id = "tpEditMeta",
       tabPanel(
         lang$nav$dialogEditMeta$categoryGeneral,
+        value = "general",
         content
       ),
-      contentAccessPerm
+      contentAccessPerm,
+      selected = if (length(selectedTab) && selectedTab %in% supportedTabs) selectedTab
     )
   }
 
