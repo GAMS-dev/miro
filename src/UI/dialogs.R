@@ -9,7 +9,7 @@ showReadonlyDialog <- function() {
         class = "bt-highlight-1 bt-gms-confirm"
       )
     ),
-    fade = TRUE, easyClose = FALSE
+    fade = TRUE, easyClose = TRUE
   ))
 }
 
@@ -24,7 +24,7 @@ showInconsistentOutputDialog <- function() {
         class = "bt-highlight-1 bt-gms-confirm"
       )
     ),
-    fade = TRUE, easyClose = FALSE
+    fade = TRUE, easyClose = TRUE
   ))
 }
 
@@ -87,7 +87,7 @@ showLoginDialog <- function(cred, forwardOnSuccess = NULL) {
         )
       }
     ),
-    fade = TRUE, easyClose = FALSE
+    fade = TRUE, easyClose = TRUE
   ))
 }
 
@@ -193,7 +193,7 @@ showRemoveScenDialog <- function(forwardTo) {
           lang$nav$dialogRemoveScen$okButton
         )
       )
-    ), fade = TRUE, easyClose = FALSE
+    ), fade = TRUE, easyClose = TRUE
   ))
 }
 
@@ -221,7 +221,7 @@ showDeleteScenDialog <- function() {
         )
       )
     ),
-    fade = TRUE, easyClose = FALSE
+    fade = TRUE, easyClose = TRUE
   ))
 }
 
@@ -237,7 +237,7 @@ showRemoveExistingOutputDataDialog <- function() {
         class = "bt-highlight-1 bt-gms-confirm"
       )
     ),
-    fade = TRUE, easyClose = FALSE
+    fade = TRUE, easyClose = TRUE
   ))
 }
 getLoadDbPanel <- function(id, title, scenList, tagList, iconName, async = FALSE) {
@@ -736,7 +736,7 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
         )
       )
     ),
-    fade = TRUE, easyClose = FALSE
+    fade = TRUE, easyClose = TRUE
   ))
 }
 showEditMetaDialog <- function(metadata,
@@ -1017,7 +1017,7 @@ showEditMetaDialog <- function(metadata,
         )
       )
     ),
-    fade = TRUE, easyClose = FALSE
+    fade = TRUE, easyClose = TRUE
   ))
 }
 showScenExportDialog <- function(id, exportTypes) {
@@ -1441,7 +1441,7 @@ showNewCompletedJobsDialog <- function() {
         lang$nav$newCompletedJobsDialog$okButton
       )
     ),
-    fade = TRUE, easyClose = FALSE
+    fade = TRUE, easyClose = TRUE
   ))
 }
 getJobsTable <- function(hcubeMeta, jobHist = FALSE, showLogFileDialog = TRUE) {
