@@ -454,16 +454,19 @@ ${optionsJSON !== '{}' ? `<script type="application/json" data-for="${id}">${opt
       if (newEl) {
         Shiny.setInputValue(arrayID, [elID, value], { priority: 'event' });
       }
-
-      return (`${'<div class="form-group">\n'
-  + '<label class="cb-label" for="'}${id}">${label}</label>\n`
-  + `<div>\n<label class="checkbox-material" for="${id}">\n<div class="checkbox">\n`
-    + '<label>\n'
-      + `<input id="${id}" type="checkbox"${value === true ? ' checked="checked"' : ''}/>\n`
-      + '<span></span>\n'
-    + '</label>\n'
-  + '</div>\n'
-+ '</div>\n</label>\n</div>');
+      return ('<div class="form-group">\n'
+      + '<div class="checkbox-simple">\n'
+        + '<label>\n'
+          + '<div class="checkbox">\n'
+            + '<label>\n'
+              + `<input id="${id}" type="checkbox"${value === true ? ' checked="checked"' : ''}/>\n`
+              + '<span></span>\n'
+            + '</label>\n'
+          + '</div>\n'
+          + `<span class="label-span">${label}</span>\n`
+        + '</label>\n'
+      + '</div>\n'
+    + '</div>');
     }
 
     static createColorPickerInput(arrayID, elID, label, value = '', newEl = true) {

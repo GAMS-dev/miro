@@ -198,18 +198,22 @@
                         >
                       </li>
                       <li>
-                        <a href="#table-settings" class="scrollto"
-                          >Configure tables</a
-                        >
+                        <a href="#general-symbols" class="scrollto">Symbols</a>
+                      </li>
+                      <li>
+                        <a href="#table-settings" class="scrollto">Tables</a>
                       </li>
                       <li>
                         <a href="#configure-widgets" class="scrollto"
-                          >Configure widgets</a
+                          >Widgets</a
                         >
                       </li>
                       <li>
-                        <a href="#configure-graphs" class="scrollto"
-                          >Configure graphs</a
+                        <a href="#configure-graphs" class="scrollto">Graphs</a>
+                      </li>
+                      <li>
+                        <a href="#scenario-analysis" class="scrollto"
+                          >Scenario analysis</a
                         >
                       </li>
                       <li>
@@ -241,7 +245,7 @@
                       As the name suggests, general options can be set in this
                       section (click on an item for more information).
                     </p>
-                    <h4 class="docu-general-header">General</h4>
+                    <h4 class="docu-general-header">User Interface</h4>
                     <h6
                       id="application-title"
                       class="block-title"
@@ -273,6 +277,31 @@
                       </div>
                       <p></p>
                     </div>
+                    <h6
+                      id="app-logo"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Upload a custom
+                      logo for your MIRO app: png/jpg file (best ratio: 4,6:1).
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        This option allows you to use your own logo for your
+                        MIRO application, which is displayed in the upper left
+                        corner.
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 200pt"
+                          src="assets/images/configuration_mode/app-logo.png"
+                          alt="App logo"
+                        />
+                      </div>
+                    </div>
+                    <!--//expanded-->
                     <h6
                       id="dark-mode"
                       class="block-title"
@@ -331,6 +360,433 @@
                       <p></p>
                     </div>
                     <h6
+                      id="app-readme"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> README file:
+                      Create an individual start page
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        You have the possibility to integrate a README file into
+                        the MIRO application. Its content is displayed in the
+                        input section in the first tab and is therefore the
+                        first thing the user sees after starting the
+                        application. This tab can be used by the developer to
+                        introduce and explain the MIRO application or the
+                        underlying GAMS model before the user starts working
+                        with it.
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 500pt"
+                          src="assets/images/configuration_mode/readme.png"
+                          alt="README file"
+                        />
+                      </div>
+                      <p>
+                        <b>Usage:</b><br />
+                        The readme file must be a
+                        <a
+                          href="https://guides.github.com/features/mastering-markdown/"
+                          target="_blank"
+                          >Markdown</a
+                        >
+                        or HTML document which is located in the model
+                        directory. The README option must be activated in the
+                        Configuration Mode. Three options are available:
+                      </p>
+
+                      <ul>
+                        <li>
+                          <b>README tab title</b> (mandatory)<br />
+                          With this option you can customize the title of the
+                          README tab in the input section. Default:
+                          <i>README</i>
+                        </li>
+                        <li>
+                          <b>README file name</b> (mandatory)<br />
+                          With this option you specify the name of the readme
+                          file that you want to display (minimum 4 characters).
+                        </li>
+                        <li>
+                          <b>Enable mathematical typesetting?</b>
+                          (optional)<br />
+                          In case you want to use mathematical notation in your
+                          README file, activate this checkbox. You can use
+                          inline math by wrapping your equations between
+                          <kbd>$</kbd> signs. To render the equation centered on
+                          its own line, use two dollar signs: <kbd>$$</kbd>.
+                          <p>
+                            <b>Example:</b><br />
+                            <kbd
+                              >This integral $\def\f#1{f(#1)} \f{x} =
+                              \int_{-\infty}^\infty\hat \f\xi\,e^{2 \pi i \xi
+                              x}\,d\xi$ is rendered inline.</kbd
+                            >
+                            is rendered as:
+                            <kbd class="katex"
+                              >This integral $\def\f#1{f(#1)} \f{x} =
+                              \int_{-\infty}^\infty\hat \f\xi\,e^{2 \pi i \xi
+                              x}\,d\xi$ is rendered inline.</kbd
+                            >
+                          </p>
+                          A list of all TeX functions supported by MIRO can be
+                          found
+                          <a href="https://katex.org/docs/supported.html"
+                            >here</a
+                          >.
+                        </li>
+                      </ul>
+                      <p>
+                        The readme file can be created or edited directly in
+                        Configuration Mode:
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 300pt"
+                          src="assets/images/configuration_mode/readme_editor.png"
+                          alt="Readme editor"
+                        />
+                      </div>
+                      <div class="callout-block callout-warning">
+                        <div class="icon-holder">
+                          <i class="fas fa-info-circle"></i>
+                        </div>
+                        <!--//icon-holder-->
+                        <div class="content">
+                          <b class="callout-title">Note:</b>
+                          <p>
+                            If you want to include images in your readme file,
+                            they must be located in the folder
+                            <i>static_&lt;modelname&gt;</i> in your model
+                            directory. In the Markdown/HTML file, the path of
+                            the images used must be pre-fixed with
+                            "static_&lt;modelname&gt;".
+                          </p>
+                        </div>
+                        <!--//content-->
+                      </div>
+                      <!--//callout-block-->
+                    </div>
+                    <!--//expanded-->
+                    <h6
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Generate graphs
+                      for each input sheet automatically (pivot tool)
+                    </h6>
+                    <p class="expanded">
+                      If this option is activated, a pivot table is created for
+                      each input symbol in addition to the table. If an graph is
+                      configured for a symbol, this will be used instead.
+                    </p>
+                    <h6
+                      id="default-output-renderer"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Default renderer
+                      for output data
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        Without further configuration, a pivot table for data
+                        visualization can be displayed automatically for each
+                        output symbol.
+                      </p>
+                      <p></p>
+                    </div>
+                    <h4 class="docu-general-header">
+                      Scenario Data and Attachments
+                    </h4>
+                    <h6
+                      id="default-scenario"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Load a default
+                      scenario on startup
+                    </h6>
+                    <p class="expanded">
+                      Allows you to pre-populate tables and widgets with data
+                      when starting MIRO. If this option is set and a scenario
+                      name is specified, MIRO looks for the corresponding
+                      scenario in the database at the application startup and
+                      automatically loads all data into the interface. In case
+                      always the same input data is used as base data, the step
+                      of data import into MIRO can be skipped with this option.
+                    </p>
+                    <h6
+                      id="local-upload"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Activate local
+                      data upload module?
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        If enabled, scenario data can be loaded via local files.
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 325pt"
+                          src="assets/images/import-local.png"
+                          alt="Import local data"
+                        />
+                      </div>
+                    </div>
+                    <h6
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Allow users to
+                      add attachments to scenarios
+                    </h6>
+                    <p class="expanded">
+                      Enables to save file attachments for scenarios. Read more
+                      about this in the <i>File attachments</i> section
+                      <a href="./start.html#file-attachments">here</a>.
+                    </p>
+                    <h6
+                      id="general-output-attach"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Output
+                      attachments
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        Output attachments allow you to automatically attach
+                        files after a GAMS run has been successfully completed.
+                        This lets you store additional results alongside the
+                        ones displayed in the UI. In addition, MIRO gives you
+                        the option to choose what should happen when an
+                        attachment is not found after a successful GAMS run.
+                        Should the user be informed of this by an error message
+                        or should it be silently ignored. You can also choose to
+                        automatically extract the attachment to the working
+                        directory when you start another GAMS run with this
+                        scenario. This function adds a state to your scenarios.
+                        Per default, scenarios in MIRO are stateless. This means
+                        that running two consecutive GAMS runs with the same
+                        input data will result in the same output data. By
+                        adding an attachment to the scenario that GAMS is
+                        allowed to read on consecutive executions, the results
+                        may no longer be the same.
+                      </p>
+                      <p>Let's have a look at a simple (toy) example:</p>
+                      <pre><code class="language-gams">$if exist report.put $abort "Report was found"
+
+File report;
+put report;
+put "This is a report."
+putclose;
+</code></pre>
+                      <p>
+                        When you run this GAMS model for the first time, it
+                        creates a file <kbd>report.put</kbd>. When running it a
+                        second time, it aborts with a compilation error: "Report
+                        was found". If you add the file <kbd>report.put</kbd> as
+                        an output attachment and select to extract it into the
+                        working directory whenever you run this scenario again,
+                        your scenario will carry a state. This gives you the
+                        possibility to implement processes of any complexity in
+                        your MIRO application.
+                      </p>
+                      <div class="callout-block callout-warning">
+                        <div class="icon-holder">
+                          <i class="fas fa-info-circle"></i>
+                        </div>
+                        <!--//icon-holder-->
+                        <div class="content">
+                          <b class="callout-title">Note:</b>
+                          <p>
+                            When this option is activated, additional files will
+                            be saved to each solved scenario. You should make
+                            sure that the disk space used does not become
+                            excessive (e.g. by limiting the output written to
+                            the lst file).
+                          </p>
+                        </div>
+                        <!--//content-->
+                      </div>
+                      <!--//callout-block-->
+                    </div>
+                    <h6
+                      id="general-temp-dir"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Allow access to
+                      the temporary directory
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        This option specifies whether all temporarily created
+                        files of the model run (like solution reports or the
+                        <span class="code">lst</span> and
+                        <span class="code">log</span> files) can be accessed by
+                        the user. If set to true, the files can be downloaded
+                        individually or as a ZIP archive with a click on the
+                        <img
+                          class="img-fluid"
+                          width="25"
+                          height="25"
+                          align="middle"
+                          src="assets/images/advanced-button.png"
+                          alt="Download temporary files"
+                        />
+                        button.
+                      </p>
+                      <div
+                        class="section-block"
+                        style="display: block; margin: auto; text-align: center"
+                      >
+                        <img
+                          class="img-fluid"
+                          style="max-height: 325pt"
+                          src="assets/images/download-tmp-files.png"
+                          alt="Output data screen - scalars"
+                        />
+                      </div>
+                    </div>
+                    <h6
+                      id="include-metadata"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Include a
+                      metadata sheet in the Excel file (when exporting a
+                      scenario)
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        The metatdata sheet contains information about the user
+                        name, the scenario name and the time the scenario was
+                        created.
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 50pt"
+                          src="assets/images/configuration_mode/general_export_metadata.png"
+                          alt="Metadata sheet"
+                        />
+                      </div>
+                    </div>
+                    <h6
+                      id="include-empty"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Include empty
+                      sheets in the Excel file
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        This option specifies whether empty sheets should be
+                        included when exporting a scenario. Sheets can be empty
+                        e.g. when a scenario contains only input data (has not
+                        been solved).
+                      </p>
+                    </div>
+                    <h6
+                      id="decimal-places"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Number of decimal
+                      places used for rounding numerical values
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        Defines the number of decimal places for numeric symbols
+                        in the MIRO application. This is a global setting and
+                        has an effect on all
+                        <a
+                          href="./customize.html#output-tables"
+                          class="scrollto"
+                          >output tables</a
+                        >,
+                        <a
+                          href="./customize.html#table-option-large"
+                          class="scrollto"
+                          >Big Data input tables</a
+                        >
+                        and the table for
+                        <a href="./start.html#scenario-loading"
+                          >finding and loading scenarios</a
+                        >.
+                      </p>
+                      <p>
+                        Note that this only applies to symbols that are treated
+                        as numerical values by MIRO. For example, elements of
+                        GAMS <i>Sets</i> may contain numbers, but they are not
+                        treated as such but as strings. These are therefore not
+                        affected by the maximum decimal place set.
+                      </p>
+                    </div>
+                    <h4 class="docu-general-header">Job Submission</h4>
+                    <h6
+                      id="activate-hcube"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Activate
+                      Hypercube module
+                    </h6>
+                    <p class="expanded">
+                      This option enables the submission of
+                      <a href="./hc-module.html">Hypercube jobs</a>. Note that
+                      you must use GAMS MIRO with a
+                      <a href="./server.html">GAMS Engine backend</a> (GAMS MIRO
+                      Server or GAMS MIRO Desktop - boosted by GAMS Engine) when
+                      you want to submit Hypercube jobs.
+                    </p>
+                    <h6
+                      id="command-line-args"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Specify extra
+                      command line arguments that GAMS will be called with
+                    </h6>
+                    <p class="expanded">
+                      With this option, command line arguments can be specified
+                      that are set for each GAMS run that is started from MIRO.
+                      This can be GAMS options like
+                      <span class="code">limrow=10</span> or
+                      <span class="code">threads=4</span> but also custom
+                      double-dash parameters. Note, that the these command line
+                      arguments are static; they can not be changed by the user
+                      from MIRO. <br />For more information about command line
+                      parameters that can be set from MIRO using widgets like
+                      sliders, dropdown menus, checkboxes etc. click
+                      <a href="./model.html#command-line">here</a>.
+                    </p>
+                    <h4 class="docu-general-header">Log Files</h4>
+                    <h6
                       id="show-log"
                       class="block-title"
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
@@ -375,8 +831,8 @@
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Use custom MIRO
-                      log
+                      <i class="fas fa-plus slide-toggle"></i> Include custom
+                      log file
                     </h6>
                     <div class="expanded">
                       <p>
@@ -588,7 +1044,26 @@ putclose log;
                       </p>
                     </div>
                     <!--//expanded-->
-
+                    <h6
+                      id="general-duration"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Duration the GAMS
+                      log and lst files are stored in the database (in days)
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        If you want to save the log and lst files of individual
+                        GAMS jobs, you can use this option to specify how long
+                        the files should be saved. 0 means files are not stored
+                        at all, 999 means files are stored indefinitely. This
+                        setting is ignored when the attachment module is not
+                        active.
+                      </p>
+                    </div>
+                    <h4 class="pivot-compare-options">Scenario comparison</h4>
                     <h6
                       class="block-title"
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
@@ -607,66 +1082,13 @@ putclose log;
                       MIRO application.
                     </p>
                     <h6
+                      id="enable-hide-empty-columns"
                       class="block-title"
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Generate graphs
-                      for each input sheet automatically (pivot tool)
-                    </h6>
-                    <p class="expanded">
-                      If this option is activated, a pivot table is created for
-                      each input symbol in addition to the table. If an graph is
-                      configured for a symbol, this will be used instead.
-                    </p>
-                    <h6
-                      id="decimal-places"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Number of decimal
-                      places used for rounding numerical values
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        Defines the number of decimal places for numeric symbols
-                        in the MIRO application. This is a global setting and
-                        has an effect on all
-                        <a
-                          href="./customize.html#output-tables"
-                          class="scrollto"
-                          >output tables</a
-                        >,
-                        <a
-                          href="./customize.html#table-option-large"
-                          class="scrollto"
-                          >Big Data input tables</a
-                        >
-                        and the table for
-                        <a href="./start.html#scenario-loading"
-                          >finding and loading scenarios</a
-                        >.
-                      </p>
-                      <p>
-                        Note that this only applies to symbols that are treated
-                        as numerical values by MIRO. For example, elements of
-                        GAMS <i>Sets</i> may contain numbers, but they are not
-                        treated as such but as strings. These are therefore not
-                        affected by the maximum decimal place set.
-                      </p>
-                    </div>
-                    <h4 class="pivot-compare-options">
-                      Pivot scenario comparison
-                    </h4>
-                    <h6
-                      id="enable-presentation"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Activate switch
-                      to hide empty columns
+                      <i class="fas fa-plus slide-toggle"></i> Enable switch to
+                      hide empty columns
                     </h6>
                     <div class="expanded">
                       <p>
@@ -729,7 +1151,163 @@ putclose log;
                       </p>
                     </div>
                     <!--//expanded-->
-                    <h4 class="docu-general-header">Symbol display</h4>
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block" id="general-symbols">
+                    <h3 class="block-title">
+                      Symbols: Naming, ordering, grouping
+                    </h3>
+                    <h6
+                      id="naming"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Symbol and Column
+                      Names
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        Under the heading <i>Naming</i>, the names of the GAMS
+                        symbols displayed in MIRO can be adapted. This includes
+                        the labels of the tabs displayed for each symbol as well
+                        as the table column headers.
+                      </p>
+                      <ul>
+                        <li>
+                          <i>Specify symbol alias:</i> <br />Specification of
+                          the labels of the symbol tabs.
+                          <div class="section-block">
+                            <img
+                              class="img-fluid"
+                              style="max-height: 150pt"
+                              src="assets/images/configuration_mode/general_naming_tab.png"
+                              alt="Symbol alias"
+                            />
+                          </div>
+                        </li>
+                        <li>
+                          <i>Specify column headers:</i> <br />To adjust a
+                          column header, the corresponding element must be
+                          deleted and replaced with a new one.
+                          <div class="section-block">
+                            <img
+                              class="img-fluid"
+                              style="max-height: 250pt"
+                              src="assets/images/configuration_mode/general_naming_headers.png"
+                              alt="Column headers"
+                            />
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                    <!--//expanded-->
+                    <h6
+                      id="tab-ordering"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Symbol Order
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        Here you can adjust the tab order in which the symbols
+                        are to be displayed in MIRO. To do this, simply drag and
+                        drop the symbols into the desired order.
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 300pt"
+                          src="assets/images/configuration_mode/general_ordering.png"
+                          alt="Ordering"
+                        />
+                      </div>
+                      <div class="callout-block callout-warning">
+                        <div class="icon-holder">
+                          <i class="fas fa-info-circle"></i>
+                        </div>
+                        <!--//icon-holder-->
+                        <div class="content">
+                          <b class="callout-title">Note:</b>
+                          <p>
+                            If symbols have been grouped using the
+                            <a href="#tab-grouping" class="scrollto"
+                              >grouping option</a
+                            >, only the individual symbols and not the
+                            configured groups are displayed here. If you want to
+                            change the position of a group, drag and drop the
+                            symbols that belong to this group to the desired
+                            position.
+                          </p>
+                        </div>
+                        <!--//content-->
+                      </div>
+                      <!--//callout-block-->
+                    </div>
+                    <!--//expanded-->
+                    <h6
+                      id="tab-grouping"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Symbol Groups
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        Multiple tabs of input symbols (or output symbols) can
+                        be grouped together. All symbols in a group are either
+                        displayed in a separate tab or side by side on the same
+                        tab.
+                      </p>
+                      <p>
+                        <a href="./widgets.html">Input widgets</a> can also be
+                        grouped. The order of the widgets can be changed
+                        directly when specifying the group members.<br />
+                        Note that adding or removing widgets does not
+                        automatically update the dropdown menus for selecting
+                        group members. You must restart the Configuration Mode
+                        for these changes to be reflected here.
+                      </p>
+                      <p>
+                        <b>Example:</b><br />
+                        For the input data of the transport model, one might
+                        want to group the symbols with geodata together:
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 200pt"
+                          src="assets/images/configuration_mode/general_inputGroups.png"
+                          alt="Specify input groups"
+                        />
+                      </div>
+                      <p>Which is displayed in the MIRO App as follows:</p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 325pt"
+                          src="assets/images/configuration_mode/general_inputGroups2.png"
+                          alt="Input group in MIRO"
+                        />
+                      </div>
+                    </div>
+                    <h6
+                      id="aggregate-widgets"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Should all input
+                      widgets (slider, dropdown menu, etc.) be aggregated on a
+                      single tab?
+                    </h6>
+                    <p class="expanded">
+                      If enabled, all scalar input widgets are displayed in the
+                      same tab and separated otherwise.
+                    </p>
                     <h6
                       id="hidden-symbols"
                       class="block-title"
@@ -789,302 +1367,6 @@ putclose log;
                       </p>
                     </div>
                     <!--//expanded-->
-                    <h6
-                      id="aggregate-widgets"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Should all input
-                      widgets (slider, dropdown menu, etc.) be aggregated on a
-                      single tab?
-                    </h6>
-                    <p class="expanded">
-                      If enabled, all scalar input widgets are displayed in the
-                      same tab and separated otherwise.
-                    </p>
-                    <h4 class="docu-general-header">Logo</h4>
-                    <h6
-                      id="app-logo"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Upload a custom
-                      logo for your MIRO app: png/jpg file (best ratio: 4,6:1).
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        This option allows you to use your own logo for your
-                        MIRO application, which is displayed in the upper left
-                        corner.
-                      </p>
-                      <div class="section-block">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 200pt"
-                          src="assets/images/configuration_mode/app-logo.png"
-                          alt="App logo"
-                        />
-                      </div>
-                    </div>
-                    <!--//expanded-->
-                    <h4 id="app-readme" class="docu-general-header">
-                      README file
-                    </h4>
-                    <h6
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Create an
-                      individual start page
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        You have the possibility to integrate a README file into
-                        the MIRO application. Its content is displayed in the
-                        input section in the first tab and is therefore the
-                        first thing the user sees after starting the
-                        application. This tab can be used by the developer to
-                        introduce and explain the MIRO application or the
-                        underlying GAMS model before the user starts working
-                        with it.
-                      </p>
-                      <div class="section-block">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 500pt"
-                          src="assets/images/configuration_mode/readme.png"
-                          alt="README file"
-                        />
-                      </div>
-                      <p>
-                        <b>Usage:</b><br />
-                        The readme file must be a
-                        <a
-                          href="https://guides.github.com/features/mastering-markdown/"
-                          target="_blank"
-                          >Markdown</a
-                        >
-                        or HTML document which is located in the model
-                        directory. The README option must be activated in the
-                        Configuration Mode. Three options are available:
-                      </p>
-
-                      <ul>
-                        <li>
-                          <b>README tab title</b> (mandatory)<br />
-                          With this option you can customize the title of the
-                          README tab in the input section. Default:
-                          <i>README</i>
-                        </li>
-                        <li>
-                          <b>README file name</b> (mandatory)<br />
-                          With this option you specify the name of the readme
-                          file that you want to display (minimum 4 characters).
-                        </li>
-                        <li>
-                          <b>Enable mathematical typesetting?</b>
-                          (optional)<br />
-                          In case you want to use mathematical notation in your
-                          README file, activate this checkbox. You can use
-                          inline math by wrapping your equations between
-                          <kbd>$</kbd> signs. To render the equation centered on
-                          its own line, use two dollar signs: <kbd>$$</kbd>.
-                          <p>
-                            <b>Example:</b><br />
-                            <kbd
-                              >This integral $\def\f#1{f(#1)} \f{x} =
-                              \int_{-\infty}^\infty\hat \f\xi\,e^{2 \pi i \xi
-                              x}\,d\xi$ is rendered inline.</kbd
-                            >
-                            is rendered as:
-                            <kbd class="katex"
-                              >This integral $\def\f#1{f(#1)} \f{x} =
-                              \int_{-\infty}^\infty\hat \f\xi\,e^{2 \pi i \xi
-                              x}\,d\xi$ is rendered inline.</kbd
-                            >
-                          </p>
-                          A list of all TeX functions supported by MIRO can be
-                          found
-                          <a href="https://katex.org/docs/supported.html"
-                            >here</a
-                          >.
-                        </li>
-                      </ul>
-                      <p>
-                        The readme file can be created or edited directly in
-                        Configuration Mode:
-                      </p>
-                      <div class="section-block">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 300pt"
-                          src="assets/images/configuration_mode/readme_editor.png"
-                          alt="Readme editor"
-                        />
-                      </div>
-                      <div class="callout-block callout-warning">
-                        <div class="icon-holder">
-                          <i class="fas fa-info-circle"></i>
-                        </div>
-                        <!--//icon-holder-->
-                        <div class="content">
-                          <b class="callout-title">Note:</b>
-                          <p>
-                            If you want to include images in your readme file,
-                            they must be located in the folder
-                            <i>static_&lt;modelname&gt;</i> in your model
-                            directory. In the Markdown/HTML file, the path of
-                            the images used must be pre-fixed with
-                            "static_&lt;modelname&gt;".
-                          </p>
-                        </div>
-                        <!--//content-->
-                      </div>
-                      <!--//callout-block-->
-                    </div>
-                    <!--//expanded-->
-                    <h4 class="docu-general-header">
-                      Symbol configuration: Naming, ordering, grouping
-                    </h4>
-                    <h6
-                      id="naming"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Naming
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        Under the heading <i>Naming</i>, the names of the GAMS
-                        symbols displayed in MIRO can be adapted. This includes
-                        the labels of the tabs displayed for each symbol as well
-                        as the table column headers.
-                      </p>
-                      <ul>
-                        <li>
-                          <i>Specify symbol alias:</i> <br />Specification of
-                          the labels of the symbol tabs.
-                          <div class="section-block">
-                            <img
-                              class="img-fluid"
-                              style="max-height: 150pt"
-                              src="assets/images/configuration_mode/general_naming_tab.png"
-                              alt="Symbol alias"
-                            />
-                          </div>
-                        </li>
-                        <li>
-                          <i>Specify column headers:</i> <br />To adjust a
-                          column header, the corresponding element must be
-                          deleted and replaced with a new one.
-                          <div class="section-block">
-                            <img
-                              class="img-fluid"
-                              style="max-height: 250pt"
-                              src="assets/images/configuration_mode/general_naming_headers.png"
-                              alt="Column headers"
-                            />
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                    <!--//expanded-->
-                    <h6
-                      id="tab-ordering"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Ordering
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        Here you can adjust the tab order in which the symbols
-                        are to be displayed in MIRO. To do this, simply drag and
-                        drop the symbols into the desired order.
-                      </p>
-                      <div class="section-block">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 300pt"
-                          src="assets/images/configuration_mode/general_ordering.png"
-                          alt="Ordering"
-                        />
-                      </div>
-                      <div class="callout-block callout-warning">
-                        <div class="icon-holder">
-                          <i class="fas fa-info-circle"></i>
-                        </div>
-                        <!--//icon-holder-->
-                        <div class="content">
-                          <b class="callout-title">Note:</b>
-                          <p>
-                            If symbols have been grouped using the
-                            <a href="#tab-grouping" class="scrollto"
-                              >grouping option</a
-                            >, only the individual symbols and not the
-                            configured groups are displayed here. If you want to
-                            change the position of a group, drag and drop the
-                            symbols that belong to this group to the desired
-                            position.
-                          </p>
-                        </div>
-                        <!--//content-->
-                      </div>
-                      <!--//callout-block-->
-                    </div>
-                    <!--//expanded-->
-                    <h6
-                      id="tab-grouping"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Tab grouping
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        Multiple tabs of input symbols (or output symbols) can
-                        be grouped together. All symbols in a group are either
-                        displayed in a separate tab or side by side on the same
-                        tab.
-                      </p>
-                      <p>
-                        <a href="./widgets.html">Input widgets</a> can also be
-                        grouped. The order of the widgets can be changed
-                        directly when specifying the group members.<br />
-                        Note that adding or removing widgets does not
-                        automatically update the dropdown menus for selecting
-                        group members. You must restart the Configuration Mode
-                        for these changes to be reflected here.
-                      </p>
-                      <p>
-                        <b>Example:</b><br />
-                        For the input data of the transport model, one might
-                        want to group the symbols with geodata together:
-                      </p>
-                      <div class="section-block">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 200pt"
-                          src="assets/images/configuration_mode/general_inputGroups.png"
-                          alt="Specify input groups"
-                        />
-                      </div>
-                      <p>Which is displayed in the MIRO App as follows:</p>
-                      <div class="section-block">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 325pt"
-                          src="assets/images/configuration_mode/general_inputGroups2.png"
-                          alt="Input group in MIRO"
-                        />
-                      </div>
-                    </div>
                     <h6
                       id="symbol-links"
                       class="block-title"
@@ -1155,440 +1437,10 @@ putclose log;
                         </li>
                       </ul>
                     </div>
-                    <h4 class="docu-general-header">Scenario & data</h4>
-                    <h6
-                      id="local-upload"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Activate local
-                      data upload module?
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        If enabled, scenario data can be loaded via local files.
-                      </p>
-                      <div class="section-block">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 325pt"
-                          src="assets/images/import-local.png"
-                          alt="Import local data"
-                        />
-                      </div>
-                    </div>
-                    <h6
-                      id="default-scenario"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Use a default
-                      scenario that will be loaded on startup?
-                    </h6>
-                    <p class="expanded">
-                      Allows you to pre-populate tables and widgets with data
-                      when starting MIRO. If this option is set and a scenario
-                      name is specified, MIRO looks for the corresponding
-                      scenario in the database at the application startup and
-                      automatically loads all data into the interface. In case
-                      always the same input data is used as base data, the step
-                      of data import into MIRO can be skipped with this option.
-                    </p>
-                    <h6
-                      id="include-metadata"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Include a
-                      metadata sheet in the Excel file (when exporting a
-                      scenario)?
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        The metatdata sheet contains information about the user
-                        name, the scenario name and the time the scenario was
-                        created.
-                      </p>
-                      <div class="section-block">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 50pt"
-                          src="assets/images/configuration_mode/general_export_metadata.png"
-                          alt="Metadata sheet"
-                        />
-                      </div>
-                    </div>
-                    <h6
-                      id="include-empty"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Include empty
-                      sheets in the Excel file?
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        This option specifies whether empty sheets should be
-                        included when exporting a scenario. Sheets can be empty
-                        e.g. when a scenario contains only input data (has not
-                        been solved).
-                      </p>
-                    </div>
-                    <h6
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Should users be
-                      allowed to add attachments to scenarios?
-                    </h6>
-                    <p class="expanded">
-                      Enables to save file attachments for scenarios. Read more
-                      about this in the <i>File attachments</i> section
-                      <a href="./start.html#file-attachments">here</a>.
-                    </p>
-                    <h6
-                      id="general-duration"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Duration the GAMS
-                      log and lst files are stored in the database (in days)
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        If you want to save the log and lst files of individual
-                        GAMS jobs, you can use this option to specify how long
-                        the files should be saved. 0 means files are not stored
-                        at all, 999 means files are stored indefinitely. This
-                        setting is ignored when the attachment module is not
-                        active. Note that this is currently only supported in
-                        the MIRO Base Mode.
-                      </p>
-                    </div>
-                    <h6
-                      id="general-output-attach"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Output
-                      attachments
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        Output attachments allow you to automatically attach
-                        files after a GAMS run has been successfully completed.
-                        This lets you store additional results alongside the
-                        ones displayed in the UI. In addition, MIRO gives you
-                        the option to choose what should happen when an
-                        attachment is not found after a successful GAMS run.
-                        Should the user be informed of this by an error message
-                        or should it be silently ignored. You can also choose to
-                        automatically extract the attachment to the working
-                        directory when you start another GAMS run with this
-                        scenario. This function adds a state to your scenarios.
-                        Per default, scenarios in MIRO are stateless. This means
-                        that running two consecutive GAMS runs with the same
-                        input data will result in the same output data. By
-                        adding an attachment to the scenario that GAMS is
-                        allowed to read on consecutive executions, the results
-                        may no longer be the same.
-                      </p>
-                      <p>Let's have a look at a simple (toy) example:</p>
-                      <pre><code class="language-gams">$if exist report.put $abort "Report was found"
-
-File report;
-put report;
-put "This is a report."
-putclose;
-</code></pre>
-                      <p>
-                        When you run this GAMS model for the first time, it
-                        creates a file <kbd>report.put</kbd>. When running it a
-                        second time, it aborts with a compilation error: "Report
-                        was found". If you add the file <kbd>report.put</kbd> as
-                        an output attachment and select to extract it into the
-                        working directory whenever you run this scenario again,
-                        your scenario will carry a state. This gives you the
-                        possibility to implement processes of any complexity in
-                        your MIRO application.
-                      </p>
-                      <div class="callout-block callout-warning">
-                        <div class="icon-holder">
-                          <i class="fas fa-info-circle"></i>
-                        </div>
-                        <!--//icon-holder-->
-                        <div class="content">
-                          <b class="callout-title">Note:</b>
-                          <p>
-                            When this option is activated, additional files will
-                            be saved to each solved scenario. You should make
-                            sure that the disk space used does not become
-                            excessive (e.g. by limiting the output written to
-                            the lst file).
-                          </p>
-                        </div>
-                        <!--//content-->
-                      </div>
-                      <!--//callout-block-->
-                    </div>
-                    <h4 class="docu-general-header">Computation</h4>
-                    <h6
-                      id="general-temp-dir"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Allow access to
-                      the temporary directory?
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        This option specifies whether all temporarily created
-                        files of the model run (like solution reports or the
-                        <span class="code">lst</span> and
-                        <span class="code">log</span> files) can be accessed by
-                        the user. If set to true, the files can be downloaded
-                        individually or as a ZIP archive with a click on the
-                        <img
-                          class="img-fluid"
-                          width="25"
-                          height="25"
-                          align="middle"
-                          src="assets/images/advanced-button.png"
-                          alt="Download temporary files"
-                        />
-                        button.
-                      </p>
-                      <div
-                        class="section-block"
-                        style="display: block; margin: auto; text-align: center"
-                      >
-                        <img
-                          class="img-fluid"
-                          style="max-height: 325pt"
-                          src="assets/images/download-tmp-files.png"
-                          alt="Output data screen - scalars"
-                        />
-                      </div>
-                    </div>
-                    <h6
-                      id="command-line-args"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Specify extra
-                      command line arguments that GAMS will be called with
-                    </h6>
-                    <p class="expanded">
-                      With this option, command line arguments can be specified
-                      that are set for each GAMS run that is started from MIRO.
-                      This can be GAMS options like
-                      <span class="code">limrow=10</span> or
-                      <span class="code">threads=4</span> but also custom
-                      double-dash parameters. Note, that the these command line
-                      arguments are static; they can not be changed by the user
-                      from MIRO. <br />For more information about command line
-                      parameters that can be set from MIRO using widgets like
-                      sliders, dropdown menus, checkboxes etc. click
-                      <a href="./model.html#command-line">here</a>.
-                    </p>
-                    <h6
-                      id="activate-hcube"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Activate
-                      Hypercube module?
-                    </h6>
-                    <p class="expanded">
-                      This option enables the submission of
-                      <a href="./hc-module.html">Hypercube jobs</a>. Note that
-                      you must use GAMS MIRO with a
-                      <a href="./server.html">GAMS Engine backend</a> (GAMS MIRO
-                      Server or GAMS MIRO Desktop - boosted by GAMS Engine) when
-                      you want to submit Hypercube jobs.
-                    </p>
-                    <h4 id="analysis-scripts" class="docu-general-header">
-                      Analysis scripts
-                    </h4>
-                    <p>
-                      MIRO allows you to run custom analysis scripts. These
-                      scripts have to generate HTML or Markdown output which
-                      will be displayed in the interface once the script
-                      finished. Scripts need to be placed in a folder called
-                      <span class="code">scripts_&lt;modelname&gt;</span>; this
-                      is also where MIRO executes them (important when you use
-                      relative paths in your script).
-                    </p>
-                    <div class="callout-block callout-warning">
-                      <div class="icon-holder">
-                        <i class="fas fa-info-circle"></i>
-                      </div>
-                      <!--//icon-holder-->
-                      <div class="content">
-                        <b class="callout-title">Note:</b>
-                        <p>
-                          All software needed to run the script must be
-                          installed on the client's machine and added to the
-                          PATH, as it is not part of a MIRO application.
-                        </p>
-                      </div>
-                      <!--//content-->
-                    </div>
-                    <!--//callout-block-->
-                    <h6
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Base Mode
-                    </h6>
-                    <p class="expanded">
-                      Analysis scripts configured for the Base Mode will appear
-                      as a new tab in the output data section. When the user
-                      runs your script, MIRO saves the data of the current
-                      scenario in a gdx file called
-                      <span class="code">data.gdx</span> in:
-                      <span class="code">scripts_&lt;modelname&gt;</span>. Your
-                      script can then read and analyze this data and produce
-                      output in the form of a single HTML or Markdown file. This
-                      file will be loaded and displayed in MIRO once your script
-                      finished. Script results are stored in the database as
-                      part of a scenario. This means that when you load a
-                      scenario (either to compare it with other scenarios or to
-                      modify it), the script results are loaded as well.
-                      <br /><br />
-                      Please have a look at the following example of an analysis
-                      script for batches of scenarios to learn how to include a
-                      script using the Configuration Mode.
-                    </p>
-                    <h6
-                      id="batch-analysis-scripts"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Batch analysis
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        Custom scripts can be used to run analyses on multiple
-                        scenarios at once from the
-                        <a href="./start.html#scenario-loading">Batch Load</a>
-                        module. Let's consider the example that comes with the
-                        <i>pickstock</i> model: a
-                        <a href="https://jupyter.org" target="_blank"
-                          >Jupyter Notebook</a
-                        >
-                        that tries to answer high-level questions like "How many
-                        training days should I use" and "How many stocks should
-                        I choose". You can find this script in
-                        <span class="code"
-                          >scripts_pickstock/hcube_analysis.ipynb</span
-                        >. First, we have to tell MIRO that we want to use a
-                        custom analysis script. The Configuration Mode allows us
-                        to set everything up:
-                      </p>
-                      <div class="section-block" style="text-align: center">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 300pt"
-                          src="assets/images/configuration_mode/hcube_script_example.png"
-                          alt="Batch analysis script configuration"
-                        />
-                      </div>
-                      <p>
-                        Each script has to have a unique identifier. The
-                        identifier is only used internally and should not be
-                        changed. What's displayed in the user interface is the
-                        script alias. The command to run is "jupyter", because
-                        we want to run a Jupyter Notebook. Note that in order
-                        for this to work,
-                        <a href="https://jupyter.org/install" target="_blank"
-                          >Jupyter</a
-                        >
-                        needs to be installed on the client's machine and added
-                        to the
-                        <a
-                          href="https://en.wikipedia.org/wiki/PATH_(variable)"
-                          target="_blank"
-                          >PATH</a
-                        >.
-                      </p>
-                      <div class="callout-block callout-warning">
-                        <div class="icon-holder">
-                          <i class="fas fa-info-circle"></i>
-                        </div>
-                        <!--//icon-holder-->
-                        <div class="content">
-                          <b class="callout-title">Info:</b>
-                          <p>
-                            For more information on how to set up the Python
-                            environment required to run this example and make
-                            MIRO aware of it, see
-                            <a href="./deployment.html#custom-environments"
-                              >here</a
-                            >.
-                          </p>
-                        </div>
-                        <!--//content-->
-                      </div>
-                      <!--//callout-block-->
-                      <p>
-                        Jupyter allows us to run and convert our notebook to
-                        HTML. In order to do so, we specify the relevant
-                        arguments. The resulting call would be:
-                        <kbd
-                          >jupyter nbconvert --to html --execute
-                          hcube_analysis.ipynb</kbd
-                        >.
-                      </p>
-                      <p>
-                        Now that we set everything up, we can start testing our
-                        script. We select a few scenarios that we want to
-                        analyze, and click on "Analyze". The following dialog
-                        opens:
-                      </p>
-                      <div class="section-block" style="text-align: center">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 150pt"
-                          src="assets/images/batch_img/hcube_script_select.png"
-                          alt="Dialog to select batch analysis script"
-                        />
-                      </div>
-                      <p>
-                        We select the script we want to run and click on "Start
-                        script". MIRO will now generate GDX containers with the
-                        data for each scenario you selected to be analyzed and
-                        store them inside:
-                        <span class="code">scripts_&lt;modelname&gt;</span>.
-                        Additionally, MIRO writes a file:
-                        <span class="code">hcube_file_names.txt</span>. This
-                        file simply lists the filenames of the gdx containers to
-                        be analyzed (separated by a newline). Once the script
-                        finished, the results are read by MIRO and displayed:
-                      </p>
-                      <div class="section-block" style="text-align: center">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 300pt"
-                          src="assets/images/batch_img/hcube_script_results.png"
-                          alt="Batch analysis script results"
-                        />
-                      </div>
-                    </div>
                   </div>
                   <!--//section-block-->
                   <div class="section-block" id="table-settings">
-                    <h3 class="block-title">Configure tables</h3>
+                    <h3 class="block-title">Tables</h3>
                     <p>
                       In this section you can customize the general
                       configuration of input and output tables (global settings)
@@ -2314,13 +2166,13 @@ $offExternalInput
                   </div>
                   <!--//section-block-->
                   <div class="section-block" id="configure-widgets">
-                    <h3 class="block-title">Configure widgets</h3>
+                    <h3 class="block-title">Widgets</h3>
                     <p>
                       <i>Input widgets</i> can be used instead of tables to
                       enter scalar input data. Examples of such widgets include:
                       sliders, dropdown menus, date selectors or checkboxes. In
-                      the <i>configure widgets</i> section of the Configuration
-                      Mode you can configure widgets for:
+                      the <i>Widgets</i> section of the Configuration Mode you
+                      can configure widgets for:
                     </p>
                     <ul>
                       <li>
@@ -2359,9 +2211,7 @@ $offExternalInput
                         >
                       </li>
                     </ul>
-                    <p>
-                      The section <i>Configure widgets</i> looks as follows:
-                    </p>
+                    <p>The section <i>Widgets</i> looks as follows:</p>
                     <div class="section-block">
                       <img
                         class="img-fluid"
@@ -2804,7 +2654,7 @@ $offExternalInput
                   </div>
                   <!--//section-block-->
                   <div class="section-block" id="configure-graphs">
-                    <h3 class="block-title">Configure graphs</h3>
+                    <h3 class="block-title">Graphs</h3>
                     <p>
                       Besides the default tabular format, multidimensional GAMS
                       symbols can be visualized as graphs. GAMS MIRO offers
@@ -3292,6 +3142,178 @@ $offExternalInput
                       <!--//content-->
                     </div>
                     <!--//callout-block-->
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block" id="database-management">
+                    <h3 id="analysis-scripts" class="block-title">
+                      Scenario analysis
+                    </h3>
+                    <p>
+                      MIRO allows you to run custom analysis scripts. These
+                      scripts have to generate HTML or Markdown output which
+                      will be displayed in the interface once the script
+                      finished. Scripts need to be placed in a folder called
+                      <span class="code">scripts_&lt;modelname&gt;</span>; this
+                      is also where MIRO executes them (important when you use
+                      relative paths in your script).
+                    </p>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          All software needed to run the script must be
+                          installed on the client's machine and added to the
+                          PATH, as it is not part of a MIRO application.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <h6
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Individual
+                      Scenarios
+                    </h6>
+                    <p class="expanded">
+                      Analysis scripts configured for individual scenarios will
+                      appear as a new tab in the output data section. When the
+                      user runs your script, MIRO saves the data of the current
+                      scenario in a gdx file called
+                      <span class="code">data.gdx</span> in:
+                      <span class="code">scripts_&lt;modelname&gt;</span>. Your
+                      script can then read and analyze this data and produce
+                      output in the form of a single HTML or Markdown file. This
+                      file will be loaded and displayed in MIRO once your script
+                      finished. Script results are stored in the database as
+                      part of a scenario. This means that when you load a
+                      scenario (either to compare it with other scenarios or to
+                      modify it), the script results are loaded as well.
+                      <br /><br />
+                      Please have a look at the following example of an analysis
+                      script for batches of scenarios to learn how to include a
+                      script using the Configuration Mode.
+                    </p>
+                    <h6
+                      id="batch-analysis-scripts"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Batch analysis
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        Custom scripts can be used to run analyses on multiple
+                        scenarios at once from the
+                        <a href="./start.html#scenario-loading">Batch Load</a>
+                        module. Let's consider the example that comes with the
+                        <i>pickstock</i> model: a
+                        <a href="https://jupyter.org" target="_blank"
+                          >Jupyter Notebook</a
+                        >
+                        that tries to answer high-level questions like "How many
+                        training days should I use" and "How many stocks should
+                        I choose". You can find this script in
+                        <span class="code"
+                          >scripts_pickstock/hcube_analysis.ipynb</span
+                        >. First, we have to tell MIRO that we want to use a
+                        custom analysis script. The Configuration Mode allows us
+                        to set everything up:
+                      </p>
+                      <div class="section-block" style="text-align: center">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 300pt"
+                          src="assets/images/configuration_mode/hcube_script_example.png"
+                          alt="Batch analysis script configuration"
+                        />
+                      </div>
+                      <p>
+                        Each script has to have a unique identifier. The
+                        identifier is only used internally and should not be
+                        changed. What's displayed in the user interface is the
+                        script alias. The command to run is "jupyter", because
+                        we want to run a Jupyter Notebook. Note that in order
+                        for this to work,
+                        <a href="https://jupyter.org/install" target="_blank"
+                          >Jupyter</a
+                        >
+                        needs to be installed on the client's machine and added
+                        to the
+                        <a
+                          href="https://en.wikipedia.org/wiki/PATH_(variable)"
+                          target="_blank"
+                          >PATH</a
+                        >.
+                      </p>
+                      <div class="callout-block callout-warning">
+                        <div class="icon-holder">
+                          <i class="fas fa-info-circle"></i>
+                        </div>
+                        <!--//icon-holder-->
+                        <div class="content">
+                          <b class="callout-title">Info:</b>
+                          <p>
+                            For more information on how to set up the Python
+                            environment required to run this example and make
+                            MIRO aware of it, see
+                            <a href="./deployment.html#custom-environments"
+                              >here</a
+                            >.
+                          </p>
+                        </div>
+                        <!--//content-->
+                      </div>
+                      <!--//callout-block-->
+                      <p>
+                        Jupyter allows us to run and convert our notebook to
+                        HTML. In order to do so, we specify the relevant
+                        arguments. The resulting call would be:
+                        <kbd
+                          >jupyter nbconvert --to html --execute
+                          hcube_analysis.ipynb</kbd
+                        >.
+                      </p>
+                      <p>
+                        Now that we set everything up, we can start testing our
+                        script. We select a few scenarios that we want to
+                        analyze, and click on "Analyze". The following dialog
+                        opens:
+                      </p>
+                      <div class="section-block" style="text-align: center">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 150pt"
+                          src="assets/images/batch_img/hcube_script_select.png"
+                          alt="Dialog to select batch analysis script"
+                        />
+                      </div>
+                      <p>
+                        We select the script we want to run and click on "Start
+                        script". MIRO will now generate GDX containers with the
+                        data for each scenario you selected to be analyzed and
+                        store them inside:
+                        <span class="code">scripts_&lt;modelname&gt;</span>.
+                        Additionally, MIRO writes a file:
+                        <span class="code">hcube_file_names.txt</span>. This
+                        file simply lists the filenames of the gdx containers to
+                        be analyzed (separated by a newline). Once the script
+                        finished, the results are read by MIRO and displayed:
+                      </p>
+                      <div class="section-block" style="text-align: center">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 300pt"
+                          src="assets/images/batch_img/hcube_script_results.png"
+                          alt="Batch analysis script results"
+                        />
+                      </div>
+                    </div>
                   </div>
                   <!--//section-block-->
                   <div class="section-block" id="database-management">
@@ -4351,9 +4373,9 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                                 entries for the table to be configured, you can
                                 simply create an initial configuration using the
                                 Configuration Mode. Select the desired symbol
-                                under "Configure tables" &rarr; "Symbol tables"
-                                and click on save. Make sure that "default" is
-                                selected as table type to be used.
+                                under "Tables" &rarr; "Symbol tables" and click
+                                on save. Make sure that "default" is selected as
+                                table type to be used.
                               </p>
                               <div class="section-block">
                                 <img
@@ -4612,9 +4634,9 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                             entries for the table to be configured, you can
                             simply create an initial configuration using the
                             Configuration Mode. Select the desired symbol under
-                            "Configure tables" &rarr; "Symbol tables" and click
-                            on save. Make sure that "default" is selected as
-                            table type to be used.
+                            "Tables" &rarr; "Symbol tables" and click on save.
+                            Make sure that "default" is selected as table type
+                            to be used.
                           </p>
                           <div class="section-block">
                             <img
@@ -5230,8 +5252,8 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                       <div class="content">
                         <b class="callout-title">Tip:</b>
                         <p>
-                          In the MIRO Base Mode, widgets with ranges are only
-                          available for double-dash parameters!
+                          Widgets with ranges are only available for double-dash
+                          parameters!
                         </p>
                       </div>
                       <!--//content-->
@@ -6699,14 +6721,20 @@ attachments$getIds()
                     <a class="nav-link scrollto" href="#general-settings"
                       >General settings</a
                     >
+                    <a class="nav-link scrollto" href="#general-symbols"
+                      >Symbols</a
+                    >
                     <a class="nav-link scrollto" href="#table-settings"
-                      >Configure tables</a
+                      >Tables</a
                     >
                     <a class="nav-link scrollto" href="#configure-widgets"
-                      >Configure widgets</a
+                      >Widgets</a
                     >
                     <a class="nav-link scrollto" href="#configure-graphs"
-                      >Configure graphs</a
+                      >Graphs</a
+                    >
+                    <a class="nav-link scrollto" href="#scenario-analysis"
+                      >Scenario analysis</a
                     >
                     <a class="nav-link scrollto" href="#database-management"
                       >Database management</a

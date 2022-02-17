@@ -1024,38 +1024,44 @@
     "uiR":{
       "configMode": "GAMS MIRO Configuration Mode",
       "general": "General settings",
-      "table": "Configure tables",
-      "widgets": "Configure widgets",
-      "graphs": "Configure graphs",
+      "symbol": "Symbols",
+      "table": "Tables",
+      "widgets": "Widgets",
+      "graphs": "Graphs",
+      "analysis": "Scenario analysis",
       "database": "Database management",
       "restartRequired": "Note: For these changes to take effect, you must restart the Configuration Mode!"
     },
     "general":{
       "ui":{
         "title":"General settings",
-        "tabInterface": "Interface",
-        "tabSymbols": "Symbol configuration",
-        "tabModules": "Modules",
+        "tabInterface": "User Interface",
+        "tabSubmission": "Job Submission",
+        "tabLogs": "Log Files",
+        "tabComparison": "Scenario Comparison",
+        "tabData": "Scenario Data and Attachments",
         "tabScripts": "Analysis scripts",
-        "headerGeneral": "General",
-        "headerPivotcompare": "Pivot scenario comparison",
-        "headerRenderers": "Default renderers",
-        "headerLogo": "Logo",
-        "headerSymbolDisplay": "Symbol display",
+        "tabSymbolLinks": "Hidden Symbols and Symbol Links",
+        "headerGeneral": "Title and Logo",
+        "headerPivotcompare": "Pivot comparison mode",
+        "headerRenderers": "Default Renderers",
+        "headerAppearance": "Appearance",
+        "headerSymbolDisplay": "Hide symbols",
         "headerTabGrouping": "Tab grouping",
         "headerTabSymlinks": "Use output data as input data",
         "headerInputGroups": "Input groups",
         "headerInputWidgetGroups": "Widget groups",
         "headerOutputGroups": "Output groups",
-        "headerSymbolNaming": "Naming",
+        "tabNameOrder": "Symbol Order and Groups",
+        "headerSymbolNaming": "Symbol and Column Names",
         "headerSymbolGrouping": "Ordering",
-        "headerBaseScripts": "Base Mode",
-        "headerOutputAttach": "Output attachments",
+        "headerBaseScripts": "Individual Scenarios",
+        "headerOutputAttach": "Output Attachments",
+        "headerExport": "Export",
+        "headerImport": "Import",
         "baseScriptsTooltip": "Run custom analysis scripts which will be displayed in the output section",
-        "headerHcubeScripts": "Batch analysis",
+        "headerHcubeScripts": "Batch Analysis",
         "hcubeScriptsTooltip": "Run custom analysis scripts for multiple scenarios at once",
-        "headerScenData": "Scenario & data",
-        "headerComputation": "Computation",
         "tooltipDocs": "Open documentation"
       },
       "modalDialog":{
@@ -1067,14 +1073,16 @@
         "choices": ["English", "German", "Chinese"]
       },
       "theme":{
-        "label": "Color mode to use",
+        "label": "Color mode",
         "choices": ["Use system/browser settings", "Light mode", "Dark mode"]
       },
       "customCss": {
-        "label": "Include a custom CSS file? The file must be named 'custom.css' and located in the static_<modelname> directory."
+        "label": "Include a custom CSS file",
+        "tooltip": "The file must be named 'custom.css' and located in the static_<modelname> directory."
       },
       "pageTitle":{
-        "label": "Application title (visible in browser tab)"
+        "label": "Application title",
+        "tooltip": "The title is visible in the browser tab"
       },
       "scen":{
         "label": "Default scenario comparison mode",
@@ -1082,7 +1090,7 @@
         "Pivot view (suited for > 2 scenarios to compare)"]
       },
       "defaultScenName":{
-        "checkbox": "Use a default scenario that will be loaded on startup?",
+        "checkbox": "Load a default scenario on startup",
         "tooltip": "Allows you to pre-populate tables and widgets with data when starting MIRO",
         "label": "Name of the default scenario"
       },
@@ -1090,23 +1098,23 @@
         "label": "Specify extra command line arguments that GAMS will be called with"
       },
       "groups":{
-        "input": "Divide input symbols into groups",
-        "widgets": "Divide input widgets into groups",
-        "output": "Divide output symbols into groups"
+        "input": "Add group for input symbols",
+        "widgets": "Add group for input widgets",
+        "output": "Add group for output symbols"
       },
       "symlinks":{
-        "label": "Specify symbol links (results that can be used as input data)"
+        "label": "Add symbol link (results that can be used as input data)"
       },
       "scripts":{
-        "base": "Specify custom analysis scripts for the Base Mode",
+        "base": "Specify custom analysis scripts for individual scenarios",
         "hcube": "Specify custom analysis scripts for analyzing batches of scenarios"
       },
       "outputAttach": {
         "label": "Add new attachment"
       },
       "overwriteSheetOrder":{
-        "input": "Specify the tab order of the input symbols (drag & drop)",
-        "output": "Specify the tab order of the output symbols (drag & drop)"
+        "input": "Order of input symbol tabs (modify via drag & drop)",
+        "output": "Order of output symbol tabs (drag & drop)"
       },
       "overwriteSymbolAliases":{
         "label": "Specify symbol alias",
@@ -1117,19 +1125,20 @@
         "label": "Specify column headers"
       },
       "hiddenOutputSymbols":{
-        "label": "Symbols that should not be displayed but can be used in graphs etc."
+        "label": "Output symbols that should not be displayed but can be used in graphs etc."
       },
       "hiddenOutputScalars":{
-        "label": "Scalars that should not be displayed in the scalars table but can be used in graphs etc."
+        "label": "Output scalars that should not be displayed in the scalars table but can be used in graphs etc."
       },
       "pivotcolor":{
         "label": "Background color of row and column headers in pivot tables."
       },
       "mirologfile":{
-        "label": "Enter the name of the MIRO log file (if available). Minimum 3 characters."
+        "label": "Include custom log file?",
+        "tooltip": "Enter the name of the MIRO log file (minimum 3 characters). Otherwise, leave this field empty."
       },
       "readme":{
-        "label": "README file",
+        "label": "README File",
         "readmeTooltip": "A README file is displayed in the input section as an individual start page",
         "useReadme": "Include README file",
         "tabTitle": "README tab title",
@@ -1158,7 +1167,8 @@
       },
       "logo":{
         "header": "Logo preview:",
-        "label": "Upload a custom logo for your MIRO app: png/jpg file (best format: 4.6:1 or 230:50px)",
+        "label": "Upload a custom logo for your MIRO app",
+        "tooltip": "png/jpg file (best format: 4.6:1 or 230:50px)",
         "placeholder": "No file selected"
       },
       "actScen":{
@@ -1169,21 +1179,21 @@
         "label": "Launch app in strict mode? This results in throwing error messages instead of accepting possibly faulty user entries."
       },
       "actUpload":{
-        "title": "Enables the user to use local data for GAMS runs",
-        "label": "Activate local data upload module?"
+        "title": "Enables the user to import local data into a sandbox scenario",
+        "label": "Enable local data upload"
       },
       "actShareScen":{
         "label": "Enable scenario sharing between different users"
       },
       "actLog":{
-        "label": "Show log file in UI"
+        "label": "Show log file"
       },
       "actLst":{
-        "label": "Show listing (lst) file in UI"
+        "label": "Show listing (lst) file"
       },
       "actAttach":{
         "title": "Can be files of any format. MIRO distinguishes between two types of attachments: attachments that can be seen and read by your GAMS model and files that can not be seen.",
-        "label": "Should users be allowed to add attachments to scenarios?"
+        "label": "Allow user to add attachments to scenarios"
       },
       "aggregate":{
         "title": "If not activated, each input widget is displayed in a separate tab.",
@@ -1194,17 +1204,18 @@
       },
       "meta":{
         "title": "Metadata contains information about the user name, the scenario name and the creation time of the scenario",
-        "label": "Include a metadata sheet in the Excel file (when exporting a scenario)?"
+        "label": "Include a metadata sheet in the Excel file (when exporting a scenario)"
       },
       "empty":{
         "title": "Sheets can be empty e.g. when the exported scenario only contains input data.",
-        "label": "Include empty sheets in the Excel file?"
+        "label": "Include empty sheets in the Excel file"
       },
       "downloadTempFiles":{
-        "label": "Allow access to the temporary directory?"
+        "label": "Allow access to the temporary working directory"
       },
       "hcubeModule":{
-        "label": "Activate Hypercube module?"
+        "label": "Activate Hypercube module",
+        "tooltip": "Requires GAMS Engine backend"
       },
       "auto":{
         "label": "Generate graphs for each input symbol automatically (pivot tool)"
@@ -1248,7 +1259,7 @@
           "label":"Number of decimal places to display"
         },
         "rownames":{
-          "label":"Show row numbers?"
+          "label":"Show row numbers"
         },
         "colReorder":{
           "label":"Allow reordering of columns?"
@@ -1406,12 +1417,12 @@
           "label": "Select operator",
           "choices": ["Minimum", "Maximum", "Count", "Mean", "Median", "Variance", "Standard Deviation"]
         },
-        "depSelector": "Static value?",
+        "depSelector": "Static value",
         "step": "Step size (also decimal places possible)",
         "minStep": "Minimum step size",
         "minStepTooltip": "Only relevant in Hypercube module. If empty, the step size is used. - Open documentation",
         "ticks": "Show tick marks?",
-        "hcube": "Should element be expanded automatically when submitting Hypercube jobs?"
+        "hcube": "Expand to slider range when submitting Hypercube jobs"
       },
       "sliderrange":{
         "label": "Choose a label",
@@ -1423,13 +1434,13 @@
           "label": "Select operator",
           "choices": ["Minimum", "Maximum", "Count", "Mean", "Median", "Variance", "Standard Deviation"]
         },
-        "depSelector": "Static value?",
+        "depSelector": "Static value",
         "max": "Set static maximum value",
         "default1": "Lower default value",
         "default2": "Upper default value",
         "step": "Step size (also decimal places possible)",
         "ticks": "Show tick marks?",
-        "hcube": "Should element be expanded automatically when submitting Hypercube jobs?"
+        "hcube": "Expand automatically when submitting Hypercube jobs"
       },
       "dropdown":{
         "label": "Choose a label",
@@ -1445,12 +1456,12 @@
         "multiple": "Should multiple items be selectable?",
         "clearValue": "Communicate as element text with GAMS",
         "clearValueTooltip": "Causes element label to be an empty string. - Open documentation",
-        "hcube": "Should element be expanded automatically when submitting Hypercube jobs?"
+        "hcube": "Expand to multidropdown menu when submitting Hypercube jobs"
       },
       "checkbox":{
         "label": "Choose a label",
-        "default": "Default value",
-        "hcube": "Should element be expanded automatically when submitting Hypercube jobs?"
+        "default": "Set default to true",
+        "hcube": "Expand to multidropdown menu when submitting Hypercube jobs"
       },
       "date":{
         "label": "Choose a label",
@@ -1476,7 +1487,7 @@
         },
         "daysDisabled": "Select weekdays that you want to disable",
         "autoclose": "Should datepicker be closed immediately when a date is selected?",
-        "hcube": "Should element be expanded automatically when submitting Hypercube jobs?"
+        "hcube": "Expand to daterange selector when submitting Hypercube jobs"
       },
       "daterange":{
         "label": "Choose a label",
@@ -1505,7 +1516,7 @@
         },
         "separator": "Select the separator between start and end date selector",
         "autoclose": "Should datepicker be closed immediately when a date range is selected?",
-        "hcube": "Should element be expanded automatically when submitting Hypercube jobs?"
+        "hcube": "Expand automatically when submitting Hypercube jobs"
       },
       "textinput":{
         "label": "Choose a label",
@@ -1752,13 +1763,13 @@
         },
         "legend":{
           "title": "Legend options",
-          "activate": "Should a legend be displayed?",
-          "show": "How should the legend be displayed?",
+          "activate": "Show a legend",
+          "show": "Display style",
           "showChoices": ["auto", "always", "on mouseover", "follow"],
           "width": "Width of the legend (in px)",
           "showZeroValues": "Show zero value labels in the legend",
-          "labelsSeparateLines": "Show labels in separate lines?",
-          "hideOnMouseOut": "Hide legend when mouse is moved out of chart?"
+          "labelsSeparateLines": "Show labels in separate lines",
+          "hideOnMouseOut": "Hide legend when mouse is moved out of chart"
         }
       },
       "leafletOptions":{
@@ -1768,11 +1779,11 @@
         "hideGroups": "Select groups that should be hidden on startup",
         "layer":{
           "title": "Layer control options",
-          "baseGroups": "Which base groups shall be selectable?",
-          "overlayGroups": "Which overlay groups shall be selectable?",
-          "position": "Should grid lines be displayed?",
+          "baseGroups": "Selectable base groups",
+          "overlayGroups": "Selectable overlay groups",
+          "position": "Display grid lines",
           "positionChoices": ["Top right", "Bottom right", "Bottom left", "Top left"],
-          "collapsed": "Shall layer control panel be collapsed?"
+          "collapsed": "Collapse layer control panel"
         }
       },
       "timevisOptions":{
@@ -1783,19 +1794,20 @@
           "showZoom": "Include 'Zoom In' / 'Zoom Out' buttons? Zoom can also be done via ctrl + mouse wheel",
           "zoomFactor": "Zoom factor? Zooming out from 20 days with a zoom factor of 1 will results in showing 40 days. No preview available.",
           "fit": "Fit all data on the timeline when the timeline initializes? Otherwise, the timeline will be set to show the current date.",
-          "editable": "Enable item editing?",
-          "multiselect": "Enable multiselect of items (ctrl+click, shift+click)?",
-          "showCurrentTime": "Show a vertical bar at the current time?"
+          "editable": "Enable item editing",
+          "multiselect": "Enable multiselect of items (ctrl+click, shift+click)",
+          "showCurrentTime": "Show a vertical bar at the current time"
         }
       },
       "miroPivotOptions":{
         "externalDefaultViewSwitch": "Use external default view",
         "externalDefaultViewName": "Name of the view to use as default",
         "infoMsg": "Please use directly the preview on the right side to configure the default view.",
-        "hideEmptyColsSwitch": "Activate switch to hide empty columns",
+        "hideEmptyColsSwitch": "Enable switch to hide empty columns",
         "emptyUEL": "UEL, which indicates a missing value (must not be empty string)",
         "hidePivotControlsSwitch": "Show presentation mode by default",
         "fixedColumnsSwitch": "Enable fixed columns",
+        "fixedColumnsTooltip": "If this option is activated, the columns of the pivot table are fixed to the left side of the table and remain visible when scrolling horizontally.",
         "infoMsgDummyData": "Currently the preview uses dummy data. This means that the filters will have dummy values. If you want to change these, you have to edit the JSON configuration file manually."
       },
       "datatableOptions":{
@@ -1850,13 +1862,13 @@
           "symbolWidgetgroups": "Name of the widget group",
           "groupMemberIn": "Select group members",
           "groupMemberWidget": "Select group members",
-          "groupSameTabIn": "Show all symbols side by side on the same tab?",
-          "groupSameTabWidget": "Show all widgets side by side on the same tab?"
+          "groupSameTabIn": "Show all symbols side by side on the same tab",
+          "groupSameTabWidget": "Show all widgets side by side on the same tab"
         },
         "addOutputGroup":{
-          "symbolOutputgroups": "Name of the output group?",
+          "symbolOutputgroups": "Name of the output group",
           "groupMemberOut": "Select group members",
-          "groupSameTabOut": "Show all symbols side by side on the same tab?"
+          "groupSameTabOut": "Show all symbols side by side on the same tab"
         },
         "addSymlink":{
           "source": "Name of the output symbol",
@@ -1873,45 +1885,45 @@
         },
         "addOutAttach":{
           "file": "Name of the file to attach",
-          "exec": "Allow model to read this file?",
-          "error": "Should an error be displayed if the file is not found?"
+          "exec": "Allow model to read this file",
+          "error": "Display an error if the file is not found"
         },
         "addDyEvent":{
-          "dyDyEventCheck": "Static event?",
+          "dyDyEventCheck": "Static event",
           "dyDyEventTrue": "Set a date for the event (yyyy-mm-dd)",
           "dyDyEventFalse": "Which symbol shall be used?",
-          "label": "What label should be used?",
+          "label": "Label",
           "labelLoc": "Position of the label",
           "labelLocChoices": ["top", "bottom"],
-          "color": "What color should the event line have?",
+          "color": "Event line color",
           "strokePattern": "Stroke pattern type",
           "strokePatternChoices": ["dashed", "dotted", "dotdash", "solid"]
         },
         "addDyLimit":{
-          "dyDyLimitCheck": "Static limit?",
+          "dyDyLimitCheck": "Static limit",
           "dyDyLimitTrue": "Set a numeric value for the limit",
           "dyDyLimitFalse": "Which symbol shall be used?",
           "limit": "Set a numeric value for the limit",
-          "label": "What label should be used?",
+          "label": "Label",
           "labelLoc": "Position of the label",
           "labelLocChoices": ["left", "right"],
-          "color": "What color should the limit line have?",
+          "color": "Limit line color",
           "strokePattern": "Stroke pattern type",
           "strokePatternChoices": ["dashed", "dotted", "dotdash", "solid"]
         },
         "addDyAnnotation":{
           "dyDyAnnotation": "What shall be annotated?",
-          "text": "What text should be used?",
-          "tooltip": "What tooltip should be used?",
+          "text": "Label",
+          "tooltip": "Tooltip",
           "width": "Specify annotation width",
           "height": "Specify annotation height",
-          "attachAtBottom": "Should annotation be attached to x axis?"
+          "attachAtBottom": "Attach annotation to x axis"
         },
         "addDyShading":{
-          "dyDyShadingCheck": "Static value?",
+          "dyDyShadingCheck": "Static value",
           "dyDyShadingTrue": "Static lower bound",
           "dyDyShadingFalse": "Symbol for lower bound",
-          "dyDyShadingUpCheck": "Static value?",
+          "dyDyShadingUpCheck": "Static value",
           "dyDyShadingUpTrue": "Static upper bound",
           "dyDyShadingUpFalse": "Symbol for upper bound",
           "axis": "Axis where shading shall be applied to",
@@ -1930,7 +1942,7 @@
           "markerColor": "Marker color",
           "markerColorChoices": ["red", "darkred", "lightred", "orange", "beige", "green", "darkgreen", "lightgreen", "blue", "darkblue", "lightblue", "purple", "darkpurple", "pink", "cadetblue", "white", "gray", "lightgray", "black"],
           "options": "Label options",
-          "labelPermanent": "Display labels only on hover?",
+          "labelPermanent": "Display labels only on hover",
           "labelcolor": "Choose a font color for the label",
           "labelbgcolor": "Choose a background color for the label",
           "labelsize": "Choose a font size for the label (in px)"
@@ -1959,11 +1971,11 @@
           "options": "Additional chart options",
           "width": "Choose the maximal width of the created elements",
           "height": "Choose the maximal height of the created elements",
-          "opacity": "Opacity of the chart?",
+          "opacity": "Opacity of the chart",
           "showlabels": "Should values be displayed above chart elements?",
           "transitionTime": "Select the duration of transitions when a property of a chart is updated (in milliseconds)",
           "layerId": "Select layer ID",
-          "legend": "Should a legend (data column names) be visible?",
+          "legend": "Show a legend (data column names)",
           "legendPosition": "Legend position",
           "legendPositionChoices": ["topright", "topleft", "bottomright", "bottomleft"]
         },
@@ -1991,8 +2003,8 @@
           "size": "Select marker size",
           "lineWidth": "Select marker outline width",
           "lineColor": "Select marker outline color",
-          "legend": "Show legend? (this option could be overwritten by the by the global show legend option)",
-          "frame": "Use a data dimension for animation (as frames)?"
+          "legend": "Show legend (this option could be overwritten by the by the global show legend option)",
+          "frame": "Use a data dimension for animation (as frames)"
         },
         "addLineDataEl":{
           "chartYdata": "What should be plotted on the y axis?",
@@ -2014,7 +2026,7 @@
           "chartYdata": "What should be plotted on the y axis?",
           "chartYlabel": "Data label (e.g. for legend)",
           "symbol": "Select marker symbol",
-          "colorCheck": "Use static color?",
+          "colorCheck": "Static color",
           "colorCheckTrue": "Select marker color",
           "colorCheckFalse": "Select a domain on which the color should depend on.",
           "size": "Select marker size",
@@ -2023,32 +2035,32 @@
           "maxsize": "Select maximum marker size (optional)",
           "lineWidth": "Select marker outline width",
           "lineColor": "Select marker outline color",
-          "legend": "Show legend? (this option could be overwritten by the by the global show legend option)",
+          "legend": "Show legend (this option could be overwritten by the by the global show legend option)",
           "frame": "Use a data dimension for animation (as frames)?"
         },
         "addHistDataEl":{
           "histXdata": "What should be plotted?",
-          "label": "What label should be used?",
-          "color": "Select bar color"
+          "label": "Label",
+          "color": "Bar color"
         },
         "addDyDataEl":{
           "chartYdata": "What index do you want to plot on the y-axis?",
-          "label": "What label should be used?",
+          "label": "Label",
           "yaxis": "Axis position",
           "yaxisChoices": ["left", "right"],
-          "color": "What color should be used for this series?",
-          "stepPlot": "Do you want the series to be a step plot?",
-          "stemPlot": "Do you want the series to be a stem plot?",
-          "fillGraph": "Should the area underneath the graph be filled?",
-          "drawPoints": "Should points be drawn?",
-          "pointShape": "What shape should points have?",
+          "color": "Color",
+          "stepPlot": "Draw series as a step plot",
+          "stemPlot": "Draw series as a stem plot",
+          "fillGraph": "Fill area underneath the graph",
+          "drawPoints": "Draw points",
+          "pointShape": "Points shape",
           "pointShapeChoices": ["dot", "triangle", "square", "diamond", "pentagon", "hexagon", "circle", "star", "plus", "ex"],
-          "pointSize": "What size should points be?"
+          "pointSize": "Points size"
         },
         "addTimevisDataEl":{
           "timevisSeries": "The contents of the items?",
-          "start": "The start date of the items?",
-          "end": "The end date of the items?",
+          "start": "Start date",
+          "end": "End date",
           "type": "The type of the item? Note: Types box and point need only a start date, types range and background need both a start and end date.",
           "typeChoices": ["box", "point", "range", "background"],
           "title": "Add a title for each item, displayed when hovering the mouse over it?",

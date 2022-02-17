@@ -860,14 +860,14 @@ observeEvent(
             ),
             tags$div(
               class = "shiny-input-container",
-              checkboxInput_MIRO(
+              checkboxInput_SIMPLE(
                 "slider_ticks", lang$adminMode$widgets$slider$ticks,
                 rv$widgetConfig$ticks
               )
             ),
             tags$div(
               class = "shiny-input-container",
-              checkboxInput_MIRO(
+              checkboxInput_SIMPLE(
                 "widget_hcube", lang$adminMode$widgets$slider$hcube,
                 !rv$widgetConfig$noHcube
               )
@@ -1085,14 +1085,14 @@ observeEvent(
             ),
             tags$div(
               class = "shiny-input-container",
-              checkboxInput_MIRO(
+              checkboxInput_SIMPLE(
                 "slider_ticks", lang$adminMode$widgets$sliderrange$ticks,
                 rv$widgetConfig$ticks
               )
             ),
             tags$div(
               class = "shiny-input-container",
-              checkboxInput_MIRO(
+              checkboxInput_SIMPLE(
                 "widget_hcube",
                 lang$adminMode$widgets$sliderrange$hcube,
                 !rv$widgetConfig$noHcube
@@ -1249,7 +1249,7 @@ observeEvent(
               identical(modelInRaw[[scalarsFileName]]$symtypes[singletonSetId], "set")) {
               tags$div(
                 class = "shiny-input-container info-position",
-                checkboxInput_MIRO(
+                checkboxInput_SIMPLE(
                   "widget_clearValue",
                   tags$div(
                     lang$adminMode$widgets$dropdown$clearValue,
@@ -1269,7 +1269,7 @@ observeEvent(
             },
             tags$div(
               class = "shiny-input-container",
-              checkboxInput_MIRO(
+              checkboxInput_SIMPLE(
                 "widget_hcube",
                 lang$adminMode$widgets$dropdown$hcube,
                 !rv$widgetConfig$noHcube
@@ -1317,7 +1317,7 @@ observeEvent(
             ),
             tags$div(
               class = "shiny-input-container",
-              checkboxInput_MIRO(
+              checkboxInput_SIMPLE(
                 "widget_value",
                 lang$adminMode$widgets$checkbox$default,
                 rv$widgetConfig$value
@@ -1325,7 +1325,7 @@ observeEvent(
             ),
             tags$div(
               class = "shiny-input-container",
-              checkboxInput_MIRO(
+              checkboxInput_SIMPLE(
                 "widget_hcube",
                 lang$adminMode$widgets$checkbox$hcube,
                 !rv$widgetConfig$noHcube
@@ -1376,7 +1376,7 @@ observeEvent(
               textInput("widget_tooltip", lang$adminMode$widgets$ui$tooltip, value = rv$widgetConfig$tooltip)
             ),
             tags$div(
-              class = "shiny-input-container",
+              class = "shiny-input-container highlight-block",
               tags$label(lang$adminMode$widgets$date$defaultlabel),
               tags$div(
                 class = "conditional",
@@ -1401,7 +1401,7 @@ observeEvent(
               )
             ),
             tags$div(
-              class = "shiny-input-container",
+              class = "shiny-input-container highlight-block",
               tags$label(lang$adminMode$widgets$date$minlabel),
               tags$div(
                 class = "conditional",
@@ -1425,7 +1425,7 @@ observeEvent(
               )
             ),
             tags$div(
-              class = "shiny-input-container",
+              class = "shiny-input-container highlight-block",
               tags$label(lang$adminMode$widgets$date$maxlabel),
               tags$div(
                 class = "conditional",
@@ -1451,7 +1451,7 @@ observeEvent(
               )
             ),
             tags$div(
-              class = "shiny-input-container conditional",
+              class = "shiny-input-container highlight-block conditional",
               tags$div(
                 class = "col-sm-8 no-padding-left",
                 conditionalPanel(
@@ -1507,7 +1507,7 @@ observeEvent(
             ),
             tags$div(
               class = "shiny-input-container",
-              checkboxInput_MIRO(
+              checkboxInput_SIMPLE(
                 "date_autoclose",
                 lang$adminMode$widgets$date$autoclose,
                 rv$widgetConfig$autoclose
@@ -1515,7 +1515,7 @@ observeEvent(
             ),
             tags$div(
               class = "shiny-input-container",
-              checkboxInput_MIRO(
+              checkboxInput_SIMPLE(
                 "widget_hcube",
                 lang$adminMode$widgets$date$hcube,
                 !rv$widgetConfig$noHcube
@@ -1567,7 +1567,7 @@ observeEvent(
               textInput("widget_tooltip", lang$adminMode$widgets$ui$tooltip, value = rv$widgetConfig$tooltip)
             ),
             tags$div(
-              class = "shiny-input-container",
+              class = "shiny-input-container highlight-block",
               tags$label(lang$adminMode$widgets$daterange$defaultStartlabel),
               tags$div(
                 class = "conditional",
@@ -1594,7 +1594,7 @@ observeEvent(
               )
             ),
             tags$div(
-              class = "shiny-input-container",
+              class = "shiny-input-container highlight-block",
               tags$label(lang$adminMode$widgets$daterange$defaultEndlabel),
               tags$div(
                 class = "conditional",
@@ -1621,7 +1621,7 @@ observeEvent(
               )
             ),
             tags$div(
-              class = "shiny-input-container",
+              class = "shiny-input-container highlight-block",
               tags$label(lang$adminMode$widgets$daterange$minlabel),
               tags$div(
                 class = "conditional",
@@ -1646,7 +1646,7 @@ observeEvent(
               )
             ),
             tags$div(
-              class = "shiny-input-container",
+              class = "shiny-input-container highlight-block",
               tags$label(lang$adminMode$widgets$daterange$maxlabel),
               tags$div(
                 class = "conditional",
@@ -1673,7 +1673,7 @@ observeEvent(
               )
             ),
             tags$div(
-              class = "shiny-input-container conditional",
+              class = "shiny-input-container highlight-block conditional",
               tags$div(
                 class = "col-sm-8 no-padding-left",
                 conditionalPanel(
@@ -1731,7 +1731,7 @@ observeEvent(
             ),
             tags$div(
               class = "shiny-input-container",
-              checkboxInput_MIRO(
+              checkboxInput_SIMPLE(
                 "date_autoclose",
                 lang$adminMode$widgets$daterange$autoclose,
                 rv$widgetConfig$autoclose
@@ -1739,7 +1739,7 @@ observeEvent(
             ),
             tags$div(
               class = "shiny-input-container",
-              checkboxInput_MIRO(
+              checkboxInput_SIMPLE(
                 "widget_hcube",
                 lang$adminMode$widgets$daterange$hcube,
                 !rv$widgetConfig$noHcube
@@ -1804,7 +1804,7 @@ observeEvent(
                 class = "shiny-input-container two-col-wrapper",
                 tags$div(
                   class = "two-col-left",
-                  checkboxInput_MIRO("widget_clearValue", labelTooltip(
+                  checkboxInput_SIMPLE("widget_clearValue", labelTooltip(
                     lang$adminMode$widgets$textinput$clearValue,
                     lang$adminMode$widgets$textinput$clearValueTooltip,
                     "https://gams.com/miro/widgets.html#textbox-option-clearvalue"

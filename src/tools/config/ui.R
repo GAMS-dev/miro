@@ -90,10 +90,12 @@ header_admin <- dashboardHeader(
 sidebar_admin <- dashboardSidebar(
   sidebarMenu(
     id = "miroSidebar",
-    menuItem(lang$adminMode$uiR$general, tabName = "new_gen", icon = icon("cogs")),
+    menuItem(lang$adminMode$uiR$general, tabName = "new_gen", icon = icon("cog")),
+    menuItem(lang$adminMode$uiR$symbol, tabName = "symbol_conf", icon = icon("edit")),
     menuItem(lang$adminMode$uiR$table, tabName = "tables_gen", icon = icon("table")),
     menuItem(lang$adminMode$uiR$widgets, tabName = "new_widget", icon = icon("sliders-h")),
     menuItem(lang$adminMode$uiR$graphs, tabName = "new_graph", icon = icon("chart-bar")),
+    menuItem(lang$adminMode$uiR$analysis, tabName = "analysis_scripts", icon = icon("search")),
     menuItem(lang$adminMode$uiR$database, tabName = "db_management", icon = icon("database"))
   )
 )
@@ -766,136 +768,56 @@ font-size: 12px;
                       tags$h2(lang$adminMode$general$ui$headerGeneral, class = "option-category"),
                       tags$div(
                         class = "option-wrapper",
-                        textInput("general_pageTitle", lang$adminMode$general$pageTitle$label,
-                          value = if (!is.null(configJSON$pageTitle) && nchar(configJSON$pageTitle)) configJSON$pageTitle else configJSON$modelTitle
-                        )
-                      ),
-                      tags$div(
-                        radioButtons("general_theme", lang$adminMode$general$theme$label,
-                          choices = langSpecificUI$theme,
-                          selected = if (length(configJSON$theme)) configJSON$theme else config$theme
-                        )
-                      ),
-                      tags$div(
-                        checkboxInput_MIRO("general_customCss", lang$adminMode$general$customCss$label,
-                          value = identical(configJSON$customCss, TRUE)
-                        )
-                      ),
-                      tags$label(class = "cb-label", "for" = "general_act_log", lang$adminMode$general$actLog$label),
-                      tags$div(
-                        tags$label(
-                          class = "checkbox-material",
-                          checkboxInput("general_act_log",
-                            value = if (length(configJSON$activateModules$logFile)) {
-                              configJSON$activateModules$logFile
-                            } else {
-                              config$activateModules$logFile
-                            },
-                            label = NULL
-                          )
-                        )
-                      ),
-                      tags$label(class = "cb-label", "for" = "general_act_lst", lang$adminMode$general$actLst$label),
-                      tags$div(
-                        tags$label(
-                          class = "checkbox-material",
-                          checkboxInput("general_act_lst",
-                            value = if (length(configJSON$activateModules$lstFile)) {
-                              configJSON$activateModules$lstFile
-                            } else {
-                              config$activateModules$lstFile
-                            },
-                            label = NULL
-                          )
-                        )
-                      ),
-                      tags$div(
-                        class = "option-wrapper info-position",
-                        textInput("general_mirologfile",
-                          tags$div(
-                            lang$adminMode$general$mirologfile$label,
-                            tags$a("",
-                              title = lang$adminMode$general$ui$tooltipDocs, class = "info-wrapper",
-                              href = "https://gams.com/miro/customize.html#miro-log",
-                              tags$span(
-                                class = "fas fa-info-circle", class = "info-icon",
-                                role = "presentation",
-                                `aria-label` = "More information"
-                              ), target = "_blank"
-                            )
-                          ),
-                          value = if (!is.null(configJSON$miroLogFile) && nchar(configJSON$miroLogFile)) {
-                            configJSON$miroLogFile
-                          } else {
-                            ""
-                          }
-                        )
-                      ),
-                      tags$div(
-                        class = "option-wrapper",
-                        tags$label(
-                          class = "cb-label", "for" = "general_auto",
-                          lang$adminMode$general$auto$label
+                        textInput("general_pageTitle", labelTooltip(
+                          lang$adminMode$general$pageTitle$label,
+                          lang$adminMode$general$pageTitle$tooltip,
+                          "https://gams.com/miro/customize.html#application-title"
                         ),
+                        value = if (!is.null(configJSON$pageTitle) && nchar(configJSON$pageTitle)) configJSON$pageTitle else configJSON$modelTitle
+                        )
+                      ),
+                      tags$div(
+                        class = "option-wrapper", style = "margin-bottom: 5px;",
+                        fileInput("widget_general_logo_upload", labelTooltip(
+                          lang$adminMode$general$logo$label,
+                          lang$adminMode$general$logo$tooltip,
+                          "https://gams.com/miro/customize.html#app-logo"
+                        ),
+                        width = "100%",
+                        multiple = FALSE,
+                        accept = c(".png", ".PNG", ".jpg", ".JPG"),
+                        placeholder = lang$adminMode$general$logo$placeholder
+                        )
+                      ),
+                      tags$label(
+                        class = "cb-label", "for" = "general_logo_preview", lang$adminMode$general$logo$header,
                         tags$div(
-                          tags$label(
-                            class = "checkbox-material",
-                            checkboxInput("general_auto",
-                              value = if (length(configJSON$autoGenInputGraphs)) {
-                                configJSON$autoGenInputGraphs
-                              } else {
-                                config$autoGenInputGraphs
-                              },
-                              label = NULL
-                            )
-                          )
+                          class = "logo-wrapper",
+                          imageOutput("general_logo_preview", height = "50px")
                         )
                       ),
+                      tags$div(class = "space"),
+                      tags$div(class = "space"),
+                      tags$h2(lang$adminMode$general$ui$headerAppearance, class = "option-category"),
                       tags$div(
                         class = "option-wrapper",
-                        sliderInput("general_decimal",
-                          tags$div(
-                            lang$adminMode$general$decimal$label,
-                            tags$a("",
-                              title = lang$adminMode$general$decimal$tooltip, class = "info-wrapper",
-                              href = "https://www.gams.com/miro/customize.html#decimal-places",
-                              tags$span(
-                                class = "fas fa-info-circle", class = "info-icon",
-                                role = "presentation",
-                                `aria-label` = "More information"
-                              ), target = "_blank"
-                            )
-                          ),
-                          min = 0, max = 6, step = 1, value = if (length(configJSON$roundingDecimals)) {
-                            configJSON$roundingDecimals
-                          } else {
-                            config$roundingDecimals
-                          }
-                        )
-                      ),
-                      tags$div(
-                        class = "option-wrapper info-position",
-                        selectInput("general_scen", tags$div(
-                          lang$adminMode$general$scen$label,
-                          tags$a("",
-                            title = lang$adminMode$general$ui$tooltipDocs, class = "info-wrapper", href = "https://gams.com/miro/start.html#scenario-comparison",
-                            tags$span(
-                              class = "fas fa-info-circle", class = "info-icon",
-                              role = "presentation",
-                              `aria-label` = "More information"
-                            ), target = "_blank"
-                          )
+                        selectInput("general_theme", labelTooltip(
+                          lang$adminMode$general$theme$label,
+                          lang$adminMode$general$ui$tooltipDocs,
+                          "https://gams.com/miro/customize.html#dark-mode"
                         ),
-                        choices = langSpecificUI$scen,
-                        selected = if (length(configJSON$defCompMode)) configJSON$defCompMode else config$defCompMode
+                        choices = langSpecificUI$theme,
+                        selected = if (length(configJSON$theme)) configJSON$theme else config$theme
                         )
                       ),
                       tags$div(
-                        class = "option-wrapper",
-                        tags$h2(lang$adminMode$general$ui$headerPivotcompare, class = "option-category"),
-                        getMIROPivotOptions(configJSON$pivotCompSettings,
-                          prefix = "pivotcomp_",
-                          pivotComp = TRUE
+                        checkboxInput_SIMPLE("general_customCss",
+                          labelTooltip(
+                            lang$adminMode$general$customCss$label,
+                            lang$adminMode$general$customCss$tooltip,
+                            "https://gams.com/miro/customize.html#custom-css"
+                          ),
+                          value = identical(configJSON$customCss, TRUE)
                         )
                       )
                     )),
@@ -907,33 +829,6 @@ font-size: 12px;
                   tags$div(
                     class = "main-tab",
                     tags$div(tagList(
-                      tags$h2(lang$adminMode$general$ui$headerRenderers, class = "option-category"),
-                      tags$div(
-                        class = "option-wrapper", style = "margin-bottom: 5px;",
-                        selectInput("general_defaultRendererOutput", lang$adminMode$general$defaultRenderer$labelOutput,
-                          setNames(c("miroPivot", "datatable"), lang$adminMode$general$defaultRenderer$choicesOutput),
-                          selected = configJSON$defaultRendererOutput
-                        )
-                      ),
-                      tags$hr(),
-                      tags$h2(lang$adminMode$general$ui$headerLogo, class = "option-category"),
-                      tags$div(
-                        class = "option-wrapper", style = "margin-bottom: 5px;",
-                        fileInput("widget_general_logo_upload", lang$adminMode$general$logo$label,
-                          width = "100%",
-                          multiple = FALSE,
-                          accept = c(".png", ".PNG", ".jpg", ".JPG"),
-                          placeholder = lang$adminMode$general$logo$placeholder
-                        )
-                      ),
-                      tags$label(
-                        class = "cb-label", "for" = "general_logo_preview", style = "padding-left: 25px;", lang$adminMode$general$logo$header,
-                        tags$div(
-                          class = "logo-wrapper",
-                          imageOutput("general_logo_preview", height = "50px")
-                        )
-                      ),
-                      tags$hr(),
                       tags$h2(lang$adminMode$general$readme$label,
                         tags$a("",
                           title = paste0(
@@ -949,20 +844,14 @@ font-size: 12px;
                         ),
                         class = "option-category info-position"
                       ),
-                      tags$label(class = "cb-label", "for" = "general_useReadme", lang$adminMode$general$readme$useReadme),
-                      tags$div(
-                        tags$label(
-                          class = "checkbox-material",
-                          checkboxInput("general_useReadme",
-                            value = length(configJSON$readme$filename) > 0L,
-                            label = NULL
-                          )
-                        )
+                      checkboxInput_SIMPLE("general_useReadme",
+                        lang$adminMode$general$readme$useReadme,
+                        value = length(configJSON$readme$filename) > 0L
                       ),
                       conditionalPanel(
                         condition = "input.general_useReadme===true",
                         tags$div(
-                          class = "option-wrapper option-wrapper-indented", style = "padding-left:40px;",
+                          class = "option-wrapper option-wrapper-indented", style = "padding-left:25px;",
                           textInput("general_readmeTabtitle", lang$adminMode$general$readme$tabTitle,
                             value = if (!is.null(configJSON$readme$tabTitle) && nchar(configJSON$readme$tabTitle)) {
                               configJSON$readme$tabTitle
@@ -972,7 +861,7 @@ font-size: 12px;
                           )
                         ),
                         tags$div(
-                          class = "option-wrapper info-position option-wrapper-indented", style = "padding-left:40px;",
+                          class = "option-wrapper info-position option-wrapper-indented", style = "padding-left:25px;",
                           textInput("general_readmeFileName", lang$adminMode$general$readme$fileName,
                             value = if (!is.null(configJSON$readme$filename) && nchar(configJSON$readme$filename)) {
                               configJSON$readme$filename
@@ -982,13 +871,13 @@ font-size: 12px;
                           )
                         ),
                         tags$div(
-                          class = "option-wrapper info-position option-wrapper-indented", style = "padding-left:40px;",
-                          checkboxInput_MIRO(
+                          class = "option-wrapper info-position option-wrapper-indented", style = "padding-left:25px;",
+                          checkboxInput_SIMPLE(
                             "general_readmeEnableMath", lang$adminMode$general$readme$enableMath,
                             isTRUE(configJSON$readme$enableMath)
                           )
                         ),
-                        tags$div(class = "option-wrapper info-position option-wrapper-indented", style = "padding-left:40px;", {
+                        tags$div(class = "option-wrapper info-position option-wrapper-indented", style = "padding-left:25px;", {
                           editButtonArgs <- list(
                             inputId = "btEditReadme",
                             label = lang$adminMode$general$readme$btEdit
@@ -999,6 +888,27 @@ font-size: 12px;
                           }
                           do.call("actionButton", editButtonArgs)
                         })
+                      ),
+                      tags$div(class = "space"),
+                      tags$div(class = "space"),
+                      tags$h2(lang$adminMode$general$ui$headerRenderers, class = "option-category"),
+                      tags$div(
+                        class = "option-wrapper",
+                        checkboxInput_SIMPLE("general_auto",
+                          lang$adminMode$general$auto$label,
+                          value = if (length(configJSON$autoGenInputGraphs)) {
+                            configJSON$autoGenInputGraphs
+                          } else {
+                            config$autoGenInputGraphs
+                          }
+                        )
+                      ),
+                      tags$div(
+                        class = "option-wrapper", style = "margin-bottom: 5px;",
+                        selectInput("general_defaultRendererOutput", lang$adminMode$general$defaultRenderer$labelOutput,
+                          setNames(c("miroPivot", "datatable"), lang$adminMode$general$defaultRenderer$choicesOutput),
+                          selected = configJSON$defaultRendererOutput
+                        )
                       )
                     )),
                     tags$div(class = "space")
@@ -1006,12 +916,335 @@ font-size: 12px;
                 )
               ),
               tabPanel(
-                lang$adminMode$general$ui$tabSymbols,
+                lang$adminMode$general$ui$tabData,
                 tags$div(
                   class = "col-sm-6", style = "padding-top: 20px;",
                   tags$div(
                     class = "main-tab",
-                    tags$h2(lang$adminMode$general$ui$headerSymbolNaming,
+                    tags$h2(lang$adminMode$general$ui$headerImport, class = "option-category"),
+                    checkboxInput_SIMPLE("default_scen_check",
+                      labelTooltip(
+                        lang$adminMode$general$defaultScenName$checkbox,
+                        paste0(
+                          lang$adminMode$general$defaultScenName$tooltip, " - ",
+                          tolower(lang$adminMode$general$ui$tooltipDocs)
+                        ),
+                        "https://gams.com/miro/customize.html#default-scenario"
+                      ),
+                      value = if (length(configJSON$defaultScenName) &&
+                        nchar(configJSON$defaultScenName)) {
+                        TRUE
+                      } else {
+                        FALSE
+                      }
+                    ),
+                    conditionalPanel(
+                      condition = "input.default_scen_check===true",
+                      tags$div(
+                        class = "option-wrapper", style = "margin-top:-10px;padding-left: 25px;",
+                        textInput("general_default_scen_name", lang$adminMode$general$defaultScenName$label,
+                          value = if (length(configJSON$defaultScenName)) configJSON$defaultScenName else NULL
+                        )
+                      )
+                    ),
+                    checkboxInput_SIMPLE("general_act_upload",
+                      labelTooltip(
+                        lang$adminMode$general$actUpload$label,
+                        paste0(
+                          lang$adminMode$general$actUpload$title, " - ",
+                          tolower(lang$adminMode$general$ui$tooltipDocs)
+                        ),
+                        "https://gams.com/miro/customize.html#local-upload"
+                      ),
+                      value = if (length(configJSON$activateModules$loadLocal)) {
+                        configJSON$activateModules$loadLocal
+                      } else {
+                        config$activateModules$loadLocal
+                      }
+                    ),
+                    checkboxInput_SIMPLE("general_act_attach",
+                      labelTooltip(
+                        lang$adminMode$general$actAttach$label,
+                        paste0(
+                          lang$adminMode$general$actAttach$title, " - ",
+                          tolower(lang$adminMode$general$ui$tooltipDocs)
+                        ),
+                        "https://gams.com/miro/start.html#file-attachment"
+                      ),
+                      value = if (length(configJSON$activateModules$attachments)) {
+                        configJSON$activateModules$attachments
+                      } else {
+                        config$activateModules$attachments
+                      }
+                    ),
+                    tags$div(class = "space"),
+                    tags$div(
+                      style = "max-width: 500px;",
+                      tags$h4(
+                        lang$adminMode$general$ui$headerOutputAttach,
+                        tags$a("",
+                          title = lang$adminMode$general$ui$tooltipDocs,
+                          class = "info-wrapper",
+                          href = "https://gams.com/miro/customize.html#general-output-attach",
+                          tags$span(
+                            class = "fas fa-info-circle", class = "info-icon",
+                            role = "presentation",
+                            `aria-label` = "More information"
+                          ), target = "_blank"
+                        )
+                      ),
+                      createArray(NULL, "general_output_attach",
+                        lang$adminMode$general$outputAttach$label,
+                        autoCreate = FALSE
+                      )
+                    ),
+                    tags$div(class = "space")
+                  )
+                ),
+                tags$div(
+                  class = "col-sm-6", style = "padding-top: 20px;",
+                  tags$div(
+                    class = "main-tab",
+                    tags$h2(lang$adminMode$general$ui$headerExport, class = "option-category"),
+                    checkboxInput_SIMPLE("general_downloadTempFiles",
+                      labelTooltip(
+                        lang$adminMode$general$downloadTempFiles$label,
+                        lang$adminMode$general$ui$tooltipDocs,
+                        "https://gams.com/miro/customize.html#general-temp-dir"
+                      ),
+                      value = if (length(configJSON$activateModules$downloadTempFiles)) {
+                        configJSON$activateModules$downloadTempFiles
+                      } else {
+                        config$activateModules$downloadTempFiles
+                      }
+                    ),
+                    checkboxInput_SIMPLE("general_meta",
+                      labelTooltip(
+                        lang$adminMode$general$meta$label,
+                        paste0(
+                          lang$adminMode$general$meta$title, " - ",
+                          tolower(lang$adminMode$general$ui$tooltipDocs)
+                        ),
+                        "https://gams.com/miro/customize.html#include-metadata"
+                      ),
+                      value = if (length(configJSON$excelIncludeMeta)) {
+                        configJSON$excelIncludeMeta
+                      } else {
+                        config$excelIncludeMeta
+                      }
+                    ),
+                    checkboxInput_SIMPLE("general_empty",
+                      labelTooltip(
+                        lang$adminMode$general$empty$label,
+                        paste0(
+                          lang$adminMode$general$empty$title, " - ",
+                          tolower(lang$adminMode$general$ui$tooltipDocs)
+                        ),
+                        "https://gams.com/miro/customize.html#include-empty"
+                      ),
+                      value = if (identical(configJSON$excelIncludeEmptySheets, FALSE)) {
+                        FALSE
+                      } else {
+                        TRUE
+                      }
+                    ),
+                    tags$hr(),
+                    tags$div(
+                      class = "option-wrapper",
+                      sliderInput("general_decimal",
+                        tags$div(
+                          lang$adminMode$general$decimal$label,
+                          tags$a("",
+                            title = lang$adminMode$general$decimal$tooltip, class = "info-wrapper",
+                            href = "https://www.gams.com/miro/customize.html#decimal-places",
+                            tags$span(
+                              class = "fas fa-info-circle", class = "info-icon",
+                              role = "presentation",
+                              `aria-label` = "More information"
+                            ), target = "_blank"
+                          )
+                        ),
+                        min = 0, max = 6, step = 1, value = if (length(configJSON$roundingDecimals)) {
+                          configJSON$roundingDecimals
+                        } else {
+                          config$roundingDecimals
+                        }
+                      )
+                    ),
+                    tags$div(class = "space")
+                  )
+                )
+              ),
+              tabPanel(
+                lang$adminMode$general$ui$tabSubmission,
+                tags$div(
+                  class = "col-sm-12", style = "padding-top: 20px;",
+                  tags$div(
+                    class = "main-tab",
+                    tags$div(tagList(
+                      checkboxInput_SIMPLE("general_act_hcube",
+                        labelTooltip(
+                          lang$adminMode$general$hcubeModule$label,
+                          lang$adminMode$general$hcubeModule$tooltip,
+                          "https://gams.com/miro/customize.html#activate-hcube"
+                        ),
+                        value = isTRUE(configJSON$activateModules$hcube)
+                      ),
+                      tags$div(
+                        class = "option-wrapper",
+                        tags$div(
+                          id = "invalidClArgsError",
+                          class = "err-msg",
+                          sprintf(
+                            lang$adminMode$widgets$validate[["val61"]],
+                            paste(reservedGMSOpt,
+                              collapse = "', '"
+                            )
+                          )
+                        ),
+                        selectizeInput("general_args",
+                          tags$div(
+                            lang$adminMode$general$args$label,
+                            tags$a("",
+                              title = lang$adminMode$general$ui$tooltipDocs,
+                              class = "info-wrapper",
+                              href = "https://gams.com/miro/customize.html#command-line-args",
+                              tags$span(
+                                class = "fas fa-info-circle", class = "info-icon",
+                                role = "presentation",
+                                `aria-label` = "More information"
+                              ), target = "_blank"
+                            )
+                          ),
+                          choices = configJSON$extraClArgs, selected = configJSON$extraClArgs,
+                          multiple = TRUE, options = list("create" = TRUE, "persist" = FALSE)
+                        )
+                      )
+                    )),
+                    tags$div(class = "space")
+                  )
+                )
+              ),
+              tabPanel(
+                lang$adminMode$general$ui$tabLogs,
+                tags$div(
+                  class = "col-sm-12", style = "padding-top: 20px;",
+                  tags$div(
+                    class = "main-tab",
+                    checkboxInput_SIMPLE("general_act_log",
+                      lang$adminMode$general$actLog$label,
+                      value = if (length(configJSON$activateModules$logFile)) {
+                        configJSON$activateModules$logFile
+                      } else {
+                        config$activateModules$logFile
+                      }
+                    ),
+                    checkboxInput_SIMPLE("general_act_lst",
+                      lang$adminMode$general$actLst$label,
+                      value = if (length(configJSON$activateModules$lstFile)) {
+                        configJSON$activateModules$lstFile
+                      } else {
+                        config$activateModules$lstFile
+                      }
+                    ),
+                    tags$div(
+                      class = "option-wrapper info-position",
+                      textInput("general_mirologfile",
+                        labelTooltip(
+                          lang$adminMode$general$mirologfile$label,
+                          lang$adminMode$general$mirologfile$tooltip,
+                          "https://gams.com/miro/customize.html#miro-log"
+                        ),
+                        value = if (!is.null(configJSON$miroLogFile) && nchar(configJSON$miroLogFile)) {
+                          configJSON$miroLogFile
+                        } else {
+                          ""
+                        }
+                      )
+                    ),
+                    tags$div(
+                      class = "option-wrapper",
+                      sliderInput("general_save_duration",
+                        tags$div(
+                          lang$adminMode$general$saveDuration$label,
+                          tags$a("",
+                            title = lang$adminMode$general$ui$tooltipDocs,
+                            class = "info-wrapper",
+                            href = "https://gams.com/miro/customize.html#general-duration",
+                            tags$span(
+                              class = "fas fa-info-circle", class = "info-icon",
+                              role = "presentation",
+                              `aria-label` = "More information"
+                            ), target = "_blank"
+                          )
+                        ),
+                        min = 0, max = 999, step = 1,
+                        value = if (length(configJSON$storeLogFilesDuration)) {
+                          configJSON$storeLogFilesDuration
+                        } else {
+                          config$storeLogFilesDuration
+                        }
+                      )
+                    ),
+                    tags$div(class = "space")
+                  )
+                )
+              ),
+              tabPanel(
+                lang$adminMode$general$ui$tabComparison,
+                tags$div(
+                  class = "col-sm-12", style = "padding-top: 20px;",
+                  tags$div(
+                    class = "main-tab",
+                    tags$div(
+                      class = "option-wrapper info-position",
+                      selectInput("general_scen", tags$div(
+                        lang$adminMode$general$scen$label,
+                        tags$a("",
+                          title = lang$adminMode$general$ui$tooltipDocs, class = "info-wrapper", href = "https://gams.com/miro/start.html#scenario-comparison",
+                          tags$span(
+                            class = "fas fa-info-circle", class = "info-icon",
+                            role = "presentation",
+                            `aria-label` = "More information"
+                          ), target = "_blank"
+                        )
+                      ),
+                      choices = langSpecificUI$scen,
+                      selected = if (length(configJSON$defCompMode)) configJSON$defCompMode else config$defCompMode
+                      )
+                    ),
+                    tags$div(class = "space"),
+                    tags$div(
+                      class = "option-wrapper",
+                      tags$h4(lang$adminMode$general$ui$headerPivotcompare, class = "option-category"),
+                      getMIROPivotOptions(configJSON$pivotCompSettings,
+                        prefix = "pivotcomp_",
+                        pivotComp = TRUE
+                      )
+                    ),
+                    tags$div(class = "space")
+                  )
+                )
+              )
+            )
+          )
+        )
+      ),
+      tabItem(
+        tabName = "symbol_conf",
+        fluidRow(
+          box(
+            title = lang$adminMode$general$ui$title, status = "primary", solidHeader = TRUE, width = 12,
+            tags$div(class = "space"),
+            tabsetPanel(
+              tabPanel(
+                lang$adminMode$general$ui$headerSymbolNaming,
+                tags$div(
+                  class = "col-sm-6", style = "padding-top: 20px;",
+                  tags$div(
+                    class = "main-tab", style = "max-height: 70vh;",
+                    tags$h2(
+                      lang$adminMode$general$overwriteSymbolAliases$input,
                       tags$a(
                         title = lang$adminMode$general$ui$tooltipDocs, class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/customize.html#naming",
                         tags$span(
@@ -1019,10 +1252,8 @@ font-size: 12px;
                           role = "presentation",
                           `aria-label` = "More information"
                         ), target = "_blank"
-                      ),
-                      class = "option-category"
+                      )
                     ),
-                    tags$h4(lang$adminMode$general$overwriteSymbolAliases$input, class = "option-category"),
                     tags$div(class = "small-space"),
                     lapply(names(inputSymHeaders), function(name) {
                       if (name %in% names(configJSON$overwriteAliases)) {
@@ -1087,8 +1318,14 @@ font-size: 12px;
                         )
                       )
                     }),
-                    tags$div(class = "space"),
-                    tags$h4(lang$adminMode$general$overwriteSymbolAliases$output, class = "option-category"),
+                    tags$div(class = "space")
+                  )
+                ),
+                tags$div(
+                  class = "col-sm-6", style = "padding-top: 20px;",
+                  tags$div(
+                    class = "main-tab", style = "max-height: 70vh;",
+                    tags$h2(lang$adminMode$general$overwriteSymbolAliases$output),
                     tags$div(class = "small-space"),
                     lapply(names(modelOut), function(name) {
                       if (name %in% names(configJSON$overwriteAliases)) {
@@ -1154,41 +1391,35 @@ font-size: 12px;
                     }),
                     tags$div(class = "space")
                   )
-                ),
+                )
+              ),
+              tabPanel(
+                lang$adminMode$general$ui$tabNameOrder,
                 tags$div(
                   class = "col-sm-6", style = "padding-top: 20px;",
                   tags$div(
-                    class = "main-tab",
-                    tags$h2(lang$adminMode$general$ui$headerSymbolGrouping,
-                      tags$a(
-                        title = lang$adminMode$general$ui$tooltipDocs, class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/customize.html#tab-ordering",
-                        tags$span(
-                          class = "fas fa-info-circle", class = "info-icon",
-                          role = "presentation",
-                          `aria-label` = "More information"
-                        ), target = "_blank"
+                    class = "main-tab", style = "max-height: 70vh;",
+                    tags$h2(lang$adminMode$general$overwriteSymbolAliases$input),
+                    tags$div(class = "small-space"),
+                    tags$div(class = "small-space"),
+                    selectizeInput("general_overwriteSheetOrderInput",
+                      labelTooltip(
+                        lang$adminMode$general$overwriteSheetOrder$input,
+                        lang$adminMode$general$ui$tooltipDocs,
+                        "https://gams.com/miro/customize.html#tab-ordering"
                       ),
-                      class = "option-category"
-                    ),
-                    tags$div(
-                      selectizeInput("general_overwriteSheetOrderInput", lang$adminMode$general$overwriteSheetOrder$input,
-                        choices = inputTabs,
-                        selected = inputTabs,
-                        multiple = TRUE,
-                        options = list(plugins = list("drag_drop", "no_delete"))
-                      ),
-                      selectizeInput("general_overwriteSheetOrderOutput", lang$adminMode$general$overwriteSheetOrder$output,
-                        choices = outputTabs,
-                        selected = outputTabs,
-                        multiple = TRUE, options = list(plugins = list("drag_drop", "no_delete"))
-                      )
+                      choices = inputTabs,
+                      selected = inputTabs,
+                      multiple = TRUE,
+                      options = list(plugins = list("drag_drop", "no_delete"))
                     ),
                     tags$div(class = "space"),
                     tags$div(
                       tags$div(
                         class = "info-position",
-                        tags$h2(
-                          title = lang$adminMode$general$ui$tooltipDocs, lang$adminMode$general$ui$headerTabGrouping,
+                        tags$h4(
+                          title = lang$adminMode$general$ui$tooltipDocs,
+                          lang$adminMode$general$ui$headerInputGroups,
                           tags$a(
                             class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/customize.html#tab-grouping",
                             tags$span(
@@ -1199,21 +1430,70 @@ font-size: 12px;
                           )
                         )
                       ),
-                      tags$h4(lang$adminMode$general$ui$headerInputGroups),
                       tags$div(
                         createArray(NULL, "symbol_inputGroups",
                           lang$adminMode$general$groups$input,
                           autoCreate = FALSE
                         )
                       ),
+                      tags$div(class = "space"),
                       tags$h4(lang$adminMode$general$ui$headerInputWidgetGroups),
                       tags$div(
                         createArray(NULL, "symbol_inputWidgetGroups",
                           lang$adminMode$general$groups$widgets,
                           autoCreate = FALSE
                         )
+                      )
+                    ),
+                    tags$div(class = "space"),
+                    tags$div(
+                      title = lang$adminMode$general$aggregate$title,
+                      checkboxInput_SIMPLE("general_aggregate",
+                        lang$adminMode$general$aggregate$label,
+                        value = if (length(configJSON$aggregateWidgets)) {
+                          configJSON$aggregateWidgets
+                        } else {
+                          config$aggregateWidgets
+                        }
+                      )
+                    ),
+                    tags$div(class = "space")
+                  )
+                ),
+                tags$div(
+                  class = "col-sm-6", style = "padding-top: 20px;",
+                  tags$div(
+                    class = "main-tab", style = "max-height: 70vh;",
+                    tags$h2(lang$adminMode$general$overwriteSymbolAliases$output),
+                    tags$div(class = "small-space"),
+                    tags$div(class = "small-space"),
+                    selectizeInput("general_overwriteSheetOrderOutput",
+                      labelTooltip(
+                        lang$adminMode$general$overwriteSheetOrder$output,
+                        lang$adminMode$general$ui$tooltipDocs,
+                        "https://gams.com/miro/customize.html#tab-ordering"
                       ),
-                      tags$h4(lang$adminMode$general$ui$headerOutputGroups),
+                      choices = outputTabs,
+                      selected = outputTabs,
+                      multiple = TRUE, options = list(plugins = list("drag_drop", "no_delete"))
+                    ),
+                    tags$div(class = "space"),
+                    tags$div(
+                      tags$div(
+                        class = "info-position",
+                        tags$h4(
+                          title = lang$adminMode$general$ui$tooltipDocs,
+                          lang$adminMode$general$ui$headerOutputGroups,
+                          tags$a(
+                            class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/customize.html#tab-grouping",
+                            tags$span(
+                              class = "fas fa-info-circle", class = "info-icon",
+                              role = "presentation",
+                              `aria-label` = "More information"
+                            ), target = "_blank"
+                          )
+                        )
+                      ),
                       tags$div(
                         createArray(NULL, "symbol_outputGroups",
                           lang$adminMode$general$groups$output,
@@ -1221,77 +1501,71 @@ font-size: 12px;
                         )
                       )
                     ),
-                    tags$div(class = "space"),
-                    tags$h2(lang$adminMode$general$ui$headerSymbolDisplay, class = "option-category"),
-                    if (length(modelOut)) {
-                      tags$div(
-                        tags$div(
-                          class = "info-position",
-                          selectInput("general_hiddenOutputSymbols",
-                            tags$div(
-                              lang$adminMode$general$hiddenOutputSymbols$label,
-                              tags$a("",
-                                class = "info-wrapper",
-                                href = "https://gams.com/miro/customize.html#hidden-symbols",
-                                tags$span(
-                                  class = "fas fa-info-circle", class = "info-icon",
-                                  role = "presentation",
-                                  `aria-label` = "More information"
-                                ),
-                                target = "_blank"
-                              )
-                            ),
-                            choices = outputSymMultiDimChoices,
-                            selected = configJSON$hiddenOutputSymbols[configJSON$hiddenOutputSymbols %in% outputSymMultiDimChoices],
-                            multiple = TRUE
-                          )
-                        )
-                      )
-                    },
-                    if (length(modelOut[[scalarsOutName]])) {
-                      tags$div(
-                        tags$div(
-                          class = "info-position",
-                          selectInput("general_hidden",
-                            tags$div(
-                              lang$adminMode$general$hiddenOutputScalars$label,
-                              tags$a("",
-                                class = "info-wrapper",
-                                href = "https://gams.com/miro/customize.html#hidden-scalars",
-                                tags$span(
-                                  class = "fas fa-info-circle", class = "info-icon",
-                                  role = "presentation",
-                                  `aria-label` = "More information"
-                                ), target = "_blank"
-                              )
-                            ),
-                            choices = setNames(modelOut[[scalarsOutName]]$symnames, modelOut[[scalarsOutName]]$symtext),
-                            selected = configJSON$hiddenOutputScalars, multiple = TRUE
-                          )
-                        )
-                      )
-                    },
+                    tags$div(class = "space")
+                  )
+                )
+              ),
+              tabPanel(
+                lang$adminMode$general$ui$tabSymbolLinks,
+                tags$div(
+                  class = "col-sm-6", style = "padding-top: 20px;",
+                  tags$div(
+                    class = "main-tab",
                     tags$div(
-                      title = lang$adminMode$general$aggregate$title,
-                      tags$label(class = "cb-label", "for" = "general_aggregate", lang$adminMode$general$aggregate$label),
-                      tags$div(
-                        tags$label(
-                          class = "checkbox-material",
-                          checkboxInput("general_aggregate",
-                            value = if (length(configJSON$aggregateWidgets)) {
-                              configJSON$aggregateWidgets
-                            } else {
-                              config$aggregateWidgets
-                            }, label = NULL
+                      tags$div(class = "space"),
+                      tags$h4(lang$adminMode$general$ui$headerSymbolDisplay, class = "option-category"),
+                      if (length(modelOut)) {
+                        tags$div(
+                          tags$div(
+                            class = "info-position",
+                            selectInput("general_hiddenOutputSymbols",
+                              tags$div(
+                                lang$adminMode$general$hiddenOutputSymbols$label,
+                                tags$a("",
+                                  class = "info-wrapper",
+                                  href = "https://gams.com/miro/customize.html#hidden-symbols",
+                                  tags$span(
+                                    class = "fas fa-info-circle", class = "info-icon",
+                                    role = "presentation",
+                                    `aria-label` = "More information"
+                                  ),
+                                  target = "_blank"
+                                )
+                              ),
+                              choices = outputSymMultiDimChoices,
+                              selected = configJSON$hiddenOutputSymbols[configJSON$hiddenOutputSymbols %in% outputSymMultiDimChoices],
+                              multiple = TRUE
+                            )
                           )
                         )
-                      )
-                    ),
-                    tags$div(class = "space"),
-                    tags$div(
+                      },
+                      if (length(modelOut[[scalarsOutName]])) {
+                        tags$div(
+                          tags$div(
+                            class = "info-position",
+                            selectInput("general_hidden",
+                              tags$div(
+                                lang$adminMode$general$hiddenOutputScalars$label,
+                                tags$a("",
+                                  class = "info-wrapper",
+                                  href = "https://gams.com/miro/customize.html#hidden-scalars",
+                                  tags$span(
+                                    class = "fas fa-info-circle", class = "info-icon",
+                                    role = "presentation",
+                                    `aria-label` = "More information"
+                                  ), target = "_blank"
+                                )
+                              ),
+                              choices = setNames(modelOut[[scalarsOutName]]$symnames, modelOut[[scalarsOutName]]$symtext),
+                              selected = configJSON$hiddenOutputScalars, multiple = TRUE
+                            )
+                          )
+                        )
+                      },
+                      tags$div(class = "space"),
                       tags$div(
                         class = "info-position",
-                        tags$h2(
+                        tags$h4(
                           title = lang$adminMode$general$ui$tooltipDocs, lang$adminMode$general$ui$headerTabSymlinks,
                           tags$a(
                             class = "info-header", href = "https://gams.com/miro/customize.html#tab-symlinks",
@@ -1308,381 +1582,6 @@ font-size: 12px;
                           lang$adminMode$general$symlinks$label,
                           autoCreate = FALSE
                         )
-                      )
-                    )
-                  )
-                )
-              ),
-              tabPanel(
-                lang$adminMode$general$ui$tabModules,
-                tags$div(
-                  class = "col-sm-6", style = "padding-top: 20px;",
-                  tags$div(
-                    class = "main-tab",
-                    tags$div(tagList(
-                      tags$h2(lang$adminMode$general$ui$headerScenData, class = "option-category"),
-                      tags$div(
-                        tags$label(
-                          class = "cb-label info-position", "for" = "general_act_upload",
-                          tags$div(
-                            lang$adminMode$general$actUpload$label,
-                            tags$a("",
-                              title = paste0(
-                                lang$adminMode$general$actUpload$title, " - ",
-                                tolower(lang$adminMode$general$ui$tooltipDocs)
-                              ), class = "info-wrapper", href = "https://gams.com/miro/customize.html#local-upload",
-                              tags$span(
-                                class = "fas fa-info-circle", class = "info-icon",
-                                role = "presentation",
-                                `aria-label` = "More information"
-                              ), target = "_blank"
-                            )
-                          )
-                        ),
-                        tags$div(
-                          tags$label(
-                            class = "checkbox-material",
-                            checkboxInput("general_act_upload",
-                              value = if (length(configJSON$activateModules$loadLocal)) {
-                                configJSON$activateModules$loadLocal
-                              } else {
-                                config$activateModules$loadLocal
-                              },
-                              label = NULL
-                            )
-                          )
-                        )
-                      ),
-                      tags$div(
-                        class = "shiny-input-container",
-                        tags$label(
-                          class = "cb-label info-position", "for" = "default_scen_check",
-                          tags$div(lang$adminMode$general$defaultScenName$checkbox, tags$a("",
-                            title = paste0(
-                              lang$adminMode$general$defaultScenName$tooltip, " - ",
-                              tolower(lang$adminMode$general$ui$tooltipDocs)
-                            ),
-                            class = "info-wrapper",
-                            href = "https://gams.com/miro/customize.html#default-scenario",
-                            tags$span(
-                              class = "fas fa-info-circle", class = "info-icon",
-                              role = "presentation",
-                              `aria-label` = "More information"
-                            ), target = "_blank"
-                          ))
-                        ),
-                        tags$div(
-                          tags$label(
-                            class = "checkbox-material",
-                            checkboxInput("default_scen_check",
-                              label = NULL,
-                              value = if (length(configJSON$defaultScenName) &&
-                                nchar(configJSON$defaultScenName)) {
-                                TRUE
-                              } else {
-                                FALSE
-                              }
-                            )
-                          )
-                        )
-                      ),
-                      conditionalPanel(
-                        condition = "input.default_scen_check===true",
-                        tags$div(
-                          class = "option-wrapper", style = "padding-right:30px;padding-left:40px;",
-                          textInput("general_default_scen_name", lang$adminMode$general$defaultScenName$label,
-                            value = if (length(configJSON$defaultScenName)) configJSON$defaultScenName else NULL
-                          )
-                        )
-                      ),
-                      tags$div(
-                        tags$label(
-                          class = "cb-label", "for" = "general_meta",
-                          lang$adminMode$general$meta$label, tags$a("",
-                            title = paste0(lang$adminMode$general$meta$title, " - ", tolower(lang$adminMode$general$ui$tooltipDocs)),
-                            class = "info-wrapper",
-                            href = "https://gams.com/miro/customize.html#include-metadata",
-                            tags$span(
-                              class = "fas fa-info-circle", class = "info-icon",
-                              role = "presentation",
-                              `aria-label` = "More information"
-                            ), target = "_blank"
-                          )
-                        ),
-                        tags$div(
-                          tags$label(
-                            class = "checkbox-material",
-                            checkboxInput("general_meta",
-                              value = if (length(configJSON$excelIncludeMeta)) {
-                                configJSON$excelIncludeMeta
-                              } else {
-                                config$excelIncludeMeta
-                              },
-                              label = NULL
-                            )
-                          )
-                        )
-                      ),
-                      tags$div(
-                        tags$label(
-                          class = "cb-label", "for" = "general_empty",
-                          lang$adminMode$general$empty$label, tags$a("",
-                            title = paste0(lang$adminMode$general$empty$title, " - ", tolower(lang$adminMode$general$ui$tooltipDocs)),
-                            class = "info-wrapper",
-                            href = "https://gams.com/miro/customize.html#include-empty",
-                            tags$span(
-                              class = "fas fa-info-circle", class = "info-icon",
-                              role = "presentation",
-                              `aria-label` = "More information"
-                            ), target = "_blank"
-                          )
-                        ),
-                        tags$div(
-                          tags$label(
-                            class = "checkbox-material",
-                            checkboxInput("general_empty",
-                              value = if (identical(configJSON$excelIncludeEmptySheets, FALSE)) {
-                                FALSE
-                              } else {
-                                TRUE
-                              }, label = NULL
-                            )
-                          )
-                        )
-                      ),
-                      tags$div(
-                        tags$label(
-                          class = "cb-label info-position", "for" = "general_act_attach",
-                          tags$div(
-                            lang$adminMode$general$actAttach$label,
-                            tags$a("",
-                              title = paste0(
-                                lang$adminMode$general$actAttach$title, " - ",
-                                tolower(lang$adminMode$general$ui$tooltipDocs)
-                              ),
-                              class = "info-wrapper",
-                              href = "https://gams.com/miro/start.html#file-attachment",
-                              tags$span(
-                                class = "fas fa-info-circle", class = "info-icon",
-                                role = "presentation",
-                                `aria-label` = "More information"
-                              ), target = "_blank"
-                            )
-                          )
-                        ),
-                        tags$div(
-                          tags$label(
-                            class = "checkbox-material",
-                            checkboxInput("general_act_attach",
-                              value = if (length(configJSON$activateModules$attachments)) {
-                                configJSON$activateModules$attachments
-                              } else {
-                                config$activateModules$attachments
-                              }, label = NULL
-                            )
-                          )
-                        )
-                      ),
-                      tags$div(
-                        class = "option-wrapper",
-                        sliderInput("general_save_duration",
-                          tags$div(
-                            lang$adminMode$general$saveDuration$label,
-                            tags$a("",
-                              title = lang$adminMode$general$ui$tooltipDocs,
-                              class = "info-wrapper",
-                              href = "https://gams.com/miro/customize.html#general-duration",
-                              tags$span(
-                                class = "fas fa-info-circle", class = "info-icon",
-                                role = "presentation",
-                                `aria-label` = "More information"
-                              ), target = "_blank"
-                            )
-                          ),
-                          min = 0, max = 999, step = 1,
-                          value = if (length(configJSON$storeLogFilesDuration)) {
-                            configJSON$storeLogFilesDuration
-                          } else {
-                            config$storeLogFilesDuration
-                          }
-                        )
-                      ),
-                      tags$div(
-                        class = "option-wrapper",
-                        tags$h4(
-                          lang$adminMode$general$ui$headerOutputAttach,
-                          tags$a("",
-                            title = lang$adminMode$general$ui$tooltipDocs,
-                            class = "info-wrapper",
-                            href = "https://gams.com/miro/customize.html#general-output-attach",
-                            tags$span(
-                              class = "fas fa-info-circle", class = "info-icon",
-                              role = "presentation",
-                              `aria-label` = "More information"
-                            ), target = "_blank"
-                          )
-                        ),
-                        createArray(NULL, "general_output_attach",
-                          lang$adminMode$general$outputAttach$label,
-                          autoCreate = FALSE
-                        )
-                      )
-                    )),
-                    tags$div(class = "space")
-                  )
-                ),
-                tags$div(
-                  class = "col-sm-6", style = "padding-top: 20px;",
-                  tags$div(
-                    class = "main-tab",
-                    tags$div(tagList(
-                      tags$h2(lang$adminMode$general$ui$headerComputation, class = "option-category"),
-                      tags$label(
-                        class = "cb-label", "for" = "general_downloadTempFiles",
-                        tags$div(
-                          lang$adminMode$general$downloadTempFiles$label,
-                          tags$a("",
-                            title = lang$adminMode$general$ui$tooltipDocs,
-                            class = "info-wrapper",
-                            href = "https://gams.com/miro/customize.html#general-temp-dir",
-                            tags$span(
-                              class = "fas fa-info-circle", class = "info-icon",
-                              role = "presentation",
-                              `aria-label` = "More information"
-                            ), target = "_blank"
-                          )
-                        )
-                      ),
-                      tags$div(
-                        tags$label(
-                          class = "checkbox-material",
-                          checkboxInput("general_downloadTempFiles",
-                            value = if (length(configJSON$activateModules$downloadTempFiles)) {
-                              configJSON$activateModules$downloadTempFiles
-                            } else {
-                              config$activateModules$downloadTempFiles
-                            },
-                            label = NULL
-                          )
-                        )
-                      ),
-                      tags$div(
-                        class = "option-wrapper",
-                        tags$div(
-                          id = "invalidClArgsError",
-                          class = "err-msg",
-                          sprintf(
-                            lang$adminMode$widgets$validate[["val61"]],
-                            paste(reservedGMSOpt,
-                              collapse = "', '"
-                            )
-                          )
-                        ),
-                        selectizeInput("general_args",
-                          tags$div(
-                            lang$adminMode$general$args$label,
-                            tags$a("",
-                              title = lang$adminMode$general$ui$tooltipDocs,
-                              class = "info-wrapper",
-                              href = "https://gams.com/miro/customize.html#command-line-args",
-                              tags$span(
-                                class = "fas fa-info-circle", class = "info-icon",
-                                role = "presentation",
-                                `aria-label` = "More information"
-                              ), target = "_blank"
-                            )
-                          ),
-                          choices = configJSON$extraClArgs, selected = configJSON$extraClArgs,
-                          multiple = TRUE, options = list("create" = TRUE, "persist" = FALSE)
-                        )
-                      ),
-                      tags$div(
-                        tags$label(
-                          class = "cb-label", "for" = "general_act_hcube",
-                          lang$adminMode$general$hcubeModule$label,
-                          tags$a("",
-                            title = lang$adminMode$general$ui$tooltipDocs,
-                            class = "info-wrapper",
-                            href = "https://gams.com/miro/customize.html#activate-hcube",
-                            tags$span(
-                              class = "fas fa-info-circle", class = "info-icon",
-                              role = "presentation",
-                              `aria-label` = "More information"
-                            ), target = "_blank"
-                          )
-                        ),
-                        tags$div(
-                          tags$label(
-                            class = "checkbox-material",
-                            checkboxInput("general_act_hcube",
-                              value = isTRUE(configJSON$activateModules$hcube),
-                              label = NULL
-                            )
-                          )
-                        )
-                      )
-                    )),
-                    tags$div(class = "space")
-                  )
-                )
-              ),
-              tabPanel(
-                lang$adminMode$general$ui$tabScripts,
-                tags$div(
-                  class = "col-sm-6", style = "padding-top: 20px;",
-                  tags$div(
-                    class = "main-tab",
-                    tags$h2(
-                      lang$adminMode$general$ui$headerBaseScripts,
-                      tags$a("",
-                        title = paste0(
-                          lang$adminMode$general$ui$baseScriptsTooltip, " - ",
-                          tolower(lang$adminMode$general$ui$tooltipDocs)
-                        ),
-                        class = "info-header",
-                        href = "https://gams.com/miro/customize.html#analysis-scripts",
-                        tags$span(
-                          class = "fas fa-info-circle", class = "info-icon",
-                          role = "presentation",
-                          `aria-label` = "More information"
-                        ), target = "_blank"
-                      )
-                    ),
-                    tags$div(
-                      class = "option-wrapper-indented",
-                      createArray(NULL, "scripts_base",
-                        lang$adminMode$general$scripts$base,
-                        autoCreate = FALSE
-                      )
-                    ),
-                    tags$div(class = "space")
-                  )
-                ),
-                tags$div(
-                  class = "col-sm-6", style = "padding-top: 20px;",
-                  tags$div(
-                    class = "main-tab",
-                    tags$h2(
-                      lang$adminMode$general$ui$headerHcubeScripts,
-                      tags$a("",
-                        title = paste0(
-                          lang$adminMode$general$ui$hcubeScriptsTooltip, " - ",
-                          tolower(lang$adminMode$general$ui$tooltipDocs)
-                        ),
-                        class = "info-header",
-                        href = "https://gams.com/miro/start.html#analysis-scripts",
-                        tags$span(
-                          class = "fas fa-info-circle", class = "info-icon",
-                          role = "presentation",
-                          `aria-label` = "More information"
-                        ), target = "_blank"
-                      )
-                    ),
-                    tags$div(
-                      class = "option-wrapper-indented",
-                      createArray(NULL, "scripts_hcube",
-                        lang$adminMode$general$scripts$hcube,
-                        autoCreate = FALSE
                       )
                     ),
                     tags$div(class = "space")
@@ -1782,6 +1681,72 @@ font-size: 12px;
                   )
                 ),
                 rHandsontableOutput("hot_preview")
+              )
+            )
+          )
+        )
+      ),
+      tabItem(
+        tabName = "analysis_scripts",
+        fluidRow(
+          box(
+            title = lang$adminMode$general$ui$tabScripts, status = "primary", solidHeader = TRUE, width = 12,
+            tags$div(
+              class = "col-sm-6", style = "padding-top: 20px;",
+              tags$div(
+                class = "main-tab",
+                tags$h2(
+                  lang$adminMode$general$ui$headerBaseScripts,
+                  tags$a("",
+                    title = paste0(
+                      lang$adminMode$general$ui$baseScriptsTooltip, " - ",
+                      tolower(lang$adminMode$general$ui$tooltipDocs)
+                    ),
+                    class = "info-header",
+                    href = "https://gams.com/miro/customize.html#analysis-scripts",
+                    tags$span(
+                      class = "fas fa-info-circle", class = "info-icon",
+                      role = "presentation",
+                      `aria-label` = "More information"
+                    ), target = "_blank"
+                  )
+                ),
+                tags$div(
+                  createArray(NULL, "scripts_base",
+                    lang$adminMode$general$scripts$base,
+                    autoCreate = FALSE
+                  )
+                ),
+                tags$div(class = "space")
+              )
+            ),
+            tags$div(
+              class = "col-sm-6", style = "padding-top: 20px;",
+              tags$div(
+                class = "main-tab",
+                tags$h2(
+                  lang$adminMode$general$ui$headerHcubeScripts,
+                  tags$a("",
+                    title = paste0(
+                      lang$adminMode$general$ui$hcubeScriptsTooltip, " - ",
+                      tolower(lang$adminMode$general$ui$tooltipDocs)
+                    ),
+                    class = "info-header",
+                    href = "https://gams.com/miro/start.html#analysis-scripts",
+                    tags$span(
+                      class = "fas fa-info-circle", class = "info-icon",
+                      role = "presentation",
+                      `aria-label` = "More information"
+                    ), target = "_blank"
+                  )
+                ),
+                tags$div(
+                  createArray(NULL, "scripts_hcube",
+                    lang$adminMode$general$scripts$hcube,
+                    autoCreate = FALSE
+                  )
+                ),
+                tags$div(class = "space")
               )
             )
           )

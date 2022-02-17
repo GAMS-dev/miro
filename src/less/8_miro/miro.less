@@ -305,7 +305,6 @@ textarea.readme-preview-markdown:focus {
   {
     background-color: @gams-color-dark;
     color: @gmsalert-error-text-dark;
-
   })
 }
 .center-alert{
@@ -743,15 +742,17 @@ animation: none !important;
     display: inline;
     cursor: pointer;
 }
-.checkbox-material .checkbox{
+.checkbox-material .checkbox,
+.checkbox-simple .checkbox{
     display: inline-block;
     line-height: 1;
 }
-
-.checkbox-material .checkbox input {
+.checkbox-material .checkbox input,
+.checkbox-simple .checkbox input {
     opacity: 0;
 }
-.checkbox-material .checkbox input[disabled] + span {
+.checkbox-material .checkbox input[disabled] + span,
+.checkbox-simple .checkbox input[disabled] + span {
     opacity: 0.5;
 }
 .checkbox-material .checkbox span {
@@ -780,7 +781,6 @@ animation: none !important;
     border-radius: 1em;
     background: white;
 }
-
 .checkbox-material .checkbox span::after {
   position: absolute;
   display: block;
@@ -799,12 +799,10 @@ animation: none !important;
   bottom: 0;
   margin: auto;
 }
-
 .checkbox-material .checkbox :checked + span::after {
   padding-left: 0;
   padding-right: 2em;
 }
-
 .checkbox-material .checkbox :checked + span {
     padding-right: .15em;
     padding-left: 1.5em;
@@ -822,9 +820,76 @@ animation: none !important;
   width: 75px;
   margin: 0;
 }
-.checkbox-material {
+.checkbox-material,
+.checkbox-simple {
   cursor: pointer;
   align-items: center;
+}
+.checkbox-simple > label{
+  padding-left: 25px;
+  position: relative;
+}
+.checkbox-simple .checkbox {
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin-top: 0;
+}
+.checkbox-simple .checkbox,
+.checkbox-simple .label-span {
+  vertical-align: middle;
+  display: inline-block;
+}
+.checkbox-simple .checkbox span {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    cursor: pointer;
+    overflow: hidden;
+    border: 1px solid;
+    .responsiveDark({
+      border-color: @readme-preview-border;
+      background-color: #fff;
+    },
+    {
+      border-color: @readme-preview-border-dark;
+      background-color: @main-bg-dark;
+    });
+    border-radius: 3px;
+}
+.checkbox-simple .checkbox span:hover {
+  background-color: #ADADAD;
+}
+.checkbox-simple .checkbox span::before {
+    display: block;
+    content: '';
+    width: 1em;
+    height: 1em;
+}
+.checkbox-simple .checkbox span::after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 5px;
+  top: 0;
+  width: 5px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.checkbox-simple .checkbox :checked + span::after {
+  display: block;
+}
+.checkbox-simple .checkbox :checked + span {
+    .responsiveDark({
+       background-color: @checkbox-color;
+    },
+    {
+       background-color: @checkbox-color-dark;
+    });
 }
 .dygraph-legend {
   .responsiveDark({
@@ -1416,7 +1481,6 @@ html {
 .logo-wrapper{
   max-width:230px;
   max-height:50px;
-  margin-left: 25px;
   vertical-align: top;
   outline: 1px solid #eeeeee;
   .responsiveDark({

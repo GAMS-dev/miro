@@ -1024,38 +1024,44 @@
     "uiR":{
       "configMode": "GAMS MIRO配置模式",
       "general": "通用设置",
+      "symbol": "GAMS符号配置",
       "table": "图表设置",
       "widgets": "配置小部件",
       "graphs": "配置图表",
+      "analysis": "情景分析",
       "database": "管理数据库",
       "restartRequired": "注意：为了使这些更改生效，您必须重新启动配置模式！"
     },
     "general":{
       "ui":{
         "title":"通用设置",
-		"tabInterface": "界面",
-        "tabSymbols": "GAMS符号配置",
-        "tabModules": "模块",
+		"tabInterface": "用户界面",
+        "tabSubmission": "工作提交",
+        "tabLogs": "日志文件",
+        "tabComparison": "情景比较",
+        "tabData": "情景数据和附件",
         "tabScripts": "分析脚本",
-        "headerGeneral": "通用",
+        "tabSymbolLinks": "隐藏的符号和符号链接",
+        "headerGeneral": "标题和标志",
         "headerPivotcompare": "枢轴比较模式",
         "headerRenderers": "默认渲染器",
-        "headerLogo": "标志",
+        "headerAppearance": "外观",
         "headerSymbolDisplay": "Symbol display",
         "headerTabGrouping": "组合选项卡",
         "headerTabSymlinks": "使用输出数据作为输入数据",
         "headerInputGroups": "输入组",
         "headerInputWidgetGroups": "小工具组",
         "headerOutputGroups": "输入组",
-        "headerSymbolNaming": "指定名称",
+        "tabNameOrder": "顺序和组别",
+        "headerSymbolNaming": "符号和列名",
         "headerSymbolGrouping": "组合",
         "headerBaseScripts": "基本模式",
         "headerOutputAttach": "附件",
+        "headerExport": "文件导出",
+        "headerImport": "进口",
         "baseScriptsTooltip": "运行自定义分析脚本，该脚本将显示在输出中",
         "headerHcubeScripts": "批次分析",
         "hcubeScriptsTooltip": "一次运行多个方案的自定义分析脚本",
-        "headerScenData": "场景和数据",
-        "headerComputation": "计算",
         "tooltipDocs": "打开文档"
       },
       "modalDialog":{
@@ -1067,21 +1073,23 @@
         "choices": ["英语", "德语", "中文"]
       },
       "theme":{
-        "label": "使用的颜色模式",
+        "label": "颜色模式",
         "choices": ["使用系统或浏览器的设置", "浅色模式", "深色模式"]
       },
       "customCss": {
-        "label": "包含自定义 CSS 文件？ 该文件必须命名为“custom.css”并位于 static_<modelname> 目录中。"
+        "label": "包含自定义 CSS 文件。",
+        "tooltip": "该文件必须命名为“custom.css”并位于 static_<modelname> 目录中。"
       },
       "pageTitle":{
-        "label": "应用程序标题（在浏览器选项卡中可见）"
+        "label": "应用程序标题",
+        "tooltip": "标题在浏览器标签中是可见的"
       },
       "scen":{
         "label": "指定默认的场景比较模式",
         "choices": ["分屏视图 （适合比较两个场景）", "标签视图 （适合多于两个的场景之间的比较）", "枢轴视图 （适合多于两个的场景之间的比较）"]
       },
       "defaultScenName":{
-        "checkbox": "要使用一个在启动时加载的默认场景吗？",
+        "checkbox": "启动时加载一个默认场景",
         "tooltip": "启动MIRO时，可以使用数据预填充表和窗口小部件",
         "label": "默认场景的名称"
       },
@@ -1125,7 +1133,8 @@
         "label": "指定数据透视表中行和列标题的背景颜色"
       },
       "mirologfile":{
-        "label": "输入MIRO日志文件的名称（最少3个字符）。如果没有MIRO日志文件，请将该字段留空。"
+        "label": "包括自定义日志文件？",
+        "tooltip": "输入MIRO日志文件的名称（最少3个字符）。如果没有MIRO日志文件，请将该字段留空。"
       },
       "readme":{
         "label": "README文件",
@@ -1157,7 +1166,8 @@
       },
       "logo":{
         "header": "预览标志:",
-        "label": "上传该MIRO应用程序的自定义标志： png文件或者jpg文件（最佳格式：4,6：1）",
+        "label": "上传该MIRO应用程序的自定义标志",
+        "tooltip": "png文件或者jpg文件（最佳格式：4,6：1）",
         "placeholder": "无选中的文件"
       },
       "actScen":{
@@ -1168,8 +1178,8 @@
         "label": "确定以严格模式启动应用程序？ 这会导致在遇到可能带有错误的用户条目时直接提示错误消息而不是接受它。"
       },
       "actUpload":{
-        "title": "允许用户使用本地数据运行GAMS",
-        "label": "确定要激活本地数据上传的模块？"
+        "title": "允许用户将本地数据导入沙盒情景中",
+        "label": "启用本地数据上传"
       },
       "actShareScen":{
         "label": "允许不同用户之间的场景共享"
@@ -1182,7 +1192,7 @@
       },
       "actAttach":{
         "title": "可以是任何格式的文件。 MIRO可以区分这两种类型的附件：可以被GAMS模型识别和读取的附件以及无法被GAMS模型识别的文件。",
-        "label": "允许用户向场景添加附件？"
+        "label": "允许用户在方案中添加附件"
       },
       "aggregate":{
         "title": "如果未激活，则每个输入小部件都显示在单独的选项卡中。",
@@ -1193,17 +1203,18 @@
       },
       "meta":{
         "title": "元数据包含有关用户名, 场景名称创建场景时间的信息",
-        "label": "（导出场景时）在Excel文件中包含元数据表？"
+        "label": "（导出场景时）在Excel文件中包含元数据表"
       },
       "empty":{
         "title": "表格可以是空的，例如，当导出的场景仅包含输入数据时。",
-        "label": "在Excel文件中包含空白表格？"
+        "label": "在Excel文件中包含空白表格"
       },
       "downloadTempFiles":{
-        "label": "允许访问临时目录？"
+        "label": "允许访问临时工作目录"
       },
       "hcubeModule":{
-        "label": "激活 Hypercube 模块？"
+        "label": "激活 Hypercube 模块",
+        "tooltip": "需要GAMS引擎后端"
       },
       "auto":{
         "label": "自动生成每个输入表格的图形（数据透视工具）"
@@ -1448,7 +1459,7 @@
       },
       "checkbox":{
         "label": "选择一个标签",
-        "default": "默认值",
+        "default": "设置默认为真",
         "hcube": "在提交Hypercube作业时，元素是否应该自动展开？"
       },
       "date":{
@@ -1750,14 +1761,14 @@
           "hideOnMouseOut": "鼠标移出图表时是否隐藏突出显示效果？"
         },
         "legend":{
-          "title": "Legend options",
-          "activate": "Should a legend be displayed?",
-          "show": "How should the legend be displayed?",
-          "showChoices": ["auto", "always", "on mouseover", "follow"],
-          "width": "Width of the legend (in px)",
-          "showZeroValues": "Show zero value labels in the legend",
-          "labelsSeparateLines": "Show labels in separate lines?",
-          "hideOnMouseOut": "Hide legend when mouse is moved out of chart?"
+          "title": "图例选项",
+          "activate": "显示一个图例",
+          "show": "显示风格",
+          "showChoices": ["自动", "始终", "鼠标移动时", "跟着光标走"],
+          "width": "图例的宽度（px）。",
+          "showZeroValues": "在图例中显示零值标签",
+          "labelsSeparateLines": "在单独的行中显示标签",
+          "hideOnMouseOut": "当鼠标不在图表中时隐藏图例"
         }
       },
       "leafletOptions":{
@@ -1782,9 +1793,9 @@
           "showZoom": "包括“放大”或者“缩小”按钮？ 也可以通过CTRL+鼠标滚轮进行缩放",
           "zoomFactor": "添加缩放系数？缩放系数为1的20天将显示为40天（不支持预览）。",
           "fit": "在时间线初始化时拟合时间线上的所有数据？否则，时间线仅显示当前日期。",
-          "editable": "允许编辑条目？",
-          "multiselect": "允许多项选项（CTRL + Click，SHIFT + Click）？",
-          "showCurrentTime": "在当前时间显示垂直的柱形？"
+          "editable": "允许编辑条目",
+          "multiselect": "允许多项选项（CTRL + Click，SHIFT + Click）",
+          "showCurrentTime": "在当前时间显示垂直的柱形"
         }
       },
       "miroPivotOptions":{
@@ -1795,6 +1806,7 @@
         "emptyUEL": "UEL，指示缺少值（不得为空字符串）",
         "hidePivotControlsSwitch": "默认显示演示模式",
         "fixedColumnsSwitch": "启用固定列",
+        "fixedColumnsTooltip": "如果这个选项被激活，透视表的列就会被固定在表格的左边，并且在水平滚动时保持可见。",
         "infoMsgDummyData": "当前，预览使用伪数据。 这意味着过滤器将具有伪值。 如果要更改它们，则必须手动编辑JSON配置文件。"
       },
       "datatableOptions":{
@@ -1849,13 +1861,13 @@
           "symbolWidgetgroups": "小组件组的名称",
           "groupMemberIn": "选择该组成员",
           "groupMemberWidget": "选择该组成员",
-          "groupSameTabIn": "在同一标签上并排显示所有符号？",
-          "groupSameTabWidget": "在同一个标签页上并排显示所有小部件？"
+          "groupSameTabIn": "在同一标签上并排显示所有符号",
+          "groupSameTabWidget": "在同一个标签页上并排显示所有小部件"
         },
         "addOutputGroup":{
           "symbolOutputgroups": "输出组的名称",
           "groupMemberOut": "选择该组成员",
-          "groupSameTabOut": "Show all symbols side by side on the same tab?"
+          "groupSameTabOut": "在同一标签上并排显示所有符号"
         },
         "addSymlink":{
           "source": "输出符号的名称",
@@ -1872,17 +1884,17 @@
         },
         "addOutAttach":{
           "file": "要附加的文件名称",
-          "exec": "允许模型读取此文件？",
-          "error": "如果找不到文件，是否应该显示错误？"
+          "exec": "允许模型读取此文件",
+          "error": "如果没有找到文件，显示一个错误"
         },
         "addDyEvent":{
-          "dyDyEventCheck": "静态事件？",
+          "dyDyEventCheck": "静态事件",
           "dyDyEventTrue": "设置活动日期（yyyy-mm-dd）。",
           "dyDyEventFalse": "使用哪个GAMS符号？",
-          "label": "应使用哪个标签？",
+          "label": "标签",
           "labelLoc": "标签的位置",
           "labelLocChoices": ["顶部", "底部"],
-          "color": "活动线是颜色？",
+          "color": "事件线颜色",
           "strokePattern": "冲程模式类型",
           "strokePatternChoices": ["虚线", "点", "点-划线", "实线"]
         },
@@ -1891,20 +1903,20 @@
           "dyDyLimitTrue": "设置限制的数值",
           "dyDyLimitFalse": "使用哪个GAMS符号？",
           "limit": "设置限制的数值",
-          "label": "使用什么标签？",
+          "label": "标签",
           "labelLoc": "标签的位置",
           "labelLocChoices": ["左侧", "右侧"],
-          "color": "限制线是什么颜色？",
+          "color": "限制线的颜色",
           "strokePattern": "冲程模式类型",
           "strokePatternChoices": ["短划线", "点", "点-划线", "实线"]
         },
         "addDyAnnotation":{
           "dyDyAnnotation": "哪些需要注释？",
-          "text": "注释内容是什么？",
-          "tooltip": "使用什么工具提示？",
+          "text": "标签",
+          "tooltip": "工具提示",
           "width": "指定注释宽度",
           "height": "指定注释高度",
-          "attachAtBottom": "是否添加注释到x轴？"
+          "attachAtBottom": "将注释附在X轴上"
         },
         "addDyShading":{
           "dyDyShadingCheck": "使用静态下限？",
@@ -1929,7 +1941,7 @@
           "markerColor": "标记颜色",
           "markerColorChoices": ["红色", "深红", "浅红", "橙色", "米色", "绿色", "深绿", "浅绿", "蓝色", "深蓝色", "浅蓝色", "紫色", "深紫色", "粉色", "藏青色", "白色", "灰色", "浅灰色", "黑色"],
           "options": "标签选项",
-          "labelPermanent": "仅在鼠标悬停在该处时显示标签？",
+          "labelPermanent": "仅在鼠标悬停在该处时显示标签",
           "labelcolor": "选择标签的字体颜色",
           "labelbgcolor": "选择标签的背景颜色",
           "labelsize": "选择标签的字体大小（以px为单位）"
@@ -1958,11 +1970,11 @@
           "options": "其他图表选项",
           "width": "选择已创建元素的最大宽度",
           "height": "选择已创建元素的最大高度",
-          "opacity": "选择图表的不透明度？",
+          "opacity": "选择图表的不透明度",
           "showlabels": "是否将值显示在图表元素上方？",
           "transitionTime": "指定更新图表属性的持续时间（以毫秒为单位）",
           "layerId": "选择图层的ID",
-          "legend": "是否显示图例（数据列名称）？",
+          "legend": "显示图例（数据列名称）",
           "legendPosition": "图例位置",
           "legendPositionChoices": ["右上方", "左上方", "右下方", "左下方" ]
         },
@@ -1990,8 +2002,8 @@
           "size": "选择标记大小",
           "lineWidth": "选择择标轮廓宽度",
           "lineColor": "选择择标轮廓颜色",
-          "legend": "是否显示图例？ （此选项将被全局图例显示选项被覆盖）",
-          "frame": "使用数据维度进行动画（作为帧）？"
+          "legend": "是否显示图例 （此选项将被全局图例显示选项被覆盖）",
+          "frame": "使用数据维度进行动画（作为帧）"
         },
         "addLineDataEl":{
           "chartYdata": "在y轴上绘制什么？",
@@ -2013,7 +2025,7 @@
           "chartYdata": "在y轴上绘制什么？",
           "chartYlabel": "数据标签（例如图例）",
           "symbol": "选择标记符号",
-          "colorCheck": "使用静态颜色？",
+          "colorCheck": "使用静态颜色",
           "colorCheckTrue": "选择标记颜色",
           "colorCheckFalse": "选择颜色应该依赖的域。",
           "size": "选择标记大小",
@@ -2022,20 +2034,20 @@
           "maxsize": "选择最大标记尺寸（可选）",
           "lineWidth": "选择标记轮廓宽度",
           "lineColor": "选择标记轮廓颜色",
-          "legend": "是否显示图例？ （此选项将被全局图例显示选项被覆盖）",
+          "legend": "是否显示图例 （此选项将被全局图例显示选项被覆盖）",
           "frame": "使用数据维度进行动画（作为帧）？"
         },
         "addHistDataEl":{
           "histXdata": "要绘制什么？",
-          "label": "使用什么标签？",
-          "color": "选择柱形颜色"
+          "label": "标签",
+          "color": "条形颜色"
         },
         "addDyDataEl":{
           "chartYdata": "在y轴上绘制哪个标量？",
-		  "label": "使用什么标签？",
+		  "label": "标签",
           "yaxis": "坐标轴的位置",
           "yaxisChoices": ["左侧", "右侧"],
-          "color": "这个序列要使用什么颜色？",
+          "color": "颜色",
           "stepPlot": "绘制该序列的step图？",
           "stemPlot": "绘制该序列的stem图？",
           "fillGraph": "是否填充图表下方的区域？",

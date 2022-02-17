@@ -752,6 +752,25 @@ checkboxInput_MIRO <- function(inputId, label, value = FALSE) {
     )
   )
 }
+checkboxInput_SIMPLE <- function(inputId, label, value = FALSE) {
+  inputTag <- tags$input(id = inputId, type = "checkbox")
+  if (!is.null(value) && value) {
+    inputTag$attribs$checked <- "checked"
+  }
+  tags$div(
+    class = "form-group shiny-input-container",
+    tags$div(
+      class = "checkbox-simple",
+      tags$label(
+        tags$div(
+          class = "checkbox",
+          tags$label(inputTag, tags$span())
+        ),
+        tags$span(class = "label-span", label)
+      )
+    )
+  )
+}
 widgetTooltip <- function(label = NULL, tooltip = NULL, mobile = FALSE) {
   return(
     tags$span(

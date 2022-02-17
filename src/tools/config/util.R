@@ -195,7 +195,7 @@ setInputValue <- function(session, id, value) {
 }
 getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE) {
   tagList(
-    checkboxInput_MIRO(paste0(prefix, "enableHideEmptyCols"),
+    checkboxInput_SIMPLE(paste0(prefix, "enableHideEmptyCols"),
       lang$adminMode$graphs$miroPivotOptions$hideEmptyColsSwitch,
       value = isTRUE(currentConfig$enableHideEmptyCols)
     ),
@@ -218,17 +218,21 @@ getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE) {
         )
       )
     ),
-    checkboxInput_MIRO(paste0(prefix, "hidePivotControls"),
+    checkboxInput_SIMPLE(paste0(prefix, "hidePivotControls"),
       lang$adminMode$graphs$miroPivotOptions$hidePivotControlsSwitch,
       value = isTRUE(currentConfig$hidePivotControls)
     ),
-    checkboxInput_MIRO(paste0(prefix, "fixedColumns"),
-      lang$adminMode$graphs$miroPivotOptions$fixedColumnsSwitch,
+    checkboxInput_SIMPLE(paste0(prefix, "fixedColumns"),
+      labelTooltip(
+        lang$adminMode$graphs$miroPivotOptions$fixedColumnsSwitch,
+        lang$adminMode$graphs$miroPivotOptions$fixedColumnsTooltip,
+        "https://gams.com/miro/customize.html#fixed-columns"
+      ),
       value = !isFALSE(currentConfig$fixedColumns)
     ),
     if (!pivotComp) {
       tagList(
-        checkboxInput_MIRO(paste0(prefix, "useExternalDefaultView"),
+        checkboxInput_SIMPLE(paste0(prefix, "useExternalDefaultView"),
           lang$adminMode$graphs$miroPivotOptions$externalDefaultViewSwitch,
           value = length(currentConfig$externalDefaultView)
         ),

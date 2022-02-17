@@ -1024,9 +1024,11 @@
     "uiR":{
       "configMode": "GAMS MIRO Konfigurationsmodus",
       "general": "Allgemeine Einstellungen",
-      "table": "Tabellen konfigurieren",
-      "widgets": "Widgets konfigurieren",
-      "graphs": "Graphen konfigurieren",
+      "symbol": "Symbole",
+      "table": "Tabellen",
+      "widgets": "Widgets",
+      "graphs": "Graphen",
+      "analysis": "Szenarioanalysen",
       "database": "Datenbankverwaltung",
       "restartRequired": "Hinweis: Damit diese Änderungen wirksam werden, müssen Sie den Konfigurationsmodus neu starten!"
     },
@@ -1034,28 +1036,32 @@
       "ui":{
         "title":"Allgemeine Einstellungen",
         "tabInterface": "Benutzeroberfläche",
-        "tabSymbols": "Symbol-Konfiguration",
-        "tabModules": "Module",
+        "tabSubmission": "GAMS Jobs",
+        "tabLogs": "Log-Dateien",
+        "tabComparison": "Szenariovergleich",
+        "tabData": "Szenariodaten und Anhänge",
         "tabScripts": "Analyseskripte",
-        "headerGeneral": "Allgemein",
+        "tabSymbolLinks": "Versteckte Symbole und Symbolverknüpfungen",
+        "headerGeneral": "Titel und Logo",
         "headerPivotcompare": "Pivot-Szenariovergleichsmodus",
         "headerRenderers": "Standard-Renderer",
-        "headerLogo": "Logo",
+        "headerAppearance": "Erscheinungsbild",
         "headerSymbolDisplay": "Symboldarstellung",
         "headerTabGrouping": "Tab-Gruppierung",
         "headerTabSymlinks": "Ergebnisse als Eingabedaten verwenden",
         "headerInputGroups": "Eingabegruppen",
         "headerInputWidgetGroups": "Widget-Gruppen",
         "headerOutputGroups": "Ausgabegruppen",
-        "headerSymbolNaming": "Benennung",
+        "tabNameOrder": "Reihenfolge und Gruppen",
+        "headerSymbolNaming": "Symbol- und Spaltennamen",
         "headerSymbolGrouping": "Reihenfolge",
-        "headerBaseScripts": "Basismodus",
+        "headerBaseScripts": "Einzelne Szenarien",
         "headerOutputAttach": "Ergebnis-Anhänge",
+        "headerExport": "Export",
+        "headerImport": "Import",
         "baseScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte aus, die im Ausgabeabschnitt angezeigt werden",
         "headerHcubeScripts": "Batch-Analyse",
         "hcubeScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte für mehrere Szenarien auf einmal aus",
-        "headerScenData": "Szenario & Daten",
-        "headerComputation": "Berechnung",
         "tooltipDocs": "Dokumentation öffnen"
       },
       "modalDialog":{
@@ -1067,14 +1073,16 @@
         "choices": ["Englisch", "Deutsch", "Chinesisch"]
       },
       "theme":{
-        "label": "Zu verwendender Farbmodus",
+        "label": "Farbmodus",
         "choices": ["System/Browser Einstellungen", "Heller Modus", "Dunkler Modus"]
       },
       "customCss": {
-        "label": "Eine benutzerdefinierte CSS-Datei einbinden? Die Datei muss 'custom.css' heißen und sich im Verzeichnis static_<modelName> befinden."
+        "label": "Benutzerdefinierte CSS-Datei einbinden",
+        "tooltip": "Die Datei muss 'custom.css' heißen und sich im Verzeichnis static_<modelName> befinden."
       },
       "pageTitle":{
-        "label": "Titel der Applikation (im Browser Tab sichtbar)"
+        "label": "Titel der Applikation",
+        "tooltip": "Der Titel ist im Browser Tab sichtbar"
       },
       "scen":{
         "label": "Standard-Szenarienvergleichsmodus",
@@ -1082,7 +1090,7 @@
         "Pivot-Ansicht (geeignet für > 2 Szenarien zum Vergleichen)"]
       },
       "defaultScenName":{
-        "checkbox": "Soll ein Standardszenario definiert werden, welches beim Start geladen wird?",
+        "checkbox": "Beim Start ein Standardszenario laden",
         "tooltip": "Erlaubt es Ihnen, Tabellen und Widgets beim Start von MIRO mit Daten vorzufüllen",
         "label": "Name des Standardszenarios"
       },
@@ -1095,18 +1103,18 @@
         "output": "Ausgabesymbole in Gruppen einteilen"
       },
       "symlinks":{
-        "label": "Symbolverknüpfungen festlegen (Ergebnisse, die als Eingabedaten verwendet werden können)"
+        "label": "Symbolverknüpfung hinzufügen (Ergebnisse, die als Eingabedaten verwendet werden können)"
       },
       "scripts":{
-        "base": "Spezifizieren Sie individuelle Analyseskripte für den Basismodus.",
+        "base": "Spezifizieren Sie individuelle Analyseskripte für einzelne Szenarien.",
         "hcube": "Spezifizieren Sie individuelle Analyseskripte für die Batch-Analyse."
       },
       "outputAttach": {
         "label": "Neue Anlage hinzufügen"
       },
       "overwriteSheetOrder":{
-        "input": "Legen Sie die Reihenfolge fest, in welcher die Eingabesymbole angezeigt werden sollen (Drag & Drop).",
-        "output": "Legen Sie die Reihenfolge fest, in welcher die Ausgabesymbole angezeigt werden sollen (Drag & Drop)."
+        "input": "Reihenfolge, in welcher die Eingabesymbole angezeigt werden sollen (Drag & Drop zum Bearbeiten).",
+        "output": "Reihenfolge, in welcher die Ausgabesymbole angezeigt werden sollen (Drag & Drop zum Bearbeiten)."
       },
       "overwriteSymbolAliases":{
         "label": "Symbol-Aliase festlegen",
@@ -1126,7 +1134,8 @@
         "label": "Hintergrundfarbe der Zeilen- und Spaltenüberschriften in Pivot-Tabellen."
       },
       "mirologfile":{
-        "label": "Geben Sie den Namen der MIRO Log-Datei ein (falls verfügbar). Mindestens 3 Zeichen."
+        "label": "Benutzerdefinierte Log-Datei einbinden?",
+        "tooltip": "Geben Sie den Namen der Log-Datei ein (mindestens 3 Zeichen). Ansonsten lassen Sie dieses Feld leer."
       },
       "readme":{
         "label": "README Datei",
@@ -1158,7 +1167,8 @@
       },
       "logo":{
         "header": "Logo Vorschau:",
-        "label": "Laden Sie ein eigenes Logo für Ihre MIRO-App hoch: png/jpg-Datei (bestes Format: 4,6:1 oder 230*50px)",
+        "label": "Laden Sie ein eigenes Logo für Ihre MIRO-App hoch",
+        "tooltip": "png/jpg-Datei (bestes Format: 4,6:1 oder 230*50px)",
         "placeholder": "Keine Datei ausgewählt"
       },
       "actScen":{
@@ -1169,21 +1179,21 @@
         "label": "App im Striktmodus starten? Dies führt dazu, dass Fehlermeldungen ausgegeben werden, anstatt möglicherweise fehlerhafte Benutzereingaben zu akzeptieren."
       },
       "actUpload":{
-        "title": "Ermöglicht es dem Benutzer, lokale Daten für GAMS-Läufe zu verwenden",
-        "label": "Lokales Daten-Upload-Modul aktivieren?"
+        "title": "Ermöglicht dem Benutzer, lokale Daten in ein Sandbox-Szenario zu importieren",
+        "label": "Lokalen Daten-Upload ermöglichen"
       },
       "actShareScen":{
         "label": "Szenario-Sharing zwischen verschiedenen Benutzern aktivieren"
       },
       "actLog":{
-        "label": "Log Datei in der Benutzeroberfläche anzeigen"
+        "label": "Log Datei anzeigen"
       },
       "actLst":{
-        "label": "Listing (lst) Datei in der Benutzeroberfläche anzeigen"
+        "label": "Listing (lst) Datei anzeigen"
       },
       "actAttach":{
         "title": "Können Dateien in jedem Format sein. MIRO unterscheidet zwei Arten von Anhängen: Anhänge, die von Ihrem GAMS-Modell gesehen und gelesen werden können und Dateien, die nicht sichtbar sind.",
-        "label": "Sollen Benutzer Anhänge zu Szenarien hinzufügen dürfen?"
+        "label": "Benutzern erlauben, Anhänge zu Szenarien hinzuzufügen"
       },
       "aggregate":{
         "title": "Wenn nicht aktiviert, wird jedes Input-Widget in einem separaten Tab angezeigt.",
@@ -1194,17 +1204,18 @@
       },
       "meta":{
         "title": "Metadaten enthalten Informationen über den Benutzernamen, den Szenarionamen und den Erstellungszeitpunkt des Szenarios",
-        "label": "Ein Metadatenblatt in die Excel-Datei aufnehmen (beim Export eines Szenarios)?"
+        "label": "Ein Metadatenblatt in die Excel-Datei aufnehmen (beim Export eines Szenarios)"
       },
       "empty":{
         "title": "Blätter können leer sein, z.B. wenn das exportierte Szenario nur Eingabedaten enthält.",
-        "label": "Leere Blätter in die Excel-Datei aufnehmen?"
+        "label": "Leere Blätter in die Excel-Datei aufnehmen"
       },
       "downloadTempFiles":{
-        "label": "Zugriff auf das temporäre Verzeichnis erlauben?"
+        "label": "Zugriff auf das temporäre Arbeitsverzeichnis erlauben"
       },
       "hcubeModule":{
-        "label": "Hypercube-Modul aktivieren?"
+        "label": "Hypercube-Modul aktivieren",
+        "tooltip": "Erfordert GAMS Engine Backend"
       },
       "auto":{
         "label": "Automatisch Grafik für jedes Eingabesymbol generieren (Pivot-Tool)"
@@ -1248,7 +1259,7 @@
           "label":"Anzahl der anzuzeigenden Dezimalstellen"
         },
         "rownames":{
-          "label":"Zeilennummern anzeigen?"
+          "label":"Zeilennummern anzeigen"
         },
         "colReorder":{
           "label":"Neuordnung von Spalten erlaubt?"
@@ -1406,12 +1417,12 @@
           "label": "Operator auswählen",
           "choices": ["Minimum", "Maximum", "Anzahl", "Mittel", "Median", "Varianz", "Standardabweichung"]
         },
-        "depSelector": "Statischer Wert?",
+        "depSelector": "Statischer Wert",
         "step": "Schrittweite (auch Dezimalstellen möglich)",
         "minStep": "Minimale Schrittweite",
         "minStepTooltip": "Nur im Hypercube-Modul relevant. Wenn leer, wird die Schrittweite genommen. - Dokumentation öffnen",
         "ticks": "Markierungen Anzeigen?",
-        "hcube": "Soll das Element für das Lösen von Hypercube jobs automatisch erweitert werden?"
+        "hcube": "Für das Lösen von Hypercube jobs zu slider range erweitern"
       },
       "sliderrange":{
         "label": "Wählen Sie eine Widget-Beschriftung",
@@ -1423,13 +1434,13 @@
           "label": "Operator auswählen",
           "choices": ["Minimum", "Maximum", "Anzahl", "Mittel", "Median", "Varianz", "Standardabweichung"]
         },
-        "depSelector": "Statischer Wert?",
+        "depSelector": "Statischer Wert",
         "max": "Wählen Sie einen Maximalwert",
         "default1": "Unterer Standardwert",
         "default2": "Oberer Standardwert",
         "step": "Schrittweite (auch Dezimalstellen möglich)",
         "ticks": "Markierungen Anzeigen?",
-        "hcube": "Soll das Element für das Lösen von Hypercube jobs automatisch erweitert werden?"
+        "hcube": "Für das Lösen von Hypercube jobs automatisch erweitern"
       },
       "dropdown":{
         "label": "Wählen Sie eine Widget-Beschriftung",
@@ -1445,12 +1456,12 @@
         "multiple": "Sollen mehrere Elemente auswählbar sein?",
         "clearValue": "Als Elementtext mit GAMS kommunizieren",
         "clearValueTooltip": "Bewirkt, dass das Elementlabel ein leerer String ist. - Dokumentation öffnen",
-        "hcube": "Soll das Element für das Lösen von Hypercube jobs automatisch erweitert werden?"
+        "hcube": "Für das Lösen von Hypercube jobs automatisch erweitern"
       },
       "checkbox":{
         "label": "Wählen Sie eine Widget-Beschriftung",
-        "default": "Standardwert",
-        "hcube": "Soll das Element für das Lösen von Hypercube jobs automatisch erweitert werden?"
+        "default": "Standardwert auf wahr setzen",
+        "hcube": "Für das Lösen von Hypercube jobs zu Multi-Dropdownmenü erweitern"
       },
       "date":{
         "label": "Wählen Sie eine Widget-Beschriftung",
@@ -1476,7 +1487,7 @@
         },
         "daysDisabled": "Wählen Sie Wochentage aus, die Sie deaktivieren möchten",
         "autoclose": "Soll der Datepicker automatisch geschlossen werden, wenn ein Datum ausgewählt wurde?",
-        "hcube": "Soll das Element für das Lösen von Hypercube jobs automatisch erweitert werden?"
+        "hcube": "Für das Lösen von Hypercube jobs zu Datumsbereich erweitern"
       },
       "daterange":{
         "label": "Wählen Sie eine Widget-Beschriftung",
@@ -1505,7 +1516,7 @@
         },
         "separator": "Wählen Sie das Trennzeichen zwischen Start- und Enddatumswahlschalter",
         "autoclose": "Soll der Datepicker automatisch geschlossen werden, wenn ein Datumsbereich ausgewählt wurde?",
-        "hcube": "Soll das Element für das Lösen von Hypercube jobs automatisch erweitert werden?"
+        "hcube": "Für das Lösen von Hypercube jobs automatisch erweitern"
       },
       "textinput":{
         "label": "Wählen Sie eine Widget-Beschriftung",
@@ -1752,13 +1763,13 @@
         },
         "legend":{
           "title": "Legendenoptionen",
-          "activate": "Soll eine Legende angezeigt werden?",
-          "show": "Wie soll die Legende angezeigt werden?",
+          "activate": "Eine Legende anzeigen",
+          "show": "Anzeigestil der Legende",
           "showChoices": ["automatisch", "immer", "beim Überfahren mit der Maus", "folgen"],
           "width": "Breite der Legende (in px)",
           "showZeroValues": "Nullwerte in der Legende anzeigen",
-          "labelsSeparateLines": "Einträge in getrennten Zeilen anzeigen?",
-          "hideOnMouseOut": "Legende ausblenden, wenn die Maus aus dem Diagramm bewegt wird?"
+          "labelsSeparateLines": "Einträge in getrennten Zeilen anzeigen",
+          "hideOnMouseOut": "Legende ausblenden, wenn die Maus aus dem Diagramm bewegt wird"
         }
       },
       "leafletOptions":{
@@ -1768,11 +1779,11 @@
         "hideGroups": "Wählen Sie Gruppen aus, die beim Start ausgeblendet werden sollen",
         "layer":{
           "title": "Optionen für die Ebenensteuerung",
-          "baseGroups": "Welche Basisgruppen sollen auswählbar sein?",
-          "overlayGroups": "Welche Overlay-Gruppen sollen auswählbar sein?",
-          "position": "Sollen Gitterlinien angezeigt werden?",
+          "baseGroups": "Auswählbare Basisgruppen",
+          "overlayGroups": "Auswählbare Overlay-Gruppen",
+          "position": "Gitterlinien angezeigen",
           "positionChoices": ["Oben rechts", "Unten rechts", "Unten links", "Oben links"],
-          "collapsed": "Soll das Ebenenauswahlmenü eingeklappt sein?"
+          "collapsed": "Ebenenauswahlmenü einklappen"
         }
       },
       "timevisOptions":{
@@ -1783,9 +1794,9 @@
           "showZoom": "Buttons: 'Zoom In' / 'Zoom Out' hinzufügen? Gezoomt werden kann alternativ per ctrl + Mausrad",
           "zoomFactor": "Zoomfaktor? Wenn Sie mit einem Zoomfaktor von 1 aus 20 Tagen herauszoomen, werden 40 Tage angezeigt. Keine Vorschau verfügbar.",
           "fit": "Alle Daten auf der Timeline anpassen, wenn die Timeline initialisiert wird? Andernfalls wird die Zeitachse so eingestellt, dass sie das aktuelle Datum anzeigt.",
-          "editable": "Elementbearbeitung aktivieren?",
-          "multiselect": "Mehrfachauswahl von Elementen aktivieren (Strg+Klick, Umschalt+Klick)?",
-          "showCurrentTime": "Einen vertikalen Balken zur aktuellen Zeit anzeigen?"
+          "editable": "Elementbearbeitung aktivieren",
+          "multiselect": "Mehrfachauswahl von Elementen aktivieren (Strg+Klick, Umschalt+Klick)",
+          "showCurrentTime": "Einen vertikalen Balken zur aktuellen Zeit anzeigen"
         }
       },
       "miroPivotOptions":{
@@ -1795,7 +1806,8 @@
          "hideEmptyColsSwitch": "Schalter zum Ausblenden leerer Spalten aktivieren",
          "emptyUEL": "UEL, die einen fehlenden Wert anzeigt (darf kein leerer String sein)",
          "hidePivotControlsSwitch": "Präsentationsmodus standardmäßig anzeigen",
-        "fixedColumnsSwitch": "Fixierte Spalten aktivieren",
+         "fixedColumnsSwitch": "Fixierte Spalten aktivieren",
+         "fixedColumnsTooltip": "Wenn diese Option aktiviert ist, werden die Spalten der Pivot-Tabelle an der linken Seite der Tabelle fixiert und bleiben beim horizontalen Scrollen sichtbar.",
          "infoMsgDummyData": "Derzeit verwendet die Vorschau Dummy-Daten. Das bedeutet, dass die Filter Dummy-Werte haben werden. Wenn Sie diese ändern möchten, müssen Sie die JSON-Konfigurationsdatei manuell bearbeiten."
       },
       "datatableOptions":{
@@ -1850,13 +1862,13 @@
           "symbolWidgetgroups": "Name der Eingabe-Widget-Gruppe",
           "groupMemberIn": "Gruppenmitglieder auswählen",
           "groupMemberWidget": "Gruppenmitglieder auswählen",
-          "groupSameTabIn": "Alle Symbole nebeneinander in demselben Tab anzeigen?",
-          "groupSameTabWidget": "Alle Widgets nebeneinander in demselben Tab anzeigen?"
+          "groupSameTabIn": "Alle Symbole nebeneinander in demselben Tab anzeigen",
+          "groupSameTabWidget": "Alle Widgets nebeneinander in demselben Tab anzeigen"
         },
         "addOutputGroup":{
-          "symbolOutputgroups": "Name der Ausgabegruppe?",
+          "symbolOutputgroups": "Name der Ausgabegruppe",
           "groupMemberOut": "Gruppenmitglieder auswählen",
-          "groupSameTabOut": "Alle Symbole nebeneinander in demselben Tab anzeigen?"
+          "groupSameTabOut": "Alle Symbole nebeneinander in demselben Tab anzeigen"
         },
         "addSymlink":{
           "source": "Name des Ausgabesymbols",
@@ -1873,39 +1885,39 @@
         },
         "addOutAttach":{
           "file": "Name der anzuhängenden Datei",
-          "exec": "Modell erlauben, diese Datei zu lesen?",
-          "error": "Soll ein Fehler angezeigt werden, wenn die Datei nicht gefunden wird?"
+          "exec": "Modell erlauben, diese Datei zu lesen",
+          "error": "Einen Fehler anzeigen, wenn die Datei nicht gefunden wird"
         },
         "addDyEvent":{
-          "dyDyEventCheck": "Statisches Ereignis?",
+          "dyDyEventCheck": "Statisches Ereignis",
           "dyDyEventTrue": "Legen Sie ein Datum für das Ereignis fest (jjjjj-mm-tt)",
           "dyDyEventFalse": "Welches Symbol soll verwendet werden?",
-          "label": "Welche Bezeichnung soll verwendet werden?",
+          "label": "Bezeichnung",
           "labelLoc": "Position für die Bezeichnung",
           "labelLocChoices": ["oben", "unten"],
-          "color": "Welche Farbe sollte die Ereignislinie haben?",
+          "color": "Farbe der Ereignislinie",
           "strokePattern": "Art des Strichmusters",
           "strokePatternChoices": ["gestrichelt", "gepunktet", "gestrichpunktet", "durchgezogen"]
         },
         "addDyLimit":{
-          "dyDyLimitCheck": "Statischen Grenzwert verwenden?",
+          "dyDyLimitCheck": "Statischen Grenzwert verwenden",
           "dyDyLimitTrue": "Numerischen Grenzwert festlegen",
           "dyDyLimitFalse": "Welches Symbol soll verwendet werden?",
           "limit": "Legen Sie den numerischen Grenzwert fest",
-          "label": "Welche Bezeichnung soll verwendet werden?",
+          "label": "Bezeichnung",
           "labelLoc": "Position für die Bezeichnung",
           "labelLocChoices": ["links", "rechts"],
-          "color": "Welche Farbe sollte die Grenzwertlinie haben?",
+          "color": "Farbe der Grenzwertlinie",
           "strokePattern": "Art des Strichmusters",
           "strokePatternChoices": ["gestrichelt", "gepunktet", "gestrichpunktet", "durchgezogen"]
         },
         "addDyAnnotation":{
           "dyDyAnnotation": "Was soll beschriftet werden?",
-          "text": "Welcher Text soll verwendet werden?",
-          "tooltip": "Welcher Tooltip sollte verwendet werden?",
+          "text": "Beschriftung",
+          "tooltip": "Tooltip",
           "width": "Geben Sie die Breite der Beschriftung an",
           "height": "Geben Sie die Höhe der Beschriftung an",
-          "attachAtBottom": "Soll die Annotation an der x-Achse fixiert werden?"
+          "attachAtBottom": "Annotation an der x-Achse fixieren"
         },
         "addDyShading":{
           "dyDyShadingCheck": "Statische Untergrenze verwenden?",
@@ -1930,7 +1942,7 @@
           "markerColor": "Marker color",
           "markerColorChoices": ["red", "darkred", "lightred", "orange", "beige", "green", "darkgreen", "lightgreen", "blue", "darkblue", "lightblue", "purple", "darkpurple", "pink", "cadetblue", "white", "gray", "lightgray", "black"],
           "options": "Label-Optionen",
-          "labelPermanent": "Label nur beim überfahren zeigen?",
+          "labelPermanent": "Label nur beim überfahren zeigen",
           "labelcolor": "Wählen Sie eine Schriftfarbe für das Label",
           "labelbgcolor": "Wählen Sie eine Hintergrundfarbe für das Label",
           "labelsize": "Wählen Sie eine Schriftgröße für das Label (in px)"
@@ -1959,11 +1971,11 @@
           "options": "Zusätzliche Chart-Optionen",
           "width": "Wählen Sie die maximale Breite der erstellten Elemente",
           "height": "Wählen Sie die maximale Höhe der erstellten Elemente",
-          "opacity": "Deckkraft des Diagramms?",
+          "opacity": "Deckkraft des Diagramms",
           "showlabels": "Sollen Werte über den Diagrammen angezeigt werden?",
           "transitionTime": "Wählen Sie die Dauer der Übergänge, wenn eine Eigenschaft eines Diagramms aktualisiert wird (in Millisekunden)",
           "layerId": "Ebenen-ID auswählen",
-          "legend": "Soll eine Legende (Datenspaltennamen) sichtbar sein?",
+          "legend": "Legende (Datenspaltennamen) anzeigen",
           "legendPosition": "Legendenposition",
           "legendPositionChoices": ["oben rechts", "topleft", "unten rechts", "unten links"]
         },
@@ -1991,8 +2003,8 @@
           "size": "Markergröße auswählen",
           "lineWidth": "Markerumriss-Breite wählen",
           "lineColor": "Markerumriss-Farbe auswählen",
-          "legend": "Legende zeigen? (diese Option kann durch die globale Legende-zeigen-Option überschrieben werden)",
-          "frame": "Eine Datendimension für die Animation verwenden (als Frames)?"
+          "legend": "Legende anzeigen (diese Option kann durch die globale Legende-zeigen-Option überschrieben werden)",
+          "frame": "Eine Datendimension für die Animation verwenden (als Frames)"
         },
         "addLineDataEl":{
           "chartYdata": "Was soll auf der y-Achse dargestellt werden?",
@@ -2014,7 +2026,7 @@
           "chartYdata": "Was soll auf der y-Achse dargestellt werden?",
           "chartYlabel": "Datenlabel (z.B. für Legende)",
           "symbol": "Markersymbol auswählen",
-          "colorCheck": "Statische Farbe verwenden?",
+          "colorCheck": "Statische Farbe",
           "colorCheckTrue": "Markerfarbe auswählen",
           "colorCheckFalse": "Wählen Sie eine Domäne aus, von der die Farbe abhängen soll.",
           "size": "Markergröße wählen",
@@ -2023,32 +2035,32 @@
           "maxsize": "Maximale Markergröße wählen (optional)",
           "lineWidth": "Markerumriss-Breite wählen",
           "lineColor": "Markerumriss-Farbe auswählen",
-          "legend": "Legende zeigen? (diese Option kann durch die globale Legende-zeigen-Option überschrieben werden)",
+          "legend": "Legende zeigen (diese Option kann durch die globale Legende-zeigen-Option überschrieben werden)",
           "frame": "Eine Datendimension für die Animation verwenden (als Frames)?"
         },
         "addHistDataEl":{
           "histXdata": "Was soll dargestellt werden?",
-          "label": "Welches Label soll verwendet werden?",
-          "color": "Balkenfarbe auswählen"
+          "label": "Bezeichnung",
+          "color": "Balkenfarbe"
         },
         "addDyDataEl":{
           "chartYdata": "Welchen Index möchten Sie auf der y-Achse zeichnen?",
-          "label": "Welches Label soll verwendet werden?",
+          "label": "Bezeichnung",
           "yaxis": "Achsenposition",
           "yaxisChoices": ["links", "rechts"],
-          "color": "Welche Farbe sollte für diese Serie verwendet werden?",
-          "stepPlot": "Willst du die Serie als Stufendiagramm darstellen?",
-          "stemPlot": "Willst du die Serie als Stammplot darstellen?",
-          "fillGraph": "Soll der Bereich unter der Grafik ausgefüllt werden?",
-          "drawPoints": "Sollen Punkte gezeichnet werden?",
-          "pointShape": "Welche Form sollen Punkte haben?",
+          "color": "Farbe",
+          "stepPlot": "Serie als Stufendiagramm darstellen",
+          "stemPlot": "Serie als Stammplot darstellen",
+          "fillGraph": "Bereich unter der Grafik ausfüllen",
+          "drawPoints": "Punkte einzeichnen",
+          "pointShape": "Form der Punkte",
           "pointShapeChoices": ["Punkt", "Dreieck", "Quadrat", "Diamant", "Pentagon", "Hexagon", "Kreis", "Stern", "Plus", "ex"],
-          "pointSize": "Welche Größe sollten die Punkte haben?"
+          "pointSize": "Größe der Punkte"
         },
         "addTimevisDataEl":{
           "timevisSeries": "Inhalt der Elemente?",
-          "start": "Das Startdatum der Elemente?",
-          "end": "Das Enddatum der Elemente?",
+          "start": "Startdatum",
+          "end": "Enddatum",
           "type": "Typ der Elemente? Hinweis: Typen Kasten und Punkt benötigen nur ein Startdatum, Typen Bereich und Hintergrund benötigen sowohl ein Start- als auch ein Enddatum.",
           "typeChoices": ["Kasten", "Punkt", "Bereich", "Hintergrund"],
           "title": "Einen Titel für jedes Element hinzufügen, der angezeigt wird, wenn mit der Maus darüber gefahren wird?",

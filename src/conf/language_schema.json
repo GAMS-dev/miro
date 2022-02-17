@@ -3973,6 +3973,10 @@
               "type": "string",
               "minLength": 1
             },
+            "symbol": {
+              "type": "string",
+              "minLength": 1
+            },
             "table": {
               "type": "string",
               "minLength": 1
@@ -3985,6 +3989,10 @@
               "type": "string",
               "minLength": 1
             },
+            "analysis": {
+              "type": "string",
+              "minLength": 1
+            },
             "database": {
               "type": "string",
               "minLength": 1
@@ -3994,7 +4002,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 7
+          "minProperties": 9
         },
         "general": {
           "type": "object",
@@ -4012,15 +4020,27 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "tabSymbols": {
+                "tabSubmission": {
                   "type": "string",
                   "minLength": 1
                 },
-                "tabModules": {
+                "tabLogs": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tabComparison": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tabData": {
                   "type": "string",
                   "minLength": 1
                 },
                 "tabScripts": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tabSymbolLinks": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -4064,6 +4084,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "tabNameOrder": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "headerSymbolNaming": {
                   "type": "string",
                   "minLength": 1
@@ -4080,6 +4104,14 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "headerExport": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "headerImport": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "baseScriptsTooltip": {
                   "type": "string",
                   "minLength": 1
@@ -4092,20 +4124,12 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "headerScenData": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "headerComputation": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "tooltipDocs": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 25
+              "minProperties": 29
             },
             "modalDialog": {
               "type": "object",
@@ -4182,9 +4206,13 @@
                 "label": {
                   "type": "string",
                   "minLength": 1
+                },
+                "tooltip": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 1
+              "minProperties": 2
             },
             "scen": {
               "type": "object",
@@ -4378,9 +4406,13 @@
                 "label": {
                   "type": "string",
                   "minLength": 1
+                },
+                "tooltip": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 1
+              "minProperties": 2
             },
             "readme": {
               "type": "object",
@@ -4507,12 +4539,16 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "tooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "placeholder": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 3
+              "minProperties": 4
             },
             "actScen": {
               "type": "object",
@@ -4677,9 +4713,13 @@
                 "label": {
                   "type": "string",
                   "minLength": 1
+                },
+                "tooltip": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 1
+              "minProperties": 2
             },
             "auto": {
               "type": "object",
@@ -7166,12 +7206,16 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "fixedColumnsTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "infoMsgDummyData": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 8
+              "minProperties": 9
             },
             "datatableOptions": {
               "type": "object",

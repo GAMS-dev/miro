@@ -85,7 +85,7 @@ getHotOptions <- reactive({
     ),
     tags$div(
       class = "shiny-input-container",
-      checkboxInput_MIRO("hot_readonly", lang$adminMode$tables$hot$readonly,
+      checkboxInput_SIMPLE("hot_readonly", lang$adminMode$tables$hot$readonly,
         value = if (length(configJSON$handsontable$readonly)) {
           configJSON$handsontable$readonly
         } else {
@@ -112,7 +112,7 @@ getHotOptions <- reactive({
     ),
     tags$div(
       class = "shiny-input-container",
-      checkboxInput_MIRO("hot_resize", lang$adminMode$tables$hot$resize,
+      checkboxInput_SIMPLE("hot_resize", lang$adminMode$tables$hot$resize,
         value = if (length(configJSON$handsontable$manualColumnResize)) {
           configJSON$handsontable$manualColumnResize
         } else {
@@ -122,7 +122,7 @@ getHotOptions <- reactive({
     ),
     tags$div(
       class = "shiny-input-container",
-      checkboxInput_MIRO("hot_context_enable", lang$adminMode$tables$hot$enable,
+      checkboxInput_SIMPLE("hot_context_enable", lang$adminMode$tables$hot$enable,
         value = if (length(configJSON$handsontable$contextMenu$enabled)) {
           configJSON$handsontable$contextMenu$enabled
         } else {
@@ -135,14 +135,14 @@ getHotOptions <- reactive({
       style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;padding-left:40px;",
       conditionalPanel(
         condition = "input.hot_context_enable == true",
-        checkboxInput_MIRO("hot_context_rowedit", lang$adminMode$tables$hot$contextRowedit,
+        checkboxInput_SIMPLE("hot_context_rowedit", lang$adminMode$tables$hot$contextRowedit,
           value = if (length(configJSON$handsontable$contextMenu$allowRowEdit)) {
             configJSON$handsontable$contextMenu$allowRowEdit
           } else {
             config$handsontable$contextMenu$allowRowEdit
           }
         ),
-        checkboxInput_MIRO("hot_context_coledit", lang$adminMode$tables$hot$contextColedit,
+        checkboxInput_SIMPLE("hot_context_coledit", lang$adminMode$tables$hot$contextColedit,
           value = if (length(configJSON$handsontable$contextMenu$allowColEdit)) {
             configJSON$handsontable$contextMenu$allowColEdit
           } else {
@@ -184,7 +184,7 @@ getDtOptions <- reactive({
     ),
     tags$div(
       class = "shiny-input-container",
-      checkboxInput_MIRO("dt_rownames", lang$adminMode$tables$dt$rownames$label,
+      checkboxInput_SIMPLE("dt_rownames", lang$adminMode$tables$dt$rownames$label,
         value = if (length(configJSON$datatable$rownames)) {
           configJSON$datatable$rownames
         } else {
@@ -382,7 +382,7 @@ getSymbolHotOptions <- function() {
     ),
     conditionalPanel(
       condition = "input.inputTable_type!=='pivot'",
-      checkboxInput_MIRO("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$tableWidgetConfig$readonly),
+      checkboxInput_SIMPLE("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$tableWidgetConfig$readonly),
       tags$div(
         class = "option-wrapper",
         style = if (!length(pivotCols)) "display:none",
@@ -397,7 +397,7 @@ getSymbolHotOptions <- function() {
                                         || ", tolower(isGamsTable), ")"),
       tags$div(
         class = "option-wrapper",
-        checkboxInput_MIRO("table_fixedColumnsLeft", lang$adminMode$widgets$table$fixedColumnsLeft,
+        checkboxInput_SIMPLE("table_fixedColumnsLeft", lang$adminMode$widgets$table$fixedColumnsLeft,
           value = if (length(rv$tableWidgetConfig$fixedColumnsLeft)) TRUE else FALSE
         )
       )
@@ -478,11 +478,11 @@ getSymbolHotOptions <- function() {
       ),
       tags$div(
         class = "option-wrapper",
-        checkboxInput_MIRO("table_hideIndexCol",
+        checkboxInput_SIMPLE("table_hideIndexCol",
           lang$adminMode$widgets$table$hideIndexCol,
           value = rv$tableWidgetConfig$hideIndexCol
         ),
-        checkboxInput_MIRO("table_heatmap",
+        checkboxInput_SIMPLE("table_heatmap",
           lang$adminMode$widgets$table$heatmap,
           value = rv$tableWidgetConfig$heatmap
         )
@@ -528,7 +528,7 @@ getOutputTableOptions <- reactive({
         min = 0L,
         value = rv$tableWidgetConfig$options$decimals
       ),
-      checkboxInput_MIRO("outputTable_rownames", lang$adminMode$tables$dt$rownames$label,
+      checkboxInput_SIMPLE("outputTable_rownames", lang$adminMode$tables$dt$rownames$label,
         value = rv$tableWidgetConfig$rownames
       ),
       selectInput("outputTable_buttons",
@@ -544,7 +544,7 @@ getOutputTableOptions <- reactive({
         selected = rv$tableWidgetConfig$options$buttons,
         multiple = TRUE
       ),
-      checkboxInput_MIRO("outputTable_noGraph", lang$adminMode$tables$symbol$noGraph,
+      checkboxInput_SIMPLE("outputTable_noGraph", lang$adminMode$tables$symbol$noGraph,
         value = if (tolower(currentTableSymbolName) %in% tolower(names(configJSON$dataRendering)) &&
           identical(configJSON$dataRendering[[currentTableSymbolName]]$outType, "datatable")) {
           TRUE
