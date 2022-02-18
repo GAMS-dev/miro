@@ -266,7 +266,7 @@
          "default":"split"
       },
       "pivotCompSettings":{
-        "description":"Settings related to the Pivot Comparison Mode",
+        "description":"Settings related to the pivot view comparison mode",
          "type":"object",
          "additionalProperties":false,
          "properties":{
@@ -289,7 +289,7 @@
              "minLength": 1
            },
            "symbolConfig": {
-             "description":"Symbol-specific settings for the Pivot Comparison Mode",
+             "description":"Symbol-specific settings for the pivot view comparison mode",
              "type":"object",
              "additionalProperties": {
                "type":"object",

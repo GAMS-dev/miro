@@ -111,7 +111,7 @@
       },
       "pivot":{
         "scenColName": "Scenario",
-        "viewPrefix": "Pivot Comparison:"
+        "viewPrefix": "Pivot comparison:"
       }
     },
     "hcubeImport":{

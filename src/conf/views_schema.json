@@ -4,7 +4,7 @@
   "description":"Global views are registered in the app and are available for all scenarios. They can be overshadowed by local/scenario specific views.",
   "type":"object",
   "additionalProperties": {
-    "description":"Views of a specific input/output symbol. The name of the object must be the symbol name or the symbol name with the _pivotcomp_ prefix. In the latter case, the views are used in the MIRO Pivot comparison mode.",
+    "description":"Views of a specific input/output symbol. The name of the object must be the symbol name or the symbol name with the _pivotcomp_ prefix. In the latter case, the views are used in the pivot view comparison mode.",
     "type":"object",
     "additionalProperties":{
       "description":"Configuration of the view. The name of the object is the name of the view.",
