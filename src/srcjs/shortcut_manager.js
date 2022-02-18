@@ -111,6 +111,27 @@ export default class ShortcutManager {
           $('a[href="#shiny-tab-scenarios"]').trigger('click');
         },
       },
+      KeyJ: {
+        description: 'Go to split view comparison mode',
+        handler: () => {
+          $('a[href="#shiny-tab-scenarios"]').trigger('click');
+          Shiny.setInputValue('btSplitView', 'splitView', { priority: 'event' });
+        },
+      },
+      KeyK: {
+        description: 'Go to tab view comparison mode',
+        handler: () => {
+          $('a[href="#shiny-tab-scenarios"]').trigger('click');
+          Shiny.setInputValue('btSplitView', 'tabView', { priority: 'event' });
+        },
+      },
+      KeyL: {
+        description: 'Go to pivot view comparison mode',
+        handler: () => {
+          $('a[href="#shiny-tab-scenarios"]').trigger('click');
+          Shiny.setInputValue('btSplitView', 'pivotView', { priority: 'event' });
+        },
+      },
       KeyT: {
         description: 'Toggle graph/table view',
         handler: () => {
