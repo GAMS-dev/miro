@@ -1026,7 +1026,7 @@
       "general": "Allgemeine Einstellungen",
       "symbol": "Symbole",
       "table": "Tabellen",
-      "widgets": "Widgets",
+      "widgets": "Eingabewidgets",
       "graphs": "Graphen",
       "analysis": "Szenarioanalysen",
       "database": "Datenbankverwaltung",
@@ -1224,13 +1224,13 @@
     "tables":{
       "ui":{
         "title": "Tabelleneinstellungen",
-        "input": "Eingabetabellen",
-        "output": "Ausgabetabellen",
-        "symbol": "Symboltabellen",
+        "input": "Eingabetabellen (globale Einstellungen)",
+        "output": "Ausgabetabellen (globale Einstellungen)",
+        "symbol": "Ausgabetabellen (individuelle Symbole)",
         "resetTable": "Zurücksetzen",
         "saveTable": "Speichern",
-		"inputSymbols": "Eingabesymbole",
-        "outputSymbols": "Ausgabesymbole"
+        "tableTooltip": "Eingabetabellen werden im Abschnitt Widgets konfiguriert.",
+        "outputSymbols": "Ausgabesymbol"
       },
       "hot":{
         "height": "Höhe der Eingabetabellen (in px)",
@@ -1313,7 +1313,9 @@
         "alias": "Beschriftung für den Reiter des Elements (keine Live-Vorschau)",
         "pivotColsRestriction": "Hinweis: Es ist nicht möglich, Spalten in der Symboltabelle hinzuzufügen oder zu löschen, wenn sie schreibgeschützt ist oder als Heatmap dargestellt wird.",
 		"notConfigurable": "Die in Ihrer JSON-Datei gefundene Widgetkonfiguration wird derzeit für den ausgewählten Symboltyp im Konfigurationsmodus nicht unterstützt! Dies bedeutet nicht, dass die Konfiguration ungültig ist. Symbol: '%s'; Konfiguriertes Widget: '%s'",
-        "tooltip": "Anmerkung / Tooltip (optional)"
+        "tooltip": "Anmerkung / Tooltip (optional)",
+        "scalarSymbols": "Skalare Eingabesymbole",
+        "multiDimSymbols": "Multi-dimensionale Eingabesymbole"
       },
       "validate":{
         "val1": "Der Alias des Elements darf nicht leer sein!",

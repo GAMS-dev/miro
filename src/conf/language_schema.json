@@ -4767,7 +4767,7 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "inputSymbols": {
+                "tableTooltip": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -5122,9 +5122,17 @@
                 "tooltip": {
                   "type": "string",
                   "minLength": 1
+                },
+                "scalarSymbols": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "multiDimSymbols": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 26
+              "minProperties": 28
             },
             "validate": {
               "type": "object",

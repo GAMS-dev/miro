@@ -729,6 +729,10 @@ font-size: 12px;
                   ),
                   tags$hr(),
                   tags$div(id = "widget_options"),
+                  tags$div(
+                    id = "pivotColsRestriction", class = "config-message",
+                    lang$adminMode$widgets$ui$pivotColsRestriction
+                  ),
                   tags$div(class = "space")
                 )
               ),
@@ -745,7 +749,18 @@ font-size: 12px;
                     style = "width:100px;"
                   )
                 ),
-                uiOutput("widget_preview")
+                uiOutput("widgetTableLabelWrapper"),
+                uiOutput("widget_preview"),
+                DTOutput("bigdata_preview"),
+                renderDataUI("inputTable_pivot",
+                  type = "miropivot", height = 400,
+                  showNoDataTxt = FALSE,
+                  customOptions = list(
+                    enablePersistentViews = FALSE,
+                    enableHideEmptyCols = TRUE
+                  )
+                ),
+                rHandsontableOutput("hot_preview")
               )
             )
           )
@@ -1598,9 +1613,6 @@ font-size: 12px;
           box(
             title = lang$adminMode$tables$ui$title, status = "primary", solidHeader = TRUE, width = 12,
             tags$div(id = "tableWidgetUpdateSuccess", class = "gmsalert gmsalert-success center-alert", lang$adminMode$widgets$ui$widgetTableUpdateSuccess),
-            tags$div(id = "tableValidationErr", class = "gmsalert gmsalert-error center-alert"),
-            # tags$div(id = "unknownErrorTables", class = "gmsalert gmsalert-error center-alert",
-            #          lang$errMsg$unknownError),
             tags$div(class = "space"),
             tags$div(
               style = "padding-bottom: 20px;",
@@ -1623,8 +1635,8 @@ font-size: 12px;
                   conditionalPanel(
                     condition = "input.table_type == 'symbol'",
                     tags$div(
-                      title = lang$adminMode$widgets$ui$tableTooltip, class = "option-wrapper",
-                      selectInput("table_symbol", lang$adminMode$widgets$ui$inputSymbol,
+                      title = lang$adminMode$tables$ui$tableTooltip, class = "option-wrapper",
+                      selectInput("table_symbol", lang$adminMode$tables$ui$outputSymbols,
                         choices = c()
                       )
                     ),
@@ -1632,10 +1644,6 @@ font-size: 12px;
                   )
                 ),
                 tags$div(id = "table_wrapper"),
-                tags$div(
-                  id = "pivotColsRestriction", class = "config-message",
-                  lang$adminMode$widgets$ui$pivotColsRestriction
-                ),
                 tags$div(class = "space")
               )
             ),
@@ -1671,16 +1679,7 @@ font-size: 12px;
                 ),
                 uiOutput("tableLabelWrapper"),
                 DTOutput("outputTable_preview"),
-                DTOutput("dt_preview"),
-                renderDataUI("inputTable_pivot",
-                  type = "miropivot", height = 400,
-                  showNoDataTxt = FALSE,
-                  customOptions = list(
-                    enablePersistentViews = FALSE,
-                    enableHideEmptyCols = TRUE
-                  )
-                ),
-                rHandsontableOutput("hot_preview")
+                DTOutput("dt_preview")
               )
             )
           )

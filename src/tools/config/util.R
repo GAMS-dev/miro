@@ -195,9 +195,12 @@ setInputValue <- function(session, id, value) {
 }
 getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE) {
   tagList(
-    checkboxInput_SIMPLE(paste0(prefix, "enableHideEmptyCols"),
-      lang$adminMode$graphs$miroPivotOptions$hideEmptyColsSwitch,
-      value = isTRUE(currentConfig$enableHideEmptyCols)
+    tags$div(
+      class = "shiny-input-container",
+      checkboxInput_SIMPLE(paste0(prefix, "enableHideEmptyCols"),
+        lang$adminMode$graphs$miroPivotOptions$hideEmptyColsSwitch,
+        value = isTRUE(currentConfig$enableHideEmptyCols)
+      )
     ),
     conditionalPanel(
       paste0("input.", prefix, "enableHideEmptyCols===true"),
@@ -218,23 +221,29 @@ getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE) {
         )
       )
     ),
-    checkboxInput_SIMPLE(paste0(prefix, "hidePivotControls"),
-      lang$adminMode$graphs$miroPivotOptions$hidePivotControlsSwitch,
-      value = isTRUE(currentConfig$hidePivotControls)
-    ),
-    checkboxInput_SIMPLE(paste0(prefix, "fixedColumns"),
-      labelTooltip(
-        lang$adminMode$graphs$miroPivotOptions$fixedColumnsSwitch,
-        lang$adminMode$graphs$miroPivotOptions$fixedColumnsTooltip,
-        "https://gams.com/miro/customize.html#fixed-columns"
+    tags$div(
+      class = "shiny-input-container",
+      checkboxInput_SIMPLE(paste0(prefix, "hidePivotControls"),
+        lang$adminMode$graphs$miroPivotOptions$hidePivotControlsSwitch,
+        value = isTRUE(currentConfig$hidePivotControls)
       ),
-      value = !isFALSE(currentConfig$fixedColumns)
+      checkboxInput_SIMPLE(paste0(prefix, "fixedColumns"),
+        labelTooltip(
+          lang$adminMode$graphs$miroPivotOptions$fixedColumnsSwitch,
+          lang$adminMode$graphs$miroPivotOptions$fixedColumnsTooltip,
+          "https://gams.com/miro/customize.html#fixed-columns"
+        ),
+        value = !isFALSE(currentConfig$fixedColumns)
+      )
     ),
     if (!pivotComp) {
       tagList(
-        checkboxInput_SIMPLE(paste0(prefix, "useExternalDefaultView"),
-          lang$adminMode$graphs$miroPivotOptions$externalDefaultViewSwitch,
-          value = length(currentConfig$externalDefaultView)
+        tags$div(
+          class = "shiny-input-container",
+          checkboxInput_SIMPLE(paste0(prefix, "useExternalDefaultView"),
+            lang$adminMode$graphs$miroPivotOptions$externalDefaultViewSwitch,
+            value = length(currentConfig$externalDefaultView)
+          )
         ),
         conditionalPanel(
           paste0("input.", prefix, "useExternalDefaultView===true"),
@@ -254,7 +263,7 @@ getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE) {
         conditionalPanel(
           paste0("input.", prefix, "useExternalDefaultView!==true"),
           tags$div(
-            id = "miroPivotInfoMsg", class = "config-message",
+            id = "miroPivotInfoMsg", class = "config-message shiny-input-container",
             style = "display:block;",
             lang$adminMode$graphs$miroPivotOptions$infoMsg
           )

@@ -1026,7 +1026,7 @@
       "general": "General settings",
       "symbol": "Symbols",
       "table": "Tables",
-      "widgets": "Widgets",
+      "widgets": "Input widgets",
       "graphs": "Graphs",
       "analysis": "Scenario analysis",
       "database": "Database management",
@@ -1224,13 +1224,13 @@
     "tables":{
       "ui":{
         "title": "Table settings",
-        "input": "input tables (global)",
-        "output": "output tables (global)",
-        "symbol": "symbol tables",
+        "input": "Input tables (global settings)",
+        "output": "Output tables (global settings)",
+        "symbol": "Output tables (individual symbols)",
         "resetTable": "Reset",
         "saveTable": "Save",
-		"inputSymbols": "Input symbols",
-        "outputSymbols": "Output symbols"
+        "tableTooltip": "Input tables are configured in the widgets section.",
+        "outputSymbols": "Output symbol"
       },
       "hot":{
         "height": "Height of input tables (in px)",
@@ -1313,7 +1313,10 @@
         "alias": "Name of the widget tab (no live preview)",
         "pivotColsRestriction": "Note: It is not possible to add or delete columns in the symbol table if it is set to readonly or displayed as a heatmap.",
 		"notConfigurable": "The widget configuration found in your JSON file is currently not supported for the selected symbol type in Configuration Mode! This does not imply that the configuration is invalid. Symbol: '%s'; Configured widget type: '%s'",
-        "tooltip": "Tooltip (optional)"
+        "tooltip": "Tooltip (optional)",
+        "scalarSymbols": "Scalar input symbols",
+        "multiDimSymbols": "Multi-dimensional input symbols"
+
       },
       "validate":{
         "val1": "The alias of the element must not be empty!",

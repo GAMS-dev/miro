@@ -1,6 +1,17 @@
 latest_widget_symbol_type <- NULL
 currentWidgetSymbolName <- character(0L)
+inputPivotRendererEnv <- new.env(parent = emptyenv())
 symbolsDefinedExternally <- inputSymInForeignRenderers[inputSymInForeignRenderers %in% widgetSymbols]
+allInputSymbols <- setNames(
+  list(
+    c(widgetSymbols),
+    c(inputSymMultiDimChoices)
+  ),
+  c(
+    lang$adminMode$widgets$ui$scalarSymbols,
+    lang$adminMode$widgets$ui$multiDimSymbols
+  )
+)
 
 updateSelectInputNoClear <- function(session, id, choices) {
   selected <- input[[id]]
@@ -14,6 +25,9 @@ updateSelectInputNoClear <- function(session, id, choices) {
 }
 isNonSingletonSet <- function(symName) {
   return(length(modelInRaw[[symName]]$headers) == 2L)
+}
+isParameter <- function(symName) {
+  return(identical(modelInRaw[[symName]]$symtype, "parameter"))
 }
 
 langSpecificWidget <- list()
@@ -57,6 +71,9 @@ langSpecificWidget$widgetOptionsSet <- setNames(c("multidropdown", "table"), c(
   lang$adminMode$widgets$widgetOptions$dropdown,
   lang$adminMode$widgets$widgetOptions$table
 ))
+langSpecificWidget$widgetOptionsParameter <- setNames(c("table"), c(
+  lang$adminMode$widgets$widgetOptions$table
+))
 langSpecificWidget$widgetOptionsDate <- setNames("date", lang$adminMode$widgets$widgetOptions$date)
 langSpecificWidget$widgetOptionsTextinput <- setNames("textinput", lang$adminMode$widgets$widgetOptions$text)
 langSpecificWidget$minDepOp <- c(
@@ -97,8 +114,8 @@ if (length(modelInRaw[[scalarsFileName]])) {
   scalarInputSymWithAliases <- c()
 }
 
-if (length(widgetSymbols)) {
-  updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
+if (length(allInputSymbols)) {
+  updateSelectInput(session, "widget_symbol", choices = allInputSymbols)
   noWidgetSymbols <- FALSE
 } else {
   showEl(session, "#noSymbolMsg")
@@ -107,6 +124,7 @@ if (length(widgetSymbols)) {
   hideEl(session, "#optionConfigMsg")
   hideEl(session, "#doubledashConfigMsg")
   hideEl(session, "#externalConfigMsg")
+  hideEl(session, "#pivotColsRestriction")
   noWidgetSymbols <- TRUE
 }
 
@@ -357,12 +375,119 @@ validateWidgetConfig <- function(widgetJSON) {
         return(lang$adminMode$widgets$validate[["val58"]])
       }
     },
+    table = {
+      if (identical(configJSON$tableType, "pivot") && sum(vapply(modelIn[[currentWidgetSymbolName]]$headers, function(header) {
+        return(identical(header$type, "numeric"))
+      }, logical(1L))) > 1L) {
+        return(sprintf(lang$adminMode$widgets$validate$val59, currentWidgetSymbolName))
+      }
+      if (any(!configJSON$readonlyCols %in% inputSymHeaders[[currentWidgetSymbolName]])) {
+        return(lang$adminMode$widgets$validate$val34)
+      }
+    },
     {
       return(lang$adminMode$widgets$validate$val35)
     }
   )
   return("")
 }
+output$widgetTableLabelWrapper <- renderUI({
+  if (!identical(rv$widgetConfig$widgetType, "table")) {
+    return()
+  }
+  if (length(rv$widgetConfig$label) && !identical(trimws(rv$widgetConfig$label), "")) {
+    tags$div(
+      id = "widgetTableLabel",
+      class = "readme-wrapper label-wrapper",
+      markdown(rv$widgetConfig$label)
+    )
+  }
+})
+output$hot_preview <- renderRHandsontable({
+  req(input$widget_symbol %in% names(inputSymHeaders))
+  if (!identical(rv$widgetConfig$tableType, "default")) {
+    return()
+  }
+  data <- createTableData(input$widget_symbol, rv$widgetConfig$pivotCols)
+
+  headersTmp <- data$headersRaw
+  headersUnnamed <- unname(headersTmp)
+  colHeaders <- data$headers
+  pivotTable <- data$isPivotTable
+  data <- data$data
+  colsReadonly <- match(rv$widgetConfig$readonlyCols, headersUnnamed)
+  colsReadonly <- colsReadonly[!is.na(colsReadonly)]
+  colWidths <- if (!is.null(rv$widgetConfig$colWidths) && !identical(rv$widgetConfig$colWidths, "custom")) {
+    rv$widgetConfig$colWidths
+  } else {
+    200
+  }
+  fixedColumnsLeft <- isolate(rv$widgetConfig$fixedColumnsLeft)
+  if (is.null(fixedColumnsLeft)) fixedColumnsLeft <- 0
+
+  readOnlyTable <- identical(input$table_readonly, TRUE)
+  if (any(duplicated(colHeaders))) {
+    if (readOnlyTable) {
+      stop("readOnly is currently not supported for identical column headers. Please make sure that the column headers are unique by changing the column aliases in the General section.", call. = FALSE)
+    }
+    readOnlyTable <- NULL
+  }
+  ht <- rhandsontable(
+    data = data,
+    rowHeaders = if (isTRUE(input$table_hideIndexCol)) NULL else rownames(data),
+    colHeaders = colHeaders,
+    readOnly = readOnlyTable,
+    digits = NA,
+    naAsNull = pivotTable
+  )
+
+  if (!pivotTable) {
+    for (colName in names(rv$widgetConfig$colFormat)) {
+      ht <- hot_col(ht, match(colName, headersUnnamed),
+        format = rv$widgetConfig$colFormat[[colName]]$format
+      )
+    }
+  }
+  if (!pivotTable && length(colsReadonly)) {
+    ht <- hot_col(ht, colsReadonly, readOnly = TRUE)
+  }
+  ht <- hot_cols(ht,
+    fixedColumnsLeft = fixedColumnsLeft,
+    colWidths = colWidths
+  )
+  if (isTRUE(input$table_heatmap)) {
+    return(hot_heatmap(ht))
+  } else {
+    return(ht)
+  }
+})
+
+output$bigdata_preview <- renderDT({
+  req(input$widget_symbol %in% names(inputSymHeaders))
+
+  data <- createTableData(input$widget_symbol, input$table_pivotCols)
+
+  headersTmp <- unname(data$headers)
+  data <- data$data
+
+  dtOptions <- list(
+    editable = !isTRUE(input$table_readonly),
+    colnames = headersTmp
+  )
+  if (!is.null(configJSON$datatable)) {
+    dtOptions <- modifyList(
+      configJSON$datatable,
+      dtOptions
+    )
+  }
+
+  if (!identical(rv$widgetConfig$tableType, "bigdata")) {
+    # showEl(session, "#hot_preview")
+    return()
+  }
+  # hideEl(session, "#hot_preview")
+  return(renderDTable(data, dtOptions, render = FALSE))
+})
 
 observeEvent(
   {
@@ -380,6 +505,7 @@ observeEvent(
     hideEl(session, "#optionConfigMsg")
     hideEl(session, "#doubledashConfigMsg")
     hideEl(session, "#externalConfigMsg")
+    hideEl(session, "#pivotColsRestriction")
     if (input$widget_symbol %in% symbolsDefinedExternally) {
       showElReplaceTxt(
         session, "#externalConfigMsg",
@@ -431,7 +557,9 @@ observeEvent(
       if (!currentWidgetSymbolName %in% names(configJSON$inputWidgets)) {
         showEl(session, "#noWidgetConfigMsg")
       }
-      if (isNonSingletonSet(input$widget_symbol)) {
+      if (isParameter(input$widget_symbol)) {
+        widgetOptions <- langSpecificWidget$widgetOptionsParameter
+      } else if (isNonSingletonSet(input$widget_symbol)) {
         widgetOptions <- langSpecificWidget$widgetOptionsSet
       } else {
         flog.error("Unknown input symbol: '%s'.", input$widget_symbol)
@@ -500,6 +628,7 @@ observeEvent(input$widget_symbol_type, {
     hideEl(session, "#noWidgetConfigMsg")
     hideEl(session, "#deleteWidget")
     hideEl(session, "#externalConfigMsg")
+    hideEl(session, "#pivotColsRestriction")
     updateTextInput(session, "widget_label", value = "")
     updateTextInput(session, "widget_tooltip", value = "")
     if (identical(input$widget_symbol_type, "dd")) {
@@ -546,7 +675,7 @@ observeEvent(input$widget_symbol_type, {
     }
     latest_widget_symbol_type <<- input$widget_symbol_type
     return()
-  } else if (!length(widgetSymbols)) {
+  } else if (!length(allInputSymbols)) {
     showEl(session, "#noSymbolMsg")
     showEl(session, "#noWidgetMsg")
     showEl(session, "#deleteWidget")
@@ -573,18 +702,21 @@ observeEvent(
     enableEl(session, "#deleteWidget")
     rv$widgetConfig <- list()
     currentConfig <- NULL
+    isGamsTable <<- FALSE
     if (currentWidgetSymbolName %in% names(configJSON$inputWidgets)) {
       currentConfig <- configJSON$inputWidgets[[currentWidgetSymbolName]]
     }
-    widgetAlias <- ""
-    if (length(currentConfig[["alias"]]) && nchar(currentConfig[["alias"]])) {
-      widgetAlias <- currentConfig[["alias"]]
-      setAlias <- TRUE
-    } else {
-      setAlias <- FALSE
-      widgetSymbolID <- match(input$widget_symbol, widgetSymbols)
-      if (!is.na(widgetSymbolID)) {
-        widgetAlias <- names(widgetSymbols)[[widgetSymbolID]]
+    if (!currentWidgetSymbolName %in% inputSymMultiDimChoices) {
+      widgetAlias <- ""
+      if (length(currentConfig[["alias"]]) && nchar(currentConfig[["alias"]])) {
+        widgetAlias <- currentConfig[["alias"]]
+        setAlias <- TRUE
+      } else {
+        setAlias <- FALSE
+        widgetSymbolID <- match(input$widget_symbol, allInputSymbols)
+        if (!is.na(widgetSymbolID)) {
+          widgetAlias <- names(allInputSymbols)[[widgetSymbolID]]
+        }
       }
     }
     switch(input$widget_type,
@@ -1238,7 +1370,7 @@ observeEvent(
             if (input$widget_type == "multidropdown") {
               tags$div(
                 class = "shiny-input-container",
-                checkboxInput_MIRO(
+                checkboxInput_SIMPLE(
                   "widget_multiple",
                   lang$adminMode$widgets$dropdown$multiple,
                   rv$widgetConfig$multiple
@@ -1929,25 +2061,505 @@ observeEvent(
           )
         })
       },
-      # in case a table was configured for a set
       table = {
-        insertUI(
-          selector = "#widget_options",
-          tags$div(
-            class = "shiny-input-container config-no-hide",
-            paste0(lang$adminMode$widgets$ui$tableWidget, lang$adminMode$uiR$table, "'!")
-          ),
-          where = "beforeEnd"
-        )
-        disableEl(session, "#saveWidget")
-        disableEl(session, "#deleteWidget")
-        output$widget_preview <- renderUI({
-        })
+        if (currentWidgetSymbolName %in% names(configJSON$inputWidgets)) {
+          configuredTable <<- TRUE
+        } else {
+          configuredTable <<- FALSE
+        }
+        pivotCols <<- NULL
+        if (length(inputSymHeaders[[input$widget_symbol]]) > 2L) {
+          numericHeaders <- vapply(modelIn[[input$widget_symbol]]$headers,
+            function(header) identical(header$type, "numeric"),
+            logical(1L),
+            USE.NAMES = FALSE
+          )
+          if (sum(numericHeaders) <= 1L) {
+            pivotCols <<- inputSymHeaders[[input$widget_symbol]][!numericHeaders]
+          } else {
+            isGamsTable <<- TRUE
+          }
+        }
+        if (identical(currentConfig$tableType, "pivot")) {
+          rv$widgetConfig <- list(
+            widgetType = "table",
+            tableType = "pivot",
+            label = currentConfig$label,
+            options = checkLength(configuredTable, currentConfig[["options"]], list())
+          )
+          rv$widgetConfig$options$input <- TRUE
+        } else if (identical(currentConfig$tableType, "bigdata") || isTRUE(currentConfig$bigData)) {
+          rv$widgetConfig <- list(
+            widgetType = "table",
+            tableType = "bigdata",
+            label = currentConfig$label,
+            readonly = checkLength(configuredTable, currentConfig[["readonly"]], FALSE),
+            pivotCols = checkLength(configuredTable, currentConfig[["pivotCols"]], "_")
+          )
+        } else {
+          rv$widgetConfig <- list(
+            widgetType = "table",
+            tableType = "default",
+            label = currentConfig$label,
+            readonly = checkLength(configuredTable, currentConfig[["readonly"]], FALSE),
+            readonlyCols = checkLength(configuredTable, currentConfig[["readonlyCols"]], NULL),
+            colWidths = if (configuredTable && !is.null(currentConfig[["colWidths"]]) && length(currentConfig[["colWidths"]]) > 1) {
+              "custom"
+            } else {
+              checkLength(configuredTable, currentConfig[["colWidths"]], NULL)
+            },
+            hideIndexCol = checkLength(configuredTable, currentConfig$hideIndexCol, FALSE),
+            heatmap = checkLength(configuredTable, currentConfig$heatmap, FALSE),
+            pivotCols = checkLength(configuredTable, currentConfig$pivotCols, "_"),
+            colFormat = checkLength(configuredTable, currentConfig$colFormat, NULL),
+            fixedColumnsLeft = checkLength(configuredTable, currentConfig$fixedColumnsLeft, NULL)
+          )
+        }
+        currentColFormatConfig <<- rv$widgetConfig$colFormat
+        output$widget_preview <- renderUI("")
+        insertUI(selector = "#widget_options", getSymbolHotOptions(), where = "beforeEnd")
+        if (identical(rv$widgetConfig$tableType, input$inputTable_type)) {
+          # need to trigger observer as it is lazy..
+          refreshTableType(refreshSameSymbol = identical(currentWidgetSymbolName, input$widget_symbol))
+        }
       }
     )
-    # hideEl(session, "#hot_preview")
   }
 )
+
+getSymbolHotOptions <- function() {
+  tagList(
+    tags$div(
+      class = "option-wrapper",
+      textAreaInput("table_label", lang$adminMode$widgets$table$label,
+        value = rv$widgetConfig$label
+      ),
+      selectInput("inputTable_type", lang$adminMode$widgets$table$type,
+        choices = setNames(
+          c("default", "bigdata", "pivot"),
+          lang$adminMode$widgets$table$typeChoices
+        ),
+        selected = if (length(rv$widgetConfig$tableType)) {
+          rv$widgetConfig$tableType
+        } else if (isTRUE(rv$widgetConfig$bigData)) {
+          "bigdata"
+        } else {
+          "default"
+        }
+      )
+    ),
+    conditionalPanel(
+      condition = "input.inputTable_type==='pivot'",
+      getMIROPivotOptions(rv$widgetConfig$options, prefix = "inputpivot_"),
+      tags$div(
+        class = "config-message shiny-input-container",
+        style = "display:block;",
+        lang$adminMode$graphs$miroPivotOptions$infoMsgDummyData
+      )
+    ),
+    conditionalPanel(
+      condition = "input.inputTable_type!=='pivot'",
+      tags$div(
+        class = "shiny-input-container",
+        checkboxInput_SIMPLE("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$widgetConfig$readonly)
+      ),
+      tags$div(
+        class = "option-wrapper shiny-input-container",
+        style = if (!length(pivotCols)) "display:none",
+        selectInput("table_pivotCols", lang$adminMode$widgets$table$pivotCols,
+          choices = c(`_` = "_", pivotCols),
+          selected = if (length(rv$widgetConfig$pivotCols)) rv$widgetConfig$pivotCols else "_"
+        )
+      )
+    ),
+    conditionalPanel(
+      condition = paste0("input.inputTable_type==='default' && ((input.table_pivotCols!=null && input.table_pivotCols!=='_')
+                                        || ", tolower(isGamsTable), ")"),
+      tags$div(
+        class = "option-wrapper shiny-input-container",
+        checkboxInput_SIMPLE("table_fixedColumnsLeft", lang$adminMode$widgets$table$fixedColumnsLeft,
+          value = if (length(rv$widgetConfig$fixedColumnsLeft)) TRUE else FALSE
+        )
+      )
+    ),
+    conditionalPanel(
+      condition = paste0("input.inputTable_type==='default' && ((input.table_pivotCols==null || input.table_pivotCols==='_')
+                                        ||", tolower(isGamsTable), ")"),
+      tags$div(
+        class = "option-wrapper shiny-input-container",
+        selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols,
+          choices = inputSymHeaders[[input$widget_symbol]],
+          selected = rv$widgetConfig$readonlyCols, multiple = TRUE
+        )
+      ),
+      tags$div(
+        class = "option-wrapper shiny-input-container",
+        lapply(names(modelIn[[input$widget_symbol]]$headers), function(headerName) {
+          if (identical(modelIn[[input$widget_symbol]]$headers[[headerName]]$type, "numeric")) {
+            defaultVal <- "2"
+            if (length(rv$widgetConfig$colFormat) &&
+              headerName %in% names(rv$widgetConfig$colFormat)) {
+              if (identical(
+                rv$widgetConfig$colFormat[[headerName]]$format,
+                "0,0a"
+              )) {
+                defaultVal <- "0"
+              } else {
+                defaultVal <- as.character(nchar(strsplit(rv$widgetConfig$colFormat[[headerName]]$format, ".",
+                  fixed = TRUE
+                )[[1]][2]))
+                if (is.na(defaultVal)) {
+                  defaultVal <- "2"
+                }
+              }
+            }
+            tags$div(
+              class = "form-group shiny-input-container",
+              tags$label(class = "control-label", sprintf(
+                lang$adminMode$widgets$table$colDecimals,
+                modelIn[[input$widget_symbol]]$headers[[headerName]]$alias
+              )),
+              tags$input(
+                type = "number", class = "form-control miro-dynamic-input-id", `data-binding-id` = "table_colDecimals",
+                `data-input-id` = headerName, value = defaultVal, min = "0"
+              )
+            )
+          }
+        })
+      )
+    ),
+    conditionalPanel(
+      condition = "input.inputTable_type==='default'",
+      tags$div(
+        class = "option-wrapper shiny-input-container",
+        numericInput("table_colWidths",
+          tags$div(
+            lang$adminMode$widgets$table$colWidths,
+            tags$a("",
+              title = lang$adminMode$widgets$table$colWidthsTooltip, class = "info-wrapper",
+              href = "https://gams.com/miro/customize.html#table-colwidths",
+              tags$span(
+                class = "fas fa-info-circle", class = "info-icon",
+                role = "presentation",
+                `aria-label` = "More information"
+              ), target = "_blank"
+            )
+          ),
+          value = if (!identical(rv$widgetConfig$colWidths, "custom")) {
+            rv$widgetConfig$colWidths
+          } else {
+            NULL
+          }, min = 0, step = 1
+        ),
+        tags$div(
+          id = "customColWidths", class = "config-message", style = if (identical(rv$widgetConfig$colWidths, "custom")) "display:block;",
+          lang$adminMode$widgets$table$customColWidths
+        )
+      ),
+      tags$div(
+        class = "option-wrapper shiny-input-container",
+        checkboxInput_SIMPLE("table_hideIndexCol",
+          lang$adminMode$widgets$table$hideIndexCol,
+          value = rv$widgetConfig$hideIndexCol
+        ),
+        checkboxInput_SIMPLE("table_heatmap",
+          lang$adminMode$widgets$table$heatmap,
+          value = rv$widgetConfig$heatmap
+        )
+      ),
+      tags$div(
+        class = "shiny-input-container",
+        tags$h4(
+          style = "font-weight: 600;",
+          lang$adminMode$widgets$table$dropdownColsTitle
+        ),
+        tags$div(lang$adminMode$widgets$table$dropdownColsDesc, tags$a("https://gams.com/miro/customize.html#table-dropdown",
+          title = lang$adminMode$general$ui$tooltipDocs,
+          href = "https://gams.com/miro/customize.html#table-dropdown", target = "_blank"
+        )),
+      )
+    )
+  )
+}
+refreshTableType <- function(refreshSameSymbol = FALSE) {
+  labelTmp <- rv$widgetConfig$label
+  if (identical(input$inputTable_type, "bigdata")) {
+    rv$widgetConfig$tableType <- "bigdata"
+    hideEl(session, "#pivotColsRestriction")
+    hideEl(session, "#inputTable_pivot-data")
+    if (refreshSameSymbol) {
+      rv$widgetConfig <<- list(
+        widgetType   = "table",
+        tableType    = "bigdata",
+        readonly     = input$table_readonly,
+        pivotCols    = input$table_pivotCols
+      )
+    } else {
+      rv$widgetConfig <- list(
+        widgetType = "table",
+        tableType = "bigdata",
+        readonly = checkLength(configuredTable, configJSON$inputWidgets[[currentWidgetSymbolName]][["readonly"]], FALSE),
+        pivotCols = checkLength(configuredTable, configJSON$inputWidgets[[currentWidgetSymbolName]][["pivotCols"]], "_")
+      )
+    }
+    if (length(labelTmp)) {
+      rv$widgetConfig$label <- labelTmp
+    }
+  } else if (identical(input$inputTable_type, "pivot")) {
+    rv$widgetConfig$tableType <- "pivot"
+    hideEl(session, "#pivotColsRestriction")
+    showEl(session, "#inputTable_pivot-data")
+    for (el in ls(envir = inputPivotRendererEnv)) {
+      if ("Observer" %in% class(inputPivotRendererEnv[[el]])) {
+        inputPivotRendererEnv[[el]]$destroy()
+      }
+    }
+    pivotOptions <- list()
+
+    if (currentWidgetSymbolName %in% inputSymMultiDimChoices &&
+      currentWidgetSymbolName %in% names(configJSON$inputWidgets) &&
+      length(configJSON$inputWidgets[[currentWidgetSymbolName]][["options"]])) {
+      pivotOptions <- configJSON$inputWidgets[[currentWidgetSymbolName]][["options"]]
+    }
+    pivotOptions$input <- TRUE
+    pivotOptions$enableHideEmptyCols <- TRUE
+    pivotOptions$emptyUEL <- rv$widgetConfig$options$emptyUEL
+
+    metadata <- list(
+      headers = modelIn[[currentWidgetSymbolName]]$headers,
+      symtype = modelIn[[currentWidgetSymbolName]]$symtype,
+      symname = currentWidgetSymbolName
+    )
+    aggregationFunctions <- if (identical(metadata$symtype, "set")) {
+      setNames(
+        c("count", "min"),
+        c(
+          lang$renderers$miroPivot$aggregationFunctions$count,
+          lang$renderers$miroPivot$aggregationFunctions$min
+        )
+      )
+    } else {
+      setNames(
+        c("sum", "count", "mean", "median", "min", "max"),
+        c(
+          lang$renderers$miroPivot$aggregationFunctions$sum,
+          lang$renderers$miroPivot$aggregationFunctions$count,
+          lang$renderers$miroPivot$aggregationFunctions$mean,
+          lang$renderers$miroPivot$aggregationFunctions$median,
+          lang$renderers$miroPivot$aggregationFunctions$min,
+          lang$renderers$miroPivot$aggregationFunctions$max
+        )
+      )
+    }
+    selectedAggregationFuction <- pivotOptions[["aggregationFunction"]]
+    if (!length(selectedAggregationFuction) ||
+      !selectedAggregationFuction %in% aggregationFunctions) {
+      selectedAggregationFuction <- aggregationFunctions[1]
+    }
+    updateSelectInput(session, "inputTable_pivot-miroPivot-aggregationFunction",
+      choices = aggregationFunctions,
+      selected = selectedAggregationFuction
+    )
+    callModule(renderData, "inputTable_pivot",
+      type = "miropivot",
+      data = createTableData(currentWidgetSymbolName, createColNames = TRUE)$data, rendererEnv = inputPivotRendererEnv,
+      customOptions = c(
+        list(
+          "_metadata_" = metadata,
+          resetOnInit = TRUE
+        ),
+        pivotOptions
+      ),
+      roundPrecision = 2, modelDir = modelDir
+    )
+  } else {
+    rv$widgetConfig$tableType <- "default"
+    hideEl(session, "#inputTable_pivot-data")
+    if (refreshSameSymbol) {
+      rv$widgetConfig <<- list(
+        widgetType = "table",
+        tableType = "default",
+        readonly = input$table_readonly,
+        pivotCols = input$table_pivotCols,
+        readonlyCols = input$table_readonlyCols,
+        colWidths = if (!is.na(input$table_colWidths) && input$table_colWidths != 0) {
+          input$table_colWidths
+        } else {
+          NULL
+        },
+        hideIndexCol = input$table_hideIndexCol,
+        heatmap = input$table_heatmap
+      )
+      numericColsTmp <- sum(vapply(modelIn[[input$widget_symbol]]$headers,
+        function(header) identical(header$type, "numeric"),
+        logical(1L),
+        USE.NAMES = FALSE
+      ))
+      if (isTRUE(input$table_fixedColumnsLeft)) {
+        if (isGamsTable) {
+          fixedColumnsLeftTmp <- length(inputSymHeaders[[input$widget_symbol]]) - numericColsTmp
+        } else {
+          fixedColumnsLeftTmp <- length(inputSymHeaders[[input$widget_symbol]]) - numericColsTmp - 1L
+        }
+        rv$widgetConfig$fixedColumnsLeft <<- fixedColumnsLeftTmp
+      }
+      if (length(currentColFormatConfig)) {
+        rv$widgetConfig$colFormat <- currentColFormatConfig
+      }
+    } else {
+      rv$widgetConfig <- list(
+        widgetType = "table",
+        tableType = "default",
+        readonly = checkLength(configuredTable, configJSON$inputWidgets[[currentWidgetSymbolName]][["readonly"]], FALSE),
+        readonlyCols = checkLength(configuredTable, configJSON$inputWidgets[[currentWidgetSymbolName]][["readonlyCols"]], NULL),
+        colWidths = if (configuredTable && length(configJSON$inputWidgets[[currentWidgetSymbolName]][["colWidths"]]) &&
+          length(configJSON$inputWidgets[[currentWidgetSymbolName]][["colWidths"]]) > 1) {
+          "custom"
+        } else {
+          checkLength(configuredTable, configJSON$inputWidgets[[currentWidgetSymbolName]][["colWidths"]], NULL)
+        },
+        hideIndexCol = checkLength(configuredTable, configJSON$inputWidgets[[currentWidgetSymbolName]]$hideIndexCol, FALSE),
+        heatmap = checkLength(configuredTable, configJSON$inputWidgets[[currentWidgetSymbolName]]$heatmap, FALSE),
+        pivotCols = checkLength(configuredTable, configJSON$inputWidgets[[currentWidgetSymbolName]]$pivotCols, "_")
+      )
+      rv$widgetConfig$fixedColumnsLeft <- checkLength(configuredTable, configJSON$inputWidgets[[currentWidgetSymbolName]]$fixedColumnsLeft, NULL)
+      rv$widgetConfig$colFormat <- checkLength(configuredTable, configJSON$inputWidgets[[currentWidgetSymbolName]]$colFormat, NULL)
+      currentColFormatConfig <<- NULL
+    }
+    if (length(labelTmp)) {
+      rv$widgetConfig$label <- labelTmp
+    }
+    if (!identical(rv$widgetConfig$pivotCols, "_") &&
+      (isTRUE(rv$widgetConfig$readonly) || isTRUE(rv$widgetConfig$heatmap))) {
+      showEl(session, "#pivotColsRestriction")
+    } else {
+      hideEl(session, "#pivotColsRestriction")
+    }
+  }
+}
+observeEvent(input$inputTable_type, {
+  refreshTableType(refreshSameSymbol = TRUE)
+})
+observeEvent(input$inputpivot_emptyUEL, {
+  if (!identical(input$inputTable_type, "pivot")) {
+    return()
+  }
+  if (identical(input$inputpivot_emptyUEL, "")) {
+    rv$widgetConfig$options$emptyUEL <- NULL
+  } else {
+    rv$widgetConfig$options$emptyUEL <- input$inputpivot_emptyUEL
+  }
+  refreshTableType(refreshSameSymbol = FALSE)
+})
+observeEvent(c(input$table_pivotCols, input$table_readonly, input$table_heatmap), {
+  if (!identical(input$table_pivotCols, "_") &&
+    (isTRUE(input$table_readonly) || isTRUE(input$table_heatmap))) {
+    showEl(session, "#pivotColsRestriction")
+  } else {
+    hideEl(session, "#pivotColsRestriction")
+  }
+})
+observeEvent(input$inputpivot_enableHideEmptyCols, {
+  if (isTRUE(input$inputpivot_enableHideEmptyCols)) {
+    showEl(session, "#inputTable_pivot-miroPivot-hideEmptyCols")
+  } else {
+    updateCheckboxInput(session, "inputTable_pivot-miroPivot-hideEmptyCols", value = FALSE)
+    hideEl(session, "#inputTable_pivot-miroPivot-hideEmptyCols")
+  }
+})
+
+observeEvent(input$table_hideIndexCol, {
+  rv$widgetConfig$hideIndexCol <<- input$table_hideIndexCol
+})
+observeEvent(input$table_readonly, {
+  rv$widgetConfig$readonly <<- input$table_readonly
+})
+observeEvent(input$table_label, {
+  if (nchar(input$table_label)) {
+    rv$widgetConfig$label <<- input$table_label
+  } else {
+    rv$widgetConfig$label <<- NULL
+  }
+})
+observeEvent(input$table_readonlyCols, ignoreNULL = FALSE, {
+  if (!length(input$table_readonlyCols)) {
+    configJSON$widgetConfig$readonlyCols <<- NULL
+    return()
+  }
+  rv$widgetConfig$readonlyCols <<- input$table_readonlyCols
+})
+observeEvent(input$table_colWidths, ignoreNULL = FALSE, {
+  if (!identical(rv$widgetConfig$colWidths, "custom") &&
+    (is.null(input$table_colWidths) || is.na(input$table_colWidths) || input$table_colWidths == 0)) {
+    configJSON$widgetConfig$colWidths <<- NULL
+    rv$widgetConfig$colWidths <<- NULL
+    return()
+  }
+  rv$widgetConfig$colWidths <<- input$table_colWidths
+  hideEl(session, "#customColWidths")
+})
+observeEvent(input$table_pivotCols, {
+  rv$widgetConfig$pivotCols <<- input$table_pivotCols
+  if (!identical(input$table_pivotCols, "_")) {
+    rv$widgetConfig$readonlyCols <<- NULL
+    numericColsTmp <- sum(vapply(modelIn[[input$widget_symbol]]$headers,
+      function(header) identical(header$type, "numeric"),
+      logical(1L),
+      USE.NAMES = FALSE
+    ))
+    if (isGamsTable) {
+      fixedColumnsLeftTmp <- length(inputSymHeaders[[input$widget_symbol]]) - numericColsTmp
+    } else {
+      fixedColumnsLeftTmp <- length(inputSymHeaders[[input$widget_symbol]]) - numericColsTmp - 1L
+    }
+    rv$widgetConfig$fixedColumnsLeft <<- fixedColumnsLeftTmp
+  } else {
+    rv$widgetConfig$readonlyCols <<- input$table_readonlyCols
+    rv$widgetConfig$fixedColumnsLeft <<- NULL
+  }
+})
+observeEvent(input$table_fixedColumnsLeft, {
+  if (isFALSE(input$table_fixedColumnsLeft)) {
+    rv$widgetConfig$fixedColumnsLeft <<- NULL
+    return()
+  }
+  numericColsTmp <- sum(vapply(modelIn[[input$widget_symbol]]$headers,
+    function(header) identical(header$type, "numeric"),
+    logical(1L),
+    USE.NAMES = FALSE
+  ))
+  if (isGamsTable) {
+    fixedColumnsLeftTmp <- length(inputSymHeaders[[input$widget_symbol]]) - numericColsTmp
+  } else {
+    fixedColumnsLeftTmp <- length(inputSymHeaders[[input$widget_symbol]]) - numericColsTmp - 1L
+  }
+  rv$widgetConfig$fixedColumnsLeft <<- fixedColumnsLeftTmp
+})
+observeEvent(input$table_heatmap, {
+  rv$widgetConfig$heatmap <<- input$table_heatmap
+})
+observeEvent(input$table_colDecimals, {
+  noDecimals <- suppressWarnings(as.integer(input$table_colDecimals$val))
+  if (is.na(noDecimals)) {
+    noDecimals <- 2L
+  }
+  if (identical(noDecimals, 2L)) {
+    if (length(rv$widgetConfig$colFormat)) {
+      rv$widgetConfig$colFormat[[input$table_colDecimals$id]] <<- NULL
+    }
+    if (!length(rv$widgetConfig$colFormat)) {
+      rv$widgetConfig$colFormat <- NULL
+    }
+  } else {
+    if (!length(rv$widgetConfig$colFormat)) {
+      rv$widgetConfig$colFormat <<- list()
+    }
+    rv$widgetConfig$colFormat[[input$table_colDecimals$id]] <- list(format = if (noDecimals > 0) paste0("0,0.", strrep("0", noDecimals)) else "0,0a")
+  }
+  currentColFormatConfig <<- rv$widgetConfig$colFormat
+})
+
+#######
 observeEvent(input$widget_label, {
   if (nchar(input$widget_label)) {
     rv$widgetConfig$label <<- input$widget_label
@@ -2309,15 +2921,77 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
       )
     }
   }
-
+  # table
+  if (currentWidgetSymbolName %in% inputSymMultiDimChoices) {
+    if (identical(input$inputTable_type, "pivot")) {
+      newConfig <- list(
+        widgetType = "table",
+        tableType = "pivot",
+        options = list(
+          aggregationFunction = input[["inputTable_pivot-miroPivot-aggregationFunction"]],
+          pivotRenderer = input[["inputTable_pivot-miroPivot-pivotRenderer"]],
+          enableHideEmptyCols = isTRUE(input$inputpivot_enableHideEmptyCols),
+          hideEmptyCols = input[["inputTable_pivot-miroPivot-hideEmptyCols"]]
+        )
+      )
+      if (length(rv$widgetConfig$label)) {
+        newConfig$label <- rv$widgetConfig$label
+      }
+      if (length(rv$widgetConfig$options$emptyUEL)) {
+        newConfig$options$emptyUEL <- rv$widgetConfig$options$emptyUEL
+      }
+      for (indexEl in list(c("rows", "rowIndexList"))) {
+        indexVal <- input[[paste0("inputTable_pivot-miroPivot-", indexEl[[2]])]]
+        if (length(indexVal)) {
+          newConfig$options[[indexEl[[1]]]] <- indexVal
+        }
+      }
+      for (indexEl in list(
+        c("aggregations", "aggregationIndexList"),
+        c("filter", "filterIndexList"),
+        c("cols", "colIndexList")
+      )) {
+        indexVal <- input[[paste0("inputTable_pivot-miroPivot-", indexEl[[2]])]]
+        if (length(indexVal)) {
+          filterElList <- lapply(indexVal, function(el) {
+            return(input[[paste0("inputTable_pivot-miroPivot-filter_", el)]])
+          })
+          names(filterElList) <- indexVal
+          newConfig$options[[indexEl[[1]]]] <- filterElList
+        }
+      }
+      configJSON$inputWidgets[[currentWidgetSymbolName]] <<- newConfig
+    } else {
+      if (identical(rv$widgetConfig$tableType, configJSON$inputWidgets[[currentWidgetSymbolName]]$tableType)) {
+        widgetconfigTmp <- configJSON$inputWidgets[[currentWidgetSymbolName]]
+        for (key in names(rv$widgetConfig)) {
+          widgetconfigTmp[[key]] <- rv$widgetConfig[[key]]
+        }
+      } else {
+        widgetconfigTmp <- rv$widgetConfig
+      }
+      configJSON$inputWidgets[[currentWidgetSymbolName]] <<- widgetconfigTmp
+      if (!length(configJSON$inputWidgets[[currentWidgetSymbolName]]$readonlyCols)) {
+        configJSON$inputWidgets[[currentWidgetSymbolName]]$readonlyCols <<- NULL
+      }
+      if (!length(configJSON$inputWidgets[[currentWidgetSymbolName]]$colWidths)) {
+        configJSON$inputWidgets[[currentWidgetSymbolName]]$colWidths <<- NULL
+      }
+      if (is.null(configJSON$inputWidgets[[currentWidgetSymbolName]]$pivotCols) ||
+        identical(configJSON$inputWidgets[[currentWidgetSymbolName]]$pivotCols, "_")) {
+        configJSON$inputWidgets[[currentWidgetSymbolName]]$pivotCols <<- NULL
+      } else {
+        configJSON$inputWidgets[[currentWidgetSymbolName]]$colFormat <<- NULL
+      }
+    }
+  }
   symbolDDNeedsUpdate <- FALSE
-
   if (any(startsWith(currentWidgetSymbolName, c(prefixDDPar, prefixGMSOpt)))) {
-    widgetSymbols <<- c(widgetSymbols, setNames(currentWidgetSymbolName, currentWidgetSymbolName))
+    allInputSymbols <<- c(allInputSymbols, setNames(currentWidgetSymbolName, currentWidgetSymbolName))
     symbolDDNeedsUpdate <- TRUE
   } else if (currentWidgetSymbolName %in% scalarInputSymWithAliases) {
     if (all(scalarInputSymWithAliases %in% names(configJSON$inputWidgets))) {
-      widgetSymbols <<- widgetSymbols[widgetSymbols != scalarsFileName]
+      allInputSymbols <<- allInputSymbols[allInputSymbols != scalarsFileName]
       if (scalarsFileName %in% names(configJSON$inputWidgets)) {
         configJSON$inputWidgets[[scalarsFileName]] <<- NULL
       }
@@ -2329,12 +3003,13 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
       hideEl(session, "#optionConfigMsg")
       hideEl(session, "#doubledashConfigMsg")
       hideEl(session, "#externalConfigMsg")
+      hideEl(session, "#pivotColsRestriction")
     }
   }
   write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
 
   if (symbolDDNeedsUpdate) {
-    updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
+    updateSelectInput(session, "widget_symbol", choices = allInputSymbols)
   }
   if (noWidgetSymbols) {
     hideEl(session, "#noSymbolMsg")
@@ -2377,8 +3052,8 @@ observeEvent(input$deleteWidgetConfirm, {
   configJSON$inputWidgets[[currentWidgetSymbolName]] <<- NULL
   write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
   if (any(startsWith(currentWidgetSymbolName, c(prefixDDPar, prefixGMSOpt)))) {
-    widgetSymbols <<- widgetSymbols[widgetSymbols != currentWidgetSymbolName]
-    updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
+    allInputSymbols <<- allInputSymbols[allInputSymbols != currentWidgetSymbolName]
+    updateSelectInput(session, "widget_symbol", choices = allInputSymbols)
   } else if (currentWidgetSymbolName %in% scalarInputSymWithAliases) {
     showEl(session, "#noWidgetConfigMsg")
   }
@@ -2407,7 +3082,8 @@ observeEvent(input$deleteWidgetConfirm, {
   hideEl(session, "#optionConfigMsg")
   hideEl(session, "#doubledashConfigMsg")
   hideEl(session, "#externalConfigMsg")
-  if (!length(widgetSymbols)) {
+  hideEl(session, "#pivotColsRestriction")
+  if (!length(allInputSymbols)) {
     if (!noWidgetSymbols) {
       showEl(session, "#noSymbolMsg")
       showEl(session, "#noWidgetMsg")

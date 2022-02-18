@@ -1228,7 +1228,7 @@
         "symbol": "符号表格",
         "resetTable": "重启",
         "saveTable": "保存",
-		"inputSymbols": "输入的GAMS符号",
+        "tableTooltip": "输入表是在小工具部分配置的。",
         "outputSymbols": "输出的GAMS符号"
       },
       "hot":{
@@ -1312,7 +1312,9 @@
         "alias": "输入要在选项卡中显示的元素名称（不支持实时预览）",
         "pivotColsRestriction": "注意：如果符号表设置为只读或显示为热图，则无法在符号表中添加或删除列。",
 		"notConfigurable": "在您的JSON文件中找到的小组件的配置目前不支持配置模式中所选择的符号类型! 这并不意味着配置无效。 GAMS符号: '%s'; 配置的小部件类型: '%s'",
-        "tooltip": "工具提示（可选）"
+        "tooltip": "工具提示（可选）",
+        "scalarSymbols": "标量输入符号",
+        "multiDimSymbols": "多维输入符号"
       },
       "validate":{
         "val1": "元素的别名不能为空！",
