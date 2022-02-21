@@ -19,7 +19,6 @@ configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_
 # general input table settings
 expect_identical(configRaw$handsontable$stretchH, configNew$handsontable$stretchH)
 expect_identical(configRaw$handsontable$readonly, configNew$handsontable$readonly)
-expect_identical(configRaw$handsontable$manualColumnResize, configNew$handsontable$manualColumnResize)
 expect_identical(configRaw$handsontable$contextMenu$enabled, configNew$handsontable$contextMenu$enabled)
 expect_identical(configRaw$handsontable$contextMenu$allowRowEdit, configNew$handsontable$contextMenu$allowRowEdit)
 expect_identical(configRaw$handsontable$contextMenu$allowColEdit, configNew$handsontable$contextMenu$allowColEdit)
@@ -40,26 +39,15 @@ app$findElement("a[data-value='tables_gen']")$click()
 Sys.sleep(1)
 app$findElement("a[data-value='symbol']")$click()
 Sys.sleep(1)
-app$findElement("button[id='saveTableWidget']")$click()
-Sys.sleep(1)
 app$setInputs(table_symbol = "stock_weight")
 Sys.sleep(1)
 app$findElement("button[id='saveTableWidget']")$click()
 Sys.sleep(1)
+
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
   simplifyDataFrame = FALSE,
   simplifyMatrix = FALSE
 ))
-
-# input symbol price
-expect_identical(configRaw$inputWidgets$price$widgetType, configNew$inputWidgets$price$widgetType)
-expect_identical(configRaw$inputWidgets$price$label, configNew$inputWidgets$price$label)
-expect_identical(configRaw$inputWidgets$price$tableType, configNew$inputWidgets$price$tableType)
-
-expect_identical(configRaw$inputWidgets$price$readonly, configNew$inputWidgets$price$readonly)
-expect_identical(configRaw$inputWidgets$price$readonlyCols, configNew$inputWidgets$price$readonlyCols)
-expect_identical(configRaw$inputWidgets$price$hideIndexCol, configNew$inputWidgets$price$hideIndexCol)
-expect_identical(configRaw$inputWidgets$price$heatmap, configNew$inputWidgets$price$heatmap)
 
 # output symbol stock_weight
 expect_identical(configRaw$outputTables$stock_weight$class, configNew$outputTables$stock_weight$class)

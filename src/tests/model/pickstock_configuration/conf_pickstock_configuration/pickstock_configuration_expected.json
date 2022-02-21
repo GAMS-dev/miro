@@ -788,7 +788,8 @@
     "lstFile": false,
     "attachments": false,
     "remoteExecution": false,
-    "downloadTempFiles": false
+    "downloadTempFiles": false,
+    "hcube": false
   },
   "aggregateWidgets": false,
   "excelIncludeMeta": false,
@@ -799,7 +800,8 @@
   "defCompMode": "tab",
   "pivotCompSettings":{
     "enableHideEmptyCols": true,
-    "emptyUEL": "&"
+    "emptyUEL": "&",
+    "fixedColumns": true
   },
   "symbolLinks": [
     {
@@ -862,6 +864,7 @@
     "filename": "Readme.md",
     "enableMath": true
   },
+  "customCss": false,
   "outputAttachments": [
     {
       "filename": "testOutputAttachment",

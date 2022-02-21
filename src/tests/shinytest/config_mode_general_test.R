@@ -13,43 +13,48 @@ configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_
   simplifyMatrix = FALSE
 ))
 
-# interface tab (I)
+# user interface tab
 expect_identical(configRaw$pageTitle, configNew$pageTitle)
-expect_identical(configRaw$theme, configNew$theme)
-expect_identical(configRaw$activateModules$logFile, configNew$activateModules$logFile)
-expect_identical(configRaw$activateModules$lstFile, configNew$activateModules$lstFile)
-expect_identical(configRaw$miroLogFile, configNew$miroLogFile)
-expect_identical(configRaw$defCompMode, configNew$defCompMode)
-expect_identical(configRaw$pivotCompSettings, list(enableHideEmptyCols = TRUE, emptyUEL = "&"))
-expect_identical(configRaw$autoGenInputGraphs, configNew$autoGenInputGraphs)
-expect_identical(configRaw$roundingDecimals, configNew$roundingDecimals)
-
-# interface tab (II)
 expect_identical(configRaw$UILogo, configNew$UILogo)
-expect_identical(configRaw$defaultRendererOutput, configNew$defaultRendererOutput)
+expect_identical(configRaw$theme, configNew$theme)
+expect_identical(configRaw$customCss, configNew$customCss)
 expect_identical(configRaw$readme$tabTitle, configNew$readme$tabTitle)
 expect_identical(configRaw$readme$filename, configNew$readme$filename)
 expect_identical(configRaw$readme$enableMath, configNew$readme$enableMath)
+expect_identical(configRaw$autoGenInputGraphs, configNew$autoGenInputGraphs)
+expect_identical(configRaw$defaultRendererOutput, configNew$defaultRendererOutput)
 
-# modules tab (I)
-expect_identical(configRaw$activateModules$loadLocal, configNew$activateModules$loadLocal)
+# scenario data and attachments
 expect_identical(configRaw$defaultScenName, configNew$defaultScenName)
-expect_identical(configRaw$excelIncludeMeta, configNew$excelIncludeMeta)
-expect_identical(configRaw$excelIncludeEmptySheets, configNew$excelIncludeEmptySheets)
+expect_identical(configRaw$activateModules$loadLocal, configNew$activateModules$loadLocal)
 expect_identical(configRaw$activateModules$attachments, configNew$activateModules$attachments)
-expect_identical(configRaw$storeLogFilesDuration, configNew$storeLogFilesDuration)
 expect_identical(configRaw$outputAttachments[[1]]$filename, configNew$outputAttachments[[1]]$filename)
 expect_identical(configRaw$outputAttachments[[1]]$execPerm, configNew$outputAttachments[[1]]$execPerm)
 expect_identical(configRaw$outputAttachments[[1]]$throwError, configNew$outputAttachments[[1]]$throwError)
 expect_identical(configRaw$outputAttachments[[2]]$filename, configNew$outputAttachments[[2]]$filename)
 expect_identical(configRaw$outputAttachments[[2]]$execPerm, configNew$outputAttachments[[2]]$execPerm)
 expect_identical(configRaw$outputAttachments[[2]]$throwError, configNew$outputAttachments[[2]]$throwError)
-
-# modules tab (II)
 expect_identical(configRaw$activateModules$downloadTempFiles, configNew$activateModules$downloadTempFiles)
+expect_identical(configRaw$excelIncludeMeta, configNew$excelIncludeMeta)
+expect_identical(configRaw$excelIncludeEmptySheets, configNew$excelIncludeEmptySheets)
+expect_identical(configRaw$roundingDecimals, configNew$roundingDecimals)
+
+# Job submission
+expect_identical(configRaw$activateModules$hcube, configNew$activateModules$hcube)
 expect_identical(configRaw$extraClArgs, configNew$extraClArgs)
 
-# symbol configuration tab (I: Naming)
+# Log files
+expect_identical(configRaw$activateModules$logFile, configNew$activateModules$logFile)
+expect_identical(configRaw$activateModules$lstFile, configNew$activateModules$lstFile)
+expect_identical(configRaw$miroLogFile, configNew$miroLogFile)
+expect_identical(configRaw$storeLogFilesDuration, configNew$storeLogFilesDuration)
+
+# Scenario comparison
+expect_identical(configRaw$defCompMode, configNew$defCompMode)
+expect_identical(configRaw$pivotCompSettings, list(enableHideEmptyCols = TRUE, emptyUEL = "&", fixedColumns = TRUE))
+
+
+# Symbol configuration: Symbol and Column Names
 expect_identical(configRaw$overwriteAliases$price$newAlias, configNew$overwriteAliases$price$newAlias)
 expect_identical(configRaw$overwriteAliases[["_scalars_out"]]$newAlias, configNew$overwriteAliases[["_scalars_out"]]$newAlias)
 expect_identical(configRaw$overwriteAliases$stock_weight$newAlias, configNew$overwriteAliases$stock_weight$newAlias)
@@ -62,26 +67,31 @@ expect_identical(configRaw$overwriteHeaderAliases[["_scalars_out"]]$newHeaders, 
 expect_identical(configRaw$overwriteHeaderAliases[["error_ratio"]]$newHeaders, configNew$overwriteHeaderAliases[["error_ratio"]]$newHeaders)
 expect_identical(configRaw$overwriteHeaderAliases[["trainingdays"]]$newHeaders, configNew$overwriteHeaderAliases[["trainingdays"]]$newHeaders)
 
-# symbol configuration tab (II: Ordering, tab grouping, symbol display, Use output data as input data)
+# Symbol configuration: Symbol Order and Groups
 expect_identical(configRaw$overwriteSheetOrder$input, configNew$overwriteSheetOrder$input)
 expect_identical(configRaw$overwriteSheetOrder$output, configNew$overwriteSheetOrder$output)
 expect_identical(configRaw$inputWidgetGroups[[1]]$name, configNew$inputWidgetGroups[[1]]$name)
 expect_identical(configRaw$inputWidgetGroups[[1]]$members, configNew$inputWidgetGroups[[1]]$members)
+expect_identical(configRaw$aggregateWidgets, configNew$aggregateWidgets)
 expect_identical(configRaw$outputGroups[[1]]$name, configNew$outputGroups[[1]]$name)
 expect_identical(configRaw$outputGroups[[1]]$members, configNew$outputGroups[[1]]$members)
+
+# Symbol configuration: Hidden Symbols and Symbol Links
 expect_identical(configRaw$hiddenOutputScalars, configNew$hiddenOutputScalars)
-expect_identical(configRaw$aggregateWidgets, configNew$aggregateWidgets)
 expect_identical(configRaw$symbolLinks[[1]]$source, configNew$symbolLinks[[1]]$source)
 expect_identical(configRaw$symbolLinks[[1]]$target, configNew$symbolLinks[[1]]$target)
 
-# analysis scripts tab
+# Scenario analysis
 expect_identical(configRaw$scripts$hcube[[1]]$title, configNew$scripts$hcube[[1]]$title)
 expect_identical(configRaw$scripts$hcube[[1]]$id, configNew$scripts$hcube[[1]]$id)
 expect_identical(configRaw$scripts$hcube[[1]]$command, configNew$scripts$hcube[[1]]$command)
 expect_identical(configRaw$scripts$hcube[[1]]$args, configNew$scripts$hcube[[1]]$args)
 expect_identical(configRaw$scripts$hcube[[1]]$outputFile, configNew$scripts$hcube[[1]]$outputFile)
 
-app$findElement("a[data-value='Symbol configuration']")$click()
+app$findElement("a[data-value='symbol_conf']")$click()
+Sys.sleep(1)
+
+app$findElement("a[data-value='Symbol and Column Names']")$click()
 app$setInputs("general_overwriteSymHeaders_price_1" = "2nd header")
 Sys.sleep(1L)
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
