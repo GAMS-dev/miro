@@ -4808,10 +4808,6 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "resize": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "enable": {
                   "type": "string",
                   "minLength": 1
@@ -4825,7 +4821,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 9
+              "minProperties": 8
             },
             "dt": {
               "type": "object",

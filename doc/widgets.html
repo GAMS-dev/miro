@@ -104,6 +104,456 @@ $(document).ready(function(){
           <div class="doc-body row">
             <div class="doc-content col-md-9 col-12 order-1">
               <div class="content-inner">
+                <section id="widget-table" class="doc-section">
+                  <h2 class="section-title">Table</h2>
+                  <div class="section-block" id="widget-table-configuration">
+                    <h3 class="block-title">Configuration</h3>
+                    <p>
+                      By default, every cell in an input table is editable and
+                      rows can be inserted and removed. If you only want to
+                      allow your users to edit certain tables or even only
+                      certain columns within a table, you can customize the
+                      table for the underlying GAMS parameter. You can also use
+                      a different type of table to enter your data. For example,
+                      if you have large amounts of data (>100,000 records) in
+                      your table, we recommend using either the
+                      <i>Big Data Table</i> or the <i>pivot</i> table. In
+                      addition, input tables can be annotated with Markdown
+                      syntax. This way you can give your users additional
+                      information, e.g. what kind of data should be entered here
+                      and in which format.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/configuration_mode/configure_widgets_table.png"
+                        alt="Table configuration"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block" id="widget-table-options">
+                    <h3 class="block-title">Available Options</h3>
+                    <p>
+                      <b>Default table:</b>
+                    </p>
+                    <p>
+                      The following options are available for the standard
+                      (default) table in MIRO, which works similar to a
+                      spreadsheet.
+                    </p>
+                    <h6
+                      id="table-option-readonly"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Should table be
+                      read-only?
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        This option prevents the user from making manual changes
+                        in the input table of a scenario. If active, the table
+                        can only be filled with scenario data from the
+                        database/local files.
+                      </p>
+                    </div>
+                    <h6
+                      id="table-option-pivot"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Select a column
+                      to pivot
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        This option allows you to pivot a table column of a
+                        symbol, i.e. to have a new column from each of the
+                        elements in this column:
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 400pt"
+                          src="assets/images/configuration_mode/widget_table_pivot.png"
+                          alt="Pivot column"
+                        />
+                      </div>
+                      <p>
+                        Unlike the
+                        <a href="./model.html#table-miro">table statement</a> in
+                        the GAMS model itself (<code class="language-gams"
+                          >Table symbolname;</code
+                        >), this option does not affect the
+                        <a href="./model.html#data-contract">data contract</a>
+                        between GAMS and MIRO. Hence, the columns of the symbol
+                        remain variable, since the symbol itself is communicated
+                        in list format. The pivoting of the configured column
+                        then happens "live" in the MIRO application.<br />
+                        Variable columns do not only mean that the column
+                        elements can change their names. It is also possible to
+                        add or delete whole columns. On the GAMS model side,
+                        this is equivalent to adding or deleting a set element
+                        of the affected index.
+                      </p>
+                      <div class="callout-block callout-warning">
+                        <div class="icon-holder">
+                          <i class="fas fa-info-circle"></i>
+                        </div>
+                        <!--//icon-holder-->
+                        <div class="content">
+                          <b class="callout-title">Note:</b>
+                          <p>
+                            Instead of pivoting a single column, the
+                            <a href="#input-pivot-table" class="scrollto"
+                              >MIRO pivot table</a
+                            >
+                            can be used in case you want to interactively
+                            filter, pivot or aggregate columns.
+                          </p>
+                        </div>
+                        <!--//content-->
+                      </div>
+                      <!--//callout-block-->
+                      <p>When using the pivot option, note the following:</p>
+                      <ul>
+                        <li>
+                          The table columns displayed with the pivot option can
+                          no longer be sorted alphabetically or numerically.
+                        </li>
+                        <li>
+                          Furthermore, it is not possible to add or delete
+                          columns in the symbol table if it is either read-only
+                          or displayed as a heatmap.
+                        </li>
+                      </ul>
+                      <p id="avoid-table">
+                        Now let's look at a case where we should probably
+                        <b>avoid</b> using this pivot functionality: For this we
+                        look at the parameter
+                        <code class="language-gams">Price</code> of the
+                        <i>Pickstock</i> model:
+                      </p>
+                      <pre><code class="language-gams">Set date   'date'
+    symbol 'stockSymbol';
+
+$onExternalInput
+Parameter price(date,symbol) 'Price';
+$offExternalInput
+</code></pre>
+                      <p>
+                        If we decide to pivot the set
+                        <span class="code">symbol</span>, we would end up with a
+                        table where all stock symbols (<span class="code"
+                          >AAPL</span
+                        >, <span class="code">AXP</span>,
+                        <span class="code">BA</span>, etc.) are displayed in a
+                        separate column:
+                      </p>
+                      <div class="section-block" style="text-align: center">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 175pt"
+                          src="assets/images/expand-table.png"
+                          alt="Visualization of expanded table"
+                        />
+                      </div>
+                      <p>
+                        A table width quickly increases when the number of set
+                        elements of the header index gets large. A total of -
+                        for example - 30 stocks to be represented in a table
+                        would lead to 30 additional columns. In this case, the
+                        <i>list view</i> might be more clear.
+                      </p>
+                    </div>
+                    <h6
+                      id="table-option-fixedColumnsLeft"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Fix columns that
+                      are not pivoted?
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        This option is available if a table has more than one
+                        value column. This can be the case for
+                        <a href="#table-option-pivot" class="scrollto"
+                          >pivoted tables</a
+                        >
+                        and for GAMS tables. When enabled, all columns that are
+                        not pivoted (i.e. all non-value columns) are fixed to
+                        the left side of the table and remain visible even when
+                        scrolling horizontally.
+                      </p>
+                      <div class="section-block" style="text-align: center">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 75pt"
+                          src="assets/images/configuration_mode/table_fixedColumnsLeft.png"
+                          alt="Column fixed to the left"
+                        />
+                      </div>
+                    </div>
+                    <h6
+                      id="table-option-readonlycol"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Select columns to
+                      be readonly
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        This option prevents the user from making manual changes
+                        in selected columns of the input table. Note that this
+                        option is only available for table columns that have not
+                        been pivoted (see option above).
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 400pt"
+                          src="assets/images/configuration_mode/widget_table_ui_readonlycols.png"
+                          alt="Heatmap"
+                        />
+                      </div>
+                    </div>
+                    <h6
+                      id="table-option-colwidths"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Column widths
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        Sets the column width (in pixels) of each column in the
+                        table. The Configuration Mode supports the specification
+                        of one column width for all columns of the table. To
+                        specify the width of each column individually, the
+                        <a href="./faqs.html#file-config"
+                          ><i>&lt;modelname&gt;.json</i></a
+                        >
+                        file must be
+                        <a href="#table-colwidths" class="scrollto"
+                          >modified manually</a
+                        >.
+                      </p>
+                    </div>
+                    <h6
+                      id="table-option-decimals"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Specify the
+                      number of decimal places for the column
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        Use this option to specify the number of decimal places
+                        for numeric columns. This function is not available if
+                        columns are
+                        <a href="#table-option-pivot" class="scrollto"
+                          >pivoted</a
+                        >.
+                      </p>
+                    </div>
+                    <h6
+                      id="table-option-hide-indexing-column"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Hide indexing
+                      column?
+                    </h6>
+                    <div class="expanded">
+                      <p>Option to hide indexing column in input tables.</p>
+                    </div>
+                    <h6
+                      id="table-option-heatmap"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Turn table into a
+                      heatmap?
+                    </h6>
+                    <div class="expanded">
+                      <p>Turns the table into a heatmap.</p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 400pt"
+                          src="assets/images/configuration_mode/widget_table_ui.png"
+                          alt="Heatmap"
+                        />
+                      </div>
+                    </div>
+                    <div class="section-block" id="widget-table-json">
+                      <h5 class="block-title">JSON example</h5>
+                      <p>
+                        Default input table with label, without index column,
+                        'date' column is readonly.
+                      </p>
+                      <pre><code class="language-json">
+{
+  "inputWidgets": {
+    "price": {
+      "widgetType": "table",
+      "tableType": "default",
+      "readonly": false,
+      "readonlyCols": "date",
+      "hideIndexCol": true,
+      "heatmap": false,
+      "label": "This table shows the price trend of the 30 DOW Jones stocks"
+    }
+  }
+}
+                                    </code></pre>
+                    </div>
+                    <p id="input-bigdata-table" style="margin-top: 20pt">
+                      <b>Big Data table:</b>
+                    </p>
+                    <p>
+                      The following options are available for the Big Data
+                      table. This table type is intended for situations in which
+                      large amounts of data are to be displayed within a table.
+                      Instead of a long, 1-page table, a multi-page table is
+                      displayed. Only the data currently visible on the client
+                      side is loaded in this table.
+                    </p>
+                    <h6
+                      id="table-option-readonly-bigdata"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Should table be
+                      read-only?
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        This option prevents the user from making manual changes
+                        in the input table of a scenario. If active, the table
+                        can only be filled with scenario data from the
+                        database/local files.
+                      </p>
+                    </div>
+                    <h6
+                      id="table-option-pivot-bigdata"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Select a column
+                      to pivot
+                    </h6>
+                    <div class="expanded">
+                      <p>
+                        See
+                        <a href="#table-option-pivot" class="scrollto"
+                          >previous section</a
+                        >
+                      </p>
+                    </div>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 400pt"
+                        src="assets/images/configuration_mode/widget_table_ui_big.png"
+                        alt="Big Data table"
+                      />
+                    </div>
+                    <div class="section-block" id="widget-bigdata-table-json">
+                      <h5 class="block-title">JSON example</h5>
+                      <p>Big data input table.</p>
+                      <pre><code class="language-json">
+{
+  "inputWidgets": {
+    "price": {
+      "widgetType": "table",
+      "tableType": "bigdata",
+      "readonly": false,
+      "label": "This table shows the price trend of the 30 DOW Jones stocks"
+    }
+  }
+}
+                                    </code></pre>
+                    </div>
+                    <p id="input-pivot-table" style="margin-top: 20pt">
+                      <b>MIRO Pivot Table:</b>
+                    </p>
+                    <p>
+                      The following options are available for the MIRO Pivot
+                      Table. This table type is also capable of handling large
+                      amounts of data (> 1 million records). It allows you to
+                      interactively filter, pivot or aggregate data. See
+                      <a href="./charts.html#pivot-chart">here</a> for more
+                      information about the MIRO Pivot Table. The configuration
+                      of this table can be done directly from the preview on the
+                      right side.
+                    </p>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          The MIRO Pivot Table has no concept of "order" because
+                          the table can be sorted interactively by changing the
+                          order of the rows. When you add or change UELs, they
+                          are always appended to the underlying data source. So
+                          when MIRO passes the data to GAMS, you cannot rely on
+                          the order of the elements coming from this table type.
+                          If you need UELs in a certain order, you should either
+                          use one of the other input table types or declare the
+                          sets you need sorted as additional external input
+                          (instead of using the
+                          <a
+                            href="https://www.gams.com/31/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition"
+                            >implicit set definition</a
+                          >).
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <div class="section-block" id="widget-pivot-table-json">
+                      <h5 class="block-title">JSON example</h5>
+                      <p>MIRO Pivot input table.</p>
+                      <pre><code class="language-json">
+{
+  "inputWidgets": {
+    "price": {
+      "widgetType": "table",
+      "tableType": "pivot",
+      "options": {
+        "aggregationFunction": "sum",
+        "pivotRenderer": "table",
+        "enableHideEmptyCols": false,
+        "hideEmptyCols": false,
+        "rows": ["date", "symbol"]
+      },
+      "label": "This table shows the price trend of the 30 DOW Jones stocks"
+    }
+  }
+}
+                                    </code></pre>
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                </section>
                 <section id="widget-slider" class="doc-section">
                   <h2 class="section-title">Slider</h2>
                   <div class="section-block" id="widget-slider-configuration">
@@ -2369,211 +2819,32 @@ $offExternalInput
             <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
               <div id="doc-nav" class="doc-nav">
                 <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                  <a class="nav-link scrollto" href="#widget-table">Table</a>
                   <a class="nav-link scrollto" href="#widget-slider">Slider</a>
-                  <nav class="doc-sub-menu nav flex-column">
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-slider-configuration"
-                      >Configuration</a
-                    >
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-slider-options"
-                      >Available options</a
-                    >
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-slider-json"
-                      >JSON example</a
-                    >
-                  </nav>
                   <a class="nav-link scrollto" href="#widget-sliderrange"
                     >Slider range</a
                   >
-                  <nav class="doc-sub-menu nav flex-column">
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-sliderrange-configuration"
-                      >Configuration</a
-                    >
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-sliderrange-options"
-                      >Available options</a
-                    >
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-sliderrange-json"
-                      >JSON example</a
-                    >
-                  </nav>
                   <a class="nav-link scrollto" href="#widget-checkbox"
                     >Checkbox</a
                   >
-                  <nav class="doc-sub-menu nav flex-column">
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-checkbox-configuration"
-                      >Configuration</a
-                    >
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-checkbox-options"
-                      >Available options</a
-                    >
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-checkbox-json"
-                      >JSON example</a
-                    >
-                  </nav>
                   <a class="nav-link scrollto" href="#widget-dropdown"
                     >Dropdown menu</a
                   >
-                  <nav class="doc-sub-menu nav flex-column">
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-dropdown-configuration"
-                      >Configuration</a
-                    >
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-dropdown-options"
-                      >Available options</a
-                    >
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-dropdown-json"
-                      >JSON example</a
-                    >
-                  </nav>
                   <a class="nav-link scrollto" href="#widget-multidropdown"
                     >Multidropdown menu</a
                   >
-                  <nav class="doc-sub-menu nav flex-column">
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-multidropdown-configuration"
-                      >Configuration</a
-                    >
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-multidropdown-options"
-                      >Available options</a
-                    >
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-multidropdown-json"
-                      >JSON example</a
-                    >
-                  </nav>
                   <a class="nav-link scrollto" href="#widget-date"
                     >Date selector</a
                   >
-                  <nav class="doc-sub-menu nav flex-column">
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-date-configuration"
-                      >Configuration</a
-                    >
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-date-options"
-                      >Available options</a
-                    >
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-date-json"
-                      >JSON example</a
-                    >
-                  </nav>
                   <a class="nav-link scrollto" href="#widget-daterange"
                     >Daterange selector</a
                   >
-                  <nav class="doc-sub-menu nav flex-column">
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-daterange-configuration"
-                      >Configuration</a
-                    >
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-daterange-options"
-                      >Available options</a
-                    >
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-daterange-json"
-                      >JSON example</a
-                    >
-                  </nav>
                   <a class="nav-link scrollto" href="#widget-textbox"
                     >Text input</a
                   >
-                  <nav class="doc-sub-menu nav flex-column">
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-textbox-configuration"
-                      >Configuration</a
-                    >
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-textbox-options"
-                      >Available options</a
-                    >
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-textbox-json"
-                      >JSON example</a
-                    >
-                  </nav>
                   <a class="nav-link scrollto" href="#widget-numeric"
                     >Numeric input</a
                   >
-                  <nav class="doc-sub-menu nav flex-column">
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-numeric-configuration"
-                      >Configuration</a
-                    >
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-numeric-options"
-                      >Available options</a
-                    >
-                    <a
-                      class="nav-link scrollto"
-                      style="padding-top: 0px; margin-bottom: 5px"
-                      href="#widget-numeric-json"
-                      >JSON example</a
-                    >
-                  </nav>
                 </nav>
                 <!--//doc-menu-->
               </div>

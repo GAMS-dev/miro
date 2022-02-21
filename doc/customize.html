@@ -152,9 +152,7 @@
                         >Configuration via JSON</a
                       >
                       shows how to configure a MIRO app without using the
-                      graphical interface. However, we strongly recommend to use
-                      the Configuration Mode, especially when you just started
-                      using GAMS MIRO.
+                      graphical interface.
                     </p>
                     <p>
                       The <i>Configuration Mode</i> is directly accessible via
@@ -205,14 +203,14 @@
                       </li>
                       <li>
                         <a href="#configure-widgets" class="scrollto"
-                          >Widgets</a
+                          >Input widgets</a
                         >
                       </li>
                       <li>
                         <a href="#configure-graphs" class="scrollto">Graphs</a>
                       </li>
                       <li>
-                        <a href="#scenario-analysis" class="scrollto"
+                        <a href="#analysis-scripts" class="scrollto"
                           >Scenario analysis</a
                         >
                       </li>
@@ -1444,8 +1442,9 @@ putclose log;
                     <p>
                       In this section you can customize the general
                       configuration of input and output tables (global settings)
-                      as well as the individual settings of multi-dimensional
-                      symbol tables.
+                      as well as the individual settings of output tables.
+                      Tables for individual input symbols are configured in the
+                      <i>Input widgets</i> category.
                     </p>
                     <h4 class="docu-general-header">
                       Input tables (global settings)
@@ -1522,28 +1521,6 @@ putclose log;
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Enable manual
-                      column resizing
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        Enables/disables the manual setting of the column width
-                        by the user.
-                      </p>
-                      <div class="section-block">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 150pt"
-                          src="assets/images/configuration_mode/tables_resize.png"
-                          alt="Manual column resizing"
-                        />
-                      </div>
-                    </div>
-                    <h6
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
                       <i class="fas fa-plus slide-toggle"></i> Enable table
                       context menu (accessible via right mouse click)
                     </h6>
@@ -1554,14 +1531,6 @@ putclose log;
                         adding or deleting a table row, or undoing the last
                         modifications.
                       </p>
-                      <div class="section-block">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 200pt"
-                          src="assets/images/configuration_mode/tables_context_menu.png"
-                          alt="Context menu"
-                        />
-                      </div>
                     </div>
                     <h4 id="output-tables" class="docu-general-header">
                       Output tables (global settings)
@@ -1704,403 +1673,22 @@ putclose log;
                       </div>
                     </div>
                     <h4 id="symbol-table" class="docu-general-header">
-                      Symbol tables (symbol specific settings)
+                      Output tables (individual symbols)
                     </h4>
                     <p>
-                      By default, every cell in an input table is editable and
-                      rows can be inserted and removed. If you only want to
-                      allow your users to edit certain tables or even only
-                      certain columns within a table, you can customize the
-                      visualization for the underlying GAMS parameter. You can
-                      also use a different type of table to enter your data. For
-                      example, if you have large amounts of data (>100,000
-                      records) in your table, we recommend using either the
-                      <i>Big Data Table</i> or the <i>pivot</i> table. In
-                      addition, input tables can be annotated with Markdown
-                      syntax. This way you can give your users additional
-                      information, e.g. what kind of data should be entered here
-                      and in which format.
-                    </p>
-                    <p>
-                      Also global table settings for
+                      Global table settings for can be overwritten for each
+                      individual symbol. The available options are almost
+                      identical to those of the
                       <a href="#output-tables" class="scrollto"
-                        >output symbols</a
-                      >
-                      can be overwritten for each individual symbol. The
-                      available options are almost identical. The only
-                      additional settings are the number of decimal places to
-                      display and an option to disable graphics for the symbol.
-                    </p>
-                    <p>
-                      Note that in contrast to the global settings, a
-                      symbol-specific configuration needs to be applied by
+                        >global settings</a
+                      >. The only additional options are the number of decimal
+                      places to display and a setting to disable graphics for
+                      the symbol. Note that in contrast to the global settings,
+                      a symbol-specific configuration needs to be applied by
                       clicking on the corresponding save-button!
                     </p>
-                    <p>
-                      <b
-                        >Available options for an input symbol table (type:
-                        Default):</b
-                      >
-                    </p>
-                    <p>
-                      This is the standard table in MIRO, which works similar to
-                      a spreadsheet.
-                    </p>
-                    <h6
-                      id="table-option-readonly"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Should table be
-                      read-only?
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        This option prevents the user from making manual changes
-                        in the input table of a scenario. If active, the table
-                        can only be filled with scenario data from the
-                        database/local files.
-                      </p>
-                    </div>
-                    <h6
-                      id="table-option-pivot"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Select a column
-                      to pivot
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        This option allows you to pivot a table column of a
-                        symbol, i.e. to have a new column from each of the
-                        elements in this column:
-                      </p>
-                      <div class="section-block">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 400pt"
-                          src="assets/images/configuration_mode/widget_table_pivot.png"
-                          alt="Pivot column"
-                        />
-                      </div>
-                      <p>
-                        Unlike the
-                        <a href="./model.html#table-miro">table statement</a> in
-                        the GAMS model itself (<code class="language-gams"
-                          >Table symbolname;</code
-                        >), this option does not affect the
-                        <a href="./model.html#data-contract">data contract</a>
-                        between GAMS and MIRO. Hence, the columns of the symbol
-                        remain variable, since the symbol itself is communicated
-                        in list format. The pivoting of the configured column
-                        then happens "live" in the MIRO application.<br />
-                        Variable columns do not only mean that the column
-                        elements can change their names. It is also possible to
-                        add or delete whole columns. On the GAMS model side,
-                        this is equivalent to adding or deleting a set element
-                        of the affected index.
-                      </p>
-                      <div class="callout-block callout-warning">
-                        <div class="icon-holder">
-                          <i class="fas fa-info-circle"></i>
-                        </div>
-                        <!--//icon-holder-->
-                        <div class="content">
-                          <b class="callout-title">Note:</b>
-                          <p>
-                            Instead of pivoting a single column, the
-                            <a href="#input-pivot-table" class="scrollto"
-                              >MIRO pivot table</a
-                            >
-                            can be used in case you want to interactively
-                            filter, pivot or aggregate columns.
-                          </p>
-                        </div>
-                        <!--//content-->
-                      </div>
-                      <!--//callout-block-->
-                      <p>When using the pivot option, note the following:</p>
-                      <ul>
-                        <li>
-                          The table columns displayed with the pivot option can
-                          no longer be sorted alphabetically or numerically.
-                        </li>
-                        <li>
-                          Furthermore, it is not possible to add or delete
-                          columns in the symbol table if it is either read-only
-                          or displayed as a heatmap.
-                        </li>
-                      </ul>
-                      <p id="avoid-table">
-                        Now let's look at a case where we should probably
-                        <b>avoid</b> using this pivot functionality: For this we
-                        look at the parameter
-                        <code class="language-gams">Price</code> of the
-                        <i>Pickstock</i> model:
-                      </p>
-                      <pre><code class="language-gams">Set date   'date'
-    symbol 'stockSymbol';
-
-$onExternalInput
-Parameter price(date,symbol) 'Price';
-$offExternalInput
-</code></pre>
-                      <p>
-                        If we decide to pivot the set
-                        <span class="code">symbol</span>, we would end up with a
-                        table where all stock symbols (<span class="code"
-                          >AAPL</span
-                        >, <span class="code">AXP</span>,
-                        <span class="code">BA</span>, etc.) are displayed in a
-                        separate column:
-                      </p>
-                      <div class="section-block" style="text-align: center">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 175pt"
-                          src="assets/images/expand-table.png"
-                          alt="Visualization of expanded table"
-                        />
-                      </div>
-                      <p>
-                        A table width quickly increases when the number of set
-                        elements of the header index gets large. A total of -
-                        for example - 30 stocks to be represented in a table
-                        would lead to 30 additional columns. In this case, the
-                        <i>list view</i> might be more clear.
-                      </p>
-                    </div>
-                    <h6
-                      id="table-option-fixedColumnsLeft"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Fix columns that
-                      are not pivoted?
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        This option is available if a table has more than one
-                        value column. This can be the case for
-                        <a href="#table-option-pivot" class="scrollto"
-                          >pivoted tables</a
-                        >
-                        and for GAMS tables. When enabled, all columns that are
-                        not pivoted (i.e. all non-value columns) are fixed to
-                        the left side of the table and remain visible even when
-                        scrolling horizontally.
-                      </p>
-                      <div class="section-block" style="text-align: center">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 75pt"
-                          src="assets/images/configuration_mode/table_fixedColumnsLeft.png"
-                          alt="Column fixed to the left"
-                        />
-                      </div>
-                    </div>
-                    <h6
-                      id="table-option-readonlycol"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Select columns to
-                      be readonly
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        This option prevents the user from making manual changes
-                        in selected columns of the input table. Note that this
-                        option is only available for table columns that have not
-                        been pivoted (see option above).
-                      </p>
-                      <div class="section-block">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 400pt"
-                          src="assets/images/configuration_mode/widget_table_ui_readonlycols.png"
-                          alt="Heatmap"
-                        />
-                      </div>
-                    </div>
-                    <h6
-                      id="table-option-colwidths"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Column widths
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        Sets the column width (in pixels) of each column in the
-                        table. The Configuration Mode supports the specification
-                        of one column width for all columns of the table. To
-                        specify the width of each column individually, the
-                        <a href="./faqs.html#file-config"
-                          ><i>&lt;modelname&gt;.json</i></a
-                        >
-                        file must be
-                        <a href="#table-colwidths" class="scrollto"
-                          >modified manually</a
-                        >.
-                      </p>
-                    </div>
-                    <h6
-                      id="table-option-decimals"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Specify the
-                      number of decimal places for the column
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        Use this option to specify the number of decimal places
-                        for numeric columns. This function is not available if
-                        columns are
-                        <a href="#table-option-pivot" class="scrollto"
-                          >pivoted</a
-                        >.
-                      </p>
-                    </div>
-                    <h6
-                      id="table-option-hide-indexing-column"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Hide indexing
-                      column?
-                    </h6>
-                    <div class="expanded">
-                      <p>Option to hide indexing column in input tables.</p>
-                    </div>
-                    <h6
-                      id="table-option-heatmap"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Turn table into a
-                      heatmap?
-                    </h6>
-                    <div class="expanded">
-                      <p>Turns the table into a heatmap.</p>
-                      <div class="section-block">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 400pt"
-                          src="assets/images/configuration_mode/widget_table_ui.png"
-                          alt="Heatmap"
-                        />
-                      </div>
-                    </div>
-                    <p id="input-bigdata-table">
-                      <b
-                        >Available options for an input symbol table (type: Big
-                        Data Table):</b
-                      >
-                    </p>
-                    <p>
-                      This table type is intended for situations in which large
-                      amounts of data are to be displayed within a table.
-                      Instead of a long, 1-page table, a multi-page table is
-                      displayed. Only the data currently visible on the client
-                      side is loaded in this table.
-                    </p>
                     <div class="section-block">
-                      <img
-                        class="img-fluid"
-                        style="max-height: 400pt"
-                        src="assets/images/configuration_mode/widget_table_ui_big.png"
-                        alt="Big Data table"
-                      />
-                    </div>
-                    <h6
-                      id="table-option-readonly-bigdata"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Should table be
-                      read-only?
-                    </h6>
-                    <div class="expanded">
                       <p>
-                        This option prevents the user from making manual changes
-                        in the input table of a scenario. If active, the table
-                        can only be filled with scenario data from the
-                        database/local files.
-                      </p>
-                    </div>
-                    <h6
-                      id="table-option-pivot-bigdata"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> Select a column
-                      to pivot
-                    </h6>
-                    <div class="expanded">
-                      <p>
-                        See
-                        <a href="#table-option-pivot" class="scrollto"
-                          >previous section</a
-                        >
-                      </p>
-                    </div>
-                    <p id="input-pivot-table">
-                      <b
-                        >Available options for an input symbol table (type: MIRO
-                        Pivot Table):</b
-                      >
-                    </p>
-                    <p>
-                      This table type is also capable of handling large amounts
-                      of data (> 1 million records). It allows you to
-                      interactively filter, pivot or aggregate data. See
-                      <a href="./charts.html#pivot-chart">here</a> for more
-                      information about the MIRO Pivot Table. The configuration
-                      of this table can be done directly from the preview on the
-                      right side.
-                    </p>
-                    <div class="callout-block callout-warning">
-                      <div class="icon-holder">
-                        <i class="fas fa-info-circle"></i>
-                      </div>
-                      <!--//icon-holder-->
-                      <div class="content">
-                        <b class="callout-title">Note:</b>
-                        <p>
-                          The MIRO Pivot Table has no concept of "order" because
-                          the table can be sorted interactively by changing the
-                          order of the rows. When you add or change UELs, they
-                          are always appended to the underlying data source. So
-                          when MIRO passes the data to GAMS, you cannot rely on
-                          the order of the elements coming from this table type.
-                          If you need UELs in a certain order, you should either
-                          use one of the other input table types or declare the
-                          sets you need sorted as additional external input
-                          (instead of using the
-                          <a
-                            href="https://www.gams.com/31/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition"
-                            >implicit set definition</a
-                          >).
-                        </p>
-                      </div>
-                      <!--//content-->
-                    </div>
-                    <!--//callout-block-->
-                    <div class="section-block">
-                      <p style="margin-top: 1rem">
                         <b>Available Options for an output symbol table:</b>
                       </p>
                       <h6
@@ -2166,52 +1754,14 @@ $offExternalInput
                   </div>
                   <!--//section-block-->
                   <div class="section-block" id="configure-widgets">
-                    <h3 class="block-title">Widgets</h3>
+                    <h3 class="block-title">Input widgets</h3>
                     <p>
-                      <i>Input widgets</i> can be used instead of tables to
-                      enter scalar input data. Examples of such widgets include:
-                      sliders, dropdown menus, date selectors or checkboxes. In
-                      the <i>Widgets</i> section of the Configuration Mode you
-                      can configure widgets for:
+                      <i>Input widgets</i> are all items that communicate input
+                      data with GAMS. While these are primarily tables for
+                      multidimensional GAMS symbols, various widgets can be used
+                      for scalar input data. Examples of such widgets include:
+                      sliders, dropdown menus, date selectors or checkboxes.
                     </p>
-                    <ul>
-                      <li>
-                        <a
-                          href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars"
-                          target="_blank"
-                          >Scalars</a
-                        >
-                      </li>
-                      <li>
-                        <a
-                          href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_Subsets"
-                          target="_blank"
-                          >Simple (1-dimensional) Subsets</a
-                        >
-                      </li>
-                      <li>
-                        <a
-                          href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets"
-                          target="_blank"
-                          >Singleton Sets</a
-                        >
-                      </li>
-                      <li>
-                        <a
-                          href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine"
-                          target="_blank"
-                          >GAMS options</a
-                        >
-                      </li>
-                      <li>
-                        <a
-                          href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample"
-                          target="_blank"
-                          >double-dash parameters</a
-                        >
-                      </li>
-                    </ul>
-                    <p>The section <i>Widgets</i> looks as follows:</p>
                     <div class="section-block">
                       <img
                         class="img-fluid"
@@ -2226,11 +1776,10 @@ $offExternalInput
                     </p>
                     <ul>
                       <li>
-                        <b>Symbol</b> <br />This option must be selected if we
-                        want to configure a GAMS symbol: scalars and
-                        1-dimensional (singleton) sets. <br />Furthermore,
-                        already configured GAMS options and double dash
-                        parameters are listed here, so that the existing
+                        <b>All symbols / widgets</b> <br />This option must be
+                        selected if we want to configure a GAMS symbol.
+                        Furthermore, already configured GAMS options and double
+                        dash parameters are listed here, so that the existing
                         configuration can be changed / removed. <br /><br />
                         <div class="callout-block callout-warning">
                           <div class="icon-holder">
@@ -2240,8 +1789,9 @@ $offExternalInput
                           <div class="content">
                             <b class="callout-title">Note:</b>
                             <p>
-                              After configuring a widget, the corresponding
-                              scalar is automatically removed from the
+                              After configuring a widget for a scalar GAMS
+                              symbol, the symbol is automatically removed from
+                              the
                               <i>Scalars</i> table and rendered as a widget
                               instead.
                             </p>
@@ -2286,47 +1836,6 @@ $offExternalInput
                             >compile time</a
                           >.
                         </p>
-                        <div class="callout-block callout-success">
-                          <div class="icon-holder">
-                            <i class="fas fa-thumbs-up"></i>
-                          </div>
-                          <!--//icon-holder-->
-                          <div class="content">
-                            <b class="callout-title">Tip:</b>
-                            <p>
-                              The GAMS options and double-dash parameters
-                              associated with a scenario are stored in MIRO's
-                              internal database. However, the information about
-                              them is lost when a scenario is exported as a GDX
-                              file. We therefore recommend using singleton sets
-                              instead of command line parameters. Both the
-                              element label and the element text of a set can be
-                              migrated to compile time variables using the
-                              Dollar Control Options
-                              <a
-                                href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset"
-                                target="__blank"
-                                >eval.Set</a
-                              >,
-                              <a
-                                href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalglobalset"
-                                target="__blank"
-                                >evalGlobal.Set</a
-                              >, and
-                              <a
-                                href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevallocalset"
-                                target="__blank"
-                                >evalLocal.Set</a
-                              >.
-                            </p>
-                            <p>
-                              Read more
-                              <a href="./model.html#command-line">here</a>.
-                            </p>
-                          </div>
-                          <!--//content-->
-                        </div>
-                        <!--//callout-block-->
                         <p>
                           Example:<br />If we set the double dash parameter
                           <span class="code">numberPeriods</span> to 11 and for
@@ -2370,6 +1879,33 @@ $offExternalInput
                             <img
                               class="img-fluid"
                               style="
+                                max-height: 70px;
+                                display: block;
+                                margin: auto;
+                              "
+                              src="assets/images/configuration_mode/widget_table.png"
+                              alt="Table"
+                            />
+                          </div>
+                          <h3
+                            class="title"
+                            style="text-align: left; margin-top: 15pt"
+                          >
+                            Table
+                          </h3>
+                          <a class="link" href="./widgets.html#widget-table"
+                            ><span></span
+                          ></a>
+                        </div>
+                        <!--//item-inner-->
+                      </div>
+                      <!--//item-->
+                      <div class="item col-lg-4 col-6">
+                        <div class="item-inner" style="padding-bottom: 10px">
+                          <div style="height: 60px">
+                            <img
+                              class="img-fluid"
+                              style="
                                 max-height: 60px;
                                 display: block;
                                 margin: auto;
@@ -2390,7 +1926,6 @@ $offExternalInput
                         </div>
                         <!--//item-inner-->
                       </div>
-                      <!--//item-->
                       <div class="item col-lg-4 col-6">
                         <div class="item-inner" style="padding-bottom: 10px">
                           <div style="height: 60px">
@@ -3144,10 +2679,8 @@ $offExternalInput
                     <!--//callout-block-->
                   </div>
                   <!--//section-block-->
-                  <div class="section-block" id="database-management">
-                    <h3 id="analysis-scripts" class="block-title">
-                      Scenario analysis
-                    </h3>
+                  <div class="section-block" id="analysis-scripts">
+                    <h3 class="block-title">Scenario analysis</h3>
                     <p>
                       MIRO allows you to run custom analysis scripts. These
                       scripts have to generate HTML or Markdown output which
@@ -4947,9 +4480,9 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                       />
                     </div>
                     <p>
-                      In case you want to change the language of MIRO or display
-                      a scalar input symbol as a slider, this information must
-                      be stored in the
+                      In case you want to change the appearance of MIRO or
+                      display a scalar input symbol as a slider, this
+                      information must be stored in the
                       <span class="code">&lt;modelname&gt;.json</span> file in
                       JSON syntax. When you first launch MIRO for a new model,
                       the <span class="code">&lt;modelname&gt;.json</span> file
@@ -4965,7 +4498,7 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                     </p>
                     <p>
                       To ensure that the configuration is correct in terms of
-                      syntax and content, all JSON files are validated against
+                      syntax and content, all JSON files are validated against a
                       schema in the background. Only if the validation is
                       successful the application starts. If a schema is
                       violated, an error message is displayed.<br />
@@ -5067,10 +4600,7 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                   <div class="section-block" id="widgets-scalars">
                     <h3 class="block-title">Example: scalars</h3>
                     <p>
-                      As with all MIRO customizations, the information about the
-                      type of visualization of a GAMS scalar is configured via
-                      the file <span class="code">&lt;modelname&gt;.json</span>.
-                      <br />Let's get back to our <i>transport</i> app. In the
+                      Let's get back to our <i>transport</i> app. In the
                       <a href="#table-readonly" class="scrollto"
                         >previous section</a
                       >
@@ -5169,12 +4699,11 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                       <div class="content">
                         <b class="callout-title">Note:</b>
                         <p>
-                          Command line parameters can not be displayed as a
-                          table, but only as a widget. Both, GAMS options and
-                          double-dash parameters can be displayed as a slider,
-                          dropdown menu, checkbox, text input or numeric input.
-                          For double-dash parameters date(-range) selector and
-                          slider range are also available.
+                          Both, GAMS options and double-dash parameters can be
+                          displayed as a slider, dropdown menu, checkbox, text
+                          input or numeric input. For double-dash parameters
+                          date(-range) selector and slider range are also
+                          available.
                         </p>
                       </div>
                       <!--//content-->
@@ -5274,8 +4803,8 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                       This means that if you specified a slider range for your
                       double dash parameter <kbd>--RANGE</kbd>, you can access
                       the lower value of the range with
-                      <kbd>%RANGE$LO%</kbd> and the upper value with
-                      <kbd>%RANGE$UP%</kbd> while <kbd>%RANGE%</kbd> will not be
+                      <kbd>%RANGE_LO%</kbd> and the upper value with
+                      <kbd>%RANGE_UP%</kbd> while <kbd>%RANGE%</kbd> will not be
                       set at all. Let's look at the following example: We would
                       like to specify a time window that we want to fetch stock
                       data for. Thus, we define a new double dash parameter
@@ -5304,7 +4833,7 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                     <p>
                       In our model, we can access the lower and upper value of
                       this slider via the compile time variables
-                      <kbd>%TW$LO%</kbd> and <kbd>%TW$UP%</kbd>.
+                      <kbd>%TW_LO%</kbd> and <kbd>%TW_UP%</kbd>.
                     </p>
                   </div>
 
@@ -6728,12 +6257,12 @@ attachments$getIds()
                       >Tables</a
                     >
                     <a class="nav-link scrollto" href="#configure-widgets"
-                      >Widgets</a
+                      >Input widgets</a
                     >
                     <a class="nav-link scrollto" href="#configure-graphs"
                       >Graphs</a
                     >
-                    <a class="nav-link scrollto" href="#scenario-analysis"
+                    <a class="nav-link scrollto" href="#analysis-scripts"
                       >Scenario analysis</a
                     >
                     <a class="nav-link scrollto" href="#database-management"

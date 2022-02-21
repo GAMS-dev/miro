@@ -1237,7 +1237,6 @@
         "stretch": "指定默认单元格的列的拉伸样式",
         "stretchChoices": ["无拉伸", "仅拉伸最后一列", "拉伸所有列"],
         "colwidth": "单个（未拉伸）列的宽度。",
-        "resize": "允许用户手动调整列的大小。",
         "enable": "允许使用表格的上下文菜单（通过鼠标右键单击访问）。",
         "contextRowedit": "允许行编辑",
         "contextColedit": "允许列编辑"
@@ -1290,7 +1289,7 @@
         "title":"配置输入小部件",
         "widgetUpdateSuccess": "小部件配置已更新",
         "widgetTableUpdateSuccess": "表格配置已更新",
-        "gams": "GAMS符号",
+        "gams": "GAMS符号和输入小工具",
         "go": "新建GAMS option",
         "dd": "新建double-dash parameter",
         "choices": ["GAMS符号", "新建GAMS option", "新建double-dash parameter"],

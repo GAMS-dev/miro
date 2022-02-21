@@ -1238,7 +1238,6 @@
         "stretch": "Strecken von Tabellenspalten.",
         "stretchChoices": ["Nicht strecken", "Letzte Spalte strecken", "Alle Spalten strecken"],
         "colwidth": "Breite einer einzelnen (nicht gestreckten) Spalte. Für den Standardwert leer lassen oder auf 0 setzen.",
-        "resize": "Manuelle Anpassung der Spaltenbreite aktivieren.",
         "enable": "Kontextmenü der Tabelle aktivieren (erreichbar über rechte Maustaste).",
         "contextRowedit": "Zeilenbearbeitung aktivieren",
         "contextColedit": "Spaltenbearbeitung aktivieren"
@@ -1291,7 +1290,7 @@
         "title":"Eingabe-Widgets konfigurieren",
         "widgetUpdateSuccess": "Die Widget-Konfiguration wurde erfolgreich aktualisiert",
         "widgetTableUpdateSuccess": "Die Tabellenkonfiguration wurde erfolgreich aktualisiert",
-        "gams": "Symbol",
+        "gams": "Alle Symbole / Widgets",
         "go": "Neue GAMS Option",
         "dd": "Neuer double-dash Parameter",
         "choices": ["Symbol", "Neue GAMS-Option", "Neuer Double-Dash-Parameter"],
