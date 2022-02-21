@@ -4056,7 +4056,7 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "headerLogo": {
+                "headerAppearance": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -4195,9 +4195,13 @@
                 "label": {
                   "type": "string",
                   "minLength": 1
+                },
+                "tooltip": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 1
+              "minProperties": 2
             },
             "pageTitle": {
               "type": "object",
@@ -5033,6 +5037,14 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "widgetCategorieOpt": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "widgetCategorieDoubleDash": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "choices": {
                   "type": "array",
                   "uniqueItems": true,
@@ -5128,7 +5140,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 28
+              "minProperties": 30
             },
             "validate": {
               "type": "object",

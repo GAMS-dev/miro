@@ -2,17 +2,24 @@ latest_widget_symbol_type <- NULL
 currentWidgetSymbolName <- character(0L)
 inputPivotRendererEnv <- new.env(parent = emptyenv())
 symbolsDefinedExternally <- inputSymInForeignRenderers[inputSymInForeignRenderers %in% widgetSymbols]
+gamsOptionWidgets <- widgetSymbols[startsWith(widgetSymbols, prefixGMSOpt)]
+doubleDashWidgets <- widgetSymbols[startsWith(widgetSymbols, prefixDDPar)]
+widgetSymbols <- widgetSymbols[!widgetSymbols %in% c(gamsOptionWidgets, doubleDashWidgets)]
+
 allInputSymbols <- setNames(
   list(
     c(widgetSymbols),
-    c(inputSymMultiDimChoices)
+    c(inputSymMultiDimChoices),
+    c(gamsOptionWidgets),
+    c(doubleDashWidgets)
   ),
   c(
     lang$adminMode$widgets$ui$scalarSymbols,
-    lang$adminMode$widgets$ui$multiDimSymbols
+    lang$adminMode$widgets$ui$multiDimSymbols,
+    lang$adminMode$widgets$ui$widgetCategorieOpt,
+    lang$adminMode$widgets$ui$widgetCategorieDoubleDash
   )
 )
-
 updateSelectInputNoClear <- function(session, id, choices) {
   selected <- input[[id]]
   if (length(selected) && !selected %in% choices) {
@@ -121,8 +128,6 @@ if (length(allInputSymbols)) {
   showEl(session, "#noSymbolMsg")
   showEl(session, "#noWidgetMsg")
   hideEl(session, "#noWidgetConfigMsg")
-  hideEl(session, "#optionConfigMsg")
-  hideEl(session, "#doubledashConfigMsg")
   hideEl(session, "#externalConfigMsg")
   hideEl(session, "#pivotColsRestriction")
   noWidgetSymbols <- TRUE
@@ -502,8 +507,6 @@ observeEvent(
     hideEl(session, "#noSymbolMsg")
     hideEl(session, "#noWidgetMsg")
     hideEl(session, "#noWidgetConfigMsg")
-    hideEl(session, "#optionConfigMsg")
-    hideEl(session, "#doubledashConfigMsg")
     hideEl(session, "#externalConfigMsg")
     hideEl(session, "#pivotColsRestriction")
     if (input$widget_symbol %in% symbolsDefinedExternally) {
@@ -533,23 +536,9 @@ observeEvent(
     } else if (any(startsWith(input$widget_symbol, c(prefixDDPar, prefixGMSOpt)))) {
       currentWidgetSymbolName <<- input$widget_symbol
       if (startsWith(currentWidgetSymbolName, prefixGMSOpt)) {
-        showElReplaceTxt(
-          session, "#optionConfigMsg",
-          sprintf(
-            lang$adminMode$widgets$ui$optionConfigMsg,
-            substring(currentWidgetSymbolName, nchar(prefixGMSOpt) + 1L)
-          )
-        )
         widgetOptions <- langSpecificWidget$widgetOptionsGo
       }
       if (startsWith(currentWidgetSymbolName, prefixDDPar)) {
-        showElReplaceTxt(
-          session, "#doubledashConfigMsg",
-          sprintf(
-            lang$adminMode$widgets$ui$doubledashConfigMsg,
-            substring(currentWidgetSymbolName, nchar(prefixDDPar) + 1L)
-          )
-        )
         widgetOptions <- langSpecificWidget$widgetOptionsAll
       }
     } else if (input$widget_symbol %in% names(modelInRaw)) {
@@ -621,52 +610,30 @@ observeEvent(input$widget_dd, {
 })
 observeEvent(input$widget_symbol_type, {
   if (input$widget_symbol_type %in% c("dd", "go")) {
-    hideEl(session, "#optionConfigMsg")
     hideEl(session, "#noSymbolMsg")
     hideEl(session, "#noWidgetMsg")
-    hideEl(session, "#doubledashConfigMsg")
     hideEl(session, "#noWidgetConfigMsg")
     hideEl(session, "#deleteWidget")
     hideEl(session, "#externalConfigMsg")
     hideEl(session, "#pivotColsRestriction")
+
     updateTextInput(session, "widget_label", value = "")
     updateTextInput(session, "widget_tooltip", value = "")
-    if (identical(input$widget_symbol_type, "dd")) {
-      updateTextInput(session, "widget_dd", value = "")
-      updateSelectInput(session, "widget_type",
-        choices =
-          langSpecificWidget$widgetOptionsAll
-      )
-    } else if (identical(input$widget_symbol_type, "go")) {
-      updateTextInput(session, "widget_go", value = "")
-      updateSelectInput(session, "widget_type",
-        choices =
-          langSpecificWidget$widgetOptionsGo
-      )
+    updateTextInput(session, paste0("widget_", input$widget_symbol_type), value = "")
+
+    widgetOptionsTmp <- if (identical(input$widget_symbol_type, "dd")) {
+      langSpecificWidget$widgetOptionsAll
+    } else {
+      langSpecificWidget$widgetOptionsGo
     }
+    updateSelectInput(session, "widget_type", choices = widgetOptionsTmp)
+    if (identical(input$widget_type, widgetOptionsTmp[[1]])) {
+      rv$widget_type <- rv$widget_type + 1L
+    }
+
     if (!length(latest_widget_symbol_type)) {
       latest_widget_symbol_type <<- input$widget_symbol_type
       return()
-    }
-    if (latest_widget_symbol_type %in% c("dd", "go")) {
-      if (identical(input$widget_symbol_type, "go") &&
-        identical(latest_widget_symbol_type, "dd") &&
-        startsWith(prefixDDPar, currentWidgetSymbolName)) {
-        currentWidgetSymbolName <<- prefixGMSOpt %+% substr(
-          currentWidgetSymbolName,
-          nchar(prefixDDPar) + 1L,
-          nchar(currentWidgetSymbolName)
-        )
-      }
-      if (identical(input$widget_symbol_type, "dd") &&
-        identical(latest_widget_symbol_type, "go") &&
-        startsWith(prefixGMSOpt, currentWidgetSymbolName)) {
-        currentWidgetSymbolName <<- prefixDDPar %+% substr(
-          currentWidgetSymbolName,
-          nchar(prefixGMSOpt) + 1L,
-          nchar(currentWidgetSymbolName)
-        )
-      }
     }
     if (identical(input$widget_symbol_type, "go")) {
       currentWidgetSymbolName <<- prefixGMSOpt %+% tolower(input$widget_go)
@@ -2986,12 +2953,27 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
     }
   }
   symbolDDNeedsUpdate <- FALSE
-  if (any(startsWith(currentWidgetSymbolName, c(prefixDDPar, prefixGMSOpt)))) {
-    allInputSymbols <<- c(allInputSymbols, setNames(currentWidgetSymbolName, currentWidgetSymbolName))
+  if (any(startsWith(currentWidgetSymbolName, prefixDDPar))) {
+    allInputSymbols[[lang$adminMode$widgets$ui$widgetCategorieDoubleDash]] <<- c(
+      allInputSymbols[[lang$adminMode$widgets$ui$widgetCategorieDoubleDash]],
+      setNames(
+        currentWidgetSymbolName,
+        paste0("--", substring(currentWidgetSymbolName, nchar(prefixDDPar) + 1L))
+      )
+    )
+    symbolDDNeedsUpdate <- TRUE
+  } else if (any(startsWith(currentWidgetSymbolName, prefixGMSOpt))) {
+    allInputSymbols[[lang$adminMode$widgets$ui$widgetCategorieOpt]] <<- c(
+      allInputSymbols[[lang$adminMode$widgets$ui$widgetCategorieOpt]],
+      setNames(
+        currentWidgetSymbolName,
+        substring(currentWidgetSymbolName, nchar(prefixGMSOpt) + 1L)
+      )
+    )
     symbolDDNeedsUpdate <- TRUE
   } else if (currentWidgetSymbolName %in% scalarInputSymWithAliases) {
     if (all(scalarInputSymWithAliases %in% names(configJSON$inputWidgets))) {
-      allInputSymbols <<- allInputSymbols[allInputSymbols != scalarsFileName]
+      allInputSymbols <<- allInputSymbols[!allInputSymbols %in% scalarsFileName]
       if (scalarsFileName %in% names(configJSON$inputWidgets)) {
         configJSON$inputWidgets[[scalarsFileName]] <<- NULL
       }
@@ -3000,8 +2982,6 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
       hideEl(session, "#noSymbolMsg")
       hideEl(session, "#noWidgetMsg")
       hideEl(session, "#noWidgetConfigMsg")
-      hideEl(session, "#optionConfigMsg")
-      hideEl(session, "#doubledashConfigMsg")
       hideEl(session, "#externalConfigMsg")
       hideEl(session, "#pivotColsRestriction")
     }
@@ -3010,6 +2990,9 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
 
   if (symbolDDNeedsUpdate) {
     updateSelectInput(session, "widget_symbol", choices = allInputSymbols)
+  }
+  if (any(startsWith(currentWidgetSymbolName, c(prefixDDPar, prefixGMSOpt)))) {
+    updateTextInput(session, paste0("widget_", input$widget_symbol_type), value = "")
   }
   if (noWidgetSymbols) {
     hideEl(session, "#noSymbolMsg")
@@ -3052,7 +3035,7 @@ observeEvent(input$deleteWidgetConfirm, {
   configJSON$inputWidgets[[currentWidgetSymbolName]] <<- NULL
   write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
   if (any(startsWith(currentWidgetSymbolName, c(prefixDDPar, prefixGMSOpt)))) {
-    allInputSymbols <<- allInputSymbols[allInputSymbols != currentWidgetSymbolName]
+    allInputSymbols <<- allInputSymbols[!allInputSymbols %in% currentWidgetSymbolName]
     updateSelectInput(session, "widget_symbol", choices = allInputSymbols)
   } else if (currentWidgetSymbolName %in% scalarInputSymWithAliases) {
     showEl(session, "#noWidgetConfigMsg")
@@ -3079,8 +3062,6 @@ observeEvent(input$deleteWidgetConfirm, {
   hideEl(session, "#noSymbolMsg")
   hideEl(session, "#noWidgetMsg")
   showEl(session, "#noWidgetConfigMsg")
-  hideEl(session, "#optionConfigMsg")
-  hideEl(session, "#doubledashConfigMsg")
   hideEl(session, "#externalConfigMsg")
   hideEl(session, "#pivotColsRestriction")
   if (!length(allInputSymbols)) {

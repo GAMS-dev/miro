@@ -171,16 +171,6 @@ getHotOptions <- reactive({
     ),
     tags$div(
       class = "shiny-input-container",
-      checkboxInput_SIMPLE("hot_resize", lang$adminMode$tables$hot$resize,
-        value = if (length(configJSON$handsontable$manualColumnResize)) {
-          configJSON$handsontable$manualColumnResize
-        } else {
-          config$handsontable$manualColumnResize
-        }
-      )
-    ),
-    tags$div(
-      class = "shiny-input-container",
       checkboxInput_SIMPLE("hot_context_enable", lang$adminMode$tables$hot$enable,
         value = if (length(configJSON$handsontable$contextMenu$enabled)) {
           configJSON$handsontable$contextMenu$enabled
@@ -492,10 +482,6 @@ observeEvent(input$hot_colwidth, {
     rv$tableConfig$handsontable$colWidths <<- 200L
   }
 })
-observeEvent(input$hot_resize, {
-  rv$tableConfig$handsontable$manualColumnResize <<- input$hot_resize
-})
-
 observeEvent(input$hot_context_enable, {
   rv$tableConfig$handsontable$contextMenu$enabled <<- input$hot_context_enable
 })
@@ -584,7 +570,7 @@ observe(
             ht <- hot_cols(ht,
               columnSorting = config$handsontable$columnSorting,
               manualColumnMove = hotOptions$manualColumnMove,
-              manualColumnResize = hotOptions$manualColumnResize,
+              manualColumnResize = config$handsontable$manualColumnResize,
               colWidths = hotOptions$colWidths,
               fixedColumnsLeft = hotOptions$fixedColumnsLeft
             )

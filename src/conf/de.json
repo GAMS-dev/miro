@@ -1293,6 +1293,8 @@
         "gams": "Alle Symbole / Widgets",
         "go": "Neue GAMS Option",
         "dd": "Neuer double-dash Parameter",
+        "widgetCategorieOpt": "GAMS Optionen",
+        "widgetCategorieDoubleDash": "Double-dash Parameter",
         "choices": ["Symbol", "Neue GAMS-Option", "Neuer Double-Dash-Parameter"],
         "noSymbolMsg": "Es wurde kein GAMS symbol für die Verwendung mit MIRO markiert",
         "noWidgetMsg": "Es wurde noch kein Widget konfiguriert",

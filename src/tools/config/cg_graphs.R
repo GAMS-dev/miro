@@ -631,6 +631,9 @@ updateYAxes <- function(dyReset = NULL) {
 }
 
 output$rendererLabelWrapper <- renderUI({
+  if (length(rv$graphConfig$label) && activeSymbol$isInput) {
+    return()
+  }
   if (length(rv$graphConfig$label) && !identical(trimws(rv$graphConfigg$label), "")) {
     tags$div(
       id = "rendererLabel",
@@ -641,7 +644,7 @@ output$rendererLabelWrapper <- renderUI({
 })
 
 observe({
-  if (length(input$renderer_label) && !identical(trimws(input$renderer_label), "")) {
+  if (length(input$renderer_label) && !identical(trimws(input$renderer_label), "") && !activeSymbol$isInput) {
     rv$graphConfig$label <- input$renderer_label
   } else {
     rv$graphConfig$label <- NULL

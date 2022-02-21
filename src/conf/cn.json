@@ -1292,6 +1292,8 @@
         "gams": "GAMS符号和输入小工具",
         "go": "新建GAMS option",
         "dd": "新建double-dash parameter",
+        "widgetCategorieOpt": "GAMS options",
+        "widgetCategorieDoubleDash": "Double-dash parameters",
         "choices": ["GAMS符号", "新建GAMS option", "新建double-dash parameter"],
         "noSymbolMsg": "没有在MIRO中可使用的GAMS符号",
         "noWidgetMsg": "尚未配置任何小部件",

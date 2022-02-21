@@ -689,8 +689,6 @@ font-size: 12px;
                   id = "noWidgetConfigMsg", class = "config-message",
                   lang$adminMode$widgets$ui$noWidgetConfigMsg
                 ),
-                tags$div(id = "optionConfigMsg", class = "config-message"),
-                tags$div(id = "doubledashConfigMsg", class = "config-message"),
                 tags$div(id = "externalConfigMsg", class = "config-message"),
                 tags$div(
                   class = "main-tab", style = "min-height: 600px;",
