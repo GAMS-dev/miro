@@ -7,6 +7,7 @@ library(zip)
 library(futile.logger)
 
 load(file.path(getwd(), "data/test_gdxio.miroconf"), .GlobalEnv)
+MIROVersionString <<- "GAMS MIRO v. latest"
 source("../../components/gdxio.R")
 source("../../components/miroscenio.R")
 modelNameRaw <<- "Pickstock"
