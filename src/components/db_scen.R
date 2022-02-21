@@ -427,7 +427,7 @@ Scenario <- R6Class("Scenario",
       stopifnot(is.character(newReadPerm))
       stopifnot(is.character(newWritePerm))
       stopifnot(is.character(newExecPerm))
-      stopifnot(!isBadScenName(newName), !isBadScenTags(newTags))
+      stopifnot(!isBadScenName(newName), !isBadScenTags(scenTagsV = newTags))
       # END error checks
       if (private$isReadonly() && sum(
         length(newReadPerm),
