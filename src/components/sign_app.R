@@ -14,7 +14,7 @@ trySignAppBundle <- function(miroAppFiles, privKeyPath, passFilePath = "") {
     stop("Could not find private key", call. = FALSE)
   }
   if (!identical(passFilePath, "")) {
-    keyPasswords <- tryCatch(readLines(passFilePath, encoding = "UTF-8"), error = function(e) {
+    keyPasswords <- tryCatch(suppressWarnings(readLines(passFilePath, encoding = "UTF-8")), error = function(e) {
       return(character(0L))
     })
     privKey <- NULL
