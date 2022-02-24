@@ -1,0 +1,171 @@
+{
+	"modelTitle":	"A Transportation Problem with multiple version LP/MIP/MINLP",
+	"inputSymbols":	{
+		"_scalars":	{
+			"alias":	"Input Scalars",
+			"symnames":	["type", "f", "mins", "beta"],
+			"symtext":	["selected model type", "freight in dollars per case per thousand miles", "minimum shipment (MIP- and MINLP-only)", "beta (MINLP-only)"],
+			"symtypes":	["set", "parameter", "parameter", "parameter"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		},
+		"a":	{
+			"alias":	"capacity of plant i in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"capacity of plant i in cases"
+				}
+			}
+		},
+		"b":	{
+			"alias":	"demand at market j in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"demand at market j in cases"
+				}
+			}
+		},
+		"d":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"ilocdata":	{
+			"alias":	"Plant location information",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"1":	{
+					"type":	"numeric",
+					"alias":	"1"
+				},
+				"2":	{
+					"type":	"numeric",
+					"alias":	"2"
+				}
+			}
+		},
+		"jlocdata":	{
+			"alias":	"Market location information",
+			"symtype":	"parameter",
+			"headers":	{
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"1":	{
+					"type":	"numeric",
+					"alias":	"1"
+				},
+				"2":	{
+					"type":	"numeric",
+					"alias":	"2"
+				}
+			}
+		}
+	},
+	"outputSymbols":	{
+		"schedule":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"1":	{
+					"type":	"numeric",
+					"alias":	"1"
+				},
+				"2":	{
+					"type":	"numeric",
+					"alias":	"2"
+				},
+				"3":	{
+					"type":	"numeric",
+					"alias":	"3"
+				},
+				"4":	{
+					"type":	"numeric",
+					"alias":	"4"
+				},
+				"5":	{
+					"type":	"numeric",
+					"alias":	"5"
+				},
+				"6":	{
+					"type":	"numeric",
+					"alias":	"6"
+				},
+				"7":	{
+					"type":	"numeric",
+					"alias":	"7"
+				}
+			}
+		},
+		"_scalars_out":	{
+			"alias":	"Output Scalars",
+			"symnames":	["total_cost"],
+			"symtext":	["total transportation costs in thousands of dollars"],
+			"symtypes":	["parameter"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		}
+	}
+}
