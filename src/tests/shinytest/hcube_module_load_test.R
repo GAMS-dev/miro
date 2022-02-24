@@ -66,7 +66,7 @@ expect_equivalent(getHotData(app, "in_2"),
 # check that attachment was added
 app$setInputs(btEditMeta = "click")
 Sys.sleep(2L)
-app$findElement("a[data-value='Attachments']")$click()
+app$findElement("a[data-value='attachments']")$click()
 Sys.sleep(1)
 attachmentList <- app$findElements(".attachment-line")
 expect_identical(length(attachmentList), 1L)

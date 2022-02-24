@@ -41,7 +41,7 @@ expect_identical(length(app$findElements("#tab_0_3-miroPivot-savedViewsDD li")),
 # add pivot comparison views
 app$setInputs(btEditMeta = "click")
 Sys.sleep(1)
-app$findElement('#editMetaUI a[data-value="Views"]')$click()
+app$findElement('#editMetaUI a[data-value="views"]')$click()
 Sys.sleep(0.5)
 app$uploadFile(file_addViews = "../data/pivot-comp-views.json")
 Sys.sleep(1)
@@ -167,7 +167,7 @@ expect_chartjs(
 # check that new views were saved
 app$setInputs(btEditMeta = "click")
 Sys.sleep(1)
-app$findElement('#editMetaUI a[data-value="Views"]')$click()
+app$findElement('#editMetaUI a[data-value="views"]')$click()
 Sys.sleep(0.5)
 expect_true(app$waitFor("$('#currentViewsTable tbody td')[2].innerHTML==='Pivot Comparison: capacity of plant i in cases'",
   timeout = 50
