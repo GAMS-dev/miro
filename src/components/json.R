@@ -6,7 +6,7 @@ JSONValidator <- R6Class(
       private$ct$source(file.path(miroRootDir, "JS", "ajv.min.js"))
       private$ct$eval("const ajv=new Ajv({useDefaults:true,validateSchema:false});")
     },
-    validate = function(jsonFileLocation, jsonSchemaLocation) {
+    validate = function(jsonFileLocation, jsonSchemaLocation, returnRawData = FALSE) {
       tryCatch(
         {
           private$ct$assign("schema", readr::read_file(jsonSchemaLocation))
@@ -24,7 +24,8 @@ JSONValidator <- R6Class(
       )
       tryCatch(
         {
-          private$ct$assign("data", readr::read_file(jsonFileLocation))
+          dataTmp <- readr::read_file(jsonFileLocation)
+          private$ct$assign("data", dataTmp)
           private$ct$eval("data=JSON.parse(data);")
         },
         error = function(e) {
@@ -53,10 +54,17 @@ JSONValidator <- R6Class(
       valid <- private$ct$get("valid")
       if (identical(valid, TRUE)) {
         errors <- NULL
-        data <- private$ct$get("data",
-          simplifyDataFrame = FALSE,
-          simplifyMatrix = FALSE
-        )
+        if (returnRawData) {
+          data <- jsonlite::fromJSON(dataTmp,
+            simplifyDataFrame = FALSE,
+            simplifyMatrix = FALSE
+          )
+        } else {
+          data <- private$ct$get("data",
+            simplifyDataFrame = FALSE,
+            simplifyMatrix = FALSE
+          )
+        }
       } else {
         errors <- private$ct$get("ajv.errorsText(validate.errors)")
         data <- NULL

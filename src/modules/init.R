@@ -153,7 +153,8 @@ if (is.null(errMsg)) {
       {
         valid <- jsonValidator$validate(
           jsonSchemaMap[[i]][1],
-          jsonSchemaMap[[i]][2]
+          jsonSchemaMap[[i]][2],
+          returnRawData = identical(names(jsonSchemaMap)[[i]], "io_config")
         )
         FALSE
       },
@@ -176,6 +177,14 @@ if (is.null(errMsg)) {
         config <<- valid$data
       } else if (identical(names(jsonSchemaMap)[[i]], "io_config")) {
         config <<- c(config, valid$data)
+        if (is.null(config$modelTitle)) {
+          # we have to use jsonlite::readJSON instead of JSON.parse for parsing
+          # the data contract due to an issue with headers being reordered if they
+          # use integer values (e.g. "1", "2" etc.). Thus, AJV won't insert the
+          # defaults from the schema (only one luckily for the io_schema) into the data
+          # object. We have to do it manually.
+          config$modelTitle <- "Unnamed model"
+        }
       } else if (identical(names(jsonSchemaMap)[[i]], "views")) {
         config$globalViews <<- valid$data
       }
