@@ -1,15 +1,6 @@
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("pivot_comp_views_test")
 
-expect_chartjs <- function(id, data, labels) {
-  chartjsData <- jsonlite::fromJSON(app$getAllValues()$output[[id]])$x$data
-  if (is.list(data)) {
-    expect_equal(chartjsData$datasets$data, data)
-  } else {
-    expect_equal(chartjsData$datasets$data[[1]], data)
-  }
-  expect_identical(chartjsData$labels, labels)
-}
 app$snapshot(items = list(output = "inputDataTitle"), screenshot = TRUE)
 
 app$setInputs(btImport = "click")
@@ -57,6 +48,7 @@ expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD li')[1].children[0].
 expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(1).click();true;", timeout = 50))
 Sys.sleep(1)
 expect_chartjs(
+  app,
   "tab_0_3-miroPivot-pivotChart",
   list(350, 200),
   c("value")
@@ -82,6 +74,7 @@ Sys.sleep(0.5)
 expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).text()==='abc';", timeout = 50))
 expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).click();true;", timeout = 50))
 expect_chartjs(
+  app,
   "tab_0_3-miroPivot-pivotChart",
   list(350, 200),
   c("value")
@@ -91,6 +84,7 @@ expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item'
 app$setInputs(`tab_0_3-miroPivot-pivotRenderer` = "bar")
 Sys.sleep(0.5)
 expect_chartjs(
+  app,
   "tab_0_3-miroPivot-pivotChart",
   list(c(600, 350, 600, 200)),
   c(
@@ -118,6 +112,7 @@ expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item'
 expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).click();true;", timeout = 50))
 Sys.sleep(1)
 expect_chartjs(
+  app,
   "tab_0_3-miroPivot-pivotChart",
   list(c(600, 350, 600, 200)),
   c(
@@ -156,6 +151,7 @@ expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item'
 expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).click();true;", timeout = 50))
 Sys.sleep(1)
 expect_chartjs(
+  app,
   "tab_0_3-miroPivot-pivotChart",
   list(c(600, 350, 600, 200)),
   c(
@@ -185,6 +181,7 @@ Sys.sleep(0.5)
 app$setInputs(contentScen_0 = "contentScen_0_1")
 Sys.sleep(1)
 expect_chartjs(
+  app,
   "tab_0_1-miroPivot-pivotChart",
   list(
     c(NA, 275, 275, 300, 50, NA),

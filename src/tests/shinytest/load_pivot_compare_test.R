@@ -1,12 +1,6 @@
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("load_pivot_compare_test")
 
-expect_chartjs <- function(id, data, labels) {
-  chartjsData <- jsonlite::fromJSON(app$getAllValues()$output[[id]])$x$data
-  expect_equal(chartjsData$datasets$data[[1]], data)
-  expect_identical(chartjsData$labels, labels)
-}
-
 currentUser <- Sys.info()[["user"]]
 
 app$findElement('a[data-value="scenarios"]')$click()
@@ -65,6 +59,7 @@ Sys.sleep(0.5)
 app$setInputs("tab_0_3-miroPivot-pivotRenderer" = "stackedbar")
 Sys.sleep(0.5)
 expect_chartjs(
+  app,
   "tab_0_3-miroPivot-pivotChart",
   c(600, 350, 600, 350, 600, 350),
   c(
@@ -89,6 +84,7 @@ Sys.sleep(0.5)
 app$setInputs("tab_0_3-miroPivot-pivotRenderer" = "stackedbar")
 Sys.sleep(0.5)
 expect_chartjs(
+  app,
   "tab_0_3-miroPivot-pivotChart",
   c(600, 350, 600, 350),
   c(

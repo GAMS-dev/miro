@@ -26,6 +26,15 @@ getHotData <- function(app, id) {
   }
   return(hotToR(jsonlite::fromJSON(app$getAllValues()$output[[id]], simplifyDataFrame = FALSE, simplifyMatrix = FALSE)$x))
 }
+expect_chartjs <- function(app, id, data, labels, tolerance = 1e-6) {
+  chartjsData <- jsonlite::fromJSON(app$getAllValues()$output[[id]])$x$data
+  if (is.list(data)) {
+    expect_equal(chartjsData$datasets$data, data, tolerance = tolerance)
+  } else {
+    expect_equal(chartjsData$datasets$data[[1]], data, tolerance = tolerance)
+  }
+  expect_identical(chartjsData$labels, labels)
+}
 expect_options <- function(options, optionsExpected) {
   expect_true(all(options %in% optionsExpected) &&
     identical(length(optionsExpected), length(options)))
