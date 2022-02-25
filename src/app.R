@@ -815,7 +815,9 @@ if (miroBuildOnly) {
             flog.info("Successfully signed MIRO app (fingerprint: %s)", sigFiles[4])
           },
           error = function(e) {
-            flog.warn("Could not sign MIRO app. Error message: %s", conditionMessage(e))
+            stop(sprintf("Could not sign MIRO app. Error message: %s", conditionMessage(e)),
+              call. = FALSE
+            )
           }
         )
       }
