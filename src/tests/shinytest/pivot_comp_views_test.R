@@ -45,7 +45,7 @@ app$findElement('#editMetaUI a[data-value="views"]')$click()
 Sys.sleep(0.5)
 app$uploadFile(file_addViews = "../data/pivot-comp-views.json")
 Sys.sleep(1)
-expect_true(app$waitFor("$('#currentViewsTable tbody td')[2].innerHTML==='Pivot Comparison: capacity of plant i in cases'",
+expect_true(app$waitFor("$('#currentViewsTable tbody td')[2].innerHTML==='Pivot comparison: capacity of plant i in cases'",
   timeout = 50
 ))
 app$findElement('button[data-dismiss="modal"]')$click()
@@ -169,7 +169,7 @@ app$setInputs(btEditMeta = "click")
 Sys.sleep(1)
 app$findElement('#editMetaUI a[data-value="views"]')$click()
 Sys.sleep(0.5)
-expect_true(app$waitFor("$('#currentViewsTable tbody td')[2].innerHTML==='Pivot Comparison: capacity of plant i in cases'",
+expect_true(app$waitFor("$('#currentViewsTable tbody td')[2].innerHTML==='Pivot comparison: capacity of plant i in cases'",
   timeout = 50
 ))
 expect_true(app$waitFor("$('#currentViewsTable tbody td')[3].innerHTML==='&lt;script&gt;alert(\\\\'asd\\\\')&lt;/script&gt;'",
