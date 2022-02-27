@@ -38,10 +38,11 @@ skip_if(
 )
 if (!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")) {
   saveAdditionalGamsClArgs(
-    testModelPath, "transport_numericHeaders",
+    testModelPath, "transport_numericheaders",
     paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"')
   )
 }
+createTestDb()
 test_that(
   "Models with integer column headers work",
   expect_pass(testApp(file.path(testDir, ".."), "integer_headers_test",
@@ -50,8 +51,8 @@ test_that(
 )
 if (!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")) {
   file.rename(
-    file.path(testModelPath, "conf_transport_numericHeaders", "transport_numericHeaders_tmp.json"),
-    file.path(testModelPath, "conf_transport_numericHeader", "transport_numericHeaders.json")
+    file.path(testModelPath, "conf_transport_numericheaders", "transport_numericheaders_tmp.json"),
+    file.path(testModelPath, "conf_transport_numericheaders", "transport_numericheaders.json")
   )
 }
 
