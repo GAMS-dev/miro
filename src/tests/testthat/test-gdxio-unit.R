@@ -13,6 +13,8 @@ lang <<- list(errMsg = list(gdxio = list(errors = list(
   duplicateRecordsTruncated = "(Only the first 10 duplicate records are displayed)"
 ))))
 
+ioConfig <<- NULL
+
 gdxio <- GdxIO$new(
   file.path(
     .libPaths()[1], "gdxrrwMIRO",
@@ -37,19 +39,19 @@ test_that("Reading of set works", {
 test_that("Reading of parameter works", {
   expect_identical(
     gdxio$rgdx(filePathEnc2, "a"),
-    tibble::tibble("1" = c("seattle", "san-diego"), "2" = c(350, 600))
+    tibble::tibble(" 1" = c("seattle", "san-diego"), " 2" = c(350, 600))
   )
 })
 test_that("Reading of table with squeezed out column works", {
   expect_identical(
     gdxio$rgdx(filePathEnc2, "squeezed_out"),
     tibble::tibble(
-      "1" = c("seattle", "san-diego"), "asd" = c(1, 1),
+      " 1" = c("seattle", "san-diego"), "asd" = c(1, 1),
       "def" = c(NA_real_, NA_real_)
     )
   )
   data <- list(tibble::tibble(
-    "1" = c("seattle", "san-diego"), "asd" = c(0, 0),
+    " 1" = c("seattle", "san-diego"), "asd" = c(0, 0),
     "def" = c(1, 2)
   ))
   names(data) <- "squeezed_out"
@@ -59,7 +61,7 @@ test_that("Reading of table with squeezed out column works", {
   expect_identical(
     gdxio$rgdx(filePathEnc, "squeezed_out"),
     tibble::tibble(
-      "1" = c("seattle", "san-diego"), "asd" = c(0, 0),
+      " 1" = c("seattle", "san-diego"), "asd" = c(0, 0),
       "def" = c(1, 2)
     )
   )
@@ -150,7 +152,7 @@ test_that("Reading of equations works", {
   expect_identical(
     gdxio$rgdx(filePathEnc2, "supply"),
     tibble::tibble(
-      "1" = c("seattle", "san-diego"), l = c(350, 550), m = c(0, 0),
+      " 1" = c("seattle", "san-diego"), l = c(350, 550), m = c(0, 0),
       lo = c(-Inf, -Inf), up = c(350, 600), s = c(1, 1)
     )
   )
@@ -159,11 +161,11 @@ test_that("Reading of variables works", {
   expect_equal(
     as.data.frame(gdxio$rgdx(filePathEnc2, "x")),
     as.data.frame(tibble::tibble(
-      "1" = c(
+      " 1" = c(
         "seattle", "seattle", "seattle",
         "san-diego", "san-diego", "san-diego"
       ),
-      "2" = c(
+      " 2" = c(
         "new-york", "chicago", "topeka",
         "new-york", "chicago", "topeka"
       ),
@@ -219,11 +221,11 @@ test_that("Writing of scalar variables and equations works", {
 
 test_that("Writing of variables works", {
   varData <- tibble::tibble(
-    "1" = c(
+    " 1" = c(
       "seattle", "seattle", "seattle",
       "san-diego", "san-diego", "san-diego"
     ),
-    "2" = c(
+    " 2" = c(
       "new-york", "chicago", "topeka",
       "new-york", "chicago", "topeka"
     ),
@@ -244,7 +246,7 @@ test_that("Writing of variables works", {
 
 test_that("Writing of equations works", {
   eqData <- tibble::tibble(
-    `1` = c("seattle", "san-diego"), l = c(350, 550), m = c(0, 0),
+    ` 1` = c("seattle", "san-diego"), l = c(350, 550), m = c(0, 0),
     lo = c(-Inf, -Inf), up = c(350, 600), s = c(1, 1)
   )
   data <- list(eqData)
