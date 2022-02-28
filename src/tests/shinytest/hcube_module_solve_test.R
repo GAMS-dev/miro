@@ -319,10 +319,9 @@ expect_true(app$waitFor("($('#shiny-modal').data('bs.modal')||{}).isShown===true
 expect_true(app$waitFor("$('#btSubmitHcJobConfirm').is(':enabled')", timeout = 5000L))
 Sys.sleep(0.5)
 app$findElement("#btSubmitHcJobConfirm")$click()
-expect_true(app$waitFor("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L))
 Sys.sleep(0.5)
-expect_true(app$waitFor("$('.shiny-notification-content').is(':visible');", timeout = 50L))
-expect_true(app$waitFor("$('.shiny-notification-content').text().includes('Quota warning');", timeout = 50L))
+expect_true(app$waitFor("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L))
+expect_true(app$waitFor("$('.shiny-notification-content').is(':visible') && $('.shiny-notification-content').text().includes('Quota warning')", timeout = 5000L))
 
 expect_identical(httr::status_code(httr::PUT(
   paste0(Sys.getenv("ENGINE_URL"), "/usage/quota"),
