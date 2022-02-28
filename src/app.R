@@ -218,7 +218,7 @@ if (!miroDeploy &&
 }
 if (is.null(errMsg)) {
   saveFileVersion <- stringi::stri_split_fixed(Sys.getenv("MIRO_VERSION_STRING"), ".")[[1]]
-  if (debugMode || (saveFileVersion[[1]] >= 2 && saveFileVersion[[2]] >= 3)) {
+  if (debugMode || (saveFileVersion[[1]] >= 2 && saveFileVersion[[2]] >= 2 && saveFileVersion[[3]] >= 999)) {
     # use new format (info contained in miroapp.json)
     rSaveFilePath <- file.path(currentModelDir, ".miroconf")
   } else {
