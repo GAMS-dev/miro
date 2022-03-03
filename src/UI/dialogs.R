@@ -1228,7 +1228,7 @@ showJobSubmissionDialog <- function(jobName = "", hashExistsData = NULL, instanc
         )
       )
     ),
-    fade = TRUE, easyClose = TRUE
+    fade = TRUE, easyClose = FALSE
   ))
 }
 # Batch Load module

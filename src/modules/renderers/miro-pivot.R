@@ -2189,7 +2189,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                     class = "bt-highlight-1 bt-gms-confirm"
                   )
                 ),
-                fade = TRUE, easyClose = TRUE, size = "l"
+                fade = TRUE, easyClose = FALSE, size = "l"
               )
             )
           })
