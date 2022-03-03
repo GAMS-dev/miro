@@ -1959,62 +1959,54 @@ ipcMain.on('delete-app', async (e, appId) => {
     message: lang.main.DeleteDataMsg,
   }) === 1;
 
+  const rmPromises = [fs.promises.rm(
+    path.join(appDataPath, appId),
+    { recursive: true, force: true },
+  )];
+  if (deleteAppData) {
+    rmPromises.push(
+      fs.promises.rm(path.join(miroWorkspaceDir, 'app_data', `${appId}.sqlite3`), { force: true }),
+      fs.promises.rm(path.join(miroWorkspaceDir, 'hcube_jobs', appId), { recursive: true, force: true }),
+      fs.promises.rm(path.join(miroWorkspaceDir, `.cred_${appId}`), { force: true }),
+    );
+  }
   try {
-    const rmPromise = fs.promises.rm(path.join(appDataPath, appId), { recursive: true });
-    try {
-      const cacheContent = await fs.promises.readdir(path.join(miroWorkspaceDir, 'cache'));
-      const removeCacheFilePromises = cacheContent
-        .filter((cacheFile) => cacheFile.startsWith(`${appId}_`))
-        .forEach((cacheFile) => fs.promises.unlink(path.join(miroWorkspaceDir, 'cache', cacheFile)));
-      if (removeCacheFilePromises != null) {
-        await Promise.all(removeCacheFilePromises);
-      }
-    } catch (err) {
-      if (err.code !== 'ENOENT') {
-        log.error(`Problems removing cache! Error message: '${err.message}'.`);
-      }
+    const cacheContent = await fs.promises.readdir(path.join(miroWorkspaceDir, 'cache'));
+    const removeCacheFilePromises = cacheContent
+      .filter((cacheFile) => cacheFile.startsWith(`${appId}_`))
+      .map((cacheFile) => fs.promises.rm(path.join(miroWorkspaceDir, 'cache', cacheFile), { force: true }));
+    if (removeCacheFilePromises != null) {
+      rmPromises.push(...removeCacheFilePromises);
     }
-    const updatedApps = appsData.deleteApp(appId).apps;
-    await rmPromise;
-    mainWindow.send('apps-received', updatedApps, appDataPath, false, false);
-    log.debug(`App: ${appId} removed.`);
   } catch (err) {
-    log.error(`Delete app (ID: ${appId}) request failed. Error message: ${err.message}`);
-    if (err.code === 'EACCES') {
-      showErrorMsg({
-        type: 'error',
-        title: lang.main.ErrorWriteHdr,
-        message: `${lang.main.ErrorWriteMsg2} '${configData.getConfigPath()}.'`,
-      });
-    } else {
-      showErrorMsg({
-        type: 'error',
-        title: lang.main.ErrorUnexpectedHdr,
-        message: lang.main.ErrorUnexpectedMsg2 + err.message,
-      });
-    }
-  } finally {
-    if (deleteAppData) {
-      const rmPromises = [];
-      rmPromises.push(
-        fs.remove(path.join(miroWorkspaceDir, 'app_data', `${appId}.sqlite3`)),
-        fs.remove(path.join(miroWorkspaceDir, 'hcube_jobs', appId)),
-        fs.remove(path.join(miroWorkspaceDir, `.cred_${appId}`)),
-      );
-      const deleteAppDataStatus = await Promise.allSettled(rmPromises);
-      const errorMsg = deleteAppDataStatus
-        .filter((value) => value.status === 'rejected')
-        .map((value) => value.reason.toString()).join('\n');
-      if (errorMsg) {
-        log.error(`Problems removing data (app ID: ${appId}). Error message: ${errorMsg}`);
-        showErrorMsg({
-          type: 'error',
-          title: lang.main.ErrorUnexpectedHdr,
-          message: lang.main.ErrorUnexpectedMsg2 + errorMsg,
-        });
-      }
+    if (err.code !== 'ENOENT') {
+      log.error(`Problems removing cache! Error message: '${err.message}'.`);
     }
   }
+  try {
+    const updatedApps = appsData.deleteApp(appId).apps;
+    mainWindow.send('apps-received', updatedApps, appDataPath, false, false);
+  } catch (err) {
+    log.error(`Delete app (ID: ${appId}) request failed. Error message: ${err.message}`);
+    showErrorMsg({
+      type: 'error',
+      title: lang.main.ErrorUnexpectedHdr,
+      message: lang.main.ErrorUnexpectedMsg2 + err.message,
+    });
+  }
+  const deleteAppFilesStatus = await Promise.allSettled(rmPromises);
+  const errorMsg = deleteAppFilesStatus
+    .filter((value) => value.status === 'rejected')
+    .map((value) => value.reason.toString()).join('\n');
+  if (errorMsg) {
+    log.error(`Problems removing app files (app ID: ${appId}). Error message: ${errorMsg}`);
+    showErrorMsg({
+      type: 'error',
+      title: lang.main.ErrorUnexpectedHdr,
+      message: lang.main.ErrorUnexpectedMsg2 + errorMsg,
+    });
+  }
+  log.debug(`App: ${appId} removed.`);
 });
 
 ipcMain.on('launch-app', (e, appData) => {
