@@ -2213,6 +2213,7 @@ if (!is.null(errMsg)) {
       source("./modules/load_dynamic_tab_content.R", local = TRUE)
 
       observeEvent(input$btScenPivot_close, {
+        flog.debug("Button to close scenarios in pivot comparison mode clicked.")
         resetCompTabset("0")
         showEl(session, "#pivotCompBtWrapper")
         hideEl(session, "#pivotCompScenWrapper")
