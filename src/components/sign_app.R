@@ -68,7 +68,7 @@ trySignAppBundle <- function(miroAppFiles, privKeyPath, passFilePath = "") {
     stop(sprintf("Could not create signature directory: %s", sigDir), call. = FALSE)
   }
   fileWithHashes <- file.path(sigDir, ".miro_hashes")
-  writeLines(sort(fileHashes), fileWithHashes)
+  writeLines(sort(fileHashes), fileWithHashes, useBytes = TRUE)
   sig <- openssl::signature_create(fileWithHashes, key = privKey, hash = openssl::sha512)
   fileWithSig <- file.path(sigDir, ".miro_sig")
   writeBin(sig, fileWithSig)
