@@ -1303,7 +1303,7 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
             ),
             tags$div(
               class = "batch-load-sb-content", style = "display:none;",
-              lang$nav$dialogImport$descOverwriteInput
+              lang$nav$dialogImport$descClearSandbox
             ),
             if (length(analysisTabset)) {
               tagList(
