@@ -1,6 +1,7 @@
 context("Integration test - App deployment with signature")
 library(processx)
 library(zip)
+library(jsonlite)
 
 source("../../components/sign_app.R")
 
@@ -77,7 +78,8 @@ expect_deploy_works <- function(useTemp = TRUE, buildArchive = TRUE, manipulate 
   if (length(manipulate)) {
     unzipDirTmp <- file.path(testModelDir, "miroappContentsTmp")
     unzip(miroappPath, exdir = unzipDirTmp)
-    fileNamesTmp <- zip::zip_list(miroappPath)$filename
+    fileNamesTmp <- zip::zip_list(miroappPath)
+    fileNamesTmp <- fileNamesTmp[fileNamesTmp$compressed_size > 0, ]$filename
     if (identical(manipulate, "hashes")) {
       currentHashes <- readLines(file.path(unzipDirTmp, ".miro_hashes"), encoding = "UTF-8")
       writeLines(c(currentHashes, "newfile:::asd"), file.path(unzipDirTmp, ".miro_hashes"))
