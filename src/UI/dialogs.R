@@ -1272,6 +1272,10 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
                 lang$nav$dialogBatchLoad$removeSuccess
               ),
               tags$div(
+                class = "gmsalert gmsalert-error", id = "batchLoadCustomError",
+                lang$errMsg$unknownError
+              ),
+              tags$div(
                 class = "gmsalert gmsalert-error", id = "batchRemoveError",
                 lang$errMsg$unknownError
               ),

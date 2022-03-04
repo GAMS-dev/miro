@@ -438,6 +438,7 @@
       "processAllButton": "Alle Verarbeiten",
       "processUnsolvedButton": "Nur die ungelösten verarbeiten",
       "successMsg": "Ihr Hypercube-Job wurde erfolgreich übermittelt. Sie können die Ergebnisse abrufen, sobald der Job ausgeführt wurde.",
+      "exportError": "Einige Szenarien konnten nicht exportiert werden: %s.",
       "waitTime": "Bitte warten Sie einige Sekunden bevor Sie einen neuen Job ausführen.",
       "waitDialog":{
         "title": "Hypercube-Job wird konfiguriert",

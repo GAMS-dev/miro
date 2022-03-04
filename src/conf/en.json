@@ -438,6 +438,7 @@
       "processAllButton": "Process all",
       "processUnsolvedButton": "Process unsolved only",
       "successMsg": "Your Hypercube job was scheduled successfully. You can retrieve the results as soon as the job finished executing.",
+      "exportError": "Some scenarios could not be exported: %s.",
       "waitTime": "Please wait some seconds before submitting a new job.",
       "waitDialog":{
         "title": "Hypercube job is being configured",

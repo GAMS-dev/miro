@@ -193,6 +193,14 @@ if (length(config$scripts$hcube)) {
         )
         FALSE
       },
+      error_invalid_scen = function(e) {
+        flog.info("Some scenarios could not be exported as GDX files: %s", conditionMessage(e))
+        showHideEl(
+          session, "#analysisRunUnknownError", 4000L,
+          sprintf(lang$nav$dialogHcube$exportError, conditionMessage(e))
+        )
+        return(FALSE)
+      },
       error = function(e) {
         flog.error(
           "Problems writing gdx files for script: '%s'. Error message: '%s'.",

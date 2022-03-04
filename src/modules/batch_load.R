@@ -614,25 +614,49 @@ downloadBatchData <- function(file, sids, type) {
   updateProgress <- function(incAmount, detail = NULL) {
     prog$inc(amount = incAmount, detail = detail)
   }
-  tryCatch(
+  if (tryCatch(
     {
       if (identical(type, "csv")) {
         batchLoader$genCsvFiles(sidsToLoad, tmpDir, prog)
       } else {
         batchLoader$genGdxFiles(sidsToLoad, tmpDir, gdxio, prog)
       }
-      return(zipr(file, list.files(tmpDir, full.names = TRUE),
-        compression_level = 6
-      ))
+      FALSE
+    },
+    error_invalid_scen = function(e) {
+      flog.info("Some scenarios could not be exported: %s", conditionMessage(e))
+      showHideEl(session, "#batchLoadCustomError", 4000L, msg = sprintf(lang$nav$dialogHcube$exportError, conditionMessage(e)))
+      return(FALSE)
     },
     error = function(e) {
-      flog.error(sprintf(
+      flog.error(
         "Problems generating the data archive for download. Error message: %s",
         conditionMessage(e)
-      ))
+      )
+      showHideEl(session, "#batchLoadCustomError", 4000L, msg = lang$errMsg$unknownError)
+      return(TRUE)
     }
-  )
-  return(downloadHandlerError(file))
+  )) {
+    return(downloadHandlerError(file))
+  }
+  if (tryCatch(
+    {
+      zipr(file, list.files(tmpDir, full.names = TRUE),
+        compression_level = 6
+      )
+      FALSE
+    },
+    error = function(e) {
+      flog.error(
+        "Problems creating zip archive to export. Error message: %s",
+        conditionMessage(e)
+      )
+      showHideEl(session, "#batchLoadCustomError", 4000L, msg = lang$errMsg$unknownError)
+      return(TRUE)
+    }
+  )) {
+    return(downloadHandlerError(file))
+  }
 }
 output$btBatchDownloadGDX <- downloadHandler(
   filename = function() {

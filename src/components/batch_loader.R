@@ -262,6 +262,8 @@ BatchLoader <- R6Class("BatchLoader",
 
       fileNamesTmp <- vector("list", length(scenIds))
 
+      invalidScenarios <- character()
+
       for (scenId in as.character(scenIds)) {
         if (!is.null(progressBar)) {
           progressBar$inc(
@@ -283,19 +285,28 @@ BatchLoader <- R6Class("BatchLoader",
           fnCount <- fnCount + 1L
         }
         fileNamesTmp[[j]] <- sanitizedScenNameTmp
-        gdxio$wgdx(
-          file.path(tmpDir, paste0(sanitizedScenNameTmp, ".gdx")),
-          setNames(lapply(names(dataTmp), function(symName) {
-            if (symName %in% c(scalarsFileName, names(ioConfig$modelOut))) {
-              scenIdToFetch <- scenId
-            } else {
-              scenIdToFetch <- sidsToFetch[[scenId]]
-            }
-            if (scenIdToFetch %in% names(dataTmp[[symName]])) {
-              return(dataTmp[[symName]][[scenIdToFetch]])
-            }
-            return(tibble())
-          }), names(dataTmp))
+        tryCatch(
+          gdxio$wgdx(
+            file.path(tmpDir, paste0(sanitizedScenNameTmp, ".gdx")),
+            setNames(lapply(names(dataTmp), function(symName) {
+              if (symName %in% c(scalarsFileName, names(ioConfig$modelOut))) {
+                scenIdToFetch <- scenId
+              } else {
+                scenIdToFetch <- sidsToFetch[[scenId]]
+              }
+              if (scenIdToFetch %in% names(dataTmp[[symName]])) {
+                return(dataTmp[[symName]][[scenIdToFetch]])
+              }
+              return(tibble())
+            }), names(dataTmp))
+          ),
+          error = function(e) {
+            flog.info(
+              "Problems saving scenario: %s to GDX. Error message: %s",
+              scenIdNameMap[[scenId]], conditionMessage(e)
+            )
+            invalidScenarios <<- c(invalidScenarios, scenIdNameMap[[scenId]])
+          }
         )
         j <- j + 1L
       }
@@ -310,6 +321,9 @@ BatchLoader <- R6Class("BatchLoader",
           amount = 1 / noProgressSteps,
           message = "Generating zip file."
         )
+      }
+      if (length(invalidScenarios)) {
+        stop_custom("error_invalid_scen", paste(invalidScenarios, collapse = ", "), call. = FALSE)
       }
       return(invisible(self))
     },

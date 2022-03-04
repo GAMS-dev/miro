@@ -1711,6 +1711,10 @@
               "type": "string",
               "minLength": 1
             },
+            "exportError": {
+              "type": "string",
+              "minLength": 1
+            },
             "waitTime": {
               "type": "string",
               "minLength": 1
@@ -1776,7 +1780,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 15
+          "minProperties": 16
         },
         "importJobsDialog": {
           "type": "object",

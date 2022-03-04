@@ -438,6 +438,7 @@
       "processAllButton":"处理所有",
       "processUnsolvedButton":"仅处理未解决的",
       "successMsg":"Hypercube作业已安排，在作业完成后可以立即查看结果。",
+      "exportError": "某些场景无法导出: %s。",
       "waitTime":"提交新作业前，请等待几秒钟。",
       "waitDialog":{
         "title":"正在配置Hypercube作业",
