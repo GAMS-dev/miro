@@ -37,33 +37,41 @@ test_that("Reading of set works", {
   )
 })
 test_that("Reading of parameter works", {
+  dataExpected <- tibble::tibble("1" = c("seattle", "san-diego"), "2" = c(350, 600))
+  names(dataExpected) <- paste0("\U2024", c("1", "2"))
   expect_identical(
     gdxio$rgdx(filePathEnc2, "a"),
-    tibble::tibble(" 1" = c("seattle", "san-diego"), " 2" = c(350, 600))
+    dataExpected
   )
 })
 test_that("Reading of table with squeezed out column works", {
+  dataExpected <- tibble::tibble(
+    "1" = c("seattle", "san-diego"), "asd" = c(1, 1),
+    "def" = c(NA_real_, NA_real_)
+  )
+  names(dataExpected)[1] <- paste0("\U2024", c("1"))
   expect_identical(
     gdxio$rgdx(filePathEnc2, "squeezed_out"),
-    tibble::tibble(
-      " 1" = c("seattle", "san-diego"), "asd" = c(1, 1),
-      "def" = c(NA_real_, NA_real_)
-    )
+    dataExpected
   )
-  data <- list(tibble::tibble(
-    " 1" = c("seattle", "san-diego"), "asd" = c(0, 0),
+  dataExpected <- tibble::tibble(
+    "1" = c("seattle", "san-diego"), "asd" = c(0, 0),
     "def" = c(1, 2)
-  ))
+  )
+  names(dataExpected)[1] <- paste0("\U2024", c("1"))
+  data <- list(dataExpected)
   names(data) <- "squeezed_out"
   filePath <- filePathEnc
   on.exit(unlink(filePath), add = TRUE)
   gdxio$wgdx(filePath, data)
+  dataExpected <- tibble::tibble(
+    "1" = c("seattle", "san-diego"), "asd" = c(0, 0),
+    "def" = c(1, 2)
+  )
+  names(dataExpected)[1] <- paste0("\U2024", c("1"))
   expect_identical(
     gdxio$rgdx(filePathEnc, "squeezed_out"),
-    tibble::tibble(
-      " 1" = c("seattle", "san-diego"), "asd" = c(0, 0),
-      "def" = c(1, 2)
-    )
+    dataExpected
   )
 })
 test_that("Reading of (single) scalar works", {
@@ -149,30 +157,34 @@ test_that("Reading of scalar variables and equations works", {
   )
 })
 test_that("Reading of equations works", {
+  dataExpected <- tibble::tibble(
+    "1" = c("seattle", "san-diego"), l = c(350, 550), m = c(0, 0),
+    lo = c(-Inf, -Inf), up = c(350, 600), s = c(1, 1)
+  )
+  names(dataExpected)[1] <- paste0("\U2024", c("1"))
   expect_identical(
     gdxio$rgdx(filePathEnc2, "supply"),
-    tibble::tibble(
-      " 1" = c("seattle", "san-diego"), l = c(350, 550), m = c(0, 0),
-      lo = c(-Inf, -Inf), up = c(350, 600), s = c(1, 1)
-    )
+    dataExpected
   )
 })
 test_that("Reading of variables works", {
+  dataExpected <- tibble::tibble(
+    "1" = c(
+      "seattle", "seattle", "seattle",
+      "san-diego", "san-diego", "san-diego"
+    ),
+    "2" = c(
+      "new-york", "chicago", "topeka",
+      "new-york", "chicago", "topeka"
+    ),
+    l = c(50, 300, 0, 275, 0, 275),
+    m = c(0, 0, 0.036, 0, 0.009, 0),
+    lo = rep.int(0, 6L), up = rep.int(Inf, 6L), s = rep.int(1, 6L)
+  )
+  names(dataExpected)[1:2] <- paste0("\U2024", c("1", "2"))
   expect_equal(
     as.data.frame(gdxio$rgdx(filePathEnc2, "x")),
-    as.data.frame(tibble::tibble(
-      " 1" = c(
-        "seattle", "seattle", "seattle",
-        "san-diego", "san-diego", "san-diego"
-      ),
-      " 2" = c(
-        "new-york", "chicago", "topeka",
-        "new-york", "chicago", "topeka"
-      ),
-      l = c(50, 300, 0, 275, 0, 275),
-      m = c(0, 0, 0.036, 0, 0.009, 0),
-      lo = rep.int(0, 6L), up = rep.int(Inf, 6L), s = rep.int(1, 6L)
-    ))
+    as.data.frame(dataExpected)
   )
 })
 
@@ -221,11 +233,11 @@ test_that("Writing of scalar variables and equations works", {
 
 test_that("Writing of variables works", {
   varData <- tibble::tibble(
-    " 1" = c(
+    "1" = c(
       "seattle", "seattle", "seattle",
       "san-diego", "san-diego", "san-diego"
     ),
-    " 2" = c(
+    "2" = c(
       "new-york", "chicago", "topeka",
       "new-york", "chicago", "topeka"
     ),
@@ -233,6 +245,7 @@ test_that("Writing of variables works", {
     m = c(0, 0, 0.036, 0, 0.009, 0),
     lo = rep.int(0, 6L), up = rep.int(Inf, 6L), s = rep.int(1, 6L)
   )
+  names(varData)[1:2] <- paste0("\U2024", c("1", "2"))
   data <- list(varData)
   names(data) <- "x"
   filePath <- filePathEnc
@@ -246,9 +259,10 @@ test_that("Writing of variables works", {
 
 test_that("Writing of equations works", {
   eqData <- tibble::tibble(
-    ` 1` = c("seattle", "san-diego"), l = c(350, 550), m = c(0, 0),
+    `1` = c("seattle", "san-diego"), l = c(350, 550), m = c(0, 0),
     lo = c(-Inf, -Inf), up = c(350, 600), s = c(1, 1)
   )
+  names(eqData)[1] <- paste0("\U2024", c("1"))
   data <- list(eqData)
   names(data) <- "supply"
   filePath <- filePathEnc3

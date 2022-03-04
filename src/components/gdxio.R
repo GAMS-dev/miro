@@ -437,7 +437,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       })
     }
     dflist[[symDim + 1L]] <- sym$val[, symDim + 1L]
-    names(dflist) <- paste0("\U2009", seq_along(dflist))
+    names(dflist) <- paste0("\U2024", seq_along(dflist))
     symDF <- tibble::as_tibble(dflist)
     symDF <- dplyr::mutate(symDF, across(where(is.factor), as.character))
     if (length(pivotHeaders)) {
