@@ -8,6 +8,7 @@
 @config-message-bg-dark:  fade(@primary-color-dark, 69%);
 @config-message-text-dark:if(abs(luma(@config-message-bg-dark) - luma(@text-color-dark)) < 8, contrast(@config-message-bg-dark), @text-color-dark);
 @gmsalert-error-text-dark: if(abs(luma(@gams-color-dark) - luma(@text-color-dark)) < 8, contrast(@gams-color-dark), @text-color-dark);
+@checkbox-check-color-dark: if(abs(luma(@gams-color-dark) - luma(@text-color-dark)) < 25, contrast(@gams-color-dark), @text-color-dark);
 @focus-color-dark:        @primary-color-dark;
 @row-selected-dark:       @primary-color-dark;
 @darker-primary-color-dark: darken(@primary-color-dark, 2%); // before: #2e6da4;
@@ -99,6 +100,7 @@
 @config-message-bg:       fade(@primary-color, 69%);
 @config-message-text:     if(abs(luma(@config-message-bg) - luma(@text-color)) < 8, contrast(@config-message-bg), @text-color);
 @gmsalert-error-text:     if(abs(luma(@gams-color) - luma(@text-color)) < 8, contrast(@gams-color), @text-color);
+@checkbox-check-color:    if(abs(luma(@gams-color) - luma(@text-color)) < 25, contrast(@gams-color), @text-color);
 @highlight-bg-save:       #d9f1d9;
 @highlight-bg-delete:     if(@remove-has-no-color, hsl(hue(@remove-color), 0%, 85%), hsl(hue(@remove-color), 77%, 90%));//#ffd6d6;
 @warning-bg:              if(@gams-has-no-color, hsl(hue(@gams-color), 0%, 85%), hsl(hue(@gams-color), 77%, 90%));
