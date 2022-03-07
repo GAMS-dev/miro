@@ -673,8 +673,9 @@ observeEvent(
     if (currentWidgetSymbolName %in% names(configJSON$inputWidgets)) {
       currentConfig <- configJSON$inputWidgets[[currentWidgetSymbolName]]
     }
+    setAlias <- FALSE
+    widgetAlias <- ""
     if (!currentWidgetSymbolName %in% inputSymMultiDimChoices) {
-      widgetAlias <- ""
       if (length(currentConfig[["alias"]]) && nchar(currentConfig[["alias"]])) {
         widgetAlias <- currentConfig[["alias"]]
         setAlias <- TRUE
