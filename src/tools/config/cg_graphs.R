@@ -1048,19 +1048,19 @@ observeEvent(input$pivot_aggregatorName, {
   rv$graphConfig$pivottable$aggregatorName <<- input$pivot_aggregatorName
 })
 observeEvent(c(input$pivot_vals, input$pivot_vals2), {
-  if (identical(input$pivot_vals, "_") || identical(input$pivot_vals, NULL)) {
+  if (identical(input$pivot_vals, "_") || is.null(input$pivot_vals)) {
     valstmp1 <<- NULL
   } else {
     valstmp1 <<- input$pivot_vals
   }
-  if (identical(input$pivot_vals2, "_") || identical(input$pivot_vals2, NULL)) {
+  if (identical(input$pivot_vals2, "_") || is.null(input$pivot_vals2)) {
     valstmp2 <<- NULL
   } else {
     valstmp2 <<- input$pivot_vals2
   }
-  if (identical(valstmp2, NULL)) {
+  if (is.null(valstmp2)) {
     rv$graphConfig$pivottable$vals <<- valstmp1
-  } else if (identical(valstmp1, NULL)) {
+  } else if (is.null(valstmp1)) {
     rv$graphConfig$pivottable$vals <<- c("", valstmp2)
   } else {
     rv$graphConfig$pivottable$vals <<- c(valstmp1, valstmp2)
@@ -1510,7 +1510,7 @@ observeEvent(input$animation_slider_font_color,
   priority = -500
 )
 observeEvent(input$dyrange_activate, {
-  if (identical(input$dyrange_activate, TRUE)) {
+  if (isTRUE(input$dyrange_activate)) {
     rv$graphConfig$graph$dyRangeSelector <<- list(
       height = input$dyrange_height, strokeColor = input$dyrange_strokeColor,
       fillColor = input$dyrange_fillColor, retainDateWindow = input$dyrange_retainDateWindow,
@@ -1521,32 +1521,32 @@ observeEvent(input$dyrange_activate, {
   }
 })
 observeEvent(input$dyrange_height, {
-  if (identical(input$dyrange_activate, TRUE)) {
+  if (isTRUE(input$dyrange_activate)) {
     rv$graphConfig$graph$dyRangeSelector$height <<- input$dyrange_height
   }
 })
 observeEvent(input$dyrange_strokeColor, {
-  if (identical(input$dyrange_activate, TRUE)) {
+  if (isTRUE(input$dyrange_activate)) {
     rv$graphConfig$graph$dyRangeSelector$strokeColor <<- input$dyrange_strokeColor
   }
 })
 observeEvent(input$dyrange_fillColor, {
-  if (identical(input$dyrange_activate, TRUE)) {
+  if (isTRUE(input$dyrange_activate)) {
     rv$graphConfig$graph$dyRangeSelector$fillColor <<- input$dyrange_fillColor
   }
 })
 observeEvent(input$dyrange_keepMouseZoom, {
-  if (identical(input$dyrange_activate, TRUE)) {
+  if (isTRUE(input$dyrange_activate)) {
     rv$graphConfig$graph$dyRangeSelector$keepMouseZoom <<- input$dyrange_keepMouseZoom
   }
 })
 observeEvent(input$dyrange_retainDateWindow, {
-  if (identical(input$dyrange_activate, TRUE)) {
+  if (isTRUE(input$dyrange_activate)) {
     rv$graphConfig$graph$dyRangeSelector$retainDateWindow <<- input$dyrange_retainDateWindow
   }
 })
 observeEvent(input$dyrange_height, {
-  if (identical(input$dyrange_activate, TRUE)) {
+  if (isTRUE(input$dyrange_activate)) {
     rv$graphConfig$graph$dyRangeSelector$height <<- input$dyrange_height
   }
 })
@@ -2295,7 +2295,19 @@ observeEvent(input$add_array_el, {
   if (identical(el_id, "chart_ydata")) {
     label <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
     if (input$chart_tool %in% plotlyChartTools) {
-      if (identical(input$chart_tool, "scatter")) {
+      if (identical(input$chart_tool, "bar")) {
+        axisOptionsGlobal[["y"]] <<- axisOptionsGlobal[["y"]] + 1L
+        updateYAxes()
+        newContent <- list(
+          label = label,
+          mode = "lines",
+          marker = list(
+            line = list(width = 0L)
+          ),
+          showlegend = TRUE,
+          yaxis = "y"
+        )
+      } else if (identical(input$chart_tool, "scatter")) {
         axisOptionsGlobal[["y"]] <<- axisOptionsGlobal[["y"]] + 1L
         updateYAxes()
         newContent <- list(
@@ -2863,7 +2875,14 @@ observeEvent(
       rv$graphConfig$graph$type <<- "bar"
       showEl(session, ".category-btn-bar")
       addClassEl(session, id = "#categoryBar1", "category-btn-active")
-      if (!isTRUE(configuredWithThisTool)) {
+      if (isTRUE(configuredWithThisTool) && length(ydataTmp)) {
+        noY2axis <- vapply(ydataTmp, function(el) {
+          identical(el$yaxis, "y2")
+        }, logical(1L), USE.NAMES = FALSE)
+        noY2axis <- sum(noY2axis)
+        noYaxis <- length(ydataTmp) - noY2axis
+        axisOptionsGlobal <<- list(y = noYaxis, y2 = noY2axis)
+      } else {
         idLabelMap[["chart_ydata"]] <<- list()
       }
       insertUI(selector = "#tool_options", tagList(
@@ -3343,15 +3362,13 @@ getChartOptions <- reactive({
           getAxisOptions("y", names(scalarIndices)[1])
         )
       ),
-      if (!identical(rv$graphConfig$graph$type, "bar")) {
-        tags$div(
-          id = "right_yaxis", class = "shiny-input-container",
-          style = if (!axisOptionsGlobal[["y2"]] > 0L) {
-            "display: none;"
-          },
-          optionSection(lang$adminMode$graphs$axisOptions$rightAxis, getAxisOptions("y2", names(scalarIndices)[1]))
-        )
-      }
+      tags$div(
+        id = "right_yaxis", class = "shiny-input-container",
+        style = if (!axisOptionsGlobal[["y2"]] > 0L) {
+          "display: none;"
+        },
+        optionSection(lang$adminMode$graphs$axisOptions$rightAxis, getAxisOptions("y2", names(scalarIndices)[1]))
+      )
     ),
     tags$div(
       class = "cat-body cat-body-5 cat-body-10 cat-body-15 cat-body-20", style = "display:none;",
@@ -3419,7 +3436,7 @@ getAxisOptions <- function(id, title, labelOnly = FALSE) {
       rv$graphConfig$graph[[id %+% "axis"]]$rangefrom <<- checkLength(configuredWithThisTool, currentGraphConfig[[id %+% "axis"]]$rangefrom, NULL)
       rv$graphConfig$graph[[id %+% "axis"]]$rangeto <<- checkLength(configuredWithThisTool, currentGraphConfig[[id %+% "axis"]]$rangeto, NULL)
     }
-    if (!identical(rv$graphConfig$graph$type, "pie") && (identical(id, "y") || identical(id, "y2"))) {
+    if (!identical(rv$graphConfig$graph$type, "pie") && (id %in% c("y", "y2"))) {
       rv$graphConfig$graph[[id %+% "axis"]]$scaleratio <<- checkLength(configuredWithThisTool, currentGraphConfig[[id %+% "axis"]]$scaleratio, NULL)
       rv$graphConfig$graph[[id %+% "axis"]]$scaleanchor <<- checkLength(configuredWithThisTool, currentGraphConfig[[id %+% "axis"]]$scaleanchor, NULL)
     }
@@ -3439,7 +3456,7 @@ getAxisOptions <- function(id, title, labelOnly = FALSE) {
       choices = langSpecificGraphs$categoryorderChoices,
       selected = rv$graphConfig$graph[[id %+% "axis"]]$categoryorder
     ),
-    if (!identical(rv$graphConfig$graph$type, "pie") && (identical(id, "y") || identical(id, "y2"))) {
+    if (!identical(rv$graphConfig$graph$type, "pie") && (id %in% c("y", "y2"))) {
       tags$div(
         class = "shiny-input-container", style = "display:inline-block;",
         tags$div(
@@ -3474,7 +3491,7 @@ getAxisOptions <- function(id, title, labelOnly = FALSE) {
     checkboxInput_SIMPLE(id %+% "_showgrid", lang$adminMode$graphs$axisOptions$showgrid, rv$graphConfig$graph[[id %+% "axis"]]$showgrid),
     checkboxInput_SIMPLE(id %+% "_zeroline", lang$adminMode$graphs$axisOptions$zeroline, rv$graphConfig$graph[[id %+% "axis"]]$zeroline),
     checkboxInput_SIMPLE(id %+% "_showticklabels", lang$adminMode$graphs$axisOptions$showticklabels, rv$graphConfig$graph[[id %+% "axis"]]$showticklabels),
-    if (identical(input$chart_tool, "scatter") || identical(input$chart_tool, "line") || identical(input$chart_tool, "bubble")) {
+    if (input$chart_tool %in% c("bar", "scatter", "line", "bubble")) {
       tags$div(
         class = "shiny-input-container", style = "display:inline-block;",
         tags$label(class = "cb-label shiny-input-container", "for" = "range-wrapper", lang$adminMode$graphs$axisOptions$range),
@@ -3510,7 +3527,9 @@ getOptionSection <- reactive({
   })
   tagList(
     textInput("chart_title", lang$adminMode$graphs$ui$chartTitle, value = rv$graphConfig$graph$title),
-    checkboxInput_SIMPLE("showlegend", lang$adminMode$graphs$chartOptions$options$showlegend, value = TRUE),
+    checkboxInput_SIMPLE("showlegend", lang$adminMode$graphs$chartOptions$options$showlegend,
+      value = rv$graphConfig$graph$showlegend
+    ),
     numericInput("fixedHeight",
       lang$adminMode$graphs$chartOptions$options$fixedHeight,
       min = 0L, value = rv$graphConfig$graph$fixedHeight, step = 1L
@@ -4478,7 +4497,7 @@ getPivotOptions <- reactive({
     } else {
       NULL
     }
-    if (identical(valTwo, NULL)) {
+    if (is.null(valTwo)) {
       rv$graphConfig$pivottable$vals <<- valOne
     } else {
       rv$graphConfig$pivottable$vals <<- list(valOne, valTwo)

@@ -405,10 +405,11 @@ const arrayTypes = {
     return ([elements, { elRequired: true }, 'piedata']);
   },
   chart_ydatabar(defaults) {
-    let key; let label; let rest; let makerLineWidth; let makerLineColor; let markerColor;
+    let key; let label; let showlegend; let yaxis; let rest; let makerLineWidth;
+    let makerLineColor; let markerColor;
     if (defaults != null) {
       [key, {
-        label, ...rest
+        label, showlegend, yaxis, ...rest
       }] = defaults;
     }
     try { makerLineWidth = rest.marker.line.width; } catch (error) { makerLineWidth = 0; }
@@ -417,9 +418,11 @@ const arrayTypes = {
     const elements = {
       chart_ydata: ['select', lang.addBarDataEl.chartYdatabar, indices, indexAliases, key == null ? scalarIndices[0] : key],
       chart_ylabel: ['text', lang.addBarDataEl.chartYlabel, label == null ? 'label' : label],
+      trace_yaxis: ['select', lang.addLineDataEl.yaxis, ['y', 'y2'], lang.addLineDataEl.yaxisChoices, yaxis],
       marker_color: ['color', lang.addBarDataEl.color, markerColor],
       marker_line_width: ['numeric', lang.addBarDataEl.lineWidth, makerLineWidth, 0],
       marker_line_color: ['color', lang.addBarDataEl.lineColor, makerLineColor],
+      trace_legend: ['checkbox', lang.addScatterDataEl.legend, showlegend == null ? true : showlegend],
     };
     return ([elements]);
   },

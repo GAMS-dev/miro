@@ -75,6 +75,12 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
         # bar plot
         p <- NULL
         lapply(seq_along(options$ydata), function(j) {
+          if (identical(options$ydata[[j]]$yaxis, "y2")) {
+            rendery2axis <<- TRUE
+            yaxis <- "y2"
+          } else {
+            yaxis <- "y"
+          }
           yData <- options$ydata[[j]]
           markerStyle <- list(line = list(
             color = yData$marker$line$color,
@@ -93,6 +99,8 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                 x = try(data[[options$xdata]]), type = "bar",
                 y = try(data[[names(options$ydata)[1]]]),
                 name = yData$label,
+                yaxis = yaxis,
+                showlegend = options$ydata[[j]]$showlegend,
                 color = if (!is.null(options$color)) {
                   try(data[[options$color]])
                 },
@@ -107,6 +115,8 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
               x = try(data[[options$xdata]]), type = "bar",
               y = try(data[[names(options$ydata)[j]]]), name = yData$label,
               marker = markerStyle,
+              showlegend = options$ydata[[j]]$showlegend,
+              yaxis = yaxis,
               orientation = options$orientation
             )
           }
