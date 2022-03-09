@@ -2139,6 +2139,7 @@ app.on('ready', async () => {
       miroversion: miroVersion,
       forceScenImport: process.env.MIRO_FORCE_SCEN_IMPORT === 'true',
       buildArchive: process.env.MIRO_BUILD_ARCHIVE !== 'false',
+      timeout: 3600,
     });
   } else {
     createMainWindow(false, () => searchLibPath());
