@@ -8,6 +8,7 @@ app$snapshot(items = list(output = "outputDataTitle"), screenshot = TRUE)
 app$findElement("#sidebarItemExpanded a[data-value='loadResults']")$click()
 Sys.sleep(0.5)
 app$setInputs(btSendQuery = "click")
+Sys.sleep(0.5)
 expect_true(app$waitFor("$('#batchLoadResults').data('datatable').data().length===8", timeout = 50L))
 scenData <- getVisibleDtData(app, "batchLoadResults")
 
