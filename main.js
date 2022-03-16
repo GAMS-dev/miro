@@ -12,8 +12,8 @@ const menu = require('./components/menu');
 const installRPackages = require('./components/install-r');
 
 const requiredAPIVersion = 1;
-const miroVersion = '2.2.999';
-const miroRelease = 'Jan 05 2022';
+const miroVersion = '2.3.0';
+const miroRelease = 'Mar 14 2022';
 const libVersion = '2.2';
 const exampleAppsData = require('./components/example-apps')(miroVersion, requiredAPIVersion);
 const LangParser = require('./components/LangParser');
@@ -2139,6 +2139,7 @@ app.on('ready', async () => {
       miroversion: miroVersion,
       forceScenImport: process.env.MIRO_FORCE_SCEN_IMPORT === 'true',
       buildArchive: process.env.MIRO_BUILD_ARCHIVE !== 'false',
+      timeout: 3600,
     });
   } else {
     createMainWindow(false, () => searchLibPath());

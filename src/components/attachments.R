@@ -388,7 +388,7 @@ Attachments <- R6Class("Attachments",
         }
 
         if (is.null(private$attachmentData)) {
-          private$attachmentData <- private$fetchDataFromDb(scenId)
+          private$attachmentData <- private$fetchDataFromDb(private$sid)
         }
         fileNamesRemote <- private$attachmentData[["fileName"]]
         if (allExecPerm) {

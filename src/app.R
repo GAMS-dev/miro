@@ -1,7 +1,7 @@
 # version number
-MIROVersion <- "2.2.999"
+MIROVersion <- "2.3.0"
 APIVersion <- "1"
-MIRORDate <- "Jan 05 2022"
+MIRORDate <- "Mar 14 2022"
 
 MIROVersionString <<- paste0("GAMS MIRO v.", MIROVersion)
 
@@ -218,7 +218,7 @@ if (!miroDeploy &&
 }
 if (is.null(errMsg)) {
   saveFileVersion <- stringi::stri_split_fixed(Sys.getenv("MIRO_VERSION_STRING"), ".")[[1]]
-  if (debugMode || (saveFileVersion[[1]] >= 2 && saveFileVersion[[2]] >= 2 && saveFileVersion[[3]] >= 999)) {
+  if (debugMode || ((saveFileVersion[[1]] == 2 && saveFileVersion[[2]] >= 3) || saveFileVersion[[1]] > 2)) {
     # use new format (info contained in miroapp.json)
     rSaveFilePath <- file.path(currentModelDir, ".miroconf")
   } else {

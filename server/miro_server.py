@@ -173,8 +173,6 @@ class MiroServer(object):
     if os.path.isdir('release'):
       shutil.rmtree('release')
 
-    os.mkdir('release')
-
     python_binary = 'python3'
 
     if platform.system() == 'Windows':

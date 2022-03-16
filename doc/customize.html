@@ -5007,7 +5007,7 @@ mirorenderer_&#x3C;symbolName&#x3E;Output &#x3C;- function(id, height = NULL, op
   ns &#x3C;- NS(id)
 }
 
-renderMirorenderer_&#x3C;symbolName&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){
+renderMirorenderer_&#x3C;symbolName&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...){
 }
                                         </code></pre>
                     </div>
@@ -5037,7 +5037,7 @@ renderMirorenderer_&#x3C;symbolName&#x3E; &#x3C;- function(input, output, sessio
                       <pre><code class="language-r">mirorenderer_optschedOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
   ns &#x3C;- NS(id)
 }
-renderMirorenderer_optsched &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){
+renderMirorenderer_optsched &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...){
 }</code></pre>
                     </div>
                     <!--//code-block-->
@@ -5141,7 +5141,7 @@ renderMirorenderer_optsched &#x3C;- function(input, output, session, data, optio
   ns &#x3C;- NS(id)
   leaflet::leafletOutput(ns(&#x22;map&#x22;), height = height)
 }
-renderMirorenderer_optsched &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){
+renderMirorenderer_optsched &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...){
   output$map &#x3C;- leaflet::renderLeaflet(leaflet::leaflet(data))
 }</code></pre>
                     </div>
@@ -5312,7 +5312,7 @@ renderMirorenderer_optsched &#x3C;- function(input, output, session, data, optio
     leaflet::leafletOutput(ns(&#x22;map&#x22;))
   )
 }
-renderMirorenderer_optsched &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){
+renderMirorenderer_optsched &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...){
   output$title &#x3C;- renderText(options$title)
   output$map   &#x3C;- leaflet::renderLeaflet(leaflet::leaflet(data) %&#x3E;%
                                            leaflet::addTiles() %&#x3E;%
