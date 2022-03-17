@@ -19,16 +19,16 @@ pushd src/model > /dev/null
     $ZIP_TOOL -r pickstock.conf.unzip pickstock_files.txt dowjones2016.csv conf_pickstock scripts_pickstock/hcube_analysis.ipynb static_pickstock README.md -x "*.DS_Store"
     cd ..
     cd sudoku
-    $ZIP_TOOL -r sudoku.conf.unzip sudoku_files.txt conf_sudoku renderer_sudoku/sudoku.R static_sudoku -x "*.DS_Store"
+    $ZIP_TOOL -r sudoku.conf.unzip sudoku_files.txt conf_sudoku renderer_sudoku static_sudoku -x "*.DS_Store"
     cd ..
     cd inscribedsquare
-    $ZIP_TOOL -r inscribedsquare.conf.unzip inscribedsquare_files.txt conf_inscribedsquare renderer_inscribedsquare/inscribedsquare_custom.R data_inscribedsquare README.md -x "*.DS_Store"
+    $ZIP_TOOL -r inscribedsquare.conf.unzip inscribedsquare_files.txt conf_inscribedsquare renderer_inscribedsquare data_inscribedsquare README.md -x "*.DS_Store"
     cd ..
     cd tsp
     $ZIP_TOOL -r tsp.conf.unzip tsp_files.txt conf_tsp data_tsp static_tsp renderer_tsp README.md -x "*.DS_Store"
     cd ..
     cd farming
-    $ZIP_TOOL -r farming.conf.unzip farming_files.txt conf_farming data_farming static_farming README.md -x "*.DS_Store"
+    $ZIP_TOOL -r farming.conf.unzip farming_files.txt conf_farming data_farming static_farming renderer_farming README.md -x "*.DS_Store"
     cd ..
     cd cpack
     $ZIP_TOOL -r cpack.conf.unzip cpack_files.txt conf_cpack data_cpack static_cpack README.md -x "*.DS_Store"
