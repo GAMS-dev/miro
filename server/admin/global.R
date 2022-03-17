@@ -13,7 +13,7 @@ LOGIN_REQUIRED <- Sys.getenv("SHINYPROXY_NOAUTH") == "true"
 
 REQUIRED_API_VERSION <- 1
 MAX_LOGO_SIZE <- 1e6
-MIRO_VERSION <- "2.3.0"
+MIRO_VERSION <- "2.3.999"
 MIRO_CONTAINER_DATA_DIR <- "/home/miro/app/data"
 MIRO_MODEL_DIR <- "models/"
 MIRO_DATA_DIR <- "data/"
