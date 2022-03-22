@@ -245,8 +245,10 @@
                       constraints of our factories must not be violated.
                       <br />In order to launch the MIRO app for this model from
                       within GAMS Studio, we open the model from the
-                      <i>GAMS MIRO model collection</i> and choose
-                      <i>Run Base Mode</i> from the MIRO menu.
+                      <a href="#demo-applications" class="scrollto"
+                        >GAMS MIRO model collection</a
+                      >
+                      and choose <i>Run Base Mode</i> from the MIRO menu.
                     </p>
                     <div
                       class="section-block"
@@ -327,11 +329,12 @@
                           target="_blank"
                           ><i>a=c</i></a
                         >
-                        (action=compile) instead of the option "Skip model
-                        execution". This will only compile the model which is
-                        sufficient to update the data contract. Note that in
-                        this case a new default scenario is created, but it
-                        contains only input data and no output data.
+                        (action=compile) via the command line instead of
+                        skipping the model execution completely. This will only
+                        compile the model which is sufficient to update the data
+                        contract. Note that in this case a new default scenario
+                        is created, but it contains only input data and no
+                        output data.
                       </p>
                     </div>
                     <div class="expandable-box-outline">
@@ -580,8 +583,10 @@
                         While solving a model with GAMS this section shows the
                         current status of your run as well as the log and
                         listing (lst) files. You can add a
-                        <a href="./customize.html#miro-log">custom log</a> here
-                        too.
+                        <a href="./configuration_general.html#miro-log"
+                          >custom log</a
+                        >
+                        here too.
                       </li>
                       <li>
                         <span class="fa-li"><i class="fa fa-database"></i></span
@@ -625,8 +630,10 @@
                       example, data is visualized, scenarios are compared and
                       analyses are carried out. In the screenshot above you can
                       also see a
-                      <a href="./customize.html#app-readme">README</a> section
-                      that is displayed to the user.
+                      <a href="./configuration_general.html#app-readme"
+                        >README</a
+                      >
+                      section that is displayed to the user.
                     </p>
                     <p>
                       Besides navigation bar and main window, some functions are
@@ -1482,8 +1489,10 @@
                         target="_blank"
                         >GAMS log and lst files</a
                       >. If you specified a
-                      <a href="./customize.html#miro-log">custom log</a> this is
-                      also shown here.
+                      <a href="./configuration_general.html#miro-log"
+                        >custom log</a
+                      >
+                      this is also shown here.
                     </p>
                     <div class="section-block">
                       <img
@@ -1574,8 +1583,10 @@
                     <h6 class="callout-title">Download temporary files:</h6>
                     <p>
                       If this
-                      <a href="./customize.html#general-temp-dir">option</a> is
-                      enabled, all temporarily created files of the model run
+                      <a href="./configuration_general.html#general-temp-dir"
+                        >option</a
+                      >
+                      is enabled, all temporarily created files of the model run
                       (like solution reports or the
                       <span class="code">lst</span> and
                       <span class="code">log</span> files) can be downloaded
@@ -1798,7 +1809,8 @@
                       <li>
                         <b>Analyze:</b><br />
                         Run one of your
-                        <a href="./customize.html#batch-analysis-scripts"
+                        <a
+                          href="./configuration_analysis.html#batch-analysis-scripts"
                           >customized batch analysis scripts</a
                         >
                         (only visible if you have custom analysis scripts set
@@ -2161,7 +2173,7 @@
                             >table statement</a
                           >
                           or by using the
-                          <a href="./customize.html#table-option-pivot"
+                          <a href="./widgets.html#table-option-pivot"
                             >MIRO-side pivoting option</a
                           >
                           - the cells of these missing values are empty.
@@ -2189,7 +2201,7 @@
                           default input tables used in MIRO and only if the
                           table is not pivoted (see above). In output tables (or
                           in input tables where the option to use
-                          <a href="./customize.html#table-option-large"
+                          <a href="./widgets.html#input-bigdata-table"
                             >large amounts of data</a
                           >
                           is enabled), <i>NAs</i> are displayed as blank cells.
@@ -2347,7 +2359,9 @@
                         results alongside the ones displayed in the UI. You can
                         also use such an attachment for the next GAMS run with
                         this scenario. Read more about output attachments
-                        <a href="./customize.html#general-output-attach">here</a
+                        <a
+                          href="./configuration_general.html#general-output-attach"
+                          >here</a
                         >.
                       </p>
                       <div class="callout-block callout-warning">
@@ -2631,11 +2645,11 @@
                         which becomes problematic when dealing with large
                         amounts of data. If you have larger data sets (>10,000
                         records and >10 columns), MIRO offers the
-                        <a href="./customize.html#input-bigdata-table"
+                        <a href="./widgets.html#input-bigdata-table"
                           >Big Data Table</a
                         >
                         as well as the
-                        <a href="./customize.html#input-pivot-table"
+                        <a href="./widgets.html#input-pivot-table"
                           >MIRO Pivot Table</a
                         >. With these two table types, most of the data is kept
                         on the server side and only fractions of the data are

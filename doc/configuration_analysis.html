@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+  <!--<![endif]-->
+  <head>
+    <title>GAMS MIRO Configuration - Scenario Analysis</title>
+    <!-- Meta -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GAMS MIRO documentation" />
+    <meta name="author" content="GAMS Development Corp." />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <!-- FontAwesome JS -->
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.1.1/js/all.js"
+      integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Global CSS -->
+    <link
+      rel="stylesheet"
+      href="assets/plugins/bootstrap/css/bootstrap.min.css"
+    />
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css" />
+    <link
+      rel="stylesheet"
+      href="assets/plugins/lightbox/dist/ekko-lightbox.css"
+    />
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css" />
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="assets/plugins/katex/katex.min.css" />
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css" />
+    <!--#include virtual="/wheader.html" -->
+  </head>
+
+  <body class="body-orange">
+    <!--#include virtual="/navbar_full.html" -->
+    <div class="page-wrapper">
+      <!--#include virtual="/mirover.html" -->
+
+      <!-- ******Header****** -->
+      <header id="header" class="sub-header">
+        <div class="container">
+          <div class="branding">
+            <h1 class="logo">
+              <a href="index.html">
+                <img
+                  class="img-fluid"
+                  style="height: 75px"
+                  src="assets/images/logo.svg"
+                  onerror="this.onerror=null; this.src='assets/images/logo.png'"
+                  alt="GAMS MIRO"
+                />
+              </a>
+            </h1>
+          </div>
+          <!--//branding-->
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item">
+              <a href="customize.html">Configuration</a>
+            </li>
+            <li class="breadcrumb-item active">Scenario Analysis</li>
+          </ol>
+        </div>
+        <!--//container-->
+      </header>
+      <!--//header-->
+      <div class="doc-wrapper">
+        <div class="container">
+          <div class="row justify-content-end search-box-wrapper">
+            <div class="float-right">
+              <input
+                class="form-control search-box"
+                id="miroSearch"
+                type="text"
+                placeholder="Search"
+                aria-label="Search"
+              />
+              <ul id="miroSearchResults" class="list-group"></ul>
+            </div>
+          </div>
+          <div id="doc-header" class="doc-header text-center">
+            <h1 class="doc-title">
+              <span aria-hidden="true" class="icon fas fa-search"></span>
+              Scenario Analysis
+            </h1>
+          </div>
+          <!--//doc-header-->
+          <div class="doc-body row">
+            <div class="doc-content col-md-9 col-12 order-1">
+              <div class="content-inner">
+                <section id="analysis-scripts" class="doc-section">
+                  <h2 class="section-title">Introduction</h2>
+                  <div class="section-block">
+                    <p>
+                      MIRO allows you to run custom analysis scripts. These
+                      scripts have to generate HTML or Markdown output which
+                      will be displayed in the interface once the script
+                      finished. Scripts need to be placed in a folder called
+                      <span class="code">scripts_&lt;modelname&gt;</span>; this
+                      is also where MIRO executes them (important when you use
+                      relative paths in your script).
+                    </p>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          All software needed to run the script must be
+                          installed on the client's machine and added to the
+                          PATH, as it is not part of a MIRO application.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                </section>
+                <section id="individual-scenarios" class="doc-section">
+                  <h2 class="section-title">Individual Scenarios</h2>
+                  <div class="section-block">
+                    <p>
+                      Analysis scripts configured for individual scenarios will
+                      appear as a new tab in the output data section. When the
+                      user runs your script, MIRO saves the data of the current
+                      scenario in a gdx file called
+                      <span class="code">data.gdx</span> in:
+                      <span class="code">scripts_&lt;modelname&gt;</span>. Your
+                      script can then read and analyze this data and produce
+                      output in the form of a single HTML or Markdown file. This
+                      file will be loaded and displayed in MIRO once your script
+                      finished. Script results are stored in the database as
+                      part of a scenario. This means that when you load a
+                      scenario (either to compare it with other scenarios or to
+                      modify it), the script results are loaded as well.
+                      <br /><br />
+                      Please have a look at the following example of an analysis
+                      script for batches of scenarios to learn how to include a
+                      script using the Configuration Mode.
+                    </p>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
+                <section id="batch-analysis-scripts" class="doc-section">
+                  <h2 class="section-title">Batch Analysis</h2>
+                  <div class="section-block">
+                    <p>
+                      Custom scripts can be used to run analyses on multiple
+                      scenarios at once from the
+                      <a href="./start.html#scenario-loading">Batch Load</a>
+                      module. Let's consider the example that comes with the
+                      <i>pickstock</i> model: a
+                      <a href="https://jupyter.org" target="_blank"
+                        >Jupyter Notebook</a
+                      >
+                      that tries to answer high-level questions like "How many
+                      training days should I use" and "How many stocks should I
+                      choose". You can find this script in
+                      <span class="code"
+                        >scripts_pickstock/hcube_analysis.ipynb</span
+                      >. First, we have to tell MIRO that we want to use a
+                      custom analysis script. The Configuration Mode allows us
+                      to set everything up:
+                    </p>
+                    <div class="section-block" style="text-align: center">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 300pt"
+                        src="assets/images/configuration_mode/hcube_script_example.png"
+                        alt="Batch analysis script configuration"
+                      />
+                    </div>
+                    <p>
+                      Each script has to have a unique identifier. The
+                      identifier is only used internally and should not be
+                      changed. What's displayed in the user interface is the
+                      script alias. The command to run is "jupyter", because we
+                      want to run a Jupyter Notebook. Note that in order for
+                      this to work,
+                      <a href="https://jupyter.org/install" target="_blank"
+                        >Jupyter</a
+                      >
+                      needs to be installed on the client's machine and added to
+                      the
+                      <a
+                        href="https://en.wikipedia.org/wiki/PATH_(variable)"
+                        target="_blank"
+                        >PATH</a
+                      >.
+                    </p>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Info:</b>
+                        <p>
+                          For more information on how to set up the Python
+                          environment required to run this example and make MIRO
+                          aware of it, see
+                          <a href="./deployment.html#custom-environments"
+                            >here</a
+                          >.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <p>
+                      Jupyter allows us to run and convert our notebook to HTML.
+                      In order to do so, we specify the relevant arguments. The
+                      resulting call would be:
+                      <kbd
+                        >jupyter nbconvert --to html --execute
+                        hcube_analysis.ipynb</kbd
+                      >.
+                    </p>
+                    <p>
+                      Now that we set everything up, we can start testing our
+                      script. We select a few scenarios that we want to analyze,
+                      and click on "Analyze". The following dialog opens:
+                    </p>
+                    <div class="section-block" style="text-align: center">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 150pt"
+                        src="assets/images/batch_img/hcube_script_select.png"
+                        alt="Dialog to select batch analysis script"
+                      />
+                    </div>
+                    <p>
+                      We select the script we want to run and click on "Start
+                      script". MIRO will now generate GDX containers with the
+                      data for each scenario you selected to be analyzed and
+                      store them inside:
+                      <span class="code">scripts_&lt;modelname&gt;</span>.
+                      Additionally, MIRO writes a file:
+                      <span class="code">hcube_file_names.txt</span>. This file
+                      simply lists the filenames of the gdx containers to be
+                      analyzed (separated by a newline). Once the script
+                      finished, the results are read by MIRO and displayed:
+                    </p>
+                    <div class="section-block" style="text-align: center">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 300pt"
+                        src="assets/images/batch_img/hcube_script_results.png"
+                        alt="Batch analysis script results"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
+              </div>
+              <!--//content-inner-->
+            </div>
+            <!--//doc-content-->
+            <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+              <div id="doc-nav" class="doc-nav">
+                <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                  <a class="nav-link scrollto" href="#analysis-scripts"
+                    >Introduction</a
+                  >
+                  <a class="nav-link scrollto" href="#individual-scenarios"
+                    >Individual Scenarios</a
+                  >
+                  <a class="nav-link scrollto" href="#batch-analysis-scripts"
+                    >Batch Analysis</a
+                  >
+                </nav>
+                <!--//doc-menu-->
+              </div>
+            </div>
+            <!--//doc-sidebar-->
+          </div>
+          <!--//doc-body-->
+        </div>
+        <!--//container-->
+      </div>
+      <!--//doc-wrapper-->
+    </div>
+    <!--//page-wrapper-->
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-3.3.1.min.js"
+    ></script>
+    <!--#include virtual="/footer_miro.html" -->
+
+    <!-- Main Javascript -->
+    <script
+      type="text/javascript"
+      src="assets/plugins/prism/min/prism-min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/stickyfill/dist/stickyfill.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/markjs/jquery.mark.min.js"
+    ></script>
+
+    <script type="text/javascript" src="assets/js/main.js"></script>
+
+    <!-- gifplayer plugin -->
+    <script type="text/javascript" src="assets/js/gifplayer.js"></script>
+    <script>
+      $(".gifplayer").gifplayer();
+    </script>
+    <!-- KaTeX -->
+    <script
+      type="text/javascript"
+      defer
+      src="assets/plugins/katex/katex.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      defer
+      src="assets/plugins/katex/auto-render.min.js"
+      onload="renderMathInElement(document.getElementsByClassName('katex')[0],{delimiters:[{left:'$$',right:'$$',display:true},{left: '$',right:'$',display:false}]});"
+    ></script>
+  </body>
+</html>

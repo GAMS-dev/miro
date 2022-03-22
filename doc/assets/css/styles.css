@@ -691,6 +691,13 @@ body{
   margin-top: 30px;
   margin-bottom: 30px;
 }
+.page-wrapper .code-block.has-title{
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+.page-wrapper .code-block-title{
+  margin-bottom: 5px;
+}
 .page-wrapper .callout-block {
   padding: 30px;
   -webkit-border-radius: 4px;
@@ -952,6 +959,9 @@ body{
   padding: 0;
   padding-left: 34px;
   background: none;
+}
+.page-wrapper .doc-sub-menu .save-space {
+  margin-bottom: 5px;
 }
 .page-wrapper .doc-sub-menu .sub-sub-menu .nav-link {
   padding-left: 55px;

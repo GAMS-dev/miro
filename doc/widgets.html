@@ -104,6 +104,120 @@ $(document).ready(function(){
           <div class="doc-body row">
             <div class="doc-content col-md-9 col-12 order-1">
               <div class="content-inner">
+                <section id="introduction" class="doc-section">
+                  <h2 class="section-title">Introduction</h2>
+                  <div class="section-block">
+                    <p>
+                      <i>Input widgets</i> are all items that communicate input
+                      data with GAMS. While these are primarily tables for
+                      multidimensional GAMS symbols, various widgets can be used
+                      for scalar input data. Examples of such widgets include:
+                      sliders, dropdown menus, date selectors or checkboxes.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 400pt; display: block; margin: auto"
+                        src="assets/images/configuration_mode/configure_widgets.png"
+                        alt="Configuration of input widgets and tables"
+                      />
+                    </div>
+                    <p>
+                      The symbol type to be configured can be selected at the
+                      top. The options are:
+                    </p>
+                    <ul>
+                      <li>
+                        <b>All symbols / widgets</b> <br />This option must be
+                        selected if we want to configure a GAMS symbol.
+                        Furthermore, already configured GAMS options and double
+                        dash parameters are listed here, so that the existing
+                        configuration can be changed / removed. <br /><br />
+                        <div class="callout-block callout-warning">
+                          <div class="icon-holder">
+                            <i class="fas fa-info-circle"></i>
+                          </div>
+                          <!--//icon-holder-->
+                          <div class="content">
+                            <b class="callout-title">Note:</b>
+                            <p>
+                              After configuring a widget for a scalar GAMS
+                              symbol, the symbol is automatically removed from
+                              the
+                              <i>Scalars</i> table and rendered as a widget
+                              instead.
+                            </p>
+                          </div>
+                          <!--//content-->
+                        </div>
+                        <!--//callout-block-->
+                      </li>
+                      <li>
+                        <p>
+                          <b>New GAMS option</b> /
+                          <b>New double dash parameter</b> <br />As the name
+                          suggests,
+                          <a
+                            href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine"
+                            target="_blank"
+                            >GAMS options</a
+                          >
+                          and
+                          <a
+                            href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample"
+                            target="_blank"
+                            >double-dash parameters</a
+                          >
+                          can be configured here as an input widget. <br />Since
+                          those parameters are specified via the command line in
+                          GAMS, they can not be tagged in the GAMS code with
+                          <code class="language-gams">$onExternalInput </code> /
+                          <code class="language-gams">$offExternalInput </code>.
+                          So that they can be set for a GAMS run via MIRO, they
+                          must be explicitly specified in the configuration.
+                        </p>
+                        <p>
+                          If a GAMS option or a double dash parameter is set via
+                          MIRO, your GAMS model will automatically be called
+                          with these command line parameters. The values the
+                          user selected are therefore available to the GAMS
+                          model at
+                          <a
+                            href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_TwoPass"
+                            target="_blank"
+                            >compile time</a
+                          >.
+                        </p>
+                        <p>
+                          Example:<br />If we set the double dash parameter
+                          <span class="code">numberPeriods</span> to 11 and for
+                          the GAMS option <span class="code">mip</span> we
+                          select CPLEX from within MIRO, then the GAMS model is
+                          run with:
+                        </p>
+                        <pre><span class="code">gams &lt;modelname&gt;.gms --numberPeriods=11 MIP=CPLEX</span></pre>
+                        <div class="callout-block callout-warning">
+                          <div class="icon-holder">
+                            <i class="fas fa-info-circle"></i>
+                          </div>
+                          <!--//icon-holder-->
+                          <div class="content">
+                            <b class="callout-title">Warning:</b>
+                            <p>
+                              The following GAMS options are reserved by GAMS
+                              MIRO and can not be configured:
+                              <span class="code"
+                                >idir1, curdir, trace, traceopt</span
+                              >
+                            </p>
+                          </div>
+                          <!--//content-->
+                        </div>
+                        <!--//callout-block-->
+                      </li>
+                    </ul>
+                  </div>
+                </section>
                 <section id="widget-table" class="doc-section">
                   <h2 class="section-title">Table</h2>
                   <div class="section-block" id="widget-table-configuration">
@@ -342,7 +456,7 @@ $offExternalInput
                           ><i>&lt;modelname&gt;.json</i></a
                         >
                         file must be
-                        <a href="#table-colwidths" class="scrollto"
+                        <a href="./configuration_json_only.html#table-colwidths"
                           >modified manually</a
                         >.
                       </p>
@@ -563,11 +677,35 @@ $offExternalInput
                       select a numeric value from a range.
                     </p>
                     <p>Example:</p>
+                    <p>
+                      Let's configure a widget for our
+                      <i>transport</i> model. For the scalar value
+                      <i>freight</i> a slider is a good choice. <br />From the
+                      list of available symbols we choose the desired scalar,
+                      select <i>slider</i> as widget tye and give it a label,
+                      which then appears above the slider. <br />Next, we
+                      specify the upper and lower bounds of the slider, the
+                      default value as well as the step size.
+                    </p>
                     <div class="section-block">
                       <img
                         class="img-fluid"
-                        src="assets/images/configuration_mode/widget_slider_config2.png"
-                        alt="Slider configuration"
+                        style="display: block; margin: auto"
+                        src="assets/images/configuration_mode/slider1.png"
+                        alt="Configuration of a slider (1)"
+                      />
+                    </div>
+                    <p>
+                      When we are satisfied with the selected configuration, we
+                      click "save". A confirmation that the configuration has
+                      been updated successfully will appear:
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 40pt; display: block; margin: auto"
+                        src="assets/images/configuration_mode/widget_updated.png"
+                        alt="Successful update of widget configuration"
                       />
                     </div>
                   </div>
@@ -602,7 +740,8 @@ $offExternalInput
                           <p>
                             If all scalar widgets are displayed in the same tab
                             (see
-                            <a href="./customize.html#aggregate-widgets"
+                            <a
+                              href="./configuration_symbols.html#aggregate-widgets"
                               >aggregate widgets</a
                             >
                             in the general options), then the name specified
@@ -802,7 +941,9 @@ $offExternalInput
                       </div>
                       <p>
                         More on Dependencies among widgets can be found
-                        <a href="./customize.html#widgets-dependencies">here</a
+                        <a
+                          href="./configuration_advanced.html#widgets-dependencies"
+                          >here</a
                         >.
                       </p>
                     </div>
@@ -1030,7 +1171,9 @@ $offExternalInput
                     </p>
                     <p>
                       More on widgets with ranges can be found
-                      <a href="./customize.html#widgets-ranges">here</a>.
+                      <a href="./configuration_advanced.html#widgets-ranges"
+                        >here</a
+                      >.
                     </p>
                     <h6 class="block-title">
                       Range sliders for Hypercube jobs
@@ -1085,9 +1228,7 @@ $offExternalInput
                     <p>
                       The available options of a range slider are identical to
                       those of a
-                      <a
-                        href="./widgets.html#widget-slider-options"
-                        class="scrollto"
+                      <a href="#widget-slider-options" class="scrollto"
                         >normal slider</a
                       >. The only difference is that instead of a single default
                       value, two of these values need to be specified.
@@ -1888,7 +2029,10 @@ $offExternalInput
                         >dropdown menu</a
                       >
                       and
-                      <a href="./customize.html#widgets-dependencies">here</a>.
+                      <a
+                        href="./configuration_advanced.html#widgets-dependencies"
+                        >here</a
+                      >.
                     </p>
                     <p>
                       In the MIRO application the result of this configuration
@@ -1909,9 +2053,7 @@ $offExternalInput
                     <p>
                       The available options of a multidropdown menu are
                       identical to those of a
-                      <a
-                        href="./widgets.html#widget-dropdown-options"
-                        class="scrollto"
+                      <a href="#widget-dropdown-options" class="scrollto"
                         >single dropdown menu</a
                       >. The only exception is that the option to
                       <a href="#dropdown-option-clearvalue" class="scrollto"
@@ -2261,7 +2403,9 @@ $offExternalInput
                     <h3 class="block-title">Configuration</h3>
                     <p>
                       Returns two dates. For more on widget ranges, see
-                      <a href="./customize.html#widgets-advanced">here</a>.
+                      <a href="./configuration_advanced.html#widgets-ranges"
+                        >here</a
+                      >.
                     </p>
                     <p>Example:</p>
                     <p>
@@ -2283,9 +2427,7 @@ $offExternalInput
                     <p>
                       The available options of a date range selector are almost
                       identical to those of a
-                      <a
-                        href="./widgets.html#widget-date-options"
-                        class="scrollto"
+                      <a href="#widget-date-options" class="scrollto"
                         >date selector</a
                       >. The following options are available in addition to a
                       date selector:
@@ -2819,6 +2961,9 @@ $offExternalInput
             <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
               <div id="doc-nav" class="doc-nav">
                 <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                  <a class="nav-link scrollto" href="#introduction"
+                    >Introduction</a
+                  >
                   <a class="nav-link scrollto" href="#widget-table">Table</a>
                   <a class="nav-link scrollto" href="#widget-slider">Slider</a>
                   <a class="nav-link scrollto" href="#widget-sliderrange"

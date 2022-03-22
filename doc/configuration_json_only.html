@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+  <!--<![endif]-->
+  <head>
+    <title>GAMS MIRO - Options not Available in Configuration Mode</title>
+    <!-- Meta -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GAMS MIRO documentation" />
+    <meta name="author" content="GAMS Development Corp." />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <!-- FontAwesome JS -->
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.1.1/js/all.js"
+      integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Global CSS -->
+    <link
+      rel="stylesheet"
+      href="assets/plugins/bootstrap/css/bootstrap.min.css"
+    />
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css" />
+    <link
+      rel="stylesheet"
+      href="assets/plugins/lightbox/dist/ekko-lightbox.css"
+    />
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css" />
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="assets/plugins/katex/katex.min.css" />
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css" />
+    <!--#include virtual="/wheader.html" -->
+  </head>
+
+  <body class="body-orange">
+    <!--#include virtual="/navbar_full.html" -->
+    <div class="page-wrapper">
+      <!--#include virtual="/mirover.html" -->
+
+      <!-- ******Header****** -->
+      <header id="header" class="sub-header">
+        <div class="container">
+          <div class="branding">
+            <h1 class="logo">
+              <a href="index.html">
+                <img
+                  class="img-fluid"
+                  style="height: 75px"
+                  src="assets/images/logo.svg"
+                  onerror="this.onerror=null; this.src='assets/images/logo.png'"
+                  alt="GAMS MIRO"
+                />
+              </a>
+            </h1>
+          </div>
+          <!--//branding-->
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item">
+              <a href="customize.html">Configuration</a>
+            </li>
+            <li class="breadcrumb-item active">
+              Options not Available in Configuration Mode
+            </li>
+          </ol>
+        </div>
+        <!--//container-->
+      </header>
+      <!--//header-->
+      <div class="doc-wrapper">
+        <div class="container">
+          <div class="row justify-content-end search-box-wrapper">
+            <div class="float-right">
+              <input
+                class="form-control search-box"
+                id="miroSearch"
+                type="text"
+                placeholder="Search"
+                aria-label="Search"
+              />
+              <ul id="miroSearchResults" class="list-group"></ul>
+            </div>
+          </div>
+          <div id="doc-header" class="doc-header text-center">
+            <h1 class="doc-title">
+              <span aria-hidden="true" class="icon fas fa-code"></span>
+              Options not Available in Configuration Mode
+            </h1>
+          </div>
+          <!--//doc-header-->
+          <div class="doc-body row">
+            <div class="doc-content col-md-9 col-12 order-1">
+              <div class="content-inner">
+                <section id="custom-import-export" class="doc-section">
+                  <h2 class="section-title">Custom data connectors</h2>
+                  <div class="section-block">
+                    <p>
+                      MIRO allows you to
+                      <a href="./start.html#import-data">import</a> and
+                      <a href="./start.html#save-export-delete">export</a>
+                      scenario data in a number of file formats. However, you
+                      may have data in a custom format that MIRO does not
+                      support, or you may want to pull and push data directly
+                      from an external database. In these cases, you need to
+                      write your own data connector in the form of an R function
+                      that you can connect to MIRO. Custom data connectors
+                      should be saved as <i>miroimport.R</i> or
+                      <i>miroexport.R</i> files and placed in the
+                      <i>renderer_&lt;modelname&gt;</i>
+                      directory.
+                    </p>
+                    <p>
+                      MIRO allows you to define multiple import and multiple
+                      export functions. They are accessible via the
+                      <i>Load data</i> and <i>Export scenario</i> dialogs.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 350pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                        "
+                        src="assets/images/configuration_mode/custom-dataio.png"
+                        alt="Custom data import and export functions displayed in the data load and export dialogs"
+                      />
+                    </div>
+                    <h6>Custom import functions</h6>
+                    <p>
+                      The custom import function should have the following
+                      signature:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+miroimport_&#x3C;importerName&#x3E; &#x3C;- function(symNames, localFile = NULL, ...) {
+
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      where <i>importerName</i> can be any name of your choice
+                      to identify the importer, <i>symNames</i> is a character
+                      vector with the names of the symbols to fetch data for and
+                      <i>localFile</i> is an optional data frame with one row
+                      for each uploaded file and the columns: <i>name</i> that
+                      specifies the name of the uploaded file, <i>size</i> that
+                      specifies the file size in bytes, <i>type</i> that
+                      provides the MIME type reported by the browser and
+                      <i>datapath</i> with the temporary path where the file was
+                      uploaded to.
+                    </p>
+                    <p>
+                      The custom import function should return a named list of
+                      data frames or tibbles, where the names are the symbol
+                      names. Any errors thrown by your custom import function
+                      will be caught by MIRO and a generic error message will be
+                      displayed to the user. If you want to give the user a more
+                      informative error message, you can trigger a custom error
+                      with the
+                      <span class="code">abortSafe(msg = "")</span> function.
+                      The <i>msg</i> will be displayed to the user.
+                    </p>
+                    <p>
+                      Let's create a custom import function for our
+                      <i>transport</i> example that allows us to upload data in
+                      the form of JSON files. We will use the
+                      <i>jsonlite</i> package to parse the JSON data. First, we
+                      create a file <span class="code">miroimport.R</span> in
+                      the
+                      <span class="code">renderer_transport</span> directory.
+                      Second, we write our own import function:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-r">miroimport_JSON &#x3C;- function(symbolNames, localFile = NULL, ...) {
+  if (is.null(localFile) || !identical(length(localFile$datapath), 1L)) {
+    abortSafe("Please upload a single, valid JSON file")
+  }
+  tryCatch(
+    {
+      jsonData &#x3C;- jsonlite::read_json(localFile$datapath, simplifyVector = TRUE)
+    },
+    error = function(e) {
+      abortSafe("Could not parse JSON file. Is the syntax correct?")
+    }
+  )
+  dataTmp &#x3C;- lapply(symbolNames, function(symbolName) {
+    if (!symbolName %in% names(jsonData)) {
+      return(NULL)
+    }
+    tryCatch(
+      {
+        return(tibble::as_tibble(jsonData[[symbolName]]))
+      },
+      error = function(e) {
+        abortSafe("Could not parse JSON file. It does not seem to follow the expected structure.")
+      }
+    )
+  })
+  names(dataTmp) &#x3C;- symbolNames
+  return(dataTmp)
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      To use our newly created custom import function, we need
+                      to add the following configuration to our
+                      <i>transport.json</i> file:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-json">{
+  "customDataImport": [
+    {
+      "label": "JSON import",
+      "functionName": "miroimport_JSON",
+      "symNames": ["a", "b"],
+      "localFileInput": {
+        "label": "Please upload your JSON file here",
+        "multiple": false,
+        "accept": [".json", "application/json"]
+      }
+    }
+  ]
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      The <i>label</i> is used in the Data Import section as the
+                      identifier for our custom importer.
+                      <i>functionName</i> must be set to the name of the import
+                      function, in our case: <i>miroimport_JSON</i>.
+                    </p>
+                    <p></p>
+                    <p>
+                      Also, we can use the <i>symNames</i> setting to restrict
+                      which symbols our import function supports. If we omit
+                      this setting, MIRO assumes that our import function
+                      supports any input and output symbol.
+                    </p>
+                    <p>
+                      The optional <i>localFileInput</i> object tells MIRO that
+                      our custom import function expects a local file to be
+                      uploaded. If the importer does not need a file (e.g. if it
+                      only fetches current values from a remote database), we
+                      can omit this object.
+                    </p>
+                    <p>
+                      To learn more about the different configuration options
+                      for custom import functions, below is the full schema
+                      against which your configuration will be validated.
+                    </p>
+                    <h6
+                      id="customDataImport-json-schema"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> JSON validation
+                      schema for custom import functions
+                    </h6>
+                    <div class="expanded">
+                      <div class="code-block">
+                        <pre><code class="language-json">"customDataImport": {
+  "description": "Import data using a custom function",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "label",
+      "functionName"
+    ],
+    "properties": {
+      "label": {
+        "description": "Label that is displayed when selecting the custom importer",
+        "type": "string",
+        "minLength": 1
+      },
+      "symNames": {
+        "description": "Names of the symbols to import. Defaults to all symbols (input and output) if not provided or empty.",
+        "type": [
+          "array",
+          "string"
+        ],
+        "minLength": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "functionName": {
+        "description": "Name of custom R function to call (required function signature: miroimport(symNames, localFile = NULL, ...), must return named list of data frames with correct number/type of columns). The names of the list must be identical to the names provided by symNames argument.",
+        "type": "string",
+        "default": "miroimport",
+        "minLength": 1
+      },
+      "localFileInput": {
+        "description": "Enable user to provide local file.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label"
+        ],
+        "properties": {
+          "label": {
+            "description": "Label of the local file input.",
+            "type": "string"
+          },
+          "multiple": {
+            "description": "Whether user is allowed to upload multiple files.",
+            "type": "boolean"
+          },
+          "accept": {
+            "description": "A character vector of unique file type specifiers which gives the browser a hint as to the type of file the server expects. Many browsers use this to prevent the user from selecting an invalid file.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}</code></pre>
+                      </div>
+                      <!--//code-block-->
+                    </div>
+                    <!--//expanded-->
+                    <h6>Custom export functions</h6>
+                    <p>
+                      For exporting data, a custom export function with the
+                      following signature should be used:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+miroexport_&#x3C;exporterName&#x3E; &#x3C;- function(data, path = NULL, ...) {
+
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      where <i>data</i> is a named list of tibbles, where the
+                      names are the names of the symbols (the same structure as
+                      the return value of a custom import function), and
+                      <i>path</i> is the file path of the (temporary) file
+                      provided to the user for download (optional).
+                    </p>
+                    <p>
+                      Let's write a JSON export function that creates JSON files
+                      that can be re-imported using the custom import function
+                      from earlier. To do so, we first create a file
+                      <span class="code">miroexport.R</span> in the
+                      <span class="code">renderer_transport</span> directory.
+                      Then we write the custom export function:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-r">miroexport_JSON &#x3C;- function(data, path = NULL, ...) {
+  jsonlite::write_json(data, path = path, dataframe = "columns")
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      and add the following to the <i>transport.json</i> file:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-json">{
+  "customDataExport": [
+    {
+      "label": "JSON export",
+      "functionName": "miroexport_JSON",
+      "localFileOutput": {
+        "filename": "output.json",
+        "contentType": "application/json"
+      }
+    }
+  ]
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      You will notice that the configuration object is very
+                      similar to that of the custom import functions, except
+                      that the optional <i>localFileOutput</i> object now
+                      specifies the properties of the file to be downloaded. We
+                      can omit this object if our export function does not
+                      create a file to be downloaded, but forwards the data to a
+                      remote service, for example.
+                    </p>
+                    <p>Below is the validation schema for custom exporters:</p>
+                    <h6
+                      id="customDataExport-json-schema"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> JSON validation
+                      schema for custom export functions
+                    </h6>
+                    <div class="expanded">
+                      <div class="code-block">
+                        <pre><code class="language-json">"customDataExport": {
+  "description": "Export data using a custom function",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "label",
+      "functionName"
+    ],
+    "properties": {
+      "label": {
+        "description": "Label that is displayed when selecting the custom exporter",
+        "type": "string",
+        "minLength": 1
+      },
+      "symNames": {
+        "description": "Names of the symbols to export. Defaults to all symbols (input and output) if not provided or empty.",
+        "type": [
+          "array",
+          "string"
+        ],
+        "minLength": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "functionName": {
+        "description": "Name of custom R function to call (required function signature: miroexport(data, ...) where data is a named list of data frames, where the names are the names of the symbols).",
+        "type": "string",
+        "default": "miroexport",
+        "minLength": 1
+      },
+      "localFileOutput": {
+        "description": "Enable user to download file.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "filename"
+        ],
+        "properties": {
+          "filename": {
+            "description": "Name of the file (including extension) that users web browser should default to.",
+            "type": "string",
+            "minLength": 1
+          },
+          "contentType": {
+            "description": "MIME type of the file to download. Defaults to application/octet-stream if file extension is unknown.",
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}</code></pre>
+                      </div>
+                      <!--//code-block-->
+                    </div>
+                    <!--//expanded-->
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          If you need to use credentials in your custom
+                          import/export functions (for example, to connect to a
+                          remote database service), you can provide them using
+                          environment variables (<a
+                            href="./deployment.html#custom-environments"
+                            >MIRO Desktop</a
+                          >
+                          /
+                          <a
+                            href="./server_administration.html#admin-panel-lang"
+                            >MIRO Server</a
+                          >).
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                </section>
+                <!--//doc-section-->
+                <section id="remote-import-export" class="doc-section">
+                  <h2 class="section-title">
+                    DEPRECATED: Remote data import and export
+                  </h2>
+                  <div class="section-block">
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Warning:</b>
+                        <p>
+                          This function is deprecated as of MIRO 2.3 and should
+                          no longer be used. It will be removed in one of the
+                          next MIRO versions! Please use the
+                          <a href="#custom-import-export" class="scrollto"
+                            >custom data connectors</a
+                          >
+                          instead.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <p>
+                      A MIRO application can be supplied with data from various
+                      sources:
+                    </p>
+                    <ul>
+                      <li>Internal database: Import existing scenario data</li>
+                      <li>Local files: GDX, Excel</li>
+                      <li>Manually entered data</li>
+                    </ul>
+                    <p>
+                      In addition to these default interfaces, the data can also
+                      come from or go to <b>external sources</b>.
+                    </p>
+                    <p>
+                      This MIRO data connector is implemented as a
+                      <a
+                        href="https://en.wikipedia.org/wiki/Representational_state_transfer"
+                        target="_blank"
+                        >REST</a
+                      >
+                      service. To set up a new external data source, you have to
+                      edit the
+                      <a href="./faqs.html#file-config"
+                        ><i>&lt;modelname&gt;.json</i></a
+                      >
+                      file which is located in the directory:
+                      <i>conf_&lt;modelname&gt;</i>. The following example shows
+                      how to set up an external data source to populate the
+                      symbol <i>price</i>:
+                    </p>
+                    <pre><code class="language-json">"remoteImport": [
+    {
+    "name": "Importer",
+      "templates": [
+        {
+          "symNames": "price",
+          "url": "http://127.0.0.1:5000/io",
+          "method": "GET",
+          "authentication": {
+            "username": "@env:API_USER",
+            "password": "@env:API_PASS"
+          },
+          "httpBody": [
+            {
+              "key": "filename",
+              "value": "/Users/miro/Documents/importer/pickstock/price_data.csv"
+            }
+          ]
+        }
+      ]
+    }
+  ]</code></pre>
+                    <p>
+                      The configuration of external data sources is
+                      template-based. This means that you can specify one and
+                      the same template for multiple input symbols. First, we
+                      have to specify which input symbols this template should
+                      apply to. Then we have to tell MIRO about the endpoint to
+                      connect to (in this case a server running on localhost on
+                      port 5000). Supported protocols are HTTP and HTTPS.
+                    </p>
+                    <p>
+                      When the user requests to import data via this data source
+                      "Importer", the resulting HTTP request looks as follows:
+                      <kbd
+                        >GET
+                        /io?filename=%2FUsers%2Fmiro%2FDocuments%2Fimporter%2Fpickstock%2Fprice_data.csv&modelname=pickstock&dataset=price
+                        HTTP/1.1</kbd
+                      >. When observing the request, you will notice that in
+                      addition to the <kbd>filename</kbd> key that you
+                      specified, MIRO sends two more key-value pairs:
+                      <kbd>modelname</kbd> and <kbd>dataset</kbd> set to the
+                      name of the model and dataset being requested. These will
+                      always be appended to the body provided by you.
+                    </p>
+                    <p>
+                      MIRO waits for the REST endpoint to respond with the
+                      requested dataset. Before we talk about the format in
+                      which MIRO expects the data, let's look at how the data is
+                      exported from MIRO to a remote destination. The format
+                      MIRO exports data is the same as data should be sent to
+                      MIRO!
+                    </p>
+                    <p>
+                      One more aspect worth talking about is authentication.
+                      When your API is not running on the local machine, but a
+                      remote server, you might want to provide credentials with
+                      your request. In the example above, we provided the
+                      username and password used to authenticate to the API.
+                      However, instead of hardcoding these credentials in the
+                      configuration file (which is possible), it is recommended
+                      to use the special prefix
+                      <kbd>@env:</kbd> that instructs MIRO to read the
+                      credentials from environment variables. Currently, the
+                      only supported authentication method is
+                      <a
+                        href="https://en.wikipedia.org/wiki/Basic_access_authentication"
+                        target="_blank"
+                        >basic access authentication</a
+                      >. In case you need another method, send us an email or a
+                      pull request!
+                    </p>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Warning:</b>
+                        <p>
+                          When using basic access authentication, username and
+                          password are sent in plain text! Therefore, you have
+                          to use HTTPS instead of HTTP to provide
+                          confidentiality!!
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <p>
+                      Instead of importing data from a remote data source, you
+                      can also export data to a remote destination. In this
+                      example the data of the symbol stock_weight should be
+                      exported to a CSV file: <i>export_stock_weight.csv</i>. As
+                      we now push data to the API, we use the POST HTTP method.
+                      The structure of the JSON configuration is identical to
+                      that of remote importers you have seen before:
+                    </p>
+                    <pre><code class="language-json">"remoteExport": [
+    {
+      "name": "Exporter",
+      "templates": [
+        {
+          "symNames": "stock_weight",
+          "url": "http://127.0.0.1:5000/io",
+          "method": "POST",
+          "authentication": {
+            "username": "@env:API_USER",
+            "password": "@env:API_PASS"
+          },
+          "httpBody": [
+            {
+              "key": "filename",
+              "value": "/Users/miro/Documents/exporter/pickstock/export_stock_weight.csv"
+            }
+          ]
+        }
+      ]
+    }
+  ]</code></pre>
+                    <p>
+                      What's more interesting is the request body that MIRO
+                      sends to the remote server:
+                    </p>
+                    <pre><code class="language-json">{"data":[{"symbol":"AXP","value":0.472295069483016},{"symbol":"MMM","value":0.316292266161662},{"symbol":"MSFT","value":0.406195141778428}],"modelname":"pickstock","dataset":"stock_weight","options":{"filename":"/Users/miro/Documents/importer/pickstock/price_data.csv"}}</code></pre>
+                    <p>
+                      MIRO sends data serialized as JSON. The
+                      <kbd>modelname</kbd> and <kbd>dataset</kbd> keys are sent
+                      along just like in the GET request we saw previously when
+                      importing data. In addition, we get the custom key-value
+                      pairs we specified in a special object called
+                      <kbd>options</kbd> as well as the actual data of the
+                      symbol in <kbd>data</kbd>. Note how the table is
+                      serialized. In case you need MIRO to serialize tables in a
+                      different format, send us an email or a pull request.
+                    </p>
+                  </div>
+                </section>
+                <!--//doc-section-->
+                <section id="custom-input-widgets" class="doc-section">
+                  <h2 class="section-title">Custom input widgets</h2>
+                  <div class="section-block">
+                    <p>
+                      MIRO has an API that allows you to use custom input
+                      widgets such as charts to produce input data. This means
+                      that input data to your GAMS model can be generated by
+                      interactively modifying a chart, a table or any other type
+                      of renderer.
+                    </p>
+                    <p>
+                      Before reading this section, you should first study the
+                      chapter about
+                      <a href="./configuration_advanced.html#custom-renderers"
+                        >custom renderers</a
+                      >. Custom widgets are an extension of custom renderers
+                      that allow you to return data back to MIRO.
+                    </p>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          The API of the custom input widgets has been changed
+                          with MIRO 2.0. Documentation for API version 1 (MIRO
+                          1.x) can be found in the
+                          <a
+                            href="https://github.com/GAMS-dev/miro/blob/v1.3.2/doc/customize.html"
+                            target="_blank"
+                            >MIRO GitHub repository</a
+                          >.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <p>
+                      To understand how this works, we will look at an example
+                      app that allows you to solve
+                      <a
+                        href="https://en.wikipedia.org/wiki/Sudoku"
+                        target="_blank"
+                        >Sudokus</a
+                      >. We would like to visualize the Sudoku in a 9x9 grid
+                      that is divided into 9 subgrids - 3x3 cells each. We will
+                      use the same tool that we use to display input tables in
+                      MIRO, but we could have used any other R package or even a
+                      combination of those. Let's first look at the boilerplate
+                      code required for any custom input widget:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+mirowidget_&#x3C;symbolName&#x3E;Output &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
+  ns &#x3C;- NS(id)
+}
+
+renderMirowidget_&#x3C;symbolName&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){
+  return(reactive(data()))
+}
+                                      </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      You will notice that the boilerplate code for custom
+                      widgets is almost identical to that of
+                      <a href="./configuration_advanced.html#custom-renderers"
+                        >custom renderers</a
+                      >. The main difference to a custom renderer is that we now
+                      have to return the input data to be passed to GAMS. Note
+                      that we return the data wrapped inside a
+                      <a
+                        href="https://shiny.rstudio.com/tutorial/written-tutorial/lesson6/"
+                        target="_blank"
+                        >reactive expression</a
+                      >. This will ensure that you always return the current
+                      state of your data. When the user interacts with your
+                      widget, the data is updated.
+                    </p>
+                    <p>
+                      The other important difference from custom renderers is
+                      that the <kbd>data</kbd> argument here is also a reactive
+                      expression (or a list of reactive expressions in case you
+                      specified additional datasets to be communicated with your
+                      widget), NOT a
+                      <a
+                        href="https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html"
+                        >tibble</a
+                      >.
+                    </p>
+                    <p>
+                      Let's get back to the Sudoku example we mentioned earlier.
+                      We place a file
+                      <span class="code">mirowidget_initial_state.R</span>
+                      within the custom renderer directory of our app:
+                      <span class="code"
+                        >&lt;modeldirectory&gt;renderer_sudoku</span
+                      >. The output and render functions for custom widgets
+                      should be named
+                      <span class="code"
+                        >mirorwidget_&#x3C;symbolName&#x3E;output</span
+                      >
+                      and
+                      <span class="code"
+                        >renderMirowidget_&#x3C;symbolName&#x3E;</span
+                      >
+                      respectively, where
+                      <span class="code">symbolName</span> is the lowercase name
+                      of the GAMS symbol for which the widget is defined.
+                    </p>
+                    <p>
+                      To tell MIRO about which input symbol(s) should use our
+                      new custom widget, we have to edit the
+                      <span class="code">sudoku.json</span> file located in the
+                      <span class="code"
+                        >&lt;modeldirectory&gt;/conf_&lt;modelname&gt;</span
+                      >
+                      directory. To use our custom widget for an input symbol
+                      named
+                      <kbd>initial_state</kbd> in our model, the following needs
+                      to be added to the configuration file:
+                    </p>
+                    <pre><code class="language-json">{
+"inputWidgets": {
+    "initial_state": {
+      "widgetType": "custom",
+      "rendererName": "mirowidget_initial_state",
+      "alias": "Initial state",
+      "apiVersion": 2,
+      "options": {
+        "isInput": true
+      }
+    }
+  }
+}</code></pre>
+                    <p>
+                      We specified that we want an input widget of type
+                      <kbd>custom</kbd> for our GAMS symbol
+                      <kbd>initial_state</kbd>. Furthermore, we declared an
+                      alias for this symbol which defines the tab title. We also
+                      provided a list of options to our renderer functions. In
+                      our Sudoku example, we want to use the same renderer for
+                      both input data and output data. Thus, when using our new
+                      renderer for the input symbol <kbd>initial_state</kbd>, we
+                      pass an option <kbd>isInput</kbd> with the value
+                      <kbd>true</kbd> to our renderer function.
+                    </p>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          For backward compatibility reasons, you currently need
+                          to explicitly specify that you want to use API version
+                          2 for custom input widgets. In a future version of
+                          MIRO, this will become the default.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <p>
+                      Let's concentrate again on the renderer functions and
+                      extend the boilerplate code from before:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+mirowidget_initial_stateOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
+  ns &#x3C;- NS(id)
+  rHandsontableOutput(ns('sudoku'))
+}
+
+renderMirowidget_initial_state &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){
+  output$sudoku &#x3C;- renderRHandsontable(
+    rhandsontable(if(isTRUE(options$isInput)) data() else data,
+                  readOnly = !isTRUE(options$isInput),
+                  rowHeaders = FALSE))
+  if(isTRUE(options$isInput)){
+    return(reactive(hot_to_r(input$sudoku)))
+  }
+}
+                                      </code></pre>
+                    </div>
+                    <p>
+                      Let's disect what we just did: First, we defined our two
+                      renderer functions
+                      <span class="code">mirowidget_initial_stateOutput</span>
+                      and
+                      <span class="code">renderMirowidget_initial_state</span>.
+                      Since we want to use the R package
+                      <a
+                        href="https://jrowen.github.io/rhandsontable/"
+                        target="_blank"
+                        >rhandsontable</a
+                      >
+                      to display our Sudoku grid, we have to use the placeholder
+                      function <kbd>rHandsontableOutput</kbd> as well as the
+                      corresponding renderer function
+                      <kbd>renderRHandsontable</kbd>. If you are wondering what
+                      the hell placeholder and renderer functions are, read the
+                      section on
+                      <a href="./configuration_advanced.html#custom-renderers"
+                        >custom renderers</a
+                      >.
+                    </p>
+                    <p>
+                      Note that we use the option <kbd>isInput</kbd> we
+                      specified previously to determine whether our table should
+                      be read-only or not. Furthermore, we only return a
+                      reactive expression when we use the renderer function to
+                      return data - in the case of a custom input widget. Note
+                      that for input widgets, we need to run the reactive
+                      expression (<kbd>data()</kbd>) to get the tibble with our
+                      input data. Whenever the data changes (for example,
+                      because the user uploaded a new CSV file), the reactive
+                      expression is updated, which in turn causes our table to
+                      be re-rendered with the new data (due to the reactive
+                      nature of the <kbd>renderRHandsontable</kbd> function).
+                      The concept of reactive programming is a bit difficult to
+                      understand at first, but once you do, you'll appreciate
+                      how handy it is.
+                    </p>
+                    <p>
+                      A detail you might stumble upon is the expression
+                      <kbd>hot_to_r(input$sudoku)</kbd>. This is simply a way to
+                      <a
+                        href="https://en.wikipedia.org/wiki/Serialization"
+                        target="_blank"
+                        >deserialize</a
+                      >
+                      the data coming from the UI that the
+                      <a
+                        href="https://jrowen.github.io/rhandsontable/"
+                        target="_blank"
+                        >rhandsontable</a
+                      >
+                      tool provides. What's important is that we return an R
+                      data frame that has exactly the number of columns MIRO
+                      expects our input symbol to have (in this example
+                      <kbd>initial_state</kbd>).
+                    </p>
+                    <p>
+                      That's all there is to it! We configured our first custom
+                      widget. To use the same renderer for the results that are
+                      stored in a GAMS symbol called <i>result</i>, simply add
+                      the following lines to the
+                      <span class="code">sudoku.json</span> file. Note that we
+                      do not set the option <kbd>isInput</kbd> here.
+                    </p>
+                    <pre><code class="language-r">"dataRendering": {
+    "results": {
+      "outType": "mirowidget_initial_state"
+    }
+  }</code></pre>
+                    <p>
+                      The full version of the custom widget described here as
+                      well as the corresponding GAMS model
+                      <i>Sudoku</i> can be found in the MIRO model library.
+                      There you will also find an example of how to create a
+                      widget that defines multiple symbols. In this case, the
+                      <kbd>data</kbd> argument is a named list of reactive
+                      expressions, where the names are the lowercase names of
+                      the GAMS symbols. Similarly, you must also return a named
+                      list of reactive expressions. Defining a custom input
+                      widget for multiple GAMS symbols is as simple as listing
+                      all the additional symbols you want your widget to define
+                      in the
+                      <code class="language-json">"widgetSymbols"</code> array
+                      of your widget configuration. Below you find the
+                      configuration for the <kbd>initial_state</kbd> widget as
+                      used in the Sudoku example.
+                    </p>
+                    <pre><code class="language-json">"initial_state": {
+  "widgetType": "custom",
+  "rendererName": "mirowidget_initial_state",
+  "alias": "Initial state",
+  "apiVersion": 2,
+  "widgetSymbols": ["force_unique_sol"],
+  "options": {
+    "isInput": true
+  }
+}</code></pre>
+                    <p>
+                      In addition to defining a widget for multiple symbols,
+                      MIRO also allows you to access values from (other) scalar
+                      input widgets from your code. To do this, you must list
+                      the symbols you want to access in the
+                      <code class="language-json">"additionalData"</code>
+                      array of your configuration. Note that MIRO currently
+                      supports only scalar input widgets as
+                      <code class="language-json">"additionalData"</code>.
+                    </p>
+                  </div>
+                </section>
+                <!--//doc-section-->
+                <section id="table-dropdown" class="doc-section">
+                  <h2 class="section-title">Drop-down menu in input table</h2>
+                  <div class="section-block">
+                    <p>
+                      An input table can be configured so that the cells are not
+                      freely editable by the user, but can only be modified via
+                      a drop-down menu. This can greatly simplify the usability
+                      of input tables. When used properly, another advantage of
+                      providing dropdown menus is the prevention of invalid or
+                      inconsistent user input data.
+                    </p>
+                    <p>
+                      The configuration of the drop-down menus is done column by
+                      column. In the following figure the column 'canning
+                      plants' (GAMS symbol
+                      <code class="language-gams"
+                        >Table d(i,j) 'distance in thousands of miles'</code
+                      >) has been configured to use a drop-down menu:
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 350pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                        "
+                        src="assets/images/configuration_mode/dropdown-columns.png"
+                        alt="Dropdown menu instead of normal cell"
+                      />
+                    </div>
+                    <p>
+                      The choices of a drop-down menu can be either predefined
+                      (static choices) or filled dynamically:
+                    </p>
+                    <ul>
+                      <li>
+                        <b>Static choices:</b><br />
+                        Static choices are predefined in the
+                        <a href="./configuration_advanced.html#jsonfiles"
+                          ><span class="code">&lt;modelname&gt;.json</span></a
+                        >
+                        file by the app developer. The following configuration
+                        results in the drop-down menu in the figure above:
+                        <div class="code-block">
+                          <pre><code class="language-json">{
+  &#x22;inputWidgets&#x22;: {
+    "d": {
+      "widgetType": "table",
+      "alias": "distance in thousands of miles",
+	  "pivotCols": "j",
+	  "dropdownCols": {
+        "i": {
+          "static": ["Seattle", "San-Diego", "Los Angeles", "Houston", "Philadelphia"],
+		  "colType": "dropdown"
+        }
+      }
+    }
+}</code></pre>
+                        </div>
+                        <!--//code-block-->
+                        <p>
+                          The configuration is done in section "inputWidgets"
+                          for each input table (here: <i>d</i>) separately. In
+                          "dropdownCols" the individual table columns are
+                          specified (here: column "i"), which should have
+                          drop-down menus. The key "static" followed by an array
+                          defines the static drop-down choices. For the
+                          "colType" key you can choose between "dropdown" and
+                          "autocomplete" (default). While "dropdown" always
+                          displays all choices at once, "autocomplete" updates
+                          the displayed choices according to an autocomplete.
+                        </p>
+                        <div class="callout-block callout-success">
+                          <div class="icon-holder">
+                            <i class="fas fa-thumbs-up"></i>
+                          </div>
+                          <!--//icon-holder-->
+                          <div class="content">
+                            <b class="callout-title">Tip:</b>
+                            <p>
+                              If your configuration file does not yet have any
+                              entries for the table to be configured, you can
+                              simply create an initial configuration using the
+                              Configuration Mode. Select the desired symbol
+                              under "Tables" &rarr; "Symbol tables" and click on
+                              save. Make sure that "default" is selected as
+                              table type to be used.
+                            </p>
+                            <div class="section-block">
+                              <img
+                                class="img-fluid"
+                                style="
+                                  max-height: 350pt;
+                                  display: block;
+                                  margin-left: auto;
+                                  margin-right: auto;
+                                "
+                                src="assets/images/configuration_mode/table-config.png"
+                                alt="Table configuration"
+                              />
+                            </div>
+                          </div>
+                          <!--//content-->
+                        </div>
+                        <!--//callout-block-->
+                      </li>
+                      <li>
+                        <b>Dynamic choices:</b>
+                        <p>
+                          Choices are dynamically filled by the cells of a
+                          column in another table. In the following example, the
+                          GAMS symbol
+                          <code class="language-gams"
+                            >Table d(i,j) 'distance in thousands of miles'</code
+                          >
+                          is configured so that the column <i>i</i> ("canning
+                          plants") displays a drop-down menu whose choices are
+                          fetched from the entries in the column of the same
+                          name in the symbol table <i>a</i> ("Capacity").
+                        </p>
+                        <p>
+                          This is what happens in the app: In the table
+                          "Capacity" the user can make any entries. If she edits
+                          the column "canning plants", the entries there are
+                          passed as choices to the dropdown menu of the
+                          "distance in thousands of miles" table:
+                        </p>
+                        <div
+                          class="section-block"
+                          style="text-align: left; padding-top: 0pt"
+                        >
+                          <img
+                            class="img-fluid gifplayer"
+                            style="
+                              max-height: 250pt;
+                              display: block;
+                              margin-left: auto;
+                              margin-right: auto;
+                            "
+                            src="assets/images/configuration_mode/dynamic-choices.gif"
+                            alt="Dynamic dropdown choices"
+                          />
+                        </div>
+                        <p>The configuration of this table looks as follows:</p>
+                        <div class="code-block">
+                          <pre><code class="language-json">{
+  &#x22;inputWidgets&#x22;: {
+    "d": {
+      "widgetType": "table",
+      "alias": "distance in thousands of miles",
+	  "pivotCols": "j",
+	  "dropdownCols": {
+        "i": {
+          "symbol": "a",
+          "column": "i",
+		  "colType": "dropdown"
+        }
+      }
+    }
+}</code></pre>
+                        </div>
+                        <!--//code-block-->
+                        <p>
+                          Instead of a "static" key, there are now two keys
+                          "symbol" and "column". The value of the "symbol" key
+                          ("a" &rarr; "capacity" table) defines the symbol table
+                          whose "column" ("i" &rarr; "canning plants") is to be
+                          used to fill the drop-down menu.
+                        </p>
+                      </li>
+                    </ul>
+                    <h6
+                      id="dropdownCols-json-schema"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Advanced: JSON
+                      validation schema for dropdown menu columns
+                    </h6>
+                    <div class="expanded">
+                      <pre><code class="language-json">"dropdownCols":{
+  "description":"Columns where only certain values are allowed to be selected (only supported for default tables)",
+  "type":"object",
+   "additionalProperties":{
+      "type":"object",
+      "properties":{
+        "colType":{
+          "description": "Column type (default is 'autocomplete')",
+          "type":"string",
+          "enum":["autocomplete", "dropdown"]
+        },
+        "static":{
+          "description": "Arrays of static choices allowed for this column",
+          "type":["array", "string"],
+          "minLength":1,
+          "items":{
+            "type":"string",
+            "minLength":1
+          }
+        },
+        "symbol":{
+          "description": "Symbol to fetch choices from",
+          "type":"string",
+          "minLength":1
+        },
+        "column":{
+          "description": "Column (of symbol) to fetch choices from",
+          "type":"string",
+          "minLength":1
+        }
+      }
+   }
+}</code></pre>
+                    </div>
+                    <!--//expanded-->
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <ul>
+                          <li>
+                            The drop-down menu feature is only supported for the
+                            default input table type, not for big data tables or
+                            pivot tables.
+                          </li>
+                          <li>
+                            User data is validated only during manual edits,
+                            i.e. when the user directly edits the values of
+                            individual cells. When the data is imported from
+                            external files or the database, there is no
+                            validation between the data and the drop-down menu
+                            choices.
+                          </li>
+                          <li>
+                            If you have edited the table configuration of a
+                            symbol manually in the
+                            <a href="./configuration_advanced.html#jsonfiles"
+                              ><span class="code"
+                                >&lt;modelname&gt;.json</span
+                              ></a
+                            >
+                            file, you should not use the Configuration mode for
+                            this symbol anymore. This could overwrite your
+                            manual edits!
+                          </li>
+                        </ul>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                </section>
+                <!--//doc-section-->
+                <section id="table-validate-columns" class="doc-section">
+                  <h2 class="section-title">
+                    Column validation in input table
+                  </h2>
+                  <div class="section-block">
+                    <p>
+                      In addition to using
+                      <a href="./configuration_json_only.html#table-dropdown"
+                        >dropdown menus</a
+                      >, numeric columns of an input table can be configured to
+                      validate manual edits by the user against predefined
+                      criteria. As with dropdown menu columns, the configuration
+                      is done column by column. The following criteria are
+                      available:
+                    </p>
+                    <ul>
+                      <li>min: Minimum value to accept</li>
+                      <li>max: Maximum value to accept</li>
+                      <li>
+                        choices: A vector of acceptable numeric choices. It will
+                        be evaluated after min and max if specified.
+                      </li>
+                      <li>exclude: A vector of unacceptable numeric values</li>
+                      <li>
+                        allowInvalid: Logical specifying whether invalid data
+                        will be accepted. Invalid data cells will then be
+                        colored red.
+                      </li>
+                    </ul>
+                    <p>
+                      The configuration is done in section
+                      <code class="language-json">inputWidgets</code> for each
+                      input table separately. In
+                      <code class="language-json">validateCols</code> the
+                      individual table columns are specified, which should be
+                      validated. In the following example a symbol
+                      <code class="language-gams">d</code> is used. Column
+                      'new-york' has been configured so that only values between
+                      1-10 are considered valid, excluding 9. If the user enters
+                      a non-valid value, MIRO accepts it, but highlights the
+                      corresponding cell in red. In the column 'topeka' only the
+                      values 11, 12 and 14 are accepted.
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-json">  "inputWidgets": {
+    "d": {
+      "widgetType": "table",
+      "tableType": "default",
+      "readonly": false,
+      "hideIndexCol": false,
+      "heatmap": false,
+      "validateCols": {
+        "new-york": {
+          "min": 1,
+          "max": 10,
+          "exclude": 9,
+          "allowInvalid": true
+        },
+        "topeka": {
+          "choices": [11, 12, 14],
+          "allowInvalid": false
+        }
+      }
+    }
+  }</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <div class="callout-block callout-success">
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Tip:</b>
+                        <p>
+                          If your configuration file does not yet have any
+                          entries for the table to be configured, you can simply
+                          create an initial configuration using the
+                          Configuration Mode. Select the desired symbol under
+                          "Tables" &rarr; "Symbol tables" and click on save.
+                          Make sure that "default" is selected as table type to
+                          be used.
+                        </p>
+                        <div class="section-block">
+                          <img
+                            class="img-fluid"
+                            style="
+                              max-height: 350pt;
+                              display: block;
+                              margin-left: auto;
+                              margin-right: auto;
+                            "
+                            src="assets/images/configuration_mode/table-config.png"
+                            alt="Table configuration"
+                          />
+                        </div>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <h6
+                      id="dropdownCols-json-schema"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> Advanced: JSON
+                      validation schema for column validation
+                    </h6>
+                    <div class="expanded">
+                      <pre><code class="language-json">"validateCols":{
+  "description":"Column values are validated against custom user criteria (only supported for default tables)",
+  "type":"object",
+   "additionalProperties":{
+      "type":"object",
+      "properties":{
+        "min":{
+          "description": "Minimum value allowed for this column",
+          "type":["number"]
+        },
+        "max":{
+          "description": "Maximum value allowed for this column",
+          "type":["number"]
+        },
+        "choices":{
+          "description": "Array of acceptable numeric values for this column",
+          "type":["array", "number"],
+          "minLength":1,
+          "items":{
+            "type":"number",
+            "minLength":1
+          }
+        },
+        "exclude":{
+          "description": "Array of unacceptable numeric values for this column",
+          "type":["array", "number"],
+          "minLength":1,
+          "items":{
+            "type":"number",
+            "minLength":1
+          }
+        },
+        "allowInvalid":{
+         "description":"Boolean that specifies whether invalid data will be accepted. Invalid data cells will be colored red.",
+         "type":"boolean"
+        }
+      }
+   }
+}</code></pre>
+                    </div>
+                    <!--//expanded-->
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <ul>
+                          <li>
+                            The column validation feature is only supported for
+                            the default input table type, not for big data
+                            tables or pivot tables.
+                          </li>
+                          <li>
+                            User data is validated only during manual edits,
+                            i.e. when the user directly edits the values of
+                            individual cells. Data imported from external files
+                            or the database is not validated.
+                          </li>
+                          <li>
+                            If you have edited the table configuration of a
+                            symbol manually in the
+                            <a href="./configuration_advanced.html#jsonfiles"
+                              ><span class="code"
+                                >&lt;modelname&gt;.json</span
+                              ></a
+                            >
+                            file, you should not use the Configuration Mode for
+                            this symbol anymore. This could overwrite your
+                            manual edits!
+                          </li>
+                        </ul>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                </section>
+                <!--//doc-section-->
+                <section id="table-colwidths" class="doc-section">
+                  <h2 class="section-title">Column width of an input table</h2>
+                  <div class="section-block">
+                    <p>
+                      With the <i>colWidths</i> option it is possible to adjust
+                      the column width of individual tables (in pixels). The
+                      Configuration Mode supports the specification of one
+                      column width for all columns of the table. To specify the
+                      width of each column individually, the
+                      <a href="./faqs.html#file-config"
+                        ><i>&lt;modelname&gt;.json</i></a
+                      >
+                      file must be modified manually. Note that using individual
+                      column widths is not compatible with the
+                      <a href="./widgets.html#table-option-pivot">pivotCols</a>
+                      option.
+                    </p>
+                    <p>Example:</p>
+                    <div class="code-block">
+                      <pre><code class="language-json">{
+  &#x22;inputWidgets&#x22;: {
+    &#x22;d&#x22;: {
+      &#x22;widgetType&#x22;: &#x22;table&#x22;,
+      &#x22;tableType&#x22;: &#x22;default&#x22;,
+      &#x22;readonly&#x22;: false,
+      &#x22;hideIndexCol&#x22;: false,
+      &#x22;heatmap&#x22;: false,
+      &#x22;colWidths&#x22;: [165, 200, 50]
+    }
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                  </div>
+                </section>
+                <!--//doc-section-->
+                <section id="pivot-compare-default-view" class="doc-section">
+                  <h2 class="section-title">
+                    Default Views in Pivot Compare Mode
+                  </h2>
+                  <div class="section-block">
+                    <p>
+                      Just as you can configure an
+                      <a href="./charts.html#external-default-view"
+                        >external default view</a
+                      >
+                      for an input/output symbol with a
+                      <a href="./charts.html#pivot-chart">MIRO Pivot renderer</a
+                      >, you can also select a default view for the same symbol
+                      in
+                      <a href="./start.html#compare-pivot">Pivot compare mode</a
+                      >. The external view can be either a local
+                      (scenario-specific) or a global (app-wide)
+                      <a href="./start.html#metadata-views">view</a>.
+                    </p>
+                    <p>
+                      Note that the symbol name has to be prefixed with
+                      <i>_pivotcomp_</i> to indicate that it is a pivot
+                      comparison mode view configuration. Also note that the
+                      symbol has an additional dimension with the special name
+                      <i>_scenName</i>, where the information about the scenario
+                      name is stored.
+                    </p>
+                    <p>
+                      Below is an example configuration for the output symbol
+                      <i>schedule</i> of the <i>transport</i> example:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-json">{
+  &#x22;_pivotcomp_schedule&#x22;: {
+    &#x22;test&#x22; {
+      &#x22;rows&#x22;: [&#x22;i&#x22;, &#x22;j&#x22;],
+      &#x22;cols&#x22;: {
+        &#x22;_scenName&#x22;: null
+      },
+      &#x22;filter&#x22;: {
+        &#x22;Hdr&#x22;: &#x22;quantities&#x22;
+      },
+      &#x22;pivotRenderer&#x22;: &#x22;bar&#x22;
+    }
+  }
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    To make this the default view, store the view configuration
+                    either as a scenario-specific
+                    <i>local</i> view or as a <i>global</i> view in the
+                    <kbd>conf_transport/views.json</kbd> file. Then, simply add
+                    the following configuration to your
+                    <kbd>conf_transport/transport.json</kbd> configuration file:
+                    <div class="code-block">
+                      <pre><code class="language-json">{
+  &#x22;pivotCompSettings&#x22;: {
+    &#x22;symbolConfig&#x22;: {
+      &#x22;schedule&#x22;: {
+        &#x22;externalDefaultView&#x22;: &#x22;test&#x22;
+      }
+    }
+  }
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                  </div>
+                </section>
+                <!--//doc-section-->
+              </div>
+              <!--//content-inner-->
+            </div>
+            <!--//doc-content-->
+            <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+              <div id="doc-nav" class="doc-nav">
+                <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                  <a class="nav-link scrollto" href="#custom-import-export"
+                    >Custom data connectors</a
+                  >
+                  <a class="nav-link scrollto" href="#remote-import-export"
+                    >DEPRECATED: Remote data import and export</a
+                  >
+                  <a class="nav-link scrollto" href="#custom-input-widgets"
+                    >Custom input widgets</a
+                  >
+                  <a class="nav-link scrollto" href="#table-dropdown"
+                    >Drop-down menu in input table</a
+                  >
+                  <a class="nav-link scrollto" href="#table-validate-columns"
+                    >Column validation in input table</a
+                  >
+                  <a class="nav-link scrollto" href="#table-colwidths"
+                    >Column width of an input table</a
+                  >
+                  <a
+                    class="nav-link scrollto"
+                    href="#pivot-compare-default-view"
+                    >Default Views in Pivot Compare Mode</a
+                  >
+                </nav>
+                <!--//doc-menu-->
+              </div>
+            </div>
+            <!--//doc-sidebar-->
+          </div>
+          <!--//doc-body-->
+        </div>
+        <!--//container-->
+      </div>
+      <!--//doc-wrapper-->
+    </div>
+    <!--//page-wrapper-->
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-3.3.1.min.js"
+    ></script>
+    <!--#include virtual="/footer_miro.html" -->
+
+    <!-- Main Javascript -->
+    <script
+      type="text/javascript"
+      src="assets/plugins/prism/min/prism-min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/stickyfill/dist/stickyfill.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/markjs/jquery.mark.min.js"
+    ></script>
+
+    <script type="text/javascript" src="assets/js/main.js"></script>
+
+    <!-- gifplayer plugin -->
+    <script type="text/javascript" src="assets/js/gifplayer.js"></script>
+    <script>
+      $(".gifplayer").gifplayer();
+    </script>
+    <!-- KaTeX -->
+    <script
+      type="text/javascript"
+      defer
+      src="assets/plugins/katex/katex.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      defer
+      src="assets/plugins/katex/auto-render.min.js"
+      onload="renderMathInElement(document.getElementsByClassName('katex')[0],{delimiters:[{left:'$$',right:'$$',display:true},{left: '$',right:'$',display:false}]});"
+    ></script>
+  </body>
+</html>

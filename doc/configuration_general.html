@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+  <!--<![endif]-->
+  <head>
+    <title>GAMS MIRO Configuration - General Settings</title>
+    <!-- Meta -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GAMS MIRO documentation" />
+    <meta name="author" content="GAMS Development Corp." />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <!-- FontAwesome JS -->
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.1.1/js/all.js"
+      integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Global CSS -->
+    <link
+      rel="stylesheet"
+      href="assets/plugins/bootstrap/css/bootstrap.min.css"
+    />
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css" />
+    <link
+      rel="stylesheet"
+      href="assets/plugins/lightbox/dist/ekko-lightbox.css"
+    />
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css" />
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="assets/plugins/katex/katex.min.css" />
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css" />
+    <!--#include virtual="/wheader.html" -->
+  </head>
+
+  <body class="body-orange">
+    <!--#include virtual="/navbar_full.html" -->
+    <div class="page-wrapper">
+      <!--#include virtual="/mirover.html" -->
+
+      <!-- ******Header****** -->
+      <header id="header" class="sub-header">
+        <div class="container">
+          <div class="branding">
+            <h1 class="logo">
+              <a href="index.html">
+                <img
+                  class="img-fluid"
+                  style="height: 75px"
+                  src="assets/images/logo.svg"
+                  onerror="this.onerror=null; this.src='assets/images/logo.png'"
+                  alt="GAMS MIRO"
+                />
+              </a>
+            </h1>
+          </div>
+          <!--//branding-->
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item">
+              <a href="customize.html">Configuration</a>
+            </li>
+            <li class="breadcrumb-item active">General Settings</li>
+          </ol>
+        </div>
+        <!--//container-->
+      </header>
+      <!--//header-->
+      <div class="doc-wrapper">
+        <div class="container">
+          <div class="row justify-content-end search-box-wrapper">
+            <div class="float-right">
+              <input
+                class="form-control search-box"
+                id="miroSearch"
+                type="text"
+                placeholder="Search"
+                aria-label="Search"
+              />
+              <ul id="miroSearchResults" class="list-group"></ul>
+            </div>
+          </div>
+          <div id="doc-header" class="doc-header text-center">
+            <h1 class="doc-title">
+              <span aria-hidden="true" class="icon fas fa-cog"></span>
+              General Settings
+            </h1>
+          </div>
+          <!--//doc-header-->
+          <div class="doc-body row">
+            <div class="doc-content col-md-9 col-12 order-1">
+              <div class="content-inner">
+                <section id="introduction" class="doc-section">
+                  <h2 class="section-title">Introduction</h2>
+                  <div class="section-block">
+                    <p>
+                      Here you can customize the general behavior and appearance
+                      of MIRO. Changes made in this category are automatically
+                      saved.
+                    </p>
+                  </div>
+                </section>
+                <section id="user-interface" class="doc-section">
+                  <h2 class="section-title">User Interface</h2>
+                  <div class="section-block">
+                    <div id="application-title" class="section-block">
+                      <h3 class="block-title">Title</h3>
+                      <p>
+                        This option allows you to customize the title of the
+                        application that is displayed in the browser window. If
+                        a
+                        <a
+                          href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARtitle"
+                          target="_blank"
+                          >$title</a
+                        >
+                        has been defined in the GAMS model, this is used by
+                        default.
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 200pt; padding-bottom: 25pt"
+                          src="assets/images/configuration_mode/general_title.png"
+                          alt="Application title"
+                        />
+                      </div>
+                    </div>
+                    <div id="app-logo" class="section-block">
+                      <h3 class="block-title">Logo</h3>
+                      <p>
+                        Upload a custom logo (png/jpg file) for your MIRO app,
+                        which is displayed in the upper left corner. Best ratio:
+                        4,6:1.
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 200pt"
+                          src="assets/images/configuration_mode/app-logo.png"
+                          alt="App logo"
+                        />
+                      </div>
+                    </div>
+                    <div id="dark-mode" class="section-block">
+                      <h3 class="block-title">Color Mode</h3>
+                      <p>
+                        Allows you to choose between MIRO light and dark mode as
+                        well as the dynamic adaptation of the theme based on the
+                        user's system settings.
+                      </p>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <p>Default light mode:</p>
+                          <img
+                            class="img-fluid"
+                            src="assets/images/configuration_mode/light.png"
+                            alt="Light mode"
+                          />
+                        </div>
+                        <div class="col-md-6">
+                          <p>Default dark mode:</p>
+                          <img
+                            class="img-fluid"
+                            src="assets/images/configuration_mode/dark.png"
+                            alt="Dark mode"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="callout-block callout-success"
+                        style="margin-top: 10px"
+                      >
+                        <div class="icon-holder">
+                          <i class="fas fa-thumbs-up"></i>
+                        </div>
+                        <!--//icon-holder-->
+                        <div class="content">
+                          <b class="callout-title">Tip:</b>
+                          <p>
+                            In addition to the color mode, various color themes
+                            can be selected. This setting is done for all apps
+                            in the
+                            <a href="./deployment.html#sbs-customize-app"
+                              >global MIRO settings</a
+                            >.
+                          </p>
+                        </div>
+                        <!--//content-->
+                      </div>
+                      <!--//callout-block-->
+                    </div>
+                    <div id="custom-css" class="section-block">
+                      <h3 class="block-title">Custom CSS</h3>
+                      <p>
+                        Allows you to include a custom
+                        <a
+                          href="https://en.wikipedia.org/wiki/CSS"
+                          target="_blank"
+                          >CSS</a
+                        >
+                        file in your MIRO app. The file must be named
+                        <i>custom.css</i> and located in the
+                        <i>static_&lt;modelname&gt;</i> directory.
+                      </p>
+                    </div>
+                    <div id="app-readme" class="section-block">
+                      <h3 class="block-title">Readme File</h3>
+                      <p>
+                        You have the possibility to integrate a README file into
+                        the MIRO application. Its content is displayed in the
+                        input section in the first tab and is therefore the
+                        first thing the user sees after starting the
+                        application. This tab can be used by the developer to
+                        introduce and explain the MIRO application or the
+                        underlying GAMS model before the user starts working
+                        with it.
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 500pt"
+                          src="assets/images/configuration_mode/readme.png"
+                          alt="README file"
+                        />
+                      </div>
+                      <p>
+                        <b>Usage:</b><br />
+                        The readme file must be a
+                        <a
+                          href="https://guides.github.com/features/mastering-markdown/"
+                          target="_blank"
+                          >Markdown</a
+                        >
+                        or HTML document which is located in the model
+                        directory. The README option must be activated in the
+                        Configuration Mode. Three options are available:
+                      </p>
+
+                      <ul>
+                        <li>
+                          <b>README tab title</b> (mandatory)<br />
+                          With this option you can customize the title of the
+                          README tab in the input section. Default:
+                          <i>README</i>
+                        </li>
+                        <li>
+                          <b>README file name</b> (mandatory)<br />
+                          With this option you specify the name of the readme
+                          file that you want to display (minimum 4 characters).
+                        </li>
+                        <li>
+                          <b>Enable mathematical typesetting?</b>
+                          (optional)<br />
+                          In case you want to use mathematical notation in your
+                          README file, activate this checkbox. You can use
+                          inline math by wrapping your equations between
+                          <kbd>$</kbd> signs. To render the equation centered on
+                          its own line, use two dollar signs: <kbd>$$</kbd>.
+                          <p>
+                            <b>Example:</b><br />
+                            <kbd
+                              >This integral $\def\f#1{f(#1)} \f{x} =
+                              \int_{-\infty}^\infty\hat \f\xi\,e^{2 \pi i \xi
+                              x}\,d\xi$ is rendered inline.</kbd
+                            >
+                            is rendered as:
+                            <kbd class="katex"
+                              >This integral $\def\f#1{f(#1)} \f{x} =
+                              \int_{-\infty}^\infty\hat \f\xi\,e^{2 \pi i \xi
+                              x}\,d\xi$ is rendered inline.</kbd
+                            >
+                          </p>
+                          A list of all TeX functions supported by MIRO can be
+                          found
+                          <a href="https://katex.org/docs/supported.html"
+                            >here</a
+                          >.
+                        </li>
+                      </ul>
+                      <p>
+                        The readme file can be created or edited directly in
+                        Configuration Mode:
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 300pt"
+                          src="assets/images/configuration_mode/readme_editor.png"
+                          alt="Readme editor"
+                        />
+                      </div>
+                      <div class="callout-block callout-warning">
+                        <div class="icon-holder">
+                          <i class="fas fa-info-circle"></i>
+                        </div>
+                        <!--//icon-holder-->
+                        <div class="content">
+                          <b class="callout-title">Note:</b>
+                          <p>
+                            If you want to include images in your readme file,
+                            they must be located in the folder
+                            <i>static_&lt;modelname&gt;</i> in your model
+                            directory. In the Markdown/HTML file, the path of
+                            the images used must be prefixed with
+                            "static_&lt;modelname&gt;".
+                          </p>
+                        </div>
+                        <!--//content-->
+                      </div>
+                      <!--//callout-block-->
+                    </div>
+                    <div id="generate-input-graphs" class="section-block">
+                      <h3 class="block-title">
+                        Generate Input Graphs Automatically
+                      </h3>
+                      <p>
+                        If this option is activated, a pivot table is created
+                        for each input symbol in addition to the table. If a
+                        graph is configured for a symbol explicitly, it will be
+                        used instead.
+                      </p>
+                    </div>
+                    <div id="default-output-renderer" class="section-block">
+                      <h3 class="block-title">Default Output Renderer</h3>
+                      <p>
+                        Without further configuration, a pivot table for data
+                        visualization can be displayed automatically for each
+                        output symbol. If a graph is configured for a symbol
+                        explicitly, it will be used instead.
+                      </p>
+                    </div>
+                  </div>
+                </section>
+                <section id="scenario-data-and-attachments" class="doc-section">
+                  <h2 class="section-title">Scenario Data and Attachments</h2>
+                  <div class="section-block">
+                    <div id="default-scenario" class="section-block">
+                      <h3 class="block-title">Default Scenario</h3>
+                      <p>
+                        Allows you to pre-populate tables and widgets with data
+                        when starting MIRO. If this option is set and a scenario
+                        name is specified, MIRO looks for the corresponding
+                        scenario in the database at the application startup and
+                        automatically loads all data into the interface. In case
+                        always the same input data is used as base data, the
+                        step of importing data into MIRO can be skipped with
+                        this option.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="section-block">
+                    <div id="local-upload" class="section-block">
+                      <h3 class="block-title">Local Data Upload</h3>
+                      <div>
+                        <p>
+                          If the local data upload module is enabled, scenario
+                          data can be loaded via local files.
+                        </p>
+                        <div class="section-block">
+                          <img
+                            class="img-fluid"
+                            style="max-height: 325pt"
+                            src="assets/images/import-local.png"
+                            alt="Import local data"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="section-block">
+                    <div id="attachments" class="section-block">
+                      <h3 class="block-title">Attachments</h3>
+                      <p>
+                        Allow users to add and save file attachments to
+                        scenarios. Read more about this in the
+                        <i>File attachments</i> section
+                        <a href="./start.html#file-attachments">here</a>.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="section-block">
+                    <div id="general-output-attach" class="section-block">
+                      <h3 class="block-title">Output Attachments</h3>
+                      <p>
+                        Output attachments allow you to automatically attach
+                        files after a GAMS run has been successfully completed.
+                        This lets you store additional results alongside the
+                        ones displayed in the UI. In addition, MIRO gives you
+                        the option to choose what should happen when an
+                        attachment is not found after a successful GAMS run.
+                        Should the user be informed of this by an error message
+                        or should it be silently ignored. You can also choose to
+                        automatically extract the attachment to the working
+                        directory when you start another GAMS run with this
+                        scenario. This function adds a state to your scenarios.
+                        Per default, scenarios in MIRO are stateless. This means
+                        that running two consecutive GAMS runs with the same
+                        input data will result in the same output data. By
+                        adding an attachment to the scenario that GAMS is
+                        allowed to read on consecutive executions, the results
+                        may no longer be the same.
+                      </p>
+                      <p>Let's have a look at a simple (toy) example:</p>
+                      <pre><code class="language-gams">$if exist report.put $abort "Report was found"
+
+File report;
+put report;
+put "This is a report."
+putclose;
+</code></pre>
+                      <p>
+                        When you run this GAMS model for the first time, it
+                        creates a file <kbd>report.put</kbd>. When running it a
+                        second time, it aborts with a compilation error: "Report
+                        was found". If you add the file <kbd>report.put</kbd> as
+                        an output attachment and select to extract it into the
+                        working directory whenever you run this scenario again,
+                        your scenario will carry a state. This gives you the
+                        possibility to implement processes of any complexity in
+                        your MIRO application.
+                      </p>
+                      <div class="callout-block callout-warning">
+                        <div class="icon-holder">
+                          <i class="fas fa-info-circle"></i>
+                        </div>
+                        <!--//icon-holder-->
+                        <div class="content">
+                          <b class="callout-title">Note:</b>
+                          <p>
+                            When this option is activated, additional files will
+                            be saved to each solved scenario. You should make
+                            sure that the disk space used does not become
+                            excessive (e.g. by limiting the output written to
+                            the lst file).
+                          </p>
+                        </div>
+                        <!--//content-->
+                      </div>
+                      <!--//callout-block-->
+                    </div>
+                  </div>
+                  <div class="section-block">
+                    <div id="general-temp-dir" class="section-block">
+                      <h3 class="block-title">Access Temporary Directory</h3>
+                      <p>
+                        This option specifies whether all temporarily created
+                        files of the model run (like solution reports or the
+                        <span class="code">lst</span> and
+                        <span class="code">log</span> files) can be accessed by
+                        the user. If set to true, the files can be downloaded
+                        individually or as a ZIP archive with a click on the
+                        <img
+                          class="img-fluid"
+                          width="25"
+                          height="25"
+                          align="middle"
+                          src="assets/images/advanced-button.png"
+                          alt="Download temporary files"
+                        />
+                        button.
+                      </p>
+                      <div
+                        class="section-block"
+                        style="display: block; margin: auto; text-align: center"
+                      >
+                        <img
+                          class="img-fluid"
+                          style="max-height: 325pt"
+                          src="assets/images/download-tmp-files.png"
+                          alt="Output data screen - scalars"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="section-block">
+                    <div id="include-metadata" class="section-block">
+                      <h3 class="block-title">Excel Export: Metadata</h3>
+                      <p>
+                        Include a metadata sheet in the Excel file when
+                        exporting a scenario. The metatdata sheet contains
+                        information about the user name, the scenario name and
+                        the time the scenario was created.
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 50pt"
+                          src="assets/images/configuration_mode/general_export_metadata.png"
+                          alt="Metadata sheet"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="section-block">
+                    <div id="include-empty" class="section-block">
+                      <h3 class="block-title">Excel Export: Empty Sheets</h3>
+                      <p>
+                        This option specifies whether empty sheets should be
+                        included when exporting a scenario. Sheets can be empty
+                        e.g. when a scenario contains only input data (has not
+                        been solved).
+                      </p>
+                    </div>
+                  </div>
+                  <div class="section-block">
+                    <div id="decimal-places" class="section-block">
+                      <h3 class="block-title">Decimal Places</h3>
+                      <p>
+                        Number of decimal places used for rounding numerical
+                        values. This is a global setting and has an effect on
+                        all
+                        <a href="./configuration_tables.html#output-tables"
+                          >output tables</a
+                        >,
+                        <a href="./widgets.html#input-bigdata-table"
+                          >Big Data input tables</a
+                        >
+                        and the table for
+                        <a href="./start.html#scenario-loading"
+                          >finding and loading scenarios</a
+                        >.
+                      </p>
+                      <p>
+                        Note that this only applies to symbols that are treated
+                        as numerical values by MIRO. For example, elements of
+                        GAMS <i>Sets</i> may contain numbers, but they are not
+                        treated as such but as strings. These are therefore not
+                        affected by the maximum decimal place set.
+                      </p>
+                    </div>
+                  </div>
+                </section>
+                <section id="job-submission" class="doc-section">
+                  <h2 class="section-title">Job Submission</h2>
+                  <div class="section-block">
+                    <div id="activate-hcube" class="section-block">
+                      <h3 class="block-title">Hypercube Mode</h3>
+                      <p>
+                        This option enables the submission of
+                        <a href="./hc-module.html">Hypercube jobs</a>. Note that
+                        you must use GAMS MIRO with a
+                        <a href="./server.html">GAMS Engine backend</a> (GAMS
+                        MIRO Server or GAMS MIRO Desktop - boosted by GAMS
+                        Engine) when you want to submit Hypercube jobs.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="section-block">
+                    <div id="command-line-args" class="section-block">
+                      <h3 class="block-title">Extra Command Line Arguments</h3>
+                      <p>
+                        With this option, command line arguments can be
+                        specified that are set for each GAMS run that is started
+                        from MIRO. This can be GAMS options like
+                        <span class="code">limrow=10</span> or
+                        <span class="code">threads=4</span> but also custom
+                        double-dash parameters. Note, that the these command
+                        line arguments are static; they can not be changed by
+                        the user from MIRO. <br />For more information about
+                        command line parameters that can be set from MIRO using
+                        widgets like sliders, dropdown menus, checkboxes etc.
+                        click <a href="./model.html#command-line">here</a>.
+                      </p>
+                    </div>
+                  </div>
+                </section>
+                <section id="log-files" class="doc-section">
+                  <h2 class="section-title">Log Files</h2>
+                  <div class="section-block">
+                    <div id="show-log" class="section-block">
+                      <h3 class="block-title">Log File</h3>
+                      <p>
+                        Determine whether the GAMS <i>log</i> file is displayed
+                        in the section <i>GAMS interaction</i> or not.
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          src="assets/images/gams-inter.png"
+                          alt="GAMS Log file"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="section-block">
+                    <div id="show-lst" class="section-block">
+                      <h3 class="block-title">Listing File</h3>
+                      <p>
+                        Determine whether the GAMS listing (<i>lst</i>) file is
+                        displayed in the section <i>GAMS interaction</i> or not.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="section-block">
+                    <div id="miro-log" class="section-block">
+                      <h3 class="block-title">Custom Log File</h3>
+                      <p>
+                        You can write a custom MIRO log file and display this in
+                        MIRO. Per default, the GAMS <i>log</i> and
+                        <i>listing</i> (<i>lst</i>) files are visible in the
+                        <i>GAMS interaction</i> section. Besides these files
+                        generated by GAMS you can also write your own log (e.g.
+                        with the
+                        <a
+                          href="https://www.gams.com/latest/docs/UG_Put.html"
+                          target="_blank"
+                          >Put Writing Facility</a
+                        >). If you already use your own report in your GAMS
+                        model, you can easily integrate it into MIRO with this
+                        option.
+                      </p>
+                      <p>
+                        All you have to do is specify the name of this file. The
+                        file must be a text file and needs to be located in the
+                        MIRO working directory at the end of the model run in
+                        order to be included.
+                      </p>
+                      <p>
+                        <b>Example:</b><br />
+                        In this example we extend our transport model with a few
+                        lines of code for creating a report
+                        <i>transport.dat</i>:
+                      </p>
+                      <pre><code class="language-gams">File log /transport.dat/;
+put log;
+put '--------------------------------'/;
+put '            Report'/;
+put '--------------------------------'/;
+put / / 'Transportation Model parameters' / /
+    'Freight cost  ', f,
+    @1#6, 'Plant capacity'/;
+loop(i, put @3, i.tl, @15, a(i)/);
+put /'Market demand'/;
+loop(j, put @3, j.tl, @15, b(j)/);
+
+put  / / 'Transportation Model Results' / / ;
+loop((i,j), put i.tl, @12, j.tl, @24, x.l(i,j):8:4 /);
+</code></pre>
+                      <p>
+                        Now we want to integrate it into MIRO. In the
+                        Configuration Mode we specify the name of the report
+                        file in the general settings:
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 125pt"
+                          src="assets/images/configuration_mode/transport_log_config.png"
+                          alt="Configure a custom log file in MIRO"
+                        />
+                      </div>
+                      <p>
+                        The next time the model is solved, this report is
+                        displayed in the GAMS interaction section in MIRO:
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 350pt; padding-bottom: 25pt"
+                          src="assets/images/configuration_mode/transport_log.png"
+                          alt="Configure a custom log file in MIRO"
+                        />
+                      </div>
+                      <div class="callout-block callout-warning">
+                        <div class="icon-holder">
+                          <i class="fas fa-info-circle"></i>
+                        </div>
+                        <!--//icon-holder-->
+                        <div class="content">
+                          <b class="callout-title">Note:</b>
+                          <p>
+                            Be careful with logs that are not written with every
+                            GAMS run, but only if, for example, a data test in
+                            the model fails. MIRO does not know if a log belongs
+                            to the current or an earlier run. If a log file was
+                            specified, MIRO looks into the working directory and
+                            includes this file after each GAMS run.
+                          </p>
+                        </div>
+                        <!--//content-->
+                      </div>
+                      <!--//callout-block-->
+                      <h4>Data validation</h4>
+                      <p>
+                        The MIRO log is particularly suitable for the validation
+                        of input data. Checking the consistency of input data
+                        and providing reports when inconsistencies are found is
+                        a critical factor in avoiding end-user frustration.
+                      </p>
+                      <p>
+                        If a certain syntax is followed in the MIRO log, data
+                        found to be invalid can be marked directly above the
+                        respective input data sheet in MIRO:
+                      </p>
+                      <div class="section-block" id="input-data-validation">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 250pt"
+                          src="assets/images/configuration_mode/general_mirolog2.png"
+                          alt="MIRO log"
+                        />
+                      </div>
+                      <p>
+                        This works as follows:<br />
+                        In the Pickstock model we create, as in the previous
+                        transport example, a reporting file. We want to inform
+                        the user when we detect invalid price data. We classify
+                        a price as incorrect if it is negative, i.e. &lt; 0.
+                        Since the data validation should take place before
+                        solving the model, the code must be placed before the
+                        solve statement. If we find inconsistent data, we abort
+                        the execution with an error message.
+                      </p>
+                      <pre><code class="language-gams">* input validation
+set error01(date, symbol);
+
+error01(date, symbol) = price(date, symbol) < 0;
+
+file log / miro.log /;
+put '------------------------------------'/;
+put '        Data validation'/;
+put '------------------------------------'/;
+if(card(error01),
+  put log 'price:: No negative prices allowed!'/;
+  loop(error01(date, symbol),
+      put log / ' Symbol ' symbol.tl:4 ' has negative price at the date: ' date.tl:0;
+    );
+  abort "Data errors detected."
+);
+putclose log;
+</code></pre>
+                      <p>
+                        If the data validation log is integrated in MIRO, the
+                        following happens: If you now have a negative price in
+                        the input data and click solve, this negative price is
+                        detected in the data validation and the model run is
+                        aborted. Instead of remaining in the
+                        <i>GAMS interaction</i> section, MIRO now switches the
+                        view and displays the input table with the first
+                        validation error detected. The corresponding message
+                        specified in the log file is also displayed (see
+                        <a href="#input-data-validation" class="scrollto"
+                          >picture above</a
+                        >).
+                      </p>
+                      <p>
+                        The MIRO log file also displays further information
+                        about the incorrect data if defined accordingly:
+                      </p>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 200pt"
+                          src="assets/images/configuration_mode/general_mirolog1.png"
+                          alt="MIRO log"
+                        />
+                      </div>
+                      <p>
+                        In this way, erroneous data can be found quickly and
+                        corrected by the user before an expensive calculation is
+                        carried out.
+                      </p>
+                      <p>
+                        The syntax that must be used for MIRO to jump directly
+                        to the table with the incorrect data is as follows:
+                      </p>
+                      <p>
+                        <code class="language-gams"
+                          >'<i>symbolname</i>:: Error message'</code
+                        >
+                      </p>
+                      <p>In the example above this was:</p>
+                      <p>
+                        <code class="language-gams"
+                          >'price:: No negative prices allowed!'</code
+                        >
+                      </p>
+                      <p>
+                        The name of the symbol whose data is incorrect, followed
+                        by two colons, signals MIRO to jump to the table of the
+                        corresponding symbol if the model run is aborted. The
+                        specified error message that follows the colons is then
+                        displayed above the table.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="section-block">
+                    <div id="general-duration" class="section-block">
+                      <h3 class="block-title">Log File Storage Duration</h3>
+                      <p>
+                        If you want to save the log and lst files of individual
+                        GAMS jobs, you can use this option to specify how long
+                        the files should be saved in the database (in days). 0
+                        means files are not stored at all, 999 means files are
+                        stored indefinitely. This setting is ignored when the
+                        attachment module is not active.
+                      </p>
+                    </div>
+                  </div>
+                </section>
+                <section id="scenario-comparison" class="doc-section">
+                  <h2 class="section-title">Scenario Comparison</h2>
+                  <div class="section-block">
+                    <div
+                      id="default-scenario-comparison-mode"
+                      class="section-block"
+                    >
+                      <h3 class="block-title">
+                        Default Scenario Comparison Mode
+                      </h3>
+                      <p>
+                        This option sets the default comparison method for
+                        scenarios (more information about scenario comparison
+                        can be found
+                        <a href="./start.html#scenario-comparison">here</a>).
+                        Regardless of the selected option, you can always switch
+                        between split view, tab view and pivot view within the
+                        MIRO application.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="section-block">
+                    <div id="enable-hide-empty-columns" class="section-block">
+                      <h3 class="block-title">
+                        Pivot Compare Mode: Hide Empty Columns
+                      </h3>
+                      <p>
+                        If enabled, this option allows to hide empty table
+                        columns of the currently visible data in pivot compare
+                        mode. Read more about this option
+                        <a href="./charts.html#hide-empty-columns">here</a>.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="section-block">
+                    <div id="enable-presentation" class="section-block">
+                      <h3 class="block-title">
+                        Pivot Compare Mode: Presentation Mode
+                      </h3>
+                      <p>
+                        This option activates the
+                        <a href="./charts.html#presentation-mode"
+                          >presentation mode</a
+                        >
+                        by default in pivot compare mode. In this mode, all
+                        pivot controls are hidden so that the chart or table
+                        takes center stage. Only configured views and export
+                        buttons remain visible. The presentation mode can be
+                        very useful for users who do not want to play around
+                        with the data in the pivot tool, but only want to view
+                        predefined views/reports. You can switch between the
+                        standard view and the presentation mode at any time by
+                        clicking on
+                        <img
+                          class="img-fluid"
+                          src="assets/images/presentation_switch.png"
+                          width="25"
+                          height="25"
+                          align="middle"
+                          alt="Refresh scenarios button"
+                        />
+                        .
+                      </p>
+                      <div class="section-block" style="cursor: pointer">
+                        <img
+                          class="img-fluid"
+                          src="assets/images/configuration_mode/graphs_miropivot_presentation.png"
+                          alt="Presentation mode"
+                          onclick="window.open(this.src, '_blank');"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="section-block">
+                    <div id="fixed-columns" class="section-block">
+                      <h3 class="block-title">
+                        Pivot Compare Mode: Fixed Columns
+                      </h3>
+                      <p>
+                        If this option is activated, the columns of the pivot
+                        table are fixed to the left side of the table and remain
+                        visible when scrolling horizontally. Note that this can
+                        cause display problems for very wide tables (e.g. with
+                        many columns), especially on small screens. For this
+                        reason, this option is automatically disabled for
+                        screens less than 768 pixels wide.
+                      </p>
+                    </div>
+                  </div>
+                </section>
+                <!--//doc-section-->
+              </div>
+              <!--//content-inner-->
+            </div>
+            <!--//doc-content-->
+            <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+              <div id="doc-nav" class="doc-nav">
+                <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                  <a class="nav-link scrollto" href="#introduction"
+                    >Introduction</a
+                  >
+                  <a
+                    class="nav-link scrollto"
+                    style="margin-bottom: 0"
+                    href="#user-interface"
+                    >User Interface</a
+                  >
+                  <nav class="doc-sub-menu nav flex-column">
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#application-title"
+                      >Title</a
+                    >
+                    <a class="nav-link scrollto save-space" href="#app-logo"
+                      >Logo</a
+                    >
+                    <a class="nav-link scrollto save-space" href="#dark-mode"
+                      >Color Mode</a
+                    >
+                    <a class="nav-link scrollto save-space" href="#custom-css"
+                      >Custom CSS</a
+                    >
+                    <a class="nav-link scrollto save-space" href="#app-readme"
+                      >Readme File</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#generate-input-graphs"
+                      >Generate Input Graphs Automatically</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#default-output-renderer"
+                      >Default Output Renderer</a
+                    >
+                  </nav>
+                  <a
+                    class="nav-link scrollto"
+                    style="margin-bottom: 0"
+                    href="#scenario-data-and-attachments"
+                    >Scenario Data and Attachments</a
+                  >
+                  <nav class="doc-sub-menu nav flex-column">
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#default-scenario"
+                      >Default Scenario</a
+                    >
+                    <a class="nav-link scrollto save-space" href="#local-upload"
+                      >Local Data Upload</a
+                    >
+                    <a class="nav-link scrollto save-space" href="#attachments"
+                      >Attachments</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#general-output-attach"
+                      >Output Attachments</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#general-temp-dir"
+                      >Access Temporary Directory</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#include-metadata"
+                      >Excel Export: Metadata</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#include-empty"
+                      >Excel Export: Empty Sheets</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#decimal-places"
+                      >Decimal Places</a
+                    >
+                  </nav>
+                  <a
+                    class="nav-link scrollto"
+                    style="margin-bottom: 0"
+                    href="#job-submission"
+                    >Job Submission</a
+                  >
+                  <nav class="doc-sub-menu nav flex-column">
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#activate-hcube"
+                      >Hypercube Module</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#command-line-args"
+                      >Extra Command Line Arguments</a
+                    >
+                  </nav>
+                  <a
+                    class="nav-link scrollto"
+                    style="margin-bottom: 0"
+                    href="#log-files"
+                    >Log Files</a
+                  >
+                  <nav class="doc-sub-menu nav flex-column">
+                    <a class="nav-link scrollto save-space" href="#show-log"
+                      >Log File</a
+                    >
+                    <a class="nav-link scrollto save-space" href="#show-lst"
+                      >Listing File</a
+                    >
+                    <a class="nav-link scrollto save-space" href="#miro-log"
+                      >Custom Log File</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#general-duration"
+                      >Log File Storage Duration</a
+                    >
+                  </nav>
+                  <a
+                    class="nav-link scrollto"
+                    style="margin-bottom: 0"
+                    href="#scenario-comparison"
+                    >Scenario comparison</a
+                  >
+                  <nav class="doc-sub-menu nav flex-column">
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#default-scenario-comparison-mode"
+                      >Default Scenario Comparison Mode</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#enable-hide-empty-columns"
+                      >Pivot Compare Mode: Hide Empty Columns</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#enable-presentation"
+                      >Pivot Compare Mode: Presentation Mode</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#fixed-columns"
+                      >Pivot Compare Mode: Fixed Columns</a
+                    >
+                  </nav>
+                </nav>
+                <!--//doc-menu-->
+              </div>
+            </div>
+            <!--//doc-sidebar-->
+          </div>
+          <!--//doc-body-->
+        </div>
+        <!--//container-->
+      </div>
+      <!--//doc-wrapper-->
+    </div>
+    <!--//page-wrapper-->
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-3.3.1.min.js"
+    ></script>
+    <!--#include virtual="/footer_miro.html" -->
+
+    <!-- Main Javascript -->
+    <script
+      type="text/javascript"
+      src="assets/plugins/prism/min/prism-min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/stickyfill/dist/stickyfill.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/markjs/jquery.mark.min.js"
+    ></script>
+
+    <script type="text/javascript" src="assets/js/main.js"></script>
+
+    <!-- gifplayer plugin -->
+    <script type="text/javascript" src="assets/js/gifplayer.js"></script>
+    <script>
+      $(".gifplayer").gifplayer();
+    </script>
+    <!-- KaTeX -->
+    <script
+      type="text/javascript"
+      defer
+      src="assets/plugins/katex/katex.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      defer
+      src="assets/plugins/katex/auto-render.min.js"
+      onload="renderMathInElement(document.getElementsByClassName('katex')[0],{delimiters:[{left:'$$',right:'$$',display:true},{left: '$',right:'$',display:false}]});"
+    ></script>
+  </body>
+</html>

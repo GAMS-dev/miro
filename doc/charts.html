@@ -6,7 +6,7 @@
 <html class="no-js" lang="">
   <!--<![endif]-->
   <head>
-    <title>GAMS MIRO - Charts</title>
+    <title>GAMS MIRO - Graphs</title>
     <!-- Meta -->
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -69,7 +69,7 @@
             <li class="breadcrumb-item active">
               <a href="customize.html">Configuration</a>
             </li>
-            <li class="breadcrumb-item active">Charts</li>
+            <li class="breadcrumb-item active">Graphs</li>
           </ol>
         </div>
         <!--//container-->
@@ -92,13 +92,163 @@
           <div id="doc-header" class="doc-header text-center">
             <h1 class="doc-title">
               <span aria-hidden="true" class="icon fas fa-chart-pie"></span>
-              Charts
+              Graphs
             </h1>
           </div>
           <!--//doc-header-->
           <div class="doc-body row">
             <div class="doc-content col-md-9 col-12 order-1">
               <div class="content-inner">
+                <section id="introduction" class="doc-section">
+                  <h2 class="section-title">Introduction</h2>
+                  <div class="section-block">
+                    <p>
+                      Besides the default tabular format, multidimensional GAMS
+                      symbols can be visualized as graphs. GAMS MIRO offers
+                      comprehensive visualization options. A lot of plotting
+                      types are available and only need to be configured, i.e.
+                      adapted to your model-specific data.
+                    </p>
+                    <div
+                      class="expandable-box-outline"
+                      style="margin: 30px 0px"
+                    >
+                      <h3
+                        id="symbol-dimensions"
+                        class="block-title"
+                        onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                        style="cursor: pointer"
+                      >
+                        <i class="fas fa-plus slide-toggle"></i> Advanced:
+                        Symbol dimensions
+                      </h3>
+                      <div class="section-block" style="display: none">
+                        <p>
+                          If you want to configure a graphic for a GAMS symbol,
+                          you have to be aware of how many dimensions your GAMS
+                          symbol has, as this influences the type of graph to
+                          choose. GAMS symbols sometimes have many dimensions.
+                          Different chart types allow you to visualize a
+                          different number of dimensions. Whereas a pie chart
+                          allows you to visualize two dimensions - a numerical
+                          one that defines the area of the slices and a
+                          categorical one that defines the labels of the slices
+                          - a bar chart allows three dimensions to be
+                          visualized: a numerical dimension that defines the
+                          height of the bars, a categorical one that defines the
+                          discrete set of bars on the x-axis, and another
+                          categorical one that defines the color of the bars. In
+                          fact, we could even display a fourth, numerical
+                          dimension that defines the width of the bars.
+                        </p>
+                        <p>
+                          As an example we can look at the parameter
+                          <code class="language-gams"
+                            >d(i,j) 'distance in thousands of miles'</code
+                          >
+                          in the model <i>transport</i>. In addition to the
+                          domains '<i>i</i>' - the set of plants - and
+                          '<i>j</i>' - the set of markets - there is the value
+                          column, i.e. a total of 3 dimensions:
+                        </p>
+                        <div class="section-block">
+                          <img
+                            class="img-fluid"
+                            style="
+                              max-height: 100pt;
+                              display: block;
+                              margin: auto;
+                            "
+                            src="assets/images/configuration_mode/graphs_dimensions3.png"
+                            alt="Symbol d: three dimensions"
+                          />
+                        </div>
+                        <p>
+                          We just learned that bar charts allow us to visualize
+                          3 dimensions, so let's choose a bar chart:
+                        </p>
+                        <div class="section-block">
+                          <img
+                            class="img-fluid"
+                            style="
+                              max-height: 200pt;
+                              display: block;
+                              margin: auto;
+                            "
+                            src="assets/images/configuration_mode/graphs_dimensions.png"
+                            alt="Bar chart - three dimensions"
+                          />
+                        </div>
+                        <p>
+                          What if we had a fourth domain, e.g. another
+                          categorical dimension? A scatter plot allows us to
+                          visualize a forth dimension in the form of the marker
+                          type (e.g. circle, square, triangle etc.).
+                        </p>
+                        <p>
+                          The more dimensions we try to plot in one chart, the
+                          harder it is to understand what is actually going on.
+                          Instead of trying to plot as many dimensions as
+                          possible in a single chart, we should think about
+                          reducing the number of dimensions. One way to do this
+                          is to
+                          <a href="./charts.html#animation"
+                            >animate our chart</a
+                          >
+                          (e.g. to show how our data changes over time). Another
+                          way is to use a
+                          <a href="./charts.html#filter-option">filter</a> that
+                          allows us to select a particular slice of our data.
+                        </p>
+                      </div>
+                      <!--//section-block-->
+                    </div>
+                    <video
+                      playsinline
+                      autoplay
+                      muted
+                      loop
+                      id="configVideo"
+                      style="
+                        width: 100%;
+                        display: block;
+                        margin: auto;
+                        padding-bottom: 15px;
+                      "
+                    >
+                      <source
+                        src="assets/images/configuration_mode/configuration.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                    <p>
+                      The following sections show some examples for different
+                      chart types you can use in MIRO. It is not useful to
+                      describe all possible options MIRO supports. Instead, you
+                      should just explore it yourself! Start the Configuration
+                      Mode and play around with the data until you get a
+                      satisfactory result.
+                    </p>
+                    <div class="callout-block callout-success">
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Tip:</b>
+                        <p>
+                          To create graphics that are perfectly tailored to your
+                          data and not available in MIRO yet, you can also
+                          implement your own renderers. More information can be
+                          found
+                          <a href="#custom-renderers" class="scrollto">here</a>.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                </section>
                 <section id="pie-chart" class="doc-section">
                   <h2 class="section-title">Pie chart</h2>
                   <div class="section-block">
@@ -180,7 +330,7 @@ stock_weight(s) = w.l(s);
                       pie charts. This is comparable to e.g. a line chart, where
                       new lines can be displayed by including new table headers.
                     </p>
-                    <div class="section-block" id="pie-variable">
+                    <div class="section-block">
                       <img
                         class="img-fluid"
                         style="max-height: 350pt"
@@ -1054,7 +1204,10 @@ $offExternalOutput
                           more sophisticated graphics, it may make sense to
                           combine data from different symbols in one symbol. Or
                           you can use our
-                          <a href="./customize.html#custom-renderers">R API</a>
+                          <a
+                            href="./configuration_advanced.html#custom-renderers"
+                            >R API</a
+                          >
                           and create your own graphics.
                         </p>
                       </li>
@@ -1237,7 +1390,7 @@ dowVSindex(d,'index fund')     = fund(d);
                         <p>
                           You want to use a scalar value in a graph but not in
                           the scalars table in MIRO? You can do this by
-                          <a href="./customize.html#hidden-scalars"
+                          <a href="./configuration_symbols.html#hidden-scalars"
                             >hiding that symbol</a
                           >.
                         </p>
@@ -1952,7 +2105,7 @@ firstDayTraining(td)                   = td.pos = 1;
                     <h3 class="block-title">Configuration</h3>
                     <p>
                       Section
-                      <a href="./customize.html#custom-renderers"
+                      <a href="./configuration_advanced.html#custom-renderers"
                         >Custom graphics</a
                       >
                       gives examples and explains in detail how to deal with
@@ -1978,7 +2131,9 @@ firstDayTraining(td)                   = td.pos = 1;
                       lower editor is for the renderer function. If you are not
                       yet familiar with the concept of output and render
                       function, please read the corresponding
-                      <a href="./customize.html#custom-renderers">section</a>
+                      <a href="./configuration_advanced.html#custom-renderers"
+                        >section</a
+                      >
                       first. When you click the "Update" button, the code is
                       executed in both cells and the graph appears on the right
                       (or an error message if you made a mistake). As an example
@@ -2015,9 +2170,11 @@ firstDayTraining(td)                   = td.pos = 1;
                       that are not included in MIRO but are required by your
                       renderer, and set additional options that will be
                       available in your renderer (read
-                      <a href="./customize.html#custom-renderers">here</a> to
-                      learn more). Additional options are especially useful when
-                      you share your renderer between different symbols.
+                      <a href="./configuration_advanced.html#custom-renderers"
+                        >here</a
+                      >
+                      to learn more). Additional options are especially useful
+                      when you share your renderer between different symbols.
                     </p>
                     <p>
                       The resulting JSON snippet for our transport example looks
@@ -2362,6 +2519,9 @@ $offExternalInput
             <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
               <div id="doc-nav" class="doc-nav">
                 <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                  <a class="nav-link scrollto" href="#introduction"
+                    >Introduction</a
+                  >
                   <a class="nav-link scrollto" href="#pie-chart">Pie chart</a>
                   <a class="nav-link scrollto" href="#donut-chart"
                     >Donut chart</a

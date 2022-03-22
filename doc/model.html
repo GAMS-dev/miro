@@ -410,7 +410,7 @@ $offExternalInput
                       <a href="#implicit-set" class="scrollto">here</a>).
                       Alternatively, we could declare the first column of the
                       tables a and b to be
-                      <a href="customize.html#table-option-readonlycol"
+                      <a href="widgets.html#table-option-readonlycol"
                         >readonly</a
                       >
                       in order to prevent domain violations.
@@ -513,11 +513,7 @@ Positive Variable x;
                           files in the directory where your model is located.
                           You can read more about the startup process and
                           related files
-                          <a
-                            href="./model.html#development-files"
-                            class="scrollto"
-                            >here</a
-                          >.
+                          <a href="./model.html#development-files">here</a>.
                         </p>
                       </div>
                       <!--//content-->
@@ -591,7 +587,7 @@ Positive Variable x;
                       <b>Note</b>: It is not possible to use the same GAMS
                       symbol both as input and output data in MIRO. However,
                       there is an option to
-                      <a href="./customize.html#symbol-links"
+                      <a href="./configuration_symbols.html#symbol-links"
                         >use output data as input data</a
                       >.
                     </p>
@@ -882,7 +878,7 @@ $offExternalInput
                           <b class="callout-title">Tip:</b>
                           <p>
                             Unlike using the GAMS table method, the
-                            <a href="./customize.html#table-option-pivot"
+                            <a href="./widgets.html#table-option-pivot"
                               >pivot option</a
                             >
                             set in the MIRO Configuration Mode, does NOT affect
@@ -1252,7 +1248,8 @@ $onExternalOutput
                           default.<br />
                           In case you want each widget to be displayed on a
                           separate sheet, there is an
-                          <a href="./customize.html#aggregate-widgets"
+                          <a
+                            href="./configuration_symbols.html#aggregate-widgets"
                             >option to do so</a
                           >.
                         </p>
@@ -1309,7 +1306,7 @@ $offExternalInput
                       suited for representation as a slider, dropdown menu,
                       checkbox, numeric input or date selector. You can learn
                       more about this in the section about
-                      <a href="./customize.html#configure-widgets">widgets</a>.
+                      <a href="./widgets.html">widgets</a>.
                     </p>
                     <div class="callout-block callout-success">
                       <div class="icon-holder">
@@ -1338,7 +1335,6 @@ $offExternalInput
                       A
                       <a
                         href="https://www.gams.com/26/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets"
-                        target="scrollto"
                         >singleton set</a
                       >
                       in GAMS is a special set that has at most one element
@@ -1562,11 +1558,12 @@ $offExternalInput
                         (i.e. be part of the GAMS/MIRO data contract), command
                         line parameters lack such a formal declaration. To be
                         able to set them from MIRO, you can specify them in the
-                        <a href="./customize.html#configure-widgets"
+                        <a href="./customize.html#configurationMode"
                           >Configuration Mode</a
                         >
                         (or in the
-                        <a href="./customize.html#widgets-commandLine"
+                        <a
+                          href="./configuration_advanced.html#widgets-commandLine"
                           ><i>&lt;modelname&gt;.json</i></a
                         >
                         file). If a GAMS option or a double dash parameter is
@@ -1670,27 +1667,6 @@ $log What you see here is the %fn%
                         class="img-fluid"
                         src="assets/images/gams_miro.png"
                         alt="GAMS MIRO - visualization"
-                      />
-                    </div>
-                  </div>
-                  <!--//section-block-->
-                </section>
-                <!--//doc-section-->
-                <section id="custom-log" class="doc-section">
-                  <h2 class="section-title">Custom log</h2>
-                  <div class="section-block">
-                    <p>
-                      Among many other customization features of your MIRO app,
-                      one of them is to display a custom log in the application.
-                      This log can be created directly in the GAMS model and
-                      displayed in MIRO after the run. Learn more about this
-                      <a href="./customize.html#miro-log">here</a>.
-                    </p>
-                    <div class="section-block" style="text-align: center">
-                      <img
-                        class="img-fluid"
-                        src="assets/images/miro_log.png"
-                        alt="Custom MIRO log"
                       />
                     </div>
                   </div>
@@ -1862,20 +1838,12 @@ $log What you see here is the %fn%
                     >
                   </nav>
                   <!--//nav-->
-                  <a class="nav-link scrollto" href="#model-advanced"
-                    >Advanced</a
+                  <a class="nav-link scrollto" href="#create-custom"
+                    >Custom configuration</a
                   >
-                  <nav class="doc-sub-menu nav flex-column">
-                    <a class="nav-link scrollto" href="#create-custom"
-                      >Custom configuration</a
-                    >
-                    <a class="nav-link scrollto" href="#custom-log"
-                      >Custom log</a
-                    >
-                    <a class="nav-link scrollto" href="#development-mode"
-                      >Development mode</a
-                    >
-                  </nav>
+                  <a class="nav-link scrollto" href="#development-mode"
+                    >Development mode</a
+                  >
                   <!--//nav-->
                 </nav>
                 <!--//doc-menu-->

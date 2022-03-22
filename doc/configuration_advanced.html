@@ -1,0 +1,2059 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+  <!--<![endif]-->
+  <head>
+    <title>GAMS MIRO Configuration - Advanced Configuration</title>
+    <!-- Meta -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GAMS MIRO documentation" />
+    <meta name="author" content="GAMS Development Corp." />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <!-- FontAwesome JS -->
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.1.1/js/all.js"
+      integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Global CSS -->
+    <link
+      rel="stylesheet"
+      href="assets/plugins/bootstrap/css/bootstrap.min.css"
+    />
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css" />
+    <link
+      rel="stylesheet"
+      href="assets/plugins/lightbox/dist/ekko-lightbox.css"
+    />
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css" />
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="assets/plugins/katex/katex.min.css" />
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css" />
+    <!--#include virtual="/wheader.html" -->
+  </head>
+
+  <body class="body-orange">
+    <!--#include virtual="/navbar_full.html" -->
+    <div class="page-wrapper">
+      <!--#include virtual="/mirover.html" -->
+
+      <!-- ******Header****** -->
+      <header id="header" class="sub-header">
+        <div class="container">
+          <div class="branding">
+            <h1 class="logo">
+              <a href="index.html">
+                <img
+                  class="img-fluid"
+                  style="height: 75px"
+                  src="assets/images/logo.svg"
+                  onerror="this.onerror=null; this.src='assets/images/logo.png'"
+                  alt="GAMS MIRO"
+                />
+              </a>
+            </h1>
+          </div>
+          <!--//branding-->
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item">
+              <a href="customize.html">Configuration</a>
+            </li>
+            <li class="breadcrumb-item active">Advanced Configuration</li>
+          </ol>
+        </div>
+        <!--//container-->
+      </header>
+      <!--//header-->
+      <div class="doc-wrapper">
+        <div class="container">
+          <div class="row justify-content-end search-box-wrapper">
+            <div class="float-right">
+              <input
+                class="form-control search-box"
+                id="miroSearch"
+                type="text"
+                placeholder="Search"
+                aria-label="Search"
+              />
+              <ul id="miroSearchResults" class="list-group"></ul>
+            </div>
+          </div>
+          <div id="doc-header" class="doc-header text-center">
+            <h1 class="doc-title">
+              <span aria-hidden="true" class="icon fas fa-search-plus"></span>
+              Advanced Configuration
+            </h1>
+          </div>
+          <!--//doc-header-->
+          <div class="doc-body row">
+            <div class="doc-content col-md-9 col-12 order-1">
+              <div class="content-inner">
+                <section id="custom-renderers" class="doc-section">
+                  <h2 class="section-title">Custom Renderers</h2>
+                  <div class="section-block">
+                    <p>
+                      GAMS MIRO allows you to use your own custom renderers for
+                      your datasets. In this section we will show you how to
+                      create really sophisticated custom graphics.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 250pt"
+                        src="assets/images/output-data_raw1.png"
+                        alt="Result of custom renderer - Map with markers"
+                      />
+                    </div>
+                  </div>
+                  <div id="custom-renderer-how-to" class="section-block">
+                    <h3 class="block-title">How to use a custom renderer</h3>
+                    <p>
+                      In order to visualize a dataset, you will need to write
+                      two functions: a placeholder where your graphs etc. will
+                      later be rendered as well as the rendering function
+                      itself. To learn more about the concepts of this dual
+                      component approach, visit the website for the R Shiny
+                      framework that GAMS MIRO is based upon:
+                      <a href="https://shiny.rstudio.com/"
+                        >https://shiny.rstudio.com/</a
+                      >. In particular, we are using
+                      <a
+                        href="https://shiny.rstudio.com/articles/modules.html"
+                        target="_blank"
+                        >Shiny Modules</a
+                      >
+                      to realize the interface between MIRO and your custom
+                      renderer functions. The template for the two components of
+                      every custom renderer is as follows:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+mirorenderer_&#x3C;symbolName&#x3E;Output &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
+  ns &#x3C;- NS(id)
+}
+
+renderMirorenderer_&#x3C;symbolName&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...){
+}
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      Note that you need to replace
+                      <span class="code">&lt;symbolName&gt;</span> with the name
+                      of the GAMS symbol you want to use this renderer for.
+                      Let's go through this code step by step. As mentioned, for
+                      each custom renderer we need to specify two functions: one
+                      that generates the placeholder and one that fills this
+                      placeholder with data. The name of the placeholder
+                      function must be postfixed with "<span class="code"
+                        >Output</span
+                      >" and the name of the function that specifies the actual
+                      rendering must be prefixed with the keyword "<span
+                        class="code"
+                        >render</span
+                      >". Let's get back to our <i>transport</i> example. We
+                      would like to see the flow of goods visualized on a map.
+                      The GAMS symbol that contains the flow data is called
+                      <span class="code">optSched</span>. Thus, our initial
+                      template looks like this:
+                    </p>
+
+                    <div class="code-block">
+                      <pre><code class="language-r">mirorenderer_optschedOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
+  ns &#x3C;- NS(id)
+}
+renderMirorenderer_optsched &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...){
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-exclamation-triangle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          MIRO expects your renderer names to follow this strict
+                          convention. Note that the symbol name in your renderer
+                          name should be converted to all lowercase. Even if the
+                          symbol in GAMS is called
+                          <span class="code">optSched</span>, the renderer
+                          function name should be
+                          <span class="code">mirorenderer_optschedOutput</span>
+                          and
+                          <span class="code">renderMirorenderer_optsched</span>.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-exclamation-triangle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          Custom renderer scripts must be located in a folder
+                          named:
+                          <span class="code">renderer_&lt;modelname&gt;</span>
+                          in your model directory. The name of the renderer file
+                          should be:
+                          <span class="code"
+                            >mirorenderer_&lt;symbolname&gt;.R</span
+                          >.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <p>
+                      Both functions take a number of parameters. Let's start
+                      with the placeholder function: Each custom renderer has
+                      its own ID. In order to avoid
+                      <a
+                        href="https://en.wikipedia.org/wiki/Name_collision"
+                        target="_blank"
+                        >name collisions</a
+                      >
+                      with other custom renderers or functions of GAMS MIRO, we
+                      need to prefix our input and output elements with this ID.
+                      How should we prefix our custom input and output
+                      functions, though? Fortunately, Shiny provides us with the
+                      function:
+                      <kbd
+                        ><a
+                          href="https://shiny.rstudio.com/reference/shiny/0.13.1/NS.html"
+                          target="_blank"
+                          >NS()</a
+                        ></kbd
+                      >. This function takes the ID of our custom renderer as
+                      its input and returns a function (functions that return
+                      functions are often called <i>closures</i> in R) that does
+                      the prefixing for us. Thus, whenever we want to specify a
+                      new input or output element, we simply hand the ID we
+                      would like to use for this element over to this prefixing
+                      function (which in our case is bound to the
+                      <kbd>ns</kbd> variable). We can also specify a height for
+                      our renderer as well as the path where the renderer files
+                      are located. We can also pass additional options to our
+                      renderer functions.
+                    </p>
+                    <p>
+                      Let's get back to our example. As we would like to
+                      visualize our optimized schedule on an interactive map, we
+                      choose the popular
+                      <a href="https://leafletjs.com" target="_blank"
+                        >Leaflet</a
+                      >
+                      library. Fortunately, there is already an R/Shiny
+                      interface for this library:
+                      <a
+                        href="https://rstudio.github.io/leaflet/"
+                        target="_blank"
+                        >Leaflet for R</a
+                      >. This R package comes with the two functions:
+                      <kbd>leafletOutput()</kbd> that generates the placeholder
+                      and <kbd>renderLeaflet()</kbd> that renders a Leaflet map
+                      object created by the <kbd>leaflet()</kbd> function which
+                      takes our dataframe as its first argument. So let's put
+                      the pieces together and extend our code:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-r">mirorenderer_optschedOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
+  ns &#x3C;- NS(id)
+  leaflet::leafletOutput(ns(&#x22;map&#x22;), height = height)
+}
+renderMirorenderer_optsched &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...){
+  output$map &#x3C;- leaflet::renderLeaflet(leaflet::leaflet(data))
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      Note that we used the aforementioned
+                      <kbd>ns()</kbd> function to prefix the ID (<span
+                        class="code"
+                        >"map"</span
+                      >) that we chose for our Leaflet element. Just like any
+                      other placeholder element, the function
+                      <kbd>leafletOutput()</kbd> generates an element that can
+                      be accessed via the list-like <kbd>output</kbd> object.
+                    </p>
+                    <p></p>
+                    <p>
+                      Inside our rendering function we assign this object the
+                      Leaflet map that is created by the
+                      <kbd>renderLeaflet()</kbd> function. In case you find the
+                      whole concept of having an output function, a rendering
+                      function, an output object etc. still very confusing, you
+                      should take a look at the
+                      <a
+                        href="https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/"
+                        target="_blank"
+                        >official tutorial series</a
+                      >
+                      for the Shiny framework. <br />
+                      To summarize: elements that generate data can be accessed
+                      by the <kbd>input</kbd> object; elements that transform
+                      data to some form of visualization via the
+                      <kbd>output</kbd> object and any user-specific information
+                      via the <kbd>session</kbd> object.
+                    </p>
+                    <div
+                      class="callout-block callout-warning"
+                      id="cr-package-note"
+                    >
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          If you use functions from packages other than
+                          <kbd>shiny</kbd>, <kbd>DT</kbd>,
+                          <kbd>rhandsontable</kbd>, <kbd>dplyr</kbd>,
+                          <kbd>readr</kbd> or the R base packages, make sure you
+                          specify the package/namespace that exports this
+                          function. In our example, the functions
+                          <kbd>leafletOutput</kbd>, <kbd>renderLeaflet</kbd> and
+                          <kbd>leaflet</kbd> are exported from the package
+                          <kbd>leaflet</kbd>. So we need to use the
+                          <i>double colon operator</i> to access them (e.g.
+                          <kbd>leaflet::leafletOutput</kbd>).
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <p>
+                      The data that you want to visualize is supplied to your
+                      rendering function by the <kbd>data</kbd> argument - an R
+                      <a
+                        href="https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html"
+                        >tibble</a
+                      >, a data structure that is very similar to a Data Frame.
+                      In case you specified
+                      <a class="link" href="./charts.html#custom-graphics"
+                        >additional datasets</a
+                      >
+                      to be communicated with your custom renderer,
+                      <kbd>data</kbd> will be a named list of
+                      <i>tibbles</i> where the names are the GAMS symbol names.
+                      In addition, the values of all input and output scalars
+                      can be accessed via the argument
+                      <kbd>outputScalarsFull</kbd> (a tibble with the columns
+                      <i>scalar</i>, <i>description</i>, <i>value</i>). The
+                      function argument <kbd>path</kbd> is a string (a
+                      one-dimensional character vector) that specifies the
+                      absolute path to your
+                      <span class="code">renderer_&lt;modelname&gt;</span>
+                      directory. This is useful if you want to include external
+                      files in your custom renderer functions. Optional
+                      parameters that you want to pass to the renderer can be
+                      accessed via the argument <kbd>options</kbd> - a (nested)
+                      list.
+                    </p>
+                    <div class="callout-block callout-success">
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Tip:</b>
+                        <p>
+                          The list <kbd>options</kbd> always has a nested list
+                          with the key <kbd>_metdata_</kbd>, which gives you
+                          access to the metadata of the symbol to render, such
+                          as the symbol type (set, parameter, ...) and header
+                          information (header name, alias, type). For example,
+                          the symbol type can be accessed as follows:
+                          <code class="language-r"
+                            >options[["_metadata_"]][["symtype"]]</code
+                          >.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <p>
+                      Now that we are familiar with the template that every
+                      custom renderer builds upon, we are still missing one
+                      fundamental concept so that we can use our custom
+                      renderer: binding the renderer to dataset(s) we wish to
+                      visualize.
+                    </p>
+                    <p>
+                      This binding of GAMS parameter to renderer function is
+                      specified - just like any other renderer binding - in the
+                      <span class="code">&lt;modelname&gt;.json</span> file;
+                      more precisely the
+                      <span class="code">dataRendering</span> section. Let's
+                      assume that in our transportation example the GAMS
+                      parameter that specifies the optimal schedule is defined
+                      as
+                      <span class="code"
+                        >optSched(lngp, latp, lngm, latm, plant, market)</span
+                      >
+                      where <span class="code">(lngP,latP)</span> and
+                      <span class="code">(lngm, latm)</span> are the coordinates
+                      of the plants and markets respectively. Our
+                      <span class="code">transport.json</span> file should then
+                      look like this:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-json">{
+   &#x22;dataRendering&#x22;:{
+      &#x22;optSched&#x22;:{
+         &#x22;outType&#x22;:&#x22;mirorenderer_optsched&#x22;,
+         &#x22;height&#x22;:&#x22;700&#x22;,
+         &#x22;options&#x22;:{
+            &#x22;title&#x22;:&#x22;Optimal transportation schedule&#x22;
+         }
+      }
+   }
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      As you can see we bound the GAMS parameter
+                      <span class="code">optSched</span> to our new custom
+                      renderer <span class="code">mirorenderer_optsched</span>.
+                      Furthermore, we specified a parameter:
+                      <span class="code">title</span> that can be accessed by
+                      our custom renderer via the
+                      <span class="code">options</span> list.
+                    </p>
+                    <p>
+                      If we decided to run our MIRO app now, we still would not
+                      be able to see anything other than a blank area. Thus, we
+                      will need to fill our renderer with some life:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-r">mirorenderer_optschedOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
+  ns &#x3C;- NS(id)
+  tagList(
+    textOutput(ns(&#x22;title&#x22;)),
+    leaflet::leafletOutput(ns(&#x22;map&#x22;))
+  )
+}
+renderMirorenderer_optsched &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...){
+  output$title &#x3C;- renderText(options$title)
+  output$map   &#x3C;- leaflet::renderLeaflet(leaflet::leaflet(data) %&#x3E;%
+                                           leaflet::addTiles() %&#x3E;%
+                                           leaflet::addMarkers(~lngp, ~latp, label = ~plant)
+  )
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      We have added a new placeholder for the title. Note the
+                      use of the <kbd>tagList()</kbd> function. Since every R
+                      function has a single return value which is either the
+                      last evaluated expression of the function or the argument
+                      to the first <kbd>return()</kbd> function that is
+                      encountered in the function body, we need to return a list
+                      object. A <kbd>tagList()</kbd> is simply a list with an
+                      additional attribute to identify that the elements are
+                      html tags.
+                    </p>
+                    <p>
+                      Within our rendering function, we set the title, add the
+                      default
+                      <a href="https://www.openstreetmap.org" target="_blank"
+                        >OpenStreetMap</a
+                      >
+                      tiles as well as some markers for our plants.
+                    </p>
+                    <div class="callout-block callout-success">
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          The syntax <kbd>~lngp</kbd> that you see here is
+                          simply a shorthand for <kbd>data$lngp</kbd> - the pipe
+                          operator <kbd>a(x) %&#x3E;% b(y)</kbd> a shorthand for
+                          <kbd>tmp &#x3C;- a(x); b(tmp, y)</kbd>
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    If you run your app now, you will be able to see a map with
+                    markers at the coordinates of the plants as you specified
+                    them in your GAMS sets: <kbd>lngp</kbd> and <kbd>latp</kbd>.
+                    When you hover over the markers, you will be able to see the
+                    names of the plants as defined by the set:
+                    <kbd>plants</kbd>. You can see a screenshot of the result
+                    below:
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/custom-renderer-map.png"
+                        alt="Result of custom renderer - Map with markers"
+                      />
+                    </div>
+                    <p>
+                      If you read until this point, you might have noticed that
+                      there is a parameter in the renderer function that we did
+                      not talk about yet: <kbd>rendererEnv</kbd>. This parameter
+                      is a static R environment that is persistent across
+                      different calls to the renderer function. Each time the
+                      data of your widget is updated (e.g. due to the user
+                      loading a new scenario from the database), your renderer
+                      function is called. One case where this can become
+                      problematic is when you make use of
+                      <a
+                        href="https://shiny.rstudio.com/reference/shiny/0.14/observe.html"
+                        target="__blank"
+                        >observers</a
+                      >
+                      in your renderer functions. Every time your renderer
+                      function is called, all observers are re-registered, which
+                      leads to duplicated observers. To avoid this problem, you
+                      must ensure that observers are cleaned up when they are no
+                      longer needed. You do this by assigning them to the
+                      <kbd>rendererEnv</kbd> environment. An example where this
+                      is extensively used is the model <kbd>tsp</kbd>, which can
+                      be found in the MIRO model library.
+                    </p>
+                    <p>
+                      You now know everything you need in order to get started
+                      writing your own custom renderers! Congratulations! In
+                      case you create a new renderer that you would like to
+                      share so that others can benefit from your work as well,
+                      please
+                      <a href="mailto:miro@gams.com" target="_blank"
+                        >contact us</a
+                      >!
+                    </p>
+                  </div>
+                  <div id="additional-datasets" class="section-block">
+                    <h3 class="block-title">Additional datasets</h3>
+                    <p>
+                      A custom renderer can use the data of other GAMS symbols
+                      (a renderer for an output symbol can use the data from
+                      both input and output symbols, while a renderer for an
+                      input symbol can only access other input symbols). For
+                      example - let's stay with the above example of a map - the
+                      geographical information can come from other symbols than
+                      the transport data. For a custom renderer to access this
+                      data, the corresponding symbols must be specified in the
+                      <span class="code">&lt;modelname&gt;.json</span> file
+                      under <code class="language-json">"additionalData"</code>:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-json">{
+   &#x22;dataRendering&#x22;:{
+      &#x22;optSched&#x22;:{
+         &#x22;outType&#x22;:&#x22;mirorenderer_optsched&#x22;,
+         &#x22;height&#x22;:&#x22;700&#x22;,
+         &#x22;options&#x22;:{
+            &#x22;title&#x22;:&#x22;Optimal transportation schedule&#x22;
+         },
+         &#x22;additionalData&#x22;: [&#x22;symbol_a&#x22;, &#x22;symbol_b&#x22;]
+      }
+   }
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          All symbols that a custom renderer should use must be
+                          included in the GAMS/MIRO
+                          <a href="./model.html#data-contract">data contract</a
+                          >.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          Custom renderers always receive the full,
+                          <a href="#widgets-dependencies" class="scrollto"
+                            >unfiltered</a
+                          >
+                          data.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                  <div id="additional-r-packages" class="section-block">
+                    <h3 class="block-title">Additional R packages</h3>
+                    <p>
+                      In a custom renderer you can include any R packages that
+                      are not part of MIRO. This allows you to use all data
+                      visualization and data processing capabilities of R. In
+                      order for such packages to be installed when starting a
+                      MIRO application, they must be specified in the
+                      <span class="code">&lt;modelname&gt;.json</span> file at
+                      the configuration of the corresponding symbol under
+                      <code class="language-json">"packages"</code>:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-json">{
+   &#x22;dataRendering&#x22;:{
+      &#x22;optSched&#x22;:{
+         &#x22;outType&#x22;:&#x22;mirorenderer_optsched&#x22;,
+         &#x22;height&#x22;:&#x22;700&#x22;,
+         &#x22;options&#x22;:{
+            &#x22;title&#x22;:&#x22;Optimal transportation schedule&#x22;
+         },
+         &#x22;additionalData&#x22;: [&#x22;symbol_a&#x22;, &#x22;symbol_b&#x22;],
+         &#x22;packages&#x22;: [&#x22;package_a&#x22;, &#x22;package_b&#x22;]
+      }
+   }
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      Note that these additional packages are installed but not
+                      loaded! This means that when you call the function, you
+                      must explicitly specify the package name using the
+                      <i>Double Colon Operator</i>:
+                      <span class="code">pkg::name(...)</span>. See also the
+                      <a href="#cr-package-note" class="scrollto">info box</a>
+                      in the previous section.
+                    </p>
+                    <div
+                      class="callout-block callout-success"
+                      style="margin-top: 10px"
+                    >
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Tip:</b>
+                        <p>
+                          Additional R packages are installed in the
+                          <a href="./download.html#miro-workspace">workspace</a>
+                          of GAMS MIRO the first time a MIRO application is
+                          started.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                  <div id="custom-renderer-views" class="section-block">
+                    <h3 class="block-title">Views</h3>
+                    <p>
+                      In cases where your renderers are interactive, you might
+                      want to allow users to store the current state of your
+                      renderer and load it later with a single click. This is
+                      what <i>MIRO views</i> were designed for. A MIRO view can
+                      be any (nested) list that is JSON serializable. Views are
+                      bound to a particular GAMS symbol and each view has a
+                      unique id. One example of a renderer where the MIRO views
+                      API is used is the
+                      <a href="./charts.html#pivot-chart">pivot table</a>
+                      renderer.
+                    </p>
+                    <p>
+                      You might have already seen that there is another argument
+                      in the renderer function that we have not yet talked
+                      about: the <kbd>views</kbd> argument. This is a reference
+                      to an instance of the views R6 class. You can get, add and
+                      remove views as well as register callbacks via this
+                      object. The following section explains how to use the API.
+                    </p>
+                    <h5>Get view data</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+views$get(session, id = NULL, filter = c("all", "global", "local"))
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Arguments</h6>
+                    <table class="api-arguments">
+                      <tbody>
+                        <tr>
+                          <th>session</th>
+                          <td>
+                            The <kbd>session</kbd> object passed to the custom
+                            renderer
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>id</th>
+                          <td>id of the view to load</td>
+                        </tr>
+                        <tr>
+                          <th>filter</th>
+                          <td>
+                            Whether to retrieve app-wide <kbd>global</kbd> views
+                            only, scenario-specific <kbd>local</kbd> views only,
+                            or <kbd>all</kbd> views.
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h6 class="api-header">Value</h6>
+                    <p>
+                      In case <kbd>id</kbd> is <kbd>NULL</kbd>: a named list
+                      where the names are the ids of the views and the values
+                      are the view data.
+                    </p>
+                    <p>
+                      In case <kbd>id</kbd> is not <kbd>NULL</kbd>: a list with
+                      the data of the view. Will throw an error in case the id
+                      provided does not exist.
+                    </p>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      This method allows you to retrieve the data of views
+                      registered for the symbol. You can retrieve either the
+                      data of all views (<kbd>id</kbd> is <kbd>NULL</kbd>) or
+                      the data of a specific view (<kbd>id</kbd> not
+                      <kbd>NULL</kbd>).
+                    </p>
+                    <h6 class="api-header">Example</h6>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+# myViews <- list(filter1 = list(filter = list(element1 = "Value 1", element2 = c("Value 2", "Value 4"))),
+#                 filter2 = list(filter = list(element3 = "Value 7")))
+
+views$get(session, "filter1")
+#> $filter
+#> $filter$element1
+#> [1] "Value 1"
+#>
+#> $filter$element2
+#> [1] "Value 2" "Value 4"
+
+views$get(session)
+#> $filter1
+#> $filter1$filter
+#> $filter1$filter$element1
+#> [1] "Value 1"
+#>
+#> $filter1$filter$element2
+#> [1] "Value 2" "Value 4"
+#>
+#>
+#>
+#> $filter2
+#> $filter2$filter
+#> $filter2$filter$element3
+#> [1] "Value 7"
+
+views$get(session, "filter3")
+#> Error: View with id: filter3 could not be found.
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h5>Get view ids</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+views$getIds(session, filter = c("all", "global", "local"))
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Arguments</h6>
+                    <table class="api-arguments">
+                      <tbody>
+                        <tr>
+                          <th>session</th>
+                          <td>
+                            The <kbd>session</kbd> object passed to the custom
+                            renderer
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>filter</th>
+                          <td>
+                            Whether to retrieve app-wide <kbd>global</kbd> views
+                            only, scenario-specific <kbd>local</kbd> views only,
+                            or <kbd>all</kbd> views.
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h6 class="api-header">Value</h6>
+                    <p>
+                      Character vector with the view ids registered for the
+                      symbol.
+                    </p>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      Retrieves the view ids that are currently registered for
+                      the symbol. It is equivalent to
+                      <code class="language-r">names(views$get(session))</code>.
+                    </p>
+                    <h6 class="api-header">Example</h6>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+# myViews <- list(filter1 = list(filter = list(element1 = "Value 1", element2 = c("Value 2", "Value 4"))),
+#                 filter2 = list(filter = list(element3 = "Value 7")))
+
+views$getIds(session)
+#> [1] "filter1" "filter2"
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h5>Add view</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+views$add(session, id, viewConf)
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Arguments</h6>
+                    <table class="api-arguments">
+                      <tbody>
+                        <tr>
+                          <th>session</th>
+                          <td>
+                            The <kbd>session</kbd> object passed to the custom
+                            renderer
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>id</th>
+                          <td>id of the view to add</td>
+                        </tr>
+                        <tr>
+                          <th>viewConf</th>
+                          <td>The view configuration</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      Adds/registers a new view. The view configuration can be
+                      any JSON serializable list. If a view with the same id
+                      already exists for the symbol, the previous view is
+                      replaced. In case the current renderer is read-only (not a
+                      sandbox scenario), an error is thrown. You can test
+                      whether the renderer is read-only with the method
+                      <code class="language-r">views$isReadonly(session)</code>.
+                    </p>
+                    <h6 class="api-header">Example</h6>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+# myViews <- list(filter1 = list(filter = list(element1 = "Value 1", element2 = c("Value 2", "Value 4"))),
+#                 filter2 = list(filter = list(element3 = "Value 7")))
+
+views$add(session, "filter3", list(filter = list(element4 = "Value 10")))
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h5>Remove view</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+views$remove(session, id)
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Arguments</h6>
+                    <table class="api-arguments">
+                      <tbody>
+                        <tr>
+                          <th>session</th>
+                          <td>
+                            The <kbd>session</kbd> object passed to the custom
+                            renderer
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>id</th>
+                          <td>id of the view to remove</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      Removes a local view with the specified id. If no view
+                      with this id exists, an error is thrown. In case the
+                      current renderer is read-only (not a sandbox scenario), an
+                      error is thrown. You can test whether the renderer is
+                      read-only with the method
+                      <code class="language-r">views$isReadonly(session)</code>.
+                      Note that global views cannot be removed.
+                    </p>
+                    <h6 class="api-header">Example</h6>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+# myViews <- list(filter1 = list(filter = list(element1 = "Value 1", element2 = c("Value 2", "Value 4"))),
+#                 filter2 = list(filter = list(element3 = "Value 7")))
+
+views$get(session)
+#> $filter1
+#> $filter1$filter
+#> $filter1$filter$element1
+#> [1] "Value 1"
+#>
+#> $filter1$filter$element2
+#> [1] "Value 2" "Value 4"
+#>
+#>
+#>
+#> $filter2
+#> $filter2$filter
+#> $filter2$filter$element3
+#> [1] "Value 7"
+
+views$remove(session, "filter2")
+
+views$get(session, "filter1")
+#> $filter
+#> $filter$element1
+#> [1] "Value 1"
+#>
+#> $filter$element2
+#> [1] "Value 2" "Value 4"
+
+views$remove(session, "filter2")
+#> Error: View with id: filter2 does not exist, so it could not be removed.
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h5>Register update callback</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+views$registerUpdateCallback(session, callback)
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Arguments</h6>
+                    <table class="api-arguments">
+                      <tbody>
+                        <tr>
+                          <th>session</th>
+                          <td>
+                            The <kbd>session</kbd> object passed to the custom
+                            renderer
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>callback</th>
+                          <td>a callback function</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      You can register a callback function that is triggered
+                      whenever the view data of a symbol is modified
+                      <b>outside</b> the renderer. This happens when a user
+                      modifies the view data via the
+                      <a href="./start.html#metadata-views">metadata dialog</a>.
+                      Note that the callback function is not triggered by the
+                      methods <code class="language-r">views$add</code> or
+                      <code class="language-r">views$remove</code> described
+                      above.
+                    </p>
+                    <h6 class="api-header">Example</h6>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+updateCallback <- function(){
+  print(sprintf("View data changed from outside! New view ids: %s.",
+                views$getIds(session)))
+}
+
+views$registerUpdateCallback(session, updateCallback)
+                                        </code></pre>
+                    </div>
+                  </div>
+                  <div id="custom-renderer-attachments" class="section-block">
+                    <h3 class="block-title">Attachments</h3>
+                    <p>
+                      Custom renderers and custom input widgets can access
+                      existing
+                      <a href="./start.html#file-attachments">attachments</a> as
+                      well as add new ones. So, for example, if your model run
+                      depends on the existence of a certain attachment, the user
+                      can be shown a hint in the custom widget whether this
+                      attachment already exists or not. Furthermore, a
+                      corresponding upload field can be displayed, which can be
+                      used to add missing attachments. This is just one of many
+                      possibilities offered by the attachments interface.
+                      Attachments are bound to a MIRO scenario and each
+                      attachment has a unique id.
+                    </p>
+                    <p>
+                      Attachments can be retrieved, downloaded, added and
+                      removed via the <kbd>attachments</kbd> argument of a
+                      custom renderer function. As with the
+                      <kbd>views</kbd> argument, this is a reference to an
+                      instance of the attachments R6 class. The following
+                      section explains how to use the API.
+                    </p>
+                    <h5>Get attachment ids</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+attachments$getIds()
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Value</h6>
+                    <p>
+                      Character vector with the attachment ids that are part of
+                      the sandbox scenario.
+                    </p>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      Retrieves the attachment ids that are currently registered
+                      for the scenario.
+                    </p>
+                    <h6 class="api-header">Example</h6>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+attachments$getIds()
+#> [1] "file1.txt" "file2.gdx" "file3.xls"
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h5>Add Attachment</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+attachmenets$add(session, filePaths, fileNames = NULL, overwrite = FALSE, execPerm = NULL)
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Arguments</h6>
+                    <table class="api-arguments">
+                      <tbody>
+                        <tr>
+                          <th>session</th>
+                          <td>
+                            The <kbd>session</kbd> object passed to the custom
+                            renderer
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>filePaths</th>
+                          <td>
+                            Character vector with file paths to read data from
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>fileNames</th>
+                          <td>Custom name(s) of the file(s) (optional)</td>
+                        </tr>
+                        <tr>
+                          <th>overwrite</th>
+                          <td>
+                            Boolean that specifies whether existing files should
+                            be overwritten
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>execPerm</th>
+                          <td>
+                            Vector with execute permissions (must be NULL or
+                            logical vector with the same length as
+                            <kbd>filePaths</kbd>)
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      Adds/registers new attchment(s). These can be files from
+                      the local file system, files created in the renderer
+                      itself, files accessed from a REST API call or any others.
+                      Attachments can be saved under a new name. If an
+                      attachment with the same name already exists, it can be
+                      overwritten. In addition, it can be specified whether the
+                      attachment may be
+                      <a href="./start.html#file-attachments"
+                        >read by the underlying GAMS model</a
+                      >. In case the current renderer is read-only (not a
+                      sandbox scenario), an error is thrown. You can test
+                      whether the renderer is read-only with the method
+                      <code class="language-r"
+                        >attachments$isReadonly(session)</code
+                      >.
+                    </p>
+                    <h6 class="api-header">Example</h6>
+                    <p>
+                      In the example below, an attachment is added using the
+                      shiny
+                      <a
+                        href="https://shiny.rstudio.com/reference/shiny/latest/fileInput.html"
+                        ,
+                        target="_blank"
+                        >fileInput</a
+                      >
+                      widget that triggers an observer when the user uploads a
+                      local file.
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+observeEvent(input$fileInput, {
+  file <- input$fileInput
+  filePath <- file$datapath
+  attachments$add(session, filePath, "custom_attachment.txt", overwrite = TRUE, execPerm = FALSE)
+})
+
+attachments$getIds()
+#> [1] "custom_attachment.txt"
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h5>Save attachments</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+attachments$save(filePaths, fileNames, overwrite = TRUE)
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Arguments</h6>
+                    <table class="api-arguments">
+                      <tbody>
+                        <tr>
+                          <th>filePaths</th>
+                          <td>
+                            Character vector where to save files. Either
+                            directory name or directory + filename (in the
+                            latter case the length of <kbd>fileNames</kbd> must
+                            be 1).
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>fileNames</th>
+                          <td>
+                            Character vector with names of the files to download
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>overwrite</th>
+                          <td>Whether to overwrite existing files.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      Stores file(s) at given location(s). If the user should be
+                      able to download attachments directly in the custom
+                      renderer, this is possible with the
+                      <kbd>save</kbd> method. Also, it can be used to access the
+                      data of an attachment in the custom renderer and process
+                      it further. For this purpose the attachment can be saved
+                      to disk and read from there.
+                    </p>
+                    <h6 class="api-header">Example</h6>
+                    <p>
+                      In the example below, a
+                      <a
+                        href="https://shiny.rstudio.com/reference/shiny/latest/downloadHandler.html"
+                        >download handler</a
+                      >
+                      is used to write an attachment <i>file.txt</i> to disk. If
+                      the <i>file.txt</i> is not found in the attachments, an
+                      <i>error.txt</i> file is downloaded instead.
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+output$downloadButton <- downloadHandler(
+  filename = function(){
+    if(!"file.txt" %in% attachments$getIds()){
+      return("error.txt")
+    }
+    return("file.txt")
+  },
+  content = function(file){
+    if(!"file.txt" %in% attachments$getIds()){
+      return(writeLines("error", file))
+    }
+    attachments$save(file, "file.txt")
+  }
+)
+                                        </code></pre>
+                    </div>
+                    <h5>Set execution permission</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+attachments$setExecPerm(session, fileNames, execPerm)
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Arguments</h6>
+                    <table class="api-arguments">
+                      <tbody>
+                        <tr>
+                          <th>session</th>
+                          <td>
+                            The <kbd>session</kbd> object passed to the custom
+                            renderer
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>fileNames</th>
+                          <td>Vector of file names</td>
+                        </tr>
+                        <tr>
+                          <th>execPerm</th>
+                          <td>
+                            Logical vector (same length as
+                            <kbd>fileNames</kbd> or length 1) that specifies
+                            whether files can be read/executed by GAMS
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      Sets read/execute permission for particular attachment(s).
+                      Note that all files that you allow your model to read must
+                      first be downloaded to the working directory before GAMS
+                      is run. It is therefore advisable to select as readable
+                      only those files that are actually relevant for the
+                      optimization run.
+                    </p>
+                    <h6 class="api-header">Example</h6>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+attachments$getIds()
+#> [1] "file1.txt" "file2.gdx" "file3.xls"
+
+attachments$setExecPerm(session, "file1.txt", execPerm = TRUE)
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h5>Remove attachment</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+attachments$remove(session, fileNames, removeLocal = TRUE)
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Arguments</h6>
+                    <table class="api-arguments">
+                      <tbody>
+                        <tr>
+                          <th>session</th>
+                          <td>
+                            The <kbd>session</kbd> object passed to the custom
+                            renderer
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>fileNames</th>
+                          <td>File name(s) of attachment(s) to remove</td>
+                        </tr>
+                        <tr>
+                          <th>removeLocal</th>
+                          <td>Whether to remove file(s) from disk</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      Removes attachment(s) with the specified filename(s). If
+                      no attachment with this name exists, an error is thrown.
+                      In case the current renderer is read-only (not a sandbox
+                      scenario), an error is thrown. You can test whether the
+                      renderer is read-only with the method
+                      <code class="language-r"
+                        >attachments$isReadonly(session)</code
+                      >.
+                    </p>
+                    <h6 class="api-header">Example</h6>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+attachments$getIds()
+#> [1] "file1.txt" "file2.gdx" "file3.xls"
+
+attachments$remove("file1.txt", removeLocal = FALSE)
+
+attachments$getIds()
+#> [1] "file2.gdx" "file3.xls"
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <!--//code-block-->
+                  </div>
+                  <div id="migrate-custom-renderers" class="section-block">
+                    <h3 class="block-title">Migrate renderers from MIRO 1.x</h3>
+                    <p>
+                      The custom renderers you created with MIRO 1.x will also
+                      work with MIRO 2.0. You will only encounter problems if
+                      you try to use these renderers in the Configuration Mode.
+                      To make your old renderers compatible with the
+                      Configuration Mode of MIRO 2.0, you must follow the rules
+                      below:
+                    </p>
+                    <ul>
+                      <li>A renderer is now bound to a specific symbol.</li>
+                      <li>
+                        Renderers can be shared by different symbols, but they
+                        always belong to one of them.
+                      </li>
+                      <li>
+                        This means that the name of the output and renderer
+                        functions should be:
+                        <span class="code"
+                          >mirorenderer_&#x3C;symbolName&#x3E;Output</span
+                        >
+                        and
+                        <span class="code"
+                          >renderMirorenderer_&#x3C;symbolName&#x3E;</span
+                        >
+                        respectively.
+                      </li>
+                      <li>
+                        Renderer files must be named
+                        <span class="code"
+                          >mirorenderer_&lt;symbolname&gt;.R</span
+                        >.
+                      </li>
+                      <li>
+                        Only one output/render function may be declared per
+                        file.
+                      </li>
+                    </ul>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
+                <section id="widgets-ranges" class="doc-section">
+                  <h2 class="section-title">Widgets with ranges</h2>
+                  <div class="section-block">
+                    <div
+                      class="callout-block callout-success"
+                      style="margin-top: 10px"
+                    >
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Tip:</b>
+                        <p>
+                          Widgets with ranges are only available for double-dash
+                          parameters!
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <p>
+                      We covered the basics of how to use widgets for your
+                      scalar inputs as well as command line parameters. Let's
+                      now take a look at how widgets that return two scalars
+                      instead of one are treated. Those widgets include a slider
+                      with two handles (also referred to as a slider range) and
+                      a date range selector:
+                    </p>
+                    <p>
+                      The lower value (or starting date of the date range) is
+                      postfixed with <kbd>_lo</kbd> and the upper value (or end
+                      date of the date range) is postfixed with <kbd>_up</kbd>.
+                      This means that if you specified a slider range for your
+                      double dash parameter <kbd>--RANGE</kbd>, you can access
+                      the lower value of the range with
+                      <kbd>%RANGE_LO%</kbd> and the upper value with
+                      <kbd>%RANGE_UP%</kbd> while <kbd>%RANGE%</kbd> will not be
+                      set at all. Let's look at the following example: We would
+                      like to specify a time window that we want to fetch stock
+                      data for. Thus, we define a new double dash parameter
+                      <kbd>--TW</kbd> that we want to be visualized in the form
+                      of a date range selector. We add the following JSON
+                      snippet to our
+                      <span class="code">&lt;modelname&gt;.json</span>
+                      configuration file:
+                    </p>
+                    <pre><code class="language-json">
+{
+  "inputWidgets": {
+    "_gmspar_TW": {
+       "alias": "time window",
+       "widgetType": "daterange",
+       "label": "Time window",
+       "start": "2018-02-20",
+       "end": "2019-02-20",
+       "min": "2017-01-01",
+       "max": "2019-12-31",
+       "autoclose": true,
+       "noHcube": true
+    },
+    [...]
+                                    </code></pre>
+                    <p>
+                      In our model, we can access the lower and upper value of
+                      this slider via the compile time variables
+                      <kbd>%TW_LO%</kbd> and <kbd>%TW_UP%</kbd>.
+                    </p>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
+                <section id="widgets-dependencies" class="doc-section">
+                  <h2 class="section-title">Dependencies among widgets</h2>
+                  <div class="section-block">
+                    <p>
+                      One special feature of GAMS MIRO is that you can define
+                      interdependencies between different parameters. Scalars
+                      can take two forms of dependencies to other parameters:
+                      They can feed their attributes from them; and they can
+                      manipulate the content of those parameters. Let's look at
+                      an example: we have a set of scenarios that can be
+                      selected as well as a singleton set with the currently
+                      selected/active scenario. A singleton set is suited to be
+                      represented as a dropdown menu, hence we choose that type
+                      of widget here. We would like to filter our parameters
+                      based on the currently selected scenario so that we only
+                      see data that is relevant for this scenario (this type of
+                      dependency is also referred to as a
+                      <span class="code">backward dependency</span>). This means
+                      that in case scenario 1 is selected via our dropdown menu,
+                      we only want to display data relevant to scenario 1 to the
+                      user. Additionally, we want the choices of our dropdown
+                      menu to be the elements of all available scenarios (also
+                      referred to as a
+                      <span class="code">forward dependency</span>).
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid gifplayer"
+                        style="
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                        "
+                        src="assets/images/dd-filter.png"
+                        alt="Dropdown menu filters table"
+                      />
+                    </div>
+                    <p>
+                      Similar dependencies can also be considered for sliders.
+                      An example is the <i>pickstock</i> model. Here, the number
+                      of stocks you can select for your portfolio can not be
+                      larger than the number of stocks in your dataset.
+                      Similarly, the number of days you can use to train your
+                      model must not be larger than the number of days you have
+                      in the stock price dataset. The slider attributes - namely
+                      the maximum value that can be selected - should change
+                      according to the price data the user uploads. Thus, we
+                      also have forward dependencies here.
+                    </p>
+                    <p>
+                      A table that shows the currently supported forms of
+                      dependencies for the different input widgets is shown
+                      below.
+                    </p>
+                    <div class="table-responsive">
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th>Input widget type</th>
+                            <th>Forward dependency</th>
+                            <th>Backward dependency</th>
+                            <th>Example model</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Dropdown menu</td>
+                            <td><i class="fas fa-check"></i></td>
+                            <td><i class="fas fa-check"></i></td>
+                            <td><span class="code">-</span></td>
+                          </tr>
+                          <tr>
+                            <td>Slider</td>
+                            <td><i class="fas fa-check"></i></td>
+                            <td><i class="fas fa-times"></i></td>
+                            <td><span class="code">pickstock</span></td>
+                          </tr>
+                          <tr>
+                            <td>Checkbox</td>
+                            <td><i class="fas fa-times"></i></td>
+                            <td><i class="fas fa-times"></i></td>
+                            <td>-</td>
+                          </tr>
+                          <tr>
+                            <td>Date selector</td>
+                            <td><i class="fas fa-times"></i></td>
+                            <td><i class="fas fa-times"></i></td>
+                            <td>-</td>
+                          </tr>
+                          <tr>
+                            <td>Daterange selector</td>
+                            <td><i class="fas fa-times"></i></td>
+                            <td>(<i class="fas fa-check"></i>)</td>
+                            <td><span class="code">-</span></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <!--//table-responsive-->
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          You need dependency support for a type of widget which
+                          is currently not available? Please feel free to
+                          contact us at:
+                          <a href="mailto:miro@gams.com" target="_blank"
+                            >miro@gams.com</a
+                          >. You added dependency support for another type of
+                          widget yourself? Send us a pull request on
+                          <a
+                            href="https://github.com/GAMS-dev/miro"
+                            target="_blank"
+                            >GitHub</a
+                          >!
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
+                <section id="jsonfiles" class="doc-section">
+                  <h2 class="section-title">Configuration via JSON files</h2>
+                  <div class="section-block">
+                    <p>
+                      The configuration of MIRO is mainly done via one JSON
+                      file. After the first start of a MIRO app, the following
+                      files are located in
+                      <span class="code"
+                        >&lt;modeldirectory&gt;/conf_&lt;modelname&gt</span
+                      >:
+                    </p>
+                    <ol class="list">
+                      <li>
+                        <h6>&lt;modelname&gt;_io.json</h6>
+                        This <a href="./faqs.html#file-io">file</a> describes
+                        the
+                        <a href="./model.html#data-contract">data contract</a>
+                        between MIRO and GAMS and is generated automatically
+                        each time MIRO is run in
+                        <a href="./model.html#development-mode"
+                          >development mode</a
+                        >. All GAMS symbols that are marked in your GAMS model
+                        with the
+                        <code class="language-gams">$onExternalInput </code> /
+                        <code class="language-gams">$offExternalInput </code>
+                        and
+                        <code class="language-gams">$onExternalOutput </code> /
+                        <code class="language-gams">$offExternalOutput </code>
+                        tags are listed here. You won't ever have to modify this
+                        file!
+                      </li>
+                      <li>
+                        <h6>&lt;modelname&gt;.json</h6>
+                        All the configuration of MIRO happens in this JSON file,
+                        e.g. <span class="code">transport.json</span>. When you
+                        use the Configuration Mode to configure your app, this
+                        file is automatically generated and modified. Here you
+                        can customize the general appearance of MIRO, set
+                        symbol-specific options, adjust the functionality and
+                        much more. Furthermore, all the graphics and widgets are
+                        specified here. If you're using a version control system
+                        like Git, you should check this file in to keep track of
+                        any changes made to the configuration of your app.
+                      </li>
+                    </ol>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          If you don't start MIRO via GAMS Studio but via the
+                          command line, the JSON files are not created
+                          automatically. Read more about this
+                          <a href="./start.html#start-via-command-line">here</a
+                          >.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 350pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                        "
+                        src="assets/images/gams_miro.png"
+                        alt="Custom visualization options"
+                      />
+                    </div>
+                    <p>
+                      In case you want to change the appearance of MIRO or
+                      display a scalar input symbol as a slider, this
+                      information must be stored in the
+                      <span class="code">&lt;modelname&gt;.json</span> file in
+                      JSON syntax. When you first launch MIRO for a new model,
+                      the <span class="code">&lt;modelname&gt;.json</span> file
+                      is almost empty:
+                    </p>
+                    <div class="code-block" id="config-start">
+                      <pre><code class="language-json">{}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      Each adjustment you want to make must be captured within
+                      the curly braces of this file.
+                    </p>
+                    <p>
+                      To ensure that the configuration is correct in terms of
+                      syntax and content, all JSON files are validated against a
+                      schema in the background. Only if the validation is
+                      successful the application starts. If a schema is
+                      violated, an error message is displayed.<br />
+                      The schemas are located in
+                      <span class="code">&lt;MIRORoot&gt;/miro/conf</span>. For
+                      the
+                      <span class="code">&lt;modelname&gt;_io.json</span> this
+                      is the schema
+                      <span class="code"
+                        >&lt;MIRORoot&gt;/miro/conf/io_config_schema.json</span
+                      >
+                      and for the
+                      <span class="code">&lt;modelname&gt;.json</span> the
+                      schema
+                      <span class="code"
+                        >&lt;MIRORoot&gt;/miro/conf/config_schema.json</span
+                      >
+                      is used. Since the latter file is used for the
+                      configuration, only the corresponding schema is of
+                      interest. You can have a look at it
+                      <a href="./schema.html" target="_blank">here</a>.
+                    </p>
+                    <div class="callout-block callout-success">
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Tip:</b>
+                        <p>
+                          In the sections on configuring widgets and charts, you
+                          can also find examples of what the configuration looks
+                          like in JSON.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block" id="widgets-tables">
+                    <h3 class="block-title">Example: tables</h3>
+                    <p>
+                      Let's get back and extend our demo model <i>transport</i>.
+                      We will do this by adjusting the file
+                      <span class="code">transport.json</span> in order to to
+                      adapt MIRO to our needs.
+                    </p>
+                    <p>
+                      GAMS MIRO comes with several options on how you can feed
+                      your
+                      <a href="faqs.html#def-model" target="_blank">model</a>
+                      with input data. By default, GAMS input parameters, sets
+                      and scalars are displayed in an editable table:
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                          max-height: 125pt;
+                        "
+                        src="assets/images/editable-table.png"
+                        alt="editable table"
+                      />
+                    </div>
+                    <p>
+                      The corresponding GAMS declaration statement looks like
+                      this:
+                      <code class="language-gams"
+                        >Parameter d(i,j) 'distance in thousands of
+                        miles';</code
+                      >. By default, every cell in the table is editable and
+                      rows can be inserted and removed. If you only want to
+                      allow your users to edit certain tables or even only
+                      certain columns within a table, you can customize the
+                      visualization for the underlying GAMS parameter. You do so
+                      by adding this kind of information to the
+                      <span class="code">transport.json</span> file. For
+                      example, if we decide that the table for our parameter
+                      <span class="code">d</span> should not be editable, this
+                      information needs to be added to our JSON file as follows:
+                    </p>
+                    <div class="code-block" id="table-readonly">
+                      <pre><code class="language-json">{
+  &#x22;inputWidgets&#x22;: {
+    &#x22;d&#x22;: {
+      &#x22;widgetType&#x22;: &#x22;table&#x22;,
+      &#x22;readonly&#x22;: true
+    }
+  }
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block" id="widgets-scalars">
+                    <h3 class="block-title">Example: scalars</h3>
+                    <p>
+                      Let's get back to our <i>transport</i> app. In the
+                      <a href="#table-readonly" class="scrollto"
+                        >previous section</a
+                      >
+                      we configured the table of parameter
+                      <span class="code">d</span> so that it is no longer
+                      editable. We achieved this by writing the corresponding
+                      information into the
+                      <span class="code">transport.json</span> file. Now we
+                      extend the configuration of our app further by adding
+                      information about how to display the scalar value
+                      <span class="code">f</span> ('<i
+                        >freight in dollars per case per thousand miles</i
+                      >'). Instead of displaying it in a table, we want to use a
+                      <i>slider</i>:
+                    </p>
+                    <div class="code-block" id="scalar-slider">
+                      <pre><code class="language-json">{
+  &#x22;inputWidgets&#x22;: {
+    &#x22;d&#x22;: {
+      &#x22;widgetType&#x22;: &#x22;table&#x22;,
+      &#x22;readonly&#x22;: true
+    },
+    &#x22;f&#x22;: {
+      &#x22;widgetType&#x22;: &#x22;slider&#x22;,
+      &#x22;alias&#x22;: &#x22;Freight in dollars per case per thousand miles&#x22;,
+      &#x22;label&#x22;: &#x22;Select the freight costs&#x22;,
+      &#x22;min&#x22;: 1,
+      &#x22;max&#x22;: 500,
+      &#x22;default&#x22;: 90,
+      &#x22;step&#x22;: 1
+    }
+  }
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      When we restart our app, the scalar is now automatically
+                      removed from the <i>Scalars</i> table and instead rendered
+                      as a separate widget:
+                    </p>
+                    <div class="section-block" style="text-align: center">
+                      <img
+                        class="img-fluid"
+                        style="
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                          max-height: 60pt;
+                        "
+                        src="assets/images/trnsport-slider.png"
+                        alt="Input widgets for scalar values"
+                      />
+                    </div>
+                    <p>
+                      In the sections on
+                      <a href="./widgets.html">widgets</a> and
+                      <a href="./charts.html">charts</a> you will find a JSON
+                      example for each widget or chart type.
+                    </p>
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block" id="widgets-commandLine">
+                    <h3 class="block-title">Command line parameters</h3>
+                    <p>
+                      We have already mentioned the possibility of
+                      <a href="./model.html#command-line"
+                        >setting GAMS command line parameters via MIRO</a
+                      >. Since
+                      <a
+                        href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine"
+                        target="_blank"
+                        >GAMS Options</a
+                      >
+                      and
+                      <a
+                        href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample"
+                        target="_blank"
+                        >Double Dash Parameters</a
+                      >
+                      are specified via the command line in GAMS, they can not
+                      be tagged in the GAMS code with
+                      <code class="language-gams">$onExternalInput </code> /
+                      <code class="language-gams">$offExternalInput </code>. To
+                      be able to set them from MIRO, they can be specified in
+                      the <span class="code">&lt;modelname&gt;.json</span> file.
+                      In order for MIRO to recognize whether your symbol is a
+                      double dash parameter or a GAMS option, you must prefix
+                      the symbol name with either <kbd>_gmspar_</kbd> for double
+                      dash parameters or <kbd>_gmsopt_</kbd> for GAMS options.
+                    </p>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          Both, GAMS options and double-dash parameters can be
+                          displayed as a slider, dropdown menu, checkbox, text
+                          input or numeric input. For double-dash parameters
+                          date(-range) selector and slider range are also
+                          available.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <p>
+                      Let's assume you want MIRO to call your GAMS model with
+                      the double dash parameter <kbd>--numberPeriods</kbd>,
+                      which can be set to a value between 1 and 14. You also
+                      want to be able to select the MIP solver to use. As you
+                      have licenses for CPLEX, Gurobi and XPRESS, you can only
+                      use either of these three solvers. Thus, your
+                      <span class="code">&lt;modelname&gt;.json</span> file
+                      could look as follows:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-json">{
+  &#x22;inputWidgets&#x22;: {
+    &#x22;_gmspar_numberPeriods&#x22;: {
+      &#x22;widgetType&#x22;: &#x22;slider&#x22;,
+      &#x22;alias&#x22;: &#x22;Number of time periods&#x22;,
+      &#x22;label&#x22;: &#x22;Select the number of time periods to solve&#x22;,
+      &#x22;min&#x22;: 1,
+      &#x22;max&#x22;: 14,
+      &#x22;default&#x22;: 11,
+      &#x22;step&#x22;: 1
+    },
+    &#x22;_gmsopt_mip&#x22;: {
+      &#x22;widgetType&#x22;: &#x22;dropdown&#x22;,
+      &#x22;alias&#x22;: &#x22;MIP Solver&#x22;,
+      &#x22;label&#x22;: &#x22;Solver to use for MIP models&#x22;,
+      &#x22;choices&#x22;: [
+        &#x22;CPLEX&#x22;,
+        &#x22;GUROBI&#x22;,
+        &#x22;XPRESS&#x22;
+      ],
+      &#x22;multiple&#x22;: false,
+      &#x22;selected&#x22;: &#x22;CPLEX&#x22;
+    }
+  }
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>The resulting interface in MIRO now looks as follows:</p>
+                    <div class="section-block" style="text-align: center">
+                      <img
+                        class="img-fluid"
+                        style="
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                          max-height: 125pt;
+                        "
+                        src="assets/images/input-widgets-command-line.png"
+                        alt="Input widgets for command line parameters"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <section id="language-files" class="doc-section">
+                  <h2 class="section-title">Language Files</h2>
+                  <div class="section-block">
+                    <p>
+                      GAMS MIRO comes with the ability to change the preferred
+                      language. Setting your preferred language results in MIRO
+                      embedding the corresponding language file where all the
+                      language specific components are specified via JSON
+                      syntax. MIRO currently ships with three of those language
+                      files: English, German and Chinese. If you would like to
+                      add another language to this list, you are more than
+                      welcome to translate one of the existing language files.
+                      The language files are located at:
+                      <span class="code"
+                        >&lt;MIRORoot&gt;/miro/conf/en.json</span
+                      >
+                      and are validated against the
+                      <a href="https://json-schema.org/" target="_blank"
+                        >JSON Schema</a
+                      >
+                      file:
+                      <span class="code"
+                        >&lt;MIRORoot&gt;/miro/conf/language_schema.json</span
+                      >. Note that there are sometimes placeholders in the
+                      language files. Let's take the error message:
+                      <kbd
+                        >"The value '%s' for the slider: '%s' is not of numeric
+                        type."</kbd
+                      >
+                      for example. <kbd>%s</kbd> will then be replaced with the
+                      value and name of the slider by MIRO. Thus, if you create
+                      a new language file, be sure to include these placeholders
+                      there!
+                    </p>
+                    <p>
+                      If you would like to contribute your language file, so
+                      that other people can profit from your work as well, send
+                      us an email:
+                      <a href="mailto:miro@gams.com" target="_blank"
+                        >miro@gams.com</a
+                      >.
+                    </p>
+                  </div>
+                  <!--//section-block-->
+                </section>
+              </div>
+              <!--//content-inner-->
+            </div>
+            <!--//doc-content-->
+            <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+              <div id="doc-nav" class="doc-nav">
+                <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                  <a class="nav-link scrollto" href="#custom-renderers"
+                    >Custom Renderers</a
+                  >
+                  <nav class="doc-sub-menu nav flex-column">
+                    <a class="nav-link scrollto" href="#custom-renderer-how-to"
+                      >How to use a custom renderer</a
+                    >
+                    <a class="nav-link scrollto" href="#additional-datasets"
+                      >Additional datasets</a
+                    >
+                    <a class="nav-link scrollto" href="#additional-r-packages"
+                      >Additional R packages</a
+                    >
+                    <a class="nav-link scrollto" href="#custom-renderer-views"
+                      >Views</a
+                    >
+                    <a
+                      class="nav-link scrollto"
+                      href="#custom-renderer-attachments"
+                      >Attachments</a
+                    >
+                    <a
+                      class="nav-link scrollto"
+                      href="#migrate-custom-renderers"
+                      >Migrate renderers from MIRO 1.x</a
+                    >
+                  </nav>
+                  <a class="nav-link scrollto" href="#widgets-ranges"
+                    >Widgets with ranges</a
+                  >
+                  <a class="nav-link scrollto" href="#widgets-dependencies"
+                    >Dependencies among Widgets</a
+                  >
+                  <a class="nav-link scrollto" href="#jsonfiles"
+                    >Configuration via JSON files</a
+                  >
+                  <a class="nav-link scrollto" href="#language-files"
+                    >Language Files</a
+                  >
+                </nav>
+                <!--//doc-menu-->
+              </div>
+            </div>
+            <!--//doc-sidebar-->
+          </div>
+          <!--//doc-body-->
+        </div>
+        <!--//container-->
+      </div>
+      <!--//doc-wrapper-->
+    </div>
+    <!--//page-wrapper-->
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-3.3.1.min.js"
+    ></script>
+    <!--#include virtual="/footer_miro.html" -->
+
+    <!-- Main Javascript -->
+    <script
+      type="text/javascript"
+      src="assets/plugins/prism/min/prism-min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/stickyfill/dist/stickyfill.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/markjs/jquery.mark.min.js"
+    ></script>
+
+    <script type="text/javascript" src="assets/js/main.js"></script>
+
+    <!-- gifplayer plugin -->
+    <script type="text/javascript" src="assets/js/gifplayer.js"></script>
+    <script>
+      $(".gifplayer").gifplayer();
+    </script>
+    <!-- KaTeX -->
+    <script
+      type="text/javascript"
+      defer
+      src="assets/plugins/katex/katex.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      defer
+      src="assets/plugins/katex/auto-render.min.js"
+      onload="renderMathInElement(document.getElementsByClassName('katex')[0],{delimiters:[{left:'$$',right:'$$',display:true},{left: '$',right:'$',display:false}]});"
+    ></script>
+  </body>
+</html>
