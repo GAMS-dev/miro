@@ -584,6 +584,15 @@ body{
 #videoOverlay {
   padding: 20px;
 }
+.index-no-video {
+    padding: 20px;
+    background: rgb(73 77 85);
+    color: #f1f1f1;
+    width: inherit;
+}
+.cards-section.text-center.index-page {
+    padding-top:0;
+}
 @media screen and (min-width: 768px) {
   .page-wrapper .sub-header .video-container {
     padding-top:40.42%;

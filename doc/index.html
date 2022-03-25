@@ -47,8 +47,8 @@
         class="sub-header text-center"
         style="padding: 0; position: relative"
       >
-        <div class="container video-container">
-          <div id="videoOverlay">
+        <div class="container">
+          <div class="index-no-video">
             <div class="branding">
               <h1 class="logo">
                 <img
@@ -105,16 +105,6 @@
               </div>
             </div>
           </div>
-          <video
-            playsinline
-            autoplay
-            muted
-            loop
-            id="headerVid"
-            poster="assets/images/header_base_poster.png"
-          >
-            <source data-src="assets/images/header_base.mp4" type="video/mp4" />
-          </video>
         </div>
         <!--//container-->
       </header>
@@ -146,12 +136,16 @@
               technology makes it possible to run in highly scalable cloud
               environments.
             </p>
+            <p>
+              For a first insight into GAMS MIRO, watch the recording of our
+              <a href="#video-wrapper" class="scrollto">latest MIRO talk</a>.
+            </p>
           </div>
           <!--//intro-->
           <div class="intro" style="margin: 115px auto">
             <div class="row">
               <div class="col-sm-12 col-md-6 col-lg-6 center-text-small">
-                <h3 class="block-title">Components</h3>
+                <h3 class="block-title">Introduction</h3>
                 <p>
                   The term <i>GAMS MIRO</i> describes the entire deployment
                   system for GAMS models. It includes several elements:
@@ -466,7 +460,7 @@
             <h3 class="block-title">Learn more</h3>
             <div class="section-block">
               <p>
-                Watch the recording of latest MIRO talk "Model Deployment in
+                Watch the recording of our latest MIRO talk "Model Deployment in
                 GAMS" (2021-09-06):
               </p>
               <!-- 16:9 aspect ratio -->
