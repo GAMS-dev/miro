@@ -784,7 +784,7 @@ font-size: 12px;
                         textInput("general_pageTitle", labelTooltip(
                           lang$adminMode$general$pageTitle$label,
                           lang$adminMode$general$pageTitle$tooltip,
-                          "https://gams.com/miro/customize.html#application-title"
+                          "https://gams.com/miro/configuration_general.html#application-title"
                         ),
                         value = if (!is.null(configJSON$pageTitle) && nchar(configJSON$pageTitle)) configJSON$pageTitle else configJSON$modelTitle
                         )
@@ -794,7 +794,7 @@ font-size: 12px;
                         fileInput("widget_general_logo_upload", labelTooltip(
                           lang$adminMode$general$logo$label,
                           lang$adminMode$general$logo$tooltip,
-                          "https://gams.com/miro/customize.html#app-logo"
+                          "https://gams.com/miro/configuration_general.html#app-logo"
                         ),
                         width = "100%",
                         multiple = FALSE,
@@ -817,7 +817,7 @@ font-size: 12px;
                         selectInput("general_theme", labelTooltip(
                           lang$adminMode$general$theme$label,
                           lang$adminMode$general$ui$tooltipDocs,
-                          "https://gams.com/miro/customize.html#dark-mode"
+                          "https://gams.com/miro/configuration_general.html#dark-mode"
                         ),
                         choices = langSpecificUI$theme,
                         selected = if (length(configJSON$theme)) configJSON$theme else config$theme
@@ -828,7 +828,7 @@ font-size: 12px;
                           labelTooltip(
                             lang$adminMode$general$customCss$label,
                             lang$adminMode$general$customCss$tooltip,
-                            "https://gams.com/miro/customize.html#custom-css"
+                            "https://gams.com/miro/configuration_general.html#custom-css"
                           ),
                           value = identical(configJSON$customCss, TRUE)
                         )
@@ -848,7 +848,7 @@ font-size: 12px;
                             lang$adminMode$general$readme$readmeTooltip, " - ",
                             tolower(lang$adminMode$general$ui$tooltipDocs)
                           ), class = "info-header",
-                          href = "https://gams.com/miro/customize.html#app-readme",
+                          href = "https://gams.com/miro/configuration_general.html#app-readme",
                           tags$span(
                             class = "fas fa-info-circle", class = "info-icon",
                             role = "presentation",
@@ -942,7 +942,7 @@ font-size: 12px;
                           lang$adminMode$general$defaultScenName$tooltip, " - ",
                           tolower(lang$adminMode$general$ui$tooltipDocs)
                         ),
-                        "https://gams.com/miro/customize.html#default-scenario"
+                        "https://gams.com/miro/configuration_general.html#default-scenario"
                       ),
                       value = if (length(configJSON$defaultScenName) &&
                         nchar(configJSON$defaultScenName)) {
@@ -967,7 +967,7 @@ font-size: 12px;
                           lang$adminMode$general$actUpload$title, " - ",
                           tolower(lang$adminMode$general$ui$tooltipDocs)
                         ),
-                        "https://gams.com/miro/customize.html#local-upload"
+                        "https://gams.com/miro/configuration_general.html#local-upload"
                       ),
                       value = if (length(configJSON$activateModules$loadLocal)) {
                         configJSON$activateModules$loadLocal
@@ -998,7 +998,7 @@ font-size: 12px;
                         tags$a("",
                           title = lang$adminMode$general$ui$tooltipDocs,
                           class = "info-wrapper",
-                          href = "https://gams.com/miro/customize.html#general-output-attach",
+                          href = "https://gams.com/miro/configuration_general.html#general-output-attach",
                           tags$span(
                             class = "fas fa-info-circle", class = "info-icon",
                             role = "presentation",
@@ -1023,7 +1023,7 @@ font-size: 12px;
                       labelTooltip(
                         lang$adminMode$general$downloadTempFiles$label,
                         lang$adminMode$general$ui$tooltipDocs,
-                        "https://gams.com/miro/customize.html#general-temp-dir"
+                        "https://gams.com/miro/configuration_general.html#general-temp-dir"
                       ),
                       value = if (length(configJSON$activateModules$downloadTempFiles)) {
                         configJSON$activateModules$downloadTempFiles
@@ -1038,7 +1038,7 @@ font-size: 12px;
                           lang$adminMode$general$meta$title, " - ",
                           tolower(lang$adminMode$general$ui$tooltipDocs)
                         ),
-                        "https://gams.com/miro/customize.html#include-metadata"
+                        "https://gams.com/miro/configuration_general.html#include-metadata"
                       ),
                       value = if (length(configJSON$excelIncludeMeta)) {
                         configJSON$excelIncludeMeta
@@ -1053,7 +1053,7 @@ font-size: 12px;
                           lang$adminMode$general$empty$title, " - ",
                           tolower(lang$adminMode$general$ui$tooltipDocs)
                         ),
-                        "https://gams.com/miro/customize.html#include-empty"
+                        "https://gams.com/miro/configuration_general.html#include-empty"
                       ),
                       value = if (identical(configJSON$excelIncludeEmptySheets, FALSE)) {
                         FALSE
@@ -1069,7 +1069,7 @@ font-size: 12px;
                           lang$adminMode$general$decimal$label,
                           tags$a("",
                             title = lang$adminMode$general$decimal$tooltip, class = "info-wrapper",
-                            href = "https://www.gams.com/miro/customize.html#decimal-places",
+                            href = "https://www.gams.com/miro/configuration_general.html#decimal-places",
                             tags$span(
                               class = "fas fa-info-circle", class = "info-icon",
                               role = "presentation",
@@ -1099,7 +1099,7 @@ font-size: 12px;
                         labelTooltip(
                           lang$adminMode$general$hcubeModule$label,
                           lang$adminMode$general$hcubeModule$tooltip,
-                          "https://gams.com/miro/customize.html#activate-hcube"
+                          "https://gams.com/miro/configuration_general.html#activate-hcube"
                         ),
                         value = isTRUE(configJSON$activateModules$hcube)
                       ),
@@ -1121,7 +1121,7 @@ font-size: 12px;
                             tags$a("",
                               title = lang$adminMode$general$ui$tooltipDocs,
                               class = "info-wrapper",
-                              href = "https://gams.com/miro/customize.html#command-line-args",
+                              href = "https://gams.com/miro/configuration_general.html#command-line-args",
                               tags$span(
                                 class = "fas fa-info-circle", class = "info-icon",
                                 role = "presentation",
@@ -1166,7 +1166,7 @@ font-size: 12px;
                         labelTooltip(
                           lang$adminMode$general$mirologfile$label,
                           lang$adminMode$general$mirologfile$tooltip,
-                          "https://gams.com/miro/customize.html#miro-log"
+                          "https://gams.com/miro/configuration_general.html#miro-log"
                         ),
                         value = if (!is.null(configJSON$miroLogFile) && nchar(configJSON$miroLogFile)) {
                           configJSON$miroLogFile
@@ -1183,7 +1183,7 @@ font-size: 12px;
                           tags$a("",
                             title = lang$adminMode$general$ui$tooltipDocs,
                             class = "info-wrapper",
-                            href = "https://gams.com/miro/customize.html#general-duration",
+                            href = "https://gams.com/miro/configuration_general.html#general-duration",
                             tags$span(
                               class = "fas fa-info-circle", class = "info-icon",
                               role = "presentation",
@@ -1259,7 +1259,7 @@ font-size: 12px;
                     tags$h2(
                       lang$adminMode$general$overwriteSymbolAliases$input,
                       tags$a(
-                        title = lang$adminMode$general$ui$tooltipDocs, class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/customize.html#naming",
+                        title = lang$adminMode$general$ui$tooltipDocs, class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/configuration_symbols.html#naming",
                         tags$span(
                           class = "fas fa-info-circle", class = "info-icon",
                           role = "presentation",
@@ -1419,7 +1419,7 @@ font-size: 12px;
                       labelTooltip(
                         lang$adminMode$general$overwriteSheetOrder$input,
                         lang$adminMode$general$ui$tooltipDocs,
-                        "https://gams.com/miro/customize.html#tab-ordering"
+                        "https://gams.com/miro/configuration_symbols.html#tab-ordering"
                       ),
                       choices = inputTabs,
                       selected = inputTabs,
@@ -1434,7 +1434,7 @@ font-size: 12px;
                           title = lang$adminMode$general$ui$tooltipDocs,
                           lang$adminMode$general$ui$headerInputGroups,
                           tags$a(
-                            class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/customize.html#tab-grouping",
+                            class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/configuration_symbols.html#tab-grouping",
                             tags$span(
                               class = "fas fa-info-circle", class = "info-icon",
                               role = "presentation",
@@ -1484,7 +1484,7 @@ font-size: 12px;
                       labelTooltip(
                         lang$adminMode$general$overwriteSheetOrder$output,
                         lang$adminMode$general$ui$tooltipDocs,
-                        "https://gams.com/miro/customize.html#tab-ordering"
+                        "https://gams.com/miro/configuration_symbols.html#tab-ordering"
                       ),
                       choices = outputTabs,
                       selected = outputTabs,
@@ -1498,7 +1498,7 @@ font-size: 12px;
                           title = lang$adminMode$general$ui$tooltipDocs,
                           lang$adminMode$general$ui$headerOutputGroups,
                           tags$a(
-                            class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/customize.html#tab-grouping",
+                            class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/configuration_symbols.html#tab-grouping",
                             tags$span(
                               class = "fas fa-info-circle", class = "info-icon",
                               role = "presentation",
@@ -1536,7 +1536,7 @@ font-size: 12px;
                                 lang$adminMode$general$hiddenOutputSymbols$label,
                                 tags$a("",
                                   class = "info-wrapper",
-                                  href = "https://gams.com/miro/customize.html#hidden-symbols",
+                                  href = "https://gams.com/miro/configuration_symbols.html#hidden-symbols",
                                   tags$span(
                                     class = "fas fa-info-circle", class = "info-icon",
                                     role = "presentation",
@@ -1561,7 +1561,7 @@ font-size: 12px;
                                 lang$adminMode$general$hiddenOutputScalars$label,
                                 tags$a("",
                                   class = "info-wrapper",
-                                  href = "https://gams.com/miro/customize.html#hidden-scalars",
+                                  href = "https://gams.com/miro/configuration_symbols.html#hidden-scalars",
                                   tags$span(
                                     class = "fas fa-info-circle", class = "info-icon",
                                     role = "presentation",
@@ -1581,7 +1581,7 @@ font-size: 12px;
                         tags$h4(
                           title = lang$adminMode$general$ui$tooltipDocs, lang$adminMode$general$ui$headerTabSymlinks,
                           tags$a(
-                            class = "info-header", href = "https://gams.com/miro/customize.html#tab-symlinks",
+                            class = "info-header", href = "https://gams.com/miro/configuration_symbols.html#symbol-links",
                             tags$span(
                               class = "fas fa-info-circle", class = "info-icon",
                               role = "presentation",
@@ -1700,7 +1700,7 @@ font-size: 12px;
                       tolower(lang$adminMode$general$ui$tooltipDocs)
                     ),
                     class = "info-header",
-                    href = "https://gams.com/miro/customize.html#analysis-scripts",
+                    href = "https://gams.com/miro/configuration_analysis.html",
                     tags$span(
                       class = "fas fa-info-circle", class = "info-icon",
                       role = "presentation",

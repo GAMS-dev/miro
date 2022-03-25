@@ -231,7 +231,7 @@ getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE) {
         labelTooltip(
           lang$adminMode$graphs$miroPivotOptions$fixedColumnsSwitch,
           lang$adminMode$graphs$miroPivotOptions$fixedColumnsTooltip,
-          "https://gams.com/miro/customize.html#fixed-columns"
+          "https://gams.com/miro/configuration_general.html#fixed-columns"
         ),
         value = !isFALSE(currentConfig$fixedColumns)
       )

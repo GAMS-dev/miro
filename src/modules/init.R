@@ -672,7 +672,7 @@ if (is.null(errMsg)) {
         if (identical(widgetConfig$apiVersion, 2L)) {
           modelIn[[i]]$apiVersion <- 2L
         } else {
-          warningMsgTmp <- "API version 1 for custom input widgets is deprecated and will be removed with a future release of MIRO. Please migrate your input widgets to API version 2. Go here to find the latest documentation: https://gams.com/miro/customize.html#custom-input-widgets"
+          warningMsgTmp <- "API version 1 for custom input widgets is deprecated and will be removed with a future release of MIRO. Please migrate your input widgets to API version 2. Go here to find the latest documentation: https://gams.com/miro/configuration_json_only.html#custom-input-widgets"
           warning(warningMsgTmp, call. = FALSE)
           warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
         }

@@ -250,7 +250,7 @@ getDtOptions <- reactive({
             lang$adminMode$tables$dt$buttons$title, " - ",
             tolower(lang$adminMode$general$ui$tooltipDocs)
           ),
-          href = "https://gams.com/miro/customize.html#export-buttons"
+          href = "https://gams.com/miro/configuration_tables.html#export-buttons"
         ),
         choices = langSpecificTable$buttons,
         selected = configJSON$datatable$options$buttons,
@@ -356,7 +356,7 @@ getOutputTableOptions <- reactive({
             lang$adminMode$tables$dt$buttons$title, " - ",
             tolower(lang$adminMode$general$ui$tooltipDocs)
           ),
-          href = "https://gams.com/miro/customize.html#export-buttons"
+          href = "https://gams.com/miro/configuration_tables.html#export-buttons"
         ),
         choices = langSpecificTable$buttons,
         selected = rv$tableWidgetConfig$options$buttons,

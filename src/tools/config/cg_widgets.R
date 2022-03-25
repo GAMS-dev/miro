@@ -2205,7 +2205,7 @@ getSymbolHotOptions <- function() {
             lang$adminMode$widgets$table$colWidths,
             tags$a("",
               title = lang$adminMode$widgets$table$colWidthsTooltip, class = "info-wrapper",
-              href = "https://gams.com/miro/customize.html#table-colwidths",
+              href = "https://gams.com/miro/configuration_json_only.html#table-colwidths",
               tags$span(
                 class = "fas fa-info-circle", class = "info-icon",
                 role = "presentation",
@@ -2241,9 +2241,9 @@ getSymbolHotOptions <- function() {
           style = "font-weight: 600;",
           lang$adminMode$widgets$table$dropdownColsTitle
         ),
-        tags$div(lang$adminMode$widgets$table$dropdownColsDesc, tags$a("https://gams.com/miro/customize.html#table-dropdown",
+        tags$div(lang$adminMode$widgets$table$dropdownColsDesc, tags$a("https://gams.com/miro/configuration_json_only.html#table-dropdown",
           title = lang$adminMode$general$ui$tooltipDocs,
-          href = "https://gams.com/miro/customize.html#table-dropdown", target = "_blank"
+          href = "https://gams.com/miro/configuration_json_only.html#table-dropdown", target = "_blank"
         )),
       )
     )

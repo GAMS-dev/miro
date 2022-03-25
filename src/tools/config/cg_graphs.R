@@ -4698,7 +4698,7 @@ getCustomOptions <- reactive({
       selectizeInput("customPackages", tags$div(
         lang$adminMode$graphs$customOptions$packages,
         tags$a("",
-          title = lang$adminMode$general$ui$tooltipDocs, class = "info-wrapper", href = "https://gams.com/miro/customize.html#custom-renderers",
+          title = lang$adminMode$general$ui$tooltipDocs, class = "info-wrapper", href = "https://gams.com/miro/configuration_advanced.html#additional-r-packages",
           tags$span(
             class = "fas fa-info-circle", class = "info-icon",
             role = "presentation",
