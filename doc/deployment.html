@@ -106,21 +106,22 @@
                       <a href="./model.html">model preparation</a> and
                       <a href="./customize.html">configuration</a>.
                     </p>
+                    <p>
+                      In order to deploy a MIRO app, you first need to create a
+                      <a href="#model-assembly-file" class="scrollto"
+                        >model assembly file</a
+                      >. All other things described in the following section,
+                      like logo, title, web app manifest file, signing the app,
+                      are optional.
+                    </p>
                   </div>
                   <!--//section-block-->
                 </section>
                 <!--//doc-section-->
-                <section id="step-by-step" class="doc-section">
-                  <h2 class="section-title">App deployment - step by step</h2>
-                  <p>
-                    The deployment of an application consists of two parts: The
-                    creation of a self-contained app bundle and its
-                    installation.
-                  </p>
-                  <div class="section-block" id="sbs-create-app">
-                    <h3>Create an app bundle</h3>
-                    <b id="model-assembly-file">The model assembly file:</b
-                    ><br />
+                <section id="sbs-create-app" class="doc-section">
+                  <h2 class="section-title">Create an app bundle</h2>
+                  <div id="model-assembly-file" class="section-block">
+                    <h3>Model assembly file</h3>
                     <p>
                       Before you export your app bundle, MIRO needs to know
                       about the files that belong to your model. This is
@@ -190,7 +191,227 @@ inc/inc2.inc
                       <span class="code">inc/inc2.inc</span> and the entire
                       directory <span class="code">data</span> to be included.
                     </p>
-                    <b>Export app:</b><br />
+                  </div>
+                  <!--//section-block-->
+                  <div id="bundle-scenarios" class="section-block">
+                    <h3>Bundling Data with your App</h3>
+                    <p>
+                      In case you want to distribute scenario data with your
+                      MIRO application, you can do so by simply placing
+                      MIROSCEN, GDX, CSV or XLSX files in the
+                      <span class="code">data_&lt;modelname&gt;</span>
+                      directory. When your MIRO app is started for the first
+                      time, these datasets will be stored in the MIRO database.
+                      The filename is used as the scenario name. To learn more,
+                      read the chapter on
+                      <a href="./start.html#startup-import"
+                        >importing multiple scenarios on startup</a
+                      >. Note that the owner of these scenarios is the user that
+                      launches the MIRO app for the first time!
+                    </p>
+                  </div>
+                  <!--//section-block-->
+                  <div id="default-logo" class="section-block">
+                    <h3>Default Logo</h3>
+                    <p>
+                      When adding the MIRO app to the MIRO library, the user has
+                      the option to choose a logo to quickly identify your app.
+                      If you want to suggest a logo, simply place an image
+                      (format: png/jpg/jpeg; aspect ratio: 8 &times; 5 fits
+                      best) with the name
+                      <span class="code">app_logo</span> inside the
+                      <span class="code">static_&lt;modelname&gt;</span> folder
+                      before deploying. When a user imports your app, this logo
+                      will be suggested to them. If no such file is found, a
+                      default logo is used.
+                    </p>
+                    <div class="section-block" style="text-align: center">
+                      <img
+                        class="img-fluid"
+                        style="max-height: 250pt"
+                        src="assets/images/deployment/custom_logo.png"
+                        alt="Custom Logo for MIRO library"
+                      />
+                    </div>
+                    <p>
+                      <b>Note</b>: The <span class="code">app_logo</span> logo
+                      described here is located in the same folder, but is
+                      independent of the logo
+                      <a href="./configuration_general.html#app-logo"
+                        >set in the Configuration Mode</a
+                      >.
+                    </p>
+                  </div>
+                  <!--//section-block-->
+                  <div id="default-title-description" class="section-block">
+                    <h3>Default Title and Description</h3>
+                    <p>
+                      When adding a new MIRO app to the library, a user can
+                      specify an app title as well as a short description. If
+                      you want to provide defaults for these, you can do so via
+                      a JSON file <span class="code">app_info.json</span> inside
+                      the
+                      <span class="code">static_&lt;modelname&gt;</span> folder.
+                      The JSON file has to have the following structure:
+                    </p>
+                    <pre><code class="language-json">{
+    "title": "Example app",
+    "description": "This is my first MIRO app"
+}</code></pre>
+                  </div>
+                  <!--//section-block-->
+                  <div id="web-app-manifest" class="section-block">
+                    <h3>Make your App Mobile Friendly</h3>
+                    <p>
+                      If you plan to deploy your app on
+                      <a href="./server.html">MIRO Server</a>, you can add a
+                      custom
+                      <a
+                        href="https://developer.mozilla.org/en-US/docs/Web/Manifest"
+                        target="_blank"
+                        >web app manifest</a
+                      >. This allows you to customize the name, logo, and more
+                      when your app is added to a user's home screen. To create
+                      a custom manifest, simply create a new
+                      <kbd>manifest.json</kbd> file in the
+                      <kbd>static_&lt;modelname&gt;</kbd> directory of your app.
+                      You can use the following template:
+                    </p>
+                    <pre><code class="language-json">{
+    "theme_color": "#ffffff",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "start_url": "..",
+    "short_name": "MIRO app",
+    "name": "This is a GAMS MIRO app",
+    "icons": [
+        {
+            "src": "logo192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "logo512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
+</code></pre>
+                    <p>
+                      Make sure you also add the two icons
+                      <kbd>logo192.png</kbd> (192x192 pixels) and
+                      <kbd>logo512.png</kbd> (512x512 pixels) to the
+                      <kbd>static_&lt;modelname&gt;</kbd> directory. They will
+                      be used when adding your app to the home screen on Android
+                      devices. For iOS devices, add another icon named
+                      <kbd>apple-touch-icon.png</kbd> with a size of 180x180
+                      pixels. The <kbd>pickstock</kbd> sample application
+                      contains a manifest that you can use as a reference.
+                    </p>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Attention</b>
+                        <p>
+                          There is a known issue where the
+                          <kbd>apple-touch-icon.png</kbd> does not display
+                          properly on Apple devices.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                  <!--//section-block-->
+                  <div class="section-block" id="sbs-sign-app">
+                    <h3>Sign your MIRO Apps</h3>
+                    <p>
+                      MIRO applications contain a lot of code (the GAMS model,
+                      custom renderers, etc.) that can be used for malicious
+                      purposes. To better protect you from these harmful apps,
+                      MIRO allows you to sign apps so you can be sure they come
+                      from developers you trust. To ensure the authenticity of
+                      an app, MIRO uses asymmetric encryption. The first time
+                      you import an app from an untrusted developer, you are
+                      asked if you want to trust that developer. To identify the
+                      developer, the fingerprint of the developer's
+                      <a
+                        href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)"
+                        target="_blank"
+                        >RSA</a
+                      >
+                      public key is displayed. This fingerprint can be
+                      transmitted through a different channel than the one you
+                      used to get the app.
+                    </p>
+                    <p>
+                      In the following section we will explain how developers of
+                      MIRO apps can sign their apps.
+                    </p>
+                    <p>
+                      To sign your apps, you need to have an RSA keypair. If you
+                      do not already have one, you can create one e.g. using
+                      your SSH client: on macOS/Linux you can use
+                      <a href="https://www.openssh.com" target="_blank"
+                        >OpenSSH</a
+                      >:
+                      <code class="console-content console-box-inline"
+                        ><span class="console-mark">&gt;</span>ssh-keygen -t
+                        rsa</code
+                      >
+                      or
+                      <a href="https://www.putty.org" target="_blank">PuTTY</a>
+                      on Windows: open the PuTTYgen tool, select RSA with a size
+                      of at least 2048 bits, follow the instructions and store
+                      the private key. Afterwards, you will need to convert your
+                      key to the PEM format. To do so, load the private key with
+                      PuTTYgen, go to the <i>Conversions</i> menu and select
+                      <i>Export OpenSSH key (force new file format)</i>.
+                    </p>
+                    <p>
+                      Once you have your private key, you should create a
+                      directory called <kbd>signature</kbd> in the
+                      <i>MIRO app path</i>. The location of the
+                      <i>MIRO app path</i> can be found in the
+                      <i>Preferences</i> window. Inside the
+                      <kbd>signature</kbd> directory, place your key file and
+                      name it <kbd>private-key.pem</kbd>. If you have encrypted
+                      your key with a passphrase, place a file named
+                      <kbd>key-passphrase</kbd> (no extension) next to your
+                      private key. This file should contain only the passphrase
+                      for your key.
+                    </p>
+                    <p>
+                      Public keys that you have trusted are stored (in PEM
+                      format) in a directory named: <kbd>known_keys</kbd> in
+                      your <i>MIRO app path</i>.
+                    </p>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          If you want to know how signing and validating MIROAPP
+                          files works in detail, read
+                          <a href="./file_formats.html#signed-miroapp-file"
+                            >here</a
+                          >.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                  <!--//section-block-->
+                  <div id="export-app" class="section-block">
+                    <h3>Export app</h3>
                     <p>
                       Once you specified the files that belong to your model,
                       you are ready to export your MIRO app!
@@ -287,132 +508,6 @@ inc/inc2.inc
                           <a href="#model-assembly-file" class="scrollto"
                             >model assembly file</a
                           >.
-                        </p>
-                      </div>
-                      <!--//content-->
-                    </div>
-                    <!--//callout-block-->
-                    <h6 id="bundle-scenarios">Bundling data with your app</h6>
-                    <p>
-                      In case you want to distribute scenario data with your
-                      MIRO application, you can do so by simply placing
-                      MIROSCEN, GDX, CSV or XLSX files in the
-                      <span class="code">data_&lt;modelname&gt;</span>
-                      directory. When your MIRO app is started for the first
-                      time, these datasets will be stored in the MIRO database.
-                      The filename is used as the scenario name. To learn more,
-                      read the chapter on
-                      <a href="./start.html#startup-import"
-                        >importing multiple scenarios on startup</a
-                      >. Note that the owner of these scenarios is the user that
-                      launches the MIRO app for the first time!
-                    </p>
-                    <h6>Assign a default logo</h6>
-                    <p>
-                      When adding the MIRO app to the MIRO library, the user has
-                      the option to choose a logo to quickly identify your app.
-                      If you want to suggest a logo, simply place an image
-                      (format: png/jpg/jpeg; aspect ratio: 8 &times; 5 fits
-                      best) with the name
-                      <span class="code">app_logo</span> inside the
-                      <span class="code">static_&lt;modelname&gt;</span> folder
-                      before deploying. When a user imports your app, this logo
-                      will be suggested to them. If no such file is found, a
-                      default logo is used.
-                    </p>
-                    <div class="section-block" style="text-align: center">
-                      <img
-                        class="img-fluid"
-                        style="max-height: 250pt"
-                        src="assets/images/deployment/custom_logo.png"
-                        alt="Custom Logo for MIRO library"
-                      />
-                    </div>
-                    <p>
-                      <b>Note</b>: The <span class="code">app_logo</span> logo
-                      described here is located in the same folder, but is
-                      independent of the logo
-                      <a href="./configuration_general.html#app-logo"
-                        >set in the Configuration Mode</a
-                      >.
-                    </p>
-                    <h6>
-                      Specify a default title and description for your app
-                    </h6>
-                    <p>
-                      When adding a new MIRO app to the library, a user can
-                      specify an app title as well as a short description. If
-                      you want to provide defaults for these, you can do so via
-                      a JSON file <span class="code">app_info.json</span> inside
-                      the
-                      <span class="code">static_&lt;modelname&gt;</span> folder.
-                      The JSON file has to have the following structure:
-                    </p>
-                    <pre><code class="language-json">{
-    "title": "Example app",
-    "description": "This is my first MIRO app"
-}</code></pre>
-                    <h6 id="web-app-manifest" style="margin-top: 15px">
-                      Make your app mobile friendly
-                    </h6>
-                    <p>
-                      If you plan to deploy your app on
-                      <a href="./server.html">MIRO Server</a>, you can add a
-                      custom
-                      <a
-                        href="https://developer.mozilla.org/en-US/docs/Web/Manifest"
-                        target="_blank"
-                        >web app manifest</a
-                      >. This allows you to customize the name, logo, and more
-                      when your app is added to a user's home screen. To create
-                      a custom manifest, simply create a new
-                      <kbd>manifest.json</kbd> file in the
-                      <kbd>static_&lt;modelname&gt;</kbd> directory of your app.
-                      You can use the following template:
-                    </p>
-                    <pre><code class="language-json">{
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff",
-    "display": "standalone",
-    "start_url": "..",
-    "short_name": "MIRO app",
-    "name": "This is a GAMS MIRO app",
-    "icons": [
-        {
-            "src": "logo192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "logo512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
-    ]
-}
-</code></pre>
-                    <p>
-                      Make sure you also add the two icons
-                      <kbd>logo192.png</kbd> (192x192 pixels) and
-                      <kbd>logo512.png</kbd> (512x512 pixels) to the
-                      <kbd>static_&lt;modelname&gt;</kbd> directory. They will
-                      be used when adding your app to the home screen on Android
-                      devices. For iOS devices, add another icon named
-                      <kbd>apple-touch-icon.png</kbd> with a size of 180x180
-                      pixels. The <kbd>pickstock</kbd> sample application
-                      contains a manifest that you can use as a reference.
-                    </p>
-                    <div class="callout-block callout-warning">
-                      <div class="icon-holder">
-                        <i class="fas fa-info-circle"></i>
-                      </div>
-                      <!--//icon-holder-->
-                      <div class="content">
-                        <b class="callout-title">Attention</b>
-                        <p>
-                          There is a known issue where the
-                          <kbd>apple-touch-icon.png</kbd> does not display
-                          properly on Apple devices.
                         </p>
                       </div>
                       <!--//content-->
@@ -540,8 +635,11 @@ inc/inc2.inc
                     <!--//callout-block-->
                   </div>
                   <!--//section-block-->
-                  <div id="sbs-install-app" class="section-block">
-                    <h3>Install the MIRO app</h3>
+                </section>
+                <!--//doc-section-->
+                <section id="sbs-install-app" class="doc-section">
+                  <h2 class="section-title">Install the MIRO App</h2>
+                  <div class="section-block">
                     <p>
                       To install a new MIRO app, launch GAMS MIRO Desktop. You
                       will see your personal MIRO library with all the MIRO apps
@@ -592,8 +690,13 @@ inc/inc2.inc
                     </p>
                   </div>
                   <!--//section-block-->
-                  <div class="section-block" id="sbs-customize-app">
-                    <h3>Customize your installed MIRO apps</h3>
+                </section>
+                <!--//doc-section-->
+                <section id="sbs-customize-app" class="doc-section">
+                  <h2 class="section-title">
+                    Customize your Installed MIRO Apps
+                  </h2>
+                  <div class="section-block">
                     <p>
                       The MIRO Desktop interface offers several ways to control
                       the behavior of your MIRO apps. To access these settings
@@ -737,6 +840,7 @@ inc/inc2.inc
                     </div>
                     <!--//table-responsive-->
                     <p id="custom-environments">
+                      <b>Environment</b><br />
                       In the <i>Environment</i> section, you can import a
                       customized environment to be used by your MIRO apps. This
                       is useful, for example, if you want to run
@@ -840,89 +944,6 @@ inc/inc2.inc
                     <pre><code class="language-json">{
     "PATH": "&lt;path_to_venv&gt;/venv/bin"
 }</code></pre>
-                  </div>
-                  <!--//section-block-->
-                  <div class="section-block" id="sbs-sign-app">
-                    <h3>Sign your MIRO apps</h3>
-                    <p>
-                      MIRO applications contain a lot of code (the GAMS model,
-                      custom renderers, etc.) that can be used for malicious
-                      purposes. To better protect you from these harmful apps,
-                      MIRO allows you to sign apps so you can be sure they come
-                      from developers you trust. To ensure the authenticity of
-                      an app, MIRO uses asymmetric encryption. The first time
-                      you import an app from an untrusted developer, you are
-                      asked if you want to trust that developer. To identify the
-                      developer, the fingerprint of the developer's
-                      <a
-                        href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)"
-                        target="_blank"
-                        >RSA</a
-                      >
-                      public key is displayed. This fingerprint can be
-                      transmitted through a different channel than the one you
-                      used to get the app.
-                    </p>
-                    <p>
-                      In the following section we will explain how developers of
-                      MIRO apps can sign their apps.
-                    </p>
-                    <p>
-                      To sign your apps, you need to have an RSA keypair. If you
-                      do not already have one, you can create one e.g. using
-                      your SSH client: on macOS/Linux you can use
-                      <a href="https://www.openssh.com" target="_blank"
-                        >OpenSSH</a
-                      >:
-                      <code class="console-content console-box-inline"
-                        ><span class="console-mark">&gt;</span>ssh-keygen -t
-                        rsa</code
-                      >
-                      or
-                      <a href="https://www.putty.org" target="_blank">PuTTY</a>
-                      on Windows: open the PuTTYgen tool, select RSA with a size
-                      of at least 2048 bits, follow the instructions and store
-                      the private key. Afterwards, you will need to convert your
-                      key to the PEM format. To do so, load the private key with
-                      PuTTYgen, go to the <i>Conversions</i> menu and select
-                      <i>Export OpenSSH key (force new file format)</i>.
-                    </p>
-                    <p>
-                      Once you have your private key, you should create a
-                      directory called <kbd>signature</kbd> in the
-                      <i>MIRO app path</i>. The location of the
-                      <i>MIRO app path</i> can be found in the
-                      <i>Preferences</i> window. Inside the
-                      <kbd>signature</kbd> directory, place your key file and
-                      name it <kbd>private-key.pem</kbd>. If you have encrypted
-                      your key with a passphrase, place a file named
-                      <kbd>key-passphrase</kbd> (no extension) next to your
-                      private key. This file should contain only the passphrase
-                      for your key.
-                    </p>
-                    <p>
-                      Public keys that you have trusted are stored (in PEM
-                      format) in a directory named: <kbd>known_keys</kbd> in
-                      your <i>MIRO app path</i>.
-                    </p>
-                    <div class="callout-block callout-warning">
-                      <div class="icon-holder">
-                        <i class="fas fa-info-circle"></i>
-                      </div>
-                      <!--//icon-holder-->
-                      <div class="content">
-                        <b class="callout-title">Note:</b>
-                        <p>
-                          If you want to know how signing and validating MIROAPP
-                          files works in detail, read
-                          <a href="./file_formats.html#signed-miroapp-file"
-                            >here</a
-                          >.
-                        </p>
-                      </div>
-                      <!--//content-->
-                    </div>
-                    <!--//callout-block-->
                   </div>
                   <!--//section-block-->
                 </section>
@@ -1186,24 +1207,39 @@ inc/inc2.inc
                   <a class="nav-link scrollto" href="#deployment-introduction"
                     >Introduction</a
                   >
-                  <a class="nav-link scrollto" href="#step-by-step"
-                    >App deployment - step by step</a
+                  <a class="nav-link scrollto" href="#sbs-create-app"
+                    >Create an app bundle</a
                   >
                   <nav class="doc-sub-menu nav flex-column">
-                    <a class="nav-link scrollto" href="#sbs-create-app"
-                      >Create an app bundle</a
+                    <a class="nav-link scrollto" href="#model-assembly-file"
+                      >Model assembly file</a
                     >
-                    <a class="nav-link scrollto" href="#sbs-install-app"
-                      >Install the MIRO app</a
+                    <a class="nav-link scrollto" href="#bundle-scenarios"
+                      >Bundling Data with your App</a
                     >
-                    <a class="nav-link scrollto" href="#sbs-customize-app"
-                      >Customize your installed MIRO apps</a
+                    <a class="nav-link scrollto" href="#default-logo"
+                      >Default Logo</a
                     >
                     <a class="nav-link scrollto" href="#sbs-sign-app"
-                      >Sign your MIRO apps</a
+                      >Default Title and Description</a
+                    >
+                    <a class="nav-link scrollto" href="#web-app-manifest"
+                      >Make your App Mobile Friendly</a
+                    >
+                    <a class="nav-link scrollto" href="#sbs-sign-app"
+                      >Sign your MIRO Apps</a
+                    >
+                    <a class="nav-link scrollto" href="#export-app"
+                      >Export App</a
                     >
                   </nav>
                   <!--//nav-->
+                  <a class="nav-link scrollto" href="#sbs-install-app"
+                    >Install the MIRO App</a
+                  >
+                  <a class="nav-link scrollto" href="#sbs-customize-app"
+                    >Customize your Installed MIRO Apps</a
+                  >
                   <a class="nav-link scrollto" href="#deployment-collaboration"
                     >Collaboration</a
                   >
