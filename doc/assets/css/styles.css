@@ -1298,6 +1298,11 @@ body{
   margin-bottom: 60px;
   color: #616670;
 }
+@media (min-width: 768px) and (max-width: 991px) {
+  .page-wrapper .cards-section .intro.no-toc {
+    margin: 0 25px;
+  }
+}
 .page-wrapper .cards-section .cards-wrapper {
   max-width: 860px;
   margin-left: auto;
