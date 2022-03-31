@@ -2,6 +2,11 @@ FROM gams/miro-ui
 
 USER root
 
+RUN apt-get update && apt-get install -y \
+    sudo \
+    wget \
+    r-base-dev=${R_BASE_VERSION}*
+
 COPY additional_packages .
 
 RUN R -e "packageList=trimws(readLines('additional_packages'));\
