@@ -118,6 +118,28 @@ pull_images (){
     docker-compose -f docker-compose.yml pull || exit 1
 }
 
+update (){
+    echo "Updating GAMS MIRO Server"
+    BUILD_UI_IMAGE=false
+    if grep -q '[^[:space:]]' ./additional_packages; then
+        read -p 'It looks like you are using a custom MIRO image with additional packages. Do you want to recreate this image as part of the update? [Y/n]: ' REBUILD_UI_IMAGE
+
+        case "$REBUILD_UI_IMAGE" in
+            [nN][oO]|[nN])
+                BUILD_UI_IMAGE=false
+                ;;
+            *)
+                BUILD_UI_IMAGE=true
+                ;;
+        esac
+    fi
+    pull_images
+    if [ "$BUILD_UI_IMAGE" = true ] ; then
+        build
+    fi
+    start
+}
+
 start (){
     echo "Starting GAMS MIRO Server"
     docker-compose -f docker-compose.yml up -d || exit 1
@@ -205,9 +227,7 @@ case "$1" in
             ;;
 
         update)
-            echo "Updating GAMS MIRO Server"
-            pull_images
-            start
+            update
             exit 0
             ;;
 

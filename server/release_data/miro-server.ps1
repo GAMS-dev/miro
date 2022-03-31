@@ -121,6 +121,28 @@ function pull_images
     if (!$?) { exit 1 }
 }
 
+function update
+{
+    "Updating GAMS MIRO Server"
+    $BUILD_UI_IMAGE = 0
+
+    if (![String]::IsNullOrWhiteSpace((Get-Content -Path additional_packages))) {
+        $REBUILD_UI_IMAGE = Read-Host -Prompt "It looks like you are using a custom MIRO image with additional packages. Do you want to recreate this image as part of the update? [Y/n]"
+
+        $VALID_NO_ANSWERS = @("n","N","no","NO","nO","No")
+        if ($REBUILD_UI_IMAGE -in $VALID_NO_ANSWERS) {
+            $BUILD_UI_IMAGE = 0
+        } else {
+            $BUILD_UI_IMAGE = 1
+        }
+    }
+    pull_images
+    if ($BUILD_UI_IMAGE) {
+        build
+    }
+    launch
+}
+
 function launch
 {
     "Starting GAMS MIRO Server"
@@ -212,8 +234,7 @@ switch -Exact ($action)
         break
     }
     "update" {
-        pull_images
-        launch
+        update
         break
     }
     Default {
