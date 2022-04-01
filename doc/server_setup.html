@@ -603,6 +603,43 @@
                         >&gt; ./miro-server pull</span
                       >
                     </div>
+                    <b>Backup (Linux only)</b>
+                    <p>To backup GAMS MIRO Server, run</p>
+                    <div class="console-box">
+                      <span class="console-content"
+                        >&gt; ./miro-server backup</span
+                      >
+                    </div>
+                    <p>
+                      This creates a new <kbd>./backup</kbd> directory in the
+                      current directory. A MIRO backup consists of two files:
+                      <kbd>./backup/dump_db_${BACKUP_TIME}.gz</kbd> and
+                      <kbd>./backup/dump_miro_server_${BACKUP_TIME}.gz</kbd>
+                      with a backup of the MIRO PostgreSQL database and the
+                      current directory respectively. <kbd>BACKUP_TIME</kbd> is
+                      a timestamp with the following format:
+                      <kbd>%d-%m-%Y_%H_%M_%S</kbd>.
+                    </p>
+                    <b>Restore (Linux only)</b>
+                    <p>
+                      To restore GAMS MIRO Server from a backup created with the
+                      <kbd>./miro-server backup</kbd> command, first unzip a new
+                      <kbd>miro_server.zip</kbd> and navigate to the
+                      <kbd>miro_server</kbd> directory. Next, copy the
+                      <kbd>backup</kbd> directory with your backup files into
+                      this directory and run
+                    </p>
+                    <div class="console-box">
+                      <span class="console-content"
+                        >&gt; ./miro-server restore BACKUP_TIME</span
+                      >
+                    </div>
+                    <p>
+                      where <kbd>BACKUP_TIME</kbd> is the backup timestamp in
+                      the form: <kbd>%d-%m-%Y_%H_%M_%S</kbd> (e.g.
+                      <kbd>01-04-2022_19_13_41</kbd> for April 1, 2022,
+                      19:13:41).
+                    </p>
                     <b>Uninstall</b>
                     <p>
                       To remove GAMS MIRO Server including all data associated

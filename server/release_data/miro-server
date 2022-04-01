@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 os=`uname`
 
@@ -190,6 +190,46 @@ uninstall (){
     echo "GAMS MIRO Server uninstalled."
 }
 
+backup (){
+    echo "Backing up GAMS MIRO Server"
+    mkdir -p backup || {
+        echo "Failed to create ./backup directory"
+        exit 1
+    }
+    BACKUP_TIME=`date +%d-%m-%Y"_"%H_%M_%S`
+    docker-compose -f docker-compose.yml exec db pg_dumpall -c -U GMSMASTER | gzip > ./backup/dump_db_${BACKUP_TIME}.gz || {
+        echo "Backup of the database failed"
+        exit 1
+    }
+    tar --exclude "backup" --exclude "miro-server" -pczf ./backup/dump_miro_server_${BACKUP_TIME}.gz . || {
+        echo "Backup of the root folder failed"
+        exit 1
+    }
+    echo "Backup created successfully in: ${PWD}/backup with timestamp: ${BACKUP_TIME}"
+}
+
+restore (){
+    BACKUP_TIME="${1}"
+    [[ -z "${BACKUP_TIME}" ]] && {
+        echo "Please specify the timestamp (format: %d-%m-%Y_%H_%M_%S) to be used for recovery as the first argument."
+        exit 1
+    }
+    echo "Restoring GAMS MIRO Server from backup with timestamp: ${BACKUP_TIME} (backup directory: ${PWD}/backup)"
+    tar -xpf ./backup/dump_miro_server_${BACKUP_TIME}.gz --exclude "backup" --exclude "miro-server" || {
+        echo "Failed to restore root folder"
+        exit 1
+    }
+    start
+    sleep 5
+    gunzip < ./backup/dump_db_${BACKUP_TIME}.gz | docker-compose exec -T db psql -b -q -U GMSMASTER -d template1 > /dev/null || {
+        echo "Failed to restore database"
+        exit 1
+    }
+    echo -e "GAMS MIRO Server successfully restored.\n\n\
+Errors stating that the default user GMSMASTER or the template database template1 cannot be dropped, \
+as well as errors stating that users cannot be dropped because they do not exist, can be safely ignored."
+}
+
 case "$1" in
         stop)
             stop
@@ -231,7 +271,17 @@ case "$1" in
             exit 0
             ;;
 
+        backup)
+            backup
+            exit 0
+            ;;
+
+        restore)
+            restore "$2"
+            exit 0
+            ;;
+
         *)
-            echo $"Usage: $0 install|build|start|stop|restart|pull|update|uninstall"
+            echo $"Usage: $0 install|build|start|stop|restart|pull|update|backup|restore|uninstall"
             exit 1
 esac

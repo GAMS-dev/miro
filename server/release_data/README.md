@@ -30,6 +30,16 @@ To update GAMS MIRO Server to the latest version, run `./miro-server update`. No
 # Stop GAMS MIRO Server
 To stop a running instance of GAMS MIRO Server, run `./miro-server stop`.
 
+# Backup GAMS MIRO Server (Linux only)
+To backup GAMS MIRO Server, run `./miro-server backup`.
+This creates a new `./backup` directory in the current directory.
+A MIRO backup consists of two files: `./backup/dump_db_${BACKUP_TIME}.gz` and `./backup/dump_miro_server_${BACKUP_TIME}.gz` with a backup of the MIRO PostgreSQL database and the current directory respectively.
+`BACKUP_TIME` is a timestamp with the following format: `%d-%m-%Y_%H_%M_%S`.
+
+# Restore GAMS MIRO Server (Linux only)
+To restore GAMS MIRO Server from a backup created with the `./miro-server backup` command, first unzip a new `miro_server.zip` and navigate to the `miro_server` directory.
+Next, copy the `backup` directory with your backup files into this directory and run `./miro-server restore BACKUP_TIME` where `BACKUP_TIME` is the backup timestamp in the form: `%d-%m-%Y_%H_%M_%S` (e.g. `01-04-2022_19_13_41` for April 1, 2022, 19:13:41).
+
 # Uninstall GAMS MIRO Server
 To remove GAMS MIRO Server including all data associated with it from your server, run `./miro-server uninstall`. Additionally you can remove the directory where you extracted the configuration files of GAMS MIRO server.
 
