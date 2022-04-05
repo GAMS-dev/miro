@@ -1197,6 +1197,352 @@ server {
                     </p>
                   </div>
                 </section>
+                <section id="same-machine-example" class="doc-section">
+                  <h2 class="section-title">
+                    Example: Install MIRO Server and GAMS Engine on the same
+                    machine
+                  </h2>
+                  <div class="section-block">
+                    <p>
+                      If the
+                      <a href="https://gams.com/sales/engine_facts/"
+                        >Engine One</a
+                      >
+                      instance is running on the same machine as MIRO Server,
+                      there are a few things to consider. The following example
+                      shows the installation procedure to run MIRO and Engine on
+                      a freshly installed Ubuntu 20.04 server.
+                    </p>
+                    <h3 class="block-title">Planned configuration</h3>
+                    <ul>
+                      <li>Access MIRO Apps under https://my-miro.com/</li>
+                      <li>
+                        Access GAMS Engine under https://my-miro.com/engine/
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="section-block">
+                    <h3 class="block-title">1) Prerequisites</h3>
+                    <ol>
+                      <li>
+                        Install and start
+                        <a href="https://docs.docker.com/engine/install/"
+                          >Docker</a
+                        >.
+                      </li>
+                      <li>
+                        We recommend configuring Docker to
+                        <a
+                          href="https://docs.docker.com/engine/install/linux-postinstall/#configure-docker-to-start-on-boot"
+                          >start on boot</a
+                        >
+                        and to
+                        <a
+                          href="https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user"
+                          >manage docker as a non-root user</a
+                        >.
+                      </li>
+                      <li>
+                        Install
+                        <a href="https://docs.docker.com/compose/install/"
+                          >Docker Compose</a
+                        >.
+                      </li>
+                      <li>
+                        Install a reverse proxy, e.g.
+                        <a
+                          href="https://www.nginx.com/resources/wiki/start/topics/tutorials/install/"
+                          >Nginx</a
+                        >.
+                      </li>
+                      <li>
+                        For the installation of MIRO Server and GAMS Engine you
+                        need a tool to unzip archives, e.g. <i>unzip</i>:
+                        <kbd>sudo apt install unzip</kbd>.
+                      </li>
+                    </ol>
+                  </div>
+                  <div class="section-block">
+                    <h3 class="block-title">2) Install GAMS Engine</h3>
+                    <p>
+                      Since the MIRO Server setup requires the GAMS Engine
+                      location to be specified, it must be installed first.
+                    </p>
+                    <ol>
+                      <li>
+                        Download the
+                        <a href="https://gams.com/engine/installation.html"
+                          >GAMS Engine zip file</a
+                        >
+                        and put it e.g. into the home directory under
+                        <kbd>/home/ubuntu</kbd>.
+                      </li>
+                      <li>
+                        Unzip the archive and <kbd>cd</kbd> into the
+                        <kbd>gams_engine</kbd> directory.
+                      </li>
+                      <li>
+                        Run the script <kbd>./up.sh</kbd> with admin privileges,
+                        e.g.
+                        <kbd
+                          >sudo ./up.sh -a test1234 -m engine -p 8095 -w 4</kbd
+                        >.
+                      </li>
+                      <ul>
+                        <li>
+                          <kbd>-a test1234</kbd>: Default password for Engine
+                          admin user.
+                        </li>
+                        <li>
+                          <kbd>-m engine</kbd>: By default, GAMS Engine is
+                          mounted under <kbd>/</kbd>. Since we want to access it
+                          under https://my-miro.com/engine/, we need to specify
+                          this here.
+                        </li>
+                        <li>
+                          <kbd>-p 8095</kbd>: We specify an Engine port to be
+                          used in a Nginx configuration. Port 8081 is reserved
+                          by MIRO Server, which we have to take into account
+                          because MIRO Server is supposed to run on the same
+                          machine.
+                        </li>
+                        <li>
+                          <kbd>-w 4</kbd>: 4 GAMS workers for solving incoming
+                          jobs.
+                        </li>
+                        <li>
+                          Note that no certificate files were specified in this
+                          step. These will be configured in the Nginx
+                          configuration later.
+                        </li>
+                      </ul>
+                    </ol>
+                  </div>
+                  <div class="section-block">
+                    <h3 class="block-title">3) Install GAMS MIRO Server</h3>
+                    <ol>
+                      <li>
+                        Download the
+                        <a href="./download.html#miro-server"
+                          >MIRO Server zip file</a
+                        >
+                        and put it e.g. into the home directory under
+                        <kbd>/home/ubuntu</kbd>.
+                      </li>
+                      <li>
+                        Unzip the archive and <kbd>cd</kbd> into the
+                        <kbd>miro_server</kbd> directory.
+                      </li>
+                      <li>
+                        Get the IP of the docker0 network interface via:
+                        <kbd
+                          >sudo ip addr show docker0 |grep -Po 'inet
+                          \K[\d.]+’</kbd
+                        >.
+                      </li>
+                      <li>Run <kbd>./miro-server install</kbd>.</li>
+                      <ul>
+                        <li>
+                          Host: <kbd>http://172.17.0.1:8095/engine/api</kbd>.
+                        </li>
+                        <li>
+                          Namespace: <kbd>global</kbd>. This is the default
+                          Engine namespace. If GAMS Engine is to be used by
+                          other clients as MIRO Server, we recommend using a
+                          different namespace.
+                        </li>
+                        <li>
+                          Use MIRO Server with authentication service:
+                          <kbd>Yes</kbd>.
+                        </li>
+                      </ul>
+                      <li>Run <kbd>./miro-server start</kbd>.</li>
+                    </ol>
+                  </div>
+                  <div class="section-block">
+                    <h3 class="block-title">4) Configure Nginx</h3>
+                    <p>
+                      We configure Nginx to forward the root URL
+                      https://my-miro.com/ to MIRO Server and
+                      https://my-miro.com/engine to GAMS Engine. Depending on
+                      the Linux distribution used, it differs where and how the
+                      configuration should be stored. In this example we use
+                      Ubuntu 20.04.
+                    </p>
+                    <ol>
+                      <li>
+                        Add a Nginx configuration file, e.g.
+                        <kbd>miro.conf</kbd> under
+                        <kbd>/etc/nginx/sites-available</kbd>. We use the
+                        <a href="#nginx-example" class="scrollto"
+                          >Nginx example configuration</a
+                        >
+                        as a starting point.
+                      </li>
+                      <ul>
+                        <li>
+                          Specify certificate files. In the example
+                          configuration these are commented out.
+                        </li>
+                        <li>
+                          Under <kbd>location /engine</kbd> we specify the
+                          Engine port by replacing
+                          <kbd>proxy_pass http://127.0.0.1:5000</kbd> with
+                          <kbd>proxy_pass http://127.0.0.1:8095</kbd>.
+                        </li>
+                      </ul>
+                      <li>
+                        Ubuntu-only: Run
+                        <kbd
+                          >sudo ln -sf /etc/nginx/sites-available/miro.conf
+                          default</kbd
+                        >
+                        to replace the default configuration.
+                      </li>
+                      <li>Run <kbd>sudo nginx -s reload</kbd>.</li>
+                    </ol>
+                  </div>
+                </section>
+                <section id="multiple-server-example" class="doc-section">
+                  <h2 class="section-title">
+                    Example: Install multiple MIRO Server instances on the same
+                    machine
+                  </h2>
+                  <div class="section-block">
+                    <p>
+                      Besides running Engine and MIRO Server on the same machine
+                      it is also possible to have multiple MIRO Server instances
+                      running there. This could be useful, for example, if some
+                      MIRO applications should be showcased, while others should
+                      only be accessible to registered users. The following
+                      example builds on the
+                      <a href="#same-machine-example" class="scrollto"
+                        >previous configuration</a
+                      >
+                      and adds another MIRO Server instance. This should be
+                      accessible under https://my-miro.com/server_2/.
+                    </p>
+                    <h3 class="block-title">
+                      Install a second MIRO Server instance
+                    </h3>
+                    <ol>
+                      <li>
+                        Under <kbd>/home/ubuntu</kbd> create a directory, e.g.
+                        <kbd>miro_server_2</kbd>.
+                      </li>
+                      <li>
+                        Unzip the
+                        <a href="./download.html#miro-server"
+                          >MIRO Server archive</a
+                        >
+                        into that new folder. Make sure that the files are
+                        directly located in miro_server_2 (e.g.
+                        <kbd>/home/ubuntu/miro_server_2/docker-compose.yml</kbd
+                        >) and not further nested in a
+                        <kbd>miro_server</kbd> folder.
+                      </li>
+                      <li><kbd>cd</kbd> into <kbd>miro_server_2</kbd>.</li>
+                      <li>
+                        In the <kbd>docker-compose.yml</kbd> file, the default
+                        ports used by some MIRO services need to be changed to
+                        avoid conflicts with the first MIRO Server instance.
+                      </li>
+                      <ul>
+                        <li>
+                          Change <kbd>services.auth.ports</kbd> from
+                          <kbd>8081:1234</kbd> to e.g. <kbd>8096:1234</kbd>
+                        </li>
+                        <li>
+                          Change <kbd>services.proxy.ports</kbd> from
+                          <kbd>8080:8080</kbd> to e.g. <kbd>8090:8090</kbd>
+                        </li>
+                      </ul>
+                      <li>In <kbd>data_raw/application.yml</kbd>:</li>
+                      <ul>
+                        <li>
+                          Change <kbd>proxy.port</kbd> from <kbd>8080</kbd> to
+                          <kbd>8090</kbd> (same port as in
+                          <kbd>services.proxy.ports</kbd> in the
+                          <kbd>docker-compose.yml</kbd>)
+                        </li>
+                        <li>
+                          Change <kbd>server.servlet.context-path</kbd> from
+                          <kbd>/</kbd> to <kbd>/server_2</kbd>. the
+                          <kbd>context-path</kbd> specifies under which URL MIRO
+                          Server should be accessible. By specifying
+                          <kbd>/server_2</kbd> the second MIRO Server instance
+                          will be accessible under
+                          https://my-miro.com/server_2/.
+                        </li>
+                        <li></li>
+                      </ul>
+                      <li>Run <kbd>./miro-server install</kbd></li>
+                      <ul>
+                        <li>
+                          Host: <kbd>http://172.17.0.1:8095/engine/api</kbd>.
+                        </li>
+                        <li>
+                          Namespace: <kbd>server_2</kbd>. We use a different
+                          namespace for each MIRO Server instance. This
+                          namespcae must be
+                          <a
+                            href="https://gams.com/engine/administration.html#namespaces"
+                            >created in Engine</a
+                          >
+                          before.
+                        </li>
+                        <li>
+                          Use MIRO Server with authentication service:
+                          <kbd>Yes</kbd>.
+                        </li>
+                      </ul>
+                      <li>
+                        In the Nginx configuration we now specify the location
+                        of the second MIRO server instance incl. REST API.
+                        <p></p>
+                        <h6 id="nginx-two-server" class="block-title">
+                          Nginx configuration to add
+                        </h6>
+                        <div>
+                          <pre><code class="language-">    location /server_2 {
+        proxy_pass http://127.0.0.1:8090;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 600s;
+
+        proxy_redirect    off;
+        proxy_set_header  Host             $http_host;
+        proxy_set_header  X-Real-IP        $remote_addr;
+        proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
+        proxy_set_header  X-Forwarded-Proto $scheme;
+    }
+    location /server_2/api {
+        proxy_pass http://127.0.0.1:8096;
+
+        proxy_redirect    off;
+        proxy_set_header  Host             $http_host;
+        proxy_set_header  X-Real-IP        $remote_addr;
+        proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
+        proxy_set_header  X-Forwarded-Proto $scheme;
+    }
+</code></pre>
+                        </div>
+                        <p>
+                          Requests for <kbd>/server_2</kbd> are passed to port
+                          <kbd>8090</kbd> which we also specified in the
+                          <kbd>docker-compose.yml</kbd> and the
+                          <kbd>data_raw/application.yml</kbd> file. The MIRO
+                          REST API can be accessed via <kbd>/server_2/api</kbd>.
+                          The port corresponds to the one used in
+                          <kbd>docker-compose.yml</kbd>.
+                        </p>
+                      </li>
+                      <li>Reload Nginx via <kbd>sudo nginx -s reload</kbd>.</li>
+                    </ol>
+                  </div>
+                </section>
               </div>
               <!--//content-inner-->
             </div>
@@ -1221,6 +1567,14 @@ server {
                   >
                   <a class="nav-link scrollto" href="#selinux"
                     >Running under SELinux</a
+                  >
+                  <a class="nav-link scrollto" href="#same-machine-example"
+                    >Example: Install MIRO Server and GAMS Engine on the same
+                    machine</a
+                  >
+                  <a class="nav-link scrollto" href="#multiple-server-example"
+                    >Example: Install multiple MIRO Server instances on the same
+                    machine</a
                   >
                   <!--//nav-->
                 </nav>

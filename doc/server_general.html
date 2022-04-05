@@ -102,11 +102,11 @@
                       applications themselves are moved to the cloud. Apps
                       deployed with MIRO Server can be accessed from any device
                       with a modern web browser. Local MIRO or GAMS
-                      installations are no longer necessary. This makes MIRO
-                      Server the most convenient solution when it comes to
-                      making apps available to end users all over the world. All
-                      you need as a user is a URL, valid credentials (optional)
-                      and you are ready to go.
+                      installations and licenses are no longer necessary. This
+                      makes MIRO Server the most convenient solution when it
+                      comes to making apps available to end users all over the
+                      world. All you need as a user is a URL, valid credentials
+                      (optional) and you are ready to go.
                     </p>
                     <p>
                       A detailed overview of the MIRO Server architecture can be
@@ -560,6 +560,28 @@
                     </p>
                   </div>
                 </section>
+                <section id="model-on-server" class="doc-section">
+                  <h2 class="section-title">Does my model run on a server?</h2>
+                  <div class="section-block">
+                    <p>
+                      When a model is sent from MIRO to GAMS Engine, it is
+                      executed in a Linux environment. This means that
+                      Windows-only tools like
+                      <a href="https://www.gams.com/latest/docs/T_GDXXRW.html"
+                        >GDXXRW</a
+                      >
+                      are not available and a corresponding call in the model
+                      will lead to an error on GAMS Engine. Furthermore it has
+                      to be considered that Linux is case-sensitive. It should
+                      therefore be ensured that file system calls (file paths as
+                      well as file names) from within the model code are
+                      correctly capitalized. The model is executed in an
+                      isolated environment ("container"). Therefore it is
+                      important that file paths can be applied correctly (e.g.
+                      no hardcoded absolute paths).
+                    </p>
+                  </div>
+                </section>
               </div>
               <!--//content-inner-->
             </div>
@@ -591,6 +613,9 @@
                   </nav>
                   <a class="nav-link scrollto" href="#miro-desktop-remote"
                     >GAMS MIRO Desktop - Boosted by GAMS Engine</a
+                  >
+                  <a class="nav-link scrollto" href="#model-on-server"
+                    >Does my model run on a server?</a
                   >
                   <!--//nav-->
                 </nav>
