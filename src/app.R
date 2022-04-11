@@ -339,6 +339,8 @@ if (is.null(errMsg)) {
   }
   if (isShinyProxy || identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")) {
     config$activateModules$remoteExecution <- TRUE
+  } else {
+    config$activateModules$remoteExecution <- FALSE
   }
   if (identical(config$activateModules$hcube, TRUE) &&
     !config$activateModules$remoteExecution && !miroBuildOnly) {
