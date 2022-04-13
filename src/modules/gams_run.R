@@ -844,7 +844,15 @@ if (!isShinyProxy && config$activateModules$remoteExecution) {
           useRegistered = input$remoteCredReg,
           rememberMe = input$remoteCredRemember
         )
+        connectionInfo <- worker$getCredentials()
         hideEl(session, "#btRemoteExecLogin")
+        setAttributes(
+          session, "#remoteExecLogoutDiv", "title",
+          paste0(
+            connectionInfo$user, "@", connectionInfo$url, " (",
+            connectionInfo$ns, ")"
+          )
+        )
         showEl(session, "#remoteExecLogoutDiv")
         removeModal()
         if (input$btSaveCredentials %in% names(rv)) {
