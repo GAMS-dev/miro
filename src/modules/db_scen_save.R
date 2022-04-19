@@ -86,37 +86,36 @@ observeEvent(input$btCheckName, {
   if (isBadScenName(scenName)) {
     showHideEl(session, "#badScenarioName", 4000L)
     return()
-  } else {
-    errMsg <- NULL
-    tryCatch(
-      {
-        if (db$checkSnameExists(scenName)) {
-          scenExists <- TRUE
-        } else {
-          scenExists <- FALSE
-        }
-      },
-      error = function(e) {
-        flog.error(
-          "Some error occurred while checking whether scenario: '%s' exists. Error message: '%s'.",
-          scenName, conditionMessage(e)
-        )
-        errMsg <<- lang$errMsg$fetchScenData$desc
+  }
+  errMsg <- NULL
+  tryCatch(
+    {
+      if (db$checkSnameExists(scenName)) {
+        scenExists <- TRUE
+      } else {
+        scenExists <- FALSE
       }
-    )
-    if (is.null(showErrorMsg(lang$errMsg$fetchScenData$title, errMsg))) {
-      return()
+    },
+    error = function(e) {
+      flog.error(
+        "Some error occurred while checking whether scenario: '%s' exists. Error message: '%s'.",
+        scenName, conditionMessage(e)
+      )
+      errMsg <<- lang$errMsg$fetchScenData$desc
     }
-    if (scenExists) {
-      showEl(session, "#scenarioExists")
-      hideEl(session, "#scenNameWrapper")
-      hideEl(session, "#dialogSaveInit")
-      showEl(session, "#dialogSaveConfirm")
-      return(NULL)
-    } else {
-      scenTags <<- scenTags
-      rv[[input$btCheckName]] <- rv[[input$btCheckName]] + 1L
-    }
+  )
+  if (is.null(showErrorMsg(lang$errMsg$fetchScenData$title, errMsg))) {
+    return()
+  }
+  if (scenExists) {
+    showEl(session, "#scenarioExists")
+    hideEl(session, "#scenNameWrapper")
+    hideEl(session, "#dialogSaveInit")
+    showEl(session, "#dialogSaveConfirm")
+    return(NULL)
+  } else {
+    scenTags <<- scenTags
+    rv[[input$btCheckName]] <- rv[[input$btCheckName]] + 1L
   }
 })
 observeEvent(

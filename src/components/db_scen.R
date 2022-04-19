@@ -39,9 +39,6 @@ Scenario <- R6Class("Scenario",
       }
       if (is.null(sid)) {
         stopifnot(is.character(sname), length(sname) == 1)
-        if (isBadScenName(sname)) {
-          stop_custom("invalid_name", "Invalid scenario name", call. = FALSE)
-        }
       } else {
         sid <- suppressWarnings(as.integer(sid))
         stopifnot(!is.na(sid), length(sid) == 1)
@@ -73,7 +70,6 @@ Scenario <- R6Class("Scenario",
 
       private$slocktimeLimit <- db$getSlocktimeLimit()
       private$tableNameScenLocks <- dbSchema$getDbTableName("_scenLock")
-      private$tags <- vector2Csv(unique(tags))
       private$readPerm <- vector2Csv(readPerm)
       private$writePerm <- vector2Csv(writePerm)
       private$execPerm <- vector2Csv(execPerm)
@@ -90,9 +86,12 @@ Scenario <- R6Class("Scenario",
       }
 
       if (isNewScen) {
-        private$stime <- Sys.time()
-        private$suid <- private$uid
-        private$sname <- sname
+        private$metadata <- ScenarioMetadata$new(
+          name = sname,
+          tags = tags,
+          owner = private$uid,
+          lastModified = Sys.time()
+        )
         private$removeAllExistingAttachments <- TRUE
         if (length(duplicatedMetadata$attach)) {
           savedAttachConfig <- list(
@@ -136,9 +135,12 @@ Scenario <- R6Class("Scenario",
             },
             error = function(e) {
               # scenario with name/uid combination does not exist, so create it
-              private$stime <- Sys.time()
-              private$suid <- private$uid
-              private$sname <- sname
+              private$metadata <- ScenarioMetadata$new(
+                name = sname,
+                tags = tags,
+                owner = private$uid,
+                lastModified = Sys.time()
+              )
               private$writeMetadata()
             }
           )
@@ -157,10 +159,10 @@ Scenario <- R6Class("Scenario",
       return(invisible(self))
     },
     getSid = function() private$sid,
-    getScenUid = function() private$suid,
-    getScenName = function() private$sname,
-    getScenTime = function() private$stime,
-    getStags = function() csv2Vector(private$tags),
+    getScenUid = function() private$metadata$owner,
+    getScenName = function() private$metadata$name,
+    getScenTime = function() private$metadata$lastModified,
+    getStags = function() private$metadata$tags,
     getReadPerm = function() csv2Vector(private$readPerm),
     getWritePerm = function() csv2Vector(private$writePerm),
     getExecPerm = function() csv2Vector(private$execPerm),
@@ -225,18 +227,18 @@ Scenario <- R6Class("Scenario",
       if (noPermFields) {
         return(tibble(
           "_sid" = sid,
-          "_uid" = private$suid,
-          "_sname" = private$sname,
-          "_stime" = private$stime,
-          "_stag" = private$tags
+          "_uid" = private$metadata$owner,
+          "_sname" = private$metadata$name,
+          "_stime" = private$metadata$lastModified,
+          "_stag" = vector2Csv(private$metadata$tags)
         ))
       }
       return(tibble(
         "_sid" = sid,
-        "_uid" = private$suid,
-        "_sname" = private$sname,
-        "_stime" = private$stime,
-        "_stag" = private$tags,
+        "_uid" = private$metadata$owner,
+        "_sname" = private$metadata$name,
+        "_stime" = private$metadata$lastModified,
+        "_stag" = vector2Csv(private$metadata$tags),
         "_accessr" = private$readPerm,
         "_accessw" = private$writePerm,
         "_accessx" = private$execPerm
@@ -270,7 +272,7 @@ Scenario <- R6Class("Scenario",
       addScenIdAttach <- FALSE
       if (!length(private$sid)) {
         addScenIdAttach <- TRUE
-        try(private$fetchMetadata(sname = private$sname, uid = private$uid), silent = TRUE)
+        try(private$fetchMetadata(sname = private$metadata$name, uid = private$uid), silent = TRUE)
         if (!private$forceOverwrite) {
           private$lock()
         }
@@ -297,7 +299,7 @@ Scenario <- R6Class("Scenario",
       # END error checks
 
       # save current time stamp
-      private$stime <- Sys.time()
+      private$metadata$lastModified <- Sys.time()
 
       if (!is.null(msgProgress)) {
         # increment progress bar
@@ -419,16 +421,11 @@ Scenario <- R6Class("Scenario",
       #   R6 object: reference to itself,
       #   throws exception in case of error
 
-      # BEGIN error checks
-      stopifnot(is.character(newName), length(newName) <= 1L)
-      if (length(newTags)) {
-        stopifnot(is.character(newTags))
-      }
-      stopifnot(is.character(newReadPerm))
-      stopifnot(is.character(newWritePerm))
-      stopifnot(is.character(newExecPerm))
-      stopifnot(!isBadScenName(newName), !isBadScenTags(scenTagsV = newTags))
-      # END error checks
+      stopifnot(
+        is.character(newReadPerm),
+        is.character(newWritePerm),
+        is.character(newExecPerm)
+      )
       if (private$isReadonly() && sum(
         length(newReadPerm),
         length(newWritePerm),
@@ -438,12 +435,8 @@ Scenario <- R6Class("Scenario",
           call. = FALSE
         )
       }
-      if (length(newName)) {
-        private$sname <- newName
-      }
-      if (length(newTags)) {
-        private$tags <- vector2Csv(newTags)
-      }
+      private$metadata$name <- newName
+      private$metadata$tags <- newTags
       if (length(newReadPerm)) {
         private$readPerm <- vector2Csv(newReadPerm)
       }
@@ -453,7 +446,6 @@ Scenario <- R6Class("Scenario",
       if (length(newExecPerm)) {
         private$execPerm <- vector2Csv(newExecPerm)
       }
-
       invisible(self)
     },
     hasExecPerm = function() {
@@ -555,10 +547,7 @@ Scenario <- R6Class("Scenario",
   ),
   private = list(
     sid = integer(0L),
-    suid = character(0L),
-    sname = character(0L),
-    stime = character(0L),
-    tags = character(1L),
+    metadata = NULL,
     readPerm = character(0L),
     writePerm = character(0L),
     execPerm = character(0L),
@@ -612,10 +601,12 @@ Scenario <- R6Class("Scenario",
         }
         if (metadata[["_scode"]][1] != private$scode && is.na(private$inDataSid)) {
           flog.debug("The scenario loaded was generated from a different mode. A copy will be created (Scen.fetchMetadata)")
-          private$sname <- metadata[["_sname"]][1]
-          private$suid <- private$uid
-          private$stime <- Sys.time()
-          private$tags <- metadata[["_stag"]][1]
+          private$metadata <- ScenarioMetadata$new(
+            name = metadata[["_sname"]][1],
+            tags = csv2Vector(metadata[["_stag"]][1]),
+            owner = private$uid,
+            lastModified = Sys.time()
+          )
           traceData <- super$importDataset("_scenTrc",
             subsetSids = sid, limit = 1L
           )
@@ -631,7 +622,7 @@ Scenario <- R6Class("Scenario",
                 "_scode"
               ),
               c(
-                private$suid, private$sname,
+                private$metadata$owner, private$metadata$name,
                 private$scode
               )
             )
@@ -641,10 +632,12 @@ Scenario <- R6Class("Scenario",
           }
           private$writeMetadata()
         } else {
-          private$suid <- metadata[["_uid"]][1]
-          private$sname <- metadata[["_sname"]][1]
-          private$stime <- metadata[["_stime"]][1]
-          private$tags <- metadata[["_stag"]][1]
+          private$metadata <- ScenarioMetadata$new(
+            name = metadata[["_sname"]][1],
+            tags = csv2Vector(metadata[["_stag"]][1]),
+            owner = metadata[["_uid"]][1],
+            lastModified = metadata[["_stime"]][1]
+          )
           private$readPerm <- metadata[["_accessr"]][1]
           private$writePerm <- metadata[["_accessw"]][1]
           private$execPerm <- metadata[["_accessx"]][1]
@@ -674,12 +667,13 @@ Scenario <- R6Class("Scenario",
           )
         }
 
-        private$suid <- uid
-        private$sname <- sname
-        private$stime <- Sys.time()
-        sidTmp <- as.integer(metadata[["_sid"]][!scenFromOtherMode])
+        private$metadata <- ScenarioMetadata$new(
+          name = sname,
+          owner = uid,
+          lastModified = Sys.time()
+        )
 
-        private$sid <- sidTmp
+        private$sid <- as.integer(metadata[["_sid"]][!scenFromOtherMode])
         if (length(private$traceData) && nrow(private$traceData)) {
           self$saveTraceData(private$traceData)
           private$traceData <- tibble()
@@ -761,8 +755,8 @@ Scenario <- R6Class("Scenario",
                 "_scode"
               ),
               c(
-                private$suid,
-                private$sname,
+                private$metadata$owner,
+                private$metadata$name,
                 private$scode
               )
             ),
@@ -777,10 +771,10 @@ Scenario <- R6Class("Scenario",
         self$deleteRows("_scenMeta", "_sid", private$sid)
         metadata <- tibble(
           `_sid` = private$sid,
-          `_uid` = private$suid,
-          `_sname` = private$sname,
-          `_stime` = private$stime,
-          `_stag` = private$tags,
+          `_uid` = private$metadata$owner,
+          `_sname` = private$metadata$name,
+          `_stime` = private$metadata$lastModified,
+          `_stag` = csv2Vector(private$metadata$tags),
           `_accessr` = private$readPerm,
           `_accessw` = private$writePerm,
           `_accessx` = private$execPerm,
@@ -790,10 +784,10 @@ Scenario <- R6Class("Scenario",
         # new scenario
         private$newScen <- TRUE
         metadata <- tibble(
-          `_uid` = private$suid,
-          `_sname` = private$sname,
-          `_stime` = private$stime,
-          `_stag` = private$tags,
+          `_uid` = private$metadata$owner,
+          `_sname` = private$metadata$name,
+          `_stime` = private$metadata$lastModified,
+          `_stag` = csv2Vector(private$metadata$tags),
           `_accessr` = private$readPerm,
           `_accessw` = private$writePerm,
           `_accessx` = private$execPerm,
@@ -803,12 +797,12 @@ Scenario <- R6Class("Scenario",
       super$writeMetadata(metadata)
       flog.debug(
         "Db: Metadata was added for scenario: '%s' (Scenario.writeMetadata).",
-        private$sname
+        private$metadata$name
       )
       if (!length(private$sid)) {
         private$fetchMetadata(
-          sname = private$sname,
-          uid = private$suid
+          sname = private$metadata$name,
+          uid = private$metadata$owner
         )
       }
       invisible(self)

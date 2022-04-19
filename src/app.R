@@ -917,6 +917,7 @@ if (is.null(errMsg)) {
 
   source("./components/db_schema.R")
   source("./components/db.R")
+  source("./components/scen_metadata.R")
   source("./components/db_scen.R")
   tryCatch(
     {
