@@ -1,4 +1,4 @@
-ScenarioMetadata <- R6Class("ScenarioMetadata",
+ScenarioExtensions <- R6Class("ScenarioExtensions",
   public = list(
     initialize = function(inputSymbols, outputSymbols, tabularInputSymbols, rv = NULL) {
       private$inputSymbols <- inputSymbols

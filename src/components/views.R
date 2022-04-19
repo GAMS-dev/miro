@@ -1,5 +1,5 @@
 Views <- R6Class("Views",
-  inherit = ScenarioMetadata,
+  inherit = ScenarioExtensions,
   public = list(
     setGlobalViews = function(globalViews) {
       if (length(globalViews)) {

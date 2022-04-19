@@ -1,5 +1,5 @@
 Attachments <- R6Class("Attachments",
-  inherit = ScenarioMetadata,
+  inherit = ScenarioExtensions,
   public = list(
     initialize = function(db, config, workDir,
                           inputSymbols, outputSymbols,

@@ -55,7 +55,7 @@ installedPackages <<- installed.packages()[, "Package"]
 # vector of required files
 filesToInclude <- c(
   "./global.R", "./components/util.R", if (useGdx) "./components/gdxio.R",
-  "./components/json.R", "./components/scenario_metadata.R", "./components/views.R",
+  "./components/json.R", "./components/scenario_extensions.R", "./components/views.R",
   "./components/attachments.R", "./components/miroscenio.R",
   "./components/load_scen_data.R", "./components/localfileio.R",
   "./components/xlsio.R", "./components/csvio.R",
