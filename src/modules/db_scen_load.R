@@ -95,7 +95,7 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
   uiSidList[["sb"]] <- NULL
   includeSandboxScen <- FALSE
   if (identical(currentCompMode, "pivot")) {
-    baseScenName <- paste(if (length(rv$activeSname)) rv$activeSname else lang$nav$dialogNewScen$newScenName, lang$nav$scen$scenNameSandboxSuffix)
+    baseScenName <- paste(activeScen$getScenName(), lang$nav$scen$scenNameSandboxSuffix)
   } else {
     baseScenName <- NULL
   }
@@ -138,11 +138,7 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
       `_sid` = "sb",
       `_uid` = uid,
       `_sname` = paste(
-        if (length(rv$activeSname)) {
-          rv$activeSname
-        } else {
-          lang$nav$dialogNewScen$newScenName
-        },
+        activeScen$getScenName(),
         lang$nav$scen$scenNameSandboxSuffix
       ),
       `_stime` = Sys.time(),
@@ -299,7 +295,7 @@ observeEvent(input$btRefreshComp, {
       {
         scenData$loadSandbox(
           getInputDataFromSandbox(),
-          modelInFileNames, activeScen$getMetadata()
+          modelInFileNames, activeScen$getMetadataDf()
         )
         FALSE
       },
@@ -611,7 +607,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           {
             scenData$loadSandbox(
               getInputDataFromSandbox(),
-              modelInFileNames, activeScen$getMetadata()
+              modelInFileNames, activeScen$getMetadataDf()
             )
             if (length(refId)) {
               # there are multiple ref ids in tab comparison mode.
@@ -642,12 +638,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           # for tab compare mode, we skip sandbox id in loop
           viewsSids <- viewsSids[-sandboxId]
         }
-        snameTmp <- if (length(rv$activeSname)) {
-          rv$activeSname
-        } else {
-          lang$nav$dialogNewScen$newScenName
-        }
-        snameTmp <- paste(snameTmp, lang$nav$scen$scenNameSandboxSuffix)
+        snameTmp <- paste(activeScen$getScenName(), lang$nav$scen$scenNameSandboxSuffix)
       }
       if (length(sidsToLoadVector)) {
         if (length(refId)) {
@@ -701,7 +692,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         {
           activeScen <<- Scenario$new(
             db = db, sid = sidsToLoad[[1]],
-            views = views, attachments = attachments
+            views = views, attachments = attachments,
+            rv = rv
           )
         },
         error = function(e) {
@@ -781,8 +773,6 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       markUnsaved()
     } else {
       flog.debug("Scenario: '%s' was loaded into UI", activeScen$getSid())
-      # update scenario name
-      rv$activeSname <<- activeScen$getScenName()
     }
     # function ends here in case not in compare mode!
     return()

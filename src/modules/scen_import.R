@@ -528,10 +528,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
 
   loadErrors <- character(0L)
   source("./modules/input_load.R", local = TRUE)
-  if (identical(fileType, "miroscen")) {
-    # update scenario name
-    rv$activeSname <<- activeScen$getScenName()
-  } else {
+  if (!identical(fileType, "miroscen")) {
     markUnsaved()
   }
   if (!is.null(errMsg)) {
@@ -539,7 +536,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
   }
   errMsg <- NULL
   # save input data
-  scenData$loadSandbox(scenInputData, names(scenInputData), activeScen$getMetadata())
+  scenData$loadSandbox(scenInputData, names(scenInputData), activeScen$getMetadataDf())
   if (!identical(loadMode, "scsv")) {
     prog$set(detail = lang$progressBar$importScen$renderOutput, value = 0.8)
     tryCatch(

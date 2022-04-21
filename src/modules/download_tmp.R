@@ -43,10 +43,7 @@ output$btDownloadTmpConfirm <- downloadHandler(
     if (identical(length(isolate(input$selectDownloadTmp)), 1L)) {
       return(isolate(input$selectDownloadTmp))
     }
-    if (is.null(isolate(rv$activeSname))) {
-      return(paste0(modelName, ".zip"))
-    }
-    return(paste0(modelName, "_", isolate(rv$activeSname), ".zip"))
+    return(paste0(modelName, "_", activeScen$getScenName(), ".zip"))
   }, content = function(file) {
     fileNamesToDownload <- isolate(input$selectDownloadTmp)
     validFileNames <- list.files(workDir, pattern = ".+\\..+$", full.names = FALSE)
@@ -73,11 +70,7 @@ output$btDownloadTmpConfirm <- downloadHandler(
 )
 output$btDownloadTmpZip <- downloadHandler(
   filename = function() {
-    if (is.null(isolate(rv$activeSname))) {
-      return(paste0(modelName, ".zip"))
-    } else {
-      return(paste0(modelName, "_", isolate(rv$activeSname), ".zip"))
-    }
+    return(paste0(modelName, "_", activeScen$getScenName(), ".zip"))
   },
   content = function(file) {
     zipr(file, list.files(

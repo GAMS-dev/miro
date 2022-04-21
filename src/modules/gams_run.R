@@ -168,7 +168,7 @@ prepareModelRun <- function(async = FALSE) {
   }
   scenData$loadSandbox(
     dataTmp, if (length(modelInFileNames)) modelInFileNames else character(),
-    activeScen$getMetadata()
+    activeScen$getMetadataDf()
   )
   inputData <- InputDataInstance$new(
     fileExchange = config$fileExchange,
@@ -1318,7 +1318,7 @@ if (identical(config$activateModules$hcube, TRUE)) {
           }
         }
         hcJobConfig <- Scenario$new(
-          db = db, sname = paste(rv$activeSname, as.numeric(Sys.time())),
+          db = db, sname = paste(activeScen$getScenName(), as.numeric(Sys.time())),
           tags = input$newHcubeTags, overwrite = FALSE,
           isNewScen = TRUE,
           duplicatedMetadata = currentMetaTmp,

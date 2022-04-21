@@ -53,17 +53,8 @@ observeEvent(
 # enter scenario name
 observeEvent(virtualActionButton(rv$btSaveAs), {
   saveAsFlag <<- TRUE
-  if (is.null(rv$activeSname)) {
-    tmpScenName <- lang$nav$dialogNewScen$newScenName
-  } else {
-    tmpScenName <- rv$activeSname
-  }
-  currentTags <- character(0L)
-  if (length(activeScen)) {
-    currentTags <- activeScen$getStags()
-  }
-  showNewScenDialog(tmpScenName,
-    scenTags = currentTags,
+  showNewScenDialog(activeScen$getScenName(),
+    scenTags = activeScen$getStags(),
     discardPermDefault = !identical(activeScen$getScenUid(), uid)
   )
 })
@@ -155,7 +146,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
       scenData$loadSandbox(
         getInputDataFromSandbox(),
         if (length(modelInFileNames)) modelInFileNames else character(),
-        activeScen$getMetadata()
+        activeScen$getMetadataDf()
       )
       FALSE
     },
@@ -176,6 +167,11 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   # save to database
   duplicatedMetadata <- NULL
   currentScenHash <- character(0L)
+  if (is.null(activeScen)) {
+    currentSbScenName <- lang$nav$dialogNewScen$newScenName
+  } else {
+    currentSbScenName <- activeScen$getScenName()
+  }
   tryCatch(
     {
       if (saveAsFlag) {
@@ -210,12 +206,12 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
             }
           }
         }
-        if (identical(input$scenName, rv$activeSname)) {
+        if (identical(input$scenName, activeScen$getScenName())) {
           # make sure title is refreshed even when scen name is identical
           # (e.g. because owner changed)
           markUnsaved()
         } else {
-          rv$activeSname <<- input$scenName
+          currentSbScenName <- input$scenName
         }
         if (isTRUE(input$newScenDiscardViews)) {
           views$clearConf()
@@ -223,10 +219,11 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
       }
       if (is.null(activeScen)) {
         activeScen <<- Scenario$new(
-          db = db, sname = isolate(rv$activeSname),
+          db = db, sname = currentSbScenName,
           tags = scenTags, overwrite = identical(saveAsFlag, TRUE),
           isNewScen = TRUE, duplicatedMetadata = duplicatedMetadata,
-          views = views, attachments = attachments
+          views = views, attachments = attachments,
+          rv = rv
         )
         activeScen$setScenHash(currentScenHash)
         scenTags <<- NULL
@@ -287,7 +284,7 @@ observeEvent(input$btEditMeta, {
     attachmentMetadata <- attachmentList
     viewsMetadata <- views$getSummary(modelInRaw, modelOut)
   }
-  showEditMetaDialog(activeScen$getMetadata(noPermFields = FALSE),
+  showEditMetaDialog(activeScen$getMetadataDf(noPermFields = FALSE),
     allowAttachments = config$activateModules$attachments,
     attachmentMetadata = attachmentMetadata,
     viewsMetadata = viewsMetadata,
@@ -335,7 +332,7 @@ observeEvent(input$tpEditMeta, {
   )) {
     return()
   }
-  metaTmp <- activeScen$getMetadata(noPermFields = FALSE)
+  metaTmp <- activeScen$getMetadataDf(noPermFields = FALSE)
   writePerm <- csv2Vector(metaTmp[["_accessw"]][[1]])
   readPerm <- csv2Vector(metaTmp[["_accessr"]][[1]])
   execPerm <- csv2Vector(metaTmp[["_accessx"]][[1]])
@@ -463,7 +460,6 @@ observeEvent(input$btUpdateMeta, {
         scenName, isolate(input$editMetaTags),
         newReadPerm, newWritePerm, newExecPerm
       )
-      rv$activeSname <- scenName
       markUnsaved()
       removeModal()
     },
@@ -667,7 +663,7 @@ if (config$activateModules$attachments) {
   })
   output$downloadViews <- downloadHandler(
     filename = function() {
-      scenName <- isolate(rv$activeSname)
+      scenName <- activeScen$getScenName()
       if (!length(scenName)) {
         scenName <- lang$nav$dialogNewScen$newScenName
       }

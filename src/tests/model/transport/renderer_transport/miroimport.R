@@ -1,7 +1,10 @@
-miroimport_noFile <- function(symbolNames, localFile = NULL, ...) {
+miroimport_noFile <- function(symbolNames, localFile = NULL, views = NULL,
+                              attachments = NULL, metadata = NULL, ...) {
   if (!is.null(localFile) || !identical(symbolNames, c("a", "b"))) {
     abortSafe("Bad, bad, bad...")
   }
+  metadata$name <- "HeyHey"
+  metadata$tags <- c("heyhey", "hoho")
   return(list(a = tibble(i = "isBadA", value = 0), b = tibble(j = "isBadB", value = 0)))
 }
 

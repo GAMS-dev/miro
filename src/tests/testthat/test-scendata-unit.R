@@ -329,9 +329,9 @@ test_that("Remapping scenario names works", {
     ),
     overwrite = TRUE
   )
-  expect_identical(scenData$.__enclos_env__$private$getMetadata(c(1, 2, 6))[["_sname"]], scenNames[c(1, 6)])
+  expect_identical(scenData$.__enclos_env__$private$getMetadataDf(c(1, 2, 6))[["_sname"]], scenNames[c(1, 6)])
   scenData$setScenIdNameMap(c("2" = "asd", "6" = "..."))
-  expect_identical(scenData$.__enclos_env__$private$getMetadata(c(1, 2, 6))[["_sname"]], c("scen_1", "..."))
+  expect_identical(scenData$.__enclos_env__$private$getMetadataDf(c(1, 2, 6))[["_sname"]], c("scen_1", "..."))
 })
 
 db$finalize()

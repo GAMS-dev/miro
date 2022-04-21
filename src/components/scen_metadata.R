@@ -1,6 +1,7 @@
 ScenarioMetadata <- R6Class("ScenarioMetadata",
   public = list(
-    initialize = function(name = NULL, tags = NULL, owner = NULL, lastModified = NULL) {
+    initialize = function(name = NULL, tags = NULL, owner = NULL, lastModified = NULL, rv = NULL) {
+      private$rv <- rv
       self$name <- name
       self$tags <- tags
       self$lastModified <- lastModified
@@ -21,6 +22,18 @@ ScenarioMetadata <- R6Class("ScenarioMetadata",
         )
       }
       private$setMetaDataEl("_sname", value)
+      if (!is.null(private$rv)) {
+        if (identical(isolate(private$rv$activeSname), value)) {
+          # refresh observer even when name is not changed
+          # (e.g. due to different owner)
+          isolate({
+            private$rv$unsavedFlag <- !private$rv$unsavedFlag
+            private$rv$unsavedFlag <- !private$rv$unsavedFlag
+          })
+        } else {
+          isolate(private$rv$activeSname <- value)
+        }
+      }
     },
     tags = function(value) {
       if (missing(value)) {
@@ -55,6 +68,7 @@ ScenarioMetadata <- R6Class("ScenarioMetadata",
   ),
   private = list(
     metadata = list(),
+    rv = NULL,
     setMetaDataEl = function(name, value) {
       if (is.null(value)) {
         return(self)

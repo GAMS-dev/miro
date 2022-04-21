@@ -215,7 +215,7 @@ InputDataInstance <- R6Class("InputDataInstance", public = list(
     if (!dir.create(miroMetaDir)) {
       stop(sprintf("Could not create (temporary) directory: %s", miroMetaDir), call. = FALSE)
     }
-    generateMiroScenMeta(miroMetaDir, private$activeScen$getMetadata(),
+    generateMiroScenMeta(miroMetaDir, private$activeScen$getMetadataDf(),
       private$attachments, private$views,
       tabsetId = 1L, clArgs = private$clArgsDf, jobName = jobName
     )

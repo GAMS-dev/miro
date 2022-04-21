@@ -132,12 +132,7 @@ output[["scenExportHandler"]] <- downloadHandler(
       }
       if (tabsetId == 1) {
         # active scenario (editable)
-        if (is.null(isolate(rv$activeSname))) {
-          # as no scenario name could be found, set scenario name to model name
-          return(paste0(modelName, ".", fileExt))
-        } else {
-          return(paste0(modelName, "_", isolate(rv$activeSname), ".", fileExt))
-        }
+        return(paste0(modelName, "_", activeScen$getScenName(), ".", fileExt))
       }
       fileName <- paste0(
         modelName, "_",
@@ -164,7 +159,7 @@ output[["scenExportHandler"]] <- downloadHandler(
         {
           scenData$loadSandbox(
             getInputDataFromSandbox(),
-            modelInFileNames, activeScen$getMetadata()
+            modelInFileNames, activeScen$getMetadataDf()
           )
           NULL
         },
@@ -293,7 +288,7 @@ observeEvent(input[["scenRemoteExportHandler"]], {
       {
         scenData$loadSandbox(
           getInputDataFromSandbox(),
-          modelInFileNames, activeScen$getMetadata()
+          modelInFileNames, activeScen$getMetadataDf()
         )
         FALSE
       },

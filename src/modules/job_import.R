@@ -210,10 +210,12 @@ observeEvent(
     }
     tryCatch(
       {
+        currentScenNameTmp <- activeScen$getScenName()
         activeScen <<- Scenario$new(
-          db = db, sname = rv$activeSname,
+          db = db, sname = currentScenNameTmp,
           tags = scenTags,
-          isNewScen = TRUE, views = views, attachments = attachments
+          isNewScen = TRUE, views = views, attachments = attachments,
+          rv = rv
         )
         scenTags <<- NULL
         rv$importJobConfirm <- rv$importJobConfirm + 1L
@@ -301,8 +303,6 @@ observeEvent(virtualActionButton(
     return()
   }
 
-  rv$activeSname <- activeScen$getScenName()
-
   loadModeWorkDir <- tmpdir
   loadModeFileName <- if (identical(config$fileExchange, "gdx")) MIROGdxInName else NULL
   dfClArgs <- NULL
@@ -317,7 +317,7 @@ observeEvent(virtualActionButton(
       scenData$clearSandbox()
       scenData$loadSandbox(
         scenInputData, if (length(modelInFileNames)) modelInFileNames else character(),
-        activeScen$getMetadata()
+        activeScen$getMetadataDf()
       )
       if (file.exists(file.path(tmpdir, MIROGdxOutName))) {
         scenData$loadSandbox(

@@ -1764,10 +1764,10 @@ if (!is.null(errMsg)) {
       rv <- reactiveValues(
         unsavedFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
         btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L,
-        btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L,
-        noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L, updateBatchLoadData = 0L,
-        jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L, importCSV = 0L,
-        refreshHcubeHashes = 0L, submitHCJobConfirm = 0L,
+        btLoadLocal = 0L, btCompareScen = 0L, activeSname = lang$nav$dialogNewScen$newScenName,
+        clear = TRUE, btSave = 0L, noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
+        updateBatchLoadData = 0L, jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L,
+        importCSV = 0L, refreshHcubeHashes = 0L, submitHCJobConfirm = 0L,
         refreshLogs = NULL, triggerAsyncProcObserver = NULL
       )
 
@@ -1803,7 +1803,8 @@ if (!is.null(errMsg)) {
       # currently active scenario (R6 object)
       activeScen <- Scenario$new(
         db = db, sname = lang$nav$dialogNewScen$newScenName,
-        isNewScen = TRUE, views = views, attachments = attachments
+        isNewScen = TRUE, views = views, attachments = attachments,
+        rv = rv
       )
       exportFileType <- if (useGdx) "miroscen" else "csv"
 
@@ -2092,13 +2093,7 @@ if (!is.null(errMsg)) {
           nameSuffix <- " (*)"
         }
         if (is.null(activeScen) || !length(activeScen$getSid())) {
-          if (length(rv$activeSname)) {
-            if (length(activeScen)) {
-              activeScen$updateMetadata(newName = rv$activeSname)
-            }
-            return(tags$i(paste0("<", rv$activeSname, ">", nameSuffix)))
-          }
-          return(tags$i(paste0("<", lang$nav$dialogNewScen$newScenName, ">", nameSuffix)))
+          return(tags$i(paste0("<", rv$activeSname, ">", nameSuffix)))
         } else {
           scenUid <- activeScen$getScenUid()
           if (!identical(scenUid, uid)) {
