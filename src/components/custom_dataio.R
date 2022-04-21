@@ -14,7 +14,7 @@ CustomDataIO <- R6Class("CustomDataIO", public = list(
     private$remoteData <- NULL
     return(invisible(self))
   },
-  read = function(dsName) {
+  read = function(dsName, sandboxScenario) {
     data <- NULL
     if (length(private$config$functionName)) {
       # custom
@@ -40,7 +40,10 @@ CustomDataIO <- R6Class("CustomDataIO", public = list(
           }
         )
         private$remoteData <- fetchFunction(private$config$datasetsToFetch,
-          localFile = private$localFile
+          localFile = private$localFile,
+          views = sandboxScenario$getViews(),
+          attachments = sandboxScenario$getAttachments(),
+          metadata = sandboxScenario$getMetadata()
         )
       }
       return(private$remoteData[[dsName]])
@@ -81,7 +84,7 @@ CustomDataIO <- R6Class("CustomDataIO", public = list(
     data <- as_tibble(safeFromJSON(private$sendHTTPRequest(item)))
     return(data)
   },
-  write = function(data, path = NULL) {
+  write = function(data, path = NULL, sandboxScenario = NULL) {
     if (length(private$config$functionName)) {
       tryCatch(
         {
@@ -94,7 +97,21 @@ CustomDataIO <- R6Class("CustomDataIO", public = list(
           ), call. = FALSE)
         }
       )
-      exportFunction(data, path = path)
+      if (is.null(sandboxScenario)) {
+        # this should not happen since custom exporters are currently
+        # only supported for the sandbox scenario
+        stop_custom(
+          "error_internal",
+          "Custom exporters not supported for non-sandbox scenario."
+        )
+      } else {
+        exportFunction(data,
+          path = path,
+          views = sandboxScenario$getViews(),
+          attachments = sandboxScenario$getAttachments(),
+          metadata = sandboxScenario$getMetadata()
+        )
+      }
       return(invisible(self))
     }
     for (dsName in names(data)) {

@@ -1,7 +1,8 @@
 loadScenData <- function(metaData, workDir,
                          templates, method = "csv", csvDelim = ",",
                          fileName = character(0L), DDPar = character(0L), GMSOpt = character(0L),
-                         dfClArgs = NULL, xlsio = NULL, csvio = NULL, customDataIO = NULL) {
+                         dfClArgs = NULL, xlsio = NULL, csvio = NULL, customDataIO = NULL,
+                         sandboxScenario = NULL) {
   ret <- list(tabular = NULL, scalar = NULL, errors = character())
   loadDataErrors <- CharArray$new()
   if (length(method) == 1L && method %in% c("xls", "gdx", "scsv")) {
@@ -129,7 +130,9 @@ loadScenData <- function(metaData, workDir,
           custom = {
             tryCatch(
               {
-                ret$tabular[i] <<- list(customDataIO$read(names(metaData)[[i]]))
+                ret$tabular[i] <<- list(customDataIO$read(names(metaData)[[i]],
+                  sandboxScenario = sandboxScenario
+                ))
                 if (is.null(ret$tabular[[i]])) {
                   ret$tabular[[i]] <<- templates[[i]]
                 }

@@ -547,7 +547,8 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
           templates = modelOutTemplate,
           method = loadMode,
           fileName = loadModeFileName,
-          xlsio = xlsio, csvio = csvio, customDataIO = customDataIO
+          xlsio = xlsio, csvio = csvio, customDataIO = customDataIO,
+          sandboxScenario = activeScen
         )
         loadErrors <- c(loadErrors, outputData$errors)
       },

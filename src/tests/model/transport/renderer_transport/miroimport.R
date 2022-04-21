@@ -8,7 +8,8 @@ miroimport_noFile <- function(symbolNames, localFile = NULL, views = NULL,
   return(list(a = tibble(i = "isBadA", value = 0), b = tibble(j = "isBadB", value = 0)))
 }
 
-miroimport_withFile <- function(symbolNames, localFile = NULL, ...) {
+miroimport_withFile <- function(symbolNames, localFile = NULL, views = NULL,
+                                attachments = NULL, metadata = NULL, ...) {
   if (!identical(symbolNames, "b")) {
     abortSafe("Bad, bad, bad...")
   }
@@ -24,7 +25,8 @@ miroimport_withFile <- function(symbolNames, localFile = NULL, ...) {
   return(list(b = tibble(j = "isGoodB", value = 1)))
 }
 
-miroimport_JSON <- function(symbolNames, localFile = NULL, ...) {
+miroimport_JSON <- function(symbolNames, localFile = NULL, views = NULL,
+                            attachments = NULL, metadata = NULL, ...) {
   if (is.null(localFile) || !identical(length(localFile$datapath), 1L)) {
     abortSafe("Please upload a single, valid JSON file")
   }

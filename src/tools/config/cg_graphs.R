@@ -706,6 +706,7 @@ observeEvent(input$dbInput, {
   datasetsToFetch <- modelInTabularData
   overwriteInput <- 1L
   dfClArgs <- NULL
+  activeScen <- NULL
 
   source("./modules/input_load.R", local = TRUE)
   if (!is.null(errMsg)) {
@@ -765,6 +766,7 @@ observeEvent(input$localInput, {
   loadModeWorkDir <- dirname(isolate(input$localInput$datapath))
   loadModeFileName <- basename(isolate(input$localInput$datapath))
   dfClArgs <- NULL
+  activeScen <- NULL
   source("./modules/input_load.R", local = TRUE)
   if (!is.null(errMsg)) {
     return(NULL)

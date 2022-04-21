@@ -36,6 +36,12 @@ ScenarioExtensions <- R6Class("ScenarioExtensions",
     rv = NULL,
     updateCallbacks = list("1" = list()),
     getSymbolName = function(session) {
+      if (is.character(session) && identical(length(session), 1L)) {
+        if (!tolower(session) %in% c(private$inputSymbols, private$outputSymbols)) {
+          stop(sprintf("Invalid symbol name: %s", session), call. = FALSE)
+        }
+        return(tolower(session))
+      }
       id <- strsplit(session$ns(""), "-", fixed = TRUE)[[1]]
       if (identical(id[1], "data")) {
         # editable input table

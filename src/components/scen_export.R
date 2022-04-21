@@ -1,5 +1,5 @@
 exportScenario <- function(file, data, exportFileType, refId, tabsetId, attachments, views, scenData, xlsio, suppressRemoveModal = FALSE, session = NULL, excelConfig = NULL,
-                           customDataIO = NULL) {
+                           customDataIO = NULL, sandboxScenario = NULL) {
   interactiveMode <- !is.null(session)
   if (interactiveMode) {
     prog <- Progress$new()
@@ -127,7 +127,7 @@ exportScenario <- function(file, data, exportFileType, refId, tabsetId, attachme
     return(tryCatch(
       {
         customDataIO$
-          write(data, path = file)
+          write(data, path = file, sandboxScenario = sandboxScenario)
         if (interactiveMode && !suppressRemoveModal) {
           removeModal()
         }

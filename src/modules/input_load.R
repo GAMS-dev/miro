@@ -20,7 +20,8 @@ if (!identical(loadMode, "scen")) {
         templates = modelInTemplateTmp,
         method = loadMode,
         fileName = loadModeFileName, DDPar = DDPar, GMSOpt = GMSOpt,
-        dfClArgs = dfClArgs, xlsio = xlsio, csvio = csvio, customDataIO = customDataIO
+        dfClArgs = dfClArgs, xlsio = xlsio, csvio = csvio, customDataIO = customDataIO,
+        sandboxScenario = activeScen
       )
       if (length(scenInputData$errors)) {
         loadErrors <- scenInputData$errors
