@@ -4,7 +4,7 @@ library(jsonlite)
 library(futile.logger)
 library(DBI)
 
-source("../../components/scenario_metadata.R")
+source("../../components/scenario_extensions.R")
 source("../../components/db_schema.R")
 source("../../components/db.R")
 source("../../components/attachments.R")

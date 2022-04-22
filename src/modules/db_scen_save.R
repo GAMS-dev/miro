@@ -206,7 +206,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
             }
           }
         }
-        if (identical(input$scenName, activeScen$getScenName())) {
+        if (identical(input$scenName, currentSbScenName)) {
           # make sure title is refreshed even when scen name is identical
           # (e.g. because owner changed)
           markUnsaved()

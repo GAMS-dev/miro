@@ -53,7 +53,10 @@ ScenarioMetadata <- R6Class("ScenarioMetadata",
       if (missing(value)) {
         return(private$metadata[["_stime"]])
       }
-      if (!"POSIXct" %in% class(value)) {
+      if (!is.null(value) && !"POSIXct" %in% class(value) &&
+        identical(tryCatch(as.POSIXct(value), error = function(e) {
+          return(FALSE)
+        }), FALSE)) {
         stop_custom(
           "error_bad_time",
           "Invalid modified time",
