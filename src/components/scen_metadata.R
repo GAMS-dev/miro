@@ -53,6 +53,13 @@ ScenarioMetadata <- R6Class("ScenarioMetadata",
       if (missing(value)) {
         return(private$metadata[["_stime"]])
       }
+      if (!"POSIXct" %in% class(value)) {
+        stop_custom(
+          "error_bad_time",
+          "Invalid modified time",
+          call. = FALSE
+        )
+      }
       private$setMetaDataEl("_stime", value)
     },
     owner = function(value) {
