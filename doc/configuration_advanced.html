@@ -696,7 +696,7 @@ views$get(session, id = NULL, filter = c("all", "global", "local"))
                           <th>session</th>
                           <td>
                             The <kbd>session</kbd> object passed to the custom
-                            renderer
+                            renderer or the name of a GAMS symbol
                           </td>
                         </tr>
                         <tr>
@@ -781,7 +781,7 @@ views$getIds(session, filter = c("all", "global", "local"))
                           <th>session</th>
                           <td>
                             The <kbd>session</kbd> object passed to the custom
-                            renderer
+                            renderer or the name of a GAMS symbol
                           </td>
                         </tr>
                         <tr>
@@ -830,7 +830,7 @@ views$add(session, id, viewConf)
                           <th>session</th>
                           <td>
                             The <kbd>session</kbd> object passed to the custom
-                            renderer
+                            renderer or the name of a GAMS symbol
                           </td>
                         </tr>
                         <tr>
@@ -877,7 +877,7 @@ views$remove(session, id)
                           <th>session</th>
                           <td>
                             The <kbd>session</kbd> object passed to the custom
-                            renderer
+                            renderer or the name of a GAMS symbol
                           </td>
                         </tr>
                         <tr>
@@ -947,7 +947,7 @@ views$registerUpdateCallback(session, callback)
                           <th>session</th>
                           <td>
                             The <kbd>session</kbd> object passed to the custom
-                            renderer
+                            renderer or the name of a GAMS symbol
                           </td>
                         </tr>
                         <tr>
@@ -1043,7 +1043,11 @@ attachmenets$add(session, filePaths, fileNames = NULL, overwrite = FALSE, execPe
                           <th>session</th>
                           <td>
                             The <kbd>session</kbd> object passed to the custom
-                            renderer
+                            renderer or <kbd>NULL</kbd> if used from a
+                            <a
+                              href="configuration_json_only.html#custom-import-export"
+                              >custom data connector</a
+                            >
                           </td>
                         </tr>
                         <tr>
@@ -1068,7 +1072,8 @@ attachmenets$add(session, filePaths, fileNames = NULL, overwrite = FALSE, execPe
                           <td>
                             Vector with execute permissions (must be NULL or
                             logical vector with the same length as
-                            <kbd>filePaths</kbd>)
+                            <kbd>filePaths</kbd>). By default, all files have
+                            execute permissions.
                           </td>
                         </tr>
                       </tbody>
@@ -1201,7 +1206,11 @@ attachments$setExecPerm(session, fileNames, execPerm)
                           <th>session</th>
                           <td>
                             The <kbd>session</kbd> object passed to the custom
-                            renderer
+                            renderer or <kbd>NULL</kbd> if used from a
+                            <a
+                              href="configuration_json_only.html#custom-import-export"
+                              >custom data connector</a
+                            >
                           </td>
                         </tr>
                         <tr>
@@ -1251,7 +1260,11 @@ attachments$remove(session, fileNames, removeLocal = TRUE)
                           <th>session</th>
                           <td>
                             The <kbd>session</kbd> object passed to the custom
-                            renderer
+                            renderer or <kbd>NULL</kbd> if used from a
+                            <a
+                              href="configuration_json_only.html#custom-import-export"
+                              >custom data connector</a
+                            >
                           </td>
                         </tr>
                         <tr>
@@ -1288,7 +1301,90 @@ attachments$getIds()
                                         </code></pre>
                     </div>
                     <!--//code-block-->
+                  </div>
+                  <div id="custom-renderer-metadata" class="section-block">
+                    <h3 class="block-title">Metadata</h3>
+                    <p>
+                      In addition to views and attachments,
+                      <a
+                        href="configuration_json_only.html#custom-import-export"
+                        >custom data importers/exporters</a
+                      >
+                      have access to the other scenario metadata such as name,
+                      owner and tags.
+                    </p>
+                    <p>
+                      Interacting with the <kbd>metadata</kbd> object works like
+                      a list (implemented as
+                      <a
+                        href="https://r6.r-lib.org/articles/Introduction.html#active-bindings"
+                        >R6 active bindings</a
+                      >). To get an attribute like the scenario <kbd>name</kbd>,
+                      use the subset operator (e.g.
+                      <code class="language-r">metadata$name</code>). To set an
+                      attribute, use the assignment operator (e.g.
+                      <code class="language-r">metadata$name &lt;- "test"</code>
+                      to set the scenario name to <i>test</i>). The available
+                      attributes are listed below.
+                    </p>
+                    <h5>Get/Set scenario name</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+metadata$name
+metadata$name &lt;- "test"
+                                        </code></pre>
+                    </div>
                     <!--//code-block-->
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      Retrieves/sets the name of the sandbox scenario. Throws
+                      condition with class <kbd>error_bad_name</kbd> when trying
+                      to assign a bad name (contains only whitespace or is more
+                      than 63 characters long).
+                    </p>
+                    <h5>Get/Set scenario tag(s)</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+metadata$tags
+metadata$tags &lt;- c("tag1", "tag2")
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      Retrieves/sets the tags of the sandbox scenario. Throws
+                      condition with class <kbd>error_bad_tags</kbd> when trying
+                      to assign bad tags (tags that contain only whitespace, or
+                      the cumulative number of characters of all tags is more
+                      than 1000).
+                    </p>
+                    <h5>Get/Set scenario modification time</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+metadata$lastModified
+metadata$lastModified &lt;- Sys.time()
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      Retrieves/sets the last modified time. Throws condition
+                      with class <kbd>error_bad_time</kbd> when trying to assign
+                      an object that is not sub-class of <kbd>POSIXct</kbd>
+                    </p>
+                    <h5>Get scenario owner (read only)</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+metadata$owner
+                                        </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      Retrieves the name of the scenario owner. Throws condition
+                      with class <kbd>error_locked</kbd> when trying to assign
+                      new value to it.
+                    </p>
                   </div>
                   <div id="migrate-custom-renderers" class="section-block">
                     <h3 class="block-title">Migrate renderers from MIRO 1.x</h3>
@@ -1966,6 +2062,11 @@ attachments$getIds()
                       class="nav-link scrollto"
                       href="#custom-renderer-attachments"
                       >Attachments</a
+                    >
+                    <a
+                      class="nav-link scrollto"
+                      href="#custom-renderer-metadata"
+                      >Metadata</a
                     >
                     <a
                       class="nav-link scrollto"

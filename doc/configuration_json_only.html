@@ -140,7 +140,7 @@
                     </p>
                     <div class="code-block">
                       <pre><code class="language-r">
-miroimport_&#x3C;importerName&#x3E; &#x3C;- function(symNames, localFile = NULL, ...) {
+miroimport_&#x3C;importerName&#x3E; &#x3C;- function(symNames, localFile = NULL, views = NULL, attachments = NULL, metadata = NULL, ...) {
 
 }</code></pre>
                     </div>
@@ -155,7 +155,21 @@ miroimport_&#x3C;importerName&#x3E; &#x3C;- function(symNames, localFile = NULL,
                       specifies the file size in bytes, <i>type</i> that
                       provides the MIME type reported by the browser and
                       <i>datapath</i> with the temporary path where the file was
-                      uploaded to.
+                      uploaded to. In addition, you have access to the
+                      <a
+                        href="configuration_advanced.html#custom-renderer-metadata"
+                        >metadata</a
+                      >,
+                      <a
+                        href="configuration_advanced.html#custom-renderer-attachments"
+                        >attachments</a
+                      >
+                      and
+                      <a
+                        href="configuration_advanced.html#custom-renderer-views"
+                        >views</a
+                      >
+                      of the sandbox scenario.
                     </p>
                     <p>
                       The custom import function should return a named list of
@@ -179,7 +193,7 @@ miroimport_&#x3C;importerName&#x3E; &#x3C;- function(symNames, localFile = NULL,
                       Second, we write our own import function:
                     </p>
                     <div class="code-block">
-                      <pre><code class="language-r">miroimport_JSON &#x3C;- function(symbolNames, localFile = NULL, ...) {
+                      <pre><code class="language-r">miroimport_JSON &#x3C;- function(symbolNames, localFile = NULL, views = NULL, attachments = NULL, metadata = NULL, ...) {
   if (is.null(localFile) || !identical(length(localFile$datapath), 1L)) {
     abortSafe("Please upload a single, valid JSON file")
   }
@@ -341,7 +355,7 @@ miroimport_&#x3C;importerName&#x3E; &#x3C;- function(symNames, localFile = NULL,
                     </p>
                     <div class="code-block">
                       <pre><code class="language-r">
-miroexport_&#x3C;exporterName&#x3E; &#x3C;- function(data, path = NULL, ...) {
+miroexport_&#x3C;exporterName&#x3E; &#x3C;- function(data, path = NULL, views = NULL, attachments = NULL, metadata = NULL, ...) {
 
 }</code></pre>
                     </div>
@@ -351,7 +365,22 @@ miroexport_&#x3C;exporterName&#x3E; &#x3C;- function(data, path = NULL, ...) {
                       names are the names of the symbols (the same structure as
                       the return value of a custom import function), and
                       <i>path</i> is the file path of the (temporary) file
-                      provided to the user for download (optional).
+                      provided to the user for download (optional). In addition,
+                      you have access to the
+                      <a
+                        href="configuration_advanced.html#custom-renderer-metadata"
+                        >metadata</a
+                      >,
+                      <a
+                        href="configuration_advanced.html#custom-renderer-attachments"
+                        >attachments</a
+                      >
+                      and
+                      <a
+                        href="configuration_advanced.html#custom-renderer-views"
+                        >views</a
+                      >
+                      of the sandbox scenario.
                     </p>
                     <p>
                       Let's write a JSON export function that creates JSON files
@@ -362,7 +391,7 @@ miroexport_&#x3C;exporterName&#x3E; &#x3C;- function(data, path = NULL, ...) {
                       Then we write the custom export function:
                     </p>
                     <div class="code-block">
-                      <pre><code class="language-r">miroexport_JSON &#x3C;- function(data, path = NULL, ...) {
+                      <pre><code class="language-r">miroexport_JSON &#x3C;- function(data, path = NULL, views = NULL, attachments = NULL, metadata = NULL, ...) {
   jsonlite::write_json(data, path = path, dataframe = "columns")
 }</code></pre>
                     </div>
