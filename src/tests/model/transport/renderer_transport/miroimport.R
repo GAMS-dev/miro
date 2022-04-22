@@ -22,6 +22,11 @@ miroimport_withFile <- function(symbolNames, localFile = NULL, views = NULL,
   )) {
     return(list(b = tibble(j = "isGoodB", value = 2)))
   }
+  attachments$add(NULL, localFile$datapath, fileNames = "test.csv", execPerm = FALSE)
+  if (!identical(attachments$getIds(), "test.csv")) {
+    return(list(b = tibble(j = "isGoodB", value = 2)))
+  }
+
   return(list(b = tibble(j = "isGoodB", value = 1)))
 }
 

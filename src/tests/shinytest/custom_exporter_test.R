@@ -34,6 +34,16 @@ expect_false(app$waitFor("$('.modal-body').is(':visible')", timeout = 2000L))
 app$waitFor('$(\'button[data-dismiss="modal"]:visible\').click();true;', timeout = 50)
 Sys.sleep(1L)
 
+app$setInputs(btImport = "click")
+Sys.sleep(0.5)
+app$setInputs(tb_importData = "tb_importData_local")
+app$uploadFile(localInput = "../data/transport.miroscen")
+Sys.sleep(0.5)
+app$setInputs(btImportLocal = "click")
+Sys.sleep(0.5)
+app$setInputs(btOverwriteScenLocal = "click")
+Sys.sleep(1L)
+
 # test custom import/export function from documentation
 app$findElements(".navbar-custom-menu a.dropdown-toggle")[[1]]$click()
 app$findElement(".navbar-custom-menu a[onclick*='btExportScen']")$click()
@@ -44,6 +54,7 @@ expect_true(app$waitFor("$('#scenRemoteExportHandler').is(':hidden')&&$('#scenEx
 
 tempJSONFile <- tempfile()
 readr::write_file(get_file_content(app, "scenExportHandler"), tempJSONFile)
+expect_identical(jsonlite::read_json(tempJSONFile)$isValid, list(TRUE))
 Sys.sleep(1)
 app$findElement("#btRemove1")$click()
 Sys.sleep(0.5)
