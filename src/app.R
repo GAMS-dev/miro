@@ -431,8 +431,7 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
       )
       if (!modelGmsName %in% modelFiles) {
         errMsg <- paste(errMsg, sprintf(
-          "Problems reading file: '%s_files.txt'.
-                                        Main GAMS model file not found in model assembly file.",
+          "Problems reading file: '%s_files.txt'. Main GAMS model file not found in model assembly file.",
           modelName
         ),
         sep = "\n"
