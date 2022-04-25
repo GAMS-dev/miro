@@ -20,7 +20,7 @@ getCommandArg <- function(argName, exception = TRUE) {
   }
 }
 isBadScenName <- function(scenName) {
-  return(nchar(scenName) > 63 || nchar(trimws(scenName, "both")) < 1L)
+  return(nchar(scenName) > 64 || nchar(trimws(scenName, "both")) < 1L)
 }
 isBadScenTags <- function(scenTags = NULL, scenTagsV = NULL) {
   if (is.null(scenTags)) {

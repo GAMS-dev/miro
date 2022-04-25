@@ -614,52 +614,17 @@ Scenario <- R6Class("Scenario",
           private$scode <- SCODEMAP[["scen"]]
           private$inDataSid <- metadata[["_scode"]] - 10000L
         }
-        if (metadata[["_scode"]][1] != private$scode && is.na(private$inDataSid)) {
-          flog.debug("The scenario loaded was generated from a different mode. A copy will be created (Scen.fetchMetadata)")
-          traceData <- super$importDataset("_scenTrc",
-            subsetSids = sid, limit = 1L
-          )
-          if (length(traceData) && nrow(traceData)) {
-            private$traceData <- traceData[-1]
-          }
-          existingSids <- self$importDataset("_scenMeta",
-            colNames = "_sid",
-            tibble(
-              c(
-                "_uid",
-                "_sname",
-                "_scode"
-              ),
-              c(
-                private$uid, metadata[["_sname"]][1],
-                private$scode
-              )
-            )
-          )[[1]]
-          if (length(existingSids) > 0L) {
-            private$sid <- existingSids[1L]
-          }
-          private$writeMetadata()
-          private$metadata <- ScenarioMetadata$new(
-            name = metadata[["_sname"]][1],
-            tags = csv2Vector(metadata[["_stag"]][1]),
-            owner = private$uid,
-            lastModified = Sys.time(),
-            rv = private$rv
-          )
-        } else {
-          private$readPerm <- metadata[["_accessr"]][1]
-          private$writePerm <- metadata[["_accessw"]][1]
-          private$execPerm <- metadata[["_accessx"]][1]
-          private$sid <- as.integer(sid)
-          private$metadata <- ScenarioMetadata$new(
-            name = metadata[["_sname"]][1],
-            tags = csv2Vector(metadata[["_stag"]][1]),
-            owner = metadata[["_uid"]][1],
-            lastModified = metadata[["_stime"]][1],
-            rv = private$rv
-          )
-        }
+        private$readPerm <- metadata[["_accessr"]][1]
+        private$writePerm <- metadata[["_accessw"]][1]
+        private$execPerm <- metadata[["_accessx"]][1]
+        private$sid <- as.integer(sid)
+        private$metadata <- ScenarioMetadata$new(
+          name = metadata[["_sname"]][1],
+          tags = csv2Vector(metadata[["_stag"]][1]),
+          owner = metadata[["_uid"]][1],
+          lastModified = metadata[["_stime"]][1],
+          rv = private$rv
+        )
       } else {
         metadata <- self$importDataset(
           "_scenMeta",
