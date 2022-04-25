@@ -74,5 +74,6 @@ expect_equivalent(getHotData(app, "in_1"), tibble(
   i = c("Seattle", "San-Diego"),
   value = c(350L, 600L)
 ))
+expect_true(app$waitFor("$('.modal-body').is(':visible')===false", timeout = 50L))
 unlink(tempJSONFile)
 app$stop()
