@@ -39,6 +39,7 @@ CustomDataIO <- R6Class("CustomDataIO", public = list(
             ), call. = FALSE)
           }
         )
+        private$remoteData <- list()
         private$remoteData <- fetchFunction(private$config$datasetsToFetch,
           localFile = private$localFile,
           views = sandboxScenario$getViews(),
