@@ -1042,7 +1042,7 @@ showScenExportDialog <- function(id, exportTypes) {
       )
     ),
     tags$div(
-      `data-display-if` = "input.exportFileType !== 'miroscen'",
+      `data-display-if` = "input.exportFileType !== 'miroscen' && !input.exportFileType.startsWith('custom_')",
       class = "gmsalert gmsalert-error", style = "position:relative;",
       lang$nav$fileExport$infoDataOnly
     ),
