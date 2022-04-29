@@ -2325,18 +2325,32 @@ if (!is.null(errMsg)) {
       observeEvent(input$exportFileType, {
         stopifnot(identical(length(input$exportFileType), 1L))
 
+        allSymbolsTmp <- setNames(
+          c(inputDsNames, names(modelOut)),
+          c(inputDsAliases, modelOutAlias)
+        )
+
         if (startsWith(input$exportFileType, "custom_")) {
           exportId <- suppressWarnings(as.integer(substring(input$exportFileType, 8L)))
           if (is.na(exportId) || exportId < 1L || exportId > length(datasetsRemoteExport)) {
             flog.error("Invalid export file type selected. This looks like an attempt to tamper with the app!")
           }
+          if (length(datasetsRemoteExport[[exportId]]$symNames)) {
+            allSymbolsTmp <- allSymbolsTmp[allSymbolsTmp %in% datasetsRemoteExport[[exportId]]$symNames]
+          }
           if (!length(datasetsRemoteExport[[exportId]]$localFileOutput)) {
             hideEl(session, ".file-export")
             showEl(session, ".remote-export")
+            updateSelectInput(session, "selDataToExport",
+              choices = allSymbolsTmp
+            )
             return()
           }
           exportFileType <<- exportId
         }
+        updateSelectInput(session, "selDataToExport",
+          choices = allSymbolsTmp
+        )
         showEl(session, ".file-export")
         hideEl(session, ".remote-export")
 
