@@ -74,21 +74,6 @@ export function downloadAttachment(elId) {
   }, 200);
 }
 
-export function changeDDButtonEvent(elText, DDBtnID, actionID,
-  actionVal = null, btnIsClickable = true) {
-  if (btnIsClickable) {
-    $(DDBtnID).attr('onclick',
-      `Shiny.setInputValue('${actionID}',${actionVal == null
-        ? 1 : actionVal},{priority: 'event'});`);
-  }
-  $(DDBtnID).text(elText);
-  if (!btnIsClickable || $(DDBtnID).is(':enabled')) {
-    Shiny.setInputValue(actionID, actionVal == null ? 1 : actionVal, {
-      priority: 'event',
-    });
-  }
-}
-
 export function showJobsDialog() {
   removeModal();
   switchTab('gamsinter');
@@ -385,6 +370,20 @@ $(document).ready(() => {
       btn.prop('disabled', false);
     }, 1500);
   }); // hide pivot filter boxes when clicked outside of box
+  $(document).on('click', '.change-dd-button', function () {
+    const params = this.dataset;
+    if (params.isClickable !== 'false') {
+      $(params.btnSelector).attr('onclick',
+        `Shiny.setInputValue('${params.actionId}','${params.actionVal == null
+          ? 1 : params.actionVal}',{priority: 'event'});`);
+    }
+    $(params.btnSelector).text(params.btnText);
+    if (params.isClickable === 'false' || $(params.btnSelector).is(':enabled')) {
+      Shiny.setInputValue(params.actionId, params.actionVal == null ? 1 : params.actionVal, {
+        priority: 'event',
+      });
+    }
+  });
 
   $(document).click((e) => {
     const { target } = e;

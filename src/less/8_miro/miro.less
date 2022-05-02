@@ -516,12 +516,19 @@ animation: none !important;
   min-height: 80px;
 }
 .dropdown-sidebar{
+  margin: 6px 0px 6px 15px;
+  position: relative;
+  width: 85%;
   .responsiveDark({
      background-color: @dropdown-sidebar-bg;
   },
   {
      background-color: @dropdown-sidebar-bg-dark;
   });
+}
+.dropdown-sidebar a {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 /* gams interaction */
 #logStatusContainer, #listFileContainer, #miroLogContainer{

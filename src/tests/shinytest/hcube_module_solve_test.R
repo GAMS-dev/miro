@@ -36,7 +36,7 @@ Sys.sleep(2L)
 
 # open Hcube dialog and check that defaults are correct
 app$findElement(".btSolve .dropdown-toggle")$click()
-app$findElement(".sidebar-menu a[onclick*='Submit Hypercube']")$click()
+app$findElement(".change-dd-button[data-action-id='btSubmitHcJob']")$click()
 Sys.sleep(3L)
 expect_true(app$waitFor("$('#hcWidget_1_step').is(':visible');", 50))
 expect_true(app$waitFor("$('#hcWidget_3').parents('.shiny-input-container').find('.irs-handle.from i').is(':visible')", 50))
@@ -53,7 +53,7 @@ Sys.sleep(2L)
 
 # create normal scenario first
 app$findElement(".btSolve .dropdown-toggle")$click()
-app$findElement(".sidebar-menu a[onclick*='Solve model']")$click()
+app$findElement(".change-dd-button[data-action-id='btSolve']")$click()
 timeout <- 600L
 repeat{
   if (app$waitFor("$('#outputDataTitle').is(':visible');", timeout = 50L)) {
@@ -73,7 +73,7 @@ Sys.sleep(2L)
 
 # solve again. We should not get same hash exists dialog since we have output attachment!
 app$findElement(".btSolve .dropdown-toggle")$click()
-app$findElement(".sidebar-menu a[onclick*='Solve model']")$click()
+app$findElement(".change-dd-button[data-action-id='btSolve']")$click()
 timeout <- 600L
 repeat{
   if (app$waitFor("$('#outputDataTitle').is(':visible');", timeout = 50L)) {
@@ -93,14 +93,14 @@ Sys.sleep(2L)
 
 # if we try solving again now, we should get hash exists dialog
 app$findElement(".btSolve .dropdown-toggle")$click()
-app$findElement(".sidebar-menu a[onclick*='Solve model']")$click()
+app$findElement(".change-dd-button[data-action-id='btSolve']")$click()
 expect_true(app$waitFor("$('.modal-body:visible').text().includes('default')===true;", timeout = 6000L))
 app$waitFor('$(\'button[data-dismiss="modal"]:visible\').click();true;', timeout = 50)
 expect_true(app$waitFor("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L))
 
 # Submit HC, check that defaults are correct and that hash exists
 app$findElement(".btSolve .dropdown-toggle")$click()
-app$findElement(".sidebar-menu a[onclick*='Submit Hypercube']")$click()
+app$findElement(".change-dd-button[data-action-id='btSubmitHcJob']")$click()
 Sys.sleep(3L)
 expect_true(grepl("1 scenarios have already been solved", app$getValue("newHcJobInfo"), fixed = TRUE))
 expect_true(app$waitFor("$('#btSubmitHcJobConfirmUnsolved').is(':visible') === true", timeout = 50L))
@@ -189,7 +189,7 @@ Sys.sleep(2L)
 app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
 Sys.sleep(0.5)
 app$findElement(".btSolve .dropdown-toggle")$click()
-app$findElement(".sidebar-menu a[onclick*='Submit Hypercube']")$click()
+app$findElement(".change-dd-button[data-action-id='btSubmitHcJob']")$click()
 Sys.sleep(3L)
 expect_true(grepl("1 scenarios have already been solved", app$getValue("newHcJobInfo"), fixed = TRUE))
 expect_true(app$waitFor("$('#btSubmitHcJobConfirmUnsolved').is(':visible') === true", timeout = 50L))
@@ -257,7 +257,7 @@ tryCatch(
 app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
 Sys.sleep(0.5)
 app$findElement(".btSolve .dropdown-toggle")$click()
-app$findElement(".sidebar-menu a[onclick*='Submit Hypercube']")$click()
+app$findElement(".change-dd-button[data-action-id='btSubmitHcJob']")$click()
 Sys.sleep(3L)
 app$setInputs(hcWidget_1 = c(4, 8))
 app$setInputs(hcWidget_1_step = c(4))
@@ -314,7 +314,7 @@ repeat{
 app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
 Sys.sleep(0.5)
 app$findElement(".btSolve .dropdown-toggle")$click()
-app$findElement(".sidebar-menu a[onclick*='Submit Hypercube']")$click()
+app$findElement(".change-dd-button[data-action-id='btSubmitHcJob']")$click()
 expect_true(app$waitFor("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L))
 expect_true(app$waitFor("$('#btSubmitHcJobConfirm').is(':enabled')", timeout = 5000L))
 Sys.sleep(0.5)
@@ -333,7 +333,7 @@ expect_identical(httr::status_code(httr::PUT(
   httr::timeout(2L)
 )), 200L)
 app$findElement(".btSolve .dropdown-toggle")$click()
-app$findElement(".sidebar-menu a[onclick*='Submit Hypercube']")$click()
+app$findElement(".change-dd-button[data-action-id='btSubmitHcJob']")$click()
 expect_true(app$waitFor("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L))
 expect_true(app$waitFor("$('#btSubmitHcJobConfirm').is(':enabled')", timeout = 5000L))
 Sys.sleep(0.5)

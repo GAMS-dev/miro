@@ -1,4 +1,48 @@
 # UI sidebar
+compareModeList <- c(list(
+  tags$li(tags$a(
+    href = "#",
+    class = "change-dd-button",
+    "data-btn-selector" = "#btSelectCompareMode",
+    "data-btn-text" = lang$nav$sidebarButtons$splitView,
+    "data-action-id" = "btSplitView",
+    "data-action-val" = "splitView",
+    "data-is-clickable" = "false",
+    "data-view" = "split", lang$nav$sidebarButtons$splitView
+  )),
+  tags$li(tags$a(
+    href = "#",
+    class = "change-dd-button",
+    "data-btn-selector" = "#btSelectCompareMode",
+    "data-btn-text" = lang$nav$sidebarButtons$pivotView,
+    "data-action-id" = "btSplitView",
+    "data-action-val" = "pivotView",
+    "data-is-clickable" = "false",
+    "data-view" = "pivot", lang$nav$sidebarButtons$pivotView
+  )),
+  tags$li(tags$a(
+    href = "#",
+    class = "change-dd-button",
+    "data-btn-selector" = "#btSelectCompareMode",
+    "data-btn-text" = lang$nav$sidebarButtons$tabView,
+    "data-action-id" = "btSplitView",
+    "data-action-val" = "tabView",
+    "data-is-clickable" = "false",
+    "data-view" = "tab", lang$nav$sidebarButtons$tabView
+  ))
+), lapply(config[["analysisModules"]], function(analysisModuleConfig) {
+  tags$li(tags$a(
+    href = "#",
+    class = "change-dd-button",
+    "data-btn-selector" = "#btSelectCompareMode",
+    "data-btn-text" = analysisModuleConfig$label,
+    "data-action-id" = "btSplitView",
+    "data-action-val" = analysisModuleConfig$id,
+    "data-is-clickable" = "false",
+    "data-view" = analysisModuleConfig$id, analysisModuleConfig$label
+  ))
+}))
+
 sidebar <- dashboardSidebar(
   sidebarMenu(
     id = "miroSidebar",
@@ -28,30 +72,30 @@ sidebar <- dashboardSidebar(
           tags$span(class = "sr-only", "toggle dropdown")
         ),
         tags$ul(
-          class = "dropdown-menu dropdown-sidebar", role = "menu", style = "margin:6px 0px 6px 15px;position:relative;width:85%;",
+          class = "dropdown-menu dropdown-sidebar", role = "menu",
           tags$li(tags$a(
-            href = "#", onclick = paste0(
-              "Miro.changeDDButtonEvent('",
-              htmltools::htmlEscape(lang$nav$sidebarButtons$solve),
-              "', '#btSolve', 'btSolve');"
-            ),
+            href = "#",
+            class = "change-dd-button",
+            "data-btn-selector" = "#btSolve",
+            "data-btn-text" = lang$nav$sidebarButtons$solve,
+            "data-action-id" = "btSolve",
             lang$nav$sidebarButtons$solve
           )),
           tags$li(tags$a(
-            href = "#", onclick = paste0(
-              "Miro.changeDDButtonEvent('",
-              htmltools::htmlEscape(lang$nav$sidebarButtons$submitJob),
-              "', '#btSolve', 'btSubmitJob');"
-            ),
+            href = "#",
+            class = "change-dd-button",
+            "data-btn-selector" = "#btSolve",
+            "data-btn-text" = lang$nav$sidebarButtons$submitJob,
+            "data-action-id" = "btSubmitJob",
             lang$nav$sidebarButtons$submitJob
           )),
           if (identical(config$activateModules$hcube, TRUE)) {
             tags$li(tags$a(
-              href = "#", onclick = paste0(
-                "Miro.changeDDButtonEvent('",
-                htmltools::htmlEscape(lang$nav$sidebarButtons$submitHcJob),
-                "', '#btSolve', 'btSubmitHcJob');"
-              ),
+              href = "#", class = "change-dd-button",
+              class = "change-dd-button",
+              "data-btn-selector" = "#btSolve",
+              "data-btn-text" = lang$nav$sidebarButtons$submitHcJob,
+              "data-action-id" = "btSubmitHcJob",
               lang$nav$sidebarButtons$submitHcJob
             ))
           }
@@ -86,20 +130,8 @@ sidebar <- dashboardSidebar(
           tags$span(class = "sr-only", "toggle dropdown")
         ),
         tags$ul(
-          class = "dropdown-menu dropdown-sidebar", role = "menu", style = "margin:6px 0px 6px 15px;position:relative;width:85%;",
-          tags$li(tags$a(
-            href = "#", onclick = paste0("Miro.changeDDButtonEvent('", htmltools::htmlEscape(lang$nav$sidebarButtons$splitView), "','#btSelectCompareMode','btSplitView','splitView',false);"),
-            "data-view" = "split", lang$nav$sidebarButtons$splitView
-          )),
-          tags$li(tags$a(
-            href = "#", onclick = paste0("Miro.changeDDButtonEvent('", htmltools::htmlEscape(lang$nav$sidebarButtons$pivotView), "','#btSelectCompareMode','btSplitView','pivotView',false);"),
-            "data-view" = "pivot", lang$nav$sidebarButtons$pivotView
-          )),
-          tags$li(tags$a(
-            href = "#",
-            onclick = paste0("Miro.changeDDButtonEvent('", htmltools::htmlEscape(lang$nav$sidebarButtons$tabView), "','#btSelectCompareMode','btSplitView','tabView',false);"),
-            "data-view" = "tab", lang$nav$sidebarButtons$tabView
-          ))
+          class = "dropdown-menu dropdown-sidebar", role = "menu",
+          compareModeList
         )
       ),
       actionButton("btCompareScen",
