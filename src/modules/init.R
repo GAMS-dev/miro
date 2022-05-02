@@ -2359,3 +2359,37 @@ if (is.null(errMsg)) {
     )
   }
 }
+
+if (is.null(errMsg)) {
+  analysisModuleConfigs <- list()
+  for (analysisModuleConfig in config[["analysisModules"]]) {
+    if (analysisModuleConfig$id %in% names(analysisModuleConfigs)) {
+      errMsg <- sprintf(
+        "Analysis module ids must be unique (%s).",
+        analysisModuleConfig$id
+      )
+    } else if (analysisModuleConfig$id %in% c("split", "tab", "pivot")) {
+      errMsg <- sprintf(
+        "Analysis module id: '%s' is reserved and cannot be used.",
+        analysisModuleConfig$id
+      )
+    } else {
+      analysisModuleConfigs[[analysisModuleConfig$id]] <- analysisModuleConfig
+      analysisModuleConfigs[[analysisModuleConfig$id]][["outType"]] <- paste0(
+        "miroanalysis_",
+        analysisModuleConfig$id
+      )
+      analysisModuleConfigs[[analysisModuleConfig$id]][["rendererFnName"]] <- paste0(
+        "renderMiroanalysis_",
+        toupper(substr(analysisModuleConfig$id, 1L, 1L)),
+        substr(analysisModuleConfig$id, 2, nchar(analysisModuleConfig$id))
+      )
+      analysisModuleConfigs[[analysisModuleConfig$id]][["outputFnName"]] <- paste0(
+        "miroanalysis_",
+        analysisModuleConfig$id,
+        "Output"
+      )
+    }
+  }
+  config[["analysisModules"]] <- analysisModuleConfigs
+}

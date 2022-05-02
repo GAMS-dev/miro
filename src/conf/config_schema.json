@@ -2817,6 +2817,41 @@
           }
         }
       },
+      "analysisModules": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "description": "Custom scenario analysis renderers",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "description": "Unique identifier of analysis module (a-z0-9)",
+              "type": "string",
+              "minLength": 2
+            },
+            "label": {
+              "description": "Label to identify this analysis module",
+              "type": "string",
+              "minLength": 1
+            },
+            "packages": {
+              "description":"Packages that need to be installed",
+              "type":["array", "string"],
+              "minLength":2,
+              "minItems":1,
+              "uniqueItems":true,
+              "items":{
+                  "type":"string",
+                  "minLength":2
+              }
+            },
+            "options": {
+              "description": "Additional options",
+              "type": "object"
+            }
+          }
+        }
+      },
       "scripts":{
         "type":"object",
         "description": "Specify external scripts that will be executed and the results displayed in MIRO",

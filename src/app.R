@@ -620,7 +620,7 @@ if (is.null(errMsg) && debugMode) {
   listOfCustomRenderers <- Set$new()
   requiredPackagesCR <<- NULL
 
-  for (customRendererConfig in c(configGraphsOut, configGraphsIn, modelIn)) {
+  for (customRendererConfig in c(configGraphsOut, configGraphsIn, modelIn, config[["analysisModules"]])) {
     # check whether non standard renderers were defined in graph config
     if (!is.null(customRendererConfig$rendererName)) {
       customRendererConfig$outType <- customRendererConfig$rendererName
