@@ -1,4 +1,4 @@
-exportScenario <- function(file, data, exportFileType, refId, tabsetId, attachments, views, scenData, xlsio, suppressRemoveModal = FALSE, session = NULL, excelConfig = NULL,
+exportScenario <- function(file, data, exportFileTypeId, refId, tabsetId, attachments, views, scenData, xlsio, suppressRemoveModal = FALSE, session = NULL, excelConfig = NULL,
                            customDataIO = NULL, sandboxScenario = NULL) {
   interactiveMode <- !is.null(session)
   if (interactiveMode) {
@@ -8,7 +8,7 @@ exportScenario <- function(file, data, exportFileType, refId, tabsetId, attachme
     prog$set(value = 0.2)
     noDatasets <- length(data)
   }
-  if (identical(exportFileType, "gdx")) {
+  if (identical(exportFileTypeId, "gdx")) {
     return(tryCatch(
       {
         gdxio$wgdx(file, data, squeezeZeros = "n")
@@ -41,7 +41,7 @@ exportScenario <- function(file, data, exportFileType, refId, tabsetId, attachme
       }
     ))
   }
-  if (identical(exportFileType, "miroscen")) {
+  if (identical(exportFileTypeId, "miroscen")) {
     return(tryCatch(
       {
         generateMiroScen(
@@ -80,7 +80,7 @@ exportScenario <- function(file, data, exportFileType, refId, tabsetId, attachme
       }
     ))
   }
-  if (identical(exportFileType, "csv")) {
+  if (identical(exportFileTypeId, "csv")) {
     if (interactiveMode && !suppressRemoveModal) {
       removeModal()
     }
@@ -122,7 +122,7 @@ exportScenario <- function(file, data, exportFileType, refId, tabsetId, attachme
       recurse = FALSE, include_directories = FALSE
     )))
   }
-  if (is.integer(exportFileType)) {
+  if (is.integer(exportFileTypeId)) {
     # custom export function
     return(tryCatch(
       {

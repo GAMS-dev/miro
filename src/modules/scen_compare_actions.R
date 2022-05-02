@@ -102,11 +102,15 @@ observeEvent(input[["btScenClose"]], {
 
 # export scenario data
 output[["scenExportHandler"]] <- downloadHandler(
-  contentType = if (is.integer(exportFileType)) {
-    datasetsRemoteExport[[exportFileType]][["localFileOutput"]][["contentType"]]
-  } else {
-    NA
-  },
+  contentType = tryCatch(
+    {
+      exportFileType <- getExportFileType(input$exportFileType, datasetsRemoteExport)
+      exportFileType$contentType
+    },
+    error_bad_type = function(e) {
+      return("text/plain")
+    }
+  ),
   filename = function() {
     tabsetId <- suppressWarnings(as.integer(input[["scenExportId"]]))
     if (is.na(tabsetId) || tabsetId < 1L) {
@@ -114,13 +118,18 @@ output[["scenExportHandler"]] <- downloadHandler(
         "Problems exporting scenario with ID: '%s'. This looks like an attempt to tamper with the app!",
         input[["scenExportId"]]
       )
-      return()
+      return("error.txt")
+    }
+    exportFileType <- tryCatch(getExportFileType(input$exportFileType, datasetsRemoteExport),
+      error_bad_type = function(e) {
+        list(fileName = "error.txt")
+      }
+    )
+    if (!is.null(exportFileType$fileName)) {
+      return(exportFileType$fileName)
     }
     isolate({
-      fileExt <- exportFileType
-      if (is.integer(fileExt)) {
-        return(datasetsRemoteExport[[fileExt]][["localFileOutput"]][["filename"]])
-      }
+      fileExt <- exportFileType$fileExt
       if (identical(fileExt, "csv")) {
         if (isTRUE(input$cbSelectManuallyExp)) {
           if (length(input$selDataToExport) > 1L) {
@@ -151,6 +160,47 @@ output[["scenExportHandler"]] <- downloadHandler(
         input[["scenExportId"]]
       )
       return(downloadHandlerError(file, lang$errMsg$unknownError))
+    }
+    dsToExport <- NULL
+
+    exportFileType <- tryCatch(getExportFileType(input$exportFileType, datasetsRemoteExport),
+      error_bad_type = function(e) {
+        flog.error(
+          "Problems determining export file type: %s. This looks like an attempt to tamper with the app!",
+          conditionMessage(e)
+        )
+        return(list(isError = TRUE))
+      }
+    )
+
+    if (isTRUE(exportFileType$isError)) {
+      return(downloadHandlerError(file, lang$errMsg$unknownError))
+    }
+
+    if (exportFileType$isCustom) {
+      # custom export function
+      customDataIO$setConfig(datasetsRemoteExport[[exportFileType$customExporterId]])
+      if (length(datasetsRemoteExport[[exportFileType$customExporterId]][["symNames"]])) {
+        # custom export function defined only for certain data sets
+        dsToExport <- c(names(modelOut), inputDsNames)
+        dsToExport <- dsToExport[dsToExport %in% datasetsRemoteExport[[exportFileType$customExporterId]][["symNames"]]]
+      }
+      exportFileTypeId <- exportFileType$customExporterId
+    } else {
+      exportFileTypeId <- exportFileType$fileExt
+    }
+
+    if (isTRUE(input$cbSelectManuallyExp)) {
+      if (is.null(dsToExport)) {
+        dsToExport <- c(names(modelOut), inputDsNames)
+      }
+      dsToExport <- dsToExport[dsToExport %in% input$selDataToExport]
+
+      if (!length(dsToExport)) {
+        flog.info("No datasets selected. Nothing will be exported.")
+        showElReplaceTxt(session, "#scenExportError", lang$nav$dialogExportScen$noDsSelected)
+        return(downloadHandlerError(file, lang$nav$dialogExportScen$noDsSelected))
+      }
     }
 
     if (tabsetId == 1) {
@@ -189,36 +239,13 @@ output[["scenExportHandler"]] <- downloadHandler(
     if (scalarsOutName %in% names(data)) {
       data[[scalarsOutName]] <- scenData$getScalars(refId, outputScalarsOnly = TRUE)
     }
-    dsToExport <- NULL
 
-    if (is.integer(exportFileType)) {
-      # custom export function
-      customDataIO$setConfig(datasetsRemoteExport[[exportFileType]])
-      if (length(datasetsRemoteExport[[exportFileType]][["symNames"]])) {
-        # custom export function defined only for certain data sets
-        dsToExport <- c(names(modelOut), inputDsNames)
-        dsToExport <- dsToExport[dsToExport %in% datasetsRemoteExport[[exportFileType]][["symNames"]]]
-      }
-    }
-
-    if (isTRUE(input$cbSelectManuallyExp)) {
-      if (is.null(dsToExport)) {
-        dsToExport <- c(names(modelOut), inputDsNames)
-      }
-      dsToExport <- dsToExport[dsToExport %in% input$selDataToExport]
-
-      if (!length(dsToExport)) {
-        flog.info("No datasets selected. Nothing will be exported.")
-        showElReplaceTxt(session, "#scenExportError", lang$nav$dialogExportScen$noDsSelected)
-        return(downloadHandlerError(file, lang$nav$dialogExportScen$noDsSelected))
-      }
-    }
 
     if (!is.null(dsToExport)) {
       data <- data[names(data) %in% dsToExport]
     }
 
-    return(exportScenario(file, data, exportFileType, refId, tabsetId, attachments, views,
+    return(exportScenario(file, data, exportFileTypeId, refId, tabsetId, attachments, views,
       scenData, xlsio,
       suppressRemoveModal = suppressRemoveModal, session = session,
       excelConfig = list(
@@ -230,6 +257,7 @@ output[["scenExportHandler"]] <- downloadHandler(
   }
 )
 observeEvent(input[["scenRemoteExportHandler"]], {
+  flog.debug("Remote export button clicked.")
   hideEl(session, "#scenExportError")
   tabsetId <- suppressWarnings(as.integer(input[["scenExportId"]]))
   if (is.na(tabsetId) || tabsetId < 1L) {
@@ -239,20 +267,30 @@ observeEvent(input[["scenRemoteExportHandler"]], {
     )
     return()
   }
-  if (!length(datasetsRemoteExport) || !identical(length(input$exportFileType), 1L) ||
-    !startsWith(input$exportFileType, "custom_")) {
-    flog.error(
-      "Remote export button clicked but export file type: '%s' does not exist.",
-      input$exportFileType
-    )
+  exportFileType <- tryCatch(getExportFileType(input$exportFileType, datasetsRemoteExport),
+    error_bad_type = function(e) {
+      flog.error(
+        "Problems determining export file type: %s. This looks like an attempt to tamper with the app!",
+        conditionMessage(e)
+      )
+      return(list(isError = TRUE))
+    }
+  )
+
+  if (isTRUE(exportFileType$isError)) {
     return()
   }
-  exportId <- suppressWarnings(as.integer(substring(input$exportFileType, 8L)))
-  if (is.na(exportId) || exportId < 1L || exportId > length(datasetsRemoteExport) ||
-    length(datasetsRemoteExport[[exportId]]$localFileOutput)) {
-    flog.error("Invalid export file type selected. This looks like an attempt to tamper with the app!")
+
+  if (is.null(exportFileType$customExporterId)) {
+    flog.error("Remote export button clicked, but selected exporter is not a remote exporter. This looks like an attempt to tamper with the app!")
+    return()
   }
-  expConfig <- datasetsRemoteExport[[exportId]]
+
+  expConfig <- datasetsRemoteExport[[exportFileType$customExporterId]]
+  if (length(expConfig$localFileOutput)) {
+    flog.error("Remote export button clicked, but selected exporter is custom exporter with local file output. This looks like an attempt to tamper with the app!")
+    return()
+  }
 
   dsToExport <- NULL
 

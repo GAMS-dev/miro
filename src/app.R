@@ -1805,7 +1805,6 @@ if (!is.null(errMsg)) {
         isNewScen = TRUE, views = views, attachments = attachments,
         rv = rv
       )
-      exportFileType <- if (useGdx) "miroscen" else "csv"
 
       # This code will be run after the client has disconnected
       session$onSessionEnded(function() {
@@ -2310,9 +2309,9 @@ if (!is.null(errMsg)) {
       observeEvent(input$btExportScen, {
         stopifnot(is.integer(input$btExportScen), length(input$btExportScen) == 1L)
         if (useGdx) {
-          exportTypes <- setNames(c("miroscen", "gdx", "csv", "xls"), lang$nav$fileExport$fileTypes)
+          exportTypes <- setNames(c("miroscen", "gdx", "csv", "xlsx"), lang$nav$fileExport$fileTypes)
         } else {
-          exportTypes <- setNames(c("csv", "xls"), lang$nav$fileExport$fileTypes[-c(1, 2)])
+          exportTypes <- setNames(c("csv", "xlsx"), lang$nav$fileExport$fileTypes[-c(1, 2)])
         }
         if (length(datasetsRemoteExport)) {
           exportTypes <- c(exportTypes, setNames(
@@ -2323,22 +2322,29 @@ if (!is.null(errMsg)) {
         showScenExportDialog(input$btExportScen, exportTypes)
       })
       observeEvent(input$exportFileType, {
-        stopifnot(identical(length(input$exportFileType), 1L))
-
         allSymbolsTmp <- setNames(
           c(inputDsNames, names(modelOut)),
           c(inputDsAliases, modelOutAlias)
         )
+        exportFileType <- tryCatch(getExportFileType(input$exportFileType, datasetsRemoteExport),
+          error_bad_type = function(e) {
+            flog.error(
+              "Invalid export file type: %s. This looks like an attempt to tamper with the app!",
+              conditionMessage(e)
+            )
+            return(list(isError = TRUE))
+          }
+        )
 
-        if (startsWith(input$exportFileType, "custom_")) {
-          exportId <- suppressWarnings(as.integer(substring(input$exportFileType, 8L)))
-          if (is.na(exportId) || exportId < 1L || exportId > length(datasetsRemoteExport)) {
-            flog.error("Invalid export file type selected. This looks like an attempt to tamper with the app!")
+        if (isTRUE(exportFileType$isError)) {
+          return()
+        }
+
+        if (exportFileType$isCustom) {
+          if (length(datasetsRemoteExport[[exportFileType$customExporterId]]$symNames)) {
+            allSymbolsTmp <- allSymbolsTmp[allSymbolsTmp %in% datasetsRemoteExport[[exportFileType$customExporterId]]$symNames]
           }
-          if (length(datasetsRemoteExport[[exportId]]$symNames)) {
-            allSymbolsTmp <- allSymbolsTmp[allSymbolsTmp %in% datasetsRemoteExport[[exportId]]$symNames]
-          }
-          if (!length(datasetsRemoteExport[[exportId]]$localFileOutput)) {
+          if (!length(datasetsRemoteExport[[exportFileType$customExporterId]]$localFileOutput)) {
             hideEl(session, ".file-export")
             showEl(session, ".remote-export")
             updateSelectInput(session, "selDataToExport",
@@ -2346,20 +2352,12 @@ if (!is.null(errMsg)) {
             )
             return()
           }
-          exportFileType <<- exportId
         }
         updateSelectInput(session, "selDataToExport",
           choices = allSymbolsTmp
         )
         showEl(session, ".file-export")
         hideEl(session, ".remote-export")
-
-        switch(input$exportFileType,
-          xls = exportFileType <<- "xlsx",
-          gdx = exportFileType <<- "gdx",
-          csv = exportFileType <<- "csv",
-          miroscen = exportFileType <<- "miroscen"
-        )
       })
       hideEl(session, "#loading-screen")
     }

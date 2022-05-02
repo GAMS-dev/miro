@@ -47,7 +47,7 @@ expect_true(app$waitFor("$('.tab-content div[data-value=\"contentScen_2_5\"]').i
 # test download of files
 app$waitFor("$('.scen-buttons-wrapper button').get(1).click()", timeout = 50)
 Sys.sleep(1)
-app$setInputs(exportFileType = "xls", cbSelectManuallyExp = "true")
+app$setInputs(exportFileType = "xlsx", cbSelectManuallyExp = "true")
 Sys.sleep(0.5)
 app$setInputs(selDataToExport = c("_scalars", "abserror"))
 expect_sheets_in_xls(app, "scenExportHandler", c(" Info", "abserror (Output)", "_scalars (Input)", "_index"))
@@ -55,7 +55,7 @@ Sys.sleep(1)
 
 app$waitFor("$('.scen-buttons-wrapper button').get(1).click()", timeout = 50)
 Sys.sleep(1)
-app$setInputs(exportFileType = "xls")
+app$setInputs(exportFileType = "xlsx")
 expect_sheets_in_xls(app, "scenExportHandler", c(" Info", "_scalars_out (Output)", "stock_weight (Output)", "dowvsindex (Output)", "abserror (Output)", "pricemerge (Output)", "_scalars (Input)", "price (Input)", "_index"))
 Sys.sleep(1)
 

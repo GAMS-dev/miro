@@ -31,7 +31,7 @@ downloadMIROScenario <- function(uid, excelConfig = NULL) {
   stdin <- file("stdin", blocking = FALSE)
   on.exit(close(stdin))
   metadata <- fromJSON(suppressWarnings(readLines(stdin)))
-  exportFileType <- metadata[["downloadFileType"]]
+  exportFileTypeId <- metadata[["downloadFileType"]]
   scenName <- metadata[["downloadScenName"]]
   scenOwner <- trimws(metadata[["downloadScenOwner"]])
   if (!length(scenOwner) || identical(scenOwner, "")) {
@@ -95,7 +95,7 @@ downloadMIROScenario <- function(uid, excelConfig = NULL) {
   if (scalarsOutName %in% names(data)) {
     data[[scalarsOutName]] <- scenData$getScalars(refId, outputScalarsOnly = TRUE)
   }
-  exportScenario(file, data, exportFileType, refId, tabsetId, attachments, views, scenData, xlsio,
+  exportScenario(file, data, exportFileTypeId, refId, tabsetId, attachments, views, scenData, xlsio,
     excelConfig = excelConfig
   )
 }

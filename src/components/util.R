@@ -2041,3 +2041,35 @@ showQuotaWarnings <- function(session, quotaList) {
     session = session
   ))
 }
+getExportFileType <- function(exportFileType, datasetsRemoteExport) {
+  if (!identical(length(exportFileType), 1L) || !is.character(exportFileType)) {
+    stop_custom("error_bad_type", "Invalid export file type", call. = FALSE)
+  }
+  if (startsWith(exportFileType, "custom_")) {
+    exportId <- suppressWarnings(as.integer(substring(exportFileType, 8L)))
+    if (is.na(exportId) || exportId < 1L || exportId > length(datasetsRemoteExport)) {
+      stop_custom("error_bad_type", "Invalid custom exporter", call. = FALSE)
+    }
+    return(list(
+      isCustom = TRUE,
+      contentType = datasetsRemoteExport[[exportId]][["localFileOutput"]][["contentType"]],
+      customExporterId = exportId,
+      fileName = datasetsRemoteExport[[exportId]][["localFileOutput"]][["filename"]],
+      fileExt = tools::file_ext(datasetsRemoteExport[[exportId]][["localFileOutput"]][["filename"]])
+    ))
+  }
+  return(tryCatch(list(
+    isCustom = FALSE,
+    contentType = c(
+      xlsx = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      csv = "text/csv",
+      miroscen = "application/octet-stream",
+      gdx = "application/octet-stream"
+    )[[exportFileType]],
+    customExporterId = NULL,
+    fileName = NULL,
+    fileExt = exportFileType
+  ), error = function(e) {
+    stop_custom("error_bad_type", sprintf("Invalid file type: %s", exportFileType), call. = FALSE)
+  }))
+}
