@@ -131,11 +131,8 @@ if (is.null(errMsg)) {
   ugroups <- NULL
   if (isShinyProxy) {
     uid <- Sys.getenv("SHINYPROXY_USERNAME")
-    if (is.null(uid) || grepl("^\\s*$", uid)) {
-      errMsg <- "No user ID specified (shinyproxy)."
-    }
     ugroups <- csv2Vector(tolower(Sys.getenv("SHINYPROXY_USERGROUPS")))
-    if (!length(ugroups) || grepl("^\\s*$", ugroups)) {
+    if (identical(length(ugroups), 0L)) {
       errMsg <- paste(errMsg, "No user groups specified (shinyproxy).", sep = "\n")
     }
     if (!identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true") &&
