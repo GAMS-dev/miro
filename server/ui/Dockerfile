@@ -3,6 +3,9 @@
 FROM ubuntu:focal AS miro-base
 
 ARG R_BASE_VERSION=4.0.5
+## we need to set this environment variable so it can be used when extending the
+## base image (e.g. r-base-dev=${R_BASE_VERSION}*)
+ENV R_BASE_VERSION=${R_BASE_VERSION}
 
 RUN groupadd -g 1000 miro && \
     useradd -r -u 1000 -g miro miro
