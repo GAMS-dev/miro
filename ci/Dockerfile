@@ -12,7 +12,6 @@ RUN apt-get update && apt-get install -y \
 
 RUN R -e "install.packages(c('testthat', 'shinytest', 'xml2', 'precommit', 'docopt', 'styler'));"
 
-# need to install Rcpp, plogr, BH again as we removed header files in miroui image
 COPY r/library_src /home/miro/r/library_src
 COPY ci/install_pkg.R /home/miro/r/install_pkg.R
 RUN Rscript /home/miro/r/install_pkg.R

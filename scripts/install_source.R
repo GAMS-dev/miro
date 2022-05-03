@@ -43,7 +43,7 @@ dontDisplayMe <- lapply(
   function(x) {
     unlink(file.path(x, c(
       "help", "doc", "tests", "html",
-      "include", "unitTests",
+      "unitTests",
       file.path("libs", "*dSYM")
     )), force = TRUE, recursive = TRUE)
   }

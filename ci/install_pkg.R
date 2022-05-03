@@ -5,7 +5,7 @@ listOfLibs <- list.files(libSrcPath)
 
 RLibPath <- .libPaths()[1]
 
-for (package in c("Rcpp", "plogr", "BH", "RSQLite")) {
+for (package in c("RSQLite")) {
   packageFile <- listOfLibs[grepl(paste0(package[1], "_"),
     listOfLibs,
     fixed = TRUE
@@ -23,14 +23,3 @@ for (package in c("Rcpp", "plogr", "BH", "RSQLite")) {
 # need to install reinstall V8 with static libv8 as we also want nodejs
 Sys.setenv(DOWNLOAD_STATIC_LIBV8 = 1)
 install.packages("V8", lib = RLibPath, repos = "https://cloud.r-project.org/")
-# clean up unncecessary files
-dontDisplayMe <- lapply(
-  list.dirs(RLibPath, full.names = TRUE, recursive = FALSE),
-  function(x) {
-    unlink(file.path(x, c(
-      "help", "doc", "tests", "html",
-      "include", "unitTests",
-      file.path("libs", "*dSYM")
-    )), force = TRUE, recursive = TRUE)
-  }
-)
