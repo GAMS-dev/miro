@@ -110,7 +110,7 @@ function install
 function build
 {
     "Building custom MIRO Docker image"
-    docker build -t gams/miro-ui:latest -f Dockerfile-extend-miro .
+    docker build --progress=plain -t gams/miro-ui:latest -f Dockerfile-extend-miro .
     if (!$?) { exit 1 }
 }
 
