@@ -63,7 +63,8 @@ filesToInclude <- c(
   "./components/custom_dataio.R", "./components/scen_export.R",
   "./components/miro_tabsetpanel.R", "./modules/render_data.R",
   "./modules/generate_data.R", "./components/script_output.R",
-  "./components/js_util.R", "./components/scen_data.R", "./components/batch_loader.R"
+  "./components/js_util.R", "./components/scen_data.R",
+  "./components/scen_data_custom_analysis.R", "./components/batch_loader.R"
 )
 LAUNCHCONFIGMODE <- FALSE
 if (is.null(errMsg)) {
@@ -2205,17 +2206,33 @@ if (!is.null(errMsg)) {
       source("./modules/scen_compare_actions.R", local = TRUE)
       source("./modules/load_dynamic_tab_content.R", local = TRUE)
 
-      observeEvent(input$btScenPivot_close, {
-        flog.debug("Button to close scenarios in pivot comparison mode clicked.")
-        resetCompTabset("0")
-        showEl(session, "#pivotCompBtWrapper")
-        hideEl(session, "#pivotCompScenWrapper")
-        isInRefreshMode <<- FALSE
-        scenData$clear("cmpPivot")
-        if (!is.null(dynamicUILoaded$dynamicTabsets[["tab_0"]])) {
-          dynamicUILoaded$dynamicTabsets[["tab_0"]][["content"]][] <<- FALSE
+      observeEvent(input$btCloseScenCmp, {
+        flog.debug("Button to close scenarios in comparison mode: %s clicked.", input$btCloseScenCmp)
+        if (identical(input$btCloseScenCmp, "pivot")) {
+          refId <- "cmpPivot"
+          resetCompTabset("0")
+          showEl(session, "#pivotCompBtWrapper")
+          hideEl(session, "#pivotCompScenWrapper")
+          if (!is.null(dynamicUILoaded$dynamicTabsets[["tab_0"]])) {
+            dynamicUILoaded$dynamicTabsets[["tab_0"]][["content"]][] <<- FALSE
+          }
+          disableEl(session, "#btClosePivotComp")
+        } else if (!identical(length(input$btCloseScenCmp), 1L) ||
+          !input$btCloseScenCmp %in% names(config[["analysisModules"]])) {
+          flog.error("Close comparison mode button has invalid value. This is likely an attempt to tamper with the app!")
+          return()
+        } else {
+          moduleIdx <- config[["analysisModules"]][[input$btCloseScenCmp]][["idx"]]
+          refId <- paste0("cmpCustom_", config[["analysisModules"]][[input$btCloseScenCmp]][["id"]])
+          showEl(session, paste0("#cmpCustomNoScenWrapper_", moduleIdx))
+          hideEl(session, paste0("#customCompScenWrapper_", moduleIdx))
+          disableEl(session, paste0("#btRefreshCustomCmp_", moduleIdx))
+          if (!is.null(dynamicUILoaded$dynamicTabsets[[refId]])) {
+            dynamicUILoaded$dynamicTabsets[[refId]][["content"]][] <<- FALSE
+          }
         }
-        disableEl(session, "#btClosePivotComp")
+        isInRefreshMode <<- FALSE
+        scenData$clear(refId)
       })
       lapply(seq(0L, maxNumberScenarios + 3L), function(i) {
         scenIdLong <- paste0("scen_", i, "_")

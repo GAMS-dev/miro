@@ -118,14 +118,9 @@ export function switchTab(el) {
       $('[href="#shiny-tab-gamsinter"]').tab('show');
       break;
 
-    case 'importData':
-      changeActiveButtons('importData');
-      $('[href="#shiny-tab-importData"]').tab('show');
-      break;
-
-    case 'hcubeAna':
+    case 'loadResults':
       changeActiveButtons('default');
-      $('[href="#shiny-tab-hcubeAnalyze"]').tab('show');
+      $('[href="#shiny-tab-loadResults"]').tab('show');
       break;
 
     case 'scenComp':

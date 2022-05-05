@@ -140,7 +140,7 @@ Sys.sleep(0.5)
 
 app$findElement(".btSplitView button")$click()
 app$findElements(".btSplitView a[data-view='pivot']")[[1]]$click()
-app$setInputs(btScenPivot_close = "click")
+app$findElements("#btScenPivot_close")$click()
 # scenarios loaded in pivot view: none
 
 # check that both scenarios loaded in tab view as well as pivot view

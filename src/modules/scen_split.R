@@ -12,7 +12,7 @@ resetCompTabset <- function(tabsetId) {
 }
 
 observeEvent(input$btSplitView, {
-  switchCompareMode(session, input$btSplitView, numberScenTabs)
+  switchCompareMode(session, input$btSplitView, numberScenTabs, config[["analysisModules"]])
   if (identical(input$btSplitView, "tabView")) {
     currentCompMode <<- "tab"
   } else if (identical(input$btSplitView, "pivotView")) {

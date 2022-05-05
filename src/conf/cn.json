@@ -96,7 +96,7 @@
         "btTableView":"切换视图",
 		"btSymbolLink": "作为输入数据",
         "btClose":"关闭场景",
-        "btClosePivot": "关闭",
+        "btCloseAll": "关闭",
         "btAddPivot": "添加场景",
         "btRefresh": "刷新",
         "btDownloadTmpFiles":"临时文件",

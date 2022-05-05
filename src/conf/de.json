@@ -96,7 +96,7 @@
         "btTableView":"Ansicht wechseln",
         "btSymbolLink": "Als Eingabedaten verwenden",
         "btClose":"Szenario schließen",
-        "btClosePivot": "schließen",
+        "btCloseAll": "schließen",
         "btAddPivot": "Szenarios hinzufügen",
         "btRefresh": "aktualisieren",
         "btDownloadTmpFiles":"temporary files",

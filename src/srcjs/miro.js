@@ -328,22 +328,22 @@ $(document).ready(() => {
     rerenderHot();
   });
 
-  $('a[data-value="outputData"]').click(() => {
+  $('a[data-value="outputData"]').on('click', () => {
     changeActiveButtons('outputData');
   });
-  $('a[data-value="gamsinter"]').click(() => {
+  $('a[data-value="gamsinter"]').on('click', () => {
     changeActiveButtons('gamsinter');
   });
-  $('a[data-value="scenarios"]').click(() => {
+  $('a[data-value="scenarios"]').on('click', () => {
     changeActiveButtons('scenarios');
   });
   $('#scenTabset').on('click', 'a[data-toggle="tab"]', () => {
     rerenderDygraph();
   });
-  $('a[data-value="advanced"],a[data-value="importData"],a[data-value="loadResults"]').click(() => {
+  $('a[data-value="advanced"],a[data-value="importData"],a[data-value="loadResults"]').on('click', () => {
     changeActiveButtons('default');
   });
-  $('#inputTabset li').click(() => {
+  $('#inputTabset li').on('click', () => {
     rerenderHot();
   });
   $('#scenTabset').append('<li id="scenTabsetAdd"><a href="#" id="btLoadScen" data-value="scen_add" '
@@ -359,6 +359,9 @@ $(document).ready(() => {
     } else {
       $('.miro-pivot-custom-colors-wrapper .miro-color-picker input').hide();
     }
+  });
+  $(document).on('click', '.btn-switch-sidebar', function () {
+    switchTab(this.dataset.target);
   });
   $(document).on('click', '.bt-highlight-1, .bt-highlight-2, .bt-highlight-3', function () {
     const btn = $(this);

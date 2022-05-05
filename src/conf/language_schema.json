@@ -381,7 +381,7 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "btClosePivot": {
+                "btCloseAll": {
                   "type": "string",
                   "minLength": 1
                 },

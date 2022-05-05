@@ -115,8 +115,7 @@ sidebar <- dashboardSidebar(
       tags$div(
         class = "btn-group btSplitView", style = "width:100%",
         tags$button(
-          class = "btn btn-default bt-highlight-2 dropdown-toggle", `data-toggle` = "dropdown",
-          style = "width:85%;display:block;margin: 6px 5px 6px 15px;",
+          class = "btn btn-default bt-highlight-2 dropdown-toggle btn-cmp-mode-dropdown", `data-toggle` = "dropdown",
           tags$span(
             id = "btSelectCompareMode",
             if (identical(config$defCompMode, "tab")) {

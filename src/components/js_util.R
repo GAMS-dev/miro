@@ -26,23 +26,33 @@ setAttributes <- function(session, selectors, attribute, values) {
     )
   )
 }
-switchCompareMode <- function(session, mode, numberScenTabs) {
+switchCompareMode <- function(session, mode, numberScenTabs, analysisModuleConfigs) {
+  if (!identical(length(mode), 1L) || !is.character(mode)) {
+    flog.error("switchCompareMode: Invalid mode argument. This is likely an attempt to tamper with the app!")
+    return()
+  }
   if (identical(mode, "pivotView")) {
-    hideEl(session, "#scen-split-view")
-    hideEl(session, "#scen-tab-view")
+    hideEl(session, ".scen-compare-tab-wrapper")
     showEl(session, "#scen-pivot-view")
     hideEl(session, "#btCompareScen")
     setAttributes(session, "#btCompareScen", "data-noshow", "true")
     setTextContent(session, "#btSelectCompareMode", lang$nav$sidebarButtons$pivotView)
     return()
   }
+  if (mode %in% names(analysisModuleConfigs)) {
+    hideEl(session, ".scen-compare-tab-wrapper")
+    showEl(session, paste0("#scen-", mode, "-view"))
+    hideEl(session, "#btCompareScen")
+    setAttributes(session, "#btCompareScen", "data-noshow", "true")
+    setTextContent(session, "#btSelectCompareMode", analysisModuleConfigs[[mode]][["label"]])
+    return()
+  }
   showEl(session, "#btCompareScen")
   setAttributes(session, "#btCompareScen", "data-noshow", "false")
   if (identical(mode, "splitView")) {
     enableEl(session, "#btCompareScen")
+    hideEl(session, ".scen-compare-tab-wrapper")
     showEl(session, "#scen-split-view")
-    hideEl(session, "#scen-tab-view")
-    hideEl(session, "#scen-pivot-view")
     setTextContent(session, "#btSelectCompareMode", lang$nav$sidebarButtons$splitView)
   } else {
     if (numberScenTabs < 2) {
@@ -50,9 +60,8 @@ switchCompareMode <- function(session, mode, numberScenTabs) {
     } else {
       enableEl(session, "#btCompareScen")
     }
-    hideEl(session, "#scen-split-view")
+    hideEl(session, ".scen-compare-tab-wrapper")
     showEl(session, "#scen-tab-view")
-    hideEl(session, "#scen-pivot-view")
     setTextContent(session, "#btSelectCompareMode", lang$nav$sidebarButtons$tabView)
   }
 }

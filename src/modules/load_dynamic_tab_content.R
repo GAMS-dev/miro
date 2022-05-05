@@ -132,6 +132,91 @@ getPivotCompGraphConfig <- function(sheetName) {
   graphConfig$options$fixedColumns <- config$pivotCompSettings$fixedColumns
   return(graphConfig)
 }
+loadDynamicTabContentCustom <- function(session, analysisModuleConfig, initEnv = FALSE) {
+  errMsg <- NULL
+  refId <- paste0("cmpCustom_", analysisModuleConfig[["id"]])
+  showLoadingScreen(session, 500)
+  on.exit(hideLoadingScreen(session))
+
+  if (is.null(dynamicUILoaded$dynamicTabsets[[refId]])) {
+    dynamicUILoaded$dynamicTabsets[[refId]] <<- list(ui = FALSE, content = FALSE)
+  }
+  if (initEnv) {
+    flog.trace("(Re)initializing environment for ref ID: %s", refId)
+    if (is.null(rendererEnv[[refId]])) {
+      rendererEnv[[refId]] <<- new.env(parent = emptyenv())
+    } else {
+      for (el in ls(envir = rendererEnv[[refId]])) {
+        if ("Observer" %in% class(rendererEnv[[refId]][[el]])) {
+          rendererEnv[[refId]][[el]]$destroy()
+        }
+      }
+    }
+  }
+  if (!dynamicUILoaded$dynamicTabsets[[refId]][["ui"]]) {
+    flog.trace(
+      "Rendering UI elements for custom analysis module: %s",
+      analysisModuleConfig[["id"]]
+    )
+    tryCatch(
+      {
+        insertUI(paste0("#customCompScenWrapper_", analysisModuleConfig[["idx"]]),
+          ui = match.fun(analysisModuleConfig[["outputFnName"]])(refId,
+            height = pivotDefaultHeight,
+            options = analysisModuleConfig[["options"]],
+            path = customRendererDir
+          ),
+          immediate = TRUE
+        )
+        dynamicUILoaded$dynamicTabsets[[refId]][["ui"]] <<- TRUE
+      },
+      error = function(e) {
+        flog.error(
+          "Problems rendering UI elements for custom analysis module: %s. Error message: %s.",
+          analysisModuleConfig[["id"]], conditionMessage(e)
+        )
+        errMsg <<- lang$errMsg$loadScen$desc
+      }
+    )
+    if (is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))) {
+      return()
+    }
+  }
+  if (!dynamicUILoaded$dynamicTabsets[[refId]][["content"]]) {
+    flog.trace("Rendering content for custom analysis module: %s", analysisModuleConfig[["id"]])
+    tryCatch(
+      {
+        scenData$load(scenData$getRefScenMap(refId),
+          symNames = character(0L),
+          refId = refId,
+          registerRef = FALSE
+        )
+        callModule(match.fun(analysisModuleConfig[["rendererFnName"]]), refId,
+          data = CustomAnalysisData$new(scenData, refId),
+          height = pivotDefaultHeight,
+          options = analysisModuleConfig[["options"]],
+          path = customRendererDir,
+          rendererEnv = rendererEnv[[refId]],
+          views = views, attachments = attachments
+        )
+        dynamicUILoaded$dynamicTabsets[[refId]][["content"]] <<- TRUE
+        if (any(unlist(scenData$getById("dirty", refId = refId, drop = TRUE), use.names = FALSE))) {
+          showErrorMsg(lang$errMsg$loadScen$title, lang$errMsg$loadScen$inconsistentDataWarning)
+        }
+      },
+      error = function(e) {
+        flog.error(
+          "Problem rendering graphs for custom analysis module: %s. Error message: %s.",
+          analysisModuleConfig[["id"]], conditionMessage(e)
+        )
+        errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderGraph$desc, analysisModuleConfig[["id"]]), sep = "\n")
+      }
+    )
+    if (is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))) {
+      return()
+    }
+  }
+}
 loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE) {
   errMsg <- NULL
   tabsetIdChar <- paste0("tab_", tabsetId)

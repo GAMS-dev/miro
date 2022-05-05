@@ -492,6 +492,60 @@ if (buildUI) {
       )
     )), inputTabContent)
   }
+  customAnalysisTabContent <- lapply(config[["analysisModules"]], function(analysisModuleConfig) {
+    fluidRow(
+      class = "box-title-mobile",
+      tags$div(
+        id = paste0("scen-", analysisModuleConfig$id, "-view"),
+        class = "scen-compare-tab-wrapper",
+        style = "display:none;",
+        box(
+          class = "box-mobile",
+          width = 12L, solidHeader = TRUE, status = "primary", title =
+            tagList(
+              tags$button(
+                id = paste0("btRefreshCustomCmp_", analysisModuleConfig$idx),
+                title = lang$nav$scen$tooltips$btRefresh,
+                disabled = "true",
+                class = "btn btn-default bt-icon action-button",
+                onclick = paste0("Shiny.setInputValue('btRefreshComp',-", analysisModuleConfig$idx, ",{priority: 'event'})"),
+                tags$i(
+                  class = "fas fa-sync-alt",
+                  `aria-label` = lang$nav$scen$tooltips$btRefresh
+                )
+              ),
+              tags$div(
+                style = "float:right;", title = lang$nav$scen$tooltips$btCloseAll,
+                tags$button(
+                  class = "btn btn-default bt-icon action-button",
+                  onclick = paste0("Shiny.setInputValue('btCloseScenCmp','", analysisModuleConfig$id, "',{priority: 'event'})"),
+                  tags$i(
+                    class = "fas fa-times",
+                    `aria-label` = lang$nav$scen$tooltips$btCloseAll
+                  )
+                )
+              )
+            ),
+          tags$div(
+            id = paste0("cmpCustomNoScenWrapper_", analysisModuleConfig$idx), class = "no-scen", lang$nav$scen$noScen,
+            tags$div(
+              style = "margin: 10px;",
+              tags$button(
+                class = "btn btn-default action-button btn-switch-sidebar",
+                type = "button",
+                "data-target" = "loadResults",
+                lang$nav$scen$btLoad
+              )
+            )
+          ),
+          tags$div(
+            id = paste0("customCompScenWrapper_", analysisModuleConfig$idx),
+            style = "margin-top: 10px;display:none;"
+          )
+        )
+      )
+    )
+  })
   tabItemList <- list(
     tabItem(
       tabName = "inputData",
@@ -612,7 +666,9 @@ if (buildUI) {
       tabName = "scenarios",
       generateScenarioTabsetPivot(),
       tags$div(
-        id = "scen-tab-view", style = if (identical(config$defCompMode, "tab")) "" else "display:none;",
+        id = "scen-tab-view",
+        style = if (identical(config$defCompMode, "tab")) "" else "display:none;",
+        class = "scen-compare-tab-wrapper",
         tags$div(
           class = "close-all-tabs",
           tags$a(
@@ -651,6 +707,7 @@ if (buildUI) {
         class = "box-title-mobile",
         tags$div(
           id = "scen-split-view", style = if (identical(config$defCompMode, "split")) "" else "display:none;",
+          class = "scen-compare-tab-wrapper",
           box(
             class = "box-mobile",
             width = 6, solidHeader = TRUE, status = "primary", title =
@@ -685,7 +742,8 @@ if (buildUI) {
             genSplitCompButtons(2)
           )
         )
-      )
+      ),
+      customAnalysisTabContent
     )
   )
   outputTabset <- tagList(

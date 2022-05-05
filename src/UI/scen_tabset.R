@@ -351,6 +351,7 @@ generateScenarioTabsetPivot <- function() {
     class = "box-title-mobile",
     tags$div(
       id = "scen-pivot-view", style = if (!identical(config$defCompMode, "pivot")) "display:none;",
+      class = "scen-compare-tab-wrapper",
       box(
         class = "box-mobile",
         width = 12L, solidHeader = TRUE, status = "primary", title =
@@ -377,12 +378,15 @@ generateScenarioTabsetPivot <- function() {
               )
             ),
             tags$div(
-              style = "float:right;", title = lang$nav$scen$tooltips$btClosePivot,
-              actionButton(
-                inputId = "btScenPivot_close",
-                class = "bt-icon",
-                icon = icon("times"),
-                label = NULL
+              style = "float:right;", title = lang$nav$scen$tooltips$btCloseAll,
+              tags$button(
+                id = "btScenPivot_close",
+                class = "btn btn-default bt-icon action-button",
+                onclick = "Shiny.setInputValue('btCloseScenCmp','pivot',{priority: 'event'})",
+                tags$i(
+                  class = "fas fa-times",
+                  `aria-label` = lang$nav$scen$tooltips$btCloseAll
+                )
               )
             )
           ),
@@ -398,7 +402,7 @@ generateScenarioTabsetPivot <- function() {
             )
           )
         ),
-        tags$div(id = "pivotCompScenWrapper", style = "margin-top: 10px;", style = "display:none")
+        tags$div(id = "pivotCompScenWrapper", style = "margin-top: 10px;display:none;")
       )
     )
   )

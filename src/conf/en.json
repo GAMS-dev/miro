@@ -96,7 +96,7 @@
         "btTableView":"switch view",
         "btSymbolLink": "Use as input data",
         "btClose":"close scenario",
-        "btClosePivot": "close",
+        "btCloseAll": "close",
         "btAddPivot": "add scenarios",
         "btRefresh": "refresh",
         "btDownloadTmpFiles":"temporary files",

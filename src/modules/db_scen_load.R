@@ -276,17 +276,30 @@ observeEvent(input$btSortTime, {
 
 observeEvent(input$btRefreshComp, {
   tabsetId <- input$btRefreshComp
+  refId <- NULL
   if (identical(tabsetId, 0L)) {
     flog.debug("Refresh scenario in pivot compare mode clicked.")
   } else if (tabsetId %in% c(2L, 3L)) {
     flog.debug("Refresh scenario in split compare mode clicked.")
+  } else if (tabsetId < 0L) {
+    if (-tabsetId > length(config[["analysisModules"]])) {
+      flog.error("Invalid value for refresh compare mode button received. This is likely an attempt to tamper with the app!")
+      return()
+    }
+    refId <- paste0("cmpCustom_", config[["analysisModules"]][[-tabsetId]][["id"]])
+    if (!is.null(dynamicUILoaded$dynamicTabsets[[refId]])) {
+      dynamicUILoaded$dynamicTabsets[[refId]][["content"]][] <<- FALSE
+    }
   } else {
     flog.debug("Refresh scenario in tab compare mode clicked.")
   }
-  refId <- tabIdToRef(tabsetId)
-  if (!is.null(dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetId)]])) {
-    dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetId)]][["content"]][] <<- FALSE
+  if (is.null(refId)) {
+    refId <- tabIdToRef(tabsetId)
+    if (!is.null(dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetId)]])) {
+      dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetId)]][["content"]][] <<- FALSE
+    }
   }
+
   scenIds <- scenData$getRefScenMap(refId)
   scenData$invalidateCache(scenIds)
   sbScenId <- startsWith(as.character(scenIds), "sb")
@@ -315,7 +328,7 @@ observeEvent(input$btRefreshComp, {
     views$duplicateSandboxConf(tabsetId)
   }
   sidsToLoad <- as.integer(scenIds[!sbScenId])
-  if (length(config$scripts$base) && !identical(tabsetId, 0L)) {
+  if (length(config$scripts$base) && tabsetId > 0L) {
     if (any(sbScenId)) {
       scriptOutput$loadResultsBase(scriptOutput$getResults(), tabsetId)
     } else if (length(sidsToLoad)) {
@@ -350,13 +363,18 @@ observeEvent(input$btRefreshComp, {
       tabsetId, inputDataSids
     )
   }
-  sheetNames <- getSheetnamesByTabsetId(tabsetId)
-  if (length(sheetNames)) {
-    loadDynamicTabContent(session, tabsetId,
-      sheetNames,
-      initEnv = TRUE
-    )
+  if (tabsetId >= 0L) {
+    sheetNames <- getSheetnamesByTabsetId(tabsetId)
+    if (length(sheetNames)) {
+      loadDynamicTabContent(session, tabsetId,
+        sheetNames,
+        initEnv = TRUE
+      )
+    }
+  } else {
+    loadDynamicTabContentCustom(session, config[["analysisModules"]][[-tabsetId]], initEnv = TRUE)
   }
+
   metaTmp <- scenData$getById("meta", refId = refId, drop = TRUE)
   showElReplaceTxt(
     session, paste0("#cmpScenTitle_", tabsetId),
@@ -438,7 +456,7 @@ observeEvent(input$btBatchCompare, {
   } else if (identical(input$btBatchCompare, "tab")) {
     viewMode <- "tabView"
     currentCompMode <<- "tab"
-  } else {
+  } else if (identical(input$btBatchCompare, "split")) {
     viewMode <- "splitView"
     currentCompMode <<- "split"
     sidInLeftSplit <- length(scenData$getRefScenMap("cmpSplitL"))
@@ -453,6 +471,13 @@ observeEvent(input$btBatchCompare, {
     } else {
       loadInLeftBoxSplit <<- identical(sidInLeftSplit, 0L)
     }
+  } else {
+    viewMode <- input$btBatchCompare
+    if (!viewMode %in% names(config[["analysisModules"]])) {
+      flog.error("Invalid batch compare mode selected. This is likely an attempt to tamper with the app!")
+      return()
+    }
+    currentCompMode <<- viewMode
   }
   if (length(input$batchCompareNameCols)) {
     if (tryCatch(
@@ -494,7 +519,7 @@ observeEvent(input$btBatchCompare, {
   pivotCompRefreshAll <<- TRUE
   isInSolveMode <<- FALSE
   loadIntoSandbox <<- FALSE
-  switchCompareMode(session, viewMode, length(sidsToLoad))
+  switchCompareMode(session, viewMode, length(sidsToLoad), config[["analysisModules"]])
   rv$btOverwriteScen <<- rv$btOverwriteScen + 1L
 })
 
@@ -510,7 +535,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   if (!length(sidsToLoad)) {
     return()
   }
-  if (!isInSolveMode && identical(currentCompMode, "pivot")) {
+  isInMultiCompMode <- currentCompMode %in% c("pivot", names(config[["analysisModules"]]))
+  if (!isInSolveMode && isInMultiCompMode) {
     sidsToLoad <<- c("sb", sidsToLoad)
   }
   sidsToLoadVector <- unlist(sidsToLoad, use.names = FALSE)
@@ -522,7 +548,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     )
     return(showErrorMsg(lang$errMsg$maxScen$title, lang$errMsg$maxScen$desc))
   }
-  if (identical(currentCompMode, "pivot") && isInRefreshMode) {
+  if (isInMultiCompMode && isInRefreshMode) {
     on.exit(hideEl(session, "#loading-screen"), add = TRUE)
   }
   if (isInSolveMode) {
@@ -548,7 +574,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       refId <- "cmpPivot"
       viewsSids <- 0L
       # check if we are modifying already opened scenarios
-      sidsInPivotComp <- scenData$getRefScenMap("cmpPivot")
+      sidsInPivotComp <- scenData$getRefScenMap(refId)
       if (length(sidsInPivotComp)) {
         if (!is.null(dynamicUILoaded$dynamicTabsets[["tab_0"]])) {
           dynamicUILoaded$dynamicTabsets[["tab_0"]][["content"]][] <<- FALSE
@@ -592,9 +618,24 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         refId <- "cmpSplitR"
         viewsSids <- 3L
       }
-    } else {
-      flog.error("Invalid state (not in solve mode, and currentCompMode is neither: pivot, tab nor split. Please contact GAMS!.")
+    } else if (!currentCompMode %in% names(config[["analysisModules"]])) {
+      flog.error("Invalid state (not in solve mode, and currentCompMode is neither: pivot, tab, split nor a custom analysis mode. Please contact GAMS!.")
       return(showErrorMsg(lang$errMsg$loadScen$title, lang$errMsg$unknownError))
+    } else {
+      refId <- paste0("cmpCustom_", config[["analysisModules"]][[currentCompMode]][["id"]])
+      viewsSids <- -config[["analysisModules"]][[currentCompMode]][["idx"]]
+      # check if we are modifying already opened scenarios
+      sidsInCustomComp <- scenData$getRefScenMap(refId)
+      if (length(sidsInCustomComp)) {
+        if (!is.null(dynamicUILoaded$dynamicTabsets[[paste0("tab_", viewsSids)]])) {
+          dynamicUILoaded$dynamicTabsets[[paste0("tab_", viewsSids)]][["content"]][] <<- FALSE
+        }
+        sidsToRemoveFromCustomComp <- !sidsInCustomComp %in% sidsToLoadVector
+        if (any(sidsToRemoveFromCustomComp)) {
+          scenData$clear(refId, sidsInCustomComp[sidsToRemoveFromCustomComp])
+        }
+        symToFetch <- character(0L)
+      }
     }
   }
   errMsg <- NULL
@@ -803,6 +844,28 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       },
       error = function(e) {
         flog.warn("Problems rendering scenarios in pivot compare mode. Error message: %s", conditionMessage(e))
+        showErrorMsg(lang$errMsg$loadScen$title, lang$errMsg$loadScen$desc)
+      }
+    ))
+  } else if (currentCompMode %in% names(config[["analysisModules"]])) {
+    moduleIdx <- config[["analysisModules"]][[currentCompMode]][["idx"]]
+    return(tryCatch(
+      {
+        loadDynamicTabContentCustom(session, config[["analysisModules"]][[currentCompMode]], initEnv = TRUE)
+        hideEl(session, paste0("#cmpCustomNoScenWrapper_", moduleIdx))
+        showEl(session, paste0("#customCompScenWrapper_", moduleIdx))
+        switchTab(session, "scenComp")
+        isInRefreshMode <<- TRUE
+        enableEl(session, paste0("#btRefreshCustomCmp_", moduleIdx))
+        removeModal()
+        flog.debug(
+          "Scenarios: '%s' loaded and rendered in custom scenario comparison mode (%s).",
+          paste(sidsToLoad, collapse = ", "),
+          currentCompMode
+        )
+      },
+      error = function(e) {
+        flog.warn("Problems rendering scenarios in custom compare mode (%s). Error message: %s", currentCompMode, conditionMessage(e))
         showErrorMsg(lang$errMsg$loadScen$title, lang$errMsg$loadScen$desc)
       }
     ))

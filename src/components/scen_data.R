@@ -7,6 +7,9 @@ ScenData <- R6Class("ScenData", public = list(
     private$hiddenOutputScalars <- tolower(hiddenOutputScalars)
     return(invisible(self))
   },
+  getDbSymbols = function() {
+    return(private$dbSymbols)
+  },
   getRefScenMap = function(refId = NULL) {
     if (is.null(refId)) {
       return(private$refScenMap)

@@ -2362,7 +2362,8 @@ if (is.null(errMsg)) {
 
 if (is.null(errMsg)) {
   analysisModuleConfigs <- list()
-  for (analysisModuleConfig in config[["analysisModules"]]) {
+  for (analysisModuleIdx in seq_along(config[["analysisModules"]])) {
+    analysisModuleConfig <- config[["analysisModules"]][[analysisModuleIdx]]
     if (analysisModuleConfig$id %in% names(analysisModuleConfigs)) {
       errMsg <- sprintf(
         "Analysis module ids must be unique (%s).",
@@ -2381,14 +2382,14 @@ if (is.null(errMsg)) {
       )
       analysisModuleConfigs[[analysisModuleConfig$id]][["rendererFnName"]] <- paste0(
         "renderMiroanalysis_",
-        toupper(substr(analysisModuleConfig$id, 1L, 1L)),
-        substr(analysisModuleConfig$id, 2, nchar(analysisModuleConfig$id))
+        analysisModuleConfig$id
       )
       analysisModuleConfigs[[analysisModuleConfig$id]][["outputFnName"]] <- paste0(
         "miroanalysis_",
         analysisModuleConfig$id,
         "Output"
       )
+      analysisModuleConfigs[[analysisModuleConfig$id]][["idx"]] <- analysisModuleIdx
     }
   }
   config[["analysisModules"]] <- analysisModuleConfigs
