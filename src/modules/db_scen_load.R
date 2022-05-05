@@ -624,18 +624,11 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     } else {
       refId <- paste0("cmpCustom_", config[["analysisModules"]][[currentCompMode]][["id"]])
       viewsSids <- -config[["analysisModules"]][[currentCompMode]][["idx"]]
-      # check if we are modifying already opened scenarios
-      sidsInCustomComp <- scenData$getRefScenMap(refId)
-      if (length(sidsInCustomComp)) {
-        if (!is.null(dynamicUILoaded$dynamicTabsets[[paste0("tab_", viewsSids)]])) {
-          dynamicUILoaded$dynamicTabsets[[paste0("tab_", viewsSids)]][["content"]][] <<- FALSE
-        }
-        sidsToRemoveFromCustomComp <- !sidsInCustomComp %in% sidsToLoadVector
-        if (any(sidsToRemoveFromCustomComp)) {
-          scenData$clear(refId, sidsInCustomComp[sidsToRemoveFromCustomComp])
-        }
-        symToFetch <- character(0L)
+      scenData$clear(refId)
+      if (!is.null(dynamicUILoaded$dynamicTabsets[[refId]])) {
+        dynamicUILoaded$dynamicTabsets[[refId]][["content"]][] <<- FALSE
       }
+      symToFetch <- character(0L)
     }
   }
   errMsg <- NULL
