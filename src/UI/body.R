@@ -492,7 +492,7 @@ if (buildUI) {
       )
     )), inputTabContent)
   }
-  customAnalysisTabContent <- lapply(config[["analysisModules"]], function(analysisModuleConfig) {
+  customAnalysisTabContent <- lapply(config[["customCompareModules"]], function(analysisModuleConfig) {
     fluidRow(
       class = "box-title-mobile",
       tags$div(

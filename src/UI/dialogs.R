@@ -1390,7 +1390,7 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
                   class = "btn-group", class = "batch-load-content",
                   tags$button(
                     class = "btn btn-default", type = "button", id = "btBatchCompare",
-                    style = if (length(sidsToLoad) <= 10L || length(config[["analysisModules"]]) > 0L) {
+                    style = if (length(sidsToLoad) <= 10L || length(config[["customCompareModules"]]) > 0L) {
                       "margin:6px 0px 6px 5px;border-right:0px;"
                     } else {
                       "margin:6px 0px 6px 5px;"
@@ -1398,7 +1398,7 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
                     onclick = "Shiny.setInputValue('btBatchCompare','pivot',{priority:'event'});",
                     lang$nav$dialogBatchLoad$interactiveButtonPivot
                   ),
-                  if (length(sidsToLoad) <= 10L || length(config[["analysisModules"]]) > 0L) {
+                  if (length(sidsToLoad) <= 10L || length(config[["customCompareModules"]]) > 0L) {
                     tagList(
                       tags$button(
                         class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
@@ -1426,7 +1426,7 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
                             )
                           )
                         },
-                        lapply(config[["analysisModules"]], function(analysisModuleConfig) {
+                        lapply(config[["customCompareModules"]], function(analysisModuleConfig) {
                           tags$li(
                             tags$a(
                               href = "#",

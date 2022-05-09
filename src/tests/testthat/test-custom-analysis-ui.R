@@ -23,7 +23,7 @@ configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName,
   simplifyMatrix = FALSE
 ))
 
-configJSON$analysisModules <- list(list(
+configJSON$customCompareModules <- list(list(
   id = "test1",
   label = "My first custom analysis renderer"
 ), list(id = "test2", label = "My second custom analyzzzer"))

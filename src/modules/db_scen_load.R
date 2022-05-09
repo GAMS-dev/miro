@@ -282,11 +282,11 @@ observeEvent(input$btRefreshComp, {
   } else if (tabsetId %in% c(2L, 3L)) {
     flog.debug("Refresh scenario in split compare mode clicked.")
   } else if (tabsetId < 0L) {
-    if (-tabsetId > length(config[["analysisModules"]])) {
+    if (-tabsetId > length(config[["customCompareModules"]])) {
       flog.error("Invalid value for refresh compare mode button received. This is likely an attempt to tamper with the app!")
       return()
     }
-    refId <- paste0("cmpCustom_", config[["analysisModules"]][[-tabsetId]][["id"]])
+    refId <- paste0("cmpCustom_", config[["customCompareModules"]][[-tabsetId]][["id"]])
     if (!is.null(dynamicUILoaded$dynamicTabsets[[refId]])) {
       dynamicUILoaded$dynamicTabsets[[refId]][["content"]][] <<- FALSE
     }
@@ -372,7 +372,7 @@ observeEvent(input$btRefreshComp, {
       )
     }
   } else {
-    loadDynamicTabContentCustom(session, config[["analysisModules"]][[-tabsetId]], initEnv = TRUE)
+    loadDynamicTabContentCustom(session, config[["customCompareModules"]][[-tabsetId]], initEnv = TRUE)
   }
 
   metaTmp <- scenData$getById("meta", refId = refId, drop = TRUE)
@@ -473,7 +473,7 @@ observeEvent(input$btBatchCompare, {
     }
   } else {
     viewMode <- input$btBatchCompare
-    if (!viewMode %in% names(config[["analysisModules"]])) {
+    if (!viewMode %in% names(config[["customCompareModules"]])) {
       flog.error("Invalid batch compare mode selected. This is likely an attempt to tamper with the app!")
       return()
     }
@@ -519,7 +519,7 @@ observeEvent(input$btBatchCompare, {
   pivotCompRefreshAll <<- TRUE
   isInSolveMode <<- FALSE
   loadIntoSandbox <<- FALSE
-  switchCompareMode(session, viewMode, length(sidsToLoad), config[["analysisModules"]])
+  switchCompareMode(session, viewMode, length(sidsToLoad), config[["customCompareModules"]])
   rv$btOverwriteScen <<- rv$btOverwriteScen + 1L
 })
 
@@ -535,7 +535,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   if (!length(sidsToLoad)) {
     return()
   }
-  isInMultiCompMode <- currentCompMode %in% c("pivot", names(config[["analysisModules"]]))
+  isInMultiCompMode <- currentCompMode %in% c("pivot", names(config[["customCompareModules"]]))
   if (!isInSolveMode && isInMultiCompMode) {
     sidsToLoad <<- c("sb", sidsToLoad)
   }
@@ -618,12 +618,12 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         refId <- "cmpSplitR"
         viewsSids <- 3L
       }
-    } else if (!currentCompMode %in% names(config[["analysisModules"]])) {
+    } else if (!currentCompMode %in% names(config[["customCompareModules"]])) {
       flog.error("Invalid state (not in solve mode, and currentCompMode is neither: pivot, tab, split nor a custom analysis mode. Please contact GAMS!.")
       return(showErrorMsg(lang$errMsg$loadScen$title, lang$errMsg$unknownError))
     } else {
-      refId <- paste0("cmpCustom_", config[["analysisModules"]][[currentCompMode]][["id"]])
-      viewsSids <- -config[["analysisModules"]][[currentCompMode]][["idx"]]
+      refId <- paste0("cmpCustom_", config[["customCompareModules"]][[currentCompMode]][["id"]])
+      viewsSids <- -config[["customCompareModules"]][[currentCompMode]][["idx"]]
       scenData$clear(refId)
       if (!is.null(dynamicUILoaded$dynamicTabsets[[refId]])) {
         dynamicUILoaded$dynamicTabsets[[refId]][["content"]][] <<- FALSE
@@ -840,11 +840,11 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         showErrorMsg(lang$errMsg$loadScen$title, lang$errMsg$loadScen$desc)
       }
     ))
-  } else if (currentCompMode %in% names(config[["analysisModules"]])) {
-    moduleIdx <- config[["analysisModules"]][[currentCompMode]][["idx"]]
+  } else if (currentCompMode %in% names(config[["customCompareModules"]])) {
+    moduleIdx <- config[["customCompareModules"]][[currentCompMode]][["idx"]]
     return(tryCatch(
       {
-        loadDynamicTabContentCustom(session, config[["analysisModules"]][[currentCompMode]], initEnv = TRUE)
+        loadDynamicTabContentCustom(session, config[["customCompareModules"]][[currentCompMode]], initEnv = TRUE)
         hideEl(session, paste0("#cmpCustomNoScenWrapper_", moduleIdx))
         showEl(session, paste0("#customCompScenWrapper_", moduleIdx))
         switchTab(session, "scenComp")

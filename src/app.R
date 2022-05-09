@@ -621,7 +621,7 @@ if (is.null(errMsg) && debugMode) {
   listOfCustomRenderers <- Set$new()
   requiredPackagesCR <<- NULL
 
-  for (customRendererConfig in c(configGraphsOut, configGraphsIn, modelIn, config[["analysisModules"]])) {
+  for (customRendererConfig in c(configGraphsOut, configGraphsIn, modelIn, config[["customCompareModules"]])) {
     # check whether non standard renderers were defined in graph config
     if (!is.null(customRendererConfig$rendererName)) {
       customRendererConfig$outType <- customRendererConfig$rendererName
@@ -1431,7 +1431,7 @@ if (!is.null(errMsg)) {
                 names(modelIn),
                 names(modelOut),
                 ioConfig$inputDsNamesBase,
-                customCompareModeConfig = config[["analysisModules"]]
+                customCompareModeConfig = config[["customCompareModules"]]
               )
               if (is.null(attachments)) {
                 attachments <- Attachments$new(
@@ -1509,7 +1509,7 @@ if (!is.null(errMsg)) {
                   names(modelIn),
                   names(modelOut),
                   ioConfig$inputDsNamesBase,
-                  customCompareModeConfig = config[["analysisModules"]]
+                  customCompareModeConfig = config[["customCompareModules"]]
                 )
                 views$addConf(safeFromJSON(read_file(file.path(miroDataDir, miroDataFilesRaw[viewsFileId])),
                   simplifyDataFrame = FALSE, simplifyVector = FALSE
@@ -1779,7 +1779,7 @@ if (!is.null(errMsg)) {
         names(modelIn),
         names(modelOut),
         ioConfig$inputDsNamesBase, rv,
-        customCompareModeConfig = config[["analysisModules"]]
+        customCompareModeConfig = config[["customCompareModules"]]
       )$setGlobalViews(config$globalViews)
       attachments <- Attachments$new(
         db, list(
@@ -2221,12 +2221,12 @@ if (!is.null(errMsg)) {
           }
           disableEl(session, "#btClosePivotComp")
         } else if (!identical(length(input$btCloseScenCmp), 1L) ||
-          !input$btCloseScenCmp %in% names(config[["analysisModules"]])) {
+          !input$btCloseScenCmp %in% names(config[["customCompareModules"]])) {
           flog.error("Close comparison mode button has invalid value. This is likely an attempt to tamper with the app!")
           return()
         } else {
-          moduleIdx <- config[["analysisModules"]][[input$btCloseScenCmp]][["idx"]]
-          refId <- paste0("cmpCustom_", config[["analysisModules"]][[input$btCloseScenCmp]][["id"]])
+          moduleIdx <- config[["customCompareModules"]][[input$btCloseScenCmp]][["idx"]]
+          refId <- paste0("cmpCustom_", config[["customCompareModules"]][[input$btCloseScenCmp]][["id"]])
           showEl(session, paste0("#cmpCustomNoScenWrapper_", moduleIdx))
           hideEl(session, paste0("#customCompScenWrapper_", moduleIdx))
           disableEl(session, paste0("#btRefreshCustomCmp_", moduleIdx))

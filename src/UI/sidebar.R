@@ -30,7 +30,7 @@ compareModeList <- c(list(
     "data-is-clickable" = "false",
     "data-view" = "tab", lang$nav$sidebarButtons$tabView
   ))
-), lapply(config[["analysisModules"]], function(analysisModuleConfig) {
+), lapply(config[["customCompareModules"]], function(analysisModuleConfig) {
   tags$li(tags$a(
     href = "#",
     class = "change-dd-button",

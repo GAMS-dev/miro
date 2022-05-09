@@ -2817,17 +2817,18 @@
           }
         }
       },
-      "analysisModules": {
+      "customCompareModules": {
         "type": "array",
         "items": {
           "type": "object",
-          "description": "Custom scenario analysis renderers",
+          "description": "Custom scenario comparison modules",
           "additionalProperties": false,
           "properties": {
             "id": {
               "description": "Unique identifier of analysis module (a-z0-9)",
               "type": "string",
-              "minLength": 2
+              "minLength": 2,
+              "maxLength": 20
             },
             "label": {
               "description": "Label to identify this analysis module",

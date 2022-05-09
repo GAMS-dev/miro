@@ -2349,8 +2349,8 @@ if (is.null(errMsg)) {
 
 if (is.null(errMsg)) {
   analysisModuleConfigs <- list()
-  for (analysisModuleIdx in seq_along(config[["analysisModules"]])) {
-    analysisModuleConfig <- config[["analysisModules"]][[analysisModuleIdx]]
+  for (analysisModuleIdx in seq_along(config[["customCompareModules"]])) {
+    analysisModuleConfig <- config[["customCompareModules"]][[analysisModuleIdx]]
     if (analysisModuleConfig$id %in% names(analysisModuleConfigs)) {
       errMsg <- sprintf(
         "Analysis module ids must be unique (%s).",
@@ -2379,14 +2379,14 @@ if (is.null(errMsg)) {
       analysisModuleConfigs[[analysisModuleConfig$id]][["idx"]] <- analysisModuleIdx
     }
   }
-  config[["analysisModules"]] <- analysisModuleConfigs
+  config[["customCompareModules"]] <- analysisModuleConfigs
 }
 
 if (is.null(errMsg)) {
   validViewSymnames <- c(
     inputDsNames, paste0("_pivotcomp_", inputDsNames),
     names(modelOut), paste0("_pivotcomp_", names(modelOut)),
-    paste0("_customcomp_", names(config[["analysisModules"]]))
+    paste0("_customcomp_", names(config[["customCompareModules"]]))
   )
   invalidViewSymbols <- !names(config$globalViews) %in% validViewSymnames
   if (any(invalidViewSymbols)) {
