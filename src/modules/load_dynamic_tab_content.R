@@ -132,9 +132,9 @@ getPivotCompGraphConfig <- function(sheetName) {
   graphConfig$options$fixedColumns <- config$pivotCompSettings$fixedColumns
   return(graphConfig)
 }
-loadDynamicTabContentCustom <- function(session, analysisModuleConfig, initEnv = FALSE) {
+loadDynamicTabContentCustom <- function(session, compareModuleConfig, initEnv = FALSE) {
   errMsg <- NULL
-  refId <- paste0("cmpCustom_", analysisModuleConfig[["id"]])
+  refId <- paste0("cmpCustom_", compareModuleConfig[["id"]])
   showLoadingScreen(session, 500)
   on.exit(hideLoadingScreen(session))
 
@@ -156,14 +156,14 @@ loadDynamicTabContentCustom <- function(session, analysisModuleConfig, initEnv =
   if (!dynamicUILoaded$dynamicTabsets[[refId]][["ui"]]) {
     flog.trace(
       "Rendering UI elements for custom analysis module: %s",
-      analysisModuleConfig[["id"]]
+      compareModuleConfig[["id"]]
     )
     tryCatch(
       {
-        insertUI(paste0("#customCompScenWrapper_", analysisModuleConfig[["idx"]]),
-          ui = match.fun(analysisModuleConfig[["outputFnName"]])(refId,
+        insertUI(paste0("#customCompScenWrapper_", compareModuleConfig[["idx"]]),
+          ui = match.fun(compareModuleConfig[["outputFnName"]])(refId,
             height = pivotDefaultHeight,
-            options = analysisModuleConfig[["options"]],
+            options = compareModuleConfig[["options"]],
             path = customRendererDir
           ),
           immediate = TRUE
@@ -173,7 +173,7 @@ loadDynamicTabContentCustom <- function(session, analysisModuleConfig, initEnv =
       error = function(e) {
         flog.error(
           "Problems rendering UI elements for custom analysis module: %s. Error message: %s.",
-          analysisModuleConfig[["id"]], conditionMessage(e)
+          compareModuleConfig[["id"]], conditionMessage(e)
         )
         errMsg <<- lang$errMsg$loadScen$desc
       }
@@ -183,7 +183,7 @@ loadDynamicTabContentCustom <- function(session, analysisModuleConfig, initEnv =
     }
   }
   if (!dynamicUILoaded$dynamicTabsets[[refId]][["content"]]) {
-    flog.trace("Rendering content for custom analysis module: %s", analysisModuleConfig[["id"]])
+    flog.trace("Rendering content for custom analysis module: %s", compareModuleConfig[["id"]])
     tryCatch(
       {
         scenData$load(scenData$getRefScenMap(refId),
@@ -191,10 +191,9 @@ loadDynamicTabContentCustom <- function(session, analysisModuleConfig, initEnv =
           refId = refId,
           registerRef = FALSE
         )
-        callModule(match.fun(analysisModuleConfig[["rendererFnName"]]), refId,
-          data = CustomAnalysisData$new(scenData, refId),
-          height = pivotDefaultHeight,
-          options = analysisModuleConfig[["options"]],
+        callModule(match.fun(compareModuleConfig[["rendererFnName"]]), refId,
+          data = CustomComparisonData$new(scenData, refId),
+          options = compareModuleConfig[["options"]],
           path = customRendererDir,
           rendererEnv = rendererEnv[[refId]],
           views = views
@@ -207,9 +206,12 @@ loadDynamicTabContentCustom <- function(session, analysisModuleConfig, initEnv =
       error = function(e) {
         flog.error(
           "Problem rendering graphs for custom analysis module: %s. Error message: %s.",
-          analysisModuleConfig[["id"]], conditionMessage(e)
+          compareModuleConfig[["id"]], conditionMessage(e)
         )
-        errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderGraph$desc, analysisModuleConfig[["id"]]), sep = "\n")
+        errMsg <<- paste(errMsg, sprintf(
+          lang$errMsg$renderGraph$desc,
+          compareModuleConfig[["id"]]
+        ), sep = "\n")
       }
     )
     if (is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))) {

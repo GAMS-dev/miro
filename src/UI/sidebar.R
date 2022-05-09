@@ -30,16 +30,16 @@ compareModeList <- c(list(
     "data-is-clickable" = "false",
     "data-view" = "tab", lang$nav$sidebarButtons$tabView
   ))
-), lapply(config[["customCompareModules"]], function(analysisModuleConfig) {
+), lapply(config[["customCompareModules"]], function(compareModuleConfig) {
   tags$li(tags$a(
     href = "#",
     class = "change-dd-button",
     "data-btn-selector" = "#btSelectCompareMode",
-    "data-btn-text" = analysisModuleConfig$label,
+    "data-btn-text" = compareModuleConfig[["label"]],
     "data-action-id" = "btSplitView",
-    "data-action-val" = analysisModuleConfig$id,
+    "data-action-val" = compareModuleConfig[["id"]],
     "data-is-clickable" = "false",
-    "data-view" = analysisModuleConfig$id, analysisModuleConfig$label
+    "data-view" = compareModuleConfig[["id"]], compareModuleConfig[["label"]]
   ))
 }))
 

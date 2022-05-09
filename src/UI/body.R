@@ -492,11 +492,11 @@ if (buildUI) {
       )
     )), inputTabContent)
   }
-  customAnalysisTabContent <- lapply(config[["customCompareModules"]], function(analysisModuleConfig) {
+  customComparisonTabContent <- lapply(config[["customCompareModules"]], function(compareModuleConfig) {
     fluidRow(
       class = "box-title-mobile",
       tags$div(
-        id = paste0("scen-", analysisModuleConfig$id, "-view"),
+        id = paste0("scen-", compareModuleConfig[["id"]], "-view"),
         class = "scen-compare-tab-wrapper",
         style = "display:none;",
         box(
@@ -504,11 +504,11 @@ if (buildUI) {
           width = 12L, solidHeader = TRUE, status = "primary", title =
             tagList(
               tags$button(
-                id = paste0("btRefreshCustomCmp_", analysisModuleConfig$idx),
+                id = paste0("btRefreshCustomCmp_", compareModuleConfig[["idx"]]),
                 title = lang$nav$scen$tooltips$btRefresh,
                 disabled = "true",
                 class = "btn btn-default bt-icon action-button",
-                onclick = paste0("Shiny.setInputValue('btRefreshComp',-", analysisModuleConfig$idx, ",{priority: 'event'})"),
+                onclick = paste0("Shiny.setInputValue('btRefreshComp',-", compareModuleConfig[["idx"]], ",{priority: 'event'})"),
                 tags$i(
                   class = "fas fa-sync-alt",
                   `aria-label` = lang$nav$scen$tooltips$btRefresh
@@ -518,7 +518,7 @@ if (buildUI) {
                 style = "float:right;", title = lang$nav$scen$tooltips$btCloseAll,
                 tags$button(
                   class = "btn btn-default bt-icon action-button",
-                  onclick = paste0("Shiny.setInputValue('btCloseScenCmp','", analysisModuleConfig$id, "',{priority: 'event'})"),
+                  onclick = paste0("Shiny.setInputValue('btCloseScenCmp','", compareModuleConfig[["id"]], "',{priority: 'event'})"),
                   tags$i(
                     class = "fas fa-times",
                     `aria-label` = lang$nav$scen$tooltips$btCloseAll
@@ -527,7 +527,7 @@ if (buildUI) {
               )
             ),
           tags$div(
-            id = paste0("cmpCustomNoScenWrapper_", analysisModuleConfig$idx), class = "no-scen", lang$nav$scen$noScen,
+            id = paste0("cmpCustomNoScenWrapper_", compareModuleConfig[["idx"]]), class = "no-scen", lang$nav$scen$noScen,
             tags$div(
               style = "margin: 10px;",
               tags$button(
@@ -539,7 +539,7 @@ if (buildUI) {
             )
           ),
           tags$div(
-            id = paste0("customCompScenWrapper_", analysisModuleConfig$idx),
+            id = paste0("customCompScenWrapper_", compareModuleConfig[["idx"]]),
             style = "margin-top: 10px;display:none;"
           )
         )
@@ -743,7 +743,7 @@ if (buildUI) {
           )
         )
       ),
-      customAnalysisTabContent
+      customComparisonTabContent
     )
   )
   outputTabset <- tagList(

@@ -25,7 +25,8 @@ configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName,
 
 configJSON$customCompareModules <- list(list(
   id = "test1",
-  label = "My first custom analysis renderer"
+  label = "My first custom analysis renderer",
+  options = list(advanced = list(test = "huhu"))
 ), list(id = "test2", label = "My second custom analyzzzer"))
 
 configJSON$defaultScenName <- "default"
@@ -38,8 +39,8 @@ jsonlite::write_json(list(`_customcomp_test1` = list(test123 = list(b = "def")))
 )
 
 test_that(
-  "Custom analysis renderers work",
-  expect_pass(testApp(file.path(testDir, ".."), "custom_analysis_test",
+  "Custom comparison renderers work",
+  expect_pass(testApp(file.path(testDir, ".."), "custom_comparison_test",
     compareImages = FALSE
   ))
 )

@@ -1426,12 +1426,12 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
                             )
                           )
                         },
-                        lapply(config[["customCompareModules"]], function(analysisModuleConfig) {
+                        lapply(config[["customCompareModules"]], function(compareModuleConfig) {
                           tags$li(
                             tags$a(
                               href = "#",
-                              onclick = paste0("Shiny.setInputValue('btBatchCompare','", analysisModuleConfig$id, "',{priority:'event'});"),
-                              analysisModuleConfig$label
+                              onclick = paste0("Shiny.setInputValue('btBatchCompare','", compareModuleConfig[["id"]], "',{priority:'event'});"),
+                              compareModuleConfig[["label"]]
                             )
                           )
                         })

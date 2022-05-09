@@ -1,5 +1,5 @@
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit("custom_analysis_test")
+app$snapshotInit("custom_comparison_test")
 
 app$snapshot(items = list(output = c("inputDataTitle")), screenshot = TRUE)
 

@@ -2348,38 +2348,38 @@ if (is.null(errMsg)) {
 }
 
 if (is.null(errMsg)) {
-  analysisModuleConfigs <- list()
-  for (analysisModuleIdx in seq_along(config[["customCompareModules"]])) {
-    analysisModuleConfig <- config[["customCompareModules"]][[analysisModuleIdx]]
-    if (analysisModuleConfig$id %in% names(analysisModuleConfigs)) {
+  compareModuleConfigs <- list()
+  for (compareModuleIdx in seq_along(config[["customCompareModules"]])) {
+    compareModuleConfig <- config[["customCompareModules"]][[compareModuleIdx]]
+    if (compareModuleConfig$id %in% names(compareModuleConfigs)) {
       errMsg <- sprintf(
         "Analysis module ids must be unique (%s).",
-        analysisModuleConfig$id
+        compareModuleConfig$id
       )
-    } else if (analysisModuleConfig$id %in% c("split", "tab", "pivot")) {
+    } else if (compareModuleConfig$id %in% c("split", "tab", "pivot")) {
       errMsg <- sprintf(
         "Analysis module id: '%s' is reserved and cannot be used.",
-        analysisModuleConfig$id
+        compareModuleConfig$id
       )
     } else {
-      analysisModuleConfigs[[analysisModuleConfig$id]] <- analysisModuleConfig
-      analysisModuleConfigs[[analysisModuleConfig$id]][["outType"]] <- paste0(
-        "miroanalysis_",
-        analysisModuleConfig$id
+      compareModuleConfigs[[compareModuleConfig$id]] <- compareModuleConfig
+      compareModuleConfigs[[compareModuleConfig$id]][["outType"]] <- paste0(
+        "mirocompare_",
+        compareModuleConfig$id
       )
-      analysisModuleConfigs[[analysisModuleConfig$id]][["rendererFnName"]] <- paste0(
-        "renderMiroanalysis_",
-        analysisModuleConfig$id
+      compareModuleConfigs[[compareModuleConfig$id]][["rendererFnName"]] <- paste0(
+        "renderMirocompare_",
+        compareModuleConfig$id
       )
-      analysisModuleConfigs[[analysisModuleConfig$id]][["outputFnName"]] <- paste0(
-        "miroanalysis_",
-        analysisModuleConfig$id,
+      compareModuleConfigs[[compareModuleConfig$id]][["outputFnName"]] <- paste0(
+        "mirocompare_",
+        compareModuleConfig$id,
         "Output"
       )
-      analysisModuleConfigs[[analysisModuleConfig$id]][["idx"]] <- analysisModuleIdx
+      compareModuleConfigs[[compareModuleConfig$id]][["idx"]] <- compareModuleIdx
     }
   }
-  config[["customCompareModules"]] <- analysisModuleConfigs
+  config[["customCompareModules"]] <- compareModuleConfigs
 }
 
 if (is.null(errMsg)) {

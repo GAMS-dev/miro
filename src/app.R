@@ -64,7 +64,7 @@ filesToInclude <- c(
   "./components/miro_tabsetpanel.R", "./modules/render_data.R",
   "./modules/generate_data.R", "./components/script_output.R",
   "./components/js_util.R", "./components/scen_data.R",
-  "./components/scen_data_custom_analysis.R", "./components/batch_loader.R"
+  "./components/custom_comparison_data.R", "./components/batch_loader.R"
 )
 LAUNCHCONFIGMODE <- FALSE
 if (is.null(errMsg)) {

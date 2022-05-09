@@ -1,4 +1,4 @@
-miroanalysis_test1Output <- function(id, height = NULL, options = NULL, path = NULL) {
+mirocompare_test1Output <- function(id, height = NULL, options = NULL, path = NULL) {
   ns <- NS(id)
   tags$div(
     plotOutput(ns("maxstockVsErrorTrain")), tableOutput(ns("maxstockVsErrorTrainTable")),
@@ -6,8 +6,11 @@ miroanalysis_test1Output <- function(id, height = NULL, options = NULL, path = N
   )
 }
 
-renderMiroanalysis_test1 <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
+renderMirocompare_test1 <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
   views$add(session, "test1", list(a = "bla"))
+  if (!identical(options, list(advanced = list(test = "huhu")))) {
+    stop("AYAYAYAYAYA!!!", call. = FALSE)
+  }
   if (!identical(views$get(session, "test123", "global"), list(b = "def"))) {
     stop("NANANANANANA!!!", call. = FALSE)
   }

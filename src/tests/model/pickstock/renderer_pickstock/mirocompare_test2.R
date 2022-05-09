@@ -1,9 +1,9 @@
-miroanalysis_test2Output <- function(id, height = NULL, options = NULL, path = NULL) {
+mirocompare_test2Output <- function(id, height = NULL, options = NULL, path = NULL) {
   ns <- NS(id)
   tags$div(plotOutput(ns("tdVsErrorRatio")), tableOutput(ns("tdVsErrorRatioTable")))
 }
 
-renderMiroanalysis_test2 <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
+renderMirocompare_test2 <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
   scalarsPivoted <- dplyr::bind_rows(lapply(data$get("_scalars"), tidyr::pivot_wider, names_from = "scalar", values_from = "value", id_cols = character()))
   scalarsOutPivoted <- dplyr::bind_rows(lapply(data$get("_scalars_out"), tidyr::pivot_wider, names_from = "scalar", values_from = "value", id_cols = character()))
   scalars <- suppressWarnings(dplyr::mutate(dplyr::bind_cols(scalarsPivoted, scalarsOutPivoted), across(everything(), as.numeric)))

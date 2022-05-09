@@ -26,7 +26,7 @@ setAttributes <- function(session, selectors, attribute, values) {
     )
   )
 }
-switchCompareMode <- function(session, mode, numberScenTabs, analysisModuleConfigs) {
+switchCompareMode <- function(session, mode, numberScenTabs, compareModuleConfigs) {
   if (!identical(length(mode), 1L) || !is.character(mode)) {
     flog.error("switchCompareMode: Invalid mode argument. This is likely an attempt to tamper with the app!")
     return()
@@ -39,12 +39,12 @@ switchCompareMode <- function(session, mode, numberScenTabs, analysisModuleConfi
     setTextContent(session, "#btSelectCompareMode", lang$nav$sidebarButtons$pivotView)
     return()
   }
-  if (mode %in% names(analysisModuleConfigs)) {
+  if (mode %in% names(compareModuleConfigs)) {
     hideEl(session, ".scen-compare-tab-wrapper")
     showEl(session, paste0("#scen-", mode, "-view"))
     hideEl(session, "#btCompareScen")
     setAttributes(session, "#btCompareScen", "data-noshow", "true")
-    setTextContent(session, "#btSelectCompareMode", analysisModuleConfigs[[mode]][["label"]])
+    setTextContent(session, "#btSelectCompareMode", compareModuleConfigs[[mode]][["label"]])
     return()
   }
   showEl(session, "#btCompareScen")
