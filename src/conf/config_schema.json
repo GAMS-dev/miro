@@ -2835,6 +2835,12 @@
               "type": "string",
               "minLength": 1
             },
+            "externalRendererId": {
+              "description": "If you want to use the same renderer multiple times (e.g. with different options), you can specify the id of the renderer to be used here. If provided, the output function should be named mirocompare_<externalRendererId>Output, the renderer function: renderMirocompare_<externalRendererId>.",
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 20
+            },
             "packages": {
               "description":"Packages that need to be installed",
               "type":["array", "string"],

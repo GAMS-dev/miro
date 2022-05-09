@@ -2363,17 +2363,22 @@ if (is.null(errMsg)) {
       )
     } else {
       compareModuleConfigs[[compareModuleConfig$id]] <- compareModuleConfig
+      if (length(compareModuleConfig$externalRendererId)) {
+        compareRendererFunctionId <- compareModuleConfig$externalRendererId
+      } else {
+        compareRendererFunctionId <- compareModuleConfig$id
+      }
       compareModuleConfigs[[compareModuleConfig$id]][["outType"]] <- paste0(
         "mirocompare_",
-        compareModuleConfig$id
+        compareRendererFunctionId
       )
       compareModuleConfigs[[compareModuleConfig$id]][["rendererFnName"]] <- paste0(
         "renderMirocompare_",
-        compareModuleConfig$id
+        compareRendererFunctionId
       )
       compareModuleConfigs[[compareModuleConfig$id]][["outputFnName"]] <- paste0(
         "mirocompare_",
-        compareModuleConfig$id,
+        compareRendererFunctionId,
         "Output"
       )
       compareModuleConfigs[[compareModuleConfig$id]][["idx"]] <- compareModuleIdx
