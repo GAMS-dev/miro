@@ -2348,19 +2348,6 @@ if (is.null(errMsg)) {
 }
 
 if (is.null(errMsg)) {
-  invalidViewSymbols <- !names(config$globalViews) %in% c(
-    inputDsNames, paste0("_pivotcomp_", inputDsNames),
-    names(modelOut), paste0("_pivotcomp_", names(modelOut))
-  )
-  if (any(invalidViewSymbols)) {
-    errMsg <- sprintf(
-      "Invalid global views found. Symbol(s): %s don't exist.",
-      paste(names(config$globalViews)[invalidViewSymbols], collapse = ", ")
-    )
-  }
-}
-
-if (is.null(errMsg)) {
   analysisModuleConfigs <- list()
   for (analysisModuleIdx in seq_along(config[["analysisModules"]])) {
     analysisModuleConfig <- config[["analysisModules"]][[analysisModuleIdx]]
@@ -2393,4 +2380,19 @@ if (is.null(errMsg)) {
     }
   }
   config[["analysisModules"]] <- analysisModuleConfigs
+}
+
+if (is.null(errMsg)) {
+  validViewSymnames <- c(
+    inputDsNames, paste0("_pivotcomp_", inputDsNames),
+    names(modelOut), paste0("_pivotcomp_", names(modelOut)),
+    paste0("_customcomp_", names(config[["analysisModules"]]))
+  )
+  invalidViewSymbols <- !names(config$globalViews) %in% validViewSymnames
+  if (any(invalidViewSymbols)) {
+    errMsg <- sprintf(
+      "Invalid global views found. Symbol(s): %s don't exist.",
+      paste(names(config$globalViews)[invalidViewSymbols], collapse = ", ")
+    )
+  }
 }

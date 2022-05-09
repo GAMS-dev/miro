@@ -22,7 +22,9 @@ lang <<- list(nav = list(scen = list(pivot = list(viewPrefix = "Pivot Comparison
 
 ioConfig <<- list(scenTableNamesToDisplay = c("out1", "out2", "out3", "in1", "in2"))
 
-views <- Views$new(c("in1", "widget1", "widget2", "in2"), c("out1", "out2", "out4", "out3"), c("in1", "in2"))
+views <- Views$new(c("in1", "widget1", "widget2", "in2"), c("out1", "out2", "out4", "out3"), c("in1", "in2"),
+  customCompareModeConfig = list(bla123 = list(label = "First custom compare"), def467 = list(label = "Second cool analyzer"))
+)
 
 test_that("Loading/Unloading configuration works", {
   testViewData <- tibble(
@@ -140,9 +142,10 @@ test_that("Adding configuration works", {
       new1 = list(a = "b"),
       view2 = list(b = "c")
     ),
-    `_pivotcomp_in10` = list(bla = list(u = "i"))
+    `_pivotcomp_in10` = list(bla = list(u = "i")),
+    `_customcomp_bla1234` = list(a = "c")
   )))
-  expect_identical(views$getInvalidViews(), "in10")
+  expect_identical(views$getInvalidViews(), c("in10", "_customcomp_bla1234"))
   expect_error(views$addConf(list(
     in1 = list(
       new1 = list(a = "b"),
@@ -294,6 +297,8 @@ test_that("Callback functions work", {
   expect_error(views$addConf(list(`_pivotcomp_in1` = list(
     new1 = list(a = "b"),
     new2 = list(a = "c")
+  ), `_customcomp_def467` = list(
+    view = list(a = "38")
   ))), NA)
   expect_identical(testEnv0$a, 2L)
   expect_error(views$removeConf(list(
@@ -330,14 +335,17 @@ test_that("Getting views summary works", {
       )
     ),
     list(
-      symName = c("out3", "in1", "in3"),
+      symName = c("out3", "in1", "in3", "_customcomp_def467"),
       symAlias = c(
         "output 3",
-        "input 1", "in3"
+        "input 1", "in3", "Second cool analyzer"
       ),
-      id = c("bla", "view2", "view3")
+      id = c("bla", "view2", "view3", "view")
     )
   )
+  expect_error(views$removeConf(list(
+    c("_customcomp_def467", "view")
+  )), NA)
   expect_error(views$addConf(list(
     out2 = list(
       new1 = list(a = "b"),

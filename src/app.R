@@ -1430,7 +1430,8 @@ if (!is.null(errMsg)) {
               views <- Views$new(
                 names(modelIn),
                 names(modelOut),
-                ioConfig$inputDsNamesBase
+                ioConfig$inputDsNamesBase,
+                customCompareModeConfig = config[["analysisModules"]]
               )
               if (is.null(attachments)) {
                 attachments <- Attachments$new(
@@ -1507,7 +1508,8 @@ if (!is.null(errMsg)) {
                 views <- Views$new(
                   names(modelIn),
                   names(modelOut),
-                  ioConfig$inputDsNamesBase
+                  ioConfig$inputDsNamesBase,
+                  customCompareModeConfig = config[["analysisModules"]]
                 )
                 views$addConf(safeFromJSON(read_file(file.path(miroDataDir, miroDataFilesRaw[viewsFileId])),
                   simplifyDataFrame = FALSE, simplifyVector = FALSE
@@ -1776,7 +1778,8 @@ if (!is.null(errMsg)) {
       views <- Views$new(
         names(modelIn),
         names(modelOut),
-        ioConfig$inputDsNamesBase, rv
+        ioConfig$inputDsNamesBase, rv,
+        customCompareModeConfig = config[["analysisModules"]]
       )$setGlobalViews(config$globalViews)
       attachments <- Attachments$new(
         db, list(

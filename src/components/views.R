@@ -1,6 +1,18 @@
 Views <- R6Class("Views",
   inherit = ScenarioExtensions,
   public = list(
+    initialize = function(inputSymbols, outputSymbols, tabularInputSymbols,
+                          rv = NULL, customCompareModeConfig = NULL) {
+      private$validSymNames <- c(
+        outputSymbols, paste0("_pivotcomp_", outputSymbols),
+        tabularInputSymbols, paste0("_pivotcomp_", tabularInputSymbols),
+        paste0("_customcomp_", names(customCompareModeConfig))
+      )
+      return(super$initialize(
+        inputSymbols, outputSymbols,
+        tabularInputSymbols, rv, customCompareModeConfig
+      ))
+    },
     setGlobalViews = function(globalViews) {
       if (length(globalViews)) {
         private$globalViews <- globalViews
@@ -27,7 +39,7 @@ Views <- R6Class("Views",
       cleanViewConf <- viewConf
       scenId <- as.character(scenId)
 
-      invalidViews <- !names(cleanViewConf) %in% private$getValidSymNames()
+      invalidViews <- !names(cleanViewConf) %in% private$validSymNames
       if (any(invalidViews)) {
         private$invalidViews <- names(cleanViewConf)[invalidViews]
         private$invalidViews[startsWith(private$invalidViews, "_pivotcomp_")] <-
@@ -99,7 +111,7 @@ Views <- R6Class("Views",
           return(list())
         }
         symNames <- datasetSid$symName
-        invalidSymNames <- !symNames %in% private$getValidSymNames()
+        invalidSymNames <- !symNames %in% private$validSymNames
         if (any(invalidSymNames)) {
           flog.info(
             "Orphaned view configuration found for symbol(s): %s.",
@@ -197,7 +209,8 @@ Views <- R6Class("Views",
         }
         private$symbolAliases <- c(
           outputSymAliases, paste(lang$nav$scen$pivo$viewPrefix, outputSymAliases),
-          inputSymAliases, paste(lang$nav$scen$pivo$viewPrefix, inputSymAliases)
+          inputSymAliases, paste(lang$nav$scen$pivo$viewPrefix, inputSymAliases),
+          vapply(private$customCompareModeConfig, "[[", character(1L), "label", USE.NAMES = FALSE)
         )
       }
       symData <- lapply(names(private$scenViewConf[[scenId]]), function(symName) {
@@ -212,7 +225,7 @@ Views <- R6Class("Views",
       }
       symIds <- match(
         viewsMetadata[["symName"]],
-        private$getValidSymNames()
+        private$validSymNames
       )
       viewsMetadata[["symAlias"]] <- private$symbolAliases[symIds]
 
@@ -223,11 +236,11 @@ Views <- R6Class("Views",
         )
         viewsMetadata[["symAlias"]][is.na(symIds)] <- viewsMetadata[["symName"]][is.na(symIds)]
       }
-      symIdsPivotComp <- startsWith(viewsMetadata[["symName"]], "_pivotcomp_")
+      symIdsComp <- startsWith(viewsMetadata[["symName"]], "_pivotcomp_") | startsWith(viewsMetadata[["symName"]], "_customcomp_")
       sortedSymIds <- order(symIds)
       sortedSymIds <- c(
-        sortedSymIds[sortedSymIds %in% which(!symIdsPivotComp)],
-        sortedSymIds[sortedSymIds %in% which(symIdsPivotComp)]
+        sortedSymIds[sortedSymIds %in% which(!symIdsComp)],
+        sortedSymIds[sortedSymIds %in% which(symIdsComp)]
       )
       viewsMetadata[["symName"]] <- viewsMetadata[["symName"]][sortedSymIds]
       viewsMetadata[["symAlias"]] <- viewsMetadata[["symAlias"]][sortedSymIds]
@@ -383,21 +396,8 @@ Views <- R6Class("Views",
     symbolAliases = NULL,
     duplicatedViews = NULL,
     invalidViews = NULL,
+    validSymNames = NULL,
     rv = NULL,
-    getValidSymNames = function() {
-      return(c(
-        private$outputSymbols,
-        paste0(
-          "_pivotcomp_",
-          private$outputSymbols
-        ),
-        private$tabularInputSymbols,
-        paste0(
-          "_pivotcomp_",
-          private$tabularInputSymbols
-        )
-      ))
-    },
     removeView = function(symName, id, scenId = "1") {
       if (!symName %in% names(private$scenViewConf[[scenId]])) {
         stop(sprintf("Could not remove view for symbol: %s as no views exist for this symbol.", symName),

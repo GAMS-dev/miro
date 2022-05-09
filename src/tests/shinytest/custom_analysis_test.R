@@ -41,6 +41,18 @@ expect_true(grepl("<tdalign=\"right\">8.00</td><tdalign=\"right\">1.68</td></tr>
   gsub(" ", "", app$getAllValues()$output[["cmpCustom_test1-maxstockVsErrorTestTable"]], fixed = TRUE),
   fixed = TRUE
 ))
+app$setInputs(btEditMeta = "click")
+Sys.sleep(0.5)
+app$findElement('#editMetaUI a[data-value="views"]')$click()
+expect_identical(length(app$findElements("#currentViewsTable tbody tr")), 1L)
+expect_true(app$waitFor("$('#currentViewsTable tbody td')[0].innerHTML==='My first custom analysis renderer'",
+  timeout = 50
+))
+expect_true(app$waitFor("$('#currentViewsTable tbody td')[1].innerHTML==='test1'",
+  timeout = 50
+))
+app$setInputs(btUpdateMeta = "click")
+Sys.sleep(0.5)
 app$waitFor("$(\"button[onclick*='btCloseScenCmp']:visible\").click();", timeout = 50L)
 Sys.sleep(0.5)
 expect_true(app$waitFor("$('#cmpCustomNoScenWrapper_1').is(':visible');", timeout = 50L))

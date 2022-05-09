@@ -65,7 +65,8 @@ downloadMIROScenario <- function(uid, excelConfig = NULL) {
   views <- Views$new(
     names(modelIn),
     names(modelOut),
-    ioConfig$inputDsNamesBase
+    ioConfig$inputDsNamesBase,
+    customCompareModeConfig = config[["analysisModules"]]
   )
   attachments <- Attachments$new(
     db, list(

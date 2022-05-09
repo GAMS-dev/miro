@@ -1,10 +1,12 @@
 ScenarioExtensions <- R6Class("ScenarioExtensions",
   public = list(
-    initialize = function(inputSymbols, outputSymbols, tabularInputSymbols, rv = NULL) {
+    initialize = function(inputSymbols, outputSymbols, tabularInputSymbols,
+                          rv = NULL, customCompareModeConfig = NULL) {
       private$inputSymbols <- inputSymbols
       private$outputSymbols <- outputSymbols
       private$tabularInputSymbols <- tabularInputSymbols
       private$rv <- rv
+      private$customCompareModeConfig <- customCompareModeConfig
       return(invisible(self))
     },
     registerUpdateCallback = function(session, callback) {
@@ -33,6 +35,7 @@ ScenarioExtensions <- R6Class("ScenarioExtensions",
     inputSymbols = NULL,
     tabularInputSymbols = NULL,
     outputSymbols = NULL,
+    customCompareModeConfig = NULL,
     rv = NULL,
     updateCallbacks = list("1" = list()),
     getSymbolName = function(session) {
@@ -51,6 +54,19 @@ ScenarioExtensions <- R6Class("ScenarioExtensions",
           stop(sprintf("Invalid symbol id: %s", symId), call. = FALSE)
         }
         return(private$inputSymbols[[symId]])
+      }
+      if (startsWith(id[1], "cmpCustom_")) {
+        customCompModeId <- substring(id[1], 11L)
+        if (!customCompModeId %in% names(private$customCompareModeConfig)) {
+          stop(sprintf("Invalid custom compare mode id: %s", customCompModeId), call. = FALSE)
+        }
+        return(c(
+          paste0(
+            "_customcomp_",
+            customCompModeId
+          ),
+          "1"
+        ))
       }
       id <- strsplit(id[1], "_", fixed = TRUE)[[1]]
       if (identical(id[1], "in")) {

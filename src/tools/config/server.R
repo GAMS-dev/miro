@@ -173,7 +173,8 @@ server_admin <- function(input, output, session) {
   views <- Views$new(
     names(modelIn),
     names(modelOut),
-    ioConfig$inputDsNamesBase
+    ioConfig$inputDsNamesBase,
+    customCompareModeConfig = config[["analysisModules"]]
   )
   attachments <- Attachments$new(
     db, list(

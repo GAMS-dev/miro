@@ -6,7 +6,14 @@ miroanalysis_test1Output <- function(id, height = NULL, options = NULL, path = N
   )
 }
 
-renderMiroanalysis_test1 <- function(input, output, session, data, options = NULL, path = NULL, ...) {
+renderMiroanalysis_test1 <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
+  views$add(session, "test1", list(a = "bla"))
+  if (!identical(views$get(session, "test123", "global"), list(b = "def"))) {
+    stop("NANANANANANA!!!", call. = FALSE)
+  }
+  if (!identical(views$get(session, "test1", "local"), list(a = "bla"))) {
+    stop("NONONONONO!!!", call. = FALSE)
+  }
   scalarsPivoted <- dplyr::bind_rows(lapply(data$get("_scalars"), tidyr::pivot_wider, names_from = "scalar", values_from = "value", id_cols = character()))
   scalarsOutPivoted <- dplyr::bind_rows(lapply(data$get("_scalars_out"), tidyr::pivot_wider, names_from = "scalar", values_from = "value", id_cols = character()))
   scalars <- suppressWarnings(dplyr::mutate(dplyr::bind_cols(scalarsPivoted, scalarsOutPivoted), across(everything(), as.numeric)))

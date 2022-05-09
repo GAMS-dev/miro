@@ -9,6 +9,10 @@ configJSONFileName <- file.path(
   testModelDir, paste0("conf_", modelToTest),
   paste0(modelToTest, ".json")
 )
+globalViewsFileName <- file.path(
+  testModelDir, paste0("conf_", modelToTest),
+  "views.json"
+)
 
 file.copy(configJSONFileName, file.path(
   dirname(configJSONFileName),
@@ -28,6 +32,10 @@ configJSON$defaultScenName <- "default"
 
 jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
 file.copy2(file.path(testDir, "data", "pickstock.gdx"), file.path(modelDataPath, "default.gdx"))
+jsonlite::write_json(list(`_customcomp_test1` = list(test123 = list(b = "def"))),
+  globalViewsFileName,
+  pretty = TRUE, auto_unbox = TRUE, null = "null"
+)
 
 test_that(
   "Custom analysis renderers work",
@@ -42,5 +50,6 @@ file.rename(
 )
 
 unlink(modelDataPath, recursive = TRUE, force = TRUE)
+unlink(globalViewsFileName, recursive = TRUE, force = TRUE)
 
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))

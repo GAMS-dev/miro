@@ -197,7 +197,7 @@ loadDynamicTabContentCustom <- function(session, analysisModuleConfig, initEnv =
           options = analysisModuleConfig[["options"]],
           path = customRendererDir,
           rendererEnv = rendererEnv[[refId]],
-          views = views, attachments = attachments
+          views = views
         )
         dynamicUILoaded$dynamicTabsets[[refId]][["content"]] <<- TRUE
         if (any(unlist(scenData$getById("dirty", refId = refId, drop = TRUE), use.names = FALSE))) {
