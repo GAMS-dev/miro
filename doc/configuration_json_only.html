@@ -1571,6 +1571,312 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                   </div>
                 </section>
                 <!--//doc-section-->
+                <section id="custom-compare-mode" class="doc-section">
+                  <h2 class="section-title">Custom scenario comparison</h2>
+                  <div class="section-block">
+                    <p>
+                      GAMS MIRO natively supports three modes for scenario
+                      comparison: split view, tab view, and pivot view. But what
+                      if you are interested in different statistics or charts
+                      tailored to compare multiple scenarios? For this purpose,
+                      MIRO supports custom scenario comparison modules. The data
+                      can be loaded via the
+                      <a href="./start.html#scenario-loading">Batch Load</a>
+                      module. The drop-down menu for selecting the comparison
+                      mode in which the selected scenarios are to be loaded is
+                      expanded accordingly.
+                    </p>
+                    <p>
+                      Custom scenario comparison modules work in a similar way
+                      to
+                      <a href="./configuration_advanced.html#custom-renderers"
+                        >custom renderers</a
+                      >. Therefore, we strongly recommend that you read the
+                      chapter on custom renderers first. Just like a custom
+                      renderer, a custom scenario comparison module consists of
+                      a JSON configuration block and an <i>.R</i> file
+                      containing the code in your application's renderer
+                      directory (<span class="code"
+                        >renderer_&lt;modelname&gt;</span
+                      >). Let's go through this process by creating a new
+                      comparison module for the <i>pickstock</i> model.
+                    </p>
+                    <p>
+                      We start by creating the boilerplate code for our renderer
+                      in a new file
+                      <span class="code">mirocompare_&lt;id&gt;.R</span> inside
+                      the <span class="code">renderer_pickstock</span> directory
+                      where <i>&lt;id&gt;</i> is the ID of our custom comparison
+                      module. The ID can be freely chosen. It must be 2-20
+                      characters long and contain only ASCII lowercase letters
+                      or digits. We choose the name
+                      <span class="code">maxstock1</span> for our example and
+                      create the file
+                      <span class="code">mirocompare_maxstock1.R</span>
+                      accordingly.
+                    </p>
+                    <p>
+                      Just like custom renderers, custom scenario comparison
+                      modules consist of two functions: the placeholder or
+                      output function and the renderer function:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+mirocompare_&#x3C;id&#x3E;Output &#x3C;- function(id, height = NULL, options = NULL, path = NULL) {
+  ns &#x3C;- NS(id)
+}
+
+renderMirocompare_&#x3C;id&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      If you have already written your own renderers, the
+                      argument list of the output and renderer functions will
+                      look familiar. Therefore, we will focus on the
+                      differences: In custom comparison modules, you currently
+                      do not have access to the
+                      <span class="code">attachments</span> object. In contrast
+                      to custom renderers, the
+                      <span class="code">data</span> argument is not a
+                      dataframe, but an
+                      <a href="https://r6.r-lib.org/index.html" target="_blank"
+                        >R6</a
+                      >
+                      object of class
+                      <span class="code">CustomComparisonData</span>. The
+                      different methods of this class are described in the
+                      <a href="#custom-comparison-data" class="scrollto"
+                        >next section</a
+                      >.
+                    </p>
+                    <p>
+                      <a
+                        href="configuration_advanced.html#custom-renderer-views"
+                        >Views</a
+                      >
+                      can be used in custom comparison renderers just like in
+                      custom renderers for output data.
+                    </p>
+                    <p>
+                      Let's return to our example and write an initial renderer
+                      that plots the relative test error against the maximum
+                      number of stocks.
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+mirocompare_maxstock1Output &#x3C;- function(id, height = NULL, options = NULL, path = NULL) {
+  ns &#x3C;- NS(id)
+  return(plotOutput(ns("maxstockVsErrorTest")))
+}
+
+renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
+  scalarsPivoted &#x3C;- dplyr::bind_rows(lapply(data$get("_scalars"), tidyr::pivot_wider, names_from = "scalar", values_from = "value", id_cols = character()))
+  scalarsOutPivoted &#x3C;- dplyr::bind_rows(lapply(data$get("_scalars_out"), tidyr::pivot_wider, names_from = "scalar", values_from = "value", id_cols = character()))
+  scalars &#x3C;- suppressWarnings(dplyr::mutate(dplyr::bind_cols(scalarsPivoted, scalarsOutPivoted), across(everything(), as.numeric)))
+  scalars[["error_test_rel"]] &#x3C;- scalars[["error_test"]] / scalars[["trainingdays"]]
+
+  output$maxstockVsErrorTest &#x3C;- renderPlot(boxplot(error_test_rel ~ maxstock, scalars, main = options$chartTitle))
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      We first use the <span class="code">get()</span> method of
+                      the <span class="code">data</span> object to retrieve
+                      input and output scalars. Scalars are treated specially in
+                      that they are bundled into a single data frame with the
+                      columns: <span class="code">scalar</span>,
+                      <span class="code">description</span> and
+                      <span class="code">value</span>. Therefore, we must first
+                      pivot them and merge the input and output scalars. Then we
+                      can calculate a new derived column
+                      <span class="code">error_test_rel</span> and create a
+                      boxplot with this relative test error against the maximum
+                      number of stocks.
+                    </p>
+                    <p>
+                      In order to use this custom comparison module in MIRO, we
+                      have to append the following JSON configuration to the
+                      <i>pickstock.json</i> file in the
+                      <i>conf_pickstock</i> directory:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-json">{
+  "customCompareModules": [
+    {
+      "id": "maxstock1",
+      "label": "Test error against maximum stocks",
+      "options": {
+        "chartTitle": "Testing error (rel.) vs maximum number of stocks"
+      }
+    }
+  ]
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      Below is the full schema used to validate the
+                      configuration of your custom comparison modules.
+                    </p>
+                    <h6
+                      id="custom-comparison-json-schema"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> JSON validation
+                      schema for custom comparison modules
+                    </h6>
+                    <div class="expanded">
+                      <div class="code-block">
+                        <pre><code class="language-json">&quot;customCompareModules&quot;:{
+  &quot;type&quot;:&quot;array&quot;,
+  &quot;items&quot;:{
+      &quot;type&quot;:&quot;object&quot;,
+      &quot;description&quot;:&quot;Custom scenario comparison modules&quot;,
+      &quot;additionalProperties&quot;:false,
+      &quot;properties&quot;:{
+        &quot;id&quot;:{
+            &quot;description&quot;:&quot;Unique identifier of analysis module (a-z0-9)&quot;,
+            &quot;type&quot;:&quot;string&quot;,
+            &quot;minLength&quot;:2,
+            &quot;maxLength&quot;:20
+        },
+        &quot;label&quot;:{
+            &quot;description&quot;:&quot;Label to identify this analysis module&quot;,
+            &quot;type&quot;:&quot;string&quot;,
+            &quot;minLength&quot;:1
+        },
+        &quot;externalRendererId&quot;:{
+            &quot;description&quot;:&quot;If you want to use the same renderer multiple times (e.g. with different options), you can specify the id of the renderer to be used here. If provided, the output function should be named mirocompare_&lt;externalRendererId&gt;Output, the renderer function: renderMirocompare_&lt;externalRendererId&gt;.&quot;,
+            &quot;type&quot;:&quot;string&quot;,
+            &quot;minLength&quot;:2,
+            &quot;maxLength&quot;:20
+        },
+        &quot;packages&quot;:{
+            &quot;description&quot;:&quot;Packages that need to be installed&quot;,
+            &quot;type&quot;:[
+              &quot;array&quot;,
+              &quot;string&quot;
+            ],
+            &quot;minLength&quot;:2,
+            &quot;minItems&quot;:1,
+            &quot;uniqueItems&quot;:true,
+            &quot;items&quot;:{
+              &quot;type&quot;:&quot;string&quot;,
+              &quot;minLength&quot;:2
+            }
+        },
+        &quot;options&quot;:{
+            &quot;description&quot;:&quot;Additional options&quot;,
+            &quot;type&quot;:&quot;object&quot;
+        }
+      }
+  }
+}</code></pre>
+                      </div>
+                      <!--//code-block-->
+                    </div>
+                    <!--//expanded-->
+                  </div>
+                  <!--//section-block-->
+                  <div id="custom-comparison-data" class="section-block">
+                    <h3 class="block-title">Custom comparison data</h3>
+                    <p>
+                      The following section describes the different methods of
+                      the <span class="code">CustomComparisonData</span> R6
+                      class. An instance of this class is passed to custom
+                      comparison renderers in the form of the
+                      <span class="code">data</span> argument.
+                    </p>
+                    <h5>Get symbol names</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+  data$getAllSymbols()
+  </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Value</h6>
+                    <p>
+                      A character vector with the names of all available (input
+                      and output) symbols.
+                    </p>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      This method allows you to get the names of all available
+                      symbols.
+                    </p>
+                    <h5>Get symbol data</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+  data$get(symbolName)
+  </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Arguments</h6>
+                    <table class="api-arguments">
+                      <tbody>
+                        <tr>
+                          <th>symbolName</th>
+                          <td>
+                            The (lowercase) name of the GAMS symbol (or the
+                            special symbol(s)
+                            <span class="code">_scalars</span> for all input
+                            scalars or
+                            <span class="code">_scalars_out</span> for all
+                            output scalars). In case the specified symbol does
+                            not exist, an error with class
+                            <span class="code">error_invalid_symbol</span> is
+                            thrown.
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h6 class="api-header">Value</h6>
+                    <p>An unnamed list of dataframes (tibbles).</p>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      This method allows you to retrieve the data of the
+                      specified symbol for all loaded scenarios. The first
+                      element is always the sandbox scenario. To get the
+                      metadata (e.g. scenario name, scenario owner, etc.) of the
+                      different scenarios, use the
+                      <span class="code">getMetadata()</span> method. The order
+                      of the scenarios is the same for all symbols and the
+                      metadata.
+                    </p>
+                    <h5>Get metadata</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+  data$getMetadata()
+  </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Value</h6>
+                    <p>
+                      An unnamed list of dataframes (tibbles) with columns:
+                      <span class="code">_sid</span> (integer: internal scenario
+                      ID), <span class="code">_uid</span> (character: username
+                      of scenario owner),
+                      <span class="code">_sname</span> (character: scenario
+                      name), <span class="code">_stime</span> (character:
+                      timestamp of the last change, format: yyyy-mm-dd
+                      HH:MM:SS), <span class="code">_stag</span> (character:
+                      comma-separated list of scenario tags).
+                    </p>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      This method allows you to retrieve the data of the
+                      specified symbol for all loaded scenarios. The first
+                      element is always the sandbox scenario. To get the
+                      metadata (e.g. scenario name, scenario owner, etc.) of the
+                      different scenarios, use the
+                      <span class="code">getMetadata()</span> method.
+                    </p>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
               </div>
               <!--//content-inner-->
             </div>
@@ -1600,6 +1906,9 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                     class="nav-link scrollto"
                     href="#pivot-compare-default-view"
                     >Default Views in Pivot Compare Mode</a
+                  >
+                  <a class="nav-link scrollto" href="#custom-compare-mode"
+                    >Custom scenario comparison</a
                   >
                 </nav>
                 <!--//doc-menu-->
