@@ -721,7 +721,8 @@ views$get(session, id = NULL, filter = c("all", "global", "local"))
                     </p>
                     <p>
                       In case <kbd>id</kbd> is not <kbd>NULL</kbd>: a list with
-                      the data of the view. Will throw an error in case the id
+                      the data of the view. Will throw an error of class
+                      <span class="code">error_not_found</span> in case the id
                       provided does not exist.
                     </p>
                     <h6 class="api-header">Description</h6>
@@ -849,8 +850,9 @@ views$add(session, id, viewConf)
                       any JSON serializable list. If a view with the same id
                       already exists for the symbol, the previous view is
                       replaced. In case the current renderer is read-only (not a
-                      sandbox scenario), an error is thrown. You can test
-                      whether the renderer is read-only with the method
+                      sandbox scenario), an error of class
+                      <span class="code">error_readonly</span> is thrown. You
+                      can test whether the renderer is read-only with the method
                       <code class="language-r">views$isReadonly(session)</code>.
                     </p>
                     <h6 class="api-header">Example</h6>
@@ -889,10 +891,12 @@ views$remove(session, id)
                     <h6 class="api-header">Description</h6>
                     <p>
                       Removes a local view with the specified id. If no view
-                      with this id exists, an error is thrown. In case the
-                      current renderer is read-only (not a sandbox scenario), an
-                      error is thrown. You can test whether the renderer is
-                      read-only with the method
+                      with this id exists, an error of class
+                      <span class="code">error_not_found</span> is thrown. In
+                      case the current renderer is read-only (not a sandbox
+                      scenario), an error of class
+                      <span class="code">error_readonly</span> is thrown. You
+                      can test whether the renderer is read-only with the method
                       <code class="language-r">views$isReadonly(session)</code>.
                       Note that global views cannot be removed.
                     </p>
@@ -1090,8 +1094,9 @@ attachmenets$add(session, filePaths, fileNames = NULL, overwrite = FALSE, execPe
                       <a href="./start.html#file-attachments"
                         >read by the underlying GAMS model</a
                       >. In case the current renderer is read-only (not a
-                      sandbox scenario), an error is thrown. You can test
-                      whether the renderer is read-only with the method
+                      sandbox scenario), an error of class
+                      <span class="code">error_readonly</span> is thrown. You
+                      can test whether the renderer is read-only with the method
                       <code class="language-r"
                         >attachments$isReadonly(session)</code
                       >.
@@ -1280,10 +1285,12 @@ attachments$remove(session, fileNames, removeLocal = TRUE)
                     <h6 class="api-header">Description</h6>
                     <p>
                       Removes attachment(s) with the specified filename(s). If
-                      no attachment with this name exists, an error is thrown.
-                      In case the current renderer is read-only (not a sandbox
-                      scenario), an error is thrown. You can test whether the
-                      renderer is read-only with the method
+                      no attachment with this name exists, an error of class
+                      <span class="code">error_not_found</span> is thrown. In
+                      case the current renderer is read-only (not a sandbox
+                      scenario), an error of class
+                      <span class="code">error_readonly</span> is thrown. You
+                      can test whether the renderer is read-only with the method
                       <code class="language-r"
                         >attachments$isReadonly(session)</code
                       >.

@@ -296,7 +296,7 @@ Views <- R6Class("Views",
       symName <- private$getSymbolName(session)
       if (length(symName) == 2) {
         if (!identical(symName[[2]], "1")) {
-          stop("Can not modify views in comparison mode.", call. = FALSE)
+          stop_custom("error_readonly", "Can not modify views in comparison mode.", call. = FALSE)
         }
         symName <- symName[[1]]
       }
@@ -351,7 +351,7 @@ Views <- R6Class("Views",
           if (id %in% names(viewConfTmp)) {
             return(viewConfTmp[[id]])
           }
-          stop(sprintf("View with id: %s could not be found.", id),
+          stop_custom("error_not_found", sprintf("View with id: %s could not be found.", id),
             call. = FALSE
           )
         }
@@ -364,7 +364,7 @@ Views <- R6Class("Views",
         if (id %in% names(viewConfTmp)) {
           return(viewConfTmp[[id]])
         }
-        stop(sprintf("View with id: %s could not be found.", id),
+        stop_custom("error_not_found", sprintf("View with id: %s could not be found.", id),
           call. = FALSE
         )
       }
@@ -375,7 +375,7 @@ Views <- R6Class("Views",
       symName <- private$getSymbolName(session)
       if (length(symName) == 2) {
         if (!identical(symName[[2]], "1")) {
-          stop("Can not modify views in comparison mode.", call. = FALSE)
+          stop_custom("error_readonly", "Can not modify views in comparison mode.", call. = FALSE)
         }
         symName <- symName[[1]]
       }
@@ -385,7 +385,7 @@ Views <- R6Class("Views",
         private$scenViewConf[["1"]][[symName]][[id]] <- NULL
         return(invisible(self))
       }
-      stop(sprintf("View with id: %s does not exist, so it could not be removed.", id),
+      stop_custom("error_not_found", sprintf("View with id: %s does not exist, so it could not be removed.", id),
         call. = FALSE
       )
     }
@@ -400,12 +400,12 @@ Views <- R6Class("Views",
     rv = NULL,
     removeView = function(symName, id, scenId = "1") {
       if (!symName %in% names(private$scenViewConf[[scenId]])) {
-        stop(sprintf("Could not remove view for symbol: %s as no views exist for this symbol.", symName),
+        stop_custom("error_not_found", sprintf("Could not remove view for symbol: %s as no views exist for this symbol.", symName),
           call. = FALSE
         )
       }
       if (!id %in% names(private$scenViewConf[[scenId]][[symName]])) {
-        stop(sprintf("Could not remove view: %s for symbol: %s as no view with this id exists", id, symName),
+        stop_custom("error_not_found", printf("Could not remove view: %s for symbol: %s as no view with this id exists", id, symName),
           call. = FALSE
         )
       }

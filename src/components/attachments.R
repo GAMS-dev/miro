@@ -199,7 +199,7 @@ Attachments <- R6Class("Attachments",
       fileSize <- file.size(filePaths)
 
       if (any(is.na(fileSize))) {
-        stop_custom("error_file_not_found",
+        stop_custom("error_not_found",
           "Some of the files to add do not exist",
           call. = FALSE
         )
@@ -309,7 +309,7 @@ Attachments <- R6Class("Attachments",
       } else {
         stopifnot(length(filePath) == 1L)
         if (!file.exists(filePath)) {
-          stop_custom("error_file_not_found",
+          stop_custom("error_not_found",
             "The destination directory does not exist",
             call. = FALSE
           )
@@ -483,7 +483,7 @@ Attachments <- R6Class("Attachments",
       if (any(is.na(localFileIds))) {
         remoteFileIds <- match(fileNames, self$getIds())
         if (any(is.na(remoteFileIds))) {
-          stop_custom("error_file_not_found",
+          stop_custom("error_not_found",
             sprintf(
               "Some of the files (%s) do not exist",
               paste(fileNames[is.na(remoteFileIds)])
@@ -770,14 +770,14 @@ Attachments <- R6Class("Attachments",
       )
 
       if (any(fileNames[is.na(localFiles)] %in% private$attachmentsToRemove)) {
-        stop_custom("error_file_not_found",
+        stop_custom("error_not_found",
           "Some of the files to remove do not exist",
           call. = FALSE
         )
       }
       if (length(private$attachmentData) &&
         any(!fileNames[is.na(localFiles)] %in% private$attachmentData[["fileName"]])) {
-        stop_custom("error_file_not_found",
+        stop_custom("error_not_found",
           "Some of the files to remove do not exist",
           call. = FALSE
         )

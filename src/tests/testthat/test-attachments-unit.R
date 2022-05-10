@@ -183,7 +183,7 @@ test_that("Adding attachments work", {
   expect_error(attachments$add(
     session = NULL, file.path(testDir, "data", "bad-views3.json"),
     fileNames = "def.json", overwrite = FALSE, execPerm = NULL
-  ), class = "error_file_not_found")
+  ), class = "error_not_found")
   expect_error(attachments$add(
     session = NULL, file.path(testDir, "data", c("_scalars.csv", "bad-views2.json")),
     fileNames = c("_scalars.csv", "def.json"), overwrite = TRUE, execPerm = NULL
@@ -304,7 +304,7 @@ test_that("Updating attachments works", {
     c(FALSE, FALSE, TRUE)
   ), NA)
   expect_error(attachments$remove(session = NULL, "_scalars.csv"), NA)
-  expect_error(attachments$remove(session = NULL, "_scalars.csv"), class = "error_file_not_found")
+  expect_error(attachments$remove(session = NULL, "_scalars.csv"), class = "error_not_found")
 
   unlink(file.path(workDir, "bad-views2.json"))
   expect_error(attachments$download(workDir, allExecPerm = TRUE), NA)
