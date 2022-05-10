@@ -10,6 +10,7 @@ app$setInputs(batchLoadAll = "click")
 # first custom analysis
 app$waitFor("$('#btBatchCompare+.dropdown-toggle').click()&&$('#btBatchCompare~.dropdown-menu a:eq(2)').text()==='My first custom analysis renderer'", timeout = 50L)
 app$waitFor("$('#btBatchCompare+.dropdown-toggle').click()&&$('#btBatchCompare~.dropdown-menu a:eq(3)').text()==='My second custom analyzzzer'", timeout = 50L)
+app$waitFor("$('#btBatchCompare+.dropdown-toggle').click()&&$('#btBatchCompare~.dropdown-menu a:eq(4)').text()==='External renderer'", timeout = 50L)
 app$waitFor("$('#btBatchCompare+.dropdown-toggle').click()&&$('#btBatchCompare~.dropdown-menu a:eq(2)').click();", timeout = 50L)
 Sys.sleep(2L)
 expect_true(grepl("<tdalign=\"right\">4.00</td><tdalign=\"right\">0.80</td></tr>\n<tr><tdalign=\"right\">4.00</td><tdalign=\"right\">0.80</td>",
@@ -20,6 +21,15 @@ expect_true(grepl("<tdalign=\"right\">4.00</td><tdalign=\"right\">9.51</td></tr>
   gsub(" ", "", app$getAllValues()$output[["cmpCustom_test1-maxstockVsErrorTestTable"]], fixed = TRUE),
   fixed = TRUE
 ))
+expect_true(app$waitFor("$('#cmpCustom_test1-title').text()==='default'", timeout = 50L))
+
+app$findElement("a[data-value='loadResults']")$click()
+app$setInputs(batchLoadAll = "click")
+app$waitFor("$('#btBatchCompare+.dropdown-toggle').click()&&$('#btBatchCompare~.dropdown-menu a:eq(4)').click();", timeout = 50L)
+Sys.sleep(2L)
+expect_true(app$waitFor("$('#cmpCustom_test3-title').text()==='bla blubB'", timeout = 50L))
+expect_true(app$waitFor("$('#btSelectCompareMode').text()==='External renderer'", timeout = 50L))
+app$waitFor("$('#btSelectCompareMode').click()&&$('.change-dd-button[data-action-val=\"test1\"]').click()", timeout = 50L)
 
 app$findElement("a[data-value='inputData']")$click()
 Sys.sleep(0.5)

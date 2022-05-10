@@ -23,11 +23,25 @@ configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName,
   simplifyMatrix = FALSE
 ))
 
-configJSON$customCompareModules <- list(list(
-  id = "test1",
-  label = "My first custom analysis renderer",
-  options = list(advanced = list(test = "huhu"))
-), list(id = "test2", label = "My second custom analyzzzer"))
+configJSON$customCompareModules <- list(
+  list(
+    id = "test1",
+    label = "My first custom analysis renderer",
+    options = list(advanced = list(test = "huhu"))
+  ), list(
+    id = "test2",
+    label = "My second custom analyzzzer"
+  ),
+  list(
+    id = "test3",
+    label = "External renderer",
+    options = list(
+      advanced = list(test = "huhu"),
+      title = "bla blubB"
+    ),
+    externalRendererId = "test1"
+  )
+)
 
 configJSON$defaultScenName <- "default"
 
