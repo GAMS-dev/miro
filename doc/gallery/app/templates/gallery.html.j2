@@ -11,9 +11,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="GAMS MIRO documentation">
     <meta name="author" content="GAMS Development Corp.">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
     <!-- FontAwesome JS -->
-    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <script defer src="{{ url_for('static', filename='plugins/fontawesome/fontawesome.js') }}"></script>
     <!-- Global CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='plugins/bootstrap/css/bootstrap.min.css') }}">
     <!-- Plugins CSS -->
@@ -25,8 +24,8 @@
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <!-- Cookie consent by https://cookieconsent.osano.com -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='plugins/cookieconsent/cookieconsent.min.css') }}" />
+    <script defer src="{{ url_for('static', filename='plugins/cookieconsent/cookieconsent.min.js') }}"></script>
     <script>
     window.addEventListener("load", function(){
     window.cookieconsent.initialise({
