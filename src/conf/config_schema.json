@@ -2856,7 +2856,8 @@
               "description": "Additional options",
               "type": "object"
             }
-          }
+          },
+          "required": ["id", "label"]
         }
       },
       "scripts":{

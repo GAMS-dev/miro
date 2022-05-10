@@ -1579,8 +1579,9 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                       comparison: split view, tab view, and pivot view. But what
                       if you are interested in different statistics or charts
                       tailored to compare multiple scenarios? For this purpose,
-                      MIRO supports custom scenario comparison modules. The data
-                      can be loaded via the
+                      there are user-defined scenario comparison modules. The
+                      data can be loaded into the custom comparison modules via
+                      the
                       <a href="./start.html#scenario-loading">Batch Load</a>
                       module. The drop-down menu for selecting the comparison
                       mode in which the selected scenarios are to be loaded is
@@ -1634,10 +1635,10 @@ renderMirocompare_&#x3C;id&#x3E; &#x3C;- function(input, output, session, data, 
                       If you have already written your own renderers, the
                       argument list of the output and renderer functions will
                       look familiar. Therefore, we will focus on the
-                      differences: In custom comparison modules, you currently
-                      do not have access to the
-                      <span class="code">attachments</span> object. In contrast
-                      to custom renderers, the
+                      differences: First, you currently do not have access to
+                      the
+                      <span class="code">attachments</span> object in custom
+                      comparison modules. Second, unlike custom renderers, the
                       <span class="code">data</span> argument is not a
                       dataframe, but an
                       <a href="https://r6.r-lib.org/index.html" target="_blank"
@@ -1715,6 +1716,26 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                     </div>
                     <!--//code-block-->
                     <p>
+                      The only mandatory fields are
+                      <span class="code">id</span> and
+                      <span class="code">label</span>. The
+                      <span class="code">label</span> is displayed when
+                      selecting the comparison mode and the
+                      <span class="code">id</span> is used internally to
+                      identify your module. You can specify an optional object
+                      with <span class="code">options</span> provided to the
+                      output and renderer functions. This is especially useful
+                      if you want to reuse the same renderer function with
+                      different options. In this case, the id of the comparison
+                      module is not the same as the id of the output/renderer
+                      function. Therefore, you must specify the id of the
+                      renderer function using the
+                      <span class="code">externalRendererId</span> field.
+                      Additional R packages required for your comparison module
+                      can be specified via the
+                      <span class="code">packages</span> field.
+                    </p>
+                    <p>
                       Below is the full schema used to validate the
                       configuration of your custom comparison modules.
                     </p>
@@ -1771,7 +1792,8 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
             &quot;description&quot;:&quot;Additional options&quot;,
             &quot;type&quot;:&quot;object&quot;
         }
-      }
+      },
+      &quot;required&quot;: [&quot;id&quot;, &quot;label&quot;]
   }
 }</code></pre>
                       </div>
