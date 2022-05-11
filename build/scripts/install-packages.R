@@ -41,11 +41,6 @@ for (libPath in c(RLibPath, RlibPathDevel, RlibPathTmp)) {
 }
 if (isLinux) {
   writeLines("", file.path(RLibPath, "INSTALLING"))
-} else if (isWindows) {
-  # make sure Rtools compilers are used on Windows
-  RtoolsHome <- "C:/rtools42"
-  Sys.setenv(PATH = paste(paste0(RtoolsHome, "/usr/bin/"), Sys.getenv("PATH"), sep = ";"))
-  Sys.setenv(BINPREF = paste0(RtoolsHome, "/mingw$(WIN)/bin/"))
 }
 requiredPackages <- c(
   "devtools", "remotes", "jsonlite", "V8",
