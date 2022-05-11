@@ -969,6 +969,16 @@ Section 8 -- Interpretation.
           https://github.com/mandreyel/ [cph] (mio library),
           Jukka Jylänki [ctb, cph] (grisu3 implementation),
           Mikkel Jørgensen [ctb, cph] (grisu3 implementation)
+        - readxl, Copyright (c) Hadley Wickham ORCID iD [aut],
+          Jennifer Bryan ORCID iD [aut, cre], RStudio [cph, fnd]
+          (Copyright holder of all R code and all C/C++ code
+          without explicit copyright attribution),
+          Marcin Kalicinski [ctb, cph] (Author of included RapidXML code),
+          Komarov Valery [ctb, cph] (Author of included libxls code),
+          Christophe Leitienne [ctb, cph] (Author of included libxls code),
+          Bob Colbert [ctb, cph] (Author of included libxls code),
+          David Hoerl [ctb, cph] (Author of included libxls code),
+          Evan Miller [ctb, cph] (Author of included libxls code)
 
 -----------------------------------------------------------------------------
 Based on <http://opensource.org/licenses/MIT>
@@ -1205,16 +1215,6 @@ Library.
         applies to:
         - R, Copyright (C) 2018 The R Foundation for Statistical Computing
         - shinydashboard [expanded from: GPL (≥ 2)], Copyright (c) 2014 RStudio, Inc.
-        - readxl, Copyright (c) Hadley Wickham ORCID iD [aut],
-            Jennifer Bryan ORCID iD [aut, cre], RStudio [cph, fnd]
-            (Copyright holder of all R code and all C/C++ code
-            without explicit copyright attribution),
-            Marcin Kalicinski [ctb, cph] (Author of included RapidXML code),
-            Komarov Valery [ctb, cph] (Author of included libxls code),
-            Christophe Leitienne [ctb, cph] (Author of included libxls code),
-            Bob Colbert [ctb, cph] (Author of included libxls code),
-            David Hoerl [ctb, cph] (Author of included libxls code),
-            Evan Miller [ctb, cph] (Author of included libxls code)
         - DT, Copyright (c) Yihui Xie [aut, cre],
             Joe Cheng [ctb], JJ Allaire [ctb], Xianying Tan [ctb], Maximilian Girlich [ctb],
             jQuery contributors [ctb, cph] (jQuery in htmlwidgets/lib),
@@ -1222,7 +1222,7 @@ Library.
             Brian Reavis [ctb, cph] (selectize.js in htmlwidgets/lib),
             Leon Gersen [ctb, cph] (noUiSlider in htmlwidgets/lib),
             Bartek Szopka [ctb, cph] (jquery.highlight.js in htmlwidgets/lib),
-            Alex Pickering [ctb], RStudio Inc [cph]
+            Alex Pickering [ctb], William Holmes [ctb], Mikko Marttila [ctb], RStudio Inc [cph]
         - lubridate, Copyright (c) Vitalie Spinu [aut, cre],
             Garrett Grolemund [aut],
             Hadley Wickham [aut],

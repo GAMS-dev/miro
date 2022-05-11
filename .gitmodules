@@ -14,9 +14,6 @@
 [submodule "r-src/DT"]
 	path = r-src/DT
 	url = https://github.com/GAMS-dev/DT.git
-[submodule "r-src/httr"]
-	path = r-src/httr
-	url = https://github.com/GAMS-dev/httr.git
 [submodule "r-src/leaflet"]
 	path = r-src/leaflet
 	url = https://github.com/GAMS-dev/leaflet.git
