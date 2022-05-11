@@ -70,13 +70,13 @@ renderMirorenderer_nurseassignments <- function(input, output, session, data, op
       day ==
         "monday" ~ vec_dates[1], day == "tuesday" ~ vec_dates[2],
       day == "wednesday" ~ vec_dates[3], day == "thursday" ~
-      vec_dates[4], day == "friday" ~ vec_dates[5], day ==
+        vec_dates[4], day == "friday" ~ vec_dates[5], day ==
         "saturday" ~ vec_dates[6], day == "sunday" ~ vec_dates[7]
     ),
     start = Date + start.time * 3600,
     end = case_when(start.time >
       end.time ~ Date + (24 + end.time) * 3600, TRUE ~
-    Date + end.time * 3600), group_nurse = vec_nurses_id[nurse],
+      Date + end.time * 3600), group_nurse = vec_nurses_id[nurse],
     group_department = vec_departments_id[department],
     title = paste0(start, " - ", end)
   )
