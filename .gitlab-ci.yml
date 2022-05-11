@@ -10,6 +10,7 @@ lint_job:
    - linux
   stage: test
   before_script:
+    - git config --global --add safe.directory "$CI_PROJECT_DIR"
     - yarn install --cache-folder .yarn
   script:
    - pre-commit run --all-files
