@@ -88,9 +88,7 @@ observeEvent(input$localInput, {
     return(showElReplaceTxt(session, "#localDataImportError", lang$errMsg$unknownError))
   }
   flog.debug("New local file with extension: %s uploaded", fileExt)
-  if (useGdx && identical(fileExt, "miroscen")) {
-    hideEl(session, "#localInputSelectManually")
-  } else if (fileExt %in% csvio$getValidExtensions()) {
+  if (fileExt %in% csvio$getValidExtensions()) {
     hideEl(session, "#localInputSelectManually")
   } else {
     showEl(session, "#localInputSelectManually")
@@ -289,7 +287,7 @@ observeEvent(input$btImportLocal, {
   if (any(datasetsImported)) {
     hideEl(session, "#importDataTabset")
     fileType <- tolower(tools::file_ext(basename(input$localInput$datapath)))
-    if (identical(fileType, "miroscen")) {
+    if (identical(fileType, "miroscen") && identical(input$cbSelectManuallyLoc, FALSE)) {
       showEl(session, "#btOverwriteScenLocal")
       showEl(session, "#importDataClearSandbox")
     } else {
@@ -384,11 +382,6 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
   dfClArgs <- NULL
 
   if (identical(fileType, "miroscen") && useGdx) {
-    resetWidgetsOnClose <<- FALSE
-    if (!closeScenario(clearMeta = TRUE)) {
-      showHideEl(session, "#importScenError", 4000L)
-      return()
-    }
     if (!tryCatch(validateMiroScen(input$localInput$datapath), error = function(e) {
       flog.info("Invalid miroscen file. Error message: '%s'.", conditionMessage(e))
       showHideEl(session, "#importScenInvalidFile", 4000L)
@@ -396,9 +389,17 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
     })) {
       return()
     }
+    if (identical(input$cbSelectManuallyLoc, FALSE)) {
+      resetWidgetsOnClose <<- FALSE
+      if (!closeScenario(clearMeta = TRUE)) {
+        showHideEl(session, "#importScenError", 4000L)
+        return()
+      }
+    }
     dfClArgs <- tryCatch(loadMiroScen(
       input$localInput$datapath, activeScen, attachments, views,
-      names(modelIn)
+      names(modelIn),
+      loadMetadata = identical(input$cbSelectManuallyLoc, FALSE)
     ),
     error = function(e) {
       showHideEl(session, "#importScenError", 4000L)
@@ -510,8 +511,8 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
     }
   }
 
-  # find out which datasets to import from Excel sheet
-  if (input$cbSelectManuallyLoc && length(input$selInputDataLoc)) {
+  # find out which datasets to import
+  if (identical(input$cbSelectManuallyLoc, TRUE) && length(input$selInputDataLoc)) {
     datasetsToFetch <- datasetsToFetch[tolower(datasetsToFetch) %in%
       tolower(isolate(input$selInputDataLoc))]
   }
@@ -528,8 +529,8 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
 
   loadErrors <- character(0L)
   source("./modules/input_load.R", local = TRUE)
-  if (!identical(fileType, "miroscen")) {
-    markUnsaved()
+  if (!identical(fileType, "miroscen") || identical(input$cbSelectManuallyLoc, TRUE)) {
+    markUnsaved(markDirty = scenData$getSandboxHasOutputData(scriptOutput))
   }
   if (!is.null(errMsg)) {
     return(NULL)
@@ -537,7 +538,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
   errMsg <- NULL
   # save input data
   scenData$loadSandbox(scenInputData, names(scenInputData), activeScen$getMetadataDf())
-  if (!identical(loadMode, "scsv")) {
+  if (!identical(loadMode, "scsv") && !identical(input$cbSelectManuallyLoc, TRUE)) {
     prog$set(detail = lang$progressBar$importScen$renderOutput, value = 0.8)
     tryCatch(
       {

@@ -80,27 +80,37 @@ validateMiroScen <- function(path) {
   }
   return(invisible(TRUE))
 }
+loadMiroScenClArgs <- function(inputNames, path = NULL, metadata = NULL) {
+  if (is.null(metadata)) {
+    metadata <- suppressWarnings(fromJSON(file.path(path, "metadata.json"),
+      simplifyDataFrame = TRUE, simplifyVector = FALSE
+    ))
+  }
+  if (!length(metadata[["cl_args"]])) {
+    return(NULL)
+  }
+  dfClArgs <- as_tibble(metadata[["cl_args"]])
+  if (identical(length(dfClArgs), 1L) && !"value" %in% names(dfClArgs)) {
+    # all cl args are NA
+    dfClArgs <- add_column(dfClArgs, value = NA_character_)
+  }
+  dfClArgs <- add_column(dfClArgs, description = "", .after = 1)
+  clArgIds <- match(dfClArgs[[1]], inputNames)
+  if (any(is.na(clArgIds))) {
+    flog.info(
+      "Command line argument(s): '%s' found in miroscen file is not part of app configuration. They were ignored.",
+      dfClArgs[[1]][is.na(clArgIds)]
+    )
+    dfClArgs <- dfClArgs[!is.na(clArgIds), ]
+  }
+  return(dfClArgs)
+}
 loadMiroScenMeta <- function(path, activeScen, attachments, views, inputNames, zipPath = NULL) {
   metadata <- suppressWarnings(fromJSON(file.path(path, "metadata.json"),
     simplifyDataFrame = TRUE, simplifyVector = FALSE
   ))
-  dfClArgs <- NULL
-  if (length(metadata[["cl_args"]])) {
-    dfClArgs <- as_tibble(metadata[["cl_args"]])
-    if (identical(length(dfClArgs), 1L) && !"value" %in% names(dfClArgs)) {
-      # all cl args are NA
-      dfClArgs <- add_column(dfClArgs, value = NA_character_)
-    }
-    dfClArgs <- add_column(dfClArgs, description = "", .after = 1)
-    clArgIds <- match(dfClArgs[[1]], inputNames)
-    if (any(is.na(clArgIds))) {
-      flog.info(
-        "Command line argument(s): '%s' found in miroscen file is not part of app configuration. They were ignored.",
-        dfClArgs[[1]][is.na(clArgIds)]
-      )
-      dfClArgs <- dfClArgs[!is.na(clArgIds), ]
-    }
-  }
+  dfClArgs <- loadMiroScenClArgs(inputNames, metadata = metadata)
+
   activeScen$updateMetadata(
     newName = as.character(metadata[["scen_name"]]),
     newTags = csv2Vector(as.character(metadata[["scen_tags"]]))
@@ -133,7 +143,7 @@ loadMiroScenMeta <- function(path, activeScen, attachments, views, inputNames, z
   }
   return(dfClArgs)
 }
-loadMiroScen <- function(path, activeScen, attachments, views, inputNames, exdir = NULL) {
+loadMiroScen <- function(path, activeScen, attachments, views, inputNames, exdir = NULL, loadMetadata = TRUE) {
   tmpd <- file.path(tempdir(check = TRUE), "miroscen")
   if (file.exists(tmpd) &&
     !identical(unlink(tmpd, recursive = TRUE, force = TRUE), 0L)) {
@@ -150,7 +160,11 @@ loadMiroScen <- function(path, activeScen, attachments, views, inputNames, exdir
   if (is.symlink(file.path(tmpd, c("metadata.json", "views.json", "data.gdx")))) {
     stop_custom("error_symlinks", "Symlinks detected in miroscen file.", call. = FALSE)
   }
-  dfClArgs <- loadMiroScenMeta(tmpd, activeScen, attachments, views, inputNames, zipPath = path)
+  if (loadMetadata) {
+    dfClArgs <- loadMiroScenMeta(tmpd, activeScen, attachments, views, inputNames, zipPath = path)
+  } else {
+    dfClArgs <- loadMiroScenClArgs(inputNames, tmpd)
+  }
   if (file.exists(file.path(dirname(path), "data.gdx")) &&
     !identical(unlink(file.path(dirname(path), "data.gdx"), force = TRUE), 0L)) {
     stop_custom("error_os", sprintf("Could not remove file: '%s'.", file.path(dirname(path), "data.gdx")),
