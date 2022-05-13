@@ -327,7 +327,7 @@ renderInputGraph <- function(i) {
       },
       error = function(e) {
         flog.error(sprintf(
-          "Problems generating UI elements for chart for dataset: '%s'. Error message: %s.",
+          "Problems generating UI elements for chart for input dataset: '%s'. Error message: %s.",
           modelInAlias[i], conditionMessage(e)
         ))
         stop_custom("error_build_ui", sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]),
@@ -361,7 +361,7 @@ renderInputGraph <- function(i) {
     },
     error = function(e) {
       flog.error(
-        "Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.",
+        "Problems rendering input charts and/or tables for dataset: '%s'. Error message: %s.",
         modelInAlias[i], conditionMessage(e)
       )
       stop_custom("error_render_graph", sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]),
