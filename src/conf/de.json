@@ -170,6 +170,9 @@
       "new":"%s Datensätze importiert.",
       "noNew":"Keine neuen Datensätze importiert."
     },
+    "notificationOutputAttachmentAdded": {
+      "desc": "Neue Ausgabeanhänge hinzugefügt: %s."
+    },
     "notificationFileNotFound":{
       "lst": "Die GAMS-Listendatei konnte nicht gefunden werden.",
       "log": "Die GAMS-Logdatei konnte nicht gefunden werden.",

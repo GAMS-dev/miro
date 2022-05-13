@@ -170,6 +170,9 @@
       "new":"%s datasets imported.",
       "noNew":"No dataset was imported."
     },
+    "notificationOutputAttachmentAdded": {
+      "desc": "Added new output attachments: %s."
+    },
     "notificationFileNotFound":{
       "lst": "The GAMS listing file could not be found.",
       "log": "The GAMS log file could not be found.",

@@ -170,6 +170,9 @@
       "new":"已导入%s个数据集。",
       "noNew":"未导入任何数据集。"
     },
+    "notificationOutputAttachmentAdded": {
+      "desc": "添加了新的输出附件：%s。"
+    },
     "notificationFileNotFound":{
       "lst": "找不到 GAMS 列表文件。",
       "log": "找不到 GAMS 日志文件。",

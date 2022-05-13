@@ -666,6 +666,17 @@
           },
           "minProperties": 2
         },
+        "notificationOutputAttachmentAdded": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 1
+        },
         "notificationFileNotFound": {
           "type": "object",
           "additionalProperties": false,

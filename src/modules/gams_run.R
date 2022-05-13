@@ -37,6 +37,8 @@ storeGAMSOutputFiles <- function(workDir) {
         enforceFileAccess <- rep.int(TRUE, length(filesToStore))
         fileAccessPerm <- rep.int(FALSE, length(filesToStore))
 
+        fnOutputAttachments <- character()
+
         if (length(config$outputAttachments)) {
           fnOutputAttachments <- file.path(workDir, vapply(config$outputAttachments, "[[", character(1L),
             "filename",
@@ -103,6 +105,13 @@ storeGAMSOutputFiles <- function(workDir) {
           session = NULL, filesToStore[!filesTooLarge], overwrite = TRUE,
           execPerm = fileAccessPerm[!filesTooLarge]
         )
+        outputAttachmentsAdded <- filesToStore[!filesTooLarge] %in% fnOutputAttachments
+        if (any(outputAttachmentsAdded)) {
+          showNotification(sprintf(
+            lang$nav$notificationOutputAttachmentAdded$desc,
+            paste(basename(filesToStore[!filesTooLarge][outputAttachmentsAdded]), collapse = ", ")
+          ))
+        }
       },
       error_max_no = function(e) {
         flog.info("Maximum number of attachments (%s) has been exceeded.", attachMaxNo)
