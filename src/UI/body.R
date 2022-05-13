@@ -818,9 +818,21 @@ if (buildUI) {
       tabContent <- tagList(
         if (length(configGraphsOut[[i]]$label) && !identical(trimws(configGraphsOut[[i]]$label), "")) {
           tags$div(
-            id = paste0("tableOutLabel_", i),
-            class = "readme-wrapper label-wrapper",
-            markdown(configGraphsOut[[i]]$label)
+            class = "label-toggle-wrapper",
+            tags$div(
+              id = paste0("tableOutLabel_", i),
+              class = "readme-wrapper label-wrapper label-collapsed",
+              markdown(configGraphsOut[[i]]$label)
+            ),
+            tags$div(
+              class = "label-toggle",
+              tags$a(
+                id = paste0("tableOutLabel_", i, "_toggle"),
+                class = "btn toggle-label-height",
+                href = "#",
+                tags$i(class = "fa fa-chevron-circle-down")
+              )
+            )
           )
         },
         tags$div(
