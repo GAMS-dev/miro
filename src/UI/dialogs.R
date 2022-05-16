@@ -240,22 +240,17 @@ showRemoveExistingOutputDataDialog <- function() {
     fade = TRUE, easyClose = TRUE
   ))
 }
-getLoadDbPanel <- function(id, title, scenList, tagList, iconName, async = FALSE) {
-  if (identical(id, "remote")) {
-    suffixInputs <- ""
-  } else {
-    suffixInputs <- "_base"
-  }
+getLoadDbPanel <- function(title, scenList, tagList, iconName) {
   content <- tagList(
     tags$div(class = "space"),
-    selectInput("selLoadScen" %+% suffixInputs, lang$nav$dialogLoadScen$selLoadScen,
+    selectInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen,
       scenList,
       multiple = FALSE, width = "100%"
     ),
-    if (length(tagList) || async) {
+    if (length(tagList)) {
       tags$div(
-        id = "selLoadScenTagsDiv" %+% suffixInputs,
-        selectInput("selLoadScenTags" %+% suffixInputs, lang$nav$dialogLoadScen$selTags,
+        id = "selLoadScenTagsDiv",
+        selectInput("selLoadScenTags", lang$nav$dialogLoadScen$selTags,
           tagList,
           multiple = TRUE, width = "100%"
         )
@@ -263,55 +258,64 @@ getLoadDbPanel <- function(id, title, scenList, tagList, iconName, async = FALSE
     },
     tags$div(
       lang$nav$dialogLoadScen$sortBy,
-      actionButton("btSortName" %+% suffixInputs,
+      actionButton("btSortName",
         label = lang$nav$dialogLoadScen$btSortNameASC,
         icon = icon("sort-alpha-down"),
         class = "scen-sort-by"
       ),
-      actionButton("btSortTime" %+% suffixInputs,
+      actionButton("btSortTime",
         label = lang$nav$dialogLoadScen$btSortTimeASC,
         icon = icon("sort-numeric-down"),
         class = "scen-sort-by scen-sort-by-selected"
       )
     ),
+    fluidRow(
+      div(
+        class = "choose-input",
+        column(
+          6,
+          tags$label(
+            class = "checkbox-material flex-design",
+            "for" = "cbSelectManuallyDb",
+            checkboxInput("cbSelectManuallyDb", "", FALSE),
+            lang$nav$dialogImport$cbSelectManually
+          )
+        ),
+        column(
+          6,
+          conditionalPanel(
+            condition = "input.cbSelectManuallyDb === true",
+            selectInput("selInputDataDb", lang$nav$dialogImport$selInputData,
+              setNames(
+                names(modelInToImport),
+                modelInToImportAlias
+              ),
+              multiple = TRUE, width = "100%"
+            )
+          )
+        )
+      )
+    ),
     tags$div(class = "small-space"),
     tags$div(
       style = "text-align: center;",
-      actionButton(if (identical(id, "remote")) "btLoadScenConfirm" else "btLoadFromBase",
+      actionButton("btLoadScenConfirm",
         lang$nav$dialogLoadScen$okButton,
         class = "bt-highlight-1 bt-gms-confirm"
       )
     )
   )
   tabPanel(title,
-    value = "tb_importData_" %+% id,
+    value = "tb_importData_remote",
     tags$div(
-      id = "loadData_content" %+% suffixInputs,
+      id = "loadData_content",
       fluidRow(
         column(
           12,
-          if (async) {
-            tagList(
-              genSpinner("importDataDbSpinner", extraClasses = "gen-spinner-black"),
-              tags$div(
-                id = "importDataDbUnknownError", style = "display:none;",
-                lang$errMsg$unknownError
-              ),
-              tags$div(
-                id = "importDataDbNoContent", style = "display:none;",
-                lang$nav$dialogLoadScen$descNoScen
-              ),
-              tags$div(
-                id = "importDataDbContent", style = "display:none;",
-                content
-              )
-            )
+          if (!length(scenList)) {
+            lang$nav$dialogLoadScen$descNoScen
           } else {
-            if (!length(scenList)) {
-              lang$nav$dialogLoadScen$descNoScen
-            } else {
-              content
-            }
+            content
           }
         )
       )
@@ -533,7 +537,6 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL, selectLocalTab = FA
   }
 
   tabLoadFromDb <- getLoadDbPanel(
-    id = "remote",
     title = lang$nav$dialogImport$tabDatabase,
     scenList = scenListDb, tagList = dbTagList,
     iconName = "database"

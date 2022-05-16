@@ -304,13 +304,13 @@ observeEvent(input$btImportLocal, {
 observeEvent(input$btReplaceInputData, {
   flog.debug("Replace input data button clicked.")
   overwriteInput <<- 1L
-  rv$btOverwriteInput <<- rv$btOverwriteInput + 1L
+  loadDatasetsIntoSandbox()
 })
 
 observeEvent(input$btMergeInputData, {
   flog.debug("Merge input data button clicked.")
   overwriteInput <<- 2L
-  rv$btOverwriteInput <<- rv$btOverwriteInput + 1L
+  loadDatasetsIntoSandbox()
 })
 
 observeEvent(input$btOverwriteScenLocal, {
@@ -582,6 +582,99 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
     showErrorMsg(lang$errMsg$dataError$title, paste(loadErrors, collapse = "\n"))
   }
 })
+loadDatasetsIntoSandbox <- function() {
+  if (!identical(input$tb_importData, "tb_importData_remote")) {
+    rv$btOverwriteInput <<- rv$btOverwriteInput + 1L
+    return()
+  }
+  if (identical(input$cbSelectManuallyDb, TRUE)) {
+    inputIdsToLoad <- match(input$selInputDataDb, names(modelIn))
+    if (!length(inputIdsToLoad)) {
+      return()
+    }
+    if (any(is.na(inputIdsToLoad))) {
+      flog.error(
+        "Invalid datasets selected to be imported from database: %s. This seems like an attempt to tamper with the app!",
+        input$selInputDataDb[is.na(inputIdsToLoad)]
+      )
+      return()
+    }
+  } else {
+    inputIdsToLoad <- seq_along(modelIn)
+  }
+  sidToFetch <- sidsToLoad
+  inputDatsetsToFetch <- names(modelIn)[inputIdsToLoad]
+  flog.debug(
+    "Loading input datasets: '%s' from scenario id: '%s'.",
+    paste(inputDatsetsToFetch, collapse = ", "), sidToFetch
+  )
+  removeModal()
+
+  prog <- Progress$new()
+  on.exit(suppressWarnings(prog$close()))
+  prog$set(message = lang$progressBar$importScen$title, value = 0.1)
+
+  isTabularInputSym <- inputDatsetsToFetch %in% inputDsNames
+  symNamesToFetch <- inputDatsetsToFetch[isTabularInputSym]
+  if (any(!isTabularInputSym)) {
+    symNamesToFetch <- c(symNamesToFetch, scalarsFileName)
+  }
+  if (tryCatch(
+    {
+      scenData$load(as.integer(sidToFetch),
+        refId = "sb",
+        symNames = symNamesToFetch,
+        addToSandbox = TRUE
+      )
+      FALSE
+    },
+    error = function(e) {
+      flog.error(
+        "Unexpected error while fetching input datasets from database. Error message: '%s'",
+        conditionMessage(e)
+      )
+      showErrorMsg(lang$errMsg$GAMSInput$title, lang$errMsg$unknownError)
+      return(TRUE)
+    }
+  )) {
+    return()
+  }
+  scenInputData <- scenData$get("sb", symNames = symNamesToFetch)
+  names(scenInputData) <- symNamesToFetch
+
+  if (scalarsFileName %in% symNamesToFetch) {
+    scalarDataset <- scenInputData[[scalarsFileName]]
+  } else {
+    scalarDataset <- NULL
+  }
+
+  errMsg <- NULL
+  loadMode <- "scen"
+  newInputCount <- 0L
+  datasetsToFetch <- inputDatsetsToFetch
+  dfClArgs <- NULL
+  prog$set(detail = lang$progressBar$importScen$renderInput, value = 0.4)
+
+  # reset input data
+  modelInputGraphVisible[] <<- FALSE
+  lapply(seq_along(modelIn)[names(modelIn) %in% datasetsToFetch], function(i) {
+    hideEl(session, "#graph-in_" %+% i)
+    showEl(session, "#data-in_" %+% i)
+  })
+  hideEl(session, "#btRefreshGraphIn")
+
+  source("./modules/input_load.R", local = TRUE)
+  markUnsaved(markDirty = scenData$getSandboxHasOutputData(scriptOutput))
+  if (!is.null(errMsg)) {
+    return(NULL)
+  }
+  scenData$loadSandbox(scenInputData, names(scenInputData), activeScen$getMetadataDf())
+  if (newInputCount) {
+    showNotification(sprintf(lang$nav$notificationNewInput$new, newInputCount))
+  } else {
+    showNotification(lang$nav$notificationNewInput$noNew, type = "error")
+  }
+}
 if (length(externalInputConfig)) {
   lapply(seq_along(externalInputConfig), function(extConfId) {
     if (length(externalInputConfig[[extConfId]]$localFileInput)) {

@@ -1,6 +1,6 @@
 # load scenario from database
-checkIfInputDataExists <- function() {
-  inputDatasetsExist <- vapply(seq_along(modelIn), function(i) {
+checkIfInputDataExists <- function(inputIdsToLoad = seq_along(modelIn), manualImport = FALSE) {
+  inputDatasetsExist <- vapply(inputIdsToLoad, function(i) {
     if (length(isolate(rv[["in_" %+% i]]))) {
       return(TRUE)
     } else {
@@ -10,11 +10,21 @@ checkIfInputDataExists <- function() {
 
   if (any(inputDatasetsExist)) {
     hideEl(session, "#importDataTabset")
-    showEl(session, "#btOverwriteScen")
-    showEl(session, "#importDataClearSandbox")
+    if (manualImport) {
+      showEl(session, "#btReplaceInputData")
+      showEl(session, "#btMergeInputData")
+      showEl(session, "#importDataOverwrite")
+    } else {
+      showEl(session, "#btOverwriteScen")
+      showEl(session, "#importDataClearSandbox")
+    }
   } else {
     overwriteInput <<- 0L
-    rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
+    if (manualImport) {
+      loadDatasetsIntoSandbox()
+    } else {
+      rv$btOverwriteScen <- rv$btOverwriteScen + 1L
+    }
   }
 }
 observeEvent(input$btLoadScen, {
@@ -407,10 +417,30 @@ observeEvent(input$btLoadScenConfirm, {
 
   # if in comparison mode skip input data check
   if (!isInSolveMode) {
-    rv$btOverwriteScen <<- rv$btOverwriteScen + 1L
+    rv$btOverwriteScen <- rv$btOverwriteScen + 1L
     return()
   }
-  checkIfInputDataExists()
+  if (identical(input$cbSelectManuallyDb, TRUE)) {
+    inputIdsToLoad <- match(input$selInputDataDb, names(modelIn))
+    if (!length(inputIdsToLoad)) {
+      return()
+    }
+    if (any(is.na(inputIdsToLoad))) {
+      flog.error(
+        "Invalid datasets selected to be imported from database: %s. This seems like an attempt to tamper with the app!",
+        input$selInputDataDb[is.na(inputIdsToLoad)]
+      )
+      return()
+    }
+    manualImport <- TRUE
+  } else {
+    inputIdsToLoad <- seq_along(modelIn)
+    manualImport <- FALSE
+  }
+  checkIfInputDataExists(
+    inputIdsToLoad = inputIdsToLoad,
+    manualImport = manualImport
+  )
 })
 
 observeEvent(input$btOverwriteScen, {
@@ -419,14 +449,14 @@ observeEvent(input$btOverwriteScen, {
     return()
   }
   overwriteInput <<- 1L
-  rv$btOverwriteScen <<- rv$btOverwriteScen + 1L
+  rv$btOverwriteScen <- rv$btOverwriteScen + 1L
 })
 
 observeEvent(input$btBatchLoadSbOverwrite, {
   flog.debug("Batch load: overwriting current content in sandbox confirmed.")
   overwriteInput <<- 1L
   switchTab(session, "input")
-  rv$btOverwriteScen <<- rv$btOverwriteScen + 1L
+  rv$btOverwriteScen <- rv$btOverwriteScen + 1L
 })
 
 observeEvent(input$btBatchLoadSb, {
@@ -444,7 +474,7 @@ observeEvent(input$btBatchLoadSb, {
     showEl(session, ".batch-load-sb-content")
   } else {
     switchTab(session, "input")
-    rv$btOverwriteScen <<- rv$btOverwriteScen + 1L
+    rv$btOverwriteScen <- rv$btOverwriteScen + 1L
   }
 })
 
@@ -520,7 +550,7 @@ observeEvent(input$btBatchCompare, {
   isInSolveMode <<- FALSE
   loadIntoSandbox <<- FALSE
   switchCompareMode(session, viewMode, length(sidsToLoad), config[["customCompareModules"]])
-  rv$btOverwriteScen <<- rv$btOverwriteScen + 1L
+  rv$btOverwriteScen <- rv$btOverwriteScen + 1L
 })
 
 observeEvent(virtualActionButton(rv$btOverwriteScen), {
