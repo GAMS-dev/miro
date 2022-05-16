@@ -83,7 +83,7 @@ ScenData <- R6Class("ScenData", public = list(
     return(FALSE)
   },
   load = function(scenIds, sheetIds = NULL, symNames = NULL, limit = 1e7,
-                  showProgress = TRUE, refId = NULL, registerRef = TRUE) {
+                  showProgress = TRUE, refId = NULL, registerRef = TRUE, addToSandbox = FALSE) {
     if (identical(refId, "sb") && length(scenIds) > 1L) {
       stop_custom("bad_param", "Cannot load multiple scenarios with refId=sb", call. = FALSE)
     }
@@ -115,22 +115,22 @@ ScenData <- R6Class("ScenData", public = list(
     }
     for (scenId in scenIds) {
       scenIdChar <- if (identical(refId, "sb")) "sb" else as.character(scenId)
-      if (!scenId %in% names(private$cachedData)) {
+      if (identical(refId, "sb") || !scenId %in% names(private$cachedData)) {
         # fetch timestamp
-        metaData <- private$getMetadata(scenId)
-        private$cachedData[[scenIdChar]] <- list(
-          data = list(),
-          meta = metaData,
-          timestamp = metaData[["_stime"]][1],
-          inDataSid = NA_integer_
-        )
-        if (length(metaData[["_scode"]]) && metaData[["_scode"]] > (SCODEMAP[["scen"]] + 10000L)) {
-          # Hcube scenario, load input data from job config
-          private$cachedData[[scenIdChar]][["inDataSid"]] <- metaData[["_scode"]] - 10000L
+        if (!identical(refId, "sb") || !addToSandbox) {
+          metaData <- private$getMetadata(scenId)
+          private$cachedData[[scenIdChar]] <- list(
+            data = list(),
+            meta = metaData,
+            timestamp = metaData[["_stime"]][1],
+            inDataSid = NA_integer_
+          )
+          if (length(metaData[["_scode"]]) && metaData[["_scode"]] > (SCODEMAP[["scen"]] + 10000L)) {
+            # Hcube scenario, load input data from job config
+            private$cachedData[[scenIdChar]][["inDataSid"]] <- metaData[["_scode"]] - 10000L
+          }
         }
         checkDirty <- FALSE
-      } else if (identical(refId, "sb")) {
-        private$cachedData[["sb"]][["inDataSid"]] <- private$cachedData[[as.character(scenId)]][["inDataSid"]]
       }
       for (symName in symNames) {
         if (identical(refId, "sb") ||
