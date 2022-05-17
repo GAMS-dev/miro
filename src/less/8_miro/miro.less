@@ -1416,6 +1416,16 @@ html {
     background-color: @primary-color-dark !important;
   });
 }
+li.drop-index-item[data-col-hidden="true"] {
+  .responsiveDark({
+    background-color: @pivot-presentation-bg;
+    color: fade(@text-color, 75%);
+  },
+  {
+    background-color: @pivot-presentation-bg-dark;
+    color: fade(@text-color-dark, 65%);
+  });
+}
 /* PAVER */
 .dataframe {
   text-align: right;
