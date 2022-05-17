@@ -87,7 +87,11 @@ RlibPathSrc <- file.path(".", "r", "library_src")
 
 RlibPathTmp <- NULL
 if (CIBuild) {
-  RlibPathTmp <- file.path(.libPaths()[1], "miro_lib")
+  if (isWindows) {
+    RlibPathTmp <- file.path(RlibPathDevel, "miro_lib")
+  } else {
+    RlibPathTmp <- file.path(.libPaths()[1], "miro_lib")
+  }
   buildConfigContent <- strsplit(readLines("build-config.json"), '"', fixed = TRUE)[[1]]
   Rversion <- buildConfigContent[which(buildConfigContent == "rVersion") + 2]
 }
