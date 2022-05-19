@@ -20,9 +20,9 @@ ScenData <- R6Class("ScenData", public = list(
     noData <- vapply(data, is.null, logical(1L), USE.NAMES = FALSE)
     if (any(noData)) {
       if (is.null(symNames)) {
-        data[noData] <- private$scenDataTemplate
+        data[noData] <- private$scenDataTemplate[noData]
       } else {
-        data[noData] <- private$scenDataTemplate[match(symNames, private$dbSymbols)]
+        data[noData] <- private$scenDataTemplate[match(symNames[noData], private$dbSymbols)]
       }
     }
     if (is.null(symNames)) {
