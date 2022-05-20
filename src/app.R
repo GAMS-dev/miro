@@ -2054,7 +2054,7 @@ if (!is.null(errMsg)) {
               return()
             }
             # if scenario includes output data set dirty flag
-            if (!noOutputData) {
+            if (scenData$getSandboxHasOutputData(scriptOutput)) {
               dirtyFlag <<- TRUE
               showEl(session, "#dirtyFlagIcon")
               showEl(session, "#dirtyFlagIconO")
@@ -2066,8 +2066,8 @@ if (!is.null(errMsg)) {
         )
       })
 
-      markUnsaved <- function(markDirty = FALSE) {
-        if (markDirty && !noOutputData) {
+      markUnsaved <- function(consistentOutput = FALSE) {
+        if (!consistentOutput && scenData$getSandboxHasOutputData(scriptOutput)) {
           showEl(session, "#dirtyFlagIcon")
           showEl(session, "#dirtyFlagIconO")
           dirtyFlag <<- TRUE

@@ -179,13 +179,7 @@ if (!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))) {
         }
         if (!identical(loadMode, "scen")) {
           # set unsaved flag
-          rv$unsavedFlag <<- TRUE
-          # if scenario includes output data set dirty flag
-          if (!noOutputData) {
-            dirtyFlag <<- TRUE
-            showEl(session, "#dirtyFlagIcon")
-            showEl(session, "#dirtyFlagIconO")
-          }
+          markUnsaved()
         }
         # reset dependent elements
         inputInitialized[dependentDatasets[[i]]] <<- FALSE

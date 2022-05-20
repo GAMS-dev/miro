@@ -662,7 +662,7 @@ output$modelStatus <- renderUI({
     )
     isolate(renderOutputData())
 
-    markUnsaved()
+    markUnsaved(consistentOutput = TRUE)
   }
   return(statusText)
 })

@@ -834,7 +834,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         "Scenario data from a scenario with id: '%s' was loaded into sandbox.",
         sidsToLoad[[1]]
       )
-      markUnsaved()
+      markUnsaved(consistentOutput = TRUE)
     } else {
       flog.debug("Scenario: '%s' was loaded into UI", activeScen$getSid())
     }
