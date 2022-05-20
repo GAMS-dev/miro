@@ -11,6 +11,19 @@ expect_true(app$waitFor("HTMLWidgets.getInstance(document.getElementById('in_1')
 expect_true(app$waitFor("HTMLWidgets.getInstance(document.getElementById('in_1')).hot.setDataAtCell(1,2,7);true;", timeout = 50L))
 app$setInputs(inputTabset = "inputTabset_2")
 expect_true(app$waitFor("HTMLWidgets.getInstance(document.getElementById('in_2')).hot.setDataAtCell(1,2,7);true;", timeout = 50L))
+
+app$setInputs(btEditMeta = "click")
+Sys.sleep(0.5)
+addSelectizeOption(app, "#editMetaTags", "tag1")
+selectSelectizeOption(app, "#editMetaTags", "tag1")
+addSelectizeOption(app, "#editMetaTags", "tag2")
+selectSelectizeOption(app, "#editMetaTags", "tag2")
+app$findElement("a[data-value='attachments']")$click()
+app$uploadFile(file_addAttachments = "../model/pickstock_with_data/README.md")
+Sys.sleep(0.5)
+app$setInputs(btUpdateMeta = "click")
+Sys.sleep(1)
+
 app$setInputs(btSaveAs = "click")
 Sys.sleep(0.5)
 app$setInputs(btRemoveOutput = "click")
@@ -54,4 +67,16 @@ expect_equivalent(dplyr::filter(getHotData(app, "in_1"), symbol == "AXP", date =
 ))
 expect_identical(nrow(getHotData(app, "in_1")), 7561L)
 expect_true(app$waitFor("$('#inputDataTitle').text()==='default (*)'&&$('#dirtyFlagIcon').is(':visible');", timeout = 2000L))
+
+
+# metadata should not be updated when manually importing data
+app$setInputs(btEditMeta = "click")
+Sys.sleep(0.5)
+expect_identical(app$getValue("editMetaName"), "default")
+expect_identical(app$getValue("editMetaTags"), list())
+app$findElement("a[data-value='attachments']")$click()
+Sys.sleep(0.5)
+attachmentList <- app$findElements(".attachment-line")
+expect_identical(attachmentList, list())
+
 app$stop()
