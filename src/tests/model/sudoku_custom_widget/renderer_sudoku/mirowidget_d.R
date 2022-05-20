@@ -1,6 +1,6 @@
 mirowidget_dOutput <- function(id, height = NULL, options = NULL, path = NULL) {
   ns <- NS(id)
-  return(tagList(textOutput(ns("i")), textOutput(ns("j")), rHandsontableOutput(ns("sudoku"))))
+  return(tagList(textOutput(ns("i")), textOutput(ns("j")), selectInput(ns("bla"), "Bla", choices = c("bla1", "bla2")), rHandsontableOutput(ns("sudoku"))))
 }
 
 renderMirowidget_d <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
@@ -26,11 +26,18 @@ renderMirowidget_d <- function(input, output, session, data, options = NULL, pat
     }
     dataTmp <- hot_to_r(input$sudoku)
   })
+  observe({
+    if (length(data[["_gmspar_bla"]]()) && data[["_gmspar_bla"]]() %in% c("bla1", "bla2")) {
+      updateSelectInput(session, "bla", selected = data[["_gmspar_bla"]]())
+    }
+  })
   return(list(d = dataToReturn, i = reactive({
     if (is.null(input$sudoku)) {
       return(NULL)
     }
     dataTmp <- unique(dataToReturn()[[1]])
     tibble(i = dataTmp, text = rep.int("", length(dataTmp)))
-  }), j = data[["j"]], ii = data[["ii"]], test124 = data[["test124"]]))
+  }), j = data[["j"]], ii = data[["ii"]], test124 = data[["test124"]], `_gmspar_bla` = reactive({
+    input$bla
+  })))
 }

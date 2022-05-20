@@ -144,6 +144,42 @@ expect_symbols_in_gdx <- function(app, id, symNames) {
   }
 }
 
+expect_symbols_in_miroscen <- function(app, id, symNames) {
+  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  req <- httr::GET(url)
+  tempFiles <- file.path(tempdir(check = TRUE), "shinytest-download.miroscen")
+  on.exit(unlink(tempFiles))
+  writeBin(req$content, tempFiles)
+  tmpPath <- file.path(tempdir(check = TRUE), as.character(as.numeric(Sys.time())))
+  if (!dir.create(tmpPath)) {
+    stop(sprintf("Could not create tmpdir: %s", tmpPath))
+  }
+  on.exit(unlink(tmpPath, recursive = TRUE), add = TRUE)
+  zip::unzip(tempFiles, exdir = tmpPath, files = c("data.gdx", "metadata.json"))
+  gdxrrwMIRO::igdx(file.path(
+    .libPaths()[1], "gdxrrwMIRO",
+    if (identical(tolower(Sys.info()[["sysname"]]), "windows")) {
+      file.path("bin", "x64")
+    } else {
+      "bin"
+    }
+  ), silent = TRUE, returnStr = FALSE)
+  symInGdx <- gdxrrwMIRO::gdxInfo(file.path(tmpPath, "data.gdx"), returnList = TRUE, dump = FALSE)
+  symInGdx <- c(symInGdx$sets, symInGdx$parameters, symInGdx$variables, symInGdx$equations)
+  isClArg <- startsWith(symNames, "_gmspar_") | startsWith(symNames, "_gmsopt_")
+  expectedSymInGdx <- symNames[!isClArg]
+  expectedClArgs <- symNames[isClArg]
+  expect_identical(length(symInGdx), length(expectedSymInGdx))
+  expect_true(all(expectedSymInGdx %in% symInGdx))
+
+  clArgsInMiroscen <- vapply(
+    jsonlite::read_json(file.path(tmpPath, "metadata.json"))$cl_args, "[[",
+    character(1L), "scalar"
+  )
+  expect_identical(length(clArgsInMiroscen), length(expectedClArgs))
+  expect_true(all(expectedClArgs %in% clArgsInMiroscen))
+}
+
 expect_sheets_in_xls <- function(app, id, sheetNames) {
   url <- app$findElement(paste0("#", id))$getAttribute("href")
   req <- httr::GET(url)

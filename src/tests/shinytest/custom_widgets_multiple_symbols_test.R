@@ -56,6 +56,7 @@ app$setInputs(inputTabset = "inputTabset_5")
 Sys.sleep(1)
 expect_identical(app$getValue("data-in_7-custom-i"), "seattle,san-diego")
 expect_identical(app$getValue("data-in_7-custom-j"), "new-york,chicago,topeka")
+expect_identical(app$getValue("data-in_7-custom-bla"), "bla1")
 expect_equivalent(
   getHotData(app, "data-in_7-custom-sudoku"),
   structure(list(
@@ -76,13 +77,13 @@ Sys.sleep(1)
 expect_identical(
   getVisibleDtData(app, "tab_2_9-datatable"),
   structure(list(
-    ...1 = c("1", "2", "3", "4"),
-    ...2 = c("force_unique_sol", "test", "test123", "test124"),
-    ...3 = c("force_unique_sol", "test", "test 123", "test 124"),
-    ...4 = c("1", "seattle", "2.3", "3.3")
+    ...1 = c("1", "2", "3", "4", "5"),
+    ...2 = c("force_unique_sol", "test", "test123", "test124", "_gmspar_bla"),
+    ...3 = c("force_unique_sol", "test", "test 123", "test 124", "bla bla"),
+    ...4 = c("1", "seattle", "2.3", "3.3", "bla1")
   ),
   class = c("tbl_df", "tbl", "data.frame"),
-  row.names = c(NA, -4L)
+  row.names = c(NA, -5L)
   )
 )
 app$setInputs(contentScen_2 = "contentScen_2_4")
@@ -118,10 +119,10 @@ Sys.sleep(2)
 app$findElements(".navbar-custom-menu a.dropdown-toggle")[[1]]$click()
 app$findElement(".navbar-custom-menu a[onclick*='btExportScen']")$click()
 Sys.sleep(1)
-app$setInputs(exportFileType = "gdx")
+app$setInputs(exportFileType = "miroscen")
 Sys.sleep(2L)
-expect_symbols_in_gdx(app, "scenExportHandler", c(
+expect_symbols_in_miroscen(app, "scenExportHandler", c(
   "a", "b", "d", "force_unique_sol", "i", "ii", "test", "j", "initial_state",
-  "test123", "test124", "results"
+  "test123", "test124", "results", "_gmspar_bla"
 ))
 app$stop()

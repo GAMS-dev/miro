@@ -9,7 +9,7 @@
   "defCompMode": "split",
   "roundingDecimals": 2,
   "activateModules": {
-    "logFile": false,
+    "logFile": true,
     "lstFile": false,
     "loadLocal": true,
     "attachments": true,
@@ -56,7 +56,7 @@
       "rendererName": "mirowidget_d",
       "alias": "Distance",
       "apiVersion": 2,
-      "widgetSymbols": ["i", "j", "ii", "test124"]
+      "widgetSymbols": ["i", "j", "ii", "test124", "_gmspar_bla"]
     },
     "test123": {
       "widgetType": "numericinput",
@@ -69,6 +69,12 @@
       "alias": "test 124",
       "value": 1.2,
       "label": "Test 124?"
+    },
+    "_gmspar_bla": {
+      "widgetType": "dropdown",
+      "alias": "bla bla",
+      "choices": ["bla1", "bla2"],
+      "aliases": ["BLA1", "BLA2"]
     }
   },
   "pageTitle": "Sudoku solver",
