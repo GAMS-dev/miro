@@ -27,7 +27,7 @@
 	path = r-src/gdxrrwMIRO
 	url = https://github.com/GAMS-dev/gdxrrw-miro.git
 [submodule "r-src/miro.util"]
-	path = r-src/miro.util
+	path = r-src/miroUtil
 	url = https://github.com/GAMS-dev/miro.util.git
 [submodule "r-src/jsonlite"]
 	path = r-src/jsonlite

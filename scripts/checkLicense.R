@@ -3,7 +3,7 @@ packages <- read.csv("./src/miro-pkg-lock.csv", stringsAsFactors = FALSE)[[1]]
 missingLicenses <- vapply(packages, function(package) {
   if (any(grepl(paste0(" ", package, ","), licenseContent, fixed = TRUE) & grepl("http", licenseContent, fixed = TRUE)) ||
     any(grepl(paste0(" ", package, " "), licenseContent, fixed = TRUE) & grepl("http", licenseContent, fixed = TRUE)) ||
-    package %in% c("miro.util")) {
+    package %in% c("miroUtil")) {
     return(FALSE)
   }
   write(sprintf("License for package: %s missing!", package), stderr())

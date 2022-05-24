@@ -44,7 +44,7 @@ packageVersionMap <- list(c("data.table", "1.14.2"), c("cpp11", "0.4.2"), c("bac
     "0.12.1"), c("dygraphs", "1.1.1.6"), c("parallelly", "1.31.1"
     ), c("future", "1.25.0"), c("bit", "4.0.4"), c("bit64", "4.0.5"
     ), c("tzdb", "0.3.0"), c("vroom", "1.5.7"), c("readr", "2.1.2"
-    ), "miro.util", "rhandsontable", "sortable", "chartjs", c("RSQLite",
+    ), "miroUtil", "rhandsontable", "sortable", "chartjs", c("RSQLite",
     "2.2.14"))
 
 isMac <- Sys.info()["sysname"] == "Darwin" || grepl("^darwin", R.version$os)

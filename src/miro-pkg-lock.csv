@@ -110,7 +110,7 @@ bit64, 4.0.5
 tzdb, 0.3.0
 vroom, 1.5.7
 readr, 2.1.2
-miro.util
+miroUtil
 rhandsontable
 sortable
 chartjs
