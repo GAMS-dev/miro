@@ -1,7 +1,3 @@
-RLibPath <- Sys.getenv("LIB_PATH")
-if (!identical(RLibPath, "")) {
-  .libPaths(c(RLibPath, .libPaths()))
-}
 print(sessionInfo())
 
 print("Library paths:")

@@ -34,14 +34,19 @@ if (typeof process.argv[2] === 'string' && process.argv[2].startsWith('gams_sys_
   }
   try {
     let rPath = 'Rscript';
+    const rEnv = {
+      R_LIBS_USER: path.join(__dirname, '..', 'r', 'library'),
+      GAMS_SYS_DIR: gamsSysDir,
+    };
     if (process.platform === 'win32') {
       rPath = path.join(__dirname, '..', 'r', 'bin', 'Rscript');
+      rEnv.R_LIBS_SITE = '~/R/win-library/%v';
     }
     const subproc = execa(
       rPath,
       [path.join(__dirname, '..', 'src', 'tests', 'testthat.R')],
       {
-        env: { LIB_PATH: path.join(__dirname, '..', 'r', 'library'), GAMS_SYS_DIR: gamsSysDir },
+        env: rEnv,
         cwd: path.join(__dirname, '..', 'src'),
       },
     );
