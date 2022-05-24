@@ -2475,7 +2475,7 @@
           }
         }
       },
-      "minProperties": 48
+      "minProperties": 49
     },
     "renderers": {
       "description": "language specific objects of renderers",
