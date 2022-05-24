@@ -30,7 +30,7 @@ def get_miro_proc_env(user_info: User) -> Dict[str, str]:
 
 def run_miro_proc(user_info: User, script_name: str, input: bytes = b"", cwd: str = settings.admin_app_dir) -> str:
     proc_env = get_miro_proc_env(user_info)
-    proc_out = subprocess.run(["R", "--no-echo", "--vanilla",
+    proc_out = subprocess.run(["R", "--no-echo", "--no-save", "--no-restore", "--no-site-file", "--no-init-file",
                                "-f", os.path.join(settings.admin_app_dir, "scripts", script_name)],
                               capture_output=True,
                               input=input,
