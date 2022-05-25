@@ -1035,6 +1035,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
       errMsg <- paste(errMsg, "Some of the input elements in the 'overwriteSheetOrder' option are not defined in the data contract!",
         sep = "\n"
       )
+      inputSheetIdsToDisplay <- integer()
     } else {
       appendSheetIds <- NULL
       if (length(config$overwriteSheetOrder$input) != length(modelIn)) {
