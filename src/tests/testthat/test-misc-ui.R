@@ -10,6 +10,7 @@ Sys.setenv(MIRO_MODEL_PATH = file.path(
 Sys.setenv(MIRO_MODE = "base")
 
 modelDataPath <- file.path(testModelPath, "data_transport")
+modelConfPath <- file.path(testModelPath, "conf_transport")
 
 file.copy2(
   file.path(testDir, "data", "transport.gdx"),
@@ -26,6 +27,93 @@ test_that(
   ))
 )
 unlink(modelDataPath, recursive = TRUE, force = TRUE)
+
+
+# test that metadata dialog opens when having no scalars in
+# data contract but double dash parameters defined (#398)
+file.move(
+  file.path(modelConfPath, "transport_io.json"),
+  file.path(modelConfPath, "transport_io_tmp.json")
+)
+file.move(
+  file.path(modelConfPath, "transport.json"),
+  file.path(modelConfPath, "transport_tmp.json")
+)
+jsonlite::write_json(
+  list(
+    modelTitle = "trnsport",
+    inputSymbols = list(a = list(
+      alias = "capacity of plant i in cases",
+      symtype = "parameter", headers = list(i = list(
+        type = "string",
+        alias = "canning plants"
+      ), value = list(
+        type = "numeric",
+        alias = "capacity of plant i in cases"
+      ))
+    )), outputSymbols = list(
+      schedule = list(
+        alias = "shipment quantities in cases",
+        symtype = "parameter", headers = list(i = list(
+          type = "string",
+          alias = "canning plants"
+        ), j = list(
+          type = "string",
+          alias = "markets"
+        ), lngp = list(
+          type = "numeric",
+          alias = "lngp"
+        ), latp = list(
+          type = "numeric",
+          alias = "latp"
+        ), lngm = list(
+          type = "numeric",
+          alias = "lngm"
+        ), latm = list(
+          type = "numeric",
+          alias = "latm"
+        ), cap = list(
+          type = "numeric",
+          alias = "cap"
+        ), demand = list(
+          type = "numeric",
+          alias = "demand"
+        ), quantities = list(
+          type = "numeric",
+          alias = "quantities"
+        ))
+      )
+    )
+  ),
+  file.path(modelConfPath, "transport_io.json"),
+  auto_unbox = TRUE
+)
+jsonlite::write_json(
+  list(inputWidgets = list(`_gmspar_type` = list(
+    widgetType = "dropdown", alias = "model type",
+    selected = "lp", noHcube = FALSE, multiple = FALSE, label = "Select the model type",
+    choices = c("lp", "mip", "minlp"), aliases = c("LP", "MIP", "MINLP")
+  ))),
+  file.path(modelConfPath, "transport.json"),
+  auto_unbox = TRUE
+)
+
+createTestDb()
+test_that(
+  "Opening metadata dialog works without scalars but cl args configured",
+  expect_pass(testApp(file.path(testDir, ".."), "metadata_no_scalars_test",
+    compareImages = FALSE
+  ))
+)
+
+file.move(
+  file.path(modelConfPath, "transport_tmp.json"),
+  file.path(modelConfPath, "transport.json")
+)
+file.move(
+  file.path(modelConfPath, "transport_io_tmp.json"),
+  file.path(modelConfPath, "transport_io.json")
+)
 
 testModelPath <- file.path(testDir, "model", "transport_numericHeaders")
 Sys.setenv(MIRO_MODEL_PATH = file.path(

@@ -282,7 +282,7 @@ observeEvent(input$btEditMeta, {
   if (config$activateModules$attachments) {
     attachmentList <<- attachments$getMetadata()
     attachmentMetadata <- attachmentList
-    viewsMetadata <- views$getSummary(modelInRaw, modelOut)
+    viewsMetadata <- views$getSummary(c(modelInRaw, scalarsInMetaData), modelOut)
   }
   showEditMetaDialog(activeScen$getMetadataDf(noPermFields = FALSE),
     allowAttachments = config$activateModules$attachments,
@@ -593,7 +593,7 @@ if (config$activateModules$attachments) {
   #            VIEWS
   ################################################
   updateViewsTable <- function() {
-    newViewData <- views$getSummary(modelInRaw, modelOut)
+    newViewData <- views$getSummary(c(modelInRaw, scalarsInMetaData), modelOut)
     if (!length(newViewData$symAlias)) {
       newViewData <- tibble(
         symAlias = character(0L),
