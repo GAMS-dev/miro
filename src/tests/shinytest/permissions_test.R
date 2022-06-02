@@ -115,6 +115,8 @@ app2$setInputs(btUpdateMeta = "click")
 Sys.sleep(1)
 app2$setInputs(btSave = "click")
 Sys.sleep(0.5)
+app2$setInputs(btSaveOutput = "click")
+Sys.sleep(0.5)
 expect_error(app2$findElement("#btSaveReadonly")$click(), NA)
 Sys.sleep(0.5)
 # discard permissions true per default for not owned scenarios

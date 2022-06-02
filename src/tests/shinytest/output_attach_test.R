@@ -47,6 +47,8 @@ app$setInputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
 app$setInputs(btSave = "click")
 Sys.sleep(0.5)
+app$setInputs(btSaveOutput = "click")
+Sys.sleep(0.5)
 app$findElement("#shiny-modal .bt-gms-confirm")$click()
 Sys.sleep(1)
 

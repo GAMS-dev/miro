@@ -1,11 +1,12 @@
 ScenarioExtensions <- R6Class("ScenarioExtensions",
   public = list(
     initialize = function(inputSymbols, outputSymbols, tabularInputSymbols,
-                          rv = NULL, customCompareModeConfig = NULL) {
+                          rv = NULL, customCompareModeConfig = NULL, scenData = NULL) {
       private$inputSymbols <- inputSymbols
       private$outputSymbols <- outputSymbols
       private$tabularInputSymbols <- tabularInputSymbols
       private$rv <- rv
+      private$scenData <- scenData
       private$customCompareModeConfig <- customCompareModeConfig
       return(invisible(self))
     },
@@ -37,6 +38,7 @@ ScenarioExtensions <- R6Class("ScenarioExtensions",
     outputSymbols = NULL,
     customCompareModeConfig = NULL,
     rv = NULL,
+    scenData = NULL,
     updateCallbacks = list("1" = list()),
     getSymbolName = function(session) {
       if (is.character(session) && identical(length(session), 1L)) {
@@ -114,9 +116,14 @@ ScenarioExtensions <- R6Class("ScenarioExtensions",
         stop(sprintf("Invalid id: %s", paste(id, collapse = "_")), call. = FALSE)
       }
     },
-    markUnsaved = function() {
+    markUnsaved = function(markDirty = FALSE) {
       if (length(private$rv)) {
-        isolate(private$rv$unsavedFlag <- TRUE)
+        isolate({
+          private$rv$unsavedFlag <- TRUE
+          if (markDirty && !is.null(private$scenData) && private$scenData$getSandboxHasOutputData(NULL)) {
+            private$rv$dirtyFlag <- TRUE
+          }
+        })
       }
       return(invisible(self))
     }

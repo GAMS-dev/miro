@@ -1711,8 +1711,6 @@ if (!is.null(errMsg)) {
         name = vector("character", attachMaxNo),
         execPerm = vector("logical", attachMaxNo)
       )
-      # boolean that specifies whether input data does not match output data
-      dirtyFlag <- FALSE
       inconsistentOutput <- FALSE
       if (identical(config$defCompMode, "tab")) {
         currentCompMode <- "tab"
@@ -1764,7 +1762,7 @@ if (!is.null(errMsg)) {
       }
 
       rv <- reactiveValues(
-        unsavedFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
+        unsavedFlag = FALSE, dirtyFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
         btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L,
         btLoadLocal = 0L, btCompareScen = 0L, activeSname = lang$nav$dialogNewScen$newScenName,
         clear = TRUE, btSave = 0L, noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
@@ -1775,6 +1773,12 @@ if (!is.null(errMsg)) {
 
       xlsio <- XlsIO$new()
       csvio <- CsvIO$new()
+
+      scenData <- ScenData$new(
+        db = db,
+        scenDataTemplate = scenDataTemplate,
+        hiddenOutputScalars = config$hiddenOutputScalars
+      )
       views <- Views$new(
         names(modelIn),
         names(modelOut),
@@ -1796,12 +1800,8 @@ if (!is.null(errMsg)) {
         workDir,
         names(modelIn),
         names(modelOut),
-        ioConfig$inputDsNamesBase, rv
-      )
-      scenData <- ScenData$new(
-        db = db,
-        scenDataTemplate = scenDataTemplate,
-        hiddenOutputScalars = config$hiddenOutputScalars
+        ioConfig$inputDsNamesBase, rv,
+        scenData = scenData
       )
       # currently active scenario (R6 object)
       activeScen <- Scenario$new(
@@ -2055,36 +2055,37 @@ if (!is.null(errMsg)) {
             }
             # if scenario includes output data set dirty flag
             if (scenData$getSandboxHasOutputData(scriptOutput)) {
-              dirtyFlag <<- TRUE
-              showEl(session, "#dirtyFlagIcon")
-              showEl(session, "#dirtyFlagIconO")
+              rv$dirtyFlag <- TRUE
             }
-            rv$unsavedFlag <<- TRUE
+            rv$unsavedFlag <- TRUE
             inconsistentOutput <<- TRUE
           },
           priority = 1000L
         )
       })
 
-      markUnsaved <- function(consistentOutput = FALSE) {
-        if (!consistentOutput && scenData$getSandboxHasOutputData(scriptOutput)) {
+      markUnsaved <- function(markDirty = FALSE, markClean = FALSE) {
+        if (markClean) {
+          rv$dirtyFlag <- FALSE
+        } else if (markDirty && scenData$getSandboxHasOutputData(scriptOutput)) {
+          rv$dirtyFlag <- TRUE
+        }
+        rv$unsavedFlag <- TRUE
+        return(invisible())
+      }
+      observe({
+        if (identical(rv$dirtyFlag, TRUE)) {
           showEl(session, "#dirtyFlagIcon")
           showEl(session, "#dirtyFlagIconO")
-          dirtyFlag <<- TRUE
         } else {
           hideEl(session, "#dirtyFlagIcon")
           hideEl(session, "#dirtyFlagIconO")
-          dirtyFlag <<- FALSE
         }
-        rv$unsavedFlag <<- TRUE
-        return(invisible())
-      }
+      })
 
       markSaved <- function() {
-        hideEl(session, "#dirtyFlagIcon")
-        hideEl(session, "#dirtyFlagIconO")
-        dirtyFlag <<- FALSE
-        rv$unsavedFlag <<- FALSE
+        rv$dirtyFlag <- FALSE
+        rv$unsavedFlag <- FALSE
         return(invisible())
       }
 

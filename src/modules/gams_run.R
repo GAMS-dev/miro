@@ -291,7 +291,7 @@ observeEvent(input$btLoadInconsistentOutput, {
     selected = "results.current"
   )
   renderOutputData()
-  markUnsaved()
+  markUnsaved(markDirty = TRUE)
 })
 observeEvent(virtualActionButton(input$btSubmitJob, rv$btSubmitJob), {
   flog.debug("Submit new asynchronous job button clicked.")
@@ -662,7 +662,7 @@ output$modelStatus <- renderUI({
     )
     isolate(renderOutputData())
 
-    markUnsaved(consistentOutput = TRUE)
+    markUnsaved(markClean = TRUE)
   }
   return(statusText)
 })

@@ -179,7 +179,7 @@ if (!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))) {
         }
         if (!identical(loadMode, "scen")) {
           # set unsaved flag
-          markUnsaved()
+          markUnsaved(markDirty = TRUE)
         }
         # reset dependent elements
         inputInitialized[dependentDatasets[[i]]] <<- FALSE

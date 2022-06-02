@@ -26,6 +26,8 @@ app$setInputs(btUpdateMeta = "click")
 Sys.sleep(1)
 app$setInputs(btSave = "click")
 Sys.sleep(1)
+app$setInputs(btSaveOutput = "click")
+Sys.sleep(1)
 
 # remove scenario from sandbox and load it again
 app$findElement("#btRemove1")$click()
@@ -54,6 +56,8 @@ expect_null(attachmentList[[1]]$findElement(".checkbox input")$getAttribute("che
 app$setInputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
 app$setInputs(btSave = "click")
+Sys.sleep(1)
+app$setInputs(btSaveOutput = "click")
 Sys.sleep(1)
 app$setInputs(btEditMeta = "click")
 Sys.sleep(0.5)

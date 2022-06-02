@@ -382,5 +382,5 @@ observeEvent(virtualActionButton(
   )
   rv$jobListPanel <- rv$jobListPanel + 1L
   # mark scenario as unsaved
-  markUnsaved(consistentOutput = TRUE)
+  markUnsaved(markClean = TRUE)
 })

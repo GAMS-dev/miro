@@ -175,7 +175,10 @@ observeEvent(input$btDeleteConfirm, {
     showErrorMsg(lang$errMsg$deleteScen$title, errMsg)
     return()
   }
-  markUnsaved(consistentOutput = TRUE)
+  # we need to force the scenario name to update as scenario is
+  # no longer stored in database
+  rv$unsavedFlag <- FALSE
+  rv$unsavedFlag <- TRUE
 })
 
 # button changes from NULL to 0 when initialised (modalDialog opens)

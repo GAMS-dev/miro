@@ -54,6 +54,8 @@ Sys.sleep(1)
 app$setInputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
 app$setInputs(btSave = "click")
+Sys.sleep(0.5)
+app$setInputs(btSaveOutput = "click")
 Sys.sleep(1)
 
 # save as same name and discard permissions

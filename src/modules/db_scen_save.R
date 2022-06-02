@@ -15,7 +15,7 @@ observeEvent(input$btSave, {
 
 observeEvent(virtualActionButton(rv$btRemoveOutputData), {
   saveOutput <<- TRUE
-  if (dirtyFlag) {
+  if (rv$dirtyFlag) {
     showRemoveExistingOutputDataDialog()
   } else {
     if (saveAsFlag || is.null(activeScen) || !length(activeScen$getSid())) {
@@ -209,7 +209,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
         if (identical(input$scenName, currentSbScenName)) {
           # make sure title is refreshed even when scen name is identical
           # (e.g. because owner changed)
-          markUnsaved(consistentOutput = TRUE)
+          markUnsaved()
         } else {
           currentSbScenName <- input$scenName
         }
@@ -228,7 +228,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
         activeScen$setScenHash(currentScenHash)
         scenTags <<- NULL
       }
-      if (dirtyFlag) {
+      if (rv$dirtyFlag) {
         activeScen$setScenHash(character(0L))
       }
       activeScen$save(scenData$get("sb", includeHiddenScalars = TRUE), msgProgress = lang$progressBar$saveScenDb)

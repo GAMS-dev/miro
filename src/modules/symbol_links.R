@@ -52,7 +52,7 @@ observeEvent(input$btSymbolLink, {
   datasetsToFetch <- modelOut[[i]]$symbolLink
   dfClArgs <- NULL
   source("./modules/input_load.R", local = TRUE)
-  markUnsaved()
+  markUnsaved(markDirty = TRUE)
   if (!is.null(errMsg)) {
     return(NULL)
   }

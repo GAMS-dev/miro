@@ -530,7 +530,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
   loadErrors <- character(0L)
   source("./modules/input_load.R", local = TRUE)
   if (!identical(fileType, "miroscen") || identical(input$cbSelectManuallyLoc, TRUE)) {
-    markUnsaved()
+    markUnsaved(markDirty = TRUE)
   }
   if (!is.null(errMsg)) {
     return(NULL)
@@ -664,7 +664,7 @@ loadDatasetsIntoSandbox <- function() {
   hideEl(session, "#btRefreshGraphIn")
 
   source("./modules/input_load.R", local = TRUE)
-  markUnsaved()
+  markUnsaved(markDirty = TRUE)
   if (!is.null(errMsg)) {
     return(NULL)
   }

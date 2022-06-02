@@ -3,12 +3,12 @@ Attachments <- R6Class("Attachments",
   public = list(
     initialize = function(db, config, workDir,
                           inputSymbols, outputSymbols,
-                          tabularInputSymbols, rv = NULL) {
+                          tabularInputSymbols, rv = NULL, scenData = NULL) {
       private$db <- db
       private$config <- config
       private$workDir <- file.path(dirname(workDir), basename(workDir))
       private$conn <- db$getConn()
-      super$initialize(inputSymbols, outputSymbols, tabularInputSymbols, rv)
+      super$initialize(inputSymbols, outputSymbols, tabularInputSymbols, rv, scenData = scenData)
     },
     setSid = function(sid) {
       private$sid <- sid
@@ -264,7 +264,7 @@ Attachments <- R6Class("Attachments",
       private$localAttachments$filePaths <- c(private$localAttachments$filePaths, filePaths)
       private$localAttachments$execPerm <- c(private$localAttachments$execPerm, execPerm)
 
-      private$markUnsaved()
+      private$markUnsaved(markDirty = any(execPerm))
       lapply(names(private$updateCallbacks[["1"]]), function(symName) {
         private$updateCallbacks[["1"]][[symName]]()
       })
@@ -512,7 +512,7 @@ Attachments <- R6Class("Attachments",
         }
         fileNames <- fileNames[!is.na(localFileIds)]
         if (!length(fileNames)) {
-          private$markUnsaved()
+          private$markUnsaved(markDirty = TRUE)
           lapply(names(private$updateCallbacks[["1"]]), function(symName) {
             private$updateCallbacks[["1"]][[symName]]()
           })
@@ -560,7 +560,7 @@ Attachments <- R6Class("Attachments",
       private$localAttachments$filePaths[localFileIds] <- newPaths
       private$localAttachments$execPerm[localFileIds] <- execPerm
 
-      private$markUnsaved()
+      private$markUnsaved(markDirty = TRUE)
       lapply(names(private$updateCallbacks[["1"]]), function(symName) {
         private$updateCallbacks[["1"]][[symName]]()
       })
@@ -592,10 +592,11 @@ Attachments <- R6Class("Attachments",
           call. = FALSE
         )
       }
+      markDirty <- any(as.logical(self$getMetadata()[["execPerm"]]))
 
       private$.remove(fileNames, removeLocal)
 
-      private$markUnsaved()
+      private$markUnsaved(markDirty = markDirty)
       lapply(names(private$updateCallbacks[["1"]]), function(symName) {
         private$updateCallbacks[["1"]][[symName]]()
       })
