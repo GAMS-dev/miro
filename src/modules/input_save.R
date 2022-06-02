@@ -223,7 +223,7 @@ getInputDataFromSandbox <- function() {
       ))
     }
     dataTmp[[match(names(modelIn)[[i]], modelInFileNames)]] <<- inputDatasetTmp[["value"]]
-    flog.trace("Dataset: %s saved in dataTmp.", names(modelIn)[[i]])
+    flog.trace("Input symbol: %s pulled from sandbox.", names(modelIn)[[i]])
     return(tibble(
       scalar = character(),
       description = character(),
