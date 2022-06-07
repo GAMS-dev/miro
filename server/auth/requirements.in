@@ -1,0 +1,7 @@
+aiofiles
+fastapi
+PyYAML
+requests
+python-multipart
+uvicorn[standard]
+gunicorn
