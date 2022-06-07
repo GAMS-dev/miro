@@ -14,7 +14,7 @@ packageVersionMap <- list(c("data.table", "1.14.2"), c("cpp11", "0.4.2"), c("bac
 ), c("promises", "1.2.0.1"), c("httpuv", "1.6.5"), c("mime",
 "0.12"), "jsonlite", c("digest", "0.6.29"), c("sourcetools",
 "0.1.7"), c("xtable", "1.8-4"), c("fastmap", "1.1.0"), c("curl",
-"4.3.2"), c("V8", "4.1.0"), c("base64enc", "0.1-3"), c("htmltools",
+"4.3.2"), c("V8", "4.2.0"), c("base64enc", "0.1-3"), c("htmltools",
 "0.5.2"), c("jquerylib", "0.1.4"), c("withr", "2.5.0"), c("leaflet.providers",
 "1.9.0"), c("commonmark", "1.8"), c("cachem", "1.0.6"), c("fontawesome",
 "0.2.2"), c("ellipsis", "0.3.2"), c("lifecycle", "1.0.1"), c("jquerylib",
@@ -25,9 +25,9 @@ packageVersionMap <- list(c("data.table", "1.14.2"), c("cpp11", "0.4.2"), c("bac
 "0.2.2"), c("pkgconfig", "2.0.3"), c("vctrs", "0.4.1"), c("tidyselect",
 "1.1.2"), c("plogr", "0.2.0"), c("htmlwidgets", "1.5.4"), c("png",
 "0.1-7"), c("RColorBrewer", "1.1-3"), c("lattice", "0.20-45"),
-    c("sp", "1.4-7"), c("viridisLite", "0.4.0"), c("raster",
+    c("sp", "1.5-0"), c("viridisLite", "0.4.0"), c("raster",
     "3.4-13"), c("farver", "2.1.0"), c("scales", "1.2.0"), c("zeallot",
-    "0.1.0"), c("crosstalk", "1.1.1"), "DT", "gdxrrwMIRO", "leaflet",
+    "0.1.0"), c("crosstalk", "1.2.0"), "DT", "gdxrrwMIRO", "leaflet",
     c("pillar", "1.7.0"), c("tibble", "3.1.7"), c("generics",
     "0.1.2"), c("lubridate", "1.8.0"), c("dplyr", "1.0.9"), c("sys",
     "3.4"), c("askpass", "1.1"), "openssl", c("prettyunits",
@@ -35,14 +35,14 @@ packageVersionMap <- list(c("data.table", "1.14.2"), c("cpp11", "0.4.2"), c("bac
     "1.2.3"), c("hms", "1.1.1"), c("tidyr", "1.2.0"), c("memoise",
     "2.0.1"), c("httr", "1.4.3"), "plotly", "shinydashboard",
     "timevis", c("rematch", "1.0.1"), c("formatR", "1.12"), c("ps",
-    "1.7.0"), c("clipr", "0.7.1"), c("cellranger", "1.1.0"),
+    "1.7.0"), c("clipr", "0.8.0"), c("cellranger", "1.1.0"),
     c("progress", "1.2.2"), c("lambda.r", "1.2.4"), c("futile.options",
     "1.0.1"), c("zoo", "1.8-10"), c("globals", "0.15.0"), c("listenv",
     "0.8.0"), c("processx", "3.5.3"), c("readxl", "1.4.0"), c("writexl",
     "1.4.0"), c("rpivotTable", "0.3.0"), c("futile.logger", "1.4.3"
-    ), c("zip", "2.2.0"), c("leaflet.minicharts", "0.6.0"), c("xts",
+    ), c("zip", "2.2.0"), c("leaflet.minicharts", "0.6.2"), c("xts",
     "0.12.1"), c("dygraphs", "1.1.1.6"), c("parallelly", "1.31.1"
-    ), c("future", "1.25.0"), c("bit", "4.0.4"), c("bit64", "4.0.5"
+    ), c("future", "1.26.1"), c("bit", "4.0.4"), c("bit64", "4.0.5"
     ), c("tzdb", "0.3.0"), c("vroom", "1.5.7"), c("readr", "2.1.2"
     ), "miroUtil", "rhandsontable", "sortable", "chartjs", c("RSQLite",
     "2.2.14"))
