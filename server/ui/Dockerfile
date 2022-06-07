@@ -2,7 +2,7 @@
 
 FROM ubuntu:focal AS miro-base
 
-ARG R_BASE_VERSION=4.0.5
+ARG R_BASE_VERSION=4.2.0
 ## we need to set this environment variable so it can be used when extending the
 ## base image (e.g. r-base-dev=${R_BASE_VERSION}*)
 ENV R_BASE_VERSION=${R_BASE_VERSION}
@@ -50,7 +50,7 @@ RUN mkdir /home/miro/r
 
 FROM miro-base AS miro-pkg-builder
 
-ARG R_BASE_VERSION=4.0.5
+ARG R_BASE_VERSION=4.2.0
 ARG BUILD_DOCKER=true
 ARG SCRIPTS_PATH=/home/miro/scripts
 
@@ -59,7 +59,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     r-base-dev=${R_BASE_VERSION}*
 
-ARG OPENSSL_VERSION=3.0.1
+ARG OPENSSL_VERSION=3.0.3
 
 # install openssl3 from source
 RUN wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz && \
@@ -72,7 +72,7 @@ RUN wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz && \
 # make sure the openssl R package finds the libraries
 ARG OPENSSL_PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig
 
-ARG CURL_VERSION=7.81.0
+ARG CURL_VERSION=7.83.1
 
 # install curl from source
 RUN wget https://curl.se/download/curl-${CURL_VERSION}.tar.gz && \
@@ -82,10 +82,10 @@ RUN wget https://curl.se/download/curl-${CURL_VERSION}.tar.gz && \
     make && \
     sudo make install
 
-ARG PQ_VERSION=14.2
+ARG PQ_VERSION=14.3
 
 # install libpq from source
-RUN wget https://ftp.postgresql.org/pub/source/v14.2/postgresql-${PQ_VERSION}.tar.gz && \
+RUN wget https://ftp.postgresql.org/pub/source/v${PQ_VERSION}/postgresql-${PQ_VERSION}.tar.gz && \
     tar -xvzf postgresql-${PQ_VERSION}.tar.gz && \
     cd postgresql-${PQ_VERSION} && \
     ./configure --with-openssl --with-includes=/usr/local/lib64/include --with-libraries=/usr/local/lib64 CFLAGS='-Wl,-rpath=/usr/local/lib64' && \
