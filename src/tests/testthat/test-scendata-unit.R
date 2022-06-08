@@ -135,7 +135,7 @@ dbSchema <<- DbSchema$new(list(
   )
 ))
 procEnv <- list(
-  R_LIBS_USER = Sys.getenv("LIB_PATH"),
+  R_LIBS_USER = Sys.getenv("R_LIBS_USER"),
   GAMS_SYS_DIR = Sys.getenv("GAMS_SYS_DIR")
 )
 if (identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")) {

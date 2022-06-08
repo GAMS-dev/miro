@@ -71,7 +71,7 @@ for (dbType in c("sqlite", "postgres")) {
     next
   }
   procEnv <- list(
-    R_LIBS_USER = Sys.getenv("LIB_PATH"),
+    R_LIBS_USER = Sys.getenv("R_LIBS_USER"),
     GAMS_SYS_DIR = Sys.getenv("GAMS_SYS_DIR")
   )
 
@@ -341,7 +341,7 @@ for (dbType in c("sqlite", "postgres")) {
     skip("Skipping Postgres tests as MIRO_DB_TYPE is not set to 'postgres'")
   }
   procEnv <- list(
-    R_LIBS_USER = Sys.getenv("LIB_PATH"),
+    R_LIBS_USER = Sys.getenv("R_LIBS_USER"),
     GAMS_SYS_DIR = Sys.getenv("GAMS_SYS_DIR")
   )
 
@@ -468,7 +468,7 @@ for (dbType in c("sqlite", "postgres")) {
     skip("Skipping Postgres tests as MIRO_DB_TYPE is not set to 'postgres'")
   }
   procEnv <- list(
-    R_LIBS_USER = Sys.getenv("LIB_PATH"),
+    R_LIBS_USER = Sys.getenv("R_LIBS_USER"),
     GAMS_SYS_DIR = Sys.getenv("GAMS_SYS_DIR")
   )
 
