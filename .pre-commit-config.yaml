@@ -57,3 +57,12 @@ repos:
         files: ^src/conf/language_schema\.json$
         additional_dependencies:
         -   jsonlite
+-   repo: local
+    hooks:
+    -   id: version-fixer
+        name: version-fixer
+        entry: Rscript ./scripts/fixVersion.R
+        language: r
+        files: ^src/app\.R$
+        additional_dependencies:
+        -   jsonlite
