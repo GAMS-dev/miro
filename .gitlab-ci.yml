@@ -75,6 +75,65 @@ lint_job:
     - if: $CI_MERGE_REQUEST_ID
       when: always
 
+build_windows_job:
+  tags:
+    - windows
+  stage: build
+  image: $CI_REGISTRY_IMAGE/builder-windows:latest
+  variables:
+    CSC_LINK: cert.p12
+    GIT_SUBMODULE_STRATEGY: normal
+  before_script:
+    - yarn install --cache-folder .yarn
+    - '[IO.File]::WriteAllBytes([io.path]::Combine((Get-Location).path, $env:CSC_LINK), [Convert]::FromBase64String($env:WIN_CERT_FILE_B64))'
+  script:
+    - yarn dist
+  artifacts:
+    paths:
+      - dist/*.exe
+    expire_in: 1 week
+  cache:
+    - key:
+        files:
+          - src/miro-pkg-lock.csv
+      paths:
+        - r
+    - key: build-cache-windows
+      paths:
+        - build/lib_devel/
+    - key:
+        files:
+          - yarn.lock
+      paths:
+        - .yarn/
+    - key:
+        files:
+          - src/package-lock.json
+      paths:
+        - src/node_modules/
+  needs: [prepare_all]
+
+
+test_windows_job:
+  tags:
+    - windows
+  stage: test
+  image: $CI_REGISTRY_IMAGE/builder-windows:latest
+  script:
+    - yarn test gams_sys_dir=$env:GAMS_SYS_DIR
+  cache:
+    - key:
+        files:
+          - src/miro-pkg-lock.csv
+      paths:
+        - r
+    - key:
+        files:
+          - yarn.lock
+      paths:
+        - .yarn/
+  needs: [build_windows_job]
+
 test_job_api:
   tags:
     - linux

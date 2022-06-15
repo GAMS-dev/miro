@@ -6,7 +6,7 @@
   "homepage": "https://gams.com/miro",
   "main": "main.js",
   "scripts": {
-    "postinstall": "electron-builder install-app-deps",
+    "postinstall": "electron-builder install-app-deps && (cd src && npm install)",
     "test": "node ./test/run-ui-tests.js",
     "start": "electron .",
     "pack": "node ./build/scripts/pre-pack.js && electron-builder --dir --publish never",

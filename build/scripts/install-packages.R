@@ -173,11 +173,13 @@ downloadPackage <- function(package) {
     RlibPathSrc,
     paste0(package[1], "_", package[2], ".tar.gz")
   )
-  if (!file.rename(packageFileNameTmp, packageFileName)) {
-    stop(sprintf(
-      "Problems renaming package: '%s' from '%s' to '%s'.",
-      package[1], packageFileNameTmp, packageFileName
-    ))
+  if (!suppressWarnings(file.rename(packageFileNameTmp, packageFileName))) {
+    if (!file.copy(packageFileNameTmp, packageFileName) || unlink(packageFileNameTmp) != 0) {
+      stop(sprintf(
+        "Problems renaming package: '%s' from '%s' to '%s'.",
+        package[1], packageFileNameTmp, packageFileName
+      ))
+    }
   }
 }
 

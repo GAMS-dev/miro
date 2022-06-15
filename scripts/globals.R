@@ -69,29 +69,14 @@ if (identical(Sys.getenv("BUILD_DOCKER"), "true")) {
   }
 }
 
-# on Jenkins use default library
-RlibPathDevel <- NULL
-CIBuild <- TRUE
-if (identical(Sys.getenv("BUILD_NUMBER"), "")) {
-  RlibPathDevel <- "./build/lib_devel"
-  CIBuild <- FALSE
-} else if (isWindows) {
-  # on Windows, we use the R version we ship, so we need to set library path explicitly, or
-  # it will install development libraries inside ./r/library
-  RlibPathDevel <- paste0(
-    "~/R/win-library/", R.version[["major"]], ".",
-    strsplit(R.version[["minor"]], ".", fixed = TRUE)[[1]][1]
-  )
-}
+# on GitLab use default library
+RlibPathDevel <- "./build/lib_devel"
+CIBuild <- !identical(Sys.getenv("CI"), "")
 RlibPathSrc <- file.path(".", "r", "library_src")
 
 RlibPathTmp <- NULL
 if (CIBuild) {
-  if (isWindows) {
-    RlibPathTmp <- file.path(RlibPathDevel, "miro_lib")
-  } else {
-    RlibPathTmp <- file.path(.libPaths()[1], "miro_lib")
-  }
+  RlibPathTmp <- file.path(RlibPathDevel, "miro_lib")
   buildConfigContent <- strsplit(readLines("build-config.json"), '"', fixed = TRUE)[[1]]
   Rversion <- buildConfigContent[which(buildConfigContent == "rVersion") + 2]
 }
