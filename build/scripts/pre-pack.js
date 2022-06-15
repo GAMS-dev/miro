@@ -15,10 +15,7 @@ const buildDocker = process.argv[2] === '--docker';
 
 const buildConfig = JSON.parse(fs.readFileSync('build-config.json'));
 
-const tryInstallRPackages = async (attempt = 0) => {
-  if (attempt === 3) {
-    process.exit(1);
-  }
+const tryInstallRPackages = async () => {
   try {
     let rPath = 'Rscript';
     if (process.platform === 'win32') {
@@ -39,11 +36,7 @@ const tryInstallRPackages = async (attempt = 0) => {
     await subproc;
   } catch (e) {
     console.log(`Problems installing R packages. Error message: ${e.message}`);
-    try {
-      await tryInstallRPackages(attempt + 1);
-    } catch (err) {
-      console.log(`Problems installing R packages. Error message: ${err.message}`);
-    }
+    process.exit(1);
   }
 };
 (async () => {
