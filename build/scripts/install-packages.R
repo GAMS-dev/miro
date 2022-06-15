@@ -28,6 +28,21 @@ print(.libPaths())
 print("Development library path:")
 print(RlibPathDevel)
 if (CIBuild) {
+  installedPackagesNotInTmpLib <- !installedPackages %in% installedPackagesTmp
+  if (any(installedPackagesNotInTmpLib)) {
+    print(
+      "Some packages (%s) were found in lib path but not in tmp lib path. These packages will be removed from lib path and reinstalled.",
+      paste(installedPackages[installedPackagesNotInTmpLib], collapse = ",")
+    )
+    pathsToUnlink <- file.path(RLibPath, installedPackages)[installedPackagesNotInTmpLib]
+    pathsFailedUnlink <- unlink(pathsToUnlink, recursive = TRUE) != 0L
+    if (any(pathsFailedUnlink)) {
+      stop(sprintf(
+        "Failed to remove: %s",
+        paste(pathsToUnlink[pathsFailedUnlink], collapse = ",")
+      ), call. = FALSE)
+    }
+  }
   installedPackages <- installedPackagesTmp
   customPackages <- packageVersionMap[vapply(packageVersionMap, function(package) {
     return(length(package) == 1L)
