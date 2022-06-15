@@ -37,6 +37,27 @@ prepare_all:
     - if: '$CI_PIPELINE_SOURCE == "web"'
     - when: manual
 
+build_build_image_linux:
+  tags:
+    - linux
+  image: docker:20.10
+  services:
+    - docker:20.10-dind
+  stage: prepare
+  before_script:
+    # this is to be able to pull and push images
+    - mkdir -p $HOME/.docker
+    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+  script:
+    - cd ci/linux
+    - docker build -t $CI_REGISTRY_IMAGE/builder-linux:latest .
+    - docker push $CI_REGISTRY_IMAGE/builder-linux:latest
+  rules:
+    - if: '$CI_PIPELINE_SOURCE != "push"'
+      when: never
+    - changes:
+      - ci/linux/Dockerfile
+
 build_build_image_windows:
   tags:
     - windows-shell
@@ -74,6 +95,62 @@ lint_job:
   rules:
     - if: $CI_MERGE_REQUEST_ID
       when: always
+
+build_linux_job:
+  tags:
+    - linux
+  stage: build
+  services:
+    - docker:20.10-dind
+  image: $CI_REGISTRY_IMAGE/builder-linux:latest
+  variables:
+    GIT_SUBMODULE_STRATEGY: normal
+    NODE_OPTIONS: --openssl-legacy-provider
+  before_script:
+    # this is to be able to pull and push images
+    - mkdir -p $HOME/.docker
+    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+    - docker login --username="${DOCKERHUB_USER}" --password="${DOCKERHUB_PASS}"
+  before_script:
+    - yarn install --cache-folder .yarn
+  script:
+    - yarn dist
+    - >
+      if [[ "$PUSH_UNSTABLE_SERVER_IMAGES" != "no" ]] || [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]]; then
+        pushd server
+            python3 miro_server.py build
+            python3 miro_server.py push --unstable --custom-tag feature
+        popd
+      elif [[ "$BUILD_CI" != "no" ]]; then
+        pushd server
+          python3 miro_server.py build --module ui
+        popd
+      fi
+    - >
+      if [[ "$BUILD_CI" != "no" ]]; then
+        yarn docker-build-ci
+        docker tag gamsmiro-ci registry.gams.com/fproske/gmswebui/gamsmiro-ci:latest
+        docker push registry.gams.com/fproske/gmswebui/gamsmiro-ci:latest
+      fi
+  artifacts:
+    paths:
+      - dist/*.AppImage
+    expire_in: 1 week
+  cache:
+    - key: build-cache-linux
+      paths:
+        - build/lib_devel/
+    - key:
+        files:
+          - yarn.lock
+      paths:
+        - .yarn/
+    - key:
+        files:
+          - src/package-lock.json
+      paths:
+        - src/node_modules/
+  needs: [prepare_all]
 
 build_windows_job:
   tags:
@@ -206,6 +283,26 @@ test_job:
     - if: $CI_MERGE_REQUEST_TITLE =~ /^Draft:/
       when: manual
     - if: $CI_MERGE_REQUEST_ID
+
+update_doc_job_release:
+  tags:
+    - linux
+  stage: deploy
+  before_script:
+    - git config --global user.email "puma@noreply.gams.com"
+    - git config --global user.name "Gitlab Runner (puma)"
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - ./.ci/push_docs.sh
+    - ./.ci/update_website.sh
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
 
 update_doc_job:
   tags:
