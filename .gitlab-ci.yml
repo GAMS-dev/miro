@@ -137,7 +137,7 @@ build_linux_job:
       - dist/*.AppImage
     expire_in: 1 week
   cache:
-    - key: build-cache-linux
+    - key: build-cache
       paths:
         - build/lib_devel/
     - key:
@@ -175,7 +175,7 @@ build_windows_job:
           - src/miro-pkg-lock.csv
       paths:
         - r
-    - key: build-cache-windows
+    - key: build-cache
       paths:
         - build/lib_devel/
     - key:

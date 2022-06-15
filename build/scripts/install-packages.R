@@ -28,14 +28,14 @@ print(.libPaths())
 print("Development library path:")
 print(RlibPathDevel)
 if (CIBuild) {
-  installedPackagesNotInTmpLib <- !installedPackages %in% installedPackagesTmp
+  installedPackagesNotInTmpLib <- !installedPackages %in% c(installedPackagesTmp, "base", "boot", "class", "cluster", "codetools", "compiler", "datasets", "foreign", "graphics", "grDevices", "grid", "KernSmooth", "lattice", "MASS", "Matrix", "methods", "mgcv", "nlme", "nnet", "parallel", "rpart", "spatial", "splines", "stats", "stats4", "survival", "tcltk", "tools", "translations", "utils")
   if (any(installedPackagesNotInTmpLib)) {
     print(sprintf(
       "Some packages (%s) were found in lib path but not in tmp lib path. These packages will be removed from lib path and reinstalled.",
       paste(installedPackages[installedPackagesNotInTmpLib], collapse = ",")
     ))
     pathsToUnlink <- file.path(RLibPath, installedPackages)[installedPackagesNotInTmpLib]
-    pathsFailedUnlink <- unlink(pathsToUnlink, recursive = TRUE) != 0L
+    pathsFailedUnlink <- unlink(pathsToUnlink, recursive = TRUE, force = TRUE) != 0L
     if (any(pathsFailedUnlink)) {
       stop(sprintf(
         "Failed to remove: %s",
@@ -189,7 +189,7 @@ downloadPackage <- function(package) {
     paste0(package[1], "_", package[2], ".tar.gz")
   )
   if (!suppressWarnings(file.rename(packageFileNameTmp, packageFileName))) {
-    if (!file.copy(packageFileNameTmp, packageFileName)) {
+    if (!file.copy(packageFileNameTmp, packageFileName, overwrite = TRUE)) {
       print("Source path info:")
       print(file.info(dirname(packageFileNameTmp)))
       print("Destination path info:")
@@ -199,7 +199,7 @@ downloadPackage <- function(package) {
         package[1], packageFileNameTmp, packageFileName
       ))
     }
-    if (!unlink(packageFileNameTmp) != 0) {
+    if (unlink(packageFileNameTmp) != 0) {
       print(sprintf("WARNING: Could not remove temporary file: %s", packageFileNameTmp))
     }
   }
