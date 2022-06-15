@@ -48,3 +48,12 @@ repos:
                 r-src/.*|
                 scripts/globals.R|
             )$
+-   repo: local
+    hooks:
+    -   id: lang-schema-fixer
+        name: language-schema-fixer
+        entry: Rscript ./scripts/fixSchema.R
+        language: r
+        files: ^src/conf/language_schema\.json$
+        additional_dependencies:
+        -   jsonlite
