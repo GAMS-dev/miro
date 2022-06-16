@@ -76,7 +76,7 @@ RUN wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz && \
         cd openssl-${OPENSSL_VERSION} && \
         ./config no-shared && \
         make && \
-        sudo make install
+        make install
 
 # make sure the openssl R package finds the libraries
 ENV OPENSSL_PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig

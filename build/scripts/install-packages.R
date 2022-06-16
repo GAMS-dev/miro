@@ -231,10 +231,20 @@ for (package in packageVersionMap) {
       args = NULL, quiet = FALSE
     )
     if (isLinux) {
-      file.rename(
+      if (!file.rename(
         packagePath,
         file.path(RlibPathSrc, basename(packagePath))
-      )
+      )) {
+        if (!file.copy(packagePath, file.path(RlibPathSrc, basename(packagePath)), overwrite = TRUE)) {
+          stop(sprintf(
+            "Problems renaming file: '%s' to '%s'.",
+            packagePath, file.path(RlibPathSrc, basename(packagePath))
+          ))
+        }
+        if (unlink(packagePath) != 0) {
+          print(sprintf("WARNING: Could not remove temporary file: %s", packagePath))
+        }
+      }
       if (!identical(package, "openssl")) {
         # we should include binary openssl linked against openssl3 in AppImage
         next
