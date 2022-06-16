@@ -1,12 +1,13 @@
 FROM node:18-bullseye
 
 ENV R_BASE_VERSION 4.2.0
+ENV OPENSSL_VERSION=3.0.3
 
 ARG GAMS_MAJOR=39
 ARG GAMS_MINOR=2
 ARG GAMS_MAINT=0
 
-# mostly taken from r base image (https://github.com/rocker-org/rocker) (GPL >= 2)
+# R installation mostly taken from r base image (https://github.com/rocker-org/rocker) (GPL >= 2)
 
 RUN apt-get update \
         && apt-get install -y --no-install-recommends \
@@ -59,15 +60,26 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key '95C0FAF38DB3CCAD0C0
         && rm -rf /var/lib/apt/lists/*
 
 RUN wget https://d37drm4t2jghv5.cloudfront.net/distributions/${GAMS_MAJOR}.${GAMS_MINOR}.${GAMS_MAINT}/linux/linux_x64_64_sfx.exe && \
-    chmod a+x linux_x64_64_sfx.exe && \
-    ./linux_x64_64_sfx.exe && \
-    rm linux_x64_64_sfx.exe && \
-    mv "gams${GAMS_MAJOR}.${GAMS_MINOR}_linux_x64_64_sfx" "/opt/gams"
+        chmod a+x linux_x64_64_sfx.exe && \
+        ./linux_x64_64_sfx.exe && \
+        rm linux_x64_64_sfx.exe && \
+        mv "gams${GAMS_MAJOR}.${GAMS_MINOR}_linux_x64_64_sfx" "/opt/gams"
 
 ENV GAMS_SYS_DIR=/opt/gams
 
 RUN R -e "install.packages(c('testthat', 'shinytest', 'xml2', 'precommit', 'docopt', 'styler'));"
 RUN R -e "shinytest::installDependencies();"
+
+# install openssl3 from source
+RUN wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz && \
+        tar -xvzf openssl-${OPENSSL_VERSION}.tar.gz && \
+        cd openssl-${OPENSSL_VERSION} && \
+        ./config no-shared && \
+        make && \
+        sudo make install
+
+# make sure the openssl R package finds the libraries
+ENV OPENSSL_PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig
 
 RUN apt-get update \
         && apt-get install -y --no-install-recommends \
@@ -78,14 +90,14 @@ RUN apt-get update \
         lsb-release
 
 RUN mkdir -p /etc/apt/keyrings \
-    && curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
-    && echo \
+        && curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
+        && echo \
         "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
         $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 RUN  apt-get update \
-     && apt-get install -y --no-install-recommends \
-     docker-ce \
-     docker-ce-cli \
-     containerd.io \
-     docker-compose-plugin
+        && apt-get install -y --no-install-recommends \
+        docker-ce \
+        docker-ce-cli \
+        containerd.io \
+        docker-compose-plugin
