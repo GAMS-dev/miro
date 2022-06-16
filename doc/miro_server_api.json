@@ -455,7 +455,7 @@
                         "required": true,
                         "schema": {
                             "title": "Name",
-                            "maxLength": 64,
+                            "maxLength": 63,
                             "type": "string",
                             "description": "The name of the scenario you want to download."
                         },
@@ -551,7 +551,7 @@
                         "required": true,
                         "schema": {
                             "title": "Name",
-                            "maxLength": 64,
+                            "maxLength": 63,
                             "type": "string",
                             "description": "The name of the scenario you want to download."
                         },
