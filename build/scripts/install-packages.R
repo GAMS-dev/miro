@@ -65,6 +65,9 @@ requiredPackages <- c(
 if (identical(Sys.getenv("BUILD_DOCKER"), "true")) {
   requiredPackages <- c(requiredPackages, "DBI", "blob")
 }
+if (isLinux) {
+  requiredPackages <- c(requiredPackages, "askpass")
+}
 installedPackagesDevel <- installed.packages(RlibPathDevel)
 newPackages <- requiredPackages[!requiredPackages %in%
   installedPackagesDevel[, "Package"]]
