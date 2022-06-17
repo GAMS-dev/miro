@@ -203,11 +203,21 @@ test_windows_job:
           - src/miro-pkg-lock.csv
       paths:
         - r
+    - key: build-cache
+      paths:
+        - build/lib_devel/
     - key:
         files:
           - yarn.lock
       paths:
         - node_modules/
+  artifacts:
+    when: always
+    reports:
+      junit: src/tests/testthat/test-out.xml
+    paths:
+      - src/tests/logs-tests
+    expire_in: 1 week
   needs: [build_windows_job]
 
 test_job_api:
