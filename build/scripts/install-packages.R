@@ -233,7 +233,8 @@ for (package in packageVersionMap) {
       binary = FALSE, vignettes = FALSE, manual = FALSE,
       args = NULL, quiet = FALSE
     )
-    if (isLinux) {
+    if (isLinux && !identical(package, "openssl")) {
+      # we should include binary openssl linked against openssl3 in AppImage
       if (!file.rename(
         packagePath,
         file.path(RlibPathSrc, basename(packagePath))
@@ -248,10 +249,7 @@ for (package in packageVersionMap) {
           print(sprintf("WARNING: Could not remove temporary file: %s", packagePath))
         }
       }
-      if (!identical(package, "openssl")) {
-        # we should include binary openssl linked against openssl3 in AppImage
-        next
-      }
+      next
     }
     install.packages(packagePath,
       lib = if (CIBuild && !isLinux) RlibPathTmp else RLibPath, repos = NULL,
