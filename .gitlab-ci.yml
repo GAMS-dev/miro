@@ -197,6 +197,7 @@ test_windows_job:
   image: $CI_REGISTRY_IMAGE/builder-windows:latest
   script:
     - yarn test gams_sys_dir=$env:GAMS_SYS_DIR
+  dependencies: []
   cache:
     - key:
         files:
@@ -214,7 +215,7 @@ test_windows_job:
   artifacts:
     when: always
     reports:
-      junit: src/tests/testthat/test-out.xml
+      junit: src/test-out.xml
     paths:
       - src/tests/logs-tests
     expire_in: 1 week
