@@ -840,9 +840,11 @@ observeEvent(input$btRunNoCheckHash, {
 })
 if (!isShinyProxy && config$activateModules$remoteExecution) {
   observeEvent(input$btRemoteExecLogin, {
+    flog.debug("Button to open login dialog clicked.")
     showLoginDialog(cred = worker$getCredentials())
   })
   observeEvent(input$btSaveCredentials, {
+    flog.debug("Login button clicked.")
     tryCatch(
       {
         worker$login(
