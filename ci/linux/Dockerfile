@@ -87,7 +87,8 @@ RUN apt-get update \
         curl \
         git \
         gnupg \
-        lsb-release
+        lsb-release \
+        python3-pip
 
 RUN mkdir -p /etc/apt/keyrings \
         && curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
@@ -101,3 +102,6 @@ RUN  apt-get update \
         docker-ce-cli \
         containerd.io \
         docker-compose-plugin
+
+# required for uploading files to s3 bucket
+RUN pip install s3cmd
