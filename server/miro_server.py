@@ -43,14 +43,14 @@ DOCKERHUB_IMAGE_CONFIG = {
 class MiroServer(object):
   def __init__(self):
     parser = argparse.ArgumentParser(prog='miro_server.py',
-      usage='miro_server [-h] {build,up,down,scan,push,release,dump_schema} [<args>]',
+      usage='miro_server [-h] {build,up,down,scan,download,push,release,dump_schema} [<args>]',
       description='GAMS MIRO Server build script')
 
     # Add the arguments
     parser.add_argument('command',
       type=str,
       help='Subcommand to run',
-      choices=['build', 'up', 'down', 'scan', 'push', 'release', 'dump_schema'])
+      choices=['build', 'up', 'down', 'scan', 'download', 'push', 'release', 'dump_schema'])
 
     args = parser.parse_args(sys.argv[1:2])
 
@@ -129,6 +129,22 @@ class MiroServer(object):
     for image_name in DOCKERHUB_IMAGE_CONFIG:
       print(f"Scanning image: {image_name}:latest")
       subprocess.check_call(['docker', 'scan', f'{image_name}:latest'])
+
+
+  def download(self):
+    parser = argparse.ArgumentParser(
+          description='Downloads GAMS MIRO Server Docker images')
+    parser.add_argument('registry', type=str,
+                        help='Registry to download images from')
+
+    args = parser.parse_args(sys.argv[2:])
+
+    for image in [('miro-sproxy', 'miro-sproxy'),
+                  ('miro-proxy', 'miro-proxy'),
+                  ('miro-auth', 'miro-auth'),
+                  ('miro-admin', 'miro-admin'),
+                  ('miro-ui', 'miro-ui')]:
+      self.download_image(*image, image_server=args.registry)
 
 
   def push(self):
@@ -239,9 +255,16 @@ class MiroServer(object):
         f.writelines(content)
 
 
+  def download_image(self, image_name_local, image_name_hub, image_server):
+    '''Downloads specified GAMS MIRO Server image from specified server'''
+    subprocess.check_call(['docker', 'pull', f'{image_server}/{image_name_hub}'])
+    subprocess.check_call(['docker', 'tag', f'{image_server}/{image_name_hub}', image_name_local])
+
+
   def push_image(self, image_name_local, image_name_hub, unstable=False, custom_tag=None):
+    GITLAB_REGISTRY_HOST = 'registry.gams.com/fproske/gmswebui'
     if unstable:
-      dhost = 'registry.gams.com/fproske/gmswebui'
+      dhost = GITLAB_REGISTRY_HOST
       if custom_tag:
         version_string = custom_tag
       else:
@@ -259,6 +282,11 @@ class MiroServer(object):
       subprocess.check_call(['docker', 'push', f'{dhost}/{image_name_hub}'])
 
     subprocess.check_call(['docker', 'push', f'{dhost}/{image_name_hub}:{version_string}'])
+
+    if image_name_local == 'miro-ui' and not unstable:
+      subprocess.check_call(['docker', 'tag', image_name_local, f'{GITLAB_REGISTRY_HOST}/{image_name_hub}:latest'])
+      subprocess.check_call(['docker', 'push', f'{GITLAB_REGISTRY_HOST}/{image_name_hub}:latest'])
+
 
     # publish README
     if (not unstable and image_name_hub in DOCKERHUB_IMAGE_CONFIG and
