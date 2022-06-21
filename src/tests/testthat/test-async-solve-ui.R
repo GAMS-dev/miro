@@ -82,7 +82,7 @@ if (file.exists(file.path("~", ".miro", paste0(".cred_", tolower(modelToTest))))
 }
 
 test_that(
-  "Solve asynchronously with GAMS MIRO Engine works",
+  "Solve asynchronously with GAMS Engine works",
   expect_pass(testApp(file.path(testDir, ".."), "async_solve_test",
     compareImages = FALSE
   ))
