@@ -43,14 +43,14 @@ DOCKERHUB_IMAGE_CONFIG = {
 class MiroServer(object):
   def __init__(self):
     parser = argparse.ArgumentParser(prog='miro_server.py',
-      usage='miro_server [-h] {build,up,down,scan,download,push,release,dump_schema} [<args>]',
+      usage='miro_server [-h] {build,up,down,scan,download,push,update_readmes,release,dump_schema} [<args>]',
       description='GAMS MIRO Server build script')
 
     # Add the arguments
     parser.add_argument('command',
       type=str,
       help='Subcommand to run',
-      choices=['build', 'up', 'down', 'scan', 'download', 'push', 'release', 'dump_schema'])
+      choices=['build', 'up', 'down', 'scan', 'download', 'push', 'update_readmes', 'release', 'dump_schema'])
 
     args = parser.parse_args(sys.argv[1:2])
 
@@ -167,6 +167,19 @@ class MiroServer(object):
 
     if args.unstable:
       self.push_image('miro-auth-test', 'miro-auth-test', unstable=args.unstable)
+
+
+  def update_readmes(self):
+    parser = argparse.ArgumentParser(
+          description='Appends specified version to README files of GAMS MIRO Server images')
+    parser.add_argument('version', type=str,
+                        help='MIRO Server version to append')
+
+    args = parser.parse_args(sys.argv[2:])
+
+    for image_name in DOCKERHUB_IMAGE_CONFIG:
+      self.append_tag_readme(os.path.join(DOCKERHUB_IMAGE_CONFIG[image_name]['readme_loc'], 'README.md'),
+                             args.version)
 
 
   def release(self):

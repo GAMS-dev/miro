@@ -13,10 +13,11 @@ pushd server > /dev/null
     cp -R release_data/data_raw/ data
     mkdir models
     python3 miro_server.py dump_schema ../doc/miro_server_api.json
+    python3 miro_server.py update_readmes "${MIRO_VERSION_FULL}"
     rm -rf data models
 popd > /dev/null
 
-git add ./doc/release.html ./doc/index.html ./doc/miro_server_api.json
+git add ./doc/release.html ./doc/index.html ./doc/miro_server_api.json ./server/image-docs/*
 
 git commit -m "[CI skip] Update documentation" || true
 
