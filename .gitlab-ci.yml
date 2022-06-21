@@ -9,12 +9,21 @@ image:
 
 
 variables:
+  BUILD_LINUX:
+    value: 'yes'
+    description: 'Build Linux (ignored on master) (yes/no)?'
+  BUILD_WINDOWS:
+    value: 'yes'
+    description: 'Build Windows (ignored on master) (yes/no)?'
+  BUILD_MACOS:
+    value: 'yes'
+    description: 'Build macOS (ignored on master) (yes/no)?'
   BUILD_CI:
-    value: "no"
+    value: 'no'
     description: 'Build CI image (yes/no)?'
   PUSH_UNSTABLE_SERVER_IMAGES:
-    value: "no"
-    description: "Push MIRO Server images to registry.gams.com (tagged as unstable on develop and feature on feature branches) (yes/no)?"
+    value: 'no'
+    description: 'Push MIRO Server images to registry.gams.com (tagged as unstable on develop and feature on feature branches) (yes/no)?'
 
 
 prepare_all:
@@ -148,6 +157,13 @@ build_linux_job:
           - src/package-lock.json
       paths:
         - src/node_modules/
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_MERGE_REQUEST_ID
+      when: never
+    - if: '"$CI_COMMIT_BRANCH" == "master" || "$BUILD_LINUX" != "no" || "$BUILD_CI" != "no" || "$PUSH_UNSTABLE_SERVER_IMAGES" != "no"'
+      when: on_success
   needs: [prepare_all]
 
 build_windows_job:
@@ -186,6 +202,13 @@ build_windows_job:
           - src/package-lock.json
       paths:
         - src/node_modules/
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_MERGE_REQUEST_ID
+      when: never
+    - if: '"$CI_COMMIT_BRANCH" == "master" || "$BUILD_WINDOWS" != "no"'
+      when: on_success
   needs: [prepare_all]
 
 
@@ -218,6 +241,13 @@ test_windows_job:
     paths:
       - src/tests/logs-tests
     expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_MERGE_REQUEST_ID
+      when: never
+    - if: '"$CI_COMMIT_BRANCH" == "master" || "$BUILD_WINDOWS" != "no"'
+      when: on_success
   needs: [build_windows_job]
 
 test_job_api:
