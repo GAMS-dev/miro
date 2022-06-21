@@ -34,7 +34,7 @@ DOCKERHUB_IMAGE_CONFIG = {
     'miro-auth': {'short_desc': 'GAMS MIRO Server Authentication Module',
                   'readme_loc': f'{os.getcwd()}/image-docs/miro-auth'},
     'miro-sproxy': {'short_desc': 'GAMS MIRO Server Docker Socket Proxy',
-                    'readme_loc': f'{os.getcwd()}/image-docs/miro-dockerproxy'},
+                    'readme_loc': f'{os.getcwd()}/image-docs/miro-sproxy'},
     'miro-proxy': {'short_desc': 'GAMS MIRO Server Container Proxy',
                    'readme_loc': f'{os.getcwd()}/image-docs/miro-proxy'}
 }
