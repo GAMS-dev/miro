@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     r-base-dev=${R_BASE_VERSION}*
 
-RUN R -e "install.packages(c('testthat', 'shinytest', 'xml2', 'precommit', 'docopt', 'styler'));"
+RUN R -e "install.packages(c('testthat', 'shinytest', 'xml2', 'precommit', 'docopt', 'styler', 'jsonlite'));"
 
 COPY r/library_src /home/miro/r/library_src
 COPY ci/install_pkg.R /home/miro/r/install_pkg.R
@@ -21,9 +21,9 @@ RUN Rscript /home/miro/r/install_pkg.R
 FROM miro-ui:latest
 
 LABEL com.gamsmiroci.vendor="GAMS Development Corp."\
-com.gamsmiroci.license="GPL-3.0"\
-com.gamsmiroci.description="GAMS MIRO CI image"\
-maintainer="fproske@gams.com"
+    com.gamsmiroci.license="GPL-3.0"\
+    com.gamsmiroci.description="GAMS MIRO CI image"\
+    maintainer="fproske@gams.com"
 
 ARG GAMS_MAJOR=33
 ARG GAMS_MINOR=1
@@ -32,7 +32,7 @@ ARG GAMS_MAINT=0
 USER root
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      libxml2-dev wget curl gpg-agent
+    libxml2-dev wget curl gpg-agent
 
 RUN wget https://d37drm4t2jghv5.cloudfront.net/distributions/${GAMS_MAJOR}.${GAMS_MINOR}.${GAMS_MAINT}/linux/linux_x64_64_sfx.exe && \
     chmod a+x linux_x64_64_sfx.exe && \
