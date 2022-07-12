@@ -84,22 +84,22 @@ class MiroServer(object):
     if args.module is None:
       if not args.no_prep:
         subprocess.check_call(['yarn', 'docker-prepare'], cwd='..')
-      subprocess.check_call(['docker-compose', 'build'], env=self.__compose_env)
-      subprocess.check_call(['docker-compose', '-f', 'docker-compose.test.yml', 'build', 'auth_test'], env=self.__compose_env)
+      subprocess.check_call(['docker', 'compose', 'build'], env=self.__compose_env)
+      subprocess.check_call(['docker', 'compose', '-f', 'docker-compose.test.yml', 'build', 'auth_test'], env=self.__compose_env)
     else:
       if args.module == 'ui' and not args.no_prep:
         subprocess.check_call(['yarn', 'docker-prepare'], cwd='..')
       if args.module == 'auth_test':
-        subprocess.check_call(['docker-compose', '-f', 'docker-compose.test.yml', 'build', 'auth_test'], env=self.__compose_env)
+        subprocess.check_call(['docker', 'compose', '-f', 'docker-compose.test.yml', 'build', 'auth_test'], env=self.__compose_env)
       else:
-        subprocess.check_call(['docker-compose', 'build', args.module], env=self.__compose_env)
+        subprocess.check_call(['docker', 'compose', 'build', args.module], env=self.__compose_env)
 
 
   def up(self):
     parser = argparse.ArgumentParser(
           description='Starts GAMS MIRO Server')
 
-    subprocess.check_call(['docker-compose', 'up', '-d'], env=self.__compose_env)
+    subprocess.check_call(['docker', 'compose', 'up', '-d'], env=self.__compose_env)
 
 
   def down(self):
@@ -110,7 +110,7 @@ class MiroServer(object):
 
     args = parser.parse_args(sys.argv[2:])
 
-    dc_args_miro = ['docker-compose', 'down']
+    dc_args_miro = ['docker', 'compose', 'down']
 
     self.stop_proxies('registry.gams.com/fproske/gmswebui/miro-admin')
     self.stop_proxies('registry.gams.com/fproske/gmswebui/miro-ui')
@@ -333,7 +333,8 @@ class MiroServer(object):
 
     dump_result = subprocess.run(
         [
-            'docker-compose',
+            'docker',
+            'compose',
             'run',
             '--no-deps',
             '--rm',
