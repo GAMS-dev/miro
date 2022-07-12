@@ -1,10 +1,10 @@
 FROM node:18-bullseye
 
-ENV R_BASE_VERSION 4.2.0
-ENV OPENSSL_VERSION=3.0.3
+ENV R_BASE_VERSION 4.2.1
+ENV OPENSSL_VERSION=3.0.5
 
 ARG GAMS_MAJOR=39
-ARG GAMS_MINOR=2
+ARG GAMS_MINOR=3
 ARG GAMS_MAINT=0
 
 # R installation mostly taken from r base image (https://github.com/rocker-org/rocker) (GPL >= 2)
