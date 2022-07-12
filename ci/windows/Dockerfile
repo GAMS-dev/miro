@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/windows:20H2
+FROM mcr.microsoft.com/windows/server:ltsc2022
 
 SHELL ["powershell", "-executionpolicy", "bypass", "-command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'; $verbosePreference='Continue'; Set-PSDebug -Trace 0;"]
 
