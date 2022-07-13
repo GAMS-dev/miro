@@ -232,6 +232,8 @@ test_windows_job:
     - windows
   stage: test
   image: $CI_REGISTRY_IMAGE/builder-windows:latest
+  before_script:
+    - yarn install
   script:
     - yarn test gams_sys_dir=$env:GAMS_SYS_DIR
   dependencies: []
