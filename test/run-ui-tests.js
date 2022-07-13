@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 const path = require('path');
-const fs = require('fs-extra');
+const fs = require('fs');
 const execa = require('execa');
 
 let gamsSysDir = '';
