@@ -5,7 +5,7 @@ stages:
   - deploy
 
 image:
-  name: registry.gams.com/fproske/gmswebui/gamsmiro-ci:latest
+  name: $CI_REGISTRY_IMAGE/gamsmiro-ci:latest
 
 
 variables:
@@ -134,7 +134,6 @@ build_linux_job:
     # this is to be able to pull and push images
     - mkdir -p $HOME/.docker
     - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
-  before_script:
     - yarn install
   script:
     - yarn dist
@@ -152,8 +151,8 @@ build_linux_job:
     - >
       if [[ "$BUILD_CI" != "no" ]]; then
         yarn docker-build-ci
-        docker tag gamsmiro-ci registry.gams.com/fproske/gmswebui/gamsmiro-ci:latest
-        docker push registry.gams.com/fproske/gmswebui/gamsmiro-ci:latest
+        docker tag gamsmiro-ci $CI_REGISTRY_IMAGE/gamsmiro-ci:latest
+        docker push $CI_REGISTRY_IMAGE/gamsmiro-ci:latest
       fi
   artifacts:
     paths:
