@@ -18,6 +18,12 @@ variables:
   BUILD_MACOS:
     value: 'yes'
     description: 'Build macOS (ignored on master) (yes/no)?'
+  FORCE_BUILD_LINUX_BUILDER:
+    value: 'no'
+    description: 'Build Linux build image even when Dockerfile did not change (yes/no)?'
+  FORCE_BUILD_WINDOWS_BUILDER:
+    value: 'no'
+    description: 'Build Windows build image even when Dockerfile did not change (yes/no)?'
   BUILD_CI:
     value: 'no'
     description: 'Build CI image (yes/no)?'
@@ -57,11 +63,13 @@ build_build_image_linux:
     # this is to be able to pull and push images
     - mkdir -p $HOME/.docker
     - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+    - apk update && apk add jq
   script:
     - cd ci/linux
-    - docker build -t $CI_REGISTRY_IMAGE/builder-linux:latest .
+    - docker build -t $CI_REGISTRY_IMAGE/builder-linux:latest --build-arg R_BASE_VERSION=`jq ".rVersion" ../../build-config.json` --build-arg OPENSSL_VERSION=`jq ".opensslVersion" ../../build-config.json` .
     - docker push $CI_REGISTRY_IMAGE/builder-linux:latest
   rules:
+    - if: $FORCE_BUILD_LINUX_BUILDER == "yes"
     - if: '$CI_PIPELINE_SOURCE != "push"'
       when: never
     - changes:
@@ -76,10 +84,13 @@ build_build_image_windows:
     - New-Item -ItemType Directory -Force -Path %USERPROFILE%/.docker
     - $env:DOCKER_AUTH_CONFIG > %USERPROFILE%/.docker/config.json
   script:
+    - $buildConfig=Get-Content build-config.json | ConvertFrom-Json
+    - $rVersion=$buildConfig.rVersion
     - cd ci/windows
-    - docker build -t $env:CI_REGISTRY_IMAGE/builder-windows:latest .
+    - docker build -t $env:CI_REGISTRY_IMAGE/builder-windows:latest --build-arg R_VERSION=$rVersion .
     - docker push $env:CI_REGISTRY_IMAGE/builder-windows:latest
   rules:
+    - if: $FORCE_BUILD_WINDOWS_BUILDER == "yes"
     - if: '$CI_PIPELINE_SOURCE != "push"'
       when: never
     - changes:

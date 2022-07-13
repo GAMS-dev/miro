@@ -6,6 +6,9 @@ services:
       context: ../
       args:
         - R_BASE_VERSION=${R_BASE_VERSION}
+        - OPENSSL_VERSION=${OPENSSL_VERSION}
+        - CURL_VERSION=${CURL_VERSION}
+        - PQ_VERSION=${PQ_VERSION}
       dockerfile: ./server/ui/Dockerfile
     restart: "no"
     command: /bin/true

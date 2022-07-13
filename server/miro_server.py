@@ -55,12 +55,15 @@ class MiroServer(object):
     args = parser.parse_args(sys.argv[1:2])
 
     with open(os.path.join('..', 'build-config.json'), 'r') as f:
-        r_base_version = json.loads(f.read())['rVersion'].strip()
+        build_config = json.loads(f.read())
 
     self.__compose_env = os.environ.copy()
     self.__compose_env['COMPOSE_PROJECT_NAME'] = 'miro_server'
     self.__compose_env['COMPOSE_IGNORE_ORPHANS'] = 'True'
-    self.__compose_env['R_BASE_VERSION'] = r_base_version
+    self.__compose_env['R_BASE_VERSION'] = build_config['rVersion'].strip()
+    self.__compose_env['OPENSSL_VERSION'] = build_config['opensslVersion'].strip()
+    self.__compose_env['CURL_VERSION'] = build_config['curlVersion'].strip()
+    self.__compose_env['PQ_VERSION'] = build_config['pqVersion'].strip()
 
     getattr(self, args.command)()
 
