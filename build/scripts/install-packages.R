@@ -233,7 +233,7 @@ for (package in packageVersionMap) {
       binary = FALSE, vignettes = FALSE, manual = FALSE,
       args = NULL, quiet = FALSE
     )
-    if (isLinux && !identical(package, "openssl")) {
+    if (isLinux && (!identical(package, "openssl") || identical(Sys.getenv("BUILD_DOCKER"), "true"))) {
       # we should include binary openssl linked against openssl3 in AppImage
       if (!file.rename(
         packagePath,
