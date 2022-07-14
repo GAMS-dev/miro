@@ -55,5 +55,6 @@ if (typeof process.argv[2] === 'string' && process.argv[2].startsWith('gams_sys_
     await subproc;
   } catch (e) {
     console.log(`Problems running R tests. Error message: ${e.message}`);
+    process.exitCode = 1;
   }
 })();
