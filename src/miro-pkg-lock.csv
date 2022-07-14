@@ -94,7 +94,7 @@ futile.options, 1.0.1
 zoo, 1.8-10
 globals, 0.15.0
 listenv, 0.8.0
-processx, 3.5.3
+processx, 3.7.0
 readxl, 1.4.0
 writexl, 1.4.0
 rpivotTable, 0.3.0
