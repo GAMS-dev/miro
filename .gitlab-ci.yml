@@ -104,14 +104,20 @@ lint_job:
     - git config --global --add safe.directory "$CI_PROJECT_DIR"
     - yarn install
   script:
-   - pre-commit install-hooks
    - pre-commit run --all-files
   variables:
     PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
   cache:
-    paths:
-      - node_modules/
-      - ${PRE_COMMIT_HOME}
+    - key:
+        files:
+          - yarn.lock
+      paths:
+        - node_modules/
+    - key:
+        files:
+          - .pre-commit-config.yaml
+      paths:
+        - ${PRE_COMMIT_HOME}
   rules:
     - if: $CI_MERGE_REQUEST_ID
       when: always
