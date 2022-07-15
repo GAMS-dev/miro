@@ -40,6 +40,8 @@ if (typeof process.argv[2] === 'string' && process.argv[2].startsWith('gams_sys_
     };
     if (process.platform === 'win32') {
       rPath = path.join(__dirname, '..', 'r', 'bin', 'Rscript');
+    }
+    if (process.platform === 'win32' || process.platform === 'darwin') {
       rEnv.R_LIBS_SITE = path.join(__dirname, '..', 'build', 'lib_devel');
     }
     const subproc = execa(
