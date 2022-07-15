@@ -326,6 +326,8 @@ test_macos_job:
   tags:
     - macos
   stage: test
+  variables:
+    LANG: en_US.UTF-8
   before_script:
     - yarn install
   script:
