@@ -24,6 +24,9 @@ variables:
   FORCE_BUILD_WINDOWS_BUILDER:
     value: 'no'
     description: 'Build Windows build image even when Dockerfile did not change (yes/no)?'
+  SKIP_NOTARIZATION:
+    value: 'no'
+    description: 'Skip notarization of macOS installer (yes/no)?'
   BUILD_CI:
     value: 'no'
     description: 'Build CI image (yes/no)?'

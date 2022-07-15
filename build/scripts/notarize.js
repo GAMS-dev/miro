@@ -7,7 +7,7 @@ exports.default = async function notarizing(context) {
     return;
   }
   // skip if not on master, develop or rc
-  if (process.env.BRANCH_NAME && !['master', 'develop', 'rc'].includes(process.env.BRANCH_NAME)) {
+  if (process.env.SKIP_NOTARIZATION === 'true') {
     return;
   }
   const appFile = `"${context.artifactPaths.filter((el) => el.endsWith('.dmg'))[0]}"`;
