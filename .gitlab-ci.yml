@@ -234,6 +234,50 @@ build_windows_job:
   needs: [prepare_all]
 
 
+build_macos_job:
+  tags:
+    - macos
+  stage: build
+  variables:
+    OPENSSL_PKG_CONFIG_PATH: ${OPENSSL_PKG_CONFIG_PATH_MACOS}
+    GIT_SUBMODULE_STRATEGY: normal
+  before_script:
+    - yarn install
+  script:
+    - yarn dist
+  artifacts:
+    paths:
+      - dist/*.dmg
+    expire_in: 1 week
+  cache:
+    - key:
+        files:
+          - src/miro-pkg-lock.csv
+      paths:
+        - r
+    - key: build-cache
+      paths:
+        - build/lib_devel/
+    - key:
+        files:
+          - yarn.lock
+      paths:
+        - node_modules
+    - key:
+        files:
+          - src/package-lock.json
+      paths:
+        - src/node_modules/
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_MERGE_REQUEST_ID
+      when: never
+    - if: '"$CI_COMMIT_BRANCH" == "master" || "$BUILD_MACOS" != "no"'
+      when: on_success
+  needs: [prepare_all]
+
+
 test_windows_job:
   tags:
     - windows
@@ -273,6 +317,47 @@ test_windows_job:
     - if: '"$CI_COMMIT_BRANCH" == "master" || "$BUILD_WINDOWS" != "no"'
       when: on_success
   needs: [build_windows_job]
+
+
+test_macos_job:
+  tags:
+    - macos
+  stage: test
+  before_script:
+    - yarn install
+  script:
+    - yarn test gams_sys_dir=${GAMS_PATH_MACOS}
+  dependencies: []
+  cache:
+    - key:
+        files:
+          - src/miro-pkg-lock.csv
+      paths:
+        - r
+    - key: build-cache
+      paths:
+        - build/lib_devel/
+    - key:
+        files:
+          - yarn.lock
+      paths:
+        - node_modules/
+  artifacts:
+    when: always
+    reports:
+      junit: src/test-out.xml
+    paths:
+      - src/tests/logs-tests
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_MERGE_REQUEST_ID
+      when: never
+    - if: '"$CI_COMMIT_BRANCH" == "master" || "$BUILD_MACOS" != "no"'
+      when: on_success
+  needs: [build_macos_job]
+
 
 test_job_api:
   tags:
