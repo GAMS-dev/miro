@@ -50,21 +50,11 @@ RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources
 RUN apt-get update && apt-get install -y yarn python3-pip git
 RUN pip3 install pre-commit
 
-RUN groupadd -g 1001 miroci && \
-    useradd -r -u 1001 -g miroci miroci
-
-RUN mkdir /home/miroci
-RUN chown -R miroci /home/miroci
-
 # install openssh and rsync for deploying documentation
 RUN apt-get update && apt-get install -y openssh-client rsync
 
-USER miroci
-
 RUN R -e "library(shinytest);installDependencies()"
 
-RUN mkdir /home/miroci/ci
-WORKDIR /home/miroci/ci
 COPY ci/run.sh /etc/profile.d/ci.sh
 
 ENV GAMS_SYS_DIR=/opt/gams
