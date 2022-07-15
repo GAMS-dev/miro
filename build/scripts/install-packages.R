@@ -60,7 +60,8 @@ if (isLinux) {
 requiredPackages <- c(
   "devtools", "remotes", "jsonlite", "V8",
   "zip", "tibble", "readr", "R6", "processx",
-  "testthat", "shinytest", "Rcpp", "futile.logger"
+  "testthat", "shinytest", "Rcpp", "futile.logger",
+  "shinytest"
 )
 if (identical(Sys.getenv("BUILD_DOCKER"), "true")) {
   requiredPackages <- c(requiredPackages, "DBI", "blob")
