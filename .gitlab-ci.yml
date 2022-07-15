@@ -411,14 +411,10 @@ test_job:
     POSTGRES_HOST_AUTH_METHOD: trust
   before_script:
     - source /etc/profile.d/ci.sh
-    - yarn install
   script:
     - mchecklic
     - mtestall
   interruptible: true
-  cache:
-    paths:
-      - node_modules/
   artifacts:
     when: always
     reports:
