@@ -141,6 +141,7 @@ build_linux_job:
     - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
     - yarn install
   script:
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_LINUX" == "no" ]] && [[ "$BUILD_CI" == "no" ]] && [[ "$PUSH_UNSTABLE_SERVER_IMAGES" == "no" ]] && echo "Skipping Linux build" && exit 0'
     - yarn dist
     - >
       if [[ "$PUSH_UNSTABLE_SERVER_IMAGES" != "no" ]] || [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]]; then
@@ -182,8 +183,7 @@ build_linux_job:
       when: never
     - if: $CI_MERGE_REQUEST_ID
       when: never
-    - if: '"$CI_COMMIT_BRANCH" == "master" || "$BUILD_LINUX" != "no" || "$BUILD_CI" != "no" || "$PUSH_UNSTABLE_SERVER_IMAGES" != "no"'
-      when: on_success
+    - when: on_success
   needs: [prepare_all]
 
 build_windows_job:
@@ -198,6 +198,7 @@ build_windows_job:
     - yarn install
     - '[IO.File]::WriteAllBytes([io.path]::Combine((Get-Location).path, $env:CSC_LINK), [Convert]::FromBase64String($env:WIN_CERT_FILE_B64))'
   script:
+    - 'if ("$env:CI_COMMIT_BRANCH" -ne "master" -and "$env:BUILD_WINDOWS" -eq "no") { "Skipping Windows build"; Exit }'
     - yarn dist
   artifacts:
     paths:
@@ -227,8 +228,7 @@ build_windows_job:
       when: never
     - if: $CI_MERGE_REQUEST_ID
       when: never
-    - if: '"$CI_COMMIT_BRANCH" == "master" || "$BUILD_WINDOWS" != "no"'
-      when: on_success
+    - when: on_success
   needs: [prepare_all]
 
 
@@ -242,6 +242,7 @@ build_macos_job:
   before_script:
     - yarn install
   script:
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS" == "no" ]] && echo "Skipping macOS build" && exit 0'
     - yarn dist
   artifacts:
     paths:
@@ -271,8 +272,7 @@ build_macos_job:
       when: never
     - if: $CI_MERGE_REQUEST_ID
       when: never
-    - if: '"$CI_COMMIT_BRANCH" == "master" || "$BUILD_MACOS" != "no"'
-      when: on_success
+    - when: on_success
   needs: [prepare_all]
 
 
@@ -284,6 +284,7 @@ test_windows_job:
   before_script:
     - yarn install
   script:
+    - 'if ("$env:CI_COMMIT_BRANCH" -ne "master" -and "$env:BUILD_WINDOWS" -eq "no") { "Skipping Windows build"; Exit }'
     - yarn test gams_sys_dir=$env:GAMS_SYS_DIR
   dependencies: []
   cache:
@@ -313,8 +314,7 @@ test_windows_job:
       when: never
     - if: $CI_MERGE_REQUEST_ID
       when: never
-    - if: '"$CI_COMMIT_BRANCH" == "master" || "$BUILD_WINDOWS" != "no"'
-      when: on_success
+    - when: on_success
   needs: [build_windows_job]
 
 
@@ -327,6 +327,7 @@ test_macos_job:
   before_script:
     - yarn install
   script:
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS" == "no" ]] && echo "Skipping macOS build" && exit 0'
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS}
   dependencies: []
   cache:
@@ -356,8 +357,7 @@ test_macos_job:
       when: never
     - if: $CI_MERGE_REQUEST_ID
       when: never
-    - if: '"$CI_COMMIT_BRANCH" == "master" || "$BUILD_MACOS" != "no"'
-      when: on_success
+    - when: on_success
   needs: [build_macos_job]
 
 
