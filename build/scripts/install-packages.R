@@ -265,11 +265,17 @@ for (package in packageVersionMap) {
 }
 if (CIBuild && !isLinux) {
   # install packages to lib path devel and copy over
+  print("Copying files from lib path devel to final destination")
   for (installedPackageTmp in c(installedPackagesTmp, customPackages)) {
     if (any(!file.copy(file.path(RlibPathTmp, installedPackageTmp),
       RLibPath,
       overwrite = TRUE, recursive = TRUE
     ))) {
+      print(sprintf(
+        "Failed to copy: %s to: %s",
+        file.path(RlibPathTmp, installedPackageTmp),
+        RLibPath
+      ))
       stop(sprintf(
         "Failed to copy: %s to: %s",
         file.path(RlibPathTmp, installedPackageTmp),
@@ -279,6 +285,7 @@ if (CIBuild && !isLinux) {
   }
 }
 # clean up unncecessary files
+print("Cleaning up unnecessary files")
 unlink(file.path(".", "r-src", "build/"), recursive = TRUE, force = TRUE)
 dontDisplayMe <- lapply(
   list.dirs(RLibPath, full.names = TRUE, recursive = FALSE),
@@ -296,6 +303,7 @@ if (isWindows) {
 # replace directories with periods in their names with symlinks
 # as directories with periods must be frameworks for codesign to not nag
 if (isMac) {
+  print("Fixing some directory names")
   currWd <- getwd()
   setwd(file.path(".", "r"))
   dirsWithPeriod <- list.dirs(file.path("."))
@@ -342,6 +350,7 @@ if (isMac) {
   )
   setwd(file.path(".", "fontconfig", "fonts", "confd"))
   # fix some symlinks that are hardlinked to /Library/Frameworks/R.frameworks
+  print("Fixing some symbolic links")
   filesWithBadLink <- list.files(".")
   filesWithBadLink <- filesWithBadLink[filesWithBadLink != "README"]
   for (fileWithBadLink in filesWithBadLink) {
@@ -358,6 +367,7 @@ if (isMac) {
 }
 
 # update commit hash in about dialog
+print(paste0("Setting hash in about dialog to: ", Sys.getenv("CI_COMMIT_SHORT_SHA", "__HASH__")))
 aboutDialog <- readLines("./renderer/about.js", warn = FALSE)
 aboutDialog <- gsub("__HASH__",
   Sys.getenv("CI_COMMIT_SHORT_SHA", "__HASH__"), aboutDialog,
