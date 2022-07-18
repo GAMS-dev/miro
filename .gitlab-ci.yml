@@ -305,6 +305,7 @@ test_windows_job:
     reports:
       junit: src/test-out.xml
     paths:
+      - src/tests/shinytest/*-current/*
       - src/tests/logs-tests
     expire_in: 1 week
   rules:
@@ -347,6 +348,7 @@ test_macos_job:
     reports:
       junit: src/test-out.xml
     paths:
+      - src/tests/shinytest/*-current/*
       - src/tests/logs-tests
     expire_in: 1 week
   rules:
