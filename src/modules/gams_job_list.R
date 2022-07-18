@@ -92,9 +92,17 @@ if (isTRUE(config$activateModules$remoteExecution)) {
         errMsg <- conditionMessage(e)
         if (errMsg == 401L || errMsg == 403L) {
           showHideEl(session, "#fetchJobsAccessDenied", 6000L)
+          flog.info(
+            "Problems downloading job with ID: '%s': access denied (%s).",
+            jID, errMsg
+          )
           return()
         }
         if (errMsg == 404L) {
+          flog.info(
+            "Problems downloading job with ID: '%s'. Job was not found on Engine server.",
+            jID
+          )
           showHideEl(session, "#fetchJobsJobNotFound", 6000L)
           tryCatch(worker$updateJobStatus(JOBSTATUSMAP[["corrupted(noProcess)"]], jID),
             error = function(e) {
@@ -133,8 +141,8 @@ if (isTRUE(config$activateModules$remoteExecution)) {
     if (!length(asyncResObs)) {
       asyncResObs <<- observe({
         invalidateLater(2000L, session)
-        flog.debug("Download-results-observer triggered.")
         activeDownloads <- worker$getActiveDownloads()
+        flog.debug("Download-results-observer triggered (active downloads: %s).", activeDownloads)
         if (identical(length(activeDownloads), 0L) &&
           length(asyncResObs)) {
           asyncResObs$destroy()
