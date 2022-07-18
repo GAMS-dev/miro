@@ -1006,16 +1006,16 @@ server:
                           token for GAMS Engine is created that is valid for 12
                           hours. When this token expires, the user must log in
                           again, otherwise any interaction with GAMS Engine
-                          (e.g. solving a model) will result in an
-                          "UNAUTHORIZED" error.
+                          (e.g. solving a model) will result in an "Access
+                          denied" error.
                         </p>
                         <p>
-                          MIRO Server also uses another token, which expires
-                          after 6 hours (independent from the Engine
+                          MIRO Server also uses another session token, which
+                          expires after 6 hours (independent from the Engine
                           authentication token). This token is intended to
                           prevent the Engine authentication token from expiring
                           while working in a MIRO app (which would lead to not
-                          being able to submit a job anymore). Eeach time the
+                          being able to submit a job anymore). Each time the
                           user accesses a new page/URL within MIRO Server, e.g.
                           by starting a MIRO app (but not while working in a
                           MIRO app), the token is reset. If the token expires,
