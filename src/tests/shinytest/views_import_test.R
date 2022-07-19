@@ -41,7 +41,7 @@ expect_true(app$waitFor("$('#viewsCustomError')[0].innerText.includes('<script>a
 app$findElement('button[data-dismiss="modal"]')$click()
 Sys.sleep(1)
 app$findElement("#btGraphIn")$click()
-Sys.sleep(1.5)
+Sys.sleep(2)
 app$findElement("#in_1-miroPivot-toggleViewButton")$click()
 Sys.sleep(1)
 expect_identical(length(app$findElements("#in_1-miroPivot-savedViewsDD li")), 3L)

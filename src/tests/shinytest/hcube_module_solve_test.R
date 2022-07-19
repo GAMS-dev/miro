@@ -144,7 +144,7 @@ repeat{
 app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()
 app$findElement('#shiny-tab-gamsinter a[data-value="joblist"]')$click()
 app$findElement("#refreshActiveJobs")$click()
-Sys.sleep(3.5)
+Sys.sleep(4.5)
 
 expect_true(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().includes('badge-info\">HC')", timeout = 5000))
 expect_true(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().startsWith('bla,blub')", timeout = 50))
@@ -222,7 +222,7 @@ repeat{
 app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()
 app$findElement('#shiny-tab-gamsinter a[data-value="joblist"]')$click()
 app$findElement("#refreshActiveJobs")$click()
-Sys.sleep(3L)
+Sys.sleep(4L)
 expect_true(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().startsWith('&lt;&gt;,&amp;&amp;')===true&&$('#jImport_output td').get(2).innerHTML.trim().includes('badge-info\">HC')===true;", timeout = 5000))
 expect_error(app$findElements("#jImport_output button[onclick*='discardJob']")[[1]]$click(), NA)
 Sys.sleep(2)
@@ -284,7 +284,7 @@ repeat{
 app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()
 app$findElement('#shiny-tab-gamsinter a[data-value="joblist"]')$click()
 app$findElement("#refreshActiveJobs")$click()
-Sys.sleep(3)
+Sys.sleep(4)
 timeout <- 200L
 repeat{
   app$findElement("#refreshActiveJobs")$click()

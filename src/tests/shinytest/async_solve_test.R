@@ -335,7 +335,7 @@ Sys.sleep(1)
 # download job test3 and test2 directly one after the other. test3 will be imported to sandbox test2 can be imported afterwards
 app$snapshot()
 app$findElements("#jImport_output button[onclick*='downloadJobData']")[[1]]$click()
-Sys.sleep(8)
+Sys.sleep(10)
 expect_error(app$findElement("#outputTableView")$click(), NA)
 app$snapshot()
 app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()
