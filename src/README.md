@@ -17,8 +17,8 @@ In order to launch GAMS MIRO you need R (v. 4.0.2 or later) with the following p
 * futile.logger
 * zip
 * tidyr
-* DBI (https://github.com/GAMS-dev/miro_desktop/tree/master/r-src/DBI)
-* RSQLite (https://github.com/GAMS-dev/RSQLite)
+* DBI
+* RSQLite
 * digest
 * DT (https://github.com/GAMS-dev/DT)
 * sortable
