@@ -51,7 +51,7 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
               dependencies = FALSE, INSTALL_opts = "--no-multiarch"
             )
           } else {
-            remotes::install_github(paste0("GAMS-dev/", if (identical(package, "gdxrrwMIRO")) "gdxrrw-miro" else package),
+            remotes::install_github(paste0("GAMS-dev/", if (identical(package, "gdxrrwMIRO")) "gdxrrw-miro" else if (identical(package, "miroUtil")) "miro.util" else package),
               dependencies = FALSE,
               INSTALL_opts = "--no-multiarch"
             )
