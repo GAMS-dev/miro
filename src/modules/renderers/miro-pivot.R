@@ -2307,7 +2307,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       })
 
       if (isInput) {
-        dtProxy <- dataTableProxy(ns("pivotTable"))
+        dtProxy <- dataTableProxy("pivotTable")
 
         rendererEnv[[ns("editTableAdd")]] <- observe({
           if (length(input[["btAddRow"]]) != 1L ||
@@ -2800,7 +2800,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 }
               }
               newData[info$row, editedCol] <- editedVal
-              replaceData(dtProxy, newData, resetPaging = FALSE)
+              replaceData(dtProxy, newData, resetPaging = FALSE, rownames = FALSE)
 
               newVal <- dataUpdated() + 1L
               dataUpdated(newVal)
