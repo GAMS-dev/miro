@@ -2092,3 +2092,16 @@ getExportFileType <- function(exportFileType, datasetsRemoteExport) {
     stop_custom("error_bad_type", sprintf("Invalid file type: %s", exportFileType), call. = FALSE)
   }))
 }
+
+dfApplyChanges <- function(df, changes) {
+  idx <- 1L
+  while (TRUE) {
+    if (idx > length(changes)) {
+      break
+    }
+    change <- changes[[idx]]
+    df[change[[1L]], change[[2L]]] <- change[[3L]]
+    idx <- idx + 1L
+  }
+  return(df)
+}

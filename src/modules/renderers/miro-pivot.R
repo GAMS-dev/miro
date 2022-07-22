@@ -681,6 +681,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
       if (isInput) {
         dataUpdated <- reactiveVal(1L)
+        changesToApply <- list()
         if (nrow(data) < 5e+05) {
           isEditable <- TRUE
           hideEl(session, paste0("#", ns("enableEdit")))
@@ -1456,14 +1457,17 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         content = function(file) {
           if (isInput) {
             dataUpdated()
+            dataTmp <- dfApplyChanges(dataToRender(), changesToApply)
+          } else {
+            dataTmp <- dataToRender()
           }
           if (length(hiddenEmptyCols)) {
-            return(write_csv(dataToRender()[-hiddenEmptyCols],
+            return(write_csv(dataTmp[-hiddenEmptyCols],
               file,
               na = ""
             ))
           }
-          return(write_csv(dataToRender(), file, na = ""))
+          return(write_csv(dataTmp, file, na = ""))
         }
       )
       rendererEnv[[ns("filterDropdowns")]] <- observe({
@@ -1749,6 +1753,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       })
 
       dataToRender <- reactive({
+        if (isInput) {
+          changesToApply <<- list()
+        }
         if (identical(input$aggregationFunction, "")) {
           return()
         }
@@ -2753,7 +2760,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             if (editedCol > noRowHeaders) {
               # edited column is value column
               editedVal <- suppressWarnings(as.numeric(info$value))
-              newData <- dataToRender()
+              newData <- dfApplyChanges(dataToRender(), changesToApply)
               if (is.na(editedVal) || length(editedVal) != 1L) {
                 if (identical(info$value, "")) {
                   # delete row
@@ -2800,6 +2807,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 }
               }
               newData[info$row, editedCol] <- editedVal
+              changesToApply <<- c(changesToApply, list(list(info$row, editedCol, editedVal)))
               replaceData(dtProxy, newData, resetPaging = FALSE, rownames = FALSE)
 
               newVal <- dataUpdated() + 1L
