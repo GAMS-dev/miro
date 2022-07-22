@@ -1416,7 +1416,8 @@ getValidCsvFromZip <- function(zipFileName, dsToVerify, uid) {
   }
   return(list(tmpDir = tmpDir, validFileNames = validFileNames))
 }
-DTbuildColHeaderContainer <- function(colNames, noRowHeaders, rowHeaders) {
+DTbuildColHeaderContainer <- function(colNames, noRowHeaders, rowHeaders,
+                                      colSummary = NULL) {
   if (noRowHeaders > 0) {
     colNameHeaders <- colNames[-seq_len(noRowHeaders)]
   } else {
@@ -1477,7 +1478,25 @@ DTbuildColHeaderContainer <- function(colNames, noRowHeaders, rowHeaders) {
       } else {
         colNameList[[noColDim]]
       }, tags$th))
-    )
+    ),
+    if (length(colSummary)) {
+      tags$tfoot(
+        tags$tr(
+          lapply(seq_along(colNames), function(idx) {
+            if (idx <= noRowHeaders) {
+              if (idx == 1L) {
+                cellContent <- colSummary[["caption"]]
+              } else {
+                cellContent <- ""
+              }
+            } else {
+              cellContent <- colSummary[["data"]][[idx - noRowHeaders]]
+            }
+            tags$th(cellContent)
+          })
+        )
+      )
+    }
   )))
 }
 sanitizeFn <- function(filename) {

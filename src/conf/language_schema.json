@@ -2533,6 +2533,10 @@
               "type": "string",
               "minLength": 1
             },
+            "btShowSettings": {
+              "type": "string",
+              "minLength": 1
+            },
             "btNewView": {
               "type": "string",
               "minLength": 1
@@ -2550,6 +2554,18 @@
               "minLength": 1
             },
             "cbHideEmptyCols": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cbShowTableSummary": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rowSummaryFunction": {
+              "type": "string",
+              "minLength": 1
+            },
+            "colSummaryFunction": {
               "type": "string",
               "minLength": 1
             },
@@ -2634,6 +2650,18 @@
               "minLength": 1
             },
             "newViewBtOverwrite": {
+              "type": "string",
+              "minLength": 1
+            },
+            "updateSettingsTitle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "updateSettingsBtCancel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "updateSettingsBtSave": {
               "type": "string",
               "minLength": 1
             },
@@ -2794,7 +2822,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 47
+          "minProperties": 54
         },
         "datatable": {
           "type": "object",

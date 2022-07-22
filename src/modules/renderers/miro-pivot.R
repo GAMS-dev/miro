@@ -225,6 +225,17 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
                 title = lang$renderers$miroPivot$btDownloadPng,
                 style = "display:none;"
               ),
+              actionButton(ns("showSettings"),
+                label = tags$div(
+                  icon("gear"),
+                  tags$div(
+                    class = "miro-pivot-btn-text",
+                    lang$renderers$miroPivot$btShowSettings
+                  )
+                ),
+                title = lang$renderers$miroPivot$btShowSettings,
+                class = "btn-custom pivot-btn-custom"
+              ),
               tags$div(
                 id = ns("hidePivotControls"), class = "btn btn-default btn-custom pivot-btn-custom activate-pivot-controls",
                 tags$div(
@@ -403,12 +414,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
           } else {
             "table"
           }
-        ),
-        if (isTRUE(options$enableHideEmptyCols)) {
-          checkboxInput_MIRO(ns("hideEmptyCols"), lang$renderers$miroPivot$cbHideEmptyCols,
-            value = identical(options$hideEmptyCols, TRUE)
-          )
-        }
+        )
       ),
       tags$div(
         class = "col-sm-12 col-md-6 col-index-wrapper",
@@ -667,6 +673,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
       hiddenEmptyCols <- NULL
 
+      hideEmptyCols <- reactiveVal(identical(options$hideEmptyCols, TRUE))
+      tableSummarySettings <- reactiveVal(list(
+        enabled = FALSE, rowSummaryFunction = "sum",
+        colSummaryFunction = "sum"
+      ))
+
       if (isInput) {
         dataUpdated <- reactiveVal(1L)
         if (nrow(data) < 5e+05) {
@@ -821,10 +833,29 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           updateSelectInput(session, "pivotRenderer", selected = "table")
         }
         if (isTRUE(options$enableHideEmptyCols)) {
-          updateCheckboxInput(session, "hideEmptyCols",
-            value = identical(viewOptions[["hideEmptyCols"]], TRUE)
+          isolate(hideEmptyCols(identical(viewOptions[["hideEmptyCols"]], TRUE)))
+        }
+        if (length(viewOptions[["tableSummarySettings"]])) {
+          newTableSummarySettings <- list(
+            enabled = identical(viewOptions[["tableSummarySettings"]][["enabled"]], TRUE),
+            rowSummaryFunction = "sum",
+            colSummaryFunction = "sum"
+          )
+          if (length(viewOptions[["tableSummarySettings"]][["rowSummaryFunction"]]) == 1L &&
+            viewOptions[["tableSummarySettings"]][["rowSummaryFunction"]] %in% aggregationFunctions[aggregationFunctions %in% c("sum", "count", "mean")]) {
+            newTableSummarySettings[["rowSummaryFunction"]] <- viewOptions[["tableSummarySettings"]][["rowSummaryFunction"]]
+          }
+          if (length(viewOptions[["tableSummarySettings"]][["colSummaryFunction"]]) == 1L &&
+            viewOptions[["tableSummarySettings"]][["colSummaryFunction"]] %in% aggregationFunctions) {
+            newTableSummarySettings[["colSummaryFunction"]] <- viewOptions[["tableSummarySettings"]][["colSummaryFunction"]]
+          }
+        } else {
+          newTableSummarySettings <- list(
+            enabled = FALSE, rowSummaryFunction = "sum",
+            colSummaryFunction = "sum"
           )
         }
+        isolate(tableSummarySettings(newTableSummarySettings))
         newView <- list(
           filter = unname(indices$filter),
           aggregations = unname(indices$aggregations),
@@ -1109,6 +1140,69 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
           showAddViewDialog(isolate(input$pivotRenderer))
         })
+        rendererEnv[[ns("showSettings")]] <- observe({
+          if (is.null(input$showSettings) || initData || input$showSettings == 0L) {
+            return()
+          }
+          isolate({
+            showModal(modalDialog(
+              tagList(
+                if (isTRUE(options$enableHideEmptyCols)) {
+                  tags$div(
+                    class = "row",
+                    tags$div(
+                      class = "col-sm-12",
+                      checkboxInput_MIRO(ns("hideEmptyCols"), lang$renderers$miroPivot$cbHideEmptyCols,
+                        value = hideEmptyCols()
+                      )
+                    )
+                  )
+                },
+                tags$div(
+                  class = "row",
+                  tags$div(
+                    class = "col-sm-6",
+                    checkboxInput_MIRO(ns("showTableSummary"),
+                      label = lang$renderers$miroPivot$cbShowTableSummary,
+                      value = tableSummarySettings()$enabled
+                    )
+                  ),
+                  tags$div(
+                    class = "col-sm-6",
+                    `data-display-if` = "input.showTableSummary===true",
+                    `data-ns-prefix` = ns(""),
+                    selectInput(ns("colSummaryFunction"),
+                      label = lang$renderers$miroPivot$colSummaryFunction,
+                      choices = aggregationFunctions,
+                      selected = tableSummarySettings()$colSummaryFunction,
+                      width = "100%"
+                    )
+                  ),
+                  tags$div(
+                    class = "col-sm-6",
+                    `data-display-if` = "input.showTableSummary===true",
+                    `data-ns-prefix` = ns(""),
+                    selectInput(ns("rowSummaryFunction"),
+                      label = lang$renderers$miroPivot$rowSummaryFunction,
+                      choices = aggregationFunctions[aggregationFunctions %in% c("sum", "count", "mean")],
+                      selected = tableSummarySettings()$rowSummaryFunction,
+                      width = "100%"
+                    )
+                  )
+                )
+              ),
+              footer = tags$div(
+                modalButton(lang$renderers$miroPivot$updateSettingsBtCancel),
+                actionButton(ns("updateSettings"),
+                  lang$renderers$miroPivot$updateSettingsBtSave,
+                  class = "bt-highlight-1 bt-gms-confirm"
+                )
+              ),
+              fade = TRUE, easyClose = FALSE, size = "m",
+              title = lang$renderers$miroPivot$updateSettingsTitle
+            ))
+          })
+        })
         deleteView <- function(viewId) {
           views$remove(session, viewId)
           updateViewList()
@@ -1121,8 +1215,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               domainFilter = list(default = input$domainFilter)
             )
             if (isTRUE(options$enableHideEmptyCols)) {
-              newViewConfig$hideEmptyCols <- identical(input$hideEmptyCols, TRUE)
+              newViewConfig$hideEmptyCols <- hideEmptyCols()
             }
+            newViewConfig$tableSummarySettings <- tableSummarySettings()
             for (indexEl in list(c("rows", "rowIndexList"))) {
               indexVal <- input[[indexEl[[2]]]]
               if (length(indexVal)) {
@@ -1218,6 +1313,37 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         # rendererEnv[[ns("togglePivotControls")]] <- observe({
         #     hideEl(session, paste0("#", ns("dataView")))
         # })
+        rendererEnv[[ns("updateSettings")]] <- observe({
+          if (is.null(input$updateSettings) || initData ||
+            input$updateSettings == 0L) {
+            return()
+          }
+          isolate({
+            if (identical(input$showTableSummary, TRUE)) {
+              newTableSummarySettings <- list(
+                enabled = TRUE,
+                rowSummaryFunction = "sum",
+                colSummaryFunction = "sum"
+              )
+              if (length(input$rowSummaryFunction) == 1L &&
+                input$rowSummaryFunction %in% aggregationFunctions[aggregationFunctions %in% c("sum", "count", "mean")]) {
+                newTableSummarySettings[["rowSummaryFunction"]] <- input$rowSummaryFunction
+              }
+              if (length(input$colSummaryFunction) == 1L &&
+                input$colSummaryFunction %in% aggregationFunctions) {
+                newTableSummarySettings[["colSummaryFunction"]] <- input$colSummaryFunction
+              }
+            } else {
+              newTableSummarySettings <- list(
+                enabled = FALSE, rowSummaryFunction = "sum",
+                colSummaryFunction = "sum"
+              )
+            }
+            tableSummarySettings(newTableSummarySettings)
+            hideEmptyCols(identical(input$hideEmptyCols, TRUE))
+            removeModal(session)
+          })
+        })
         rendererEnv[[ns("saveViewConfirm")]] <- observe({
           if (is.null(input$saveViewConfirm) || initData ||
             input$saveViewConfirm == 0L || readonlyViews) {
@@ -1808,7 +1934,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if (noError) {
           hideEl(session, paste0("#", ns("errMsg")))
         }
-        if (isTRUE(options$enableHideEmptyCols) && isTRUE(input$hideEmptyCols)) {
+        if (isTRUE(options$enableHideEmptyCols) && hideEmptyCols()) {
           hiddenEmptyColsTmp <- vapply(dataTmp[seq_len(rowHeaderLen)],
             function(x) {
               identical(
@@ -2031,7 +2157,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         hideEl(session, paste0("#", ns("loadPivotTable")))
 
-        if (isTRUE(options$enableHideEmptyCols) && isTRUE(input$hideEmptyCols)) {
+        if (isTRUE(options$enableHideEmptyCols) && hideEmptyCols()) {
           hiddenEmptyCols <<- which(vapply(dataTmp[seq_len(noRowHeaders)],
             function(x) {
               identical(
@@ -2070,6 +2196,60 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           columnDefsTmp <- NULL
         }
 
+        fixedColumnsConfig <- list(leftColumns = noRowHeaders)
+        colSummarySettings <- NULL
+
+        if (tableSummarySettings()$enabled) {
+          if (identical(tableSummarySettings()$rowSummaryFunction, "sum")) {
+            dataTmp <- mutate(
+              dataTmp,
+              !!paste0(
+                lang$renderers$miroPivot$aggregationFunctions$sum,
+                "\U2003\U2003"
+              ) := rowSums(dataTmp[vapply(dataTmp, is.numeric,
+                logical(1L),
+                USE.NAMES = FALSE
+              )])
+            )
+          } else if (identical(tableSummarySettings()$rowSummaryFunction, "mean")) {
+            dataTmp <- mutate(
+              dataTmp,
+              !!paste0(
+                lang$renderers$miroPivot$aggregationFunctions$mean,
+                "\U2003\U2003"
+              ) := rowMeans(dataTmp[vapply(dataTmp, is.numeric,
+                logical(1L),
+                USE.NAMES = FALSE
+              )])
+            )
+          } else {
+            # count
+            dataTmp <- mutate(
+              dataTmp,
+              !!paste0(
+                lang$renderers$miroPivot$aggregationFunctions$count,
+                "\U2003\U2003"
+              ) := rowSums(!is.na(dataTmp[vapply(dataTmp, is.numeric,
+                logical(1L),
+                USE.NAMES = FALSE
+              )]))
+            )
+          }
+          fixedColumnsConfig$rightColumns <- 1
+          colSummarySettings <- list(caption = lang$renderers$miroPivot$aggregationFunctions[[tableSummarySettings()$colSummaryFunction]])
+          if (identical(tableSummarySettings()$colSummaryFunction, "count")) {
+            colSummarySettings$data <- round(colSums(!is.na(dataTmp[vapply(dataTmp, is.numeric,
+              logical(1L),
+              USE.NAMES = FALSE
+            )])), digits = roundPrecision)
+          } else {
+            colSummarySettings$data <- round(as.numeric(slice(summarise(dataTmp, across(
+              where(is.numeric),
+              !!as.name(tableSummarySettings()$colSummaryFunction)
+            )), 1L)), digits = roundPrecision)
+          }
+        }
+
         ret <- datatable(dataTmp,
           extensions = c("Scroller", "FixedColumns"),
           selection = if (isEditableTable) "multiple" else "none", editable = isEditableTable,
@@ -2079,7 +2259,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             noRowHeaders,
             unlist(setIndexAliases[names(dataTmp)[seq_len(noRowHeaders)]],
               use.names = FALSE
-            )
+            ),
+            colSummary = colSummarySettings
           ),
           options = list(
             fnDrawCallback = if (noRowHeaders > 1) JS(paste0("function ( settings ) {
@@ -2109,7 +2290,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 }")),
             scrollY = 400, scrollX = TRUE, scrollCollapse = TRUE,
             scroller = list(loadingIndicator = FALSE), dom = "frtip",
-            fixedColumns = list(leftColumns = noRowHeaders),
+            fixedColumns = fixedColumnsConfig,
             columnDefs = columnDefsTmp
           ), rownames = FALSE
         ) %>%
@@ -2623,6 +2804,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
               newVal <- dataUpdated() + 1L
               dataUpdated(newVal)
+              if (tableSummarySettings()$enabled) {
+                updateFilter(newUpdateFilterVal)
+              }
               return()
             }
             # edited column is key column
