@@ -71,7 +71,11 @@ expect_chartjs(
     "default4.Seattle"
   )
 )
+app$setInputs("tab_0_3-miroPivot-showSettings" = "click")
+Sys.sleep(1)
 expect_error(app$setInputs(`tab_0_3-miroPivot-hideEmptyCols` = TRUE), NA)
+app$setInputs(`tab_0_3-miroPivot-updateSettings` = "click")
+Sys.sleep(1)
 app$findElements("#scen-pivot-view .box-title button")[[1]]$click()
 Sys.sleep(0.5)
 expect_options(
@@ -81,6 +85,47 @@ expect_options(
 app$setInputs(selLoadScen = paste0(c("1_", "2_"), currentUser))
 app$setInputs(btLoadScenConfirm = "click")
 Sys.sleep(0.5)
+app$setInputs("tab_0_3-miroPivot-pivotRenderer" = "table")
+Sys.sleep(0.5)
+expect_identical(
+  getVisibleDtData(app, "tab_0_3-miroPivot-pivotTable"),
+  structure(list(
+    ...1 = c("default1", "default1", "default2", "default2"), ...2 = c("San-Diego", "Seattle", "San-Diego", "Seattle"),
+    ...3 = c("600", "350", "600", "350")
+  ), class = c(
+    "tbl_df",
+    "tbl", "data.frame"
+  ), row.names = c(NA, -4L))
+)
+app$setInputs(`tab_0_3-miroPivot-showSettings` = "click")
+Sys.sleep(1)
+app$setInputs(`tab_0_3-miroPivot-showTableSummary` = TRUE)
+app$setInputs(`tab_0_3-miroPivot-colSummaryFunction` = "mean")
+app$setInputs(`tab_0_3-miroPivot-rowSummaryFunction` = "count")
+app$setInputs(`tab_0_3-miroPivot-updateSettings` = "click")
+Sys.sleep(1)
+expect_identical(
+  getVisibleDtData(app, "tab_0_3-miroPivot-pivotTable"),
+  structure(list(
+    ...1 = c("default1", "default1", "default2", "default2"), ...2 = c("San-Diego", "Seattle", "San-Diego", "Seattle"),
+    ...3 = c("600", "350", "600", "350"), ...4 = c(
+      "1", "1",
+      "1", "1"
+    )
+  ), class = c("tbl_df", "tbl", "data.frame"), row.names = c(
+    NA,
+    -4L
+  ))
+)
+expect_true(app$waitFor("$('#tab_0_3-miroPivot-pivotTable .dataTables_scrollFootInner th:first').text()==='Mean'",
+  timeout = 50
+))
+expect_true(app$waitFor("$('#tab_0_3-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(2)').text()==='475'",
+  timeout = 50
+))
+expect_true(app$waitFor("$('#tab_0_3-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(3)').text()==='1'",
+  timeout = 50
+))
 app$setInputs("tab_0_3-miroPivot-pivotRenderer" = "stackedbar")
 Sys.sleep(0.5)
 expect_chartjs(
