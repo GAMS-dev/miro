@@ -2194,12 +2194,7 @@ observeEvent(input$chart_xdata, {
   rv$graphConfig$graph$xdata <<- input$chart_xdata
 })
 observeEvent(input$miropivot_enableHideEmptyCols, {
-  if (isTRUE(input$miropivot_enableHideEmptyCols)) {
-    showEl(session, "#preview_output_miropivot-miroPivot-hideEmptyCols")
-  } else {
-    updateCheckboxInput(session, "preview_output_miropivot-miroPivot-hideEmptyCols", value = FALSE)
-    hideEl(session, "#preview_output_miropivot-miroPivot-hideEmptyCols")
-  }
+  rv$graphConfig$graph$options$enableHideEmptyCols <- isTRUE(input$miropivot_enableHideEmptyCols)
 })
 observeEvent(input$miropivot_emptyUEL, {
   if (identical(input$miropivot_emptyUEL, "")) {
@@ -4990,7 +4985,7 @@ observe(
           )
           miropivotOptions <- currentGraphConfig$options
           miropivotOptions$emptyUEL <- rv$graphConfig$graph$options$emptyUEL
-          miropivotOptions$enableHideEmptyCols <- TRUE
+          miropivotOptions$enableHideEmptyCols <- rv$graphConfig$graph$options$enableHideEmptyCols
           miropivotOptions$hidepivotcontrols <- rv$graphConfig$graph$options$hidepivotcontrols
           miropivotOptions$fixedColumns <- rv$graphConfig$graph$options$fixedColumns
           miropivotOptions$externalDefaultView <- rv$graphConfig$graph$options$externalDefaultView

@@ -2290,7 +2290,7 @@ refreshTableType <- function(refreshSameSymbol = FALSE) {
       pivotOptions <- configJSON$inputWidgets[[currentWidgetSymbolName]][["options"]]
     }
     pivotOptions$input <- TRUE
-    pivotOptions$enableHideEmptyCols <- TRUE
+    pivotOptions$enableHideEmptyCols <- rv$widgetConfig$options$enableHideEmptyCols
     pivotOptions$emptyUEL <- rv$widgetConfig$options$emptyUEL
     pivotOptions$fixedColumns <- rv$widgetConfig$options$fixedColumns
 
@@ -2429,12 +2429,7 @@ observeEvent(c(input$table_pivotCols, input$table_readonly, input$table_heatmap)
   }
 })
 observeEvent(input$inputpivot_enableHideEmptyCols, {
-  if (isTRUE(input$inputpivot_enableHideEmptyCols)) {
-    showEl(session, "#inputTable_pivot-miroPivot-hideEmptyCols")
-  } else {
-    updateCheckboxInput(session, "inputTable_pivot-miroPivot-hideEmptyCols", value = FALSE)
-    hideEl(session, "#inputTable_pivot-miroPivot-hideEmptyCols")
-  }
+  rv$widgetConfig$options$enableHideEmptyCols <- isTRUE(input$inputpivot_enableHideEmptyCols)
 })
 observeEvent(input$inputpivot_fixedColumns, {
   rv$widgetConfig$options$fixedColumns <- isTRUE(input$inputpivot_fixedColumns)
