@@ -254,6 +254,7 @@ build_macos_job:
           - src/miro-pkg-lock.csv
       paths:
         - r
+      policy: push
     - key: build-cache
       paths:
         - build/lib_devel/
