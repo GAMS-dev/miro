@@ -11,11 +11,12 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
 
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("input_table_dropdowncols_test")
-
+Sys.sleep(0.5)
 app$snapshot(
   items = list(output = "errorMessages"),
   screenshot = TRUE
 )
+Sys.sleep(0.5)
 app$stop()
 
 configNew$inputWidgets$d$dropdownCols <- list(bla = list(static = letters))
