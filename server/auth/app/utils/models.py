@@ -20,6 +20,7 @@ class AuthRequest(BaseModel):
 class AuthResponse(BaseModel):
     token: str
     roles: List[str]
+    permissions: str
 
 
 class AppConfig(BaseModel):
