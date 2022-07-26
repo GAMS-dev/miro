@@ -1,6 +1,6 @@
 # UI header
 header <- dashboardHeader(
-  if (!isShinyProxy && config$activateModules$remoteExecution) {
+  if (!isShinyProxy && config$activateModules$remoteExecution && !config$activateModules$readonlyMode) {
     tags$li(
       class = "dropdown",
       HTML(paste0(
@@ -30,16 +30,16 @@ header <- dashboardHeader(
     ),
     tags$ul(
       class = "dropdown-menu", role = "menu",
-      tags$li(actionLink("btEditMeta", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-magnifying-glass"></i></div> ', lang$nav$header$scenario$edit)))),
-      tags$li(actionLink("btSave", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-floppy-disk"></i></div> ', lang$nav$header$scenario$save)))),
-      tags$li(actionLink("btSaveAs", HTML(paste0('<div class="menu-icon-align"></div> ', lang$nav$header$scenario$saveAs)))),
+      if (!config$activateModules$readonlyMode) tags$li(actionLink("btEditMeta", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-magnifying-glass"></i></div> ', lang$nav$header$scenario$edit)))),
+      if (!config$activateModules$readonlyMode) tags$li(actionLink("btSave", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-floppy-disk"></i></div> ', lang$nav$header$scenario$save)))),
+      if (!config$activateModules$readonlyMode) tags$li(actionLink("btSaveAs", HTML(paste0('<div class="menu-icon-align"></div> ', lang$nav$header$scenario$saveAs)))),
       tags$li(HTML(paste0(
         '<a href="#" class="action-button"
                                       onclick="Shiny.setInputValue(\'btExportScen\', 1, {priority: \'event\'})">
                                       <div class="menu-icon-align"><i class="fa fa-file-export"></i></div> ',
         lang$nav$header$scenario$export, "</a>"
       ))),
-      tags$li(actionLink("btDelete", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-trash"></i></div> ', lang$nav$header$scenario$delete))))
+      if (!config$activateModules$readonlyMode) tags$li(actionLink("btDelete", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-trash"></i></div> ', lang$nav$header$scenario$delete))))
     )
   ),
   tags$li(

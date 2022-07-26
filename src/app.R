@@ -335,6 +335,9 @@ if (is.null(errMsg)) {
       assign(customRendererName, get(customRendererName), envir = .GlobalEnv)
     }
   }
+
+  config$activateModules$readonlyMode <- !miroDeploy && identical(tolower(Sys.getenv("MIRO_MODE")), "readonly")
+
   if (isShinyProxy || identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")) {
     config$activateModules$remoteExecution <- TRUE
   } else {
@@ -2137,10 +2140,21 @@ if (!is.null(errMsg)) {
       source("./modules/scen_import.R", local = TRUE)
 
       ####### GAMS interaction
-      # solve button clicked
-      source("./modules/gams_run.R", local = TRUE)
-      # Interrupt button clicked
-      source("./modules/gams_interrupt.R", local = TRUE)
+      clearLogs <- function(session) {
+        if (config$activateModules$logFile ||
+          config$activateModules$miroLogFile) {
+          emptyEl(session, "#logStatusContainer")
+        }
+        rv$refreshLogs <- NULL
+        emptyEl(session, "#modelStatus")
+        hideEl(session, ".input-validation-error")
+      }
+      if (!config$activateModules$readonlyMode) {
+        # solve button clicked
+        source("./modules/gams_run.R", local = TRUE)
+        # Interrupt button clicked
+        source("./modules/gams_interrupt.R", local = TRUE)
+      }
 
 
       ####### Model output
@@ -2161,7 +2175,7 @@ if (!is.null(errMsg)) {
       ####### Batch Load module
       source("./modules/batch_load.R", local = TRUE)
 
-      if (config$activateModules$remoteExecution) {
+      if (config$activateModules$remoteExecution && !config$activateModules$readonlyMode) {
         source("./modules/gams_job_list.R", local = TRUE)
         # remote job import
         source("./modules/job_import.R", local = TRUE)
@@ -2170,15 +2184,20 @@ if (!is.null(errMsg)) {
         }
       }
 
+      source("./modules/scen_close.R", local = TRUE)
       # delete scenario
-      source("./modules/db_scen_remove.R", local = TRUE)
+      if (!config$activateModules$readonlyMode) {
+        source("./modules/db_scen_remove.R", local = TRUE)
+      }
       # scenario module
       # render scenarios (comparison mode)
       source("./modules/scen_render.R", local = TRUE)
       # load scenario
       source("./modules/db_scen_load.R", local = TRUE)
       # save scenario
-      source("./modules/db_scen_save.R", local = TRUE)
+      if (!config$activateModules$readonlyMode) {
+        source("./modules/db_scen_save.R", local = TRUE)
+      }
       # scenario split screen mode
       source("./modules/scen_split.R", local = TRUE)
       skipScenCompObserve <- vector("logical", maxNumberScenarios + 3L)

@@ -1,13 +1,4 @@
 # run GAMS
-clearLogs <- function(session) {
-  if (config$activateModules$logFile ||
-    config$activateModules$miroLogFile) {
-    emptyEl(session, "#logStatusContainer")
-  }
-  rv$refreshLogs <- NULL
-  emptyEl(session, "#modelStatus")
-  hideEl(session, ".input-validation-error")
-}
 storeGAMSOutputFiles <- function(workDir) {
   if (config$activateModules$attachments &&
     !is.null(activeScen) &&
