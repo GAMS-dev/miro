@@ -105,6 +105,17 @@
                         >: Add option to show table summary (sum, mean, count,
                         ... for rows/columns).
                       </li>
+                      <li>
+                        MIRO Server: When a user without permissions on the MIRO
+                        Server namespace opens an application, it is now
+                        launched in read-only mode, i.e. the GAMS interaction
+                        section is hidden and the sandbox scenario cannot be
+                        saved/deleted.
+                        <a href="./server_setup.html#config-disable-readonly"
+                          >A new setting</a
+                        >
+                        allows you to disable this behavior.
+                      </li>
                     </ul>
                     <h3>Bug fixes</h3>
                     <ul>
@@ -2788,6 +2799,7 @@
             <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
               <div id="doc-nav" class="doc-nav">
                 <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                  <a class="nav-link scrollto" href="#v25">GAMS MIRO 2.5</a>
                   <a class="nav-link scrollto" href="#v24">GAMS MIRO 2.4</a>
                   <a class="nav-link scrollto" href="#v23">GAMS MIRO 2.3</a>
                   <a class="nav-link scrollto" href="#v22">GAMS MIRO 2.2</a>

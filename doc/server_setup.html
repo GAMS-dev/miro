@@ -698,6 +698,7 @@
   admin-groups: admins
   container-log-path: /logs/container-logs
   force-signed-apps: false
+  disable-readonly-mode: false
   authentication: webservice
   webservice:
     authentication-url: http://auth:1234/login
@@ -824,6 +825,22 @@ server:
                           developer. You should store all public keys (in PEM
                           format) of the developers you trust in the directory:
                           <i>miro_server/data/known_keys</i>.
+                        </p>
+                      </li>
+                      <li>
+                        <b
+                          >Disable readonly mode
+                          (<i>proxy.disable-readonly-mode</i>):</b
+                        >
+                        <a id="config-disable-readonly" class="anchor"></a>
+                        <p>
+                          By default, when a user without permissions on the
+                          MIRO Server namespace opens an application, MIRO
+                          starts in read-only mode. This means that the GAMS
+                          interaction section and the "Solve" button are hidden.
+                          In addition, the sandbox scenario cannot be saved or
+                          deleted. To disable this behaviour, set this option
+                          to: <i>true</i>.
                         </p>
                       </li>
                       <li>
