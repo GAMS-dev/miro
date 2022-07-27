@@ -21,6 +21,8 @@ RUN apt-get update \
         openssh-client \
         rsync \
         libxml2-dev \
+        libfribidi-dev \
+        libharfbuzz-dev \
         && rm -rf /var/lib/apt/lists/*
 
 ## Configure default locale, see https://github.com/rocker-org/rocker/issues/19
