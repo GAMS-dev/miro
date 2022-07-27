@@ -1355,7 +1355,7 @@ Worker <- R6Class("Worker", public = list(
       },
       error = function(e) {
         statusCode <- conditionMessage(e)
-        if (identical(statusCode, "308")) {
+        if (identical(statusCode, "308") || identical(statusCode, "410")) {
           return(list(entry_value = "", queue_finished = TRUE))
         } else if (identical(statusCode, "404")) {
           flog.debug("Stream entry not found.")
@@ -1557,7 +1557,7 @@ Worker <- R6Class("Worker", public = list(
       }
       return(private$status)
     }
-    if (identical(statusCode, 308L)) {
+    if (identical(statusCode, 308L) || identical(statusCode, 410L)) {
       # job finished, get full log
       ret <- private$getRemoteStatus(private$process)
       gamsRetCode <- content(ret)$gams_return_code
