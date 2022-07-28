@@ -179,7 +179,7 @@
             "lng": "lngp",
             "lat": "latp",
             "iconOptions": {
-              "icon": "cog",
+              "icon": "gear",
               "iconColor": "#000000",
               "markerColor": "red"
             },
@@ -197,7 +197,7 @@
             "lng": "lngm",
             "lat": "latm",
             "iconOptions": {
-              "icon": "user-circle",
+              "icon": "circle-user",
               "iconColor": "#000000",
               "markerColor": "blue"
             },
@@ -344,7 +344,7 @@
             "description": "first date of training period",
             "color": "aqua",
             "icon": {
-              "name": "play-circle",
+              "name": "circle-play",
               "lib": "font-awesome"
             },
             "round": 0

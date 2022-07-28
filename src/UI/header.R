@@ -30,8 +30,8 @@ header <- dashboardHeader(
     ),
     tags$ul(
       class = "dropdown-menu", role = "menu",
-      tags$li(actionLink("btEditMeta", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-edit"></i></div> ', lang$nav$header$scenario$edit)))),
-      tags$li(actionLink("btSave", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-save"></i></div> ', lang$nav$header$scenario$save)))),
+      tags$li(actionLink("btEditMeta", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-magnifying-glass"></i></div> ', lang$nav$header$scenario$edit)))),
+      tags$li(actionLink("btSave", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-floppy-disk"></i></div> ', lang$nav$header$scenario$save)))),
       tags$li(actionLink("btSaveAs", HTML(paste0('<div class="menu-icon-align"></div> ', lang$nav$header$scenario$saveAs)))),
       tags$li(HTML(paste0(
         '<a href="#" class="action-button"

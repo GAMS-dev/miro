@@ -90,12 +90,12 @@ header_admin <- dashboardHeader(
 sidebar_admin <- dashboardSidebar(
   sidebarMenu(
     id = "miroSidebar",
-    menuItem(lang$adminMode$uiR$general, tabName = "new_gen", icon = icon("cog")),
-    menuItem(lang$adminMode$uiR$symbol, tabName = "symbol_conf", icon = icon("edit")),
+    menuItem(lang$adminMode$uiR$general, tabName = "new_gen", icon = icon("gear")),
+    menuItem(lang$adminMode$uiR$symbol, tabName = "symbol_conf", icon = icon("pen-to-square")),
     menuItem(lang$adminMode$uiR$table, tabName = "tables_gen", icon = icon("table")),
-    menuItem(lang$adminMode$uiR$widgets, tabName = "new_widget", icon = icon("sliders-h")),
+    menuItem(lang$adminMode$uiR$widgets, tabName = "new_widget", icon = icon("sliders")),
     menuItem(lang$adminMode$uiR$graphs, tabName = "new_graph", icon = icon("chart-bar")),
-    menuItem(lang$adminMode$uiR$analysis, tabName = "analysis_scripts", icon = icon("search")),
+    menuItem(lang$adminMode$uiR$analysis, tabName = "analysis_scripts", icon = icon("magnifying-glass")),
     menuItem(lang$adminMode$uiR$database, tabName = "db_management", icon = icon("database"))
   )
 )
@@ -537,8 +537,8 @@ font-size: 12px;
                   ),
                   tags$div(
                     class = "save-delete-wrapper",
-                    actionButton("deleteGraph", lang$adminMode$graphs$ui$deleteGraph, icon("trash-alt"), class = "save-delete-delete-btn full-width"),
-                    actionButton("saveGraph", lang$adminMode$graphs$ui$saveGraph, icon("save"), class = "save-delete-save-btn full-width")
+                    actionButton("deleteGraph", lang$adminMode$graphs$ui$deleteGraph, icon("trash-can"), class = "save-delete-delete-btn full-width"),
+                    actionButton("saveGraph", lang$adminMode$graphs$ui$saveGraph, icon("floppy-disk"), class = "save-delete-save-btn full-width")
                   )
                 ),
                 tags$div(
@@ -738,11 +738,11 @@ font-size: 12px;
                 class = "col-sm-6", id = "config-right-widget",
                 tags$div(
                   style = "margin-bottom:50px;text-align:right;",
-                  actionButton("deleteWidget", "Delete", icon("trash-alt"),
+                  actionButton("deleteWidget", "Delete", icon("trash-can"),
                     class = "save-delete-delete-btn",
                     style = "width:100px;"
                   ),
-                  actionButton("saveWidget", "Save", icon("save"),
+                  actionButton("saveWidget", "Save", icon("floppy-disk"),
                     class = "save-delete-save-btn",
                     style = "width:100px;"
                   )
@@ -850,7 +850,7 @@ font-size: 12px;
                           ), class = "info-header",
                           href = "https://gams.com/miro/configuration_general.html#app-readme",
                           tags$span(
-                            class = "fas fa-info-circle", class = "info-icon",
+                            class = "fas fa-circle-info", class = "info-icon",
                             role = "presentation",
                             `aria-label` = "More information"
                           ), target = "_blank"
@@ -1000,7 +1000,7 @@ font-size: 12px;
                           class = "info-wrapper",
                           href = "https://gams.com/miro/configuration_general.html#general-output-attach",
                           tags$span(
-                            class = "fas fa-info-circle", class = "info-icon",
+                            class = "fas fa-circle-info", class = "info-icon",
                             role = "presentation",
                             `aria-label` = "More information"
                           ), target = "_blank"
@@ -1071,7 +1071,7 @@ font-size: 12px;
                             title = lang$adminMode$general$decimal$tooltip, class = "info-wrapper",
                             href = "https://www.gams.com/miro/configuration_general.html#decimal-places",
                             tags$span(
-                              class = "fas fa-info-circle", class = "info-icon",
+                              class = "fas fa-circle-info", class = "info-icon",
                               role = "presentation",
                               `aria-label` = "More information"
                             ), target = "_blank"
@@ -1123,7 +1123,7 @@ font-size: 12px;
                               class = "info-wrapper",
                               href = "https://gams.com/miro/configuration_general.html#command-line-args",
                               tags$span(
-                                class = "fas fa-info-circle", class = "info-icon",
+                                class = "fas fa-circle-info", class = "info-icon",
                                 role = "presentation",
                                 `aria-label` = "More information"
                               ), target = "_blank"
@@ -1185,7 +1185,7 @@ font-size: 12px;
                             class = "info-wrapper",
                             href = "https://gams.com/miro/configuration_general.html#general-duration",
                             tags$span(
-                              class = "fas fa-info-circle", class = "info-icon",
+                              class = "fas fa-circle-info", class = "info-icon",
                               role = "presentation",
                               `aria-label` = "More information"
                             ), target = "_blank"
@@ -1216,7 +1216,7 @@ font-size: 12px;
                         tags$a("",
                           title = lang$adminMode$general$ui$tooltipDocs, class = "info-wrapper", href = "https://gams.com/miro/start.html#scenario-comparison",
                           tags$span(
-                            class = "fas fa-info-circle", class = "info-icon",
+                            class = "fas fa-circle-info", class = "info-icon",
                             role = "presentation",
                             `aria-label` = "More information"
                           ), target = "_blank"
@@ -1261,7 +1261,7 @@ font-size: 12px;
                       tags$a(
                         title = lang$adminMode$general$ui$tooltipDocs, class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/configuration_symbols.html#naming",
                         tags$span(
-                          class = "fas fa-info-circle", class = "info-icon",
+                          class = "fas fa-circle-info", class = "info-icon",
                           role = "presentation",
                           `aria-label` = "More information"
                         ), target = "_blank"
@@ -1436,7 +1436,7 @@ font-size: 12px;
                           tags$a(
                             class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/configuration_symbols.html#tab-grouping",
                             tags$span(
-                              class = "fas fa-info-circle", class = "info-icon",
+                              class = "fas fa-circle-info", class = "info-icon",
                               role = "presentation",
                               `aria-label` = "More information"
                             ), target = "_blank"
@@ -1500,7 +1500,7 @@ font-size: 12px;
                           tags$a(
                             class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/configuration_symbols.html#tab-grouping",
                             tags$span(
-                              class = "fas fa-info-circle", class = "info-icon",
+                              class = "fas fa-circle-info", class = "info-icon",
                               role = "presentation",
                               `aria-label` = "More information"
                             ), target = "_blank"
@@ -1538,7 +1538,7 @@ font-size: 12px;
                                   class = "info-wrapper",
                                   href = "https://gams.com/miro/configuration_symbols.html#hidden-symbols",
                                   tags$span(
-                                    class = "fas fa-info-circle", class = "info-icon",
+                                    class = "fas fa-circle-info", class = "info-icon",
                                     role = "presentation",
                                     `aria-label` = "More information"
                                   ),
@@ -1563,7 +1563,7 @@ font-size: 12px;
                                   class = "info-wrapper",
                                   href = "https://gams.com/miro/configuration_symbols.html#hidden-scalars",
                                   tags$span(
-                                    class = "fas fa-info-circle", class = "info-icon",
+                                    class = "fas fa-circle-info", class = "info-icon",
                                     role = "presentation",
                                     `aria-label` = "More information"
                                   ), target = "_blank"
@@ -1583,7 +1583,7 @@ font-size: 12px;
                           tags$a(
                             class = "info-header", href = "https://gams.com/miro/configuration_symbols.html#symbol-links",
                             tags$span(
-                              class = "fas fa-info-circle", class = "info-icon",
+                              class = "fas fa-circle-info", class = "info-icon",
                               role = "presentation",
                               `aria-label` = "More information"
                             ), target = "_blank"
@@ -1665,12 +1665,12 @@ font-size: 12px;
                   style = "margin-bottom:50px;text-align:right;",
                   actionButton("deleteTableWidget",
                     lang$adminMode$tables$ui$resetTable,
-                    icon("undo"),
+                    icon("rotate-left"),
                     class = "save-delete-delete-btn",
                     style = "width:100px;"
                   ),
                   actionButton("saveTableWidget", lang$adminMode$tables$ui$saveTable,
-                    icon("save"),
+                    icon("floppy-disk"),
                     class = "save-delete-save-btn",
                     style = "width:100px;"
                   )
@@ -1702,7 +1702,7 @@ font-size: 12px;
                     class = "info-header",
                     href = "https://gams.com/miro/configuration_analysis.html",
                     tags$span(
-                      class = "fas fa-info-circle", class = "info-icon",
+                      class = "fas fa-circle-info", class = "info-icon",
                       role = "presentation",
                       `aria-label` = "More information"
                     ), target = "_blank"
@@ -1731,7 +1731,7 @@ font-size: 12px;
                     class = "info-header",
                     href = "https://gams.com/miro/start.html#analysis-scripts",
                     tags$span(
-                      class = "fas fa-info-circle", class = "info-icon",
+                      class = "fas fa-circle-info", class = "info-icon",
                       role = "presentation",
                       `aria-label` = "More information"
                     ), target = "_blank"

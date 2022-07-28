@@ -697,7 +697,7 @@ aboutDialogText <- paste0(
   "GNU General Public License for more details.<br/><br/>",
   "You should have received a copy of the GNU General Public License ",
   "along with this program. If not, see ",
-  "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
+  "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>. ",
   "For more information about third-party software included in MIRO, see ",
   "<a href=\\'http://www.gams.com/miro/license.html\\' target=\\'_blank\\'>here</a>."
 )

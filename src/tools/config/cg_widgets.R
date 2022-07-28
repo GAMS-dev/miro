@@ -948,7 +948,7 @@ observeEvent(
                     class = "info-wrapper",
                     href = "https://gams.com/miro/widgets.html#slider-option-minstep",
                     tags$span(
-                      class = "fas fa-info-circle", class = "info-icon",
+                      class = "fas fa-circle-info", class = "info-icon",
                       role = "presentation",
                       `aria-label` = "More information"
                     ), target = "_blank"
@@ -1357,7 +1357,7 @@ observeEvent(
                       title = lang$adminMode$widgets$dropdown$clearValueTooltip,
                       class = "info-wrapper", href = "https://gams.com/miro/widgets.html#dropdown-option-clearvalue",
                       tags$span(
-                        class = "fas fa-info-circle", class = "info-icon",
+                        class = "fas fa-circle-info", class = "info-icon",
                         role = "presentation",
                         `aria-label` = "More information"
                       ), target = "_blank"
@@ -2207,7 +2207,7 @@ getSymbolHotOptions <- function() {
               title = lang$adminMode$widgets$table$colWidthsTooltip, class = "info-wrapper",
               href = "https://gams.com/miro/configuration_json_only.html#table-colwidths",
               tags$span(
-                class = "fas fa-info-circle", class = "info-icon",
+                class = "fas fa-circle-info", class = "info-icon",
                 role = "presentation",
                 `aria-label` = "More information"
               ), target = "_blank"

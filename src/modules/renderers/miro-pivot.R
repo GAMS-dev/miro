@@ -57,7 +57,7 @@ createBootstrapDropdownChoices <- function(el, eventId, editEventId = NULL, dele
     },
     if (!is.null(deleteEventId)) {
       tags$a(
-        role = "button", icon("times"), class = "miro-pivot-view-button",
+        role = "button", icon("xmark"), class = "miro-pivot-view-button",
         onClick = paste0(
           "Shiny.setInputValue('", deleteEventId, "','",
           el$id, "',{priority:\'event\'});"
@@ -188,7 +188,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
               class = "presentation-hide custom-order", style = if (isTRUE(options$hidePivotControls)) "display:none;",
               actionButton(ns("saveView"),
                 label = tags$div(
-                  icon("plus-square"),
+                  icon("square-plus"),
                   tags$div(
                     class = "miro-pivot-btn-text",
                     lang$renderers$miroPivot$btNewView

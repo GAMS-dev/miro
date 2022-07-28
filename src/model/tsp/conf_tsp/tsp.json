@@ -40,7 +40,7 @@
             "lng": "lnga",
             "lat": "lata",
             "iconOptions": {
-              "icon": "user-circle",
+              "icon": "circle-user",
               "iconColor": "#f3f709",
               "markerColor": "blue"
             },

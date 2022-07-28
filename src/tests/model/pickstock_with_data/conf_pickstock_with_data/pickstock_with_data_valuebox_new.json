@@ -91,7 +91,7 @@
             "description": "first date of training period",
             "color": "aqua",
             "icon": {
-              "name": "play-circle",
+              "name": "circle-play",
               "lib": "font-awesome"
             },
             "round": 0

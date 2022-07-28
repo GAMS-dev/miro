@@ -780,7 +780,7 @@ widgetTooltip <- function(label = NULL, tooltip = NULL, mobile = FALSE) {
         class = "info-wrapper tooltip-mobile",
         class = if (mobile) "always-mobile",
         tags$span(
-          class = "fas fa-info-circle", class = "info-icon",
+          class = "fas fa-circle-info", class = "info-icon",
           role = "presentation",
           `aria-label` = "More information"
         )

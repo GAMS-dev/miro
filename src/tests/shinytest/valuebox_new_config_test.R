@@ -24,6 +24,6 @@ expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .small-box.bg-aqu
 expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .small-box.bg-aqua h3')[1].innerText==='2016-05-24'", timeout = 50))
 expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .small-box.bg-aqua p')[1].innerText==='last date of training period'", timeout = 50))
 
-expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .row .bg-aqua .fa-play-circle').length==1", timeout = 50))
+expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .row .bg-aqua .fa-circle-play').length==1", timeout = 50))
 
 app$stop()

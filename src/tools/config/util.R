@@ -26,7 +26,7 @@ createArray <- function(session, arrayID, label, plotlyChartType = "", autoCreat
     '<div class="array-wrapper"></div>\n
    <div onclick="Miro.addArrayDataEl(\'', arrayID, '\')" style="cursor:pointer">\n
      <button type="button" class="btn btn-default bt-icon btn-add-array-el" style="font-size:20px;">\n
-       <i class="far fa-plus-square" role="presentation" aria-label="Add new array element"></i>\n
+       <i class="far fa-square-plus" role="presentation" aria-label="Add new array element"></i>\n
      </button>\n', label, "\n
   </div>
 </div>"
@@ -62,7 +62,7 @@ labelTooltip <- function(label = NULL, tooltip = NULL, href = NULL) {
           `data-tooltip` = tooltip,
           class = "info-wrapper tooltip-mobile",
           tags$span(
-            class = "fas fa-info-circle", class = "info-icon",
+            class = "fas fa-circle-info", class = "info-icon",
             role = "presentation",
             `aria-label` = "More information"
           )
@@ -76,7 +76,7 @@ labelTooltip <- function(label = NULL, tooltip = NULL, href = NULL) {
       tags$a("",
         title = tooltip, class = "info-wrapper", href = href,
         tags$span(
-          class = "fas fa-info-circle", class = "info-icon",
+          class = "fas fa-circle-info", class = "info-icon",
           role = "presentation",
           `aria-label` = "More information"
         ), target = "_blank"

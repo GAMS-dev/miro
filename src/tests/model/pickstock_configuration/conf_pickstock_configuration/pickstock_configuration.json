@@ -223,7 +223,7 @@
             "lng": "lngp",
             "lat": "latp",
             "iconOptions": {
-              "icon": "cog",
+              "icon": "gear",
               "iconColor": "#000000",
               "markerColor": "red"
             },
@@ -241,7 +241,7 @@
             "lng": "lngm",
             "lat": "latm",
             "iconOptions": {
-              "icon": "user-circle",
+              "icon": "circle-user",
               "iconColor": "#000000",
               "markerColor": "blue"
             },

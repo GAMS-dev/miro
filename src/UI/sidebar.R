@@ -46,11 +46,11 @@ compareModeList <- c(list(
 sidebar <- dashboardSidebar(
   sidebarMenu(
     id = "miroSidebar",
-    menuItem(lang$nav$sidebarMenu$inputScreen, tabName = "inputData", icon = icon("sliders-h")),
+    menuItem(lang$nav$sidebarMenu$inputScreen, tabName = "inputData", icon = icon("sliders")),
     menuItem(lang$nav$sidebarMenu$outputScreen, tabName = "outputData", icon = icon("chart-pie")),
-    menuItem(lang$nav$sidebarMenu$gams, tabName = "gamsinter", icon = icon("cog")),
+    menuItem(lang$nav$sidebarMenu$gams, tabName = "gamsinter", icon = icon("gear")),
     menuItem(lang$nav$sidebarMenu$load, tabName = "loadResults", icon = icon("database")),
-    menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("columns")),
+    menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("table-columns")),
     actionButton("btImport", lang$nav$sidebarButtons$importInput,
       width = "85%",
       class = "bt-highlight-3 btn-custom",

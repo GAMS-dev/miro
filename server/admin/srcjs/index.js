@@ -54,7 +54,7 @@ const addAppWrapperHTML = `<div id="addAppBox" class="add-app-box app-box-fixed-
                                <div class="add-app-box-title"></div>
                                <div class="add-app-box-desc"></div>
                              </div>
-                            <a class="btn-add-app" id="addApp"><i class="fas fa-plus-circle"></i></a>
+                            <a class="btn-add-app" id="addApp"><i class="fas fa-circle-plus"></i></a>
                           </div>`;
 
 const supportedDataFileTypes = ['gdx', 'miroscen', 'xlsx', 'xlsm', 'xls', 'zip'];
@@ -235,7 +235,7 @@ function refreshConfigList() {
             <input data-index="${index}" data-id="${id}" class="btn btn-secondary cancel-btn" value="Cancel" type="reset">
             <button class="btn btn-secondary confirm-btn btn-save-changes" data-id="${id}" data-index="${index}" type="button">Save</button>
         </div>
-        <a class="delete-app-button app-corner-button" data-index="${index}" data-id="${id}"><i class="fas fa-times"></i></a>
+        <a class="delete-app-button app-corner-button" data-index="${index}" data-id="${id}"><i class="fas fa-xmark"></i></a>
       </div>
     </div>`;
   }, '');
@@ -265,7 +265,7 @@ function expandAddAppForm() {
                            <div class="drag-drop-area app-window input-group" id="newAppFiles">
                               <label for="miroAppFile" style="width:100%;height:100%;">
                                 <div class="drag-drop-area-text empty">
-                                <div><i class="fas fa-plus-circle drag-drop-area-icon"></i></div>
+                                <div><i class="fas fa-circle-plus drag-drop-area-icon"></i></div>
                                    ${appFilesPlaceholder}
                                 </div>
                               </label>

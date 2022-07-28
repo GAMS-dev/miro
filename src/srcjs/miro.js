@@ -216,7 +216,7 @@ $(document).ready(() => {
   }
   $(document).on('click', '.toggle-label-height', function () {
     const $this = $(this);
-    $this.children('.fa').toggleClass('fa-chevron-circle-down fa-chevron-circle-up');
+    $this.children('.fa').toggleClass('fa-circle-chevron-down fa-circle-chevron-up');
     $this.parent().prev().toggleClass('label-full label-collapsed', 500);
   });
   $('.label-wrapper').each(function () {
@@ -348,7 +348,7 @@ $(document).ready(() => {
   });
   $('#scenTabset').append('<li id="scenTabsetAdd"><a href="#" id="btLoadScen" data-value="scen_add" '
     + 'onclick="Shiny.setInputValue(\'btLoadScen\', 1, {priority: \'event\'});">'
-    + '<i class="far fa-plus-square" style="font-size:13pt;" role="presentation" aria-label="Add scenario"></i></a></li>'); // show/hide buttons after (R triggered) tab switch.
+    + '<i class="far fa-square-plus" style="font-size:13pt;" role="presentation" aria-label="Add scenario"></i></a></li>'); // show/hide buttons after (R triggered) tab switch.
 
   Shiny.addCustomMessageHandler('gms-switchTab', (el) => {
     switchTab(el);
@@ -621,7 +621,7 @@ checked="checked">
       </div>`;
       }
 
-      $(`<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_${id[i]}" type="button" onclick="Miro.removeAttachment(${id[i]})"><i class="fa fa-times-circle" role="presentation" aria-label="Remove attachment"></i></button><a href="#" onclick="Miro.downloadAttachment(${id[i]})"> ${name[i]}</a></div>${checkBoxHTML}</div>`).insertBefore('#endAttachList');
+      $(`<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_${id[i]}" type="button" onclick="Miro.removeAttachment(${id[i]})"><i class="fa fa-circle-xmark" role="presentation" aria-label="Remove attachment"></i></button><a href="#" onclick="Miro.downloadAttachment(${id[i]})"> ${name[i]}</a></div>${checkBoxHTML}</div>`).insertBefore('#endAttachList');
     }
   });
   Shiny.addCustomMessageHandler('gms-fitTitleInBox', (id) => {

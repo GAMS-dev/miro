@@ -193,7 +193,7 @@ MIRObuildTabItem <- function(index, tabsetId, tabs = NULL,
             ",{priority:\\'event\\'})')"
           ),
           tags$i(
-            class = "fa fa-times",
+            class = "fa fa-xmark",
             role = "presentation",
             `aria-label` = scenButtonLang[["title"]]
           )

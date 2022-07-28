@@ -354,7 +354,7 @@ if (buildUI) {
                     id = paste0("tableLabel_", i, "_toggle"),
                     class = "btn toggle-label-height",
                     href = "#",
-                    tags$i(class = "fa fa-chevron-circle-down")
+                    tags$i(class = "fa fa-circle-chevron-down")
                   )
                 )
               )
@@ -510,7 +510,7 @@ if (buildUI) {
                 class = "btn btn-default bt-icon action-button",
                 onclick = paste0("Shiny.setInputValue('btRefreshComp',-", compareModuleConfig[["idx"]], ",{priority: 'event'})"),
                 tags$i(
-                  class = "fas fa-sync-alt",
+                  class = "fas fa-rotate",
                   `aria-label` = lang$nav$scen$tooltips$btRefresh
                 )
               ),
@@ -520,7 +520,7 @@ if (buildUI) {
                   class = "btn btn-default bt-icon action-button",
                   onclick = paste0("Shiny.setInputValue('btCloseScenCmp','", compareModuleConfig[["id"]], "',{priority: 'event'})"),
                   tags$i(
-                    class = "fas fa-times",
+                    class = "fas fa-xmark",
                     `aria-label` = lang$nav$scen$tooltips$btCloseAll
                   )
                 )
@@ -556,7 +556,7 @@ if (buildUI) {
           title = list(
             tags$div(
               id = "dirtyFlagIcon", title = lang$nav$inputScreen$dirtyFlag, class = "inline-el",
-              style = "display:none;", icon("exclamation-triangle")
+              style = "display:none;", icon("triangle-exclamation")
             ),
             uiOutput("inputDataTitle", inline = TRUE),
             tags$div(
@@ -569,7 +569,7 @@ if (buildUI) {
                 lang$nav$dialogRemoveScen$cancelButton, "', '",
                 lang$nav$dialogRemoveScen$okButton,
                 '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
-                            <i class="fa fa-times" role="presentation" aria-label="', lang$nav$dialogRemoveScen$title, '"></i></button>'
+                            <i class="fa fa-xmark" role="presentation" aria-label="', lang$nav$dialogRemoveScen$title, '"></i></button>'
               ))
             )
           ), status = "primary", solidHeader = TRUE, width = 12L,
@@ -584,7 +584,7 @@ if (buildUI) {
                   type = "button",
                   style = "display:none",
                   id = "btRefreshGraphIn",
-                  icon("sync")
+                  icon("rotate")
                 )
               ),
               tags$div(
@@ -718,7 +718,7 @@ if (buildUI) {
                   actionButton(
                     inputId = "btScenSplit1_close",
                     class = "bt-icon",
-                    icon = icon("times"),
+                    icon = icon("xmark"),
                     label = NULL
                   )
                 )
@@ -734,7 +734,7 @@ if (buildUI) {
                 style = "float: right;",
                 actionButton(
                   inputId = "btScenSplit2_close",
-                  class = "bt-icon", icon = icon("times"), label = NULL
+                  class = "bt-icon", icon = icon("xmark"), label = NULL
                 )
               )
             ),
@@ -888,7 +888,7 @@ if (buildUI) {
                 id = paste0("tableOutLabel_", i, "_toggle"),
                 class = "btn toggle-label-height",
                 href = "#",
-                tags$i(class = "fa fa-chevron-circle-down")
+                tags$i(class = "fa fa-circle-chevron-down")
               )
             )
           )
@@ -986,7 +986,7 @@ if (buildUI) {
                       actionButton(
                         inputId = "refreshActiveJobs",
                         class = "bt-icon",
-                        icon = icon("sync"), label = NULL
+                        icon = icon("rotate"), label = NULL
                       )
                     )
                   ),
@@ -1018,7 +1018,7 @@ if (buildUI) {
           title = list(
             tags$div(
               id = "dirtyFlagIconO", title = lang$nav$inputScreen$dirtyFlag, class = "inline-el",
-              style = "display:none;", icon("exclamation-triangle")
+              style = "display:none;", icon("triangle-exclamation")
             ),
             uiOutput("outputDataTitle", inline = TRUE),
             tags$div(
@@ -1031,7 +1031,7 @@ if (buildUI) {
                 lang$nav$dialogRemoveScen$cancelButton, "', '",
                 lang$nav$dialogRemoveScen$okButton,
                 '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
-                            <i class="fa fa-times" role="presentation" aria-label="', lang$nav$dialogRemoveScen$title, '"></i></button>'
+                            <i class="fa fa-xmark" role="presentation" aria-label="', lang$nav$dialogRemoveScen$title, '"></i></button>'
               ))
             )
           ), status = "primary", solidHeader = TRUE, width = 12,

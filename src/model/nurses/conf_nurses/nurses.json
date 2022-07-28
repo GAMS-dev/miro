@@ -173,7 +173,7 @@
             "description": "Total number of assignments",
             "color": "light-blue",
             "icon": {
-              "name": "check-circle",
+              "name": "circle-check",
               "lib": "font-awesome"
             },
             "round": 0

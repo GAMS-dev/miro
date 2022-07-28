@@ -1680,7 +1680,7 @@
         "color": "Select color of the valuebox",
         "colorChoices": ["red", "yellow", "aqua", "blue", "light-blue", "green", "navy", "teal", "olive", "lime", "orange", "fuchsia", "purple", "maroon", "black"],
         "icon": "Specify an icon for the valuebox (optional).",
-        "valueboxIconChoices": ["_", "coins", "wallet", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupee", "Ruble", "Pound", "Lira", "User", "Users", "Plus", "Minus", "Exclamation mark", "Question mark", "Play", "Check", "Home", "Cog", "Asterisk", "Ban", "Heart", "Leaf", "Lightbulb", "Smile", "Star"],
+        "valueboxIconChoices": ["_", "coins", "wallet", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupee", "Ruble", "Pound", "Lira", "User", "Users", "Plus", "Minus", "Exclamation mark", "Question mark", "Play", "Check", "House", "Gear", "Asterisk", "Ban", "Heart", "Leaf", "Lightbulb", "Smile", "Star"],
         "desc": "Descriptive text",
         "round": "Number of decimal places (rounding)"
       },
@@ -1945,7 +1945,7 @@
           "label": "Choose a label",
           "iconOptions": "Icon options",
           "icon": "Icon to use",
-          "iconChoices": ["Circle", "Circle-notch", "Dot-circle", "Square", "Times", "User", "Users", "Plus", "Minus", "Exclamation mark", "Question mark", "Play", "Check", "Home", "Cog", "Asterisk", "Ban", "Heart", "Leaf", "Lightbulb", "Smile", "Star"],
+          "iconChoices": ["Circle", "Circle-notch", "Dot-circle", "Square", "Xmark", "User", "Users", "Plus", "Minus", "Exclamation mark", "Question mark", "Play", "Check", "House", "Gear", "Asterisk", "Ban", "Heart", "Leaf", "Lightbulb", "Smile", "Star"],
           "iconColor": "Icon color",
           "markerColor": "Marker color",
           "markerColorChoices": ["red", "darkred", "lightred", "orange", "beige", "green", "darkgreen", "lightgreen", "blue", "darkblue", "lightblue", "purple", "darkpurple", "pink", "cadetblue", "white", "gray", "lightgray", "black"],

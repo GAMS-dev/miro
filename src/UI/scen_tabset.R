@@ -237,7 +237,7 @@ generateScenarioTabsetMulti <- function(scenId) {
               scenId, ",{priority:'event'})"
             ),
             tags$i(
-              class = "fas fa-sync-alt",
+              class = "fas fa-rotate",
               role = "presentation",
               `aria-label` = lang$nav$scen$tooltips$btRefresh
             )
@@ -308,7 +308,7 @@ generateScenarioTabsetSplit <- function(scenId) {
               scenId, ",{priority:'event'})"
             ),
             tags$i(
-              class = "fas fa-sync-alt",
+              class = "fas fa-rotate",
               role = "presentation",
               `aria-label` = lang$nav$scen$tooltips$btRefresh
             )
@@ -373,7 +373,7 @@ generateScenarioTabsetPivot <- function() {
               class = "btn btn-default bt-icon action-button",
               onclick = "Shiny.setInputValue('btRefreshComp',0,{priority: 'event'})",
               tags$i(
-                class = "fas fa-sync-alt",
+                class = "fas fa-rotate",
                 `aria-label` = lang$nav$scen$tooltips$btRefresh
               )
             ),
@@ -384,7 +384,7 @@ generateScenarioTabsetPivot <- function() {
                 class = "btn btn-default bt-icon action-button",
                 onclick = "Shiny.setInputValue('btCloseScenCmp','pivot',{priority: 'event'})",
                 tags$i(
-                  class = "fas fa-times",
+                  class = "fas fa-xmark",
                   `aria-label` = lang$nav$scen$tooltips$btCloseAll
                 )
               )

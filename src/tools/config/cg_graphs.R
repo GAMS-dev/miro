@@ -86,13 +86,13 @@ langSpecificGraphs$valueboxIconChoices <- c(
   "_" = "_", "Coins" = "coins", "Wallet" = "wallet", "Dollar" = "dollar-sign",
   "Euro" = "euro-sign", "Yen" = "yen-sign", "Won" = "won-sign",
   "Shekel" = "shekel-sign", "Rupee" = "rupee-sign",
-  "Ruble" = "ruble-sign", "Pound" = "pound-sign", "Lira" = "lira-sign",
-  "User" = "user-circle", "Users" = "users", "Plus" = "plus-circle",
-  "Minus" = "minus-circle", "Exclamation mark" = "exclamation-circle",
-  "Question mark" = "question-circle", "Play" = "play-circle",
-  "Check" = "check-circle", "Home" = "home", "Cog" = "cog", "Asterisk" = "asterisk",
+  "Ruble" = "ruble-sign", "Pound" = "sterling-sign", "Lira" = "lira-sign",
+  "User" = "circle-user", "Users" = "users", "Plus" = "circle-plus",
+  "Minus" = "circle-minus", "Exclamation mark" = "circle-exclamation",
+  "Question mark" = "circle-question", "Play" = "circle-play",
+  "Check" = "circle-check", "House" = "house-chimney", "Gear" = "gear", "Asterisk" = "asterisk",
   "Ban" = "ban", "Heart" = "heart", "Leaf" = "leaf", "Lightbulb" = "lightbulb",
-  "Smile" = "smile", "Star" = "star"
+  "Smile" = "face-smile", "Star" = "star"
 )
 names(langSpecificGraphs$valueboxIconChoices) <- lang$adminMode$graphs$valueboxOptions$valueboxIconChoices
 langSpecificGraphs$easingChoices <- c(
@@ -3557,7 +3557,7 @@ getOuttype <- reactive({
         class = "info-wrapper",
         href = "https://gams.com/miro/charts.html#table-graph-split-screen",
         tags$span(
-          class = "fas fa-info-circle", class = "info-icon",
+          class = "fas fa-circle-info", class = "info-icon",
           role = "presentation",
           `aria-label` = "More information"
         ), target = "_blank"
@@ -3858,6 +3858,13 @@ getValueboxOptions <- reactive({
                   return()
                 }
               }
+              valueboxIconChoices <- langSpecificGraphs$valueboxIconChoices
+              if (!scalarConfig$icon$name %in% valueboxIconChoices) {
+                valueboxIconChoices <- c(
+                  valueboxIconChoices,
+                  setNames(scalarConfig$icon$name, scalarConfig$icon$name)
+                )
+              }
               tags$div(
                 "data-rank-id" = paste0("valueBox_", i),
                 class = "valuebox-config-el",
@@ -3897,10 +3904,7 @@ getValueboxOptions <- reactive({
                       title = lang$adminMode$graphs$valueboxOptions$icon,
                       selectizeInput(paste0("valueBoxIcon_", i),
                         label = NULL,
-                        choices = unique(c(
-                          langSpecificGraphs$valueboxIconChoices,
-                          scalarConfig$icon$name
-                        )),
+                        choices = valueboxIconChoices,
                         selected = scalarConfig$icon$name,
                         options = list(create = TRUE)
                       )
@@ -4016,7 +4020,7 @@ getDygraphsOptions <- reactive({
           tags$a("",
             class = "info-wrapper", href = "https://gams.com/miro/charts.html#group-domain",
             tags$span(
-              class = "fas fa-info-circle", class = "info-icon",
+              class = "fas fa-circle-info", class = "info-icon",
               role = "presentation",
               `aria-label` = "More information"
             ), target = "_blank"
@@ -4702,7 +4706,7 @@ getCustomOptions <- reactive({
         tags$a("",
           title = lang$adminMode$general$ui$tooltipDocs, class = "info-wrapper", href = "https://gams.com/miro/configuration_advanced.html#additional-r-packages",
           tags$span(
-            class = "fas fa-info-circle", class = "info-icon",
+            class = "fas fa-circle-info", class = "info-icon",
             role = "presentation",
             `aria-label` = "More information"
           ), target = "_blank"
@@ -4743,7 +4747,7 @@ getColorPivotOptions <- reactive({
       tags$a("",
         class = "info-wrapper", href = "https://gams.com/miro/charts.html#group-domain",
         tags$span(
-          class = "fas fa-info-circle", class = "info-icon",
+          class = "fas fa-circle-info", class = "info-icon",
           role = "presentation",
           `aria-label` = "More information"
         ), target = "_blank"

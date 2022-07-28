@@ -862,7 +862,7 @@ showEditMetaDialog <- function(metadata,
               width = 6,
               HTML(paste0(
                 '<button class="btn btn-default bt-icon" id="btRemoveAttachment_', i,
-                '" type="button" onclick="Miro.removeAttachment(', i, ')"><i class="fa fa-times-circle" role="presentation" aria-label="Remove attachment"></i></button>
+                '" type="button" onclick="Miro.removeAttachment(', i, ')"><i class="fa fa-circle-xmark" role="presentation" aria-label="Remove attachment"></i></button>
                                                                    <a href="#" onclick="Miro.downloadAttachment(', i, ')">',
                 htmltools::htmlEscape(attachmentMetadata[["name"]][[i]]), "</a>"
               ))
@@ -1878,7 +1878,7 @@ generateLine <- function(i, j, type, label) {
       fluidRow(
         tags$div(
           class = "col-lg-2 no-side-margin item-delete",
-          actionButton(paste0("btRemoveLine", i, "_", j), label = NULL, icon = icon("minus-circle"), class = "btn-custom btn-item-delete")
+          actionButton(paste0("btRemoveLine", i, "_", j), label = NULL, icon = icon("circle-minus"), class = "btn-custom btn-item-delete")
         )
       )
     )
