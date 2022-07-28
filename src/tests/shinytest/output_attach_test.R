@@ -38,7 +38,7 @@ app$findElement("[data-value='attachments']")$click()
 attachmentList <- app$findElements(".attachment-line")
 expect_identical(length(attachmentList), 4L)
 
-app$findElement("#btRemoveAttachment_1")$click()
+app$waitFor("$('#btRemoveAttachment_1').click();true;", timeout = 50L)
 attachmentList <- app$findElements(".attachment-line")
 expect_identical(length(attachmentList), 3L)
 app$findElement("[data-value='general']")$click()
