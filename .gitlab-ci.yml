@@ -515,6 +515,12 @@ update_doc_job:
   rules:
     - if: $CI_MERGE_REQUEST_ID
       when: always
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "rc"'
+      when: always
     - when: manual
     - allow_failure: true
   needs: []
