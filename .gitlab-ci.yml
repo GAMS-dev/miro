@@ -434,28 +434,9 @@ upload_cloudfront:
   tags:
     - linux
   stage: deploy
+  image: $CI_REGISTRY_IMAGE/builder-linux:latest
   script:
-    - >
-      pushd dist
-        ## get MIRO version information for artifact and tag name
-        MIRO_VERSION=$(find * -name '*.AppImage'|grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+')
-        MIRO_VERSION_MAJOR=$(echo $MIRO_VERSION | cut -f1 -d".")
-        MIRO_VERSION_MINOR=$(echo $MIRO_VERSION | cut -f2 -d".")
-        MIRO_VERSION_PATCH=$(echo $MIRO_VERSION | cut -f3 -d".")
-        FOLDER_NAME="${MIRO_VERSION_MAJOR}.${MIRO_VERSION_MINOR}"
-        mkdir -p $FOLDER_NAME
-        ## move artifacts to correct location
-        mkdir -p $FOLDER_NAME/linux
-        mv *.AppImage $FOLDER_NAME/linux/GAMS-MIRO-${MIRO_VERSION_MAJOR}.${MIRO_VERSION_MINOR}.${MIRO_VERSION_PATCH}.AppImage
-        mkdir -p $FOLDER_NAME/macosx
-        mv *.dmg $FOLDER_NAME/macosx/GAMS-MIRO-${MIRO_VERSION_MAJOR}.${MIRO_VERSION_MINOR}.${MIRO_VERSION_PATCH}.dmg
-        mkdir -p $FOLDER_NAME/windows
-        mv *.exe $FOLDER_NAME/windows/GAMS-MIRO-Setup-${MIRO_VERSION_MAJOR}.${MIRO_VERSION_MINOR}.${MIRO_VERSION_PATCH}.exe
-        ## S3 upload to gams.com
-        s3cmd sync --acl-public ./ ${S3_URL} --access_key=${S3_ACCESS_KEY} --secret_key=${S3_SECRET_KEY}
-        ## S3 content listing
-        s3cmd ls -r ${S3_URL} --access_key=${S3_ACCESS_KEY} --secret_key=${S3_SECRET_KEY}
-      popd
+    - ./.ci/s3_upload_artifacts.sh
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
@@ -464,15 +445,24 @@ upload_dockerhub:
   tags:
     - linux
   stage: deploy
+  services:
+    - docker:20.10-dind
+  image: $CI_REGISTRY_IMAGE/builder-linux:latest
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_VERIFY: 1
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_CERT_PATH: "/certs/client"
+    DOCKER_HOST: tcp://docker:2376
   before_script:
     # this is to be able to pull and push images
     - mkdir -p $HOME/.docker
     - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
   script:
     - echo -e "\e[0Ksection_start:`date +%s`:download_image_section[collapsed=true]\r\e[0KDownloading images section"
-    - cd server && python3 miro_server.py download ${CI_REGISTRY_IMAGE}
+    - cd server && python3 miro_server.py download ${CI_REGISTRY_IMAGE} && cd ..
     - echo -e "\e[0Ksection_end:`date +%s`:download_image_section\r\e[0K"
-    - cd server && python3 miro_server.py push
+    - cd server && python3 miro_server.py push && cd ..
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
@@ -481,6 +471,7 @@ update_doc_job_release:
   tags:
     - linux
   stage: deploy
+  image: $CI_REGISTRY_IMAGE/builder-linux:latest
   before_script:
     - git config --global user.email "puma@noreply.gams.com"
     - git config --global user.name "Gitlab Runner (puma)"
