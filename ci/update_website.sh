@@ -15,8 +15,8 @@ popd > /dev/null
 
 pushd "$GAMSCOMDIR" > /dev/null
   git pull
-  sed -i -e 's/^\\( *miro_release *= *\\).*/\\1"'"${MIRO_VERSION_FULL}"'"/' ./config.toml
-  sed -i -e 's/^\\( *miro_release_date *= *\\).*/\\1"'"${MIRO_RELEASE_DATE}"'"/' ./config.toml
+  sed -i -e 's/^\( *miro_release *= *\).*/\1"'"${MIRO_VERSION_FULL}"'"/' ./config.toml
+  sed -i -e 's/^\( *miro_release_date *= *\).*/\1"'"${MIRO_RELEASE_DATE}"'"/' ./config.toml
   git add config.toml
   git commit -m "Update MIRO version" && {
       git push origin HEAD:master || true
