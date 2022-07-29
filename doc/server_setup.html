@@ -699,6 +699,7 @@
   container-log-path: /logs/container-logs
   force-signed-apps: false
   disable-readonly-mode: false
+  anonymous-readonly-mode: false
   authentication: webservice
   webservice:
     authentication-url: http://auth:1234/login
@@ -841,6 +842,26 @@ server:
                           In addition, the sandbox scenario cannot be saved or
                           deleted. To disable this behaviour, set this option
                           to: <i>true</i>.
+                        </p>
+                      </li>
+                      <li>
+                        <b
+                          >Anonymous readonly mode
+                          (<i>proxy.anonymous-readonly-mode</i>):</b
+                        >
+                        <a id="config-anonymous-readonly" class="anchor"></a>
+                        <p>
+                          Only relevant when authentication is disabled (<i
+                            >proxy.authentication: none</i
+                          >): Activates read-only mode (GAMS interaction section
+                          and solve button hidden and sandbox scenario cannot be
+                          saved/deleted). It is recommended not to give the
+                          <a
+                            href="./server_administration.html#authentication-user-management"
+                            >anonymous user</a
+                          >
+                          any permissions in GAMS Engine if this setting is
+                          enabled.
                         </p>
                       </li>
                       <li>

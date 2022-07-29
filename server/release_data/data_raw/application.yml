@@ -12,6 +12,7 @@ proxy:
   container-log-path: /logs/container-logs
   force-signed-apps: false
   disable-readonly-mode: false
+  anonymous-readonly-mode: false
   authentication: webservice
   webservice:
     authentication-url: http://auth:1234/login
