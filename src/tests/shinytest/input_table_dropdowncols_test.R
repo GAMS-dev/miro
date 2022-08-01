@@ -25,8 +25,9 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
 )
 
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
-Sys.sleep(1)
+Sys.sleep(0.5)
 expect_true(app$waitFor("$('#errorMessages').html().includes('bla');", timeout = 50))
+Sys.sleep(0.5)
 app$stop()
 
 configNew <- configOld
@@ -36,7 +37,7 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
 )
 
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
-Sys.sleep(1)
+Sys.sleep(0.5)
 app$setInputs(btImport = "click")
 app$setInputs(tb_importData = "tb_importData_local")
 app$uploadFile(localInput = "../data/transport.gdx")
