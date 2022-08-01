@@ -293,7 +293,7 @@ observeEvent(input$btLoadInconsistentOutput, {
   renderOutputData()
   markUnsaved(markDirty = TRUE)
 })
-observeEvent(virtualActionButton(input$btSubmitJob, rv$btSubmitJob), {
+observeEvent(input$btSubmitJob, {
   flog.debug("Submit new asynchronous job button clicked.")
   jobNameTmp <- character(1L)
   if (!verifyCanSolve(async = TRUE, buttonId = "btSubmitJob")) {
