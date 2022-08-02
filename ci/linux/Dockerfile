@@ -69,8 +69,7 @@ RUN wget https://d37drm4t2jghv5.cloudfront.net/distributions/${GAMS_MAJOR}.${GAM
 
 ENV GAMS_SYS_DIR=/opt/gams
 
-RUN R -e "install.packages(c('testthat', 'shinytest', 'xml2', 'precommit', 'docopt', 'styler'));"
-RUN R -e "shinytest::installDependencies();"
+RUN R -e "install.packages(c('xml2', 'precommit', 'docopt', 'styler'));"
 
 # install openssl3 from source
 RUN wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz && \

@@ -2,15 +2,16 @@ FROM miro-ui:latest AS miro-pkg-builder
 
 USER root
 
-ARG R_BASE_VERSION=4.0.5
+ARG R_BASE_VERSION=4.2.1
 
 RUN apt-get update && apt-get install -y \
     sudo \
     wget \
     libxml2-dev \
+    libssl-dev \
     r-base-dev=${R_BASE_VERSION}*
 
-RUN R -e "install.packages(c('testthat', 'shinytest', 'xml2', 'precommit', 'docopt', 'styler'));"
+RUN R -e "install.packages(c('testthat', 'shinytest2', 'xml2', 'precommit', 'docopt', 'styler'));"
 
 COPY r/library_src /home/miro/r/library_src
 COPY ci/install_pkg.R /home/miro/r/install_pkg.R
@@ -53,7 +54,10 @@ RUN pip3 install pre-commit
 # install openssh and rsync for deploying documentation
 RUN apt-get update && apt-get install -y openssh-client rsync
 
-RUN R -e "library(shinytest);installDependencies()"
+# install chrome for UI tests
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    apt install -y ./google-chrome-stable_current_amd64.deb && \
+    rm ./google-chrome-stable_current_amd64.deb
 
 COPY ci/run.sh /etc/profile.d/ci.sh
 

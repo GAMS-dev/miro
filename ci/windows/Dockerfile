@@ -74,10 +74,5 @@ RUN Invoke-WebRequest $('https://d37drm4t2jghv5.cloudfront.net/distributions/{0}
 
 ENV GAMS_SYS_DIR=C:/gams
 
-RUN Invoke-WebRequest "https://github.com/wch/webshot/releases/download/v0.3.1/phantomjs-2.1.1-windows.zip" -OutFile "phantomjs.zip" -UseBasicParsing ; \
-    Expand-Archive -Path phantomjs.zip -DestinationPath $env:TEMP ; \
-    New-Item $($env:APPDATA + '\PhantomJS') -Type Directory ; \
-    Move-Item -Path $('{0}\phantomjs-2.1.1-windows\bin\phantomjs.exe' -f $env:TEMP) -Destination $('{0}\PhantomJS\phantomjs.exe' -f $env:APPDATA) ; \
-    $env:PATH = '{0}\PhantomJS;{1}' -f $env:APPDATA, $env:PATH ; \
-    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment\' -Name Path -Value $env:PATH ; \
-    Remove-Item phantomjs.zip
+RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; \
+    choco install -y googlechrome

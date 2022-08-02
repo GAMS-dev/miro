@@ -60,14 +60,15 @@ if (isLinux) {
 requiredPackages <- c(
   "withr", "pkgbuild", "remotes", "jsonlite", "V8",
   "zip", "tibble", "readr", "R6", "processx",
-  "testthat", "shinytest", "Rcpp", "futile.logger",
-  "shinytest", "stringi", "xml2"
+  "Rcpp", "futile.logger", "stringi", "xml2"
 )
 if (identical(Sys.getenv("BUILD_DOCKER"), "true")) {
   requiredPackages <- c(requiredPackages, "DBI", "blob")
 }
 if (isLinux) {
   requiredPackages <- c(requiredPackages, "askpass")
+} else {
+  requiredPackages <- c(requiredPackages, "testthat", "shinytest2")
 }
 installedPackagesDevel <- installed.packages(RlibPathDevel)
 newPackages <- requiredPackages[!requiredPackages %in%
