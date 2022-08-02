@@ -12,13 +12,9 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit("input_table_col_format_test")
+app <- AppDriver$new("../../", name = "input_table_col_format_test", variant = NULL, load_timeout = 20000)
 Sys.sleep(5)
-app$snapshot(
-  items = list(output = "errorMessages"),
-  screenshot = TRUE
-)
+app$expect_values(output = "errorMessages")
 Sys.sleep(0.5)
 app$stop()
 
@@ -30,10 +26,10 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app2 <- ShinyDriver$new("../../", loadTimeout = 20000)
+app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
 Sys.sleep(5)
-expect_identical(app2$getAllValues()$output[["errorMessages"]], " colFormat is not supported when pivotCols are active (table: d).")
-app2$stop()
+expect_identical(app$get_values()$output[["errorMessages"]], " colFormat is not supported when pivotCols are active (table: d).")
+app$stop()
 
 configNew <- configOld
 configNew$inputWidgets$d$colFormat <- list(value = list(format = "0"))
@@ -42,17 +38,17 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app3 <- ShinyDriver$new("../../", loadTimeout = 20000)
+app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
 Sys.sleep(5)
-app3$setInputs(btImport = "click")
-app3$setInputs(tb_importData = "tb_importData_local")
-app3$uploadFile(localInput = "../data/transport.gdx")
-app3$setInputs(btImportLocal = "click")
-app3$setInputs(inputTabset = "inputTabset_3")
-colDef <- jsonlite::fromJSON(app3$getAllValues()$output[["in_3"]])$x$columns
+app$set_inputs(btImport = "click")
+app$set_inputs(tb_importData = "tb_importData_local")
+app$upload_file(localInput = "../data/transport.gdx")
+app$set_inputs(btImportLocal = "click")
+app$set_inputs(inputTabset = "inputTabset_3")
+colDef <- jsonlite::fromJSON(app$get_values()$output[["in_3"]])$x$columns
 expect_identical(colDef$numericFormat$pattern, c(NA_character_, NA_character_, "0"))
 
-app3$stop()
+app$stop()
 
 configNew <- configOld
 configNew$inputWidgets$d$colFormat <- list(value = list(format = "0", language = "ja-JP"))
@@ -61,15 +57,15 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app4 <- ShinyDriver$new("../../", loadTimeout = 20000)
+app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
 Sys.sleep(5)
-app4$setInputs(btImport = "click")
-app4$setInputs(tb_importData = "tb_importData_local")
-app4$uploadFile(localInput = "../data/transport.gdx")
-app4$setInputs(btImportLocal = "click")
-app4$setInputs(inputTabset = "inputTabset_3")
-colDef <- jsonlite::fromJSON(app4$getAllValues()$output[["in_3"]])$x$columns
+app$set_inputs(btImport = "click")
+app$set_inputs(tb_importData = "tb_importData_local")
+app$upload_file(localInput = "../data/transport.gdx")
+app$set_inputs(btImportLocal = "click")
+app$set_inputs(inputTabset = "inputTabset_3")
+colDef <- jsonlite::fromJSON(app$get_values()$output[["in_3"]])$x$columns
 expect_identical(colDef$numericFormat$pattern, c(NA_character_, NA_character_, "0"))
 expect_identical(colDef$numericFormat$culture, c(NA_character_, NA_character_, "ja-JP"))
 
-app4$stop()
+app$stop()

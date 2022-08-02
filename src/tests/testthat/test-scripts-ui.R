@@ -61,16 +61,16 @@ jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox =
 
 test_that(
   "Analysis scripts in Base Mode work",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "base_mode_scripts_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "base_mode_scripts_test.R"), local = TRUE)
+  }
 )
 
 test_that(
   "Batch analysis scripts work",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "batch_scripts_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "batch_scripts_test.R"), local = TRUE)
+  }
 )
 
 file.copy(file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), "_tmp.json")),

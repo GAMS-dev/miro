@@ -29,9 +29,9 @@ jsonlite::write_json(configJSON, file.path(testModelPath, "conf_transport", "tra
 )
 test_that(
   "Custom renderers with multiple datasets work for input symbols",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "multiple_symbol_renderer_input",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "multiple_symbol_renderer_input.R"), local = TRUE)
+  }
 )
 file.rename(
   file.path(testModelPath, "conf_transport", "transport_tmp.json"),

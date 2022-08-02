@@ -1,22 +1,18 @@
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit("output_table_settings")
+app <- AppDriver$new("../../", name = "output_table_settings", variant = NULL, load_timeout = 20000)
 
 Sys.sleep(2)
-app$findElement("a[data-value='outputData']")$click()
+app$click(selector = "a[data-value='outputData']")
 Sys.sleep(1)
-app$setInputs(outputTableView = "click")
+app$set_inputs(outputTableView = "click")
 Sys.sleep(1)
-app$snapshot(
-  items = list(output = "outputDataTitle"),
-  screenshot = TRUE
-)
-expect_true(grepl("<th>Scalar Description</th>", jsonlite::fromJSON(app$getAllValues()$output[["table_tab_1_1-datatable"]])$x$container,
+app$expect_values(output = "outputDataTitle")
+expect_true(grepl("<th>Scalar Description</th>", jsonlite::fromJSON(app$get_values()$output[["table_tab_1_1-datatable"]])$x$container,
   fixed = TRUE
 ))
-expect_identical(jsonlite::fromJSON(app$getAllValues()$output[["table_tab_1_1-datatable"]])$x$filter, "top")
-expect_identical(jsonlite::fromJSON(app$getAllValues()$output[["table_tab_1_1-datatable"]])$x$options$decimals, 4L)
-expect_identical(jsonlite::fromJSON(app$getAllValues()$output[["table_tab_1_1-datatable"]])$x$options$pageLength, 5L)
-app$setInputs(outputTabset = "outputTabset_2")
+expect_identical(jsonlite::fromJSON(app$get_values()$output[["table_tab_1_1-datatable"]])$x$filter, "top")
+expect_identical(jsonlite::fromJSON(app$get_values()$output[["table_tab_1_1-datatable"]])$x$options$decimals, 4L)
+expect_identical(jsonlite::fromJSON(app$get_values()$output[["table_tab_1_1-datatable"]])$x$options$pageLength, 5L)
+app$set_inputs(outputTabset = "outputTabset_2")
 Sys.sleep(1L)
-expect_true(app$waitFor("$('#tableOutLabel_2').html().trim()==='<h1>asd</h1>';", timeout = 50L))
+expect_true(app$get_js("$('#tableOutLabel_2').html().trim()==='<h1>asd</h1>';", timeout = 50L))
 app$stop()

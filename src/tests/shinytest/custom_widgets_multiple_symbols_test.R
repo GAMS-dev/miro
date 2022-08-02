@@ -1,12 +1,7 @@
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit("custom_widgets_multiple_symbols_test")
+app <- AppDriver$new("../../", name = "custom_widgets_multiple_symbols_test", variant = NULL, load_timeout = 20000)
 
 Sys.sleep(2)
-app$snapshot(
-  items = list(output = "inputDataTitle"),
-  screenshot = TRUE
-)
-app$setInputs(inputTabset = "inputTabset_1")
+app$set_inputs(inputTabset = "inputTabset_1")
 Sys.sleep(1)
 expect_equivalent(
   getHotData(app, "data-in_8-custom-sudoku"),
@@ -25,12 +20,12 @@ expect_equivalent(
   row.names = c(NA, -9L)
   )
 )
-expect_identical(app$getValue("data-in_8-custom-testOutput"), "1.1")
-expect_identical(app$getValue("data-in_8-custom-force_unique_sol"), FALSE)
-expect_identical(app$getValue("data-in_8-custom-uniqueSolWarning"), "")
-app$setInputs(btImport = "click")
+expect_identical(app$get_values()$output[["data-in_8-custom-testOutput"]], "1.1")
+expect_identical(app$get_values()$input[["data-in_8-custom-force_unique_sol"]], FALSE)
+expect_identical(app$get_values()$output[["data-in_8-custom-uniqueSolWarning"]], "")
+app$set_inputs(btImport = "click")
 Sys.sleep(1)
-app$setInputs(btLoadScenConfirm = "click")
+app$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(2)
 expect_equivalent(
   getHotData(app, "data-in_8-custom-sudoku"),
@@ -49,14 +44,14 @@ expect_equivalent(
   row.names = c(NA, -9L)
   )
 )
-expect_identical(app$getValue("data-in_8-custom-testOutput"), "2.3")
-expect_identical(app$getValue("data-in_8-custom-force_unique_sol"), TRUE)
-expect_identical(app$getValue("data-in_8-custom-uniqueSolWarning"), "Model will abort if more than one solution exists.")
-app$setInputs(inputTabset = "inputTabset_5")
+expect_identical(app$get_values()$output[["data-in_8-custom-testOutput"]], "2.3")
+expect_identical(app$get_values()$input[["data-in_8-custom-force_unique_sol"]], TRUE)
+expect_identical(app$get_values()$output[["data-in_8-custom-uniqueSolWarning"]], "Model will abort if more than one solution exists.")
+app$set_inputs(inputTabset = "inputTabset_5")
 Sys.sleep(1)
-expect_identical(app$getValue("data-in_7-custom-i"), "seattle,san-diego")
-expect_identical(app$getValue("data-in_7-custom-j"), "new-york,chicago,topeka")
-expect_identical(app$getValue("data-in_7-custom-bla"), "bla1")
+expect_identical(app$get_values()$output[["data-in_7-custom-i"]], "seattle,san-diego")
+expect_identical(app$get_values()$output[["data-in_7-custom-j"]], "new-york,chicago,topeka")
+expect_identical(app$get_values()$input[["data-in_7-custom-bla"]], "bla1")
 expect_equivalent(
   getHotData(app, "data-in_7-custom-sudoku"),
   structure(list(
@@ -68,11 +63,11 @@ expect_equivalent(
   row.names = c(NA, -6L)
   )
 )
-app$waitFor("HTMLWidgets.getInstance(document.getElementById('data-in_7-custom-sudoku')).hot.setDataAtCell(0,0,'test');true;", timeout = 50L)
-app$findElement('a[data-value="scenarios"]')$click()
-app$waitFor("$('.scenSplit-button-load').eq(1).click();true;", timeout = 50)
+app$run_js("HTMLWidgets.getInstance(document.getElementById('data-in_7-custom-sudoku')).hot.setDataAtCell(0,0,'test');true;", timeout = 50L)
+app$click(selector = 'a[data-value="scenarios"]')
+app$run_js("$('.scenSplit-button-load').eq(1).click();true;", timeout = 50)
 Sys.sleep(1)
-app$setInputs(contentScen_2 = "contentScen_2_2")
+app$set_inputs(contentScen_2 = "contentScen_2_2")
 Sys.sleep(1)
 expect_identical(
   getVisibleDtData(app, "tab_2_9-datatable"),
@@ -86,7 +81,7 @@ expect_identical(
   row.names = c(NA, -5L)
   )
 )
-app$setInputs(contentScen_2 = "contentScen_2_4")
+app$set_inputs(contentScen_2 = "contentScen_2_4")
 Sys.sleep(3)
 expect_identical(
   getVisibleDtData(app, "tab_2_2-miroPivot-pivotTable"),
@@ -98,7 +93,7 @@ expect_identical(
   row.names = c(NA, -3L)
   )
 )
-app$setInputs(contentScen_2 = "contentScen_2_9")
+app$set_inputs(contentScen_2 = "contentScen_2_9")
 Sys.sleep(2)
 expect_identical(
   getVisibleDtData(app, "tab_2_7-datatable"),
@@ -112,14 +107,14 @@ expect_identical(
   row.names = c(NA, -6L)
   )
 )
-app$setInputs(btSave = "click")
+app$set_inputs(btSave = "click")
 Sys.sleep(1)
-app$setInputs(btRemoveOutput = "click")
+app$set_inputs(btRemoveOutput = "click")
 Sys.sleep(2)
-app$findElements(".navbar-custom-menu a.dropdown-toggle")[[1]]$click()
-app$findElement(".navbar-custom-menu a[onclick*='btExportScen']")$click()
+app$run_js("$('.navbar-custom-menu a.dropdown-toggle').get(0).click()")
+app$click(selector = ".navbar-custom-menu a[onclick*='btExportScen']")
 Sys.sleep(1)
-app$setInputs(exportFileType = "miroscen")
+app$set_inputs(exportFileType = "miroscen")
 Sys.sleep(2L)
 expect_symbols_in_miroscen(app, "scenExportHandler", c(
   "a", "b", "d", "force_unique_sol", "i", "ii", "test", "j", "initial_state",

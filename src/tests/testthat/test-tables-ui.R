@@ -10,23 +10,23 @@ Sys.setenv(MIRO_MODE = "base")
 
 test_that(
   "Output table config works.",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "output_table_settings",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "output_table_settings.R"), local = TRUE)
+  }
 )
 
 test_that(
   "Adding/removing rows in input table works.",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "bigdata_table",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "bigdata_table.R"), local = TRUE)
+  }
 )
 
 test_that(
   "Input table markdown works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "input_table_markdown_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "input_table_markdown_test.R"), local = TRUE)
+  }
 )
 Sys.setenv(MIRO_MODEL_PATH = file.path(
   getwd(), "..", "model", "transport",
@@ -39,9 +39,9 @@ file.copy2(
 createTestDb()
 test_that(
   "Input table dropdownCols work",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "input_table_dropdowncols_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "input_table_dropdowncols_test.R"), local = TRUE)
+  }
 )
 file.move(
   file.path("..", "model", "transport", "conf_transport", "bk_transport.json"),
@@ -55,9 +55,9 @@ file.copy2(
 createTestDb()
 test_that(
   "Input table column formatting works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "input_table_col_format_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "input_table_col_format_test.R"), local = TRUE)
+  }
 )
 file.move(
   file.path("..", "model", "transport", "conf_transport", "bk_transport.json"),
@@ -79,9 +79,9 @@ file.copy2(
 createTestDb()
 test_that(
   "Input table column validation works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "input_table_validate_cols_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "input_table_validate_cols_test.R"), local = TRUE)
+  }
 )
 file.move(
   file.path("..", "model", "transport", "conf_transport", "bk_transport.json"),

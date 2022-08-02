@@ -10,9 +10,9 @@ Sys.setenv(MIRO_MODE = "base")
 
 test_that(
   "Downloading temporary files works.",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "download_temp_files_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "download_temp_files_test.R"), local = TRUE)
+  }
 )
 
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))

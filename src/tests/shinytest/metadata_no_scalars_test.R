@@ -1,11 +1,10 @@
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit("metadata_no_scalars_test")
+app <- AppDriver$new("../../", name = "metadata_no_scalars_test", variant = NULL, load_timeout = 20000)
 
-app$setInputs(btEditMeta = "click")
+app$set_inputs(btEditMeta = "click")
 Sys.sleep(1)
-app$findElement("a[data-value='views']")$click()
+expect_error(app$click(selector = "a[data-value='views']"), NA)
 Sys.sleep(0.1)
 
-app$snapshot(items = list(output = c("inputDataTitle")), screenshot = TRUE)
+app$expect_values(output = c("inputDataTitle"))
 
 app$stop()

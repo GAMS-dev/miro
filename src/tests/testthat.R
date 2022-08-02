@@ -14,35 +14,49 @@ library("testthat")
 library("stringi")
 library("tibble")
 library("R6")
-library("shinytest")
+library("shinytest2")
 
 source("global.R")
 source(file.path("tests", "util.R"))
 source(file.path("components", "js_util.R"))
 source(file.path("components", "util.R"))
 
-if (!dependenciesInstalled()) {
-  installDependencies()
-}
-
 if (dir.exists(logPathTests) && !identical(unlink(logPathTests, recursive = TRUE), 0L)) {
-  stop(sprintf(
-    "Can't remove existing log file directory: '%s'. Do you lack write permissions?",
-    logPathTests
-  ),
-  call. = FALSE
+  stop(
+    sprintf(
+      "Can't remove existing log file directory: '%s'. Do you lack write permissions?",
+      logPathTests
+    ),
+    call. = FALSE
   )
 }
 if (!dir.create(logPathTests)) {
-  stop(sprintf(
-    "Can't create log file directory: '%s'. Do you lack write permissions?",
-    logPathTests
-  ),
-  call. = FALSE
+  stop(
+    sprintf(
+      "Can't create log file directory: '%s'. Do you lack write permissions?",
+      logPathTests
+    ),
+    call. = FALSE
   )
 }
 
 Sys.setenv(MIRO_LOG_PATH = logPathTests)
+Sys.setenv(NOT_CRAN = "true")
+if (Sys.info()[["sysname"]] == "Darwin") {
+  # need to set chromium path manually until https://github.com/rstudio/chromote/issues/91 is closed
+  chromePath <- "/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
+  if (!file.exists(chromePath)) {
+    chromePath <- Sys.which("chromium-browser")
+  }
+  if (nchar(chromePath) == 0) {
+    chromePath <- Sys.which("chromium")
+  }
+  if (nchar(chromePath) == 0) {
+    message("Google Chrome and Chromium were not found. Try setting the `CHROMOTE_CHROME` environment variable.")
+    stop()
+  }
+  Sys.setenv(CHROMOTE_CHROME = chromePath)
+}
 
 reporter <- MultiReporter$new(list(
   ProgressReporter$new(max_failures = 100),

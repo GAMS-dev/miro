@@ -7,15 +7,15 @@ Sys.setenv(MIRO_MODE = "base")
 
 test_that(
   "Attachments work",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "attachments_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "attachments_test.R"), local = TRUE)
+  }
 )
 test_that(
   "Save as dialog (attachments) works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "attachments_save_as_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "attachments_save_as_test.R"), local = TRUE)
+  }
 )
 
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))

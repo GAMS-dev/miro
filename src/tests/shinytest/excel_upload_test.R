@@ -1,5 +1,4 @@
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit(paste0("excel_upload_test_", Sys.getenv("GMSMODELNAME")))
+app <- AppDriver$new("../../", name = paste0("excel_upload_test_", Sys.getenv("GMSMODELNAME")), variant = NULL, load_timeout = 20000)
 
 widgetSheetId <- 1L
 if (identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
@@ -7,40 +6,34 @@ if (identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
 } else if (identical(Sys.getenv("GMSMODELNAME"), "transport")) {
   widgetSheetId <- 7L
 }
-app$setInputs(inputTabset = paste0("inputTabset_", widgetSheetId))
+app$set_inputs(inputTabset = paste0("inputTabset_", widgetSheetId))
 if (!identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
   Sys.sleep(1)
-  app$snapshot(
-    items = list(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L))),
-    screenshot = TRUE
-  )
+  app$expect_values(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L)))
 }
-app$setInputs(btImport = "click")
+app$set_inputs(btImport = "click")
 Sys.sleep(0.5)
-app$setInputs(tb_importData = "tb_importData_local")
-app$uploadFile(localInput = paste0("../data/", Sys.getenv("GMSMODELNAME"), ".xlsx"))
+app$set_inputs(tb_importData = "tb_importData_local")
+app$upload_file(localInput = paste0("../data/", Sys.getenv("GMSMODELNAME"), ".xlsx"))
 Sys.sleep(0.5)
-app$setInputs(btImportLocal = "click")
-app$setInputs(inputTabset = paste0("inputTabset_", widgetSheetId))
+app$set_inputs(btImportLocal = "click")
+app$set_inputs(inputTabset = paste0("inputTabset_", widgetSheetId))
 Sys.sleep(1)
-app$snapshot(
-  items = list(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L))),
-  screenshot = TRUE
-)
-app$setInputs(btSave = "click")
+app$expect_values(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L)))
+app$set_inputs(btSave = "click")
 Sys.sleep(1)
-app$findElement(".modal-footer .bt-gms-confirm")$click()
+app$click(selector = ".modal-footer #dialogSaveInit .bt-gms-confirm")
 Sys.sleep(2)
 if (identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
-  app$findElement("#btRemove1")$click()
+  app$click(selector = "#btRemove1")
   Sys.sleep(1)
-  app$findElement(".modal-footer .bt-gms-confirm")$click()
+  app$click(selector = ".modal-footer .bt-gms-confirm")
   Sys.sleep(1)
-  app$setInputs(btImport = "click")
-  app$setInputs(tb_importData = "tb_importData_local")
-  app$uploadFile(localInput = "../data/pickstock_index2.xlsx")
+  app$set_inputs(btImport = "click")
+  app$set_inputs(tb_importData = "tb_importData_local")
+  app$upload_file(localInput = "../data/pickstock_index2.xlsx")
   Sys.sleep(1)
-  expect_identical(app$getValue("selExcelIndexSheet"), "_index")
+  expect_identical(app$get_value(input = "selExcelIndexSheet"), "_index")
   optionsTmp <- getSelectizeOptions(app, "#selExcelIndexSheet")
   expect_length(optionsTmp, 10L)
   expect_true(all(optionsTmp %in% c(
@@ -48,8 +41,8 @@ if (identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
     "dowvsindex (Output)", "abserror (Output)", "pricemerge (Output)",
     "price (Input)", "_scalars (Input)", "_index"
   )))
-  expect_true(app$waitFor("$('#localDataImportError').text().includes('idontexist');", timeout = 50))
-  app$uploadFile(localInput = "../data/pickstock_index.xlsx")
+  expect_true(grepl("idontexist", app$get_text(selector = "#localDataImportError"), fixed = TRUE))
+  app$upload_file(localInput = "../data/pickstock_index.xlsx")
   Sys.sleep(2)
   optionsTmp <- getSelectizeOptions(app, "#selExcelIndexSheet")
   expect_length(optionsTmp, 10L)
@@ -58,19 +51,19 @@ if (identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
     "dowvsindex (Output)", "abserror (Output)", "pricemerge (Output)",
     "price (Input)", "_scalars (Input)", "index"
   )))
-  expect_true(app$waitFor("$('#localDataImportError').is(':hidden');", timeout = 50))
-  expect_identical(app$getValue("selExcelIndexSheet"), "-")
-  app$setInputs(selExcelIndexSheet = "index")
+  expect_true(app$get_js("$('#localDataImportError').is(':hidden');"))
+  expect_identical(app$get_value(input = "selExcelIndexSheet"), "-")
+  app$set_inputs(selExcelIndexSheet = "index")
   Sys.sleep(0.5)
-  app$setInputs(excelIndexSheetRng = "I10")
+  app$set_inputs(excelIndexSheetRng = "I10")
   Sys.sleep(0.5)
-  app$setInputs(btImportLocal = "click")
+  app$set_inputs(btImportLocal = "click")
   Sys.sleep(4)
-  expect_true(app$waitFor("$('.modal-body').text().includes('asd');", timeout = 50L))
-  expect_identical(app$getAllValues()$input[["slider_2"]], 28L)
-  expect_identical(app$getAllValues()$input[["slider_3"]], 101L)
+  expect_true(app$get_js("$('.modal-body').text().includes('asd');", timeout = 50L))
+  expect_identical(app$get_values()$input[["slider_2"]], 28L)
+  expect_identical(app$get_values()$input[["slider_3"]], 101L)
   Sys.sleep(1)
-  app$setInputs(inputTabset = paste0("inputTabset_", widgetSheetId - 1L))
+  app$set_inputs(inputTabset = paste0("inputTabset_", widgetSheetId - 1L))
   Sys.sleep(1)
   stockData <- getHotData(app, "in_1")
   expect_identical(nrow(stockData), 7056L)

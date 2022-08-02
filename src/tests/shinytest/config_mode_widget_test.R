@@ -1,7 +1,5 @@
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit("config_mode_widget_test")
+app <- AppDriver$new("../../", name = "config_mode_widget_test", variant = NULL, load_timeout = 20000)
 
-app$snapshot(items = list(input = "deleteGraph"), screenshot = TRUE)
 Sys.sleep(1)
 jsonPath <- file.path("..", "model", "pickstock_configuration", "conf_pickstock_configuration")
 configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"),
@@ -15,12 +13,12 @@ configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_
 
 
 # load and save all widgets
-app$findElement("a[data-value='new_widget']")$click()
+app$click(selector = "a[data-value='new_widget']")
 Sys.sleep(1)
 for (widgetToTest in names(configRaw$inputWidgets)) {
-  app$setInputs(widget_symbol = widgetToTest)
+  app$set_inputs(widget_symbol = widgetToTest)
   Sys.sleep(1)
-  app$findElement("button[id='saveWidget']")$click()
+  app$click(selector = "button[id='saveWidget']")
   Sys.sleep(1)
 }
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),

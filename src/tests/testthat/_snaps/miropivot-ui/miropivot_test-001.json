@@ -1,0 +1,15 @@
+{
+  "input": {
+    "tab_1_1-miroPivot-aggregationFunction": "sum",
+    "tab_1_1-miroPivot-aggregationIndexList": [
+
+    ],
+    "tab_1_1-miroPivot-colIndexList": "j",
+    "tab_1_1-miroPivot-filterIndexList": "Hdr",
+    "tab_1_1-miroPivot-filter_Hdr": "quantities",
+    "tab_1_1-miroPivot-filter_j": null,
+    "tab_1_1-miroPivot-pivotRenderer": "bar",
+    "tab_1_1-miroPivot-rowIndexList": "i",
+    "tab_1_1-miroPivot-saveView": 0
+  }
+}

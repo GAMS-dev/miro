@@ -33,9 +33,9 @@ file.copy2(
 )
 test_that(
   "Loading sandbox scenarios works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "sandbox_compare_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "sandbox_compare_test.R"), local = TRUE)
+  }
 )
 unlink(modelDataPath, recursive = TRUE, force = TRUE)
 

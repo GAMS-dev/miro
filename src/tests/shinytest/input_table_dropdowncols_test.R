@@ -9,13 +9,9 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit("input_table_dropdowncols_test")
+app <- AppDriver$new("../../", name = "input_table_dropdowncols_test", variant = NULL, load_timeout = 20000)
 Sys.sleep(0.5)
-app$snapshot(
-  items = list(output = "errorMessages"),
-  screenshot = TRUE
-)
+app$expect_values(output = "errorMessages")
 Sys.sleep(0.5)
 app$stop()
 
@@ -24,9 +20,9 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
+app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
 Sys.sleep(0.5)
-expect_true(app$waitFor("$('#errorMessages').html().includes('bla');", timeout = 50))
+expect_true(app$get_js("$('#errorMessages').html().includes('bla');", timeout = 50))
 Sys.sleep(0.5)
 app$stop()
 
@@ -36,14 +32,14 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
+app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
 Sys.sleep(0.5)
-app$setInputs(btImport = "click")
-app$setInputs(tb_importData = "tb_importData_local")
-app$uploadFile(localInput = "../data/transport.gdx")
-app$setInputs(btImportLocal = "click")
-app$setInputs(inputTabset = "inputTabset_3")
-colDef <- jsonlite::fromJSON(app$getAllValues()$output[["in_3"]])$x$columns
+app$set_inputs(btImport = "click")
+app$set_inputs(tb_importData = "tb_importData_local")
+app$upload_file(localInput = "../data/transport.gdx")
+app$set_inputs(btImportLocal = "click")
+app$set_inputs(inputTabset = "inputTabset_3")
+colDef <- jsonlite::fromJSON(app$get_values()$output[["in_3"]])$x$columns
 expect_identical(colDef$type, c("autocomplete", "numeric", "numeric"))
 expect_identical(colDef$source, list(letters, NULL, NULL))
 app$stop()
@@ -54,14 +50,14 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
+app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
 Sys.sleep(1)
-app$setInputs(btImport = "click")
-app$setInputs(tb_importData = "tb_importData_local")
-app$uploadFile(localInput = "../data/transport.gdx")
-app$setInputs(btImportLocal = "click")
-app$setInputs(inputTabset = "inputTabset_3")
-colDef <- jsonlite::fromJSON(app$getAllValues()$output[["in_3"]])$x$columns
+app$set_inputs(btImport = "click")
+app$set_inputs(tb_importData = "tb_importData_local")
+app$upload_file(localInput = "../data/transport.gdx")
+app$set_inputs(btImportLocal = "click")
+app$set_inputs(inputTabset = "inputTabset_3")
+colDef <- jsonlite::fromJSON(app$get_values()$output[["in_3"]])$x$columns
 expect_identical(colDef$type, c("dropdown", "numeric", "numeric"))
 expect_identical(colDef$source, list(letters, NULL, NULL))
 app$stop()
@@ -72,14 +68,14 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
+app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
 Sys.sleep(1)
-app$setInputs(btImport = "click")
-app$setInputs(tb_importData = "tb_importData_local")
-app$uploadFile(localInput = "../data/transport.gdx")
-app$setInputs(btImportLocal = "click")
-app$setInputs(inputTabset = "inputTabset_3")
-colDef <- jsonlite::fromJSON(app$getAllValues()$output[["in_3"]])$x$columns
+app$set_inputs(btImport = "click")
+app$set_inputs(tb_importData = "tb_importData_local")
+app$upload_file(localInput = "../data/transport.gdx")
+app$set_inputs(btImportLocal = "click")
+app$set_inputs(inputTabset = "inputTabset_3")
+colDef <- jsonlite::fromJSON(app$get_values()$output[["in_3"]])$x$columns
 expect_identical(colDef$type, c("autocomplete", "numeric", "numeric"))
 expect_identical(colDef$source, list(c("Seattle", "San-Diego"), NULL, NULL))
 app$stop()
@@ -90,30 +86,30 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
+app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
 Sys.sleep(1)
-app$setInputs(btImport = "click")
-app$setInputs(tb_importData = "tb_importData_local")
-app$uploadFile(localInput = "../data/transport.gdx")
-app$setInputs(btImportLocal = "click")
-app$setInputs(inputTabset = "inputTabset_3")
-colDef <- jsonlite::fromJSON(app$getAllValues()$output[["in_3"]])$x$columns
+app$set_inputs(btImport = "click")
+app$set_inputs(tb_importData = "tb_importData_local")
+app$upload_file(localInput = "../data/transport.gdx")
+app$set_inputs(btImportLocal = "click")
+app$set_inputs(inputTabset = "inputTabset_3")
+colDef <- jsonlite::fromJSON(app$get_values()$output[["in_3"]])$x$columns
 expect_identical(colDef$type, c("dropdown", "numeric", "numeric"))
 expect_identical(colDef$source, list(c("Seattle", "San-Diego"), NULL, NULL))
-app$setInputs(btSave = "click")
+app$set_inputs(btSave = "click")
 Sys.sleep(1)
-app$findElement(".modal-footer .bt-gms-confirm")$click()
+app$click(selector = ".modal-footer #dialogSaveInit .bt-gms-confirm")
 Sys.sleep(2)
-app$findElement("#btRemove1")$click()
+app$click(selector = "#btRemove1")
 Sys.sleep(0.5)
-app$findElement(".modal-footer .bt-gms-confirm")$click()
+app$click(selector = ".modal-footer .bt-gms-confirm")
 Sys.sleep(0.5)
-app$setInputs(btImport = "click")
+app$set_inputs(btImport = "click")
 Sys.sleep(1)
-app$setInputs(btLoadScenConfirm = "click")
+app$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(2)
 expect_identical(
-  as.character(app$getAllValues()$output$inputDataTitle$html),
+  as.character(app$get_values()$output$inputDataTitle$html),
   "New Scenario"
 )
 app$stop()

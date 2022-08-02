@@ -19,9 +19,9 @@ if (length(additionalGamsClArgs)) {
 }
 test_that(
   "MIRO log works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "mirolog_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "mirolog_test.R"), local = TRUE)
+  }
 )
 
 if (length(additionalGamsClArgs)) {

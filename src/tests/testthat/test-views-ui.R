@@ -11,9 +11,9 @@ Sys.setenv(MIRO_MODE = "base")
 
 test_that(
   "Views metadata menu works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "views_metadata_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "views_metadata_test.R"), local = TRUE)
+  }
 )
 
 modelDataPath <- file.path(testModelPath, "data_transport")
@@ -28,17 +28,17 @@ file.copy2(
 )
 test_that(
   "Import views from data folder works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "views_import_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "views_import_test.R"), local = TRUE)
+  }
 )
 unlink(modelDataPath, recursive = TRUE, force = TRUE)
 
 test_that(
   "Saving views to database works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "views_save_as_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "views_save_as_test.R"), local = TRUE)
+  }
 )
 
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))

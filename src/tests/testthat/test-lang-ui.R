@@ -33,9 +33,9 @@ for (langToTest in langsToTest) {
     }
     test_that(
       paste0("Language: ", langToTest, " works"),
-      try_again(3L, expect_pass(testApp(file.path(testDir, ".."), paste0("lang_test_", langToTest),
-        compareImages = FALSE
-      )))
+      {
+        source(file.path(testDir, "shinytest", "lang_test.R"), local = TRUE)
+      }
     )
   }
 }

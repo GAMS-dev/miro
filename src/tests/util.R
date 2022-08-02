@@ -1,20 +1,14 @@
 getSelectizeOptions <- function(app, selector) {
-  app$getDebugLog("browser")
-  app$waitFor(paste0("var options=$('", selector, "')[0].selectize.options;options=Object.keys(options);for(i in options){console.log(options[i])};true"))
-  options <- app$getDebugLog("browser")$message
-  return(rev(substr(options, 1, nchar(options) - 4)))
+  options <- app$get_js(paste0("Object.keys($('", selector, "')[0].selectize.options);"))
+  return(options)
 }
 getSelectizeAliases <- function(app, selector) {
-  app$getDebugLog("browser")
-  app$waitFor(paste0("var options=$('", selector, "')[0].selectize.options;for(key in options){console.log(options[key].label)};true"))
-  options <- app$getDebugLog("browser")$message
-  return(rev(substr(options, 1, nchar(options) - 4)))
+  options <- app$get_js(paste0("Object.values($('", selector, "')[0].selectize.options).map(option => option.label)"))
+  return(unlist(options))
 }
 getVisibleDtData <- function(app, id) {
-  app$waitFor(paste0("console.log(JSON.stringify($('#", id, "').data('datatable').data().toArray()))"), timeout = 50L)
-  dtData <- app$getDebugLog("browser")$message
-  dtData <- dtData[length(dtData)]
-  return(tibble::as_tibble(jsonlite::fromJSON(substr(dtData, 1, nchar(dtData) - 4)),
+  dtData <- app$get_js(paste0("JSON.stringify($('#", id, "').data('datatable').data().toArray())"))
+  return(tibble::as_tibble(jsonlite::fromJSON(dtData),
     .name_repair = "universal"
   ))
 }
@@ -24,10 +18,10 @@ getHotData <- function(app, id) {
       data.table::rbindlist(data$data, use.names = FALSE)
     )))
   }
-  return(hotToR(jsonlite::fromJSON(app$getAllValues()$output[[id]], simplifyDataFrame = FALSE, simplifyMatrix = FALSE)$x))
+  return(hotToR(jsonlite::fromJSON(app$get_values()$output[[id]], simplifyDataFrame = FALSE, simplifyMatrix = FALSE)$x))
 }
 expect_chartjs <- function(app, id, data, labels, tolerance = 1e-6) {
-  chartjsData <- jsonlite::fromJSON(app$getAllValues()$output[[id]])$x$data
+  chartjsData <- jsonlite::fromJSON(app$get_values()$output[[id]])$x$data
   if (is.list(data)) {
     expect_equal(chartjsData$datasets$data, data, tolerance = tolerance)
   } else {
@@ -40,16 +34,16 @@ expect_options <- function(options, optionsExpected) {
     identical(length(optionsExpected), length(options)))
 }
 addSelectizeOption <- function(app, selector, value, alias = value) {
-  return(app$waitFor(paste0("$('", selector, "')[0].selectize.addOption({value:'", value, "',label: '", alias, "'});true;"), timeout = 50))
+  return(app$run_js(paste0("$('", selector, "')[0].selectize.addOption({value:'", value, "',label: '", alias, "'});")))
 }
 selectSelectizeOption <- function(app, selector, value) {
-  return(app$waitFor(paste0("$('", selector, "')[0].selectize.addItem('", value, "');true;"), timeout = 50))
+  return(app$run_js(paste0("$('", selector, "')[0].selectize.addItem('", value, "');true;")))
 }
 
 expect_download <- function(app, id, filename) {
-  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
   req <- httr::GET(url)
-  filePath <- file.path(getwd(), "data", "downloads-expected", basename(app$getSnapshotDir()))
+  filePath <- file.path(getwd(), "testthat", "_snaps")
   if (!file.exists(filePath)) {
     if (!dir.create(filePath, recursive = TRUE)) {
       stop("Could not create file downloads test directory", call. = FALSE)
@@ -57,9 +51,9 @@ expect_download <- function(app, id, filename) {
   }
   if (file.exists(file.path(filePath, filename))) {
     if (is.raw(req$content)) {
-      expect_identical(req$content, read_file_raw(file.path(filePath, filename)))
+      expect_identical(req$content, readr::read_file_raw(file.path(filePath, filename)))
     } else {
-      expect_identical(req$content, read_file(file.path(filePath, filename)))
+      expect_identical(req$content, readr::read_file(file.path(filePath, filename)))
     }
   } else {
     writeBin(req$content, file.path(filePath, filename))
@@ -67,9 +61,9 @@ expect_download <- function(app, id, filename) {
 }
 
 expect_download_size <- function(app, id, filename, tolerance = 100) {
-  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
   req <- httr::GET(url)
-  filePath <- file.path(getwd(), "data", "downloads-expected", basename(app$getSnapshotDir()))
+  filePath <- file.path(getwd(), "testthat", "_snaps")
   if (!file.exists(filePath)) {
     if (!dir.create(filePath, recursive = TRUE)) {
       stop("Could not create file downloads test directory", call. = FALSE)
@@ -87,13 +81,13 @@ expect_download_size <- function(app, id, filename, tolerance = 100) {
 }
 
 get_file_content <- function(app, id) {
-  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
   req <- httr::GET(url)
   return(req$content)
 }
 
 expect_files_in_zip <- function(app, id, files) {
-  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
   req <- httr::GET(url)
   tempFiles <- file.path(tempdir(check = TRUE), "shinytest-download")
   on.exit(unlink(tempFiles))
@@ -104,7 +98,7 @@ expect_files_in_zip <- function(app, id, files) {
 }
 
 expect_symbols_in_gdx <- function(app, id, symNames) {
-  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
   req <- httr::GET(url)
   tempFiles <- file.path(tempdir(check = TRUE), "shinytest-download.gdx")
   on.exit(unlink(tempFiles))
@@ -145,7 +139,7 @@ expect_symbols_in_gdx <- function(app, id, symNames) {
 }
 
 expect_symbols_in_miroscen <- function(app, id, symNames) {
-  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
   req <- httr::GET(url)
   tempFiles <- file.path(tempdir(check = TRUE), "shinytest-download.miroscen")
   on.exit(unlink(tempFiles))
@@ -181,7 +175,7 @@ expect_symbols_in_miroscen <- function(app, id, symNames) {
 }
 
 expect_sheets_in_xls <- function(app, id, sheetNames) {
-  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
   req <- httr::GET(url)
   tempFiles <- file.path(tempdir(check = TRUE), "shinytest-download")
   on.exit(unlink(tempFiles))
@@ -192,7 +186,7 @@ expect_sheets_in_xls <- function(app, id, sheetNames) {
 }
 
 get_downloaded_file_content <- function(app, id, raw = FALSE) {
-  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
   req <- httr::GET(url)
   if (raw) {
     return(req$content)

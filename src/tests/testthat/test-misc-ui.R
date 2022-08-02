@@ -22,9 +22,9 @@ file.copy2(
 )
 test_that(
   "Loading scenario while input graph view is active works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "load_input_graph_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "load_input_graph_test.R"), local = TRUE)
+  }
 )
 unlink(modelDataPath, recursive = TRUE, force = TRUE)
 
@@ -101,9 +101,9 @@ jsonlite::write_json(
 createTestDb()
 test_that(
   "Opening metadata dialog works without scalars but cl args configured",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "metadata_no_scalars_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "metadata_no_scalars_test.R"), local = TRUE)
+  }
 )
 
 file.move(
@@ -133,9 +133,9 @@ if (!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")) {
 createTestDb()
 test_that(
   "Models with integer column headers work",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "integer_headers_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "integer_headers_test.R"), local = TRUE)
+  }
 )
 if (!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")) {
   file.rename(

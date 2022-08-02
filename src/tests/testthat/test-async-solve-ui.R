@@ -83,9 +83,9 @@ if (file.exists(file.path("~", ".miro", paste0(".cred_", tolower(modelToTest))))
 
 test_that(
   "Solve asynchronously with GAMS Engine works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "async_solve_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "async_solve_test.R"), local = TRUE)
+  }
 )
 
 removeUser(apiURL, inviterUser, inviterPass, inviteeName)
@@ -101,9 +101,9 @@ jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox =
 
 test_that(
   "Detaching from active solve works",
-  expect_pass(testApp(file.path(testDir, ".."), "async_solve_detach_test",
-    compareImages = FALSE
-  ))
+  {
+    source(file.path(testDir, "shinytest", "async_solve_detach_test.R"), local = TRUE)
+  }
 )
 
 removeUser(apiURL, inviterUser, inviterPass, inviteeName)

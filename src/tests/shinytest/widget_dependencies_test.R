@@ -1,5 +1,4 @@
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit("widget_dependencies_test")
+app <- AppDriver$new("../../", name = "widget_dependencies_test", variant = NULL, load_timeout = 20000)
 Sys.sleep(2L)
 
 allStocks <- c(
@@ -10,24 +9,24 @@ allStocks <- c(
 )
 
 # check stock table (already filtered)
-app$findElement('a[data-value="inputTabset_1"]')$click()
+app$click(selector = 'a[data-value="inputTabset_1"]')
 Sys.sleep(2L)
 priceData <- getHotData(app, "in_1")
 filteredStock <- priceData[[2]] %>% unique()
 expect_identical(filteredStock, "AAPL")
 
 # check stock selection dropdown and select JPM stock
-app$findElement('a[data-value="inputTabset_1"]')$click()
+app$click(selector = 'a[data-value="inputTabset_1"]')
 Sys.sleep(1L)
-expect_options(getSelectizeOptions(app, "#dropdown_2") %>% sort(), allStocks)
+expect_options(unlist(getSelectizeOptions(app, "#dropdown_2")) %>% sort(), allStocks)
 selectSelectizeOption(app, "#dropdown_2", "JPM")
 
 # check filtered table
-app$findElement('a[data-value="inputTabset_2"]')$click()
+app$click(selector = 'a[data-value="inputTabset_2"]')
 Sys.sleep(2L)
 priceData <- getHotData(app, "in_1")
 filteredStock <- priceData[[2]] %>% unique()
 expect_identical(filteredStock, "JPM")
-app$snapshot(items = list(output = c("inputDataTitle")), screenshot = TRUE)
+app$expect_values(output = "inputDataTitle")
 
 app$stop()

@@ -14,9 +14,9 @@ file.copy2(
 )
 test_that(
   "Default compare mode works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "default_compare_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "default_compare_test.R"), local = TRUE)
+  }
 )
 
 modelDataPath <- file.path(testModelPath, "data_transport")
@@ -39,9 +39,9 @@ file.copy2(
 )
 test_that(
   "Loading scenarios works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "load_pivot_compare_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "load_pivot_compare_test.R"), local = TRUE)
+  }
 )
 unlink(modelDataPath, recursive = TRUE, force = TRUE)
 
@@ -66,9 +66,9 @@ file.copy2(
 context("UI tests - comparison mode in split/tab view")
 test_that(
   "Scenario comparison mode in split/tab view works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "comparison_mode_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "comparison_mode_test.R"), local = TRUE)
+  }
 )
 unlink(file.path(modelDataPath, "pickstock.gdx"), force = TRUE)
 

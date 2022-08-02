@@ -28,7 +28,7 @@ Sys.setenv(ENGINE_USER_INVITEE = inviteeName)
 
 createUser(apiURL, inviterUser, inviterPass, namespace,
   inviteeName, inviterPass,
-  volumeQuota = 76L
+  volumeQuota = 75L
 )
 
 modelToTest <- "pickstock_configuration"
@@ -84,23 +84,23 @@ if (file.exists(file.path("~", ".miro", paste0(".cred_", tolower(modelToTest))))
 
 test_that(
   "Solving Hypercube jobs works",
-  expect_pass(testApp(file.path(testDir, ".."), "hcube_module_solve_test",
-    compareImages = FALSE
-  ))
+  {
+    source(file.path(testDir, "shinytest", "hcube_module_solve_test.R"), local = TRUE)
+  }
 )
 
 test_that(
   "Loading Hypercube jobs works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "hcube_module_load_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "hcube_module_load_test.R"), local = TRUE)
+  }
 )
 
 test_that(
   "Compare Mode works with Hypercube jobs",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "hcube_module_compare_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "hcube_module_compare_test.R"), local = TRUE)
+  }
 )
 
 removeUser(apiURL, inviterUser, inviterPass, inviteeName)

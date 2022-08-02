@@ -1,7 +1,5 @@
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit("config_mode_general_test")
+app <- AppDriver$new("../../", name = "config_mode_general_test", variant = NULL, load_timeout = 20000)
 
-app$snapshot(items = list(input = "deleteGraph"), screenshot = TRUE)
 Sys.sleep(1)
 jsonPath <- file.path("..", "model", "pickstock_configuration", "conf_pickstock_configuration")
 configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"),
@@ -88,18 +86,18 @@ expect_identical(configRaw$scripts$hcube[[1]]$command, configNew$scripts$hcube[[
 expect_identical(configRaw$scripts$hcube[[1]]$args, configNew$scripts$hcube[[1]]$args)
 expect_identical(configRaw$scripts$hcube[[1]]$outputFile, configNew$scripts$hcube[[1]]$outputFile)
 
-app$findElement("a[data-value='symbol_conf']")$click()
+app$click(selector = "a[data-value='symbol_conf']")
 Sys.sleep(1)
 
-app$findElement("a[data-value='Symbol and Column Names']")$click()
-app$setInputs("general_overwriteSymHeaders_price_1" = "2nd header")
+app$click(selector = "a[data-value='Symbol and Column Names']")
+app$set_inputs("general_overwriteSymHeaders_price_1" = "2nd header")
 Sys.sleep(1L)
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
   simplifyDataFrame = FALSE,
   simplifyMatrix = FALSE
 ))
 expect_identical(configNew$overwriteHeaderAliases$price$newHeaders, c("2nd header", "2nd header", "3rd header"))
-app$setInputs("general_overwriteSymHeaders_price_1" = "")
+app$set_inputs("general_overwriteSymHeaders_price_1" = "")
 Sys.sleep(1L)
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
   simplifyDataFrame = FALSE,
@@ -107,6 +105,6 @@ configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_
 ))
 expect_identical(configNew$overwriteHeaderAliases$price$newHeaders, NULL)
 
-expect_true(app$waitFor("$('#general_overwriteSymHeaders_price').hasClass('has-error')", timeout = 50))
+expect_error(app$wait_for_js("$('#general_overwriteSymHeaders_price').hasClass('has-error')", timeout = 50), NA)
 
 app$stop()

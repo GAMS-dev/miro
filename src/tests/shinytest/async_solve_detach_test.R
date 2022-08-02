@@ -1,71 +1,66 @@
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit("async_solve_detach_test")
+app <- AppDriver$new("../../", name = "async_solve_detach_test", variant = NULL, load_timeout = 20000)
 
 getNumberJobsInJobList <- function(app) {
-  app$waitFor("console.log($('#jImport_output tr').length);true", timeout = 50L)
-  numberJobs <- app$getDebugLog("browser")$message
-  numberJobs <- as.integer(strsplit(numberJobs[length(numberJobs)], " ", fixed = TRUE)[[1]][1])
+  numberJobs <- app$get_js("$('#jImport_output tr').length")
   return(max(0L, numberJobs - 1L))
 }
 
 Sys.sleep(1)
 
-app$snapshot(items = list(output = "outputDataTitle"), screenshot = TRUE)
-
-expect_error(app$findElement("#remoteExecLogoutDiv")$click(), NA)
+expect_error(app$click(selector = "#remoteExecLogoutDiv"), NA)
 Sys.sleep(1)
-app$findElement("#confirmModal .bt-gms-confirm")$click()
+app$click(selector = "#confirmModal .bt-gms-confirm")
 Sys.sleep(1)
 
-app$findElement("#btRemoteExecLogin")$click()
+app$click(selector = "#btRemoteExecLogin")
 Sys.sleep(1)
-app$setInputs(remoteCredUrl = Sys.getenv("ENGINE_URL"))
-app$setInputs(remoteCredUser = Sys.getenv("ENGINE_USER_INVITEE"))
-app$setInputs(remoteCredPass = Sys.getenv("ENGINE_PASSWORD"))
-app$setInputs(remoteCredNs = Sys.getenv("ENGINE_NS"))
-app$setInputs(remoteCredReg = FALSE)
-app$setInputs(remoteCredRemember = TRUE)
+app$set_inputs(remoteCredUrl = Sys.getenv("ENGINE_URL"))
+app$set_inputs(remoteCredUser = Sys.getenv("ENGINE_USER_INVITEE"))
+app$set_inputs(remoteCredPass = Sys.getenv("ENGINE_PASSWORD"))
+app$set_inputs(remoteCredNs = Sys.getenv("ENGINE_NS"))
+app$set_inputs(remoteCredReg = FALSE)
+app$set_inputs(remoteCredRemember = TRUE)
 Sys.sleep(1)
-app$findElement("#shiny-modal .bt-gms-confirm")$click()
+app$click(selector = "#shiny-modal .bt-gms-confirm")
 Sys.sleep(1)
 
-app$setInputs(btImport = "click")
+app$set_inputs(btImport = "click")
 Sys.sleep(0.5)
-app$setInputs(selLoadScen = paste0("1_", Sys.info()[["user"]]))
-expect_identical(startsWith(app$getValue("selLoadScen"), "1_"), TRUE)
-app$setInputs(btLoadScenConfirm = "click")
+app$set_inputs(selLoadScen = paste0("1_", Sys.info()[["user"]]))
+expect_identical(startsWith(app$get_values()$input[["selLoadScen"]], "1_"), TRUE)
+app$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(1)
 
-app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()
-app$findElement('#shiny-tab-gamsinter a[data-value="joblist"]')$click()
-app$findElement("#refreshActiveJobs")$click()
+app$click(selector = "#sidebarItemExpanded a[data-value='gamsinter']")
+app$click(selector = '#shiny-tab-gamsinter a[data-value="joblist"]')
+app$click(selector = "#refreshActiveJobs")
 
 timeout <- 20L
 repeat{
-  if (identical(app$waitFor("$('.cJob-wrapper').is(':visible') || $('#jImport_output div').is(':visible')", timeout = 100L), TRUE)) {
+  if (identical(app$get_js("$('.cJob-wrapper').is(':visible') || $('#jImport_output div').is(':visible')"), TRUE)) {
     break
   }
   Sys.sleep(1L)
   timeout <- timeout - 1L
   if (timeout <= 0L) {
-    app$snapshot()
+    app$expect_values()
     stop("Timeout reached. Could not get job status.", call. = FALSE)
   }
 }
 
 numberJobsBefore <- getNumberJobsInJobList(app)
 
-app$findElement('#shiny-tab-gamsinter a[data-value="current"]')$click()
+app$click(selector = '#shiny-tab-gamsinter a[data-value="current"]')
 
-expect_true(app$waitFor("$('#btDetachCurrentJob').is(':disabled')", timeout = 50L))
+expect_true(app$get_js("$('#btDetachCurrentJob').is(':disabled')"))
 
-app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
+app$click(selector = "#sidebarItemExpanded a[data-value='inputData']")
 
-app$findElement(".btSolve .dropdown-toggle")$click()
-app$findElement(".change-dd-button[data-action-id='btSolve']")$click()
+app$click(selector = ".btSolve .dropdown-toggle")
+app$click(selector = ".change-dd-button[data-action-id='btSolve']")
 timeout <- 40
 repeat{
-  isRunning <- app$waitFor("$('#modelStatus').is(':visible') && $('#modelStatus').text().startsWith('Model execution phase');", timeout = 50)
+  isRunning <- app$get_js("$('#modelStatus').is(':visible') && $('#modelStatus').text().startsWith('Model execution phase');")
   if (isRunning) {
     break
   }
@@ -76,21 +71,21 @@ repeat{
   }
 }
 Sys.sleep(2L)
-expect_true(app$waitFor("$('#logStatusContainer').text()!=='';", timeout = 5000L))
-expect_true(app$waitFor("$('#btDetachCurrentJob').is(':enabled')", timeout = 50L))
-app$findElement("#btDetachCurrentJob")$click()
+app$wait_for_js("$('#logStatusContainer').text()!=='';", timeout = 5000L)
+expect_true(app$get_js("$('#btDetachCurrentJob').is(':enabled')"))
+app$click(selector = "#btDetachCurrentJob")
 Sys.sleep(0.5)
-expect_true(app$waitFor("$('#modelStatus').is(':visible') && $('#modelStatus').text()==='';", timeout = 2000L))
-expect_true(app$waitFor("$('#logStatusContainer').text()==='';", timeout = 50))
-expect_true(app$waitFor("$('#btDetachCurrentJob').is(':disabled')", timeout = 50L))
+app$wait_for_js("$('#modelStatus').is(':visible') && $('#modelStatus').text()==='';", timeout = 2000L)
+expect_true(app$get_js("$('#logStatusContainer').text()==='';"))
+expect_true(app$get_js("$('#btDetachCurrentJob').is(':disabled')"))
 
-app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
+app$click(selector = "#sidebarItemExpanded a[data-value='inputData']")
 
-app$findElement(".btSolve .dropdown-toggle")$click()
-app$findElement(".change-dd-button[data-action-id='btSolve']")$click()
+app$click(selector = ".btSolve .dropdown-toggle")
+app$click(selector = ".change-dd-button[data-action-id='btSolve']")
 timeout <- 20
 repeat{
-  isRunning <- app$waitFor("$('#modelStatus').is(':visible') && ($('#modelStatus').text().startsWith('Model execution phase') || $('#modelStatus').text().includes('queued'));", timeout = 50)
+  isRunning <- app$get_js("$('#modelStatus').is(':visible') && ($('#modelStatus').text().startsWith('Model execution phase') || $('#modelStatus').text().includes('queued'));")
   if (isRunning) {
     break
   }
@@ -101,16 +96,16 @@ repeat{
   }
 }
 
-app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
+app$click(selector = "#sidebarItemExpanded a[data-value='inputData']")
 
-app$findElement(".btSolve .dropdown-toggle")$click()
-app$findElement(".change-dd-button[data-action-id='btSolve']")$click()
+app$click(selector = ".btSolve .dropdown-toggle")
+app$click(selector = ".change-dd-button[data-action-id='btSolve']")
 Sys.sleep(1)
-expect_true(app$waitFor("$('#btSolveDetachCurrent').is(':visible')", timeout = 50))
-app$findElement("#btSolveDetachCurrent")$click()
+expect_true(app$get_js("$('#btSolveDetachCurrent').is(':visible')"))
+app$click(selector = "#btSolveDetachCurrent")
 timeout <- 20
 repeat{
-  isRunning <- app$waitFor("$('#modelStatus').is(':visible') && ($('#modelStatus').text().startsWith('Model execution phase') || $('#modelStatus').text().includes('queued'));", timeout = 50)
+  isRunning <- app$get_js("$('#modelStatus').is(':visible') && ($('#modelStatus').text().startsWith('Model execution phase') || $('#modelStatus').text().includes('queued'));")
   if (isRunning) {
     break
   }
@@ -122,20 +117,20 @@ repeat{
 }
 
 
-app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()
-app$findElement('#shiny-tab-gamsinter a[data-value="joblist"]')$click()
-app$findElement("#refreshActiveJobs")$click()
+app$click(selector = "#sidebarItemExpanded a[data-value='gamsinter']")
+app$click(selector = '#shiny-tab-gamsinter a[data-value="joblist"]')
+app$click(selector = "#refreshActiveJobs")
 
 timeout <- 20L
 repeat{
-  if (identical(app$waitFor("$('.cJob-wrapper').is(':visible')", timeout = 100L), TRUE)) {
+  if (identical(app$get_js("$('.cJob-wrapper').is(':visible')"), TRUE)) {
     break
   }
   Sys.sleep(1L)
   timeout <- timeout - 1L
   if (timeout <= 0L) {
-    app$snapshot()
+    app$expect_values()
     stop("Timeout reached. Could not get job status.", call. = FALSE)
   }
 }
-expect_true(app$waitFor(paste0("$('#jImport_output tr').length===", numberJobsBefore + 1L + 3L), timeout = 50L))
+expect_true(app$get_js(paste0("$('#jImport_output tr').length===", numberJobsBefore + 1L + 3L)))

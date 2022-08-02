@@ -1,5 +1,4 @@
 context("UI tests - Layout settings")
-library(shinytest)
 
 createTestDb()
 
@@ -29,9 +28,9 @@ jsonlite::write_json(configJSON, file.path(configJSONPath, "pickstock_configurat
 
 test_that(
   "Layout settings - Setting number of expanded tabs works",
-  expect_pass(testApp(file.path(testDir, ".."), "layout_expanded_tabs_test",
-    compareImages = FALSE
-  ))
+  {
+    source(file.path(testDir, "shinytest", "layout_expanded_tabs_test.R"), local = TRUE)
+  }
 )
 
 file.rename(

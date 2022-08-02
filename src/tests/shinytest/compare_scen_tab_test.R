@@ -1,31 +1,29 @@
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit(paste0("compare_scen_tab_test_", Sys.getenv("GMSMODELNAME")))
+app <- AppDriver$new("../../", name = paste0("compare_scen_tab_test_", Sys.getenv("GMSMODELNAME")), variant = NULL, load_timeout = 20000)
 
-app$findElement("a[data-value='scenarios']")$click()
-app$findElement(".btSplitView button")$click()
-app$findElements(".btSplitView a[data-view='tab']")[[1]]$click()
+app$click(selector = "a[data-value='scenarios']")
+app$click(selector = ".btSplitView button")
+app$click(selector = ".btSplitView a[data-view='tab']")
 Sys.sleep(0.5)
-app$findElement("#cmpTabNoScenWrapper .action-button")$click()
+app$click(selector = "#cmpTabNoScenWrapper .action-button")
 Sys.sleep(1)
 scenOptions <- setNames(
   getSelectizeAliases(app, "#selLoadScen"),
   getSelectizeOptions(app, "#selLoadScen")
 )
 scenToCompare <- paste0(c("1_", "2_"), Sys.info()[["user"]])
-app$setInputs(selLoadScen = scenToCompare, wait_ = FALSE, values_ = FALSE)
-app$setInputs(btLoadScenConfirm = "click")
+app$set_inputs(selLoadScen = scenToCompare, wait_ = FALSE)
+app$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(2)
-expect_true(app$waitFor(paste0(
+expect_error(app$get_js(paste0(
   "$('#cmpScenTitle_4').text()==='",
   strsplit(scenOptions[scenToCompare[1]], " (", fixed = TRUE)[[1]][1],
-  "';"
-), timeout = 50))
-expect_true(app$waitFor(paste0(
+  "'"
+), timeout = 50), NA)
+expect_error(app$wait_for_js(paste0(
   "$('#cmpScenTitle_5').text()==='",
   strsplit(scenOptions[scenToCompare[2]], " (", fixed = TRUE)[[1]][1],
-  "';"
-), timeout = 50))
-app$snapshot(items = list(output = c("inputDataTitle")), screenshot = TRUE)
-app$findElement("#btScenTableView5")$click()
+  "'"
+), timeout = 50), NA)
+app$click(selector = "#btScenTableView5")
 
 app$stop()

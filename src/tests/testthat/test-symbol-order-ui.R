@@ -56,9 +56,9 @@ file.copy2(file.path(testDir, "data", "pickstock.gdx"), file.path(modelDataPath,
 
 test_that(
   "Symbol output and input order works as expected",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "symbol_order_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "symbol_order_test.R"), local = TRUE)
+  }
 )
 
 file.rename(

@@ -39,9 +39,9 @@ configJSON$pivotCompSettings$symbolConfig <- list(schedule = list(
 jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
 test_that(
   "Loading/saving views in Pivot Compare Mode works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "pivot_comp_views_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "pivot_comp_views_test.R"), local = TRUE)
+  }
 )
 unlink(globalViewsFilePath)
 unlink(modelDataPath, recursive = TRUE, force = TRUE)

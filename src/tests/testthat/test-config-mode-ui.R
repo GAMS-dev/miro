@@ -1,5 +1,4 @@
 context("UI tests - Configuration Mode")
-library(shinytest)
 
 createTestDb()
 
@@ -16,27 +15,27 @@ file.copy(file.path(configJSONPath, "pickstock_configuration_expected.json"),
 
 test_that(
   "Configuration mode - general settings works.",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "config_mode_general_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "config_mode_general_test.R"), local = TRUE)
+  }
 )
 test_that(
   "Configuration mode - table settings works.",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "config_mode_table_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "config_mode_table_test.R"), local = TRUE)
+  }
 )
 test_that(
   "Configuration mode - widget settings works.",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "config_mode_widget_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "config_mode_widget_test.R"), local = TRUE)
+  }
 )
 test_that(
   "Configuration mode - graph settings works.",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "config_mode_graph_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "config_mode_graph_test.R"), local = TRUE)
+  }
 )
 
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))

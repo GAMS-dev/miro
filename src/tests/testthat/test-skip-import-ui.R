@@ -16,9 +16,9 @@ file.copy2(
 )
 test_that(
   "Skipping import of data files if unchanged works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "skip_scen_import_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "skip_scen_import_test.R"), local = TRUE)
+  }
 )
 file.copy2(
   file.path(testDir, "data", "transport2.gdx"),
@@ -26,9 +26,9 @@ file.copy2(
 )
 test_that(
   "Import new scenario works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "skip_scen_import_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "skip_scen_import_test.R"), local = TRUE)
+  }
 )
 file.copy2(
   file.path(testDir, "data", "transport2.gdx"),
@@ -36,17 +36,17 @@ file.copy2(
 )
 test_that(
   "Skipping import of data files if changed works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "skip_scen_import_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "skip_scen_import_test.R"), local = TRUE)
+  }
 )
 Sys.setenv(MIRO_FORCE_SCEN_IMPORT = "true")
 Sys.setenv(MIRO_DATA_DIR = file.path(modelDataPath, "default.gdx"))
 test_that(
   "MIRO_FORCE_SCEN_IMPORT option works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "skip_scen_import_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "skip_scen_import_test.R"), local = TRUE)
+  }
 )
 unlink(modelDataPath, recursive = TRUE, force = TRUE)
 

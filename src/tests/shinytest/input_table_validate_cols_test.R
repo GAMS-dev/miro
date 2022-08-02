@@ -34,21 +34,20 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit("input_table_validate_cols_test")
+app <- AppDriver$new("../../", name = "input_table_validate_cols_test", variant = NULL, load_timeout = 20000)
 Sys.sleep(1)
-app$waitFor("HTMLWidgets.getInstance(document.getElementById('in_1')).hot.setDataAtCell(0,1,'6');true;", timeout = 50L)
-expect_false(app$waitFor("$('#in_1 table tr:nth-child(1) td:nth-child(3)').hasClass('htInvalid')", timeout = 50L))
-app$waitFor("HTMLWidgets.getInstance(document.getElementById('in_1')).hot.setDataAtCell(0,1,'12');true;", timeout = 50L)
-expect_true(app$waitFor("$('#in_1 table tr:nth-child(1) td:nth-child(3)').hasClass('htInvalid')", timeout = 50L))
-expect_true(app$waitFor("HTMLWidgets.getInstance(document.getElementById('in_1')).hot.getDataAtCell(0,1)===12", timeout = 50L))
+app$get_js("HTMLWidgets.getInstance(document.getElementById('in_1')).hot.setDataAtCell(0,1,'6');true;", timeout = 50L)
+expect_false(app$get_js("$('#in_1 table tr:nth-child(1) td:nth-child(3)').hasClass('htInvalid')", timeout = 50L))
+app$get_js("HTMLWidgets.getInstance(document.getElementById('in_1')).hot.setDataAtCell(0,1,'12');true;", timeout = 50L)
+expect_true(app$get_js("$('#in_1 table tr:nth-child(1) td:nth-child(3)').hasClass('htInvalid')", timeout = 50L))
+expect_true(app$get_js("HTMLWidgets.getInstance(document.getElementById('in_1')).hot.getDataAtCell(0,1)===12", timeout = 50L))
 
-app$waitFor("HTMLWidgets.getInstance(document.getElementById('in_1')).hot.setDataAtCell(0,3,'10');true;", timeout = 50L)
-expect_true(app$waitFor("HTMLWidgets.getInstance(document.getElementById('in_1')).hot.getDataAtCell(0,3)===null", timeout = 50L))
-app$waitFor("HTMLWidgets.getInstance(document.getElementById('in_1')).hot.setDataAtCell(0,3,'11');true;", timeout = 50L)
-expect_true(app$waitFor("HTMLWidgets.getInstance(document.getElementById('in_1')).hot.getDataAtCell(0,3)===11", timeout = 50L))
+app$get_js("HTMLWidgets.getInstance(document.getElementById('in_1')).hot.setDataAtCell(0,3,'10');true;", timeout = 50L)
+expect_true(app$get_js("HTMLWidgets.getInstance(document.getElementById('in_1')).hot.getDataAtCell(0,3)===null", timeout = 50L))
+app$get_js("HTMLWidgets.getInstance(document.getElementById('in_1')).hot.setDataAtCell(0,3,'11');true;", timeout = 50L)
+expect_true(app$get_js("HTMLWidgets.getInstance(document.getElementById('in_1')).hot.getDataAtCell(0,3)===11", timeout = 50L))
 
-app$snapshot(items = list(output = c("inputDataTitle")), screenshot = TRUE)
+app$expect_values(output = "inputDataTitle")
 app$stop()
 
 configNew <- configWorking
@@ -62,11 +61,11 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app2 <- ShinyDriver$new("../../", loadTimeout = 20000)
+app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
 Sys.sleep(0.5)
-expect_true(app2$waitFor("$('#errorMessages').html().includes('greater than the specified maximum value');", timeout = 50))
+expect_true(app$get_js("$('#errorMessages').html().includes('greater than the specified maximum value');", timeout = 50))
 Sys.sleep(0.5)
-app2$stop()
+app$stop()
 
 configNew <- configWorking
 configNew$inputWidgets$d$validateCols$topeka <- list(
@@ -77,8 +76,8 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app3 <- ShinyDriver$new("../../", loadTimeout = 20000)
+app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
 Sys.sleep(0.5)
-expect_true(app3$waitFor("$('#errorMessages').html().includes('declared as choices and should be excluded');", timeout = 50))
+expect_true(app$get_js("$('#errorMessages').html().includes('declared as choices and should be excluded');", timeout = 50))
 Sys.sleep(0.5)
-app3$stop()
+app$stop()

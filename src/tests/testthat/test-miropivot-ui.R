@@ -10,9 +10,9 @@ Sys.setenv(MIRO_MODE = "base")
 
 test_that(
   "MIRO Pivot renderer works.",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "miropivot_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "miropivot_test.R"), local = TRUE)
+  }
 )
 
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))

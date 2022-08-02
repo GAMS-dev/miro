@@ -26,9 +26,9 @@ file.copy(oldValueboxConfigJSON, file.path(
 context("UI tests - Old valuebox settings")
 test_that(
   "Valueboxes with old (global) configuration works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "valuebox_old_config_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "valuebox_old_config_test.R"), local = TRUE)
+  }
 )
 
 file.copy(newValueboxConfigJSON, file.path(
@@ -39,9 +39,9 @@ file.copy(newValueboxConfigJSON, file.path(
 context("UI tests - new valuebox settings")
 test_that(
   "Valueboxes with new (individual) configuration works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "valuebox_new_config_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "valuebox_new_config_test.R"), local = TRUE)
+  }
 )
 
 file.rename(

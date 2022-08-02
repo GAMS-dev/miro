@@ -1,0 +1,313 @@
+{
+  "input": {
+    "batchLoadAll": 0,
+    "batchLoadCurrent": 0,
+    "batchLoadSelected": 0,
+    "btClosePivotComp": 0,
+    "btCompareScen": 0,
+    "btDelete": 0,
+    "btDetachCurrentJob": 0,
+    "btDownloadTmpFiles": 0,
+    "btEditMeta": 0,
+    "btGraphIn": 0,
+    "btImport": 0,
+    "btInterrupt": 0,
+    "btNewBlock": 0,
+    "btRefreshGraphIn": 0,
+    "btRemoteExecLogin": 1,
+    "btRemoteExecLogout": 1,
+    "btSave": 0,
+    "btSaveAs": 0,
+    "btSaveCredentials": 1,
+    "btScenPivot_close": 0,
+    "btScenSplit1_close": 0,
+    "btScenSplit1_open": 0,
+    "btScenSplit2_close": 0,
+    "btScenSplit2_open": 0,
+    "btSendQuery": 0,
+    "btShowCommandPalette": 0,
+    "btShowHistory": 0,
+    "discardJob": 6,
+    "downloadJobData": 6,
+    "dropdown_9": "lp",
+    "importJob": 6,
+    "in_1": {
+      "data": [
+        [
+          "",
+          "NA"
+        ]
+      ],
+      "changes": {
+        "event": "afterChange",
+        "changes": null
+      },
+      "params": {
+        "data": [
+          [
+            "",
+            "NA"
+          ]
+        ],
+        "rClass": [
+          "tbl_df",
+          "tbl",
+          "data.frame"
+        ],
+        "rColClasses": {
+          "i": "character",
+          "value": "numeric"
+        },
+        "rColnames": [
+          "i",
+          "value"
+        ],
+        "rColHeaders": [
+          "i",
+          "value"
+        ],
+        "rRowHeaders": null,
+        "rDataDim": [
+          1,
+          2
+        ],
+        "selectCallback": true,
+        "colHeaders": [
+          "canning plants",
+          "capacity of plant i in cases"
+        ],
+        "rowHeaders": "1",
+        "columns": [
+          {
+            "type": "text",
+            "default": null
+          },
+          {
+            "type": "numeric",
+            "numericFormat": {
+              "pattern": "0.00"
+            },
+            "default": null
+          }
+        ],
+        "width": null,
+        "height": 700,
+        "debug": 0,
+        "search": true,
+        "stretchH": "none",
+        "comments": false,
+        "contextMenu": {
+          "items": {
+            "row_above": [
+
+            ],
+            "row_below": [
+
+            ],
+            "remove_row": [
+
+            ],
+            "hsep4": {
+              "name": "---------",
+              "key": "hsep4"
+            },
+            "undo": [
+
+            ],
+            "redo": [
+
+            ],
+            "hsep5": {
+              "name": "---------",
+              "key": "hsep5"
+            },
+            "alignment": [
+
+            ]
+          }
+        },
+        "ishighlight": true,
+        "currentRowClassName": "currentRow",
+        "currentColClassName": "currentCol",
+        "colWidths": 150,
+        "columnSorting": true,
+        "manualColumnMove": false,
+        "manualColumnResize": true
+      }
+    },
+    "in_1-search": "",
+    "in_2-search": "",
+    "in_3-search": "",
+    "in_4-search": "",
+    "in_5-search": "",
+    "in_m_1_add_row": 0,
+    "in_m_1_remove_row": 0,
+    "in_m_2_add_row": 0,
+    "in_m_2_remove_row": 0,
+    "in_m_3_add_row": 0,
+    "in_m_3_remove_row": 0,
+    "in_m_4_add_row": 0,
+    "in_m_4_remove_row": 0,
+    "in_m_5_add_row": 0,
+    "in_m_5_remove_row": 0,
+    "inputTabset": "inputTabset_1",
+    "inputTabset4": "inputTabset4_1",
+    "jobListPanel": "joblist",
+    "logFileTabsset": "mirolog",
+    "logUpdate": true,
+    "miroSidebar": "outputData",
+    "newLine_1": "",
+    "outputTableView": 1,
+    "outputTabset": "outputTabset_1",
+    "refreshActiveJobs": 0,
+    "remoteCredNs": "tests",
+    "remoteCredPass": "xyRgin-dephu9-kyzbyp",
+    "remoteCredReg": false,
+    "remoteCredRemember": true,
+    "remoteCredUrl": "https://miro.gams.com/engine/api",
+    "remoteCredUser": "mirotests_44894",
+    "remoteExecLogoutDiv": 1,
+    "scenTabset": null,
+    "showJobLog": "6",
+    "sidebarCollapsed": false,
+    "sidebarItemExpanded": null,
+    "slider_6": 100,
+    "slider_7": 100,
+    "slider_8": 0.95
+  },
+  "output": {
+    "in_1": {
+      "x": {
+        "data": [
+          {
+            "i": "",
+            "value": "NA"
+          }
+        ],
+        "rClass": [
+          "tbl_df",
+          "tbl",
+          "data.frame"
+        ],
+        "rColClasses": {
+          "i": "character",
+          "value": "numeric"
+        },
+        "rColnames": [
+          "i",
+          "value"
+        ],
+        "rColHeaders": [
+          "i",
+          "value"
+        ],
+        "rRowHeaders": null,
+        "rDataDim": [
+          1,
+          2
+        ],
+        "selectCallback": true,
+        "colHeaders": [
+          "canning plants",
+          "capacity of plant i in cases"
+        ],
+        "rowHeaders": "1",
+        "columns": [
+          {
+            "type": "text",
+            "renderer": "customRenderer",
+            "default": null
+          },
+          {
+            "type": "numeric",
+            "numericFormat": {
+              "pattern": "0.00"
+            },
+            "renderer": "customRenderer",
+            "default": null
+          }
+        ],
+        "width": null,
+        "height": 700,
+        "debug": 0,
+        "search": true,
+        "stretchH": "none",
+        "comments": false,
+        "contextMenu": {
+          "items": {
+            "row_above": [
+
+            ],
+            "row_below": [
+
+            ],
+            "remove_row": [
+
+            ],
+            "hsep4": {
+              "name": "---------"
+            },
+            "undo": [
+
+            ],
+            "redo": [
+
+            ],
+            "hsep5": {
+              "name": "---------"
+            },
+            "alignment": [
+
+            ]
+          }
+        },
+        "ishighlight": true,
+        "currentRowClassName": "currentRow",
+        "currentColClassName": "currentCol",
+        "colWidths": 150,
+        "columnSorting": true,
+        "manualColumnMove": false,
+        "manualColumnResize": true
+      },
+      "evals": [
+        "columns.0.renderer",
+        "columns.1.renderer"
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+
+      ]
+    },
+    "inputDataTitle": {
+      "html": "<i>&lt;New Scenario&gt;<\/i>",
+      "deps": [
+
+      ]
+    },
+    "jImport_output": {
+      "html": "<table class=\"miro-table cJob-wrapper\">\n  <tr>\n    <th>Owner<\/th>\n    <th>Submission date<\/th>\n    <th>Job name<\/th>\n    <th>Status<\/th>\n    <th>Action<\/th>\n  <\/tr>\n  <tr>\n    <td>fproske<\/td>\n    <td>2023-01-02 15:48:33 CET<\/td>\n    <td>test2<\/td>\n    <td>\n      <div>Completed<\/div>\n      <div class=\"progress\" style=\"display:none;margin-bottom:0;border:1px solid black;\" id=\"jobImportDlProgressWrapper_5\">\n        <div class=\"progress-bar progress-bar-striped active\" id=\"jobImportDlProgress_5\" role=\"progressbar\" aria-valuenow=\"5\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:5%;\">Downloading results<\/div>\n      <\/div>\n    <\/td>\n    <td>\n      <button class=\"btn btn-default\" style=\"\" id=\"btDownloadJob_5\" onclick=\"Shiny.setInputValue(&#39;downloadJobData&#39;,5,{priority:&#39;event&#39;});\">Download results<\/button>\n      <button class=\"btn btn-default\" style=\"display:none\" id=\"btImportJob_5\" onclick=\"Shiny.setInputValue(&#39;importJob&#39;,5,{priority:&#39;event&#39;});\">Import<\/button>\n      <button class=\"btn btn-default\" onclick=\"Shiny.setInputValue(&#39;showJobLog&#39;, &#39;5&#39;,{priority:&#39;event&#39;});\">Show log<\/button>\n      <button class=\"btn btn-default\" onclick=\"Miro.confirmModalShow(&#39;Confirm discard&#39;, &#39;Are you sure you want to discard the selected job? Running jobs will be stopped.&#39;, &#39;Cancel&#39;, &#39;Confirm&#39;, &#39;Shiny.setInputValue(\\&#39;discardJob\\&#39;,5,{priority:\\&#39;event\\&#39;})&#39;)\">Discard<\/button>\n    <\/td>\n  <\/tr>\n  <tr>\n    <td>fproske<\/td>\n    <td>2023-01-02 15:48:28 CET<\/td>\n    <td>test1<\/td>\n    <td>\n      <div>Completed<\/div>\n      <div class=\"progress\" style=\"display:none;margin-bottom:0;border:1px solid black;\" id=\"jobImportDlProgressWrapper_4\">\n        <div class=\"progress-bar progress-bar-striped active\" id=\"jobImportDlProgress_4\" role=\"progressbar\" aria-valuenow=\"5\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:5%;\">Downloading results<\/div>\n      <\/div>\n    <\/td>\n    <td>\n      <button class=\"btn btn-default\" style=\"\" id=\"btDownloadJob_4\" onclick=\"Shiny.setInputValue(&#39;downloadJobData&#39;,4,{priority:&#39;event&#39;});\">Download results<\/button>\n      <button class=\"btn btn-default\" style=\"display:none\" id=\"btImportJob_4\" onclick=\"Shiny.setInputValue(&#39;importJob&#39;,4,{priority:&#39;event&#39;});\">Import<\/button>\n      <button class=\"btn btn-default\" onclick=\"Shiny.setInputValue(&#39;showJobLog&#39;, &#39;4&#39;,{priority:&#39;event&#39;});\">Show log<\/button>\n      <button class=\"btn btn-default\" onclick=\"Miro.confirmModalShow(&#39;Confirm discard&#39;, &#39;Are you sure you want to discard the selected job? Running jobs will be stopped.&#39;, &#39;Cancel&#39;, &#39;Confirm&#39;, &#39;Shiny.setInputValue(\\&#39;discardJob\\&#39;,4,{priority:\\&#39;event\\&#39;})&#39;)\">Discard<\/button>\n    <\/td>\n  <\/tr>\n<\/table>",
+      "deps": [
+
+      ]
+    },
+    "modelStatus": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "outputDataTitle": {
+      "html": "<i>&lt;test3&gt; (*)<\/i>",
+      "deps": [
+
+      ]
+    }
+  },
+  "export": {
+
+  }
+}

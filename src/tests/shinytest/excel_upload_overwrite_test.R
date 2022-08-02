@@ -1,5 +1,4 @@
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit(paste0("excel_upload_overwrite_test_", Sys.getenv("GMSMODELNAME")))
+app <- AppDriver$new("../../", name = paste0("excel_upload_overwrite_test_", Sys.getenv("GMSMODELNAME")), variant = NULL, load_timeout = 20000)
 
 widgetSheetId <- 1L
 if (identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
@@ -8,30 +7,27 @@ if (identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
   widgetSheetId <- 7L
 }
 
-app$setInputs(btImport = "click")
+app$set_inputs(btImport = "click")
 Sys.sleep(0.5)
-app$setInputs(tb_importData = "tb_importData_local", wait_ = FALSE, values_ = FALSE)
-app$uploadFile(localInput = paste0("../data/", Sys.getenv("GMSMODELNAME"), ".xlsx"))
-app$setInputs(btImportLocal = "click")
+app$set_inputs(tb_importData = "tb_importData_local", wait_ = FALSE)
+app$upload_file(localInput = paste0("../data/", Sys.getenv("GMSMODELNAME"), ".xlsx"))
+app$set_inputs(btImportLocal = "click")
 Sys.sleep(2)
-app$setInputs(btImport = "click")
+app$set_inputs(btImport = "click")
 Sys.sleep(0.5)
-app$setInputs(tb_importData = "tb_importData_local", wait_ = FALSE, values_ = FALSE)
-app$uploadFile(localInput = paste0("../data/", Sys.getenv("GMSMODELNAME"), ".xlsx"))
-app$setInputs(btImportLocal = "click")
-app$setInputs(btReplaceInputData = "click")
+app$set_inputs(tb_importData = "tb_importData_local", wait_ = FALSE)
+app$upload_file(localInput = paste0("../data/", Sys.getenv("GMSMODELNAME"), ".xlsx"))
+app$set_inputs(btImportLocal = "click")
+app$set_inputs(btReplaceInputData = "click")
 Sys.sleep(1)
-app$snapshot(
-  items = list(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L))),
-  screenshot = TRUE
-)
+app$expect_values(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L)))
 if (identical(Sys.getenv("GMSMODELNAME"), "transport")) {
-  app$setInputs(btImport = "click")
+  app$set_inputs(btImport = "click")
   Sys.sleep(0.5)
-  app$setInputs(tb_importData = "tb_importData_local", wait_ = FALSE, values_ = FALSE)
-  app$uploadFile(localInput = paste0("../data/transport_merge.xlsx"))
-  app$setInputs(btImportLocal = "click")
-  app$setInputs(btMergeInputData = "click")
+  app$set_inputs(tb_importData = "tb_importData_local", wait_ = FALSE)
+  app$upload_file(localInput = paste0("../data/transport_merge.xlsx"))
+  app$set_inputs(btImportLocal = "click")
+  app$set_inputs(btMergeInputData = "click")
   Sys.sleep(1)
   expect_equal(getHotData(app, "in_1"),
     tibble(
@@ -40,7 +36,7 @@ if (identical(Sys.getenv("GMSMODELNAME"), "transport")) {
     ),
     check.attributes = FALSE
   )
-  app$setInputs(inputTabset = "inputTabset_4")
+  app$set_inputs(inputTabset = "inputTabset_4")
   Sys.sleep(1)
   expect_equal(getHotData(app, "in_4"),
     tibble(
@@ -50,15 +46,15 @@ if (identical(Sys.getenv("GMSMODELNAME"), "transport")) {
     ),
     check.attributes = FALSE
   )
-  expect_identical(app$getValue("slider_7"), 123)
-  app$setInputs(btImport = "click")
+  expect_identical(app$get_value(input = "slider_7"), 123L)
+  app$set_inputs(btImport = "click")
   Sys.sleep(0.5)
-  app$setInputs(tb_importData = "tb_importData_local", wait_ = FALSE, values_ = FALSE)
-  app$uploadFile(localInput = paste0("../data/transport_replace.xlsx"))
-  app$setInputs(btImportLocal = "click")
-  app$setInputs(btReplaceInputData = "click")
+  app$set_inputs(tb_importData = "tb_importData_local", wait_ = FALSE, values_ = FALSE)
+  app$upload_file(localInput = paste0("../data/transport_replace.xlsx"))
+  app$set_inputs(btImportLocal = "click")
+  app$set_inputs(btReplaceInputData = "click")
   Sys.sleep(1)
-  app$setInputs(inputTabset = "inputTabset_1")
+  app$set_inputs(inputTabset = "inputTabset_1")
   expect_equal(getHotData(app, "in_1"),
     tibble(
       i = c("Seattle", "Boston"),
@@ -66,7 +62,7 @@ if (identical(Sys.getenv("GMSMODELNAME"), "transport")) {
     ),
     check.attributes = FALSE
   )
-  app$setInputs(inputTabset = "inputTabset_4")
+  app$set_inputs(inputTabset = "inputTabset_4")
   Sys.sleep(1)
   expect_equal(getHotData(app, "in_4"),
     tibble(
@@ -76,6 +72,6 @@ if (identical(Sys.getenv("GMSMODELNAME"), "transport")) {
     ),
     check.attributes = FALSE
   )
-  expect_identical(app$getValue("slider_7"), 123)
+  expect_identical(app$get_value(input = "slider_7"), 123L)
 }
 app$stop()

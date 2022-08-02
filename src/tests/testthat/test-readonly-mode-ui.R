@@ -11,9 +11,9 @@ Sys.setenv(MIRO_MODE = "readonly")
 
 test_that(
   "Readonly mode works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "readonly_mode_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "readonly_mode_test.R"), local = TRUE)
+  }
 )
 
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))

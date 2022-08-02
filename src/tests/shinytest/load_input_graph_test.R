@@ -1,17 +1,16 @@
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit("load_input_graph_test")
+app <- AppDriver$new("../../", name = "load_input_graph_test", variant = NULL, load_timeout = 20000)
 
 currentUser <- Sys.info()[["user"]]
 
-app$setInputs(btImport = "click")
+app$set_inputs(btImport = "click")
 Sys.sleep(0.5)
-app$setInputs(selLoadScen = paste0("1_", currentUser))
-app$setInputs(btLoadScenConfirm = "click")
+app$set_inputs(selLoadScen = paste0("1_", currentUser))
+app$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(1)
-app$setInputs(btGraphIn = "click")
+app$set_inputs(btGraphIn = "click")
 Sys.sleep(0.5)
-expect_true(app$waitFor("$('#graph-in_1').is(':visible');", timeout = 50))
-app$setInputs(`in_1-miroPivot-pivotRenderer` = "bar")
+expect_true(app$get_js("$('#graph-in_1').is(':visible');", timeout = 50))
+app$set_inputs(`in_1-miroPivot-pivotRenderer` = "bar")
 Sys.sleep(1)
 expect_chartjs(
   app,
@@ -21,16 +20,16 @@ expect_chartjs(
     "Seattle"
   )
 )
-app$setInputs(btImport = "click")
+app$set_inputs(btImport = "click")
 Sys.sleep(0.5)
-app$setInputs(btLoadScenConfirm = "click")
+app$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(0.2)
-app$setInputs(btOverwriteScen = "click")
+app$set_inputs(btOverwriteScen = "click")
 Sys.sleep(1.5)
-expect_true(app$waitFor("$('#data-in_1').is(':visible');", timeout = 50))
-app$setInputs(btGraphIn = "click")
+expect_true(app$get_js("$('#data-in_1').is(':visible');", timeout = 50))
+app$set_inputs(btGraphIn = "click")
 Sys.sleep(0.5)
-app$setInputs(`in_1-miroPivot-pivotRenderer` = "bar")
+app$set_inputs(`in_1-miroPivot-pivotRenderer` = "bar")
 Sys.sleep(1)
 expect_chartjs(
   app,
@@ -41,5 +40,4 @@ expect_chartjs(
   )
 )
 
-app$snapshot(items = list(output = c("inputDataTitle")), screenshot = TRUE)
 app$stop()

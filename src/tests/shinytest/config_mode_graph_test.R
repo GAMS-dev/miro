@@ -1,7 +1,5 @@
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit("config_mode_graph_test")
+app <- AppDriver$new("../../", name = "config_mode_graph_test", variant = NULL, load_timeout = 20000)
 
-app$snapshot(items = list(input = "deleteGraph"), screenshot = TRUE)
 Sys.sleep(2L)
 jsonPath <- file.path("..", "model", "pickstock_configuration", "conf_pickstock_configuration")
 configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"),
@@ -15,12 +13,12 @@ configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_
 
 
 # load and save all widgets
-app$findElement("a[data-value='new_graph']")$click()
+app$click(selector = "a[data-value='new_graph']")
 Sys.sleep(1)
-app$findElement("button[id='dbInput']")$click()
+app$click(selector = "button[id='dbInput']")
 Sys.sleep(5)
 for (GraphToTest in names(configRaw$dataRendering)) {
-  app$setInputs(gams_symbols = GraphToTest)
+  app$set_inputs(gams_symbols = GraphToTest)
   if (identical(GraphToTest, "hovercraft")) {
     Sys.sleep(12)
   } else {
@@ -31,9 +29,9 @@ for (GraphToTest in names(configRaw$dataRendering)) {
     # langSpecificGraphs$graphOptionsSet in tools/cg_graphs.R
     expect_identical(setOptions, c("timevis", "miropivot", "custom", "leaflet"))
   }
-  app$findElement("button[id='saveGraph']")$click()
+  app$click(selector = "button[id='saveGraph']")
   Sys.sleep(1)
-  app$findElement("button[id='saveGraphConfirm']")$click()
+  app$click(selector = "button[id='saveGraphConfirm']")
   Sys.sleep(1)
 }
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),

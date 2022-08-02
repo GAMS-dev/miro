@@ -1,7 +1,3 @@
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit("startup_performance_test")
-app$snapshot(
-  items = list(output = "inputDataTitle"),
-  screenshot = TRUE
-)
+app <- AppDriver$new("../../", name = "startup_performance_test", variant = NULL, load_timeout = 20000)
+app$expect_values(output = "inputDataTitle")
 app$stop()

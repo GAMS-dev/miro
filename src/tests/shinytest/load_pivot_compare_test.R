@@ -1,62 +1,61 @@
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit("load_pivot_compare_test")
+app <- AppDriver$new("../../", name = "load_pivot_compare_test", variant = NULL, load_timeout = 20000)
 
 currentUser <- Sys.info()[["user"]]
 
-app$findElement('a[data-value="scenarios"]')$click()
-app$findElement(".btSplitView button")$click()
-app$findElements(".btSplitView a[data-view='tab']")[[1]]$click()
+app$click(selector = 'a[data-value="scenarios"]')
+app$click(selector = ".btSplitView button")
+app$click(selector = ".btSplitView a[data-view='tab']")
 Sys.sleep(0.5)
 
-app$findElement("#cmpTabNoScenWrapper .action-button")$click()
+app$click(selector = "#cmpTabNoScenWrapper .action-button")
 Sys.sleep(0.5)
 scenToSelect <- paste0(c("1_", "3_"), currentUser)
-app$setInputs(selLoadScen = scenToSelect, wait_ = FALSE, values_ = FALSE)
-app$setInputs(btLoadScenConfirm = "click")
+app$set_inputs(selLoadScen = scenToSelect, wait_ = FALSE, values_ = FALSE)
+app$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(2)
 
 # scenarios loaded in tab view: 1, 3
 
 # load scenarios into split view (1 from tab view, 1 from db)
-app$findElement(".btSplitView button")$click()
-app$findElements(".btSplitView a[data-view='split']")[[1]]$click()
+app$click(selector = ".btSplitView button")
+app$click(selector = ".btSplitView a[data-view='split']")
 
-app$setInputs(btScenSplit1_open = "click")
+app$set_inputs(btScenSplit1_open = "click")
 Sys.sleep(0.5)
-app$setInputs(tabsetLoadScen = "loadScenUI")
+app$set_inputs(tabsetLoadScen = "loadScenUI")
 expect_options(getSelectizeOptions(app, "#selLoadScenUI"), scenToSelect)
-app$setInputs(selLoadScenUI = paste0("1_", currentUser))
-app$setInputs(btLoadScenConfirm = "click")
+app$set_inputs(selLoadScenUI = paste0("1_", currentUser))
+app$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(0.5)
 
-app$setInputs(btScenSplit2_open = "click")
+app$set_inputs(btScenSplit2_open = "click")
 Sys.sleep(0.5)
 expect_options(
   getSelectizeOptions(app, "#selLoadScen"),
   paste0(c("2_", "3_", "4_"), currentUser)
 )
-app$setInputs(selLoadScen = paste0("4_", currentUser))
-app$setInputs(btLoadScenConfirm = "click")
+app$set_inputs(selLoadScen = paste0("4_", currentUser))
+app$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(0.5)
-expect_true(app$waitFor("$('#cmpScenTitle_2').text()==='default1';", timeout = 50))
-expect_true(app$waitFor("$('#cmpScenTitle_3').text()==='default4';", timeout = 50))
+expect_identical(app$get_text(selector = "#cmpScenTitle_2"), "default1")
+expect_identical(app$get_text(selector = "#cmpScenTitle_3"), "default4")
 # scenarios loaded in split view: 1, 4
 
 # load scenarios into pivot view
-app$findElement(".btSplitView button")$click()
-app$findElements(".btSplitView a[data-view='pivot']")[[1]]$click()
+app$click(selector = ".btSplitView button")
+app$click(selector = ".btSplitView a[data-view='pivot']")
 
-app$findElement("#pivotCompBtWrapper button")$click()
+app$click(selector = "#pivotCompBtWrapper button")
 Sys.sleep(0.5)
 expect_options(
-  app$getValue("selLoadScen"),
+  app$get_value(input = "selLoadScen"),
   c(scenToSelect, paste0("4_", currentUser))
 )
-app$setInputs(btLoadScenConfirm = "click")
+app$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(1)
-app$setInputs(contentScen_0 = "contentScen_0_4")
+app$set_inputs(contentScen_0 = "contentScen_0_4")
 Sys.sleep(0.5)
-app$setInputs("tab_0_3-miroPivot-pivotRenderer" = "stackedbar")
+app$set_inputs("tab_0_3-miroPivot-pivotRenderer" = "stackedbar")
 Sys.sleep(0.5)
 expect_chartjs(
   app,
@@ -71,21 +70,21 @@ expect_chartjs(
     "default4.Seattle"
   )
 )
-app$setInputs("tab_0_3-miroPivot-showSettings" = "click")
+app$set_inputs("tab_0_3-miroPivot-showSettings" = "click")
 Sys.sleep(1)
-expect_error(app$setInputs(`tab_0_3-miroPivot-hideEmptyCols` = TRUE), NA)
-app$setInputs(`tab_0_3-miroPivot-updateSettings` = "click")
+expect_error(app$set_inputs(`tab_0_3-miroPivot-hideEmptyCols` = TRUE), NA)
+app$set_inputs(`tab_0_3-miroPivot-updateSettings` = "click")
 Sys.sleep(1)
-app$findElements("#scen-pivot-view .box-title button")[[1]]$click()
+app$click(selector = "#scen-pivot-view .box-title > button:nth-child(1)")
 Sys.sleep(0.5)
 expect_options(
-  app$getValue("selLoadScen"),
+  app$get_values()$input$selLoadScen,
   c(scenToSelect, paste0("4_", currentUser))
 )
-app$setInputs(selLoadScen = paste0(c("1_", "2_"), currentUser))
-app$setInputs(btLoadScenConfirm = "click")
+app$set_inputs(selLoadScen = paste0(c("1_", "2_"), currentUser))
+app$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(0.5)
-app$setInputs("tab_0_3-miroPivot-pivotRenderer" = "table")
+app$set_inputs("tab_0_3-miroPivot-pivotRenderer" = "table")
 Sys.sleep(0.5)
 expect_identical(
   getVisibleDtData(app, "tab_0_3-miroPivot-pivotTable"),
@@ -97,12 +96,12 @@ expect_identical(
     "tbl", "data.frame"
   ), row.names = c(NA, -4L))
 )
-app$setInputs(`tab_0_3-miroPivot-showSettings` = "click")
+app$set_inputs(`tab_0_3-miroPivot-showSettings` = "click")
 Sys.sleep(1)
-app$setInputs(`tab_0_3-miroPivot-showTableSummary` = TRUE)
-app$setInputs(`tab_0_3-miroPivot-colSummaryFunction` = "mean")
-app$setInputs(`tab_0_3-miroPivot-rowSummaryFunction` = "count")
-app$setInputs(`tab_0_3-miroPivot-updateSettings` = "click")
+app$set_inputs(`tab_0_3-miroPivot-showTableSummary` = TRUE)
+app$set_inputs(`tab_0_3-miroPivot-colSummaryFunction` = "mean")
+app$set_inputs(`tab_0_3-miroPivot-rowSummaryFunction` = "count")
+app$set_inputs(`tab_0_3-miroPivot-updateSettings` = "click")
 Sys.sleep(1)
 expect_identical(
   getVisibleDtData(app, "tab_0_3-miroPivot-pivotTable"),
@@ -117,16 +116,16 @@ expect_identical(
     -4L
   ))
 )
-expect_true(app$waitFor("$('#tab_0_3-miroPivot-pivotTable .dataTables_scrollFootInner th:first').text()==='Mean'",
+expect_true(app$get_js("$('#tab_0_3-miroPivot-pivotTable .dataTables_scrollFootInner th:first').text()==='Mean'",
   timeout = 50
 ))
-expect_true(app$waitFor("$('#tab_0_3-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(2)').text()==='475'",
+expect_true(app$get_js("$('#tab_0_3-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(2)').text()==='475'",
   timeout = 50
 ))
-expect_true(app$waitFor("$('#tab_0_3-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(3)').text()==='1'",
+expect_true(app$get_js("$('#tab_0_3-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(3)').text()==='1'",
   timeout = 50
 ))
-app$setInputs("tab_0_3-miroPivot-pivotRenderer" = "stackedbar")
+app$set_inputs("tab_0_3-miroPivot-pivotRenderer" = "stackedbar")
 Sys.sleep(0.5)
 expect_chartjs(
   app,
@@ -139,82 +138,81 @@ expect_chartjs(
     "default2.Seattle"
   )
 )
-app$findElements("#scen-pivot-view .box-title button")[[1]]$click()
+app$click(selector = "#scen-pivot-view .box-title > button:nth-child(1)")
 Sys.sleep(0.5)
-expect_true(app$waitFor("$('#cmpScenTitle_2').text()==='default1';", timeout = 50))
-expect_true(app$waitFor("$('#cmpScenTitle_3').text()==='default4';", timeout = 50))
-app$snapshot(items = list(output = c("inputDataTitle")), screenshot = TRUE)
+expect_identical(app$get_text(selector = "#cmpScenTitle_2"), "default1")
+expect_identical(app$get_text(selector = "#cmpScenTitle_3"), "default4")
 expect_options(
-  app$getAllValues()$input$selLoadScen,
+  app$get_values()$input$selLoadScen,
   paste0(c("1_", "2_"), currentUser)
 )
-app$findElement("button[data-dismiss='modal']")$click()
+app$click(selector = "button[data-dismiss='modal']")
 Sys.sleep(0.5)
 # scenarios loaded in pivot view: 1, 2
 
 # check that both scenarios loaded in tab view as well as pivot view
 # are displayed in UI tab in split view
-app$findElement(".btSplitView button")$click()
-app$findElements(".btSplitView a[data-view='split']")[[1]]$click()
-app$setInputs(btScenSplit1_close = "click")
+app$click(selector = ".btSplitView button")
+app$click(selector = ".btSplitView a[data-view='split']")
+app$set_inputs(btScenSplit1_close = "click")
 Sys.sleep(0.5)
-app$setInputs(btScenSplit1_open = "click")
+app$set_inputs(btScenSplit1_open = "click")
 Sys.sleep(0.5)
-app$setInputs(tabsetLoadScen = "loadScenUI")
+app$set_inputs(tabsetLoadScen = "loadScenUI")
 expect_options(
   getSelectizeOptions(app, "#selLoadScenUI"),
   paste0(c("1_", "2_", "3_"), currentUser)
 )
-app$findElement("button[data-dismiss='modal']")$click()
+app$click(selector = "button[data-dismiss='modal']")
 Sys.sleep(0.5)
 
 # check that both scenarios loaded in split view as well as pivot view
 # are selected when loading scenario in tab view
-app$findElement(".btSplitView button")$click()
-app$findElements(".btSplitView a[data-view='tab']")[[1]]$click()
+app$click(selector = ".btSplitView button")
+app$click(selector = ".btSplitView a[data-view='tab']")
 Sys.sleep(0.5)
 
-app$findElement("#btLoadScen")$click()
+app$click(selector = "#btLoadScen")
 Sys.sleep(0.5)
 expect_options(
   getSelectizeOptions(app, "#selLoadScen"),
   paste0(c("2_", "4_", "sb_"), currentUser)
 )
-app$findElement("button[data-dismiss='modal']")$click()
+app$click(selector = "button[data-dismiss='modal']")
 Sys.sleep(0.5)
 
-app$findElement(".btSplitView button")$click()
-app$findElements(".btSplitView a[data-view='pivot']")[[1]]$click()
-app$waitFor("$('#btScenPivot_close').click()", timeout = 50L)
+app$click(selector = ".btSplitView button")
+app$click(selector = ".btSplitView a[data-view='pivot']")
+app$click(selector = "#btScenPivot_close")
 Sys.sleep(0.5)
 # scenarios loaded in pivot view: none
 
 # check that both scenarios loaded in tab view as well as pivot view
 # are displayed in UI tab in split view
-app$findElement(".btSplitView button")$click()
-app$findElements(".btSplitView a[data-view='split']")[[1]]$click()
+app$click(selector = ".btSplitView button")
+app$click(selector = ".btSplitView a[data-view='split']")
 
-app$setInputs(btScenSplit1_open = "click")
+app$set_inputs(btScenSplit1_open = "click")
 Sys.sleep(0.5)
-app$setInputs(tabsetLoadScen = "loadScenUI")
+app$set_inputs(tabsetLoadScen = "loadScenUI")
 expect_options(
   getSelectizeOptions(app, "#selLoadScenUI"),
   paste0(c("1_", "3_"), currentUser)
 )
-app$findElement("button[data-dismiss='modal']")$click()
+app$click(selector = "button[data-dismiss='modal']")
 Sys.sleep(0.5)
 
 # close all in tab view
-app$findElement(".btSplitView button")$click()
-app$findElements(".btSplitView a[data-view='tab']")[[1]]$click()
+app$click(selector = ".btSplitView button")
+app$click(selector = ".btSplitView a[data-view='tab']")
 Sys.sleep(0.5)
-expect_true(app$waitFor("$('#btCmpTabCloseAll').click();true;", timeout = 50))
+app$click(selector = "#btCmpTabCloseAll")
 Sys.sleep(0.5)
-expect_true(app$waitFor("$('.modal-footer .bt-gms-confirm').click();true;", timeout = 50))
+expect_error(app$wait_for_js("$('.modal-footer .bt-gms-confirm').click()", timeout = 50), NA)
 Sys.sleep(0.5)
-expect_true(app$waitFor("$('#scenTabset li').length===1&&$('#cmpTabNoScenWrapper').is(':visible');", timeout = 50))
-app$findElement("#cmpTabNoScenWrapper .action-button")$click()
+expect_error(app$wait_for_js("$('#scenTabset li').length===1&&$('#cmpTabNoScenWrapper').is(':visible')", timeout = 50), NA)
+app$click(selector = "#cmpTabNoScenWrapper .action-button")
 Sys.sleep(0.5)
-expect_true(startsWith(as.character(app$getValue("selLoadScen")), "4_"))
+expect_true(startsWith(as.character(app$get_value(input = "selLoadScen")), "4_"))
 
 app$stop()

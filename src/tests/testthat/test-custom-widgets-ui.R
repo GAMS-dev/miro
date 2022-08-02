@@ -11,9 +11,9 @@ Sys.setenv(MIRO_MODEL_PATH = file.path(
 
 test_that(
   "Custom widgets with multiple symbols work.",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "custom_widgets_multiple_symbols_test",
-    compareImages = FALSE
-  )))
+  {
+    source(file.path(testDir, "shinytest", "custom_widgets_multiple_symbols_test.R"), local = TRUE)
+  }
 )
 
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))

@@ -1,9 +1,6 @@
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit("config_mode_table_test")
+app <- AppDriver$new("../../", name = "config_mode_table_test", variant = NULL, load_timeout = 20000)
 
-app$snapshot(items = list(input = "deleteGraph"), screenshot = TRUE)
 Sys.sleep(1)
-
 
 jsonPath <- file.path("..", "model", "pickstock_configuration", "conf_pickstock_configuration")
 configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"),
@@ -35,13 +32,13 @@ expect_identical(configRaw$datatable$options$dom, configNew$datatable$options$do
 expect_identical(configRaw$datatable$extensions, configNew$datatable$extensions)
 
 # symbol table settings
-app$findElement("a[data-value='tables_gen']")$click()
+app$click(selector = "a[data-value='tables_gen']")
 Sys.sleep(1)
-app$findElement("a[data-value='symbol']")$click()
+app$click(selector = "a[data-value='symbol']")
 Sys.sleep(1)
-app$setInputs(table_symbol = "stock_weight")
+app$set_inputs(table_symbol = "stock_weight")
 Sys.sleep(1)
-app$findElement("button[id='saveTableWidget']")$click()
+app$click(selector = "button[id='saveTableWidget']")
 Sys.sleep(1)
 
 configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
