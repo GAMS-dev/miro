@@ -87,8 +87,8 @@
     "_gmsopt_qcp": {
       "widgetType": "dropdown",
       "alias": "QCP solver",
-      "choices": ["antigone", "baron", "conopt", "conopt4", "couenne", "glomiqo", "gurobi", "ipopt", "knitro", "lgo", "lindo", "localsolver", "minos", "msnlp", "scip", "snopt"],
-      "selected": "msnlp",
+      "choices": ["antigone", "baron", "conopt", "conopt4", "gurobi", "ipopt", "knitro", "lgo", "lindo", "minos", "scip", "snopt"],
+      "selected": "scip",
       "noHcube": false,
       "multiple": false,
       "label": "select the QCP solver"
