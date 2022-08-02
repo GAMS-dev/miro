@@ -79,9 +79,9 @@ build_build_image_linux:
     - if: '$CI_PIPELINE_SOURCE != "push"'
       when: never
     - changes:
-      paths:
-        - ci/linux/Dockerfile
-      compare_to: develop
+        paths:
+          - ci/linux/Dockerfile
+        compare_to: develop
 
 
 build_build_image_windows:
@@ -103,9 +103,9 @@ build_build_image_windows:
     - if: '$CI_PIPELINE_SOURCE != "push"'
       when: never
     - changes:
-      paths:
-        - ci/windows/Dockerfile
-      compare_to: develop
+        paths:
+          - ci/windows/Dockerfile
+        compare_to: develop
 
 lint_job:
   tags:
