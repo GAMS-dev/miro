@@ -49,7 +49,7 @@ reporter <- MultiReporter$new(list(
   JunitReporter$new(file = file.path(getwd(), "test-out.xml"))
 ))
 
-stopOnFailure <- identical(commandArgs(trailingOnly = TRUE), "--stop") || identical(Sys.getenv("MIRO_STOP_TESTS_ON_FAILURE"), "true")
+stopOnFailure <- identical(commandArgs(trailingOnly = TRUE), "--stop") || !identical(Sys.getenv("FORCE_RELEASE"), "yes")
 testDir <- file.path(getwd(), "tests")
 
 # test_file("tests/testthat/test-lang-ui.R", reporter = reporter)

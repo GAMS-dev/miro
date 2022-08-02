@@ -24,6 +24,9 @@ variables:
   FORCE_BUILD_WINDOWS_BUILDER:
     value: 'no'
     description: 'Build Windows build image even when Dockerfile did not change (yes/no)?'
+  FORCE_RELEASE:
+    value: 'no'
+    description: 'Force release even if tests fail (yes/no)?'
   SKIP_NOTARIZATION:
     value: 'no'
     description: 'Skip notarization of macOS installer (yes/no)?'
@@ -402,7 +405,6 @@ test_job:
   services:
     - name: postgres:12.1-alpine
   variables:
-    MIRO_STOP_TESTS_ON_FAILURE: "false"
     MIRO_DB_TYPE: postgres
     MIRO_DB_HOST: postgres
     MIRO_DB_NAME: mirotests
