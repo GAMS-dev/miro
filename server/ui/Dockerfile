@@ -1,6 +1,6 @@
 ## largely based on rocker r-base image (GPL >= 2.0)
 
-FROM ubuntu:focal AS miro-base
+FROM ubuntu:22.04 AS miro-base
 
 ARG R_BASE_VERSION=4.2.0
 ## we need to set this environment variable so it can be used when extending the
