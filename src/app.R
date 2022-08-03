@@ -1,7 +1,7 @@
 # version number
 MIROVersion <- "2.4.999"
 APIVersion <- "1"
-MIRORDate <- "Jun 16 2022"
+MIRORDate <- "Aug 02 2022"
 
 MIROVersionString <<- paste0("GAMS MIRO v.", MIROVersion)
 
@@ -1765,7 +1765,7 @@ if (!is.null(errMsg)) {
         unsavedFlag = FALSE, dirtyFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
         btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L,
         btLoadLocal = 0L, btCompareScen = 0L, activeSname = lang$nav$dialogNewScen$newScenName,
-        clear = TRUE, btSave = 0L, noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
+        clear = TRUE, btSave = 0L, noInvalidData = 0L, uploadHcube = 0L,
         updateBatchLoadData = 0L, jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L,
         importCSV = 0L, refreshHcubeHashes = 0L, submitHCJobConfirm = 0L,
         refreshLogs = NULL, triggerAsyncProcObserver = NULL
