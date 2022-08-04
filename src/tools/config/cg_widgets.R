@@ -2292,6 +2292,7 @@ refreshTableType <- function(refreshSameSymbol = FALSE) {
     pivotOptions$input <- TRUE
     pivotOptions$enableHideEmptyCols <- TRUE
     pivotOptions$emptyUEL <- rv$widgetConfig$options$emptyUEL
+    pivotOptions$fixedColumns <- rv$widgetConfig$options$fixedColumns
 
     metadata <- list(
       headers = modelIn[[currentWidgetSymbolName]]$headers,
@@ -2434,6 +2435,9 @@ observeEvent(input$inputpivot_enableHideEmptyCols, {
     updateCheckboxInput(session, "inputTable_pivot-miroPivot-hideEmptyCols", value = FALSE)
     hideEl(session, "#inputTable_pivot-miroPivot-hideEmptyCols")
   }
+})
+observeEvent(input$inputpivot_fixedColumns, {
+  rv$widgetConfig$options$fixedColumns <- isTRUE(input$inputpivot_fixedColumns)
 })
 
 observeEvent(input$table_hideIndexCol, {
@@ -2899,7 +2903,8 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
           aggregationFunction = input[["inputTable_pivot-miroPivot-aggregationFunction"]],
           pivotRenderer = input[["inputTable_pivot-miroPivot-pivotRenderer"]],
           enableHideEmptyCols = isTRUE(input$inputpivot_enableHideEmptyCols),
-          hideEmptyCols = input[["inputTable_pivot-miroPivot-hideEmptyCols"]]
+          hideEmptyCols = input[["inputTable_pivot-miroPivot-hideEmptyCols"]],
+          fixedColumns = isTRUE(input$inputpivot_fixedColumns)
         )
       )
       if (length(rv$widgetConfig$label)) {
