@@ -750,11 +750,14 @@ font-size: 12px;
                 uiOutput("widgetTableLabelWrapper"),
                 uiOutput("widget_preview"),
                 DTOutput("bigdata_preview"),
-                renderDataUI("inputTable_pivot",
+                tags$div(
+                  style = "display:none",
+                  tags$input(id = "preview_inputTable_pivot-miroPivot-symbol_name", type = "text")
+                ),
+                renderDataUI("preview_inputTable_pivot",
                   type = "miropivot", height = 400,
                   showNoDataTxt = FALSE,
                   customOptions = list(
-                    enablePersistentViews = FALSE,
                     enableHideEmptyCols = TRUE
                   )
                 ),

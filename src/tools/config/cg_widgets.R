@@ -561,6 +561,7 @@ observeEvent(
       return()
     }
     selectedType <- widgetOptions[[1L]]
+    updateTextInput(session, "preview_inputTable_pivot-miroPivot-symbol_name", value = currentWidgetSymbolName)
     if (currentWidgetSymbolName %in% names(configJSON$inputWidgets)) {
       selectedType <- configJSON$inputWidgets[[currentWidgetSymbolName]]$widgetType
       if (identical(selectedType, "slider") &&
@@ -2254,7 +2255,7 @@ refreshTableType <- function(refreshSameSymbol = FALSE) {
   if (identical(input$inputTable_type, "bigdata")) {
     rv$widgetConfig$tableType <- "bigdata"
     hideEl(session, "#pivotColsRestriction")
-    hideEl(session, "#inputTable_pivot-data")
+    hideEl(session, "#preview_inputTable_pivot-data")
     if (refreshSameSymbol) {
       rv$widgetConfig <<- list(
         widgetType   = "table",
@@ -2276,7 +2277,7 @@ refreshTableType <- function(refreshSameSymbol = FALSE) {
   } else if (identical(input$inputTable_type, "pivot")) {
     rv$widgetConfig$tableType <- "pivot"
     hideEl(session, "#pivotColsRestriction")
-    showEl(session, "#inputTable_pivot-data")
+    showEl(session, "#preview_inputTable_pivot-data")
     for (el in ls(envir = inputPivotRendererEnv)) {
       if ("Observer" %in% class(inputPivotRendererEnv[[el]])) {
         inputPivotRendererEnv[[el]]$destroy()
@@ -2325,11 +2326,11 @@ refreshTableType <- function(refreshSameSymbol = FALSE) {
       !selectedAggregationFuction %in% aggregationFunctions) {
       selectedAggregationFuction <- aggregationFunctions[1]
     }
-    updateSelectInput(session, "inputTable_pivot-miroPivot-aggregationFunction",
+    updateSelectInput(session, "preview_inputTable_pivot-miroPivot-aggregationFunction",
       choices = aggregationFunctions,
       selected = selectedAggregationFuction
     )
-    callModule(renderData, "inputTable_pivot",
+    callModule(renderData, "preview_inputTable_pivot",
       type = "miropivot",
       data = createTableData(currentWidgetSymbolName, createColNames = TRUE)$data, rendererEnv = inputPivotRendererEnv,
       customOptions = c(
@@ -2339,11 +2340,11 @@ refreshTableType <- function(refreshSameSymbol = FALSE) {
         ),
         pivotOptions
       ),
-      roundPrecision = 2, modelDir = modelDir
+      roundPrecision = 2, modelDir = modelDir, views = views
     )
   } else {
     rv$widgetConfig$tableType <- "default"
-    hideEl(session, "#inputTable_pivot-data")
+    hideEl(session, "#preview_inputTable_pivot-data")
     if (refreshSameSymbol) {
       rv$widgetConfig <<- list(
         widgetType = "table",
@@ -2430,6 +2431,7 @@ observeEvent(c(input$table_pivotCols, input$table_readonly, input$table_heatmap)
 })
 observeEvent(input$inputpivot_enableHideEmptyCols, {
   rv$widgetConfig$options$enableHideEmptyCols <- isTRUE(input$inputpivot_enableHideEmptyCols)
+  refreshTableType()
 })
 observeEvent(input$inputpivot_fixedColumns, {
   rv$widgetConfig$options$fixedColumns <- isTRUE(input$inputpivot_fixedColumns)
@@ -2895,10 +2897,10 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
         widgetType = "table",
         tableType = "pivot",
         options = list(
-          aggregationFunction = input[["inputTable_pivot-miroPivot-aggregationFunction"]],
-          pivotRenderer = input[["inputTable_pivot-miroPivot-pivotRenderer"]],
+          aggregationFunction = input[["preview_inputTable_pivot-miroPivot-aggregationFunction"]],
+          pivotRenderer = input[["preview_inputTable_pivot-miroPivot-pivotRenderer"]],
           enableHideEmptyCols = isTRUE(input$inputpivot_enableHideEmptyCols),
-          hideEmptyCols = input[["inputTable_pivot-miroPivot-hideEmptyCols"]],
+          hideEmptyCols = isTRUE(input[["preview_inputTable_pivot-miroPivot-hideEmptyCols"]]),
           fixedColumns = isTRUE(input$inputpivot_fixedColumns)
         )
       )
@@ -2909,7 +2911,7 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
         newConfig$options$emptyUEL <- rv$widgetConfig$options$emptyUEL
       }
       for (indexEl in list(c("rows", "rowIndexList"))) {
-        indexVal <- input[[paste0("inputTable_pivot-miroPivot-", indexEl[[2]])]]
+        indexVal <- input[[paste0("preview_inputTable_pivot-miroPivot-", indexEl[[2]])]]
         if (length(indexVal)) {
           newConfig$options[[indexEl[[1]]]] <- indexVal
         }
@@ -2919,10 +2921,10 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
         c("filter", "filterIndexList"),
         c("cols", "colIndexList")
       )) {
-        indexVal <- input[[paste0("inputTable_pivot-miroPivot-", indexEl[[2]])]]
+        indexVal <- input[[paste0("preview_inputTable_pivot-miroPivot-", indexEl[[2]])]]
         if (length(indexVal)) {
           filterElList <- lapply(indexVal, function(el) {
-            return(input[[paste0("inputTable_pivot-miroPivot-filter_", el)]])
+            return(input[[paste0("preview_inputTable_pivot-miroPivot-filter_", el)]])
           })
           names(filterElList) <- indexVal
           newConfig$options[[indexEl[[1]]]] <- filterElList
