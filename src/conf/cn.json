@@ -1685,7 +1685,7 @@
         "color": "选择值框的颜色",
         "colorChoices": ["红色", "黄色", "水蓝色", "蓝色", "浅蓝色", "绿色", "藏青色", "蓝绿色", "橄榄绿", "鲜绿色", "橙色", "品红", "紫色", "栗色", "黑色"],
         "icon": "指定值框的图标（可选）。",
-        "valueboxIconChoices": ["_", "coins", "wallet", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupee", "Ruble", "Pound", "Lira", "User", "Users", "Plus", "Minus", "Exclamation mark", "Question mark", "Play", "Check", "Home", "Cog", "Asterisk", "Ban", "Heart", "Leaf", "Lightbulb", "Smile", "Star"],
+        "valueboxIconChoices": ["_", "coins", "wallet", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupee", "Ruble", "Pound", "Lira", "User", "Users", "Plus", "Minus", "Exclamation mark", "Question mark", "Play", "Check", "Home", "Gear", "Asterisk", "Ban", "Heart", "Leaf", "Lightbulb", "Smile", "Star"],
         "desc": "说明性文字",
         "round": "小数位数（四舍五入）"
       },
