@@ -141,11 +141,15 @@ def get_authenticated_user(bearer_token: str, username: str) -> User:
                 )
             models = r.json()
             if not models:
+                logger.info("User '%s' can not see any models in namespace: %s. Unauthorized!",
+                            username, settings.engine_ns)
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Unauthorized access",
                 )
         is_admin = namespace_permissions == 7
+        logger.info("User '%s' successfully authenticated on namespace: %s (permissions: %s)",
+                    username, settings.engine_ns, str(namespace_permissions))
         return User(name=username, auth_header=auth_header,
                     permissions=namespace_permissions, is_admin=is_admin,
                     groups=get_user_groups(auth_header, is_admin=is_admin))
