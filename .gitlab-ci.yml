@@ -150,7 +150,17 @@ build_linux_job:
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_LINUX" == "no" ]] && [[ "$BUILD_CI" == "no" ]] && [[ "$PUSH_UNSTABLE_SERVER_IMAGES" == "no" ]] && echo "Skipping Linux build" && exit 0'
     - yarn dist
     - >
-      if [[ "$PUSH_UNSTABLE_SERVER_IMAGES" != "no" ]] || [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]]; then
+      if [[ "$CI_COMMIT_BRANCH" == "master" ]]; then
+        pushd server
+            python3 miro_server.py build
+            python3 miro_server.py push --unstable --custom-tag latest
+        popd
+      elif [[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]]; then
+        pushd server
+            python3 miro_server.py build
+            python3 miro_server.py push --unstable --custom-tag unstable
+        popd
+      elif [[ "$PUSH_UNSTABLE_SERVER_IMAGES" != "no" ]]; then
         pushd server
             python3 miro_server.py build
             python3 miro_server.py push --unstable --custom-tag feature
