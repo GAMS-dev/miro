@@ -270,6 +270,7 @@ build_macos_job:
     - yarn install
   script:
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS" == "no" ]] && echo "Skipping macOS build" && exit 0'
+    - export PATH="/usr/bin:${PATH}"
     - yarn dist
   artifacts:
     paths:
