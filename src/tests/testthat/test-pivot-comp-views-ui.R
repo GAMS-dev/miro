@@ -16,7 +16,7 @@ file.copy2(
   file.path(testDir, "data", "transport_full.gdx"),
   file.path(modelDataPath, "default.gdx")
 )
-write_json(list(`_pivotcomp_schedule` = list(
+jsonlite::write_json(list(`_pivotcomp_schedule` = list(
   test = list(
     rows = c("i", "j"),
     cols = list(`_scenName` = NULL),

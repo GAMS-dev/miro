@@ -70,7 +70,7 @@ app$setInputs("tab_0_3-miroPivot-saveViewConfirm" = "click")
 Sys.sleep(1)
 
 app$findElement("#tab_0_3-miroPivot-toggleViewButton")$click()
-Sys.sleep(0.5)
+Sys.sleep(1)
 expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).text()==='abc';", timeout = 50))
 expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).click();true;", timeout = 50))
 expect_chartjs(
@@ -82,7 +82,7 @@ expect_chartjs(
 
 expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(0).click();true;", timeout = 50))
 app$setInputs(`tab_0_3-miroPivot-pivotRenderer` = "bar")
-Sys.sleep(0.5)
+Sys.sleep(1)
 expect_chartjs(
   app,
   "tab_0_3-miroPivot-pivotChart",
