@@ -44,6 +44,17 @@ prepare_all:
   stage: prepare
   script:
     - 'echo "Building on branch: $CI_COMMIT_BRANCH"'
+    - >
+      if [[ "$CI_COMMIT_BRANCH" == "master" ]]; then
+        if [[ `grep -m 1 -e 'MIROVersion' src/app.R | cut -f2 -d'"' | cut -f3 -d'.'` -ge "999" ]]; then
+          echo "Cannot build release with patch number greater than or equal to 999"
+          exit 1
+        fi
+        if [[ `curl -s https://gams.com/miro/latest.ver` == `grep -m 1 -e 'MIROVersion' src/app.R | cut -f2 -d'"' | tr . ,` ]]; then
+          echo "Cannot build the same release twice. Please update version number"
+          exit 1
+        fi
+      fi
   rules:
     - if: $CI_COMMIT_TAG
       when: never
