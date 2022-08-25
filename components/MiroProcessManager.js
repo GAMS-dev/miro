@@ -231,7 +231,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       });
     }
     this.miroProcesses[internalPid].catch(async (e) => {
-      log.debug(`Process of MIRO app with pid: ${internalPid} stopped.`);
+      log.debug(`Process of MIRO app with pid: ${internalPid} stopped.\nStdout: ${e.stdout}.\nStderr: ${e.stderr}`);
       this.miroProcesses[internalPid] = null;
       delete this.pidPortMap[internalPid.toString()];
       if (appData.allowMultiple !== true) {
