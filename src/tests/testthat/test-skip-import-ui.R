@@ -41,6 +41,7 @@ test_that(
   ))
 )
 Sys.setenv(MIRO_FORCE_SCEN_IMPORT = "true")
+Sys.setenv(MIRO_DATA_DIR = file.path(modelDataPath, "default.gdx"))
 test_that(
   "MIRO_FORCE_SCEN_IMPORT option works",
   expect_pass(testApp(file.path(testDir, ".."), "skip_scen_import_test",
@@ -49,4 +50,4 @@ test_that(
 )
 unlink(modelDataPath, recursive = TRUE, force = TRUE)
 
-Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE", "MIRO_FORCE_SCEN_IMPORT"))
+Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE", "MIRO_FORCE_SCEN_IMPORT", "MIRO_DATA_DIR"))

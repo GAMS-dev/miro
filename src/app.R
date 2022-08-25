@@ -1284,20 +1284,24 @@ if (!is.null(errMsg)) {
       miroDataFilesRaw <- basename(miroDataDir)
       miroDataDir <- dirname(miroDataDir)
       stdin <- NULL
-      scenImportConfig <- tryCatch(
-        {
-          stdin <- file("stdin", blocking = FALSE)
-          fromJSON(suppressWarnings(readLines(stdin)))
-        },
-        error = function(e) {
-          return(list())
-        },
-        finally = {
-          if (!is.null(stdin)) {
-            close(stdin)
+      if (isWindows()) {
+        scenImportConfig <- list()
+      } else {
+        scenImportConfig <- tryCatch(
+          {
+            stdin <- file("stdin", blocking = FALSE)
+            fromJSON(suppressWarnings(readLines(stdin)))
+          },
+          error = function(e) {
+            return(list())
+          },
+          finally = {
+            if (!is.null(stdin)) {
+              close(stdin)
+            }
           }
-        }
-      )
+        )
+      }
       removeDataFile <- FALSE
     } else {
       miroDataFilesRaw <- list.files(miroDataDir)
