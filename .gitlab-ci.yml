@@ -92,6 +92,7 @@ build_build_image_linux:
     - changes:
         paths:
           - ci/linux/Dockerfile
+        compare_to: develop
 
 
 build_build_image_windows:
@@ -115,6 +116,7 @@ build_build_image_windows:
     - changes:
         paths:
           - ci/windows/Dockerfile
+        compare_to: develop
 
 lint_job:
   tags:
