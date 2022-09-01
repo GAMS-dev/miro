@@ -318,7 +318,7 @@ observeEvent(input$btSubmitJob, {
   instanceInfo <- worker$getInstanceInfo()
   showJobSubmissionDialog(jobNameTmp, scenWithSameHash, instanceInfo = instanceInfo)
   if (!length(instanceInfo)) {
-    worker$fetchInstancesAsync(session, "selWorkerInstance")
+    worker$fetchInstancesAsync(session, "selWorkerInstance", lang$nav$dialogJobSubmission$instanceDropdownCategories)
   }
 })
 observeEvent(virtualActionButton(input$btSubmitAsyncJob, rv$btSubmitAsyncJob), {
@@ -1222,7 +1222,7 @@ if (identical(config$activateModules$hcube, TRUE)) {
     ))
 
     if (!length(instanceInfo)) {
-      worker$fetchInstancesAsync(session, "selHcWorkerInstance")
+      worker$fetchInstancesAsync(session, "selHcWorkerInstance", lang$nav$dialogJobSubmission$instanceDropdownCategories)
     }
 
     emptyEl(session, "#newHcWrapper")

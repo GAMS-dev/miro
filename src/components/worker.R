@@ -15,7 +15,7 @@ Worker <- R6Class("Worker", public = list(
     }
     return(invisible(self))
   },
-  fetchInstancesAsync = function(session, selectizeId) {
+  fetchInstancesAsync = function(session, selectizeId, dropdownCategories) {
     stopifnot(length(private$authHeader) > 0L)
     fetchInstancesFuture <- future(
       {
@@ -57,9 +57,35 @@ Worker <- R6Class("Worker", public = list(
               type = "application/json",
               encoding = "utf-8"
             )
+            if (identical(length(instances[["instances_available"]]), 0L)) {
+              instances <- httr::GET(
+                url = paste0(metadata$url, "/usage/instances"),
+                httr::add_headers(
+                  Authorization = authHeader,
+                  Timestamp = as.character(Sys.time(), usetz = TRUE)
+                ),
+                httr::timeout(6L)
+              )
+              if (!identical(httr::status_code(instances), 200L)) {
+                errMsg <- httr::content(instances,
+                  type = "application/json",
+                  encoding = "utf-8"
+                )
+                stop(sprintf(
+                  "Invalid status code when fetching global instances: %s. Error message: %s",
+                  httr::status_code(instances), errMsg[["message"]]
+                ), call. = FALSE)
+              }
+              availableInstances <- httr::content(instances,
+                type = "application/json",
+                encoding = "utf-8"
+              )
+            } else {
+              availableInstances <- instances[["instances_available"]]
+            }
             return(list(
               error = FALSE, instancesSupported = TRUE, apiInfo = apiInfo,
-              instances = instances[["instances_available"]],
+              instances = availableInstances,
               default = instances[["default_instance"]]
             ))
           },
@@ -94,15 +120,29 @@ Worker <- R6Class("Worker", public = list(
         flog.info("No instances found for user: %s.", private$metadata$username)
         return(list(valid = TRUE, instancesSupported = FALSE))
       }
+      availableInstances <- instanceInfo[["instances"]][vapply(instanceInfo[["instances"]], function(instance) {
+        !identical(instance[["pool_canceling"]], TRUE)
+      }, logical(1L), USE.NAMES = FALSE)]
+      isInstancePool <- vapply(availableInstances, function(instance) {
+        identical(instance[["is_pool"]], TRUE)
+      }, logical(1L), USE.NAMES = FALSE)
+
       availableInstances <- setNames(
-        vapply(instanceInfo[["instances"]], "[[", character(1L), "label", USE.NAMES = FALSE),
-        vapply(instanceInfo[["instances"]], instanceToStr, character(1L), USE.NAMES = FALSE)
+        vapply(availableInstances, "[[", character(1L), "label", USE.NAMES = FALSE),
+        vapply(availableInstances, instanceToStr, character(1L), USE.NAMES = FALSE)
       )
       defaultInstance <- instanceInfo[["default"]][["label"]]
-      if (!identical(length(defaultInstance), 1L) || !defaultInstance %in% availableInstances) {
+      if (is.null(defaultInstance)) {
+        defaultInstance <- availableInstances[[1L]]
+      } else if (!identical(length(defaultInstance), 1L) || !defaultInstance %in% availableInstances) {
         flog.error("Default instance: %s not in list of available instances. This should never happen and is likely an issue with GAMS Engine. Please report to support@gams.com.", defaultInstance)
         return(list(valid = FALSE, instancesSupported = FALSE))
       }
+      availableInstances <- list(
+        pools = availableInstances[isInstancePool],
+        instances = availableInstances[!isInstancePool]
+      )
+      names(availableInstances) <- dropdownCategories
       return(list(valid = TRUE, instancesSupported = TRUE, choices = availableInstances, selected = defaultInstance))
     }
     obs <- observe({

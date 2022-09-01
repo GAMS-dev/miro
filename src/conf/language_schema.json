@@ -1655,6 +1655,15 @@
               "type": "string",
               "minLength": 1
             },
+            "instanceDropdownCategories": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "descWait": {
               "type": "string",
               "minLength": 1
@@ -1676,7 +1685,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 9
+          "minProperties": 10
         },
         "dialogHcube": {
           "type": "object",

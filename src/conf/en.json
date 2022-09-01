@@ -424,6 +424,7 @@
       "desc": "Submit a new job to be solved asynchronously.",
       "jobName": "Specify a name for your job (optional)",
       "workerInstance": "Choose an instance on which to run your job",
+      "instanceDropdownCategories": ["Instance Pools", "Instances"],
       "descWait": "Please wait while the job is being submitted...",
       "badName": "Please choose a valid name for the new job.",
       "cancelButton":"Cancel",
