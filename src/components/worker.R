@@ -121,7 +121,7 @@ Worker <- R6Class("Worker", public = list(
         return(list(valid = TRUE, instancesSupported = FALSE))
       }
       availableInstances <- instanceInfo[["instances"]][vapply(instanceInfo[["instances"]], function(instance) {
-        !identical(instance[["pool_canceling"]], TRUE)
+        !identical(instance[["pool_cancelling"]], TRUE)
       }, logical(1L), USE.NAMES = FALSE)]
       isInstancePool <- vapply(availableInstances, function(instance) {
         identical(instance[["is_pool"]], TRUE)
