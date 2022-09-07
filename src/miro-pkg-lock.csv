@@ -11,7 +11,7 @@ Rcpp, 1.0.9
 R6, 2.5.1
 BH, 1.78.0-0
 magrittr, 2.0.3
-rlang, 1.0.4
+rlang, 1.0.5
 later, 1.3.0
 promises, 1.2.0.1
 httpuv, 1.6.5
@@ -22,7 +22,7 @@ sourcetools, 0.1.7
 xtable, 1.8-4
 fastmap, 1.1.0
 curl, 4.3.2
-V8, 4.2.0
+V8, 4.2.1
 base64enc, 0.1-3
 htmltools, 0.5.3
 jquerylib, 0.1.4
@@ -56,20 +56,20 @@ png, 0.1-7
 RColorBrewer, 1.1-3
 lattice, 0.20-45
 sp, 1.5-0
-viridisLite, 0.4.0
+viridisLite, 0.4.1
 raster, 3.4-13
 farver, 2.1.0
-scales, 1.2.0
+scales, 1.2.1
 zeallot, 0.1.0
 crosstalk, 1.2.0
 DT
 gdxrrwMIRO
 leaflet
-pillar, 1.7.0
+pillar, 1.8.1
 tibble, 3.1.8
-generics, 0.1.2
+generics, 0.1.3
 lubridate, 1.8.0
-dplyr, 1.0.9
+dplyr, 1.0.10
 sys, 3.4
 askpass, 1.1
 openssl
@@ -77,25 +77,25 @@ prettyunits, 1.1.1
 stringi, 1.7.8
 DBI, 1.1.3
 blob, 1.2.3
-hms, 1.1.1
+hms, 1.1.2
 tidyr, 1.2.0
-httr, 1.4.3
+httr, 1.4.4
 plotly
 shinydashboard
 timevis
 rematch, 1.0.1
 formatR, 1.12
-ps, 1.7.0
+ps, 1.7.1
 clipr, 0.8.0
 cellranger, 1.1.0
 progress, 1.2.2
 lambda.r, 1.2.4
 futile.options, 1.0.1
 zoo, 1.8-10
-globals, 0.15.0
+globals, 0.16.1
 listenv, 0.8.0
 processx, 3.7.0
-readxl, 1.4.0
+readxl, 1.4.1
 writexl, 1.4.0
 rpivotTable, 0.3.0
 futile.logger, 1.4.3
@@ -103,8 +103,8 @@ zip, 2.2.0
 leaflet.minicharts, 0.6.2
 xts, 0.12.1
 dygraphs, 1.1.1.6
-parallelly, 1.31.1
-future, 1.26.1
+parallelly, 1.32.1
+future, 1.28.0
 bit, 4.0.4
 bit64, 4.0.5
 tzdb, 0.3.0
@@ -114,4 +114,4 @@ miroUtil
 rhandsontable
 sortable
 chartjs
-RSQLite, 2.2.15
+RSQLite, 2.2.16

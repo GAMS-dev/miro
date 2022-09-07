@@ -875,7 +875,7 @@ Section 8 -- Interpretation.
         - askpass, Copyright (c) 2018 Jeroen Ooms
         - timevis, Copyright (c) 2016 Dean Attali [aut, cre] (R interface), Almende B.V. [aut, cph] (vis.js library, http://visjs.org, http://www.almende.com/home)
         - generics, Copyright (c) 2020 Hadley Wickham [aut, cre], Max Kuhn [aut], Davis Vaughan [aut], RStudio [cph]
-        - dplyr, Copyright (c) 2013-2020 Hadley Wickham [aut, cre], Romain François [aut], Lionel Henry [aut], Kirill Müller [aut], RStudio [cph, fnd]
+        - dplyr, Copyright (c) 2013-2022 Hadley Wickham [aut, cre], Romain François [aut], Lionel Henry [aut], Kirill Müller [aut], RStudio [cph, fnd]
         - cpp11, Copyright (c) 2020 RStudio
         - rhandsontable , Copyright (c) 2015-2018 Marcin Warpechowski, Handsoncode sp. z o.o.,
           Gregor Aisch, Tim Wood, Iskren Chernev, Moment.js contributors, David Bushell,
