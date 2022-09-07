@@ -111,8 +111,8 @@
   "author": "GAMS Development Corp.",
   "license": "GPL-3.0-only",
   "devDependencies": {
-    "electron": "^17.4.3",
-    "electron-builder": "23.0.3",
+    "electron": "^20.0.0",
+    "electron-builder": "23.3.3",
     "eslint": "^8.15.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
