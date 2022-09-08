@@ -81,6 +81,7 @@ expect_chartjs(
 )
 
 expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(0).click();true;", timeout = 50))
+Sys.sleep(1)
 app$setInputs(`tab_0_3-miroPivot-pivotRenderer` = "bar")
 Sys.sleep(1)
 expect_chartjs(
