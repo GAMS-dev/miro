@@ -119,7 +119,7 @@ RUN Rscript ./home/miro/scripts/install_source.R
 FROM miro-base
 
 LABEL com.gamsmiro.vendor="GAMS Development Corp."\
-com.gamsmiro.version="2.4.999"\
+com.gamsmiro.version="2.5.0"\
 com.gamsmiro.license="GPL-3.0"\
 com.gamsmiro.description="GAMS MIRO Docker image"\
 maintainer="fproske@gams.com"
