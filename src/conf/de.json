@@ -161,6 +161,7 @@
     "gamsModelStatus":{
       "submission": "Modell wird übermittelt",
       "queued": "Modell in der Warteschlange",
+      "queuedWithPosition": "In der Warteschlange (Position: %s)",
       "exec":"Modell wird gelöst",
       "collection": "Ergebnisse werden übermittelt",
       "success":"Das Modell wurde erfolgreich gelöst.",

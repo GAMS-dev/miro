@@ -542,6 +542,8 @@ output$modelStatus <- renderUI({
     return(lang$nav$gamsModelStatus$submission)
   } else if (identical(currModelStat, "q")) {
     return(lang$nav$gamsModelStatus$queued)
+  } else if (is.character(currModelStat) && startsWith(currModelStat, "q")) {
+    return(sprintf(lang$nav$gamsModelStatus$queuedWithPosition, substring(currModelStat, 2L)))
   } else if (identical(currModelStat, "d")) {
     return(lang$nav$gamsModelStatus$collection)
   }

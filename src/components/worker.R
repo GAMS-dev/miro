@@ -1090,6 +1090,7 @@ Worker <- R6Class("Worker", public = list(
   gamsRet = NULL,
   waitCnt = integer(1L),
   wait = integer(1L),
+  pingQueuePosition = FALSE,
   fRemoteSub = NULL,
   fJobRes = list(),
   fRefreshToken = NULL,
@@ -1236,15 +1237,47 @@ Worker <- R6Class("Worker", public = list(
           ),
           timeout(120L)
         )
+        jobPostStatusCode <- status_code(ret)
+        jobPostResponse <- tryCatch(content(ret,
+          type = "application/json",
+          encoding = "utf-8"
+        ), error = function(e) {
+          sprintf("No valid UTF-8 encoded JSON received. Error message: %s", conditionMessage(e))
+        })
+        queuePosition <- NULL
+        if (identical(jobPostStatusCode, 201L)) {
+          ret <- GET(
+            paste0(
+              metadata$url,
+              if (is.R6(hcubeData)) paste0("/hypercube/?hypercube_token=", jobPostResponse$hypercube_token) else paste0("/jobs/", jobPostResponse$token)
+            ),
+            add_headers(
+              Authorization = authHeader,
+              Timestamp = as.character(Sys.time(),
+                usetz = TRUE
+              ),
+              `X-Fields` = "queue_position"
+            ),
+            timeout(10L)
+          )
+          if (identical(status_code(ret), 200L)) {
+            try({
+              queuePosition <- content(ret,
+                type = "application/json",
+                encoding = "utf-8"
+              )$queue_position
+              if (identical(length(queuePosition), 1L) &&
+                is.integer(queuePosition) && queuePosition > 0L) {
+                queuePosition <- queuePosition
+              }
+            })
+          }
+        }
         return(list(
-          statusCode = status_code(ret),
+          statusCode = jobPostStatusCode,
           hcJob = is.R6(hcubeData),
-          response = tryCatch(content(ret,
-            type = "application/json",
-            encoding = "utf-8"
-          ), error = function(e) {
-            sprintf("No valid UTF-8 encoded JSON received. Error message: %s", conditionMessage(e))
-          })
+          response = jobPostResponse,
+          queuePosition = queuePosition
         ))
       },
       globals = list(
@@ -1434,6 +1467,7 @@ Worker <- R6Class("Worker", public = list(
         }
         private$wait <- 0L
         private$waitCnt <- 0L
+        private$pingQueuePosition <- FALSE
         if (identical(remoteSubValue$statusCode, 201L)) {
           if (identical(remoteSubValue$hcJob, TRUE)) {
             tokenTmp <- as.character(remoteSubValue$response$hypercube_token)[1]
@@ -1469,7 +1503,14 @@ Worker <- R6Class("Worker", public = list(
               }
             )
           }
-          private$status <- "q"
+          if (is.null(remoteSubValue$queuePosition)) {
+            private$status <- "q"
+          } else {
+            private$status <- paste0("q", remoteSubValue$queuePosition)
+            if (remoteSubValue$queuePosition > 1L) {
+              private$pingQueuePosition <- TRUE
+            }
+          }
         } else {
           flog.info(
             "Could not execute model remotely. Status code: %s. Error message: %s",
@@ -1561,6 +1602,7 @@ Worker <- R6Class("Worker", public = list(
             private$gamsRet <- responseContent$gams_return_code
             private$wait <- 0L
             private$waitCnt <- 0L
+            private$pingQueuePosition <- FALSE
             private$fRemoteRes <- future({
               library(httr)
               private$readRemoteOutput()
@@ -1584,6 +1626,7 @@ Worker <- R6Class("Worker", public = list(
         private$gamsRet <- responseContent$gams_return_code
         private$wait <- 0L
         private$waitCnt <- 0L
+        private$pingQueuePosition <- FALSE
         private$fRemoteRes <- future({
           library(httr)
           private$readRemoteOutput()
@@ -1610,12 +1653,56 @@ Worker <- R6Class("Worker", public = list(
       return(private$status)
     }
     if (identical(statusCode, 403L)) {
-      private$wait <- bitwShiftL(2L, private$waitCnt)
-      if (private$waitCnt < private$metadata$timeout) {
-        private$waitCnt <- private$waitCnt + 1L
-      } else {
-        flog.warn("Pinging remote process timed out (error: 0127837).")
-        private$status <- -404L
+      private$wait <- min(bitwShiftL(1L, private$waitCnt), 10L)
+      private$waitCnt <- private$waitCnt + 1L
+      if (private$pingQueuePosition) {
+        ret <- GET(
+          paste0(
+            private$metadata$url,
+            "/jobs/", private$process
+          ),
+          add_headers(
+            Authorization = private$authHeader,
+            Timestamp = as.character(Sys.time(), usetz = TRUE),
+            `X-Fields` = "queue_position"
+          ),
+          timeout(2L)
+        )
+        if (identical(status_code(ret), 200L)) {
+          tryCatch(
+            {
+              queuePosition <- content(ret,
+                type = "application/json",
+                encoding = "utf-8"
+              )$queue_position
+              if (identical(length(queuePosition), 1L) &&
+                is.integer(queuePosition)) {
+                if (queuePosition <= 1L) {
+                  private$pingQueuePosition <- FALSE
+                }
+                if (queuePosition > 0L) {
+                  private$status <- paste0("q", queuePosition)
+                }
+              } else {
+                flog.warn("Invalid response returned when fetching queue position.")
+                private$status <- "q"
+                private$pingQueuePosition <- FALSE
+              }
+            },
+            error = function(e) {
+              flog.info(
+                "Invalid JSON reponse received from server when fetching queue position: %s",
+                conditionMessage(e)
+              )
+              private$status <- "q"
+              private$pingQueuePosition <- FALSE
+            }
+          )
+        } else {
+          flog.warn("Fetching queue position returned status code: %s", status_code(ret))
+          private$status <- "q"
+          private$pingQueuePosition <- FALSE
+        }
       }
       return(private$status)
     }
@@ -1950,6 +2037,7 @@ Worker <- R6Class("Worker", public = list(
     private$updateLog <- 0L
     private$wait <- 0L
     private$waitCnt <- 0L
+    private$pingQueuePosition <- FALSE
 
     return(invisible(self))
   },

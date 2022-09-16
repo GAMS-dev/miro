@@ -632,6 +632,10 @@
               "type": "string",
               "minLength": 1
             },
+            "queuedWithPosition": {
+              "type": "string",
+              "minLength": 1
+            },
             "exec": {
               "type": "string",
               "minLength": 1
@@ -649,7 +653,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 6
+          "minProperties": 7
         },
         "notificationNewInput": {
           "type": "object",

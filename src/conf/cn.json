@@ -161,6 +161,7 @@
     "gamsModelStatus":{
       "submission": "正在提交模型",
       "queued": "模型已加入队列",
+      "queuedWithPosition": "排队 (排队位置：%s)",
       "collection": "正在下载结果",
       "exec":"模型执行阶段",
       "success":"运行已终止。",

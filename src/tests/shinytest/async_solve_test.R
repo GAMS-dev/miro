@@ -168,7 +168,7 @@ app$findElement(".btSolve .dropdown-toggle")$click()
 app$findElement(".change-dd-button[data-action-id='btSolve']")$click()
 timeout <- 30
 repeat{
-  if (identical(app$waitFor("$('#modelStatus').text()==='Model queued'||$('#modelStatus').text()==='Model execution phase'", timeout = 50L), TRUE)) {
+  if (identical(app$waitFor("$('#modelStatus').text().startsWith('Model queued')||$('#modelStatus').text()==='Model execution phase'", timeout = 50L), TRUE)) {
     break
   }
   Sys.sleep(0.5)

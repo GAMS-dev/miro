@@ -161,6 +161,7 @@
     "gamsModelStatus":{
       "submission": "Model is being submitted",
       "queued": "Model queued",
+      "queuedWithPosition": "Model queued (queue position: %s)",
       "exec":"Model execution phase",
       "collection": "Results are being downloaded",
       "success":"Run successfully terminated.",
