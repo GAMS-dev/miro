@@ -144,9 +144,19 @@ repeat{
 app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()
 app$findElement('#shiny-tab-gamsinter a[data-value="joblist"]')$click()
 app$findElement("#refreshActiveJobs")$click()
-Sys.sleep(4.5)
 
-expect_true(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().includes('badge-info\">HC')", timeout = 5000))
+timeout <- 20L
+repeat{
+  if (identical(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().includes('badge-info\">HC')", timeout = 100L), TRUE)) {
+    break
+  }
+  Sys.sleep(1L)
+  timeout <- timeout - 1L
+  if (timeout <= 0L) {
+    app$snapshot()
+    stop("Timeout reached. Could not get HC job status.", call. = FALSE)
+  }
+}
 expect_true(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().startsWith('bla,blub')", timeout = 50))
 expect_error(app$findElements("#jImport_output button[onclick*='showJobProgress']")[[1]]$click(), NA)
 Sys.sleep(1)
@@ -222,8 +232,18 @@ repeat{
 app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()
 app$findElement('#shiny-tab-gamsinter a[data-value="joblist"]')$click()
 app$findElement("#refreshActiveJobs")$click()
-Sys.sleep(4L)
-expect_true(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().startsWith('&lt;&gt;,&amp;&amp;')===true&&$('#jImport_output td').get(2).innerHTML.trim().includes('badge-info\">HC')===true;", timeout = 5000))
+timeout <- 20L
+repeat{
+  if (identical(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().startsWith('&lt;&gt;,&amp;&amp;')===true&&$('#jImport_output td').get(2).innerHTML.trim().includes('badge-info\">HC')===true;", timeout = 100L), TRUE)) {
+    break
+  }
+  Sys.sleep(1L)
+  timeout <- timeout - 1L
+  if (timeout <= 0L) {
+    app$snapshot()
+    stop("Timeout reached. Could not get HC job status.", call. = FALSE)
+  }
+}
 expect_error(app$findElements("#jImport_output button[onclick*='discardJob']")[[1]]$click(), NA)
 Sys.sleep(2)
 app$findElement("#confirmModal .bt-gms-confirm")$click()
