@@ -27,6 +27,9 @@ variables:
   FORCE_RELEASE:
     value: 'no'
     description: 'Force release even if tests fail (yes/no)?'
+  SKIP_TESTS:
+    value: 'no'
+    description: 'Skip tests on Windows/macOS (yes/no)?'
   SKIP_NOTARIZATION:
     value: 'no'
     description: 'Skip notarization of macOS installer (yes/no)?'
@@ -314,6 +317,7 @@ test_windows_job:
   before_script:
     - yarn install
   script:
+    - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
     - 'if ("$env:CI_COMMIT_BRANCH" -ne "master" -and "$env:BUILD_WINDOWS" -eq "no") { "Skipping Windows build"; Exit }'
     - yarn test gams_sys_dir=$env:GAMS_SYS_DIR
   dependencies: []
@@ -357,6 +361,7 @@ test_macos_job:
   before_script:
     - yarn install
   script:
+    - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS" == "no" ]] && echo "Skipping macOS build" && exit 0'
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS}
   dependencies: []
