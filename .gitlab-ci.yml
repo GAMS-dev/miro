@@ -317,7 +317,7 @@ test_windows_job:
   before_script:
     - yarn install
   script:
-    - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
+    - 'if ("$env:SKIP_TESTS" -eq "yes") { "Skipping tests"; Exit }'
     - 'if ("$env:CI_COMMIT_BRANCH" -ne "master" -and "$env:BUILD_WINDOWS" -eq "no") { "Skipping Windows build"; Exit }'
     - yarn test gams_sys_dir=$env:GAMS_SYS_DIR
   dependencies: []
