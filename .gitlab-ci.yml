@@ -519,8 +519,8 @@ update_doc_job_release:
     - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
-    - ./.ci/push_docs.sh
-    - ./.ci/update_website.sh
+    - ./ci/push_docs.sh
+    - ./ci/update_website.sh
   dependencies: []
   needs: [upload_cloudfront, upload_dockerhub]
   rules:
