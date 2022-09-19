@@ -21,15 +21,9 @@ for (modelToTest in c(
   }
   Sys.setenv(MIRO_MODEL_PATH = file.path(miroModelDir, paste0(modelToTest, ".gms")))
   Sys.setenv(GMSMODELNAME = modelToTest)
-  if (modelToTest %in% c("pickstock", "kport")) {
-    extraClArgs <- c(additionalGamsClArgs, "MIP=CBC")
-  } else if (modelToTest %in% c("indus89")) {
-    extraClArgs <- c(additionalGamsClArgs, "LP=CBC")
-  } else {
-    extraClArgs <- c()
-  }
+
   if (length(additionalGamsClArgs)) {
-    saveAdditionalGamsClArgs(miroModelDir, modelToTest, c(additionalGamsClArgs, extraClArgs))
+    saveAdditionalGamsClArgs(miroModelDir, modelToTest, additionalGamsClArgs)
   }
   for (testFile in c("solve_model_test")) {
     file.copy(file.path(testDir, "shinytest", paste0(testFile, ".R")),
