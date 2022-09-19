@@ -468,7 +468,7 @@ upload_cloudfront:
   stage: deploy
   image: $CI_REGISTRY_IMAGE/builder-linux:latest
   script:
-    - ./.ci/s3_upload_artifacts.sh
+    - ./ci/s3_upload_artifacts.sh
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
