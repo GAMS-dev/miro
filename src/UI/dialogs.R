@@ -274,12 +274,12 @@ getLoadDbPanel <- function(title, scenList, tagList, iconName) {
       lang$nav$dialogLoadScen$sortBy,
       actionButton("btSortName",
         label = lang$nav$dialogLoadScen$btSortNameASC,
-        icon = icon("sort-alpha-down"),
+        icon = icon("arrow-down-a-z"),
         class = "scen-sort-by"
       ),
       actionButton("btSortTime",
         label = lang$nav$dialogLoadScen$btSortTimeASC,
-        icon = icon("sort-numeric-down"),
+        icon = icon("arrow-down-1-9"),
         class = "scen-sort-by scen-sort-by-selected"
       )
     ),
@@ -633,36 +633,6 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL, selectLocalTab = FA
     }
   ))
 }
-getHcubeHashLookupTable <- function(hashLookupResults) {
-  if (!inherits(hashLookupResults, "data.frame")) {
-    tags$div(
-      class = "err-msg",
-      lang$errMsg$unknownError
-    )
-  } else {
-    tags$table(
-      class = "cJob-wrapper miro-table",
-      tags$tr(
-        tags$th(lang$nav$importJobsDialog$header$tags),
-        tags$th(lang$nav$importJobsDialog$header$date)
-      ),
-      do.call("tagList", lapply(seq_len(nrow(hashLookupResults)), function(i) {
-        tags$tr(
-          onclick = paste0(
-            "Shiny.setInputValue('loadHcubeHashSid',",
-            hashLookupResults[[1]][i], ",{priority: 'event'});"
-          ),
-          style = "cursor:pointer",
-          tags$td(substr(
-            hashLookupResults[[2]][i], 2,
-            nchar(hashLookupResults[[2]][i]) - 1L
-          )),
-          tags$td(hashLookupResults[[3]][i])
-        )
-      }))
-    )
-  }
-}
 showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel = FALSE,
                                dbTagList = NULL, baseScenName = NULL) {
   tabPanelUI <- NULL
@@ -711,12 +681,12 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
         lang$nav$dialogLoadScen$sortBy,
         actionButton("btSortName",
           label = lang$nav$dialogLoadScen$btSortNameASC,
-          icon = icon("sort-alpha-down"),
+          icon = icon("arrow-down-a-z"),
           class = "scen-sort-by"
         ),
         actionButton("btSortTime",
           label = lang$nav$dialogLoadScen$btSortTimeASC,
-          icon = icon("sort-numeric-down"),
+          icon = icon("arrow-down-1-9"),
           class = "scen-sort-by scen-sort-by-selected"
         )
       )

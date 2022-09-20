@@ -233,7 +233,7 @@ observeEvent(input$btSortName, {
     )
     updateActionButton(session, "btSortName",
       label = lang$nav$dialogLoadScen$btSortNameDESC,
-      icon = icon("sort-alpha-down-alt")
+      icon = icon("arrow-down-z-a")
     )
     btSortNameDesc <<- FALSE
   } else {
@@ -245,7 +245,7 @@ observeEvent(input$btSortName, {
     )
     updateActionButton(session, "btSortName",
       label = lang$nav$dialogLoadScen$btSortNameASC,
-      icon = icon("sort-alpha-down")
+      icon = icon("arrow-down-a-z")
     )
     btSortNameDesc <<- TRUE
   }
@@ -268,7 +268,7 @@ observeEvent(input$btSortTime, {
     )
     updateActionButton(session, "btSortTime",
       label = lang$nav$dialogLoadScen$btSortTimeDESC,
-      icon = icon("sort-numeric-down-alt")
+      icon = icon("arrow-down-9-1")
     )
     btSortTimeDesc <<- FALSE
   } else {
@@ -278,7 +278,7 @@ observeEvent(input$btSortTime, {
     ))
     updateActionButton(session, "btSortTime",
       label = lang$nav$dialogLoadScen$btSortTimeASC,
-      icon = icon("sort-numeric-down")
+      icon = icon("arrow-down-1-9")
     )
     btSortTimeDesc <<- TRUE
   }
