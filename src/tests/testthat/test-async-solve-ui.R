@@ -90,6 +90,24 @@ test_that(
 
 removeUser(apiURL, inviterUser, inviterPass, inviteeName)
 
+createUser(
+  apiURL, inviterUser, inviterPass, namespace,
+  inviteeName, inviterPass
+)
+
+configJSON$extraClArgs <- c(configJSON$extraClArgs, "--sleep=30")
+configJSON$activateModules$logFile <- TRUE
+jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
+
+test_that(
+  "Detaching from active solve works",
+  expect_pass(testApp(file.path(testDir, ".."), "async_solve_detach_test",
+    compareImages = FALSE
+  ))
+)
+
+removeUser(apiURL, inviterUser, inviterPass, inviteeName)
+
 file.rename(
   file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), "_tmp.json")),
   file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), ".json"))
