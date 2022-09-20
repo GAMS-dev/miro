@@ -16,6 +16,10 @@ app$snapshot(
   items = list(output = "inputDataTitle"),
   screenshot = TRUE
 )
+if (Sys.getenv("GMSMODELNAME") == "inscribedsquare") {
+  app$setInputs(inputTabset = "inputTabset_1")
+  app$setInputs(dropdown_3 = "CONOPT")
+}
 app$setInputs(btSolve = "click")
 Sys.sleep(10)
 expect_error(app$findElement("#outputTableView")$click(), NA)
