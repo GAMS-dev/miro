@@ -662,13 +662,30 @@ output$modelStatus <- renderUI({
 # refresh even when modelStatus message is hidden (i.e. user is on another tab)
 outputOptions(output, "modelStatus", suspendWhenHidden = FALSE)
 
-verifyCanSolve <- function(async = FALSE, buttonId = "btSolve") {
-  if (!async && length(modelStatus)) {
-    showErrorMsg(
-      lang$errMsg$jobRunning$title,
-      lang$errMsg$jobRunning$desc
-    )
-    return(FALSE)
+verifyCanSolve <- function(async = FALSE, buttonId = "btSolve", detachCurrentRun = FALSE) {
+  if (!async) {
+    if (length(modelStatus)) {
+      if (detachCurrentRun) {
+        removeModal()
+        modelStatusObs$destroy()
+        modelStatus <<- NULL
+        if (config$activateModules$logFile ||
+          config$activateModules$miroLogFile) {
+          logfileObs$destroy()
+          logfileObs <- NULL
+          logfile <- NULL
+        }
+      } else if (config$activateModules$remoteExecution) {
+        showJobRunningDialog()
+        return(FALSE)
+      } else {
+        showErrorMsg(
+          lang$errMsg$jobRunning$title,
+          lang$errMsg$jobRunning$desc
+        )
+        return(FALSE)
+      }
+    }
   }
   if (length(unzipModelFilesProcess)) {
     if (length(unzipModelFilesProcess$get_exit_status())) {
@@ -789,10 +806,8 @@ runGAMSJob <- function() {
   }
 }
 
-observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
-  flog.debug("Solve button clicked (model: '%s').", modelName)
-
-  if (!verifyCanSolve()) {
+runNewSynchronousJob <- function(detachCurrentRun = FALSE) {
+  if (!verifyCanSolve(detachCurrentRun = detachCurrentRun)) {
     return()
   }
   inputData <- prepareModelRun(async = FALSE)
@@ -822,6 +837,11 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     return(NULL)
   }
   runGAMSJob()
+}
+
+observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
+  flog.debug("Solve button clicked (model: '%s').", modelName)
+  runNewSynchronousJob()
 })
 observeEvent(input$btRunNoCheckHash, {
   flog.debug("Solve button (no check scen hash) clicked (model: '%s').", modelName)
@@ -848,6 +868,25 @@ observeEvent(input$btInterrupt, {
     return()
   }
   updateActionButton(session, "btInterrupt", icon = icon("skull"))
+})
+observeEvent(input$btSolveDetachCurrent, {
+  flog.debug("Button to detach from current job to solve new job clicked .")
+  runNewSynchronousJob(detachCurrentRun = TRUE)
+})
+observeEvent(input$btDetachCurrentJob, {
+  flog.debug("Button to detach from current job clicked .")
+  modelStatusObs$destroy()
+  modelStatus <<- NULL
+  if (config$activateModules$logFile ||
+    config$activateModules$miroLogFile) {
+    logfileObs$destroy()
+    logfileObs <- NULL
+    logfile <- NULL
+  }
+  clearLogs(session)
+  enableEl(session, "#btSolve")
+  disableEl(session, "#btInterrupt")
+  showNotification(lang$nav$gams$boxGamsOutput$gamsOutputTabset$detachedInfoMsg)
 })
 if (!isShinyProxy && config$activateModules$remoteExecution) {
   observeEvent(input$btRemoteExecLogin, {

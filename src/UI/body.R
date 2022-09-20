@@ -863,7 +863,14 @@ if (buildUI) {
                       )
                     }
                   )
-                )
+                ),
+                if (config$activateModules$remoteExecution) {
+                  tags$button(
+                    id = "btDetachCurrentJob", type = "button", title = lang$nav$gams$boxGamsOutput$gamsOutputTabset$detachButton,
+                    class = "btn btn-default action-button",
+                    tags$i(class = "fas fa-link-slash")
+                  )
+                }
               )
             )
           )

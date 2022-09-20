@@ -75,7 +75,9 @@
           "logFile":"Log file",
           "lstFile":"Listing file",
           "miroLogFile":"MIRO log file",
-          "logUpdate":"Update"
+          "logUpdate":"Update",
+          "detachButton": "Detach current job",
+          "detachedInfoMsg": "Job was detached"
         }
       }
     },
@@ -926,7 +928,10 @@
     },
     "jobRunning": {
       "title": "Active job",
-      "desc": "A GAMS job is currently running. You must stop or wait for this job to finish before you can run another job."
+      "desc": "A GAMS job is currently running. You must stop or wait for this job to finish before you can run another job.",
+      "descAsync": "There is already a GAMS job running at the moment. Do you want to detach the current job and attach this job instead? The currently running job can still be accessed via the job list.",
+      "cancelButton": "Cancel",
+      "detachButton": "Detach current run"
     },
     "unzipProcessRunning":{
       "title": "MIRO busy",

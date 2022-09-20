@@ -224,6 +224,20 @@ showDeleteScenDialog <- function() {
     fade = TRUE, easyClose = TRUE
   ))
 }
+showJobRunningDialog <- function() {
+  showModal(modalDialog(
+    title = lang$errMsg$jobRunning$title,
+    lang$errMsg$jobRunning$descAsync,
+    footer = tagList(
+      modalButton(lang$errMsg$jobRunning$cancelButton),
+      actionButton("btSolveDetachCurrent",
+        label = lang$errMsg$jobRunning$detachButton,
+        class = "bt-highlight-1 bt-gms-confirm"
+      )
+    ),
+    fade = TRUE, easyClose = TRUE
+  ))
+}
 
 showRemoveExistingOutputDataDialog <- function() {
   showModal(modalDialog(

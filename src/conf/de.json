@@ -75,7 +75,9 @@
           "logFile":"Log-Datei",
           "lstFile":"Listing-Datei",
           "miroLogFile":"MIRO Log-Datei",
-          "logUpdate":"Aktualisieren"
+          "logUpdate":"Aktualisieren",
+          "detachButton": "Aktuellen Auftrag entkoppeln",
+          "detachedInfoMsg": "Auftrag wurde entkoppelt"
         }
       }
     },
@@ -926,7 +928,10 @@
     },
     "jobRunning":{
       "title":"Aktiver Job",
-      "desc": "Ein GAMS-Job läuft derzeit. Sie müssen diesen Job stoppen oder warten, bis er beendet ist, bevor Sie einen anderen Job ausführen können."
+      "desc": "Ein GAMS-Job läuft derzeit. Sie müssen diesen Job stoppen oder warten, bis er beendet ist, bevor Sie einen anderen Job ausführen können.",
+      "descAsync": "Zurzeit läuft bereits ein GAMS-Job. Möchten Sie den aktuellen Job entkoppeln und stattdessen diesen Job anhängen? Der aktuell laufende Job kann weiterhin über die Jobliste aufgerufen werden.",
+      "cancelButton": "Abbrechen",
+      "detachButton": "Aktuellen Job entkoppeln"
     },
     "unzipProcessRunning":{
       "title": "MIRO beschäftigt",
