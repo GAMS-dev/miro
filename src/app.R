@@ -2156,8 +2156,6 @@ if (!is.null(errMsg)) {
       if (!config$activateModules$readonlyMode) {
         # solve button clicked
         source("./modules/gams_run.R", local = TRUE)
-        # Interrupt button clicked
-        source("./modules/gams_interrupt.R", local = TRUE)
       }
 
 

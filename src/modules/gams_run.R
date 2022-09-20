@@ -831,6 +831,24 @@ observeEvent(input$btRunNoCheckHash, {
   removeModal()
   runGAMSJob()
 })
+observeEvent(input$btInterrupt, {
+  flog.debug("Button to interrupt model run clicked.")
+
+  if (tryCatch(
+    {
+      worker$interrupt()
+      FALSE
+    },
+    error = function(e) {
+      flog.error("Problems interrupting the GAMS process. Error message: %s.", conditionMessage(e))
+      showErrorMsg(lang$errMsg$gamsTerm$title, lang$errMsg$gamsTerm$desc)
+      return(TRUE)
+    }
+  )) {
+    return()
+  }
+  updateActionButton(session, "btInterrupt", icon = icon("skull"))
+})
 if (!isShinyProxy && config$activateModules$remoteExecution) {
   observeEvent(input$btRemoteExecLogin, {
     flog.debug("Button to open login dialog clicked.")
