@@ -41,9 +41,9 @@
       "widgetType": "dropdown",
       "alias": "Solver",
       "label": "Solver to use for DNLP models",
-      "choices": ["IPOPT", "CONOPT", "MSNLP", "LINDO"],
+      "choices": ["IPOPT", "CONOPT", "LINDO"],
       "multiple": false,
-      "selected": "MSNLP"
+      "selected": "LINDO"
     }
   },
   "datatable": {
