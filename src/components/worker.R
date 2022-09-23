@@ -1242,7 +1242,7 @@ Worker <- R6Class("Worker", public = list(
           type = "application/json",
           encoding = "utf-8"
         ), error = function(e) {
-          sprintf("No valid UTF-8 encoded JSON received. Error message: %s", conditionMessage(e))
+          list(message = sprintf("No valid UTF-8 encoded JSON received. Error message: %s", conditionMessage(e)))
         })
         queuePosition <- NULL
         if (identical(jobPostStatusCode, 201L)) {
