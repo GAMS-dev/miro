@@ -340,4 +340,129 @@ test_that("Saving already deleted attachment should result in warning in log", {
   )))
 })
 
+attachments <- Attachments$new(
+  db, list(
+    maxSize = 200, maxNo = 3,
+    forbiddenFNames = c(
+      MIROGdxInName, MIROGdxOutName,
+      paste0(modelName, c(".log", ".lst"))
+    )
+  ),
+  workDir,
+  c("in1", "widget1", "widget2", "in2"),
+  c("out1", "out2", "out3"), c("in1", "in2")
+)
+
+db$deleteRows("_scenAttach", force = TRUE)
+
+test_that("getData method works", {
+  fakeSessionIn1 <- FakeSession$new("in_1")
+  expect_identical(
+    attachments$getData(),
+    tibble::tibble(`_sid` = integer(), fileName = character(), execPerm = logical())
+  )
+  expect_identical(
+    attachments$getData(includeContent = TRUE),
+    tibble::tibble(`_sid` = integer(), fileName = character(), execPerm = logical(), fileContent = blob::blob())
+  )
+  file.copy(
+    c(
+      file.path(testDir, "data", "_scalars.csv"),
+      file.path(testDir, "data", "bad-views2.json")
+    ),
+    c(file.path("data", "_scalars.csv"), file.path("data", "bad-views2.json"))
+  )
+  attachments$add(
+    session = fakeSessionIn1, c(
+      file.path(testDir, "data", "_scalars.csv"),
+      file.path(testDir, "data", "bad-views2.json")
+    ),
+    fileNames = NULL, overwrite = FALSE, execPerm = NULL
+  )
+  file.move(
+    c(file.path("data", "_scalars.csv"), file.path("data", "bad-views2.json")),
+    c(
+      file.path(testDir, "data", "_scalars.csv"),
+      file.path(testDir, "data", "bad-views2.json")
+    )
+  )
+  expect_identical(
+    attachments$getData(),
+    tibble::tibble(
+      `_sid` = c(0L, 0L), fileName = c("_scalars.csv", "bad-views2.json"),
+      execPerm = c(TRUE, TRUE)
+    )
+  )
+  attachments$setExecPerm(fakeSessionIn1, "_scalars.csv", FALSE)
+  expect_identical(
+    attachments$getData(),
+    tibble::tibble(
+      `_sid` = c(0L, 0L), fileName = c("_scalars.csv", "bad-views2.json"),
+      execPerm = c(FALSE, TRUE)
+    )
+  )
+  attachments$remove(fakeSessionIn1, "_scalars.csv")
+  expect_identical(
+    attachments$getData(),
+    tibble::tibble(
+      `_sid` = c(0L), fileName = c("bad-views2.json"),
+      execPerm = c(TRUE)
+    )
+  )
+  expect_identical(
+    attachments$getData(includeContent = TRUE)$fileContent,
+    blob::blob(charToRaw("./tests/data/good-views.json"))
+  )
+  expect_identical(
+    attachments$getData(includeSandboxScen = FALSE),
+    tibble::tibble(`_sid` = integer(), fileName = character(), execPerm = logical())
+  )
+  writeToDb(attachments$flushOpQueue(), sid = 1L)
+  attachments$setSid(1L)
+  expect_identical(
+    attachments$getData(includeSandboxScen = FALSE),
+    tibble::tibble(
+      `_sid` = c(1L), fileName = c("bad-views2.json"),
+      execPerm = c(TRUE)
+    )
+  )
+  file.copy(
+    file.path(testDir, "data", "_scalars.csv"),
+    file.path("data", "_scalars.csv")
+  )
+  attachments$add(
+    session = fakeSessionIn1, c(
+      file.path(testDir, "data", "_scalars.csv")
+    ),
+    fileNames = "test.csv", overwrite = FALSE, execPerm = FALSE
+  )
+  file.move(
+    file.path("data", "_scalars.csv"),
+    file.path(testDir, "data", "_scalars.csv")
+  )
+  attachments$setExecPerm(fakeSessionIn1, "bad-views2.json", FALSE)
+  expect_identical(
+    attachments$getData(scenIds = 1L),
+    tibble::tibble(
+      `_sid` = c(0L, 0L, 1L), fileName = c("test.csv", "bad-views2.json", "bad-views2.json"),
+      execPerm = c(FALSE, FALSE, TRUE)
+    )
+  )
+  expect_identical(
+    attachments$getData(scenIds = 1L, fileNames = c("bad-views2.json")),
+    tibble::tibble(
+      `_sid` = c(0L, 1L), fileName = c("bad-views2.json", "bad-views2.json"),
+      execPerm = c(FALSE, TRUE)
+    )
+  )
+  attachments$clear()
+  expect_identical(
+    attachments$getData(scenIds = 1L),
+    tibble::tibble(
+      `_sid` = c(1L), fileName = c("bad-views2.json"),
+      execPerm = c(TRUE)
+    )
+  )
+})
+
 db$finalize()

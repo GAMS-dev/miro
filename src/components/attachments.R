@@ -270,6 +270,109 @@ Attachments <- R6Class("Attachments",
       })
       invisible(self)
     },
+    getData = function(scenIds = integer(0L), fileNames = NULL, includeContent = FALSE, includeSandboxScen = TRUE) {
+      # Fetches attachment metadata as well as content in memory
+      #
+      # Args:
+      #   scenIds:             scenario IDs to fetch (meta)data for (optional)
+      #   fileNames:           filter what attachments to fetch (by file name) (optional)
+      #   includeContent:      whether to include attachment data as well (as blob) (optional)
+      #   includeSandboxScen:  whether to include data of sandbox scenario (has _sid == 0) (optional)
+      #
+      # Returns:
+      #   tibble with columns _sid, fileName, execPerm and additionally: fileContent in case includeContent is TRUE
+
+      colsToFetch <- c("_sid", "fileName", "execPerm")
+      if (includeContent) {
+        colsToFetch <- c(colsToFetch, "fileContent")
+      }
+      sidToFilter <- NULL
+      if (includeSandboxScen) {
+        if (length(private$sid) && private$sid %in% scenIds) {
+          scenIdsToFetch <- scenIds
+        } else {
+          scenIdsToFetch <- c(private$sid, scenIds)
+          sidToFilter <- private$sid
+        }
+      } else {
+        scenIdsToFetch <- scenIds
+      }
+      if (length(fileNames)) {
+        data <- private$db$importDataset("_scenAttach",
+          tibble(rep.int("fileName", length(fileNames)), fileNames),
+          colNames = colsToFetch, innerSepAND = FALSE,
+          subsetSids = scenIdsToFetch
+        )
+      } else {
+        data <- private$db$importDataset("_scenAttach",
+          colNames = colsToFetch, innerSepAND = FALSE,
+          subsetSids = scenIdsToFetch
+        )
+      }
+      if (!length(data)) {
+        data <- tibble(`_sid` = integer(), fileName = character(), execPerm = logical())
+        if (includeContent) {
+          data$fileContent <- blob::blob()
+        }
+      }
+      data$execPerm <- as.logical(data$execPerm)
+      if (!includeSandboxScen) {
+        return(data)
+      }
+      sandboxScenData <- dplyr::filter(data, `_sid` == if (is.null(private$sid)) -1L else private$sid)
+      sandboxScenData$`_sid` <- 0L
+      if (length(private$attachmentsToRemove)) {
+        sandboxScenData <- dplyr::filter(data, fileName %in% private$attachmentsToRemove)
+      }
+      if (length(private$attachmentsUpdateExec)) {
+        fileIdsToUpdate <- match(private$attachmentsUpdateExec$name, sandboxScenData$fileName)
+        execPermNeedsUpdate <- !is.na(fileIdsToUpdate)
+        fileIdsToUpdate <- fileIdsToUpdate[execPermNeedsUpdate]
+        sandboxScenData[fileIdsToUpdate, "execPerm"] <- private$attachmentsUpdateExec$execPerm[execPermNeedsUpdate]
+      }
+      if (length(private$localAttachments)) {
+        localFilePaths <- private$localAttachments$filePaths
+        localFileData <- tibble(
+          `_sid` = vector("integer", length(localFilePaths)),
+          fileName = basename(localFilePaths),
+          execPerm = private$localAttachments$execPerm
+        )
+        if (length(fileNames)) {
+          localFileData <- dplyr::filter(localFileData, fileName %in% fileNames)
+          localFilePaths <- localFilePaths[basename(localFilePaths) %in% localFileData$fileName]
+        }
+        if (includeContent) {
+          localFileSize <- file.size(localFilePaths)
+          localFileData$fileContent <- blob::new_blob(lapply(
+            seq_along(localFilePaths),
+            function(i) {
+              tryCatch(
+                readBin(localFilePaths[[i]], "raw", n = localFileSize[[i]]),
+                error = function(e) {
+                  flog.warn(
+                    "Problems reading file: '%s'. Error message: %s",
+                    localFilePaths[[i]],
+                    conditionMessage(e)
+                  )
+                  return(raw(0))
+                }, warning = function(w) {
+                  flog.warn(
+                    "Problems reading file: '%s'. Warning message: %s",
+                    localFilePaths[[i]],
+                    conditionMessage(w)
+                  )
+                  return(raw(0))
+                }
+              )
+            }
+          ))
+        }
+      }
+      if (!is.null(sidToFilter)) {
+        data <- dplyr::filter(data, `_sid` != sidToFilter)
+      }
+      return(dplyr::bind_rows(localFileData, sandboxScenData, data))
+    },
     download = function(filePath, fileNames = NULL,
                         fullPath = FALSE, allExecPerm = FALSE, scenId = NULL) {
       # Fetches attachment data from db
