@@ -3626,6 +3626,14 @@
               "type": "string",
               "minLength": 1
             },
+            "descAsyncSubmitting": {
+              "type": "string",
+              "minLength": 1
+            },
+            "descAsyncSubmittingDetach": {
+              "type": "string",
+              "minLength": 1
+            },
             "cancelButton": {
               "type": "string",
               "minLength": 1
@@ -3635,7 +3643,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 5
+          "minProperties": 7
         },
         "unzipProcessRunning": {
           "type": "object",

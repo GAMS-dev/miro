@@ -930,6 +930,8 @@
       "title": "正在求解的作业",
       "desc": "正在求解一个GAMS作业。只有停止求解该作业或等待该作业完成后，才能运行其他的作业。",
       "descAsync": "目前已经有一个 GAMS 作业在运行。 是否要分离当前作业并附加此作业？ 当前运行的作业仍然可以通过作业列表访问。",
+      "descAsyncSubmitting": "正在提交 GAMS 作业。 您必须等到该作业提交后才能运行另一个作业。",
+      "descAsyncSubmittingDetach": "提交期间不能分离作业。",
       "cancelButton": "取消",
       "detachButton": "分离当前作业"
     },

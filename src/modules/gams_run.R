@@ -676,6 +676,14 @@ verifyCanSolve <- function(async = FALSE, buttonId = "btSolve", detachCurrentRun
           logfile <- NULL
         }
       } else if (config$activateModules$remoteExecution) {
+        if (is.null(worker$getJobId())) {
+          flog.debug("Job still submitting. Cant detach..")
+          showErrorMsg(
+            lang$errMsg$jobRunning$title,
+            lang$errMsg$jobRunning$descAsyncSubmitting
+          )
+          return(FALSE)
+        }
         showJobRunningDialog()
         return(FALSE)
       } else {
@@ -875,6 +883,11 @@ observeEvent(input$btSolveDetachCurrent, {
 })
 observeEvent(input$btDetachCurrentJob, {
   flog.debug("Button to detach from current job clicked .")
+  if (is.null(worker$getJobId())) {
+    flog.debug("Job still submitting. Cant detach..")
+    showNotification(lang$errMsg$jobRunning$descAsyncSubmittingDetach, type = "error", duration = 10L)
+    return()
+  }
   modelStatusObs$destroy()
   modelStatus <<- NULL
   if (config$activateModules$logFile ||

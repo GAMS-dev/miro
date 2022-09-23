@@ -675,6 +675,9 @@ Worker <- R6Class("Worker", public = list(
   getPid = function(jID) {
     return(self$getInfoFromJobList(jID, "_pid"))
   },
+  getJobId = function() {
+    return(private$jID)
+  },
   getSid = function(jID) {
     if (!length(private$jobList) || !nrow(private$jobList)) {
       return(NULL)

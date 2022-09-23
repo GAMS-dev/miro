@@ -929,6 +929,8 @@
     "jobRunning": {
       "title": "Active job",
       "desc": "A GAMS job is currently running. You must stop or wait for this job to finish before you can run another job.",
+      "descAsyncSubmitting": "A GAMS job is being submitted. You must wait until this job is submitted before you can run another job.",
+      "descAsyncSubmittingDetach": "Jobs cannot be detached while being submitted.",
       "descAsync": "There is already a GAMS job running at the moment. Do you want to detach the current job and attach this job instead? The currently running job can still be accessed via the job list.",
       "cancelButton": "Cancel",
       "detachButton": "Detach current run"
