@@ -3,7 +3,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.logger import logger
 
-from app.routers import login, apps, scenarios
+from app.routers import login, apps, scenarios, configuration
 from app.config import settings_yml, settings
 from app.utils.utils import use_route_names_as_operation_ids
 
@@ -37,6 +37,7 @@ public_api = FastAPI(
 
 app.include_router(login.router)
 if settings_yml:
+    public_api.include_router(configuration.router)
     public_api.include_router(apps.router)
     public_api.include_router(scenarios.router)
     public_api.include_router(login.router)

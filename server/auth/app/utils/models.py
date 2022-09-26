@@ -23,6 +23,10 @@ class AuthResponse(BaseModel):
     permissions: str
 
 
+class ConfigurationResponse(BaseModel):
+    version: str
+
+
 class AppConfig(BaseModel):
     id: Optional[str]
     display_name: Optional[str]
