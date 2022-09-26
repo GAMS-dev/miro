@@ -1,7 +1,8 @@
 CustomComparisonData <- R6Class("CustomComparisonData", public = list(
-  initialize = function(scenData, refId) {
+  initialize = function(scenData, refId, attachments) {
     private$scenData <- scenData
     private$refId <- refId
+    private$attachments <- attachments
     return(invisible(self))
   },
   getAllSymbols = function() {
@@ -17,10 +18,17 @@ CustomComparisonData <- R6Class("CustomComparisonData", public = list(
     }
     return(private$scenData$getAll(private$refId, symName = symbolName))
   },
+  getAttachmentData = function(scenIds = NULL, fileNames = NULL, includeContent = FALSE, includeSandboxScen = TRUE) {
+    if (is.null(scenIds)) {
+      scenIds <- vapply(self$getMetadata(), "[[", integer(1L), "_sid")
+    }
+    return(private$attachments$getData(scenIds, fileNames, includeContent, includeSandboxScen))
+  },
   getMetadata = function() {
     return(unname(private$scenData$getById("meta", refId = private$refId)))
   }
 ), private = list(
   scenData = NULL,
-  refId = NULL
+  refId = NULL,
+  attachments = NULL
 ))

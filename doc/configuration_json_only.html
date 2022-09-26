@@ -1649,10 +1649,7 @@ renderMirocompare_&#x3C;id&#x3E; &#x3C;- function(input, output, session, data, 
                       If you have already written your own renderers, the
                       argument list of the output and renderer functions will
                       look familiar. Therefore, we will focus on the
-                      differences: First, you currently do not have access to
-                      the
-                      <span class="code">attachments</span> object in custom
-                      comparison modules. Second, unlike custom renderers, the
+                      differences: First, unlike custom renderers, the
                       <span class="code">data</span> argument is not a
                       dataframe, but an
                       <a href="https://r6.r-lib.org/index.html" target="_blank"
@@ -1663,7 +1660,10 @@ renderMirocompare_&#x3C;id&#x3E; &#x3C;- function(input, output, session, data, 
                       different methods of this class are described in the
                       <a href="#custom-comparison-data" class="scrollto"
                         >next section</a
-                      >.
+                      >. Second, you have access to the attachment data of the
+                      scenarios via the
+                      <kbd>data$getAttachmentData()</kbd> method instead of a
+                      separate object.
                     </p>
                     <p>
                       <a
@@ -1899,6 +1899,76 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                       timestamp of the last change, format: yyyy-mm-dd
                       HH:MM:SS), <span class="code">_stag</span> (character:
                       comma-separated list of scenario tags).
+                    </p>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      This method allows you to retrieve the metadata (e.g.
+                      scenario name, scenario owner, etc.) for all loaded
+                      scenarios. The order is the same as the
+                      <span class="code">data$get(symbolName)</span> method.
+                    </p>
+                    <h5>Get attachment (meta)data</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+  data$getAttachmentData(scenIds = NULL, fileNames = NULL, includeContent = FALSE, includeSandboxScen = TRUE)
+  </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Arguments</h6>
+                    <table class="api-arguments">
+                      <tbody>
+                        <tr>
+                          <th>scenIds</th>
+                          <td>
+                            integer vector of scenario IDs (as returned by
+                            <span class="code">getMetadata()</span> method) or
+                            <span class="code">NULL</span> to include all loaded
+                            scenarios
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>fileNames</th>
+                          <td>
+                            character vector of attachment filenames to filter
+                            or <span class="code">NULL</span> to include all
+                            loaded scenarios
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>includeContent</th>
+                          <td>
+                            boolean specifying whether to include
+                            <span class="code">fileContent</span> column with
+                            attachment data
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>includeSandboxScen</th>
+                          <td>
+                            boolean specifying whether to include attachments of
+                            the sandbox scenario (will be included with scenario
+                            ID (<span class="code">_sid</span>) of
+                            <span class="code">0</span>)
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h6 class="api-header">Value</h6>
+                    <p>
+                      An dataframe (tibble) with columns:
+                      <span class="code">_sid</span> (integer: internal scenario
+                      ID, <span class="code">0</span> for sandbox scenario),
+                      <span class="code">fileName</span> (character: filename of
+                      the attachment),
+                      <span class="code">execPerm</span> (logical: whether model
+                      is allowed to read attachment),
+                      <span class="code">fileContent</span> (<a
+                        href="https://cran.r-project.org/web/packages/blob/index.html"
+                        target="_blank"
+                        >blob</a
+                      >: attachment data, only included if
+                      <span class="code">includeContent</span> is
+                      <span class="code">TRUE</span>).
                     </p>
                     <h6 class="api-header">Description</h6>
                     <p>

@@ -3,6 +3,14 @@ app$snapshotInit("custom_comparison_test")
 
 app$snapshot(items = list(output = c("inputDataTitle")), screenshot = TRUE)
 
+app$setInputs(btEditMeta = "click")
+Sys.sleep(0.5)
+app$findElement("a[data-value='attachments']")$click()
+app$uploadFile(file_addAttachments = "../data/bad-views2.json")
+Sys.sleep(1)
+app$setInputs(btUpdateMeta = "click")
+Sys.sleep(1)
+
 app$findElement("a[data-value='loadResults']")$click()
 Sys.sleep(0.5)
 app$setInputs(btSendQuery = "click")

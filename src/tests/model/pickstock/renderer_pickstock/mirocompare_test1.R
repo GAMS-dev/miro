@@ -9,10 +9,20 @@ mirocompare_test1Output <- function(id, height = NULL, options = NULL, path = NU
 
 renderMirocompare_test1 <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
   views$add(session, "test1", list(a = "bla"))
+
   if (!identical(options$advanced, list(test = "huhu"))) {
     stop("AYAYAYAYAYA!!!", call. = FALSE)
   }
   if (length(options$title)) {
+    attachmentData <- data$getAttachmentData(includeContent = TRUE)
+    if (!identical(attachmentData, tibble::tibble(
+      `_sid` = 0L,
+      fileName = "bad-views2.json",
+      execPerm = TRUE,
+      fileContent = blob::blob(charToRaw("./tests/data/good-views.json"))
+    ))) {
+      stop("UIUIUIUIUUIUIU!!!!!", call. = FALSE)
+    }
     if (tryCatch(
       {
         views$get(session, "test123", "global")
