@@ -55,6 +55,10 @@ repeat{
 
 numberJobsBefore <- getNumberJobsInJobList(app)
 
+app$findElement('#shiny-tab-gamsinter a[data-value="current"]')$click()
+
+expect_true(app$waitFor("$('#btDetachCurrentJob').is(':disabled')", timeout = 50L))
+
 app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
 
 app$findElement(".btSolve .dropdown-toggle")$click()
@@ -73,11 +77,12 @@ repeat{
 }
 Sys.sleep(2L)
 expect_true(app$waitFor("$('#logStatusContainer').text()!=='';", timeout = 5000L))
-app$snapshot()
+expect_true(app$waitFor("$('#btDetachCurrentJob').is(':enabled')", timeout = 50L))
 app$findElement("#btDetachCurrentJob")$click()
 Sys.sleep(0.5)
 expect_true(app$waitFor("$('#modelStatus').is(':visible') && $('#modelStatus').text()==='';", timeout = 2000L))
 expect_true(app$waitFor("$('#logStatusContainer').text()==='';", timeout = 50))
+expect_true(app$waitFor("$('#btDetachCurrentJob').is(':disabled')", timeout = 50L))
 
 app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
 

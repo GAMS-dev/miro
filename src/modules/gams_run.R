@@ -551,6 +551,7 @@ output$modelStatus <- renderUI({
   modelStatus <<- NULL
   enableEl(session, "#btSolve")
   disableEl(session, "#btInterrupt")
+  disableEl(session, "#btDetachCurrentJob")
 
   if (config$activateModules$logFile ||
     config$activateModules$miroLogFile) {
@@ -764,6 +765,7 @@ runGAMSJob <- function() {
   # activate Interrupt button as GAMS is running now
   updateActionButton(session, "btInterrupt", icon = character(0L))
   enableEl(session, "#btInterrupt")
+  enableEl(session, "#btDetachCurrentJob")
   switchTab(session, "gamsinter")
 
   if (!is.null(logFilePath) &&
@@ -899,6 +901,7 @@ observeEvent(input$btDetachCurrentJob, {
   clearLogs(session)
   enableEl(session, "#btSolve")
   disableEl(session, "#btInterrupt")
+  disableEl(session, "#btDetachCurrentJob")
   showNotification(lang$nav$gams$boxGamsOutput$gamsOutputTabset$detachedInfoMsg)
 })
 if (!isShinyProxy && config$activateModules$remoteExecution) {
