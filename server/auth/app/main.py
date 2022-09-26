@@ -39,6 +39,7 @@ app.include_router(login.router)
 if settings_yml:
     public_api.include_router(apps.router)
     public_api.include_router(scenarios.router)
+    public_api.include_router(login.router)
     use_route_names_as_operation_ids(public_api)
     app.mount(f"{settings.script_name}/api", public_api)
 else:
