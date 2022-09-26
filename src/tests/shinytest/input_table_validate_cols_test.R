@@ -62,11 +62,11 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
+app2 <- ShinyDriver$new("../../", loadTimeout = 20000)
 Sys.sleep(0.5)
-expect_true(app$waitFor("$('#errorMessages').html().includes('greater than the specified maximum value');", timeout = 50))
+expect_true(app2$waitFor("$('#errorMessages').html().includes('greater than the specified maximum value');", timeout = 50))
 Sys.sleep(0.5)
-app$stop()
+app2$stop()
 
 configNew <- configWorking
 configNew$inputWidgets$d$validateCols$topeka <- list(
@@ -77,8 +77,8 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- ShinyDriver$new("../../", loadTimeout = 20000)
+app3 <- ShinyDriver$new("../../", loadTimeout = 20000)
 Sys.sleep(0.5)
-expect_true(app$waitFor("$('#errorMessages').html().includes('declared as choices and should be excluded');", timeout = 50))
+expect_true(app3$waitFor("$('#errorMessages').html().includes('declared as choices and should be excluded');", timeout = 50))
 Sys.sleep(0.5)
-app$stop()
+app3$stop()
