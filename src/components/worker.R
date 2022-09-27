@@ -1457,7 +1457,7 @@ Worker <- R6Class("Worker", public = list(
           error = function(e) {
             errMsg <- conditionMessage(e)
             flog.error(errMsg)
-            if (startsWith(errMsg, "Could not") || startsWith(errMsg, "Timeout was")) {
+            if (startsWith(errMsg, "Failed to connect") || startsWith(errMsg, "Could not") || startsWith(errMsg, "Timeout was")) {
               private$status <- -404L
             } else {
               private$status <- -500L
