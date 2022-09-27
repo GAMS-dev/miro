@@ -665,9 +665,11 @@ outputOptions(output, "modelStatus", suspendWhenHidden = FALSE)
 
 verifyCanSolve <- function(async = FALSE, buttonId = "btSolve", detachCurrentRun = FALSE) {
   if (!async) {
+    if (detachCurrentRun) {
+      removeModal()
+    }
     if (length(modelStatus)) {
       if (detachCurrentRun) {
-        removeModal()
         modelStatusObs$destroy()
         modelStatus <<- NULL
         if (config$activateModules$logFile ||
@@ -880,7 +882,7 @@ observeEvent(input$btInterrupt, {
   updateActionButton(session, "btInterrupt", icon = icon("skull"))
 })
 observeEvent(input$btSolveDetachCurrent, {
-  flog.debug("Button to detach from current job to solve new job clicked .")
+  flog.debug("Button to detach from current job to solve new job clicked.")
   runNewSynchronousJob(detachCurrentRun = TRUE)
 })
 observeEvent(input$btDetachCurrentJob, {
