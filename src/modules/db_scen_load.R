@@ -874,13 +874,15 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     moduleIdx <- config[["customCompareModules"]][[currentCompMode]][["idx"]]
     return(tryCatch(
       {
-        loadDynamicTabContentCustom(session, config[["customCompareModules"]][[currentCompMode]], initEnv = TRUE)
+        noError <- loadDynamicTabContentCustom(session, config[["customCompareModules"]][[currentCompMode]], initEnv = TRUE)
         hideEl(session, paste0("#cmpCustomNoScenWrapper_", moduleIdx))
         showEl(session, paste0("#customCompScenWrapper_", moduleIdx))
         switchTab(session, "scenComp")
         isInRefreshMode <<- TRUE
         enableEl(session, paste0("#btRefreshCustomCmp_", moduleIdx))
-        removeModal()
+        if (noError) {
+          removeModal()
+        }
         flog.debug(
           "Scenarios: '%s' loaded and rendered in custom scenario comparison mode (%s).",
           paste(sidsToLoad, collapse = ", "),

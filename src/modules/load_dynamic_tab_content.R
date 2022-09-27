@@ -179,7 +179,7 @@ loadDynamicTabContentCustom <- function(session, compareModuleConfig, initEnv = 
       }
     )
     if (is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))) {
-      return()
+      return(FALSE)
     }
   }
   if (!dynamicUILoaded$dynamicTabsets[[refId]][["content"]]) {
@@ -215,8 +215,9 @@ loadDynamicTabContentCustom <- function(session, compareModuleConfig, initEnv = 
       }
     )
     if (is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))) {
-      return()
+      return(FALSE)
     }
+    return(TRUE)
   }
 }
 loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE) {
