@@ -21,6 +21,7 @@ CustomComparisonData <- R6Class("CustomComparisonData", public = list(
   getAttachmentData = function(scenIds = NULL, fileNames = NULL, includeContent = FALSE, includeSandboxScen = TRUE) {
     if (is.null(scenIds)) {
       scenIds <- vapply(self$getMetadata(), "[[", integer(1L), "_sid")
+      scenIds <- scenIds[!is.na(scenIds)]
     }
     return(private$attachments$getData(scenIds, fileNames, includeContent, includeSandboxScen))
   },
