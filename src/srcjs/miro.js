@@ -612,8 +612,8 @@ font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
           <div class="checkbox">
             <label>
               <input type="checkbox" \
-onchange="Shiny.setInputValue('execPermAttachment_${id[i]}', $(this).is(':checked'));" \
-checked="checked">
+onchange="Shiny.setInputValue('execPermAttachment_${id[i]}',$(this).is(':checked'),\
+{priority:'event'});" checked="checked">
               <span>${el.labelCb}</span>
             </label>
           </div>
