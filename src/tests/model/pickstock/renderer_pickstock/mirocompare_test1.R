@@ -16,10 +16,10 @@ renderMirocompare_test1 <- function(input, output, session, data, options = NULL
   if (length(options$title)) {
     attachmentData <- data$getAttachmentData(includeContent = TRUE)
     if (!identical(attachmentData, tibble::tibble(
-      `_sid` = 0L,
-      fileName = "bad-views2.json",
-      execPerm = TRUE,
-      fileContent = blob::blob(charToRaw("./tests/data/good-views.json"))
+      `_sid` = c(0L, 1L),
+      fileName = c("bad-views2.json", "bad-views2.json"),
+      execPerm = c(FALSE, TRUE),
+      fileContent = c(blob::blob(charToRaw("./tests/data/good-views.json")), blob::blob(charToRaw("./tests/data/good-views.json")))
     ))) {
       stop("UIUIUIUIUUIUIU!!!!!", call. = FALSE)
     }

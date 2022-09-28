@@ -319,7 +319,7 @@ Attachments <- R6Class("Attachments",
       if (!includeSandboxScen) {
         return(data)
       }
-      sandboxScenData <- dplyr::filter(data, `_sid` == if (is.null(private$sid)) -1L else private$sid)
+      sandboxScenData <- dplyr::filter(data, `_sid` == if (length(private$sid)) private$sid else -1L)
       sandboxScenData$`_sid` <- 0L
       if (length(private$attachmentsToRemove)) {
         sandboxScenData <- dplyr::filter(data, fileName %in% private$attachmentsToRemove)
@@ -368,7 +368,7 @@ Attachments <- R6Class("Attachments",
           ))
         }
       }
-      if (!is.null(sidToFilter)) {
+      if (length(sidToFilter)) {
         data <- dplyr::filter(data, `_sid` != sidToFilter)
       }
       return(dplyr::bind_rows(localFileData, sandboxScenData, data))
