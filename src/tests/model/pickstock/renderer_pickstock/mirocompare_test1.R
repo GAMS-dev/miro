@@ -21,6 +21,7 @@ renderMirocompare_test1 <- function(input, output, session, data, options = NULL
       execPerm = c(FALSE, TRUE),
       fileContent = c(blob::blob(charToRaw("./tests/data/good-views.json")), blob::blob(charToRaw("./tests/data/good-views.json")))
     ))) {
+      flog.error("%s", paste(attachmentData, collapse = ", "))
       stop("UIUIUIUIUUIUIU!!!!!", call. = FALSE)
     }
     if (tryCatch(
