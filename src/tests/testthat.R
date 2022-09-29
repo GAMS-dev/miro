@@ -52,7 +52,7 @@ reporter <- MultiReporter$new(list(
 stopOnFailure <- identical(commandArgs(trailingOnly = TRUE), "--stop") || !identical(Sys.getenv("FORCE_RELEASE"), "yes")
 testDir <- file.path(getwd(), "tests")
 
-# test_file("tests/testthat/test-lang-ui.R", reporter = reporter)
+# test_file("tests/testthat/test-lang-ui.R", reporter = reporter, stop_on_failure = stopOnFailure)
 test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure)
 
 Sys.unsetenv("MIRO_LOG_PATH")
