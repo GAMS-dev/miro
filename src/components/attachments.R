@@ -301,12 +301,12 @@ Attachments <- R6Class("Attachments",
         data <- private$db$importDataset("_scenAttach",
           tibble(rep.int("fileName", length(fileNames)), fileNames),
           colNames = colsToFetch, innerSepAND = FALSE,
-          subsetSids = scenIdsToFetch
+          subsetSids = unique(scenIdsToFetch)
         )
       } else {
         data <- private$db$importDataset("_scenAttach",
           colNames = colsToFetch, innerSepAND = FALSE,
-          subsetSids = scenIdsToFetch
+          subsetSids = unique(scenIdsToFetch)
         )
       }
       if (!length(data)) {
