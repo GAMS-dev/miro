@@ -3,7 +3,7 @@
 os=`uname`
 
 install (){
-    [ -f .env ] || {
+    [ -f .env ] && grep -q "GMS_MIRO_DATABASE_PWD" .env || {
         local db_password=$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 40 ; echo)
         printf "A new master password for your MIRO Server database was generated: ${db_password}\nPlease keep this password in a safe place.\n"
         printf "GMS_MIRO_DATABASE_PWD=${db_password}\n" > .env
