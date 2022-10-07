@@ -91,4 +91,134 @@ Sys.sleep(0.5)
 expect_true(app$waitFor("$('#tab_1_2-miroPivot-savedViewsDD li').eq(0).children('.dropdown-item').click();true;", timeout = 50))
 Sys.sleep(0.5)
 expect_equal(getData("tab_1_2"), list(c(NA, 300), c(275, 50), c(275, NA)))
+
+app$setInputs("tab_1_2-miroPivot-pivotRenderer" = "table")
+Sys.sleep(0.5)
+
+app$setInputs(`tab_1_2-miroPivot-showSettings` = "click")
+Sys.sleep(1)
+app$setInputs(`tab_1_2-miroPivot-showTableSummary` = TRUE)
+app$setInputs(`tab_1_2-miroPivot-colSummaryFunction` = "mean")
+app$setInputs(`tab_1_2-miroPivot-rowSummaryFunction` = "count")
+app$setInputs(`tab_1_2-miroPivot-updateSettings` = "click")
+Sys.sleep(1)
+
+expect_identical(
+  getVisibleDtData(app, "tab_1_2-miroPivot-pivotTable"),
+  structure(list(
+    ...1 = c("San-Diego", "Seattle"), ...2 = c(
+      NA,
+      "300"
+    ), ...3 = c("275", "50"), ...4 = c("275", NA),
+    ...5 = c(
+      "2",
+      "2"
+    )
+  ), class = c("tbl_df", "tbl", "data.frame"), row.names = c(
+    NA,
+    -2L
+  ))
+)
+expect_true(app$waitFor("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:first').text()==='Mean'",
+  timeout = 50
+))
+expect_true(app$waitFor("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(1)').text()==='300'",
+  timeout = 50
+))
+expect_true(app$waitFor("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(2)').text()==='162.5'",
+  timeout = 50
+))
+expect_true(app$waitFor("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(3)').text()==='275'",
+  timeout = 50
+))
+expect_true(app$waitFor("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(4)').text()==='2'",
+  timeout = 50
+))
+
+app$setInputs(`tab_1_2-miroPivot-showSettings` = "click")
+Sys.sleep(1)
+app$setInputs(`tab_1_2-miroPivot-showTableSummary` = TRUE)
+app$setInputs(`tab_1_2-miroPivot-colSummaryFunction` = "min")
+app$setInputs(`tab_1_2-miroPivot-rowSummaryFunction` = "mean")
+app$setInputs(`tab_1_2-miroPivot-updateSettings` = "click")
+Sys.sleep(1)
+
+expect_identical(
+  getVisibleDtData(app, "tab_1_2-miroPivot-pivotTable"),
+  structure(list(
+    ...1 = c("San-Diego", "Seattle"),
+    ...2 = c(
+      NA,
+      "300"
+    ),
+    ...3 = c("275", "50"),
+    ...4 = c("275", NA),
+    ...5 = c(
+      "275",
+      "175"
+    )
+  ), class = c("tbl_df", "tbl", "data.frame"), row.names = c(
+    NA,
+    -2L
+  ))
+)
+expect_true(app$waitFor("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:first').text()==='Min'",
+  timeout = 50
+))
+expect_true(app$waitFor("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(1)').text()==='300'",
+  timeout = 50
+))
+expect_true(app$waitFor("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(2)').text()==='50'",
+  timeout = 50
+))
+expect_true(app$waitFor("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(3)').text()==='275'",
+  timeout = 50
+))
+expect_true(app$waitFor("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(4)').text()==='175'",
+  timeout = 50
+))
+
+app$setInputs(`tab_1_2-miroPivot-showSettings` = "click")
+Sys.sleep(1)
+app$setInputs(`tab_1_2-miroPivot-showTableSummary` = TRUE)
+app$setInputs(`tab_1_2-miroPivot-colSummaryFunction` = "max")
+app$setInputs(`tab_1_2-miroPivot-rowSummaryFunction` = "sum")
+app$setInputs(`tab_1_2-miroPivot-updateSettings` = "click")
+Sys.sleep(1)
+
+expect_identical(
+  getVisibleDtData(app, "tab_1_2-miroPivot-pivotTable"),
+  structure(list(
+    ...1 = c("San-Diego", "Seattle"),
+    ...2 = c(
+      NA,
+      "300"
+    ),
+    ...3 = c("275", "50"),
+    ...4 = c("275", NA),
+    ...5 = c(
+      "550",
+      "350"
+    )
+  ), class = c("tbl_df", "tbl", "data.frame"), row.names = c(
+    NA,
+    -2L
+  ))
+)
+expect_true(app$waitFor("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:first').text()==='Max'",
+  timeout = 50
+))
+expect_true(app$waitFor("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(1)').text()==='300'",
+  timeout = 50
+))
+expect_true(app$waitFor("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(2)').text()==='275'",
+  timeout = 50
+))
+expect_true(app$waitFor("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(3)').text()==='275'",
+  timeout = 50
+))
+expect_true(app$waitFor("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(4)').text()==='550'",
+  timeout = 50
+))
+
 app$stop()

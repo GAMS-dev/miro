@@ -2216,7 +2216,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               ) := rowSums(dataTmp[vapply(dataTmp, is.numeric,
                 logical(1L),
                 USE.NAMES = FALSE
-              )])
+              )], na.rm = TRUE)
             )
           } else if (identical(tableSummarySettings()$rowSummaryFunction, "mean")) {
             dataTmp <- mutate(
@@ -2227,7 +2227,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               ) := rowMeans(dataTmp[vapply(dataTmp, is.numeric,
                 logical(1L),
                 USE.NAMES = FALSE
-              )])
+              )], na.rm = TRUE)
             )
           } else {
             # count
@@ -2252,7 +2252,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           } else {
             colSummarySettings$data <- round(as.numeric(slice(summarise(dataTmp, across(
               where(is.numeric),
-              !!as.name(tableSummarySettings()$colSummaryFunction)
+              !!as.name(tableSummarySettings()$colSummaryFunction),
+              na.rm = TRUE
             )), 1L)), digits = roundPrecision)
           }
         }
