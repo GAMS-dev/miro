@@ -27,14 +27,14 @@ if (file.exists(file.path(
 }
 test_that(
   "Output attachments work (part 1)",
-  expect_pass(testApp(file.path(testDir, ".."), "output_attach_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "output_attach_test",
     compareImages = FALSE
-  ))
+  )))
 )
 test_that(
   "Output attachments work (part2)",
-  expect_pass(testApp(file.path(testDir, ".."), "output_attach_test_2",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "output_attach_test_2",
     compareImages = FALSE
-  ))
+  )))
 )
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH"))

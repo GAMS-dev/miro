@@ -20,15 +20,15 @@ saveAdditionalGamsClArgs(miroModelDir, modelToTest, additionalGamsClArgs)
 Sys.setenv(MIRO_FORCE_SCEN_IMPORT = "true")
 test_that(
   "Permissions work",
-  expect_pass(testApp(file.path(testDir, ".."), "permissions_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "permissions_test",
     compareImages = FALSE
-  ))
+  )))
 )
 test_that(
   "Save as dialog (permissions) works",
-  expect_pass(testApp(file.path(testDir, ".."), "permissions_save_as_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "permissions_save_as_test",
     compareImages = FALSE
-  ))
+  )))
 )
 if (length(additionalGamsClArgs)) {
   file.rename(

@@ -19,9 +19,9 @@ if (length(additionalGamsClArgs)) {
 }
 test_that(
   "MIRO log works",
-  expect_pass(testApp(file.path(testDir, ".."), "mirolog_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "mirolog_test",
     compareImages = FALSE
-  ))
+  )))
 )
 
 if (length(additionalGamsClArgs)) {

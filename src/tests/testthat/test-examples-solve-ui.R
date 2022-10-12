@@ -39,16 +39,16 @@ for (modelToTest in c(
   }
   test_that(
     sprintf("Example app: '%s' solves: ", modelToTest),
-    expect_pass(testApp(file.path(testDir, ".."), paste0("solve_model_test_", modelToTest),
+    try_again(3L, expect_pass(testApp(file.path(testDir, ".."), paste0("solve_model_test_", modelToTest),
       compareImages = FALSE
-    ))
+    )))
   )
   if (modelToTest == "pickstock") {
     test_that(
       "Interupting model run works.",
-      expect_pass(testApp(file.path(testDir, ".."), "interrupt_model_test",
+      try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "interrupt_model_test",
         compareImages = FALSE
-      ))
+      )))
     )
   }
   if (length(additionalGamsClArgs)) {

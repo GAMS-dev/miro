@@ -54,9 +54,9 @@ jsonlite::write_json(list(`_customcomp_test1` = list(test123 = list(b = "def")))
 
 test_that(
   "Custom comparison renderers work",
-  expect_pass(testApp(file.path(testDir, ".."), "custom_comparison_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "custom_comparison_test",
     compareImages = FALSE
-  ))
+  )))
 )
 
 file.rename(

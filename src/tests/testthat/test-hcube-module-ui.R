@@ -84,23 +84,23 @@ if (file.exists(file.path("~", ".miro", paste0(".cred_", tolower(modelToTest))))
 
 test_that(
   "Solving Hypercube jobs works",
-  expect_pass(testApp(file.path(testDir, ".."), "hcube_module_solve_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "hcube_module_solve_test",
     compareImages = FALSE
-  ))
+  )))
 )
 
 test_that(
   "Loading Hypercube jobs works",
-  expect_pass(testApp(file.path(testDir, ".."), "hcube_module_load_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "hcube_module_load_test",
     compareImages = FALSE
-  ))
+  )))
 )
 
 test_that(
   "Compare Mode works with Hypercube jobs",
-  expect_pass(testApp(file.path(testDir, ".."), "hcube_module_compare_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "hcube_module_compare_test",
     compareImages = FALSE
-  ))
+  )))
 )
 
 removeUser(apiURL, inviterUser, inviterPass, inviteeName)

@@ -16,9 +16,9 @@ pr$measure(
   "startup",
   test_that(
     "MIRO app transport_large starts",
-    expect_pass(testApp(file.path(testDir, ".."), "startup_performance_test",
+    try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "startup_performance_test",
       compareImages = FALSE
-    ))
+    )))
   )
 )
 pr$publish()

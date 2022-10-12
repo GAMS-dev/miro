@@ -20,9 +20,9 @@ if (!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")) {
 }
 test_that(
   "Custom renderers with multiple (hidden) datasets work",
-  expect_pass(testApp(file.path(testDir, ".."), "multiple_symbol_renderer",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "multiple_symbol_renderer",
     compareImages = FALSE
-  ))
+  )))
 )
 if (!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")) {
   file.rename(

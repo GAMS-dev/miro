@@ -71,16 +71,16 @@ jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox =
 
 test_that(
   "Custom importer functions work",
-  expect_pass(testApp(file.path(testDir, ".."), "custom_importer_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "custom_importer_test",
     compareImages = FALSE
-  ))
+  )))
 )
 
 test_that(
   "Custom exporter functions work",
-  expect_pass(testApp(file.path(testDir, ".."), "custom_exporter_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "custom_exporter_test",
     compareImages = FALSE
-  ))
+  )))
 )
 
 file.move(

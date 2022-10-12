@@ -33,9 +33,9 @@ for (langToTest in langsToTest) {
     }
     test_that(
       paste0("Language: ", langToTest, " works"),
-      expect_pass(testApp(file.path(testDir, ".."), paste0("lang_test_", langToTest),
+      try_again(3L, expect_pass(testApp(file.path(testDir, ".."), paste0("lang_test_", langToTest),
         compareImages = FALSE
-      ))
+      )))
     )
   }
 }
