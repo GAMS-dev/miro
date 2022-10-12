@@ -17,9 +17,9 @@ file.copy2(
 )
 test_that(
   "Import/Export MIROSCEN files works",
-  expect_pass(testApp(file.path(testDir, ".."), "miroscenio_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "miroscenio_test",
     compareImages = FALSE
-  ))
+  )))
 )
 unlink(file.path(modelDataPath, "bla.miroscen"), force = TRUE)
 

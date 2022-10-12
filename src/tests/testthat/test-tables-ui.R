@@ -10,23 +10,23 @@ Sys.setenv(MIRO_MODE = "base")
 
 test_that(
   "Output table config works.",
-  expect_pass(testApp(file.path(testDir, ".."), "output_table_settings",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "output_table_settings",
     compareImages = FALSE
-  ))
+  )))
 )
 
 test_that(
   "Adding/removing rows in input table works.",
-  expect_pass(testApp(file.path(testDir, ".."), "bigdata_table",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "bigdata_table",
     compareImages = FALSE
-  ))
+  )))
 )
 
 test_that(
   "Input table markdown works",
-  expect_pass(testApp(file.path(testDir, ".."), "input_table_markdown_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "input_table_markdown_test",
     compareImages = FALSE
-  ))
+  )))
 )
 Sys.setenv(MIRO_MODEL_PATH = file.path(
   getwd(), "..", "model", "transport",
@@ -39,9 +39,9 @@ file.copy2(
 createTestDb()
 test_that(
   "Input table dropdownCols work",
-  expect_pass(testApp(file.path(testDir, ".."), "input_table_dropdowncols_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "input_table_dropdowncols_test",
     compareImages = FALSE
-  ))
+  )))
 )
 file.move(
   file.path("..", "model", "transport", "conf_transport", "bk_transport.json"),
@@ -55,9 +55,9 @@ file.copy2(
 createTestDb()
 test_that(
   "Input table column formatting works",
-  expect_pass(testApp(file.path(testDir, ".."), "input_table_col_format_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "input_table_col_format_test",
     compareImages = FALSE
-  ))
+  )))
 )
 file.move(
   file.path("..", "model", "transport", "conf_transport", "bk_transport.json"),
@@ -79,9 +79,9 @@ file.copy2(
 createTestDb()
 test_that(
   "Input table column validation works",
-  expect_pass(testApp(file.path(testDir, ".."), "input_table_validate_cols_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "input_table_validate_cols_test",
     compareImages = FALSE
-  ))
+  )))
 )
 file.move(
   file.path("..", "model", "transport", "conf_transport", "bk_transport.json"),

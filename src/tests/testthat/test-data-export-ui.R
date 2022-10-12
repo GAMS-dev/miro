@@ -14,9 +14,9 @@ file.copy2(
 )
 test_that(
   "Export scenario works",
-  expect_pass(testApp(file.path(testDir, ".."), "download_files_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "download_files_test",
     compareImages = FALSE
-  ))
+  )))
 )
 
 unlink(modelDataPath, recursive = TRUE, force = TRUE)

@@ -28,45 +28,45 @@ for (modelToTest in c("pickstock", "transport")) {
   }
   test_that(
     paste0("Uploading CSV file works for model: ", modelToTest),
-    expect_pass(testApp(file.path(testDir, ".."), paste0("csv_upload_test_", modelToTest),
+    try_again(3L, expect_pass(testApp(file.path(testDir, ".."), paste0("csv_upload_test_", modelToTest),
       compareImages = FALSE
-    ))
+    )))
   )
   test_that(
     paste0("Uploading GDX file works for model: ", modelToTest),
-    expect_pass(testApp(file.path(testDir, ".."), paste0("gdx_upload_test_", modelToTest),
+    try_again(3L, expect_pass(testApp(file.path(testDir, ".."), paste0("gdx_upload_test_", modelToTest),
       compareImages = FALSE
-    ))
+    )))
   )
   test_that(
     paste0("Uploading Excel file works for model: ", modelToTest),
-    expect_pass(testApp(file.path(testDir, ".."), paste0("excel_upload_test_", modelToTest),
+    try_again(3L, expect_pass(testApp(file.path(testDir, ".."), paste0("excel_upload_test_", modelToTest),
       compareImages = FALSE
-    ))
+    )))
   )
   test_that(
     paste0("Uploading Excel file and overwriting data works for model: ", modelToTest),
-    expect_pass(testApp(file.path(testDir, ".."), paste0("excel_upload_overwrite_test_", modelToTest),
+    try_again(3L, expect_pass(testApp(file.path(testDir, ".."), paste0("excel_upload_overwrite_test_", modelToTest),
       compareImages = FALSE
-    ))
+    )))
   )
   test_that(
     paste0("Loading and saving data in db works for model: ", modelToTest),
-    expect_pass(testApp(file.path(testDir, ".."), paste0("load_from_db_test_", modelToTest),
+    try_again(3L, expect_pass(testApp(file.path(testDir, ".."), paste0("load_from_db_test_", modelToTest),
       compareImages = FALSE
-    ))
+    )))
   )
   test_that(
     paste0("Comparing scenarios in split screen mode works for model: ", modelToTest),
-    expect_pass(testApp(file.path(testDir, ".."), paste0("compare_scen_split_test_", modelToTest),
+    try_again(3L, expect_pass(testApp(file.path(testDir, ".."), paste0("compare_scen_split_test_", modelToTest),
       compareImages = FALSE
-    ))
+    )))
   )
   test_that(
     paste0("Comparing scenarios in tab view mode works for model: ", modelToTest),
-    expect_pass(testApp(file.path(testDir, ".."), paste0("compare_scen_tab_test_", modelToTest),
+    try_again(3L, expect_pass(testApp(file.path(testDir, ".."), paste0("compare_scen_tab_test_", modelToTest),
       compareImages = FALSE
-    ))
+    )))
   )
 }
 

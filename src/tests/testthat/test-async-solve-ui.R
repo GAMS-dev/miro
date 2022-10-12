@@ -83,9 +83,9 @@ if (file.exists(file.path("~", ".miro", paste0(".cred_", tolower(modelToTest))))
 
 test_that(
   "Solve asynchronously with GAMS Engine works",
-  expect_pass(testApp(file.path(testDir, ".."), "async_solve_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "async_solve_test",
     compareImages = FALSE
-  ))
+  )))
 )
 
 removeUser(apiURL, inviterUser, inviterPass, inviteeName)

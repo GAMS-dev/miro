@@ -16,27 +16,27 @@ file.copy(file.path(configJSONPath, "pickstock_configuration_expected.json"),
 
 test_that(
   "Configuration mode - general settings works.",
-  expect_pass(testApp(file.path(testDir, ".."), "config_mode_general_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "config_mode_general_test",
     compareImages = FALSE
-  ))
+  )))
 )
 test_that(
   "Configuration mode - table settings works.",
-  expect_pass(testApp(file.path(testDir, ".."), "config_mode_table_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "config_mode_table_test",
     compareImages = FALSE
-  ))
+  )))
 )
 test_that(
   "Configuration mode - widget settings works.",
-  expect_pass(testApp(file.path(testDir, ".."), "config_mode_widget_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "config_mode_widget_test",
     compareImages = FALSE
-  ))
+  )))
 )
 test_that(
   "Configuration mode - graph settings works.",
-  expect_pass(testApp(file.path(testDir, ".."), "config_mode_graph_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "config_mode_graph_test",
     compareImages = FALSE
-  ))
+  )))
 )
 
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))

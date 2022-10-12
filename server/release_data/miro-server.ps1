@@ -2,7 +2,7 @@ param([string]$action)
 
 function install
 {
-    if (!(Test-Path .env)) {
+    if (!(Test-Path .env) -or !(type .env | Select-String -Pattern "GMS_MIRO_DATABASE_PWD" -SimpleMatch)) {
         [Reflection.Assembly]::LoadWithPartialName("System.Web") | out-null
         $db_password = [System.Web.Security.Membership]::GeneratePassword(40,0)
 		$pwd_docker = "$pwd" -replace "\\", "/"

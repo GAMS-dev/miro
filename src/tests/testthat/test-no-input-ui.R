@@ -17,8 +17,8 @@ if (length(additionalGamsClArgs)) {
 }
 test_that(
   "Model without input data works",
-  expect_pass(testApp(file.path(testDir, ".."), "solve_no_input_test",
+  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "solve_no_input_test",
     compareImages = FALSE
-  ))
+  )))
 )
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "GMSMODELNAME"))
