@@ -173,6 +173,43 @@
          "type":"boolean",
          "default":false
       },
+      "layoutSettings" : {
+        "description":"Settings related to layout",
+        "type":"object",
+        "additionalProperties":false,
+        "properties":{
+          "maxTabsExpandedInput": {
+            "description":"Maximum number of tabs expanded in input section (more tabs will be collapsed to single More>> dropdown tab).",
+            "type":"integer",
+            "minimum":1,
+            "default": 5
+          },
+          "maxTabsExpandedOutput": {
+            "description":"Maximum number of tabs expanded in output section (more tabs will be collapsed to single More>> dropdown tab).",
+            "type":"integer",
+            "minimum":1,
+            "default": 5
+          },
+          "maxTabsExpandedPivotComp": {
+            "description":"Maximum number of tabs expanded in pivot compare mode (more tabs will be collapsed to single More>> dropdown tab).",
+            "type":"integer",
+            "minimum":1,
+            "default": 5
+          },
+          "maxTabsExpandedSplitComp": {
+            "description":"Maximum number of tabs expanded in split compare mode (more tabs will be collapsed to single More>> dropdown tab).",
+            "type":"integer",
+            "minimum":1,
+            "default": 5
+          },
+          "maxTabsExpandedTabComp": {
+            "description":"Maximum number of tabs expanded in tab compare mode (more tabs will be collapsed to single More>> dropdown tab).",
+            "type":"integer",
+            "minimum":1,
+            "default": 5
+          }
+        }
+      },
       "customCss": {
         "description": "Should a custom css file be included? This file must be named custom.css and must be located in the static_<modelname> directory.",
         "type":"boolean",

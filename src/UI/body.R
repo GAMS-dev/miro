@@ -602,6 +602,7 @@ if (buildUI) {
           tags$div(class = "small-space"),
           MIROtabBox(
             id = "inputTabset",
+            maxTabsExpanded = if (is.null(config$layoutSettings$maxTabsExpandedInput)) 5L else config$layoutSettings$maxTabsExpandedInput,
             btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs,
             inputTabContent, hideTabs = identical(length(inputTabContent), 1L)
           )
@@ -1086,6 +1087,7 @@ if (buildUI) {
           tags$div(class = "small-space"),
           MIROtabBox(
             id = "outputTabset", btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs,
+            maxTabsExpanded = if (is.null(config$layoutSettings$maxTabsExpandedOutput)) 5L else config$layoutSettings$maxTabsExpandedOutput,
             outputTabContent, hideTabs = identical(length(outputTabContent), 1L)
           )
         )

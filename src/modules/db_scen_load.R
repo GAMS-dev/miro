@@ -848,7 +848,11 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       dynamicUILoaded$compareModeTabsets[3] <<- TRUE
       insertUI("#pivotCompScenWrapper",
         where = "afterBegin",
-        generateScenarioTabset(0L, pivotCompare = TRUE), immediate = TRUE
+        generateScenarioTabset(0L,
+          pivotCompare = TRUE,
+          maxTabsExpanded = if (is.null(config$layoutSettings$maxTabsExpandedPivotComp)) 5L else config$layoutSettings$maxTabsExpandedPivotComp
+        ),
+        immediate = TRUE
       )
     }
     return(tryCatch(

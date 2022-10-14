@@ -51,7 +51,7 @@ getScenTabData <- function(sheetName) {
   }
   return(tabData)
 }
-generateScenarioTabset <- function(scenId, createdDynamically = FALSE, pivotCompare = FALSE) {
+generateScenarioTabset <- function(scenId, createdDynamically = FALSE, pivotCompare = FALSE, maxTabsExpanded = NULL) {
   errMsg <- NULL
   noDataDiv <- tags$div(class = "out-no-data", lang$nav$outputScreen$boxResults$noData)
   scenTabContent <- lapply(
@@ -194,7 +194,8 @@ generateScenarioTabset <- function(scenId, createdDynamically = FALSE, pivotComp
   scenTabset <- MIROtabBox(
     id = paste0("contentScen_", scenId), noTabsGrouped = length(outputTabs),
     btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs,
-    scenTabContent
+    scenTabContent,
+    maxTabsExpanded = if (is.null(maxTabsExpanded)) 5L else maxTabsExpanded
   )
   if (!is.null(errMsg)) {
     stop(errMsg, call. = FALSE)
@@ -205,7 +206,7 @@ generateScenarioTabset <- function(scenId, createdDynamically = FALSE, pivotComp
 generateScenarioTabsetMulti <- function(scenId) {
   tryCatch(
     {
-      scenTabset <- generateScenarioTabset(scenId, createdDynamically = TRUE)
+      scenTabset <- generateScenarioTabset(scenId, createdDynamically = TRUE, maxTabsExpanded = config$layoutSettings$maxTabsExpandedTabComp)
     },
     error = function(e) {
       flog.error(
@@ -278,7 +279,7 @@ onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\
 generateScenarioTabsetSplit <- function(scenId) {
   tryCatch(
     {
-      scenTabset <- generateScenarioTabset(scenId)
+      scenTabset <- generateScenarioTabset(scenId, maxTabsExpanded = config$layoutSettings$maxTabsExpandedSplitComp)
     },
     error = function(e) {
       flog.error(
