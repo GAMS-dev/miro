@@ -4287,6 +4287,33 @@
               },
               "minProperties": 2
             },
+            "maxTabsExpanded": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "input": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "output": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "pivotComp": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "splitComp": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tabComp": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 5
+            },
             "pageTitle": {
               "type": "object",
               "additionalProperties": false,
@@ -4821,7 +4848,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 39
+          "minProperties": 40
         },
         "tables": {
           "type": "object",

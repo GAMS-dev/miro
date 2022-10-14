@@ -1100,6 +1100,13 @@
         "label": "Include a custom CSS file",
         "tooltip": "The file must be named 'custom.css' and located in the static_<modelname> directory."
       },
+      "maxTabsExpanded": {
+        "input": "Max. number tabs before collapsing tabs under More» drop-down tab (Input)",
+        "output": "Max. number tabs before collapsing tabs under More» drop-down tab (Output)",
+        "pivotComp": "Max. number tabs before collapsing tabs under More» drop-down tab (Pivot compare)",
+        "splitComp": "Max. number tabs before collapsing tabs under More» drop-down tab (Split compare)",
+        "tabComp": "Max. number tabs before collapsing tabs under More» drop-down tab (Tab compare)"
+      },
       "pageTitle":{
         "label": "Application title",
         "tooltip": "The title is visible in the browser tab"

@@ -1100,6 +1100,13 @@
         "label": "Benutzerdefinierte CSS-Datei einbinden",
         "tooltip": "Die Datei muss 'custom.css' heißen und sich im Verzeichnis static_<modelName> befinden."
       },
+      "maxTabsExpanded": {
+        "input": "Max. Anzahl Tabs vor Zusammenfassen von Tabs unter Dropdown-Tab: Mehr» (Eingabedaten)",
+        "output": "Max. Anzahl Tabs vor Zusammenfassen von Tabs unter Dropdown-Tab: Mehr» (Ergebnisse)",
+        "pivotComp": "Max. Anzahl Tabs vor Zusammenfassen von Tabs unter Dropdown-Tab: Mehr» (Pivot-Vergleichsmodus)",
+        "splitComp": "Max. Anzahl Tabs vor Zusammenfassen von Tabs unter Dropdown-Tab: Mehr» (Split-Vergleichsmodus)",
+        "tabComp": "Max. Anzahl Tabs vor Zusammenfassen von Tabs unter Dropdown-Tab: Mehr» (Tab-Vergleichsmodus)"
+      },
       "pageTitle":{
         "label": "Titel der Applikation",
         "tooltip": "Der Titel ist im Browser Tab sichtbar"

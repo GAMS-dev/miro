@@ -123,6 +123,56 @@ observeEvent(input$general_theme, {
 observeEvent(input$general_customCss, {
   rv$generalConfig$customCss <<- input$general_customCss
 })
+observeEvent(input$general_maxTabsExpandedInput, {
+  valTmp <- as.integer(input$general_maxTabsExpandedInput)
+  if (length(valTmp) != 1L || is.na(valTmp) || valTmp < 0L) {
+    valTmp <- 5L
+  }
+  if (!length(rv$generalConfig$layoutSettings)) {
+    rv$generalConfig$layoutSettings <- list()
+  }
+  rv$generalConfig$layoutSettings$maxTabsExpandedInput <- valTmp
+})
+observeEvent(input$general_maxTabsExpandedOutput, {
+  valTmp <- as.integer(input$general_maxTabsExpandedOutput)
+  if (length(valTmp) != 1L || is.na(valTmp) || valTmp < 1L) {
+    valTmp <- 5L
+  }
+  if (!length(rv$generalConfig$layoutSettings)) {
+    rv$generalConfig$layoutSettings <- list()
+  }
+  rv$generalConfig$layoutSettings$maxTabsExpandedOutput <- valTmp
+})
+observeEvent(input$general_maxTabsExpandedPivotComp, {
+  valTmp <- as.integer(input$general_maxTabsExpandedPivotComp)
+  if (length(valTmp) != 1L || is.na(valTmp) || valTmp < 1L) {
+    valTmp <- 5L
+  }
+  if (!length(rv$generalConfig$layoutSettings)) {
+    rv$generalConfig$layoutSettings <- list()
+  }
+  rv$generalConfig$layoutSettings$maxTabsExpandedPivotComp <- valTmp
+})
+observeEvent(input$general_maxTabsExpandedSplitComp, {
+  valTmp <- as.integer(input$general_maxTabsExpandedSplitComp)
+  if (length(valTmp) != 1L || is.na(valTmp) || valTmp < 1L) {
+    valTmp <- 5L
+  }
+  if (!length(rv$generalConfig$layoutSettings)) {
+    rv$generalConfig$layoutSettings <- list()
+  }
+  rv$generalConfig$layoutSettings$maxTabsExpandedSplitComp <- valTmp
+})
+observeEvent(input$general_maxTabsExpandedTabComp, {
+  valTmp <- as.integer(input$general_maxTabsExpandedTabComp)
+  if (length(valTmp) != 1L || is.na(valTmp) || valTmp < 1L) {
+    valTmp <- 5L
+  }
+  if (!length(rv$generalConfig$layoutSettings)) {
+    rv$generalConfig$layoutSettings <- list()
+  }
+  rv$generalConfig$layoutSettings$maxTabsExpandedTabComp <- valTmp
+})
 observeEvent(input$general_meta, {
   rv$generalConfig$excelIncludeMeta <<- input$general_meta
 })
