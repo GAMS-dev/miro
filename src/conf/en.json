@@ -1101,11 +1101,10 @@
         "tooltip": "The file must be named 'custom.css' and located in the static_<modelname> directory."
       },
       "maxTabsExpanded": {
-        "input": "Max. number tabs before collapsing tabs under More» drop-down tab (Input)",
-        "output": "Max. number tabs before collapsing tabs under More» drop-down tab (Output)",
-        "pivotComp": "Max. number tabs before collapsing tabs under More» drop-down tab (Pivot compare)",
-        "splitComp": "Max. number tabs before collapsing tabs under More» drop-down tab (Split compare)",
-        "tabComp": "Max. number tabs before collapsing tabs under More» drop-down tab (Tab compare)"
+        "title": "Max. number tabs before collapsing tabs under More» drop-down tab",
+        "pivotComp": "Pivot compare",
+        "splitComp": "Split compare",
+        "tabComp": "Tab compare"
       },
       "pageTitle":{
         "label": "Application title",

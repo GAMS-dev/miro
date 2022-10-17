@@ -4291,11 +4291,7 @@
               "type": "object",
               "additionalProperties": false,
               "properties": {
-                "input": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "output": {
+                "title": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -4312,7 +4308,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 5
+              "minProperties": 4
             },
             "pageTitle": {
               "type": "object",

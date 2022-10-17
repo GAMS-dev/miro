@@ -836,54 +836,62 @@ font-size: 12px;
                           value = identical(configJSON$customCss, TRUE)
                         )
                       ),
-                      tags$div(
-                        numericInput(
-                          "general_maxTabsExpandedInput",
-                          lang$adminMode$general$maxTabsExpanded$input,
-                          5L,
-                          min = 1L,
-                          step = 1L,
-                          value = if (is.null(configJSON$layoutSettings$maxTabsExpandedInput)) 5L else configJSON$layoutSettings$maxTabsExpandedInput
-                        )
-                      ),
-                      tags$div(
-                        numericInput(
-                          "general_maxTabsExpandedOutput",
-                          lang$adminMode$general$maxTabsExpanded$output,
-                          5L,
-                          min = 1L,
-                          step = 1L,
-                          value = if (is.null(configJSON$layoutSettings$maxTabsExpandedOutput)) 5L else configJSON$layoutSettings$maxTabsExpandedOutput
-                        )
-                      ),
-                      tags$div(
-                        numericInput(
-                          "general_maxTabsExpandedTabComp",
-                          lang$adminMode$general$maxTabsExpanded$tabComp,
-                          5L,
-                          min = 1L,
-                          step = 1L,
-                          value = if (is.null(configJSON$layoutSettings$maxTabsExpandedTabComp)) 5L else configJSON$layoutSettings$maxTabsExpandedTabComp
-                        )
-                      ),
-                      tags$div(
-                        numericInput(
-                          "general_maxTabsExpandedSplitComp",
-                          lang$adminMode$general$maxTabsExpanded$splitComp,
-                          5L,
-                          min = 1L,
-                          step = 1L,
-                          value = if (is.null(configJSON$layoutSettings$maxTabsExpandedSplitComp)) 5L else configJSON$layoutSettings$maxTabsExpandedSplitComp
-                        )
-                      ),
-                      tags$div(
-                        numericInput(
-                          "general_maxTabsExpandedPivotComp",
-                          lang$adminMode$general$maxTabsExpanded$pivotComp,
-                          5L,
-                          min = 1L,
-                          step = 1L,
-                          value = if (is.null(configJSON$layoutSettings$maxTabsExpandedPivotComp)) 5L else configJSON$layoutSettings$maxTabsExpandedPivotComp
+                      tags$b(lang$adminMode$general$maxTabsExpanded$title),
+                      fluidRow(
+                        tags$div(
+                          class = "col-sm-6",
+                          numericInput(
+                            "general_maxTabsExpandedInput",
+                            lang$nav$sidebarMenu$inputScreen,
+                            5L,
+                            min = 1L,
+                            step = 1L,
+                            value = if (is.null(configJSON$layoutSettings$maxTabsExpandedInput)) 5L else configJSON$layoutSettings$maxTabsExpandedInput
+                          )
+                        ),
+                        tags$div(
+                          class = "col-sm-6",
+                          numericInput(
+                            "general_maxTabsExpandedOutput",
+                            lang$nav$sidebarMenu$outputScreen,
+                            5L,
+                            min = 1L,
+                            step = 1L,
+                            value = if (is.null(configJSON$layoutSettings$maxTabsExpandedOutput)) 5L else configJSON$layoutSettings$maxTabsExpandedOutput
+                          )
+                        ),
+                        tags$div(
+                          class = "col-sm-6",
+                          numericInput(
+                            "general_maxTabsExpandedTabComp",
+                            lang$adminMode$general$maxTabsExpanded$tabComp,
+                            5L,
+                            min = 1L,
+                            step = 1L,
+                            value = if (is.null(configJSON$layoutSettings$maxTabsExpandedTabComp)) 5L else configJSON$layoutSettings$maxTabsExpandedTabComp
+                          )
+                        ),
+                        tags$div(
+                          class = "col-sm-6",
+                          numericInput(
+                            "general_maxTabsExpandedSplitComp",
+                            lang$adminMode$general$maxTabsExpanded$splitComp,
+                            5L,
+                            min = 1L,
+                            step = 1L,
+                            value = if (is.null(configJSON$layoutSettings$maxTabsExpandedSplitComp)) 5L else configJSON$layoutSettings$maxTabsExpandedSplitComp
+                          )
+                        ),
+                        tags$div(
+                          class = "col-sm-6",
+                          numericInput(
+                            "general_maxTabsExpandedPivotComp",
+                            lang$adminMode$general$maxTabsExpanded$pivotComp,
+                            5L,
+                            min = 1L,
+                            step = 1L,
+                            value = if (is.null(configJSON$layoutSettings$maxTabsExpandedPivotComp)) 5L else configJSON$layoutSettings$maxTabsExpandedPivotComp
+                          )
                         )
                       )
                     )),
