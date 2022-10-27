@@ -1652,3 +1652,26 @@ input[type=text], select {
   border: 1px solid black;
   padding: 5px;
 }
+.shortcode-youtube {
+    position: relative; display: inline-block;
+}
+.shortcode-youtube::before, .shortcode-youtube::after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.shortcode-youtube::before {
+    background: url(../images/youtube_button.svg) center center / auto 4rem no-repeat;
+}
+.shortcode-youtube:hover::before {
+    background: url(../images/youtube_button_hover.svg) center center / auto 4rem no-repeat;
+}
+.shortcode-youtube::after {
+    background: url(../images/youtube.svg) calc(100% - 1rem) calc(100% - 1rem) / auto 2rem no-repeat;
+}
+.shortcode-youtube img {
+    display: block;
+}
