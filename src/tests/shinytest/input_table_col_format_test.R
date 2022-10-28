@@ -14,7 +14,7 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
 
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("input_table_col_format_test")
-Sys.sleep(5)
+Sys.sleep(3)
 app$snapshot(
   items = list(output = "errorMessages"),
   screenshot = TRUE
@@ -31,7 +31,7 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
 )
 
 app2 <- ShinyDriver$new("../../", loadTimeout = 20000)
-Sys.sleep(5)
+Sys.sleep(3)
 expect_identical(app2$getAllValues()$output[["errorMessages"]], " colFormat is not supported when pivotCols are active (table: d).")
 app2$stop()
 
@@ -43,7 +43,7 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
 )
 
 app3 <- ShinyDriver$new("../../", loadTimeout = 20000)
-Sys.sleep(5)
+Sys.sleep(3)
 app3$setInputs(btImport = "click")
 app3$setInputs(tb_importData = "tb_importData_local")
 app3$uploadFile(localInput = "../data/transport.gdx")
@@ -62,7 +62,7 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
 )
 
 app4 <- ShinyDriver$new("../../", loadTimeout = 20000)
-Sys.sleep(5)
+Sys.sleep(3)
 app4$setInputs(btImport = "click")
 app4$setInputs(tb_importData = "tb_importData_local")
 app4$uploadFile(localInput = "../data/transport.gdx")
