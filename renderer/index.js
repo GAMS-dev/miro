@@ -54,6 +54,33 @@ jQuery.fn.swapWith = function swapWithOuter(to) {
   });
 };
 
+function unicodeToHTMLID(str) {
+  const idTmp = window.btoa(encodeURIComponent(str)).replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+  return `a${idTmp}`;
+}
+
+function HTMLIDToUnicode(str) {
+  if (str == null) {
+    return null;
+  }
+  if (str === '') {
+    return '';
+  }
+  const unicodeTmp = str.substring(1);
+  return decodeURIComponent(window.atob(unicodeTmp));
+}
+
+function escapeHtml(unsafe) {
+  return unsafe
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 function resetAppConfig(appID) {
   if (!appID) {
     return;
@@ -65,12 +92,12 @@ function resetAppConfig(appID) {
     logoPath = path.join(dataPath, appID, oldAppData.logoPath);
   }
   newAppConfig = null;
-  $(`#appLogo_${appID}`).css('background-image', `url('${pathToFileURL(logoPath)}?v=${new Date().getTime()}')`);
-  $(`#appTitle_${appID}`).text(oldAppData.title);
-  $(`#appDesc_${appID}`).text(oldAppData.description);
-  $(`#appDbPathLabel_${appID}`).text(appDbPath);
+  $(`#appLogo_${unicodeToHTMLID(appID)}`).css('background-image', `url('${pathToFileURL(logoPath)}?v=${new Date().getTime()}')`);
+  $(`#appTitle_${unicodeToHTMLID(appID)}`).text(oldAppData.title);
+  $(`#appDesc_${unicodeToHTMLID(appID)}`).text(oldAppData.description);
+  $(`#appDbPathLabel_${unicodeToHTMLID(appID)}`).text(appDbPath);
   if (appDbPath === lang.appDbPathPlaceholder) {
-    $(`#appDbPathLabel_${appID}`).siblings('.reset-db-path').hide();
+    $(`#appDbPathLabel_${unicodeToHTMLID(appID)}`).siblings('.reset-db-path').hide();
   }
 }
 function exitOverlayMode() {
@@ -91,7 +118,7 @@ function exitOverlayMode() {
 }
 function toggleEditMode() {
   if (isInEditMode) {
-    resetAppConfig($('.cancel-btn:visible').data('id'));
+    resetAppConfig(HTMLIDToUnicode($('.cancel-btn:visible').data('id')));
     exitOverlayMode();
     if (!appData.length) {
       noAppsNotice.fadeIn(200);
@@ -183,7 +210,7 @@ $body.on('click', '.app-box', function appBoxClick(e) {
     return;
   }
   const $this = $(this);
-  const appID = this.dataset.id;
+  const appID = HTMLIDToUnicode(this.dataset.id);
   if (appID) {
     newAppConfig = $.extend(true, {}, appData.find((app) => app.id === appID));
     if (!newAppConfig) {
@@ -194,17 +221,17 @@ $body.on('click', '.app-box', function appBoxClick(e) {
       });
       return;
     }
-    $(`#appBox_${appID}`).removeClass('app-box-fixed-height');
-    $(`#appLogo_${appID}`).html(`<div class='drag-drop-area-text'>${lang.appLogoPlaceholder}</div>`).addClass('drag-drop-area');
-    $(`#appTitle_${appID}`).addClass('editable').removeClass('app-title-fixed').attr('contenteditable', true);
-    const appDescField = $(`#appDesc_${appID}`);
+    $(`#appBox_${unicodeToHTMLID(appID)}`).removeClass('app-box-fixed-height');
+    $(`#appLogo_${unicodeToHTMLID(appID)}`).html(`<div class='drag-drop-area-text'>${lang.appLogoPlaceholder}</div>`).addClass('drag-drop-area');
+    $(`#appTitle_${unicodeToHTMLID(appID)}`).addClass('editable').removeClass('app-title-fixed').attr('contenteditable', true);
+    const appDescField = $(`#appDesc_${unicodeToHTMLID(appID)}`);
     appDescField.addClass('editable').removeClass('app-desc-fixed').attr('contenteditable', true);
     if (!appDescField.text().trim()) {
       appDescField.text(lang.appDescPlaceholder);
     }
   }
-  $(`#appBox_${appID} .db-path-field`).slideDown(200);
-  $(`#appBox_${appID} .edit-bt-group`).slideDown(200);
+  $(`#appBox_${unicodeToHTMLID(appID)} .db-path-field`).slideDown(200);
+  $(`#appBox_${unicodeToHTMLID(appID)} .edit-bt-group`).slideDown(200);
   $this.css('z-index', 11);
   $overlay.data('current', $this).fadeIn(300);
   $('.launch-app-box').removeClass('app-box-hover');
@@ -234,7 +261,7 @@ appsWrapper.on('focusout', '.app-desc', (e) => {
   }
 });
 appsWrapper.on('click', '.btn-save-changes', function saveChangesHandler() {
-  const appID = this.dataset.id;
+  const appID = HTMLIDToUnicode(this.dataset.id);
   if (!appID) {
     return;
   }
@@ -246,7 +273,7 @@ appsWrapper.on('click', '.btn-save-changes', function saveChangesHandler() {
     });
     return;
   }
-  const appTitle = $(`#appTitle_${appID}`).text().trim();
+  const appTitle = $(`#appTitle_${unicodeToHTMLID(appID)}`).text().trim();
   if (!appTitle || appTitle === lang.appNamePlaceholder) {
     ipcRenderer.send('show-error-msg', {
       type: 'info',
@@ -256,22 +283,22 @@ appsWrapper.on('click', '.btn-save-changes', function saveChangesHandler() {
     return;
   }
   newAppConfig.title = appTitle;
-  const appDescription = $(`#appDesc_${appID}`).text().trim();
+  const appDescription = $(`#appDesc_${unicodeToHTMLID(appID)}`).text().trim();
   if (appDescription && appDescription !== lang.appDescPlaceholder) {
     newAppConfig.description = appDescription;
   }
   ipcRenderer.send('update-app-meta', newAppConfig);
 });
 appsWrapper.on('click', '.reset-db-path', function resetDbPathHandler() {
-  const appID = this.dataset.id;
-  $(`#appDbPathLabel_${appID}`).text(lang.appDbPathPlaceholder);
+  const appID = HTMLIDToUnicode(this.dataset.id);
+  $(`#appDbPathLabel_${unicodeToHTMLID(appID)}`).text(lang.appDbPathPlaceholder);
   $(this).hide();
   if (newAppConfig) {
     delete newAppConfig.dbpath;
   }
 });
 appsWrapper.on('click', '.delete-app-button', function deleteAppHandler() {
-  ipcRenderer.send('delete-app', this.dataset.id);
+  ipcRenderer.send('delete-app', HTMLIDToUnicode(this.dataset.id));
 });
 appsWrapper.on('click', '#btAddApp', () => {
   if (!newAppConfig) {
@@ -300,7 +327,7 @@ appsWrapper.on('click', '#btAddApp', () => {
   return null;
 });
 appsWrapper.on('click', '.cancel-btn', function cancelHandler() {
-  const appID = this.dataset.id;
+  const appID = HTMLIDToUnicode(this.dataset.id);
   resetAppConfig(appID);
   exitOverlayMode();
 });
@@ -320,7 +347,7 @@ appsWrapper.on('drop', '.app-logo', function newLogoHandler(e) {
   $this.removeClass('index-dragover').removeClass('drag-drop-area-dragover');
   $this.children('.drag-drop-area-text').text(lang.appLogoPlaceholder);
   const filePath = [...e.originalEvent.dataTransfer.files].map((el) => el.path);
-  ipcRenderer.send('validate-logo', filePath, this.dataset.id);
+  ipcRenderer.send('validate-logo', filePath, HTMLIDToUnicode(this.dataset.id));
 });
 appsWrapper.on('click', '.app-logo', function browseLogoHandler() {
   if (!isInEditMode || !$overlay.is(':visible')) {
@@ -334,7 +361,7 @@ appsWrapper.on('click', '.app-logo', function browseLogoHandler() {
     filters: [
       { name: lang.dialogSelectAppLogoFilter, extensions: ['jpg', 'png', 'jpeg'] },
     ],
-  }, 'validateLogo', this.dataset.id);
+  }, 'validateLogo', HTMLIDToUnicode(this.dataset.id));
 });
 appsWrapper.on('dragenter', '#addAppBox', (e) => {
   if (!isInEditMode || reorderAppsMode) {
@@ -465,10 +492,11 @@ appsWrapper.on('drop', '.app-box', function appBoxDropHandler(e) {
   reorderAppsMode = false;
   dragAddAppCounter = 0;
   $('.app-box').removeClass('drag-drop-area-dragover').css('opacity', '');
-  const idTo = $(this).attr('id').slice(7);
+  const idToEncoded = $(this).attr('id').slice(7);
+  const idTo = HTMLIDToUnicode(idToEncoded);
 
   if (filesDropped) {
-    const spinnerId = `#appSpinner_${idTo}`;
+    const spinnerId = `#appSpinner_${idToEncoded}`;
     $(spinnerId).show();
     const filesTmp = [...e.originalEvent.dataTransfer.files];
     const filePaths = filesTmp.map((el) => el.path);
@@ -494,8 +522,8 @@ appsWrapper.on('drop', '.app-box', function appBoxDropHandler(e) {
 
   const idFromRaw = e.originalEvent.dataTransfer.getData('text/plain');
   const idFrom = idFromRaw.slice(7);
-  const idxFrom = appData.findIndex((el) => el.id === idFrom);
-  const idxTo = appData.findIndex((el) => el.id === idTo);
+  const idxFrom = appData.findIndex((el) => el.id === HTMLIDToUnicode(idFrom));
+  const idxTo = appData.findIndex((el) => el.id === HTMLIDToUnicode(idTo));
   [appData[idxFrom], appData[idxTo]] = [appData[idxTo], appData[idxFrom]];
   ipcRenderer.send('update-apps', appData);
   $(`#${idFromRaw}`).parent().swapWith($(this).parent());
@@ -512,11 +540,11 @@ appsWrapper.on('click', '.app-db-path', function browseDbPathHandler() {
     message: lang.dialogSelectDbPathMsg,
     buttonLabel: lang.dialogSelectDbPathBtn,
     properties: ['openDirectory', 'createDirectory'],
-  }, 'dbpath-received', this.dataset.id);
+  }, 'dbpath-received', HTMLIDToUnicode(this.dataset.id));
 });
 appsWrapper.on('click', '.launch-app', function launchAppHandler() {
-  const appID = this.dataset.id;
-  if (isInEditMode || $(`#appLoadingScreen_${appID}`).is(':visible')) {
+  const appID = HTMLIDToUnicode(this.dataset.id);
+  if (isInEditMode || $(`#appLoadingScreen_${unicodeToHTMLID(appID)}`).is(':visible')) {
     return;
   }
   if (!appID) {
@@ -527,10 +555,13 @@ appsWrapper.on('click', '.launch-app', function launchAppHandler() {
     });
     return;
   }
-  $(`#appLoadingScreen_${appID}`).show();
+  $(`#appLoadingScreen_${unicodeToHTMLID(appID)}`).show();
   runningProcesses.push(appID);
   btEditWrapper.addClass('bt-disabled');
-  ipcRenderer.send('launch-app', { ...this.dataset });
+  const appDataTmp = { ...this.dataset };
+  appDataTmp.id = HTMLIDToUnicode(appDataTmp.id);
+  appDataTmp.dbpath = HTMLIDToUnicode(appDataTmp.dbpath);
+  ipcRenderer.send('launch-app', appDataTmp);
 });
 ipcRenderer.on('apps-received', (e, apps, appDataPath, startup = false, deactivateEditMode = true, appsActive = [], langData = null) => {
   if (isInEditMode) {
@@ -552,16 +583,16 @@ ipcRenderer.on('apps-received', (e, apps, appDataPath, startup = false, deactiva
     if (app.logoPath) {
       logoPath = path.join(appDataPath, app.id, app.logoPath);
     }
-    return `${html}<div class="col-xxl-3 col-lg-4 col-6 miro-app-item" data-id="${app.id}"
+    return `${html}<div class="col-xxl-3 col-lg-4 col-6 miro-app-item" data-id="${unicodeToHTMLID(app.id)}"
                data-usetmp="${app.usetmpdir}" data-mode="${app.modesAvailable[0]}"
                data-apiver="${app.apiversion}" data-mirover="${app.miroversion}">
-                 <div id="appBox_${app.id}" class="app-box launch-app-box app-box-fixed-height" data-id="${app.id}">
-                   <div id="appSpinner_${app.id}" class="app-spinner">
+                 <div id="appBox_${unicodeToHTMLID(app.id)}" class="app-box launch-app-box app-box-fixed-height" data-id="${unicodeToHTMLID(app.id)}">
+                   <div id="appSpinner_${unicodeToHTMLID(app.id)}" class="app-spinner">
                       <div class="progress" style="position:relative;top:50%;margin-left:auto;margin-right:auto;width:90%">
-                        <div id="appProgress_${app.id}" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div id="appProgress_${unicodeToHTMLID(app.id)}" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                       </div>
                    </div>
-                   <div id="appLoadingScreen_${app.id}" class="app-loading-screen" style="display:none">
+                   <div id="appLoadingScreen_${unicodeToHTMLID(app.id)}" class="app-loading-screen" style="display:none">
                     <div class="lds-ellipsis">
                       <div>
                       </div>
@@ -575,34 +606,34 @@ ipcRenderer.on('apps-received', (e, apps, appDataPath, startup = false, deactiva
                   </div>
                    <div>
                      <div style="height:200px;">
-                         <div id="appLogo_${app.id}" style="background-image:url('${pathToFileURL(logoPath)}?v=${new Date().getTime()}');" \
-data-id="${app.id}" class="app-logo">
+                         <div id="appLogo_${unicodeToHTMLID(app.id)}" style="background-image:url('${pathToFileURL(logoPath)}?v=${new Date().getTime()}');" \
+data-id="${unicodeToHTMLID(app.id)}" class="app-logo">
                         </div>
                      </div>
                      <div>
                          <div style="height:125px">
-                           <h3 title="${app.title}" id="appTitle_${app.id}" class="app-title app-title-fixed app-item-title" style="margin-top:15pt;">${app.title}</h3>
-                           <p title="${app.description}" id="appDesc_${app.id}" class="app-desc app-desc-fixed app-item-desc">${app.description}</p>
+                           <h3 title="${escapeHtml(app.title)}" id="appTitle_${unicodeToHTMLID(app.id)}" class="app-title app-title-fixed app-item-title" style="margin-top:15pt;">${escapeHtml(app.title)}</h3>
+                           <p title="${escapeHtml(app.description)}" id="appDesc_${unicodeToHTMLID(app.id)}" class="app-desc app-desc-fixed app-item-desc">${escapeHtml(app.description)}</p>
                          </div>
                          <div class="custom-file db-path-field" style="display:none;">
-                           <div id="appDbPath_${app.id}" class="custom-file-input browseFiles app-db-path" data-id="${app.id}" aria-describedby="resetDbPath"></div>
-                           <label id="appDbPathLabel_${app.id}" class="custom-file-label dbpath" for="appDbPath_${app.id}">${app.dbpath ? app.dbpath : lang.appDbPathPlaceholder}</label>
-                           <small data-id="${app.id}" class="form-text reset-db-path" style="${app.dbpath ? '' : 'display:none'}">${lang.appDbPathReset}</small>
+                           <div id="appDbPath_${unicodeToHTMLID(app.id)}" class="custom-file-input browseFiles app-db-path" data-id="${unicodeToHTMLID(app.id)}" aria-describedby="resetDbPath"></div>
+                           <label id="appDbPathLabel_${unicodeToHTMLID(app.id)}" class="custom-file-label dbpath" for="appDbPath_${unicodeToHTMLID(app.id)}">${app.dbpath ? escapeHtml(app.dbpath) : escapeHtml(lang.appDbPathPlaceholder)}</label>
+                           <small data-id="${unicodeToHTMLID(app.id)}" class="form-text reset-db-path" style="${app.dbpath ? '' : 'display:none'}">${escapeHtml(lang.appDbPathReset)}</small>
                          </div>
                      </div>
                      <div class="dropdown mb-3 btn-launch-wrapper">
                       <button class="btn btn-outline-secondary btn-launch launch-app"
-                       type="button" data-id="${app.id}" data-dbpath="${app.dbpath == null ? '' : app.dbpath}"
+                       type="button" data-id="${unicodeToHTMLID(app.id)}" data-dbpath="${app.dbpath == null ? '' : unicodeToHTMLID(app.dbpath)}"
                        data-usetmpdir="${app.usetmpdir}" data-mode="${app.modesAvailable[0]}"
-                       data-apiversion="${app.apiversion}" data-miroversion="${app.miroversion}">${lang.btLaunch}</button>
+                       data-apiversion="${app.apiversion}" data-miroversion="${app.miroversion}">${escapeHtml(lang.btLaunch)}</button>
                     </div>
                  </div>
                  <div style="text-align:right;display:none;" class="edit-bt-group">
-                     <input data-id="${app.id}" class="btn btn-secondary cancel-btn" id="btCancelChanges" value="${lang.btCancel}" type="reset">
-                     <button class="btn btn-secondary confirm-btn btn-save-changes" data-id="${app.id}" type="button">${lang.btSave}</button>
+                     <input data-id="${unicodeToHTMLID(app.id)}" class="btn btn-secondary cancel-btn" id="btCancelChanges" value="${escapeHtml(lang.btCancel)}" type="reset">
+                     <button class="btn btn-secondary confirm-btn btn-save-changes" data-id="${unicodeToHTMLID(app.id)}" type="button">${escapeHtml(lang.btSave)}</button>
                  </div>
-                 <div id="iconActive_${app.id}" class="running-app-icon app-corner-button" style="${appsActive.includes(app.id) ? '' : 'display:none;'}"><i class="fas fa-cog fa-spin"></i></div>
-                 <a class="delete-app-button app-corner-button" data-id="${app.id}" style="display:none;"><i class="fas fa-times"></i></a>
+                 <div id="iconActive_${unicodeToHTMLID(app.id)}" class="running-app-icon app-corner-button" style="${appsActive.includes(app.id) ? '' : 'display:none;'}"><i class="fas fa-cog fa-spin"></i></div>
+                 <a class="delete-app-button app-corner-button" data-id="${unicodeToHTMLID(app.id)}" style="display:none;"><i class="fas fa-times"></i></a>
                </div>
              </div>`;
   }, '');
@@ -656,7 +687,7 @@ ipcRenderer.on('dbpath-received', (e, dbpathData) => {
   if (appID == null) {
     dpPathFieldID = '#newAppDbPathLabel';
   } else {
-    dpPathFieldID = `#appDbPathLabel_${appID}`;
+    dpPathFieldID = `#appDbPathLabel_${unicodeToHTMLID(appID)}`;
   }
   [newAppConfig.dbpath] = dbpathData.path;
   $(`${dpPathFieldID} + .reset-db-path`).show();
@@ -671,7 +702,7 @@ ipcRenderer.on('validated-logopath-received', (e, logoData) => {
   if (appID == null) {
     logoEl = $('#newAppLogo');
   } else {
-    logoEl = $(`#appLogo_${appID}`);
+    logoEl = $(`#appLogo_${unicodeToHTMLID(appID)}`);
   }
   newAppConfig.logoPath = logoData.path;
   newAppConfig.logoNeedsMove = true;
@@ -686,7 +717,7 @@ ipcRenderer.on('validated-logo-received', (e, logoData) => {
   if (appID == null) {
     logoEl = $('#newAppLogo');
   } else {
-    logoEl = $(`appLogo_${appID}`);
+    logoEl = $(`appLogo_${unicodeToHTMLID(appID)}`);
   }
   logoEl.css('background-image', `url('${pathToFileURL(logoData.path)}?v=${new Date().getTime()}')`);
 });
@@ -718,8 +749,8 @@ ipcRenderer.on('add-app-progress', (_, progress, appId) => {
   let spinnerId = '#addAppSpinner';
   let progressId = '#addAppProgress';
   if (appId != null) {
-    spinnerId = `#appSpinner_${appId}`;
-    progressId = `#appProgress_${appId}`;
+    spinnerId = `#appSpinner_${unicodeToHTMLID(appId)}`;
+    progressId = `#appProgress_${unicodeToHTMLID(appId)}`;
   }
   if (progress === -1) {
     $(spinnerId).hide();
@@ -758,17 +789,17 @@ ipcRenderer.on('activate-edit-mode', (e, openNewAppForm, scrollToBottom = false)
   }
 });
 ipcRenderer.on('app-closed', (e, appID) => {
-  $(`#iconActive_${appID}`).fadeOut(200);
-  $(`#appLoadingScreen_${appID}`).hide();
+  $(`#iconActive_${unicodeToHTMLID(appID)}`).fadeOut(200);
+  $(`#appLoadingScreen_${unicodeToHTMLID(appID)}`).hide();
   runningProcesses.pop(appID);
   if (!runningProcesses.length) {
     btEditWrapper.removeClass('bt-disabled');
   }
 });
 ipcRenderer.on('hide-loading-screen', (e, appID, success = false) => {
-  $(`#appLoadingScreen_${appID}`).hide();
+  $(`#appLoadingScreen_${unicodeToHTMLID(appID)}`).hide();
   if (success) {
-    $(`#iconActive_${appID}`).show();
+    $(`#iconActive_${unicodeToHTMLID(appID)}`).show();
   } else {
     runningProcesses.pop(appID);
     if (!runningProcesses.length) {
