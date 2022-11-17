@@ -124,6 +124,9 @@ a:hover {
 .btn-default:hover {
   color: #000;
 }
+.modal-dialog {
+    margin-top: 57px !important;
+}
 .btn-default.hover, .btn-default:active, .btn-default:hover {
     background-color:#e7e7e7
 }
