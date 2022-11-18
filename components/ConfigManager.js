@@ -474,29 +474,38 @@ ${latestGamsInstalled}`);
 
     if (!this.gamspathDefault && process.platform === 'win32') {
       let GAMSRootPath = 'C:\\GAMS';
-      let latestGamsInstalled = fs.readdirSync(
-        GAMSRootPath,
-        { withFileTypes: true },
-      )
-        .filter((el) => {
-          if (!el.isDirectory()) {
-            return false;
-          }
-          const gamsVer = parseInt(el.name, 10);
-          if (Number.isNaN(gamsVer) || gamsVer < 32) {
-            return false;
-          }
-          return true;
-        })
-        .map((el) => el.name);
-      if (latestGamsInstalled.length === 0) {
-        GAMSRootPath = 'C:\\GAMS\\win64';
+      let latestGamsInstalled = [];
+      try {
         latestGamsInstalled = fs.readdirSync(
           GAMSRootPath,
           { withFileTypes: true },
         )
-          .filter((el) => el.isDirectory() && gamsDirNameRegex.test(el.name))
+          .filter((el) => {
+            if (!el.isDirectory()) {
+              return false;
+            }
+            const gamsVer = parseInt(el.name, 10);
+            if (Number.isNaN(gamsVer) || gamsVer < 32) {
+              return false;
+            }
+            return true;
+          })
           .map((el) => el.name);
+      } catch (_) {
+        // continue regardless of error
+      }
+      if (latestGamsInstalled.length === 0) {
+        GAMSRootPath = 'C:\\GAMS\\win64';
+        try {
+          latestGamsInstalled = fs.readdirSync(
+            GAMSRootPath,
+            { withFileTypes: true },
+          )
+            .filter((el) => el.isDirectory() && gamsDirNameRegex.test(el.name))
+            .map((el) => el.name);
+        } catch (_) {
+          // continue regardless of error
+        }
       }
       if (latestGamsInstalled.length > 0) {
         latestGamsInstalled = latestGamsInstalled
