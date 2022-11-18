@@ -298,7 +298,7 @@ class ConfigManager extends Store {
             .map((el) => (el.name))
             .filter((el) => {
               try {
-                return ConfigManager.vComp(el, minR, true);
+                return ConfigManager.vComp(el, minR);
               } catch (e) {
                 log.error(e);
                 return false;
@@ -393,7 +393,7 @@ class ConfigManager extends Store {
     rpathTmp = stdout[rpathIdx].match(rOutRegex);
     const rVersion = stdout[rpathIdx + 1].match(/^\[1\] "([^"]*)"$/);
     if (rpathTmp && rVersion
-      && ConfigManager.vComp(rVersion[1], minR, true)) {
+      && ConfigManager.vComp(rVersion[1], minR)) {
       return rpathTmp[1];
     }
     log.info(`Stdout of Rscript is invalid: ${stdout.join('\n')}`);
@@ -626,17 +626,13 @@ ${latestGamsInstalled}`);
     return ConfigManager.validateR(pathToValidate);
   }
 
-  static vComp(v1, v2, compR = false) {
+  static vComp(v1, v2) {
     const v1parts = v1.split('.');
     const v2parts = v2.split('.');
     const v1Major = parseInt(v1parts[0], 10);
     const v2Major = parseInt(v2parts[0], 10);
     const v1Minor = parseInt(v1parts[1], 10);
     const v2Minor = parseInt(v2parts[1], 10);
-    if (compR && process.platform === 'darwin') {
-      // since packages need to be recompiled on R 4.0, r 3.6 is the only supported version on Mac
-      return (v1Major === v2Major && v1Minor === v2Minor);
-    }
     if (v1Major > v2Major || (v1Major === v2Major
       && v1Minor >= v2Minor)) {
       return true;
