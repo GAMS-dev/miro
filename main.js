@@ -302,8 +302,9 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
                   [newAppConf.path] = filePath;
                   [, , , , newAppConf.miroversion] = miroConfMatch;
                   if (newAppConf.id == null) {
-                    [newAppConf.id] = miroConfMatch;
+                    [, newAppConf.id] = miroConfMatch;
                   }
+                  newAppConf.gmsName = `${newAppConf.id}.gms`;
                   newAppConf.apiversion = parseInt(miroConfMatch[3], 10);
                   if (!validateAppId(newAppConf.id)) {
                     invalidMiroApp = true;
@@ -356,6 +357,7 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
           if (newAppConf.id == null) {
             newAppConf.id = path.parse(appMetadata.main_gms_name).name.toLowerCase();
           }
+          newAppConf.gmsName = appMetadata.main_gms_name;
           [newAppConf.path] = filePath;
           if (!validateAppId(newAppConf.id)) {
             if (mainWindow) {
