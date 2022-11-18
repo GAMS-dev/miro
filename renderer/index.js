@@ -108,6 +108,7 @@ function exitOverlayMode() {
     $('.app-logo').empty().removeClass('drag-drop-area');
     $('.app-item-title').removeClass('editable').addClass('app-title-fixed').attr('contenteditable', false);
     $('.app-item-desc').removeClass('editable').addClass('app-desc-fixed').attr('contenteditable', false);
+    $('.app-id-field').show();
     $('.db-path-field').slideUp(200);
     $('.edit-bt-group').slideUp(200);
     $('.launch-app-box').addClass('app-box-fixed-height');
@@ -135,6 +136,7 @@ function toggleEditMode() {
       draggable: 'false',
       droppable: 'false',
     });
+    $('.app-id-field').hide();
     isInEditMode = false;
   } else {
     if (!appData.length) {
@@ -143,6 +145,7 @@ function toggleEditMode() {
     btEdit.textContent = lang.btEditDone;
     newAppConfig = null;
     $('.edit-info').fadeIn(200);
+    $('.app-id-field').show();
     $('.delete-app-button').fadeIn(200);
     $('#addAppWrapper').fadeIn(200);
     $('.btn-launch-wrapper').fadeOut(200);
@@ -230,6 +233,7 @@ $body.on('click', '.app-box', function appBoxClick(e) {
       appDescField.text(lang.appDescPlaceholder);
     }
   }
+  $(`#appBox_${unicodeToHTMLID(appID)} .app-id-field`).hide();
   $(`#appBox_${unicodeToHTMLID(appID)} .db-path-field`).slideDown(200);
   $(`#appBox_${unicodeToHTMLID(appID)} .edit-bt-group`).slideDown(200);
   $this.css('z-index', 11);
@@ -619,6 +623,9 @@ data-id="${unicodeToHTMLID(app.id)}" class="app-logo">
                            <div id="appDbPath_${unicodeToHTMLID(app.id)}" class="custom-file-input browseFiles app-db-path" data-id="${unicodeToHTMLID(app.id)}" aria-describedby="resetDbPath"></div>
                            <label id="appDbPathLabel_${unicodeToHTMLID(app.id)}" class="custom-file-label dbpath" for="appDbPath_${unicodeToHTMLID(app.id)}">${app.dbpath ? escapeHtml(app.dbpath) : escapeHtml(lang.appDbPathPlaceholder)}</label>
                            <small data-id="${unicodeToHTMLID(app.id)}" class="form-text reset-db-path" style="${app.dbpath ? '' : 'display:none'}">${escapeHtml(lang.appDbPathReset)}</small>
+                         </div>
+                         <div class="app-id-field" style="display:none;" title="${escapeHtml(app.id)}">
+                          <small>ID: <i>${escapeHtml(app.id)}</i></small>
                          </div>
                      </div>
                      <div class="dropdown mb-3 btn-launch-wrapper">

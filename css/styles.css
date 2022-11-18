@@ -330,6 +330,10 @@ a:hover {
   background-size:cover;
   text-align:center;
 }
+.app-id-field {
+  overflow: hidden;
+  white-space: nowrap;
+}
 .app-title {
   max-height: 35px;
 }

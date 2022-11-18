@@ -201,6 +201,7 @@ function refreshConfigList() {
     const descSafe = escapeHtml(configData.desc);
     const appEnvSafe = escapeHtml(configData.appEnv);
     const { id } = configData;
+    const appIdSafe = escapeHtml(id);
     const idEncoded = unicodeToHTMLID(id);
     const index = indexRaw + 1;
     let groupOptions = configData.groups != null ? configData.groups.reduce((optionsHTML, groupName) => (`${optionsHTML}<option value="${groupName}" selected>${groupName.toLowerCase()}</option>`), '') : '';
@@ -247,6 +248,9 @@ function refreshConfigList() {
                 <div style="height:1rem"></div>
               </div>
               <textarea id="appEnv_${index}" rows="1" name="appEnv" class="editable" style="width:100%;display:none;" placeholder="${appEnvPlaceholder}">${appEnvSafe}</textarea>
+              <div class="app-id-field" title="${appIdSafe}">
+                <small>ID: <i>${appIdSafe}</i></small>
+              </div>
             </div>
           </div>
         </div>
@@ -595,6 +599,7 @@ $appsWrapper.on('click', '.app-box', function (e) {
                 </div>`);
     $(`#appTitle_${appIndex}`).show();
     $(`#staticAppTitle_${appIndex}`).hide();
+    $(`#appBox_${appIDEncoded} .app-id-field`).hide();
     $(`#appDesc_${appIndex}`).show();
     $(`#appEnv_${appIndex}`).show();
     $(`#staticAppDesc_${appIndex}`).hide();
