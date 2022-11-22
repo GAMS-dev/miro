@@ -564,6 +564,7 @@ appsWrapper.on('click', '.launch-app', function launchAppHandler() {
   btEditWrapper.addClass('bt-disabled');
   const appDataTmp = { ...this.dataset };
   appDataTmp.id = HTMLIDToUnicode(appDataTmp.id);
+  appDataTmp.gmsName = HTMLIDToUnicode(appDataTmp.gmsName);
   appDataTmp.dbpath = HTMLIDToUnicode(appDataTmp.dbpath);
   ipcRenderer.send('launch-app', appDataTmp);
 });
@@ -632,7 +633,7 @@ data-id="${unicodeToHTMLID(app.id)}" class="app-logo">
                       <button class="btn btn-outline-secondary btn-launch launch-app"
                        type="button" data-id="${unicodeToHTMLID(app.id)}" data-dbpath="${app.dbpath == null ? '' : unicodeToHTMLID(app.dbpath)}"
                        data-usetmpdir="${app.usetmpdir}" data-mode="${app.modesAvailable[0]}"
-                       data-apiversion="${app.apiversion}" data-miroversion="${app.miroversion}">${escapeHtml(lang.btLaunch)}</button>
+                       data-apiversion="${app.apiversion}" data-miroversion="${app.miroversion}" data-gms-name="${unicodeToHTMLID(app.gmsName == null ? `${app.id}.gms` : app.gmsName)}">${escapeHtml(lang.btLaunch)}</button>
                     </div>
                  </div>
                  <div style="text-align:right;display:none;" class="edit-bt-group">

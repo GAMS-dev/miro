@@ -102,6 +102,7 @@ if (is.null(errMsg)) {
   modelName <<- modelName
   modelGmsName <<- modelPath[[2]]
   modelPath <<- modelPath[[1]]
+  appId <<- Sys.getenv("MIRO_APP_ID", modelName)
 }
 
 if (is.null(errMsg)) {
@@ -189,7 +190,7 @@ if (is.null(errMsg)) {
     list(file = file.path(
       logFileDir,
       paste0(
-        modelName, "_", uid, "_",
+        appId, "_", uid, "_",
         format(
           Sys.time(),
           "%y.%m.%d_%H.%M.%S"
@@ -388,7 +389,7 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
       type = "sqlite",
       name = file.path(
         miroDbDir,
-        paste0(modelName, ".sqlite3")
+        paste0(appId, ".sqlite3")
       )
     )
     if (!dir.exists(miroDbDir)) {
