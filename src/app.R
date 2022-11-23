@@ -130,10 +130,10 @@ if (is.null(errMsg)) {
     logFileDir <- file.path(miroWorkspace, logFileDir)
   }
   # set user ID (user name) and user groups
-  ugroups <- NULL
+  ugroups <<- NULL
   if (isShinyProxy) {
-    uid <- Sys.getenv("SHINYPROXY_USERNAME")
-    ugroups <- csv2Vector(tolower(Sys.getenv("SHINYPROXY_USERGROUPS")))
+    uid <<- Sys.getenv("SHINYPROXY_USERNAME")
+    ugroups <<- csv2Vector(tolower(Sys.getenv("SHINYPROXY_USERGROUPS")))
     if (identical(length(ugroups), 0L)) {
       errMsg <- paste(errMsg, "No user groups specified (shinyproxy).", sep = "\n")
     }
@@ -147,17 +147,17 @@ if (is.null(errMsg)) {
   } else {
     uidTmp <- Sys.getenv("MIRO_USERNAME")
     if (!identical(uidTmp, "")) {
-      uid <- uidTmp
+      uid <<- uidTmp
       ugroupsTmp <- Sys.getenv("MIRO_USERGROUPS")
       if (!identical(ugroupsTmp, "")) {
-        ugroups <- ugroupsTmp
+        ugroups <<- ugroupsTmp
       }
     }
     if (length(uid) != 1 || !is.character(uid)) {
       errMsg <- "Invalid user ID specified."
     }
     if (!length(ugroups)) {
-      ugroups <- defaultGroup
+      ugroups <<- defaultGroup
     }
   }
 }
