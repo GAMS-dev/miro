@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     gms_miro_database_user: str = 'GMSMASTER'
     gms_miro_database_pwd: str = ''
     script_name: str = ''
+    request_timeout: int = 10
 
 
 settings = Settings()
