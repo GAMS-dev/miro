@@ -2146,7 +2146,7 @@ app.on('ready', async () => {
       return;
     }
     createMIROAppWindow({
-      id: path.basename(modelPath, 'gms'),
+      id: path.parse(modelPath).name.toLowerCase(),
       modelPath,
       mode: process.env.MIRO_MODE,
       usetmpdir: process.env.MIRO_USE_TMP ? process.env.MIRO_USE_TMP === 'true' : false,
