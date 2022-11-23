@@ -128,6 +128,7 @@ lint_job:
     - yarn install
   script:
    - pre-commit run --all-files
+   - ./scripts/fix_copyright.sh
   variables:
     PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
   cache:
