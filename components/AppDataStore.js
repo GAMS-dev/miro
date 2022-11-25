@@ -25,6 +25,10 @@ const schema = {
           type: 'string',
           minLength: 1,
         },
+        gmsName: {
+          type: 'string',
+          minLength: 1,
+        },
         apiversion: {
           type: 'integer',
           minimum: 1,

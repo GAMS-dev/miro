@@ -1,7 +1,7 @@
 # version number
-MIROVersion <- "2.5.1"
+MIROVersion <- "2.5.2"
 APIVersion <- "1"
-MIRORDate <- "Oct 12 2022"
+MIRORDate <- "Nov 24 2022"
 
 MIROVersionString <<- paste0("GAMS MIRO v.", MIROVersion)
 
@@ -102,6 +102,7 @@ if (is.null(errMsg)) {
   modelName <<- modelName
   modelGmsName <<- modelPath[[2]]
   modelPath <<- modelPath[[1]]
+  appId <<- Sys.getenv("MIRO_APP_ID", modelName)
 }
 
 if (is.null(errMsg)) {
@@ -129,10 +130,10 @@ if (is.null(errMsg)) {
     logFileDir <- file.path(miroWorkspace, logFileDir)
   }
   # set user ID (user name) and user groups
-  ugroups <- NULL
+  ugroups <<- NULL
   if (isShinyProxy) {
-    uid <- Sys.getenv("SHINYPROXY_USERNAME")
-    ugroups <- csv2Vector(tolower(Sys.getenv("SHINYPROXY_USERGROUPS")))
+    uid <<- Sys.getenv("SHINYPROXY_USERNAME")
+    ugroups <<- csv2Vector(tolower(Sys.getenv("SHINYPROXY_USERGROUPS")))
     if (identical(length(ugroups), 0L)) {
       errMsg <- paste(errMsg, "No user groups specified (shinyproxy).", sep = "\n")
     }
@@ -146,17 +147,17 @@ if (is.null(errMsg)) {
   } else {
     uidTmp <- Sys.getenv("MIRO_USERNAME")
     if (!identical(uidTmp, "")) {
-      uid <- uidTmp
+      uid <<- uidTmp
       ugroupsTmp <- Sys.getenv("MIRO_USERGROUPS")
       if (!identical(ugroupsTmp, "")) {
-        ugroups <- ugroupsTmp
+        ugroups <<- ugroupsTmp
       }
     }
     if (length(uid) != 1 || !is.character(uid)) {
       errMsg <- "Invalid user ID specified."
     }
     if (!length(ugroups)) {
-      ugroups <- defaultGroup
+      ugroups <<- defaultGroup
     }
   }
 }
@@ -189,7 +190,7 @@ if (is.null(errMsg)) {
     list(file = file.path(
       logFileDir,
       paste0(
-        modelName, "_", uid, "_",
+        appId, "_", uid, "_",
         format(
           Sys.time(),
           "%y.%m.%d_%H.%M.%S"
@@ -388,7 +389,7 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
       type = "sqlite",
       name = file.path(
         miroDbDir,
-        paste0(modelName, ".sqlite3")
+        paste0(appId, ".sqlite3")
       )
     )
     if (!dir.exists(miroDbDir)) {
@@ -689,8 +690,8 @@ if (is.null(errMsg) && debugMode) {
 aboutDialogText <- paste0(
   "<b>", MIROVersionString, "</b><br/><br/>",
   "Release Date: ", MIRORDate, "<br/>",
-  "Copyright (c) 2020 GAMS Software GmbH &lt;support@gams.com&gt;<br/>",
-  "Copyright (c) 2020 GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>",
+  "Copyright (c) 2022 GAMS Software GmbH &lt;support@gams.com&gt;<br/>",
+  "Copyright (c) 2022 GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>",
   "This program is free software: you can redistribute it and/or modify ",
   "it under the terms of version 3 of the GNU General Public License as published by ",
   "the Free Software Foundation.<br/><br/>",
@@ -778,6 +779,24 @@ if (miroBuildOnly) {
       )
       # assemble MIROAPP
       miroAppPath <- file.path(currentModelDir, paste0(modelNameRaw, ".miroapp"))
+      appInfoPath <- file.path(paste0("static_", modelName), "app_info.json")
+      appIdToValidate <- tryCatch(suppressWarnings(
+        read_json(file.path(currentModelDir, appInfoPath),
+          simplifyDataFrame = FALSE,
+          simplifyMatrix = FALSE
+        )
+      )$appId, error = function(e) {
+        return(modelName)
+      })
+      if (!grepl("^[a-z0-9][a-z0-9-_]{0,59}$", appIdToValidate, perl = TRUE)) {
+        stop(
+          sprintf(
+            "The App ID ('%s') may only contain ASCII lowercase letters, digits, '-' and '_', must not start with '-' or '_' and may not be longer than 60 characters!\nProvide a valid app ID by specifying it in the `%s` JSON file with the key: `appId` (e.g. `{\"appId\": \"my_model123\"}`).",
+            appIdToValidate, appInfoPath
+          ),
+          call. = FALSE
+        )
+      }
       flog.info("Generating miroapp file...")
       zipMiro(
         miroAppPath,

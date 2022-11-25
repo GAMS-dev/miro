@@ -526,6 +526,7 @@ server <- function(input, output, session) {
     }
     appId <- ""
     progressSelector <- ""
+    spinnerSelector <- ""
     tryCatch(
       {
         appId <- input$updateAppRequest$id
@@ -535,8 +536,9 @@ server <- function(input, output, session) {
           appId, overwriteData
         )
 
-        progressSelector <- paste0("#appProgress_", appId)
-        filePath <- input[[paste0("appFiles_", appId)]]$datapath
+        progressSelector <- input$updateAppRequest$progressSelector
+        spinnerSelector <- input$updateAppRequest$spinnerSelector
+        filePath <- input[[input$updateAppRequest$fileInputId]]$datapath
 
         appConfig <- modelConfig$getAppConfigFull(appId)
 
@@ -581,7 +583,7 @@ server <- function(input, output, session) {
           appDir = appDirTmp,
           overwriteExisting = overwriteData,
           launchDbMigrationManager = launchDbMigrationManager,
-          additionalData = list(progressSelector = progressSelector, spinnerSelector = paste0("#appSpinner_", appId)),
+          additionalData = list(progressSelector = progressSelector, spinnerSelector = spinnerSelector),
           appConfig = appConfig, customCallback = function() {
             tryCatch(
               {
@@ -622,7 +624,7 @@ server <- function(input, output, session) {
                   "onSuccess",
                   list(
                     requestType = "updateApp", progressSelector = progressSelector,
-                    spinnerSelector = paste0("#appSpinner_", appId)
+                    spinnerSelector = spinnerSelector
                   )
                 )
               },
@@ -634,7 +636,7 @@ server <- function(input, output, session) {
                 flog.info(errMsg)
                 session$sendCustomMessage("onError", list(
                   requestType = "updateApp", message = errMsg,
-                  progressSelector = progressSelector, spinnerSelector = paste0("#appSpinner_", appId)
+                  progressSelector = progressSelector, spinnerSelector = spinnerSelector
                 ))
               }
             )
@@ -649,7 +651,7 @@ server <- function(input, output, session) {
         flog.info(errMsg)
         session$sendCustomMessage("onError", list(
           requestType = "updateApp", message = errMsg,
-          progressSelector = progressSelector, spinnerSelector = paste0("#appSpinner_", appId)
+          progressSelector = progressSelector, spinnerSelector = spinnerSelector
         ))
       }
     )
@@ -660,6 +662,7 @@ server <- function(input, output, session) {
     }
     appId <- ""
     progressSelector <- ""
+    spinnerSelector <- ""
     tryCatch(
       {
         appId <- input$updateAppDataRequest$id
@@ -668,9 +671,10 @@ server <- function(input, output, session) {
           "Request to update app data of app: '%s' received (Overwrite: '%s').",
           appId, overwriteData
         )
-        progressSelector <- paste0("#appProgress_", appId)
-        filePaths <- input[[paste0("appFiles_", appId)]]$datapath
-        fileNames <- input[[paste0("appFiles_", appId)]]$name
+        progressSelector <- input$updateAppDataRequest$progressSelector
+        spinnerSelector <- input$updateAppDataRequest$spinnerSelector
+        filePaths <- input[[input$updateAppDataRequest$fileInputId]]$datapath
+        fileNames <- input[[input$updateAppDataRequest$fileInputId]]$name
         isMIROAPPFile <- endsWith(tolower(fileNames), ".miroapp")
         if (!all(isMIROAPPFile)) {
           # we should rename data files since they get random name by Shiny
@@ -688,7 +692,7 @@ server <- function(input, output, session) {
         addDataFiles(appId, filePaths, progressSelector,
           "updateApp",
           overwriteExisting = overwriteData,
-          additionalData = list(progressSelector = if (length(filePaths) > 1) progressSelector, spinnerSelector = paste0("#appSpinner_", appId))
+          additionalData = list(progressSelector = if (length(filePaths) > 1) progressSelector, spinnerSelector = spinnerSelector)
         )
       },
       error = function(e) {
@@ -699,7 +703,7 @@ server <- function(input, output, session) {
         flog.info(errMsg)
         session$sendCustomMessage("onError", list(
           requestType = "updateApp", message = errMsg,
-          progressSelector = progressSelector, spinnerSelector = paste0("#appSpinner_", appId)
+          progressSelector = progressSelector, spinnerSelector = spinnerSelector
         ))
       }
     )

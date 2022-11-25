@@ -125,40 +125,22 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     private$appTitle <- appInfo$title
     private$appDesc <- paste(appInfo$description, collapse = "\n")
 
-    appIdTmp <- self$validateAppId(appInfo$appId)
+    appIdTmp <- appInfo$appId
     if (is.null(appIdTmp)) {
-      private$appId <- self$getModelId()
-    } else {
-      private$appId <- appIdTmp
+      appIdTmp <- self$getModelId()
     }
-    if (nchar(private$appId) > 60L) {
-      stop("The App ID must not be longer than 60 characters!", call. = FALSE)
-    }
-    if (startsWith(private$appId, "~$")) {
-      stop("The App ID must not start with the characters: '~$'!", call. = FALSE)
-    }
+    self$validateAppId(appIdTmp)
+    private$appId <- appIdTmp
     return(invisible(self))
   },
   validateAppId = function(appIdRaw) {
-    if (is.null(appIdRaw)) {
-      return(NULL)
-    }
-    if (!identical(length(appIdRaw), 1L) || !is.character(appIdRaw)) {
+    if (is.null(appIdRaw) || !is.character(appIdRaw) || length(appIdRaw) != 1L) {
       stop("Invalid app id in app_info.json", call. = FALSE)
     }
-    if (!identical(gsub("[/\\\\\\?%*:|\"<>]", "", appIdRaw), appIdRaw)) {
-      stop("Invalid app id in app_info.json", call. = FALSE)
+    if (!grepl("^[a-z0-9][a-z0-9-_]{0,59}$", appIdRaw, perl = TRUE)) {
+      stop("The App ID may only contain ASCII lowercase letters, digits, '-' and '_', must not start with '-' or '_' and may not be longer than 60 characters!", call. = FALSE)
     }
-    if (!identical(appIdRaw, tolower(appIdRaw))) {
-      stop("App ID must not contain capital letters", call. = FALSE)
-    }
-    if (!identical(trimws(appIdRaw), appIdRaw)) {
-      stop("App ID must not contain leading or trailing spaces", call. = FALSE)
-    }
-    if (identical(appIdRaw, "admin")) {
-      stop("You cannot add an app with this ID", call. = FALSE)
-    }
-    return(appIdRaw)
+    return(TRUE)
   }
 ), private = list(
   appId = NULL,

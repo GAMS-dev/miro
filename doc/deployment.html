@@ -259,6 +259,68 @@ inc/inc2.inc
 }</code></pre>
                   </div>
                   <!--//section-block-->
+                  <div id="app-id" class="section-block">
+                    <h3>App ID</h3>
+                    <p>
+                      Each MIRO app has its own identifier. When using MIRO
+                      Server, the app ID determines the
+                      <a href="./server_administration.html#direct-app-link"
+                        >URL</a
+                      >
+                      under which the app can be reached. The ID is also used to
+                      access an app via the MIRO Server
+                      <a href="./server_api.html">REST API</a>. Within a MIRO
+                      instance (MIRO Desktop or MIRO Server), each ID must be
+                      unique. The default app id is the lowercase modelname,
+                      i.e. the lowercase name of the main GMS file (without .gms
+                      extension).
+                    </p>
+                    <p>An app id must meet the following requirements:</p>
+                    <ul>
+                      <li>Max. 60 characters</li>
+                      <li>
+                        Must only contain lowercase ASCII characters, digits,
+                        <kbd>_</kbd> or <kbd>-</kbd>
+                      </li>
+                      <li>
+                        Has to start with a lowercase ASCII character or digit
+                      </li>
+                    </ul>
+                    <p>
+                      If the default app id does not meet the requirements (note
+                      that the default ID is always derived with lowercase
+                      characters), an alternative id must be specified manually.
+                      This can be done in the
+                      <span class="code">app_info.json</span> inside the
+                      <span class="code">static_&lt;modelname&gt;</span> folder.
+                    </p>
+                    <pre><code class="language-json">{
+    "title": "Example app",
+    "description": "This is my first MIRO app",
+    "appId": "my_app123"
+}</code></pre>
+                    <p>
+                      Note that unlike the title and description, the app id
+                      cannot be changed after the app has been deployed.
+                    </p>
+                    <div class="callout-block callout-success">
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Tip:</b>
+                        <p>
+                          The app id can be used to register multiple MIRO apps
+                          based on the same model by assigning an individual ID
+                          for each app.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                  <!--//section-block-->
                   <div id="web-app-manifest" class="section-block">
                     <h3>Make your App Mobile Friendly</h3>
                     <p>
@@ -1224,6 +1286,7 @@ inc/inc2.inc
                       href="#default-title-description"
                       >Default Title and Description</a
                     >
+                    <a class="nav-link scrollto" href="#app-id">App ID</a>
                     <a class="nav-link scrollto" href="#web-app-manifest"
                       >Make your App Mobile Friendly</a
                     >

@@ -17,10 +17,17 @@ def get_bearer_token(username: str, password: str, expires_in=3600) -> str:
         r = requests.post(f"{settings.engine_url}/auth/login",
                           data={"expires_in": expires_in,
                                 "username": username,
-                                "password": password})
+                                "password": password}, timeout=settings.request_timeout)
     except requests.exceptions.ConnectionError:
         logger.info(
             "ConnectionError when requesting bearer token from GAMS Engine.")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            message="Internal server error",
+        )
+    except requests.exceptions.Timeout:
+        logger.info(
+            "Timeout (%s) when requesting bearer token from GAMS Engine.", str(settings.request_timeout))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             message="Internal server error",
@@ -41,10 +48,17 @@ def get_username_bearer(bearer_token: str) -> str:
         auth_header = "Bearer " + bearer_token
         r = requests.get(
             f"{settings.engine_url}/users/",
-            headers={"Authorization": auth_header})
+            headers={"Authorization": auth_header}, timeout=settings.request_timeout)
     except requests.exceptions.ConnectionError:
         logger.info(
             "ConnectionError when requesting username of bearer token from GAMS Engine.")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            message="Internal server error",
+        )
+    except requests.exceptions.Timeout:
+        logger.info(
+            "Timeout (%s) when requesting username of bearer token from GAMS Engine.", str(settings.request_timeout))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             message="Internal server error",
@@ -73,7 +87,7 @@ def get_user_groups(auth_header: str, is_admin: bool) -> List[str]:
     try:
         r = requests.get(
             f"{settings.engine_url}/namespaces/{settings.engine_ns}/user-groups",
-            headers={"Authorization": auth_header})
+            headers={"Authorization": auth_header}, timeout=settings.request_timeout)
         if r.status_code != 200:
             logger.info("Invalid return code (%s) when requesting user groups for namespace: %s",
                         str(r.status_code), settings.engine_ns)
@@ -101,6 +115,14 @@ def get_user_groups(auth_header: str, is_admin: bool) -> List[str]:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
         )
+    except requests.exceptions.Timeout:
+        logger.info(
+            "Timeout (%s) when requesting user groups for namespace: %s.", str(
+                settings.request_timeout), settings.engine_ns)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            message="Internal server error",
+        )
     except HTTPException as e:
         raise e
     except:
@@ -120,7 +142,7 @@ def get_authenticated_user(bearer_token: str, username: str) -> User:
         r = requests.get(
             f"{settings.engine_url}/namespaces/{settings.engine_ns}/permissions",
             params={"username": username},
-            headers={"Authorization": auth_header})
+            headers={"Authorization": auth_header}, timeout=settings.request_timeout)
         if r.status_code == 200:
             namespace_permissions = r.json()["permission"]
 
@@ -130,7 +152,7 @@ def get_authenticated_user(bearer_token: str, username: str) -> User:
             # if user can see models in namespace, she is still authenticated
             r = requests.get(
                 f"{settings.engine_url}/namespaces/{settings.engine_ns}",
-                headers={"X-Fields": "name", "Authorization": auth_header})
+                headers={"X-Fields": "name", "Authorization": auth_header}, timeout=settings.request_timeout)
             if r.status_code != 200:
                 logger.info("Invalid return code (%s) when requesting models in namespace: %s",
                             str(r.status_code), settings.engine_ns)
@@ -161,6 +183,14 @@ def get_authenticated_user(bearer_token: str, username: str) -> User:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
+        )
+    except requests.exceptions.Timeout:
+        logger.info(
+            "Timeout (%s) when requesting permissions for namespace: %s.", str(
+                settings.request_timeout), settings.engine_ns)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            message="Internal server error",
         )
     except Exception as e:
         logger.exception(
@@ -236,7 +266,7 @@ async def get_current_admin_user(credentials_basic: HTTPBasicCredentials = Depen
         r = requests.get(
             f"{settings.engine_url}/namespaces/{settings.engine_ns}/permissions",
             params={"username": username},
-            headers={"Authorization": auth_header})
+            headers={"Authorization": auth_header}, timeout=settings.request_timeout)
         if r.status_code == 200:
             namespace_permissions = r.json()["permission"]
 
@@ -254,6 +284,13 @@ async def get_current_admin_user(credentials_basic: HTTPBasicCredentials = Depen
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
+        )
+    except requests.exceptions.Timeout:
+        logger.info(
+            "Timeout (%s) when requesting user info from GAMS Engine.", str(settings.request_timeout))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            message="Internal server error",
         )
     except HTTPException as e:
         raise e

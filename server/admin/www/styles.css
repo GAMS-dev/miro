@@ -124,6 +124,9 @@ a:hover {
 .btn-default:hover {
   color: #000;
 }
+.modal-dialog {
+    margin-top: 57px !important;
+}
 .btn-default.hover, .btn-default:active, .btn-default:hover {
     background-color:#e7e7e7
 }
@@ -429,6 +432,10 @@ a:hover {
   padding: 55px 20px;
   background-size:cover;
   text-align:center;
+}
+.app-id-field {
+  overflow: hidden;
+  white-space: nowrap;
 }
 .app-title {
   max-height: 35px;

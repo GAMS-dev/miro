@@ -60,7 +60,7 @@ getJobsTableSkeleton <- function(id = NULL, content = NULL) {
 buildUI <- TRUE
 if (!debugMode) {
   miroCacheFile <- paste0(
-    modelNameRaw, "_",
+    appId, "_",
     MIROVersion, "_0_",
     miroLanguage, "_",
     miroColorTheme,
@@ -1160,7 +1160,8 @@ if (buildUI) {
               if (!identical(config$UILogo, "gams_logo.png") &&
                 staticDirExists) {
                 "static_"
-              }, modelName, "/", config$UILogo, '") ',
+              }, utils::URLencode(modelName, reserved = TRUE), "/",
+              utils::URLencode(config$UILogo, reserved = TRUE), '") ',
               if (!identical(config$UILogo, "gams_logo.png") &&
                 staticDirExists) {
                 "!important;
@@ -1171,7 +1172,10 @@ if (buildUI) {
           )
         ),
         if (staticDirExists && identical(config$customCss, TRUE)) {
-          tags$link(type = "text/css", rel = "stylesheet", href = paste0("static_", modelName, "/custom.css"))
+          tags$link(
+            type = "text/css", rel = "stylesheet",
+            href = paste0("static_", utils::URLencode(modelName, reserved = TRUE), "/custom.css")
+          )
         }
       ),
       HTML(paste0(

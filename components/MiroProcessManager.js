@@ -197,7 +197,8 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       MIRO_LOG_LEVEL: await generalConfig.logLevel,
       MIRO_VERSION_STRING: appData.miroversion,
       MIRO_MODEL_PATH: this.inDevelopmentMode ? appData.modelPath
-        : path.join(this.appDataPath, appData.id, `${appData.id}.gms`),
+        : path.join(this.appDataPath, appData.id, appData.gmsName == null ? `${appData.id}.gms` : appData.gmsName),
+      MIRO_APP_ID: appData.id,
     });
     if (process.platform === 'linux') {
       procEnv.R_BROWSER = 'xdg-open';

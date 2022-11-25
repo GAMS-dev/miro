@@ -12,8 +12,8 @@ const menu = require('./components/menu');
 const installRPackages = require('./components/install-r');
 
 const requiredAPIVersion = 1;
-const miroVersion = '2.5.1';
-const miroRelease = 'Oct 12 2022';
+const miroVersion = '2.5.2';
+const miroRelease = 'Nov 24 2022';
 const libVersion = '2.5';
 const exampleAppsData = require('./components/example-apps')(miroVersion, requiredAPIVersion);
 const LangParser = require('./components/LangParser');
@@ -268,8 +268,18 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
           if (content.file === 'app_info.json') {
             newAppConf.title = content.data.title;
             newAppConf.description = content.data.description;
+            newAppConf.id = content.data.appId;
           }
         });
+        const validateAppId = (appIdToValidate) => {
+          if (typeof appIdToValidate === 'string' || appIdToValidate instanceof String) {
+            if (/^[a-z0-9][a-z0-9-_]{0,59}$/.test(appIdToValidate)) {
+              return true;
+            }
+          }
+          log.warn("The App ID may only contain ASCII lowercase letters, digits, '-' and '_', must not start with '-' or '_' and may not be longer than 60 characters! Invalid app.");
+          return false;
+        };
         if (appMetadata == null) {
           // old app (< MIRO 2.3)
           const miroConfFormat = /(.*)_(\d)_(\d+)_(\d+\.\d+\.\d+)(_hcube)?\.miroconf$/;
@@ -290,10 +300,13 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
                   newAppConf.modesAvailable.push('base');
                   newAppConf.usetmpdir = miroConfMatch[2] === '1';
                   [newAppConf.path] = filePath;
-                  [, newAppConf.id, , , newAppConf.miroversion] = miroConfMatch;
+                  [, , , , newAppConf.miroversion] = miroConfMatch;
+                  if (newAppConf.id == null) {
+                    [, newAppConf.id] = miroConfMatch;
+                  }
+                  newAppConf.gmsName = `${newAppConf.id}.gms`;
                   newAppConf.apiversion = parseInt(miroConfMatch[3], 10);
-                  if (newAppConf.id.startsWith('~$')) {
-                    log.warn("App ID starts with illegal characters ('~$'). Invalid app.");
+                  if (!validateAppId(newAppConf.id)) {
                     invalidMiroApp = true;
                     break;
                   }
@@ -341,10 +354,12 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
           newAppConf.usetmpdir = appMetadata.use_temp_dir === true;
           newAppConf.miroversion = appMetadata.miro_version;
           newAppConf.apiversion = parseInt(appMetadata.api_version, 10);
-          newAppConf.id = path.parse(appMetadata.main_gms_name).name;
+          if (newAppConf.id == null) {
+            newAppConf.id = path.parse(appMetadata.main_gms_name).name.toLowerCase();
+          }
+          newAppConf.gmsName = appMetadata.main_gms_name;
           [newAppConf.path] = filePath;
-          if (newAppConf.id.startsWith('~$')) {
-            log.warn("App ID starts with illegal characters ('~$'). Invalid app.");
+          if (!validateAppId(newAppConf.id)) {
             if (mainWindow) {
               mainWindow.setProgressBar(-1);
             }
@@ -362,7 +377,7 @@ MIRO version: ${newAppConf.miroversion}.`);
         if (mainWindow) {
           mainWindow.setProgressBar(0.9);
         }
-        if (!newAppConf.id || invalidMiroApp) {
+        if (!newAppConf.apiversion || invalidMiroApp) {
           if (mainWindow) {
             mainWindow.setProgressBar(-1);
           }
@@ -2131,7 +2146,7 @@ app.on('ready', async () => {
       return;
     }
     createMIROAppWindow({
-      id: path.basename(modelPath, 'gms'),
+      id: path.parse(modelPath).name.toLowerCase(),
       modelPath,
       mode: process.env.MIRO_MODE,
       usetmpdir: process.env.MIRO_USE_TMP ? process.env.MIRO_USE_TMP === 'true' : false,

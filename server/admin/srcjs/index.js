@@ -18,6 +18,24 @@ const envSchema = {
 
 const validateEnvSchema = ajv.compile(envSchema);
 
+function unicodeToHTMLID(str) {
+  const idTmp = window.btoa(encodeURIComponent(str)).replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+  return `a${idTmp}`;
+}
+
+function HTMLIDToUnicode(str) {
+  if (str == null) {
+    return null;
+  }
+  if (str === '') {
+    return '';
+  }
+  const unicodeTmp = str.substring(1);
+  return decodeURIComponent(window.atob(unicodeTmp));
+}
+
 // taken from bjornd: https://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
 function escapeHtml(unsafe) {
   return unsafe
@@ -183,6 +201,8 @@ function refreshConfigList() {
     const descSafe = escapeHtml(configData.desc);
     const appEnvSafe = escapeHtml(configData.appEnv);
     const { id } = configData;
+    const appIdSafe = escapeHtml(id);
+    const idEncoded = unicodeToHTMLID(id);
     const index = indexRaw + 1;
     let groupOptions = configData.groups != null ? configData.groups.reduce((optionsHTML, groupName) => (`${optionsHTML}<option value="${groupName}" selected>${groupName.toLowerCase()}</option>`), '') : '';
     if (currentGroupList.length > 0) {
@@ -193,27 +213,27 @@ function refreshConfigList() {
       }
       groupOptions += nonSelectedGroups.reduce((optionsHTML, groupName) => (`${optionsHTML}<option value="${groupName}">${groupName.toLowerCase()}</option>`), '');
     }
-    return `${html}<div class="col-xxl-3 col-lg-4 col-sm-6 col-12 miro-app-item" data-id="${id}">
-        <div id="appBox_${id}" class="app-box app-box-draggable launch-app-box app-box-fixed-height" data-id="${id}" data-index="${index}" draggable="true">
-          <div id="appSpinner_${id}" class="app-spinner">
+    return `${html}<div class="col-xxl-3 col-lg-4 col-sm-6 col-12 miro-app-item" data-id="${idEncoded}">
+        <div id="appBox_${idEncoded}" class="app-box app-box-draggable launch-app-box app-box-fixed-height" data-id="${idEncoded}" data-index="${index}" draggable="true">
+          <div id="appSpinner_${idEncoded}" class="app-spinner">
             <div class="progress" style="position:relative;top:50%;margin-left:auto;margin-right:auto;width:90%">
-              <div id="appProgress_${id}" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+              <div id="appProgress_${idEncoded}" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
           </div>
           <div class="input-group app-data-file-input">
-            <label for="appFiles_${id}" style="width:100%;height:100%;">
+            <label for="appFiles_${idEncoded}" style="width:100%;height:100%;">
               <div class="drag-drop-area-text empty">
               </div>
             </label>
             <input class="input-btn app-data-file-input-el" style="margin-top:1rem;" type="file"
-              name="appFiles_${id}" id="appFiles_${id}" data-restore="" multiple="multiple" accept=".miroapp,${supportedDataFileTypes.map((el) => `.${el}`).join(',')}">
+              name="appFiles_${idEncoded}" id="appFiles_${idEncoded}" data-restore="" multiple="multiple" accept=".miroapp,${supportedDataFileTypes.map((el) => `.${el}`).join(',')}">
           </div>
-          <div id="appFiles_${id}_progress" class="progress active shiny-file-input-progress">
+          <div id="appFiles_${idEncoded}_progress" class="progress active shiny-file-input-progress">
             <div class="progress-bar"></div>
           </div>
           <div>
             <div style="height:200px;">
-              <div id="appLogo_${id}" class="app-logo" style="background-image:url(${configData.logob64});" data-id="${id}">
+              <div id="appLogo_${idEncoded}" class="app-logo" style="background-image:url(${configData.logob64});" data-id="${idEncoded}">
               </div>
             </div>
             <div>
@@ -228,14 +248,17 @@ function refreshConfigList() {
                 <div style="height:1rem"></div>
               </div>
               <textarea id="appEnv_${index}" rows="1" name="appEnv" class="editable" style="width:100%;display:none;" placeholder="${appEnvPlaceholder}">${appEnvSafe}</textarea>
+              <div class="app-id-field" title="${appIdSafe}">
+                <small>ID: <i>${appIdSafe}</i></small>
+              </div>
             </div>
           </div>
         </div>
         <div style="text-align:right;display:none;" class="edit-bt-group">
-            <input data-index="${index}" data-id="${id}" class="btn btn-secondary cancel-btn" value="Cancel" type="reset">
-            <button class="btn btn-secondary confirm-btn btn-save-changes" data-id="${id}" data-index="${index}" type="button">Save</button>
+            <input data-index="${index}" data-id="${idEncoded}" class="btn btn-secondary cancel-btn" value="Cancel" type="reset">
+            <button class="btn btn-secondary confirm-btn btn-save-changes" data-id="${idEncoded}" data-index="${index}" type="button">Save</button>
         </div>
-        <a class="delete-app-button app-corner-button" data-index="${index}" data-id="${id}"><i class="fas fa-xmark"></i></a>
+        <a class="delete-app-button app-corner-button" data-index="${index}" data-id="${idEncoded}"><i class="fas fa-xmark"></i></a>
       </div>
     </div>`;
   }, '');
@@ -425,15 +448,24 @@ function sendUpdateAppShinyEvent(appId, fileTypes) {
   if (overwriteAppData[appId] == null || uploadAppDataFinished[appId] == null) {
     return;
   }
+  const appIDEncoded = unicodeToHTMLID(appId);
   const overwriteData = overwriteAppData[appId];
   overwriteAppData[appId] = null;
   uploadAppDataFinished[appId] = null;
-  const spinnerId = `#appSpinner_${appId}`;
+  const spinnerId = `#appSpinner_${appIDEncoded}`;
+  const progressId = `#appProgress_${appIDEncoded}`;
+  const fileInputId = `appFiles_${appIDEncoded}`;
   $('#overlayScreen').show();
   $(spinnerId).show();
-  $(`#appFiles_${appId}_progress`).css('visibility', '');
+  $(`#appFiles_${appIDEncoded}_progress`).css('visibility', '');
   if (fileTypes.length === 1 && fileTypes[0] === 'miroapp') {
-    Shiny.setInputValue('updateAppRequest', { id: appId, overwrite: overwriteData }, {
+    Shiny.setInputValue('updateAppRequest', {
+      id: appId,
+      overwrite: overwriteData,
+      progressSelector: progressId,
+      spinnerSelector: spinnerId,
+      fileInputId,
+    }, {
       priority: 'event',
     });
     return;
@@ -441,7 +473,13 @@ function sendUpdateAppShinyEvent(appId, fileTypes) {
   const invalidFileTypes = fileTypes
     .filter((fileType) => !supportedDataFileTypes.includes(fileType));
   if (invalidFileTypes.length === 0) {
-    Shiny.setInputValue('updateAppDataRequest', { id: appId, overwrite: overwriteData }, {
+    Shiny.setInputValue('updateAppDataRequest', {
+      id: appId,
+      overwrite: overwriteData,
+      progressSelector: progressId,
+      spinnerSelector: spinnerId,
+      fileInputId,
+    }, {
       priority: 'event',
     });
     return;
@@ -472,7 +510,7 @@ const showOverwriteDialog = (appId, sendUpdateEvent = true, fileTypes = []) => b
 $(document).on('shiny:inputchanged', (event) => {
   const eventName = event.name;
   if (eventName.startsWith('appFiles_') && event.value != null && event.value.length > 0) {
-    const appId = eventName.substring(9);
+    const appId = HTMLIDToUnicode(eventName.substring(9));
     const fileTypes = event.value.map((fileTmp) => fileTmp.name.split('.').pop().toLowerCase());
     uploadAppDataFinished[appId] = true;
     setTimeout(() => sendUpdateAppShinyEvent(appId, fileTypes), 800);
@@ -492,7 +530,7 @@ $appsWrapper.on('drop', '.app-box-draggable', function (e) {
   $('.app-box-draggable').removeClass('drag-drop-area-dragover').css('opacity', '');
 
   const idToRaw = $(this).attr('id');
-  const idTo = idToRaw.slice(7);
+  const idTo = HTMLIDToUnicode(idToRaw.slice(7));
   if (filesDropped) {
     const filesTmp = [...e.originalEvent.dataTransfer.files];
     const fileTypes = filesTmp.map((fileTmp) => fileTmp.name.split('.').pop().toLowerCase());
@@ -506,7 +544,7 @@ $appsWrapper.on('drop', '.app-box-draggable', function (e) {
         message: 'Only up to 10 files can be added at once.',
         centerVertical: true,
       });
-      $(`#appFiles_${idTo}_progress`).css('visibility', '');
+      $(`#appFiles_${unicodeToHTMLID(idTo)}_progress`).css('visibility', '');
       return;
     }
     const invalidFileTypes = fileTypes
@@ -520,12 +558,12 @@ $appsWrapper.on('drop', '.app-box-draggable', function (e) {
       message: `The file you dropped (${invalidFileTypes.join(',')}) is not supported. Please drop either a new MIRO app (.miroapp) to update the current version or a valid data file (${supportedDataFileTypes.join(',')}).`,
       centerVertical: true,
     });
-    $(`#appFiles_${idTo}_progress`).css('visibility', '');
+    $(`#appFiles_${unicodeToHTMLID(idTo)}_progress`).css('visibility', '');
     return;
   }
 
   const idFromRaw = e.originalEvent.dataTransfer.getData('text/plain');
-  const idFrom = idFromRaw.slice(7);
+  const idFrom = HTMLIDToUnicode(idFromRaw.slice(7));
   if (idFrom !== idTo) {
     sendUpdateAppOrderRequest(idFrom, idTo, idFromRaw, idToRaw);
   }
@@ -543,11 +581,12 @@ $appsWrapper.on('click', '.app-box', function (e) {
     || $target.parents('.delete-app-button').length) {
     return;
   }
-  const appID = this.dataset.id;
+  const appIDEncoded = this.dataset.id;
+  const appID = HTMLIDToUnicode(appIDEncoded);
   const appIndex = this.dataset.index;
   if (appIndex) {
-    $(`#appBox_${appID}`).removeClass('app-box-fixed-height');
-    $(`#appLogo_${appID}`)
+    $(`#appBox_${appIDEncoded}`).removeClass('app-box-fixed-height');
+    $(`#appLogo_${appIDEncoded}`)
       .html(`<label for="updateMiroAppLogo" style="width:100%;height:100%;">
                   <div class="drag-drop-area-text not-empty">
                   ${appLogoPlaceholder}
@@ -560,13 +599,14 @@ $appsWrapper.on('click', '.app-box', function (e) {
                 </div>`);
     $(`#appTitle_${appIndex}`).show();
     $(`#staticAppTitle_${appIndex}`).hide();
+    $(`#appBox_${appIDEncoded} .app-id-field`).hide();
     $(`#appDesc_${appIndex}`).show();
     $(`#appEnv_${appIndex}`).show();
     $(`#staticAppDesc_${appIndex}`).hide();
     $(`#appGroupsWrapper_${appIndex}`).show();
-    Shiny.bindAll(document.getElementById(`appBox_${appID}`));
+    Shiny.bindAll(document.getElementById(`appBox_${appIDEncoded}`));
   }
-  $(`#appBox_${appID} .edit-bt-group`).slideDown(200);
+  $(`#appBox_${appIDEncoded} .edit-bt-group`).slideDown(200);
   $this.css('z-index', 11);
   currentAppId = appID;
   $overlay.data('current', $this).fadeIn(300);
@@ -574,7 +614,7 @@ $appsWrapper.on('click', '.app-box', function (e) {
 
 $appsWrapper.on('click', '.btn-save-changes', function () {
   const appIndex = this.dataset.index;
-  const appID = this.dataset.id;
+  const appID = HTMLIDToUnicode(this.dataset.id);
   if (!appIndex || !appID) {
     bootbox.alert({
       title: 'Unexpected error',
@@ -588,7 +628,7 @@ $appsWrapper.on('click', '.btn-save-changes', function () {
 
 $appsWrapper.on('click', '.delete-app-button', function () {
   const appIndex = this.dataset.index;
-  const appId = this.dataset.id;
+  const appId = HTMLIDToUnicode(this.dataset.id);
   bootbox.confirm({
     message: 'Are you sure you want to remove this app? This cannot be undone.',
     centerVertical: true,
@@ -714,7 +754,6 @@ $(() => {
     } else if (data.requestType === 'migrateDb') {
       $('#loadingScreenProgressWrapper').hide();
       $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');
-      sendAddRequest();
       return;
     }
     if (Array.isArray(data.configList)) {
@@ -768,7 +807,7 @@ $(() => {
     }
     $('.btn-save-changes').attr('disabled', false);
     currentAppLogo = data.logoB64;
-    $(`#appLogo_${currentAppId}`).css('background-image',
+    $(`#appLogo_${unicodeToHTMLID(currentAppId)}`).css('background-image',
       `url("${currentAppLogo}")`);
   });
   Shiny.addCustomMessageHandler('onNewAppValidated', (data) => {
