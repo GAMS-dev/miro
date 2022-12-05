@@ -13,7 +13,7 @@ const installRPackages = require('./components/install-r');
 
 const requiredAPIVersion = 1;
 const miroVersion = '2.5.9999';
-const miroRelease = 'Nov 24 2022';
+const miroRelease = 'Dec 02 2022';
 const libVersion = '2.5';
 const exampleAppsData = require('./components/example-apps')(miroVersion, requiredAPIVersion);
 const LangParser = require('./components/LangParser');
@@ -551,7 +551,8 @@ function activateEditMode(openNewAppForm = false, scrollToBottom = false) {
     mainWindow.send('activate-edit-mode', openNewAppForm, scrollToBottom);
   }
 }
-async function updateMIROApp(newApp, appIdToUpdate = null) {
+async function updateMIROApp(newAppParam, appIdToUpdate = null) {
+  const newApp = newAppParam;
   if (newApp === false) {
     if (appIdToUpdate != null) {
       mainWindow.send('add-app-progress', -1, appIdToUpdate);
@@ -560,14 +561,19 @@ async function updateMIROApp(newApp, appIdToUpdate = null) {
     return;
   }
   if (appIdToUpdate != null && appIdToUpdate !== newApp.id) {
-    mainWindow.send('add-app-progress', -1, appIdToUpdate);
-    log.info('Error updating app (app was dropped on app with different ID).');
-    showErrorMsg({
-      type: 'info',
-      title: lang.main.AppIdConflictHdr,
-      message: util.format(lang.main.AppIdConflictMsg, newApp.id, appIdToUpdate),
-    });
-    return;
+    if (appIdToUpdate.toLowerCase() === newApp.id.toLowerCase()) {
+      log.info(`App was dropped on legacy (MIRO < 2.5.2) app with ID that includes uppercase letters ('${appIdToUpdate}'). Changing app ID accordingly.`);
+      newApp.id = appIdToUpdate;
+    } else {
+      mainWindow.send('add-app-progress', -1, appIdToUpdate);
+      log.info('Error updating app (app was dropped on app with different ID).');
+      showErrorMsg({
+        type: 'info',
+        title: lang.main.AppIdConflictHdr,
+        message: util.format(lang.main.AppIdConflictMsg, newApp.id, appIdToUpdate),
+      });
+      return;
+    }
   }
   const overwriteData = dialog.showMessageBoxSync(
     mainWindow,
@@ -727,8 +733,14 @@ async function addOrUpdateMIROApp(filePath) {
     }
     return;
   }
-  log.debug(`Received MIROAPP file for already existing MIRO app with ID: ${newApp.id}.`);
-  await updateMIROApp(newApp);
+  const existingAppIds = appsData.getApps().map((t) => t.id);
+  const appIdx = existingAppIds.findIndex((t) => t.toLowerCase() === newApp.id.toLowerCase());
+  if (appIdx === -1) {
+    log.debug('Error updating app: Could not find index of existing app. This should never happen..');
+    return;
+  }
+  log.debug(`Received MIROAPP file for already existing MIRO app with ID: ${existingAppIds[appIdx]}.`);
+  await updateMIROApp(newApp, existingAppIds[appIdx]);
 }
 async function addMiroscenFile(filePath) {
   let miroscenPath = filePath;
