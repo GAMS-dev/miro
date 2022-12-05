@@ -12,12 +12,15 @@ bearer_auth = HTTPBearer(auto_error=False)
 basic_auth = HTTPBasic(auto_error=False)
 
 
-def get_bearer_token(username: str, password: str, expires_in=3600) -> str:
+def _send_token_request(username: str, password: str, expires_in: int = 3600, scopes: List[str] = []) -> requests.Response:
+    data = {"expires_in": expires_in,
+            "username": username,
+            "password": password}
+    if scopes:
+        data["scope"] = " ".join(scopes)
     try:
         r = requests.post(f"{settings.engine_url}/auth/login",
-                          data={"expires_in": expires_in,
-                                "username": username,
-                                "password": password}, timeout=settings.request_timeout)
+                          data=data, timeout=settings.request_timeout)
     except requests.exceptions.ConnectionError:
         logger.info(
             "ConnectionError when requesting bearer token from GAMS Engine.")
@@ -32,6 +35,15 @@ def get_bearer_token(username: str, password: str, expires_in=3600) -> str:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             message="Internal server error",
         )
+    return r
+
+
+def get_bearer_token(username: str, password: str, expires_in: int = 3600) -> str:
+    r = _send_token_request(
+        username, password, expires_in, scopes=["JOBS", "HYPERCUBE", "NAMESPACES", "USAGE"])
+    if r.status_code == 400:
+        logger.info("Received bad request when trying to request bearer token. Most likely old Engine version that does not have 'scope' parameter. Trying without scopes.")
+        r = _send_token_request(username, password, expires_in)
     if r.status_code != 200:
         logger.info("Invalid return code (%s) when requesting token from GAMS Engine",
                     str(r.status_code))
