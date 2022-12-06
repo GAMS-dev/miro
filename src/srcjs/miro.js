@@ -547,10 +547,52 @@ font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
   });
   Shiny.addCustomMessageHandler('gms-appendEl', (data) => {
     let { content } = data;
+    let replaceText = false;
     if (data.text) {
-      content = document.createTextNode(content);
+      let crPosition = Infinity;
+      let nlPosition = -1;
+      let contentToAppend = '';
+      for (;;) {
+        if (crPosition - 1 < 0) {
+          crPosition = -1;
+          content += contentToAppend;
+          break;
+        }
+        crPosition = content.lastIndexOf('\r', crPosition - 1);
+        if (crPosition === -1) {
+          content += contentToAppend;
+          break;
+        }
+        if (content[crPosition + 1] === '\n') {
+          // \r\n should not cause line to be removed
+          continue; // eslint-disable-line no-continue
+        }
+        contentToAppend = content.substring(crPosition + 1) + contentToAppend;
+        nlPosition = content.lastIndexOf('\n', crPosition - 1);
+        if (nlPosition === -1) {
+          break;
+        }
+        content = content.substring(0, nlPosition + 1);
+      }
+      if (crPosition !== -1) {
+        const prevContent = $(data.id).text();
+        replaceText = true;
+        const nlPositionPrev = prevContent.lastIndexOf('\n');
+        if (nlPositionPrev !== -1) {
+          content = prevContent.substring(0, nlPositionPrev + 1) + contentToAppend;
+        } else {
+          content = contentToAppend;
+        }
+      }
+      if (replaceText === false) {
+        content = document.createTextNode(content);
+      }
     }
-    $(data.id).append(content);
+    if (replaceText) {
+      $(data.id).text(content);
+    } else {
+      $(data.id).append(content);
+    }
 
     if (data.triggerChange) {
       $(data.id).trigger('change');
