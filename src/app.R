@@ -788,6 +788,9 @@ if (miroBuildOnly) {
       )$appId, error = function(e) {
         return(modelName)
       })
+      if (length(appIdToValidate) != 1L || !is.character(appIdToValidate)) {
+        appIdToValidate <- modelName
+      }
       if (!grepl("^[a-z0-9][a-z0-9-_]{0,59}$", appIdToValidate, perl = TRUE)) {
         stop(
           sprintf(
