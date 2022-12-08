@@ -1,5 +1,6 @@
 # load model input data
 errMsg <- NULL
+datasetsToLoad <- datasetsToFetch
 if (!identical(loadMode, "scen")) {
   tryCatch(
     {
@@ -26,6 +27,7 @@ if (!identical(loadMode, "scen")) {
       if (length(scenInputData$errors)) {
         loadErrors <- scenInputData$errors
       }
+      datasetsToLoad <- datasetsToFetch[!datasetsToFetch %in% scenInputData$symbolsNotFound]
       scenInputData <- scenInputData$tabular
       if (!length(scenInputData)) {
         return()
@@ -43,7 +45,7 @@ if (!identical(loadMode, "scen")) {
   )
 }
 if (!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))) {
-  lapply(datasetsToFetch, function(dataset) {
+  lapply(datasetsToLoad, function(dataset) {
     i <- match(tolower(dataset), names(modelIn))[[1]]
     dataTmp <- NULL
     if (is.na(i)) {
@@ -213,8 +215,8 @@ if (!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))) {
   showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)
 
   # set initialisation flags for handsontables to FALSE
-  if (length(datasetsToFetch)) {
-    dsIdsModified <- match(tolower(datasetsToFetch), names(modelIn))
+  if (length(datasetsToLoad)) {
+    dsIdsModified <- match(tolower(datasetsToLoad), names(modelIn))
     hotInit[dsIdsModified] <<- FALSE
     widgetModifiedSkipCount[dsIdsModified] <<- widgetModifiedSkipCount[dsIdsModified] + 1L
   }

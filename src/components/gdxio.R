@@ -106,7 +106,8 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     } else if (symName %in% tolower(c(private$gdxSymbols$variables, private$gdxSymbols$equations))) {
       return(private$rgdxVe(symName, names = names))
     } else {
-      stop(sprintf("Symbol: '%s' does not exist in gdx container: '%s'.", symName, gdxName),
+      stop_custom("error_notfound",
+        sprintf("Symbol: '%s' does not exist in gdx container: '%s'.", symName, gdxName),
         call. = FALSE
       )
     }

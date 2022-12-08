@@ -3,7 +3,7 @@ loadScenData <- function(metaData, workDir,
                          fileName = character(0L), DDPar = character(0L), GMSOpt = character(0L),
                          dfClArgs = NULL, xlsio = NULL, csvio = NULL, customDataIO = NULL,
                          sandboxScenario = NULL) {
-  ret <- list(tabular = NULL, scalar = NULL, errors = character())
+  ret <- list(tabular = NULL, scalar = NULL, errors = character(), symbolsNotFound = character())
   loadDataErrors <- CharArray$new()
   if (length(method) == 1L && method %in% c("xls", "gdx", "scsv")) {
     if (identical(method, "scsv") && is.null(csvio)) {
@@ -30,6 +30,7 @@ loadScenData <- function(metaData, workDir,
                 FALSE
               },
               error_notfound = function(e) {
+                ret$symbolsNotFound <<- c(ret$symbolsNotFound, names(metaData)[[i]])
                 ret$tabular[[i]] <<- templates[[i]]
                 return(TRUE)
               }
@@ -45,6 +46,7 @@ loadScenData <- function(metaData, workDir,
                 col_names = TRUE
               )
             } else {
+              ret$symbolsNotFound <<- c(ret$symbolsNotFound, names(metaData)[[i]])
               ret$tabular[[i]] <<- templates[[i]]
             }
             if (identical(names(metaData)[[i]], scalarsFileName)) {
@@ -76,6 +78,7 @@ loadScenData <- function(metaData, workDir,
               },
               error_notfound = function(e) {
                 flog.debug("Symbol: %s not found in Excel spreadsheet", names(metaData)[[i]])
+                ret$symbolsNotFound <<- c(ret$symbolsNotFound, names(metaData)[[i]])
                 ret$tabular[[i]] <<- templates[[i]]
                 return(TRUE)
               },
@@ -116,6 +119,10 @@ loadScenData <- function(metaData, workDir,
                   ret$tabular[[i]] <<- templates[[i]]
                 }
               },
+              error_notfound = function(e) {
+                ret$symbolsNotFound <<- c(ret$symbolsNotFound, names(metaData)[[i]])
+                ret$tabular[[i]] <<- templates[[i]]
+              },
               error = function(e) {
                 if (grepl("Compression library not found",
                   conditionMessage(e),
@@ -147,6 +154,7 @@ loadScenData <- function(metaData, workDir,
                 ret$tabular[[i]] <<- templates[[i]]
               },
               error_notfound = function(e) {
+                ret$symbolsNotFound <<- c(ret$symbolsNotFound, names(metaData)[[i]])
                 ret$tabular[[i]] <<- templates[[i]]
               },
               error = function(e) {
