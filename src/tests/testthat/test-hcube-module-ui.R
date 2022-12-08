@@ -84,9 +84,9 @@ if (file.exists(file.path("~", ".miro", paste0(".cred_", tolower(modelToTest))))
 
 test_that(
   "Solving Hypercube jobs works",
-  try_again(3L, expect_pass(testApp(file.path(testDir, ".."), "hcube_module_solve_test",
+  expect_pass(testApp(file.path(testDir, ".."), "hcube_module_solve_test",
     compareImages = FALSE
-  )))
+  ))
 )
 
 test_that(
