@@ -502,16 +502,6 @@ if (config$activateModules$logFile ||
   } else {
     logFilePath <- file.path(workDir, config$miroLogFile)
   }
-  writeLogFileToDisk <- TRUE
-  if (config$activateModules$attachments &&
-    config$storeLogFilesDuration > 0L &&
-    !is.null(activeScen)) {
-    if (!config$activateModules$logFile) {
-      writeLogFileToDisk <- FALSE
-    }
-  } else {
-    writeLogFileToDisk <- FALSE
-  }
 
   logObs <- observe({
     req(rv$triggerAsyncProcObserver)
@@ -523,9 +513,7 @@ if (config$activateModules$logFile ||
       return()
     }
 
-    if (writeLogFileToDisk) {
-      write_file(logText, logFilePath, append = TRUE)
-    }
+    write_file(logText, logFilePath, append = TRUE)
     appendEl(session, "#logStatusContainer", logText,
       scroll = identical(isolate(input$logUpdate), TRUE)
     )
