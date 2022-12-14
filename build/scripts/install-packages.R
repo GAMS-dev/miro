@@ -58,10 +58,10 @@ if (isLinux) {
   writeLines("", file.path(RLibPath, "INSTALLING"))
 }
 requiredPackages <- c(
-  "devtools", "remotes", "jsonlite", "V8",
+  "withr", "pkgbuild", "remotes", "jsonlite", "V8",
   "zip", "tibble", "readr", "R6", "processx",
   "testthat", "shinytest", "Rcpp", "futile.logger",
-  "shinytest"
+  "shinytest", "stringi"
 )
 if (identical(Sys.getenv("BUILD_DOCKER"), "true")) {
   requiredPackages <- c(requiredPackages, "DBI", "blob")
@@ -116,7 +116,7 @@ packageIsInstalled <- function(package) {
   return(package[1] %in% installedPackages)
 }
 
-dontDisplayMe <- lapply(c("devtools", "remotes"), library, character.only = TRUE)
+dontDisplayMe <- lapply(c("pkgbuild", "remotes"), library, character.only = TRUE)
 
 if (isLinux && !dir.exists(RlibPathSrc) &&
   !dir.create(RlibPathSrc, showWarnings = TRUE, recursive = TRUE)) {
@@ -230,7 +230,7 @@ for (package in packageVersionMap) {
   }
   if (length(package) == 1L) {
     packagePath <- build(file.path(".", "r-src", package),
-      path = file.path(".", "r-src", "build/"),
+      dest_path = file.path(".", "r-src", "build/"),
       binary = FALSE, vignettes = FALSE, manual = FALSE,
       args = NULL, quiet = FALSE
     )
