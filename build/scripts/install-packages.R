@@ -61,7 +61,7 @@ requiredPackages <- c(
   "withr", "pkgbuild", "remotes", "jsonlite", "V8",
   "zip", "tibble", "readr", "R6", "processx",
   "testthat", "shinytest", "Rcpp", "futile.logger",
-  "shinytest", "stringi"
+  "shinytest", "stringi", "xml2"
 )
 if (identical(Sys.getenv("BUILD_DOCKER"), "true")) {
   requiredPackages <- c(requiredPackages, "DBI", "blob")
