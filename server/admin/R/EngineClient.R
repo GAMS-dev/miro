@@ -106,19 +106,20 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
       (is.na(private$apiInfo$apiVersionInt) || private$apiInfo$apiVersionInt > 210809L)) {
       requestData <- c(requestData, private$getGroupLabelsEngine(userGroups))
     }
-    ret <- httr::POST(paste0(
-      ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/models/",
-      URLencode(appId)
-    ),
-    encode = "multipart",
-    body = requestData,
-    add_headers(
-      Authorization = private$getAuthHeader(),
-      Timestamp = as.character(Sys.time(),
-        usetz = TRUE
-      )
-    ),
-    timeout(600)
+    ret <- httr::POST(
+      paste0(
+        ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/models/",
+        URLencode(appId)
+      ),
+      encode = "multipart",
+      body = requestData,
+      add_headers(
+        Authorization = private$getAuthHeader(),
+        Timestamp = as.character(Sys.time(),
+          usetz = TRUE
+        )
+      ),
+      timeout(600)
     )
     if (status_code(ret) != 201) {
       stop(sprintf(
@@ -155,19 +156,20 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
     } else if (!identical(userGroups, FALSE)) {
       requestData[["delete_user_groups"]] <- TRUE
     }
-    ret <- httr::PATCH(paste0(
-      ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/models/",
-      URLencode(appId)
-    ),
-    encode = "multipart",
-    body = requestData,
-    add_headers(
-      Authorization = private$getAuthHeader(),
-      Timestamp = as.character(Sys.time(),
-        usetz = TRUE
-      )
-    ),
-    timeout(600)
+    ret <- httr::PATCH(
+      paste0(
+        ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/models/",
+        URLencode(appId)
+      ),
+      encode = "multipart",
+      body = requestData,
+      add_headers(
+        Authorization = private$getAuthHeader(),
+        Timestamp = as.character(Sys.time(),
+          usetz = TRUE
+        )
+      ),
+      timeout(600)
     )
     if (status_code(ret) != 200) {
       stop(sprintf(
@@ -254,10 +256,13 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
       type = "application/json",
       encoding = "utf-8"
     )
-    private$labelsEngine <- vapply(groupLabelsEngine, "[[", character(1L),
+    labelsEngineTmp <- vapply(groupLabelsEngine, "[[", character(1L),
       "label",
       USE.NAMES = FALSE
     )
+    # allow only lowercase group labels
+    labelsEngineTmp <- labelsEngineTmp[labelsEngineTmp == tolower(labelsEngineTmp)]
+    private$labelsEngine <- labelsEngineTmp
     return(invisible(self))
   },
   getGroupLabelsEngine = function(groupLabels) {

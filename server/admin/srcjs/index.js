@@ -188,7 +188,6 @@ function exitOverlayMode() {
 
 function registerSelectizeInputs() {
   $('select').selectize({
-    create: true,
     persist: false,
   });
 }
