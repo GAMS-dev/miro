@@ -15,7 +15,7 @@ rlang, 1.0.6
 ellipsis, 0.3.2
 later, 1.3.0
 promises, 1.2.0.1
-httpuv, 1.6.6
+httpuv, 1.6.7
 mime, 0.12
 jsonlite
 digest, 0.6.31
@@ -38,7 +38,7 @@ jquerylib, 0.1.4
 fs, 1.5.2
 rappdirs, 0.3.3
 sass, 0.4.4
-bslib, 0.4.1
+bslib, 0.4.2
 shiny
 shinyAce, 0.4.2
 colorspace, 2.0-3
@@ -51,7 +51,7 @@ pkgconfig, 2.0.3
 vctrs, 0.5.1
 tidyselect, 1.2.0
 plogr, 0.2.0
-htmlwidgets, 1.5.4
+htmlwidgets, 1.6.0
 png, 0.1-8
 RColorBrewer, 1.1-3
 lattice, 0.20-45
@@ -94,7 +94,7 @@ lambda.r, 1.2.4
 futile.options, 1.0.1
 zoo, 1.8-11
 globals, 0.16.2
-listenv, 0.8.0
+listenv, 0.9.0
 processx, 3.8.0
 readxl, 1.4.1
 writexl, 1.4.1
@@ -104,8 +104,8 @@ zip, 2.2.2
 leaflet.minicharts, 0.6.2
 xts, 0.12.2
 dygraphs, 1.1.1.6
-parallelly, 1.32.1
-future, 1.29.0
+parallelly, 1.33.0
+future, 1.30.0
 bit, 4.0.5
 bit64, 4.0.5
 tzdb, 0.3.0
