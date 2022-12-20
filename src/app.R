@@ -1,7 +1,7 @@
 # version number
-MIROVersion <- "2.5.9999"
+MIROVersion <- "2.6.0"
 APIVersion <- "1"
-MIRORDate <- "Dec 12 2022"
+MIRORDate <- "Dec 21 2022"
 
 MIROVersionString <<- paste0("GAMS MIRO v.", MIROVersion)
 
@@ -418,11 +418,12 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
     if (file.exists(file.path(currentModelDir, paste0(modelName, "_files.txt")))) {
       tryCatch(
         {
-          modelFiles <- gsub("^[.][/\\\\]", "", readLines(file.path(
-            currentModelDir,
-            paste0(modelName, "_files.txt")
-          ),
-          encoding = "UTF-8", warn = FALSE
+          modelFiles <- gsub("^[.][/\\\\]", "", readLines(
+            file.path(
+              currentModelDir,
+              paste0(modelName, "_files.txt")
+            ),
+            encoding = "UTF-8", warn = FALSE
           ))
         },
         error = function(e) {
@@ -819,18 +820,19 @@ if (miroBuildOnly) {
         source("./components/sign_app.R")
         tryCatch(
           {
-            sigFiles <- trySignAppBundle(list(
+            sigFiles <- trySignAppBundle(
               list(
-                rootDir = currentModelDir,
-                files = c(modelFiles, basename(rSaveFilePath))
+                list(
+                  rootDir = currentModelDir,
+                  files = c(modelFiles, basename(rSaveFilePath))
+                ),
+                list(
+                  rootDir = dirname(appMetadataFile),
+                  files = basename(appMetadataFile)
+                )
               ),
-              list(
-                rootDir = dirname(appMetadataFile),
-                files = basename(appMetadataFile)
-              )
-            ),
-            privKeyPath = privKeyPath,
-            passFilePath = passFilePath
+              privKeyPath = privKeyPath,
+              passFilePath = passFilePath
             )
             # adding multiple files via cherry-pick at once seems to break the zip file
             zipr_append(miroAppPath, sigFiles[1], mode = "cherry-pick")
@@ -1123,19 +1125,20 @@ if (is.null(errMsg) && (debugMode || miroStoreDataOnly)) {
         if (identical(Sys.getenv("MIRO_MIGRATE_DB"), "true")) {
           quit("no", migrateFromConfig(Sys.getenv("MIRO_MIGRATION_CONFIG_PATH")))
         } else {
-          write_json(list(
-            inconsistentTablesInfo = inconsistentTablesInfo,
-            orphanedTablesInfo = orphanedTablesInfo,
-            uiContent = as.character(
-              dbMigrationForm(Sys.getenv("MIRO_MIGRATE_DB_FORM_ID", "migrationForm"),
-                inconsistentTablesInfo,
-                orphanedTablesInfo,
-                standalone = FALSE
+          write_json(
+            list(
+              inconsistentTablesInfo = inconsistentTablesInfo,
+              orphanedTablesInfo = orphanedTablesInfo,
+              uiContent = as.character(
+                dbMigrationForm(Sys.getenv("MIRO_MIGRATE_DB_FORM_ID", "migrationForm"),
+                  inconsistentTablesInfo,
+                  orphanedTablesInfo,
+                  standalone = FALSE
+                )
               )
-            )
-          ),
-          path = Sys.getenv("MIRO_MIGRATION_CONFIG_PATH"),
-          auto_unbox = TRUE, null = "null"
+            ),
+            path = Sys.getenv("MIRO_MIGRATION_CONFIG_PATH"),
+            auto_unbox = TRUE, null = "null"
           )
           write("\n", stderr())
           write("merr:::409", stderr())
@@ -1497,18 +1500,19 @@ if (!is.null(errMsg)) {
               })) {
                 next
               }
-              dfClArgs <- tryCatch(loadMiroScen(file.path(miroDataDir, miroDataFile),
-                newScen, attachments, views,
-                names(modelIn),
-                exdir = tmpDir
-              ),
-              error = function(e) {
-                flog.info(
-                  "Problems reading miroscen file. Error message: '%s'.",
-                  conditionMessage(e)
-                )
-                return(FALSE)
-              }
+              dfClArgs <- tryCatch(
+                loadMiroScen(file.path(miroDataDir, miroDataFile),
+                  newScen, attachments, views,
+                  names(modelIn),
+                  exdir = tmpDir
+                ),
+                error = function(e) {
+                  flog.info(
+                    "Problems reading miroscen file. Error message: '%s'.",
+                    conditionMessage(e)
+                  )
+                  return(FALSE)
+                }
               )
               if (isFALSE(dfClArgs)) {
                 next
@@ -1686,7 +1690,6 @@ if (!is.null(errMsg)) {
     source("./tools/config/ui.R", local = TRUE)
     shinyApp(ui = ui_admin, server = server_admin)
   } else {
-
     # ______________________________________________________
     # \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     #                   Server
