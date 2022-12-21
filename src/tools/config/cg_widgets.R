@@ -509,6 +509,7 @@ observeEvent(
     hideEl(session, "#noWidgetConfigMsg")
     hideEl(session, "#externalConfigMsg")
     hideEl(session, "#pivotColsRestriction")
+    hideEl(session, "#preview_inputTable_pivot-data")
     if (input$widget_symbol %in% symbolsDefinedExternally) {
       showElReplaceTxt(
         session, "#externalConfigMsg",
