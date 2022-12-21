@@ -183,7 +183,16 @@ $('.btn-reset-nonpath').click(function resetClickNonPath() {
   } else if (elKey === 'logLifeTime') {
     inputLogLifetime.val(defaultValues[elKey]);
   } else if (Object.keys(optionAliasMap).includes(elKey)) {
-    inputLanguage.val(Object.keys(optionAliasMap[elKey])
+    let inputElTmp;
+    if (elKey === 'language') {
+      inputElTmp = inputLanguage;
+    } else if (elKey === 'colorTheme') {
+      inputElTmp = inputColorTheme;
+    } else {
+      console.error('COULD NOT FIND INPUT EL!!');
+      return;
+    }
+    inputElTmp.val(Object.keys(optionAliasMap[elKey])
       .find((key) => optionAliasMap[elKey][key] === defaultValues[elKey]));
   } else if (elKey === 'logLevel') {
     inputLogLevel.val(defaultValues[elKey]);
