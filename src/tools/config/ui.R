@@ -738,11 +738,11 @@ font-size: 12px;
                 class = "col-sm-6", id = "config-right-widget",
                 tags$div(
                   style = "margin-bottom:50px;text-align:right;",
-                  actionButton("deleteWidget", "Delete", icon("trash-can"),
+                  actionButton("deleteWidget", lang$adminMode$graphs$ui$deleteGraph, icon("trash-can"),
                     class = "save-delete-delete-btn",
                     style = "width:100px;"
                   ),
-                  actionButton("saveWidget", "Save", icon("floppy-disk"),
+                  actionButton("saveWidget", lang$adminMode$graphs$ui$saveGraph, icon("floppy-disk"),
                     class = "save-delete-save-btn",
                     style = "width:100px;"
                   )
