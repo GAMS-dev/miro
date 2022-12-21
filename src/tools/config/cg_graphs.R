@@ -3854,7 +3854,7 @@ getValueboxOptions <- reactive({
                 }
               }
               valueboxIconChoices <- langSpecificGraphs$valueboxIconChoices
-              if (!scalarConfig$icon$name %in% valueboxIconChoices) {
+              if (!length(scalarConfig$icon$name) || !scalarConfig$icon$name %in% valueboxIconChoices) {
                 valueboxIconChoices <- c(
                   valueboxIconChoices,
                   setNames(scalarConfig$icon$name, scalarConfig$icon$name)
