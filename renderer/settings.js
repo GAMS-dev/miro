@@ -31,12 +31,12 @@ const optionAliasMap = {
     中文: 'cn',
   },
   colorTheme: {
-    'Default theme': 'default',
-    'Black and white': 'blackandwhite',
-    'Green forest': 'forest',
-    Tawny: 'tawny',
-    'Dark blue': 'darkblue',
-    'Red wine': 'redwine',
+    colorThemeOptionDefault: 'default',
+    colorThemeOptionBlackWhite: 'blackandwhite',
+    colorThemeOptionForest: 'forest',
+    colorThemeOptionTawny: 'tawny',
+    colorThemeOptionDarkBlue: 'darkblue',
+    colorThemeOptionRedWine: 'redwine',
   },
 };
 
@@ -194,6 +194,11 @@ $('.btn-reset-nonpath').click(function resetClickNonPath() {
 ipcRenderer.on('settings-loaded', (e, data, defaults, langData) => {
   if (langData != null && lang.title == null) {
     lang = langData;
+    ['colorThemeOptionDefault', 'colorThemeOptionBlackWhite',
+      'colorThemeOptionForest', 'colorThemeOptionTawny', 'colorThemeOptionDarkBlue', 'colorThemeOptionRedWine'].forEach((id) => {
+      optionAliasMap.colorTheme[lang[id]] = optionAliasMap.colorTheme[id];
+      delete optionAliasMap.colorTheme[id];
+    });
     ['title', 'general-tab', 'paths-tab', 'env-tab', 'launchBrowser', 'browserReset', 'generalLanguage', 'languageReset',
       'generalRemoteExec', 'remoteExecReset', 'generalLogging', 'loggingReset', 'generalLoglife', 'loglifeReset',
       'pathMiroapp', 'pathMiroappSelect', 'resetPathMiroapp', 'pathGams', 'pathGamsSelect', 'pathGamsReset', 'pathLog',
