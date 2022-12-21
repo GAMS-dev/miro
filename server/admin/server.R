@@ -192,15 +192,15 @@ server <- function(input, output, session) {
 
         createAppDir(appId)
 
+        modelId <- miroAppValidator$getModelId()
+
         logoPath <- miroAppValidator$getLogoFile()
         logoURL <- "default_logo.png"
         if (length(logoPath)) {
-          logoURL <- getLogoName(appId, logoPath)
+          logoURL <- getLogoName(modelId, logoPath)
         } else {
           logoPath <- NULL
         }
-
-        modelId <- miroAppValidator$getModelId()
 
         extractAppData(
           input$miroAppFile$datapath, appId, modelId, miroProc
@@ -363,6 +363,7 @@ server <- function(input, output, session) {
           stop(sprintf("Invalid app index: %s", appIndex), call. = FALSE)
         }
         appId <- modelConfig$getAppId(appIndex)
+        modelId <- tolower(modelConfig$getModelName(appIndex))
 
         newLogoName <- NULL
         if (isTRUE(input$updateAppMeta$newLogo)) {
@@ -370,8 +371,8 @@ server <- function(input, output, session) {
           if (!length(logoPath)) {
             stop("Logo file not found.", call. = FALSE)
           }
-          newLogoName <- getLogoName(appId, logoPath)
-          addAppLogo(appId, logoPath)
+          newLogoName <- getLogoName(modelId, logoPath)
+          addAppLogo(appId, modelId, logoPath)
         }
 
         newAppEnv <- NULL

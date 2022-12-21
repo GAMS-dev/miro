@@ -182,6 +182,7 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
 
     return(tryCatch(getLogoB64(logoPath), error = function(e) {
       flog.info("Problems reading app logo. Default logo will be used. Error: %s", conditionMessage(e))
+      private$logoFile <- NULL
       return(DEFAULT_LOGO_B64)
     }))
   },
