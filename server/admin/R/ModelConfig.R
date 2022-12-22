@@ -31,6 +31,10 @@ ModelConfig <- R6::R6Class("ModelConfig",
         private$currentModelConfigs[[model_index]][["containerEnv"]][["MIRO_MODEL_PATH"]]
       ))
     },
+    setAppsNotOnEngine = function(appIds) {
+      private$appsNotOnEngine <- appIds
+      return(invisible(self))
+    },
     getConfigList = function() {
       return(lapply(seq_along(private$currentModelConfigs), self$getAppConfig))
     },
@@ -193,7 +197,8 @@ ModelConfig <- R6::R6Class("ModelConfig",
         id = appConfig[["id"]], alias = appConfig[["displayName"]],
         desc = appConfig[["description"]], logob64 = logoB64,
         appEnv = if (length(appEnv)) appEnv else "",
-        groups = I(accessGroups)
+        groups = I(accessGroups),
+        isDirty = appConfig[["id"]] %in% private$appsNotOnEngine
       ))
     }
   ),
@@ -202,6 +207,7 @@ ModelConfig <- R6::R6Class("ModelConfig",
     accessGroups = NULL,
     currentModelConfigs = NULL,
     modelConfigsNoAccess = NULL,
+    appsNotOnEngine = NULL,
     restrictedEnvKeys = c(
       "MIRO_MODEL_PATH", "MIRO_DATA_DIR", "MIRO_MODE",
       "MIRO_VERSION_STRING", "MIRO_DB_USERNAME", "MIRO_DB_PASSWORD", "MIRO_DB_SCHEMA",

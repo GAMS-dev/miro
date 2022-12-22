@@ -26,6 +26,8 @@ initCallback <- function(session, appIds) {
 
   if (any(appIdsNotOnEngine)) {
     engineClient$setAppsNotOnEngine(appIds[appIdsNotOnEngine])
+    modelConfig$setAppsNotOnEngine(engineClient$getAppsNotOnEngine())
+    errors$configList <- modelConfig$getConfigList()
     errors$appsNotOnEngine <- I(engineClient$getAppsNotOnEngine())
     flog.info(
       "Some apps are not registered on Engine: '%s'. They will be marked CORRUPTED!",
