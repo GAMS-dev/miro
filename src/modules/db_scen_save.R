@@ -364,6 +364,7 @@ observeEvent(input$tpEditMeta, {
 })
 
 observeEvent(input$btUpdateMeta, {
+  flog.debug("Button to update metadata clicked.")
   req(activeScen)
   scenName <- isolate(input$editMetaName)
   hideEl(session, "#editMetaBadName")
@@ -375,6 +376,7 @@ observeEvent(input$btUpdateMeta, {
   hideEl(session, "#attachUnknownError")
 
   if (isBadScenName(scenName)) {
+    flog.debug("Edit metadata: Invalid scenario name.")
     showHideEl(session, "#editMetaBadName", 6000)
     return()
   }
@@ -401,6 +403,7 @@ observeEvent(input$btUpdateMeta, {
     return()
   }
   if ((!identical(activeScen$getScenName(), scenName)) && scenExists) {
+    flog.debug("Edit metadata: Scenario with same name already exists.")
     enableEl(session, "#btUpdateMeta")
     showHideEl(session, "#editMetaNameExists", 6000)
     return()
@@ -671,16 +674,17 @@ if (config$activateModules$attachments) {
     },
     content = function(file) {
       flog.debug("Request to download views received.")
-      tryCatch(write_file(views$getJSON(safeFromJSON(input$downloadViews,
-        simplifyMatrix = FALSE
-      )), file),
-      error = function(e) {
-        flog.warn(
-          "Problems writing views JSON file. Error message: %s",
-          conditionMessage(e)
-        )
-        return(writeLines('{"error": "Some problem occurred while writing views."}', file))
-      }
+      tryCatch(
+        write_file(views$getJSON(safeFromJSON(input$downloadViews,
+          simplifyMatrix = FALSE
+        )), file),
+        error = function(e) {
+          flog.warn(
+            "Problems writing views JSON file. Error message: %s",
+            conditionMessage(e)
+          )
+          return(writeLines('{"error": "Some problem occurred while writing views."}', file))
+        }
       )
     }, contentType = "application/json"
   )
