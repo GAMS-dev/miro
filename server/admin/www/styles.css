@@ -721,7 +721,14 @@ a:hover {
   top: -22.5px;
   right: -22.5px;
   color:red !important;
-  cursor:pointer;
+  cursor: pointer;
+  z-index: 1;
+}
+.dirty-app-button {
+  top: -22.5px;
+  right: 25px;
+  color:red !important;
+  cursor: help;
   z-index: 1;
 }
 .delete-app-button:hover,
@@ -1118,4 +1125,7 @@ a:hover {
   height: unset;
   padding: 0;
   text-align: center;
+}
+.bootbox-body {
+  white-space: pre-line;
 }

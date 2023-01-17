@@ -11,13 +11,13 @@ ENV GPG_VERSION=${GPG_VERSION}
 ARG YARN_VERSION=1.22.19
 ENV YARN_VERSION=${YARN_VERSION}
 
-ARG R_VERSION=4.2.1
+ARG R_VERSION=4.2.2
 ENV R_VERSION=${R_VERSION}
 
 ARG INNOEXTRACT_VERSION=1.9
 ENV INNOEXTRACT_VERSION=${INNOEXTRACT_VERSION}
 
-ARG GAMS_VERSION=39.3.0
+ARG GAMS_VERSION=41.3.0
 ENV GAMS_VERSION=${GAMS_VERSION}
 
 RUN Invoke-WebRequest $('https://files.gpg4win.org/gpg4win-{0}.exe' -f $env:GPG_VERSION) -OutFile 'gpg4win.exe' -UseBasicParsing ; \
@@ -55,7 +55,7 @@ RUN New-Item $($env:APPDATA + '\npm') -Type Directory ; \
     $env:PATH = 'C:\nodejs;{0}\npm;C:\yarn\bin;{1}' -f $env:APPDATA, $env:PATH ; \
     Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment\' -Name Path -Value $env:PATH
 
-RUN Invoke-WebRequest "https://cran.r-project.org/bin/windows/Rtools/rtools42/files/rtools42-5253-5107.exe" -OutFile "Rtools.exe" -UseBasicParsing ; \
+RUN Invoke-WebRequest "https://cran.r-project.org/bin/windows/Rtools/rtools42/files/rtools42-5355-5357.exe" -OutFile "Rtools.exe" -UseBasicParsing ; \
     Start-Process Rtools.exe -ArgumentList '/TYPE=full', '/VERYSILENT', -NoNewWindow -Wait
 
 RUN Invoke-WebRequest $('https://constexpr.org/innoextract/files/innoextract-{0}-windows.zip' -f $env:INNOEXTRACT_VERSION) -OutFile innoextract.zip -UseBasicParsing ; \

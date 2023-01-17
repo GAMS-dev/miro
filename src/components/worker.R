@@ -1208,17 +1208,19 @@ Worker <- R6Class("Worker", public = list(
         pfFilePath <- gmsFilePath(file.path(workDir, paste0(tolower(metadata$modelName), ".pf")))
         writeLines(c(pfFileContent, gamsArgs), pfFilePath)
 
-        requestBody$inex_file <- upload_file(inputData$
-          addInexFile(
-          workDir,
-          filesToInclude
-        ),
-        type = "application/json"
+        requestBody$inex_file <- upload_file(
+          inputData$
+            addInexFile(
+            workDir,
+            filesToInclude
+          ),
+          type = "application/json"
         )
-        requestBody$data <- upload_file(inputData$
-          addFilePaths(pfFilePath)$
-          compress(),
-        type = "application/zip"
+        requestBody$data <- upload_file(
+          inputData$
+            addFilePaths(pfFilePath)$
+            compress(),
+          type = "application/zip"
         )
 
         if (identical(metadata$useRegistered, FALSE)) {
@@ -1762,14 +1764,16 @@ Worker <- R6Class("Worker", public = list(
       tryCatch(
         unzip(resultsPath, exdir = workDir),
         error = function(e) {
-          contentPreview <- tryCatch(paste(as.character(readBin(resultsPath,
-            what = "raw", n = 20L
-          )),
-          collapse = " "
-          ),
-          error = function(e2) {
-            return(conditionMessage(e2))
-          }
+          contentPreview <- tryCatch(
+            paste(
+              as.character(readBin(resultsPath,
+                what = "raw", n = 20L
+              )),
+              collapse = " "
+            ),
+            error = function(e2) {
+              return(conditionMessage(e2))
+            }
           )
           errMsg <<- sprintf(
             "Problems extracting results archive. Error message: %s. Preview of content received: %s.",
@@ -1796,7 +1800,7 @@ Worker <- R6Class("Worker", public = list(
         Timestamp = as.character(Sys.time(), usetz = TRUE),
         "X-Fields" = "process_status,status"
       ),
-      timeout(2L)
+      timeout(6L)
     )
   },
   interruptLocal = function(hardKill = FALSE, process = NULL) {
@@ -1896,26 +1900,27 @@ Worker <- R6Class("Worker", public = list(
     return(0L)
   },
   removeJobResults = function(jID, isHcJob = FALSE) {
-    tryCatch(private$validateAPIResponse(
-      DELETE(
-        url = paste0(
-          private$metadata$url,
-          if (isHcJob) "/hypercube/" else "/jobs/",
-          jID, "/result"
-        ),
-        add_headers(
-          Authorization = private$authHeader,
-          Timestamp = as.character(Sys.time(), usetz = TRUE)
-        ),
-        timeout(private$metadata$timeout)
-      )
-    ),
-    error = function(e) {
-      warning(sprintf(
-        "Problems removing results of job: '%s'. Error message: '%s'.",
-        jID, conditionMessage(e)
-      ), call. = FALSE)
-    }
+    tryCatch(
+      private$validateAPIResponse(
+        DELETE(
+          url = paste0(
+            private$metadata$url,
+            if (isHcJob) "/hypercube/" else "/jobs/",
+            jID, "/result"
+          ),
+          add_headers(
+            Authorization = private$authHeader,
+            Timestamp = as.character(Sys.time(), usetz = TRUE)
+          ),
+          timeout(private$metadata$timeout)
+        )
+      ),
+      error = function(e) {
+        warning(sprintf(
+          "Problems removing results of job: '%s'. Error message: '%s'.",
+          jID, conditionMessage(e)
+        ), call. = FALSE)
+      }
     )
     return(invisible(self))
   },
@@ -2016,15 +2021,16 @@ Worker <- R6Class("Worker", public = list(
     ))$token
 
     private$metadata$password <- sessionToken
-    write_json(list(
-      url = url,
-      username = username,
-      password = sessionToken,
-      namespace = namespace,
-      reg = useRegistered
-    ),
-    private$metadata$rememberMeFileName,
-    auto_unbox = TRUE
+    write_json(
+      list(
+        url = url,
+        username = username,
+        password = sessionToken,
+        namespace = namespace,
+        reg = useRegistered
+      ),
+      private$metadata$rememberMeFileName,
+      auto_unbox = TRUE
     )
     return(invisible(self))
   },

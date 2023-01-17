@@ -527,7 +527,7 @@ appsWrapper.on('drop', '.app-box', function appBoxDropHandler(e) {
   const idFromRaw = e.originalEvent.dataTransfer.getData('text/plain');
   const idFrom = idFromRaw.slice(7);
   const idxFrom = appData.findIndex((el) => el.id === HTMLIDToUnicode(idFrom));
-  const idxTo = appData.findIndex((el) => el.id === HTMLIDToUnicode(idTo));
+  const idxTo = appData.findIndex((el) => el.id === idTo);
   [appData[idxFrom], appData[idxTo]] = [appData[idxTo], appData[idxFrom]];
   ipcRenderer.send('update-apps', appData);
   $(`#${idFromRaw}`).parent().swapWith($(this).parent());

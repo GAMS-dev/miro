@@ -17,7 +17,7 @@ except FileNotFoundError:
 
 with open("/home/miro/admin/global.R", "r") as f:
     MIRO_SERVER_VERSION = re.search(
-        'MIRO_VERSION\s*<-\s*"(\d+\.\d+\.\d+)"\s*', f.read()).group(1)
+        r'MIRO_VERSION\s*<-\s*"(\d+\.\d+\.\d+)"\s*', f.read()).group(1)
 
 FORCE_SIGNED_APPS = "force-signed-apps" in settings_yml and settings_yml["force-signed-apps"] == True
 FORCE_SIGNED_APPS = "true" if FORCE_SIGNED_APPS else "false"

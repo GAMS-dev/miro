@@ -1,7 +1,7 @@
 {
   "name": "com.gams.miro",
   "productName": "GAMS MIRO",
-  "version": "2.5.9999",
+  "version": "2.6.0",
   "description": "GAMS MIRO is an interactive web application for GAMS models. It is designed for people working with GAMS looking for an easy and automated way to deploy their models. Extensive visualization options support you to make decisions based on optimization.",
   "homepage": "https://gams.com/miro",
   "main": "main.js",
@@ -111,8 +111,8 @@
   "author": "GAMS Development Corp.",
   "license": "GPL-3.0-only",
   "devDependencies": {
-    "electron": "^20.0.0",
-    "electron-builder": "23.3.3",
+    "electron": "^22.0.0",
+    "electron-builder": "23.6.0",
     "eslint": "^8.15.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",

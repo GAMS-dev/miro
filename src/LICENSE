@@ -43,6 +43,7 @@ these components are included below):
 - writexl https://github.com/ropensci/writexl or https://cran.r-project.org/web/packages/writexl/index.html
 - leaflet.providers https://github.com/rstudio/leaflet.providers or https://cran.r-project.org/web/packages/leaflet.providers/index.html
 - rhandsontable https://github.com/jrowen/rhandsontable or https://cran.r-project.org/web/packages/rhandsontable/index.html
+- timechange https://github.com/vspinu/timechange or https://cran.r-project.org/web/packages/timechange/index.html
 - lubridate https://github.com/tidyverse/lubridate/ or https://cran.r-project.org/web/packages/lubridate/index.html
 - fs https://github.com/r-lib/fs or https://cran.r-project.org/web/packages/fs/index.html
 - rappdirs https://github.com/r-lib/rappdirs or https://cran.r-project.org/web/packages/rappdirs/index.html
@@ -873,7 +874,7 @@ Section 8 -- Interpretation.
         - ps, Copyright (c) 2009-2020 Jay Loden, Dave Daeschler, Giampaolo Rodola', RStudio
         - processx, Copyright (c) 2016-2019 Mango Solutions, RStudio, Gábor Csárdi
         - askpass, Copyright (c) 2018 Jeroen Ooms
-        - timevis, Copyright (c) 2016 Dean Attali [aut, cre] (R interface), Almende B.V. [aut, cph] (vis.js library, http://visjs.org, http://www.almende.com/home)
+        - timevis, Copyright (c) 2022 Dean Attali [aut, cre] (R interface), Almende B.V. [aut, cph] (vis.js library, http://visjs.org, http://www.almende.com/home)
         - generics, Copyright (c) 2020 Hadley Wickham [aut, cre], Max Kuhn [aut], Davis Vaughan [aut], RStudio [cph]
         - dplyr, Copyright (c) 2013-2022 Hadley Wickham [aut, cre], Romain François [aut], Lionel Henry [aut], Kirill Müller [aut], RStudio [cph, fnd]
         - cpp11, Copyright (c) 2020 RStudio
@@ -1217,12 +1218,16 @@ Library.
         - shinydashboard [expanded from: GPL (≥ 2)], Copyright (c) 2014 RStudio, Inc.
         - DT, Copyright (c) Yihui Xie [aut, cre],
             Joe Cheng [ctb], JJ Allaire [ctb], Xianying Tan [ctb], Maximilian Girlich [ctb],
+            Greg Freedman Ellis [ctb], Johannes Rauh [ctb],
             jQuery contributors [ctb, cph] (jQuery in htmlwidgets/lib),
             SpryMedia Limited [ctb, cph] (DataTables in htmlwidgets/lib),
             Brian Reavis [ctb, cph] (selectize.js in htmlwidgets/lib),
             Leon Gersen [ctb, cph] (noUiSlider in htmlwidgets/lib),
             Bartek Szopka [ctb, cph] (jquery.highlight.js in htmlwidgets/lib),
             Alex Pickering [ctb], William Holmes [ctb], Mikko Marttila [ctb], RStudio Inc [cph]
+        - timechange, Copyright (c) Vitalie Spinu [aut, cre], Google Inc. [ctb, cph]
+            (Parts of the 'CCTZ' source code, released under the Apache 2.0 License, are included in this package.
+            See <https://github.com/google/cctz> for more details.)
         - lubridate, Copyright (c) Vitalie Spinu [aut, cre],
             Garrett Grolemund [aut],
             Hadley Wickham [aut],

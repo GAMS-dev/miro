@@ -6,6 +6,31 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/configuration/": {
+            "get": {
+                "tags": [
+                    "configuration"
+                ],
+                "summary": "Get MIRO Server configuration information",
+                "description": "Return configuration information of MIRO Server instance",
+                "operationId": "get_configuration",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConfigurationResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/apps/": {
             "get": {
                 "tags": [
@@ -623,6 +648,55 @@
                     }
                 ]
             }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "login"
+                ],
+                "summary": "Log in user and return login info",
+                "description": "Log in user and return login info:\n\n- **token**: Bearer access token that can be used for authentication\n- **roles**: Labels of user groups that user can see\n- **permissions**: Permissions (octal) of the user in the MIRO Server namespace",
+                "operationId": "login",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AuthRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "message": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -652,6 +726,50 @@
                         "items": {
                             "type": "string"
                         }
+                    }
+                }
+            },
+            "AuthRequest": {
+                "title": "AuthRequest",
+                "required": [
+                    "username",
+                    "password"
+                ],
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "title": "Username",
+                        "type": "string"
+                    },
+                    "password": {
+                        "title": "Password",
+                        "type": "string"
+                    }
+                }
+            },
+            "AuthResponse": {
+                "title": "AuthResponse",
+                "required": [
+                    "token",
+                    "roles",
+                    "permissions"
+                ],
+                "type": "object",
+                "properties": {
+                    "token": {
+                        "title": "Token",
+                        "type": "string"
+                    },
+                    "roles": {
+                        "title": "Roles",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "permissions": {
+                        "title": "Permissions",
+                        "type": "string"
                     }
                 }
             },
@@ -790,6 +908,19 @@
                     }
                 }
             },
+            "ConfigurationResponse": {
+                "title": "ConfigurationResponse",
+                "required": [
+                    "version"
+                ],
+                "type": "object",
+                "properties": {
+                    "version": {
+                        "title": "Version",
+                        "type": "string"
+                    }
+                }
+            },
             "ExportFileType": {
                 "title": "ExportFileType",
                 "enum": [
@@ -883,7 +1014,14 @@
                         "title": "Location",
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
                         }
                     },
                     "msg": {

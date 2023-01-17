@@ -188,7 +188,6 @@ function exitOverlayMode() {
 
 function registerSelectizeInputs() {
   $('select').selectize({
-    create: true,
     persist: false,
   });
 }
@@ -200,7 +199,7 @@ function refreshConfigList() {
     const appNameSafe = escapeHtml(configData.alias);
     const descSafe = escapeHtml(configData.desc);
     const appEnvSafe = escapeHtml(configData.appEnv);
-    const { id } = configData;
+    const { id, isDirty } = configData;
     const appIdSafe = escapeHtml(id);
     const idEncoded = unicodeToHTMLID(id);
     const index = indexRaw + 1;
@@ -213,6 +212,7 @@ function refreshConfigList() {
       }
       groupOptions += nonSelectedGroups.reduce((optionsHTML, groupName) => (`${optionsHTML}<option value="${groupName}">${groupName.toLowerCase()}</option>`), '');
     }
+    const dirtyMarker = isDirty === true ? '<span class="dirty-app-button app-corner-button" title="The app is not registered on GAMS Engine. You will not be able to solve your model. Update app to fix this issue."><i class="fas fa-bolt"></i></span>' : '';
     return `${html}<div class="col-xxl-3 col-lg-4 col-sm-6 col-12 miro-app-item" data-id="${idEncoded}">
         <div id="appBox_${idEncoded}" class="app-box app-box-draggable launch-app-box app-box-fixed-height" data-id="${idEncoded}" data-index="${index}" draggable="true">
           <div id="appSpinner_${idEncoded}" class="app-spinner">
@@ -258,6 +258,7 @@ function refreshConfigList() {
             <input data-index="${index}" data-id="${idEncoded}" class="btn btn-secondary cancel-btn" value="Cancel" type="reset">
             <button class="btn btn-secondary confirm-btn btn-save-changes" data-id="${idEncoded}" data-index="${index}" type="button">Save</button>
         </div>
+        ${dirtyMarker}
         <a class="delete-app-button app-corner-button" data-index="${index}" data-id="${idEncoded}"><i class="fas fa-xmark"></i></a>
       </div>
     </div>`;
@@ -718,12 +719,14 @@ $(() => {
     refreshConfigList();
   });
   Shiny.addCustomMessageHandler('onInitErrors', (data) => {
-    let errorMessage;
+    let errorMessage = '';
     if (data.appsNotOnEngine) {
-      errorMessage = `Some apps registered on MIRO Server were not found on GAMS Engine: '${data.appsNotOnEngine.join("', '")}'\n`;
+      errorMessage += `Some apps registered on MIRO Server were not found on GAMS Engine: '${data.appsNotOnEngine.join("', '")}'.\n`;
+      currentConfigList = data.configList;
+      refreshConfigList();
     }
     if (data.appsNotOnMIRO) {
-      errorMessage = `Some models registered on GAMS Engine are not found on MIRO Server: '${data.appsNotOnMIRO.join("', '")}'\n`;
+      errorMessage += `Some models registered on GAMS Engine are not found on MIRO Server: '${data.appsNotOnMIRO.join("', '")}'.\n`;
     }
     if (errorMessage) {
       bootbox.alert({
