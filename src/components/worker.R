@@ -205,19 +205,12 @@ Worker <- R6Class("Worker", public = list(
 
     private$authHeader <- private$buildAuthHeader(useBearer)
     if (refreshToken) {
-      private$fRefreshToken <- future(
-        {
-          library(httr)
-          library(jsonlite)
-          try(private$saveLoginCredentials(
-            private$metadata$url,
-            private$metadata$username,
-            private$metadata$namespace,
-            private$metadata$useRegistered
-          ))
-        },
-        globals = list(private = private)
-      )
+      try(private$saveLoginCredentials(
+        private$metadata$url,
+        private$metadata$username,
+        private$metadata$namespace,
+        private$metadata$useRegistered
+      ))
     }
     return(invisible(self))
   },
