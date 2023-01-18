@@ -292,7 +292,7 @@ repeat{
   }
 }
 app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
-Sys.sleep(1)
+expect_error(app$wait_for_js("$(\"#shiny-modal button[onclick*='showJobsDialog']\").is(':visible')", timeout = 20000), NA)
 expect_error(app$click(selector = "#shiny-modal button[onclick*='showJobsDialog']"), NA)
 Sys.sleep(1)
 
