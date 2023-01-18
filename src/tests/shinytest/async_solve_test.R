@@ -216,10 +216,10 @@ addSelectizeOption(app, "#editMetaTags", "tag2")
 selectSelectizeOption(app, "#editMetaTags", "tag2")
 app$click(selector = "a[data-value='attachments']")
 app$upload_file(file_addAttachments = "../model/pickstock_with_data/README.md")
-app$wait_for_idle()
+Sys.sleep(0.5)
 app$click(selector = '#editMetaUI a[data-value="views"]')
 app$upload_file(file_addViews = "../data/good-views.json")
-app$wait_for_idle()
+Sys.sleep(0.5)
 app$set_inputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L)
@@ -292,7 +292,7 @@ repeat{
   }
 }
 app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
-app$wait_for_idle()
+Sys.sleep(1)
 expect_error(app$click(selector = "#shiny-modal button[onclick*='showJobsDialog']"), NA)
 Sys.sleep(1)
 
@@ -341,8 +341,8 @@ Sys.sleep(1)
 
 # download job test3 and test2 directly one after the other. test3 will be imported to sandbox test2 can be imported afterwards
 app$run_js("$('#jImport_output button[onclick*=\\'downloadJobData\\']').get(0).click()")
-Sys.sleep(3)
-app$wait_for_idle()
+app$wait_for_js("$('#outputTableView').is(':visible');", timeout = 10000)
+Sys.sleep(1)
 expect_error(app$click(selector = "#outputTableView"), NA)
 app$click(selector = "#sidebarItemExpanded a[data-value='gamsinter']")
 app$click(selector = '#shiny-tab-gamsinter a[data-value="joblist"]')
