@@ -1,4 +1,4 @@
-## largely based on rocker r-base image (GPL >= 2.0)
+## largely based on rocker r-ubuntu image (GPL >= 2.0)
 
 FROM ubuntu:22.04 AS miro-base
 
@@ -20,6 +20,10 @@ RUN apt-get update \
         dirmngr \
         locales \
         ca-certificates \
+        wget \
+        gpg-agent \
+    && wget -q -O - https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
+        | tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc \
     && add-apt-repository --enable-source --yes "ppa:marutter/rrutter4.0"
 
 ## Configure default locale, see https://github.com/rocker-org/rocker/issues/19
@@ -55,8 +59,6 @@ ARG BUILD_DOCKER=true
 ARG SCRIPTS_PATH=/home/miro/scripts
 
 RUN apt-get update && apt-get install -y \
-    sudo \
-    wget \
     r-base-dev=${R_BASE_VERSION}*
 
 ARG OPENSSL_VERSION=3.0.3
@@ -67,7 +69,7 @@ RUN wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz && \
     cd openssl-${OPENSSL_VERSION} && \
     ./config no-shared && \
     make && \
-    sudo make install
+    make install
 
 # make sure the openssl R package finds the libraries
 ARG OPENSSL_PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig
@@ -80,7 +82,7 @@ RUN wget https://curl.se/download/curl-${CURL_VERSION}.tar.gz && \
     cd curl-${CURL_VERSION} && \
     env PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig ./configure --with-openssl --disable-shared && \
     make && \
-    sudo make install
+    make install
 
 ARG PQ_VERSION=14.3
 
@@ -90,10 +92,10 @@ RUN wget https://ftp.postgresql.org/pub/source/v${PQ_VERSION}/postgresql-${PQ_VE
     cd postgresql-${PQ_VERSION} && \
     ./configure --with-openssl --with-includes=/usr/local/lib64/include --with-libraries=/usr/local/lib64 CFLAGS='-Wl,-rpath=/usr/local/lib64' && \
     make && \
-    sudo make -C src/bin install && \
-    sudo make -C src/include install && \
-    sudo make -C src/interfaces install && \
-    sudo make -C doc install
+    make -C src/bin install && \
+    make -C src/include install && \
+    make -C src/interfaces install && \
+    make -C doc install
 
 ARG LD_LIBRARY_PATH=/usr/local/pgsql/lib
 
