@@ -691,8 +691,8 @@ if (is.null(errMsg) && debugMode) {
 aboutDialogText <- paste0(
   "<b>", MIROVersionString, "</b><br/><br/>",
   "Release Date: ", MIRORDate, "<br/>",
-  "Copyright (c) 2022 GAMS Software GmbH &lt;support@gams.com&gt;<br/>",
-  "Copyright (c) 2022 GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>",
+  "Copyright (c) 2023 GAMS Software GmbH &lt;support@gams.com&gt;<br/>",
+  "Copyright (c) 2023 GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>",
   "This program is free software: you can redistribute it and/or modify ",
   "it under the terms of version 3 of the GNU General Public License as published by ",
   "the Free Software Foundation.<br/><br/>",
