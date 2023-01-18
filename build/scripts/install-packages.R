@@ -89,6 +89,9 @@ for (devPkgToInstall in devPkgVersionMap) {
 }
 
 for (newPackage in newPackages) {
+  if (identical(newPackage, "V8")) {
+    Sys.setenv(DOWNLOAD_STATIC_LIBV8 = 1)
+  }
   install.packages(newPackage,
     repos = CRANMirrors[1], lib = RlibPathDevel,
     dependencies = c("Depends", "Imports", "LinkingTo"),
