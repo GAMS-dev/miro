@@ -17,7 +17,7 @@ pushd server > /dev/null
     rm -rf data models
 popd > /dev/null
 
-rsync -rlptvz doc/* ubuntu@new.gams.com:/var/www/html/new.gams.com/public_html/miro
+rsync -rlptvz doc/* ubuntu@gams.com:/var/www/html/new.gams.com/public_html/miro
 
 git add ./doc/release.html ./doc/index.html ./doc/miro_server_api.json ./server/image-docs/*
 

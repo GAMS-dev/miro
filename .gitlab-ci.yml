@@ -552,7 +552,7 @@ update_doc_job:
     - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
-    - rsync -rlptvz doc/* ubuntu@new.gams.com:/var/www/html/staging.gams.com/public_html/miro
+    - rsync -rlptvz doc/* ubuntu@gams.com:/var/www/html/staging.gams.com/public_html/miro
   rules:
     - if: $CI_MERGE_REQUEST_ID
       when: always
