@@ -9,8 +9,7 @@ app$run_js("$('#btLoadScen').click();", timeout = 50L)
 Sys.sleep(1L)
 app$set_inputs(selLoadScen = paste0("1_", Sys.info()[["user"]]))
 app$set_inputs(btLoadScenConfirm = "click")
-Sys.sleep(2L)
-expect_true(app$get_js("$('#outputTabset > li').length===4", timeout = 50L))
+expect_error(app$wait_for_js("$('#outputTabset > li').length===4", timeout = 5000L), NA)
 expect_true(app$get_js("$('#contentScen_4 > li').length===7", timeout = 50L))
 
 # pivot view
@@ -28,7 +27,6 @@ app$wait_for_js("$('#contentScen_0 > li').length===5", timeout = 2000L)
 app$click(selector = ".btSplitView button")
 app$run_js("$('.btSplitView a[data-view=\\'split\\']').get(0).click()")
 app$run_js("$('.scenSplit-button-load:nth(1)').click();true", timeout = 50L)
-Sys.sleep(1)
-expect_true(app$get_js("$('#contentScen_2 > li').length===2", timeout = 50L))
+expect_error(app$wait_for_js("$('#contentScen_2 > li').length===2", timeout = 5000L), NA)
 
 app$stop()

@@ -308,10 +308,11 @@ createTestDb <- function(dbPath = file.path(getwd(), "..", "testdb")) {
       if (unlink(dbPath, force = TRUE, recursive = TRUE)) {
         gc()
         if (unlink(dbPath, force = TRUE, recursive = TRUE)) {
-          stop("Could not remove old database SQLite file for tests")
+          # try create new subfolder with random name
+          dbPath <- file.path(dbPath, stringi::stri_rand_strings(1L, 20L)[[1L]])
         }
       }
-      if (!dir.create(dbPath)) {
+      if (!dir.create(dbPath, recursive = TRUE)) {
         stop(sprintf("Could not create test database path: '%s'.", dbPath))
       }
     }

@@ -7,7 +7,7 @@ app$click(selector = "#sidebarItemExpanded a[data-value='loadResults']")
 Sys.sleep(0.5)
 app$set_inputs(btSendQuery = "click")
 Sys.sleep(0.5)
-expect_true(app$get_js("$('#batchLoadResults').data('datatable').data().length===8;", timeout = 50L))
+expect_true(app$get_js("$('#batchLoadResults')?.data('datatable')?.data()?.length===8;", timeout = 50L))
 scenData <- getVisibleDtData(app, "batchLoadResults")
 
 # Makes sure hidden output scalars (firstdaytraining/lastdaytraining) were properly stored
@@ -142,7 +142,7 @@ expect_files_in_zip(
 app$click(selector = "#sidebarItemExpanded a[data-value='loadResults']")
 Sys.sleep(0.5)
 app$set_inputs(btSendQuery = "click")
-expect_true(app$get_js("$('#batchLoadResults').data('datatable').data().length===8;", timeout = 50L))
+expect_error(app$wait_for_js("$('#batchLoadResults')?.data('datatable')?.data()?.length===8;", timeout = 5000L), NA)
 app$set_inputs(batchLoadResults_rows_selected = scenToCompare[2], allow_no_input_binding_ = TRUE)
 app$set_inputs(batchLoadSelected = "click")
 Sys.sleep(2L)

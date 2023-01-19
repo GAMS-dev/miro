@@ -118,7 +118,7 @@ expect_error(app$wait_for_js("$('#shiny-modal .btn-default').length===0", timeou
 app$click(selector = "#sidebarItemExpanded a[data-value='inputData']")
 app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSolve']")
-timeout <- 15
+timeout <- 20
 repeat{
   isRunning <- app$get_js("$('#modelStatus').is(':visible') && $('#modelStatus').text().startsWith('Model execution phase');")
   if (isRunning) {
@@ -399,7 +399,8 @@ app$click(selector = "a[data-value='attachments']")
 Sys.sleep(0.5)
 attachmentList <- app$get_js("$('.attachment-line').length")
 expect_identical(attachmentList, 2L)
-expect_true(app$get_js("$('.attachment-line > div:nth-child(2) input[type=checkbox]').get(0).checked"))
+idx <- which(app$get_js("$('.attachment-line a').map(function(){return $.trim($(this).text());}).get();") == "README.md")
+expect_true(app$get_js(paste0("$('.attachment-line > div:nth-child(2) input[type=checkbox]').get(", idx - 1L, ").checked")))
 Sys.sleep(0.5)
 app$click(selector = '#editMetaUI a[data-value="views"]')
 Sys.sleep(0.5)
