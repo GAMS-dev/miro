@@ -41,7 +41,15 @@ selectSelectizeOption <- function(app, selector, value) {
 }
 
 expect_download <- function(app, id, filename) {
-  url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
+  i <- 1L
+  repeat {
+    url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
+    if (grepl("/session/", url, fixed = TRUE) || i > 5) {
+      break
+    }
+    i <- i + 1L
+    Sys.sleep(0.2)
+  }
   req <- httr::GET(url)
   filePath <- file.path(getwd(), "testthat", "_snaps")
   if (!file.exists(filePath)) {
@@ -61,7 +69,15 @@ expect_download <- function(app, id, filename) {
 }
 
 expect_download_size <- function(app, id, filename, tolerance = 100) {
-  url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
+  i <- 1L
+  repeat {
+    url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
+    if (grepl("/session/", url, fixed = TRUE) || i > 5) {
+      break
+    }
+    i <- i + 1L
+    Sys.sleep(0.2)
+  }
   req <- httr::GET(url)
   filePath <- file.path(getwd(), "testthat", "_snaps")
   if (!file.exists(filePath)) {
@@ -81,13 +97,29 @@ expect_download_size <- function(app, id, filename, tolerance = 100) {
 }
 
 get_file_content <- function(app, id) {
-  url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
+  i <- 1L
+  repeat {
+    url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
+    if (grepl("/session/", url, fixed = TRUE) || i > 5) {
+      break
+    }
+    i <- i + 1L
+    Sys.sleep(0.2)
+  }
   req <- httr::GET(url)
   return(req$content)
 }
 
 expect_files_in_zip <- function(app, id, files) {
-  url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
+  i <- 1L
+  repeat {
+    url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
+    if (grepl("/session/", url, fixed = TRUE) || i > 5) {
+      break
+    }
+    i <- i + 1L
+    Sys.sleep(0.2)
+  }
   req <- httr::GET(url)
   tempFiles <- file.path(tempdir(check = TRUE), "shinytest-download")
   on.exit(unlink(tempFiles))
@@ -98,7 +130,15 @@ expect_files_in_zip <- function(app, id, files) {
 }
 
 expect_symbols_in_gdx <- function(app, id, symNames) {
-  url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
+  i <- 1L
+  repeat {
+    url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
+    if (grepl("/session/", url, fixed = TRUE) || i > 5) {
+      break
+    }
+    i <- i + 1L
+    Sys.sleep(0.2)
+  }
   req <- httr::GET(url)
   tempFiles <- file.path(tempdir(check = TRUE), "shinytest-download.gdx")
   on.exit(unlink(tempFiles))
@@ -139,7 +179,15 @@ expect_symbols_in_gdx <- function(app, id, symNames) {
 }
 
 expect_symbols_in_miroscen <- function(app, id, symNames) {
-  url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
+  i <- 1L
+  repeat {
+    url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
+    if (grepl("/session/", url, fixed = TRUE) || i > 5) {
+      break
+    }
+    i <- i + 1L
+    Sys.sleep(0.2)
+  }
   req <- httr::GET(url)
   tempFiles <- file.path(tempdir(check = TRUE), "shinytest-download.miroscen")
   on.exit(unlink(tempFiles))
@@ -175,7 +223,15 @@ expect_symbols_in_miroscen <- function(app, id, symNames) {
 }
 
 expect_sheets_in_xls <- function(app, id, sheetNames) {
-  url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
+  i <- 1L
+  repeat {
+    url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
+    if (grepl("/session/", url, fixed = TRUE) || i > 5) {
+      break
+    }
+    i <- i + 1L
+    Sys.sleep(0.2)
+  }
   req <- httr::GET(url)
   tempFiles <- file.path(tempdir(check = TRUE), "shinytest-download")
   on.exit(unlink(tempFiles))
@@ -186,7 +242,15 @@ expect_sheets_in_xls <- function(app, id, sheetNames) {
 }
 
 get_downloaded_file_content <- function(app, id, raw = FALSE) {
-  url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
+  i <- 1L
+  repeat {
+    url <- paste0(app$get_url(), app$get_js(paste0("$('#", id, "').attr('href')")))
+    if (grepl("/session/", url, fixed = TRUE) || i > 5) {
+      break
+    }
+    i <- i + 1L
+    Sys.sleep(0.2)
+  }
   req <- httr::GET(url)
   if (raw) {
     return(req$content)
