@@ -142,12 +142,13 @@ XlsIO <- R6::R6Class("XlsIO",
           "_accessr", "_accessw", "_accessx"
         ), names(metaData))
         metaData <- metaData[, metaColIds[!is.na(metaColIds)], drop = FALSE]
-        names(metaData) <- unlist(lang$nav$excelExport$metadataSheet[c(
-          "uid", "sname", "stime",
-          "stag", "readPerm", "writePerm",
-          "execPerm"
-        )[seq_along(metaData)]],
-        use.names = FALSE
+        names(metaData) <- unlist(
+          lang$nav$excelExport$metadataSheet[c(
+            "uid", "sname", "stime",
+            "stag", "readPerm", "writePerm",
+            "execPerm"
+          )[seq_along(metaData)]],
+          use.names = FALSE
         )
         metaData[[" "]] <- ""
         metaData[["  "]] <- ""
@@ -158,11 +159,12 @@ XlsIO <- R6::R6Class("XlsIO",
           )
         }))
         symDesc <- add_column(symDesc,
-          symbol = xl_hyperlink(paste0(
-            "#'",
-            names(dataToWrite)[seq_along(wsNamesRaw)], "'!A1"
-          ),
-          name = wsNamesRaw
+          symbol = xl_hyperlink(
+            paste0(
+              "#'",
+              names(dataToWrite)[seq_along(wsNamesRaw)], "'!A1"
+            ),
+            name = wsNamesRaw
           ),
           .before = 1L
         )
@@ -1116,11 +1118,12 @@ XlsIO <- R6::R6Class("XlsIO",
         range <- trimws(range)
       }
       if (range %in% c("", "!")) {
-        return(structure(list(
-          ul = c(1L, 1L), lr = c(NA_integer_, NA_integer_),
-          sheet = private$rSheets[1]
-        ),
-        class = c("cell_limits", "list")
+        return(structure(
+          list(
+            ul = c(1L, 1L), lr = c(NA_integer_, NA_integer_),
+            sheet = private$rSheets[1]
+          ),
+          class = c("cell_limits", "list")
         ))
       }
       if (startsWith(range, "!")) {

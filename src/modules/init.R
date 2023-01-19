@@ -80,16 +80,17 @@ if (is.null(errMsg)) {
     currentModelDir, .Platform$file.sep, "conf_", modelName,
     .Platform$file.sep, modelName, ".json"
   ))) {
-    tryCatch(cat("{}\n", file = paste0(
-      currentModelDir, .Platform$file.sep, "conf_", modelName,
-      .Platform$file.sep, modelName, ".json"
-    )),
-    error = function(e) {
-      errMsg <<- paste0(
-        "A configuration file was not found and no data could be written to the location of the config folder. Please check read/write permissions in folder: ",
-        paste0(currentModelDir, .Platform$file.sep, "conf_", modelName)
-      )
-    }
+    tryCatch(
+      cat("{}\n", file = paste0(
+        currentModelDir, .Platform$file.sep, "conf_", modelName,
+        .Platform$file.sep, modelName, ".json"
+      )),
+      error = function(e) {
+        errMsg <<- paste0(
+          "A configuration file was not found and no data could be written to the location of the config folder. Please check read/write permissions in folder: ",
+          paste0(currentModelDir, .Platform$file.sep, "conf_", modelName)
+        )
+      }
     )
   }
 }

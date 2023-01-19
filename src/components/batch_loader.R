@@ -129,23 +129,25 @@ BatchLoader <- R6Class("BatchLoader",
       colIdsExclAttrib <- match(exclAttrib, names(data))
 
       if (any(is.na(colIdsAttrib))) {
-        stop(sprintf(
-          "Attributes: '%s' not found in data.",
-          paste(attribs[is.na(colIdsAttrib)],
-            collapse = "', '"
-          )
-        ),
-        call. = FALSE
+        stop(
+          sprintf(
+            "Attributes: '%s' not found in data.",
+            paste(attribs[is.na(colIdsAttrib)],
+              collapse = "', '"
+            )
+          ),
+          call. = FALSE
         )
       }
       if (any(is.na(colIdsExclAttrib))) {
-        stop(sprintf(
-          "Attributes: '%s' not found in data.",
-          paste(exclAttrib[is.na(colIdsExclAttrib)],
-            collapse = "', '"
-          )
-        ),
-        call. = FALSE
+        stop(
+          sprintf(
+            "Attributes: '%s' not found in data.",
+            paste(exclAttrib[is.na(colIdsExclAttrib)],
+              collapse = "', '"
+            )
+          ),
+          call. = FALSE
         )
       }
 
@@ -162,13 +164,14 @@ BatchLoader <- R6Class("BatchLoader",
 
       private$groupedNames <- lapply(private$groupedSids, function(sidGroup) {
         vapply(sidGroup, function(sid) {
-          paste(as.vector(groupedData[groupedData[[1]] == sid, -c(
-            1, colIdsAttrib,
-            colIdsExclAttrib
-          ),
-          drop = FALSE
-          ]),
-          collapse = "\\"
+          paste(
+            as.vector(groupedData[groupedData[[1]] == sid, -c(
+              1, colIdsAttrib,
+              colIdsExclAttrib
+            ),
+            drop = FALSE
+            ]),
+            collapse = "\\"
           )
         }, character(1L), USE.NAMES = FALSE)
       })
@@ -508,12 +511,13 @@ BatchLoader <- R6Class("BatchLoader",
         dbSchema$getDbTableName("_scenMeta")
       )
 
-      escapedColNamesToFetch <- paste0(DBI::dbQuoteIdentifier(
-        private$conn,
-        names(colNames)
-      ),
-      ".", DBI::dbQuoteIdentifier(private$conn, colNames),
-      collapse = ","
+      escapedColNamesToFetch <- paste0(
+        DBI::dbQuoteIdentifier(
+          private$conn,
+          names(colNames)
+        ),
+        ".", DBI::dbQuoteIdentifier(private$conn, colNames),
+        collapse = ","
       )
       leftJoin <- ""
       if (length(private$scalarTables)) {
@@ -521,13 +525,14 @@ BatchLoader <- R6Class("BatchLoader",
           private$conn,
           private$scalarTables
         )
-        leftJoin <- paste(paste0(
-          "LEFT JOIN ",
-          escapedScalarsTableNames, " ON ",
-          escapedMetaTableName, "._sid=",
-          escapedScalarsTableNames, "._sid"
-        ),
-        collapse = " "
+        leftJoin <- paste(
+          paste0(
+            "LEFT JOIN ",
+            escapedScalarsTableNames, " ON ",
+            escapedMetaTableName, "._sid=",
+            escapedScalarsTableNames, "._sid"
+          ),
+          collapse = " "
         )
       }
       subsetRows <- paste0(

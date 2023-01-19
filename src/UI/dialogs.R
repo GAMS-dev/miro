@@ -930,12 +930,13 @@ showEditMetaDialog <- function(metadata,
               symbolName <- viewsMetadata[["symName"]][i]
               tags$tr(
                 onClick = "$(this).toggleClass('selected')",
-                tags$td(if (identical(symbolName, viewsMetadata[["symName"]][i - 1L])) {
-                  ""
-                } else {
-                  viewsMetadata[["symAlias"]][i]
-                },
-                `data-val` = base64_enc(symbolName)
+                tags$td(
+                  if (identical(symbolName, viewsMetadata[["symName"]][i - 1L])) {
+                    ""
+                  } else {
+                    viewsMetadata[["symAlias"]][i]
+                  },
+                  `data-val` = base64_enc(symbolName)
                 ),
                 tags$td(viewsMetadata[["id"]][i])
               )

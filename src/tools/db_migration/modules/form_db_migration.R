@@ -15,11 +15,12 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
           ns("btCancelDataLoss"),
           lang$nav$migrationModule$dialogConfirmDataLoss$btCancel
         ),
-        tagAppendAttributes(actionButton(ns("btConfirmDataLoss"),
-          class = "bt-highlight-1",
-          lang$nav$migrationModule$dialogConfirmDataLoss$btConfirm
-        ),
-        `disabled` = "true"
+        tagAppendAttributes(
+          actionButton(ns("btConfirmDataLoss"),
+            class = "bt-highlight-1",
+            lang$nav$migrationModule$dialogConfirmDataLoss$btConfirm
+          ),
+          `disabled` = "true"
         )
       )
     },
@@ -299,11 +300,12 @@ dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
               tags$div(
                 class = "modal-footer-mobile",
                 modalButton(lang$nav$migrationModule$dialogConfirmDataLoss$btCancel),
-                tagAppendAttributes(actionButton(session$ns("btConfirmDataLoss"),
-                  class = "bt-highlight-1",
-                  lang$nav$migrationModule$dialogConfirmDataLoss$btConfirm
-                ),
-                `disabled` = "true"
+                tagAppendAttributes(
+                  actionButton(session$ns("btConfirmDataLoss"),
+                    class = "bt-highlight-1",
+                    lang$nav$migrationModule$dialogConfirmDataLoss$btConfirm
+                  ),
+                  `disabled` = "true"
                 )
               )
             )

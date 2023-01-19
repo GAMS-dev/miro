@@ -1099,39 +1099,40 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           } else {
             additionalOptionsContent <- NULL
           }
-          showModal(modalDialog(tags$div(
-            id = ns("errUniqueName"), style = "display:none;",
-            lang$renderers$miroPivot$errUniqueViewName
-          ),
-          textInput(ns("newViewName"),
-            width = "100%",
-            lang$renderers$miroPivot$newViewLabel,
-            value = viewOptions$name
-          ),
-          additionalOptionsContent,
-          footer = tagList(
+          showModal(modalDialog(
             tags$div(
-              id = ns("saveViewButtonsWrapper"),
-              modalButton(lang$renderers$miroPivot$newViewBtCancel),
-              actionButton(ns("saveViewConfirm"),
-                lang$renderers$miroPivot$newViewBtSave,
-                class = "bt-highlight-1 bt-gms-confirm"
+              id = ns("errUniqueName"), style = "display:none;",
+              lang$renderers$miroPivot$errUniqueViewName
+            ),
+            textInput(ns("newViewName"),
+              width = "100%",
+              lang$renderers$miroPivot$newViewLabel,
+              value = viewOptions$name
+            ),
+            additionalOptionsContent,
+            footer = tagList(
+              tags$div(
+                id = ns("saveViewButtonsWrapper"),
+                modalButton(lang$renderers$miroPivot$newViewBtCancel),
+                actionButton(ns("saveViewConfirm"),
+                  lang$renderers$miroPivot$newViewBtSave,
+                  class = "bt-highlight-1 bt-gms-confirm"
+                )
+              ),
+              tags$div(
+                id = ns("saveViewOverwriteButtonsWrapper"), style = "display:none",
+                actionButton(
+                  ns("saveViewCancelOverwrite"),
+                  lang$renderers$miroPivot$newViewBtCancelOverwrite
+                ),
+                actionButton(ns("saveViewOverwrite"),
+                  lang$renderers$miroPivot$newViewBtOverwrite,
+                  class = "bt-highlight-1 bt-gms-confirm"
+                )
               )
             ),
-            tags$div(
-              id = ns("saveViewOverwriteButtonsWrapper"), style = "display:none",
-              actionButton(
-                ns("saveViewCancelOverwrite"),
-                lang$renderers$miroPivot$newViewBtCancelOverwrite
-              ),
-              actionButton(ns("saveViewOverwrite"),
-                lang$renderers$miroPivot$newViewBtOverwrite,
-                class = "bt-highlight-1 bt-gms-confirm"
-              )
-            )
-          ),
-          fade = TRUE, easyClose = FALSE, size = "m",
-          title = lang$renderers$miroPivot$newViewTitle
+            fade = TRUE, easyClose = FALSE, size = "m",
+            title = lang$renderers$miroPivot$newViewTitle
           ))
         }
 
@@ -2708,12 +2709,13 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                     # key was edited while columns are pivoted -> need to (potentially) change multiple keys
                     colElementsList <- strsplit(colHeaders, "\U2024", fixed = TRUE)
                     keyToReplace <- vapply(colElementsList, function(colElements) {
-                      paste(c(
-                        rowElements,
-                        colElements,
-                        filterElements
-                      )[indexOrder],
-                      collapse = "\U2024"
+                      paste(
+                        c(
+                          rowElements,
+                          colElements,
+                          filterElements
+                        )[indexOrder],
+                        collapse = "\U2024"
                       )
                     }, character(1L), USE.NAMES = FALSE)
                     rowId <- match(keyToReplace, data[["__key__"]])
@@ -2839,12 +2841,13 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               colElementsList <- colElementsList[validRowIds]
               rowElements[editedCol] <- editedKey
               newKey <- vapply(colElementsList, function(colElements) {
-                paste(c(
-                  rowElements,
-                  colElements,
-                  filterElements
-                )[indexOrder],
-                collapse = "\U2024"
+                paste(
+                  c(
+                    rowElements,
+                    colElements,
+                    filterElements
+                  )[indexOrder],
+                  collapse = "\U2024"
                 )
               }, character(1L), USE.NAMES = FALSE)
             }

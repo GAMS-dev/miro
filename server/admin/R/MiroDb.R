@@ -33,21 +33,23 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
       dbQuoteString(private$conn, dbAppId)
     )
     if (length(dbGetQuery(private$conn, SQL(roleExistsQuery))[[1]]) > 0L) {
-      private$runQuery(paste0(
-        "ALTER USER ",
-        dbQuoteIdentifier(private$conn, dbAppId),
-        " WITH PASSWORD ",
-        dbQuoteString(private$conn, appDbCredentials$password), ";"
-      ),
-      mask = appDbCredentials$password
+      private$runQuery(
+        paste0(
+          "ALTER USER ",
+          dbQuoteIdentifier(private$conn, dbAppId),
+          " WITH PASSWORD ",
+          dbQuoteString(private$conn, appDbCredentials$password), ";"
+        ),
+        mask = appDbCredentials$password
       )
     } else {
-      private$runQuery(paste0(
-        "CREATE ROLE ",
-        dbQuoteIdentifier(private$conn, dbAppId), " LOGIN PASSWORD ",
-        dbQuoteString(private$conn, appDbCredentials$password), ";"
-      ),
-      mask = appDbCredentials$password
+      private$runQuery(
+        paste0(
+          "CREATE ROLE ",
+          dbQuoteIdentifier(private$conn, dbAppId), " LOGIN PASSWORD ",
+          dbQuoteString(private$conn, appDbCredentials$password), ";"
+        ),
+        mask = appDbCredentials$password
       )
     }
     private$runQuery(paste0(

@@ -257,11 +257,12 @@ DbSchema <- R6Class("DbSchema", public = list(
       escapedTableNameMeta, "._sid,",
       paste(escapedScalarNames, collapse = ","), " FROM ",
       escapedTableNameMeta, " ",
-      paste(paste0(
-        "LEFT JOIN ", escapedScalarNames, " ON ",
-        escapedTableNameMeta, "._sid=", escapedScalarNames, "._sid"
-      ),
-      collapse = " "
+      paste(
+        paste0(
+          "LEFT JOIN ", escapedScalarNames, " ON ",
+          escapedTableNameMeta, "._sid=", escapedScalarNames, "._sid"
+        ),
+        collapse = " "
       )
     ))
   },

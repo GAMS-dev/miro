@@ -374,11 +374,12 @@ HcubeImport <- R6Class("HcubeImport",
             }))
           },
           error = function(e) {
-            stop(sprintf(
-              "Problems reading file: '%s'. Error message: %s.", filePath,
-              conditionMessage(e)
-            ),
-            call. = FALSE
+            stop(
+              sprintf(
+                "Problems reading file: '%s'. Error message: %s.", filePath,
+                conditionMessage(e)
+              ),
+              call. = FALSE
             )
           }
         )
@@ -387,17 +388,18 @@ HcubeImport <- R6Class("HcubeImport",
       return(scenData)
     },
     verifyScenFiles = function(filePaths) {
-      tableNames <- unlist(lapply(filePaths, function(filePath) {
-        if (endsWith(tolower(filePath), ".trc")) {
-          return("_scenTrc")
-        }
-        gdxSym <- private$gdxio$getSymbols(filePath)
-        return(tolower(c(
-          gdxSym$sets, gdxSym$parameters,
-          gdxSym$variables, gdxSym$equations
-        )))
-      }),
-      use.names = FALSE, recursive = FALSE
+      tableNames <- unlist(
+        lapply(filePaths, function(filePath) {
+          if (endsWith(tolower(filePath), ".trc")) {
+            return("_scenTrc")
+          }
+          gdxSym <- private$gdxio$getSymbols(filePath)
+          return(tolower(c(
+            gdxSym$sets, gdxSym$parameters,
+            gdxSym$variables, gdxSym$equations
+          )))
+        }),
+        use.names = FALSE, recursive = FALSE
       )
       verifiedIds <- match(private$tableNamesMustHave, tableNames)
       if (any(is.na(verifiedIds))) {

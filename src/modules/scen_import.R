@@ -188,11 +188,12 @@ observeEvent(input$localInput, {
       session, "#localDataImportError",
       sprintf(
         lang$errMsg$invalidFileType$desc,
-        paste0(c(
-          "zip", xlsio$getValidExtensions(), csvio$getValidExtensions(),
-          if (useGdx) c("miroscen", "gdx")
-        ),
-        collapse = ","
+        paste0(
+          c(
+            "zip", xlsio$getValidExtensions(), csvio$getValidExtensions(),
+            if (useGdx) c("miroscen", "gdx")
+          ),
+          collapse = ","
         )
       )
     )
@@ -396,19 +397,20 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
         return()
       }
     }
-    dfClArgs <- tryCatch(loadMiroScen(
-      input$localInput$datapath, activeScen, attachments, views,
-      names(modelIn),
-      loadMetadata = identical(input$cbSelectManuallyLoc, FALSE)
-    ),
-    error = function(e) {
-      showHideEl(session, "#importScenError", 4000L)
-      flog.info(
-        "Problems reading miroscen file. Error message: '%s'.",
-        conditionMessage(e)
-      )
-      return(FALSE)
-    }
+    dfClArgs <- tryCatch(
+      loadMiroScen(
+        input$localInput$datapath, activeScen, attachments, views,
+        names(modelIn),
+        loadMetadata = identical(input$cbSelectManuallyLoc, FALSE)
+      ),
+      error = function(e) {
+        showHideEl(session, "#importScenError", 4000L)
+        flog.info(
+          "Problems reading miroscen file. Error message: '%s'.",
+          conditionMessage(e)
+        )
+        return(FALSE)
+      }
     )
     if (isFALSE(dfClArgs)) {
       return()

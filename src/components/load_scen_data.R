@@ -158,11 +158,12 @@ loadScenData <- function(metaData, workDir,
                 ret$tabular[[i]] <<- templates[[i]]
               },
               error = function(e) {
-                stop(sprintf(
-                  "Unexpected error running custom importer function: %s. Error message: %s",
-                  customDataIO$getLabel(), conditionMessage(e)
-                ),
-                call. = FALSE
+                stop(
+                  sprintf(
+                    "Unexpected error running custom importer function: %s. Error message: %s",
+                    customDataIO$getLabel(), conditionMessage(e)
+                  ),
+                  call. = FALSE
                 )
               }
             )

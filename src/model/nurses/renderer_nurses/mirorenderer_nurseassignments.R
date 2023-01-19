@@ -30,7 +30,6 @@ mirorenderer_nurseassignmentsOutput <- function(id, height = NULL, options = NUL
 }
 
 renderMirorenderer_nurseassignments <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
-
   # data preparation
   data_full <- left_join(data$nurseassignments, data$shiftdata)
   colnames(data_full) <- c(

@@ -145,12 +145,13 @@ if (buildUI) {
           if (hasDependency) {
             tagList(
               tags$ul(class = "err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-              tagAppendAttributes(selectInput(paste0("dropdown_", i),
-                label = widgetlabel,
-                choices = character(0), selected = character(0),
-                multiple = isTRUE(modelIn[[i]]$dropdown$multiple)
-              ),
-              style = "display:none;"
+              tagAppendAttributes(
+                selectInput(paste0("dropdown_", i),
+                  label = widgetlabel,
+                  choices = character(0), selected = character(0),
+                  multiple = isTRUE(modelIn[[i]]$dropdown$multiple)
+                ),
+                style = "display:none;"
               ),
               tags$div(
                 id = paste0("no_data_dep_", i), class = "in-no-data-dep",

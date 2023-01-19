@@ -300,17 +300,18 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
       tryCatch(
         {
           insertUI(paste0("#scenGraph_", tabsetId, "_", tabId),
-            ui = renderDataUI(paste0(
-              tabsetIdChar,
-              "_", tabId
-            ),
-            type = graphConfig$outType,
-            graphTool = graphConfig$graph$tool,
-            customOptions = graphConfig$options,
-            filterOptions = graphConfig$graph$filter,
-            height = graphConfig$height,
-            modelDir = modelDir,
-            createdDynamically = FALSE
+            ui = renderDataUI(
+              paste0(
+                tabsetIdChar,
+                "_", tabId
+              ),
+              type = graphConfig$outType,
+              graphTool = graphConfig$graph$tool,
+              customOptions = graphConfig$options,
+              filterOptions = graphConfig$graph$filter,
+              height = graphConfig$height,
+              modelDir = modelDir,
+              createdDynamically = FALSE
             ),
             immediate = TRUE
           )
@@ -331,12 +332,13 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
         tryCatch(
           {
             insertUI(paste0("#scenTable_", tabsetId, "_", tabId),
-              ui = renderDataUI(paste0(
-                "table_", tabsetIdChar, "_",
-                tabId
-              ),
-              type = "datatable",
-              createdDynamically = FALSE
+              ui = renderDataUI(
+                paste0(
+                  "table_", tabsetIdChar, "_",
+                  tabId
+                ),
+                type = "datatable",
+                createdDynamically = FALSE
               ),
               immediate = TRUE
             )

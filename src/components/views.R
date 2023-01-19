@@ -197,12 +197,13 @@ Views <- R6Class("Views",
           USE.NAMES = FALSE
         )
         if (length(tabularInputSymConfig)) {
-          inputSymAliases <- vapply(tabularInputSymConfig[match(
-            private$tabularInputSymbols,
-            names(tabularInputSymConfig)
-          )],
-          "[[", character(1L), "alias",
-          USE.NAMES = FALSE
+          inputSymAliases <- vapply(
+            tabularInputSymConfig[match(
+              private$tabularInputSymbols,
+              names(tabularInputSymConfig)
+            )],
+            "[[", character(1L), "alias",
+            USE.NAMES = FALSE
           )
         } else {
           inputSymAliases <- character(0L)

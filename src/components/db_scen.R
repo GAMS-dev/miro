@@ -1046,18 +1046,20 @@ Scenario <- R6Class("Scenario",
           attachSchema$tabName
         ),
         "(",
-        paste0(dbQuoteIdentifier(
-          private$conn,
-          attachSchema$colNames
-        ),
-        collapse = ","
+        paste0(
+          dbQuoteIdentifier(
+            private$conn,
+            attachSchema$colNames
+          ),
+          collapse = ","
         ),
         ") SELECT ", private$sid, ",",
-        paste0(dbQuoteIdentifier(
-          private$conn,
-          attachSchema$colNames[-1]
-        ),
-        collapse = ","
+        paste0(
+          dbQuoteIdentifier(
+            private$conn,
+            attachSchema$colNames[-1]
+          ),
+          collapse = ","
         ),
         " FROM ",
         dbQuoteIdentifier(private$conn, attachSchema$tabName),

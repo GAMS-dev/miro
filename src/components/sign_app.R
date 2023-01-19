@@ -47,14 +47,15 @@ trySignAppBundle <- function(miroAppFiles, privKeyPath, passFilePath = "") {
     rootDir <- fileObject$rootDir
     lapply(fileObject$files, function(miroAppFile) {
       if (dir.exists(file.path(rootDir, miroAppFile))) {
-        return(vapply(list.files(file.path(rootDir, miroAppFile),
-          all.files = TRUE, recursive = TRUE,
-          no.. = TRUE
-        ), function(fileName) {
-          getFileId(rootDir, file.path(miroAppFile, fileName))
-        },
-        character(1L),
-        USE.NAMES = FALSE
+        return(vapply(
+          list.files(file.path(rootDir, miroAppFile),
+            all.files = TRUE, recursive = TRUE,
+            no.. = TRUE
+          ), function(fileName) {
+            getFileId(rootDir, file.path(miroAppFile, fileName))
+          },
+          character(1L),
+          USE.NAMES = FALSE
         ))
       }
       return(getFileId(rootDir, miroAppFile))

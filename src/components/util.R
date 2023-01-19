@@ -250,11 +250,12 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL) {
             j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
             ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- getNestedDep(el[-1])
           } else {
-            stop(paste0(
-              "The header: '", el[[2]], "' for input sheet: '",
-              el[[1]], "' could not be found. Make sure you define a valid reference."
-            ),
-            call. = FALSE
+            stop(
+              paste0(
+                "The header: '", el[[2]], "' for input sheet: '",
+                el[[1]], "' could not be found. Make sure you define a valid reference."
+              ),
+              call. = FALSE
             )
           }
         } else {
@@ -269,11 +270,12 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL) {
             ddownDep$bw[[names(modelIn)[[idx1]]]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
           } else if (!forwardDep[i]) {
             # neither forward nor backward dependency selected results in error or rendering as string
-            stop(paste0(
-              "Neither a forward nor a backward dependency was defined in: '",
-              choices[[i]], "'. Make sure you define some type of dependency."
-            ),
-            call. = FALSE
+            stop(
+              paste0(
+                "Neither a forward nor a backward dependency was defined in: '",
+                choices[[i]], "'. Make sure you define some type of dependency."
+              ),
+              call. = FALSE
             )
           }
         }
@@ -1334,27 +1336,29 @@ getHcubeScalars <- function(modelIn) {
 }
 loadPfFileContent <- function(content, GMSOpt = character(0L), DDPar = character(0L)) {
   content <- stri_split_regex(content, "=| ", 2)
-  content <- tryCatch(tibble(
-    scalar = trimws(vapply(content, "[[",
-      character(1L), 1L,
-      USE.NAMES = FALSE
-    ), "left", "-"),
-    description = character(length(content)),
-    value = trimws(vapply(content, "[[",
-      character(1L), 2L,
-      USE.NAMES = FALSE
-    ), "both", '"')
-  ),
-  error = function(e) {
-    return(tibble())
-  }
+  content <- tryCatch(
+    tibble(
+      scalar = trimws(vapply(content, "[[",
+        character(1L), 1L,
+        USE.NAMES = FALSE
+      ), "left", "-"),
+      description = character(length(content)),
+      value = trimws(vapply(content, "[[",
+        character(1L), 2L,
+        USE.NAMES = FALSE
+      ), "both", '"')
+    ),
+    error = function(e) {
+      return(tibble())
+    }
   )
   if (!length(content)) {
     return(tibble())
   }
-  content <- content[tolower(content[[1]]) %in%
-    c(GMSOpt, DDPar), ,
-  drop = FALSE
+  content <- content[
+    tolower(content[[1]]) %in%
+      c(GMSOpt, DDPar), ,
+    drop = FALSE
   ]
   if (!length(content[[1]])) {
     return(tibble())
@@ -1511,11 +1515,12 @@ genWidgetGroups <- function(widgetNames, widgetGroups, widgetTabName, aggregateW
     newWidgetGroups <- lapply(widgetGroups, function(widgetGroup) {
       groupMemberIds <- match(widgetGroup$members, widgetNames)
       if (any(is.na(groupMemberIds))) {
-        stop(sprintf(
-          "The members: '%s' of the widget group: '%s' are not in the list of input widgets. Please fix the configuration and try again!",
-          paste(widgetGroup$members[is.na(groupMemberIds)], collapse = "', '"), widgetGroup
-        ),
-        call. = FALSE
+        stop(
+          sprintf(
+            "The members: '%s' of the widget group: '%s' are not in the list of input widgets. Please fix the configuration and try again!",
+            paste(widgetGroup$members[is.na(groupMemberIds)], collapse = "', '"), widgetGroup
+          ),
+          call. = FALSE
         )
       }
       widgetNames <<- widgetNames[-groupMemberIds]
@@ -1964,17 +1969,18 @@ mergeDf <- function(a, b, isScalarsTable = FALSE) {
   numericCols <- vapply(a, class, character(1L), USE.NAMES = FALSE) %in% c("numeric", "integer")
   if (sum(numericCols) > 1L) {
     # data is already pivoted
-    return(pivot_wider(mergeDf(
-      pivot_longer(a, names(a)[numericCols],
-        names_to = "Hdr",
-        values_to = "value", names_repair = "unique"
+    return(pivot_wider(
+      mergeDf(
+        pivot_longer(a, names(a)[numericCols],
+          names_to = "Hdr",
+          values_to = "value", names_repair = "unique"
+        ),
+        pivot_longer(b, names(b)[numericCols],
+          names_to = "Hdr",
+          values_to = "value", names_repair = "unique"
+        )
       ),
-      pivot_longer(b, names(b)[numericCols],
-        names_to = "Hdr",
-        values_to = "value", names_repair = "unique"
-      )
-    ),
-    names_from = Hdr, values_from = value, names_repair = "unique"
+      names_from = Hdr, values_from = value, names_repair = "unique"
     ))
   }
   if (sum(numericCols) == 0L) {

@@ -108,10 +108,11 @@ sidebar <- dashboardSidebar(
         )
       }
     },
-    tagAppendAttributes(actionButton("btInterrupt", lang$nav$sidebarButtons$interrupt,
-      width = "85%", class = "bt-highlight-2", style = "display:block;"
-    ),
-    disabled = ""
+    tagAppendAttributes(
+      actionButton("btInterrupt", lang$nav$sidebarButtons$interrupt,
+        width = "85%", class = "bt-highlight-2", style = "display:block;"
+      ),
+      disabled = ""
     ),
     tagList(
       tags$div(

@@ -34,8 +34,7 @@ getJobStatus <- function(token) {
 
 context("UI tests - asynchronous solve - solve without login")
 # expect login screen to appear. Don't log in first.
-Sys.sleep(1)
-expect_true(app$get_js("$('#shiny-modal .bt-gms-confirm').is(':visible');"))
+expect_error(app$wait_for_js("$('#shiny-modal .bt-gms-confirm').is(':visible');", timeout = 5000L), NA)
 app$run_js("$('#shiny-modal .btn-default').get(0).click()")
 Sys.sleep(1)
 # load data

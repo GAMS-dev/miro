@@ -178,11 +178,12 @@ test_that("Reading miroscen files works", {
     attachmentsDummy, viewsDummy,
     tabsetId = NULL
   )
-  expect_output(f <- loadMiroScen(
-    file.path(tmpd, "test.miroscen"), scenDummy, attachmentsDummy, viewsDummy,
-    names(modelIn)
-  ),
-  regexp = "ignored"
+  expect_output(
+    f <- loadMiroScen(
+      file.path(tmpd, "test.miroscen"), scenDummy, attachmentsDummy, viewsDummy,
+      names(modelIn)
+    ),
+    regexp = "ignored"
   )
   expect_identical(f, tibble::tibble(scalar = character(), description = character(), value = character()))
   expect_true(file.exists(file.path(tmpd, "data.gdx")))
@@ -235,11 +236,12 @@ test_that("Loading MIRO scenario into specified directory works", {
     stop("Could not copy miroscen file")
   }
   on.exit(unlink(file.path(tmpd, c("test.miroscen", "bla")), recursive = TRUE))
-  expect_output(f <- loadMiroScen(file.path(tmpd, "test.miroscen"), scenDummy, attachmentsDummy, viewsDummy,
-    c(names(modelIn), "_gmsopt_a"),
-    exdir = file.path(tmpd, "bla")
-  ),
-  regexp = "ignored"
+  expect_output(
+    f <- loadMiroScen(file.path(tmpd, "test.miroscen"), scenDummy, attachmentsDummy, viewsDummy,
+      c(names(modelIn), "_gmsopt_a"),
+      exdir = file.path(tmpd, "bla")
+    ),
+    regexp = "ignored"
   )
   expect_identical(f, tibble::tibble(scalar = "_gmsopt_a", description = "", value = "1"))
   expect_true(file.exists(file.path(tmpd, "bla", "data.gdx")))

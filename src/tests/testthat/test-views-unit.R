@@ -393,16 +393,17 @@ test_that("Getting views summary works", {
     )
   )
   expect_identical(
-    views$getSummary(list(
-      in1 = list(alias = "input 1"),
-      in2 = list(alias = "input 2")
-    ),
-    list(
-      out1 = list(alias = "output 1"),
-      out2 = list(alias = "output 2"),
-      out3 = list(alias = "output 3")
-    ),
-    scenId = "4"
+    views$getSummary(
+      list(
+        in1 = list(alias = "input 1"),
+        in2 = list(alias = "input 2")
+      ),
+      list(
+        out1 = list(alias = "output 1"),
+        out2 = list(alias = "output 2"),
+        out3 = list(alias = "output 3")
+      ),
+      scenId = "4"
     ),
     list(
       symName = c("out2", "in1", "in1"),
@@ -411,16 +412,17 @@ test_that("Getting views summary works", {
     )
   )
   expect_identical(
-    views$getSummary(list(
-      in1 = list(alias = "input 1"),
-      in2 = list(alias = "input 2")
-    ),
-    list(
-      out1 = list(alias = "output 1"),
-      out2 = list(alias = "output 2"),
-      out3 = list(alias = "output 3")
-    ),
-    scenId = "10"
+    views$getSummary(
+      list(
+        in1 = list(alias = "input 1"),
+        in2 = list(alias = "input 2")
+      ),
+      list(
+        out1 = list(alias = "output 1"),
+        out2 = list(alias = "output 2"),
+        out3 = list(alias = "output 3")
+      ),
+      scenId = "10"
     ),
     list(symName = NULL, symAlias = NULL, id = NULL)
   )

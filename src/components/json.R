@@ -13,12 +13,13 @@ JSONValidator <- R6Class(
           private$ct$eval("var validate=ajv.compile(JSON.parse(schema));")
         },
         error = function(e) {
-          stop(paste0(
-            "Error reading'", jsonSchemaLocation,
-            "'. Check for valid JSON syntax and make sure file is accessible.\nError message: ",
-            conditionMessage(e)
-          ),
-          call. = FALSE
+          stop(
+            paste0(
+              "Error reading'", jsonSchemaLocation,
+              "'. Check for valid JSON syntax and make sure file is accessible.\nError message: ",
+              conditionMessage(e)
+            ),
+            call. = FALSE
           )
         }
       )
@@ -29,12 +30,13 @@ JSONValidator <- R6Class(
           private$ct$eval("data=JSON.parse(data);")
         },
         error = function(e) {
-          stop(paste0(
-            "Error reading'", jsonFileLocation,
-            "'. Check for valid JSON syntax and make sure file is accessible.\nError message: ",
-            conditionMessage(e)
-          ),
-          call. = FALSE
+          stop(
+            paste0(
+              "Error reading'", jsonFileLocation,
+              "'. Check for valid JSON syntax and make sure file is accessible.\nError message: ",
+              conditionMessage(e)
+            ),
+            call. = FALSE
           )
         }
       )
@@ -43,11 +45,12 @@ JSONValidator <- R6Class(
           private$ct$eval("var valid=validate(data);")
         },
         error = function(e) {
-          stop(paste0(
-            "Problems validating JSON file: '", jsonFileLocation,
-            "'.\nError message: '", conditionMessage(e), "'."
-          ),
-          call. = FALSE
+          stop(
+            paste0(
+              "Problems validating JSON file: '", jsonFileLocation,
+              "'.\nError message: '", conditionMessage(e), "'."
+            ),
+            call. = FALSE
           )
         }
       )

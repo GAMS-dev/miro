@@ -179,11 +179,12 @@ migrateMiroDatabase <- function(oldPath, newPath) {
               "CREATE VIEW ", dbQuoteIdentifier(conn, newTableName), " AS SELECT ",
               "_sys_metadata_._sid,",
               paste(escapedScalarNames, collapse = ","), " FROM _sys_metadata_ ",
-              paste(paste0(
-                "LEFT JOIN ", escapedScalarNames, " ON ",
-                "_sys_metadata_._sid=", escapedScalarNames, "._sid"
-              ),
-              collapse = " "
+              paste(
+                paste0(
+                  "LEFT JOIN ", escapedScalarNames, " ON ",
+                  "_sys_metadata_._sid=", escapedScalarNames, "._sid"
+                ),
+                collapse = " "
               )
             ))
             dbExecute(conn, paste0(

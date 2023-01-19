@@ -3,10 +3,11 @@ mirorenderer_existingcohortgroupmapOutput <- function(id, height = NULL, options
   tagList(
     tags$style(".rank-list{color: #000;}"),
     tags$b("Current cohort assignment. You can drag students between the lists."),
-    fluidRow(column(width = 12, tags$div(selectizeInput(ns("groupFilter"),
-      label = NULL, choices = c(), multiple = TRUE, options = list(placeholder = "Filter names by groups")
-    ),
-    style = "margin-top:15pt;"
+    fluidRow(column(width = 12, tags$div(
+      selectizeInput(ns("groupFilter"),
+        label = NULL, choices = c(), multiple = TRUE, options = list(placeholder = "Filter names by groups")
+      ),
+      style = "margin-top:15pt;"
     ))), fluidRow(column(
       width = 12,
       uiOutput(ns("cohortsOut"))

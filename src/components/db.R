@@ -65,11 +65,12 @@ Db <- R6Class("Db",
             )
           },
           error = function(e) {
-            stop(sprintf(
-              "Db: Database connection could not be established. Error message: %s",
-              conditionMessage(e)
-            ),
-            call. = FALSE
+            stop(
+              sprintf(
+                "Db: Database connection could not be established. Error message: %s",
+                conditionMessage(e)
+              ),
+              call. = FALSE
             )
           }
         )
@@ -107,11 +108,12 @@ Db <- R6Class("Db",
             self$runQuery("PRAGMA foreign_keys = ON;")
           },
           error = function(e) {
-            stop(sprintf(
-              "Db: Database connection could not be established. Error message: %s",
-              conditionMessage(e)
-            ),
-            call. = FALSE
+            stop(
+              sprintf(
+                "Db: Database connection could not be established. Error message: %s",
+                conditionMessage(e)
+              ),
+              call. = FALSE
             )
           }
         )
@@ -266,11 +268,12 @@ Db <- R6Class("Db",
         } else if (distinctHashes) {
           paste0("DISTINCT(", escapedHashTableName, ".hash)")
         } else {
-          paste(paste0(
-            escapedMetaTableName, ".",
-            c("_sid", "_uid", "_sname", "_stime", "_stag")
-          ),
-          collapse = ", "
+          paste(
+            paste0(
+              escapedMetaTableName, ".",
+              c("_sid", "_uid", "_sname", "_stime", "_stag")
+            ),
+            collapse = ", "
           )
         }, " FROM ",
         escapedHashTableName, " INNER JOIN ",
@@ -460,11 +463,12 @@ Db <- R6Class("Db",
       if (!is.null(colNames)) {
         subsetRows <- paste0(
           "(",
-          paste(paste(DBI::dbQuoteIdentifier(private$conn, colNames),
-            DBI::dbQuoteLiteral(private$conn, values),
-            sep = " = "
-          ),
-          collapse = paste0(" ", conditionSep, " ")
+          paste(
+            paste(DBI::dbQuoteIdentifier(private$conn, colNames),
+              DBI::dbQuoteLiteral(private$conn, values),
+              sep = " = "
+            ),
+            collapse = paste0(" ", conditionSep, " ")
           ), ")"
         )
       }
@@ -585,11 +589,12 @@ Db <- R6Class("Db",
         {
           query <- paste0(
             "UPDATE ", DBI::dbQuoteIdentifier(private$conn, tableNameDb), " SET ",
-            paste(paste(DBI::dbQuoteIdentifier(private$conn, colNames),
-              DBI::dbQuoteLiteral(private$conn, values),
-              sep = " = "
-            ),
-            collapse = ", "
+            paste(
+              paste(DBI::dbQuoteIdentifier(private$conn, colNames),
+                DBI::dbQuoteLiteral(private$conn, values),
+                sep = " = "
+              ),
+              collapse = ", "
             ), " WHERE ", subsetRows, subsetWritePerm, ";"
           )
           affectedRows <- self$runQuery(query)
@@ -1265,14 +1270,16 @@ Db <- R6Class("Db",
       } else {
         symtext <- ioConfig$modelOut[[scalarsOutName]]$symtext
       }
-      return(mutate(add_column(pivot_longer(mutate(dataset, across(everything(), as.character)),
-        cols = dbSchema$getDbViews(tableName),
-        names_to = "scalar",
-        values_to = "value"
-      ),
-      description = rep.int(symtext, noScen), .after = 2L
-      ),
-      value = as.character(value)
+      return(mutate(
+        add_column(
+          pivot_longer(mutate(dataset, across(everything(), as.character)),
+            cols = dbSchema$getDbViews(tableName),
+            names_to = "scalar",
+            values_to = "value"
+          ),
+          description = rep.int(symtext, noScen), .after = 2L
+        ),
+        value = as.character(value)
       ))
     }
   )

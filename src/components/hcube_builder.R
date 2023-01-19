@@ -141,13 +141,14 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
         fixed = TRUE
       )
     }
-    names(private$parValCombinations) <- vapply(unite(allParValCombinations, "val",
-      seq_along(allParValCombinations),
-      remove = TRUE, sep = " "
-    )[[1]],
-    digest::digest, character(1L),
-    algo = "sha256",
-    serialize = FALSE, USE.NAMES = FALSE
+    names(private$parValCombinations) <- vapply(
+      unite(allParValCombinations, "val",
+        seq_along(allParValCombinations),
+        remove = TRUE, sep = " "
+      )[[1]],
+      digest::digest, character(1L),
+      algo = "sha256",
+      serialize = FALSE, USE.NAMES = FALSE
     )
     return(names(private$parValCombinations))
   },
@@ -196,11 +197,12 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
       return(list(
         id = scenId,
         arguments = unlist(
-          strsplit(unlist(private$parValCombinations[[scenId]],
-            use.names = FALSE
-          ),
-          '|"""|',
-          fixed = TRUE
+          strsplit(
+            unlist(private$parValCombinations[[scenId]],
+              use.names = FALSE
+            ),
+            '|"""|',
+            fixed = TRUE
           ),
           use.names = FALSE
         )

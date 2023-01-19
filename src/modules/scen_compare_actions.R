@@ -367,24 +367,25 @@ observeEvent(input[["scenRemoteExportHandler"]], {
   if (!is.null(dsToExport)) {
     data <- data[names(data) %in% dsToExport]
   }
-  tryCatch(customDataIO$write(data,
-    sandboxScenario = if (tabsetId == 1) activeScen else NULL
-  ),
-  error_custom = function(e) {
-    flog.debug(
-      "Custom exporter: %s reported a custom error: %s",
-      input$exportFileType,
-      conditionMessage(e)
-    )
-    errMsg <<- conditionMessage(e)
-  },
-  error = function(e) {
-    flog.warn(
-      "Problems exporting data (export name: '%s'). Error message: '%s'.",
-      input$exportFileType, conditionMessage(e)
-    )
-    errMsg <<- lang$errMsg$saveScen$desc
-  }
+  tryCatch(
+    customDataIO$write(data,
+      sandboxScenario = if (tabsetId == 1) activeScen else NULL
+    ),
+    error_custom = function(e) {
+      flog.debug(
+        "Custom exporter: %s reported a custom error: %s",
+        input$exportFileType,
+        conditionMessage(e)
+      )
+      errMsg <<- conditionMessage(e)
+    },
+    error = function(e) {
+      flog.warn(
+        "Problems exporting data (export name: '%s'). Error message: '%s'.",
+        input$exportFileType, conditionMessage(e)
+      )
+      errMsg <<- lang$errMsg$saveScen$desc
+    }
   )
   if (is.null(showErrorMsg(lang$errMsg$saveScen$title, errMsg))) {
     return()

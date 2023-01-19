@@ -40,25 +40,27 @@ scalarSymbols <- setNames(
 )
 scalarSymbols <- scalarSymbols[scalarSymbols %in% scalarInputSym]
 
-baseScriptValidator <- Validator$new(c(
-  "id", "tabTitle", "command",
-  "args", "outputFile", "markdown", "timeout"
-),
-configJSON$scripts$base,
-requiredKeys = c(
-  "id", "tabTitle",
-  "command", "outputFile"
+baseScriptValidator <- Validator$new(
+  c(
+    "id", "tabTitle", "command",
+    "args", "outputFile", "markdown", "timeout"
+  ),
+  configJSON$scripts$base,
+  requiredKeys = c(
+    "id", "tabTitle",
+    "command", "outputFile"
+  )
 )
-)
-hcubeScriptValidator <- Validator$new(c(
-  "id", "title", "command",
-  "args", "outputFile", "markdown", "timeout"
-),
-configJSON$scripts$hcube,
-requiredKeys = c(
-  "id", "title",
-  "command", "outputFile"
-)
+hcubeScriptValidator <- Validator$new(
+  c(
+    "id", "title", "command",
+    "args", "outputFile", "markdown", "timeout"
+  ),
+  configJSON$scripts$hcube,
+  requiredKeys = c(
+    "id", "title",
+    "command", "outputFile"
+  )
 )
 outputAttachmentsValidator <- Validator$new(c("filename", "execPerm", "throwError"),
   configJSON$outputAttachments,

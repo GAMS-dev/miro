@@ -135,11 +135,12 @@ InputDataInstance <- R6Class("InputDataInstance", public = list(
     }
     hashesToOrder <- startsWith(names(dataHashesTmp), "__")
     scenHashOrder <- order(names(dataHashesTmp)[hashesToOrder])
-    scenHash <- paste(c(
-      unlist(dataHashesTmp[!hashesToOrder], use.names = FALSE),
-      unlist(dataHashesTmp[hashesToOrder][scenHashOrder], use.names = FALSE)
-    ),
-    collapse = " "
+    scenHash <- paste(
+      c(
+        unlist(dataHashesTmp[!hashesToOrder], use.names = FALSE),
+        unlist(dataHashesTmp[hashesToOrder][scenHashOrder], use.names = FALSE)
+      ),
+      collapse = " "
     )
     return(digest::digest(scenHash, algo = "sha256", serialize = FALSE))
   },
