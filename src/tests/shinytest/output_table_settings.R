@@ -13,6 +13,5 @@ expect_identical(jsonlite::fromJSON(app$get_values()$output[["table_tab_1_1-data
 expect_identical(jsonlite::fromJSON(app$get_values()$output[["table_tab_1_1-datatable"]])$x$options$decimals, 4L)
 expect_identical(jsonlite::fromJSON(app$get_values()$output[["table_tab_1_1-datatable"]])$x$options$pageLength, 5L)
 app$set_inputs(outputTabset = "outputTabset_2")
-Sys.sleep(1L)
-expect_true(app$get_js("$('#tableOutLabel_2').html().trim()==='<h1>asd</h1>';", timeout = 50L))
+expect_error(app$wait_for_js("$('#tableOutLabel_2').html().trim()==='<h1>asd</h1>';", timeout = 5000L), NA)
 app$stop()

@@ -55,7 +55,7 @@ app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSolve']")
 timeout <- 600L
 repeat{
-  if (app$get_js("$('#outputDataTitle').is(':visible');", timeout = 50L)) {
+  if (isTRUE(app$get_js("$('#outputDataTitle').is(':visible');", timeout = 50L))) {
     break
   }
   Sys.sleep(4L)
@@ -75,7 +75,7 @@ app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSolve']")
 timeout <- 600L
 repeat{
-  if (app$get_js("$('#outputDataTitle').is(':visible');", timeout = 50L)) {
+  if (isTRUE(app$get_js("$('#outputDataTitle').is(':visible');", timeout = 50L))) {
     break
   }
   Sys.sleep(4L)
@@ -113,8 +113,7 @@ Sys.sleep(2L)
 expect_true(grepl("selected 6 scenarios", app$get_values()$output[["newHcJobInfo"]], fixed = TRUE))
 expect_true(grepl("1 scenarios have already been solved", app$get_values()$output[["newHcJobInfo"]], fixed = TRUE))
 app$set_inputs(hcWidget_3_combinations = TRUE)
-Sys.sleep(1L)
-expect_true(app$get_js("$('#hcWidget_3_step').is(':visible') === true", timeout = 50L))
+expect_error(app$wait_for_js("$('#hcWidget_3_step').is(':visible')===true", timeout = 5000L), NA)
 expect_true(grepl("selected 126 scenarios", app$get_values()$output[["newHcJobInfo"]], fixed = TRUE))
 app$set_inputs(hcWidget_3_step = 9)
 Sys.sleep(1)
@@ -129,18 +128,7 @@ addSelectizeOption(app, "#newHcubeTags", "blub")
 selectSelectizeOption(app, "#newHcubeTags", "bla")
 selectSelectizeOption(app, "#newHcubeTags", "blub")
 app$click(selector = "#btSubmitHcJobConfirmUnsolved")
-timeout <- 20L
-repeat{
-  if (app$get_js("$('#shiny-modal').is(':visible')", timeout = 50L)) {
-    break
-  }
-  Sys.sleep(1L)
-  timeout <- timeout - 1L
-  if (timeout <= 0L) {
-    app$expect_values()
-    stop("Timeout reached. Could not submit HC job.", call. = FALSE)
-  }
-}
+expect_error(app$wait_for_js("$('#shiny-modal').is(':visible');", timeout = 20000L), NA)
 app$click(selector = "#sidebarItemExpanded a[data-value='gamsinter']")
 app$click(selector = '#shiny-tab-gamsinter a[data-value="joblist"]')
 app$click(selector = "#refreshActiveJobs")
@@ -159,11 +147,10 @@ repeat{
 }
 expect_true(app$get_js("$('#jImport_output td').get(2).innerHTML.trim().startsWith('bla,blub')", timeout = 50))
 app$run_js("$('#jImport_output button[onclick*=\\'showJobProgress\\']').get(0).click()")
-Sys.sleep(1)
-expect_true(app$get_js("$('#shiny-modal .progress-bar.progress-bar-striped.active').is(':visible')"))
+expect_error(app$wait_for_js("$('#shiny-modal .progress-bar.progress-bar-striped.active').is(':visible')", timeout = 5000L), NA)
 timeout <- 600L
 repeat{
-  if (app$get_js("$('#shiny-modal .progress-bar.progress-bar-striped.active').is(':visible')===false;", timeout = 50)) {
+  if (isTRUE(app$get_js("$('#shiny-modal .progress-bar.progress-bar-striped.active').is(':visible')===false;", timeout = 50))) {
     break
   }
   Sys.sleep(4L)
@@ -177,7 +164,7 @@ Sys.sleep(1)
 expect_error(app$run_js("$('#jImport_output button[onclick*=\\'downloadJobData\\']').get(0).click()"), NA)
 timeout <- 30L
 repeat{
-  if (app$get_js("$('#jImport_output td').length === 0", timeout = 50)) {
+  if (isTRUE(app$get_js("$('#jImport_output td').length===0;", timeout = 50))) {
     break
   }
   Sys.sleep(2L)
@@ -219,7 +206,7 @@ selectSelectizeOption(app, "#newHcubeTags", "&&")
 app$click(selector = "#btSubmitHcJobConfirm")
 timeout <- 20L
 repeat{
-  if (app$get_js("$('#shiny-modal').is(':visible')", timeout = 50L)) {
+  if (isTRUE(app$get_js("$('#shiny-modal').is(':visible');", timeout = 50L))) {
     break
   }
   Sys.sleep(1L)
@@ -293,7 +280,7 @@ selectSelectizeOption(app, "#newHcubeTags", "woff")
 app$click(selector = "#btSubmitHcJobConfirm")
 timeout <- 20L
 repeat{
-  if (app$get_js("$('#shiny-modal').is(':visible')", timeout = 50L)) {
+  if (isTRUE(app$get_js("$('#shiny-modal').is(':visible');", timeout = 50L))) {
     break
   }
   Sys.sleep(1L)
@@ -310,7 +297,7 @@ Sys.sleep(4)
 timeout <- 200L
 repeat{
   app$click(selector = "#refreshActiveJobs")
-  if (app$get_js("$(\"#jImport_output button[onclick*='downloadJobData']\").length>0;", timeout = 50L)) {
+  if (isTRUE(app$get_js("$(\"#jImport_output button[onclick*='downloadJobData']\").length>0;", timeout = 50L))) {
     break
   }
   Sys.sleep(2L)
@@ -323,7 +310,7 @@ repeat{
 expect_error(app$run_js("$('#jImport_output button[onclick*=\\'downloadJobData\\']').get(0).click()"), NA)
 timeout <- 30L
 repeat{
-  if (app$get_js("$('#jImport_output td').length===0;", timeout = 50)) {
+  if (isTRUE(app$get_js("$('#jImport_output td').length===0;", timeout = 50))) {
     break
   }
   Sys.sleep(2L)
@@ -344,7 +331,7 @@ Sys.sleep(0.5)
 app$click(selector = "#btSubmitHcJobConfirm")
 Sys.sleep(2)
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true;", timeout = 10000L)
-app$wait_for_js("$('.shiny-notification-content').is(':visible') && $('.shiny-notification-content').text().includes('Quota warning');", timeout = 5000L)
+app$wait_for_js("$('.shiny-notification-warning').is(':visible') && $('.shiny-notification-warning').text().includes('Quota warning');", timeout = 5000L)
 
 expect_identical(httr::status_code(httr::PUT(
   paste0(Sys.getenv("ENGINE_URL"), "/usage/quota"),

@@ -28,7 +28,7 @@ if (identical(Sys.getenv("GMSMODELNAME"), "transport")) {
   app$upload_file(localInput = paste0("../data/transport_merge.xlsx"))
   app$set_inputs(btImportLocal = "click")
   app$set_inputs(btMergeInputData = "click")
-  Sys.sleep(1)
+  Sys.sleep(2)
   expect_equal(getHotData(app, "in_1"),
     tibble(
       i = c("Seattle", "San-Diego", "Boston"),

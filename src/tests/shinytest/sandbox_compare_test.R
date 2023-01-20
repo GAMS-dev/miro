@@ -53,11 +53,12 @@ app$set_inputs(btUpdateMeta = "click")
 expect_error(app$wait_for_js("$('#cmpScenTitle_2').text()==='default1 (Sandbox)'", timeout = 5000L), NA)
 app$click(selector = "#refreshSandbox_2 button")
 expect_error(app$wait_for_js("$('#cmpScenTitle_2').text()==='bliblablub (Sandbox)'", timeout = 5000L), NA)
-
+Sys.sleep(1)
 app$click(selector = ".btSplitView button")
 app$click(selector = ".btSplitView a[data-view='pivot']")
 
-expect_error(app$wait_for_js("$('.box-title:visible button').eq(0).click();true;", timeout = 5000L), NA)
+expect_error(app$wait_for_js("$('.box-title button').is(':visible');", timeout = 5000L), NA)
+app$run_js("$('.box-title:visible button').eq(0).click();")
 expect_error(app$wait_for_js("$('.base-scen').text()==='bliblablub (Sandbox)'", timeout = 5000L), NA)
 app$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(1)
@@ -65,7 +66,7 @@ app$set_inputs(contentScen_0 = "contentScen_0_4")
 Sys.sleep(0.5)
 app$click(selector = 'a[data-value="inputData"]')
 app$set_inputs(inputTabset = "inputTabset_1")
-expect_error(app$wait_for_js("HTMLWidgets.getInstance($('.rhandsontable:visible').get(0)).hot.setDataAtRowProp(0,1,200);true;", timeout = 5000L), NA)
+app$run_js("HTMLWidgets.getInstance($('.rhandsontable:visible').get(0)).hot.setDataAtRowProp(0,1,200);")
 Sys.sleep(0.5)
 app$click(selector = 'a[data-value="scenarios"]')
 
@@ -85,10 +86,8 @@ expect_chartjs(
   )
 )
 # click refresh button in pivot compare mode
-expect_true(app$get_js("$('.box-title:visible button').eq(1).click();true;", timeout = 50))
-Sys.sleep(3)
-app$set_inputs("tab_0_3-miroPivot-pivotRenderer" = "stackedbar")
-Sys.sleep(0.5)
+app$run_js("$('.box-title:visible button').eq(1).click();")
+Sys.sleep(2)
 expect_chartjs(
   app,
   "tab_0_3-miroPivot-pivotChart",
@@ -107,7 +106,8 @@ app$click(selector = ".btSplitView button")
 app$click(selector = ".btSplitView a[data-view='tab']")
 expect_error(app$wait_for_js("$('#tab_5_8-scalarBoxes h3:contains(\"102\")').length>0", timeout = 5000L), NA)
 # click refresh button in tab compare mode
-expect_true(app$get_js("$('.scen-button:visible').eq(0).click();true;", timeout = 50))
-Sys.sleep(2)
+Sys.sleep(1)
+expect_error(app$wait_for_js("$('.scen-button').is(':visible');", timeout = 5000L), NA)
+app$run_js("$('.scen-button:visible').eq(0).click();")
 expect_error(app$wait_for_js("$('#tab_5_8-scalarBoxes h3:contains(\"22\")').length>0", timeout = 5000L), NA)
 app$stop()

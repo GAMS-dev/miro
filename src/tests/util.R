@@ -258,7 +258,7 @@ get_downloaded_file_content <- function(app, id, raw = FALSE) {
   return(rawToChar(req$content))
 }
 
-connectDb <- function(modelName = NULL, dbPath = file.path(getwd(), "..", "testdb")) {
+connectDb <- function(modelName = NULL, dbPath = Sys.getenv("MIRO_DB_PATH")) {
   if (identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")) {
     conn <- DBI::dbConnect(
       drv = RPostgres::Postgres(),

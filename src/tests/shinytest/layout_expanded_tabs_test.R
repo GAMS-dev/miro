@@ -1,5 +1,4 @@
 app <- AppDriver$new("../../", name = "layout_expanded_tabs_test", variant = NULL, load_timeout = 20000)
-
 expect_true(app$get_js("$('#inputTabset > li').length===3", timeout = 50L))
 expect_true(app$get_js("$('#outputTabset > li').length===4", timeout = 50L))
 
@@ -14,19 +13,20 @@ expect_true(app$get_js("$('#contentScen_4 > li').length===7", timeout = 50L))
 
 # pivot view
 app$click(selector = ".btSplitView button")
-app$run_js("$('.btSplitView a[data-view=\\'pivot\\']').get(0).click()")
-Sys.sleep(0.5)
-app$run_js("$('.box-title:visible button').eq(0).click();", timeout = 50)
-Sys.sleep(1)
+app$run_js("$('.btSplitView a[data-view=\\'pivot\\']').get(0).click();")
+expect_error(app$wait_for_js("$('.box-title:visible button').is(':visible');", timeout = 5000L), NA)
+app$run_js("$('.box-title:visible button').eq(0).click();")
+expect_error(app$wait_for_js("$('#btLoadScenConfirm').is(':visible');", timeout = 5000L), NA)
 app$set_inputs(selLoadScen = paste0("1_", Sys.info()[["user"]]))
 Sys.sleep(0.2)
 app$set_inputs(btLoadScenConfirm = "click")
-app$wait_for_js("$('#contentScen_0 > li').length===5", timeout = 2000L)
+expect_error(app$wait_for_js("$('#contentScen_0 > li').length===5;", timeout = 5000L), NA)
 
 # split view
 app$click(selector = ".btSplitView button")
 app$run_js("$('.btSplitView a[data-view=\\'split\\']').get(0).click()")
-app$run_js("$('.scenSplit-button-load:nth(1)').click();true", timeout = 50L)
-expect_error(app$wait_for_js("$('#contentScen_2 > li').length===2", timeout = 5000L), NA)
+expect_error(app$wait_for_js("$('.scenSplit-button-load:nth(1)').is(':visible');", timeout = 5000L), NA)
+app$run_js("$('.scenSplit-button-load:nth(1)').click();")
+expect_error(app$wait_for_js("$('#contentScen_2 > li').length===2;", timeout = 5000L), NA)
 
 app$stop()

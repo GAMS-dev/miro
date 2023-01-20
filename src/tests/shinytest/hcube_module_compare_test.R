@@ -6,8 +6,7 @@ context("UI tests - Hypercube module - compare mode")
 app$click(selector = "#sidebarItemExpanded a[data-value='loadResults']")
 Sys.sleep(0.5)
 app$set_inputs(btSendQuery = "click")
-Sys.sleep(0.5)
-expect_true(app$get_js("$('#batchLoadResults')?.data('datatable')?.data()?.length===8;", timeout = 50L))
+expect_error(app$wait_for_js("$('#batchLoadResults')?.data('datatable')?.data()?.length===8;", timeout = 5000L), NA)
 scenData <- getVisibleDtData(app, "batchLoadResults")
 
 # Makes sure hidden output scalars (firstdaytraining/lastdaytraining) were properly stored

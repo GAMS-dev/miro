@@ -100,8 +100,7 @@ app$click(selector = "#sidebarItemExpanded a[data-value='inputData']")
 
 app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSolve']")
-Sys.sleep(1)
-expect_true(app$get_js("$('#btSolveDetachCurrent').is(':visible')"))
+expect_error(app$wait_for_js("$('#btSolveDetachCurrent').is(':visible')", timeout = 5000L), NA)
 app$click(selector = "#btSolveDetachCurrent")
 timeout <- 20
 repeat{

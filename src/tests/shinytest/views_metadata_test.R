@@ -7,6 +7,7 @@ getData <- function(id) {
 app$set_inputs(btImport = "click")
 Sys.sleep(0.5)
 app$set_inputs(tb_importData = "tb_importData_local")
+expect_error(app$wait_for_js("$('#localInput.shiny-bound-input').is(':visible');", timeout = 2000L), NA)
 app$upload_file(localInput = "../data/transport.gdx")
 app$set_inputs(btImportLocal = "click")
 Sys.sleep(0.5)
