@@ -30,6 +30,9 @@ variables:
   SKIP_TESTS:
     value: 'no'
     description: 'Skip tests on Windows/macOS (yes/no)?'
+  MIRO_MAX_TEST_FAILURES:
+    value: '1'
+    description: 'Maximum number of tests allowed to fail before the job fails'
   SKIP_NOTARIZATION:
     value: 'no'
     description: 'Skip notarization of macOS installer (yes/no)?'

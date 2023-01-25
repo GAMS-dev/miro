@@ -59,7 +59,7 @@ if (Sys.info()[["sysname"]] == "Darwin") {
 }
 
 reporter <- MultiReporter$new(list(
-  ProgressReporter$new(max_failures = 100),
+  ProgressReporter$new(max_failures = as.integer(Sys.getenv("MIRO_MAX_TEST_FAILURES", "1"))),
   JunitReporter$new(file = file.path(getwd(), "test-out.xml"))
 ))
 
