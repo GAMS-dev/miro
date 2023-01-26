@@ -862,7 +862,8 @@
         "duplicateScalars": "ERROR: Scalar(s): '%s' have been declared multiple times. Please make sure that each symbol is declared only once.",
         "duplicateScalarVE": "ERROR: Scalar variable(s)/equation(s): '%s' have been declared multiple times. Please make sure that each symbol is declared only once.",
         "invalidRange": "ERROR: Invalid range specification.",
-        "invalidColRange": "ERROR: Invalid column range specification."
+        "invalidColRange": "ERROR: Invalid column range specification.",
+        "maxDimExceeded": "Data exceeds maximum number of rows and/or columns supported by Excel."
       }
     },
     "invalidFileType":{

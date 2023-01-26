@@ -862,7 +862,8 @@
         "duplicateScalars": "FEHLER: Skalar(e): '%s' wurden mehrfach deklariert. Bitte stellen Sie sicher, dass jedes Symbol nur einmal deklariert wird.",
         "duplicateScalarVE": "FEHLER: Skalarvariable(n)/Gleichung(en): '%s' wurden mehrfach deklariert. Bitte stellen Sie sicher, dass jedes Symbol nur einmal deklariert wird.",
         "invalidRange": "FEHLER: Ungültige Bereichsinformation.",
-        "invalidColRange": "FEHLER: Ungültige Zeilendimension."
+        "invalidColRange": "FEHLER: Ungültige Zeilendimension.",
+        "maxDimExceeded": "Die Daten überschreiten die von Excel unterstützte maximale Anzahl von Zeilen und/oder Spalten."
       }
     },
     "invalidFileType":{

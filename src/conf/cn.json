@@ -857,7 +857,8 @@
         "duplicateScalars": "错误：标量：'%s'已被声明多次。 请确保每个符号仅声明一次。",
         "duplicateScalarVE": "错误：标量变量/等式：'%s'已被声明多次。 请确保每个符号仅声明一次。",
         "invalidRange": "错误：范围规格无效。",
-        "invalidColRange": "错误：无效的列范围规范。"
+        "invalidColRange": "错误：无效的列范围规范。",
+        "maxDimExceeded": "数据超出 Excel 支持的最大行数和/或列数。"
       }
     },
     "fileRead":{

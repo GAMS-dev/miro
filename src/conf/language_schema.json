@@ -3354,9 +3354,13 @@
                 "invalidColRange": {
                   "type": "string",
                   "minLength": 1
+                },
+                "maxDimExceeded": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 24
+              "minProperties": 25
             }
           },
           "minProperties": 2

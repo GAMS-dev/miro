@@ -173,12 +173,20 @@ exportScenario <- function(file, data, exportFileTypeId, refId, tabsetId, attach
       }
     },
     error = function(e) {
-      flog.info("Unexpected error while creating xlsx file for export: %s", conditionMessage(e))
-      if (interactiveMode) {
-        showElReplaceTxt(session, "#scenExportError", lang$errMsg$unknownError)
-        downloadHandlerError(file, lang$errMsg$unknownError)
+      if (grepl("row or column index out of rang", conditionMessage(e), fixed = TRUE)) {
+        flog.info("Data exceeds maximum number of rows and/or columns supported by Excel: %s", conditionMessage(e))
+        errMsgInteractive <- lang$errMsg$xlsio$errors$maxDimExceeded
+        errMsg <- "Data exceeds maximum number of rows and/or columns supported by Excel."
       } else {
-        write("merr:::500:::Unexpected error while creating xlsx file for export.", stderr())
+        flog.info("Unexpected error while creating xlsx file for export: %s", conditionMessage(e))
+        errMsgInteractive <- lang$errMsg$unknownError
+        errMsg <- "Unexpected error while creating xlsx file for export."
+      }
+      if (interactiveMode) {
+        showElReplaceTxt(session, "#scenExportError", errMsgInteractive)
+        downloadHandlerError(file, errMsgInteractive)
+      } else {
+        write(paste0("merr:::500:::", errMsg), stderr())
         quit("no", 1L)
       }
     }
