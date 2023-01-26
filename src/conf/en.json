@@ -44,6 +44,7 @@
       "scenario":{
         "title":"Scenario",
         "edit":"Edit metadata",
+        "removeDuplicates": "Remove duplicates",
         "save":"Save",
         "saveAs":"Save As",
         "export": "Export",
@@ -245,6 +246,15 @@
       "errMsg": "Prolems updating scenario metadata. If this problem persists, please contact the system administrator.",
       "cancelButton":"Close",
       "okButton":"Update metadata"
+    },
+    "dialogRemoveDuplicates": {
+      "noDuplicates": "None of your input tables contain duplicate records.",
+      "title": "Remove duplicate records",
+      "desc": "The following symbol(s) contain duplicate records: '%s'.\nDo you want to keep only the first or only the last value of these duplicate records?",
+      "cancelButton": "Cancel",
+      "btKeepFirst": "Keep first",
+      "btKeepLast": "Keep last",
+      "success": "Duplicate records successfully removed"
     },
     "dialogRemoteLogin": {
       "title": "Login required",

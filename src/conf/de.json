@@ -44,6 +44,7 @@
       "scenario":{
         "title":"Szenario",
         "edit":"Metadaten bearbeiten",
+        "removeDuplicates": "Duplikate entfernen",
         "save":"Speichern",
         "saveAs":"Speichern unter",
         "export": "Exportieren",
@@ -245,6 +246,15 @@
       "errMsg": "Beim aktualisieren der Metadaten ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
       "cancelButton":"Schließen",
       "okButton":"Metadaten aktualisieren"
+    },
+    "dialogRemoveDuplicates": {
+      "noDuplicates": "Keine Ihrer Eingabetabellen enthält doppelte Datensätze.",
+      "title": "Doppelte Datensätze entfernen",
+      "desc": "Das/die folgende(n) Symbol(e) enthalten doppelte Datensätze: '%s'.\nWollen Sie nur den ersten oder nur den letzten Wert dieser doppelten Datensätze behalten?",
+      "cancelButton": "Abbrechen",
+      "btKeepFirst": "Ersten behalten",
+      "btKeepLast": "Letzten behalten",
+      "success": "Doppelte Datensätze erfolgreich entfernt"
     },
     "dialogRemoteLogin": {
       "title": "Login erforderlich",

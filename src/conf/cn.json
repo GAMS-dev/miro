@@ -44,6 +44,7 @@
       "scenario":{
         "title":"场景选项",
         "edit":"编辑元数据",
+        "removeDuplicates": "删除重复项",
         "save":"保存",
         "saveAs":"另存为",
         "export":"导出",
@@ -245,6 +246,15 @@
       "errMsg":"更新场景元数据中出现错误。如果此问题仍然存在,请与系统管理员联系。",
       "cancelButton": "关闭",
       "okButton":"更新元数据"
+    },
+    "dialogRemoveDuplicates": {
+      "noDuplicates": "你的输入表都不包含重复的记录。",
+      "title": "删除重复的记录",
+      "desc": "以下符号包含重复的记录。'%s'.n你想只保留这些重复记录的第一个或最后一个值吗？",
+      "cancelButton": "取消",
+      "btKeepFirst": "保留第一个数据集",
+      "btKeepLast": "保留最后一个数据集",
+      "success": "成功删除重复记录"
     },
     "dialogRemoteLogin": {
       "title": "请登陆",

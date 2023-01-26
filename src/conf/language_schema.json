@@ -183,6 +183,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "removeDuplicates": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "save": {
                   "type": "string",
                   "minLength": 1
@@ -200,7 +204,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 6
+              "minProperties": 7
             },
             "help": {
               "type": "object",
@@ -963,6 +967,41 @@
             }
           },
           "minProperties": 35
+        },
+        "dialogRemoveDuplicates": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "noDuplicates": {
+              "type": "string",
+              "minLength": 1
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "desc": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cancelButton": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btKeepFirst": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btKeepLast": {
+              "type": "string",
+              "minLength": 1
+            },
+            "success": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 7
         },
         "dialogRemoteLogin": {
           "type": "object",
@@ -2496,7 +2535,7 @@
           }
         }
       },
-      "minProperties": 49
+      "minProperties": 50
     },
     "renderers": {
       "description": "language specific objects of renderers",

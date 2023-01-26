@@ -140,7 +140,7 @@ storeGAMSOutputFiles <- function(workDir) {
     showErrorMsg(lang$errMsg$saveAttachments$title, errMsg)
   }
 }
-prepareModelRun <- function(async = FALSE) {
+prepareModelRun <- function(saveAttachments = TRUE) {
   prog <- Progress$new()
   on.exit(suppressWarnings(prog$close()))
   prog$set(message = lang$progressBar$prepRun$title, value = 0)
@@ -205,6 +205,9 @@ prepareModelRun <- function(async = FALSE) {
   })
   if (is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))) {
     return(NULL)
+  }
+  if (!saveAttachments) {
+    return(inputData)
   }
   tryCatch(
     {
@@ -293,7 +296,7 @@ observeEvent(input$btSubmitJob, {
   if (length(activeScen)) {
     jobNameTmp <- activeScen$getScenName()
   }
-  inputData <- prepareModelRun(async = TRUE)
+  inputData <- prepareModelRun()
   if (is.null(inputData)) {
     return(NULL)
   }
@@ -810,7 +813,7 @@ runNewSynchronousJob <- function(detachCurrentRun = FALSE) {
   if (!verifyCanSolve(detachCurrentRun = detachCurrentRun)) {
     return()
   }
-  inputData <- prepareModelRun(async = FALSE)
+  inputData <- prepareModelRun()
   if (is.null(inputData)) {
     return(NULL)
   }
@@ -893,6 +896,125 @@ observeEvent(input$btDetachCurrentJob, {
   disableEl(session, "#btInterrupt")
   disableEl(session, "#btDetachCurrentJob")
   showNotification(lang$nav$gams$boxGamsOutput$gamsOutputTabset$detachedInfoMsg)
+})
+observeEvent(input$btRemoveDuplicates, {
+  flog.debug("Button to open remove duplicate records dialog clicked.")
+  inputData <- prepareModelRun(saveAttachments = FALSE)
+  worker$setInputData(inputData)
+  tempie <- tempfile(fileext = ".gdx")
+  if (is.null(inputData)) {
+    return()
+  }
+  if (tryCatch(
+    {
+      gdxio$wgdx(tempie, inputData$get(), getAllSymbolsWithDuplicates = TRUE)
+      TRUE
+    },
+    error_duplicate_records = function(e) {
+      return(FALSE)
+    }
+  )) {
+    showNotification(lang$nav$dialogRemoveDuplicates$noDuplicates)
+    return()
+  }
+  duplicateSymNames <- gdxio$getSymbolsWithDuplicates()
+  symIds <- match(duplicateSymNames, names(modelInRaw))
+  invalidSymNames <- is.na(symIds)
+  symIds <- symIds[!invalidSymNames]
+  inputSymAliases <- vapply(modelInRaw, "[[", character(1L), "alias", USE.NAMES = FALSE)
+  duplicateSymAliases <- c(inputSymAliases[symIds], duplicateSymNames[invalidSymNames])
+
+  showModal(modalDialog(
+    title = lang$nav$dialogRemoveDuplicates$title,
+    tags$div(
+      tags$div(
+        class = "gmsalert gmsalert-error", id = "removeDuplicatesError",
+        lang$errMsg$unknownError
+      ),
+      tags$div(
+        sprintf(lang$nav$dialogRemoveDuplicates$desc, paste(duplicateSymAliases, collapse = "', '"))
+      )
+    ),
+    footer = tagList(
+      tags$div(
+        class = "modal-footer-mobile",
+        modalButton(lang$nav$dialogRemoveDuplicates$cancelButton),
+        actionButton("btRemoveDuplicatesKeepFirst", lang$nav$dialogRemoveDuplicates$btKeepFirst),
+        actionButton("btRemoveDuplicatesKeepLast", lang$nav$dialogRemoveDuplicates$btKeepLast)
+      )
+    ),
+    fade = TRUE, easyClose = TRUE
+  ))
+})
+reloadInputTables <- function(scenInputData) {
+  prog <- Progress$new()
+  on.exit(suppressWarnings(prog$close()))
+  prog$set(message = lang$progressBar$importScen$title, value = 0.1)
+
+  datasetsToFetch <- names(scenInputData)
+  scalarDataset <- NULL
+
+  errMsg <- NULL
+  overwriteInput <<- 1L
+  loadMode <- "scen"
+  newInputCount <- 0L
+  dfClArgs <- NULL
+  prog$set(detail = lang$progressBar$importScen$renderInput, value = 0.4)
+
+  # reset input data
+  modelInputGraphVisible[] <<- FALSE
+  lapply(seq_along(modelIn)[names(modelIn) %in% datasetsToFetch], function(i) {
+    hideEl(session, "#graph-in_" %+% i)
+    showEl(session, "#data-in_" %+% i)
+  })
+  hideEl(session, "#btRefreshGraphIn")
+
+  source("./modules/input_load.R", local = TRUE)
+  markUnsaved(markDirty = TRUE)
+  if (!is.null(errMsg)) {
+    return(NULL)
+  }
+  scenData$loadSandbox(
+    scenInputData, names(scenInputData),
+    activeScen$getMetadataDf()
+  )
+}
+removeDuplicateRecords <- function(keep = c("first", "last")) {
+  tryCatch(
+    {
+      keep <- match.arg(keep)
+      duplicateSymNames <- gdxio$getSymbolsWithDuplicates()
+      inputData <- worker$getInputData()
+      newData <- lapply(duplicateSymNames, function(symName) {
+        oldData <- inputData$get(symName)
+        isNumCol <- vapply(oldData, is.numeric, logical(1L), USE.NAMES = FALSE)
+        dimCols <- rlang::syms(names(oldData)[!isNumCol])
+        if (identical(keep, "first")) {
+          return(dplyr::distinct(oldData, !!!dimCols, .keep_all = TRUE))
+        }
+        return(ungroup(filter(group_by(oldData, !!!dimCols), row_number() == n())))
+      })
+      names(newData) <- duplicateSymNames
+      reloadInputTables(newData)
+      removeModal()
+      showNotification(lang$nav$dialogRemoveDuplicates$success)
+    },
+    error = function(e) {
+      flog.error(
+        "Unexpected error while removed duplicates (keep %s): %s",
+        keep, conditionMessage(e)
+      )
+      showHideEl(session, "#removeDuplicatesError", 6000L)
+    }
+  )
+}
+observeEvent(input$btRemoveDuplicatesKeepFirst, {
+  flog.debug("Button to remove duplicate records except first clicked.")
+  removeDuplicateRecords("first")
+})
+observeEvent(input$btRemoveDuplicatesKeepLast, {
+  flog.debug("Button to remove duplicate records except last clicked.")
+  removeDuplicateRecords("last")
 })
 if (!isShinyProxy && config$activateModules$remoteExecution) {
   observeEvent(input$btRemoteExecLogin, {
@@ -1211,7 +1333,7 @@ if (identical(config$activateModules$hcube, TRUE)) {
     if (length(activeScen)) {
       jobNameTmp <- activeScen$getScenName()
     }
-    inputData <- prepareModelRun(async = TRUE)
+    inputData <- prepareModelRun()
     if (is.null(inputData)) {
       return(NULL)
     }
