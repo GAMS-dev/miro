@@ -657,7 +657,7 @@
       "progress":"Rendern von Grafik "
     },
     "prepRun":{
-      "title":"Optimierungslauf wird vorbereitet",
+      "title":"Vorbereitung",
       "sendInput":"Senden der Eingabedaten",
       "downloadAttach": "Laden der Anhänge"
     },

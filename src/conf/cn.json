@@ -657,7 +657,7 @@
       "progress":"正在绘制输出"
     },
     "prepRun":{
-      "title":"正在准备优化",
+      "title":"准备",
       "sendInput":"发送输入数据",
       "downloadAttach":"正在下载附件"
     },
