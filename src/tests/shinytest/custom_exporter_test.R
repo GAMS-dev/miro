@@ -25,7 +25,7 @@ app$set_inputs(exportFileType = "custom_1")
 app$set_inputs(scenRemoteExportHandler = "click")
 Sys.sleep(1)
 app$wait_for_js("$('.modal-body').is(':visible')===false;", timeout = 2000L)
-app$run_js('$(\'button[data-dismiss="modal"]:visible\').click();true;')
+app$run_js('$(\'button[data-dismiss="modal"]:visible\').click();')
 Sys.sleep(1L)
 
 app$set_inputs(btImport = "click")

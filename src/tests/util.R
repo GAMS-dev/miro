@@ -37,7 +37,7 @@ addSelectizeOption <- function(app, selector, value, alias = value) {
   return(app$run_js(paste0("$('", selector, "')[0].selectize.addOption({value:'", value, "',label: '", alias, "'});")))
 }
 selectSelectizeOption <- function(app, selector, value) {
-  return(app$run_js(paste0("$('", selector, "')[0].selectize.addItem('", value, "');true;")))
+  return(app$run_js(paste0("$('", selector, "')[0].selectize.addItem('", value, "');")))
 }
 
 expect_download <- function(app, id, filename) {
