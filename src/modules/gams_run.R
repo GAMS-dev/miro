@@ -932,6 +932,7 @@ observeEvent(input$btRemoveDuplicates, {
         lang$errMsg$unknownError
       ),
       tags$div(
+        class = "gmsdialog-text",
         sprintf(lang$nav$dialogRemoveDuplicates$desc, paste(duplicateSymAliases, collapse = "', '"))
       )
     ),
