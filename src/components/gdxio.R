@@ -112,7 +112,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       )
     }
   },
-  wgdx = function(gdxName, data, squeezeZeros = c("n", "y", "e")) {
+  wgdx = function(gdxName, data, squeezeZeros = c("n", "y", "e"), getAllSymbolsWithDuplicates = FALSE) {
     if (!length(names(data))) {
       gdxrrwMIRO::wgdx(nativeFileEnc(gdxName), list())
       return(invisible(self))
@@ -325,39 +325,67 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
 
     scalarSymList <- scalarSymList[!is.na(scalarSymList)]
     wgdxDotList <- wgdxDotList[!(isScalarData | isEmptySymbol)]
-    tryCatch(
-      do.call(gdxrrwMIRO::wgdx, c(nativeFileEnc(gdxName), wgdxDotList, scalarSymList, list(squeeze = squeezeZeros))),
-      error = function(e) {
-        errMsg <- conditionMessage(e)
-        if (startsWith(errMsg, "GDXRRW:wgdx:GDXDupError:")) {
-          errMsg <- stri_split_fixed(substr(errMsg, 25L, nchar(errMsg)), "\n")[[1L]]
-          if (errMsg[[1]] %in% names(private$metaData)) {
-            errMsg[[1]] <- sprintf(
-              lang$errMsg$gdxio$errors$duplicateRecords,
-              private$metaData[[errMsg[[1]]]]$alias
-            )
-          } else {
-            flog.warn("Could not find symbol: '%s' that was reported to have duplicate records in data contract.", errMsg[[1]])
-            errMsg[[1]] <- sprintf(
-              lang$errMsg$gdxio$errors$duplicateRecords,
-              errMsg[[1]]
-            )
+    private$symbolsWithDuplicates <- character(0L)
+    if (getAllSymbolsWithDuplicates) {
+      wgdxDotListSymNames <- vapply(wgdxDotList, "[[", character(1L), "name", USE.NAMES = FALSE)
+    }
+    errMsg <- NULL
+    repeat{
+      tryCatch(
+        {
+          do.call(gdxrrwMIRO::wgdx, c(nativeFileEnc(gdxName), wgdxDotList, scalarSymList, list(squeeze = squeezeZeros)))
+          if (length(private$symbolsWithDuplicates)) {
+            stop_custom("error_duplicate_records", errMsg)
           }
-          if (length(errMsg) > 11L) {
-            errMsg <- paste0(
-              paste(errMsg[1:11], collapse = "\n"),
-              "\n\n",
-              lang$errMsg$gdxio$errors$duplicateRecordsTruncated
-            )
-          } else {
-            errMsg <- paste(errMsg, collapse = "\n")
+          return(invisible(self))
+        },
+        error = function(e) {
+          if ("error_duplicate_records" %in% class(e)) {
+            stop_custom("error_duplicate_records", conditionMessage(e))
           }
-          stop_custom("error_duplicate_records", errMsg)
+          errMsgTmp <- conditionMessage(e)
+          if (startsWith(errMsgTmp, "GDXRRW:wgdx:GDXDupError:")) {
+            errMsgTmp <- stri_split_fixed(substr(errMsgTmp, 25L, nchar(errMsgTmp)), "\n")[[1L]]
+            symIdxWithDuplicates <- NA_integer_
+            if (errMsgTmp[[1]] %in% names(private$metaData)) {
+              symIdxWithDuplicates <- which(errMsgTmp[[1]] == wgdxDotListSymNames)[1L]
+              private$symbolsWithDuplicates <- c(private$symbolsWithDuplicates, errMsgTmp[[1]])
+              errMsgTmp[[1]] <- sprintf(
+                lang$errMsg$gdxio$errors$duplicateRecords,
+                private$metaData[[errMsgTmp[[1]]]]$alias
+              )
+            } else {
+              flog.warn("Could not find symbol: '%s' that was reported to have duplicate records in data contract.", errMsgTmp[[1]])
+              errMsgTmp[[1]] <- sprintf(
+                lang$errMsg$gdxio$errors$duplicateRecords,
+                errMsgTmp[[1]]
+              )
+            }
+            if (length(errMsgTmp) > 11L) {
+              errMsg <<- paste0(
+                paste(errMsgTmp[1:11], collapse = "\n"),
+                "\n\n",
+                lang$errMsg$gdxio$errors$duplicateRecordsTruncated
+              )
+            } else {
+              errMsg <<- paste(errMsgTmp, collapse = "\n")
+            }
+            if (getAllSymbolsWithDuplicates && !is.na(symIdxWithDuplicates) &&
+              length(wgdxDotList) > symIdxWithDuplicates) {
+              wgdxDotList <<- wgdxDotList[seq(symIdxWithDuplicates + 1L, length(wgdxDotList))]
+              wgdxDotListSymNames <<- vapply(wgdxDotList, "[[", character(1L), "name", USE.NAMES = FALSE)
+              return()
+            }
+            stop_custom("error_duplicate_records", errMsg)
+          }
+          stop(errMsgTmp)
         }
-        stop(errMsg)
-      }
-    )
+      )
+    }
     return(invisible(self))
+  },
+  getSymbolsWithDuplicates = function() {
+    return(private$symbolsWithDuplicates)
   }
 ), private = list(
   rgdxName = character(1L),
@@ -369,6 +397,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   scalarEquationsName = character(1L),
   scalarEquationsOutName = character(1L),
   dropdownAliases = list(),
+  symbolsWithDuplicates = character(0L),
   rgdxVe = function(symName, names = NULL) {
     sym <- gdxrrwMIRO::rgdx(private$rgdxName,
       list(

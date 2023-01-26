@@ -507,3 +507,57 @@ test_that("Duplicate records throw error (part 2)", {
     class = "error_duplicate_records"
   )
 })
+
+test_that("Finding symbols with duplicates works", {
+  gdxio <- GdxIO$new(
+    file.path(
+      .libPaths()[1], "gdxrrwMIRO",
+      if (identical(tolower(Sys.info()[["sysname"]]), "windows")) {
+        file.path("bin", "x64")
+      } else {
+        "bin"
+      }
+    ), c(modelInRaw, modelOut),
+    scalarsFileName, scalarsOutName,
+    scalarEquationsName,
+    scalarEquationsOutName,
+    list()
+  )
+  filePath <- filePathEnc
+  on.exit(unlink(filePath), add = TRUE)
+  data <- list(
+    tibble::tibble(
+      "i" = c("seattle", "san-diego", "seattle"),
+      "text" = c("", "", "")
+    ),
+    tibble::tibble(
+      "j" = c("new-york", "chicago", "topeka"),
+      "text" = c("", "", "")
+    ),
+    tibble::tibble(
+      "i" = c("seattle", "seattle", "seattle", "san-diego", "san-diego", "san-diego", "seattle"),
+      "j" = c("new-york", "chicago", "topeka", "new-york", "chicago", "topeka", "new-york"),
+      value = c(2.5, 1.7, 1.8, 2.5, 1.8, 1.4, 2.1)
+    )
+  )
+  names(data) <- c("i", "j", "d")
+  expect_error(gdxio$wgdx(filePath, data, getAllSymbolsWithDuplicates = TRUE),
+    class = "error_duplicate_records"
+  )
+  expect_identical(gdxio$getSymbolsWithDuplicates(), c("i", "d"))
+  data <- list(
+    tibble::tibble(
+      "i" = c("seattle", "san-diego", "seattle"),
+      "text" = c("", "", "")
+    ),
+    tibble::tibble(
+      "j" = c("new-york", "chicago", "topeka"),
+      "text" = c("", "", "")
+    )
+  )
+  names(data) <- c("i", "j")
+  expect_error(gdxio$wgdx(filePath, data, getAllSymbolsWithDuplicates = TRUE),
+    class = "error_duplicate_records"
+  )
+  expect_identical(gdxio$getSymbolsWithDuplicates(), c("i"))
+})
