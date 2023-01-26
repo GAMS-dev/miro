@@ -326,6 +326,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     scalarSymList <- scalarSymList[!is.na(scalarSymList)]
     wgdxDotList <- wgdxDotList[!(isScalarData | isEmptySymbol)]
     private$symbolsWithDuplicates <- character(0L)
+    wgdxDotListSymNames <- character()
     if (getAllSymbolsWithDuplicates) {
       wgdxDotListSymNames <- vapply(wgdxDotList, "[[", character(1L), "name", USE.NAMES = FALSE)
     }
