@@ -1492,6 +1492,21 @@
                     run.
                   </div>
                   <!--//section-block-->
+                  <div id="data-cleaning" class="section-block">
+                    <h3 class="block-title">Data cleaning</h3>
+                    <p>
+                      Your input data must not contain duplicate records. MIRO
+                      can help you automatically find and remove duplicate
+                      records in your input data sets using the
+                      <i>Scenario</i> &rarr; <i>Remove duplicates</i> menu in
+                      the header. MIRO first checks if any of your input records
+                      contain duplicate records, and gives you the option to
+                      keep only the first or only the last occurrence of the
+                      duplicate.
+                    </p>
+                  </div>
+
+                  <!--//section-block-->
                   <div id="solve-model" class="section-block">
                     <h3 class="block-title">Solve the model</h3>
                     <p>
@@ -1659,18 +1674,23 @@
                         />
                       </div>
                       <ul>
-                        <li id="metadata">
-                          <b>Edit metadata</b> <br />Allows you to edit scenario
-                          metadata, i.e. the scenario name and/or the tags
-                          assigned as well as file attachments and scenario
-                          access permissions. Read more about scenario metadata
+                        <li>
+                          <b>Edit metadata</b> <br /><a
+                            id="metadata"
+                            class="anchor"
+                          ></a
+                          >Allows you to edit scenario metadata, i.e. the
+                          scenario name and/or the tags assigned as well as file
+                          attachments and scenario access permissions. Read more
+                          about scenario metadata
                           <a href="#scenario-metadata" class="scrollto">here</a
                           >.
                         </li>
-                        <li id="save">
-                          <b>Save</b> <br />Saves the currently active sandbox
-                          scenario under an already specified name. Data of the
-                          initially loaded scenario is overwritten.<br /><br />
+                        <li>
+                          <b>Save</b> <br /><a id="save" class="anchor"></a
+                          >Saves the currently active sandbox scenario under an
+                          already specified name. Data of the initially loaded
+                          scenario is overwritten.<br /><br />
                           <div class="callout-block callout-success">
                             <div class="icon-holder">
                               <i class="fas fa-thumbs-up"></i>
@@ -1689,11 +1709,14 @@
                           </div>
                           <!--//callout-block-->
                         </li>
-                        <li id="save-as">
-                          <b>Save As</b> <br />Saves the currently active
-                          sandbox scenario under an new name. If the sandbox
-                          scenario has no name yet, only this option is
-                          available for saving.
+                        <li>
+                          <b>Save As</b> <br /><a
+                            id="save-as"
+                            class="anchor"
+                          ></a
+                          >Saves the currently active sandbox scenario under an
+                          new name. If the sandbox scenario has no name yet,
+                          only this option is available for saving.
                           <div
                             class="section-block"
                             style="
@@ -2811,6 +2834,11 @@
                       class="nav-link scrollto save-space"
                       href="#data-manipulation"
                       >Data manipulation</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#data-cleaning"
+                      >Data cleaning</a
                     >
                     <a class="nav-link scrollto save-space" href="#solve-model"
                       >Solve the model</a
