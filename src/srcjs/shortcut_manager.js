@@ -150,6 +150,15 @@ export default class ShortcutManager {
           }
         },
       },
+      KeyD: {
+        description: 'Remove duplicates',
+        context: () => $('.modal.in').length === 0,
+        handler: () => {
+          Shiny.setInputValue('btRemoveDuplicates', 1, {
+            priority: 'event',
+          });
+        },
+      },
       KeyM: {
         description: 'Edit metadata',
         context: () => $('.modal.in').length === 0,
