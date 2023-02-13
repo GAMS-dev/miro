@@ -1644,6 +1644,7 @@ Worker <- R6Class("Worker", public = list(
       gamsRetCode <- content(ret)$gams_return_code
 
       if (is.null(gamsRetCode)) {
+        flog.error("Engine returned 308/410 return code but gams_return_code was NULL.")
         private$status <- -500L
       } else {
         private$status <- gamsRetCode
