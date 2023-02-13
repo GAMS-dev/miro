@@ -1535,15 +1535,14 @@ Worker <- R6Class("Worker", public = list(
     if (length(private$gamsRet)) {
       if (resolved(private$fRemoteRes)) {
         resVal <- value(private$fRemoteRes)
-        private$status <- private$gamsRet
-        if (!identical(resVal, 0L)) {
-          if (identical(resVal, -100L)) {
-            private$status <- -100L
-            flog.error("Fetching results timed out.")
-          } else {
-            flog.error(resVal)
-            private$status <- -500L
-          }
+        if (identical(resVal, 0L)) {
+          private$status <- private$gamsRet
+        } else if (identical(resVal, -100L)) {
+          flog.error("Fetching results timed out.")
+          private$status <- -100L
+        } else {
+          flog.error("Invalid value returned while resolving model results future: %s", resVal)
+          private$status <- -500L
         }
       } else {
         private$wait <- bitwShiftL(2L, private$waitCnt)
@@ -1781,7 +1780,7 @@ Worker <- R6Class("Worker", public = list(
       }
     } else {
       unlink(resultsPath)
-      return(content(ret)$message)
+      return(sprintf("Could not download job results. Return code: %s.", status_code(ret)))
     }
     unlink(resultsPath)
     return(0L)
