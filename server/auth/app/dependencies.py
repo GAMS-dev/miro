@@ -6,7 +6,7 @@ from fastapi.logger import logger
 
 from app.config import settings
 from app.utils.app_utils import app_is_invisible
-from app.utils.models import User
+from app.utils.models import User, OidcLoginData
 
 bearer_auth = HTTPBearer(auto_error=False)
 basic_auth = HTTPBasic(auto_error=False)
@@ -38,6 +38,31 @@ def _send_token_request(username: str, password: str, expires_in: int = 3600, sc
     return r
 
 
+def _send_id_token_request(id_token: str, expires_in: int = 3600, scopes: List[str] = []) -> requests.Response:
+    data = {"expires_in": expires_in,
+            "id_token": id_token}
+    if scopes:
+        data["scope"] = " ".join(scopes)
+    try:
+        r = requests.post(f"{settings.engine_url}/auth/oidc-providers/login",
+                          data=data, timeout=settings.request_timeout)
+    except requests.exceptions.ConnectionError:
+        logger.info(
+            "ConnectionError when requesting bearer token from GAMS Engine (OIDC).")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            message="Internal server error",
+        )
+    except requests.exceptions.Timeout:
+        logger.info(
+            "Timeout (%s) when requesting bearer token from GAMS Engine (OIDC).", str(settings.request_timeout))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            message="Internal server error",
+        )
+    return r
+
+
 def get_bearer_token(username: str, password: str, expires_in: int = 3600) -> str:
     r = _send_token_request(
         username, password, expires_in, scopes=["JOBS", "HYPERCUBE", "NAMESPACES", "USAGE"])
@@ -55,6 +80,58 @@ def get_bearer_token(username: str, password: str, expires_in: int = 3600) -> st
     return r.json()["token"]
 
 
+def login_user_oidc(id_token: str, expires_in: int = 3600) -> OidcLoginData:
+    r = _send_id_token_request(
+        id_token, expires_in, scopes=["JOBS", "HYPERCUBE", "NAMESPACES", "USAGE", "USERS"])
+    if r.status_code != 200:
+        logger.info("Invalid return code (%s) when requesting token from GAMS Engine (OIDC)",
+                    str(r.status_code))
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+
+    bearer_token = r.json()["token"]
+    auth_header = "Bearer " + bearer_token
+
+    try:
+        r = requests.get(f"{settings.engine_url}/users/?everyone=false",
+                         headers={"Authorization": auth_header,
+                                  "X-Fields": "username,roles"},
+                         timeout=settings.request_timeout)
+    except requests.exceptions.ConnectionError:
+        logger.info(
+            "ConnectionError when requesting user details from GAMS Engine (OIDC).")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error",
+        )
+    except requests.exceptions.Timeout:
+        logger.info(
+            "Timeout (%s) when rrequesting user details from GAMS Engine (OIDC).", str(settings.request_timeout))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error",
+        )
+    if r.status_code != 200:
+        logger.info("Invalid return code (%s) when requesting user details from GAMS Engine (OIDC)",
+                    str(r.status_code))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error",
+        )
+    user_info = r.json()
+    if len(user_info) != 1:
+        logger.info(
+            "GAMS Engine did not return exactly one user when requesting user details (OIDC).")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error",
+        )
+    return OidcLoginData(username=user_info[0]["username"], bearer_token=bearer_token)
+
+
 def get_username_bearer(bearer_token: str) -> str:
     try:
         auth_header = "Bearer " + bearer_token
@@ -66,14 +143,14 @@ def get_username_bearer(bearer_token: str) -> str:
             "ConnectionError when requesting username of bearer token from GAMS Engine.")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message="Internal server error",
+            detail="Internal server error",
         )
     except requests.exceptions.Timeout:
         logger.info(
             "Timeout (%s) when requesting username of bearer token from GAMS Engine.", str(settings.request_timeout))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message="Internal server error",
+            detail="Internal server error",
         )
     if r.status_code != 200:
         logger.info("Invalid return code (%s) when requesting user data from GAMS Engine",
@@ -202,7 +279,7 @@ def get_authenticated_user(bearer_token: str, username: str) -> User:
                 settings.request_timeout), settings.engine_ns)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message="Internal server error",
+            detail="Internal server error",
         )
     except Exception as e:
         logger.exception(

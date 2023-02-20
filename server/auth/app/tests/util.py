@@ -17,6 +17,7 @@ def reset_app_config_file():
     with open(settings["SPECS_FILE_PATH"], "w") as f:
         f.write("specs:\n- accessGroups:\n  - admins\n  containerEnv:\n    MIRO_API_VERSION: '1'\n  containerVolumes:\n  - :/home/miro/admin/models\n  - :/home/miro/admin/data\n  description: MIRO Server Admin Panel\n  displayName: Admin\n  id: admin\n  logoURL: ~\n")
 
+
 def get_db_cursor():
     conn = psycopg2.connect(dbname=os.environ['GMS_MIRO_DATABASE'], user=os.environ['GMS_MIRO_DATABASE_USER'], host=os.environ['GMS_MIRO_DATABASE_HOST'],
                             password=os.environ['GMS_MIRO_DATABASE_PWD'], port=5432)

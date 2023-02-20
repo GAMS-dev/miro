@@ -22,12 +22,16 @@ with open("/home/miro/admin/global.R", "r") as f:
 FORCE_SIGNED_APPS = "force-signed-apps" in settings_yml and settings_yml["force-signed-apps"] == True
 FORCE_SIGNED_APPS = "true" if FORCE_SIGNED_APPS else "false"
 
+OIDC_LOGIN = "authentication" in settings_yml and settings_yml["authentication"] == "openid"
+
 
 class Settings(BaseSettings):
     engine_url: str
     engine_ns: str
     session_timeout: int = 3600*12
     add_data_timeout: int = 3600
+    authentication_mode: str = Field(
+        "oidc" if OIDC_LOGIN else "engine", const=True)
     miro_server_version: str = Field(MIRO_SERVER_VERSION, const=True)
     force_signed_apps: str = Field(FORCE_SIGNED_APPS, const=True)
     supported_data_filetypes: List[str] = [

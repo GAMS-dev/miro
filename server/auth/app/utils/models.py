@@ -17,14 +17,31 @@ class AuthRequest(BaseModel):
     password: str
 
 
+class OidcAuthRequest(BaseModel):
+    id_token: str
+
+
+class OidcLoginData(BaseModel):
+    bearer_token: str
+    username: str
+
+
 class AuthResponse(BaseModel):
     token: str
     roles: List[str]
     permissions: str
 
 
+class OidcAuthResponse(BaseModel):
+    token: str
+    roles: List[str]
+    permissions: str
+    username: str
+
+
 class ConfigurationResponse(BaseModel):
     version: str
+    authentication_mode: str
 
 
 class AppConfig(BaseModel):

@@ -2,12 +2,15 @@ import os
 import shutil
 import pytest
 import requests
+from unittest.mock import patch, MagicMock
 from fastapi.testclient import TestClient
 
 from ..main import app
+from ..config import settings as app_settings
 from .util import settings, get_db_cursor, register_transport, invite_user, delete_user, reset_app_config_file
 
 client = TestClient(app)
+app_settings.authentication_mode = "oidc"
 
 
 @pytest.fixture()
@@ -40,33 +43,48 @@ def cleanup():
     delete_user("mirotests_auth_1", allow_fail=True)
 
 
-class TestEngine:
-    def test_login_invalid(self, cleanup):
-        response = client.post("/login/oidc",
-                               json={"id_token": "invalid"})
+def create_mock_login(username, password):
+    mock_response = MagicMock()
+    r = requests.post(f"{settings['ENGINE_URL']}/auth/login",
+                      data={"expires_in": 100,
+                            "username": settings["ENGINE_USER"],
+                            "password": settings["ENGINE_PASSWORD"]})
+    mock_response.json = lambda: {"token": r.json()["token"]}
+    mock_response.status_code = 200
+    return mock_response
+
+
+class TestOidc:
+    @patch('requests.post')
+    def test_login_invalid(self, mock_login, cleanup):
+        mock_response = MagicMock()
+        mock_response.json.token = "Unauthorized"
+        mock_response.status_code = 401
+        mock_login.return_value = mock_response
+
+        response = client.post("/login",
+                               json={"username": settings["ENGINE_USER"],
+                                     "password": settings["ENGINE_PASSWORD"]})
         print(response.json())
         assert response.status_code == 400
 
-        response = client.post("/login",
-                               json={"username": "invalid",
-                                     "password": "invalid"})
+        response = client.post("/login/oidc",
+                               json={"id_token": "invalid"})
         print(response.json())
         assert response.status_code == 401
-        response = client.post("/login",
+        response = client.post("/login/oidc",
                                json={"username": settings["ENGINE_USER"],
-                                     "password": "invalid"})
-        print(response.json())
-        assert response.status_code == 401
-        response = client.post("/login",
-                               json={"username": settings["ENGINE_USER"]})
+                                     "password": settings["ENGINE_PASSWORD"]})
         print(response.json())
         assert response.status_code == 422
 
     def test_login_no_perm(self, cleanup):
         invite_user("mirotests_auth_1", 0)
-        response = client.post("/login",
-                               json={"username": "mirotests_auth_1",
-                                     "password": "mirotests_auth_1"})
+
+        with patch("requests.post", return_value=create_mock_login(
+                "mirotests_auth_1", "mirotests_auth_1")):
+            response = client.post("/login/oidc",
+                                   json={"id_token": "valid"})
         print(response.json())
         assert response.status_code == 403
         response = requests.post(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups/mygroup",
@@ -75,29 +93,34 @@ class TestEngine:
         print(response.json())
         assert response.status_code == 201
         # user without permissions but member of group should get access only if models exist
-        response = client.post("/login",
-                               json={"username": "mirotests_auth_1",
-                                     "password": "mirotests_auth_1"})
+        with patch("requests.post", return_value=create_mock_login(
+                "mirotests_auth_1", "mirotests_auth_1")):
+            response = client.post("/login/oidc",
+                                   json={"id_token": "valid"})
         print(response.json())
         assert response.status_code == 403
 
         register_transport(client, ["mygroup"])
-        response = client.post("/login",
-                               json={"username": "mirotests_auth_1",
-                                     "password": "mirotests_auth_1"})
+        with patch("requests.post", return_value=create_mock_login(
+                "mirotests_auth_1", "mirotests_auth_1")):
+            response = client.post("/login/oidc",
+                                   json={"id_token": "valid"})
         print(response.json())
         assert response.status_code == 200
 
     def test_login_with_perm(self, cleanup):
         invite_user("mirotests_auth_1", 1)
-        response = client.post("/login",
-                               json={"username": "mirotests_auth_1",
-                                     "password": "mirotests_auth_1"})
+
+        with patch("requests.post", return_value=create_mock_login(
+                "mirotests_auth_1", "mirotests_auth_1")):
+            response = client.post("/login/oidc",
+                                   json={"id_token": "valid"})
         print(response.json())
         assert response.status_code == 200
-        response = client.post("/login",
-                               json={"username": settings["ENGINE_USER"],
-                                     "password": settings["ENGINE_PASSWORD"]})
+        with patch("requests.post", return_value=create_mock_login(
+                settings["ENGINE_USER"], settings["ENGINE_PASSWORD"])):
+            response = client.post("/login/oidc",
+                                   json={"id_token": "valid"})
         print(response.json())
         assert response.status_code == 200
 
@@ -108,9 +131,12 @@ class TestEngine:
                                  auth=("mirotests_auth_1", "mirotests_auth_1"))
         print(response.json())
         assert response.status_code == 201
-        response = client.post("/login",
-                               json={"username": "mirotests_auth_1",
-                                     "password": "mirotests_auth_1"})
+
+        with patch("requests.post", return_value=create_mock_login(
+                "mirotests_auth_1", "mirotests_auth_1")):
+            response = client.post("/login/oidc",
+                                   json={"id_token": "valid"})
+
         response_data = response.json()
         print(response_data)
         assert response_data["roles"] == ['mygroup', 'users', 'admins']

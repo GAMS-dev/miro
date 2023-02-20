@@ -15,6 +15,9 @@ router = APIRouter(
 async def get_configuration():
     """
     Return configuration information of MIRO Server instance
+
+    - **version**: Version of GAMS MIRO Server
+    - **authentication_mode**: Authentication mode (engine or oidc)
     """
     logger.info("Request to return MIRO Server config received")
-    return ConfigurationResponse(version=settings.miro_server_version)
+    return ConfigurationResponse(version=settings.miro_server_version, authentication_mode=settings.authentication_mode)
