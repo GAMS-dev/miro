@@ -1,0 +1,86 @@
+<!--
+
+    ContainerProxy
+
+    Copyright (C) 2016-2020 Open Analytics
+
+    ===========================================================================
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the Apache License as published by
+    The Apache Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    Apache License for more details.
+
+    You should have received a copy of the Apache License
+    along with this program.  If not, see <https://www.apache.org/licenses/>
+
+-->
+<!DOCTYPE html>
+<html
+  xmlns:th="//www.thymeleaf.org"
+  xmlns:sec="//www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+>
+  <head lang="en">
+    <title th:text="${title}"></title>
+
+    <!-- Meta -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GAMS MIRO Server" />
+    <meta name="author" content="GAMS Development Corp." />
+
+    <!--<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />-->
+    <!-- Theme CSS -->
+    <link rel="shortcut icon" th:href="@{/assets/img/favicon.ico}" />
+
+    <link
+      rel="stylesheet"
+      media="screen"
+      th:href="@{/assets/css/bootstrap.min.css}"
+    />
+    <link id="theme-style" rel="stylesheet" th:href="@{${themeCss}}" />
+  </head>
+
+  <body>
+    <div class="site-wrapper">
+      <!-- ******Header****** -->
+      <header class="sub-header text-center">
+        <div class="container">
+          <div class="branding">
+            <h1 class="logo">
+              <img
+                class="img-fluid"
+                th:src="@{/assets/img/logo.png}"
+                alt="Logo"
+              />
+            </h1>
+          </div>
+          <!--//branding-->
+          <div class="tagline"></div>
+          <!--//tagline-->
+        </div>
+        <!--//container-->
+      </header>
+      <!--//header-->
+
+      <section class="cards-section text-center">
+        <div class="container">
+          <h2 class="form-signin-heading">
+            You have been logged out successfully!
+          </h2>
+          <a class="btn btn-lg btn-primary btn-block" th:href="@{/}">
+            Login again
+          </a>
+        </div>
+        <!--//container-->
+      </section>
+      <!--//cards-section-->
+    </div>
+  </body>
+</html>
