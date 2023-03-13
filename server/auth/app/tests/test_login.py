@@ -5,6 +5,7 @@ import requests
 from fastapi.testclient import TestClient
 
 from ..main import app
+from ..config import settings as app_settings
 from .util import settings, get_db_cursor, register_transport, invite_user, delete_user, reset_app_config_file
 
 client = TestClient(app)
@@ -12,6 +13,7 @@ client = TestClient(app)
 
 @pytest.fixture()
 def cleanup():
+    app_settings.authentication_mode = "engine"
     requests.post(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups?label=mygroup",
                   auth=settings["VALID_AUTH_TUPLE"])
     os.remove(settings["SPECS_FILE_PATH"])

@@ -10,11 +10,11 @@ from ..config import settings as app_settings
 from .util import settings, get_db_cursor, register_transport, invite_user, delete_user, reset_app_config_file
 
 client = TestClient(app)
-app_settings.authentication_mode = "oidc"
 
 
 @pytest.fixture()
 def cleanup():
+    app_settings.authentication_mode = "oidc"
     requests.post(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups?label=mygroup",
                   auth=settings["VALID_AUTH_TUPLE"])
     os.remove(settings["SPECS_FILE_PATH"])
@@ -47,8 +47,8 @@ def create_mock_login(username, password):
     mock_response = MagicMock()
     r = requests.post(f"{settings['ENGINE_URL']}/auth/login",
                       data={"expires_in": 100,
-                            "username": settings["ENGINE_USER"],
-                            "password": settings["ENGINE_PASSWORD"]})
+                            "username": username,
+                            "password": password})
     mock_response.json = lambda: {"token": r.json()["token"]}
     mock_response.status_code = 200
     return mock_response
