@@ -109,7 +109,7 @@ def login_user_oidc(id_token: str, expires_in: int = 3600) -> OidcLoginData:
         )
     except requests.exceptions.Timeout:
         logger.info(
-            "Timeout (%s) when rrequesting user details from GAMS Engine (OIDC).", str(settings.request_timeout))
+            "Timeout (%s) when requesting user details from GAMS Engine (OIDC).", str(settings.request_timeout))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
