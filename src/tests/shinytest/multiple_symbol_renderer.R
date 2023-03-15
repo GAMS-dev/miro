@@ -21,7 +21,7 @@ app$set_inputs(miroSidebar = "inputData")
 app$set_inputs(inputTabset = "inputTabset_2")
 app$set_inputs(dropdown_9 = "mip")
 app$set_inputs(btSolve = "click")
-Sys.sleep(6L)
+expect_error(app$wait_for_js("$('#outputTableView').is(':visible')", timeout = 10000L), NA)
 app$set_inputs(outputTableView = "click")
 expect_identical(
   jsonlite::fromJSON(app$get_values()$output[["tab_1_1-custom-trnsport"]])$x$calls$args[[4]][[1]]$dyn$value,
