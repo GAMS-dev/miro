@@ -170,7 +170,7 @@
                         aria-controls="macos"
                         aria-selected="false"
                         ><i class="fab fa-apple" style="font-size: 40pt"></i
-                        ><br />macOS (x86_64)</a
+                        ><br />macOS (x86_64/arm64)</a
                       >
                     </li>
                     <li
@@ -235,10 +235,20 @@
                       <div class="section-block">
                         <a
                           class="btn btn-primary btn-cta"
+                          style="
+                            margin: 10pt 10pt 0 0;
+                            -webkit-transition: unset;
+                          "
+                          href="https://d37drm4t2jghv5.cloudfront.net/miro/__VERSION__/macosxarm/GAMS-MIRO-__VERSION_FULL__.dmg"
+                          download
+                          >Download for macOS (Apple silicon)</a
+                        >
+                        <a
+                          class="btn btn-primary btn-cta"
                           style="margin-top: 10pt; -webkit-transition: unset"
                           href="https://d37drm4t2jghv5.cloudfront.net/miro/__VERSION__/macosx/GAMS-MIRO-__VERSION_FULL__.dmg"
                           download
-                          >Download for macOS</a
+                          >Download for macOS (x86_64)</a
                         >
                       </div>
                       <div class="section-block">
@@ -247,21 +257,6 @@
                           <a href="./license.html">License Agreement</a>.
                         </p>
                       </div>
-                      <div class="callout-block callout-warning">
-                        <div class="icon-holder">
-                          <i class="fas fa-info-circle"></i>
-                        </div>
-                        <!--//icon-holder-->
-                        <div class="content">
-                          <b class="callout-title">Note:</b>
-                          <p>
-                            GAMS MIRO is currently not supported on the new
-                            Apple Silicon processors.
-                          </p>
-                        </div>
-                        <!--//content-->
-                      </div>
-                      <!--//callout-block-->
                       <div class="section-block">
                         <h3 class="block-title">Installation</h3>
                         <p>

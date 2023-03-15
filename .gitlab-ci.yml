@@ -18,6 +18,9 @@ variables:
   BUILD_MACOS:
     value: 'yes'
     description: 'Build macOS (ignored on master) (yes/no)?'
+  BUILD_MACOS_ARM:
+    value: 'yes'
+    description: 'Build macOS ARM (ignored on master) (yes/no)?'
   FORCE_BUILD_LINUX_BUILDER:
     value: 'no'
     description: 'Build Linux build image even when Dockerfile did not change (yes/no)?'
@@ -313,6 +316,53 @@ build_macos_job:
   needs: [prepare_all]
 
 
+build_macos_arm_job:
+  tags:
+    - macos-arm64
+  stage: build
+  variables:
+    OPENSSL_PKG_CONFIG_PATH: ${OPENSSL_PKG_CONFIG_PATH_MACOS}
+    GIT_SUBMODULE_STRATEGY: normal
+  before_script:
+    - yarn install
+  script:
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS" == "no" ]] && echo "Skipping macOS ARM build" && exit 0'
+    - export PATH="/usr/bin:${PATH}"
+    - yarn dist
+    - mkdir dist/arm && mv dist/*.dmg dist/arm
+  artifacts:
+    paths:
+      - dist/arm/*.dmg
+    expire_in: 1 week
+  cache:
+    - key:
+        files:
+          - src/miro-pkg-lock.csv
+      paths:
+        - r
+      policy: push
+    - key: build-cache
+      paths:
+        - build/lib_devel/
+    - key:
+        files:
+          - yarn.lock
+      paths:
+        - node_modules
+    - key:
+        files:
+          - src/package-lock.json
+      paths:
+        - src/node_modules/
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+  needs: [prepare_all]
+
+
 test_windows_job:
   tags:
     - windows
@@ -398,6 +448,50 @@ test_macos_job:
       when: never
     - when: on_success
   needs: [build_macos_job]
+
+
+test_macos_arm_job:
+  tags:
+    - macos-arm64
+  stage: test
+  variables:
+    LANG: en_US.UTF-8
+  before_script:
+    - yarn install
+  script:
+    - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS" == "no" ]] && echo "Skipping macOS build" && exit 0'
+    - yarn test gams_sys_dir=${GAMS_PATH_MACOS}
+  dependencies: []
+  cache:
+    - key:
+        files:
+          - src/miro-pkg-lock.csv
+      paths:
+        - r
+    - key: build-cache
+      paths:
+        - build/lib_devel/
+    - key:
+        files:
+          - yarn.lock
+      paths:
+        - node_modules/
+  artifacts:
+    when: always
+    reports:
+      junit: src/test-out.xml
+    paths:
+      - src/tests/testthat/_snaps
+      - src/tests/logs-tests
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+  needs: [build_macos_arm_job]
 
 
 test_job_api:
