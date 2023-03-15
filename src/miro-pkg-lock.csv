@@ -1,28 +1,28 @@
-data.table, 1.14.6
+data.table, 1.14.8
 cpp11, 0.4.3
 backports, 1.4.1
 assertthat, 0.2.1
 crayon, 1.5.2
 glue, 1.6.2
-fansi, 1.0.3
-cli, 3.4.1
-utf8, 1.2.2
-Rcpp, 1.0.9
+fansi, 1.0.4
+cli, 3.6.0
+utf8, 1.2.3
+Rcpp, 1.0.10
 R6, 2.5.1
-BH, 1.78.0-0
+BH, 1.81.0-1
 magrittr, 2.0.3
-rlang, 1.0.6
+rlang, 1.1.0
 ellipsis, 0.3.2
 later, 1.3.0
 promises, 1.2.0.1
-httpuv, 1.6.7
+httpuv, 1.6.9
 mime, 0.12
 jsonlite
 digest, 0.6.31
-sourcetools, 0.1.7
+sourcetools, 0.1.7-1
 xtable, 1.8-4
-fastmap, 1.1.0
-curl, 4.3.3
+fastmap, 1.1.1
+curl, 5.0.0
 V8, 4.2.2
 base64enc, 0.1-3
 htmltools, 0.5.4
@@ -30,32 +30,32 @@ jquerylib, 0.1.4
 withr, 2.5.0
 leaflet.providers, 1.9.0
 commonmark, 1.8.1
-cachem, 1.0.6
+cachem, 1.0.7
 memoise, 2.0.1
-fontawesome, 0.4.0
+fontawesome, 0.5.0
 lifecycle, 1.0.3
 jquerylib, 0.1.4
-fs, 1.5.2
+fs, 1.6.1
 rappdirs, 0.3.3
-sass, 0.4.4
+sass, 0.4.5
 bslib, 0.4.2
 shiny
 shinyAce, 0.4.2
-colorspace, 2.0-3
-purrr, 0.3.5
-yaml, 2.3.6
+colorspace, 2.1-0
+purrr, 1.0.1
+yaml, 2.3.7
 labeling, 0.4.2
 munsell, 0.5.0
 lazyeval, 0.2.2
 pkgconfig, 2.0.3
-vctrs, 0.5.1
+vctrs, 0.5.2
 tidyselect, 1.2.0
 plogr, 0.2.0
-htmlwidgets, 1.5.4
+htmlwidgets, 1.6.1
 png, 0.1-8
 RColorBrewer, 1.1-3
 lattice, 0.20-45
-sp, 1.5-1
+sp, 1.6-0
 viridisLite, 0.4.1
 raster, 3.4-13
 farver, 2.1.0
@@ -66,26 +66,26 @@ DT
 gdxrrwMIRO
 leaflet
 pillar, 1.8.1
-tibble, 3.1.8
+tibble, 3.2.0
 generics, 0.1.3
-timechange, 0.1.1
-lubridate, 1.8.0
-dplyr, 1.0.10
+timechange, 0.2.0
+lubridate, 1.9.2
+dplyr, 1.1.0
 sys, 3.4.1
 askpass, 1.1
 openssl
 prettyunits, 1.1.1
-stringi, 1.7.8
+stringi, 1.7.12
 DBI, 1.1.3
 blob, 1.2.3
 hms, 1.1.2
-tidyr, 1.2.1
-httr, 1.4.4
+tidyr, 1.3.0
+httr, 1.4.5
 plotly
 shinydashboard
 timevis
 rematch, 1.0.1
-formatR, 1.12
+formatR, 1.14
 ps, 1.7.2
 clipr, 0.8.0
 cellranger, 1.1.0
@@ -96,23 +96,23 @@ zoo, 1.8-11
 globals, 0.16.2
 listenv, 0.9.0
 processx, 3.8.0
-readxl, 1.4.1
-writexl, 1.4.1
+readxl, 1.4.2
+writexl, 1.4.2
 rpivotTable, 0.3.0
 futile.logger, 1.4.3
 zip, 2.2.2
 leaflet.minicharts, 0.6.2
-xts, 0.12.2
+xts, 0.13.0
 dygraphs, 1.1.1.6
-parallelly, 1.33.0
-future, 1.30.0
+parallelly, 1.34.0
+future, 1.32.0
 bit, 4.0.5
 bit64, 4.0.5
 tzdb, 0.3.0
-vroom, 1.6.0
-readr, 2.1.3
+vroom, 1.6.1
+readr, 2.1.4
 miroUtil
 rhandsontable
 sortable
 chartjs
-RSQLite, 2.2.19
+RSQLite, 2.3.0
