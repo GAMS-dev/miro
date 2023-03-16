@@ -27,10 +27,10 @@ if [ ! -f "$3"  ]; then
     exit 1
 fi
 
-find "$1/Frameworks" -type f \( -name "*.so" -o -name "*.dylib" \) -exec sh -c "file '{}' \; | grep -q -e 'library x86_64\|bundle x86_64'" \; -print0 | \
+find "$1/Frameworks" -type f \( -name "*.so" -o -name "*.dylib" \) -exec sh -c "file '{}' \; | grep -q -e 'library x86_64\|bundle x86_64\|library arm64\|bundle arm64'" \; -print0 | \
    xargs -0 codesign --sign "$2" --force -v --timestamp || exit 1
 
-find "$1/Resources" -type f \( -name "*.so" -o -name "*.dylib" \) -exec sh -c "file '{}' \; | grep -q -e 'library x86_64\|bundle x86_64'" \; -print0 | \
+find "$1/Resources" -type f \( -name "*.so" -o -name "*.dylib" \) -exec sh -c "file '{}' \; | grep -q -e 'library x86_64\|bundle x86_64\|library arm64\|bundle arm64'" \; -print0 | \
    xargs -0 codesign --sign "$2" --force -v --timestamp || exit 1
 
 find "$1/Frameworks" -type f -perm +0100 -exec sh -c "file '{}' \; | grep -q 'Mach-O 64-bit executable'" \; -print0 | \
