@@ -5,7 +5,11 @@ set -e
 # Requires xar and cpio
 rm -rf r
 mkdir -p r
-curl -o r/r.pkg https://cloud.r-project.org/bin/macosx/base/R-${R_BASE_VERSION}.pkg
+if [[ $(uname -p) == 'arm' ]]; then
+    curl -o r/r.pkg https://cloud.r-project.org/bin/macosx/big-sur-arm64/base/R-${R_BASE_VERSION}-arm64.pkg
+else
+    curl -o r/r.pkg https://cloud.r-project.org/bin/macosx/base/R-${R_BASE_VERSION}.pkg
+fi
 
 pushd r > /dev/null
     xar -xf r.pkg
