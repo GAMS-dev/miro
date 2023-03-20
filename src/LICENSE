@@ -907,7 +907,7 @@ Section 8 -- Interpretation.
           JJ Allaire, Yihui Xie, and Kenton Russell
         - magrittr, Copyright (c) 2014 Stefan Milton Bache and Hadley Wickham
         - crosstalk, Copyright (c) 2016 RStudio, Inc.
-        - openssl, Copyright (c) 2019 Jeroen Ooms [aut, cre], Oliver Keyes [ctb]
+        - openssl, Copyright (c) 2023 Jeroen Ooms [aut, cre], Oliver Keyes [ctb]
         - curl, Copyright (c) 2017 Jeroen Ooms; RStudio
         - bindrcpp, Copyright (c) 2016 RStudio
         - jquerylib, Copyright (c) 2020 Carson Sievert
