@@ -67,6 +67,8 @@ these components are included below):
 - stringi https://github.com/gagolews/stringi or https://cran.r-project.org/web/packages/stringi/index.html
 - dygraphs https://github.com/rstudio/dygraphs or https://cran.r-project.org/web/packages/dygraphs/index.html
 - xts https://github.com/joshuaulrich/xts or https://cran.r-project.org/web/packages/xts/index.html
+- xfun https://github.com/yihui/xfun or https://cran.r-project.org/web/packages/xfun/index.html
+- stringr https://github.com/tidyverse/stringr or https://cran.r-project.org/web/packages/stringr/index.html
 - tidyr https://github.com/tidyverse/tidyr or https://cran.r-project.org/web/packages/tidyr/index.html
 - lifecycle https://github.com/r-lib/lifecycle or https://cran.r-project.org/web/packages/lifecycle/index.html
 - backports https://github.com/r-lib/backports or https://cran.r-project.org/web/packages/backports/index.html
@@ -896,6 +898,8 @@ Section 8 -- Interpretation.
         - jsonlite, Copyright (c) 2020 Jeroen Ooms
         - rpivotTable, Copyright (c) 2015 Enzo Martoglio
         - dygraphs, Copyright (c) 2015-2016 Dan Vanderkam; RStudio, Inc.
+        - xfun, Copyright (c) 2018-2022 Yihui Xie ORCID iD [aut, cre, cph], Wush Wu [ctb], Daijiang Li [ctb], Xianying Tan [ctb], Salim Brüggemann ORCID iD [ctb], Christophe Dervieux [ctb]
+        - stringr, Copyright (c) 2020 Hadley Wickham [aut, cre, cph], RStudio [cph, fnd]
         - tidyr, Copyright (c) 2020 Hadley Wickham [aut, cre], Lionel Henry [aut], RStudio [cph]
         - plogr, Copyright (c) 2016 Kirill Müller [aut, cre],
           Sergey Podobry [cph] (Author of the bundled plog library)
