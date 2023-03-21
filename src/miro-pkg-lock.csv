@@ -34,6 +34,7 @@ cachem, 1.0.7
 memoise, 2.0.1
 fontawesome, 0.5.0
 lifecycle, 1.0.3
+vctrs, 0.6.0
 fs, 1.6.1
 rappdirs, 0.3.3
 sass, 0.4.5
@@ -47,7 +48,6 @@ labeling, 0.4.2
 munsell, 0.5.0
 lazyeval, 0.2.2
 pkgconfig, 2.0.3
-vctrs, 0.6.0
 tidyselect, 1.2.0
 plogr, 0.2.0
 htmlwidgets, 1.5.4
