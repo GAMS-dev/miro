@@ -62,6 +62,10 @@ file log / miro.log /;
 put log '------------------------------------'/;
 put log '        Data validation'/;
 put log '------------------------------------'/;
+if(test123 < 0,
+    put log 'initial_state:: test123 must be positive!'/;
+    abort "Data errors detected."
+);
 if(card(error01),
   put log 'initial_state_clean:: Digits must be integers between 0 and 9!'/;
   loop(error01(row,col),

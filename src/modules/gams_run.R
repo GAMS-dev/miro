@@ -516,7 +516,9 @@ if (config$activateModules$logFile ||
       return()
     }
 
-    write_file(logText, logFilePath, append = TRUE)
+    if (config$activateModules$logFile) {
+      write_file(logText, logFilePath, append = TRUE)
+    }
     appendEl(session, "#logStatusContainer", logText,
       scroll = identical(isolate(input$logUpdate), TRUE)
     )
