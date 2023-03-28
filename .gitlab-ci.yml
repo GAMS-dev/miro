@@ -326,7 +326,7 @@ build_macos_arm_job:
   before_script:
     - yarn install
   script:
-    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS" == "no" ]] && echo "Skipping macOS ARM build" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS_ARM" == "no" ]] && echo "Skipping macOS ARM build" && exit 0'
     - export PATH="/usr/bin:${PATH}"
     - yarn dist
     - mkdir dist/arm && mv dist/*.dmg dist/arm
@@ -460,8 +460,8 @@ test_macos_arm_job:
     - yarn install
   script:
     - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
-    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS" == "no" ]] && echo "Skipping macOS build" && exit 0'
-    - yarn test gams_sys_dir=${GAMS_PATH_MACOS}
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS_ARM" == "no" ]] && echo "Skipping macOS ARM build" && exit 0'
+    - yarn test gams_sys_dir=${GAMS_PATH_MACOS_ARM}
   dependencies: []
   cache:
     - key:
