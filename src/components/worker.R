@@ -57,35 +57,9 @@ Worker <- R6Class("Worker", public = list(
               type = "application/json",
               encoding = "utf-8"
             )
-            if (identical(length(instances[["instances_available"]]), 0L)) {
-              instances <- httr::GET(
-                url = paste0(metadata$url, "/usage/instances"),
-                httr::add_headers(
-                  Authorization = authHeader,
-                  Timestamp = as.character(Sys.time(), usetz = TRUE)
-                ),
-                httr::timeout(6L)
-              )
-              if (!identical(httr::status_code(instances), 200L)) {
-                errMsg <- httr::content(instances,
-                  type = "application/json",
-                  encoding = "utf-8"
-                )
-                stop(sprintf(
-                  "Invalid status code when fetching global instances: %s. Error message: %s",
-                  httr::status_code(instances), errMsg[["message"]]
-                ), call. = FALSE)
-              }
-              availableInstances <- httr::content(instances,
-                type = "application/json",
-                encoding = "utf-8"
-              )
-            } else {
-              availableInstances <- instances[["instances_available"]]
-            }
             return(list(
               error = FALSE, instancesSupported = TRUE, apiInfo = apiInfo,
-              instances = availableInstances,
+              instances = instances[["instances_available"]],
               default = instances[["default_instance"]]
             ))
           },
