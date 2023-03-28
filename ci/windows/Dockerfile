@@ -2,22 +2,22 @@ FROM mcr.microsoft.com/windows/server:ltsc2022
 
 SHELL ["powershell", "-executionpolicy", "bypass", "-command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'; $verbosePreference='Continue'; Set-PSDebug -Trace 0;"]
 
-ARG NODE_VERSION=16.15.1
+ARG NODE_VERSION=18.15.0
 ENV NODE_VERSION=${NODE_VERSION}
 
-ARG GPG_VERSION=4.0.2
+ARG GPG_VERSION=4.1.0
 ENV GPG_VERSION=${GPG_VERSION}
 
 ARG YARN_VERSION=1.22.19
 ENV YARN_VERSION=${YARN_VERSION}
 
-ARG R_VERSION=4.2.2
+ARG R_VERSION=4.2.3
 ENV R_VERSION=${R_VERSION}
 
 ARG INNOEXTRACT_VERSION=1.9
 ENV INNOEXTRACT_VERSION=${INNOEXTRACT_VERSION}
 
-ARG GAMS_VERSION=41.3.0
+ARG GAMS_VERSION=42.4.0
 ENV GAMS_VERSION=${GAMS_VERSION}
 
 RUN Invoke-WebRequest $('https://files.gpg4win.org/gpg4win-{0}.exe' -f $env:GPG_VERSION) -OutFile 'gpg4win.exe' -UseBasicParsing ; \
