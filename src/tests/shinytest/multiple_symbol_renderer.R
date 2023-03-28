@@ -23,6 +23,7 @@ app$set_inputs(dropdown_9 = "mip")
 app$set_inputs(btSolve = "click")
 expect_error(app$wait_for_js("$('#outputTableView').is(':visible')", timeout = 10000L), NA)
 app$set_inputs(outputTableView = "click")
+Sys.sleep(1L)
 expect_identical(
   jsonlite::fromJSON(app$get_values()$output[["tab_1_1-custom-trnsport"]])$x$calls$args[[4]][[1]]$dyn$value,
   list(0L, 325L, 275L, 300L, 0L, 0L)
