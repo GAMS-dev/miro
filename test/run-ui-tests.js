@@ -50,13 +50,13 @@ if (typeof process.argv[2] === 'string' && process.argv[2].startsWith('gams_sys_
       {
         env: rEnv,
         cwd: path.join(__dirname, '..', 'src'),
+        stdio: 'inherit',
       },
     );
-    subproc.stderr.pipe(process.stderr);
-    subproc.stdout.pipe(process.stderr);
     await subproc;
+    process.exit();
   } catch (e) {
     console.log(`Problems running R tests. Error message: ${e.message}`);
-    process.exitCode = 1;
+    process.exit(1);
   }
 })();

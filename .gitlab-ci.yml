@@ -381,14 +381,17 @@ test_windows_job:
           - src/miro-pkg-lock.csv
       paths:
         - r
+      policy: pull
     - key: build-cache
       paths:
         - build/lib_devel/
+      policy: pull
     - key:
         files:
           - yarn.lock
       paths:
         - node_modules/
+      policy: pull
   artifacts:
     when: always
     reports:
@@ -425,14 +428,17 @@ test_macos_job:
           - src/miro-pkg-lock.csv
       paths:
         - r
+      policy: pull
     - key: build-cache
       paths:
         - build/lib_devel/
+      policy: pull
     - key:
         files:
           - yarn.lock
       paths:
         - node_modules/
+      policy: pull
   artifacts:
     when: always
     reports:
@@ -467,16 +473,19 @@ test_macos_arm_job:
     - key:
         files:
           - src/miro-pkg-lock.csv
+      policy: pull
       paths:
         - r
     - key: build-cache
       paths:
         - build/lib_devel/
+      policy: pull
     - key:
         files:
           - yarn.lock
       paths:
         - node_modules/
+      policy: pull
   artifacts:
     when: always
     reports:

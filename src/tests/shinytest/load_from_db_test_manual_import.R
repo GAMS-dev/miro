@@ -51,7 +51,7 @@ expect_equivalent(
   )
 )
 app$set_inputs(inputTabset = "inputTabset_1")
-Sys.sleep(0.5)
+Sys.sleep(1)
 expect_equivalent(dplyr::filter(getHotData(app, "in_1"), symbol == "GAMS"), tibble::tibble(
   date = c("2016-01-04"),
   symbol = c("GAMS"), value = c(6)
