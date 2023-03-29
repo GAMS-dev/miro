@@ -5,7 +5,7 @@ USER root
 RUN apt-get update && apt-get install -y \
     sudo \
     wget \
-    r-base-dev=${R_BASE_VERSION}*
+    r-base-dev
 
 COPY additional_packages .
 
