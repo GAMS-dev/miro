@@ -379,8 +379,7 @@ expect_true(app$get_js("$('#jImport_output tr').length===2"))
 app$run_js("$('#jImport_output button[onclick*=\\'discardJob\\']').get(0).click()")
 Sys.sleep(1)
 app$click(selector = "#confirmModal .bt-gms-confirm")
-Sys.sleep(1.5)
-expect_true(app$get_js("$('#jImport_output td').length===0"))
+app$wait_for_js("$('#jImport_output td').length===0", timeout = 3000)
 
 # check job history
 app$click(selector = "#btShowHistory")
