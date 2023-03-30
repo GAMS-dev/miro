@@ -12,7 +12,7 @@
                     "configuration"
                 ],
                 "summary": "Get MIRO Server configuration information",
-                "description": "Return configuration information of MIRO Server instance",
+                "description": "Return configuration information of MIRO Server instance\n\n- **version**: Version of GAMS MIRO Server\n- **authentication_mode**: Authentication mode (engine or oidc)",
                 "operationId": "get_configuration",
                 "responses": {
                     "200": {
@@ -697,6 +697,55 @@
                     }
                 }
             }
+        },
+        "/login/oidc": {
+            "post": {
+                "tags": [
+                    "login"
+                ],
+                "summary": "Log in user via OpenID Connect and return login info",
+                "description": "Log in user and return login info:\n\n- **token**: Bearer access token that can be used for authentication\n- **roles**: Labels of user groups that user can see\n- **permissions**: Permissions (octal) of the user in the MIRO Server namespace\n- **username**: GAMS Engine username",
+                "operationId": "login",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OidcAuthRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OidcAuthResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "message": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -911,12 +960,17 @@
             "ConfigurationResponse": {
                 "title": "ConfigurationResponse",
                 "required": [
-                    "version"
+                    "version",
+                    "authentication_mode"
                 ],
                 "type": "object",
                 "properties": {
                     "version": {
                         "title": "Version",
+                        "type": "string"
+                    },
+                    "authentication_mode": {
+                        "title": "Authentication Mode",
                         "type": "string"
                     }
                 }
@@ -942,6 +996,50 @@
                         "items": {
                             "$ref": "#/components/schemas/ValidationError"
                         }
+                    }
+                }
+            },
+            "OidcAuthRequest": {
+                "title": "OidcAuthRequest",
+                "required": [
+                    "id_token"
+                ],
+                "type": "object",
+                "properties": {
+                    "id_token": {
+                        "title": "Id Token",
+                        "type": "string"
+                    }
+                }
+            },
+            "OidcAuthResponse": {
+                "title": "OidcAuthResponse",
+                "required": [
+                    "token",
+                    "roles",
+                    "permissions",
+                    "username"
+                ],
+                "type": "object",
+                "properties": {
+                    "token": {
+                        "title": "Token",
+                        "type": "string"
+                    },
+                    "roles": {
+                        "title": "Roles",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "permissions": {
+                        "title": "Permissions",
+                        "type": "string"
+                    },
+                    "username": {
+                        "title": "Username",
+                        "type": "string"
                     }
                 }
             },
