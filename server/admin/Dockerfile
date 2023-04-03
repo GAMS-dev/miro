@@ -1,7 +1,7 @@
 FROM miro-ui
 
 LABEL com.gamsmiroadmin.vendor="GAMS Development Corp."\
-com.gamsmiroadmin.version="2.7.0"\
+com.gamsmiroadmin.version="2.7.9999"\
 com.gamsmiroadmin.license="GPL-3.0"\
 com.gamsmiroadmin.description="GAMS MIRO Docker image for admin panel"\
 maintainer="fproske@gams.com"
