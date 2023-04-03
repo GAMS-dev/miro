@@ -563,7 +563,7 @@ test_job:
   artifacts:
     when: always
     reports:
-      junit: src/tests/testthat/test-out.xml
+      junit: src/test-out.xml
     paths:
       - src/tests/testthat/_snaps
       - src/tests/logs-tests
