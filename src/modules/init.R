@@ -1,3 +1,4 @@
+confFileVersion <- 1L
 validateGraphConfig <- function(graphConfig, skipOutTypeCheck = FALSE) {
   if (!skipOutTypeCheck && !identical(graphConfig$outType, "miroPivot")) {
     return(TRUE)
@@ -145,9 +146,7 @@ Note that GAMS will not create the directories 'conf_", modelName, "' and 'data_
 }
 
 # validate json files
-config <- NULL
 if (is.null(errMsg)) {
-  config <- NULL
   jsonValidator <- JSONValidator$new()
   lapply(seq_along(jsonSchemaMap), function(i) {
     if (tryCatch(
@@ -204,9 +203,6 @@ if (is.null(errMsg)) {
 
 # load model input and output parameters
 if (is.null(errMsg)) {
-  # handsontable options
-  hotOptions <- config[["handsontable"]]
-
   modelIn <- config[["inputSymbols"]]
   names(modelIn) <- tolower(names(modelIn))
 
@@ -1263,7 +1259,6 @@ if (is.null(errMsg)) {
   ddownDep <- list()
   choicesNoDep <- list()
   aliasesNoDep <- list()
-  sliderValues <- list()
   modelInWithDep <- list()
   dependentDatasets <- vector("list", length = length(modelIn))
 
@@ -1350,6 +1345,13 @@ if (is.null(errMsg)) {
         ddownDep[[name]]$aliases <<- aliases$fw
         choicesNoDep[[name]] <<- choices$strings
         aliasesNoDep[[name]] <<- aliases$strings
+        modelIn[[i]]$dropdown$dependencyConfig <<- list(
+          fw = choices$fw,
+          bw = choices$bw,
+          aliases = aliases$fw,
+          staticChoices = choices$strings,
+          staticAliases = aliases$strings
+        )
         if (length(choices$fw)) {
           modelInWithDep[[name]] <<- modelIn[i]
         }
@@ -1382,7 +1384,7 @@ if (is.null(errMsg)) {
         }
         tryCatch(
           {
-            sliderValues[[name]] <<- getDependenciesSlider(
+            sliderValues <- getDependenciesSlider(
               min = modelIn[[i]]$slider$min,
               max = modelIn[[i]]$slider$max,
               def = modelIn[[i]]$slider$default,
@@ -1391,14 +1393,15 @@ if (is.null(errMsg)) {
               listOfOperators = listOfOperators
             )
             # no dependencies for slider
-            if (is.null(sliderValues[[name]])) {
-              sliderValues[[name]] <<- list(
+            modelIn[[i]]$slider$hasDependency <<- !is.null(sliderValues)
+            if (is.null(sliderValues)) {
+              modelIn[[i]]$sliderConfig <- list(
                 "min" = as.numeric(modelIn[[i]]$slider$min),
                 "max" = as.numeric(modelIn[[i]]$slider$max),
                 "def" = as.numeric(modelIn[[i]]$slider$default),
                 "step" = as.numeric(modelIn[[i]]$slider$step)
               )
-              if (suppressWarnings(any(is.na(sliderValues[[name]])))) {
+              if (suppressWarnings(any(is.na(sliderValues)))) {
                 errMsg <<- paste(errMsg,
                   paste0(
                     "The slider: '", modelInAlias[i],
@@ -1409,9 +1412,8 @@ if (is.null(errMsg)) {
               }
             } else {
               modelInWithDep[[name]] <<- modelIn[[i]]
+              modelIn[[i]]$sliderConfig <<- sliderValues
             }
-            # used to access default value inside lapply (in input_render_nontab.R)
-            attributes(sliderValues[[name]]$def) <- list(ref = "def")
             if (length(modelIn[[i]]$slider$default) > 1L &&
               !identical(modelIn[[i]]$slider$single, TRUE)) {
               # double dash parameters declared as double sliders are automatically
@@ -1706,6 +1708,8 @@ if (is.null(errMsg)) {
       attr(modelInTemplate[[i]], "isTable") <<- sum(vapply(modelIn[[i]]$headers, function(hdr) {
         identical(hdr$type, "numeric")
       }, logical(1L), USE.NAMES = FALSE)) > 1L
+
+      modelIn[[i]][["template"]] <<- modelInTemplate[[i]]
 
       if (length(modelIn[[i]]$pivotCols)) {
         if (any(!modelIn[[i]]$pivotCols %in% names(modelIn[[i]]$headers))) {

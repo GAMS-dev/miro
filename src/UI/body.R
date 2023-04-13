@@ -120,16 +120,15 @@ if (buildUI) {
               )
             )
           } else {
-            sliderName <- tolower(names(modelIn)[[i]])
-            sliderStepSize <- sliderValues[[sliderName]]$step
+            sliderStepSize <- modelIn[[i]]$slider$step
             slider <- tagList(
               tags$ul(class = "err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
               sliderInput(paste0("slider_", i),
                 label = widgetlabel,
-                min = sliderValues[[sliderName]]$min,
-                max = sliderValues[[sliderName]]$max,
-                value = sliderValues[[sliderName]]$def,
-                step = sliderValues[[sliderName]]$step,
+                min = modelIn[[i]]$slider$min,
+                max = modelIn[[i]]$slider$max,
+                value = modelIn[[i]]$slider$def,
+                step = modelIn[[i]]$slider$step,
                 width = modelIn[[i]]$slider$width,
                 ticks = if (isFALSE(modelIn[[i]]$slider$ticks)) FALSE else TRUE
               )

@@ -660,34 +660,6 @@ lapply(seq_along(modelIn), function(id) {
           priority = -1
         )
       }
-      if (identical(modelIn[[id]]$slider$single, TRUE) ||
-        identical(modelIn[[id]]$slider$double, TRUE)) {
-        observe(
-          {
-            rv[["in_" %+% id]]
-            value <- modelInputDataHcube[[id]]
-            if (length(value) && !identical(
-              value[1],
-              as.numeric(isolate(input[[paste0("hcubeStep_", id)]]))
-            )) {
-              noCheck[id] <<- TRUE
-              updateNumericInput(session, "hcubeStep_" %+% id,
-                value = value[1]
-              )
-            }
-            if (length(value) > 1 && !identical(
-              value[2],
-              as.numeric(isolate(input[[paste0("hcubeMode_", id)]]))
-            )) {
-              noCheck[id] <<- TRUE
-              updateCheckboxInput(session, "hcubeMode_" %+% id,
-                value = value[2]
-              )
-            }
-          },
-          priority = -1
-        )
-      }
     }
   )
 })

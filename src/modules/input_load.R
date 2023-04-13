@@ -52,6 +52,7 @@ if (!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))) {
       return()
     }
     inputVerified <- FALSE
+    isEmptyInput <- TRUE
     # execute only if dataframe has not yet been imported or already imported data shall be overridden
     if (!length(isolate(rv[["in_" %+% i]])) || overwriteInput > 0L) {
       # handsontable, multi dropdown, or daterange
@@ -99,13 +100,12 @@ if (!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))) {
               inputVerified <- TRUE
             }
           }
-          isEmptyInput[[i]] <<- FALSE
+          isEmptyInput <- FALSE
         } else {
           # empty dataset
           if (length(modelInTemplate[[i]])) {
             modelInputData[[i]] <<- modelInTemplate[[i]]
           }
-          isEmptyInput[[i]] <<- TRUE
           inputVerified <- TRUE
         }
       } else {
@@ -173,37 +173,11 @@ if (!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))) {
 
       # check if input data is valid
       if (inputVerified) {
-        if (!isTRUE(isEmptyInput[i])) {
+        if (!isTRUE(isEmptyInput)) {
           flog.debug("Dataset: %s loaded successfully (mode: %s, overwrite: %s)", dataset, loadMode, overwriteInput)
           newInputCount <<- newInputCount + 1
-          # set identifier that data was overwritten
-          isEmptyInput[i] <<- TRUE
         }
-        if (!identical(loadMode, "scen")) {
-          # set unsaved flag
-          markUnsaved(markDirty = TRUE)
-        }
-        # reset dependent elements
-        inputInitialized[dependentDatasets[[i]]] <<- FALSE
-
-        if (!is.null(modelInWithDep[[tolower(names(modelIn)[[i]])]])) {
-          id <- match(tolower(names(modelIn)[[i]]), tolower(names(modelInWithDep)))[1]
-          if (inputInitialized[id]) {
-            # only update when initialized
-            if (length(isolate(rv[[paste0("in_", i)]]))) {
-              rv[[paste0("in_", i)]] <<- isolate(rv[[paste0("in_", i)]]) + 1
-            } else {
-              rv[[paste0("in_", i)]] <<- 1
-            }
-          }
-        } else {
-          # no dependencies, so update anyway
-          if (length(isolate(rv[[paste0("in_", i)]]))) {
-            rv[[paste0("in_", i)]] <<- isolate(rv[[paste0("in_", i)]]) + 1
-          } else {
-            rv[[paste0("in_", i)]] <<- 1
-          }
-        }
+        sandboxInputData$setData(dataset, modelInputData[[i]])
       } else {
         if (tolower(dataset) %in% names(modelInMustImport)) {
           flog.info("The uploaded dataset: '%s' could not be verified.", modelInAlias[i])

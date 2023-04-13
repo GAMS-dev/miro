@@ -5,8 +5,6 @@ closeScenario <- function(clearMeta = TRUE) {
   # reset input data sheets
   modelInputData <<- modelInTemplate
   tableContent <<- vector(mode = "list", length = length(modelIn))
-  inputInitialized[] <<- FALSE
-  noCheck[] <<- FALSE
   if (resetWidgetsOnClose) {
     widgetModifiedSkipCount[] <<- 1L
     lapply(seq_along(modelIn), function(i) {
@@ -14,7 +12,6 @@ closeScenario <- function(clearMeta = TRUE) {
         hot = {
           # set identifier that data was overwritten
           hotInit[i] <<- FALSE
-          isEmptyInput[i] <<- TRUE
         },
         slider = {
           if (is.null(modelInWithDep[[names(modelIn)[[i]]]])) {
@@ -29,7 +26,6 @@ closeScenario <- function(clearMeta = TRUE) {
               value = 0, step = 1
             )
           }
-          noCheck[i] <<- TRUE
         },
         dropdown = {
           if (is.null(modelInWithDep[[names(modelIn)[[i]]]])) {
@@ -44,12 +40,10 @@ closeScenario <- function(clearMeta = TRUE) {
             hideEl(session, "#dropdown_" %+% i)
             updateSelectInput(session, "dropdown_" %+% i, choices = "_", selected = "_")
           }
-          noCheck[i] <<- TRUE
         },
         date = {
           if (is.null(modelInWithDep[[names(modelIn)[[i]]]]) && length(modelIn[[i]]$date$value)) {
             updateDateInput(session, "date_" %+% i, value = modelIn[[i]]$date$value)
-            noCheck[i] <<- TRUE
           }
         },
         daterange = {
@@ -59,25 +53,21 @@ closeScenario <- function(clearMeta = TRUE) {
               start = modelIn[[i]]$daterange$start,
               end = modelIn[[i]]$daterange$end
             )
-            noCheck[i] <<- TRUE
           }
         },
         checkbox = {
           if (length(modelIn[[i]]$checkbox$value)) {
             updateCheckboxInput(session, "cb_" %+% i, value = modelIn[[i]]$checkbox$value)
-            noCheck[i] <<- TRUE
           }
         },
         textinput = {
           if (length(modelIn[[i]]$textinput$value)) {
             updateTextInput(session, "text_" %+% i, value = modelIn[[i]]$textinput$value)
-            noCheck[i] <<- TRUE
           }
         },
         numericinput = {
           if (length(modelIn[[i]]$numericinput$value)) {
             updateNumericInput(session, "numeric_" %+% i, value = modelIn[[i]]$numericinput$value)
-            noCheck[i] <<- TRUE
           }
         }
       )
@@ -101,6 +91,8 @@ closeScenario <- function(clearMeta = TRUE) {
     showEl(session, "#data-in_" %+% i)
   })
   hideEl(session, "#btRefreshGraphIn")
+
+  sandboxInputData$reset()
 
   # reset model output data
   if (length(activeScen)) {

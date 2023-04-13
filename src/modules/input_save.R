@@ -29,8 +29,8 @@ getInputDataset <- function(i, visible = FALSE) {
     }
     if (!is.null(valTmp)) {
       value <- valTmp
-    } else if (is.numeric(sliderValues[[tolower(names(modelIn)[[i]])]]$def)) {
-      value <- sliderValues[[tolower(names(modelIn)[[i]])]]$def
+    } else if (is.numeric(modelIn[[i]]$slider$def)) {
+      value <- modelIn[[i]]$slider$def
     } else {
       flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
       stop_custom("no_data", sprintf(
@@ -211,24 +211,14 @@ getInputDataset <- function(i, visible = FALSE) {
 }
 getInputDataFromSandbox <- function() {
   # define temporary list to save input data to
-  dataTmp <- vector(mode = "list", length = length(modelInFileNames))
-  names(dataTmp) <- modelInFileNames
-  scalarData <- bind_rows(lapply(seq_along(modelIn), function(i) {
-    inputDatasetTmp <- getInputDataset(i)
-    if (identical(inputDatasetTmp[["isScalar"]], TRUE)) {
-      return(tibble(
-        scalar = inputDatasetTmp[["scalar"]],
-        description = inputDatasetTmp[["description"]],
-        value = as.character(inputDatasetTmp[["value"]])
-      ))
+  dataTmp <- lapply(modelInFileNames, function(symName) {
+    if (symName %in% names(modelIn)) {
+      isolate(sandboxInputData$getData(symName)())
     }
-    dataTmp[[match(names(modelIn)[[i]], modelInFileNames)]] <<- inputDatasetTmp[["value"]]
-    flog.trace("Input symbol: %s pulled from sandbox.", names(modelIn)[[i]])
-    return(tibble(
-      scalar = character(),
-      description = character(),
-      value = character()
-    ))
+  })
+  names(dataTmp) <- modelInFileNames
+  scalarData <- bind_rows(lapply(names(modelIn)[!names(modelIn) %in% modelInFileNames], function(symName) {
+    tibble(scalar = symName, description = "", value = as.character(isolate(sandboxInputData$getData(symName)())))
   }))
   if (nrow(scalarData) > 0L) {
     names(scalarData) <- scalarsFileHeaders

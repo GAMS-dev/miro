@@ -39,7 +39,7 @@ if (!miroBuildOnly) {
     "DT", "sortable", "chartjs"
   )
 }
-config <- list()
+config <<- list()
 modelFiles <- character()
 gamsSysDir <- Sys.getenv("GAMS_SYS_DIR")
 
@@ -64,7 +64,8 @@ filesToInclude <- c(
   "./components/miro_tabsetpanel.R", "./modules/render_data.R",
   "./modules/generate_data.R", "./components/script_output.R",
   "./components/js_util.R", "./components/scen_data.R",
-  "./components/custom_comparison_data.R", "./components/batch_loader.R"
+  "./components/custom_comparison_data.R", "./components/batch_loader.R",
+  "./components/sandbox_input_data.R"
 )
 LAUNCHCONFIGMODE <- FALSE
 if (is.null(errMsg)) {
@@ -330,6 +331,24 @@ if (is.null(errMsg)) {
         scenDataTemplate <- c(scenDataTemplate, list(scalarsInTemplate))
       }
       rm(dbSchema)
+    }
+    if (!exits("confFileVersion")) {
+      # legacy app (<2.8.0), need to convert some configuration
+      for (i in seq_along(modelIn)) {
+        if (names(modelIn)[i] %in% sliderValues) {
+          modelIn[[i]]$sliderDependencyConfig <- sliderValues[[names(modelIn)[i]]]
+        }
+        if (names(modelIn)[i] %in% ddownDep) {
+          modelIn[[i]]$dropdown$dependencyConfig <- list(
+            fw = ddownDep[[names(modelIn)[i]]]$fw,
+            bw = ddownDep[[names(modelIn)[i]]]$bw,
+            aliases = ddownDep[[names(modelIn)[i]]]$aliases,
+            staticChoices = choicesNoDep[[names(modelIn)[i]]],
+            staticAliases = aliasesNoDep[[names(modelIn)[i]]]
+          )
+        }
+        modelIn[[i]][["template"]] <- modelInTemplate[[i]]
+      }
     }
     suppressWarnings(rm(lang))
     for (customRendererName in customRendererNames) {
@@ -735,9 +754,9 @@ if (miroBuildOnly) {
       "modelOut", "config", "inputDsNames", "inputDsAliases",
       "outputTabTitles", "modelInTemplate", "scenDataTemplate",
       "modelInTabularData", "modelInTabularDataBase", "externalInputConfig", "tabSheetMap",
-      "modelInFileNames", "ddownDep", "aliasesNoDep", "idsIn",
-      "choicesNoDep", "sliderValues", "configGraphsOut",
-      "configGraphsIn", "hotOptions", "inputTabs", "inputTabTitles",
+      "modelInFileNames", "idsIn",
+      "configGraphsOut",
+      "configGraphsIn", "inputTabs", "inputTabTitles",
       "scenInputTabs", "scenInputTabTitles", "isGroupOfSheets",
       "groupSheetToTabIdMap", "scalarsInTemplate", "modelInWithDep",
       "modelOutAlias", "colsWithDep", "scalarsInMetaData",
@@ -1732,9 +1751,6 @@ if (!is.null(errMsg)) {
       # counter that controls whether observer that checks whether custom widget was
       # modified should be skipped
       widgetModifiedSkipCount <- vector("integer", length = length(modelIn))
-      # boolean that specifies whether check if data is unsaved should be skipped
-      noCheck <- vector("logical", length = length(modelIn))
-      noCheck[] <- TRUE
       # when inputs change values quickly, they sometimes lag in updating its element in
       # 'input' list. Thus, we remember currently selected values in this list
       selectedDepEl <- vector(mode = "list", length = length(modelIn))
@@ -1800,8 +1816,11 @@ if (!is.null(errMsg)) {
         clear = TRUE, btSave = 0L, noInvalidData = 0L, uploadHcube = 0L,
         updateBatchLoadData = 0L, jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L,
         importCSV = 0L, refreshHcubeHashes = 0L, submitHCJobConfirm = 0L,
-        refreshLogs = NULL, triggerAsyncProcObserver = NULL
+        refreshLogs = NULL, triggerAsyncProcObserver = NULL,
+        inputDataDirty = FALSE
       )
+
+      sandboxInputData <- SandboxInputData$new(modelIn, isMobileDevice, input, output, session, rv)
 
       xlsio <- XlsIO$new()
       csvio <- CsvIO$new()
@@ -2010,10 +2029,6 @@ if (!is.null(errMsg)) {
 
       # initialise list of reactive expressions returning data for model input
       dataModelIn <- setNames(vector(mode = "list", length = length(modelIn)), names(modelIn))
-      # auxiliary vector that specifies whether data frame has no data or data was overwritten
-      isEmptyInput <- vector(mode = "logical", length = length(modelIn))
-      # input is empty in the beginning
-      isEmptyInput[] <- TRUE
       # list of data frames which save changes made in handsontable
       hotInput <- vector(mode = "list", length = length(modelIn))
       tableContent <- vector(mode = "list", length = length(modelIn))
@@ -2029,71 +2044,6 @@ if (!is.null(errMsg)) {
         } else if (identical(input$miroSidebar, "importData")) {
           rv$jobListPanel <- rv$jobListPanel + 1L
         }
-      })
-
-      lapply(seq_along(modelIn), function(i) {
-        widgetType <- modelIn[[i]]$type
-        if (isMobileDevice && identical(widgetType, "hot")) {
-          widgetType <- "dt"
-        }
-        if (widgetType == "hot") {
-          observeEvent(input[["in_" %+% i %+% "_select"]], {
-            hotInit[[i]] <<- TRUE
-            isEmptyInput[[i]] <<- FALSE
-            if (noCheck[i]) {
-              noCheck[i] <<- FALSE
-            }
-          })
-        }
-        observe(
-          {
-            switch(widgetType,
-              hot = {
-                input[["in_" %+% i]]
-              },
-              dt = {
-                rv[[paste0("wasModified_", i)]]
-              },
-              slider = {
-                input[["slider_" %+% i]]
-                input[["hcubeStep_" %+% i]]
-                input[["hcubeMode_" %+% i]]
-              },
-              textinput = {
-                input[["text_" %+% i]]
-              },
-              numericinput = {
-                input[["numeric_" %+% i]]
-              },
-              dropdown = {
-                input[["dropdown_" %+% i]]
-              },
-              date = {
-                input[["date_" %+% i]]
-              },
-              daterange = {
-                input[["daterange_" %+% i]]
-              },
-              checkbox = {
-                input[["cb_" %+% i]]
-              },
-              custom = {
-                rv[[paste0("wasModified_", i)]]
-              }
-            )
-            if (noCheck[i]) {
-              noCheck[i] <<- FALSE
-              return()
-            }
-            # if scenario includes output data set dirty flag
-            if (scenData$getSandboxHasOutputData(scriptOutput)) {
-              rv$dirtyFlag <- TRUE
-            }
-            rv$unsavedFlag <- TRUE
-            inconsistentOutput <<- TRUE
-          },
-          priority = 1000L
-        )
       })
 
       markUnsaved <- function(markDirty = FALSE, markClean = FALSE) {
@@ -2124,7 +2074,7 @@ if (!is.null(errMsg)) {
       # print scenario title in input and output sheets
       getScenTitle <- reactive({
         nameSuffix <- ""
-        if (rv$unsavedFlag) {
+        if (rv$inputDataDirty) {
           nameSuffix <- " (*)"
         }
         if (is.null(activeScen) || !length(activeScen$getSid())) {
@@ -2159,10 +2109,6 @@ if (!is.null(errMsg)) {
       ####### Model input
       # get sandbox data
       source("./modules/input_save.R", local = TRUE)
-      # render non tabular input datasets (e.g. slider, dropdown)
-      source("./modules/input_render_nontab.R", local = TRUE)
-      # render tabular input datasets
-      source("./modules/input_render_tab.R", local = TRUE)
       # generate import dialogue
       source("./modules/input_ui.R", local = TRUE)
       # load input data from Excel sheet

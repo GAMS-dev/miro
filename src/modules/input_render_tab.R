@@ -184,43 +184,6 @@ getTabularInputDatasetRaw <- function(id, subSymName = NULL) {
     stop("No valid input data found.", call. = FALSE)
   }
 }
-pivotData <- function(i, tabData, force = FALSE) {
-  if (isEmptyInput[i] && !force) {
-    return(list(data = tabData, colnames = attr(modelInTemplate[[i]], "aliases")))
-  }
-  pivotIdx <- match(modelIn[[i]]$pivotCols[[1]], names(modelIn[[i]]$headers))[[1L]]
-  attrTmp <- attr(modelInTemplate[[i]], "aliases")[-c(pivotIdx, length(modelInTemplate[[i]]))]
-  if (tryCatch(
-    {
-      tabData <- pivot_wider(tabData,
-        names_from = !!pivotIdx,
-        values_from = !!length(tabData),
-        names_sort = isTRUE(modelIn[[i]]$sortPivotCols)
-      )
-      FALSE
-    },
-    error = function(e) {
-      TRUE
-    }
-  )) {
-    if (force) {
-      return(list(
-        data = tabData[-c(pivotIdx, length(modelInTemplate[[i]]))],
-        colnames = attrTmp
-      ))
-    }
-    return(list(data = tabData, colnames = attr(modelInTemplate[[i]], "aliases")))
-  }
-
-  attrTmp <- c(
-    attrTmp,
-    names(tabData)[seq(
-      length(attrTmp) + 1L,
-      length(tabData)
-    )]
-  )
-  return(list(data = tabData, colnames = attrTmp))
-}
 observe({
   req(input$inputTabset)
   i <- as.integer(strsplit(input$inputTabset, "_")[[1]][2])
