@@ -1,5 +1,4 @@
 app <- AppDriver$new("../../", name = "miropivot_test", variant = NULL, load_timeout = 20000)
-
 getData <- function(id = "tab_1_1") {
   return(jsonlite::fromJSON(app$get_values()$output[[paste0(id, "-miroPivot-pivotChart")]])$x$data$datasets$data)
 }
@@ -214,5 +213,16 @@ expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootI
 expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(4)').text()==='550'",
   timeout = 50
 ))
-
+app$click(selector = "a[data-value='inputData']")
+Sys.sleep(0.5)
+app$set_inputs(inputTabset = "inputTabset_4")
+Sys.sleep(1)
+app$click(selector = "#btRemove1")
+Sys.sleep(0.5)
+app$click(selector = ".modal-footer .bt-gms-confirm")
+Sys.sleep(1)
+expect_identical(
+  getVisibleDtData(app, "data-in_3-inputPivot-pivotTable"),
+  structure(list(), class = c("tbl_df", "tbl", "data.frame"), row.names = integer(0), names = character(0))
+)
 app$stop()

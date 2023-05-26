@@ -1429,10 +1429,15 @@ DTbuildColHeaderContainer <- function(colNames, noRowHeaders, rowHeaders,
   }
   # note that split character is not an ASCII full stop, but UNICODE U+2024
   colNameList <- stri_split_fixed(colNameHeaders, "\U2024")
-  noColDim <- length(colNameList[[1L]])
+  if (length(colNameList)) {
+    noColDim <- length(colNameList[[1L]])
+    colNameList <- purrr::transpose(colNameList)
+  } else {
+    noColDim <- 1L
+    colNameList <- list(character())
+  }
   noCols <- length(colNameHeaders)
 
-  colNameList <- purrr::transpose(colNameList)
   colGroupBorders <- integer(0L)
   return(htmltools::withTags(tags$table(
     class = "display",

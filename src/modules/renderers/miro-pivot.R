@@ -2302,11 +2302,13 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             fixedColumns = fixedColumnsConfig,
             columnDefs = columnDefsTmp
           ), rownames = FALSE
-        ) %>%
-          formatRound(seq(noRowHeaders + 1, length(dataTmp)),
+        )
+        if (noRowHeaders < length(dataTmp)) {
+          ret <- formatRound(ret, seq(noRowHeaders + 1, length(dataTmp)),
             digits = roundPrecision
           )
-        if (!isHeatmap) {
+        }
+        if (!isHeatmap || noRowHeaders >= length(dataTmp)) {
           return(ret)
         }
         return(formatStyle(ret, seq(noRowHeaders + 1, length(dataTmp)),

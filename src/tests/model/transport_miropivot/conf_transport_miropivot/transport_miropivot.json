@@ -35,11 +35,12 @@
     },
     "d": {
       "widgetType": "table",
-      "alias": "distance in thousands of miles",
-      "readonly": false,
-      "heatmap": false,
-      "bigData": false,
-      "pivotCols": "i"
+      "tableType": "pivot",
+      "options": {
+        "cols": {
+          "j": null
+        }
+      }
     },
     "type": {
       "widgetType": "dropdown",
