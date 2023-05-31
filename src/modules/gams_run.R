@@ -417,7 +417,7 @@ if (config$activateModules$lstFile) {
         if (fileSize > maxSizeToRead) {
           lang$errMsg$readLst$fileSize
         } else if (file.exists(file.path(workDir, modelNameRaw %+% ".lst"))) {
-          read_file(file.path(workDir, modelNameRaw %+% ".lst"))
+          iconv(read_file(file.path(workDir, modelNameRaw %+% ".lst")), "UTF-8", "UTF-8", sub = "\uFFFD")
         } else {
           lang$errMsg$readLst$fileNotFound
         }

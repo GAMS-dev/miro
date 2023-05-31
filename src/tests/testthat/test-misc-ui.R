@@ -144,4 +144,31 @@ if (!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")) {
   )
 }
 
+testModelPath <- file.path(testDir, "model", "transport_latin1")
+if (!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")) {
+  saveAdditionalGamsClArgs(
+    testModelPath, "transport",
+    paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"')
+  )
+}
+createTestDb()
+Sys.setenv(MIRO_MODEL_PATH = file.path(
+  testModelPath,
+  "Transport.gms"
+))
+
+test_that(
+  "Opening LST file with bad encoding works",
+  {
+    source(file.path(testDir, "shinytest", "lst_file_bad_encoding_test.R"), local = TRUE)
+  }
+)
+
+if (!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")) {
+  file.rename(
+    file.path(testModelPath, "conf_transport", "transport_tmp.json"),
+    file.path(testModelPath, "conf_transport", "transport.json")
+  )
+}
+
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))
