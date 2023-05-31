@@ -8,7 +8,7 @@ app$set_inputs(inputTabset = "inputTabset_2")
 Sys.sleep(0.5)
 app$run_js("HTMLWidgets.getInstance(document.getElementById('in_2')).hot.setDataAtCell(1,2,7);")
 app$set_inputs(btEditMeta = "click")
-Sys.sleep(0.5)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
 addSelectizeOption(app, "#editMetaTags", "tag1")
 selectSelectizeOption(app, "#editMetaTags", "tag1")
 addSelectizeOption(app, "#editMetaTags", "tag2")
@@ -66,7 +66,7 @@ expect_true(app$get_js("$('#inputDataTitle').text()==='default (*)'&&$('#dirtyFl
 
 # metadata should not be updated when manually importing data
 app$set_inputs(btEditMeta = "click")
-Sys.sleep(0.5)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
 expect_identical(app$get_values()$input[["editMetaName"]], "default")
 expect_identical(app$get_values()$input[["editMetaTags"]], NULL)
 app$click(selector = "a[data-value='attachments']")

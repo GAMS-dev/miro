@@ -390,7 +390,7 @@ Sys.sleep(1)
 
 # check that metadata was successfully restored
 app$set_inputs(btEditMeta = "click")
-Sys.sleep(0.5)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
 expect_identical(app$get_values()$input[["editMetaName"]], "test2")
 expect_identical(app$get_values()$input[["editMetaTags"]], c("tag1", "tag2"))
 app$click(selector = "a[data-value='attachments']")

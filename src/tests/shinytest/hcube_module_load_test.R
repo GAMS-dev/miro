@@ -60,7 +60,7 @@ expect_equivalent(getHotData(app, "in_2"),
 
 # check that attachment was added
 app$set_inputs(btEditMeta = "click")
-Sys.sleep(2L)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
 app$click(selector = "a[data-value='attachments']")
 Sys.sleep(1)
 attachmentList <- app$get_js("$('.attachment-line').length")
