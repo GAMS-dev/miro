@@ -9,7 +9,7 @@ Sys.sleep(1L)
 app$set_inputs(selLoadScen = paste0("1_", Sys.info()[["user"]]))
 app$set_inputs(btLoadScenConfirm = "click")
 expect_error(app$wait_for_js("$('#outputTabset > li').length===4", timeout = 5000L), NA)
-expect_true(app$get_js("$('#contentScen_4 > li').length===7", timeout = 50L))
+expect_true(app$get_js("$('#contentScen_4 > li').length===7", timeout = 2000L))
 
 # pivot view
 app$click(selector = ".btSplitView button")
