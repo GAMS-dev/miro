@@ -218,7 +218,11 @@ getInputDataFromSandbox <- function() {
   })
   names(dataTmp) <- modelInFileNames
   scalarData <- bind_rows(lapply(names(modelIn)[!names(modelIn) %in% modelInFileNames], function(symName) {
-    tibble(scalar = symName, description = "", value = as.character(isolate(sandboxInputData$getData(symName)())))
+    valTmp <- isolate(sandboxInputData$getData(symName)())
+    if (is.logical(valTmp)) {
+      valTmp <- as.integer(valTmp)
+    }
+    tibble(scalar = symName, description = "", value = if (length(valTmp)) as.character(valTmp) else NA_character_)
   }))
   if (nrow(scalarData) > 0L) {
     names(scalarData) <- scalarsFileHeaders
