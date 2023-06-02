@@ -6,7 +6,7 @@ mirowidget_iilocdataOutput <- function(id, height, options, path) {
 renderMirowidget_iilocdata <- function(input, output, session, data, options = NULL, path = NULL, ...) {
   markerCnt <- 1L
 
-  rv <- reactiveValues(markerPositions = list)
+  rv <- reactiveValues(markerPositions = list())
   observe({
     if (length(data()) != 3L && !nrow(data())) {
       return()
