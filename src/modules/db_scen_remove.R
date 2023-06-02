@@ -37,8 +37,8 @@ observeEvent(input$btDeleteConfirm, {
   }
   # we need to force the scenario name to update as scenario is
   # no longer stored in database
-  rv$unsavedFlag <- FALSE
-  rv$unsavedFlag <- TRUE
+  rv$inputDataDirty <- FALSE
+  rv$inputDataDirty <- TRUE
 })
 
 # button changes from NULL to 0 when initialised (modalDialog opens)

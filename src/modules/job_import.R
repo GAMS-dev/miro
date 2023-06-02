@@ -188,7 +188,7 @@ observeEvent(input$importJob, {
   if (identical(jobMeta[["_scode"]][1], SCODEMAP[["hcube_jobconfig"]])) {
     return(importHcJob(worker$getJobResultsPath(jobImportID), jobMeta))
   }
-  if (rv$unsavedFlag) {
+  if (rv$inputDataDirty) {
     showRemoveScenDialog("importJobConfirm")
   } else {
     rv$importJobConfirm <- rv$importJobConfirm + 1L

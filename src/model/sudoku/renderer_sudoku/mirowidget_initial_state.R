@@ -101,10 +101,7 @@ renderMirowidget_initial_state <- function(input, output, session, data, options
       }),
       force_unique_sol = reactive({
         force(input$force_unique_sol)
-        if (is.null(isolate(input$sudoku))) {
-          return(NULL)
-        }
-        input$force_unique_sol
+        as.character(as.integer(input$force_unique_sol))
       })
     ))
   }

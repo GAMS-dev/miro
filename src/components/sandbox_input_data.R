@@ -1,16 +1,18 @@
 InputWidget <- R6::R6Class(
   "InputWidget",
   public = list(
-    initialize = function(id, config, input, output, session, rv, sandboxInputDataObj) {
+    initialize = function(id, config, input, output, session, rv, sandboxInputDataObj,
+                          symName = NULL, ...) {
       private$id <- id
       private$config <- config
       private$input <- input
       private$output <- output
       private$session <- session
       private$rv <- rv
-      private$sanboxData <- sandboxInputDataObj
-      private$changeObs <- private$observeChanges()
+      private$sandboxData <- sandboxInputDataObj
+      private$symName <- symName
       private$data <- reactiveVal(config$defaultValue)
+      private$changeObs <- private$observeChanges()
       return(invisible(self))
     },
     getData = function() {
@@ -40,10 +42,12 @@ InputWidget <- R6::R6Class(
     output = NULL,
     session = NULL,
     rv = NULL,
-    sanboxData = NULL,
+    sandboxData = NULL,
+    symName = NULL,
     data = NULL,
     changeObs = NULL,
     ignoreUpdate = 1L,
+    isInitialized = FALSE,
     observeChanges = function() {
       stop_custom("error_not_implemented", "observeChanges method not implemented")
     }
@@ -53,7 +57,7 @@ InputWidget <- R6::R6Class(
 MultiDimWidget <- R6::R6Class("MultiDimWidget",
   inherit = InputWidget,
   public = list(
-    initialize = function(id, config, input, output, session, rv, sandboxInputDataObj) {
+    initialize = function(id, config, input, output, session, rv, sandboxInputDataObj, symName = NULL, ...) {
       private$updateWidget <- reactiveVal(0L)
       config$defaultValue <- config$template
       private$needsPivot <- length(config$pivotCols) > 0L
@@ -66,7 +70,7 @@ MultiDimWidget <- R6::R6Class("MultiDimWidget",
       } else {
         private$staticColHeaders <- attr(config$defaultValue, "aliases")
       }
-      return(super$initialize(id, config, input, output, session, rv, sandboxInputDataObj))
+      return(super$initialize(id, config, input, output, session, rv, sandboxInputDataObj, symName))
     }
   ),
   private = list(
@@ -105,6 +109,12 @@ MultiDimWidget <- R6::R6Class("MultiDimWidget",
           length(dataTmp)
         )]
       )))
+    },
+    dataNeedsUpdate = function(data) {
+      return(!identical(
+        digest::digest(data, algo = "sha1"),
+        digest::digest(isolate(private$data()), algo = "sha1")
+      ))
     }
   )
 )
@@ -116,16 +126,13 @@ ScalarWidget <- R6::R6Class("ScalarWidget",
       private$isInitialized <- FALSE
       return(super$reset())
     }
-  ),
-  private = list(
-    isInitialized = FALSE
   )
 )
 
 HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
   inherit = MultiDimWidget,
   public = list(
-    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj) {
+    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, ...) {
       colsReadonly <- vapply(symConfig$headers, function(headerConfig) {
         if (identical(headerConfig$readonly, TRUE)) {
           return(headerConfig$alias)
@@ -309,9 +316,6 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
           })
         }
       }))
-    },
-    dataNeedsUpdate = function(data) {
-      return(!identical(digest::digest(data, algo = "sha1"), isolate(private$data())))
     },
     getHotCustomColOptions = function() {
       setNames(
@@ -547,10 +551,213 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
   )
 )
 
+CustomWidget <- R6::R6Class("CustomWidget",
+  inherit = MultiDimWidget,
+  public = list(
+    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName, ...) {
+      private$rendererEnv <- new.env(parent = emptyenv())
+      widgetSymNames <- c(symName, symConfig$widgetSymbols)
+      private$outputReactives <- c(
+        list(reactiveVal(symConfig$template)),
+        lapply(symConfig$widgetSymbols, function(symName) {
+          return(reactiveVal(sandboxInputDataObj$getSymConfig(symName)$template))
+        })
+      )
+      names(private$outputReactives) <- widgetSymNames
+      private$inputReactiveData <- c(
+        list(symConfig$template),
+        lapply(symConfig$widgetSymbols, function(symName) {
+          return(sandboxInputDataObj$getSymConfig(symName)$template)
+        })
+      )
+      names(private$inputReactiveData) <- widgetSymNames
+      private$updateInputReactives <- c(
+        list(reactiveVal(0L)),
+        lapply(symConfig$widgetSymbols, function(symName) {
+          reactiveVal(0L)
+        })
+      )
+      names(private$updateInputReactives) <- widgetSymNames
+      private$inputReactives <- c(list(reactive({
+        private$updateInputReactives[[private$symName]]()
+        return(private$inputReactiveData[[private$symName]])
+      })), lapply(symConfig$widgetSymbols, function(symName) {
+        return(reactive({
+          private$updateInputReactives[[symName]]()
+          return(private$inputReactiveData[[symName]])
+        }))
+      }))
+      names(private$inputReactives) <- widgetSymNames
+      private$ignoreUpdate <- c(1L, vapply(symConfig$widgetSymbols, function(symName) {
+        1L
+      }, integer(1L), USE.NAMES = FALSE))
+      names(private$ignoreUpdate) <- widgetSymNames
+      if (!identical(symConfig$apiVersion, 2L)) {
+        private$reinitOutputObservers <- reactiveVal(0L)
+      }
+      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName))
+    },
+    getData = function(symName = NULL) {
+      if (is.null(symName)) {
+        return(private$outputReactives[[private$symName]])
+      }
+      return(private$outputReactives[[symName]])
+    },
+    setData = function(data, symName = NULL) {
+      if (is.null(symName)) {
+        symName <- private$symName
+      }
+      if (private$dataNeedsUpdate(data, symName)) {
+        private$ignoreUpdate[[symName]] <- 1L
+      }
+      private$inputReactiveData[[symName]] <- data
+      isolate({
+        currentVal <- private$updateInputReactives[[symName]]()
+        private$updateInputReactives[[symName]](currentVal + 1L)
+      })
+      return(invisible(self))
+    },
+    reset = function() {
+      self$setData(private$config$defaultValue)
+      lapply(private$config$widgetSymbols, function(symName) {
+        # TODO: support scalar dependencies ($template is NULL for those)
+        self$setData(private$sandboxData$getSymConfig(symName)$template, symName)
+      })
+      return(invisible(self))
+    }
+  ),
+  private = list(
+    rendererEnv = NULL,
+    returnVal = NULL,
+    outputReactives = NULL,
+    inputReactives = NULL,
+    inputReactiveData = NULL,
+    updateInputReactives = NULL,
+    reinitOutputObservers = NULL,
+    isInitialized = FALSE,
+    observeChanges = function() {
+      return(c(
+        list(
+          observe({
+            if (identical(private$config$apiVersion, 2L)) {
+              reactiveDataVals <- c(
+                private$inputReactives,
+                lapply(private$config$additionalData, function(symName) {
+                  return(private$sandboxData$getData(symName)())
+                })
+              )
+            } else {
+              for (el in ls(envir = private$rendererEnv)) {
+                if ("Observer" %in% class(private$rendererEnv[[el]])) {
+                  private$rendererEnv[[el]]$destroy()
+                }
+              }
+              reactiveDataVals <- c(
+                lapply(private$inputReactives, function(inputReactive) {
+                  return(inputReactive())
+                }),
+                lapply(private$config$additionalData, function(symName) {
+                  return(private$sandboxData$getData(symName))
+                })
+              )
+            }
+            names(reactiveDataVals) <- c(
+              names(private$inputReactives), private$config$additionalData
+            )
+            if (length(reactiveDataVals) == 1L) {
+              reactiveDataVals <- reactiveDataVals[[1L]]
+            } else {
+              reactiveDataVals <- reactiveDataVals
+            }
+            private$returnVal <- callModule(generateData,
+              paste0("data-in_", private$id),
+              type = private$config$rendererName,
+              data = reactiveDataVals,
+              customOptions = private$config$options,
+              rendererEnv = private$rendererEnv,
+              attachments = private$sandboxData$attachments,
+              views = private$sandboxData$views
+            )
+            if (length(private$config$widgetSymbols)) {
+              if (!identical(length(names(private$returnVal)), length(private$config$widgetSymbols) + 1L)) {
+                stop(sprintf(
+                  "Custom input widget for symbol: %s has invalid return value. It should return a named list of reactive expressions.",
+                  private$symName
+                ), call. = FALSE)
+              }
+            } else if (!identical(length(private$returnVal), 1L) || !"reactiveExpr" %in% class(private$returnVal)) {
+              stop(sprintf(
+                "Custom input widget for symbol: %s has invalid return value. It should return a single reactive expression.",
+                private$symName
+              ), call. = FALSE)
+            }
+            if (!identical(private$config$apiVersion, 2L)) {
+              # need to re-initiate observers since we got new reactives
+              private$ignoreUpdate[] <- private$ignoreUpdate[] + 1L
+              isolate({
+                currentVal <- private$reinitOutputObservers()
+                private$reinitOutputObservers(currentVal + 1L)
+              })
+            }
+          })
+        ),
+        if (length(private$config$widgetSymbols)) {
+          lapply(names(private$outputReactives), function(symName) {
+            observe({
+              if (!identical(private$config$apiVersion, 2L)) {
+                private$reinitOutputObservers()
+              }
+              dataTmp <- private$returnVal[[symName]]()
+              if (is.null(dataTmp)) {
+                return()
+              }
+              if (private$ignoreUpdate[[symName]] > 0L) {
+                private$ignoreUpdate[[symName]] <- private$ignoreUpdate[[symName]] - 1L
+              } else {
+                private$rv$inputDataDirty <- TRUE
+              }
+              if (is.null(dataTmp)) {
+                return()
+              }
+              isolate({
+                private$outputReactives[[symName]](dataTmp)
+              })
+            })
+          })
+        } else {
+          list(observe({
+            if (!identical(private$config$apiVersion, 2L)) {
+              private$reinitOutputObservers()
+            }
+            dataTmp <- private$returnVal()
+            if (private$ignoreUpdate[[private$symName]] > 0L) {
+              private$ignoreUpdate[[private$symName]] <- private$ignoreUpdate[[private$symName]] - 1L
+            } else {
+              private$rv$inputDataDirty <- TRUE
+            }
+            if (is.null(dataTmp)) {
+              return()
+            }
+            isolate({
+              private$outputReactives[[private$symName]](dataTmp)
+            })
+          }))
+        }
+      ))
+    },
+    dataNeedsUpdate = function(data, symName = NULL) {
+      return(!identical(
+        digest::digest(data, algo = "sha1"),
+        digest::digest(isolate(private$outputReactives[[symName]]()), algo = "sha1")
+      ))
+    }
+  )
+)
+
 SliderWidget <- R6::R6Class("SliderWidget",
   inherit = ScalarWidget,
   public = list(
-    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj) {
+    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, ...) {
       symConfig$defaultValue <- symConfig$slider$default
       if (!identical(private$config$slider$hasDependency, TRUE)) {
         private$isInitialized <- TRUE
@@ -595,7 +802,7 @@ SliderWidget <- R6::R6Class("SliderWidget",
                 }
                 return(NULL)
               }
-              dependentData <- unique(private$sanboxData$getData(names(configEl)[1L])()[[configEl[[1L]]]])
+              dependentData <- unique(private$sandboxData$getData(names(configEl)[1L])()[[configEl[[1L]]]])
               if (identical(configEl[["$operator"]], "count")) {
                 return(length(dependentData))
               }
@@ -641,7 +848,7 @@ SliderWidget <- R6::R6Class("SliderWidget",
 DropdownWidget <- R6::R6Class("DropdownWidget",
   inherit = ScalarWidget,
   public = list(
-    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj) {
+    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, ...) {
       symConfig$defaultValue <- symConfig$dropdown$default
       return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj))
     },
@@ -678,14 +885,14 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
             private$config$dropdown$dependencyConfig$staticChoices,
             unlist(lapply(names(private$config$dropdown$dependencyConfig$fw), function(symName) {
               colName <- private$config$dropdown$dependencyConfig$fw[[symName]][[1]]
-              return(unique(private$sanboxData$getData(symName)()[[colName]]))
+              return(unique(private$sandboxData$getData(symName)()[[colName]]))
             }))
           )
           newAliases <- c(
             private$config$dropdown$dependencyConfig$staticAliases,
             unlist(lapply(names(private$config$dropdown$dependencyConfig$aliases), function(symName) {
               colName <- private$config$dropdown$dependencyConfig$aliases[[symName]][[1]]
-              return(unique(private$sanboxData$getData(symName)()[[colName]]))
+              return(unique(private$sandboxData$getData(symName)()[[colName]]))
             }))
           )
           if (length(newAliases)) {
@@ -721,7 +928,7 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
 CheckboxWidget <- R6::R6Class("CheckboxWidget",
   inherit = ScalarWidget,
   public = list(
-    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj) {
+    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, ...) {
       symConfig$defaultValue <- symConfig$checkbox$value
       return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj))
     },
@@ -759,9 +966,52 @@ CheckboxWidget <- R6::R6Class("CheckboxWidget",
   )
 )
 
+NumericInputWidget <- R6::R6Class("NumericInputWidget",
+  inherit = ScalarWidget,
+  public = list(
+    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, ...) {
+      symConfig$defaultValue <- symConfig$numericinput$value
+      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj))
+    },
+    setData = function(data) {
+      dataNew <- as.numeric(data)
+      if (private$dataNeedsUpdate(dataNew)) {
+        isolate({
+          private$data(dataNew)
+        })
+        private$ignoreUpdate <- 1L
+        updateNumericInput(private$session,
+          paste0("numeric_", private$id),
+          value = as.numeric(dataNew)
+        )
+      }
+      return(invisible(self))
+    }
+  ),
+  private = list(
+    observeChanges = function() {
+      return(observe({
+        dataRaw <- private$input[[paste0("numeric_", private$id)]]
+        if (private$ignoreUpdate > 0L) {
+          private$ignoreUpdate <- private$ignoreUpdate - 1L
+        } else {
+          isolate({
+            private$data(as.numeric(dataRaw))
+            private$rv$inputDataDirty <- TRUE
+          })
+        }
+      }))
+    },
+    dataNeedsUpdate = function(data) {
+      return(!identical(as.numeric(data), as.numeric(isolate(private$data()))))
+    }
+  )
+)
+
 SandboxInputData <- R6::R6Class("SandboxInputData",
   public = list(
-    initialize = function(inputConfig, isMobileDevice, input, output, session, rv) {
+    initialize = function(inputConfig, isMobileDevice, input, output, session, rv,
+                          attachments, views) {
       private$inputConfig <- inputConfig
       private$rv <- rv
       typeWidgetMapping <- list(
@@ -769,23 +1019,25 @@ SandboxInputData <- R6::R6Class("SandboxInputData",
         # dt = DataTableWidget,
         slider = SliderWidget,
         # textinput = TextInputWidget,
-        # numericinput = NumericInputWidget,
+        numericinput = NumericInputWidget,
         dropdown = DropdownWidget,
         # date = DateWidget,
         # daterange = DateRangeWidget,
-        checkbox = CheckboxWidget
-        # custom = CustomWidget
+        checkbox = CheckboxWidget,
+        custom = CustomWidget
       )
       private$inputWidgets <- lapply(seq_along(inputConfig), function(id) {
         symName <- names(inputConfig)[[id]]
         config <- inputConfig[[id]]
         widget <- typeWidgetMapping[[config$type]]
         if (!is.null(widget)) {
-          return(widget$new(id, config, input, output, session, rv, self))
+          return(widget$new(id, config, input, output, session, rv, self, symName = symName))
         }
         stop_custom("error_not_implemented", sprintf("Widget type: '%s' not implemented for symbol: '%s'", config$type, symName))
       })
       names(private$inputWidgets) <- names(inputConfig)
+      self$attachments <- attachments
+      self$views <- views
       return(invisible(self))
     },
     reset = function() {
@@ -796,17 +1048,22 @@ SandboxInputData <- R6::R6Class("SandboxInputData",
     },
     getData = function(symName) {
       if (length(private$inputConfig[[symName]]$definedByExternalSymbol)) {
-        return(private$inputWidgets[[private$inputConfig[[symName]]$definedByExternalSymbol]]$getData())
+        return(private$inputWidgets[[private$inputConfig[[symName]]$definedByExternalSymbol]]$getData(symName))
       }
       return(private$inputWidgets[[symName]]$getData())
     },
     setData = function(symName, data) {
       if (length(private$inputConfig[[symName]]$definedByExternalSymbol)) {
-        return(private$inputWidgets[[private$inputConfig[[symName]]$definedByExternalSymbol]]$setData(data))
+        return(private$inputWidgets[[private$inputConfig[[symName]]$definedByExternalSymbol]]$setData(data, symName))
       }
       private$inputWidgets[[symName]]$setData(data)
       return(invisible(self))
-    }
+    },
+    getSymConfig = function(symName) {
+      return(private$inputConfig[[symName]])
+    },
+    attachments = NULL,
+    views = NULL
   ),
   private = list(
     rv = NULL,

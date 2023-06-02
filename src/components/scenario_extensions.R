@@ -119,7 +119,7 @@ ScenarioExtensions <- R6Class("ScenarioExtensions",
     markUnsaved = function(markDirty = FALSE) {
       if (length(private$rv)) {
         isolate({
-          private$rv$unsavedFlag <- TRUE
+          private$rv$inputDataDirty <- TRUE
           if (markDirty && !is.null(private$scenData) && private$scenData$getSandboxHasOutputData(NULL)) {
             private$rv$dirtyFlag <- TRUE
           }

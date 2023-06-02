@@ -1810,7 +1810,7 @@ if (!is.null(errMsg)) {
       }
 
       rv <- reactiveValues(
-        unsavedFlag = FALSE, dirtyFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
+        dirtyFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
         btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L,
         btLoadLocal = 0L, btCompareScen = 0L, activeSname = lang$nav$dialogNewScen$newScenName,
         clear = TRUE, btSave = 0L, noInvalidData = 0L, uploadHcube = 0L,
@@ -1819,8 +1819,6 @@ if (!is.null(errMsg)) {
         refreshLogs = NULL, triggerAsyncProcObserver = NULL,
         inputDataDirty = FALSE
       )
-
-      sandboxInputData <- SandboxInputData$new(modelIn, isMobileDevice, input, output, session, rv)
 
       xlsio <- XlsIO$new()
       csvio <- CsvIO$new()
@@ -1853,6 +1851,10 @@ if (!is.null(errMsg)) {
         names(modelOut),
         ioConfig$inputDsNamesBase, rv,
         scenData = scenData
+      )
+      sandboxInputData <- SandboxInputData$new(
+        modelIn, isMobileDevice, input, output, session, rv,
+        attachments, views
       )
       # currently active scenario (R6 object)
       activeScen <- Scenario$new(
@@ -2052,7 +2054,7 @@ if (!is.null(errMsg)) {
         } else if (markDirty && scenData$getSandboxHasOutputData(scriptOutput)) {
           rv$dirtyFlag <- TRUE
         }
-        rv$unsavedFlag <- TRUE
+        rv$inputDataDirty <- TRUE
         return(invisible())
       }
       observe({
@@ -2067,7 +2069,7 @@ if (!is.null(errMsg)) {
 
       markSaved <- function() {
         rv$dirtyFlag <- FALSE
-        rv$unsavedFlag <- FALSE
+        rv$inputDataDirty <- FALSE
         return(invisible())
       }
 
