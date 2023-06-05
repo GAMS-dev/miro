@@ -103,8 +103,7 @@ renderMirowidget_initial_state <- function(input, output, session, data, options
         return(dataTmp)
       }
     }), `_scalars` = reactive({
-      force(data[["_scalars"]]())
-      return(NULL)
+      return(data[["_scalars"]]())
     })))
   }
 }

@@ -674,13 +674,10 @@ if (is.null(errMsg)) {
           warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
         }
         if (length(widgetConfig$additionalData)) {
-          invalidDsNames <- !widgetConfig$additionalData %in% c(
-            names(config$inputWidgets),
-            names(modelOut)
-          )
+          invalidDsNames <- !widgetConfig$additionalData %in% c(names(modelIn), names(config$inputWidgets))
           if (any(invalidDsNames) && !LAUNCHCONFIGMODE) {
             errMsg <- paste(errMsg, sprintf(
-              "Invalid additional data for custom input widget: '%s' declared. The dataset(s): '%s' are not scalar input widgets. Currently, only scalar input widgets are supported as additional data for custom widgets.",
+              "Invalid additional data for custom input widget: '%s' declared. The dataset(s): '%s' are not input widgets. If you want to include a scalar value as additional data, please declare it as a widget first.",
               names(modelIn)[[i]],
               paste(widgetConfig$additionalData[invalidDsNames], collapse = "', '")
             ),

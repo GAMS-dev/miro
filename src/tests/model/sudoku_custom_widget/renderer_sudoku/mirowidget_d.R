@@ -1,6 +1,12 @@
 mirowidget_dOutput <- function(id, height = NULL, options = NULL, path = NULL) {
   ns <- NS(id)
-  return(tagList(textOutput(ns("i")), textOutput(ns("j")), selectInput(ns("bla"), "Bla", choices = c("bla1", "bla2")), rHandsontableOutput(ns("sudoku"))))
+  return(tagList(
+    textOutput(ns("i")),
+    textOutput(ns("j")),
+    textOutput(ns("initial_state2")),
+    selectInput(ns("bla"), "Bla", choices = c("bla1", "bla2")),
+    rHandsontableOutput(ns("sudoku"))
+  ))
 }
 
 renderMirowidget_d <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
@@ -19,6 +25,9 @@ renderMirowidget_d <- function(input, output, session, data, options = NULL, pat
       return(paste(data[["j"]]()[[1]], collapse = ","))
     }
     return("")
+  })
+  output$initial_state2 <- renderText({
+    return(as.character(sum(rowSums(data[["initial_state2"]]()[, -1], na.rm = TRUE))))
   })
   dataToReturn <- reactive({
     if (is.null(input$sudoku)) {

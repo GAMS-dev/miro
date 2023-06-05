@@ -48,6 +48,18 @@ row7 5         3                        7    6
 row8                5         8         2
 row9                3    7
 ;
+table initial_state2(row,col)
+     col1 col2 col3 col4 col5 col6 col7 col8 col9
+row1                     1    6
+row2      7         9         2
+row3 6    9                        2         8
+row4 8                   9         7         2
+row5 4                                       3
+row6 2         9         1                   4
+row7 5         3                        1    6
+row8                5         8         2
+row9                3    1
+;
 $offExternalInput
 
 parameter initial_state_clean(row,col);

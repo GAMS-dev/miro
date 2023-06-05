@@ -53,6 +53,7 @@ app$set_inputs(inputTabset = "inputTabset_5")
 Sys.sleep(1)
 expect_identical(app$get_values()$output[["data-in_7-custom-i"]], "seattle,san-diego")
 expect_identical(app$get_values()$output[["data-in_7-custom-j"]], "new-york,chicago,topeka")
+expect_identical(app$get_values()$output[["data-in_7-custom-initial_state2"]], "133")
 expect_identical(app$get_values()$input[["data-in_7-custom-bla"]], "bla1")
 expect_equivalent(
   getHotData(app, "data-in_7-custom-sudoku"),
@@ -73,7 +74,7 @@ Sys.sleep(1)
 app$set_inputs(contentScen_2 = "contentScen_2_2")
 Sys.sleep(1)
 expect_identical(
-  getVisibleDtData(app, "tab_2_9-datatable"),
+  getVisibleDtData(app, "tab_2_10-datatable"),
   structure(
     list(
       ...1 = c("1", "2", "3", "4", "5"),
@@ -124,6 +125,6 @@ app$set_inputs(exportFileType = "miroscen")
 Sys.sleep(2L)
 expect_symbols_in_miroscen(app, "scenExportHandler", c(
   "a", "b", "d", "force_unique_sol", "i", "ii", "test", "j", "initial_state",
-  "test123", "test124", "results", "_gmspar_bla"
+  "initial_state2", "test123", "test124", "results", "_gmspar_bla"
 ))
 app$stop()

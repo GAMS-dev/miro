@@ -56,6 +56,7 @@
       "rendererName": "mirowidget_d",
       "alias": "Distance",
       "apiVersion": 2,
+      "additionalData": "initial_state2",
       "widgetSymbols": ["i", "j", "ii", "test124", "_gmspar_bla"]
     },
     "test123": {
