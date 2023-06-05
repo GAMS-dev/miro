@@ -213,7 +213,13 @@ getInputDataFromSandbox <- function() {
   # define temporary list to save input data to
   dataTmp <- lapply(modelInFileNames, function(symName) {
     if (symName %in% names(modelIn)) {
-      isolate(sandboxInputData$getData(symName)())
+      datasetTmp <- isolate(sandboxInputData$getData(symName)())
+      if (!identical(length(datasetTmp), length(modelIn[[symName]]$headers)) ||
+        !hasValidHeaderTypes(datasetTmp, modelIn[[symName]]$colTypes)) {
+        stop(sprintf("No valid input data found for symbol: %s.", symName), call. = FALSE)
+      }
+      names(datasetTmp) <- names(modelIn[[symName]]$headers)
+      return(datasetTmp)
     }
   })
   names(dataTmp) <- modelInFileNames
@@ -222,7 +228,9 @@ getInputDataFromSandbox <- function() {
     if (is.logical(valTmp)) {
       valTmp <- as.integer(valTmp)
     }
-    tibble(scalar = symName, description = "", value = if (length(valTmp)) as.character(valTmp) else NA_character_)
+    tibble(scalar = symName, description = tryCatch(modelIn[[symName]][["alias"]], error = function(e) {
+      return(symName)
+    }), value = if (length(valTmp)) as.character(valTmp) else NA_character_)
   }))
   if (nrow(scalarData) > 0L) {
     names(scalarData) <- scalarsFileHeaders
