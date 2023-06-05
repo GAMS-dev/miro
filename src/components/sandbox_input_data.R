@@ -643,7 +643,7 @@ CustomWidget <- R6::R6Class("CustomWidget",
               reactiveDataVals <- c(
                 private$inputReactives,
                 lapply(private$config$additionalData, function(symName) {
-                  return(private$sandboxData$getData(symName)())
+                  return(private$sandboxData$getData(symName))
                 })
               )
             } else {
@@ -657,7 +657,7 @@ CustomWidget <- R6::R6Class("CustomWidget",
                   return(inputReactive())
                 }),
                 lapply(private$config$additionalData, function(symName) {
-                  return(private$sandboxData$getData(symName))
+                  return(private$sandboxData$getData(symName)())
                 })
               )
             }
