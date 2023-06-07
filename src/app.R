@@ -2111,6 +2111,8 @@ if (!is.null(errMsg)) {
       ####### Model input
       # get sandbox data
       source("./modules/input_save.R", local = TRUE)
+      # render input charts
+      source("./modules/input_charts.R", local = TRUE)
       # generate import dialogue
       source("./modules/input_ui.R", local = TRUE)
       # load input data from Excel sheet
