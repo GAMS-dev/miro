@@ -61,12 +61,13 @@ MultiDimWidget <- R6::R6Class("MultiDimWidget",
       private$updateWidget <- reactiveVal(0L)
       config$defaultValue <- config$template
       private$needsPivot <- length(config$pivotCols) > 0L
+      config$noDomains <- sum(vapply(config$headers, function(header) {
+        identical(header$type, "string")
+      }, logical(1L), USE.NAMES = FALSE))
       if (private$needsPivot) {
         private$pivotIdx <- match(config$pivotCols[[1]], names(config$headers))[[1L]]
         private$staticColHeaders <- attr(config$defaultValue, "aliases")[-c(private$pivotIdx, length(config$defaultValue))]
-        config$noDomains <- sum(vapply(config$headers, function(header) {
-          identical(header$type, "string")
-        }, logical(1L), USE.NAMES = FALSE)) - 1L
+        config$noDomains <- config$noDomains - 1L
       } else {
         private$staticColHeaders <- attr(config$defaultValue, "aliases")
       }
@@ -109,6 +110,29 @@ MultiDimWidget <- R6::R6Class("MultiDimWidget",
           length(dataTmp)
         )]
       )))
+    },
+    normalizeData = function(data) {
+      if (!private$needsPivot) {
+        return(data)
+      }
+      return(select(pivot_longer(
+        suppressWarnings(
+          mutate(
+            data,
+            across(all_of(seq(
+              length(private$config$headers) - 1L,
+              length(data)
+            )), as.numeric)
+          )
+        ),
+        cols = seq(
+          length(private$config$headers) - 1L,
+          length(data)
+        ),
+        names_to = private$config$pivotCols[[1]],
+        values_to = names(private$config$headers)[length(private$config$headers)],
+        values_drop_na = TRUE
+      ), !!!names(private$config$headers)))
     },
     dataNeedsUpdate = function(data) {
       return(!identical(
@@ -291,24 +315,7 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
             private$config
           )
           if (private$needsPivot) {
-            dataTmp <- select(pivot_longer(
-              suppressWarnings(
-                mutate(
-                  dataTmp,
-                  across(all_of(seq(
-                    length(private$config$headers) - 1L,
-                    length(dataTmp)
-                  )), as.numeric)
-                )
-              ),
-              cols = seq(
-                length(private$config$headers) - 1L,
-                length(dataTmp)
-              ),
-              names_to = private$config$pivotCols[[1]],
-              values_to = names(private$config$headers)[length(private$config$headers)],
-              values_drop_na = TRUE
-            ), !!!names(private$config$headers))
+            dataTmp <- private$normalizeData(dataTmp)
           }
           isolate({
             private$data(dataTmp)
@@ -547,6 +554,378 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
         ),
         c("column_left", "column_right", "rename_column", "remove_column")
       )
+    }
+  )
+)
+
+DataTableWidget <- R6::R6Class("DataTableWidget",
+  inherit = MultiDimWidget,
+  public = list(
+    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName = NULL,
+                          htmlSelectorPefix = "in_", ...) {
+      private$staticTableConfig <- list(
+        dtConfig = modifyList(
+          config[["datatable"]],
+          list(
+            editable = !identical(
+              symConfig$readonly,
+              TRUE
+            ),
+            options = list(scrollX = TRUE)
+          )
+        ),
+        htmlSelector = paste0(htmlSelectorPefix, id),
+        roundPrecision = config[["roundingDecimals"]]
+      )
+      private$dtProxy <- dataTableProxy(private$staticTableConfig$htmlSelector)
+      output[[private$staticTableConfig$htmlSelector]] <- renderDT({
+        private$updateWidget()
+
+        if (private$needsPivot) {
+          dataTmp <- private$getPivotedData()
+          colHeaders <- dataTmp$colHeaders
+          dataTmp <- dataTmp$data
+        } else {
+          dataTmp <- isolate(private$data())
+          colHeaders <- private$staticColHeaders
+        }
+
+        dtOptions <- private$staticTableConfig$dtConfig
+        dtOptions$colnames <- colHeaders
+
+        return(renderDTable(dataTmp,
+          dtOptions,
+          roundPrecision = private$staticTableConfig$roundPrecision,
+          render = FALSE
+        ))
+      })
+      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName = symName))
+    },
+    setData = function(data) {
+      if (private$dataNeedsUpdate(data)) {
+        private$ignoreUpdate <- 1L
+        isolate({
+          private$data(data)
+          updateNew <- private$updateWidget() + 1L
+          private$updateWidget(updateNew)
+        })
+        if (private$needsPivot) {
+          dataTmp <- private$getPivotedData()
+          private$dataPivoted <- dataTmp$data
+        }
+      }
+      return(invisible(self))
+    }
+  ),
+  private = list(
+    staticTableConfig = NULL,
+    dtProxy = NULL,
+    dataPivoted = NULL,
+    observeChanges = function() {
+      return(list(
+        observeEvent(private$input[[paste0(
+          private$staticTableConfig$htmlSelector,
+          "_add_row"
+        )]], {
+          if (!length(private$data())) {
+            flog.warn(
+              "Add row button (symbol: %s) was clicked but data has no length.",
+              private$symName
+            )
+            return()
+          }
+          removeUI("body>.selectize-dropdown", multiple = TRUE, immediate = TRUE)
+
+          newRowId <- suppressWarnings(
+            as.integer(private$input[[paste0(
+              private$staticTableConfig$htmlSelector,
+              "_rows_selected"
+            )]])
+          )
+          if (any(is.na(newRowId))) {
+            return(flog.error(
+              "Invalid data for 'rows_selected' (symbol: %s).",
+              private$symName
+            ))
+          }
+          if (length(newRowId) == 1L) {
+            newRowId <- c(newRowId - 1L, newRowId)
+          } else if (length(newRowId) > 1L) {
+            newRowId <- c(min(newRowId) - 1L, max(newRowId))
+          }
+          colNames <- private$staticColHeaders
+          if (private$needsPivot) {
+            colNames <- c(colNames, names(private$dataPivoted)[seq(
+              private$config$noDomains + 1L,
+              length(private$dataPivoted)
+            )])
+            noRows <- nrow(private$dataPivoted)
+          } else {
+            noRows <- nrow(private$data())
+          }
+          showModal(
+            modalDialog(
+              title = lang$renderers$miroPivot$dialogAddRow$title,
+              tags$div(id = "newRowError", class = "gmsalert gmsalert-error"),
+              tags$div(
+                class = "table-responsive", style = "margin-top:30px",
+                tags$table(
+                  class = "table",
+                  tags$tr(
+                    lapply(colNames, tags$th)
+                  ),
+                  tags$tr(lapply(seq_along(colNames), function(j) {
+                    tags$td(
+                      class = "table-add-row",
+                      if (j <= private$config$noDomains) {
+                        if (private$needsPivot) {
+                          uelChoices <- unique(private$dataPivoted[[j]])
+                        } else {
+                          uelChoices <- unique(private$data()[[j]])
+                        }
+                        serverSelectInput(private$session,
+                          paste0("newRow_", j), NULL,
+                          uelChoices,
+                          multiple = TRUE,
+                          width = "100%",
+                          options = list(
+                            create = TRUE, maxItems = 1L,
+                            dropdownParent = "body"
+                          )
+                        )
+                      } else {
+                        textInput(paste0("newRow_", j), NULL, NA, width = "100%")
+                      }
+                    )
+                  }))
+                )
+              ),
+              selectInput("newRowId", NULL,
+                choices = if (length(newRowId) == 0L) {
+                  setNames(
+                    c(0L, noRows),
+                    lang$renderers$datatable$addRowPosNoneSelected
+                  )
+                } else {
+                  setNames(newRowId, lang$renderers$datatable$addRowPos)
+                },
+                selected = newRowId[2]
+              ),
+              footer = tagList(
+                tags$div(
+                  class = "modal-footer-mobile",
+                  modalButton(lang$renderers$miroPivot$dialogAddRow$btCancel),
+                  actionButton(
+                    paste0(
+                      private$staticTableConfig$htmlSelector,
+                      "_add_row_confirm"
+                    ),
+                    label = lang$renderers$miroPivot$btAddRow,
+                    class = "bt-highlight-1 bt-gms-confirm"
+                  )
+                )
+              ),
+              fade = TRUE, easyClose = FALSE, size = "l"
+            )
+          )
+        }),
+        observeEvent(private$input[[paste0(
+          private$staticTableConfig$htmlSelector,
+          "_add_row_confirm"
+        )]], {
+          flog.trace("Add row button for table: %s clicked.", private$symName)
+          if (!length(private$data())) {
+            flog.warn(
+              "Add rows confirm button (symbol: %s) was clicked but data has no length.",
+              private$symName
+            )
+            return()
+          }
+          newKeys <- vapply(seq_len(private$config$noDomains), function(i) {
+            editedKey <- tryCatch(trimws(private$input[[paste0("newRow_", i)]]),
+              error = function(e) {
+                NA_character_
+              }
+            )
+            if (isValidUEL(editedKey)) {
+              return(editedKey)
+            }
+            return(NA_character_)
+          }, character(1L), USE.NAMES = FALSE)
+          if (any(is.na(newKeys))) {
+            return(showHideEl(
+              private$session, "#newRowError", 5000L,
+              lang$renderers$miroPivot$dialogAddRow$invalidKeysError
+            ))
+          }
+          invalidValue <- FALSE
+          if (private$needsPivot) {
+            noCols <- length(private$dataPivoted)
+          } else {
+            noCols <- length(private$data())
+          }
+          newValues <- vapply(seq(
+            private$config$noDomains + 1L,
+            noCols
+          ), function(i) {
+            newVal <- trimws(private$input[[paste0("newRow_", i)]])
+            if (identical(newVal, "")) {
+              return(NA_real_)
+            }
+            newVal <- tryCatch(
+              suppressWarnings(
+                as.numeric(private$input[[paste0("newRow_", i)]])
+              ),
+              error = function(e) {
+                NA_real_
+              }
+            )
+            if (length(newVal) != 1L) {
+              return(NA_real_)
+            }
+            if (is.na(newVal) && !invalidValue) {
+              invalidValue <<- TRUE
+            }
+            return(newVal)
+          }, numeric(1L), USE.NAMES = FALSE)
+
+          if (invalidValue) {
+            return(showHideEl(
+              private$session, "#newRowError", 5000L,
+              lang$renderers$miroPivot$dialogAddRow$invalidValuesError
+            ))
+          }
+
+          newRowId <- suppressWarnings(as.integer(private$input$newRowId))
+          if (length(newRowId) != 1L || is.na(newRowId)) {
+            return(flog.error(
+              "Invalid data for 'newRowId' (symbol: %s).",
+              private$symName
+            ))
+          }
+          if (private$needsPivot) {
+            newDataTmp <- add_row(private$dataPivoted,
+              !!!setNames(
+                c(
+                  as.list(newKeys),
+                  as.list(newValues)
+                ),
+                names(private$dataPivoted)
+              ),
+              .after = newRowId
+            )
+          } else {
+            newDataTmp <- add_row(private$data(),
+              !!!setNames(
+                c(
+                  as.list(newKeys),
+                  as.list(newValues)
+                ),
+                names(private$data())
+              ),
+              .after = newRowId
+            )
+          }
+          replaceData(private$dtProxy,
+            newDataTmp,
+            resetPaging = FALSE,
+            rownames = config$datatable$rownames
+          )
+          private$data(private$normalizeData(newDataTmp))
+          if (private$needsPivot) {
+            private$dataPivoted <- newDataTmp
+          }
+          private$rv$inputDataDirty <- TRUE
+          removeModal()
+          flog.trace("Added row (symbol: %s).", private$symName)
+        }),
+        observeEvent(private$input[[paste0(
+          private$staticTableConfig$htmlSelector,
+          "_remove_row"
+        )]], {
+          flog.trace(
+            "Remove rows button (symbol: %s) was clicked.",
+            private$symName
+          )
+          idsToRemove <- private$input[[paste0(
+            private$staticTableConfig$htmlSelector,
+            "_rows_selected"
+          )]]
+          if (!length(idsToRemove)) {
+            flog.trace("No rows selected (symbol: %s).", private$symName)
+            return()
+          }
+          if (!length(private$data())) {
+            flog.warn(
+              "Remove rows button (symbol: %s) was clicked but data has no length.",
+              private$symName
+            )
+            return()
+          }
+          if (private$needsPivot) {
+            newDataTmp <- private$dataPivoted[-idsToRemove, ]
+          } else {
+            newDataTmp <- private$data()[-idsToRemove, ]
+          }
+          replaceData(private$dtProxy,
+            newDataTmp,
+            resetPaging = FALSE,
+            rownames = config$datatable$rownames
+          )
+          private$data(private$normalizeData(newDataTmp))
+          if (private$needsPivot) {
+            private$dataPivoted <- newDataTmp
+          }
+          private$rv$inputDataDirty <- TRUE
+          flog.trace(
+            "Removed %s row(s) (symbol: %s).",
+            length(idsToRemove),
+            private$symName
+          )
+        }),
+        observeEvent(private$input[[paste0(
+          private$staticTableConfig$htmlSelector,
+          "_cell_edit"
+        )]], {
+          info <- private$input[[paste0(
+            private$staticTableConfig$htmlSelector,
+            "_cell_edit"
+          )]]
+          row <- info$row
+          if (config$datatable$rownames) {
+            col <- info$col
+            if (col < 1) {
+              return()
+            }
+          } else {
+            col <- info$col + 1L
+          }
+          val <- info$value
+          if (private$needsPivot) {
+            newDataTmp <- private$dataPivoted
+          } else {
+            newDataTmp <- private$data()
+          }
+          newDataTmp[row, col] <- suppressWarnings(coerceValue(
+            val,
+            newDataTmp[[col]][row]
+          ))
+          replaceData(private$dtProxy,
+            newDataTmp,
+            resetPaging = FALSE,
+            rownames = config$datatable$rownames
+          )
+          private$data(private$normalizeData(newDataTmp))
+          if (private$needsPivot) {
+            private$dataPivoted <- newDataTmp
+          }
+          private$rv$inputDataDirty <- TRUE
+          flog.trace(
+            "Modified value of row: %s, column: %s, value: %s (symbol: %s).",
+            row, col, val, private$symName
+          )
+        })
+      ))
     }
   )
 )
@@ -1016,7 +1395,7 @@ SandboxInputData <- R6::R6Class("SandboxInputData",
       private$rv <- rv
       typeWidgetMapping <- list(
         hot = HandsonTableWidget,
-        # dt = DataTableWidget,
+        dt = DataTableWidget,
         slider = SliderWidget,
         # textinput = TextInputWidget,
         numericinput = NumericInputWidget,
@@ -1029,6 +1408,12 @@ SandboxInputData <- R6::R6Class("SandboxInputData",
       private$inputWidgets <- lapply(seq_along(inputConfig), function(id) {
         symName <- names(inputConfig)[[id]]
         config <- inputConfig[[id]]
+        if (identical(config$type, "hot") && isMobileDevice) {
+          return(DataTableWidget$new(id, config, input, output, session, rv, self,
+            symName = symName,
+            htmlSelector = paste0("in_m_")
+          ))
+        }
         widget <- typeWidgetMapping[[config$type]]
         if (!is.null(widget)) {
           return(widget$new(id, config, input, output, session, rv, self, symName = symName))
