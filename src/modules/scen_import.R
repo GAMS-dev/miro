@@ -391,8 +391,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
       return()
     }
     if (identical(input$cbSelectManuallyLoc, FALSE)) {
-      resetWidgetsOnClose <<- FALSE
-      if (!closeScenario(clearMeta = TRUE)) {
+      if (!closeScenario(clearMeta = TRUE, resetWidgets = FALSE)) {
         showHideEl(session, "#importScenError", 4000L)
         return()
       }

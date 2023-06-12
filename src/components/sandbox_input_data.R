@@ -147,7 +147,14 @@ ScalarWidget <- R6::R6Class("ScalarWidget",
   inherit = InputWidget,
   public = list(
     reset = function() {
-      private$isInitialized <- FALSE
+      if (identical(private$config$hasDependency, TRUE)) {
+        private$isInitialized <- FALSE
+        hideEl(
+          private$session,
+          paste0("#", private$config$htmlSelector)
+        )
+        showEl(private$session, paste0("#no_data_dep_", private$id))
+      }
       return(super$reset())
     }
   )
@@ -156,7 +163,7 @@ ScalarWidget <- R6::R6Class("ScalarWidget",
 HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
   inherit = MultiDimWidget,
   public = list(
-    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, ...) {
+    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName, ...) {
       colsReadonly <- vapply(symConfig$headers, function(headerConfig) {
         if (identical(headerConfig$readonly, TRUE)) {
           return(headerConfig$alias)
@@ -285,7 +292,7 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
         }
         return(ht)
       })
-      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj))
+      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName))
     },
     setData = function(data) {
       if (private$dataNeedsUpdate(data)) {
@@ -319,6 +326,7 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
           }
           isolate({
             private$data(dataTmp)
+            flog.debug("Modification of hot (symbol: %s).", private$symName)
             private$rv$inputDataDirty <- TRUE
           })
         }
@@ -1093,6 +1101,7 @@ CustomWidget <- R6::R6Class("CustomWidget",
               if (private$ignoreUpdate[[symName]] > 0L) {
                 private$ignoreUpdate[[symName]] <- private$ignoreUpdate[[symName]] - 1L
               } else {
+                flog.debug("Modification of custom widget (symbol: %s).", symName)
                 private$rv$inputDataDirty <- TRUE
               }
               if (is.null(dataTmp)) {
@@ -1112,6 +1121,7 @@ CustomWidget <- R6::R6Class("CustomWidget",
             if (private$ignoreUpdate[[private$symName]] > 0L) {
               private$ignoreUpdate[[private$symName]] <- private$ignoreUpdate[[private$symName]] - 1L
             } else {
+              flog.debug("Modification of custom widget (symbol: %s).", private$symName)
               private$rv$inputDataDirty <- TRUE
             }
             if (is.null(dataTmp)) {
@@ -1136,20 +1146,22 @@ CustomWidget <- R6::R6Class("CustomWidget",
 SliderWidget <- R6::R6Class("SliderWidget",
   inherit = ScalarWidget,
   public = list(
-    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, ...) {
+    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName, ...) {
       symConfig$defaultValue <- symConfig$slider$default
-      if (!identical(private$config$slider$hasDependency, TRUE)) {
-        private$isInitialized <- TRUE
+      symConfig$htmlSelector <- paste0("slider_", id)
+      if (identical(symConfig$slider$hasDependency, TRUE)) {
+        symConfig$hasDependency <- TRUE
       }
-      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj))
+      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName))
     },
     setData = function(data) {
       if (private$dataNeedsUpdate(data)) {
         isolate({
           private$data(as.numeric(data))
         })
+        private$ignoreUpdate <- 1L
         updateSliderInput(private$session,
-          paste0("slider_", private$id),
+          private$config$htmlSelector,
           value = data
         )
       }
@@ -1159,12 +1171,12 @@ SliderWidget <- R6::R6Class("SliderWidget",
   private = list(
     observeChanges = function() {
       obsList <- list(observe({
-        dataRaw <- private$input[[paste0("slider_", private$id)]]
+        dataRaw <- private$input[[private$config$htmlSelector]]
         if (private$ignoreUpdate > 0L) {
           private$ignoreUpdate <- private$ignoreUpdate - 1L
         } else {
           isolate({
-            private$data(dataRaw)
+            flog.debug("Modification of slider (symbol: %s).", private$symName)
             private$rv$inputDataDirty <- TRUE
           })
         }
@@ -1190,6 +1202,11 @@ SliderWidget <- R6::R6Class("SliderWidget",
           )
           if ((is.null(newValues$min) || is.finite(newValues$min)) &&
             (is.null(newValues$max) || is.finite(newValues$max))) {
+            if (is.finite(newValues$min) &&
+              is.finite(newValues$max) &&
+              newValues$min > newValues$max) {
+              return()
+            }
             if (!private$isInitialized) {
               private$isInitialized <- TRUE
               newValues$value <- isolate(private$data())
@@ -1203,11 +1220,14 @@ SliderWidget <- R6::R6Class("SliderWidget",
                   newValues$value
                 )
               }
-              showEl(private$session, paste0("#slider_", private$id))
+              showEl(
+                private$session,
+                paste0("#", private$config$htmlSelector)
+              )
               hideEl(private$session, paste0("#no_data_dep_", private$id))
             }
             updateSliderInput(private$session,
-              paste0("slider_", private$id),
+              private$config$htmlSelector,
               value = newValues$value,
               min = newValues$min,
               max = newValues$max,
@@ -1227,9 +1247,11 @@ SliderWidget <- R6::R6Class("SliderWidget",
 DropdownWidget <- R6::R6Class("DropdownWidget",
   inherit = ScalarWidget,
   public = list(
-    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, ...) {
-      symConfig$defaultValue <- symConfig$dropdown$default
-      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj))
+    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName, ...) {
+      symConfig$defaultValue <- symConfig$dropdown$selected
+      symConfig$htmlSelector <- paste0("dropdown_", id)
+      symConfig$hasDependency <- !is.null(private$config$dropdown$dependencyConfig$fw)
+      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName))
     },
     setData = function(data) {
       if (private$dataNeedsUpdate(data)) {
@@ -1238,7 +1260,7 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
         })
         private$ignoreUpdate <- 1L
         updateSelectInput(private$session,
-          paste0("dropdown_", private$id),
+          private$config$htmlSelector,
           selected = data
         )
       }
@@ -1248,12 +1270,13 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
   private = list(
     observeChanges = function() {
       obsList <- list(observe({
-        dataRaw <- private$input[[paste0("dropdown_", private$id)]]
+        dataRaw <- private$input[[private$config$htmlSelector]]
         if (private$ignoreUpdate > 0L) {
           private$ignoreUpdate <- private$ignoreUpdate - 1L
         } else {
           isolate({
             private$data(dataRaw)
+            flog.debug("Modification of dropdown (symbol: %s).", private$symName)
             private$rv$inputDataDirty <- TRUE
           })
         }
@@ -1280,7 +1303,7 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
           if (!private$isInitialized) {
             private$isInitialized <- TRUE
             currentValue <- isolate(private$data())
-            showEl(private$session, paste0("#dropdown_", private$id))
+            showEl(private$session, paste0("#", private$config$htmlSelector))
             hideEl(private$session, paste0("#no_data_dep_", private$id))
           }
           if (length(currentValue) && !currentValue %in% newChoices) {
@@ -1291,7 +1314,7 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
             private$ignoreUpdate <- 0L
           }
           updateSelectInput(private$session,
-            paste0("dropdown_", private$id),
+            private$config$htmlSelector,
             choices = newChoices
           )
         })
@@ -1307,9 +1330,9 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
 CheckboxWidget <- R6::R6Class("CheckboxWidget",
   inherit = ScalarWidget,
   public = list(
-    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, ...) {
+    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName, ...) {
       symConfig$defaultValue <- symConfig$checkbox$value
-      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj))
+      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName))
     },
     setData = function(data) {
       if (private$dataNeedsUpdate(data)) {
@@ -1334,6 +1357,7 @@ CheckboxWidget <- R6::R6Class("CheckboxWidget",
         } else {
           isolate({
             private$data(as.integer(dataRaw))
+            flog.debug("Modification of checkbox (symbol: %s).", private$symName)
             private$rv$inputDataDirty <- TRUE
           })
         }
@@ -1348,9 +1372,9 @@ CheckboxWidget <- R6::R6Class("CheckboxWidget",
 NumericInputWidget <- R6::R6Class("NumericInputWidget",
   inherit = ScalarWidget,
   public = list(
-    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, ...) {
+    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName, ...) {
       symConfig$defaultValue <- symConfig$numericinput$value
-      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj))
+      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName))
     },
     setData = function(data) {
       dataNew <- as.numeric(data)
@@ -1376,6 +1400,7 @@ NumericInputWidget <- R6::R6Class("NumericInputWidget",
         } else {
           isolate({
             private$data(as.numeric(dataRaw))
+            flog.debug("Modification of numeric input (symbol: %s).", private$symName)
             private$rv$inputDataDirty <- TRUE
           })
         }

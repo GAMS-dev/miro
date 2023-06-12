@@ -245,8 +245,7 @@ observeEvent(virtualActionButton(
     showHideEl(session, "#fetchJobsError")
     return()
   }
-  resetWidgetsOnClose <<- FALSE
-  if (!closeScenario()) {
+  if (!closeScenario(resetWidgets = FALSE)) {
     return()
   }
   newInputCount <- 0L
