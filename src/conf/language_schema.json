@@ -5845,16 +5845,12 @@
                         "minLength": 1
                       }
                     },
-                    "type": {
-                      "type": "string",
-                      "minLength": 1
-                    },
                     "selector": {
                       "type": "string",
                       "minLength": 1
                     }
                   },
-                  "minProperties": 4
+                  "minProperties": 3
                 },
                 "default": {
                   "type": "string",

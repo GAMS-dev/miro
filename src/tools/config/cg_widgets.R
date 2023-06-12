@@ -1314,11 +1314,6 @@ observeEvent(
                             selected = dynamicChoices[3]
                           )
                         )
-                      ),
-                      checkboxInput_MIRO(
-                        "dd_choice_dep_type",
-                        lang$adminMode$widgets$dropdown$choiceDep$type,
-                        identical(dynamicChoices[1], "2")
                       )
                     )
                   )
@@ -2660,10 +2655,7 @@ observeEvent(input$dd_choice_dep_selector, {
       if (nchar(input$dd_choice_dep)) {
         "$"
       },
-      input$dd_choice_dep_header,
-      if (isTRUE(input$dd_choice_dep_type)) {
-        "$"
-      }
+      input$dd_choice_dep_header
     )
     rv$widgetConfig$aliases <<- NULL
     rv$widgetConfig$selected <<- NULL
@@ -2840,23 +2832,13 @@ observeEvent(input$saveWidget, {
     }
   } else if (rv$widgetConfig$widgetType %in% c("dropdown", "multidropdown")) {
     if (isFALSE(input$dd_choice_dep_selector)) {
-      if (isTRUE(input$dd_choice_dep_type)) {
-        rv$widgetConfig$choices <<- paste0(
-          "$", input$dd_choice_dep,
-          if (nchar(input$dd_choice_dep)) {
-            "$"
-          },
-          input$dd_choice_dep_header, "$"
-        )
-      } else {
-        rv$widgetConfig$choices <<- paste0(
-          "$", input$dd_choice_dep,
-          if (nchar(input$dd_choice_dep)) {
-            "$"
-          },
-          input$dd_choice_dep_header
-        )
-      }
+      rv$widgetConfig$choices <<- paste0(
+        "$", input$dd_choice_dep,
+        if (nchar(input$dd_choice_dep)) {
+          "$"
+        },
+        input$dd_choice_dep_header
+      )
     }
   }
   errMsg <- validateWidgetConfig(rv$widgetConfig)

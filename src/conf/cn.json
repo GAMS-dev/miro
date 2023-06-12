@@ -1488,7 +1488,6 @@
         "choiceDep":{
           "label": "选择要依赖的GAMS符号和标题",
           "depChoices": ["全部"],
-          "type": "要使用下拉菜单中的选择的GAMS符号去筛选所有表格吗",
           "selector": "静态选项？"
         },
         "default": "默认值",

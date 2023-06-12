@@ -1489,7 +1489,6 @@
         "choiceDep":{
           "label": "Wählen Sie Symbol und Domäne aus, von denen die Auswahlmöglichkeiten abgeleitet werden sollen",
           "depChoices": ["Alle"],
-          "type": "Soll dieses Dropdown-Menü zum Filtern anderer Tabellen verwendet werden?",
           "selector": "Statische Auswahlmöglichkeiten?"
         },
         "default": "Standardauswahl",

@@ -759,7 +759,7 @@ if (miroBuildOnly) {
       "configGraphsIn", "inputTabs", "inputTabTitles",
       "scenInputTabs", "scenInputTabTitles", "isGroupOfSheets",
       "groupSheetToTabIdMap", "scalarsInTemplate", "modelInWithDep",
-      "modelOutAlias", "colsWithDep", "scalarsInMetaData",
+      "modelOutAlias", "scalarsInMetaData",
       "modelInMustImport", "modelInAlias", "DDPar", "GMSOpt",
       "modelInToImportAlias", "modelInToImport", "inputDsNamesNotToDisplay",
       "dbSchemaModel", "modelOutTemplate", "scenTableNamesToDisplay",
@@ -1729,7 +1729,6 @@ if (!is.null(errMsg)) {
       btSortTimeDescBase <- TRUE
       btSortTimeBase <- TRUE
       jobImportID <- NULL
-      resetWidgetsOnClose <- TRUE
       # boolean that specifies whether output data should be saved
       saveOutput <- TRUE
       # count number of open scenario tabs
@@ -1746,8 +1745,6 @@ if (!is.null(errMsg)) {
       asyncLogLoaded <- vector(mode = "logical", 3L)
       asyncResObs <- NULL
       traceData <- data.frame()
-      # boolean that specifies whether handsontable is initialised
-      hotInit <- vector("logical", length = length(modelIn))
       # counter that controls whether observer that checks whether custom widget was
       # modified should be skipped
       widgetModifiedSkipCount <- vector("integer", length = length(modelIn))

@@ -1512,41 +1512,11 @@ metadata$owner
                   <h2 class="section-title">Dependencies among widgets</h2>
                   <div class="section-block">
                     <p>
-                      One special feature of GAMS MIRO is that you can define
-                      interdependencies between different parameters. Scalars
-                      can take two forms of dependencies to other parameters:
-                      They can feed their attributes from them; and they can
-                      manipulate the content of those parameters. Let's look at
-                      an example: we have a set of scenarios that can be
-                      selected as well as a singleton set with the currently
-                      selected/active scenario. A singleton set is suited to be
-                      represented as a dropdown menu, hence we choose that type
-                      of widget here. We would like to filter our parameters
-                      based on the currently selected scenario so that we only
-                      see data that is relevant for this scenario (this type of
-                      dependency is also referred to as a
-                      <span class="code">backward dependency</span>). This means
-                      that in case scenario 1 is selected via our dropdown menu,
-                      we only want to display data relevant to scenario 1 to the
-                      user. Additionally, we want the choices of our dropdown
-                      menu to be the elements of all available scenarios (also
-                      referred to as a
-                      <span class="code">forward dependency</span>).
+                      MIRO allows you to set the limits of your sliders as well
+                      as the choices of dropdown widgets by data from other
+                      symbols.
                     </p>
-                    <div class="section-block">
-                      <img
-                        class="img-fluid gifplayer"
-                        style="
-                          display: block;
-                          margin-left: auto;
-                          margin-right: auto;
-                        "
-                        src="assets/images/dd-filter.png"
-                        alt="Dropdown menu filters table"
-                      />
-                    </div>
                     <p>
-                      Similar dependencies can also be considered for sliders.
                       An example is the <i>pickstock</i> model. Here, the number
                       of stocks you can select for your portfolio can not be
                       larger than the number of stocks in your dataset.
@@ -1557,56 +1527,6 @@ metadata$owner
                       according to the price data the user uploads. Thus, we
                       also have forward dependencies here.
                     </p>
-                    <p>
-                      A table that shows the currently supported forms of
-                      dependencies for the different input widgets is shown
-                      below.
-                    </p>
-                    <div class="table-responsive">
-                      <table class="table table-striped">
-                        <thead>
-                          <tr>
-                            <th>Input widget type</th>
-                            <th>Forward dependency</th>
-                            <th>Backward dependency</th>
-                            <th>Example model</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>Dropdown menu</td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><span class="code">-</span></td>
-                          </tr>
-                          <tr>
-                            <td>Slider</td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><span class="code">pickstock</span></td>
-                          </tr>
-                          <tr>
-                            <td>Checkbox</td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td>-</td>
-                          </tr>
-                          <tr>
-                            <td>Date selector</td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td>-</td>
-                          </tr>
-                          <tr>
-                            <td>Daterange selector</td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td>(<i class="fas fa-check"></i>)</td>
-                            <td><span class="code">-</span></td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    <!--//table-responsive-->
                     <div class="callout-block callout-warning">
                       <div class="icon-holder">
                         <i class="fas fa-info-circle"></i>
@@ -1615,18 +1535,13 @@ metadata$owner
                       <div class="content">
                         <b class="callout-title">Note:</b>
                         <p>
-                          You need dependency support for a type of widget which
-                          is currently not available? Please feel free to
-                          contact us at:
-                          <a href="mailto:miro@gams.com" target="_blank"
-                            >miro@gams.com</a
-                          >. You added dependency support for another type of
-                          widget yourself? Send us a pull request on
+                          For more sophisticated dependencies (e.g. conditional
+                          filtering of tables based on values of drop-down
+                          menus, etc.) use
                           <a
-                            href="https://github.com/GAMS-dev/miro"
-                            target="_blank"
-                            >GitHub</a
-                          >!
+                            href="./configuration_json_only.html#custom-input-widgets"
+                            >custom input widgets</a
+                          >.
                         </p>
                       </div>
                       <!--//content-->

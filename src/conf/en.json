@@ -1490,7 +1490,6 @@
         "choiceDep":{
           "label": "Select symbol and header to depend upon",
           "depChoices": ["All"],
-          "type": "Should this dropdown menu be used for filtering other tables?",
           "selector": "Static choices?"
         },
         "default": "Default value",

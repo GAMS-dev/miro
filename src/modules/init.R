@@ -1338,7 +1338,16 @@ if (is.null(errMsg)) {
         modelIn[[i]]$dropdown$choices <<- choices$strings
         modelIn[[i]]$dropdown$aliases <<- aliases$strings
         ddownDep[[name]]$fw <<- choices$fw
-        ddownDep[[name]]$bw <<- choices$bw
+        if (length(choices$bw)) {
+          warningMsgTmp <- sprintf(
+            paste0(
+              "The symbol: %s is configurated with a backward dependency (filter on table). This feature was dropped with MIRO 2.8.",
+              "Please use custom input widgets instead: https://www.gams.com/miro/configuration_json_only.html#custom-input-widgets"
+            ), names(modelIn)[i]
+          )
+          warning(warningMsgTmp, call. = FALSE)
+          warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
+        }
         ddownDep[[name]]$aliases <<- aliases$fw
         choicesNoDep[[name]] <<- choices$strings
         aliasesNoDep[[name]] <<- aliases$strings
@@ -1581,35 +1590,6 @@ if (is.null(errMsg)) {
   } else {
     modelInNoDep <- names(modelIn)
   }
-
-  # initialise list that contains dependency information about each input dataset
-  colsWithDep <- vector(mode = "list", length = length(modelIn))
-
-  # find dependencies
-  lapply(modelInNoDep, function(sheet) {
-    # get input element id of dataset without dependency
-    i <- match(tolower(sheet), names(modelIn))
-    # find columns of dataset i with dependency
-
-    lapply(names(modelIn[[i]]$headers), function(col) {
-      lapply(names(modelIn), function(sheetDep) {
-        # test if sheetDep has a forward dependency on considered sheet without forward dependencies
-        if (col %in% ddownDep[[sheetDep]]$bw[[sheet]]) {
-          if (col %in% names(colsWithDep[[i]])) {
-            errMsg <<- paste(errMsg, paste0(
-              "Column: '", col, "' of input sheet '", sheet,
-              "' has more than one dependency. Only one backward dependency per column is allowed."
-            ),
-            sep = "\n"
-            )
-          } else {
-            id <- match(tolower(sheetDep), names(modelIn))
-            colsWithDep[[i]][[col]] <<- id
-          }
-        }
-      })
-    })
-  })
   # find ID columns (sets in GAMS) for each input data sheet
   idsIn <- vector(mode = "list", length = length(modelIn))
   for (inputName in modelInTabularData) {
