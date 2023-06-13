@@ -146,6 +146,14 @@ MultiDimWidget <- R6::R6Class("MultiDimWidget",
 ScalarWidget <- R6::R6Class("ScalarWidget",
   inherit = InputWidget,
   public = list(
+    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj,
+                          symName, conversionFn = as.character, ...) {
+      private$conversionFn <- conversionFn
+      return(super$initialize(
+        id, symConfig, input, output, session, rv,
+        sandboxInputDataObj, symName
+      ))
+    },
     reset = function() {
       if (identical(private$config$hasDependency, TRUE)) {
         private$isInitialized <- FALSE
@@ -156,6 +164,28 @@ ScalarWidget <- R6::R6Class("ScalarWidget",
         showEl(private$session, paste0("#no_data_dep_", private$id))
       }
       return(super$reset())
+    }
+  ), private = list(
+    conversionFn = NULL,
+    observeChanges = function() {
+      return(observe({
+        dataRaw <- private$input[[private$config$htmlSelector]]
+        if (private$ignoreUpdate > 0L) {
+          private$ignoreUpdate <- private$ignoreUpdate - 1L
+        } else {
+          isolate({
+            private$data(private$conversionFn(dataRaw))
+            flog.debug("Modification of input widget (symbol: %s).", private$symName)
+            private$rv$inputDataDirty <- TRUE
+          })
+        }
+      }))
+    },
+    dataNeedsUpdate = function(data) {
+      return(!identical(
+        private$conversionFn(data),
+        private$conversionFn(isolate(private$data()))
+      ))
     }
   )
 )
@@ -1152,17 +1182,20 @@ SliderWidget <- R6::R6Class("SliderWidget",
       if (identical(symConfig$slider$hasDependency, TRUE)) {
         symConfig$hasDependency <- TRUE
       }
-      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName))
+      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName,
+        conversionFn = as.numeric
+      ))
     },
     setData = function(data) {
+      dataNew <- private$conversionFn(data)
       if (private$dataNeedsUpdate(data)) {
         isolate({
-          private$data(as.numeric(data))
+          private$data(as.integer(data))
         })
         private$ignoreUpdate <- 1L
         updateSliderInput(private$session,
           private$config$htmlSelector,
-          value = data
+          value = dataNew
         )
       }
       return(invisible(self))
@@ -1186,22 +1219,29 @@ SliderWidget <- R6::R6Class("SliderWidget",
           newValues <- lapply(
             list("value" = "def", "min" = "min", "max" = "max", "step" = "step"),
             function(configElName) {
-              configEl <- private$config$sliderConfig[[configElName]]
-              if (is.numeric(configEl)) {
-                if (!private$isInitialized) {
-                  return(configEl)
+              configElRaw <- private$config$sliderConfig[[configElName]]
+              if (!identical(configElName, "def") || !is.null(names(configElRaw))) {
+                configElRaw <- list(configElRaw)
+              }
+              return(vapply(configElRaw, function(configEl) {
+                if (is.numeric(configEl)) {
+                  if (!private$isInitialized) {
+                    return(configEl)
+                  }
+                  return(NA_real_)
                 }
-                return(NULL)
-              }
-              dependentData <- unique(private$sandboxData$getData(names(configEl)[1L])()[[configEl[[1L]]]])
-              if (identical(configEl[["$operator"]], "count")) {
-                return(length(dependentData))
-              }
-              return(match.fun(configEl[["$operator"]])(as.numeric(dependentData)))
+                dependentData <- unique(private$sandboxData$getData(
+                  names(configEl)[1L]
+                )()[[configEl[[1L]]]])
+                if (identical(configEl[["$operator"]], "count")) {
+                  return(length(dependentData))
+                }
+                return(match.fun(configEl[["$operator"]])(as.numeric(dependentData)))
+              }, numeric(1L)))
             }
           )
-          if ((is.null(newValues$min) || is.finite(newValues$min)) &&
-            (is.null(newValues$max) || is.finite(newValues$max))) {
+          if ((is.na(newValues$min) || is.finite(newValues$min)) &&
+            (is.na(newValues$max) || is.finite(newValues$max))) {
             if (is.finite(newValues$min) &&
               is.finite(newValues$max) &&
               newValues$min > newValues$max) {
@@ -1211,8 +1251,8 @@ SliderWidget <- R6::R6Class("SliderWidget",
               private$isInitialized <- TRUE
               newValues$value <- isolate(private$data())
               if (length(newValues$value) &&
-                newValues$value >= newValues$min &&
-                newValues$value <= newValues$max) {
+                all(newValues$value >= newValues$min) &&
+                all(newValues$value <= newValues$max)) {
                 private$ignoreUpdate <- 1L
               } else {
                 flog.info(
@@ -1237,9 +1277,6 @@ SliderWidget <- R6::R6Class("SliderWidget",
         })
       }
       return(obsList)
-    },
-    dataNeedsUpdate = function(data) {
-      return(!identical(as.numeric(data), as.numeric(isolate(private$data()))))
     }
   )
 )
@@ -1320,9 +1357,6 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
         })
       }
       return(obsList)
-    },
-    dataNeedsUpdate = function(data) {
-      return(!identical(as.character(data), as.character(isolate(private$data()))))
     }
   )
 )
@@ -1332,39 +1366,24 @@ CheckboxWidget <- R6::R6Class("CheckboxWidget",
   public = list(
     initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName, ...) {
       symConfig$defaultValue <- symConfig$checkbox$value
-      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName))
+      symConfig$htmlSelector <- paste0("cb_", id)
+      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName,
+        conversionFn = as.integer
+      ))
     },
     setData = function(data) {
+      dataNew <- private$conversionFn(data)
       if (private$dataNeedsUpdate(data)) {
         isolate({
           private$data(as.integer(data))
         })
         private$ignoreUpdate <- 1L
         updateCheckboxInput(private$session,
-          paste0("cb_", private$id),
-          value = as.logical(data)
+          private$config$htmlSelector,
+          value = dataNew
         )
       }
       return(invisible(self))
-    }
-  ),
-  private = list(
-    observeChanges = function() {
-      return(observe({
-        dataRaw <- private$input[[paste0("cb_", private$id)]]
-        if (private$ignoreUpdate > 0L) {
-          private$ignoreUpdate <- private$ignoreUpdate - 1L
-        } else {
-          isolate({
-            private$data(as.integer(dataRaw))
-            flog.debug("Modification of checkbox (symbol: %s).", private$symName)
-            private$rv$inputDataDirty <- TRUE
-          })
-        }
-      }))
-    },
-    dataNeedsUpdate = function(data) {
-      return(!identical(as.logical(data), as.logical(isolate(private$data()))))
     }
   )
 )
@@ -1374,40 +1393,100 @@ NumericInputWidget <- R6::R6Class("NumericInputWidget",
   public = list(
     initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName, ...) {
       symConfig$defaultValue <- symConfig$numericinput$value
-      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName))
+      symConfig$htmlSelector <- paste0("numeric_", id)
+      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName,
+        conversionFn = as.numeric
+      ))
     },
     setData = function(data) {
-      dataNew <- as.numeric(data)
+      dataNew <- private$conversionFn(data)
       if (private$dataNeedsUpdate(dataNew)) {
         isolate({
           private$data(dataNew)
         })
         private$ignoreUpdate <- 1L
         updateNumericInput(private$session,
-          paste0("numeric_", private$id),
-          value = as.numeric(dataNew)
+          private$config$htmlSelector,
+          value = dataNew
         )
       }
       return(invisible(self))
     }
-  ),
-  private = list(
-    observeChanges = function() {
-      return(observe({
-        dataRaw <- private$input[[paste0("numeric_", private$id)]]
-        if (private$ignoreUpdate > 0L) {
-          private$ignoreUpdate <- private$ignoreUpdate - 1L
-        } else {
-          isolate({
-            private$data(as.numeric(dataRaw))
-            flog.debug("Modification of numeric input (symbol: %s).", private$symName)
-            private$rv$inputDataDirty <- TRUE
-          })
-        }
-      }))
+  )
+)
+
+TextInputWidget <- R6::R6Class("TextInputWidget",
+  inherit = ScalarWidget,
+  public = list(
+    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName, ...) {
+      symConfig$defaultValue <- symConfig$textinput$value
+      symConfig$htmlSelector <- paste0("text_", id)
+      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName))
     },
-    dataNeedsUpdate = function(data) {
-      return(!identical(as.numeric(data), as.numeric(isolate(private$data()))))
+    setData = function(data) {
+      dataNew <- private$conversionFn(data)
+      if (private$dataNeedsUpdate(dataNew)) {
+        isolate({
+          private$data(dataNew)
+        })
+        private$ignoreUpdate <- 1L
+        updateTextInput(private$session,
+          private$config$htmlSelector,
+          value = dataNew
+        )
+      }
+      return(invisible(self))
+    }
+  )
+)
+
+DateWidget <- R6::R6Class("DateWidget",
+  inherit = ScalarWidget,
+  public = list(
+    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName, ...) {
+      symConfig$defaultValue <- symConfig$date$value
+      symConfig$htmlSelector <- paste0("date_", id)
+      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName))
+    },
+    setData = function(data) {
+      dataNew <- private$conversionFn(data)
+      if (private$dataNeedsUpdate(dataNew)) {
+        isolate({
+          private$data(dataNew)
+        })
+        private$ignoreUpdate <- 1L
+        updateDateInput(private$session,
+          private$config$htmlSelector,
+          value = dataNew
+        )
+      }
+      return(invisible(self))
+    }
+  )
+)
+
+DateRangeWidget <- R6::R6Class("DateRangeWidget",
+  inherit = ScalarWidget,
+  public = list(
+    initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName, ...) {
+      symConfig$defaultValue <- symConfig$date$value
+      symConfig$htmlSelector <- paste0("daterange_", id)
+      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName))
+    },
+    setData = function(data) {
+      dataNew <- private$conversionFn(data)
+      if (private$dataNeedsUpdate(dataNew)) {
+        isolate({
+          private$data(dataNew)
+        })
+        private$ignoreUpdate <- 1L
+        updateDateRangeInput(private$session,
+          private$config$htmlSelector,
+          start = dataNew[1],
+          end = dataNew[2]
+        )
+      }
+      return(invisible(self))
     }
   )
 )
@@ -1422,11 +1501,11 @@ SandboxInputData <- R6::R6Class("SandboxInputData",
         hot = HandsonTableWidget,
         dt = DataTableWidget,
         slider = SliderWidget,
-        # textinput = TextInputWidget,
+        textinput = TextInputWidget,
         numericinput = NumericInputWidget,
         dropdown = DropdownWidget,
-        # date = DateWidget,
-        # daterange = DateRangeWidget,
+        date = DateWidget,
+        daterange = DateRangeWidget,
         checkbox = CheckboxWidget,
         custom = CustomWidget
       )

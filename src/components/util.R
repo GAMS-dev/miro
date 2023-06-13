@@ -342,70 +342,74 @@ getDependenciesSlider <- function(min, max, def, step, modelIn, listOfOperators)
   # list of values with either a sheet name/column name pair in case of an external dependency or a numeric value in case of no dependency.
   # returns NULL, if no value of slider has dependency on external data
 
-  listOfValues <- c("min" = min, "max" = max, "def" = def, "step" = step)
+  listOfValues <- list("min" = min, "max" = max, "def" = def, "step" = step)
   # check if any value of slider has dependency on external data
   if (any(grepl("(", listOfValues, fixed = TRUE))) {
     # evaluate slider values
-    sliderDep <- lapply(listOfValues, function(el) {
-      if (grepl("(", el, fixed = TRUE)) {
-        # split string in operator and operand part
-        splitted <- tolower(strsplit(el, "\\(|\\)")[[1]])
-        operator <- splitted[[1]]
-        operatorId <- match(operator, listOfOperators)[1]
-        if (is.na(operatorId)) {
-          stop(paste0("'", operator, "' is not a valid operator for sliders."),
-            call. = FALSE
-          )
-        }
-        dep <- splitted[[2]]
-        # split string into the sheets/elements ("dataset_1$column_3" -> "dataset_1", "column_3")
-        dep <- strsplit(dep, "$", fixed = TRUE)[[1]]
-        # make sure that in case a reference is given, the underlying data is also part of the input data
-        idx1 <- match(dep[1], names(modelIn))[1]
-        idx2 <- match(dep[2], names(modelIn[[idx1]]$headers))[1]
-        if (is.na(idx2)) {
-          if (!is.na(idx1)) {
-            if (identical(modelIn[[idx1]]$type, "daterange")) {
-              # dependency on daterange selector
-              sliderValue <- list()
-              sliderValue[[tolower(dep[[1]])]] <- "$daterange"
-              sliderValue[["$operator"]] <- names(listOfOperators)[[operatorId]]
-              return(sliderValue)
-            } else if (identical(modelIn[[idx1]]$type, "dropdown") && length(dep) > 1) {
-              # dependency on another dropdown menu
-              sliderValue <- list()
-              sliderValue[[tolower(dep[[1]])]] <- getNestedDep(dep[c(-1)])
-              sliderValue[["$operator"]] <- names(listOfOperators)[[operatorId]]
-              return(sliderValue)
-            }
+    sliderDep <- lapply(listOfValues, function(elRaw) {
+      returnVal <- lapply(elRaw, function(el) {
+        if (grepl("(", el, fixed = TRUE)) {
+          # split string in operator and operand part
+          splitted <- tolower(strsplit(el, "\\(|\\)")[[1]])
+          operator <- splitted[[1]]
+          operatorId <- match(operator, listOfOperators)[1]
+          if (is.na(operatorId)) {
+            stop(paste0("'", operator, "' is not a valid operator for sliders."),
+              call. = FALSE
+            )
           }
+          dep <- splitted[[2]]
+          # split string into the sheets/elements ("dataset_1$column_3" -> "dataset_1", "column_3")
+          dep <- strsplit(dep, "$", fixed = TRUE)[[1]]
+          # make sure that in case a reference is given, the underlying data is also part of the input data
+          idx1 <- match(dep[1], names(modelIn))[1]
+          idx2 <- match(dep[2], names(modelIn[[idx1]]$headers))[1]
+          if (is.na(idx2)) {
+            if (!is.na(idx1)) {
+              if (identical(modelIn[[idx1]]$type, "daterange")) {
+                # dependency on daterange selector
+                sliderValue <- list()
+                sliderValue[[tolower(dep[[1]])]] <- "$daterange"
+                sliderValue[["$operator"]] <- names(listOfOperators)[[operatorId]]
+                return(sliderValue)
+              }
+              if (identical(modelIn[[idx1]]$type, "dropdown") && length(dep) > 1) {
+                # dependency on another dropdown menu
+                sliderValue <- list()
+                sliderValue[[tolower(dep[[1]])]] <- getNestedDep(dep[c(-1)])
+                sliderValue[["$operator"]] <- names(listOfOperators)[[operatorId]]
+                return(sliderValue)
+              }
+            }
 
-          if (length(dep) > 1) {
-            stop(paste0(
-              "Invalid reference. The header: '", dep[[2]],
-              "' specified for input sheet: '", dep[[1]],
-              "' could not be found."
-            ), call. = FALSE)
-          } else {
+            if (length(dep) > 1) {
+              stop(paste0(
+                "Invalid reference. The header: '", dep[[2]],
+                "' specified for input sheet: '", dep[[1]],
+                "' could not be found."
+              ), call. = FALSE)
+            }
             stop(paste0(
               "Invalid reference. The reference: '", dep,
               "' specified could not be found."
             ), call. = FALSE)
           }
-        } else {
           sliderValue <- list()
           sliderValue[[dep[[1]]]] <- names(modelIn[[idx1]]$headers)[[idx2]]
           sliderValue[["$operator"]] <- names(listOfOperators)[[operatorId]]
           return(sliderValue)
         }
-      } else {
         if (is.na(as.numeric(el))) {
           stop(paste0("'", el, "' is not a valid value for a slider."),
             call. = FALSE
           )
         }
         return(as.numeric(el))
+      })
+      if (identical(length(returnVal), 1L)) {
+        return(returnVal[[1L]])
       }
+      return(returnVal)
     })
     return(sliderDep)
   } else {

@@ -17,9 +17,18 @@ getInputDataFromSandbox <- function() {
     if (is.logical(valTmp)) {
       valTmp <- as.integer(valTmp)
     }
-    tibble(scalar = symName, description = tryCatch(modelIn[[symName]][["alias"]], error = function(e) {
+    scalarNames <- symName
+    scalarAliases <- tryCatch(modelIn[[symName]][["alias"]], error = function(e) {
       return(symName)
-    }), value = if (length(valTmp)) as.character(valTmp) else NA_character_)
+    })
+    if (identical(modelIn[[symName]]$type, "daterange") || length(modelIn[[symName]]$slider$default) > 1L) {
+      scalarNames <- paste0(scalarNames, c("_lo", "_up"))
+      scalarAliases <- paste0(scalarAliases, c(" (lower)", " (upper)"))
+    }
+    tibble(
+      scalar = scalarNames, description = scalarAliases,
+      value = if (length(valTmp)) as.character(valTmp) else NA_character_
+    )
   }))
   if (nrow(scalarData) > 0L) {
     names(scalarData) <- scalarsFileHeaders

@@ -336,7 +336,15 @@ if (is.null(errMsg)) {
       # legacy app (<2.8.0), need to convert some configuration
       for (i in seq_along(modelIn)) {
         if (names(modelIn)[i] %in% sliderValues) {
-          modelIn[[i]]$sliderDependencyConfig <- sliderValues[[names(modelIn)[i]]]
+          modelIn[[i]]$sliderConfig <- sliderValues[[names(modelIn)[i]]]
+          if (any(c("def1", "def2") %in% names(modelIn[[i]]$sliderConfig))) {
+            # bug in getDependenciesSlider resulted in def to be split into
+            # def1 and def2 for slider ranges
+            modelIn[[i]]$sliderConfig[["def"]] <- list(
+              modelIn[[i]]$sliderConfig$def1,
+              modelIn[[i]]$sliderConfig$def2
+            )
+          }
         }
         if (names(modelIn)[i] %in% ddownDep) {
           modelIn[[i]]$dropdown$dependencyConfig <- list(
