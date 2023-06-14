@@ -239,6 +239,14 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
           colHeaders <- private$staticColHeaders
         }
 
+        if (identical(nrow(dataTmp), 0L)) {
+          dataTmp[1, ] <- NA
+          dataTmp <- mutate(dataTmp, across(
+            where(is.character),
+            ~ replace_na(.x, replace = "")
+          ))
+        }
+
         ht <- rhandsontable(dataTmp,
           height = private$staticTableConfig$height,
           rowHeaders = if (isTRUE(private$config$hideIndexCol)) NULL else rownames(dataTmp),
