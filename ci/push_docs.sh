@@ -23,7 +23,7 @@ git add ./doc/release.html ./doc/index.html ./doc/miro_server_api.json ./server/
 
 git commit -m "[CI skip] Update documentation" || true
 
-git remote rm origin && git remote add origin "https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+git remote rm origin && git remote add origin "https://miro_ci:${GITLAB_MIRO_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
 
 git tag -fa "v${MIRO_VERSION_FULL}" -m "version ${MIRO_VERSION_FULL}"
 

@@ -5,7 +5,7 @@ set -e
 GAMSCOMDIR=update_website
 
 [ -d "$GAMSCOMDIR" ] || {
-  git clone https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@git.gams.com/smann/new.gams.com.git --branch master --single-branch "$GAMSCOMDIR"
+  git clone https://miro_ci:${GITLAB_WEBSITE_TOKEN}@git.gams.com/smann/new.gams.com.git --branch master --single-branch "$GAMSCOMDIR"
 }
 
 MIRO_VERSION_FULL=$(grep -e '"version": .*' package.json |cut -f4 -d"\"")
