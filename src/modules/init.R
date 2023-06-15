@@ -451,6 +451,7 @@ if (is.null(errMsg)) {
           }
           modelIn[[i]]$type <- "custom"
           modelIn[[i]]$rendererName <- "miroPivot"
+          modelIn[[i]]$options$readonly <- identical(widgetConfig[["readonly"]], TRUE)
           modelIn[[i]]$options <- c(
             modelIn[[i]]$options,
             list(

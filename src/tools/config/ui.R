@@ -758,7 +758,8 @@ font-size: 12px;
                   type = "miropivot", height = 400,
                   showNoDataTxt = FALSE,
                   customOptions = list(
-                    enableHideEmptyCols = TRUE
+                    enableHideEmptyCols = TRUE,
+                    "_input_" = TRUE
                   )
                 ),
                 rHandsontableOutput("hot_preview")

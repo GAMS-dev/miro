@@ -721,3 +721,89 @@ test_that("Editing with aggregated columns does not work", {
     )
   )
 })
+
+test_that("Editing with readonly option does not work", {
+  testServer(renderMiroPivot,
+    {
+      session$setInputs(
+        rowIndexList = letters[1:6], colIndexList = character(),
+        filterIndexList = character(), aggregationIndexList = character(),
+        aggregationFunction = "sum"
+      )
+      expect_identical(
+        convert_to_df(dataToRender()),
+        data.frame(
+          a = c("a1", "a1", "a2", "a2", "a3", "a3", "a4", "a4", "a5", "a5"),
+          b = c("b1", "b6", "b2", "b7", "b3", "b8", "b4", "b9", "b10", "b5"),
+          c = c("c1", "c6", "c2", "c7", "c3", "c8", "c4", "c9", "c10", "c5"),
+          d = c("d1", "d6", "d2", "d7", "d3", "d8", "d4", "d9", "d10", "d5"),
+          e = c("e2", "e10", "e10", "e2", "e2", "e10", "e10", "e2", "e10", "e2"),
+          f = "f10",
+          value = c(1L, 6L, 2L, 7L, 3L, 8L, 4L, 9L, 10L, 5L)
+        )
+      )
+      session$setInputs(pivotTable_cell_edit = list(col = 6, row = 1L, value = 2L))
+      session$setInputs(pivotTable_cell_edit = list(col = 5, row = 1L, value = "f3"))
+      expect_identical(
+        convert_to_df(dataToRender()),
+        data.frame(
+          a = c("a1", "a1", "a2", "a2", "a3", "a3", "a4", "a4", "a5", "a5"),
+          b = c("b1", "b6", "b2", "b7", "b3", "b8", "b4", "b9", "b10", "b5"),
+          c = c("c1", "c6", "c2", "c7", "c3", "c8", "c4", "c9", "c10", "c5"),
+          d = c("d1", "d6", "d2", "d7", "d3", "d8", "d4", "d9", "d10", "d5"),
+          e = c("e2", "e10", "e10", "e2", "e2", "e10", "e10", "e2", "e10", "e2"),
+          f = "f10",
+          value = c(1L, 6L, 2L, 7L, 3L, 8L, 4L, 9L, 10L, 5L)
+        )
+      )
+      # clicking the add row button should not throw an error
+      session$setInputs(btAddRow = 1L)
+      session$setInputs(
+        newRow_1 = "a4", newRow_2 = "b9", newRow_3 = "c9", newRow_4 = "d9",
+        newRow_5 = "e2", newRow_6 = "f11", newRow_7 = 1.5, btAddRowConfirm = 1L
+      )
+      expect_identical(
+        convert_to_df(dataToRender()),
+        data.frame(
+          a = c("a1", "a1", "a2", "a2", "a3", "a3", "a4", "a4", "a5", "a5"),
+          b = c("b1", "b6", "b2", "b7", "b3", "b8", "b4", "b9", "b10", "b5"),
+          c = c("c1", "c6", "c2", "c7", "c3", "c8", "c4", "c9", "c10", "c5"),
+          d = c("d1", "d6", "d2", "d7", "d3", "d8", "d4", "d9", "d10", "d5"),
+          e = c("e2", "e10", "e10", "e2", "e2", "e10", "e10", "e2", "e10", "e2"),
+          f = "f10",
+          value = c(1L, 6L, 2L, 7L, 3L, 8L, 4L, 9L, 10L, 5L)
+        )
+      )
+      session$setInputs(pivotTable_rows_selected = c(2, 11), btRemoveRows = 2L)
+      expect_identical(
+        convert_to_df(dataToRender()),
+        data.frame(
+          a = c("a1", "a1", "a2", "a2", "a3", "a3", "a4", "a4", "a5", "a5"),
+          b = c("b1", "b6", "b2", "b7", "b3", "b8", "b4", "b9", "b10", "b5"),
+          c = c("c1", "c6", "c2", "c7", "c3", "c8", "c4", "c9", "c10", "c5"),
+          d = c("d1", "d6", "d2", "d7", "d3", "d8", "d4", "d9", "d10", "d5"),
+          e = c("e2", "e10", "e10", "e2", "e2", "e10", "e10", "e2", "e10", "e2"),
+          f = "f10",
+          value = c(1L, 6L, 2L, 7L, 3L, 8L, 4L, 9L, 10L, 5L)
+        )
+      )
+      expect_identical(
+        convert_to_df(session$returned()),
+        data.frame(
+          a = rep.int(paste0("a", seq_len(5)), 2L), b = paste0("b", seq_len(10)),
+          c = paste0("c", seq_len(10)), d = paste0("d", seq_len(10)),
+          e = rep.int(c("e2", "e10"), 5L), f = "f10",
+          value = 1:10
+        )
+      )
+    },
+    args = list(
+      data = testData,
+      options = list(
+        enablePersistentViews = FALSE, `_input_` = TRUE,
+        "_metadata_" = list(symtype = "parameter"),
+        readonly = TRUE
+      )
+    )
+  )
+})

@@ -682,7 +682,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       if (isInput) {
         dataUpdated <- reactiveVal(1L)
         changesToApply <- list()
-        if (nrow(data) < 5e+05) {
+        if (identical(options[["readonly"]], TRUE)) {
+          hideEl(session, paste0("#", ns("btAddRow")))
+          hideEl(session, paste0("#", ns("btRemoveRows")))
+        } else if (nrow(data) < 5e+05) {
           isEditable <- TRUE
           hideEl(session, paste0("#", ns("enableEdit")))
           showEl(session, paste0("#", ns("btAddRow")))
@@ -1821,7 +1824,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           if (bigData) {
             isEditable <<- identical(names(data)[1], "__key__")
           } else {
-            isEditable <<- TRUE
+            isEditable <<- !identical(options[["readonly"]], TRUE)
           }
           enableEl(session, paste0("#", ns("btAddRow")))
           enableEl(session, paste0("#", ns("btRemoveRows")))

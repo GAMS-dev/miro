@@ -2050,9 +2050,10 @@ observeEvent(
             widgetType = "table",
             tableType = "pivot",
             label = currentConfig$label,
+            readonly = identical(currentConfig[["readonly"]], TRUE),
             options = checkLength(configuredTable, currentConfig[["options"]], list())
           )
-          rv$widgetConfig$options$input <- TRUE
+          rv$widgetConfig$options[["_input_"]] <- TRUE
         } else if (identical(currentConfig$tableType, "bigdata") || isTRUE(currentConfig$bigData)) {
           rv$widgetConfig <- list(
             widgetType = "table",
@@ -2115,6 +2116,13 @@ getSymbolHotOptions <- function() {
     ),
     conditionalPanel(
       condition = "input.inputTable_type==='pivot'",
+      tags$div(
+        class = "shiny-input-container",
+        checkboxInput_SIMPLE("inputpivot_readonly",
+          lang$adminMode$widgets$table$readonly,
+          value = identical(rv$widgetConfig[["readonly"]], TRUE)
+        )
+      ),
       getMIROPivotOptions(rv$widgetConfig$options, prefix = "inputpivot_"),
       tags$div(
         class = "config-message shiny-input-container",
@@ -2286,7 +2294,8 @@ refreshTableType <- function(refreshSameSymbol = FALSE) {
       length(configJSON$inputWidgets[[currentWidgetSymbolName]][["options"]])) {
       pivotOptions <- configJSON$inputWidgets[[currentWidgetSymbolName]][["options"]]
     }
-    pivotOptions$input <- TRUE
+    pivotOptions[["_input_"]] <- TRUE
+    pivotOptions$readonly <- identical(rv$widgetConfig[["readonly"]], TRUE)
     pivotOptions$enableHideEmptyCols <- rv$widgetConfig$options$enableHideEmptyCols
     pivotOptions$emptyUEL <- rv$widgetConfig$options$emptyUEL
     pivotOptions$fixedColumns <- rv$widgetConfig$options$fixedColumns
@@ -2427,6 +2436,10 @@ observeEvent(c(input$table_pivotCols, input$table_readonly, input$table_heatmap)
 })
 observeEvent(input$inputpivot_enableHideEmptyCols, {
   rv$widgetConfig$options$enableHideEmptyCols <- isTRUE(input$inputpivot_enableHideEmptyCols)
+  refreshTableType()
+})
+observeEvent(input$inputpivot_readonly, {
+  rv$widgetConfig[["readonly"]] <- isTRUE(input$inputpivot_readonly)
   refreshTableType()
 })
 observeEvent(input$inputpivot_fixedColumns, {
@@ -2879,6 +2892,7 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
       newConfig <- list(
         widgetType = "table",
         tableType = "pivot",
+        readonly = isTRUE(rv$widgetConfig[["readonly"]]),
         options = list(
           aggregationFunction = input[["preview_inputTable_pivot-miroPivot-aggregationFunction"]],
           pivotRenderer = input[["preview_inputTable_pivot-miroPivot-pivotRenderer"]],
