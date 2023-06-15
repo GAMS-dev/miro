@@ -31,6 +31,7 @@ InputWidget <- R6::R6Class(
       }
     },
     reset = function() {
+      private$isInitialized <- FALSE
       self$setData(private$config$defaultValue)
       return(invisible(self))
     }
@@ -156,7 +157,6 @@ ScalarWidget <- R6::R6Class("ScalarWidget",
     },
     reset = function() {
       if (identical(private$config$hasDependency, TRUE)) {
-        private$isInitialized <- FALSE
         hideEl(
           private$session,
           paste0("#", private$config$htmlSelector)
@@ -172,6 +172,12 @@ ScalarWidget <- R6::R6Class("ScalarWidget",
         dataRaw <- private$input[[private$config$htmlSelector]]
         if (private$ignoreUpdate > 0L) {
           private$ignoreUpdate <- private$ignoreUpdate - 1L
+          if (!private$isInitialized) {
+            private$isInitialized <- TRUE
+            if (private$dataNeedsUpdate(dataRaw)) {
+              isolate(private$data(dataRaw))
+            }
+          }
         } else {
           isolate({
             private$data(private$conversionFn(dataRaw))
@@ -1059,7 +1065,6 @@ CustomWidget <- R6::R6Class("CustomWidget",
     inputReactiveData = NULL,
     updateInputReactives = NULL,
     reinitOutputObservers = NULL,
-    isInitialized = FALSE,
     observeChanges = function() {
       return(c(
         list(
@@ -1477,9 +1482,21 @@ DateRangeWidget <- R6::R6Class("DateRangeWidget",
   inherit = ScalarWidget,
   public = list(
     initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName, ...) {
-      symConfig$defaultValue <- symConfig$date$value
       symConfig$htmlSelector <- paste0("daterange_", id)
-      return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName))
+      symConfig$defaultValue <- c(
+        symConfig$daterange[["start"]],
+        symConfig$daterange[["end"]]
+      )
+      return(super$initialize(
+        id,
+        symConfig,
+        input,
+        output,
+        session,
+        rv,
+        sandboxInputDataObj,
+        symName
+      ))
     },
     setData = function(data) {
       dataNew <- private$conversionFn(data)
