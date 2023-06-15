@@ -2100,17 +2100,6 @@ if (!is.null(errMsg)) {
       output$inputDataTitle <- renderUI(getScenTitle())
       output$outputDataTitle <- renderUI(getScenTitle())
 
-      # activate solve button once all model input files are imported
-      observe({
-        datasetsImported <- vapply(names(modelInMustImport), function(el) {
-          i <- match(el, names(modelIn))[[1]]
-          if (length(rv[["in_" %+% i]])) {
-            return(TRUE)
-          } else {
-            return(FALSE)
-          }
-        }, logical(1), USE.NAMES = FALSE)
-      })
       # UI elements (modalDialogs)
       source("./UI/dialogs.R", local = TRUE)
       ####### Model input

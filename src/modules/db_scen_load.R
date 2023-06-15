@@ -1,12 +1,11 @@
 # load scenario from database
 checkIfInputDataExists <- function(inputIdsToLoad = seq_along(modelIn), manualImport = FALSE) {
-  inputDatasetsExist <- vapply(inputIdsToLoad, function(i) {
-    if (length(isolate(rv[["in_" %+% i]]))) {
-      return(TRUE)
-    } else {
-      return(FALSE)
-    }
-  }, logical(1), USE.NAMES = FALSE)
+  tabularInputDsToLoad <- modelInTabularData[modelInTabularData %in% names(modelIn)[inputIdsToLoad]]
+  inputDatasetsExist <- vapply(tabularInputDsToLoad,
+    sandboxInputData$hasData,
+    logical(1),
+    USE.NAMES = FALSE
+  )
 
   if (any(inputDatasetsExist)) {
     hideEl(session, "#importDataTabset")
@@ -463,13 +462,11 @@ observeEvent(input$btBatchLoadSb, {
   flog.debug("Load scenario into sandbox from Batch Load module button clicked.")
   isInSolveMode <<- TRUE
   loadIntoSandbox <<- FALSE
-  if (any(vapply(seq_along(modelIn), function(i) {
-    if (length(isolate(rv[["in_" %+% i]]))) {
-      return(TRUE)
-    } else {
-      return(FALSE)
-    }
-  }, logical(1), USE.NAMES = FALSE))) {
+  if (identical(isolate(rv$inputDataDirty), TRUE) ||
+    any(vapply(modelInTabularData,
+      sandboxInputData$hasData, logical(1),
+      USE.NAMES = FALSE
+    ))) {
     hideEl(session, ".batch-load-content")
     showEl(session, ".batch-load-sb-content")
   } else {

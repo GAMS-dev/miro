@@ -276,14 +276,12 @@ observeEvent(input$btImportLocal, {
       idsToFetch <- seq_along(modelIn)
     }
   }
-
-  datasetsImported <- vapply(idsToFetch, function(i) {
-    if (length(isolate(rv[[paste0("in_", i)]]))) {
-      return(TRUE)
-    } else {
-      return(FALSE)
-    }
-  }, logical(1L))
+  tabularDatasetsToFetch <- modelInTabularData[modelInTabularData %in% names(modelIn)[idsToFetch]]
+  datasetsImported <- vapply(tabularDatasetsToFetch,
+    sandboxInputData$hasData,
+    logical(1),
+    USE.NAMES = FALSE
+  )
 
   if (any(datasetsImported)) {
     hideEl(session, "#importDataTabset")
@@ -760,13 +758,12 @@ if (length(externalInputConfig)) {
       datasetsToImport <- datasetsToImport[datasetsToImport %in%
         tolower(input$selInputDataExt)]
     }
-    datasetsImported <- vapply(match(datasetsToImport, names(modelIn)), function(i) {
-      if (length(isolate(rv[[paste0("in_", i)]]))) {
-        return(TRUE)
-      } else {
-        return(FALSE)
-      }
-    }, logical(1L))
+    tabularDatasetsToImport <- modelInTabularData[modelInTabularData %in% datasetsToImport]
+    datasetsImported <- vapply(tabularDatasetsToImport,
+      sandboxInputData$hasData,
+      logical(1),
+      USE.NAMES = FALSE
+    )
 
     if (any(datasetsImported)) {
       hideEl(session, "#importDataTabset")

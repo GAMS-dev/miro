@@ -15,6 +15,9 @@ InputWidget <- R6::R6Class(
       private$changeObs <- private$observeChanges()
       return(invisible(self))
     },
+    hasData = function() {
+      stop_custom("error_not_implemented", "hasData method not implemented")
+    },
     getData = function() {
       return(private$data)
     },
@@ -61,6 +64,8 @@ MultiDimWidget <- R6::R6Class("MultiDimWidget",
     initialize = function(id, config, input, output, session, rv, sandboxInputDataObj, symName = NULL, ...) {
       private$updateWidget <- reactiveVal(0L)
       config$defaultValue <- config$template
+      config$defaultHasData <- length(config$defaultValue) &&
+        nrow(config$defaultValue) > 0L
       private$needsPivot <- length(config$pivotCols) > 0L
       config$noDomains <- sum(vapply(config$headers, function(header) {
         identical(header$type, "string")
@@ -73,6 +78,13 @@ MultiDimWidget <- R6::R6Class("MultiDimWidget",
         private$staticColHeaders <- attr(config$defaultValue, "aliases")
       }
       return(super$initialize(id, config, input, output, session, rv, sandboxInputDataObj, symName))
+    },
+    hasData = function() {
+      if (private$config$defaultHasData) {
+        return(private$dataNeedsUpdate(private$config$defaultValue))
+      }
+      noRows <- isolate(nrow(private$data()))
+      return(length(noRows) && noRows > 0L)
     }
   ),
   private = list(
@@ -154,6 +166,9 @@ ScalarWidget <- R6::R6Class("ScalarWidget",
         id, symConfig, input, output, session, rv,
         sandboxInputDataObj, symName
       ))
+    },
+    hasData = function() {
+      return(TRUE)
     },
     reset = function() {
       if (identical(private$config$hasDependency, TRUE)) {
@@ -1034,6 +1049,14 @@ CustomWidget <- R6::R6Class("CustomWidget",
       }
       return(private$outputReactives[[symName]])
     },
+    hasData = function(symName = NULL) {
+      if (is.null(symName)) {
+        noRows <- isolate(nrow(private$outputReactives[[private$symName]]()))
+      } else {
+        noRows <- isolate(nrow(private$outputReactives[[symName]]()))
+      }
+      return(length(noRows) && noRows > 0L)
+    },
     setData = function(data, symName = NULL) {
       if (is.null(symName)) {
         symName <- private$symName
@@ -1565,6 +1588,12 @@ SandboxInputData <- R6::R6Class("SandboxInputData",
         return(private$inputWidgets[[private$inputConfig[[symName]]$definedByExternalSymbol]]$getData(symName))
       }
       return(private$inputWidgets[[symName]]$getData())
+    },
+    hasData = function(symName) {
+      if (length(private$inputConfig[[symName]]$definedByExternalSymbol)) {
+        return(private$inputWidgets[[private$inputConfig[[symName]]$definedByExternalSymbol]]$hasData(symName))
+      }
+      return(private$inputWidgets[[symName]]$hasData())
     },
     setData = function(symName, data) {
       if (length(private$inputConfig[[symName]]$definedByExternalSymbol)) {

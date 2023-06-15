@@ -54,18 +54,13 @@ if (!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))) {
     inputVerified <- FALSE
     isEmptyInput <- TRUE
     # execute only if dataframe has not yet been imported or already imported data shall be overridden
-    if (!length(isolate(rv[["in_" %+% i]])) || overwriteInput > 0L) {
+    if (!sandboxInputData$hasData(dataset) || overwriteInput > 0L) {
       # handsontable, multi dropdown, or daterange
       if (tolower(dataset) %in% modelInTabularData) {
         if (identical(overwriteInput, 2L)) {
-          if (length(modelIn[[i]]$definedByExternalSymbol)) {
-            rootSymId <- match(modelIn[[i]]$definedByExternalSymbol, names(modelIn))
-          } else {
-            rootSymId <- i
-          }
           dataTmp <- mergeDf(
             fixColTypes(
-              getTabularInputDataset(rootSymId, subSymName = names(modelIn)[[i]]),
+              isolate(sandboxInputData$getData(dataset)()),
               modelIn[[i]]$colTypes
             ),
             scenInputData[[dataset]],
