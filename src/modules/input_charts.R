@@ -58,8 +58,10 @@ renderInputGraph <- function(i) {
   }
   getInputDataset <- function(symName) {
     datasetTmp <- isolate(sandboxInputData$getData(symName)())
-    if (!identical(length(datasetTmp), length(modelIn[[symName]]$headers)) ||
-      !hasValidHeaderTypes(datasetTmp, modelIn[[symName]]$colTypes)) {
+    noHeaders <- length(modelIn[[symName]]$headers)
+    if (noHeaders > 0L &&
+      (!identical(length(datasetTmp), noHeaders) ||
+        !hasValidHeaderTypes(datasetTmp, modelIn[[symName]]$colTypes))) {
       stop(sprintf("No valid input data found for symbol: %s.", symName), call. = FALSE)
     }
     names(datasetTmp) <- names(modelIn[[symName]]$headers)
