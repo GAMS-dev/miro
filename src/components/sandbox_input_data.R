@@ -1224,9 +1224,9 @@ SliderWidget <- R6::R6Class("SliderWidget",
     },
     setData = function(data) {
       dataNew <- private$conversionFn(data)
-      if (private$dataNeedsUpdate(data)) {
+      if (private$dataNeedsUpdate(dataNew)) {
         isolate({
-          private$data(as.integer(data))
+          private$data(dataNew)
         })
         private$ignoreUpdate <- 1L
         updateSliderInput(private$session,
@@ -1327,14 +1327,15 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
       return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName))
     },
     setData = function(data) {
-      if (private$dataNeedsUpdate(data)) {
+      dataNew <- private$conversionFn(data)
+      if (private$dataNeedsUpdate(dataNew)) {
         isolate({
-          private$data(as.character(data))
+          private$data(dataNew)
         })
         private$ignoreUpdate <- 1L
         updateSelectInput(private$session,
           private$config$htmlSelector,
-          selected = data
+          selected = dataNew
         )
       }
       return(invisible(self))

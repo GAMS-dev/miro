@@ -18,7 +18,7 @@ checkIfInputDataExists <- function(inputIdsToLoad = seq_along(modelIn), manualIm
       showEl(session, "#importDataClearSandbox")
     }
   } else {
-    overwriteInput <<- 0L
+    overwriteInput <<- 1L
     if (manualImport) {
       loadDatasetsIntoSandbox()
     } else {

@@ -2025,6 +2025,7 @@ if (!is.null(errMsg)) {
             if (!identical(defSid, 0L)) {
               sidsToLoad <- list(defSid)
               suppressCloseModal <- TRUE
+              overwriteInput <- 1L
               rv$btOverwriteScen <- isolate(rv$btOverwriteScen) + 1L
             }
           }

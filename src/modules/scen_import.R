@@ -295,7 +295,7 @@ observeEvent(input$btImportLocal, {
       showEl(session, "#importDataOverwrite")
     }
   } else {
-    overwriteInput <<- 0L
+    overwriteInput <<- 1L
     rv$btOverwriteInput <<- rv$btOverwriteInput + 1L
   }
 })
@@ -771,7 +771,7 @@ if (length(externalInputConfig)) {
       showEl(session, "#btMergeInputData")
       showEl(session, "#importDataOverwrite")
     } else {
-      overwriteInput <<- 0L
+      overwriteInput <<- 1L
       rv$btOverwriteInput <<- rv$btOverwriteInput + 1L
     }
   })

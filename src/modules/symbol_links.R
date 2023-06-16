@@ -39,7 +39,7 @@ observeEvent(input$btSymbolLink, {
     flog.error("Symbol link button clicked for symbol with no symbol link defined. This looks like an attempt to tamper with the app!")
     return(NULL)
   }
-  overwriteInput <- 1L
+  overwriteInput <<- 1L
   errMsg <- NULL
   loadMode <- "scen"
   newInputCount <- 0L
