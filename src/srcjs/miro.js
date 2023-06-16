@@ -468,7 +468,12 @@ font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
     $(data.selector).html(data.content);
   });
   Shiny.addCustomMessageHandler('gms-setTextContent', (data) => {
-    $(data.selector).text(data.content);
+    if (data.keepChildNodes === true) {
+      $(data.selector).contents().filter(function () { return this.nodeType === 3; }).first()
+        .replaceWith(data.content);
+    } else {
+      $(data.selector).text(data.content);
+    }
   });
   Shiny.addCustomMessageHandler('gms-showLogContent', (data) => {
     $(data.id).text(data.content);

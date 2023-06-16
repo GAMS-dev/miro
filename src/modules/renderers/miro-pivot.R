@@ -879,6 +879,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             newView$domainFilter <- domainFilterDomains[[1]]
           }
         }
+        setTextContent(session, paste0("#", ns("toggleViewButton")),
+          viewOptions$name,
+          keepChildNodes = TRUE
+        )
         if (!interfaceInitialized) {
           return()
         }
@@ -1307,6 +1311,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             } else {
               updateViewList()
             }
+            setTextContent(session, paste0("#", ns("toggleViewButton")),
+              viewName,
+              keepChildNodes = TRUE
+            )
             if (refreshRequired) {
               currentView <<- newViewConfig
               currentView$name <<- viewName
@@ -2108,6 +2116,17 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         hideEl(session, paste0("#", ns("loadPivotTable")))
         chartJsObj$x$options$maintainAspectRatio <- FALSE
+        if (length(currentView[["_didRender_"]])) {
+          if (currentView[["_didRender_"]] < 2L) {
+            setTextContent(session, paste0("#", ns("toggleViewButton")),
+              lang$renderers$miroPivot$btLoadView,
+              keepChildNodes = TRUE
+            )
+            currentView[["_didRender_"]] <<- 2L
+          }
+        } else {
+          currentView[["_didRender_"]] <<- 1L
+        }
         return(chartJsObj %>% cjsLegend())
       })
 
@@ -2119,6 +2138,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         pivotRenderer <- input$pivotRenderer
         if (initRenderer && isTRUE(options$resetOnInit)) {
           if (length(currentView[["pivotRenderer"]])) {
+            if (!identical(pivotRenderer, currentView[["pivotRenderer"]])) {
+              return()
+            }
             pivotRenderer <- currentView[["pivotRenderer"]]
           } else {
             pivotRenderer <- "table"
@@ -2310,6 +2332,17 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           ret <- formatRound(ret, seq(noRowHeaders + 1, length(dataTmp)),
             digits = roundPrecision
           )
+        }
+        if (length(currentView[["_didRender_"]])) {
+          if (currentView[["_didRender_"]] < 2L) {
+            setTextContent(session, paste0("#", ns("toggleViewButton")),
+              lang$renderers$miroPivot$btLoadView,
+              keepChildNodes = TRUE
+            )
+            currentView[["_didRender_"]] <<- 2L
+          }
+        } else {
+          currentView[["_didRender_"]] <<- 1L
         }
         if (!isHeatmap || noRowHeaders >= length(dataTmp)) {
           return(ret)

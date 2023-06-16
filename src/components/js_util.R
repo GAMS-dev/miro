@@ -13,8 +13,8 @@ showElReplaceTxt <- function(session, id, txt) {
 setContent <- function(session, selector, htmlContent) {
   session$sendCustomMessage("gms-setContent", list(selector = selector, content = htmlContent))
 }
-setTextContent <- function(session, selector, htmlContent) {
-  session$sendCustomMessage("gms-setTextContent", list(selector = selector, content = htmlContent))
+setTextContent <- function(session, selector, htmlContent, keepChildNodes = FALSE) {
+  session$sendCustomMessage("gms-setTextContent", list(selector = selector, content = htmlContent, keepChildNodes = keepChildNodes))
 }
 setAttributes <- function(session, selectors, attribute, values) {
   stopifnot(identical(length(selectors), length(values)))
