@@ -1379,13 +1379,13 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
             currentValue <- isolate(private$data())
             showEl(private$session, paste0("#", private$config$htmlSelector))
             hideEl(private$session, paste0("#no_data_dep_", private$id))
-          }
-          if (length(currentValue) && !currentValue %in% newChoices) {
-            flog.info(
-              "Dropdown value: %s not part of dependent choices. Will reset value.",
-              currentValue
-            )
-            private$ignoreUpdate <- 0L
+            if (length(currentValue) && !currentValue %in% newChoices) {
+              flog.info(
+                "Dropdown value: %s not part of dependent choices. Will reset value.",
+                currentValue
+              )
+              private$ignoreUpdate <- 0L
+            }
           }
           updateSelectInput(private$session,
             private$config$htmlSelector,
