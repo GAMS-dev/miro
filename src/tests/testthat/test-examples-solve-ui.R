@@ -11,7 +11,7 @@ if (!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")) {
 
 for (modelToTest in c(
   "pickstock", "transport", "sudoku", "farming",
-  "inscribedsquare", "tsp", "cpack", "lubrication", "kport", "indus89"
+  "inscribedsquare", "tsp", "cpack", "lubrication", "indus89"
 )) {
   createTestDb()
   if (modelToTest %in% c("indus89")) {

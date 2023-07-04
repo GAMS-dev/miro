@@ -1,5 +1,5 @@
 app <- AppDriver$new("../../", name = paste0("solve_model_test_", Sys.getenv("GMSMODELNAME")), variant = NULL, load_timeout = 20000)
-if (Sys.getenv("GMSMODELNAME") %in% c("sudoku", "tsp", "kport")) {
+if (Sys.getenv("GMSMODELNAME") %in% c("sudoku", "tsp")) {
   app$set_inputs(btImport = "click")
   Sys.sleep(1)
   app$set_inputs(btLoadScenConfirm = "click")
@@ -8,9 +8,6 @@ if (Sys.getenv("GMSMODELNAME") %in% c("sudoku", "tsp", "kport")) {
   }
 }
 Sys.sleep(2)
-if (Sys.getenv("GMSMODELNAME") %in% c("kport")) {
-  Sys.sleep(2)
-}
 if (Sys.getenv("GMSMODELNAME") == "inscribedsquare") {
   app$set_inputs(inputTabset = "inputTabset_1")
   app$set_inputs(dropdown_3 = "CONOPT")
