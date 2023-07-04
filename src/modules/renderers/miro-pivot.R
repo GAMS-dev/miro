@@ -879,10 +879,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             newView$domainFilter <- domainFilterDomains[[1]]
           }
         }
-        setTextContent(session, paste0("#", ns("toggleViewButton")),
-          viewOptions$name,
-          keepChildNodes = TRUE
-        )
+        if (length(viewOptions$name)) {
+          setTextContent(session, paste0("#", ns("toggleViewButton")),
+            viewOptions$name,
+            keepChildNodes = TRUE
+          )
+        }
         if (!interfaceInitialized) {
           return()
         }
@@ -1311,10 +1313,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             } else {
               updateViewList()
             }
-            setTextContent(session, paste0("#", ns("toggleViewButton")),
-              viewName,
-              keepChildNodes = TRUE
-            )
+            if (length(viewName)) {
+              setTextContent(session, paste0("#", ns("toggleViewButton")),
+                viewName,
+                keepChildNodes = TRUE
+              )
+            }
             if (refreshRequired) {
               currentView <<- newViewConfig
               currentView$name <<- viewName
