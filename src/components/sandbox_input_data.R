@@ -1051,8 +1051,18 @@ CustomWidget <- R6::R6Class("CustomWidget",
     },
     hasData = function(symName = NULL) {
       if (is.null(symName)) {
+        defaultValue <- private$config$defaultValue
+        if (length(defaultValue) &&
+          nrow(defaultValue)) {
+          return(private$dataNeedsUpdate(defaultValue))
+        }
         noRows <- isolate(nrow(private$outputReactives[[private$symName]]()))
       } else {
+        defaultValue <- private$sandboxData$getSymConfig(symName)$template
+        if (length(defaultValue) &&
+          nrow(defaultValue)) {
+          return(private$dataNeedsUpdate(defaultValue, symName))
+        }
         noRows <- isolate(nrow(private$outputReactives[[symName]]()))
       }
       return(length(noRows) && noRows > 0L)
