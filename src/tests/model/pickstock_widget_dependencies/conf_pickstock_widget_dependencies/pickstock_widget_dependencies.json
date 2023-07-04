@@ -1,0 +1,37 @@
+{
+  "miroLogFile": "miro.log",
+  "inputWidgets": {
+    "price": {
+      "widgetType": "table",
+      "readonlyCols": "date"
+    },
+    "maxstock": {
+      "label": "select the maximum number of stocks",
+      "widgetType": "slider",
+      "alias": "maximum number of stocks to select",
+      "min": 1,
+      "max": "card(price$symbol)",
+      "default": 3,
+      "step": 1,
+      "ticks": false,
+      "noHcube": false
+    },
+    "trainingdays": {
+      "label": "select the number of days for training",
+      "min": 1,
+      "default": 99,
+      "step": 1,
+      "max": "card(price$date)",
+      "alias": "number of days for training",
+      "widgetType": "slider"
+    },
+    "selected_symbol": {
+      "alias": "Selected stock symbol",
+      "widgetType": "dropdown",
+      "label": "Select stock symbol",
+      "choices": "$price$symbol",
+      "selected": "AAPL"
+    }
+  },
+  "defaultScenName": "default"
+}

@@ -1374,6 +1374,7 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
           if (length(newAliases)) {
             newChoices <- setNames(newChoices, newAliases)
           }
+          currentValue <- NULL
           if (!private$isInitialized) {
             private$isInitialized <- TRUE
             currentValue <- isolate(private$data())
@@ -1389,7 +1390,8 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
           }
           updateSelectInput(private$session,
             private$config$htmlSelector,
-            choices = newChoices
+            choices = newChoices,
+            selected = currentValue
           )
         })
       }
