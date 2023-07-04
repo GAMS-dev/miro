@@ -1396,6 +1396,7 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
                 currentValue
               )
               private$ignoreUpdate <- 0L
+              currentValue <- newChoices[[1L]]
             }
           }
           updateSelectInput(private$session,
