@@ -744,7 +744,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
 
   if (isInSolveMode) {
     # close currently opened scenario
-    if (!closeScenario(clearMeta = FALSE, resetWidgets = FALSE)) {
+    if (!closeScenario(clearMeta = FALSE)) {
       return()
     }
     if (!loadIntoSandbox) {

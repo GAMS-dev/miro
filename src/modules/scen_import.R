@@ -389,7 +389,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
       return()
     }
     if (identical(input$cbSelectManuallyLoc, FALSE)) {
-      if (!closeScenario(clearMeta = TRUE, resetWidgets = FALSE)) {
+      if (!closeScenario(clearMeta = TRUE)) {
         showHideEl(session, "#importScenError", 4000L)
         return()
       }
