@@ -97,6 +97,9 @@ renderMirowidget_initial_state <- function(input, output, session, data, options
         return(NULL)
       }
       dataTmp <- hot_to_r(input$sudoku) %>% mutate(across(everything(), as.integer))
+      if (all(is.na(dataTmp))) {
+        return(isolate(data[["initial_state"]]()))
+      }
       if (length(dataTmp) && nrow(dataTmp) == 9L) {
         return(bind_cols(row = paste0("row", 1:9), dataTmp))
       } else {
