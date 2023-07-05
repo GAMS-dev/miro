@@ -470,6 +470,7 @@ observeEvent(input$btBatchLoadSb, {
     hideEl(session, ".batch-load-content")
     showEl(session, ".batch-load-sb-content")
   } else {
+    overwriteInput <<- 1L
     switchTab(session, "input")
     rv$btOverwriteScen <- rv$btOverwriteScen + 1L
   }

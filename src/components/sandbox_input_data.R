@@ -1245,9 +1245,20 @@ SliderWidget <- R6::R6Class("SliderWidget",
         )
       }
       return(invisible(self))
+    },
+    getCurrentConfig = function() {
+      if (identical(private$config$slider$hasDependency, TRUE)) {
+        return(private$currentConfig)
+      }
+      return(list(
+        min = private$config$slider$min,
+        max = private$config$slider$max,
+        step = private$config$slider$step,
+      ))
     }
   ),
   private = list(
+    currentConfig = NULL,
     observeChanges = function() {
       obsList <- list(observe({
         dataRaw <- private$input[[private$config$htmlSelector]]
@@ -1313,6 +1324,7 @@ SliderWidget <- R6::R6Class("SliderWidget",
               )
               hideEl(private$session, paste0("#no_data_dep_", private$id))
             }
+            private$currentConfig <- newValues
             updateSliderInput(private$session,
               private$config$htmlSelector,
               value = newValues$value,
@@ -1334,7 +1346,7 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
     initialize = function(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName, ...) {
       symConfig$defaultValue <- symConfig$dropdown$selected
       symConfig$htmlSelector <- paste0("dropdown_", id)
-      symConfig$hasDependency <- !is.null(private$config$dropdown$dependencyConfig$fw)
+      symConfig$hasDependency <- !is.null(symConfig$dropdown$dependencyConfig$fw)
       return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName))
     },
     setData = function(data) {
@@ -1350,9 +1362,20 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
         )
       }
       return(invisible(self))
+    },
+    getChoices = function(data) {
+      if (private$config$hasDependency) {
+        return(private$currentChoices)
+      }
+      choices <- private$config$dropdown$choices
+      if (!is.null(private$config$dropdown$aliases)) {
+        names(choices) <- private$config$dropdown$aliases
+      }
+      return(choices)
     }
   ),
   private = list(
+    currentChoices = NULL,
     observeChanges = function() {
       obsList <- list(observe({
         dataRaw <- private$input[[private$config$htmlSelector]]
@@ -1399,6 +1422,9 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
               private$ignoreUpdate <- 0L
               currentValue <- newChoices[[1L]]
             }
+          }
+          if (identical(config$activateModules$hcube, TRUE)) {
+            private$currentChoices <- newChoices
           }
           updateSelectInput(private$session,
             private$config$htmlSelector,
@@ -1619,6 +1645,9 @@ SandboxInputData <- R6::R6Class("SandboxInputData",
     },
     getSymConfig = function(symName) {
       return(private$inputConfig[[symName]])
+    },
+    getWidget = function(symName) {
+      return(private$inputWidgets[[symName]])
     },
     attachments = NULL,
     views = NULL

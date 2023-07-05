@@ -1116,7 +1116,7 @@ if (identical(config$activateModules$hcube, TRUE)) {
           lapply(seq_along(config$hcModule$scalarsConfig), function(widgetId) {
             scalarConfig <- config$hcModule$scalarsConfig[[widgetId]]
             symId <- match(scalarConfig$name, names(modelIn))
-            dependencyId <- match(scalarConfig$name, names(modelInWithDep))
+            hasDependency <- scalarConfig$name %in% names(modelInWithDep)
             widgetlabel <- scalarConfig$label
             if (!is.null(scalarConfig$tooltip)) {
               widgetlabel <- widgetTooltip(widgetlabel, scalarConfig$tooltip, mobile = TRUE)
@@ -1128,8 +1128,8 @@ if (identical(config$activateModules$hcube, TRUE)) {
                 } else {
                   dropdownVal <- isolate(input[[paste0("dropdown_", symId)]])
                 }
-                if (!is.na(dependencyId)) {
-                  scalarConfig$choices <- isolate(getData[[dependencyId]]())
+                if (hasDependency) {
+                  scalarConfig$choices <- sandboxInputData$getWidget(scalarConfig$name)$getChoices()
                 }
                 selectInput(paste0("hcWidget_", widgetId),
                   label = widgetlabel,
@@ -1145,8 +1145,8 @@ if (identical(config$activateModules$hcube, TRUE)) {
                 } else {
                   sliderVal <- c(scalarConfig$default, scalarConfig$default)
                 }
-                if (!is.na(dependencyId)) {
-                  configTmp <- isolate(getData[[dependencyId]]())
+                if (hasDependency) {
+                  configTmp <- sandboxInputData$getWidget(scalarConfig$name)$getCurrentConfig()
                   scalarConfig$min <- configTmp$min
                   scalarConfig$max <- configTmp$max
                   scalarConfig$step <- configTmp$step
