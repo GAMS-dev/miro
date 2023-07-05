@@ -1255,6 +1255,7 @@ SliderWidget <- R6::R6Class("SliderWidget",
           private$ignoreUpdate <- private$ignoreUpdate - 1L
         } else {
           isolate({
+            private$data(dataRaw)
             flog.debug("Modification of slider (symbol: %s).", private$symName)
             private$rv$inputDataDirty <- TRUE
           })
