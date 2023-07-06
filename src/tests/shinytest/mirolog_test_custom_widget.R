@@ -11,5 +11,5 @@ app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeo
 Sys.sleep(0.1)
 app$set_inputs(btSolve = "click")
 expect_error(app$wait_for_js("$('#valErr_initial_state').is(':visible');", timeout = 10000L), NA)
-expect_error(app$wait_for_js("$('#valErr_initial_state').text()===' test123 must be positive!';", timeout = 500L), NA)
+expect_error(app$wait_for_js("$('#valErr_initial_state').text()===' test123 must be positive!';", timeout = 5000L), NA)
 app$stop()
