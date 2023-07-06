@@ -175,8 +175,7 @@ repeat{
   }
 }
 app$set_inputs(btShowHistory = "click")
-Sys.sleep(2L)
-expect_true(app$get_js("$('.cJob-wrapper td').get(2).innerHTML.trim().includes('badge-info\">HC')", timeout = 50))
+app$wait_for_js("$('.cJob-wrapper td').get(2).innerHTML.trim().includes('badge-info\">HC')", timeout = 5000)
 expect_true(app$get_js("$('.cJob-wrapper td').get(2).innerHTML.trim().startsWith('bla,blub')", timeout = 50))
 expect_true(app$get_js("$('.cJob-wrapper td').get(3).textContent.trim().includes('Imported')", timeout = 50))
 app$run_js('$(\'button[data-dismiss="modal"]:visible\').click();', timeout = 50)
@@ -236,7 +235,7 @@ Sys.sleep(2)
 app$click(selector = "#confirmModal .bt-gms-confirm")
 Sys.sleep(2)
 app$set_inputs(btShowHistory = "click")
-expect_true(app$get_js("$('.cJob-wrapper td').get(2).innerHTML.trim().includes('badge-info\">HC')===true&&$('.cJob-wrapper td').get(2).innerHTML.trim().startsWith('&lt;&gt;,&amp;&amp;')===true;", timeout = 50000))
+app$wait_for_js("$('.cJob-wrapper td').get(2).innerHTML.trim().includes('badge-info\">HC')===true&&$('.cJob-wrapper td').get(2).innerHTML.trim().startsWith('&lt;&gt;,&amp;&amp;')===true;", timeout = 5000)
 expect_true(app$get_js("$('.cJob-wrapper td').get(3).textContent.trim().startsWith('Discarded') && $('.cJob-wrapper td').get(3).textContent.trim().endsWith('The job was still active.')", timeout = 50))
 app$run_js('$(\'button[data-dismiss="modal"]:visible\').click();', timeout = 50)
 Sys.sleep(2L)
