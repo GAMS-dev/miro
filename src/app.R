@@ -1822,7 +1822,7 @@ if (!is.null(errMsg)) {
         updateBatchLoadData = 0L, jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L,
         importCSV = 0L, refreshHcubeHashes = 0L, submitHCJobConfirm = 0L,
         refreshLogs = NULL, triggerAsyncProcObserver = NULL,
-        inputDataDirty = FALSE
+        inputDataDirty = FALSE, sandboxUnsaved = FALSE
       )
 
       xlsio <- XlsIO$new()
@@ -1874,7 +1874,6 @@ if (!is.null(errMsg)) {
         if (useTempDir) {
           unlink(workDir, recursive = TRUE)
         }
-        suppressWarnings(rm(activeScen))
         try(flog.info("Session ended (model: '%s', user: '%s').", modelName, uid),
           silent = TRUE
         )
@@ -2060,7 +2059,7 @@ if (!is.null(errMsg)) {
         } else if (markDirty && scenData$getSandboxHasOutputData(scriptOutput)) {
           rv$dirtyFlag <- TRUE
         }
-        rv$inputDataDirty <- TRUE
+        rv$sandboxUnsaved <- TRUE
         return(invisible())
       }
       observe({
@@ -2072,17 +2071,28 @@ if (!is.null(errMsg)) {
           hideEl(session, "#dirtyFlagIconO")
         }
       })
+      observe({
+        if (identical(rv$inputDataDirty, TRUE)) {
+          isolate({
+            rv$sandboxUnsaved <- TRUE
+            if (!rv$dirtyFlag && scenData$getSandboxHasOutputData(scriptOutput)) {
+              rv$dirtyFlag <- TRUE
+            }
+          })
+        }
+      })
 
       markSaved <- function() {
-        rv$dirtyFlag <- FALSE
         rv$inputDataDirty <- FALSE
+        rv$dirtyFlag <- FALSE
+        rv$sandboxUnsaved <- FALSE
         return(invisible())
       }
 
       # print scenario title in input and output sheets
       getScenTitle <- reactive({
         nameSuffix <- ""
-        if (rv$inputDataDirty) {
+        if (rv$sandboxUnsaved) {
           nameSuffix <- " (*)"
         }
         if (is.null(activeScen) || !length(activeScen$getSid())) {

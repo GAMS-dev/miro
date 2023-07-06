@@ -27,8 +27,8 @@ ScenarioMetadata <- R6Class("ScenarioMetadata",
           # refresh observer even when name is not changed
           # (e.g. due to different owner)
           isolate({
-            private$rv$inputDataDirty <- !private$rv$inputDataDirty
-            private$rv$inputDataDirty <- !private$rv$inputDataDirty
+            private$rv$sandboxUnsaved <- !private$rv$sandboxUnsaved
+            private$rv$sandboxUnsaved <- !private$rv$sandboxUnsaved
           })
         } else {
           isolate(private$rv$activeSname <- value)

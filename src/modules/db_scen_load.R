@@ -462,7 +462,7 @@ observeEvent(input$btBatchLoadSb, {
   flog.debug("Load scenario into sandbox from Batch Load module button clicked.")
   isInSolveMode <<- TRUE
   loadIntoSandbox <<- FALSE
-  if (identical(isolate(rv$inputDataDirty), TRUE) ||
+  if (identical(isolate(rv$sandboxUnsaved), TRUE) ||
     any(vapply(modelInTabularData,
       sandboxInputData$hasData, logical(1),
       USE.NAMES = FALSE
