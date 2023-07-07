@@ -186,14 +186,15 @@ export function modal(msg, okButton, cancelButton,
   <script>$('#shiny-modal').modal().focus();</script>
 </div>`,
   });
+  $(document).off('click', '#miroModalConfirmButton');
   if (value == null) {
-    $('#miroModalConfirmButton').click(() => {
+    $(document).on('click', '#miroModalConfirmButton', () => {
       if (callback(...callbackArgs) !== false) {
         $('#shiny-modal').modal('hide');
       }
     });
   } else {
-    $('#miroModalConfirmButton').click(() => {
+    $(document).on('click', '#miroModalConfirmButton', () => {
       if (callback(document.getElementById('miroPromptInput').value,
         ...callbackArgs) !== false) {
         $('#shiny-modal').modal('hide');
@@ -552,7 +553,7 @@ font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
       let crPosition = Infinity;
       let nlPosition = -1;
       let contentToAppend = '';
-      for (;;) {
+      for (; ;) {
         if (crPosition - 1 < 0) {
           crPosition = -1;
           content += contentToAppend;
