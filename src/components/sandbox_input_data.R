@@ -92,8 +92,12 @@ MultiDimWidget <- R6::R6Class("MultiDimWidget",
     needsPivot = FALSE,
     pivotIdx = NULL,
     staticColHeaders = NULL,
-    getPivotedData = function(force = FALSE) {
-      dataTmp <- isolate(private$data())
+    getPivotedData = function(force = FALSE, dataToPivot = NULL) {
+      if (is.null(dataToPivot)) {
+        dataTmp <- isolate(private$data())
+      } else {
+        dataTmp <- dataToPivot
+      }
       if (tryCatch(
         {
           dataTmp <- pivot_wider(dataTmp,
@@ -128,24 +132,27 @@ MultiDimWidget <- R6::R6Class("MultiDimWidget",
       if (!private$needsPivot) {
         return(data)
       }
-      return(select(pivot_longer(
-        suppressWarnings(
-          mutate(
+      if (length(data) < length(private$config$headers) - 1L) {
+        return(private$config$defaultValue)
+      }
+      return(suppressWarnings(mutate(
+        unnest(
+          select(pivot_longer(
             data,
-            across(all_of(seq(
+            cols = seq(
               length(private$config$headers) - 1L,
               length(data)
-            )), as.numeric)
-          )
+            ),
+            names_to = private$config$pivotCols[[1]],
+            values_to = names(private$config$headers)[length(private$config$headers)],
+            values_drop_na = TRUE
+          ), !!!names(private$config$headers)),
+          cols = all_of(!!!length(private$config$headers))
         ),
-        cols = seq(
-          length(private$config$headers) - 1L,
-          length(data)
-        ),
-        names_to = private$config$pivotCols[[1]],
-        values_to = names(private$config$headers)[length(private$config$headers)],
-        values_drop_na = TRUE
-      ), !!!names(private$config$headers)))
+        across(
+          length(private$config$headers), as.numeric
+        )
+      )))
     },
     dataNeedsUpdate = function(data) {
       return(!identical(
@@ -356,11 +363,26 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
     setData = function(data) {
       if (private$dataNeedsUpdate(data)) {
         private$ignoreUpdate <- 1L
-        isolate({
-          private$data(data)
-          updateNew <- private$updateWidget() + 1L
-          private$updateWidget(updateNew)
-        })
+        if (private$needsPivot) {
+          # we need to do this to not mess up the row order when
+          # removing duplicates since pivoting and unpivoting causes
+          # same records to be next to each other
+          dataTmp <- private$getPivotedData(
+            force = TRUE,
+            dataToPivot = data
+          )$data
+          isolate({
+            private$data(private$normalizeData(dataTmp))
+            updateNew <- private$updateWidget() + 1L
+            private$updateWidget(updateNew)
+          })
+        } else {
+          isolate({
+            private$data(data)
+            updateNew <- private$updateWidget() + 1L
+            private$updateWidget(updateNew)
+          })
+        }
       }
       return(invisible(self))
     }
@@ -671,14 +693,25 @@ DataTableWidget <- R6::R6Class("DataTableWidget",
     setData = function(data) {
       if (private$dataNeedsUpdate(data)) {
         private$ignoreUpdate <- 1L
-        isolate({
-          private$data(data)
-          updateNew <- private$updateWidget() + 1L
-          private$updateWidget(updateNew)
-        })
         if (private$needsPivot) {
-          dataTmp <- private$getPivotedData()
-          private$dataPivoted <- dataTmp$data
+          # we need to do this to not mess up the row order when
+          # removing duplicates since pivoting and unpivoting causes
+          # same records to be next to each other
+          private$dataPivoted <- private$getPivotedData(
+            force = TRUE,
+            dataToPivot = data
+          )$data
+          isolate({
+            private$data(private$normalizeData(private$dataPivoted))
+            updateNew <- private$updateWidget() + 1L
+            private$updateWidget(updateNew)
+          })
+        } else {
+          isolate({
+            private$data(data)
+            updateNew <- private$updateWidget() + 1L
+            private$updateWidget(updateNew)
+          })
         }
       }
       return(invisible(self))

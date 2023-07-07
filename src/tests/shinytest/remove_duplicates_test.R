@@ -1,5 +1,4 @@
 app <- AppDriver$new("../../", name = "remove_duplicates_test", variant = NULL, load_timeout = 20000)
-app$view()
 app$set_inputs(btRemoveDuplicates = "click")
 expect_error(app$wait_for_js("$('.shiny-notification-content').text().includes('None of your input tables contain duplicate records');", timeout = 10000L), NA)
 
