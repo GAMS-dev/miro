@@ -28,7 +28,7 @@ Sys.setenv(ENGINE_USER_INVITEE = inviteeName)
 
 createUser(apiURL, inviterUser, inviterPass, namespace,
   inviteeName, inviterPass,
-  volumeQuota = 70L
+  volumeQuota = 72L
 )
 
 modelToTest <- "pickstock_configuration"
