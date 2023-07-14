@@ -1559,7 +1559,11 @@ DateWidget <- R6::R6Class("DateWidget",
       return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName))
     },
     setData = function(data) {
-      dataNew <- private$conversionFn(data)
+      if (is.null(data)) {
+        dataNew <- NULL
+      } else {
+        dataNew <- private$conversionFn(data)
+      }
       if (private$dataNeedsUpdate(dataNew)) {
         isolate({
           private$data(dataNew)
@@ -1596,7 +1600,11 @@ DateRangeWidget <- R6::R6Class("DateRangeWidget",
       ))
     },
     setData = function(data) {
-      dataNew <- private$conversionFn(data)
+      if (is.null(data)) {
+        dataNew <- NULL
+      } else {
+        dataNew <- private$conversionFn(data)
+      }
       if (private$dataNeedsUpdate(dataNew)) {
         isolate({
           private$data(dataNew)
