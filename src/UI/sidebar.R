@@ -125,8 +125,18 @@ sidebar <- dashboardSidebar(
               lang$nav$sidebarButtons$tabView
             } else if (identical(config$defCompMode, "pivot")) {
               lang$nav$sidebarButtons$pivotView
-            } else {
+            } else if (identical(config$defCompMode, "split")) {
               lang$nav$sidebarButtons$splitView
+            } else {
+              unlist(lapply(
+                config[["customCompareModules"]],
+                function(compareModuleConfig) {
+                  if (identical(compareModuleConfig$id, config$defCompMode)) {
+                    return(compareModuleConfig$label)
+                  }
+                  return(character(0L))
+                }
+              ), use.names = FALSE)[[1L]]
             }
           ), tags$span(class = "caret"),
           tags$span(class = "sr-only", "toggle dropdown")

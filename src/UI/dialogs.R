@@ -1232,6 +1232,69 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
   } else {
     analysisTabset <- NULL
   }
+  createCompareModesDropdown <- function(noScenariosToCompare) {
+    if (noScenariosToCompare > 50L) {
+      return(NULL)
+    }
+    compareModesList <- list(
+      pivot = lang$nav$dialogBatchLoad$interactiveButtonPivot,
+      tab = lang$nav$dialogBatchLoad$interactiveButtonTab,
+      split = lang$nav$dialogBatchLoad$interactiveButtonSplit
+    )
+    compareModesList <- c(compareModesList, setNames(
+      lapply(config[["customCompareModules"]], "[[", "label"),
+      lapply(config[["customCompareModules"]], "[[", "id")
+    ))
+    if (noScenariosToCompare > 2L) {
+      compareModesList[["split"]] <- NULL
+      if (noScenariosToCompare > 10L) {
+        compareModesList[["tab"]] <- NULL
+      }
+    }
+    if (length(config$defCompMode) && config$defCompMode %in% names(compareModesList)) {
+      defCompModeButton <- list(id = config$defCompMode, label = compareModesList[[config$defCompMode]])
+      compareModesList[[config$defCompMode]] <- NULL
+    } else {
+      defCompModeButton <- list(id = "pivot", label = compareModesList[["pivot"]])
+      compareModesList[["pivot"]] <- NULL
+    }
+    defCompModeButton <- tags$button(
+      class = "btn btn-default", type = "button", id = "btBatchCompare",
+      style = if (length(compareModesList) > 0L) {
+        "margin:6px 0px 6px 5px;border-right:0px;"
+      } else {
+        "margin:6px 0px 6px 5px;"
+      },
+      onclick = paste0("Shiny.setInputValue('btBatchCompare','", defCompModeButton$id, "',{priority:'event'});"),
+      defCompModeButton$label
+    )
+    return(tags$div(
+      class = "btn-group", class = "batch-load-content",
+      defCompModeButton,
+      if (length(compareModeList) > 0L) {
+        tagList(
+          tags$button(
+            class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
+            style = "margin:6px 0px 6px 0;display:block;",
+            tags$span(class = "caret"),
+            tags$span(class = "sr-only", "toggle dropdown")
+          ),
+          tags$ul(
+            class = "dropdown-menu", role = "menu", style = "margin-left:5px;max-width:280px;overflow:hidden;",
+            lapply(names(compareModesList), function(compareModeId) {
+              tags$li(
+                tags$a(
+                  href = "#",
+                  onclick = paste0("Shiny.setInputValue('btBatchCompare','", compareModeId, "',{priority:'event'});"),
+                  compareModesList[[compareModeId]]
+                )
+              )
+            })
+          )
+        )
+      }
+    ))
+  }
   showModal(
     tags$div(
       id = "shiny-modal", class = "modal fade", tabindex = "-1",
@@ -1377,61 +1440,7 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
                   )
                 )
               },
-              if (length(sidsToLoad) <= 50L) {
-                tags$div(
-                  class = "btn-group", class = "batch-load-content",
-                  tags$button(
-                    class = "btn btn-default", type = "button", id = "btBatchCompare",
-                    style = if (length(sidsToLoad) <= 10L || length(config[["customCompareModules"]]) > 0L) {
-                      "margin:6px 0px 6px 5px;border-right:0px;"
-                    } else {
-                      "margin:6px 0px 6px 5px;"
-                    },
-                    onclick = "Shiny.setInputValue('btBatchCompare','pivot',{priority:'event'});",
-                    lang$nav$dialogBatchLoad$interactiveButtonPivot
-                  ),
-                  if (length(sidsToLoad) <= 10L || length(config[["customCompareModules"]]) > 0L) {
-                    tagList(
-                      tags$button(
-                        class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
-                        style = "margin:6px 0px 6px 0;display:block;",
-                        tags$span(class = "caret"),
-                        tags$span(class = "sr-only", "toggle dropdown")
-                      ),
-                      tags$ul(
-                        class = "dropdown-menu", role = "menu", style = "margin-left:5px;max-width:280px;overflow:hidden;",
-                        if (length(sidsToLoad) <= 10L) {
-                          tags$li(
-                            tags$a(
-                              href = "#",
-                              onclick = "Shiny.setInputValue('btBatchCompare','tab',{priority:'event'});",
-                              lang$nav$dialogBatchLoad$interactiveButtonTab
-                            )
-                          )
-                        },
-                        if (length(sidsToLoad) <= 2L) {
-                          tags$li(
-                            tags$a(
-                              href = "#",
-                              onclick = "Shiny.setInputValue('btBatchCompare','split',{priority:'event'});",
-                              lang$nav$dialogBatchLoad$interactiveButtonSplit
-                            )
-                          )
-                        },
-                        lapply(config[["customCompareModules"]], function(compareModuleConfig) {
-                          tags$li(
-                            tags$a(
-                              href = "#",
-                              onclick = paste0("Shiny.setInputValue('btBatchCompare','", compareModuleConfig[["id"]], "',{priority:'event'});"),
-                              compareModuleConfig[["label"]]
-                            )
-                          )
-                        })
-                      )
-                    )
-                  }
-                )
-              }
+              createCompareModesDropdown(length(sidsToLoad))
             )
           ),
           tags$div(

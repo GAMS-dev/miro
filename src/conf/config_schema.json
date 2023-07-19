@@ -292,14 +292,9 @@
           "minLength":3
         }
       },
-      "defCompMode":{
-         "description":"Specifies the default scenario comparison mode (the one that is loaded on startup).",
+    "defCompMode":{
+         "description":"Specifies the default scenario comparison mode (the one that is loaded on startup). Possible values: split, tab, pivot or id of custom comparison module",
          "type":"string",
-         "enum":[
-            "split",
-            "tab",
-            "pivot"
-         ],
          "default":"split"
       },
       "pivotCompSettings":{

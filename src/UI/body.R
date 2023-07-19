@@ -498,7 +498,7 @@ if (buildUI) {
       tags$div(
         id = paste0("scen-", compareModuleConfig[["id"]], "-view"),
         class = "scen-compare-tab-wrapper",
-        style = "display:none;",
+        style = if (identical(config$defCompMode, compareModuleConfig[["id"]])) "" else "display:none;",
         box(
           class = "box-mobile",
           width = 12L, solidHeader = TRUE, status = "primary", title =

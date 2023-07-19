@@ -1765,13 +1765,7 @@ if (!is.null(errMsg)) {
         execPerm = vector("logical", attachMaxNo)
       )
       inconsistentOutput <- FALSE
-      if (identical(config$defCompMode, "tab")) {
-        currentCompMode <- "tab"
-      } else if (identical(config$defCompMode, "pivot")) {
-        currentCompMode <- "pivot"
-      } else {
-        currentCompMode <- "split"
-      }
+      currentCompMode <- config$defCompMode
       if (identical(currentCompMode, "split")) {
         enableEl(session, "#btCompareScen")
       }

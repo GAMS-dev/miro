@@ -12,13 +12,18 @@ resetCompTabset <- function(tabsetId) {
 }
 
 observeEvent(input$btSplitView, {
+  if (!is.character(input$btSplitView) || length(input$btSplitView) != 1L) {
+    stop("Invalid value for btSplitView. Possible attempt to tamper with app!")
+  }
   switchCompareMode(session, input$btSplitView, numberScenTabs, config[["customCompareModules"]])
   if (identical(input$btSplitView, "tabView")) {
     currentCompMode <<- "tab"
   } else if (identical(input$btSplitView, "pivotView")) {
     currentCompMode <<- "pivot"
-  } else {
+  } else if (identical(input$btSplitView, "splitView")) {
     currentCompMode <<- "split"
+  } else {
+    currentCompMode <<- input$btSplitView
   }
   if (isInCompareMode) {
     rv$btCompareScen <- isolate(rv$btCompareScen + 1L)
