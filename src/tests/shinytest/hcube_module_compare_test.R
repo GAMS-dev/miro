@@ -86,12 +86,16 @@ Sys.sleep(0.5)
 app$set_inputs(batchLoadResults_rows_selected = scenToCompare, allow_no_input_binding_ = TRUE)
 app$set_inputs(batchLoadSelected = "click")
 Sys.sleep(2L)
+expect_true(app$get_js("$('#prefixBatchCompareNameCols').is(':visible')===false"))
 app$set_inputs(batchCompareNameCols = c("maxstock", "_gmsopt_lsttitleleftaligned"))
+Sys.sleep(0.5)
+expect_true(app$get_js("$('#prefixBatchCompareNameCols').is(':visible')===true"))
+app$set_inputs(prefixBatchCompareNameCols = "blabla123_")
 app$run_js("$('#btBatchDownloadGDX+.dropdown-toggle').click()", timeout = 50L)
 Sys.sleep(0.5)
 expect_files_in_zip(
   app, "btBatchDownloadCSV",
-  unlist(lapply(c("2_1", "6_0"), function(scenName) {
+  unlist(lapply(c("blabla123_2_1", "blabla123_6_0"), function(scenName) {
     paste0(scenName, "/", c("", paste0(c(
       multiDimSym, "_metadata_",
       "_scalars", "_scalars_out"

@@ -536,6 +536,7 @@
       "title": "Aktion auswählen",
       "selectMethod": "Was möchtest du mit den ausgewählten Szenarien machen?",
       "scenNameCols": "Spalten für die Benennung von Szenarien auswählen",
+      "scenNamePrefix": "Präfix für den Szenarionamen",
       "selExportType": "Wählen Sie einen Dateityp aus",
       "maxScenWarning1": "Sie können nur bis zu: '%d' gleichzeitig für den Vergleich im interaktiven Modus laden.",
       "maxScenWarning2": " Wählen Sie weniger Szenarien oder verwenden Sie eigene Analyseskripte zum Vergleich.",

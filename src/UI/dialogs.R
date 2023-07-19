@@ -1289,6 +1289,10 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
                   selectInput("batchCompareNameCols", NULL,
                     choices = colNamesForNaming,
                     multiple = TRUE
+                  ),
+                  conditionalPanel(
+                    "input.batchCompareNameCols?.length > 0",
+                    textInput("prefixBatchCompareNameCols", label = lang$nav$dialogBatchLoad$scenNamePrefix)
                   )
                 )
               }

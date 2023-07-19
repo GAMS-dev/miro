@@ -580,10 +580,15 @@ downloadBatchData <- function(file, sids, type) {
             paste(sidsToLoad[is.na(rowIdsToPick)], collapse = ", ")
           ))
         }
-        batchLoader$setScenIdNameMap(setNames(unite(batchLoadData[rowIdsToPick, mapColIds],
+        scenNamesPrefixTmp <- input$prefixBatchCompareNameCols
+        if (length(scenNamesPrefixTmp) != 1L || !is.character(scenNamesPrefixTmp)) {
+          stop("Invalid prefix for scenario names. This is likely an attempt to tamper with the app!")
+        }
+        scenNamesTmp <- paste0(scenNamesPrefixTmp, unite(batchLoadData[rowIdsToPick, mapColIds],
           "name",
           sep = "_"
-        )[[1]], as.character(sidsToLoad)))
+        )[[1]])
+        batchLoader$setScenIdNameMap(setNames(scenNamesTmp, as.character(sidsToLoad)))
         FALSE
       },
       error = function(e) {

@@ -536,6 +536,7 @@
       "title": "Select action",
       "selectMethod": "What would you like to do with the selected scenarios?",
       "scenNameCols": "Select columns for naming scenarios",
+      "scenNamePrefix": "Prefix for the scenario name",
       "selExportType": "Select a file type",
       "maxScenWarning1": "You may only select up to: '%d' scenarios to load into interactive mode at once.",
       "maxScenWarning2": " Select less scenarios or use custom analysis scripts to compare.",
