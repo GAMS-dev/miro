@@ -1,5 +1,6 @@
 CustomDataIO <- R6Class("CustomDataIO", public = list(
-  initialize = function() {
+  initialize = function(customRendererDir) {
+    private$customRendererDir <- customRendererDir
     return(invisible(self))
   },
   getLabel = function() {
@@ -44,7 +45,8 @@ CustomDataIO <- R6Class("CustomDataIO", public = list(
           localFile = private$localFile,
           views = sandboxScenario$getViews(),
           attachments = sandboxScenario$getAttachments(),
-          metadata = sandboxScenario$getMetadata()
+          metadata = sandboxScenario$getMetadata(),
+          customRendererDir = customRendererDir
         )
       }
       return(private$remoteData[[dsName]])
@@ -110,7 +112,8 @@ CustomDataIO <- R6Class("CustomDataIO", public = list(
           path = path,
           views = sandboxScenario$getViews(),
           attachments = sandboxScenario$getAttachments(),
-          metadata = sandboxScenario$getMetadata()
+          metadata = sandboxScenario$getMetadata(),
+          customRendererDir = customRendererDir
         )
       }
       return(invisible(self))
@@ -150,6 +153,7 @@ CustomDataIO <- R6Class("CustomDataIO", public = list(
   config = NULL,
   localFile = NULL,
   remoteData = NULL,
+  customRendererDir = NULL,
   sendHTTPRequest = function(item) {
     switch(item$method,
       GET = {

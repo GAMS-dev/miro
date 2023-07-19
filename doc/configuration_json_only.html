@@ -140,7 +140,7 @@
                     </p>
                     <div class="code-block">
                       <pre><code class="language-r">
-miroimport_&#x3C;importerName&#x3E; &#x3C;- function(symNames, localFile = NULL, views = NULL, attachments = NULL, metadata = NULL, ...) {
+miroimport_&#x3C;importerName&#x3E; &#x3C;- function(symNames, localFile = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
 
 }</code></pre>
                     </div>
@@ -169,7 +169,10 @@ miroimport_&#x3C;importerName&#x3E; &#x3C;- function(symNames, localFile = NULL,
                         href="configuration_advanced.html#custom-renderer-views"
                         >views</a
                       >
-                      of the sandbox scenario.
+                      of the sandbox scenario. The directory
+                      <i>renderer_&lt;modelname&gt;</i> can be accessed via the
+                      <i>customRendererDir</i> argument (e.g. to access
+                      additional files placed in the same directory).
                     </p>
                     <p>
                       The custom import function should return a named list of
@@ -193,7 +196,7 @@ miroimport_&#x3C;importerName&#x3E; &#x3C;- function(symNames, localFile = NULL,
                       Second, we write our own import function:
                     </p>
                     <div class="code-block">
-                      <pre><code class="language-r">miroimport_JSON &#x3C;- function(symbolNames, localFile = NULL, views = NULL, attachments = NULL, metadata = NULL, ...) {
+                      <pre><code class="language-r">miroimport_JSON &#x3C;- function(symbolNames, localFile = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
   if (is.null(localFile) || !identical(length(localFile$datapath), 1L)) {
     abortSafe("Please upload a single, valid JSON file")
   }
@@ -355,7 +358,7 @@ miroimport_&#x3C;importerName&#x3E; &#x3C;- function(symNames, localFile = NULL,
                     </p>
                     <div class="code-block">
                       <pre><code class="language-r">
-miroexport_&#x3C;exporterName&#x3E; &#x3C;- function(data, path = NULL, views = NULL, attachments = NULL, metadata = NULL, ...) {
+miroexport_&#x3C;exporterName&#x3E; &#x3C;- function(data, path = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
 
 }</code></pre>
                     </div>
@@ -380,7 +383,10 @@ miroexport_&#x3C;exporterName&#x3E; &#x3C;- function(data, path = NULL, views = 
                         href="configuration_advanced.html#custom-renderer-views"
                         >views</a
                       >
-                      of the sandbox scenario.
+                      of the sandbox scenario. The directory
+                      <i>renderer_&lt;modelname&gt;</i> can be accessed via the
+                      <i>customRendererDir</i> argument (e.g. to access
+                      additional files placed in the same directory).
                     </p>
                     <p>
                       Let's write a JSON export function that creates JSON files
@@ -391,7 +397,7 @@ miroexport_&#x3C;exporterName&#x3E; &#x3C;- function(data, path = NULL, views = 
                       Then we write the custom export function:
                     </p>
                     <div class="code-block">
-                      <pre><code class="language-r">miroexport_JSON &#x3C;- function(data, path = NULL, views = NULL, attachments = NULL, metadata = NULL, ...) {
+                      <pre><code class="language-r">miroexport_JSON &#x3C;- function(data, path = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
   jsonlite::write_json(data, path = path, dataframe = "columns")
 }</code></pre>
                     </div>

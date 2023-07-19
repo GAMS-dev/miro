@@ -990,7 +990,7 @@ if (is.null(errMsg)) {
       errMsg <<- paste(errMsg, conditionMessage(e), sep = "\n")
     }
   )
-  customDataIO <- CustomDataIO$new()
+  customDataIO <- CustomDataIO$new(customRendererDir)
 
   if (identical(config$activateModules$hcube, TRUE)) {
     source("./components/hcube_builder.R")

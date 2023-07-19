@@ -1,6 +1,8 @@
 miroimport_noFile <- function(symbolNames, localFile = NULL, views = NULL,
-                              attachments = NULL, metadata = NULL, ...) {
-  if (!is.null(localFile) || !identical(symbolNames, c("a", "b"))) {
+                              attachments = NULL, metadata = NULL,
+                              customRendererDir = NULL, ...) {
+  if (!is.null(localFile) || !identical(symbolNames, c("a", "b")) ||
+    !startsWith(readr::read_file(file.path(customRendererDir, "miroimport.R")), "miroimport_noFile")) {
     abortSafe("Bad, bad, bad...")
   }
   metadata$name <- "HeyHey"
@@ -9,7 +11,8 @@ miroimport_noFile <- function(symbolNames, localFile = NULL, views = NULL,
 }
 
 miroimport_withFile <- function(symbolNames, localFile = NULL, views = NULL,
-                                attachments = NULL, metadata = NULL, ...) {
+                                attachments = NULL, metadata = NULL,
+                                customRendererDir = NULL, ...) {
   if (!identical(symbolNames, "b")) {
     abortSafe("Bad, bad, bad...")
   }
