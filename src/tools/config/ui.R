@@ -1276,7 +1276,9 @@ font-size: 12px;
                       selectInput("general_scen", tags$div(
                         lang$adminMode$general$scen$label,
                         tags$a("",
-                          title = lang$adminMode$general$ui$tooltipDocs, class = "info-wrapper", href = "https://gams.com/miro/start.html#scenario-comparison",
+                          title = lang$adminMode$general$ui$tooltipDocs,
+                          class = "info-wrapper",
+                          href = "https://gams.com/miro/start.html#scenario-comparison",
                           tags$span(
                             class = "fas fa-circle-info", class = "info-icon",
                             role = "presentation",
@@ -1284,7 +1286,20 @@ font-size: 12px;
                           ), target = "_blank"
                         )
                       ),
-                      choices = langSpecificUI$scen,
+                      choices = c(
+                        langSpecificUI$scen,
+                        setNames(
+                          vapply(config[["customCompareModules"]],
+                            "[[", character(1L),
+                            "id",
+                            USE.NAMES = FALSE
+                          ),
+                          vapply(config[["customCompareModules"]],
+                            "[[", character(1L), "label",
+                            USE.NAMES = FALSE
+                          )
+                        )
+                      ),
                       selected = if (length(configJSON$defCompMode)) configJSON$defCompMode else config$defCompMode
                       )
                     ),
