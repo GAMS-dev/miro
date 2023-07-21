@@ -1431,6 +1431,9 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
               return(unique(private$sandboxData$getData(symName)()[[colName]]))
             }))
           )
+          if (!length(newChoices)) {
+            return()
+          }
           newAliases <- c(
             private$config$dropdown$dependencyConfig$staticAliases,
             unlist(lapply(names(private$config$dropdown$dependencyConfig$aliases), function(symName) {

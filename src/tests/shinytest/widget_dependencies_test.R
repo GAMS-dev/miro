@@ -1,6 +1,5 @@
 app <- AppDriver$new("../../", name = "widget_dependencies_test", variant = NULL, load_timeout = 20000)
 Sys.sleep(2L)
-app$view()
 allStocks <- c(
   "AAPL", "AXP", "BA", "CAT", "CSCO", "CVX", "DD", "DIS", "GE",
   "GS", "HD", "IBM", "INTC", "JNJ", "JPM", "KO", "MCD", "MMM",
