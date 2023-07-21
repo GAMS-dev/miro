@@ -119,7 +119,7 @@ repeat{
 app$click(selector = "#sidebarItemExpanded a[data-value='gamsinter']")
 app$click(selector = '#shiny-tab-gamsinter a[data-value="joblist"]')
 app$click(selector = "#refreshActiveJobs")
-
+Sys.sleep(1L)
 timeout <- 20L
 repeat{
   if (identical(app$get_js("$('.cJob-wrapper').is(':visible')"), TRUE)) {
@@ -133,3 +133,4 @@ repeat{
   }
 }
 expect_true(app$get_js(paste0("$('#jImport_output tr').length===", numberJobsBefore + 1L + 3L)))
+app$stop()

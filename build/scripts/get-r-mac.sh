@@ -8,7 +8,7 @@ mkdir -p r
 if [[ $(uname -p) == 'arm' ]]; then
     curl -o r/r.pkg https://cloud.r-project.org/bin/macosx/big-sur-arm64/base/R-${R_BASE_VERSION}-arm64.pkg
 else
-    curl -o r/r.pkg https://cloud.r-project.org/bin/macosx/base/R-${R_BASE_VERSION}.pkg
+    curl -o r/r.pkg https://cloud.r-project.org/bin/macosx/big-sur-x86_64/base/R-${R_BASE_VERSION}-x86_64.pkg
 fi
 
 pushd r > /dev/null

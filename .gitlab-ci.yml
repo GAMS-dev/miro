@@ -630,12 +630,15 @@ update_doc_job_release:
     - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
     - git config --global user.email "puma@noreply.gams.com"
     - git config --global user.name "Gitlab Runner (puma)"
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
+    - echo 'echo "$SSH_PASSPHRASE"' > ~/.ssh/.print_ssh_password
+    - chmod 700 ~/.ssh/.print_ssh_password
+    - chmod +x ~/.ssh/.print_ssh_password
     - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | DISPLAY=":0.0" SSH_ASKPASS=~/.ssh/.print_ssh_password setsid ssh-add - > /dev/null
   script:
     - docker pull ${CI_REGISTRY_IMAGE}/miro-auth:latest && docker tag ${CI_REGISTRY_IMAGE}/miro-auth:latest miro-auth || exit 1
     - ./ci/push_docs.sh
@@ -651,12 +654,15 @@ update_doc_job:
     - linux
   stage: deploy
   before_script:
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
+    - echo 'echo "$SSH_PASSPHRASE"' > ~/.ssh/.print_ssh_password
+    - chmod 700 ~/.ssh/.print_ssh_password
+    - chmod +x ~/.ssh/.print_ssh_password
     - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | DISPLAY=":0.0" SSH_ASKPASS=~/.ssh/.print_ssh_password setsid ssh-add - > /dev/null
   script:
     - rsync -rlptvz doc/* ubuntu@gams.com:/var/www/html/staging.gams.com/public_html/miro
   rules:
