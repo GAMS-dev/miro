@@ -1,5 +1,5 @@
 data.table, 1.14.8
-cpp11, 0.4.3
+cpp11, 0.4.5
 backports, 1.4.1
 assertthat, 0.2.1
 crayon, 1.5.2
@@ -7,38 +7,38 @@ glue, 1.6.2
 fansi, 1.0.4
 cli, 3.6.1
 utf8, 1.2.3
-Rcpp, 1.0.10
+Rcpp, 1.0.11
 R6, 2.5.1
 BH, 1.81.0-1
 magrittr, 2.0.3
-rlang, 1.1.0
+rlang, 1.1.1
 ellipsis, 0.3.2
-later, 1.3.0
+later, 1.3.1
 promises, 1.2.0.1
-httpuv, 1.6.9
+httpuv, 1.6.11
 mime, 0.12
 jsonlite
-digest, 0.6.31
+digest, 0.6.33
 sourcetools, 0.1.7-1
 xtable, 1.8-4
 fastmap, 1.1.1
-curl, 5.0.0
-V8, 4.2.2
+curl, 5.0.1
+V8, 4.3.3
 base64enc, 0.1-3
 htmltools, 0.5.5
 jquerylib, 0.1.4
 withr, 2.5.0
 leaflet.providers, 1.9.0
 commonmark, 1.9.0
-cachem, 1.0.7
+cachem, 1.0.8
 memoise, 2.0.1
-fontawesome, 0.5.0
+fontawesome, 0.5.1
 lifecycle, 1.0.3
-vctrs, 0.6.1
-fs, 1.6.1
+vctrs, 0.6.3
+fs, 1.6.3
 rappdirs, 0.3.3
-sass, 0.4.5
-bslib, 0.4.2
+sass, 0.4.7
+bslib, 0.5.0
 shiny
 shinyAce, 0.4.2
 colorspace, 2.1-0
@@ -53,9 +53,9 @@ plogr, 0.2.0
 htmlwidgets, 1.5.4
 png, 0.1-8
 RColorBrewer, 1.1-3
-lattice, 0.20-45
-sp, 1.6-0
-viridisLite, 0.4.1
+lattice, 0.21-8
+sp, 2.0-0
+viridisLite, 0.4.2
 raster, 3.4-13
 farver, 2.1.0
 scales, 1.2.1
@@ -69,8 +69,8 @@ tibble, 3.2.1
 generics, 0.1.3
 timechange, 0.2.0
 lubridate, 1.9.2
-dplyr, 1.1.1
-sys, 3.4.1
+dplyr, 1.1.2
+sys, 3.4.2
 askpass, 1.1
 openssl
 prettyunits, 1.1.1
@@ -80,39 +80,39 @@ blob, 1.2.4
 hms, 1.1.3
 stringr, 1.5.0
 tidyr, 1.3.0
-httr, 1.4.5
+httr, 1.4.6
 plotly
 shinydashboard
 timevis
 rematch, 1.0.1
 formatR, 1.14
-ps, 1.7.3
+ps, 1.7.5
 clipr, 0.8.0
 cellranger, 1.1.0
 progress, 1.2.2
 lambda.r, 1.2.4
 futile.options, 1.0.1
-zoo, 1.8-11
+zoo, 1.8-12
 globals, 0.16.2
 listenv, 0.9.0
-processx, 3.8.0
-readxl, 1.4.2
+processx, 3.8.2
+readxl, 1.4.3
 writexl, 1.4.2
 rpivotTable, 0.3.0
 futile.logger, 1.4.3
-zip, 2.2.2
+zip, 2.3.0
 leaflet.minicharts, 0.6.2
-xts, 0.13.0
+xts, 0.13.1
 dygraphs, 1.1.1.6
-parallelly, 1.35.0
-future, 1.32.0
+parallelly, 1.36.0
+future, 1.33.0
 bit, 4.0.5
 bit64, 4.0.5
-tzdb, 0.3.0
-vroom, 1.6.1
+tzdb, 0.4.0
+vroom, 1.6.3
 readr, 2.1.4
 miroUtil
 rhandsontable
 sortable
 chartjs
-RSQLite, 2.3.0
+RSQLite, 2.3.1
