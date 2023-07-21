@@ -20,7 +20,7 @@ def cleanup():
     group_labels = ["mygroup", "another_group"]
     for group_label in group_labels:
         requests.post(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups?label={group_label}",
-                    auth=settings["VALID_AUTH_TUPLE"])
+                      auth=settings["VALID_AUTH_TUPLE"])
     os.remove(settings["SPECS_FILE_PATH"])
     reset_app_config_file()
     yield
@@ -261,7 +261,8 @@ class TestScenarios:
         assert scen_metadata[0]['owner'] == settings["VALID_AUTH_TUPLE"][0]
         assert scen_metadata[1]['last_modified'].startswith(
             datetime.date.today().strftime("%Y-%m-%dT"))
-        assert scen_metadata[1]['last_modified'].endswith("+00:00")
+        assert scen_metadata[1]['last_modified'].endswith(
+            "+00:00") or scen_metadata[1]['last_modified'].endswith('Z')
         assert set(scen_metadata[1]['read_perm']) == {
             'mirotests_auth_1', '#mygroup', '#users'}
         assert set(scen_metadata[0]['read_perm']) == {

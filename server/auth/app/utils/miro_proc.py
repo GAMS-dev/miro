@@ -28,13 +28,13 @@ def get_miro_proc_env(user_info: User) -> Dict[str, str]:
     return proc_env
 
 
-def run_miro_proc(user_info: User, script_name: str, input: bytes = b"", cwd: str = settings.admin_app_dir) -> str:
+def run_miro_proc(user_info: User, script_name: str, proc_input: bytes = b"", cwd: str = settings.admin_app_dir) -> str:
     proc_env = get_miro_proc_env(user_info)
     proc_out = subprocess.run(["R", "--no-echo", "--no-save", "--no-restore", "--no-site-file", "--no-init-file",
                                "-f", os.path.join(settings.admin_app_dir, "scripts", script_name)],
                               capture_output=True,
-                              input=input,
-                              cwd=cwd, env=proc_env)
+                              input=proc_input,
+                              cwd=cwd, env=proc_env, check=False)
     logger.info("Stdout of %s subprocess: %s",
                 script_name,
                 proc_out.stdout.decode()[:3000])
@@ -57,7 +57,8 @@ def run_miro_proc(user_info: User, script_name: str, input: bytes = b"", cwd: st
                             script_name,
                             proc_out.stderr.decode())
             if err_code >= 500:
-                logger.info("Internal error when running MIRO subprocess. Details: %s", err_details)
+                logger.info(
+                    "Internal error when running MIRO subprocess. Details: %s", err_details)
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error"
                 )

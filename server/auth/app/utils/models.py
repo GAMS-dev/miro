@@ -1,15 +1,15 @@
 import datetime
 from enum import Enum
+
 from pydantic import BaseModel
-from typing import List, Optional
 
 
 class User(BaseModel):
     name: str
     auth_header: str
-    permissions: Optional[int] = None
-    is_admin: Optional[bool] = False
-    groups: List[str]
+    permissions: int | None = None
+    is_admin: bool | None = False
+    groups: list[str]
 
 
 class AuthRequest(BaseModel):
@@ -28,13 +28,13 @@ class OidcLoginData(BaseModel):
 
 class AuthResponse(BaseModel):
     token: str
-    roles: List[str]
+    roles: list[str]
     permissions: str
 
 
 class OidcAuthResponse(BaseModel):
     token: str
-    roles: List[str]
+    roles: list[str]
     permissions: str
     username: str
 
@@ -45,30 +45,30 @@ class ConfigurationResponse(BaseModel):
 
 
 class AppConfig(BaseModel):
-    id: Optional[str]
-    display_name: Optional[str]
-    description: Optional[str]
-    access_groups: List[str]
+    id: str | None
+    display_name: str | None
+    description: str | None
+    access_groups: list[str]
 
 
 class ScenarioConfig(BaseModel):
     name: str
-    tags: List[str]
+    tags: list[str]
     owner: str
     last_modified: datetime.datetime
-    read_perm: List[str]
-    write_perm: List[str]
-    exec_perm: List[str]
+    read_perm: list[str]
+    write_perm: list[str]
+    exec_perm: list[str]
 
 
 class ScenarioPermissions(BaseModel):
-    read_perm: Optional[List[str]] = None
-    write_perm: Optional[List[str]] = None
-    exec_perm: Optional[List[str]] = None
+    read_perm: list[str] | None = None
+    write_perm: list[str] | None = None
+    exec_perm: list[str] | None = None
 
 
 class ExportFileType(str, Enum):
-    miroscen = "miroscen"
-    gdx = "gdx"
-    csv = "csv"
-    xlsx = "xlsx"
+    MIROSCEN = "miroscen"
+    GDX = "gdx"
+    CSV = "csv"
+    XLSX = "xlsx"

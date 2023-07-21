@@ -13,7 +13,8 @@ router = APIRouter(
 )
 
 
-@router.post("", summary="Log in user and return login info", status_code=status.HTTP_200_OK, response_model=AuthResponse)
+@router.post("", summary="Log in user and return login info",
+             status_code=status.HTTP_200_OK, response_model=AuthResponse)
 async def login(auth_request: AuthRequest):
     """
     Log in user and return login info:
@@ -34,11 +35,14 @@ async def login(auth_request: AuthRequest):
         bearer_token, auth_request.username)
     logger.info("User: %s successfully logged in (is_admin: %s).",
                 auth_request.username, str(authenticated_user.is_admin))
-    return AuthResponse(token=bearer_token, roles=authenticated_user.groups, permissions=str(authenticated_user.permissions))
+    return AuthResponse(token=bearer_token,
+                        roles=authenticated_user.groups,
+                        permissions=str(authenticated_user.permissions))
 
 
-@router.post("/oidc", summary="Log in user via OpenID Connect and return login info", status_code=status.HTTP_200_OK, response_model=OidcAuthResponse)
-async def login(auth_request: OidcAuthRequest):
+@router.post("/oidc", summary="Log in user via OpenID Connect and return login info",
+             status_code=status.HTTP_200_OK, response_model=OidcAuthResponse)
+async def login_oidc(auth_request: OidcAuthRequest):
     """
     Log in user and return login info:
 

@@ -1,6 +1,6 @@
-from typing import Optional
+from typing import Annotated
 from fastapi.param_functions import Query
-from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, Path, File, Form, UploadFile, status
 from fastapi.logger import logger
 
@@ -36,8 +36,8 @@ metadata = {
 }
 
 
-@ router.get("/", summary=metadata["summary"]["get"], response_model=List[AppConfig])
-async def get_apps(admin_user: User = Depends(get_current_user)):
+@router.get("/", summary=metadata["summary"]["get"], response_model=list[AppConfig])
+async def get_apps(admin_user: Annotated[User, Depends(get_current_user)]):
     """
     Get all apps registered for one of your user groups and their metadata.
 
@@ -52,25 +52,23 @@ async def get_apps(admin_user: User = Depends(get_current_user)):
     return get_apps_raw(user_groups=admin_user.groups)
 
 
-@ router.put(
+@router.put(
     "/{app_id}", summary=metadata["summary"]["put"],
     responses={
         200: {"description": "App successfully updated"},
         400: {"description": "You cannot update an app with this ID"},
         404: {"description": "An app with this ID does not exist"}}
 )
-async def update_app(app_id: str = Path(..., description="The ID of the app to update.", max_length=60),
-                     display_name: Optional[str] = Form(
-                         None, description=metadata["description"]["display_name"], max_length=40),
-                     description: Optional[str] = Form(
-                         None, description=metadata["description"]["description"], max_length=200),
-                     access_groups: Optional[List[str]] = Form(
-                         [], description=metadata["description"]["access_groups"]),
-                     overwrite_data: bool = Form(
-                         False, description=metadata["description"]["overwrite_data"]),
-                     app_data: UploadFile = File(
-                         ..., description=metadata["description"]["app_data"]),
-                     admin_user: User = Depends(get_current_admin_user)):
+async def update_app(app_data: Annotated[UploadFile, File(description=metadata["description"]["app_data"])],
+                     admin_user: Annotated[User, Depends(get_current_admin_user)],
+                     app_id: Annotated[str, Path(description="The ID of the app to update.", max_length=60)],
+                     display_name: Annotated[str | None, Form(
+                         description=metadata["description"]["display_name"], max_length=40)] = None,
+                     description: Annotated[str | None, Form(
+                         description=metadata["description"]["description"], max_length=200)] = None,
+                     access_groups: Annotated[list[str], Form(
+                         description=metadata["description"]["access_groups"])] = None,
+                     overwrite_data: Annotated[bool, Form(description=metadata["description"]["overwrite_data"])] = False):
     """
     Update a MIRO app (requires write permissions on namespace).
 
@@ -80,15 +78,18 @@ async def update_app(app_id: str = Path(..., description="The ID of the app to u
     """
     logger.info(
         "%s requested to update existing app: %s", admin_user.name, app_id)
-    nonempty_access_groups = [group for group in access_groups if group != ""]
+    if access_groups:
+        nonempty_access_groups = [
+            group for group in access_groups if group != ""]
+    else:
+        nonempty_access_groups = []
     invalid_user_groups = list(filter(
         lambda access_group: access_group in ["admins", "users"] or access_group not in admin_user.groups, nonempty_access_groups))
     if invalid_user_groups:
         logger.info("Invalid user groups when updating app: %s", app_id)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid user group(s): {}".format(
-                ",".join(invalid_user_groups))
+            detail=f"Invalid user group(s): {','.join(invalid_user_groups)}"
         )
     if app_is_invisible(admin_user.groups, app_id):
         logger.info("%s is not visible", app_id)
@@ -101,23 +102,24 @@ async def update_app(app_id: str = Path(..., description="The ID of the app to u
                            access_groups=nonempty_access_groups)
     try:
         await add_or_update_app(admin_user, app_config, app_data, overwrite_data=overwrite_data, update=True)
-    except HTTPException as e:
+    except HTTPException as exc:
         logger.info(
-            "Problems updating MIRO app with id: %s. Status code: %s. Details: %s", app_id, e.status_code, e.detail)
-        raise e
-    except Exception as e:
+            "Problems updating MIRO app with id: %s. Status code: %s. Details: %s",
+            app_id, exc.status_code, exc.detail)
+        raise exc
+    except Exception as exc:
         logger.info(
-            "Problems updating MIRO app with id: %s. Details: %s", app_id, str(e))
+            "Problems updating MIRO app with id: %s. Details: %s", app_id, str(exc))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal Server Error"
-        )
+        ) from exc
     logger.info("App with id: %s successfully updated by: %s.",
                 app_id, admin_user.name)
     return {"description": "App successfully updated"}
 
 
-@ router.post(
+@router.post(
     "/", summary=metadata["summary"]["post"],
     responses={
         201: {"description": "App successfully added"},
@@ -125,64 +127,66 @@ async def update_app(app_id: str = Path(..., description="The ID of the app to u
         409: {"description": "An app with this id already exists"}},
     status_code=status.HTTP_201_CREATED
 )
-async def add_app(app_id: Optional[str] = Form(None, description=metadata["description"]["app_id"], max_length=60),
-                  display_name: Optional[str] = Form(
-                      None, description=metadata["description"]["display_name"], max_length=40),
-                  description: Optional[str] = Form(
-                      None, description=metadata["description"]["description"], max_length=200),
-                  access_groups: Optional[List[str]] = Form(
-                      [], description=metadata["description"]["access_groups"]),
-                  overwrite_data: bool = Form(
-                      False, description=metadata["description"]["overwrite_data"]),
-                  app_data: UploadFile = File(
-                      ..., description=metadata["description"]["app_data"]),
-                  admin_user: User = Depends(get_current_admin_user)):
+async def add_app(
+        app_data: Annotated[UploadFile, File(description=metadata["description"]["app_data"])],
+        admin_user: Annotated[User, Depends(get_current_admin_user)],
+        app_id: Annotated[str | None, Form(
+            description=metadata["description"]["app_id"], max_length=60)] = None,
+        display_name: Annotated[str | None, Form(
+            description=metadata["description"]["display_name"], max_length=40)] = None,
+        description: Annotated[str | None, Form(
+            description=metadata["description"]["description"], max_length=200)] = None,
+        access_groups: Annotated[list[str], Form(
+            description=metadata["description"]["access_groups"])] = None,
+        overwrite_data: Annotated[bool, Form(description=metadata["description"]["overwrite_data"])] = False):
     """
     Add a new MIRO app (requires write permissions on namespace).
     """
     logger.info(
         "%s requested to add new app", admin_user.name)
-    nonempty_access_groups = [group for group in access_groups if group != ""]
+    if access_groups:
+        nonempty_access_groups = [
+            group for group in access_groups if group != ""]
+    else:
+        nonempty_access_groups = []
     invalid_user_groups = list(filter(
         lambda access_group: access_group in ["admins", "users"] or access_group not in admin_user.groups, nonempty_access_groups))
     if invalid_user_groups:
         logger.info("Invalid user groups when adding new app")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid user group(s): {}".format(
-                ",".join(invalid_user_groups))
+            detail=f"Invalid user group(s): {','.join(invalid_user_groups)}"
         )
 
     app_config = AppConfig(id=app_id, display_name=display_name, description=description,
                            access_groups=nonempty_access_groups)
     try:
         await add_or_update_app(admin_user, app_config, app_data, overwrite_data=overwrite_data)
-    except HTTPException as e:
+    except HTTPException as exc:
         logger.info(
-            "Problems adding new MIRO app. Status code: %s. Details: %s", e.status_code, e.detail)
-        raise e
-    except Exception as e:
+            "Problems adding new MIRO app. Status code: %s. Details: %s", exc.status_code, exc.detail)
+        raise exc
+    except Exception as exc:
         logger.info(
-            "Problems adding new MIRO app. Details: %s", str(e))
+            "Problems adding new MIRO app. Details: %s", str(exc))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal Server Error"
-        )
+        ) from exc
     logger.info("New app with successfully added by: %s.",
                 admin_user.name)
     return {"description": "App successfully added"}
 
 
-@ router.delete(
+@router.delete(
     "/{app_id}", summary=metadata["summary"]["delete"],
     responses={
         200: {"description": "App successfully deleted"},
         404: {"description": "An app with this ID does not exist"}}
 )
-async def delete_app(app_id: str = Path(..., description="The ID of the app to delete.", max_length=60),
-                     delete_data: Optional[bool] = Query(
-                         False, description="Whether to delete all scenario data of this app."),
-                     admin_user: User = Depends(get_current_admin_user)):
+async def delete_app(app_id: Annotated[str, Path(description="The ID of the app to delete.", max_length=60)],
+                     admin_user: Annotated[User, Depends(get_current_admin_user)],
+                     delete_data: Annotated[bool, Query(description="Whether to delete all scenario data of this app.")] = False):
     """
     Remove an existing MIRO app (requires write permissions on namespace).
     """
@@ -196,17 +200,18 @@ async def delete_app(app_id: str = Path(..., description="The ID of the app to d
         )
     try:
         await delete_app_internal(admin_user, app_id, delete_data)
-    except HTTPException as e:
+    except HTTPException as exc:
         logger.info(
-            "Problems deleting MIRO app with id: %s. Status code: %s. Details: %s", app_id, e.status_code, e.detail)
-        raise e
-    except Exception as e:
+            "Problems deleting MIRO app with id: %s. Status code: %s. Details: %s",
+            app_id, exc.status_code, exc.detail)
+        raise exc
+    except Exception as exc:
         logger.info(
-            "Problems deleting MIRO app with id: %s. Details: %s", app_id, str(e))
+            "Problems deleting MIRO app with id: %s. Details: %s", app_id, str(exc))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal Server Error"
-        )
+        ) from exc
     logger.info("App with id: %s successfully deleted by: %s.",
                 app_id, admin_user.name)
     return {"description": "App successfully deleted"}

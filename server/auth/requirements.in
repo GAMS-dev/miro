@@ -1,4 +1,6 @@
 aiofiles
+pydantic
+pydantic_settings
 fastapi
 PyYAML
 requests

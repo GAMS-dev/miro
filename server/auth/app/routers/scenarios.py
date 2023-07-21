@@ -1,16 +1,19 @@
 import os
 import tempfile
-from fastapi.param_functions import Form, Query
-from starlette.background import BackgroundTask
-from starlette.responses import FileResponse
-from typing import List, Optional
-from fastapi import APIRouter, Depends, Path, File, HTTPException, UploadFile, status
-from fastapi.logger import logger
+from typing import Annotated
 
 from app.config import settings
 from app.dependencies import get_current_app_user
-from app.utils.models import ScenarioPermissions, User, ScenarioConfig, ExportFileType
-from app.utils.scen_utils import delete_data, get_scen_list, download_data, add_data
+from app.utils.models import (ExportFileType, ScenarioConfig,
+                              ScenarioPermissions, User)
+from app.utils.scen_utils import (add_data, delete_data, download_data,
+                                  get_scen_list)
+from fastapi import (APIRouter, Depends, File, HTTPException, Path, UploadFile,
+                     status)
+from fastapi.logger import logger
+from fastapi.param_functions import Form, Query
+from starlette.background import BackgroundTask
+from starlette.responses import FileResponse
 
 router = APIRouter(
     prefix="/scenarios/{app_id}",
@@ -43,9 +46,10 @@ metadata = {
 }
 
 
-@ router.get("/", summary=metadata["summary"]["get"], response_model=List[ScenarioConfig])
-async def get_scenario_list(app_id: str = Path(..., description=metadata['description']['app_id'], max_length=60),
-                            user: User = Depends(get_current_app_user)):
+@ router.get("/", summary=metadata["summary"]["get"], response_model=list[ScenarioConfig])
+async def get_scenario_list(app_id: Annotated[str, Path(description=metadata['description']['app_id'],
+                                                        max_length=60)],
+                            user: Annotated[User, Depends(get_current_app_user)]):
     """
     Get all scenarios for this app that are visible to you.
 
@@ -66,28 +70,29 @@ async def get_scenario_list(app_id: str = Path(..., description=metadata['descri
         logger.info("%s Scenario list of app: %s successfully returned.",
                     user.name, app_id)
         return scen_list
-    except HTTPException as e:
+    except HTTPException as exc:
         logger.info(
-            "Problems adding new MIRO scenario. Status code: %s. Details: %s", e.status_code, e.detail)
-        raise e
-    except Exception as e:
+            "Problems adding new MIRO scenario. Status code: %s. Details: %s", exc.status_code, exc.detail)
+        raise exc
+    except Exception as exc:
         logger.info(
-            "Problems adding new MIRO scenario. Details: %s", str(e))
+            "Problems adding new MIRO scenario. Details: %s", str(exc))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal Server Error"
-        )
+        ) from exc
 
 
 @ router.delete("/", summary=metadata["summary"]["delete"],  responses={
     201: {"description": "Scenario successfully deleted"},
     404: {"description": "A scenario with this name does not exist"},
     423: {"description": "The scenario is locked and cannot be deleted"}})
-async def delete_scenario(app_id: str = Path(..., description=metadata['description']['app_id'], max_length=60),
-                          user: User = Depends(get_current_app_user),
-                          name: str = Query(...,
-                                            description=metadata['description']['name'], max_length=63),
-                          owner: str = Query(None, description=metadata['description']['owner'], max_length=70)):
+async def delete_scenario(app_id: Annotated[str, Path(description=metadata['description']['app_id'],
+                                                      max_length=60)],
+                          user: Annotated[User, Depends(get_current_app_user)],
+                          name: Annotated[str, Query(description=metadata['description']['name'], max_length=63)],
+                          owner: Annotated[str | None, Query(description=metadata['description']['owner'],
+                                                             max_length=70)] = None):
     """
     Delete an existing scenario.
     """
@@ -95,17 +100,17 @@ async def delete_scenario(app_id: str = Path(..., description=metadata['descript
                 user.name, name, app_id)
     try:
         await delete_data(user, app_id, name, owner)
-    except HTTPException as e:
+    except HTTPException as exc:
         logger.info(
-            "Problems deleting MIRO scenario. Status code: %s. Details: %s", e.status_code, e.detail)
-        raise e
-    except Exception as e:
+            "Problems deleting MIRO scenario. Status code: %s. Details: %s", exc.status_code, exc.detail)
+        raise exc
+    except Exception as exc:
         logger.info(
-            "Problems deleting MIRO scenario. Details: %s", str(e))
+            "Problems deleting MIRO scenario. Details: %s", str(exc))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal Server Error"
-        )
+        ) from exc
     logger.info("%s: Scenario successfully deleted", user.name)
     return {"detail": "Scenario successfully deleted"}
 
@@ -113,13 +118,14 @@ async def delete_scenario(app_id: str = Path(..., description=metadata['descript
 @ router.get("/download", summary=metadata["summary"]["download"], responses={
     422: {"description": "Duplicate records found when writing GDX file"}
 })
-async def download_scenario(app_id: str = Path(..., description=metadata['description']['app_id'], max_length=60),
-                            user: User = Depends(get_current_app_user),
-                            name: str = Query(...,
-                                              description=metadata['description']['name'], max_length=63),
-                            owner: str = Query(
-                                None, description=metadata['description']['owner'], max_length=70),
-                            file_type: ExportFileType = Query(ExportFileType.miroscen, description=metadata['description']['file_type'])):
+async def download_scenario(app_id: Annotated[str, Path(description=metadata['description']['app_id'],
+                                                        max_length=60)],
+                            user: Annotated[User, Depends(get_current_app_user)],
+                            name: Annotated[str, Query(description=metadata['description']['name'],
+                                                       max_length=63)],
+                            file_type: Annotated[ExportFileType,
+                                                 Query(description=metadata['description']['file_type'])] = ExportFileType.MIROSCEN,
+                            owner: Annotated[str | None, Query(description=metadata['description']['owner'], max_length=70)] = None):
     """
     Download a scenario.
     """
@@ -127,7 +133,7 @@ async def download_scenario(app_id: str = Path(..., description=metadata['descri
                 user.name, name, app_id)
 
     file_extension = file_type.value
-    if file_type == ExportFileType.csv:
+    if file_type == ExportFileType.CSV:
         file_extension = "zip"
     _, temp_file_name = tempfile.mkstemp(suffix="."+file_extension)
 
@@ -148,19 +154,19 @@ async def download_scenario(app_id: str = Path(..., description=metadata['descri
             background=BackgroundTask(cleanup),
             media_type="application/octet-stream"
         )
-    except HTTPException as e:
+    except HTTPException as exc:
         cleanup()
         logger.info(
-            "Problems downloading MIRO scenario. Status code: %s. Details: %s", e.status_code, e.detail)
-        raise e
-    except Exception as e:
+            "Problems downloading MIRO scenario. Status code: %s. Details: %s", exc.status_code, exc.detail)
+        raise exc
+    except Exception as exc:
         cleanup()
         logger.info(
-            "Problems downloading MIRO scenario. Details: %s", str(e))
+            "Problems downloading MIRO scenario. Details: %s", str(exc))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal Server Error"
-        )
+        ) from exc
 
 
 @ router.post("/", summary=metadata["summary"]["post"], responses={
@@ -168,17 +174,19 @@ async def download_scenario(app_id: str = Path(..., description=metadata['descri
     409: {"description": "A scenario with this name already exists"},
     423: {"description": "The scenario is locked and cannot be overwritten"}},
     status_code=status.HTTP_201_CREATED)
-async def add_scenario(app_id: str = Path(..., description=metadata['description']['app_id'], max_length=60),
-                       user: User = Depends(get_current_app_user),
-                       scenario_data: UploadFile = File(
-                           ..., description=metadata["description"]["scenario_data"]),
-                       overwrite_data: Optional[bool] = Form(
-                           False, description=metadata["description"]["overwrite_data"]),
-                       read_perm: Optional[List[str]] = Form(
-                           None, description=metadata["description"]["read_perm"]),
-                       write_perm: Optional[List[str]] = Form(
-                           None, description=metadata["description"]["write_perm"]),
-                       exec_perm: Optional[List[str]] = Form(None, description=metadata["description"]["exec_perm"])):
+async def add_scenario(app_id: Annotated[str,
+                                         Path(description=metadata['description']['app_id'],
+                                              max_length=60)],
+                       user: Annotated[User, Depends(get_current_app_user)],
+                       scenario_data: Annotated[UploadFile, File(description=metadata["description"]["scenario_data"])],
+                       overwrite_data: Annotated[bool, Form(
+                           description=metadata["description"]["overwrite_data"])] = False,
+                       read_perm: Annotated[list[str], Form(
+                           description=metadata["description"]["read_perm"])] = None,
+                       write_perm: Annotated[list[str], Form(
+                           description=metadata["description"]["write_perm"])] = None,
+                       exec_perm: Annotated[list[str],
+                                            Form(description=metadata["description"]["exec_perm"])] = None):
     """
     Add a new scenario.
     """
@@ -187,16 +195,16 @@ async def add_scenario(app_id: str = Path(..., description=metadata['description
         read_perm=read_perm, write_perm=write_perm, exec_perm=exec_perm)
     try:
         await add_data(user, app_id, scenario_data, permissions, overwrite_data=overwrite_data)
-    except HTTPException as e:
+    except HTTPException as exc:
         logger.info(
-            "Problems adding new MIRO scenario. Status code: %s. Details: %s", e.status_code, e.detail)
-        raise e
-    except Exception as e:
+            "Problems adding new MIRO scenario. Status code: %s. Details: %s", exc.status_code, exc.detail)
+        raise exc
+    except Exception as exc:
         logger.info(
-            "Problems adding new MIRO scenario. Details: %s", str(e))
+            "Problems adding new MIRO scenario. Details: %s", str(exc))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal Server Error"
-        )
+        ) from exc
     logger.info("%s: Scenario successfully added", user.name)
     return {"detail": "Scenario successfully added"}
