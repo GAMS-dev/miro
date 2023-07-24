@@ -1,8 +1,9 @@
 import os
 import re
-from typing import List
+
 import yaml
-from pydantic import BaseSettings, Field
+from pydantic import Field, ConfigDict
+from pydantic_settings import BaseSettings
 
 data_dir_tmp = os.environ.get('DATA_DIR')
 if not data_dir_tmp:
@@ -10,7 +11,7 @@ if not data_dir_tmp:
 
 settings_yml = {}
 try:
-    with open(os.path.join(data_dir_tmp, "application.yml"), "r") as f:
+    with open(os.path.join(data_dir_tmp, "application.yml"), "r", encoding="utf-8") as f:
         settings_yml = yaml.load(f, Loader=yaml.CSafeLoader)["proxy"]
 except FileNotFoundError:
     pass
@@ -31,10 +32,10 @@ class Settings(BaseSettings):
     session_timeout: int = 3600*12
     add_data_timeout: int = 3600
     authentication_mode: str = Field(
-        "oidc" if OIDC_LOGIN else "engine", const=True)
-    miro_server_version: str = Field(MIRO_SERVER_VERSION, const=True)
-    force_signed_apps: str = Field(FORCE_SIGNED_APPS, const=True)
-    supported_data_filetypes: List[str] = [
+        "oidc" if OIDC_LOGIN else "engine", frozen=True)
+    miro_server_version: str = Field(MIRO_SERVER_VERSION, frozen=True)
+    force_signed_apps: str = Field(FORCE_SIGNED_APPS, frozen=True)
+    supported_data_filetypes: list[str] = [
         'gdx', 'miroscen', 'xlsx', 'xlsm', 'xls', 'zip']
     model_dir: str = '/home/miro/admin/models'
     data_dir: str = '/home/miro/admin/data'
@@ -46,6 +47,9 @@ class Settings(BaseSettings):
     gms_miro_database_pwd: str = ''
     script_name: str = ''
     request_timeout: int = 10
+    model_config = ConfigDict(
+        protected_namespaces=('settings_', )
+    )
 
 
 settings = Settings()

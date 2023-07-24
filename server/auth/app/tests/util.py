@@ -60,17 +60,17 @@ def get_scen_metadata(app_id: str):
     return scen_data
 
 
-def register_transport(client, access_groups=[]):
-    response = client.post("/api/apps/",
-                           files={"app_data": open(
-                               "tests/data/transport.miroapp", "rb")},
-                           data={
-                               "overwrite_data": True,
-                               "access_groups": access_groups
-                           },
-                           auth=settings["VALID_AUTH_TUPLE"])
-    print(response.json())
-    assert response.status_code == 201
+def register_transport(client, access_groups=None):
+    with open("tests/data/transport.miroapp", "rb") as app_data:
+        response = client.post("/api/apps/",
+                               files={"app_data": app_data},
+                               data={
+                                   "overwrite_data": True,
+                                   "access_groups": access_groups if access_groups else []
+                               },
+                               auth=settings["VALID_AUTH_TUPLE"])
+        print(response.json())
+        assert response.status_code == 201
 
 
 def invite_user(name, permissions, group=None, inviter=False):

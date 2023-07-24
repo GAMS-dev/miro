@@ -1,10 +1,11 @@
-import sys
 import logging
+import sys
+
 from fastapi import FastAPI
 from fastapi.logger import logger
 
-from app.routers import login, apps, scenarios, configuration
 from app.config import settings_yml, settings
+from app.routers import login, apps, scenarios, configuration
 from app.utils.utils import use_route_names_as_operation_ids
 
 gunicorn_logger = logging.getLogger('gunicorn.error')

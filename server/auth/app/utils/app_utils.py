@@ -1,6 +1,5 @@
 import os
 import json
-from typing import List, Optional
 from fastapi import UploadFile
 from fastapi.exceptions import HTTPException
 from starlette import status
@@ -12,10 +11,10 @@ from app.utils.models import AppConfig, User
 from app.utils.miro_proc import run_miro_proc
 
 
-def get_apps_raw(user_groups: Optional[List[str]] = None, all_apps: bool = False) -> List[AppConfig]:
+def get_apps_raw(user_groups: list[str] = None, all_apps: bool = False) -> list[AppConfig]:
     apps = []
-    with open(os.path.join(settings.data_dir, "specs.yaml"), "r") as f:
-        apps = yaml.load(f, Loader=yaml.CSafeLoader)["specs"]
+    with open(os.path.join(settings.data_dir, "specs.yaml"), "r", encoding="utf-8") as f_apps:
+        apps = yaml.load(f_apps, Loader=yaml.CSafeLoader)["specs"]
     if all_apps:
         return apps
 
@@ -32,7 +31,7 @@ def get_apps_raw(user_groups: Optional[List[str]] = None, all_apps: bool = False
             visible_apps.append(app)
             app["access_groups"] = []
             continue
-        if not len(app["access_groups"]):
+        if not app["access_groups"]:
             visible_apps.append(app)
             continue
         access_groups_lowercase = [access_group.lower()
@@ -45,19 +44,20 @@ def get_apps_raw(user_groups: Optional[List[str]] = None, all_apps: bool = False
     return visible_apps
 
 
-def app_is_invisible(user_groups: List[str], app_id: str) -> bool:
+def app_is_invisible(user_groups: list[str], app_id: str) -> bool:
     return not os.path.isdir(os.path.join(settings.model_dir, app_id)) or \
         app_id not in [app["id"] for app in get_apps_raw(
             user_groups=user_groups)]
 
 
-async def add_or_update_app(user_info: User, app_config: AppConfig, data: UploadFile, overwrite_data: bool = False, update=False) -> None:
+async def add_or_update_app(user_info: User, app_config: AppConfig,
+                            data: UploadFile, overwrite_data: bool = False, update=False) -> None:
     _, file_extension = os.path.splitext(data.filename)
     file_extension = file_extension.lower()
     if file_extension != ".miroapp":
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid file extension: {}. Please upload a valid miroapp file.".format(
-                file_extension)
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid file extension: {file_extension}. Please upload a valid miroapp file."
         )
     async with aiofiles.tempfile.NamedTemporaryFile("wb", suffix=".miroapp") as out_file:
         while content := await data.read(1024):
@@ -72,10 +72,10 @@ async def add_or_update_app(user_info: User, app_config: AppConfig, data: Upload
             "appPath": out_file.name,
             "overwriteData": overwrite_data,
             "update": update}).encode()
-        run_miro_proc(user_info, "addApp.R", input=proc_input)
+        run_miro_proc(user_info, "addApp.R", proc_input=proc_input)
 
 
 async def delete_app_internal(user_info: User, app_id: str, delete_data: bool = False) -> None:
     proc_input = json.dumps({"id": app_id,
                              "deleteData": delete_data}).encode()
-    run_miro_proc(user_info, "deleteApp.R", input=proc_input)
+    run_miro_proc(user_info, "deleteApp.R", proc_input=proc_input)
