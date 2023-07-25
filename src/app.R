@@ -332,7 +332,7 @@ if (is.null(errMsg)) {
       }
       rm(dbSchema)
     }
-    if (!exits("confFileVersion")) {
+    if (!exists("confFileVersion")) {
       # legacy app (<2.8.0), need to convert some configuration
       for (i in seq_along(modelIn)) {
         if (names(modelIn)[i] %in% sliderValues) {
