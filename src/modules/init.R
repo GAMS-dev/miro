@@ -370,6 +370,12 @@ if (is.null(errMsg)) {
         modelIn[[tolower(scalarsFileName)]]$symnames <- modelIn[[tolower(scalarsFileName)]]$symnames[-c(j)]
         if (!length(modelIn[[tolower(scalarsFileName)]]$symnames)) {
           # remove scalar table entirely if no scalar symbols are left
+          if (scalarsFileName %in% names(config$inputWidgets)) {
+            errMsg <- paste(errMsg,
+              "You specified an input widget for the scalars table.\nHowever, all scalar symbols are also defined as widgets, thus the scalar table was removed.\nPlease either remove the widget for the scalars table or some of the scalar widgets from your configuration.",
+              sep = "\n"
+            )
+          }
           modelIn[[tolower(scalarsFileName)]] <- NULL
           scalarIdOverwriteSheetOrder <- match(scalarsFileName, config$overwriteSheetOrder$input)
           if (!is.na(scalarIdOverwriteSheetOrder)) {
