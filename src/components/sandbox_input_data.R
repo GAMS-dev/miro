@@ -1087,7 +1087,7 @@ CustomWidget <- R6::R6Class("CustomWidget",
         defaultValue <- private$config$defaultValue
         if (length(defaultValue) &&
           nrow(defaultValue)) {
-          return(private$dataNeedsUpdate(defaultValue))
+          return(private$dataNeedsUpdate(defaultValue, private$symName))
         }
         noRows <- isolate(nrow(private$outputReactives[[private$symName]]()))
       } else {
@@ -1243,7 +1243,7 @@ CustomWidget <- R6::R6Class("CustomWidget",
         }
       ))
     },
-    dataNeedsUpdate = function(data, symName = NULL) {
+    dataNeedsUpdate = function(data, symName) {
       return(!identical(
         digest::digest(data, algo = "sha1"),
         digest::digest(isolate(private$outputReactives[[symName]]()), algo = "sha1")
