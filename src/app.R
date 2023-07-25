@@ -688,8 +688,8 @@ if (is.null(errMsg) && debugMode) {
           error = function(e) {
             errMsg <<- paste(errMsg,
               sprintf(
-                "No output function for custom renderer function: '%s' was found. Please make sure you define such a function.",
-                customRendererName
+                "No output function: '%s' for custom renderer function: '%s' was found. Please make sure you define such a function.",
+                customRendererOutput, customRendererName
               ),
               sep = "\n"
             )
