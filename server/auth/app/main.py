@@ -8,10 +8,13 @@ from app.config import settings_yml, settings
 from app.routers import login, apps, scenarios, configuration
 from app.utils.utils import use_route_names_as_operation_ids
 
-gunicorn_logger = logging.getLogger('gunicorn.error')
+gunicorn_error_logger = logging.getLogger("gunicorn.error")
+gunicorn_logger = logging.getLogger("gunicorn")
+uvicorn_access_logger = logging.getLogger("uvicorn.access")
+uvicorn_access_logger.handlers = gunicorn_error_logger.handlers
 
-logger.handlers = gunicorn_logger.handlers
-if __name__ != "main":
+logger.handlers = gunicorn_error_logger.handlers
+if __name__ != "__main__":
     logger.setLevel(gunicorn_logger.level)
 else:
     handler = logging.StreamHandler(sys.stdout)
