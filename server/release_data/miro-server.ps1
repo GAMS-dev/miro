@@ -117,7 +117,7 @@ function build
 function pull_images
 {
     "Pulling Docker images for GAMS MIRO Server"
-    docker-compose -f docker-compose.yml pull
+    docker compose -f docker-compose.yml pull
     if (!$?) { exit 1 }
 }
 
@@ -146,7 +146,7 @@ function update
 function launch
 {
     "Starting GAMS MIRO Server"
-    docker-compose -f docker-compose.yml up -d
+    docker compose -f docker-compose.yml up -d
     if (!$?) { exit 1 }
     "GAMS MIRO Server started."
 }
@@ -170,7 +170,7 @@ function stop
 {
     "Stopping GAMS MIRO Server"
     stop_proxies
-    & docker-compose -f docker-compose.yml down
+    & docker compose -f docker-compose.yml down
     if (!$?) { exit 1 }
     "GAMS MIRO Server stopped."
 }
@@ -178,7 +178,7 @@ function stop
 function restart
 {
     "Restarting GAMS MIRO Server"
-    docker-compose -f docker-compose.yml restart
+    docker compose -f docker-compose.yml restart
     if (!$?) { exit 1 }
     "GAMS MIRO Server restarted."
 }
@@ -193,7 +193,7 @@ function uninstall
         exit 0
     }
     stop
-    docker-compose -f docker-compose.yml down -v
+    docker compose -f docker-compose.yml down -v
     if (!$?) { exit 1 }
     Remove-Item data,models -Recurse -Confirm:$false -ErrorAction SilentlyContinue
     if (!$?) {

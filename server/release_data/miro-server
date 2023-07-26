@@ -2,6 +2,8 @@
 
 os=`uname`
 
+COMPOSE_BINARY=$(docker compose > /dev/null 2>&1 && echo "docker compose" || echo "docker-compose")
+
 install (){
     [ -f .env ] && grep -q "GMS_MIRO_DATABASE_PWD" .env || {
         local db_password=$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 40 ; echo)
@@ -115,7 +117,7 @@ build (){
 
 pull_images (){
     echo "Pulling Docker images for GAMS MIRO Server"
-    docker-compose -f docker-compose.yml pull || exit 1
+    $COMPOSE_BINARY -f docker-compose.yml pull || exit 1
 }
 
 update (){
@@ -142,7 +144,7 @@ update (){
 
 start (){
     echo "Starting GAMS MIRO Server"
-    docker-compose -f docker-compose.yml up -d || exit 1
+    $COMPOSE_BINARY -f docker-compose.yml up -d || exit 1
     echo "GAMS MIRO Server started."
 }
 
@@ -163,14 +165,14 @@ stop_proxies (){
 stop (){
     echo "Stopping GAMS MIRO Server"
     stop_proxies
-    docker-compose -f docker-compose.yml down || exit 1
+    $COMPOSE_BINARY -f docker-compose.yml down || exit 1
     echo "GAMS MIRO Server stopped."
 }
 
 restart (){
     echo "Restarting GAMS MIRO Server"
     export COMPOSE_IGNORE_ORPHANS=True
-    docker-compose -f docker-compose.yml restart || exit 1
+    $COMPOSE_BINARY -f docker-compose.yml restart || exit 1
     echo "GAMS MIRO Server restarted."
 }
 
@@ -182,7 +184,7 @@ uninstall (){
         exit 0
     }
     stop
-    docker-compose -f docker-compose.yml down -v || exit 1
+    $COMPOSE_BINARY -f docker-compose.yml down -v || exit 1
     rm -rf data models || {
         echo "Could not remove \"data\" and/or \"models\" directory. Check your permissions"
         exit 1
@@ -197,7 +199,7 @@ backup (){
         exit 1
     }
     BACKUP_TIME=`date +%d-%m-%Y"_"%H_%M_%S`
-    docker-compose -f docker-compose.yml exec db pg_dumpall -c -U GMSMASTER | gzip > ./backup/dump_db_${BACKUP_TIME}.gz || {
+    $COMPOSE_BINARY -f docker-compose.yml exec db pg_dumpall -c -U GMSMASTER | gzip > ./backup/dump_db_${BACKUP_TIME}.gz || {
         echo "Backup of the database failed"
         exit 1
     }
@@ -221,7 +223,7 @@ restore (){
     }
     start
     sleep 5
-    gunzip < ./backup/dump_db_${BACKUP_TIME}.gz | docker-compose exec -T db psql -b -q -U GMSMASTER -d template1 > /dev/null || {
+    gunzip < ./backup/dump_db_${BACKUP_TIME}.gz | $COMPOSE_BINARY exec -T db psql -b -q -U GMSMASTER -d template1 > /dev/null || {
         echo "Failed to restore database"
         exit 1
     }
