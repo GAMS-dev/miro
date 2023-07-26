@@ -41,6 +41,8 @@ if (!dir.create(logPathTests)) {
 }
 
 Sys.setenv(MIRO_LOG_PATH = logPathTests)
+Sys.setenv(MIRO_TEST_LOAD_TIMEOUT = "30000")
+Sys.setenv(MIRO_TEST_TIMEOUT = "10000")
 Sys.setenv(NOT_CRAN = "true")
 if (Sys.info()[["sysname"]] == "Darwin") {
   # need to set chromium path manually until https://github.com/rstudio/chromote/issues/91 is closed
@@ -69,4 +71,4 @@ testDir <- file.path(getwd(), "tests")
 # test_file("tests/testthat/test-hcube-module-ui.R", reporter = reporter, stop_on_failure = stopOnFailure)
 test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure)
 
-Sys.unsetenv("MIRO_LOG_PATH")
+Sys.unsetenv(c("MIRO_LOG_PATH", "MIRO_TEST_TIMEOUT", "MIRO_TEST_LOAD_TIMEOUT"))

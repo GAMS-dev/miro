@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = "solve_no_input_test", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "solve_no_input_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 app$set_inputs(btSolve = "click")
 expect_error(app$wait_for_js('$("#outputTableView").is(":visible")', timeout = 10000), NA)
 app$set_inputs(btSave = "click")

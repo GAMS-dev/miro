@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = "miroscenio_test", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "miroscenio_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 
 app$set_inputs(inputTabset = "inputTabset_7")
 Sys.sleep(1)

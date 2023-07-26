@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = "skip_scen_import_test", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "skip_scen_import_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 
 app$set_inputs(btImport = "click")
 Sys.sleep(1)
@@ -13,7 +17,11 @@ Sys.sleep(1)
 app$stop()
 
 # launch again. Import of data should be skipped now
-app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 app$set_inputs(btImport = "click")
 Sys.sleep(1)
 expect_identical(app$get_values()$input[["tb_importData"]], if (identical(Sys.getenv("MIRO_FORCE_SCEN_IMPORT"), "true")) {

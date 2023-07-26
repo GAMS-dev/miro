@@ -34,7 +34,11 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- AppDriver$new("../../", name = "input_table_validate_cols_test", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "input_table_validate_cols_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 Sys.sleep(1)
 app$run_js("HTMLWidgets.getInstance(document.getElementById('in_1')).hot.setDataAtCell(0,1,'6');")
 expect_false(app$get_js("$('#in_1 table tr:nth-child(1) td:nth-child(3)').hasClass('htInvalid')", timeout = 50L))
@@ -61,7 +65,11 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 Sys.sleep(0.5)
 expect_true(app$get_js("$('#errorMessages').html().includes('greater than the specified maximum value');", timeout = 50))
 Sys.sleep(0.5)
@@ -76,7 +84,11 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 Sys.sleep(0.5)
 expect_true(app$get_js("$('#errorMessages').html().includes('declared as choices and should be excluded');", timeout = 50))
 Sys.sleep(0.5)

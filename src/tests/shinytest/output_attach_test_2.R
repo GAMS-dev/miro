@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = "output_attach_test_2", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "output_attach_test_2", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 app$click(selector = "#btRemove1")
 Sys.sleep(1)
 app$click(selector = ".modal-footer .bt-gms-confirm")

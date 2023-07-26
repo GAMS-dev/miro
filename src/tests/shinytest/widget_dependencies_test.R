@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = "widget_dependencies_test", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "widget_dependencies_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 Sys.sleep(2L)
 allStocks <- c(
   "AAPL", "AXP", "BA", "CAT", "CSCO", "CVX", "DD", "DIS", "GE",

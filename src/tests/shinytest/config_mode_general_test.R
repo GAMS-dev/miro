@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = "config_mode_general_test", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "config_mode_general_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 
 Sys.sleep(1)
 jsonPath <- file.path("..", "model", "pickstock_configuration", "conf_pickstock_configuration")

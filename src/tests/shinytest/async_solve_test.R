@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = "async_solve_test", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "async_solve_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 
 authHeader <- paste0(
   "Basic ",
@@ -197,7 +201,11 @@ repeat{
     stop("Engine seems to be busy. Try again later.. (5)")
   }
 }
-app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 expect_error(app$wait_for_js("$(\"#shiny-modal button[onclick*='showJobsDialog']\").is(':visible')", timeout = 20000), NA)
 expect_error(app$click(selector = "#shiny-modal button[onclick*='showJobsDialog']"), NA)
 Sys.sleep(2)
@@ -288,7 +296,11 @@ repeat{
     stop("Engine seems to be busy. Try again later.. (6)")
   }
 }
-app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 expect_error(app$wait_for_js("$(\"#shiny-modal button[onclick*='showJobsDialog']\").is(':visible')", timeout = 20000), NA)
 expect_error(app$click(selector = "#shiny-modal button[onclick*='showJobsDialog']"), NA)
 Sys.sleep(1)

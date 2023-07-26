@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = "hcube_module_compare_test", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "hcube_module_compare_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 
 context("UI tests - Hypercube module - compare mode")
 

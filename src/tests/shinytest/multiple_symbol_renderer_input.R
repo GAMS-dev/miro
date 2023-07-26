@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = "multiple_symbol_renderer_input", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "multiple_symbol_renderer_input", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 app$set_inputs(btImport = "click")
 app$set_inputs(tb_importData = "tb_importData_local")
 app$upload_file(localInput = "../data/transport.gdx")

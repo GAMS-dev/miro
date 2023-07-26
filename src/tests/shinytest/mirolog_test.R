@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = "mirolog_test", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "mirolog_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 app$set_inputs(btImport = "click")
 Sys.sleep(1)
 app$set_inputs(tb_importData = "tb_importData_local", wait_ = FALSE)

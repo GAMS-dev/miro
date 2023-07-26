@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = paste0("compare_scen_tab_test_", Sys.getenv("GMSMODELNAME")), variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = paste0("compare_scen_tab_test_", Sys.getenv("GMSMODELNAME")), variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 
 app$click(selector = "a[data-value='scenarios']")
 app$click(selector = ".btSplitView button")

@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = "custom_exporter_test", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "custom_exporter_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 
 app$run_js("$('.navbar-custom-menu a.dropdown-toggle')[0].get(1).click();")
 app$click(selector = ".navbar-custom-menu a[onclick*='btExportScen']")

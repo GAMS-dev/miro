@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = "layout_expanded_tabs_test", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "layout_expanded_tabs_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 expect_true(app$get_js("$('#inputTabset > li').length===3", timeout = 50L))
 expect_true(app$get_js("$('#outputTabset > li').length===4", timeout = 50L))
 

@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = "permissions_save_as_test", variant = NULL, load_timeout = 100000)
+app <- AppDriver$new("../../",
+  name = "permissions_save_as_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 
 # get user name first
 app$set_inputs(btEditMeta = "click")

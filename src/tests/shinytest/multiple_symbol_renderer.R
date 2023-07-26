@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = "multiple_symbol_renderer", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "multiple_symbol_renderer", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 Sys.sleep(2L)
 expect_identical(app$get_values()$input[["in_1"]]$data[[1]], list("f", "freight in dollars per case per thousand miles", "NA"))
 app$set_inputs(btImport = "click")

@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = "load_from_db_test_manual_import", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "load_from_db_test_manual_import", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 
 Sys.sleep(2)
 app$run_js("HTMLWidgets.getInstance(document.getElementById('in_1')).hot.setDataAtCell(0,1,'GAMS');")

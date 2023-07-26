@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = "mirolog_test_custom_widget", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "mirolog_test_custom_widget", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 Sys.sleep(1)
 app$set_inputs(btImport = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)

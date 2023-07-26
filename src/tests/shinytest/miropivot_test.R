@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = "miropivot_test", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "miropivot_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 getData <- function(id = "tab_1_1") {
   return(jsonlite::fromJSON(app$get_values()$output[[paste0(id, "-miroPivot-pivotChart")]])$x$data$datasets$data)
 }

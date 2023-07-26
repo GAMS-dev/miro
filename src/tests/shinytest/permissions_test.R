@@ -1,12 +1,20 @@
 # launch user1
 Sys.setenv(MIRO_USERNAME = "testuser1")
 Sys.setenv(MIRO_USERGROUPS = "users")
-app <- AppDriver$new("../../", name = "permissions_test", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "permissions_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 
 user1 <- Sys.getenv("MIRO_USERNAME")
 # launch user2
 Sys.setenv(MIRO_USERNAME = "testuser2")
-app2 <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
+app2 <- AppDriver$new("../../",
+  variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 
 user2 <- Sys.getenv("MIRO_USERNAME")
 Sys.unsetenv("MIRO_USERNAME")
@@ -163,7 +171,11 @@ app$set_inputs(btSave = "click")
 Sys.sleep(1)
 app$stop()
 Sys.setenv(MIRO_USERNAME = "testuser1")
-app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 Sys.sleep(2)
 app$set_inputs(btEditMeta = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)

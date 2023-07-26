@@ -12,7 +12,11 @@ writeConfig <- function() {
 }
 
 # default = split view
-app <- AppDriver$new("../../", name = "default_compare_test", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "default_compare_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 
 app$click(selector = 'a[data-value="scenarios"]')
 expect_error(app$click(selector = "#scenSplit1_open > div:nth-child(2) > button"), NA)
@@ -24,7 +28,11 @@ app$stop()
 # default = tab view
 configJSON[["defCompMode"]] <- "tab"
 writeConfig()
-app <- AppDriver$new("../../", name = "default_compare_test", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "default_compare_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 
 app$click(selector = 'a[data-value="scenarios"]')
 expect_error(app$click(selector = "#scenTabset #btLoadScen"), NA)
@@ -34,7 +42,11 @@ app$stop()
 # default = pivot view
 configJSON[["defCompMode"]] <- "pivot"
 writeConfig()
-app <- AppDriver$new("../../", name = "default_compare_test", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "default_compare_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 
 app$click(selector = 'a[data-value="scenarios"]')
 expect_error(app$click(selector = "#pivotCompBtWrapper button"), NA)

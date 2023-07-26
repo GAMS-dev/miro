@@ -9,7 +9,11 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- AppDriver$new("../../", name = "input_table_dropdowncols_test", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "input_table_dropdowncols_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 Sys.sleep(0.5)
 app$expect_values(output = "errorMessages")
 Sys.sleep(0.5)
@@ -20,7 +24,11 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 Sys.sleep(0.5)
 expect_true(app$get_js("$('#errorMessages').html().includes('bla');", timeout = 50))
 Sys.sleep(0.5)
@@ -32,7 +40,11 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 Sys.sleep(0.5)
 app$set_inputs(btImport = "click")
 app$set_inputs(tb_importData = "tb_importData_local")
@@ -50,7 +62,11 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 Sys.sleep(1)
 app$set_inputs(btImport = "click")
 app$set_inputs(tb_importData = "tb_importData_local")
@@ -68,7 +84,11 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 Sys.sleep(1)
 app$set_inputs(btImport = "click")
 app$set_inputs(tb_importData = "tb_importData_local")
@@ -86,7 +106,11 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
 
-app <- AppDriver$new("../../", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 Sys.sleep(1)
 app$set_inputs(btImport = "click")
 app$set_inputs(tb_importData = "tb_importData_local")

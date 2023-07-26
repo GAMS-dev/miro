@@ -1,4 +1,8 @@
-app <- AppDriver$new("../../", name = "symbol_order_test", variant = NULL, load_timeout = 20000)
+app <- AppDriver$new("../../",
+  name = "symbol_order_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
 
 # input symbol order
 expect_true(app$get_js("$('a[data-value=\"inputTabset_1\"]').text()==='Scalars';", timeout = 50))
