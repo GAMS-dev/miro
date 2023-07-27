@@ -209,6 +209,11 @@ ScenData <- R6Class("ScenData", public = list(
       symNames = symName, showProgress = showProgress,
       refId = refId, registerRef = FALSE
     )
+    if (identical(symName, scalarsOutName)) {
+      return(lapply(as.character(scenIds), function(scenId) {
+        private$cachedData[[scenId]][["scalar"]]
+      }))
+    }
     return(lapply(as.character(scenIds), function(scenId) {
       private$cachedData[[scenId]][["data"]][[symName]]
     }))
