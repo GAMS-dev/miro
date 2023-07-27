@@ -879,7 +879,9 @@ colTypeVectorToString <- function(colTypeVector) {
   return(paste(ret, collapse = ""))
 }
 fixColTypes <- function(data, colTypes) {
-  stopifnot(identical(length(data), nchar(colTypes)))
+  if (!identical(length(data), nchar(colTypes))) {
+    stop_custom("error_bad_format", "Invalid length of data")
+  }
 
   data[] <- lapply(seq_along(data), function(i) {
     colType <- substr(colTypes, i, i)

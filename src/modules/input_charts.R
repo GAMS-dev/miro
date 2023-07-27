@@ -58,11 +58,18 @@ renderInputGraph <- function(i) {
   }
   getInputDataset <- function(symName) {
     datasetTmp <- isolate(sandboxInputData$getData(symName)())
-    noHeaders <- length(modelIn[[symName]]$headers)
-    if (noHeaders > 0L &&
-      (!identical(length(datasetTmp), noHeaders) ||
-        !hasValidHeaderTypes(datasetTmp, modelIn[[symName]]$colTypes))) {
-      stop(sprintf("No valid input data found for symbol: %s.", symName), call. = FALSE)
+    if (length(modelIn[[symName]]$headers) > 0L) {
+      tryCatch(
+        {
+          datasetTmp <- fixColTypes(datasetTmp, modelIn[[symName]]$colTypes)
+        },
+        error_bad_format = function(e) {
+          stop(sprintf(
+            "Input data found for symbol: %s has wrong number of columns (expected: %d, actual: %d).",
+            symName, nchar(modelIn[[symName]]$colTypes), length(datasetTmp)
+          ), call. = FALSE)
+        }
+      )
     }
     names(datasetTmp) <- names(modelIn[[symName]]$headers)
     return(datasetTmp)

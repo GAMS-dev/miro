@@ -3,10 +3,17 @@ getInputDataFromSandbox <- function() {
   dataTmp <- lapply(modelInFileNames, function(symName) {
     if (symName %in% names(modelIn)) {
       datasetTmp <- isolate(sandboxInputData$getData(symName)())
-      if (!identical(length(datasetTmp), length(modelIn[[symName]]$headers)) ||
-        !hasValidHeaderTypes(datasetTmp, modelIn[[symName]]$colTypes)) {
-        stop(sprintf("No valid input data found for symbol: %s.", symName), call. = FALSE)
-      }
+      tryCatch(
+        {
+          datasetTmp <- fixColTypes(datasetTmp, modelIn[[symName]]$colTypes)
+        },
+        error_bad_format = function(e) {
+          stop(sprintf(
+            "Input data found for symbol: %s has wrong number of columns (expected: %d, actual: %d).",
+            symName, nchar(modelIn[[symName]]$colTypes), length(datasetTmp)
+          ), call. = FALSE)
+        }
+      )
       names(datasetTmp) <- names(modelIn[[symName]]$headers)
       return(datasetTmp)
     }
