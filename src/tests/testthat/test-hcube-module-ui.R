@@ -57,6 +57,7 @@ configJSON$activateModules$loadLocal <- TRUE
 configJSON$activateModules$hcube <- TRUE
 configJSON$activateModules$attachments <- TRUE
 configJSON$extraClArgs <- c(configJSON$extraClArgs, "--sleep=1")
+configJSON$defCompMode <- "pivot"
 
 configJSON$inputWidgets[["_gmspar_sliderrange"]]$noHcube <- FALSE
 configJSON$inputWidgets[["trainingdays"]]$noHcube <- TRUE
