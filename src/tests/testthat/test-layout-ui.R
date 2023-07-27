@@ -22,6 +22,7 @@ configJSON$layoutSettings <- list(
   maxTabsExpandedSplitComp = 1L,
   maxTabsExpandedTabComp = 6L
 )
+configJSON$defCompMode <- "tab"
 jsonlite::write_json(configJSON, file.path(configJSONPath, "pickstock_configuration.json"),
   pretty = TRUE, auto_unbox = TRUE, null = "null"
 )
