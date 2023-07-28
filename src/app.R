@@ -763,7 +763,7 @@ if (miroBuildOnly) {
       "outputTabTitles", "modelInTemplate", "scenDataTemplate",
       "modelInTabularData", "modelInTabularDataBase", "externalInputConfig", "tabSheetMap",
       "modelInFileNames", "idsIn",
-      "configGraphsOut",
+      "configGraphsOut", "confFileVersion",
       "configGraphsIn", "inputTabs", "inputTabTitles",
       "scenInputTabs", "scenInputTabTitles", "isGroupOfSheets",
       "groupSheetToTabIdMap", "scalarsInTemplate", "modelInWithDep",
