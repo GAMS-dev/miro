@@ -24,7 +24,7 @@ Worker <- R6Class("Worker", public = list(
             if (length(apiInfoGlobal)) {
               apiInfo <- apiInfoGlobal
             } else {
-              apiInfo <- httr::content(httr::GET(url = paste0(metadata$url, "/version"), httr::timeout(4L)),
+              apiInfo <- httr::content(httr::GET(url = paste0(metadata$url, "/version"), httr::timeout(5L)),
                 type = "application/json",
                 encoding = "utf-8"
               )
@@ -269,7 +269,7 @@ Worker <- R6Class("Worker", public = list(
             Timestamp = as.character(Sys.time(), usetz = TRUE),
             "X-Fields" = "name"
           ),
-          timeout(3L)
+          timeout(5L)
         )
         retContent <- tryCatch(
           {
@@ -1395,7 +1395,7 @@ Worker <- R6Class("Worker", public = list(
             Authorization = private$authHeader,
             Timestamp = as.character(Sys.time(), usetz = TRUE)
           ),
-          timeout(3L)
+          timeout(5L)
         )))
       },
       error = function(e) {
@@ -1537,7 +1537,7 @@ Worker <- R6Class("Worker", public = list(
             Authorization = private$authHeader,
             Timestamp = as.character(Sys.time(), usetz = TRUE)
           ),
-          timeout(2L)
+          timeout(5L)
         )
         statusCode <- status_code(ret)
       },
@@ -1638,7 +1638,7 @@ Worker <- R6Class("Worker", public = list(
             Timestamp = as.character(Sys.time(), usetz = TRUE),
             `X-Fields` = "queue_position"
           ),
-          timeout(2L)
+          timeout(5L)
         )
         if (identical(status_code(ret), 200L)) {
           tryCatch(
@@ -1984,7 +1984,7 @@ Worker <- R6Class("Worker", public = list(
         Authorization = private$authHeader,
         Timestamp = as.character(Sys.time(), usetz = TRUE)
       ),
-      timeout(2L)
+      timeout(5L)
     ))$token
 
     private$metadata$password <- sessionToken
