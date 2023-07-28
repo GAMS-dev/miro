@@ -190,10 +190,11 @@ server_admin <- function(input, output, session) {
     ioConfig$inputDsNamesBase
   )
   isMobileDevice <- FALSE
-  sandboxInputData <- SandboxInputData$new(
-    modelIn, isMobileDevice, input, output, session, rv,
-    attachments, views
-  )
+  sandboxInputData <- list(hasData = function(symName) {
+    return(FALSE)
+  }, setData = function(symName, data) {
+    return()
+  })
   session$sendCustomMessage(
     "gms-setGAMSSymbols",
     list(
