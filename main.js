@@ -177,6 +177,7 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
       const incAmt = 0.8 / zipfile.entryCount;
       let fileCnt = 0;
       let skipCntAppInfo = 0;
+      let appLogoFound = false;
       const appInfoContentPromises = [];
       newAppConf = {
         modesAvailable: [],
@@ -193,7 +194,7 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
         fileCnt += 1;
         mainWindow.setProgressBar(fileCnt * incAmt);
         appFileNames.push(entry.fileName);
-        if (skipCntAppInfo < 3) {
+        if (skipCntAppInfo < 2 || appLogoFound === false) {
           const filenameInZip = path.basename(entry.fileName.toLowerCase());
           const isInStaticDir = path.dirname(entry.fileName).startsWith('static_');
           if (filenameInZip === 'miroapp.json' || (isInStaticDir && filenameInZip === 'app_info.json')) {
@@ -232,9 +233,15 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
             }));
           }
           if (isInStaticDir) {
-            const logoExt = entry.fileName.toLowerCase().match(/.*_logo\.(jpg|jpeg|png)$/);
+            const logoExt = filenameInZip.match(/.*_logo\.(jpg|jpeg|png)$/);
             if (logoExt) {
               newAppConf.logoPath = entry.fileName;
+              if (appLogoFound === true) {
+                if (filenameInZip !== `app_logo.${logoExt[1]}`) {
+                  // multiple logos in app found, using app_logo if available
+                  return;
+                }
+              }
               log.debug('Logo in new MIRO app found.');
               const logoPathTmp = path.join(app.getPath('temp'), `logo.${logoExt[1]}`);
               zipfile.openReadStream(entry, (error, readStream) => {
@@ -249,7 +256,7 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
                   }
                 });
               });
-              skipCntAppInfo += 1;
+              appLogoFound = true;
             }
           }
         }
