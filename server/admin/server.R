@@ -374,7 +374,7 @@ server <- function(input, output, session) {
             stop("Logo file not found.", call. = FALSE)
           }
           newLogoName <- getLogoName(modelId, logoPath)
-          addAppLogo(appId, modelId, logoPath)
+          addAppLogo(appId, logoPath)
         }
 
         newAppEnv <- NULL
