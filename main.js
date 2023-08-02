@@ -235,13 +235,12 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
           if (isInStaticDir) {
             const logoExt = filenameInZip.match(/.*_logo\.(jpg|jpeg|png)$/);
             if (logoExt) {
-              newAppConf.logoPath = entry.fileName;
-              if (appLogoFound === true) {
-                if (filenameInZip !== `app_logo.${logoExt[1]}`) {
-                  // multiple logos in app found, using app_logo if available
-                  return;
-                }
+              if (appLogoFound === true && filenameInZip !== `app_logo.${logoExt[1]}`) {
+                // multiple logos in app found, using app_logo if available
+                return;
               }
+              appLogoFound = true;
+              newAppConf.logoPath = entry.fileName;
               log.debug('Logo in new MIRO app found.');
               const logoPathTmp = path.join(app.getPath('temp'), `logo.${logoExt[1]}`);
               zipfile.openReadStream(entry, (error, readStream) => {
@@ -256,7 +255,6 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
                   }
                 });
               });
-              appLogoFound = true;
             }
           }
         }
