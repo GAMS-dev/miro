@@ -704,10 +704,15 @@ if (is.null(errMsg) && debugMode) {
   }
   if (miroBuildOnly) {
     for (el in c(externalInputConfig, datasetsRemoteExport)) {
-      for (sym in el) {
-        if (length(sym$functionName)) {
-          listOfCustomRenderers$push(sym$functionName)
+      if ("templates" %in% names(el)) {
+        # legacy remote importers/exporters
+        for (sym in el) {
+          if (length(sym$functionName)) {
+            listOfCustomRenderers$push(sym$functionName)
+          }
         }
+      } else if (length(el$functionName)) {
+        listOfCustomRenderers$push(el$functionName)
       }
     }
   }
