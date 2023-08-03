@@ -415,7 +415,7 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL, selectLocalTab = FA
             lang$nav$dialogImport$okButton
           )
         )
-      ), icon = icon("external-link-alt")
+      ), icon = icon("up-right-from-square")
     )
   }
   if (config$activateModules$loadLocal) {
