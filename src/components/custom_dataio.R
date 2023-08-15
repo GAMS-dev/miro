@@ -48,6 +48,10 @@ CustomDataIO <- R6Class("CustomDataIO", public = list(
           metadata = sandboxScenario$getMetadata(),
           customRendererDir = customRendererDir
         )
+        if (is.null(private$remoteData)) {
+          flog.warn("The custom importer function returned NULL. Please avoid this and output an error instead (e.g. with abortSafe(message)).")
+          private$remoteData <- list()
+        }
       }
       return(private$remoteData[[dsName]])
     }
