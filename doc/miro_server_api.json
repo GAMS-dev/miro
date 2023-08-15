@@ -1,5 +1,5 @@
 {
-    "openapi": "3.0.2",
+    "openapi": "3.1.0",
     "info": {
         "title": "MIRO Server API",
         "description": "REST API for managing MIRO apps and scenario data",
@@ -45,11 +45,11 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "title": "Response Get Apps Apps  Get",
-                                    "type": "array",
                                     "items": {
                                         "$ref": "#/components/schemas/AppConfig"
-                                    }
+                                    },
+                                    "type": "array",
+                                    "title": "Response Get Apps Apps  Get"
                                 }
                             }
                         }
@@ -155,29 +155,37 @@
                 "summary": "Update an existing MIRO app",
                 "description": "Update a MIRO app (requires write permissions on namespace).\n\nThe app as well as its metadata will be overwritten. This means that you should specify all parameters.\nFor example, if you do not specify `access_groups`, no access groups will be assigned to the app.\nThis will result in it being visible to everyone.",
                 "operationId": "update_app",
+                "security": [
+                    {
+                        "HTTPBasic": []
+                    },
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
                 "parameters": [
                     {
-                        "description": "The ID of the app to update.",
+                        "name": "app_id",
+                        "in": "path",
                         "required": true,
                         "schema": {
-                            "title": "App Id",
-                            "maxLength": 60,
                             "type": "string",
-                            "description": "The ID of the app to update."
+                            "maxLength": 60,
+                            "description": "The ID of the app to update.",
+                            "title": "App Id"
                         },
-                        "name": "app_id",
-                        "in": "path"
+                        "description": "The ID of the app to update."
                     }
                 ],
                 "requestBody": {
+                    "required": true,
                     "content": {
                         "multipart/form-data": {
                             "schema": {
                                 "$ref": "#/components/schemas/Body_update_app_apps__app_id__put"
                             }
                         }
-                    },
-                    "required": true
+                    }
                 },
                 "responses": {
                     "200": {
@@ -189,12 +197,12 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized",
-                        "message": "Unauthorized"
+                        "message": "Unauthorized",
+                        "description": "Unauthorized"
                     },
                     "403": {
-                        "description": "Forbidden",
-                        "message": "Unauthorized access"
+                        "message": "Unauthorized access",
+                        "description": "Forbidden"
                     },
                     "404": {
                         "description": "An app with this ID does not exist"
@@ -215,15 +223,7 @@
                             }
                         }
                     }
-                },
-                "security": [
-                    {
-                        "HTTPBasic": []
-                    },
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
+                }
             },
             "delete": {
                 "tags": [
@@ -232,30 +232,38 @@
                 "summary": "Remove an existing MIRO app",
                 "description": "Remove an existing MIRO app (requires write permissions on namespace).",
                 "operationId": "delete_app",
-                "parameters": [
+                "security": [
                     {
-                        "description": "The ID of the app to delete.",
-                        "required": true,
-                        "schema": {
-                            "title": "App Id",
-                            "maxLength": 60,
-                            "type": "string",
-                            "description": "The ID of the app to delete."
-                        },
-                        "name": "app_id",
-                        "in": "path"
+                        "HTTPBasic": []
                     },
                     {
-                        "description": "Whether to delete all scenario data of this app.",
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "app_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 60,
+                            "description": "The ID of the app to delete.",
+                            "title": "App Id"
+                        },
+                        "description": "The ID of the app to delete."
+                    },
+                    {
+                        "name": "delete_data",
+                        "in": "query",
                         "required": false,
                         "schema": {
-                            "title": "Delete Data",
                             "type": "boolean",
                             "description": "Whether to delete all scenario data of this app.",
-                            "default": false
+                            "default": false,
+                            "title": "Delete Data"
                         },
-                        "name": "delete_data",
-                        "in": "query"
+                        "description": "Whether to delete all scenario data of this app."
                     }
                 ],
                 "responses": {
@@ -268,12 +276,12 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized",
-                        "message": "Unauthorized"
+                        "message": "Unauthorized",
+                        "description": "Unauthorized"
                     },
                     "403": {
-                        "description": "Forbidden",
-                        "message": "Unauthorized access"
+                        "message": "Unauthorized access",
+                        "description": "Forbidden"
                     },
                     "404": {
                         "description": "An app with this ID does not exist"
@@ -291,15 +299,7 @@
                             }
                         }
                     }
-                },
-                "security": [
-                    {
-                        "HTTPBasic": []
-                    },
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
+                }
             }
         },
         "/scenarios/{app_id}/": {
@@ -310,18 +310,26 @@
                 "summary": "Get list of all visible scenarios",
                 "description": "Get all scenarios for this app that are visible to you.\n\nA scenario object contains the following fields:\n\n- **name**: The name of the scenario\n- **owner**: The owner of this scenario\n- **tags**: The tags of the scenario\n- **last_modified**: The timestamp when the scenario was last modified\n- **read_perm**: Array of users/groups that have permissions to read the scenario data (groups are indicated by a leading hash `#`)\n- **write_perm**: Array of users/groups that have permissions to modify the scenario data (groups are indicated by a leading hash `#`)\n- **exec_perm**: Array of users/groups that have permissions to execute the scenario (groups are indicated by a leading hash `#`)",
                 "operationId": "get_scenario_list",
+                "security": [
+                    {
+                        "HTTPBasic": []
+                    },
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
                 "parameters": [
                     {
-                        "description": "The ID of the app whose data you want to operate on.",
+                        "name": "app_id",
+                        "in": "path",
                         "required": true,
                         "schema": {
-                            "title": "App Id",
-                            "maxLength": 60,
                             "type": "string",
-                            "description": "The ID of the app whose data you want to operate on."
+                            "maxLength": 60,
+                            "description": "The ID of the app whose data you want to operate on.",
+                            "title": "App Id"
                         },
-                        "name": "app_id",
-                        "in": "path"
+                        "description": "The ID of the app whose data you want to operate on."
                     }
                 ],
                 "responses": {
@@ -330,26 +338,26 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "title": "Response Get Scenario List Scenarios  App Id   Get",
                                     "type": "array",
                                     "items": {
                                         "$ref": "#/components/schemas/ScenarioConfig"
-                                    }
+                                    },
+                                    "title": "Response Get Scenario List Scenarios  App Id   Get"
                                 }
                             }
                         }
                     },
                     "401": {
-                        "description": "Unauthorized",
-                        "message": "Unauthorized"
+                        "message": "Unauthorized",
+                        "description": "Unauthorized"
                     },
                     "403": {
-                        "description": "Forbidden",
-                        "message": "Unauthorized access"
+                        "message": "Unauthorized access",
+                        "description": "Forbidden"
                     },
                     "404": {
-                        "description": "Not Found",
-                        "message": "Not found"
+                        "message": "Not found",
+                        "description": "Not Found"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -364,96 +372,7 @@
                             }
                         }
                     }
-                },
-                "security": [
-                    {
-                        "HTTPBasic": []
-                    },
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
-            },
-            "post": {
-                "tags": [
-                    "scenarios"
-                ],
-                "summary": "Add a new scenario",
-                "description": "Add a new scenario.",
-                "operationId": "add_scenario",
-                "parameters": [
-                    {
-                        "description": "The ID of the app whose data you want to operate on.",
-                        "required": true,
-                        "schema": {
-                            "title": "App Id",
-                            "maxLength": 60,
-                            "type": "string",
-                            "description": "The ID of the app whose data you want to operate on."
-                        },
-                        "name": "app_id",
-                        "in": "path"
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Body_add_scenario_scenarios__app_id___post"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "201": {
-                        "description": "Scenario successfully added",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "message": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "message": "Unauthorized access"
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "message": "Not found"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    },
-                    "409": {
-                        "description": "A scenario with this name already exists"
-                    },
-                    "423": {
-                        "description": "The scenario is locked and cannot be overwritten"
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBasic": []
-                    },
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
+                }
             },
             "delete": {
                 "tags": [
@@ -462,42 +381,57 @@
                 "summary": "Delete an existing scenario",
                 "description": "Delete an existing scenario.",
                 "operationId": "delete_scenario",
+                "security": [
+                    {
+                        "HTTPBasic": []
+                    },
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
                 "parameters": [
                     {
-                        "description": "The ID of the app whose data you want to operate on.",
-                        "required": true,
-                        "schema": {
-                            "title": "App Id",
-                            "maxLength": 60,
-                            "type": "string",
-                            "description": "The ID of the app whose data you want to operate on."
-                        },
                         "name": "app_id",
-                        "in": "path"
-                    },
-                    {
-                        "description": "The name of the scenario you want to download.",
+                        "in": "path",
                         "required": true,
                         "schema": {
-                            "title": "Name",
-                            "maxLength": 63,
                             "type": "string",
-                            "description": "The name of the scenario you want to download."
+                            "maxLength": 60,
+                            "description": "The ID of the app whose data you want to operate on.",
+                            "title": "App Id"
                         },
-                        "name": "name",
-                        "in": "query"
+                        "description": "The ID of the app whose data you want to operate on."
                     },
                     {
-                        "description": "The owner of the scenario you want to download (by default, the logged in user).",
+                        "name": "name",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 63,
+                            "description": "The name of the scenario you want to download.",
+                            "title": "Name"
+                        },
+                        "description": "The name of the scenario you want to download."
+                    },
+                    {
+                        "name": "owner",
+                        "in": "query",
                         "required": false,
                         "schema": {
-                            "title": "Owner",
-                            "maxLength": 70,
-                            "type": "string",
-                            "description": "The owner of the scenario you want to download (by default, the logged in user)."
+                            "anyOf": [
+                                {
+                                    "type": "string",
+                                    "maxLength": 70
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "description": "The owner of the scenario you want to download (by default, the logged in user).",
+                            "title": "Owner"
                         },
-                        "name": "owner",
-                        "in": "query"
+                        "description": "The owner of the scenario you want to download (by default, the logged in user)."
                     }
                 ],
                 "responses": {
@@ -510,12 +444,12 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized",
-                        "message": "Unauthorized"
+                        "message": "Unauthorized",
+                        "description": "Unauthorized"
                     },
                     "403": {
-                        "description": "Forbidden",
-                        "message": "Unauthorized access"
+                        "message": "Unauthorized access",
+                        "description": "Forbidden"
                     },
                     "404": {
                         "description": "A scenario with this name does not exist"
@@ -539,7 +473,15 @@
                             }
                         }
                     }
-                },
+                }
+            },
+            "post": {
+                "tags": [
+                    "scenarios"
+                ],
+                "summary": "Add a new scenario",
+                "description": "Add a new scenario.",
+                "operationId": "add_scenario",
                 "security": [
                     {
                         "HTTPBasic": []
@@ -547,7 +489,72 @@
                     {
                         "HTTPBearer": []
                     }
-                ]
+                ],
+                "parameters": [
+                    {
+                        "name": "app_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 60,
+                            "description": "The ID of the app whose data you want to operate on.",
+                            "title": "App Id"
+                        },
+                        "description": "The ID of the app whose data you want to operate on."
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_add_scenario_scenarios__app_id___post"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Scenario successfully added",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "message": "Unauthorized",
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "message": "Unauthorized access",
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "message": "Not found",
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "409": {
+                        "description": "A scenario with this name already exists"
+                    },
+                    "423": {
+                        "description": "The scenario is locked and cannot be overwritten"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/scenarios/{app_id}/download": {
@@ -558,45 +565,42 @@
                 "summary": "Download a scenario",
                 "description": "Download a scenario.",
                 "operationId": "download_scenario",
+                "security": [
+                    {
+                        "HTTPBasic": []
+                    },
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
                 "parameters": [
                     {
-                        "description": "The ID of the app whose data you want to operate on.",
-                        "required": true,
-                        "schema": {
-                            "title": "App Id",
-                            "maxLength": 60,
-                            "type": "string",
-                            "description": "The ID of the app whose data you want to operate on."
-                        },
                         "name": "app_id",
-                        "in": "path"
-                    },
-                    {
-                        "description": "The name of the scenario you want to download.",
+                        "in": "path",
                         "required": true,
                         "schema": {
-                            "title": "Name",
-                            "maxLength": 63,
                             "type": "string",
-                            "description": "The name of the scenario you want to download."
+                            "maxLength": 60,
+                            "description": "The ID of the app whose data you want to operate on.",
+                            "title": "App Id"
                         },
+                        "description": "The ID of the app whose data you want to operate on."
+                    },
+                    {
                         "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "description": "The owner of the scenario you want to download (by default, the logged in user).",
-                        "required": false,
+                        "in": "query",
+                        "required": true,
                         "schema": {
-                            "title": "Owner",
-                            "maxLength": 70,
                             "type": "string",
-                            "description": "The owner of the scenario you want to download (by default, the logged in user)."
+                            "maxLength": 63,
+                            "description": "The name of the scenario you want to download.",
+                            "title": "Name"
                         },
-                        "name": "owner",
-                        "in": "query"
+                        "description": "The name of the scenario you want to download."
                     },
                     {
-                        "description": "In which file type should the scenario be exported?",
+                        "name": "file_type",
+                        "in": "query",
                         "required": false,
                         "schema": {
                             "allOf": [
@@ -605,10 +609,29 @@
                                 }
                             ],
                             "description": "In which file type should the scenario be exported?",
-                            "default": "miroscen"
+                            "default": "miroscen",
+                            "title": "File Type"
                         },
-                        "name": "file_type",
-                        "in": "query"
+                        "description": "In which file type should the scenario be exported?"
+                    },
+                    {
+                        "name": "owner",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string",
+                                    "maxLength": 70
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "description": "The owner of the scenario you want to download (by default, the logged in user).",
+                            "title": "Owner"
+                        },
+                        "description": "The owner of the scenario you want to download (by default, the logged in user)."
                     }
                 ],
                 "responses": {
@@ -621,16 +644,16 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized",
-                        "message": "Unauthorized"
+                        "message": "Unauthorized",
+                        "description": "Unauthorized"
                     },
                     "403": {
-                        "description": "Forbidden",
-                        "message": "Unauthorized access"
+                        "message": "Unauthorized access",
+                        "description": "Forbidden"
                     },
                     "404": {
-                        "description": "Not Found",
-                        "message": "Not found"
+                        "message": "Not found",
+                        "description": "Not Found"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -638,15 +661,7 @@
                     "422": {
                         "description": "Duplicate records found when writing GDX file"
                     }
-                },
-                "security": [
-                    {
-                        "HTTPBasic": []
-                    },
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
+                }
             }
         },
         "/login": {
@@ -705,7 +720,7 @@
                 ],
                 "summary": "Log in user via OpenID Connect and return login info",
                 "description": "Log in user and return login info:\n\n- **token**: Bearer access token that can be used for authentication\n- **roles**: Labels of user groups that user can see\n- **permissions**: Permissions (octal) of the user in the MIRO Server namespace\n- **username**: GAMS Engine username",
-                "operationId": "login",
+                "operationId": "login_oidc",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -751,300 +766,399 @@
     "components": {
         "schemas": {
             "AppConfig": {
-                "title": "AppConfig",
-                "required": [
-                    "access_groups"
-                ],
-                "type": "object",
                 "properties": {
                     "id": {
-                        "title": "Id",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Id"
                     },
                     "display_name": {
-                        "title": "Display Name",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Display Name"
                     },
                     "description": {
-                        "title": "Description",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description"
                     },
                     "access_groups": {
-                        "title": "Access Groups",
-                        "type": "array",
                         "items": {
                             "type": "string"
-                        }
+                        },
+                        "type": "array",
+                        "title": "Access Groups"
                     }
-                }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "display_name",
+                    "description",
+                    "access_groups"
+                ],
+                "title": "AppConfig"
             },
             "AuthRequest": {
-                "title": "AuthRequest",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "title": "Username"
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "Password"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "username",
                     "password"
                 ],
-                "type": "object",
-                "properties": {
-                    "username": {
-                        "title": "Username",
-                        "type": "string"
-                    },
-                    "password": {
-                        "title": "Password",
-                        "type": "string"
-                    }
-                }
+                "title": "AuthRequest"
             },
             "AuthResponse": {
-                "title": "AuthResponse",
+                "properties": {
+                    "token": {
+                        "type": "string",
+                        "title": "Token"
+                    },
+                    "roles": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Roles"
+                    },
+                    "permissions": {
+                        "type": "string",
+                        "title": "Permissions"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "token",
                     "roles",
                     "permissions"
                 ],
-                "type": "object",
-                "properties": {
-                    "token": {
-                        "title": "Token",
-                        "type": "string"
-                    },
-                    "roles": {
-                        "title": "Roles",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "permissions": {
-                        "title": "Permissions",
-                        "type": "string"
-                    }
-                }
+                "title": "AuthResponse"
             },
             "Body_add_app_apps__post": {
-                "title": "Body_add_app_apps__post",
-                "required": [
-                    "app_data"
-                ],
-                "type": "object",
                 "properties": {
-                    "app_id": {
-                        "title": "App Id",
-                        "maxLength": 60,
+                    "app_data": {
                         "type": "string",
+                        "format": "binary",
+                        "title": "App Data",
+                        "description": "A valid MIROAPP file deployed for a multi-user environment."
+                    },
+                    "app_id": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 60
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "App Id",
                         "description": "The ID of this app. If no ID is specified, the default ID (filename of the main `.gms` file in lower case) is used. This ID must be unique among all apps registered on this instance of MIRO Server."
                     },
                     "display_name": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 40
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Display Name",
-                        "maxLength": 40,
-                        "type": "string",
                         "description": "The name of the app as it appears in the library."
                     },
                     "description": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 200
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Description",
-                        "maxLength": 200,
-                        "type": "string",
                         "description": "The description of the app as it appears in the library."
                     },
                     "access_groups": {
-                        "title": "Access Groups",
-                        "type": "array",
                         "items": {
                             "type": "string"
                         },
-                        "description": "User groups that can access this app. If no groups are specified, it is visible to everyone who has access to your MIRO Server instance.",
-                        "default": []
+                        "type": "array",
+                        "title": "Access Groups",
+                        "description": "User groups that can access this app. If no groups are specified, it is visible to everyone who has access to your MIRO Server instance."
                     },
                     "overwrite_data": {
-                        "title": "Overwrite Data",
                         "type": "boolean",
+                        "title": "Overwrite Data",
                         "description": "Whether to overwrite existing scenario data (from a previous installation of an app with the same ID).",
                         "default": false
-                    },
-                    "app_data": {
-                        "title": "App Data",
-                        "type": "string",
-                        "description": "A valid MIROAPP file deployed for a multi-user environment.",
-                        "format": "binary"
                     }
-                }
+                },
+                "type": "object",
+                "required": [
+                    "app_data"
+                ],
+                "title": "Body_add_app_apps__post"
             },
             "Body_add_scenario_scenarios__app_id___post": {
-                "title": "Body_add_scenario_scenarios__app_id___post",
-                "required": [
-                    "scenario_data"
-                ],
-                "type": "object",
                 "properties": {
                     "scenario_data": {
-                        "title": "Scenario Data",
                         "type": "string",
-                        "description": "A file that contains scenario data. Supported file types are: gdx,miroscen,xlsx,xlsm,xls,zip",
-                        "format": "binary"
+                        "format": "binary",
+                        "title": "Scenario Data",
+                        "description": "A file that contains scenario data. Supported file types are: gdx,miroscen,xlsx,xlsm,xls,zip"
                     },
                     "overwrite_data": {
-                        "title": "Overwrite Data",
                         "type": "boolean",
+                        "title": "Overwrite Data",
                         "description": "Whether to overwrite existing scenario data.",
                         "default": false
                     },
                     "read_perm": {
-                        "title": "Read Perm",
-                        "type": "array",
                         "items": {
                             "type": "string"
                         },
+                        "type": "array",
+                        "title": "Read Perm",
                         "description": "Read permissions (by default all groups of logged in user). The MIRO Server REST API currently only supports assigning user groups, not individual users. Group names must be prefixed with a hash (`#`). The logged in user will always be appended to the specified permissions."
                     },
                     "write_perm": {
-                        "title": "Write Perm",
-                        "type": "array",
                         "items": {
                             "type": "string"
                         },
+                        "type": "array",
+                        "title": "Write Perm",
                         "description": "Write permissions (by default logged in user). The MIRO Server REST API currently only supports assigning user groups, not individual users. Group names must be prefixed with a hash (`#`). The logged in user will always be appended to the specified permissions."
                     },
                     "exec_perm": {
-                        "title": "Exec Perm",
-                        "type": "array",
                         "items": {
                             "type": "string"
                         },
+                        "type": "array",
+                        "title": "Exec Perm",
                         "description": "Execute permissions (by default all groups of logged in user). The MIRO Server REST API currently only supports assigning user groups, not individual users. Group names must be prefixed with a hash (`#`). The logged in user will always be appended to the specified permissions."
                     }
-                }
+                },
+                "type": "object",
+                "required": [
+                    "scenario_data"
+                ],
+                "title": "Body_add_scenario_scenarios__app_id___post"
             },
             "Body_update_app_apps__app_id__put": {
-                "title": "Body_update_app_apps__app_id__put",
-                "required": [
-                    "app_data"
-                ],
-                "type": "object",
                 "properties": {
-                    "display_name": {
-                        "title": "Display Name",
-                        "maxLength": 40,
+                    "app_data": {
                         "type": "string",
+                        "format": "binary",
+                        "title": "App Data",
+                        "description": "A valid MIROAPP file deployed for a multi-user environment."
+                    },
+                    "display_name": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 40
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Display Name",
                         "description": "The name of the app as it appears in the library."
                     },
                     "description": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 200
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
                         "title": "Description",
-                        "maxLength": 200,
-                        "type": "string",
                         "description": "The description of the app as it appears in the library."
                     },
                     "access_groups": {
-                        "title": "Access Groups",
-                        "type": "array",
                         "items": {
                             "type": "string"
                         },
-                        "description": "User groups that can access this app. If no groups are specified, it is visible to everyone who has access to your MIRO Server instance.",
-                        "default": []
+                        "type": "array",
+                        "title": "Access Groups",
+                        "description": "User groups that can access this app. If no groups are specified, it is visible to everyone who has access to your MIRO Server instance."
                     },
                     "overwrite_data": {
-                        "title": "Overwrite Data",
                         "type": "boolean",
+                        "title": "Overwrite Data",
                         "description": "Whether to overwrite existing scenario data (from a previous installation of an app with the same ID).",
                         "default": false
-                    },
-                    "app_data": {
-                        "title": "App Data",
-                        "type": "string",
-                        "description": "A valid MIROAPP file deployed for a multi-user environment.",
-                        "format": "binary"
                     }
-                }
+                },
+                "type": "object",
+                "required": [
+                    "app_data"
+                ],
+                "title": "Body_update_app_apps__app_id__put"
             },
             "ConfigurationResponse": {
-                "title": "ConfigurationResponse",
+                "properties": {
+                    "version": {
+                        "type": "string",
+                        "title": "Version"
+                    },
+                    "authentication_mode": {
+                        "type": "string",
+                        "title": "Authentication Mode"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "version",
                     "authentication_mode"
                 ],
-                "type": "object",
-                "properties": {
-                    "version": {
-                        "title": "Version",
-                        "type": "string"
-                    },
-                    "authentication_mode": {
-                        "title": "Authentication Mode",
-                        "type": "string"
-                    }
-                }
+                "title": "ConfigurationResponse"
             },
             "ExportFileType": {
-                "title": "ExportFileType",
+                "type": "string",
                 "enum": [
                     "miroscen",
                     "gdx",
                     "csv",
                     "xlsx"
                 ],
-                "type": "string",
-                "description": "An enumeration."
+                "title": "ExportFileType"
             },
             "HTTPValidationError": {
-                "title": "HTTPValidationError",
-                "type": "object",
                 "properties": {
                     "detail": {
-                        "title": "Detail",
-                        "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/ValidationError"
-                        }
+                        },
+                        "type": "array",
+                        "title": "Detail"
                     }
-                }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
             },
             "OidcAuthRequest": {
-                "title": "OidcAuthRequest",
+                "properties": {
+                    "id_token": {
+                        "type": "string",
+                        "title": "Id Token"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "id_token"
                 ],
-                "type": "object",
-                "properties": {
-                    "id_token": {
-                        "title": "Id Token",
-                        "type": "string"
-                    }
-                }
+                "title": "OidcAuthRequest"
             },
             "OidcAuthResponse": {
-                "title": "OidcAuthResponse",
+                "properties": {
+                    "token": {
+                        "type": "string",
+                        "title": "Token"
+                    },
+                    "roles": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Roles"
+                    },
+                    "permissions": {
+                        "type": "string",
+                        "title": "Permissions"
+                    },
+                    "username": {
+                        "type": "string",
+                        "title": "Username"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "token",
                     "roles",
                     "permissions",
                     "username"
                 ],
-                "type": "object",
-                "properties": {
-                    "token": {
-                        "title": "Token",
-                        "type": "string"
-                    },
-                    "roles": {
-                        "title": "Roles",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "permissions": {
-                        "title": "Permissions",
-                        "type": "string"
-                    },
-                    "username": {
-                        "title": "Username",
-                        "type": "string"
-                    }
-                }
+                "title": "OidcAuthResponse"
             },
             "ScenarioConfig": {
-                "title": "ScenarioConfig",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "tags": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Tags"
+                    },
+                    "owner": {
+                        "type": "string",
+                        "title": "Owner"
+                    },
+                    "last_modified": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Last Modified"
+                    },
+                    "read_perm": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Read Perm"
+                    },
+                    "write_perm": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Write Perm"
+                    },
+                    "exec_perm": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Exec Perm"
+                    }
+                },
+                "type": "object",
                 "required": [
                     "name",
                     "tags",
@@ -1054,63 +1168,11 @@
                     "write_perm",
                     "exec_perm"
                 ],
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "title": "Name",
-                        "type": "string"
-                    },
-                    "tags": {
-                        "title": "Tags",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "owner": {
-                        "title": "Owner",
-                        "type": "string"
-                    },
-                    "last_modified": {
-                        "title": "Last Modified",
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "read_perm": {
-                        "title": "Read Perm",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "write_perm": {
-                        "title": "Write Perm",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "exec_perm": {
-                        "title": "Exec Perm",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    }
-                }
+                "title": "ScenarioConfig"
             },
             "ValidationError": {
-                "title": "ValidationError",
-                "required": [
-                    "loc",
-                    "msg",
-                    "type"
-                ],
-                "type": "object",
                 "properties": {
                     "loc": {
-                        "title": "Location",
-                        "type": "array",
                         "items": {
                             "anyOf": [
                                 {
@@ -1120,17 +1182,26 @@
                                     "type": "integer"
                                 }
                             ]
-                        }
+                        },
+                        "type": "array",
+                        "title": "Location"
                     },
                     "msg": {
-                        "title": "Message",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Message"
                     },
                     "type": {
-                        "title": "Error Type",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Error Type"
                     }
-                }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
             }
         },
         "securitySchemes": {
