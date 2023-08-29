@@ -252,8 +252,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
               class = "dropdown presentation",
               style = if (isTRUE(options$hidePivotControls)) "margin-top: 0;",
               tags$button(
-                class = "btn btn-default dropdown-toggle btn-dropdown",
-                style = "width:100%",
+                class = "btn btn-default dropdown-toggle btn-dropdown btn-view-dropdown",
                 type = "button", id = ns("toggleViewButton"),
                 onclick = "Miro.resetDropdownFilter(this)",
                 `data-toggle` = "dropdown", `aria-haspopup` = "true",
