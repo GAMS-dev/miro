@@ -86,4 +86,4 @@ log_data = {
     "host": host,
     "port": port,
 }
-print(json.dumps(log_data))
+# print(json.dumps(log_data))

@@ -8,18 +8,10 @@ from app.config import settings_yml, settings
 from app.routers import login, apps, scenarios, configuration
 from app.utils.utils import use_route_names_as_operation_ids
 
+# Configure the root log level and ensure all logs are sent to Gunicorn's error log.
 gunicorn_error_logger = logging.getLogger("gunicorn.error")
-gunicorn_logger = logging.getLogger("gunicorn")
-uvicorn_access_logger = logging.getLogger("uvicorn.access")
-uvicorn_access_logger.handlers = gunicorn_error_logger.handlers
-
-logger.handlers = gunicorn_error_logger.handlers
-if __name__ != "__main__":
-    logger.setLevel(gunicorn_logger.level)
-else:
-    handler = logging.StreamHandler(sys.stdout)
-    logger.addHandler(handler)
-    logger.setLevel(logging.DEBUG)
+logging.root.handlers.extend(gunicorn_error_logger.handlers)
+logging.root.setLevel(gunicorn_error_logger.level)
 
 app = FastAPI()
 
