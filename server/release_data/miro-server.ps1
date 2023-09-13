@@ -177,7 +177,7 @@ function stop
 
 function restart
 {
-    "Restarting GAMS MIRO Server"
+    "Restarting GAMS MIRO Server.`n`nPlease note that changes to the 'docker-compose.yml' file or the '.env' file are not applied.`nRun './miro-server.cmd stop' and './miro-server.cmd start' instead!"
     docker compose -f docker-compose.yml restart
     if (!$?) { exit 1 }
     "GAMS MIRO Server restarted."

@@ -170,7 +170,7 @@ stop (){
 }
 
 restart (){
-    echo "Restarting GAMS MIRO Server"
+    echo -e "Restarting GAMS MIRO Server.\n\nPlease note that changes to the 'docker-compose.yml' file or the '.env' file are not applied.\nRun './miro-server stop' and './miro-server start' instead!"
     export COMPOSE_IGNORE_ORPHANS=True
     $COMPOSE_BINARY -f docker-compose.yml restart || exit 1
     echo "GAMS MIRO Server restarted."
