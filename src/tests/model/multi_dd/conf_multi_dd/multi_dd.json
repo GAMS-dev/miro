@@ -1,0 +1,100 @@
+{
+  "theme": "browser",
+  "customCss": false,
+  "layoutSettings": {
+    "maxTabsExpandedInput": 5,
+    "maxTabsExpandedOutput": 5,
+    "maxTabsExpandedPivotComp": 5,
+    "maxTabsExpandedSplitComp": 5,
+    "maxTabsExpandedTabComp": 5
+  },
+  "excelIncludeMeta": true,
+  "excelIncludeEmptySheets": true,
+  "defaultRendererOutput": "miroPivot",
+  "autoGenInputGraphs": true,
+  "storeLogFilesDuration": 7,
+  "defCompMode": "split",
+  "defaultScenName": "default",
+  "pivotCompSettings": {
+    "hidePivotControls": false,
+    "fixedColumns": true
+  },
+  "activateModules": {
+    "loadLocal": true,
+    "logFile": true,
+    "lstFile": true,
+    "attachments": true,
+    "hcube": false,
+    "downloadTempFiles": false
+  },
+  "aggregateWidgets": true,
+  "overwriteSheetOrder": {
+    "input": ["_scalars", "a", "b", "d", "ilocdata", "jlocdata", "_widgets"]
+  },
+  "overwriteAliases": {
+    "type": {
+      "newAlias": "selected model type"
+    },
+    "f": {
+      "newAlias": "freight in dollars per case per thousand miles"
+    },
+    "mins": {
+      "newAlias": "minimum shipment (MIP- and MINLP-only)"
+    },
+    "beta": {
+      "newAlias": "beta (MINLP-only)"
+    },
+    "total_cost": {
+      "newAlias": "total transportation costs in thousands of dollars"
+    },
+    "_scalars": {
+      "newAlias": "Scalars"
+    },
+    "a": {
+      "newAlias": "capacity of plant i in cases"
+    },
+    "b": {
+      "newAlias": "demand at market j in cases"
+    },
+    "d": {
+      "newAlias": "distance in thousands of miles"
+    },
+    "ilocdata": {
+      "newAlias": "Plant location information"
+    },
+    "jlocdata": {
+      "newAlias": "Market location information"
+    },
+    "active_plants": {
+      "newAlias": "active plants"
+    },
+    "schedule": {
+      "newAlias": "shipment quantities in cases"
+    },
+    "_scalars_out": {
+      "newAlias": "Output Scalars"
+    }
+  },
+  "roundingDecimals": 2,
+  "handsontable": {
+    "stretchH": "none",
+    "readonly": false,
+    "contextMenu": {
+      "enabled": true,
+      "allowRowEdit": true,
+      "allowColEdit": true
+    },
+    "height": 700,
+    "colWidths": 200
+  },
+  "inputWidgets": {
+    "active_plants": {
+      "widgetType": "dropdown",
+      "noHcube": true,
+      "clearValue": false,
+      "multiple": true,
+      "label": "Active plants",
+      "choices": "$a$i"
+    }
+  }
+}
