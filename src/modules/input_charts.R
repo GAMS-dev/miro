@@ -59,6 +59,11 @@ renderInputGraph <- function(i) {
   getInputDataset <- function(symName) {
     datasetTmp <- isolate(sandboxInputData$getData(symName)())
     if (length(modelIn[[symName]]$headers) > 0L) {
+      if (identical(modelIn[[symName]]$type, "dropdown") &&
+        !length(modelIn[[symName]]$definedByExternalSymbol)) {
+        # multi dropdown
+        datasetTmp <- ddToTibble(datasetTmp, modelIn[[symName]])
+      }
       tryCatch(
         {
           datasetTmp <- fixColTypes(datasetTmp, modelIn[[symName]]$colTypes)

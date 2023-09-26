@@ -3,6 +3,11 @@ getInputDataFromSandbox <- function() {
   dataTmp <- lapply(modelInFileNames, function(symName) {
     if (symName %in% names(modelIn)) {
       datasetTmp <- isolate(sandboxInputData$getData(symName)())
+      if (identical(modelIn[[symName]]$type, "dropdown") &&
+        !length(modelIn[[symName]]$definedByExternalSymbol)) {
+        # multi dropdown
+        datasetTmp <- ddToTibble(datasetTmp, modelIn[[symName]])
+      }
       tryCatch(
         {
           datasetTmp <- fixColTypes(datasetTmp, modelIn[[symName]]$colTypes)

@@ -58,9 +58,15 @@ if (!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))) {
       # handsontable, multi dropdown, or daterange
       if (tolower(dataset) %in% modelInTabularData) {
         if (identical(overwriteInput, 2L)) {
+          dataTmp <- isolate(sandboxInputData$getData(dataset)())
+          if (identical(modelIn[[dataset]]$type, "dropdown") &&
+            !length(modelIn[[dataset]]$definedByExternalSymbol)) {
+            # multi dropdown
+            dataTmp <- ddToTibble(dataTmp, modelIn[[i]])
+          }
           dataTmp <- mergeDf(
             fixColTypes(
-              isolate(sandboxInputData$getData(dataset)()),
+              dataTmp,
               modelIn[[i]]$colTypes
             ),
             scenInputData[[dataset]],

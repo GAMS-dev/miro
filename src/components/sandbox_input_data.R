@@ -1383,7 +1383,11 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
       return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName))
     },
     setData = function(data) {
-      dataNew <- private$conversionFn(data)
+      if (identical(private$config$dropdown$multiple, TRUE)) {
+        dataNew <- private$conversionFn(data[[1L]])
+      } else {
+        dataNew <- private$conversionFn(data)
+      }
       if (private$dataNeedsUpdate(dataNew)) {
         isolate({
           private$data(dataNew)
@@ -1395,6 +1399,12 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
         )
       }
       return(invisible(self))
+    },
+    hasData = function() {
+      if (identical(private$config$dropdown$multiple, TRUE)) {
+        return(!identical(isolate(private$data()), private$config$defaultValue))
+      }
+      return(TRUE)
     },
     getChoices = function(data) {
       if (private$config$hasDependency) {
@@ -1450,10 +1460,10 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
             currentValue <- isolate(private$data())
             showEl(private$session, paste0("#", private$config$htmlSelector))
             hideEl(private$session, paste0("#no_data_dep_", private$id))
-            if (length(currentValue) && !currentValue %in% newChoices) {
+            if (length(currentValue) && !all(currentValue %in% newChoices)) {
               flog.info(
-                "Dropdown value: %s not part of dependent choices. Will reset value.",
-                currentValue
+                "Dropdown value(s): %s for symbol: %s not part of dependent choices. Will reset value.",
+                paste(currentValue, collapse = ", "), private$symName
               )
               private$ignoreUpdate <- 0L
               currentValue <- newChoices[[1L]]
