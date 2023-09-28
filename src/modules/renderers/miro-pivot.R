@@ -2238,7 +2238,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if (tableSummarySettings()$enabled) {
           if (identical(tableSummarySettings()$rowSummaryFunction, "sum")) {
             dataTmp <- mutate(
-              dataTmp,
+              ungroup(dataTmp),
               !!paste0(
                 lang$renderers$miroPivot$aggregationFunctions$sum,
                 "\U2003\U2003"
@@ -2249,7 +2249,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             )
           } else if (identical(tableSummarySettings()$rowSummaryFunction, "mean")) {
             dataTmp <- mutate(
-              dataTmp,
+              ungroup(dataTmp),
               !!paste0(
                 lang$renderers$miroPivot$aggregationFunctions$mean,
                 "\U2003\U2003"
@@ -2261,7 +2261,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           } else {
             # count
             dataTmp <- mutate(
-              dataTmp,
+              ungroup(dataTmp),
               !!paste0(
                 lang$renderers$miroPivot$aggregationFunctions$count,
                 "\U2003\U2003"
@@ -2281,8 +2281,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           } else {
             colSummarySettings$data <- round(as.numeric(slice(summarise(dataTmp, across(
               where(is.numeric),
-              !!as.name(tableSummarySettings()$colSummaryFunction),
-              na.rm = TRUE
+              \(x) match.fun(tableSummarySettings()$colSummaryFunction)(x, na.rm = TRUE)
             )), 1L)), digits = roundPrecision)
           }
         }
