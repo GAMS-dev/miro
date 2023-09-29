@@ -350,10 +350,9 @@ if (buildUI) {
                 ),
                 tags$div(
                   class = "label-toggle",
-                  tags$a(
+                  tags$span(
                     id = paste0("tableLabel_", i, "_toggle"),
                     class = "btn toggle-label-height",
-                    href = "#",
                     tags$i(class = "fa fa-circle-chevron-down")
                   )
                 )
