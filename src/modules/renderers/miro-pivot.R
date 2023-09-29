@@ -462,6 +462,11 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
           id = ns("errMsg"), class = "gmsalert gmsalert-error",
           style = "position:static;margin-bottom:5px;"
         ),
+        tags$div(
+          id = ns("noData"), class = "out-no-data",
+          style = "margin-top:50px;",
+          lang$nav$outputScreen$boxResults$noData
+        ),
         genSpinner(ns("loadPivotTable"), hidden = TRUE),
         DTOutput(ns("pivotTable")),
         chartjsOutput(ns("pivotChart"), height = "40px"),
@@ -1919,15 +1924,17 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         )) {
           return()
         }
-        showEl(session, paste0("#", ns("loadPivotTable")))
         dataTmp <- dataToRender()
         if (!length(dataTmp)) {
           if (miroPivotState$triggerEditViewDialog) {
             miroPivotState$triggerEditViewDialog <<- FALSE
             showAddViewDialog(pivotRenderer, viewOptions = currentView)
           }
+          showEl(session, paste0("#", ns("noData")))
           return()
         }
+        hideEl(session, paste0("#", ns("noData")))
+        showEl(session, paste0("#", ns("loadPivotTable")))
         rowHeaderLen <- attr(dataTmp, "noRowHeaders")
         noSeries <- length(dataTmp) - rowHeaderLen
         noError <- TRUE
@@ -2171,10 +2178,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           session, paste0("#", ns("pivotChart-container")),
           list(position = "absolute", top = "-2000pt")
         )
-        showEl(session, paste0("#", ns("loadPivotTable")))
         if (!length(dataTmp)) {
+          showEl(session, paste0("#", ns("noData")))
           return()
         }
+        hideEl(session, paste0("#", ns("noData")))
+        showEl(session, paste0("#", ns("loadPivotTable")))
         noRowHeaders <- attr(dataTmp, "noRowHeaders")
         if (isHeatmap) {
           brks <- quantile(dataTmp[-seq_len(noRowHeaders)],
@@ -2193,34 +2202,37 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         hideEl(session, paste0("#", ns("loadPivotTable")))
 
+        columnDefsTmp <- NULL
         if (isTRUE(options$enableHideEmptyCols) && hideEmptyCols()) {
-          hiddenEmptyCols <<- which(vapply(dataTmp[seq_len(noRowHeaders)],
-            function(x) {
-              identical(
-                as.character(unique(x)),
-                if (length(options$emptyUEL)) {
-                  options$emptyUEL
-                } else {
-                  "-"
-                }
-              )
-            },
-            logical(1L),
-            USE.NAMES = FALSE
-          ))
-          hiddenEmptyColsJs <- rep.int("false", noRowHeaders)
-          hiddenEmptyColsJs[hiddenEmptyCols] <- "true"
-          setAttributes(
-            session, paste0(
-              "#", ns("rowIndexList .drop-index-item:nth-child("),
-              seq_len(noRowHeaders), ")"
-            ),
-            "data-col-hidden", hiddenEmptyColsJs
-          )
-          columnDefsTmp <- list(list(
-            visible = FALSE,
-            targets = hiddenEmptyCols - 1L
-          ))
+          if (noRowHeaders > 0L) {
+            hiddenEmptyCols <<- which(vapply(dataTmp[seq_len(noRowHeaders)],
+              function(x) {
+                identical(
+                  as.character(unique(x)),
+                  if (length(options$emptyUEL)) {
+                    options$emptyUEL
+                  } else {
+                    "-"
+                  }
+                )
+              },
+              logical(1L),
+              USE.NAMES = FALSE
+            ))
+            hiddenEmptyColsJs <- rep.int("false", noRowHeaders)
+            hiddenEmptyColsJs[hiddenEmptyCols] <- "true"
+            setAttributes(
+              session, paste0(
+                "#", ns("rowIndexList .drop-index-item:nth-child("),
+                seq_len(noRowHeaders), ")"
+              ),
+              "data-col-hidden", hiddenEmptyColsJs
+            )
+            columnDefsTmp <- list(list(
+              visible = FALSE,
+              targets = hiddenEmptyCols - 1L
+            ))
+          }
         } else {
           hiddenEmptyCols <<- NULL
           if (isTRUE(options$enableHideEmptyCols)) {
@@ -2229,7 +2241,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               "data-col-hidden", "false"
             )
           }
-          columnDefsTmp <- NULL
         }
 
         fixedColumnsConfig <- list(leftColumns = noRowHeaders)
@@ -2326,7 +2337,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 }")),
             scrollY = 400, scrollX = TRUE, scrollCollapse = TRUE,
             scroller = list(loadingIndicator = FALSE), dom = "frtip",
-            fixedColumns = fixedColumnsConfig,
+            fixedColumns = if (nrow(dataTmp)) fixedColumnsConfig,
             columnDefs = columnDefsTmp
           ), rownames = FALSE
         )
