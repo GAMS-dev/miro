@@ -12,8 +12,8 @@ const menu = require('./components/menu');
 const installRPackages = require('./components/install-r');
 
 const requiredAPIVersion = 1;
-const miroVersion = '2.8.0';
-const miroRelease = 'Aug 11 2023';
+const miroVersion = '2.8.1';
+const miroRelease = 'Oct 04 2023';
 const libVersion = '2.6';
 const exampleAppsData = require('./components/example-apps')(miroVersion, requiredAPIVersion);
 const LangParser = require('./components/LangParser');
