@@ -92,4 +92,12 @@ file.move(
   file.path("..", "model", "transport", "conf_transport", "transport_io.json")
 )
 
+createTestDb()
+test_that(
+  "Input table pivotCols works",
+  {
+    source(file.path(testDir, "shinytest", "input_table_pivot_cols_test.R"), local = TRUE)
+  }
+)
+
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))

@@ -144,6 +144,7 @@ MultiDimWidget <- R6::R6Class("MultiDimWidget",
               length(data)
             ),
             names_to = private$config$pivotCols[[1]],
+            values_transform = as.numeric,
             values_to = names(private$config$headers)[length(private$config$headers)],
             values_drop_na = TRUE
           ), !!!names(private$config$headers)),
