@@ -21,7 +21,7 @@ pushd dist > /dev/null
     mkdir -p $FOLDER_NAME/windows
     mv *.exe $FOLDER_NAME/windows/GAMS-MIRO-Setup-${MIRO_VERSION_MAJOR}.${MIRO_VERSION_MINOR}.${MIRO_VERSION_PATCH}.exe
     ## S3 upload to gams.com
-    s3cmd sync --acl-public ./ ${S3_URL} --access_key=${S3_ACCESS_KEY} --secret_key=${S3_SECRET_KEY}
+    aws s3 sync ./ ${S3_URL} --acl public-read
     ## S3 content listing
-    s3cmd ls -r ${S3_URL} --access_key=${S3_ACCESS_KEY} --secret_key=${S3_SECRET_KEY}
+    aws s3 ls ${S3_URL} --recursive
 popd > /dev/null

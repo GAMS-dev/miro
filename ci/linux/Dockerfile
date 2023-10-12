@@ -1,7 +1,9 @@
 FROM node:18-bullseye
 
-ENV R_BASE_VERSION 4.2.3
-ENV OPENSSL_VERSION=3.1.0
+ARG R_BASE_VERSION=4.3.1
+ENV R_BASE_VERSION=${R_BASE_VERSION}
+ARG OPENSSL_VERSION=3.1.0
+ENV OPENSSL_VERSION=${OPENSSL_VERSION}
 
 ARG GAMS_MAJOR=41
 ARG GAMS_MINOR=3
@@ -41,8 +43,9 @@ RUN echo "deb http://cloud.r-project.org/bin/linux/debian bullseye-cran40/" >> /
 #    && echo "deb [trusted=yes] https://eddelbuettel.github.io/ppaR400 ./" > /etc/apt/sources.list.d/edd-r4.list
 
 ## Now install R and littler, and create a link for littler in /usr/local/bin
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key '95C0FAF38DB3CCAD0C080A7BDC78B2DDEABC47B7' && \
-        apt-get update \
+RUN gpg --keyserver keyserver.ubuntu.com --recv-key '95C0FAF38DB3CCAD0C080A7BDC78B2DDEABC47B7' \
+        && gpg --armor --export '95C0FAF38DB3CCAD0C080A7BDC78B2DDEABC47B7' | tee /etc/apt/trusted.gpg.d/cran_debian_key.asc \
+        && apt-get update \
         && apt-get install -y --no-install-recommends \
         libopenblas0-pthread \
         littler \
@@ -105,4 +108,7 @@ RUN  apt-get update \
         docker-compose-plugin
 
 # required for uploading files to s3 bucket
-RUN pip install s3cmd
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+        && unzip awscliv2.zip \
+        && ./aws/install \
+        && rm -rf aws awscliv2

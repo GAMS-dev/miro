@@ -47,6 +47,19 @@ variables:
     description: 'Push MIRO Server images to registry.gams.com (tagged as unstable on develop and feature on feature branches) (yes/no)?'
 
 
+.assume_role: &assume_role
+    - >
+      STS=($(aws sts assume-role-with-web-identity
+      --role-arn ${AWS_S3_ROLE_ARN}
+      --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
+      --web-identity-token $ID_TOKEN
+      --duration-seconds 3600
+      --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
+      --output text))
+    - export AWS_ACCESS_KEY_ID="${STS[0]}"
+    - export AWS_SECRET_ACCESS_KEY="${STS[1]}"
+    - export AWS_SESSION_TOKEN="${STS[2]}"
+
 prepare_all:
   tags:
     - linux
@@ -90,7 +103,7 @@ build_build_image_linux:
     - apk update && apk add jq
   script:
     - cd ci/linux
-    - docker build -t $CI_REGISTRY_IMAGE/builder-linux:latest --build-arg R_BASE_VERSION=`jq ".rVersion" ../../build-config.json` --build-arg OPENSSL_VERSION=`jq ".opensslVersion" ../../build-config.json` .
+    - docker build -t $CI_REGISTRY_IMAGE/builder-linux:latest --build-arg R_BASE_VERSION=`jq -r ".rVersion" ../../build-config.json` --build-arg OPENSSL_VERSION=`jq -r ".opensslVersion" ../../build-config.json` .
     - docker push $CI_REGISTRY_IMAGE/builder-linux:latest
   rules:
     - if: $FORCE_BUILD_LINUX_BUILDER == "yes"
@@ -575,12 +588,17 @@ test_job:
       when: manual
     - if: $CI_MERGE_REQUEST_ID
 
+
 upload_cloudfront:
   tags:
     - linux
   stage: deploy
   image: $CI_REGISTRY_IMAGE/builder-linux:latest
+  id_tokens:
+      ID_TOKEN:
+        aud: ${S3_OIDC_AUD}
   script:
+    - *assume_role
     - ./ci/s3_upload_artifacts.sh
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
