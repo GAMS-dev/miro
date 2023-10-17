@@ -30,6 +30,9 @@ ENV ALLOW_RESTARTS=0 \
     VOLUMES=0
 COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
 
+RUN apk update && \
+    apk upgrade --available
+
 # Metadata
 ARG VCS_REF
 ARG BUILD_DATE

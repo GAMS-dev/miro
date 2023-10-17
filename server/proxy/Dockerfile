@@ -17,7 +17,9 @@ RUN ./build.sh
 
 FROM alpine:3.15
 
-RUN apk --no-cache add openjdk11-jre
+RUN apk update && \
+    apk upgrade --available && \
+    apk --no-cache add openjdk11-jre
 
 RUN addgroup -g 1000 -S miro && \
     adduser -u 1000 -S miro -G miro

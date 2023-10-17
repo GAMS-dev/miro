@@ -135,6 +135,9 @@ ENV LD_LIBRARY_PATH=/usr/local/lib
 # copy MIRO to the image
 COPY src /home/miro/app/
 
+RUN apt-get update \
+    && apt-get upgrade -y
+
 USER miro
 
 EXPOSE 3838

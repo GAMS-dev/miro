@@ -1,5 +1,8 @@
 FROM python:3-alpine
 
+RUN apk update && \
+    apk upgrade --available
+
 RUN adduser -D -u 1000 mirodoc
 
 WORKDIR /home/mirodoc
