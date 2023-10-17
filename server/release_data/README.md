@@ -3,7 +3,6 @@ GAMS MIRO Server makes use of GAMS Engine, a server software that allows you to 
 
 1\.  Engine
    1.  For the installation of GAMS Engine follow the instructions at [https://www.gams.com/engine/installation.html](https://www.gams.com/engine/installation.html). When successfully installed, MIRO Engine will be mounted on `/engine` (Management interface) and `/engine/api` (Engine API).
-   2.  Log into the Engine user interface (`/engine`) with username: `admin` and password: `admin`. Change the password of the administrator via the interface.
 
 2\.  MIRO Server
    1.  Extract `miro_server.zip`. This will create a subfolder `miro_server`.

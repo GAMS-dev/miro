@@ -19,10 +19,6 @@ proxy:
     authentication-request-body: '{"username": "%s", "password": "%s"}'
     authentication-response-token: '$.token'
     authentication-response-roles: '$.roles'
-  users:
-  - name: admin
-    password: admin
-    groups: admins
   database:
     host: miroserver-db
     port: 5432
