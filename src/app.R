@@ -250,6 +250,7 @@ if (is.null(errMsg)) {
     )
   } else {
     load(rSaveFilePath)
+    config <<- config
     if (!exists("dbSchemaModel")) {
       # legacy app, need to convert to new format
       dbSchemaModel <- substring(
