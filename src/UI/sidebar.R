@@ -149,7 +149,7 @@ sidebar <- dashboardSidebar(
       actionButton("btCompareScen",
         class = "bt-highlight-3", lang$nav$sidebarButtons$compareStart,
         width = "85%", style = "display:block;",
-        "data-noshow" = if (identical(config$defCompMode, "pivot")) "true" else "false"
+        "data-noshow" = if (identical(config$defCompMode, "split") || identical(config$defCompMode, "tab")) "false" else "true"
       )
     )
   )
