@@ -98,9 +98,21 @@ MultiDimWidget <- R6::R6Class("MultiDimWidget",
       } else {
         dataTmp <- dataToPivot
       }
+      hasDuplicates <- FALSE
       if (tryCatch(
         {
           dataTmp <- pivot_wider(dataTmp,
+            names_from = !!private$pivotIdx,
+            values_from = !!length(dataTmp),
+            names_sort = isTRUE(private$config$sortPivotCols)
+          )
+          FALSE
+        },
+        warning = function(w) {
+          if (grepl("list-cols", conditionMessage(w), fixed = TRUE)) {
+            hasDuplicates <<- TRUE
+          }
+          dataTmp <<- pivot_wider(dataTmp,
             names_from = !!private$pivotIdx,
             values_from = !!length(dataTmp),
             names_sort = isTRUE(private$config$sortPivotCols)
@@ -114,10 +126,13 @@ MultiDimWidget <- R6::R6Class("MultiDimWidget",
         if (force) {
           return(list(
             data = dataTmp[-c(private$pivotIdx, length(private$config$defaultValue))],
-            colHeaders = private$staticColHeaders
+            colHeaders = private$staticColHeaders, hasDuplicates = hasDuplicates
           ))
         }
-        return(list(data = dataTmp, colHeaders = attr(private$config$defaultValue, "aliases")))
+        return(list(
+          data = dataTmp, colHeaders = attr(private$config$defaultValue, "aliases"),
+          hasDuplicates = hasDuplicates
+        ))
       }
 
       return(list(data = dataTmp, colHeaders = c(
@@ -126,7 +141,7 @@ MultiDimWidget <- R6::R6Class("MultiDimWidget",
           length(private$staticColHeaders) + 1L,
           length(dataTmp)
         )]
-      )))
+      ), hasDuplicates = hasDuplicates))
     },
     normalizeData = function(data) {
       if (!private$needsPivot) {
@@ -144,7 +159,7 @@ MultiDimWidget <- R6::R6Class("MultiDimWidget",
               length(data)
             ),
             names_to = private$config$pivotCols[[1]],
-            values_transform = as.numeric,
+            values_transform = asNumericIfNotList,
             values_to = names(private$config$headers)[length(private$config$headers)],
             values_drop_na = TRUE
           ), !!!names(private$config$headers)),
@@ -259,8 +274,21 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
       output[[paste0("in_", id)]] <- renderRHandsontable({
         private$updateWidget()
 
+        hasDuplicates <- FALSE
         if (private$needsPivot) {
           dataTmp <- private$getPivotedData(force = TRUE)
+          hasDuplicates <- identical(dataTmp$hasDuplicates, TRUE)
+          if (hasDuplicates) {
+            showEl(
+              session,
+              paste0("#in_", id, "_duplicate_error")
+            )
+          } else {
+            hideEl(
+              session,
+              paste0("#in_", id, "_duplicate_error")
+            )
+          }
           colHeaders <- dataTmp$colHeaders
           dataTmp <- dataTmp$data
         } else {
@@ -276,6 +304,9 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
           ))
         }
 
+        enableContextMenu <- isTRUE(private$staticTableConfig$contextMenu) &&
+          !isTRUE(private$config$readonly) && !hasDuplicates
+
         ht <- rhandsontable(dataTmp,
           height = private$staticTableConfig$height,
           rowHeaders = if (isTRUE(private$config$hideIndexCol)) NULL else rownames(dataTmp),
@@ -283,20 +314,20 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
           useTypes = TRUE,
           width = private$staticTableConfig$width,
           search = private$staticTableConfig$search,
-          readOnly = if (isTRUE(private$config$readonly)) TRUE else NULL,
+          readOnly = if (isTRUE(private$config$readonly) || hasDuplicates) TRUE else NULL,
           selectCallback = TRUE,
           digits = NA,
           naAsNull = private$needsPivot || isTRUE(attr(private$config$defaultValue, "isTable"))
         )
         ht <- hot_table(ht,
-          contextMenu = private$staticTableConfig$contextMenu,
+          contextMenu = enableContextMenu,
           highlightCol = private$staticTableConfig$highlightCol,
           highlightRow = private$staticTableConfig$highlightRow,
           rowHeaderWidth = private$staticTableConfig$rowHeaderWidth,
           stretchH = private$staticTableConfig$stretchH,
           overflow = private$staticTableConfig$overflow
         )
-        if (isTRUE(private$staticTableConfig$contextMenu)) {
+        if (enableContextMenu) {
           if (private$needsPivot && !private$staticTableConfig$isReadonly &&
             !isTRUE(private$config$pivotColIsReadonly)) {
             ht <- hot_context_menu(ht,

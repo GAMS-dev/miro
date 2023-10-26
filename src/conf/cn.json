@@ -254,7 +254,8 @@
       "cancelButton": "取消",
       "btKeepFirst": "保留第一个数据集",
       "btKeepLast": "保留最后一个数据集",
-      "success": "成功删除重复记录"
+      "success": "成功删除重复记录",
+      "pivotReadonlyWarning": "由于符号中包含重复记录，表格被设置为只读。\n您可以使用 \"场景选项\"->\"删除重复项\" 对话框删除重复记录。"
     },
     "dialogRemoteLogin": {
       "title": "请登陆",

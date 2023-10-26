@@ -928,6 +928,12 @@ ddToTibble <- function(values, metaData) {
   names(ddTibble) <- headers
   return(ddTibble)
 }
+asNumericIfNotList <- function(el) {
+  if (is.list(el)) {
+    return(el)
+  }
+  return(as.numeric(el))
+}
 pidExists <- function(pid) {
   pid <- suppressWarnings(as.integer(pid))
   if (!length(pid) || is.na(pid)) {

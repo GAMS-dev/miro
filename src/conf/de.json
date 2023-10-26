@@ -254,7 +254,8 @@
       "cancelButton": "Abbrechen",
       "btKeepFirst": "Ersten behalten",
       "btKeepLast": "Letzten behalten",
-      "success": "Doppelte Datensätze erfolgreich entfernt"
+      "success": "Doppelte Datensätze erfolgreich entfernt",
+      "pivotReadonlyWarning": "Die Tabelle wurde auf schreibgeschützt gesetzt, weil das Symbol doppelte Datensätze enthält.\nSie können Duplikate über das Dialogfeld \"Szenario\" -> \"Duplikate entfernen\" entfernen."
     },
     "dialogRemoteLogin": {
       "title": "Login erforderlich",

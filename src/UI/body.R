@@ -363,6 +363,11 @@ if (buildUI) {
               if (modelIn[[i]]$type == "hot") {
                 tagList(
                   tags$div(
+                    class = "gmsalert gmsalert-error", id = paste0("in_", i, "_duplicate_error"),
+                    style = "position: relative",
+                    lang$nav$dialogRemoveDuplicates$pivotReadonlyWarning
+                  ),
+                  tags$div(
                     class = "miro-show-on-desktop-devices",
                     tags$div(
                       class = "hot-search-wrapper",

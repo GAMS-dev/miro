@@ -254,7 +254,8 @@
       "cancelButton": "Cancel",
       "btKeepFirst": "Keep first",
       "btKeepLast": "Keep last",
-      "success": "Duplicate records successfully removed"
+      "success": "Duplicate records successfully removed",
+      "pivotReadonlyWarning": "The table was set to read-only because the symbol contains duplicate records.\nYou can remove duplicates using the \"Scenario\"->\"Remove duplicates\" dialog."
     },
     "dialogRemoteLogin": {
       "title": "Login required",
