@@ -66,6 +66,24 @@
   background: #fff;
 }
 
+.irs--shiny .irs-handle.from.state_hover > i, .irs--shiny .irs-handle.from:hover > i {
+  .responsiveDark({
+    border-right-color: @light-blue;
+  },
+  {
+    border-right-color: @light-blue-dark;
+  });
+}
+
+.irs--shiny .irs-handle.to.state_hover > i, .irs--shiny .irs-handle.to:hover > i {
+  .responsiveDark({
+    border-left-color: @light-blue;
+  },
+  {
+    border-left-color: @light-blue-dark;
+  });
+}
+
 .irs--shiny .irs-min,
 .irs--shiny .irs-max {
   .responsiveDark({
