@@ -142,7 +142,10 @@ if (isTRUE(config$activateModules$remoteExecution)) {
       asyncResObs <<- observe({
         invalidateLater(2000L, session)
         activeDownloads <- worker$getActiveDownloads()
-        flog.debug("Download-results-observer triggered (active downloads: %s).", activeDownloads)
+        flog.debug(
+          "Download-results-observer triggered (active downloads: %s).",
+          paste(activeDownloads, collapse = ", ")
+        )
         if (identical(length(activeDownloads), 0L) &&
           length(asyncResObs)) {
           asyncResObs$destroy()

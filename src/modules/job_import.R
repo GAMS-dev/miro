@@ -176,7 +176,8 @@ observeEvent(input$importJob, {
     flog.debug("User is not logged in. Login dialog is opened.")
     return(showLoginDialog(cred = worker$getCredentials()))
   }
-  if (!worker$getStatus(jobImportID) %in% c(JOBSTATUSMAP[["completed"]], JOBSTATUSMAP[["downloaded"]])) {
+  jobStatus <- worker$getStatus(jobImportID)
+  if (!length(jobStatus) || !jobStatus %in% c(JOBSTATUSMAP[["completed"]], JOBSTATUSMAP[["downloaded"]])) {
     flog.error(
       "Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.",
       jobImportID
@@ -186,6 +187,7 @@ observeEvent(input$importJob, {
   }
   jobMeta <- worker$getInfoFromJobList(jobImportID)
   if (identical(jobMeta[["_scode"]][1], SCODEMAP[["hcube_jobconfig"]])) {
+    hideEl(session, paste0("#btImportJob_", jobImportID))
     return(importHcJob(worker$getJobResultsPath(jobImportID), jobMeta))
   }
   if (rv$sandboxUnsaved) {
@@ -200,7 +202,8 @@ observeEvent(
   {
     removeModal()
     errMsg <- NULL
-    if (!worker$getStatus(jobImportID) %in% c(JOBSTATUSMAP[["completed"]], JOBSTATUSMAP[["downloaded"]])) {
+    jobStatus <- worker$getStatus(jobImportID)
+    if (!length(jobStatus) || !jobStatus %in% c(JOBSTATUSMAP[["completed"]], JOBSTATUSMAP[["downloaded"]])) {
       flog.error(
         "Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.",
         jobImportID
@@ -237,7 +240,10 @@ observeEvent(virtualActionButton(
 ), {
   req(length(jobImportID) == 1L)
   removeModal()
-  if (!worker$getStatus(jobImportID) %in% c(JOBSTATUSMAP[["completed"]], JOBSTATUSMAP[["downloaded"]])) {
+  hideEl(session, paste0("#btImportJob_", jobImportID))
+  on.exit(showEl(session, paste0("#btImportJob_", jobImportID)))
+  jobStatus <- worker$getStatus(jobImportID)
+  if (!length(jobStatus) || !jobStatus %in% c(JOBSTATUSMAP[["completed"]], JOBSTATUSMAP[["downloaded"]])) {
     flog.error(
       "Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.",
       jobImportID
@@ -257,7 +263,7 @@ observeEvent(virtualActionButton(
 
   progress <- Progress$new()
 
-  on.exit(progress$close())
+  on.exit(progress$close(), add = TRUE)
 
   progress$set(
     message = lang$progressBar$importScen$title,
