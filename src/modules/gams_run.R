@@ -1510,7 +1510,7 @@ if (identical(config$activateModules$hcube, TRUE)) {
           }
         }
         hcJobConfig <- Scenario$new(
-          db = db, sname = paste(activeScen$getScenName(), as.numeric(Sys.time())),
+          db = db, sname = paste(substring(activeScen$getScenName(), 1, 44), as.numeric(Sys.time())),
           tags = input$newHcubeTags, overwrite = FALSE,
           isNewScen = TRUE,
           duplicatedMetadata = currentMetaTmp,

@@ -76,6 +76,22 @@ Sys.sleep(1)
 app$set_inputs(btSave = "click")
 Sys.sleep(0.5)
 
+# try to submit as new HC job (long scen name)
+expect_identical(httr::status_code(httr::PUT(
+  paste0(Sys.getenv("ENGINE_URL"), "/usage/quota"),
+  body = list(
+    username = Sys.getenv("ENGINE_USER_INVITEE"),
+    volume_quota = 200L
+  ),
+  httr::authenticate(Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")),
+  httr::timeout(2L)
+)), 200L)
+app$click(selector = ".btSolve .dropdown-toggle")
+app$click(selector = ".change-dd-button[data-action-id='btSubmitHcJob']")
+Sys.sleep(3L)
+app$click(selector = "#btSubmitHcJobConfirm")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
+
 # load scenario from HC job with only 2 scenarios
 app$click(selector = "#sidebarItemExpanded a[data-value='loadResults']")
 Sys.sleep(0.5)

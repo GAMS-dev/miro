@@ -17,7 +17,7 @@ ScenarioMetadata <- R6Class("ScenarioMetadata",
       if (!is.null(value) && isBadScenName(value)) {
         stop_custom(
           "error_bad_name",
-          "Scenario name must contain at least one non-whitespace character and must not have more than 63 characters",
+          "Scenario name must contain at least one non-whitespace character and must not have more than 64 characters",
           call. = FALSE
         )
       }
