@@ -217,7 +217,9 @@ lapply(seq_len(maxNumBlocks), function(blockIdx) {
     } else if (field %in% inputType[["date"]]) {
       ui <- generateLine(blockIdx, lineIdxToAssign, "date", label)
     } else if (field %in% inputType[["csv"]]) {
-      ui <- generateLine(blockIdx, lineIdxToAssign, "csv", label)
+      ui <- generateLine(blockIdx, lineIdxToAssign, "csv", label,
+        choices = if (identical(field, "_stag")) db$getAllScenTags() else NULL
+      )
     } else {
       ui <- generateLine(blockIdx, lineIdxToAssign, "number", label)
     }

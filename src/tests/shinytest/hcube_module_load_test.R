@@ -26,6 +26,10 @@ for (staticColId in c(1, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16)) {
 
 app$set_inputs(newLine_1 = "_sys_metadata_._stag")
 Sys.sleep(0.5)
+expect_options(getSelectizeOptions(app, "#val_1_1"), c("bla", "blub", "woff"))
+# adding option should work
+addSelectizeOption(app, "#val_1_1", "tag1")
+expect_options(getSelectizeOptions(app, "#val_1_1"), c("bla", "blub", "woff", "tag1"))
 app$set_inputs(val_1_1 = "blub")
 app$set_inputs(btSendQuery = "click")
 expect_error(app$wait_for_js("$('#batchLoadResults')?.data('datatable')?.data()?.length===5;", timeout = 5000L), NA)

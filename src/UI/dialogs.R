@@ -92,7 +92,8 @@ showLoginDialog <- function(cred, forwardOnSuccess = NULL) {
 }
 
 showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm",
-                              scenTags = character(0L), discardPermDefault = FALSE) {
+                              scenTags = character(0L), discardPermDefault = FALSE,
+                              allScenTags = character()) {
   showModal(modalDialog(
     title = lang$nav$dialogNewScen$title,
     tags$div(
@@ -106,7 +107,8 @@ showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm",
       ),
       tags$div(
         class = "input-form-mobile",
-        selectizeInput("newScenTags", lang$nav$dialogNewScen$tags, scenTags,
+        selectizeInput("newScenTags", lang$nav$dialogNewScen$tags,
+          unique(c(scenTags, allScenTags)),
           selected = scenTags,
           multiple = TRUE, options = list(
             "create" = TRUE,
@@ -733,7 +735,8 @@ showEditMetaDialog <- function(metadata,
                                viewsMetadata = character(0L),
                                attachAllowExec = FALSE,
                                isLocked = FALSE,
-                               selectedTab = NULL) {
+                               selectedTab = NULL,
+                               allScenTags = character(0L)) {
   supportedTabs <- "general"
   scenTags <- csv2Vector(metadata[["_stag"]][[1]])
 
@@ -759,7 +762,7 @@ showEditMetaDialog <- function(metadata,
     tags$div(
       class = "input-form-mobile",
       selectizeInput("editMetaTags", lang$nav$dialogEditMeta$newTags,
-        scenTags,
+        unique(c(scenTags, allScenTags)),
         selected = scenTags,
         multiple = TRUE, options = list(
           "create" = TRUE,
@@ -1781,7 +1784,7 @@ showJobProgressDialog <- function(jID, progressStatus) {
   ))
 }
 # Hypercube load module
-generateLine <- function(i, j, type, label) {
+generateLine <- function(i, j, type, label, choices = NULL) {
   fluidRow(
     class = "vertical-align",
     id = paste0("line", i, "_", j),
@@ -1864,7 +1867,16 @@ generateLine <- function(i, j, type, label) {
             {
               conditionalPanel(
                 paste0("!['%EXIST','%NOTEXIST'].includes(input.op_", i, "_", j, ")"),
-                textInput(paste0("val_", i, "_", j), label = NULL)
+                if (identical(type, "csv") && length(choices)) {
+                  selectizeInput(paste0("val_", i, "_", j), NULL, choices,
+                    multiple = FALSE, options = list(
+                      "create" = TRUE,
+                      "persist" = FALSE
+                    ),
+                  )
+                } else {
+                  textInput(paste0("val_", i, "_", j), label = NULL)
+                }
               )
             }
           )

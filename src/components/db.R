@@ -1080,6 +1080,13 @@ Db <- R6Class("Db",
         innerSepAND = FALSE
       ))
     },
+    getAllScenTags = function() {
+      scenTagsDf <- self$importDataset("_scenMeta", colNames = "_stag", distinct = TRUE)
+      if (!length(scenTagsDf)) {
+        return(character())
+      }
+      return(unique(csv2Vector(scenTagsDf[[1]])))
+    },
     buildRowSubsetSubquery = function(subsetData, innerSep, outerSep) {
       brackets <- NULL
       if (identical(innerSep, " OR ")) {

@@ -55,7 +55,8 @@ observeEvent(virtualActionButton(rv$btSaveAs), {
   saveAsFlag <<- TRUE
   showNewScenDialog(activeScen$getScenName(),
     scenTags = activeScen$getStags(),
-    discardPermDefault = !identical(activeScen$getScenUid(), uid)
+    discardPermDefault = !identical(activeScen$getScenUid(), uid),
+    allScenTags = db$getAllScenTags()
   )
 })
 
@@ -291,7 +292,8 @@ observeEvent(input$btEditMeta, {
     attachAllowExec = attachAllowExec,
     ugroups = csv2Vector(db$getUserAccessGroups()),
     isLocked = length(activeScen) != 0L && length(activeScen$getLockUid()) > 0L,
-    selectedTab = input$btEditMeta
+    selectedTab = input$btEditMeta,
+    allScenTags = db$getAllScenTags()
   )
 })
 

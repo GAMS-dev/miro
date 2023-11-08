@@ -1362,7 +1362,8 @@ if (identical(config$activateModules$hcube, TRUE)) {
         class = "row hc-tags-row",
         tags$div(
           class = "col-md-6",
-          selectizeInput("newHcubeTags", lang$nav$dialogHcube$newTags, c(),
+          selectizeInput("newHcubeTags", lang$nav$dialogHcube$newTags,
+            db$getAllScenTags(),
             multiple = TRUE, width = "100%", options = list(
               "create" = TRUE,
               "persist" = FALSE
