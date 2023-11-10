@@ -9,6 +9,7 @@ const log = require('electron-log');
 
 const minGams = '30.2';
 const minR = '4.0';
+const minPython = '3.8';
 const gamsDirNameRegex = /^(GAMS)?(\d+\.\d+)$/;
 
 const schema = {
@@ -17,6 +18,10 @@ const schema = {
     minLength: 2,
   },
   gamspath: {
+    type: 'string',
+    minLength: 2,
+  },
+  pythonpath: {
     type: 'string',
     minLength: 2,
   },
@@ -66,6 +71,7 @@ const schema = {
       type: 'string',
       enum: [
         'gamspath',
+        'pythonpath',
         'rpath',
         'logpath',
         'launchExternal',
@@ -102,7 +108,7 @@ class ConfigManager extends Store {
           cwd: configPathTmp,
           name: 'settings',
         });
-        ['gamspath', 'rpath', 'logpath', 'launchExternal', 'remoteExecution',
+        ['gamspath', 'pythonpath', 'rpath', 'logpath', 'launchExternal', 'remoteExecution',
           'logLifeTime', 'language', 'colorTheme', 'logLevel', 'miroEnv'].forEach((el) => {
           this[el] = superPathConfigData.get(el, '');
         });
@@ -117,7 +123,7 @@ class ConfigManager extends Store {
     this.configpathDefault = miroWorkspaceDir;
     this.logpathDefault = path.join(miroWorkspaceDir, 'logs');
 
-    ['gamspath', 'rpath', 'logpath', 'launchExternal', 'remoteExecution',
+    ['gamspath', 'pythonpath', 'rpath', 'logpath', 'launchExternal', 'remoteExecution',
       'logLifeTime', 'language', 'colorTheme', 'logLevel', 'miroEnv'].forEach((el) => {
       if (this.important.find((iel) => iel === el)) {
         return;
@@ -141,12 +147,12 @@ class ConfigManager extends Store {
     Object.entries(data).forEach(([key, value]) => {
       this[key] = value;
       if (value == null || value === ''
-       || (key === 'launchExternal' && value === false)
-       || (key === 'remoteExecution' && value === false)
-       || (key === 'logLifeTime' && value === -1)
-       || (key === 'language' && value === 'en')
-       || (key === 'colorTheme' && value === 'default')
-       || (key === 'logLevel' && value === 'INFO')) {
+        || (key === 'launchExternal' && value === false)
+        || (key === 'remoteExecution' && value === false)
+        || (key === 'logLifeTime' && value === -1)
+        || (key === 'language' && value === 'en')
+        || (key === 'colorTheme' && value === 'default')
+        || (key === 'logLevel' && value === 'INFO')) {
         this[key] = '';
         super.delete(key);
       } else {
@@ -167,7 +173,7 @@ class ConfigManager extends Store {
 
     valTmp = this[key];
 
-    if (['gamspath', 'rpath'].includes(key)) {
+    if (['gamspath', 'pythonpath', 'rpath'].includes(key)) {
       if (valTmp && !fs.existsSync(valTmp)) {
         this[key] = '';
         valTmp = '';
@@ -189,6 +195,8 @@ class ConfigManager extends Store {
       return this.findR();
     } if (key === 'gamspath') {
       return this.findGAMS();
+    } if (key === 'pythonpath') {
+      return this.findPython();
     } if (key === 'logpath') {
       return this.logpathDefault;
     } if (key === 'configpath') {
@@ -358,7 +366,7 @@ class ConfigManager extends Store {
       } else if (contentRDir.find((el) => el.name === 'Resources')) {
         rpathTmp = path.join(rpathTmp, 'Resources', 'bin');
       } else if (!contentRDir.find((el) => el.isFile()
-           && (el.name === 'Rscript' || el.name === 'Rscript.exe'))) {
+        && (el.name === 'Rscript' || el.name === 'Rscript.exe'))) {
         log.info('R path to validate is not a directory');
         return false;
       }
@@ -531,6 +539,9 @@ ${latestGamsInstalled}`);
     if (type.toLowerCase() === 'gams') {
       return minGams;
     }
+    if (type.toLowerCase() === 'python') {
+      return minPython;
+    }
     return minR;
   }
 
@@ -628,9 +639,104 @@ ${latestGamsInstalled}`);
     }
   }
 
+  async findPython() {
+    if (this.pythonpathDefault) {
+      return this.pythonpathDefault;
+    }
+    try {
+      let pythonpathTmp = which.sync('python3', { nothrow: true });
+      pythonpathTmp = await ConfigManager.validatePython(pythonpathTmp);
+      if (pythonpathTmp === false) {
+        pythonpathTmp = which.sync('python', { nothrow: true });
+        pythonpathTmp = await ConfigManager.validatePython(pythonpathTmp);
+      }
+      if (pythonpathTmp !== false) {
+        this.pythonpathDefault = pythonpathTmp;
+      }
+    } catch (e) {
+      log.error(e);
+      this.pythonpathDefault = '';
+    }
+    return this.pythonpathDefault;
+  }
+
+  static async validatePython(pythonpath) {
+    if (!pythonpath) {
+      log.info('Python path to validate is empty');
+      return false;
+    }
+    try {
+      let pythonpathTmp;
+      if (path.basename(pythonpath).toLowerCase().startsWith('python')) {
+        pythonpathTmp = pythonpath;
+      } else {
+        if (!fs.lstatSync(pythonpath).isDirectory()) {
+          log.info('Python path to validate is not a directory');
+          return false;
+        }
+        // Directory was selected, so scan it
+        let contentPythonDir;
+        const dirsToExplore = [pythonpath, path.join(pythonpath, 'bin')];
+        for (let i = 0; i < dirsToExplore.length; i += 1) {
+          try {
+            contentPythonDir = await fs.promises.readdir( // eslint-disable-line no-await-in-loop
+              dirsToExplore[i],
+              { withFileTypes: true },
+            );
+            if (process.platform === 'win32') {
+              const contentPythonDirTmp = contentPythonDir.filter((el) => (el.isFile() || el.isSymbolicLink()) && el.name === 'python.exe');
+              if (contentPythonDirTmp.length > 0) {
+                pythonpathTmp = path.join(dirsToExplore[i], contentPythonDirTmp[0].name);
+              }
+            } else {
+              const contentPythonDirTmp = contentPythonDir.filter((el) => (el.isFile() || el.isSymbolicLink()) && ['python', 'python3'].includes(el.name));
+              if (contentPythonDirTmp.length > 0) {
+                if (contentPythonDirTmp.length > 1) {
+                  pythonpathTmp = path.join(dirsToExplore[i], contentPythonDirTmp.filter((el) => (el.isFile() || el.isSymbolicLink()) && el.name === 'python3')[0].name);
+                } else {
+                  pythonpathTmp = path.join(dirsToExplore[i], contentPythonDirTmp[0].name);
+                }
+              }
+            }
+            if (pythonpathTmp) {
+              break;
+            }
+          } catch (e) {
+            // do nothing if dir does not exist
+          }
+        }
+        if (!pythonpathTmp || !fs.existsSync(pythonpathTmp)) {
+          log.info('python executable not found in python path');
+          return false;
+        }
+      }
+      let { stdout } = await execa(pythonpathTmp, ['-V']);
+      if (!stdout) {
+        log.info('Stdout of python is empty');
+        return false;
+      }
+      stdout = stdout.split(' ');
+      if (stdout.length < 2) {
+        log.info(`Stdout of python is invalid: ${stdout.join(' ')}`);
+        return false;
+      }
+      if (ConfigManager.vComp(stdout[1], minPython)) {
+        return pythonpathTmp;
+      }
+      log.info(`Stdout of python is invalid: ${stdout.join(' ')}`);
+      return false;
+    } catch (e) {
+      log.error(e);
+      return false;
+    }
+  }
+
   static async validate(id, pathToValidate) {
     if (id === 'gams') {
       return ConfigManager.validateGAMS(pathToValidate);
+    }
+    if (id === 'python') {
+      return ConfigManager.validatePython(pathToValidate);
     }
     return ConfigManager.validateR(pathToValidate);
   }

@@ -46,6 +46,8 @@ const pathConfig = {
   },
   gamspath: {
   },
+  pythonpath: {
+  },
   rpath: {
   },
   logpath: {
@@ -157,14 +159,14 @@ ipcRenderer.on('update-miroEnv', (e, envData) => {
 });
 
 Object.keys(pathConfig).forEach((id) => {
-  $(`#btPathSelect_${id}`).click(genPathSelectHandler(id));
+  $(`#btPathSelect_${id}`).on('click', genPathSelectHandler(id));
 
-  $(`#btPathSelect_${id}`).siblings('.btn-reset').click(function resetClickPath() {
+  $(`#btPathSelect_${id}`).siblings('.btn-reset').on('click', function resetClickPath() {
     const elKey = this.dataset.key;
     newConfig[elKey] = '';
     saveButton.attr('disabled', false);
     if (Object.keys(pathConfig).find((id2) => id2 === elKey
-        && pathConfig[id2].requiresRestart === true)) {
+      && pathConfig[id2].requiresRestart === true)) {
       requireRestart = true;
     }
     const $this = $(this);
@@ -172,7 +174,7 @@ Object.keys(pathConfig).forEach((id) => {
     $this.hide();
   });
 });
-$('.btn-reset-nonpath').click(function resetClickNonPath() {
+$('.btn-reset-nonpath').on('click', function resetClickNonPath() {
   saveButton.attr('disabled', false);
   const elKey = this.dataset.key;
   newConfig[elKey] = '';
@@ -189,7 +191,7 @@ $('.btn-reset-nonpath').click(function resetClickNonPath() {
     } else if (elKey === 'colorTheme') {
       inputElTmp = inputColorTheme;
     } else {
-      console.error('COULD NOT FIND INPUT EL!!');
+      console.error('COULD NOT FIND INPUT EL!!'); // eslint-disable-line no-console
       return;
     }
     inputElTmp.val(Object.keys(optionAliasMap[elKey])
@@ -210,9 +212,10 @@ ipcRenderer.on('settings-loaded', (e, data, defaults, langData) => {
     });
     ['title', 'general-tab', 'paths-tab', 'env-tab', 'launchBrowser', 'browserReset', 'generalLanguage', 'languageReset',
       'generalRemoteExec', 'remoteExecReset', 'generalLogging', 'loggingReset', 'generalLoglife', 'loglifeReset',
-      'pathMiroapp', 'pathMiroappSelect', 'resetPathMiroapp', 'pathGams', 'pathGamsSelect', 'pathGamsReset', 'pathLog',
-      'pathLogSelect', 'pathLogReset', 'pathR', 'pathRSelect', 'pathRReset', 'needHelp', 'btSave', 'btEnvImport',
-      'btEnvExport', 'btEnvReset', 'miroEnvHdrVar', 'miroEnvHdrVal', 'generalColorTheme', 'colorThemeReset', 'colorThemeOptionDefault', 'colorThemeOptionBlackWhite',
+      'pathMiroapp', 'pathMiroappSelect', 'resetPathMiroapp', 'pathGams', 'pathGamsSelect', 'pathGamsReset',
+      'pathPython', 'pathPythonSelect', 'pathPythonReset', 'pathLog', 'pathLogSelect', 'pathLogReset', 'pathR', 'pathRSelect',
+      'pathRReset', 'needHelp', 'btSave', 'btEnvImport', 'btEnvExport', 'btEnvReset', 'miroEnvHdrVar', 'miroEnvHdrVal',
+      'generalColorTheme', 'colorThemeReset', 'colorThemeOptionDefault', 'colorThemeOptionBlackWhite',
       'colorThemeOptionForest', 'colorThemeOptionTawny', 'colorThemeOptionDarkBlue', 'colorThemeOptionRedWine'].forEach((id) => {
       const el = document.getElementById(id);
       if (el) {
@@ -221,7 +224,7 @@ ipcRenderer.on('settings-loaded', (e, data, defaults, langData) => {
     });
     noEnvDesc = lang.noEnvDesc;
     document.getElementById('btCancel').value = lang.btCancel;
-    ['pathMiroappSelect', 'pathGamsSelect', 'pathLogSelect', 'pathRSelect'].forEach((id) => {
+    ['pathMiroappSelect', 'pathGamsSelect', 'pathPythonSelect', 'pathLogSelect', 'pathRSelect'].forEach((id) => {
       const el = document.getElementById(id);
       if (el) {
         $(el).addClass('browseLang').attr('content-after', lang.browseFiles);
