@@ -380,6 +380,10 @@ if (is.null(errMsg)) {
 
   if (isShinyProxy || identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")) {
     config$activateModules$remoteExecution <- TRUE
+    if (identical(config$isGamsPy, TRUE)) {
+      flog.error("GAMSPy-MIRO apps are currently not supported by GAMS Engine.")
+      errMsg <- "GAMSPy-MIRO apps are currently not supported by GAMS Engine."
+    }
   } else {
     config$activateModules$remoteExecution <- FALSE
   }
