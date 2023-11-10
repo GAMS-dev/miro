@@ -1073,22 +1073,30 @@ Worker <- R6Class("Worker", public = list(
     private$status <- NULL
     private$inputData$writeDisk(private$workDir, fileName = private$metadata$MIROGdxInName)
 
-    gamsArgs <- c(
-      if (length(private$metadata$extraClArgs)) private$metadata$extraClArgs,
-      paste0('curdir="', private$workDir, '"'), "lo=3", private$metadata$clArgs,
-      paste0('IDCGDXInput="', private$metadata$MIROGdxInName, '"'),
-      "LstTitleLeftAligned=1"
-    )
-    if (private$metadata$saveTraceFile) {
-      gamsArgs <- c(gamsArgs, 'trace="_scenTrc.trc"', "traceopt=3")
+    if (identical(private$metadata$isGamsPy, TRUE)) {
+      procArgs <- private$metadata$modelGmsName
+      procWd <- private$workDir
+    } else {
+      gamsArgs <- c(
+        if (length(private$metadata$extraClArgs)) private$metadata$extraClArgs,
+        paste0('curdir="', private$workDir, '"'), "lo=3", private$metadata$clArgs,
+        paste0('IDCGDXInput="', private$metadata$MIROGdxInName, '"'),
+        "LstTitleLeftAligned=1"
+      )
+      if (private$metadata$saveTraceFile) {
+        gamsArgs <- c(gamsArgs, 'trace="_scenTrc.trc"', "traceopt=3")
+      }
+      pfFilePath <- gmsFilePath(file.path(private$workDir, tolower(private$metadata$modelName) %+% ".pf"))
+      writeLines(c(private$inputData$getClArgs(), gamsArgs), pfFilePath)
+      procArgs <- c(private$metadata$modelGmsName, "pf", pfFilePath)
+      procWd <- NULL
     }
-    pfFilePath <- gmsFilePath(file.path(private$workDir, tolower(private$metadata$modelName) %+% ".pf"))
-    writeLines(c(private$inputData$getClArgs(), gamsArgs), pfFilePath)
 
-    private$process <- process$new(file.path(private$metadata$gamsSysDir, "gams"),
-      args = c(private$metadata$modelGmsName, "pf", pfFilePath),
+    private$process <- process$new(private$metadata$executablePath,
+      args = procArgs,
       stdout = if (private$metadata$hiddenLogFile) NULL else "|",
       windows_hide_window = TRUE,
+      wd = procWd,
       env = private$getProcEnv()
     )
     return(self)
@@ -2188,6 +2196,12 @@ Worker <- R6Class("Worker", public = list(
     return(paste0("https://", url))
   },
   getProcEnv = function() {
+    if (identical(private$metadata$isGamsPy, TRUE)) {
+      procEnv <- Sys.getenv()
+      procEnv[["GAMS_IDC_GDX_INPUT"]] <- private$metadata$MIROGdxInName
+      procEnv[["GAMS_IDC_GDX_OUTPUT"]] <- private$metadata$MIROGdxOutName
+      return(procEnv)
+    }
     # workaround since GAMS31 has a bug on Linux that causes an infinite loop in case
     # XDG_DATA_DIRS or XDG_CONFIG_DIRS has more than 8 entries
     procEnv <- NULL

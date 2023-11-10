@@ -1597,6 +1597,12 @@ ipcMain.on('settings-select-new-path', async (e, id, defaultPath) => {
         label: lang.settings.dialogGamsPathLabel,
         buttonLabel: lang.settings.dialogGamsPathBtn,
       },
+      pythonpath: {
+        title: lang.settings.dialogPythonPathHdr,
+        message: lang.settings.dialogPythonPathMsg,
+        label: lang.settings.dialogPythonPathLabel,
+        buttonLabel: lang.settings.dialogPythonPathBtn,
+      },
       rpath: {
         title: lang.settings.dialogRPathHdr,
         message: lang.settings.dialogRPathMsg,
@@ -1620,12 +1626,14 @@ ipcMain.on('settings-select-new-path', async (e, id, defaultPath) => {
     if (!pathSelected) {
       return;
     }
-    if (id === 'gamspath' || id === 'rpath') {
+    if (['gamspath', 'rpath', 'pythonpath'].includes(id)) {
       let configId;
       if (id === 'gamspath') {
         configId = 'gams';
-      } else {
+      } else if (id === 'rpath') {
         configId = 'r';
+      } else {
+        configId = 'python';
       }
       const idUpper = configId.toUpperCase();
 

@@ -1939,6 +1939,7 @@ if (!is.null(errMsg)) {
             vapply(config$outputAttachments, "[[", character(1L), "filename", USE.NAMES = FALSE)
           ),
           MIROGdxInName = MIROGdxInName,
+          MIROGdxOutName = MIROGdxOutName,
           clArgs = GAMSClArgs,
           textEntries = c(
             if (config$activateModules$logFile) paste0(modelNameRaw, ".log"),
@@ -1949,7 +1950,13 @@ if (!is.null(errMsg)) {
           extraClArgs = config$extraClArgs,
           saveTraceFile = config$saveTraceFile,
           modelGmsName = modelGmsName, modelNameRaw = modelNameRaw,
-          gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
+          executablePath = if (identical(config$isGamsPy, TRUE)) {
+            Sys.getenv("PYTHON_EXEC_PATH")
+          } else {
+            file.path(gamsSysDir, "gams")
+          },
+          csvDelim = config$csvDelim,
+          isGamsPy = config$isGamsPy,
           serverOS = getOS(), modelData = modelData,
           rememberMeFileName = rememberMeFileName,
           hiddenLogFile = !config$activateModules$logFile

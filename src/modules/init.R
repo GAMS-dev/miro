@@ -2390,3 +2390,8 @@ if (is.null(errMsg)) {
     )
   }
 }
+if (endsWith(tolower(modelGmsName), ".py")) {
+  config$isGamsPy <- TRUE
+  # lst file not supported with gamspy
+  config$activateModules$lstFile <- FALSE
+}

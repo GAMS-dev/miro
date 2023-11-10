@@ -122,6 +122,7 @@ class MiroProcessManager {
     log.debug(`Process: ${internalPid} is being started on port: ${shinyPort}.`);
     const rpath = this.configData.get('rpath');
     const gamspath = this.configData.get('gamspath');
+    const pythonpath = this.configData.get('pythonpath');
     const logpath = this.configData.get('logpath');
     const dbPath = getAppDbPath(appData.dbpath);
 
@@ -189,6 +190,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       MIRO_BUILD: this.isInBuildMode,
       MIRO_BUILD_ARCHIVE: appData.buildArchive === true,
       GAMS_SYS_DIR: await gamspath,
+      PYTHON_EXEC_PATH: await pythonpath,
       MIRO_LOG_PATH: await logpath,
       LAUNCHINBROWSER: await generalConfig.launchExternal,
       MIRO_REMOTE_EXEC: await generalConfig.remoteExecution,
