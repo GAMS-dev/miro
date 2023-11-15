@@ -3,7 +3,7 @@ const {
 } = require('electron');
 const path = require('path');
 const { format } = require('util');
-const log = require('electron-log');
+const log = require('electron-log/main');
 
 async function addModelData(
   miroProcessManager,

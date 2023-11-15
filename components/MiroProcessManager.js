@@ -1,4 +1,4 @@
-const log = require('electron-log');
+const log = require('electron-log/main');
 const http = require('axios');
 const execa = require('execa');
 const path = require('path');
