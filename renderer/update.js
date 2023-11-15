@@ -1,7 +1,7 @@
 const { ipcRenderer, shell } = require('electron');
 const querystring = require('querystring');
 const https = require('https');
-const log = require('electron-log');
+const log = require('electron-log/renderer');
 const $ = require('jquery');
 
 const installedVersion = querystring.parse(global.location.search)['?miroVersion'].split('.');

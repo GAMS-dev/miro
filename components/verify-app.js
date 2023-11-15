@@ -1,5 +1,5 @@
 const { dialog } = require('electron');
-const log = require('electron-log');
+const log = require('electron-log/main');
 const execa = require('execa');
 const path = require('path');
 const fs = require('fs');

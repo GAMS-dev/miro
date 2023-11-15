@@ -5,7 +5,7 @@ const path = require('path');
 const which = require('which');
 const execa = require('execa');
 const { tmpdir } = require('os');
-const log = require('electron-log');
+const log = require('electron-log/main');
 
 const minGams = '30.2';
 const minR = '4.0';

@@ -7,7 +7,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const yauzl = require('yauzl');
 const util = require('util');
-const log = require('electron-log');
+const log = require('electron-log/main');
 const menu = require('./components/menu');
 const installRPackages = require('./components/install-r');
 
@@ -27,6 +27,8 @@ const MiroProcessManager = require('./components/MiroProcessManager');
 const {
   getAppDbPath,
 } = require('./components/util');
+
+log.initialize({ preload: true });
 
 const isMac = process.platform === 'darwin';
 const DEVELOPMENT_MODE = !app.isPackaged;
@@ -64,7 +66,7 @@ if (!errMsg) {
     if (!fs.existsSync(logPath)) {
       fs.mkdirSync(logPath, { recursive: true });
     }
-    log.transports.file.resolvePath = () => (path.join(
+    log.transports.file.resolvePathFn = () => (path.join(
       logPath,
       'launcher.log',
     ));
