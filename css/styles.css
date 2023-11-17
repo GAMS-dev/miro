@@ -38,6 +38,7 @@ a:hover {
   }
 }
 #btEditWrapper {
+  -webkit-app-region: no-drag;
   cursor: pointer;
 }
 #btEdit:hover {
