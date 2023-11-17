@@ -4,6 +4,9 @@ stages:
   - test
   - deploy
 
+include:
+  - template: Security/Container-Scanning.gitlab-ci.yml
+
 image:
   name: $CI_REGISTRY_IMAGE/gamsmiro-ci:latest
 
@@ -236,6 +239,222 @@ build_linux_job:
       when: never
     - when: on_success
   needs: [prepare_all]
+
+
+dependency_scanning_js:
+  tags:
+   - linux
+  stage: test
+  script:
+    - echo -n '{"launcher":' > npm-audit-report.json
+    - npm i --package-lock-only --ignore-scripts
+    - npm audit --omit=dev --json | tr -d '\n' >> npm-audit-report.json || true
+    - echo -n ',"ui":' >> npm-audit-report.json
+    - |
+        pushd src
+          npm audit --omit=dev --json | tr -d '\n' >> ../npm-audit-report.json || true
+        popd
+    - echo -n ',"server_admin":' >> npm-audit-report.json
+    - |
+        pushd server/admin
+          npm i --package-lock-only --ignore-scripts
+          npm audit --omit=dev --json | tr -d '\n' >> ../../npm-audit-report.json || true
+        popd
+    - echo -n '}' >> npm-audit-report.json
+  artifacts:
+    paths:
+      - npm-audit-report.json
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+
+
+dependency_scanning_r:
+  tags:
+   - linux
+  stage: test
+  script:
+    - Rscript scripts/checkVuln.R
+  artifacts:
+    paths:
+      - r-audit-report.json
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+
+
+dependency_scanning_python:
+  tags:
+    - linux
+  stage: test
+  script:
+    - pip-audit -r server/auth/requirements.txt -f json > audit-auth.json || true
+    - python3 ./ci/create_pip_audit_report.py pip-audit-report.json audit-auth.json
+  artifacts:
+    paths:
+      - pip-audit-report.json
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+
+
+container_scanning:
+  tags:
+    - linux
+  variables:
+    CS_DOCKERFILE_PATH: "server/ui/Dockerfile"
+    GIT_STRATEGY: "fetch"
+  before_script:
+    - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]]) && IMAGE_TAG=unstable
+    - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-ui:$IMAGE_TAG
+  after_script:
+    - cp gl-container-scanning-report.json gl-container-scanning-report-ui.json
+  artifacts:
+    paths:
+      - gl-container-scanning-report-ui.json
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+
+
+container_scanning_admin:
+  extends: container_scanning
+  variables:
+    CS_DOCKERFILE_PATH: "server/admin/Dockerfile"
+    GIT_STRATEGY: "fetch"
+  before_script:
+    - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]]) && IMAGE_TAG=unstable
+    - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-admin:$IMAGE_TAG
+  after_script:
+    - cp gl-container-scanning-report.json gl-container-scanning-report-admin.json
+  artifacts:
+    paths:
+      - gl-container-scanning-report-admin.json
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+
+
+container_scanning_auth:
+  extends: container_scanning
+  variables:
+    CS_DOCKERFILE_PATH: "server/auth/Dockerfile"
+    GIT_STRATEGY: "fetch"
+  before_script:
+    - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]]) && IMAGE_TAG=unstable
+    - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-auth:$IMAGE_TAG
+  after_script:
+    - cp gl-container-scanning-report.json gl-container-scanning-report-auth.json
+  artifacts:
+    paths:
+      - gl-container-scanning-report-auth.json
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+
+
+container_scanning_proxy:
+  extends: container_scanning
+  variables:
+    CS_DOCKERFILE_PATH: "server/proxy/Dockerfile"
+    GIT_STRATEGY: "fetch"
+  before_script:
+    - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]]) && IMAGE_TAG=unstable
+    - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-proxy:$IMAGE_TAG
+  after_script:
+    - cp gl-container-scanning-report.json gl-container-scanning-report-proxy.json
+  artifacts:
+    paths:
+      - gl-container-scanning-report-proxy.json
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+
+
+container_scanning_sproxy:
+  extends: container_scanning
+  variables:
+    CS_DOCKERFILE_PATH: "server/docker-socket-proxy/Dockerfile"
+    GIT_STRATEGY: "fetch"
+  before_script:
+    - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]]) && IMAGE_TAG=unstable
+    - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-sproxy:$IMAGE_TAG
+  after_script:
+    - cp gl-container-scanning-report.json gl-container-scanning-report-sproxy.json
+  artifacts:
+    paths:
+      - gl-container-scanning-report-sproxy.json
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+
+
+container_scanning_db:
+  extends: container_scanning
+  variables:
+    CS_IMAGE: "postgres:12.9-alpine"
+  after_script:
+    - cp gl-container-scanning-report.json gl-container-scanning-report-db.json
+  artifacts:
+    paths:
+      - gl-container-scanning-report-db.json
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+
+
+create_vulnerability_report:
+  tags:
+    - linux
+  stage: test
+  needs:
+    - dependency_scanning_js
+    - dependency_scanning_r
+    - dependency_scanning_python
+    - container_scanning
+    - container_scanning_admin
+    - container_scanning_auth
+    - container_scanning_proxy
+    - container_scanning_sproxy
+  script:
+    - python3 ci/create_vuln_report.py
+  artifacts:
+    paths:
+      - ci-vuln-report.html
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+
 
 build_windows_job:
   tags:

@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     r-base-dev=${R_BASE_VERSION}*
 
-RUN R -e "install.packages(c('testthat', 'shinytest2', 'xml2', 'precommit', 'docopt', 'styler'));"
+RUN R -e "install.packages(c('testthat', 'shinytest2', 'xml2', 'precommit', 'docopt', 'styler', 'oysteR'));"
 
 COPY r/library_src /home/miro/r/library_src
 COPY ci/install_pkg.R /home/miro/r/install_pkg.R
@@ -48,8 +48,8 @@ RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash -
 RUN apt-get install -y nodejs
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-RUN apt-get update && apt-get install -y yarn python3-pip git
-RUN pip3 install pre-commit
+RUN apt-get update && apt-get install -y yarn python3-pip python3-venv git
+RUN pip3 install pre-commit pip-audit pandas
 
 # install openssh and rsync for deploying documentation
 RUN apt-get update && apt-get install -y openssh-client rsync

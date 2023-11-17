@@ -21,6 +21,7 @@ mv server/miro_server.zip doc/GAMS-MIRO-Server-${MIRO_VERSION_FULL}.zip
 
 echo $MIRO_VERSION_FULL | sed 's/\./,/g'> ./doc/latest.ver
 sed -e '/<code class="language-json config-schema-container">/r./src/conf/config_schema.json' ./doc/schema_template.html >./doc/schema.html
+sed -e '/<div id="ci-vuln-report" class="section-block">/r./ci-vuln-report.html' ./doc/security_ci_report.html >./doc/security_ci_report.html
 sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g' ./src/LICENSE > ./src/LICENSE-escaped && {
     sed -e '/<pre id="miro-license">/r./src/LICENSE-escaped' ./doc/license_template.html >./doc/license.html && rm ./src/LICENSE-escaped
 }
