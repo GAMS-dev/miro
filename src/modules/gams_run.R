@@ -565,8 +565,8 @@ output$modelStatus <- renderUI({
 
   if (currModelStat < 0) {
     returnCodeText <- GAMSRCMAP[as.character(currModelStat)]
-    if (is.na(returnCodeText)) {
-      returnCodeText <- as.character(currModelStat)
+    if (is.na(returnCodeText) || identical(config$isGamsPy, TRUE)) {
+      returnCodeText <- sprintf(lang$nav$gamsModelStatus$errorReturnCode, currModelStat)
     }
     statusText <- lang$nav$gamsModelStatus$error %+% returnCodeText
     flog.debug(
@@ -585,8 +585,8 @@ output$modelStatus <- renderUI({
 
   if (currModelStat != 0) {
     returnCodeText <- GAMSRCMAP[as.character(currModelStat)]
-    if (is.na(returnCodeText)) {
-      returnCodeText <- as.character(currModelStat)
+    if (is.na(returnCodeText) || identical(config$isGamsPy, TRUE)) {
+      returnCodeText <- sprintf(lang$nav$gamsModelStatus$errorReturnCode, currModelStat)
     }
     statusText <- lang$nav$gamsModelStatus$error %+% returnCodeText
     if (config$activateModules$miroLogFile && length(miroLogAnnotations)) {

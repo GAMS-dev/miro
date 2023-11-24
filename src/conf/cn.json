@@ -168,7 +168,8 @@
       "collection": "正在下载结果",
       "exec":"模型执行阶段",
       "success":"运行已终止。",
-      "error":"运行未终止:"
+      "error":"运行未终止:",
+      "errorReturnCode": "进程终止，状态为：%d"
     },
     "notificationNewInput":{
       "new":"已导入%s个数据集。",

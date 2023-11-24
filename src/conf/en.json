@@ -168,7 +168,8 @@
       "exec":"Model execution phase",
       "collection": "Results are being downloaded",
       "success":"Run successfully terminated.",
-      "error":"Run did not terminate successfully: "
+      "error":"Run did not terminate successfully: ",
+      "errorReturnCode": "Process terminated with status: %d"
     },
     "notificationNewInput":{
       "new":"%s datasets imported.",
