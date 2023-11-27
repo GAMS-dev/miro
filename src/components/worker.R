@@ -1076,6 +1076,7 @@ Worker <- R6Class("Worker", public = list(
     if (identical(private$metadata$isGamsPy, TRUE)) {
       procArgs <- private$metadata$modelGmsName
       procWd <- private$workDir
+      stderrHandler <- if (private$metadata$hiddenLogFile) NULL else "2>&1"
     } else {
       gamsArgs <- c(
         if (length(private$metadata$extraClArgs)) private$metadata$extraClArgs,
@@ -1090,11 +1091,13 @@ Worker <- R6Class("Worker", public = list(
       writeLines(c(private$inputData$getClArgs(), gamsArgs), pfFilePath)
       procArgs <- c(private$metadata$modelGmsName, "pf", pfFilePath)
       procWd <- NULL
+      stderrHandler <- NULL
     }
 
     private$process <- process$new(private$metadata$executablePath,
       args = procArgs,
       stdout = if (private$metadata$hiddenLogFile) NULL else "|",
+      stderr = stderrHandler,
       windows_hide_window = TRUE,
       wd = procWd,
       env = private$getProcEnv()
