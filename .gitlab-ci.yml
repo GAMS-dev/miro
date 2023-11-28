@@ -416,7 +416,7 @@ container_scanning_sproxy:
 container_scanning_db:
   extends: container_scanning
   variables:
-    CS_IMAGE: "postgres:12.9-alpine"
+    CS_IMAGE: "postgres:16.1-alpine"
   after_script:
     - cp gl-container-scanning-report.json gl-container-scanning-report-db.json
   artifacts:
@@ -742,7 +742,7 @@ test_job_api:
   image: docker:20.10
   services:
     - name: docker:20.10-dind
-    - name: postgres:12.1-alpine
+    - name: postgres:16.1-alpine
       alias: postgres
   variables:
     DOCKER_DRIVER: overlay2
@@ -775,7 +775,7 @@ test_job:
     - linux
   stage: test
   services:
-    - name: postgres:12.1-alpine
+    - name: postgres:16.1-alpine
   variables:
     MIRO_DB_TYPE: postgres
     MIRO_DB_HOST: postgres

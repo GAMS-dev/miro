@@ -1,4 +1,4 @@
-# v2
+# v3
 version: "3.7"
 services:
   admin:
@@ -41,7 +41,7 @@ services:
     networks:
       - gamsmiro-internal-network
   db:
-    image: postgres:12.9-alpine
+    image: postgres:16.1-alpine
     restart: always
     environment:
       POSTGRES_USER: GMSMASTER
