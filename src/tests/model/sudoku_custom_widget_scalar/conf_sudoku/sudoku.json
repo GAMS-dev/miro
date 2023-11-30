@@ -1,0 +1,98 @@
+{
+  "overwriteSheetOrder": {
+    "input": ["initial_state", "_widgets"]
+  },
+  "pivottable": {
+    "bgColor": "rgb(255,128,0)"
+  },
+  "theme": "browser",
+  "defCompMode": "split",
+  "roundingDecimals": 2,
+  "activateModules": {
+    "logFile": true,
+    "lstFile": false,
+    "loadLocal": true,
+    "attachments": true,
+    "downloadTempFiles": false
+  },
+  "autoGenInputGraphs": true,
+  "aggregateWidgets": true,
+  "storeLogFilesDuration": 7,
+  "excelIncludeMeta": true,
+  "excelIncludeEmptySheets": true,
+  "saveTraceFile": true,
+  "dataRendering": {
+    "results": {
+      "outType": "mirowidget_initial_state"
+    },
+    "initial_state": {
+      "outType": "mirowidget_initial_state"
+    }
+  },
+  "inputWidgets": {
+    "initial_state": {
+      "widgetType": "custom",
+      "rendererName": "mirowidget_initial_state",
+      "alias": "Initial state",
+      "apiVersion": 2,
+      "additionalData": "test123",
+      "widgetSymbols": "_scalars",
+      "options": {
+        "isInput": true
+      }
+    },
+    "ii": {
+      "widgetType": "dropdown",
+      "choices": ["seattle", "san-diego"],
+      "aliases": ["Seattle", "San-Diego"],
+      "multiple": true
+    },
+    "test": {
+      "widgetType": "dropdown",
+      "choices": "$ii$i"
+    },
+    "test124": {
+      "widgetType": "custom",
+      "rendererName": "mirowidget_test124",
+      "alias": "Distance",
+      "apiVersion": 2,
+      "additionalData": "initial_state2",
+      "widgetSymbols": ["i", "j", "ii", "d", "_gmspar_bla"]
+    },
+    "test123": {
+      "widgetType": "numericinput",
+      "alias": "test 123",
+      "value": 1.1,
+      "label": "Test 123?"
+    },
+    "_gmspar_bla": {
+      "widgetType": "dropdown",
+      "alias": "bla bla",
+      "choices": ["bla1", "bla2"],
+      "aliases": ["BLA1", "BLA2"]
+    }
+  },
+  "pageTitle": "Sudoku solver",
+  "miroLogFile": "miro.log",
+  "overwriteAliases": {
+    "initial_state": {
+      "newAlias": "initial_state"
+    },
+    "results": {
+      "newAlias": "results"
+    }
+  },
+  "defaultRendererOutput": "miroPivot",
+  "handsontable": {
+    "stretchH": "none",
+    "readonly": false,
+    "manualColumnResize": true,
+    "contextMenu": {
+      "enabled": true,
+      "allowRowEdit": true,
+      "allowColEdit": true
+    },
+    "height": 700,
+    "colWidths": 150
+  }
+}
