@@ -1065,33 +1065,55 @@ if (is.null(errMsg)) {
     if (!length(config$hcubeWidgetGroups)) {
       config$hcubeWidgetGroups <- list(list(name = NULL, members = names(modelIn)))
     }
+    for (el in names(config$hcubeWidgets)) {
+      if (!el %in% names(modelIn)) {
+        errMsg <- paste(errMsg, sprintf(
+          "Unknown symbol: '%s' defined as a Hypercube widget.",
+          el
+        ))
+      } else if (!identical(modelIn[[el]]$isScalarDs, TRUE)) {
+        errMsg <- paste(errMsg, sprintf(
+          "Hypercube widgets can only be defined for scalar symbols. '%s' is not a scalar.",
+          el
+        ))
+      } else {
+        widgetType <- config$hcubeWidgets[[el]]$widgetType
+        config$hcubeWidgets[[el]]$type <- widgetType
+        config$hcubeWidgets[[el]][[widgetType]] <- config$hcubeWidgets[[el]]
+      }
+    }
     hcubeWidgetsAlreadyAssigned <- c()
     hcWidgetsTmp <- lapply(seq_along(modelIn), function(widgetId) {
       el <- names(modelIn)[[widgetId]]
-      if (isTRUE(modelIn[[el]]$noHcube)) {
+      if (el %in% names(config$hcubeWidgets)) {
+        widgetConfig <- config$hcubeWidgets[[el]]
+      } else {
+        widgetConfig <- modelIn[[el]]
+      }
+      if (isTRUE(widgetConfig$noHcube)) {
         return(NA)
       }
-      if (identical(modelIn[[el]]$type, "checkbox")) {
+      if (identical(widgetConfig$type, "checkbox")) {
         return(list(
           type = "dropdown",
           baseType = "checkbox",
-          alias = modelIn[[el]]$checkbox$alias,
+          alias = widgetConfig$checkbox$alias,
           name = el,
           widgetId = widgetId,
-          label = modelIn[[el]]$checkbox$label,
+          label = widgetConfig$checkbox$label,
           choices = c(0L, 1L),
-          selected = modelIn[[el]]$checkbox$value,
+          selected = widgetConfig$checkbox$value,
           multiple = TRUE
         ))
       }
-      if (identical(modelIn[[el]]$type, "dropdown")) {
-        if (isTRUE(modelIn[[el]]$dropdown$multiple)) {
+      if (identical(widgetConfig$type, "dropdown")) {
+        if (isTRUE(widgetConfig$dropdown$multiple)) {
           return(NA)
         }
-        if (identical(modelIn[[el]]$symtype, "set")) {
+        if (identical(widgetConfig$symtype, "set")) {
           return(NA)
         }
-        ret <- modelIn[[el]]$dropdown
+        ret <- widgetConfig$dropdown
         ret$type <- "dropdown"
         ret$baseType <- "dropdown"
         ret$multiple <- TRUE
@@ -1102,8 +1124,8 @@ if (is.null(errMsg)) {
         }
         return(ret)
       }
-      if (identical(modelIn[[el]]$type, "slider")) {
-        ret <- modelIn[[el]]$slider
+      if (identical(widgetConfig$type, "slider")) {
+        ret <- widgetConfig$slider
         ret$type <- "slider"
         ret$baseType <- "slider"
         ret$name <- el
