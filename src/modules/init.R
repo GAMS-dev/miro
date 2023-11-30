@@ -325,48 +325,39 @@ if (is.null(errMsg)) {
   }
 
   modelInRaw <- modelIn
-  customPackages <- vector("list", length(modelIn))
 
   invalidWidgetsToRender <- character(0L)
   inputSymInForeignRenderers <- character(0L)
 
   for (el in names(config$inputWidgets)) {
     i <- match(tolower(el), names(modelIn))
-    el_l <- tolower(el)
 
     widgetConfig <- config$inputWidgets[[el]]
     widgetType <- widgetConfig$widgetType
-    if (is.na(i)) {
+    widgetConfig$widgetType <- NULL
+    isScalarWidget <- is.na(i)
+    if (isScalarWidget) {
+      if (identical(widgetType, "table")) {
+        errMsg <- paste(errMsg, sprintf(
+          "The output type for the GAMS symbol: '%s' is not valid. This widget type can not represent 0 dimensional data.",
+          names(modelIn)[i]
+        ), sep = "\n")
+        next
+      }
       j <- NA
       if (tolower(scalarsFileName) %in% names(modelIn)) {
         j <- match(tolower(el), tolower(modelIn[[scalarsFileName]]$symnames))
       }
-      widgetConfig$widgetType <- NULL
+      i <- tolower(el)
+      modelIn[[i]] <- list(isScalarDs = TRUE)
 
       if (!is.na(j)) {
-        modelIn[[el_l]] <- list()
-
         if (is.null(widgetConfig[["alias"]])) {
-          modelIn[[el_l]]$alias <- modelIn[[scalarsFileName]]$symtext[j]
+          modelIn[[i]]$alias <- modelIn[[scalarsFileName]]$symtext[j]
         } else {
-          modelIn[[el_l]]$alias <- widgetConfig[["alias"]]
+          modelIn[[i]]$alias <- widgetConfig[["alias"]]
           widgetConfig$alias <- NULL
         }
-        if (!is.null(widgetConfig$noHcube)) {
-          modelIn[[el_l]]$noHcube <- widgetConfig$noHcube
-          widgetConfig$noHcube <- NULL
-        }
-        if (!is.null(widgetConfig$noImport)) {
-          modelIn[[el_l]]$noImport <- widgetConfig$noImport
-          widgetConfig$noImport <- NULL
-        }
-        if (isTRUE(widgetConfig$clearValue)) {
-          config$textOnlySymbols <- c(config$textOnlySymbols, el)
-          if (!identical(widgetType, "dropdown")) {
-            widgetConfig$clearValue <- NULL
-          }
-        }
-        modelIn[[el_l]][[widgetType]] <- widgetConfig
         modelIn[[tolower(scalarsFileName)]]$symnames <- modelIn[[tolower(scalarsFileName)]]$symnames[-c(j)]
         if (!length(modelIn[[tolower(scalarsFileName)]]$symnames)) {
           # remove scalar table entirely if no scalar symbols are left
@@ -386,52 +377,48 @@ if (is.null(errMsg)) {
           modelIn[[tolower(scalarsFileName)]]$symtext <- modelIn[[tolower(scalarsFileName)]]$symtext[-c(j)]
         }
       } else if (any(startsWith(el, c(prefixDDPar, prefixGMSOpt)))) {
-        elL <- tolower(el)
-        modelIn[[elL]] <- list()
-
         if (!is.null(widgetConfig[["alias"]])) {
-          modelIn[[elL]]$alias <- widgetConfig[["alias"]]
+          modelIn[[i]]$alias <- widgetConfig[["alias"]]
           widgetConfig$alias <- NULL
-        } else if (startsWith(elL, prefixGMSOpt)) {
-          modelIn[[elL]]$alias <- substr(toupper(el), 9L, nchar(el))
+        } else if (startsWith(el, prefixGMSOpt)) {
+          modelIn[[i]]$alias <- substr(toupper(el), 9L, nchar(el))
         } else {
-          modelIn[[elL]]$alias <- paste0("--", toupper(substr(el, 9L, nchar(el))))
+          modelIn[[i]]$alias <- paste0("--", toupper(substr(el, 9L, nchar(el))))
         }
-        if (!is.null(widgetConfig$noHcube)) {
-          modelIn[[elL]]$noHcube <- widgetConfig$noHcube
-          widgetConfig$noHcube <- NULL
-        }
-        if (!is.null(widgetConfig$noImport)) {
-          modelIn[[elL]]$noImport <- widgetConfig$noImport
-          widgetConfig$noImport <- NULL
-        }
-        modelIn[[elL]][[widgetType]] <- widgetConfig
       } else if (LAUNCHCONFIGMODE) {
         invalidWidgetsToRender <- c(invalidWidgetsToRender, el)
+        modelIn[[i]] <- NULL
+        i <- NA
       } else {
         errMsgTmp <- paste0("'", el, "' was defined to be an input widget, but is not part of the data contract! Start the Configuration Mode to reconfigure your app.")
         errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
+        modelIn[[i]] <- NULL
+        i <- NA
       }
     } else {
+      if (!is.null(widgetConfig[["alias"]])) {
+        modelIn[[i]]$alias <- widgetConfig[["alias"]]
+        widgetConfig$alias <- NULL
+      }
+    }
+    if (!is.na(i)) {
       symDim <- length(modelIn[[i]]$headers)
       if (symDim > 1L && !(widgetType %in% c("table", "custom"))) {
         if (!(identical(widgetType, "dropdown") && identical(symDim, 2L) && identical(modelIn[[i]]$headers[[2]]$type, "string"))) {
           errMsg <- paste(errMsg, sprintf(
             "The output type for the GAMS symbol: '%s' is not valid. This widget type can not represent multi-dimensional data.",
-            names(modelIn)[i]
+            el
           ), sep = "\n")
           next
         }
       }
-      if (identical(symDim, 1L) && !(widgetType %in% c("table", "dropdown"))) {
+      if (identical(symDim, 1L) && !(widgetType %in% c("table", "custom", "dropdown"))) {
         errMsg <- paste(errMsg, sprintf(
           "The output type for the GAMS symbol: '%s' is not valid. This widget type can not represent 1 dimensional data.",
-          names(modelIn)[i]
+          el
         ), sep = "\n")
         next
       }
-      widgetConfig$widgetType <- NULL
-
       if (!is.null(widgetConfig$options)) {
         modelIn[[i]]$options <- widgetConfig$options
         widgetConfig$options <- NULL
@@ -445,7 +432,7 @@ if (is.null(errMsg)) {
           }, logical(1L))) > 1L) {
             errMsg <- paste(errMsg, sprintf(
               "The GAMS symbol: %s is declared as table. This causes the last column to be pivoted in MIRO.\nMIRO pivot cannot be used with already pivoted symbols.\nPlease declare the symbol as a parameter instead.",
-              names(modelIn)[i]
+              el
             ), sep = "\n")
             next
           }
@@ -457,7 +444,7 @@ if (is.null(errMsg)) {
             list(
               "_input_" = TRUE,
               "_metadata_" = list(
-                symname = names(modelIn)[i],
+                symname = el,
                 headers = modelIn[[i]]$headers,
                 symtype = modelIn[[i]]$symtype
               )
@@ -466,17 +453,17 @@ if (is.null(errMsg)) {
           validGraphConfig <- validateGraphConfig(modelIn[[i]], skipOutTypeCheck = TRUE)
           if (!identical(validGraphConfig, TRUE)) {
             errMsg <- paste(errMsg, paste0(
-              "Invalid widget config for symbol '", names(modelIn)[i],
+              "Invalid widget config for symbol '", el,
               "': ", validGraphConfig, "."
             ), sep = "\n")
             next
           }
-          if (is.null(config$dataRendering[[names(modelIn)[i]]])) {
+          if (is.null(config$dataRendering[[el]])) {
             if (length(config$dataRendering)) {
-              config$dataRendering[[names(modelIn)[i]]] <- list(outType = "datatable")
+              config$dataRendering[[el]] <- list(outType = "datatable")
             } else {
               config$dataRendering <- list(list(outType = "datatable"))
-              names(config$dataRendering) <- names(modelIn)[i]
+              names(config$dataRendering) <- el
             }
           }
         } else if (!is.null(widgetConfig$dropdownCols)) {
@@ -495,7 +482,7 @@ if (is.null(errMsg)) {
             errMsg <- paste(errMsg, sprintf(
               "The column: '%s' of the GAMS symbol: '%s': cannot be declared both as a pivot column and a drop-down column!",
               paste(colNames[colNames %in% widgetConfig$pivotCols], collapse = "', '"),
-              names(modelIn)[i]
+              el
             ),
             sep = "\n"
             )
@@ -523,14 +510,14 @@ if (is.null(errMsg)) {
             if (!dataSource$symbol %in% names(modelIn)) {
               errMsg <<- paste(errMsg, sprintf(
                 "The GAMS symbol: '%s' defined as data source for symbol: '%s' does not exist in data contract!",
-                dataSource$symbol, names(modelIn)[i]
+                dataSource$symbol, el
               ),
               sep = "\n"
               )
               hasErr <<- TRUE
               return(NULL)
             }
-            if (identical(dataSource$symbol, names(modelIn)[i])) {
+            if (identical(dataSource$symbol, el)) {
               errMsg <<- paste(errMsg, sprintf("The GAMS symbol: '%s' has a data source (dropdown column) defined on itself!", names(modelIn)[i]), sep = "\n")
               hasErr <<- TRUE
               return(NULL)
@@ -539,7 +526,7 @@ if (is.null(errMsg)) {
             if (is.na(colId)) {
               errMsg <<- paste(errMsg, sprintf(
                 "The GAMS symbol: '%s' defined as data source for symbol: '%s' does not have a column named: '%s'!",
-                dataSource$symbol, names(modelIn)[i], dataSource$column
+                dataSource$symbol, el, dataSource$column
               ),
               sep = "\n"
               )
@@ -555,7 +542,7 @@ if (is.null(errMsg)) {
               if (identical(colId, pivotColId)) {
                 errMsg <<- paste(errMsg, sprintf(
                   "The column: '%s' of GAMS symbol: '%s' is defined as data source for symbol: '%s'. However, this data source is a pivoted column and can therefore not be used!",
-                  dataSource$column, dataSource$symbol, names(modelIn)[i]
+                  dataSource$column, dataSource$symbol, el
                 ),
                 sep = "\n"
                 )
@@ -588,7 +575,7 @@ if (is.null(errMsg)) {
           if (any(!colNames %in% names(modelIn[[i]]$headers))) {
             errMsg <- paste(errMsg, sprintf(
               "GAMS symbol: '%s': Invalid column name(s): '%s' in configuration for columns to validate.",
-              names(modelIn)[i], paste(colNames[!colNames %in% names(modelIn[[i]]$headers)], collapse = "', '")
+              el, paste(colNames[!colNames %in% names(modelIn[[i]]$headers)], collapse = "', '")
             ),
             sep = "\n"
             )
@@ -598,7 +585,7 @@ if (is.null(errMsg)) {
             errMsg <- paste(errMsg, sprintf(
               "The column: '%s' of the GAMS symbol: '%s': cannot be declared both as a pivot column and a column to validate!",
               paste(colNames[colNames %in% widgetConfig$pivotCols], collapse = "', '"),
-              names(modelIn)[i]
+              el
             ),
             sep = "\n"
             )
@@ -615,7 +602,7 @@ if (is.null(errMsg)) {
             if (length(validateConf$min) && length(validateConf$max) && as.numeric(validateConf$min) > as.numeric(validateConf$max)) {
               errMsg <<- paste(errMsg, sprintf(
                 "Column: '%s' of the GAMS symbol: '%s': For the column validation, a minimum value was specified that is greater than the specified maximum value!",
-                validateCol, names(modelIn)[i]
+                validateCol, el
               ),
               sep = "\n"
               )
@@ -625,7 +612,7 @@ if (is.null(errMsg)) {
             if (length(validateConf$choices) && length(validateConf$exclude) && any(validateConf$choices %in% validateConf$exclude)) {
               errMsg <<- paste(errMsg, sprintf(
                 "Column: '%s' of the GAMS symbol: '%s': The column validation has values that are declared as choices and should be excluded at the same time!",
-                validateCol, names(modelIn)[i]
+                validateCol, el
               ),
               sep = "\n"
               )
@@ -648,10 +635,6 @@ if (is.null(errMsg)) {
           widgetConfig$validateCols <- NULL
         }
       }
-      if (!is.null(widgetConfig[["alias"]])) {
-        modelIn[[i]]$alias <- widgetConfig[["alias"]]
-        widgetConfig$alias <- NULL
-      }
       if (!is.null(widgetConfig$noHcube)) {
         modelIn[[i]]$noHcube <- widgetConfig$noHcube
         widgetConfig$noHcube <- NULL
@@ -669,7 +652,7 @@ if (is.null(errMsg)) {
       if (!is.null(widgetConfig$rendererName)) {
         modelIn[[i]]$rendererName <- widgetConfig$rendererName
         if (length(widgetConfig$packages)) {
-          customPackages[[i]] <- widgetConfig$packages
+          modelIn[[i]]$packages <- widgetConfig$packages
         }
         widgetConfig$rendererName <- NULL
         widgetConfig$packages <- NULL
@@ -685,7 +668,7 @@ if (is.null(errMsg)) {
           if (any(invalidDsNames) && !LAUNCHCONFIGMODE) {
             errMsg <- paste(errMsg, sprintf(
               "Invalid additional data for custom input widget: '%s' declared. The dataset(s): '%s' are not input widgets. If you want to include a scalar value as additional data, please declare it as a widget first.",
-              names(modelIn)[[i]],
+              el,
               paste(widgetConfig$additionalData[invalidDsNames], collapse = "', '")
             ),
             sep = "\n"
@@ -696,8 +679,8 @@ if (is.null(errMsg)) {
         }
         if (length(widgetConfig$widgetSymbols)) {
           widgetSymbolsTmp <- tolower(unique(widgetConfig$widgetSymbols))
-          if (names(modelIn)[[i]] %in% widgetSymbolsTmp) {
-            widgetSymbolsTmp <- widgetSymbolsTmp[!widgetSymbolsTmp %in% names(modelIn)[[i]]]
+          if (el %in% widgetSymbolsTmp) {
+            widgetSymbolsTmp <- widgetSymbolsTmp[!widgetSymbolsTmp %in% el]
           }
           invalidDsNames <- !widgetConfig$widgetSymbols %in% c(
             names(config$inputWidgets),
@@ -707,7 +690,7 @@ if (is.null(errMsg)) {
             errMsg <- paste(errMsg, sprintf(
               "The symbol(s): %s declared for the custom widget of symbol: %s were not found in the list of input symbols.",
               paste(widgetConfig$widgetSymbols[invalidDsNames], collapse = "', '"),
-              names(modelIn)[[i]]
+              el
             ),
             sep = "\n"
             )
@@ -719,7 +702,7 @@ if (is.null(errMsg)) {
           if (length(invalidAdditionalData) && !LAUNCHCONFIGMODE) {
             errMsg <- paste(errMsg, sprintf(
               "Invalid additional data for custom input widget: '%s' declared. Additional data: '%s' cannot be part of renderer symbols.",
-              names(modelIn)[[i]],
+              el,
               paste(modelIn[[i]]$additionalData[invalidAdditionalData], collapse = "', '")
             ),
             sep = "\n"
@@ -731,7 +714,7 @@ if (is.null(errMsg)) {
             setNames(
               widgetSymbolsTmp,
               rep.int(
-                names(modelIn)[i],
+                el,
                 length(widgetSymbolsTmp)
               )
             )
@@ -772,7 +755,7 @@ if (is.null(errMsg)) {
           if (length(modelIn[[i]]$pivotCols)) {
             errMsg <- paste(errMsg, sprintf(
               "Invalid configuration for input symbol '%s'. For a symbol with pivot columns (pivotCols) only one column width may be specified, which is valid for all columns.",
-              names(modelIn)[[i]]
+              el
             ),
             sep = "\n"
             )
@@ -781,7 +764,7 @@ if (is.null(errMsg)) {
           if (length(widgetConfig[["colWidths"]]) != length(modelIn[[i]]$headers)) {
             errMsg <- paste(errMsg, sprintf(
               "Invalid configuration for input symbol '%s'. The number of defined column widths (%s) does not match the number of symbol headers (%s).",
-              names(modelIn)[[i]],
+              el,
               length(widgetConfig[["colWidths"]]),
               length(modelIn[[i]]$headers)
             ),
@@ -809,7 +792,7 @@ if (is.null(errMsg)) {
           } else {
             errMsg <- paste(errMsg, sprintf(
               "The column: '%s' of table: '%s' was set to be readonly. However, such a column does not exist in the table.",
-              names(modelIn[[i]]$headers)[[j]], names(modelIn)[[i]],
+              names(modelIn[[i]]$headers)[[j]], el,
             ))
             break
           }
@@ -819,7 +802,7 @@ if (is.null(errMsg)) {
         if (length(modelIn[[i]]$pivotCols)) {
           errMsg <- paste(errMsg, sprintf(
             "colFormat is not supported when pivotCols are active (table: %s).",
-            names(modelIn)[[i]]
+            el
           ))
           break
         }
@@ -827,7 +810,7 @@ if (is.null(errMsg)) {
         if (any(is.na(colIds))) {
           errMsg <- paste(errMsg, sprintf(
             "The column(s): '%s' of table: '%s' specified in colFormat does not exist.",
-            paste(names(widgetConfig$colFormat)[is.na(colIds)], collapse = ", "), names(modelIn)[[i]]
+            paste(names(widgetConfig$colFormat)[is.na(colIds)], collapse = ", "), el
           ))
           break
         }
@@ -1059,6 +1042,13 @@ if (is.null(errMsg)) {
     }
     return(i)
   })
+  additionalScenWidgetIds <- lapply(inputSheetIdsToDisplay[is.na(scenWidgetIds)], function(i) {
+    if (identical(modelIn[[i]]$isScalarDs, TRUE)) {
+      return(i)
+    }
+    return(NA)
+  })
+  additionalScenWidgetIds <- unlist(additionalScenWidgetIds[!is.na(additionalScenWidgetIds)], use.names = FALSE)
   scenWidgetIds <- unlist(scenWidgetIds[!is.na(scenWidgetIds)], use.names = FALSE)
   if (length(inputSymInForeignRenderers)) {
     symIdsForeignRenderers <- match(inputSymInForeignRenderers, names(modelIn))
@@ -1067,6 +1057,8 @@ if (is.null(errMsg)) {
   } else {
     widgetIds <- scenWidgetIds
   }
+
+  scenWidgetIds <- c(scenWidgetIds, additionalScenWidgetIds)
 
   # Hypercube Mode configuration
   if (config$activateModules$hcube) {
@@ -1570,6 +1562,9 @@ if (is.null(errMsg)) {
         return(NULL)
       },
       {
+        if (identical(modelIn[[i]]$isScalarDs, TRUE)) {
+          return(NULL)
+        }
         # check that in case dataset is scalar ds, it has correct headers
         if (names(modelIn)[[i]] %in% c(scalarsFileName, scalarsOutName) &&
           !identical(names(modelIn[[i]]$headers), scalarsFileHeaders)) {
@@ -2033,7 +2028,7 @@ if (is.null(errMsg)) {
       config$dataRendering[[elName]] <- list(
         outType = "datatable",
         rendererName = modelIn[[i]]$rendererName,
-        packages = customPackages[[i]]
+        packages = modelIn[[i]]$packages
       )
     } else if (config$autoGenInputGraphs) {
       # Create graphs only for tabular input sheets
