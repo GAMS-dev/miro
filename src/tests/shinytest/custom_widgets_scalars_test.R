@@ -3,8 +3,17 @@ app <- AppDriver$new("../../",
   load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
   timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
 )
-app$view()
 Sys.sleep(2)
+expect_error(app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L), NA)
+app$set_inputs(remoteCredUrl = Sys.getenv("ENGINE_URL"))
+app$set_inputs(remoteCredUser = Sys.getenv("ENGINE_USER"))
+app$set_inputs(remoteCredPass = Sys.getenv("ENGINE_PASSWORD"))
+app$set_inputs(remoteCredNs = Sys.getenv("ENGINE_NS"))
+app$set_inputs(remoteCredReg = FALSE)
+app$set_inputs(remoteCredRemember = TRUE)
+app$run_js("$('#shiny-modal .bt-gms-confirm').click()")
+expect_error(app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L), NA)
+
 app$set_inputs(inputTabset = "inputTabset_1")
 Sys.sleep(1)
 expect_equivalent(
@@ -130,4 +139,14 @@ expect_symbols_in_miroscen(app, "scenExportHandler", c(
   "a", "b", "d", "force_unique_sol", "i", "ii", "test", "j", "initial_state",
   "initial_state2", "test123", "test124", "results", "_gmspar_bla"
 ))
+app$click(selector = 'button[data-dismiss="modal"]')
+Sys.sleep(1)
+app$click(selector = "#sidebarItemExpanded a[data-value='inputData']")
+Sys.sleep(0.5)
+app$click(selector = ".btSolve .dropdown-toggle")
+app$click(selector = ".change-dd-button[data-action-id='btSubmitHcJob']")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)
+Sys.sleep(1L)
+expect_true(app$get_js("$('#hcWidget_2-label').text()==='huuuuiii'"))
+expect_options(getSelectizeOptions(app, "#hcWidget_2"), c("0", "1"))
 app$stop()

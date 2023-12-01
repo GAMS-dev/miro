@@ -13,7 +13,8 @@
     "lstFile": false,
     "loadLocal": true,
     "attachments": true,
-    "downloadTempFiles": false
+    "downloadTempFiles": false,
+    "hcube": true
   },
   "autoGenInputGraphs": true,
   "aggregateWidgets": true,
@@ -27,6 +28,15 @@
     },
     "initial_state": {
       "outType": "mirowidget_initial_state"
+    }
+  },
+  "hcubeWidgets": {
+    "test124": {
+      "widgetType": "checkbox",
+      "alias": "Test 124",
+      "label": "huuuuiii",
+      "value": 1,
+      "class": "checkbox-material"
     }
   },
   "inputWidgets": {
