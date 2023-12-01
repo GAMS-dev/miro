@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     session_timeout: int = 3600*12
     add_data_timeout: int = 3600
     authentication_mode: str = Field(
-        "oidc" if OIDC_LOGIN else "engine", frozen=True)
+        "oidc" if OIDC_LOGIN else "engine")
     miro_server_version: str = Field(MIRO_SERVER_VERSION, frozen=True)
     force_signed_apps: str = Field(FORCE_SIGNED_APPS, frozen=True)
     supported_data_filetypes: list[str] = [
