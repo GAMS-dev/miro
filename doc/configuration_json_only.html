@@ -1019,6 +1019,56 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                       <code class="language-json">"additionalData"</code>
                       array of your configuration.
                     </p>
+                    <p>
+                      Note that custom widgets cannot be automatically expanded
+                      to use them for
+                      <a href="./hc-module.html">Hypercube jobs</a>. Therefore,
+                      if you include scalar symbols in custom widgets (either as
+                      the symbol for which the widget is defined or via
+                      <code class="language-json">"widgetSymbols"</code>) and
+                      still want to include these symbols in the Hypercube job
+                      configuration, you must also define a scalar widget
+                      configuration for Hypercube jobs. You can do this with the
+                      <code class="language-json">"hcubeWidgets"</code>
+                      configuration option. Below you will find an example of
+                      the scalar <span class="code">force_unique_sol</span>,
+                      which is to be used both as a custom widget and as a
+                      slider in the
+                      <a href="./hc-module.html">Hypercube module</a>:
+                    </p>
+                    <pre><code class="language-json">{
+  "activateModules": {
+    "hcubeModule": true
+  },
+  "hcubeWidgets": {
+    "force_unique_sol": {
+      "widgetType": "checkbox",
+      "alias": "Force initial solution",
+      "value": 1,
+      "class": "checkbox-material"
+    }
+  },
+  "inputWidgets": {
+    "force_unique_sol": {
+      "widgetType": "custom",
+      "rendererName": "mirowidget_force_unique_sol",
+      "alias": "Initial state",
+      "apiVersion": 2,
+      "widgetSymbols": ["initial_state"],
+      "options": {
+        "isInput": true
+      }
+    }
+  }
+}</code></pre>
+                    <p>
+                      The checkbox is then expanded to a dropdown menu in the
+                      Hypercube submission dialog (see
+                      <a href="./hc-module.html#widget-expansion-table"
+                        >this table</a
+                      >, which widgets are supported and how they are expanded
+                      in the Hypercube submission dialog).
+                    </p>
                   </div>
                 </section>
                 <!--//doc-section-->
