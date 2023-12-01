@@ -32,6 +32,8 @@ if (file.exists(file.path("~", ".miro", ".cred_sudoku"))) {
   unlink(file.path("~", ".miro", ".cred_sudoku"), force = TRUE)
 }
 
+createTestDb()
+
 test_that(
   "Custom widgets for scalars work.",
   {
