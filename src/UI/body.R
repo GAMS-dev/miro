@@ -650,14 +650,20 @@ if (buildUI) {
           tags$div(
             id = "batchLoadButtons", style = "display:none;padding:30px 0 50px 0;",
             tags$div(
-              class = "col-sm-6",
               tags$div(
+                class = "choose-scen-btn",
                 actionButton("batchLoadSelected", lang$nav$queryBuilder$chooseSelectedButton,
                   class = "bt-highlight-1"
-                ),
+                )
+              ),
+              tags$div(
+                class = "choose-scen-btn",
                 actionButton("batchLoadCurrent", lang$nav$queryBuilder$chooseCurrentButton,
                   class = "bt-highlight-1"
-                ),
+                )
+              ),
+              tags$div(
+                class = "choose-scen-btn",
                 actionButton("batchLoadAll", lang$nav$queryBuilder$chooseAllButton,
                   class = "bt-highlight-1"
                 )
