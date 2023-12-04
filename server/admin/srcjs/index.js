@@ -87,7 +87,7 @@ function validateAppEnv(envContentRaw) {
     if (!valid) {
       bootbox.alert({
         title: 'Problems validating app environment',
-        message: `The app environment could not be validated.\nValidation errors: ${ajv.errorsText(validateEnvSchema.errors)}.`,
+        message: `The app environment could not be validated.\nValidation errors: ${escapeHtml(ajv.errorsText(validateEnvSchema.errors))}.`,
         centerVertical: true,
       });
       return false;
@@ -556,7 +556,7 @@ $appsWrapper.on('drop', '.app-box-draggable', function (e) {
     }
     bootbox.alert({
       title: 'Invalid file',
-      message: `The file you dropped (${invalidFileTypes.join(',')}) is not supported. Please drop either a new MIRO app (.miroapp) to update the current version or a valid data file (${supportedDataFileTypes.join(',')}).`,
+      message: `The file you dropped (${escapeHtml(invalidFileTypes.join(','))}) is not supported. Please drop either a new MIRO app (.miroapp) to update the current version or a valid data file (${escapeHtml(supportedDataFileTypes.join(','))}).`,
       centerVertical: true,
     });
     $(`#appFiles_${unicodeToHTMLID(idTo)}_progress`).css('visibility', '');
@@ -731,7 +731,7 @@ $(() => {
     if (errorMessage) {
       bootbox.alert({
         title: 'Discrepancy with GAMS Engine',
-        message: errorMessage,
+        message: escapeHtml(errorMessage),
         centerVertical: true,
       });
     }
@@ -767,7 +767,7 @@ $(() => {
       refreshConfigList();
     } else {
       bootbox.alert({
-        message: data.message,
+        message: escapeHtml(data.message),
         centerVertical: true,
       });
     }
@@ -865,7 +865,7 @@ $(() => {
     if (e.message != null) {
       bootbox.alert({
         title: 'Error',
-        message: e.message,
+        message: escapeHtml(e.message),
         centerVertical: true,
       });
     }
