@@ -1,5 +1,6 @@
 const path = require('path');
-const TerserJSPlugin = require('terser-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 module.exports = (env, argv) => ({
     mode: 'development',
@@ -14,28 +15,21 @@ module.exports = (env, argv) => ({
     externals: {
       jquery: 'jQuery'
     },
+    optimization: {
+      minimize: true,
+      minimizer: [new TerserPlugin()],
+    },
+    plugins: [new ESLintPlugin({
+      fix: true
+    })],
     module: {
         rules: [
-          {
-            enforce: "pre",
-            test: /\.js$/,
-            exclude: /node_modules/,
-            loader: "eslint-loader",
-            options: {
-              fix: true
-            }
-          },
           {
             test: /\.js$/,
             exclude: /node_modules/,
             use: {
               loader: 'babel-loader',
               options: {
-                "plugins": [
-                  ["@babel/plugin-proposal-class-properties", { "loose": true },],
-                  ["@babel/plugin-proposal-private-property-in-object", { "loose": true },],
-                  ["@babel/plugin-proposal-private-methods", { "loose": true }]
-                ],
                 presets: [[
                     '@babel/preset-env',
                     {

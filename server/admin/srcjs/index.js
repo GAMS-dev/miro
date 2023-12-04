@@ -804,14 +804,18 @@ $(() => {
     if (currentAppId === -1) {
       // new App
       $('#btAddApp').attr('disabled', false);
-      $('#newAppLogo').css('background-image',
-        `url("${data.logoB64}")`);
+      $('#newAppLogo').css(
+        'background-image',
+        `url("${data.logoB64}")`,
+      );
       return;
     }
     $('.btn-save-changes').attr('disabled', false);
     currentAppLogo = data.logoB64;
-    $(`#appLogo_${unicodeToHTMLID(currentAppId)}`).css('background-image',
-      `url("${currentAppLogo}")`);
+    $(`#appLogo_${unicodeToHTMLID(currentAppId)}`).css(
+      'background-image',
+      `url("${currentAppLogo}")`,
+    );
   });
   Shiny.addCustomMessageHandler('onNewAppValidated', (data) => {
     const newAppTitle = document.getElementById('newAppName').value;
@@ -833,8 +837,10 @@ $(() => {
     $('#miroAppFile_progress').hide();
     $('#newAppLogo').show();
     $('#miroAppLogo_progress').show();
-    $('#newAppLogo').css('background-image',
-      `url("${data.logoB64}")`);
+    $('#newAppLogo').css(
+      'background-image',
+      `url("${data.logoB64}")`,
+    );
     $('#btAddApp').attr('disabled', false);
   });
   Shiny.addCustomMessageHandler('onError', (e) => {
