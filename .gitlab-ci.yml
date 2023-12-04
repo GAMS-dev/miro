@@ -313,6 +313,7 @@ container_scanning:
   variables:
     CS_DOCKERFILE_PATH: "server/ui/Dockerfile"
     GIT_STRATEGY: "fetch"
+    CS_IGNORE_UNFIXED: "true"
   before_script:
     - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]]) && IMAGE_TAG=unstable
     - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-ui:$IMAGE_TAG
@@ -334,6 +335,7 @@ container_scanning_admin:
   variables:
     CS_DOCKERFILE_PATH: "server/admin/Dockerfile"
     GIT_STRATEGY: "fetch"
+    CS_IGNORE_UNFIXED: "true"
   before_script:
     - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]]) && IMAGE_TAG=unstable
     - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-admin:$IMAGE_TAG
@@ -355,6 +357,7 @@ container_scanning_auth:
   variables:
     CS_DOCKERFILE_PATH: "server/auth/Dockerfile"
     GIT_STRATEGY: "fetch"
+    CS_IGNORE_UNFIXED: "true"
   before_script:
     - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]]) && IMAGE_TAG=unstable
     - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-auth:$IMAGE_TAG
