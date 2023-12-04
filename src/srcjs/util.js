@@ -1,7 +1,7 @@
 /* global $:false HTMLWidgets:false Chart:false Shiny:false */
 
 export function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise((resolve) => { setTimeout(resolve, ms); });
 }
 
 export class LoadingScreen {

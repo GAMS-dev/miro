@@ -85,28 +85,16 @@ module.exports = (env, argv) => ({
     module: {
         rules: [
           {
-            enforce: "pre",
-            test: /\.js$/,
-            exclude: /node_modules/,
-            loader: "eslint-loader",
-            options: {
-              fix: true
-            }
-          },
-          {
             test: /\.js$/,
             exclude: /node_modules/,
             use: {
               loader: 'babel-loader',
               options: {
-                "plugins": [
-                  ["@babel/plugin-proposal-class-properties", { "loose": true }]
-                ],
                 presets: [[
                     '@babel/preset-env',
                     {
                         "useBuiltIns": "entry",
-                        "corejs": "3.15"
+                        "corejs": "3"
                     }
                 ]]
               }
@@ -135,13 +123,7 @@ module.exports = (env, argv) => ({
           },
           {
             test: /\.(png|jp(e*)g|svg)$/,
-            use: [{
-                loader: 'url-loader',
-                options: {
-                    limit: 8000, // Convert images < 8kb to base64 strings
-                    name: 'images/[hash]-[name].[ext]'
-                }
-            }]
+            type: 'asset/inline'
           }
         ]
     }

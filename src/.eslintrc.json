@@ -9,9 +9,6 @@
   "extends": ["airbnb-base"],
   "root": true,
   "parserOptions": {
-    "requireConfigFile": false,
-    "babelOptions": {
-      "plugins": ["@babel/plugin-proposal-class-properties"]
-    }
+    "requireConfigFile": false
   }
 }

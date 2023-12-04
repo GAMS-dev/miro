@@ -41,8 +41,13 @@ export function slideToggleEl(data) {
   $(data.id).slideToggle(duration);
 }
 
-export function confirmModalShow(title, desc, cancelTxt,
-  confirmTxt = null, confirmCall = null) {
+export function confirmModalShow(
+  title,
+  desc,
+  cancelTxt,
+  confirmTxt = null,
+  confirmCall = null,
+) {
   const btDataDismiss = `<button type="button" class="btn btn-default" data-dismiss="modal">\
 ${cancelTxt}</button>`;
   let btDataConfirm = '';
@@ -95,8 +100,12 @@ export function validateSname(el, inputID = 'btCheckSnameLocalConfirm') {
   return false;
 }
 
-export function sendSelectedRowsRequest(tableId, shinyId, noneSelectedErrorId = null,
-  downloadLink = false) {
+export function sendSelectedRowsRequest(
+  tableId,
+  shinyId,
+  noneSelectedErrorId = null,
+  downloadLink = false,
+) {
   const data = [];
 
   $(`#${tableId} tr.selected`).each(function () {
@@ -162,8 +171,14 @@ export function filterMiroDropdown(that) {
   });
 }
 
-export function modal(msg, okButton, cancelButton,
-  value, callback, ...callbackArgs) {
+export function modal(
+  msg,
+  okButton,
+  cancelButton,
+  value,
+  callback,
+  ...callbackArgs
+) {
   Shiny.modal.show({
     html: `<div id="shiny-modal" class="modal fade"
     tabindex="-1" data-backdrop="static" data-keyboard="false">
@@ -195,8 +210,10 @@ export function modal(msg, okButton, cancelButton,
     });
   } else {
     $(document).on('click', '#miroModalConfirmButton', () => {
-      if (callback(document.getElementById('miroPromptInput').value,
-        ...callbackArgs) !== false) {
+      if (callback(
+        document.getElementById('miroPromptInput').value,
+        ...callbackArgs,
+      ) !== false) {
         $('#shiny-modal').modal('hide');
       }
     });
@@ -377,9 +394,11 @@ $(document).ready(() => {
   $(document).on('click', '.change-dd-button', function () {
     const params = this.dataset;
     if (params.isClickable !== 'false') {
-      $(params.btnSelector).attr('onclick',
+      $(params.btnSelector).attr(
+        'onclick',
         `Shiny.setInputValue('${params.actionId}','${params.actionVal == null
-          ? 1 : params.actionVal}',{priority: 'event'});`);
+          ? 1 : params.actionVal}',{priority: 'event'});`,
+      );
     }
     $(params.btnSelector).text(params.btnText);
     if (params.isClickable === 'false' || $(params.btnSelector).is(':enabled')) {
@@ -445,10 +464,13 @@ $(document).ready(() => {
       scriptOutputContainer = scriptOutputContainer.children('.script-output');
     } else if (data.sid == null) {
       scriptOutputContainer = $(`#scriptOutput_${data.id} .script-output`);
-      Shiny.setInputValue('outputGenerated', 1,
+      Shiny.setInputValue(
+        'outputGenerated',
+        1,
         {
           priority: 'event',
-        });
+        },
+      );
       $(`#scriptOutput_${data.id} .script-spinner`).hide();
     } else {
       scriptOutputContainer = $(`#scenScript_${data.sid}_${data.id}`);
@@ -492,14 +514,17 @@ font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
         < $(data.id).outerHeight() + 200
         && isLoading === false) {
         isLoading = true;
-        Shiny.setInputValue('loadTextEntryChunk',
+        Shiny.setInputValue(
+          'loadTextEntryChunk',
           {
             jID: data.jID,
             chunkCount: counter,
             type: data.type,
-          }, {
+          },
+          {
             priority: 'event',
-          });
+          },
+        );
         counter += 1;
 
         if (counter === noChunks) {
@@ -687,9 +712,13 @@ onchange="Shiny.setInputValue('execPermAttachment_${id[i]}',$(this).is(':checked
   });
   Shiny.addCustomMessageHandler('gms-updateSortable', (data) => {
     $(`#${data.id}`).html(data.children);
-    Shiny.setInputValue(`${data.id}:sortablejs.rank_list`,
-      $.map(document.getElementById(data.id).children,
-        (child) => $(child).attr('data-rank-id') || $.trim(child.innerText)));
+    Shiny.setInputValue(
+      `${data.id}:sortablejs.rank_list`,
+      $.map(
+        document.getElementById(data.id).children,
+        (child) => $(child).attr('data-rank-id') || $.trim(child.innerText),
+      ),
+    );
   });
   Shiny.addCustomMessageHandler('gms-updateTable', (data) => {
     const tableToUpdate = document.getElementById(data.id);
@@ -746,8 +775,11 @@ onchange="Shiny.setInputValue('execPermAttachment_${id[i]}',$(this).is(':checked
 
       if (currContent.length !== newContent.length) {
         $(dropdownContainer).empty();
-        Shiny.renderContent(dropdownContainer,
-          newContent.map((el) => el[0]).join(''), 'beforeEnd');
+        Shiny.renderContent(
+          dropdownContainer,
+          newContent.map((el) => el[0]).join(''),
+          'beforeEnd',
+        );
         return;
       }
       if (currContent.length === 0) {

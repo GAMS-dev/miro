@@ -588,8 +588,11 @@ export function mdToHTML(mdContent, destId, useKatex) {
 }
 
 export function mdSave(mdContentId) {
-  Shiny.setInputValue('btMdSave', $(mdContentId).val(),
-    { priority: 'event' });
+  Shiny.setInputValue(
+    'btMdSave',
+    $(mdContentId).val(),
+    { priority: 'event' },
+  );
 }
 
 export function addArrayDataEl(arrayID, defaultsRaw) {
@@ -741,8 +744,11 @@ $(document).ready(() => {
     $(data.id).val(data.value).change();
   });
   $(document).on('input', '.miro-dynamic-input-id', debounce(function () {
-    Shiny.setInputValue(this.dataset.bindingId,
-      { id: this.dataset.inputId, val: $(this).val() }, { priority: 'event' });
+    Shiny.setInputValue(
+      this.dataset.bindingId,
+      { id: this.dataset.inputId, val: $(this).val() },
+      { priority: 'event' },
+    );
   }, 300));
   Shiny.inputBindings.register(colorPickerBinding);
 });
