@@ -35,6 +35,7 @@ these components are included below):
 - tar implementation from R, http://www.r-project.org/
 - commonmark, https://github.com/jeroen/commonmark or https://cran.r-project.org/web/packages/commonmark/index.html
 - cpp11, https://github.com/r-lib/cpp11 or https://cran.rstudio.com/web/packages/cpp11/index.html
+- xfun, https://github.com/yihui/xfun or https://cran.r-project.org/web/packages/xfun/index.html
 - R6, https://github.com/r-lib/R6/ or https://cran.r-project.org/web/packages/R6/index.html
 - processx https://github.com/r-lib/processx or https://cran.r-project.org/web/packages/processx/index.html
 - generics https://generics.r-lib.org or https://cran.r-project.org/web/packages/generics/index.html
@@ -880,6 +881,7 @@ Section 8 -- Interpretation.
         - generics, Copyright (c) 2020 Hadley Wickham [aut, cre], Max Kuhn [aut], Davis Vaughan [aut], RStudio [cph]
         - dplyr, Copyright (c) 2013-2022 Hadley Wickham [aut, cre], Romain François [aut], Lionel Henry [aut], Kirill Müller [aut], RStudio [cph, fnd]
         - cpp11, Copyright (c) 2020 RStudio
+        - xfun, Copyright (c) 2018-2023 Yihui Xie
         - rhandsontable , Copyright (c) 2015-2018 Marcin Warpechowski, Handsoncode sp. z o.o.,
           Gregor Aisch, Tim Wood, Iskren Chernev, Moment.js contributors, David Bushell,
           jQuery Foundation, Splunk Inc, Jon Rohan, James M. Greeneand, Företagsplatsen,
