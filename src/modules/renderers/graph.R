@@ -759,11 +759,6 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
         stop("No start data found!", call. = FALSE)
       }
       id <- seq_along(data[[options$series[[1]]$start]])
-      if (length(id) > TIMEVIS_MAX_EVENTS) {
-        stop(sprintf("No more than %d events can be plotted. Please reduce the number of events.", TIMEVIS_MAX_EVENTS),
-          call. = FALSE
-        )
-      }
       content <- data[[options$series[[1]]$content]]
       start <- data[[options$series[[1]]$start]]
       end <- NULL

@@ -110,8 +110,6 @@ attachAllowExec <- TRUE
 attachMaxFileSize <- 5e7
 attachMaxNo <- 7L
 
-TIMEVIS_MAX_EVENTS <- 50L
-
 JOBSTATUSMAP <- c(
   "queued" = -2L,
   "running" = -1L,
