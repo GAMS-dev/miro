@@ -1116,13 +1116,10 @@ if (identical(config$activateModules$hcube, TRUE)) {
             class = "hc-widget-group",
             if (!is.null(groupConfig$name)) {
               tags$div(
-                class = "row",
-                tags$div(
-                  class = "col-12",
-                  tags$h4(
-                    class = "hc-widget-group-title",
-                    groupConfig$name
-                  )
+                class = "col-12",
+                tags$h4(
+                  class = "hc-widget-group-title",
+                  groupConfig$name
                 )
               )
             },
