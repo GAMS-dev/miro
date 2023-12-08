@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     r-base-dev=${R_BASE_VERSION}*
 
-RUN R -e "install.packages(c('testthat', 'shinytest2', 'xml2', 'precommit', 'docopt', 'styler', 'oysteR'));"
+RUN R -e "install.packages(c('testthat', 'shinytest2', 'xml2', 'precommit', 'docopt', 'styler', 'oysteR', 'jsonlite'));"
 
 COPY r/library_src /home/miro/r/library_src
 COPY ci/install_pkg.R /home/miro/r/install_pkg.R
