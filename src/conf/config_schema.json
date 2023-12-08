@@ -2422,6 +2422,33 @@
            }
          }
       },
+      "hcubeWidgetGroups": {
+        "description": "Specify widgets that should be grouped in Hypercube submission dialog",
+        "type": "array",
+        "uniqueItems":true,
+        "minItems":1,
+        "items":{
+          "type":"object",
+          "additionalProperties":false,
+          "required": ["name", "members"],
+          "properties":{
+             "name":{
+               "description":"Specify the name of the group",
+               "type":"string",
+               "minLength":1
+             },
+             "members":{
+               "description":"Specify the group members",
+               "type":["array", "string"],
+               "uniqueItems":true,
+               "items":{
+                 "type":"string",
+                 "minLength":1
+               }
+             }
+          }
+        }
+      },
       "customDataImport": {
         "description": "Import data using a custom function",
         "type": "array",

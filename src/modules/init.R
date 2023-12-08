@@ -1070,57 +1070,83 @@ if (is.null(errMsg)) {
 
   # Hypercube Mode configuration
   if (config$activateModules$hcube) {
-    config$hcModule$scalarsConfig <- lapply(names(modelIn), function(el) {
-      if (isTRUE(modelIn[[el]]$noHcube)) {
-        return(NA)
-      }
-      if (identical(modelIn[[el]]$type, "checkbox")) {
-        return(list(
-          type = "dropdown",
-          baseType = "checkbox",
-          alias = modelIn[[el]]$checkbox$alias,
-          name = el,
-          label = modelIn[[el]]$checkbox$label,
-          choices = c(0L, 1L),
-          selected = modelIn[[el]]$checkbox$value,
-          multiple = TRUE
+    if (!length(config$hcubeWidgetGroups)) {
+      config$hcubeWidgetGroups <- list(list(name = NULL, members = names(modelIn)))
+    }
+    hcubeWidgetsAlreadyAssigned <- c()
+    config$hcModule$scalarsConfig <- lapply(config$hcubeWidgetGroups, function(group) {
+      membersAlreadyAssigned <- group$members %in% hcubeWidgetsAlreadyAssigned
+      if (any(membersAlreadyAssigned)) {
+        warning(sprintf(
+          "Widget(s): %s are declared as members of multiple Hypercube widget groups.",
+          paste(group$members[membersAlreadyAssigned], collapse = ", ")
         ))
       }
-      if (identical(modelIn[[el]]$type, "dropdown")) {
-        if (isTRUE(modelIn[[el]]$dropdown$multiple)) {
+      groupMembers <- group$members[!membersAlreadyAssigned]
+      membersTmp <- lapply(seq_along(groupMembers), function(groupIdx) {
+        widgetId <- length(hcubeWidgetsAlreadyAssigned) + groupIdx
+        el <- groupMembers[[groupIdx]]
+        if (isTRUE(modelIn[[el]]$noHcube)) {
           return(NA)
         }
-        if (identical(modelIn[[el]]$symtype, "set")) {
-          return(NA)
+        if (identical(modelIn[[el]]$type, "checkbox")) {
+          return(list(
+            type = "dropdown",
+            baseType = "checkbox",
+            alias = modelIn[[el]]$checkbox$alias,
+            name = el,
+            widgetId = widgetId,
+            label = modelIn[[el]]$checkbox$label,
+            choices = c(0L, 1L),
+            selected = modelIn[[el]]$checkbox$value,
+            multiple = TRUE
+          ))
         }
-        ret <- modelIn[[el]]$dropdown
-        ret$type <- "dropdown"
-        ret$baseType <- "dropdown"
-        ret$multiple <- TRUE
-        ret$name <- el
-        if (length(ret$aliases)) {
-          ret$choices <- setNames(ret$choices, ret$aliases)
+        if (identical(modelIn[[el]]$type, "dropdown")) {
+          if (isTRUE(modelIn[[el]]$dropdown$multiple)) {
+            return(NA)
+          }
+          if (identical(modelIn[[el]]$symtype, "set")) {
+            return(NA)
+          }
+          ret <- modelIn[[el]]$dropdown
+          ret$type <- "dropdown"
+          ret$baseType <- "dropdown"
+          ret$multiple <- TRUE
+          ret$name <- el
+          ret$widgetId <- widgetId
+          if (length(ret$aliases)) {
+            ret$choices <- setNames(ret$choices, ret$aliases)
+          }
+          return(ret)
         }
-        return(ret)
+        if (identical(modelIn[[el]]$type, "slider")) {
+          ret <- modelIn[[el]]$slider
+          ret$type <- "slider"
+          ret$baseType <- "slider"
+          ret$name <- el
+          ret$widgetId <- widgetId
+          ret$ticks <- !isFALSE(ret$ticks)
+          if (!length(ret$minStep)) {
+            ret$minStep <- 0L
+          }
+          if (length(ret$default) == 1) {
+            ret$single <- TRUE
+            ret$default <- rep(ret$default, 2L)
+          } else {
+            ret$single <- FALSE
+          }
+          return(ret)
+        }
+        return(NA)
+      })
+      isValidMember <- !is.na(membersTmp)
+      membersTmp <- membersTmp[isValidMember]
+      if (!length(membersTmp)) {
+        return(NA)
       }
-      if (identical(modelIn[[el]]$type, "slider")) {
-        ret <- modelIn[[el]]$slider
-        ret$type <- "slider"
-        ret$baseType <- "slider"
-        ret$name <- el
-        ret$ticks <- !isFALSE(ret$ticks)
-        if (!length(ret$minStep)) {
-          ret$minStep <- 0L
-        }
-        if (length(ret$default) == 1) {
-          ret$single <- TRUE
-          ret$default <- rep(ret$default, 2L)
-        } else {
-          ret$single <- FALSE
-        }
-        return(ret)
-      }
-      return(NA)
+      hcubeWidgetsAlreadyAssigned <<- c(hcubeWidgetsAlreadyAssigned, group$members[isValidMember])
+      return(list(name = group$name, members = membersTmp))
     })
     config$hcModule$scalarsConfig <- config$hcModule$scalarsConfig[!is.na(config$hcModule$scalarsConfig)]
     if (!length(config$hcModule$scalarsConfig)) {

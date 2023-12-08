@@ -1111,155 +1111,178 @@ if (identical(config$activateModules$hcube, TRUE)) {
     tagList(
       tags$div(
         class = "container-fluid hc-container",
-        tags$div(
-          class = "row",
-          lapply(seq_along(config$hcModule$scalarsConfig), function(widgetId) {
-            scalarConfig <- config$hcModule$scalarsConfig[[widgetId]]
-            symId <- match(scalarConfig$name, names(modelIn))
-            hasDependency <- scalarConfig$name %in% names(modelInWithDep)
-            widgetlabel <- scalarConfig$label
-            if (!is.null(scalarConfig$tooltip)) {
-              widgetlabel <- widgetTooltip(widgetlabel, scalarConfig$tooltip, mobile = TRUE)
-            }
-            tags$div(class = "col-md-6 hc-widget-row", {
-              if (identical(scalarConfig$type, "dropdown")) {
-                if (identical(scalarConfig$baseType, "checkbox")) {
-                  dropdownVal <- suppressWarnings(as.integer(isolate(input[[paste0("cb_", symId)]])))
-                } else {
-                  dropdownVal <- isolate(input[[paste0("dropdown_", symId)]])
-                }
-                if (hasDependency) {
-                  scalarConfig$choices <- sandboxInputData$getWidget(scalarConfig$name)$getChoices()
-                }
-                selectInput(paste0("hcWidget_", widgetId),
-                  label = widgetlabel,
-                  choices = scalarConfig$choices,
-                  selected = dropdownVal,
-                  multiple = TRUE,
-                  width = "100%"
+        lapply(config$hcModule$scalarsConfig, function(groupConfig) {
+          tags$div(
+            class = "hc-widget-group",
+            if (!is.null(groupConfig$name)) {
+              tags$div(
+                class = "row",
+                tags$div(
+                  class = "col-12",
+                  tags$h4(
+                    class = "hc-widget-group-title",
+                    groupConfig$name
+                  )
                 )
-              } else if (identical(scalarConfig$type, "slider")) {
-                sliderVal <- isolate(input[[paste0("slider_", symId)]])
-                if (length(sliderVal)) {
-                  sliderVal <- c(sliderVal, sliderVal)
-                } else {
-                  sliderVal <- c(scalarConfig$default, scalarConfig$default)
-                }
-                if (hasDependency) {
-                  configTmp <- sandboxInputData$getWidget(scalarConfig$name)$getCurrentConfig()
-                  scalarConfig$min <- configTmp$min
-                  scalarConfig$max <- configTmp$max
-                  scalarConfig$step <- configTmp$step
+              )
+            },
+            tags$div(
+              class = "row",
+              lapply(groupConfig$members, function(scalarConfig) {
+                symId <- match(scalarConfig$name, names(modelIn))
+                hasDependency <- scalarConfig$name %in% names(modelInWithDep)
+                widgetlabel <- scalarConfig$label
+                if (!is.null(scalarConfig$tooltip)) {
+                  widgetlabel <- widgetTooltip(widgetlabel, scalarConfig$tooltip, mobile = TRUE)
                 }
                 tags$div(
-                  class = "row", style = "overflow:hidden;",
-                  tags$div(
-                    class = if (scalarConfig$single) "col-sm-10" else "col-sm-8",
-                    sliderInput(paste0("hcWidget_", widgetId),
-                      label = widgetlabel,
-                      min = scalarConfig$min,
-                      max = scalarConfig$max,
-                      value = sliderVal,
-                      step = scalarConfig$step,
-                      ticks = scalarConfig$ticks,
-                      width = "100%"
-                    )
-                  ),
-                  if (scalarConfig$single) {
-                    tags$div(
-                      class = "col-sm-2",
-                      numericInput(paste0("hcWidget_", widgetId, "_step"),
-                        lang$nav$hcubeMode$stepsize,
-                        scalarConfig$step,
-                        min = scalarConfig$minStep,
+                  class = "col-md-6 hc-widget-row",
+                  {
+                    if (identical(scalarConfig$type, "dropdown")) {
+                      if (identical(scalarConfig$baseType, "checkbox")) {
+                        dropdownVal <- suppressWarnings(as.integer(isolate(input[[paste0("cb_", symId)]])))
+                      } else {
+                        dropdownVal <- isolate(input[[paste0("dropdown_", symId)]])
+                      }
+                      if (hasDependency) {
+                        scalarConfig$choices <- sandboxInputData$getWidget(scalarConfig$name)$getChoices()
+                      }
+                      selectInput(paste0("hcWidget_", scalarConfig$widgetId),
+                        label = widgetlabel,
+                        choices = scalarConfig$choices,
+                        selected = dropdownVal,
+                        multiple = TRUE,
                         width = "100%"
                       )
-                    )
-                  } else {
-                    tagList(
+                    } else if (identical(scalarConfig$type, "slider")) {
+                      sliderVal <- isolate(input[[paste0("slider_", symId)]])
+                      if (length(sliderVal)) {
+                        sliderVal <- c(sliderVal, sliderVal)
+                      } else {
+                        sliderVal <- c(scalarConfig$default, scalarConfig$default)
+                      }
+                      if (hasDependency) {
+                        configTmp <- sandboxInputData$getWidget(scalarConfig$name)$getCurrentConfig()
+                        scalarConfig$min <- configTmp$min
+                        scalarConfig$max <- configTmp$max
+                        scalarConfig$step <- configTmp$step
+                      }
                       tags$div(
-                        class = "col-sm-2",
-                        checkboxInput_MIRO(paste0("hcWidget_", widgetId, "_combinations"),
-                          lang$nav$hcubeMode$sliderAllCombinations,
-                          value = FALSE
-                        )
-                      ),
-                      tags$div(
-                        class = "col-sm-2",
-                        conditionalPanel(
-                          paste0("input.hcWidget_", widgetId, "_combinations===true"),
-                          numericInput(paste0("hcWidget_", widgetId, "_step"),
-                            lang$nav$hcubeMode$stepsize,
-                            scalarConfig$step,
-                            min = scalarConfig$minStep,
+                        class = "row", style = "overflow:hidden;",
+                        tags$div(
+                          class = if (scalarConfig$single) "col-sm-10" else "col-sm-8",
+                          sliderInput(paste0("hcWidget_", scalarConfig$widgetId),
+                            label = widgetlabel,
+                            min = scalarConfig$min,
+                            max = scalarConfig$max,
+                            value = sliderVal,
+                            step = scalarConfig$step,
+                            ticks = scalarConfig$ticks,
                             width = "100%"
                           )
-                        )
+                        ),
+                        if (scalarConfig$single) {
+                          tags$div(
+                            class = "col-sm-2",
+                            numericInput(paste0("hcWidget_", scalarConfig$widgetId, "_step"),
+                              lang$nav$hcubeMode$stepsize,
+                              scalarConfig$step,
+                              min = scalarConfig$minStep,
+                              width = "100%"
+                            )
+                          )
+                        } else {
+                          tagList(
+                            tags$div(
+                              class = "col-sm-2",
+                              checkboxInput_MIRO(paste0("hcWidget_", scalarConfig$widgetId, "_combinations"),
+                                lang$nav$hcubeMode$sliderAllCombinations,
+                                value = FALSE
+                              )
+                            ),
+                            tags$div(
+                              class = "col-sm-2",
+                              conditionalPanel(
+                                paste0("input.hcWidget_", scalarConfig$widgetId, "_combinations===true"),
+                                numericInput(paste0("hcWidget_", scalarConfig$widgetId, "_step"),
+                                  lang$nav$hcubeMode$stepsize,
+                                  scalarConfig$step,
+                                  min = scalarConfig$minStep,
+                                  width = "100%"
+                                )
+                              )
+                            )
+                          )
+                        }
                       )
-                    )
+                    } else {
+                      stop("HC widget type  not implemented (should never happen)", call. = FALSE)
+                    }
                   }
                 )
-              } else {
-                stop("HC widget type  not implemented (should never happen)", call. = FALSE)
-              }
-            })
-          })
-        )
+              })
+            )
+          )
+        })
       )
     )
   }
   noHcubeScen <- throttle(reactive({
     req(input$btSubmitHcJob)
-    noScenTmp <- vapply(seq_along(config$hcModule$scalarsConfig), function(widgetId) {
-      widgetVal <- input[[paste0("hcWidget_", widgetId)]]
-      if (is.null(widgetVal)) {
-        return(NA_integer_)
-      }
-      scalarConfig <- config$hcModule$scalarsConfig[[widgetId]]
-      if (identical(scalarConfig$type, "slider")) {
-        if (!scalarConfig$single) {
-          if (!identical(input[[paste0("hcWidget_", widgetId, "_combinations")]], TRUE)) {
-            hcubeBuilder$pushRange(
-              paste0(scalarConfig$name, "_lo"),
-              paste0(scalarConfig$name, "_up"), widgetVal
+    noScenTmp <- unlist(
+      lapply(config$hcModule$scalarsConfig, function(groupConfig) {
+        vapply(groupConfig$members, function(scalarConfig) {
+          widgetVal <- input[[paste0("hcWidget_", scalarConfig$widgetId)]]
+          if (is.null(widgetVal)) {
+            return(NA_integer_)
+          }
+          if (identical(scalarConfig$type, "slider")) {
+            if (!scalarConfig$single) {
+              if (!identical(input[[paste0("hcWidget_", scalarConfig$widgetId, "_combinations")]], TRUE)) {
+                hcubeBuilder$pushRange(
+                  paste0(scalarConfig$name, "_lo"),
+                  paste0(scalarConfig$name, "_up"), widgetVal
+                )
+                return(1L)
+              }
+            }
+
+            stepSize <- input[[paste0("hcWidget_", scalarConfig$widgetId, "_step")]]
+            if (is.null(stepSize)) {
+              return(NA_integer_)
+            }
+            if (!is.numeric(stepSize) || stepSize <= 0) {
+              # non valid step size selected
+              return(-1L)
+            }
+            hcRange <- floor((widgetVal[2] - widgetVal[1]) / stepSize) + 1
+
+            if (length(scalarConfig$minStep)) {
+              if (stepSize < scalarConfig$minStep) {
+                return(-1L)
+              }
+            } else if (stepSize < scalarConfig$step) {
+              return(-1L)
+            }
+            if (scalarConfig$single) {
+              hcubeBuilder$push(scalarConfig$name, seq(widgetVal[1], widgetVal[2], stepSize))
+              return(as.integer(hcRange))
+            }
+            # double slider all combinations
+            hcubeBuilder$pushRange(paste0(scalarConfig$name, "_lo"),
+              paste0(scalarConfig$name, "_up"),
+              getCombinationsSlider(widgetVal[1], widgetVal[2], stepSize),
+              allCombinations = TRUE
             )
-            return(1L)
+            return(as.integer(hcRange * (hcRange + 1) / 2))
+          } else {
+            hcubeBuilder$push(scalarConfig$name, widgetVal, ddChoices = scalarConfig$choices)
+            return(length(widgetVal))
           }
-        }
-
-        stepSize <- input[[paste0("hcWidget_", widgetId, "_step")]]
-        if (is.null(stepSize)) {
-          return(NA_integer_)
-        }
-        if (!is.numeric(stepSize) || stepSize <= 0) {
-          # non valid step size selected
-          return(-1L)
-        }
-        hcRange <- floor((widgetVal[2] - widgetVal[1]) / stepSize) + 1
-
-        if (length(scalarConfig$minStep)) {
-          if (stepSize < scalarConfig$minStep) {
-            return(-1L)
-          }
-        } else if (stepSize < scalarConfig$step) {
-          return(-1L)
-        }
-        if (scalarConfig$single) {
-          hcubeBuilder$push(scalarConfig$name, seq(widgetVal[1], widgetVal[2], stepSize))
-          return(as.integer(hcRange))
-        }
-        # double slider all combinations
-        hcubeBuilder$pushRange(paste0(scalarConfig$name, "_lo"),
-          paste0(scalarConfig$name, "_up"),
-          getCombinationsSlider(widgetVal[1], widgetVal[2], stepSize),
-          allCombinations = TRUE
-        )
-        return(as.integer(hcRange * (hcRange + 1) / 2))
-      } else {
-        hcubeBuilder$push(scalarConfig$name, widgetVal, ddChoices = scalarConfig$choices)
-        return(length(widgetVal))
-      }
-    }, integer(1L), USE.NAMES = FALSE)
+        }, integer(1L), USE.NAMES = FALSE)
+      }),
+      use.names = FALSE
+    )
     if (any(is.na(noScenTmp))) {
       return()
     }
