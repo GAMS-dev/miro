@@ -1950,7 +1950,7 @@ if (!is.null(errMsg)) {
           saveTraceFile = config$saveTraceFile,
           modelGmsName = modelGmsName, modelNameRaw = modelNameRaw,
           gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
-          timeout = 10L, serverOS = getOS(), modelData = modelData,
+          serverOS = getOS(), modelData = modelData,
           rememberMeFileName = rememberMeFileName,
           hiddenLogFile = !config$activateModules$logFile
         ),

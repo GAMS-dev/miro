@@ -24,7 +24,7 @@ Worker <- R6Class("Worker", public = list(
             if (length(apiInfoGlobal)) {
               apiInfo <- apiInfoGlobal
             } else {
-              apiInfo <- httr::content(httr::GET(url = paste0(metadata$url, "/version"), httr::timeout(5L)),
+              apiInfo <- httr::content(httr::GET(url = paste0(metadata$url, "/version"), httr::timeout(10L)),
                 type = "application/json",
                 encoding = "utf-8"
               )
@@ -41,7 +41,7 @@ Worker <- R6Class("Worker", public = list(
                 Authorization = authHeader,
                 Timestamp = as.character(Sys.time(), usetz = TRUE)
               ),
-              httr::timeout(6L)
+              httr::timeout(10L)
             )
             if (!identical(httr::status_code(instances), 200L)) {
               errMsg <- httr::content(instances,
@@ -269,7 +269,7 @@ Worker <- R6Class("Worker", public = list(
             Timestamp = as.character(Sys.time(), usetz = TRUE),
             "X-Fields" = "name"
           ),
-          timeout(5L)
+          timeout(10L)
         )
         retContent <- tryCatch(
           {
@@ -885,7 +885,7 @@ Worker <- R6Class("Worker", public = list(
         Authorization = private$authHeader,
         Timestamp = as.character(Sys.time(), usetz = TRUE)
       ),
-      timeout(5L)
+      timeout(10L)
     ))
     groupsTmp <- unlist(lapply(groupsTmp, function(accessGroup) {
       if (!identical(accessGroup$label, tolower(accessGroup$label))) {
@@ -1395,7 +1395,7 @@ Worker <- R6Class("Worker", public = list(
             Authorization = private$authHeader,
             Timestamp = as.character(Sys.time(), usetz = TRUE)
           ),
-          timeout(5L)
+          timeout(10L)
         )))
       },
       error = function(e) {
@@ -1497,7 +1497,7 @@ Worker <- R6Class("Worker", public = list(
         private$fRemoteSub <- NULL
       } else {
         private$wait <- bitwShiftL(2L, private$waitCnt)
-        if (private$waitCnt < private$metadata$timeout) {
+        if (private$waitCnt < 10L) {
           private$waitCnt <- private$waitCnt + 1L
         } else {
           flog.warn("Pinging remote process timed out (error: 126318).")
@@ -1520,7 +1520,7 @@ Worker <- R6Class("Worker", public = list(
         }
       } else {
         private$wait <- bitwShiftL(2L, private$waitCnt)
-        if (private$waitCnt < private$metadata$timeout) {
+        if (private$waitCnt < 10L) {
           private$waitCnt <- private$waitCnt + 1L
         } else {
           flog.warn("Pinging remote process timed out (error: 7126360).")
@@ -1537,7 +1537,7 @@ Worker <- R6Class("Worker", public = list(
             Authorization = private$authHeader,
             Timestamp = as.character(Sys.time(), usetz = TRUE)
           ),
-          timeout(5L)
+          timeout(10L)
         )
         statusCode <- status_code(ret)
       },
@@ -1638,7 +1638,7 @@ Worker <- R6Class("Worker", public = list(
             Timestamp = as.character(Sys.time(), usetz = TRUE),
             `X-Fields` = "queue_position"
           ),
-          timeout(5L)
+          timeout(10L)
         )
         if (identical(status_code(ret), 200L)) {
           tryCatch(
@@ -1767,7 +1767,7 @@ Worker <- R6Class("Worker", public = list(
         Timestamp = as.character(Sys.time(), usetz = TRUE),
         "X-Fields" = "process_status,status"
       ),
-      timeout(6L)
+      timeout(10L)
     )
   },
   interruptLocal = function(hardKill = FALSE, process = NULL) {
@@ -1879,7 +1879,7 @@ Worker <- R6Class("Worker", public = list(
             Authorization = private$authHeader,
             Timestamp = as.character(Sys.time(), usetz = TRUE)
           ),
-          timeout(private$metadata$timeout)
+          timeout(10L)
         )
       ),
       error = function(e) {
@@ -1984,7 +1984,7 @@ Worker <- R6Class("Worker", public = list(
         Authorization = private$authHeader,
         Timestamp = as.character(Sys.time(), usetz = TRUE)
       ),
-      timeout(5L)
+      timeout(10L)
     ))$token
 
     private$metadata$password <- sessionToken
