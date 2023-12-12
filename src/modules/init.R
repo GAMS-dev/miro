@@ -1074,81 +1074,97 @@ if (is.null(errMsg)) {
       config$hcubeWidgetGroups <- list(list(name = NULL, members = names(modelIn)))
     }
     hcubeWidgetsAlreadyAssigned <- c()
+    hcWidgetsTmp <- lapply(seq_along(modelIn), function(widgetId) {
+      el <- names(modelIn)[[widgetId]]
+      if (isTRUE(modelIn[[el]]$noHcube)) {
+        return(NA)
+      }
+      if (identical(modelIn[[el]]$type, "checkbox")) {
+        return(list(
+          type = "dropdown",
+          baseType = "checkbox",
+          alias = modelIn[[el]]$checkbox$alias,
+          name = el,
+          widgetId = widgetId,
+          label = modelIn[[el]]$checkbox$label,
+          choices = c(0L, 1L),
+          selected = modelIn[[el]]$checkbox$value,
+          multiple = TRUE
+        ))
+      }
+      if (identical(modelIn[[el]]$type, "dropdown")) {
+        if (isTRUE(modelIn[[el]]$dropdown$multiple)) {
+          return(NA)
+        }
+        if (identical(modelIn[[el]]$symtype, "set")) {
+          return(NA)
+        }
+        ret <- modelIn[[el]]$dropdown
+        ret$type <- "dropdown"
+        ret$baseType <- "dropdown"
+        ret$multiple <- TRUE
+        ret$name <- el
+        ret$widgetId <- widgetId
+        if (length(ret$aliases)) {
+          ret$choices <- setNames(ret$choices, ret$aliases)
+        }
+        return(ret)
+      }
+      if (identical(modelIn[[el]]$type, "slider")) {
+        ret <- modelIn[[el]]$slider
+        ret$type <- "slider"
+        ret$baseType <- "slider"
+        ret$name <- el
+        ret$widgetId <- widgetId
+        ret$ticks <- !isFALSE(ret$ticks)
+        if (!length(ret$minStep)) {
+          ret$minStep <- 0L
+        }
+        if (length(ret$default) == 1) {
+          ret$single <- TRUE
+          ret$default <- rep(ret$default, 2L)
+        } else {
+          ret$single <- FALSE
+        }
+        return(ret)
+      }
+      return(NA)
+    })
+    names(hcWidgetsTmp) <- names(modelIn)
+    hcWidgetsTmp <- hcWidgetsTmp[!is.na(hcWidgetsTmp)]
     config$hcModule$scalarsConfig <- lapply(config$hcubeWidgetGroups, function(group) {
       membersAlreadyAssigned <- group$members %in% hcubeWidgetsAlreadyAssigned
       if (any(membersAlreadyAssigned)) {
         warning(sprintf(
-          "Widget(s): %s are declared as members of multiple Hypercube widget groups.",
-          paste(group$members[membersAlreadyAssigned], collapse = ", ")
+          "Widget(s): '%s' are declared as members of multiple Hypercube widget groups.",
+          paste(group$members[membersAlreadyAssigned], collapse = "', '")
         ))
       }
       groupMembers <- group$members[!membersAlreadyAssigned]
-      membersTmp <- lapply(seq_along(groupMembers), function(groupIdx) {
-        widgetId <- length(hcubeWidgetsAlreadyAssigned) + groupIdx
-        el <- groupMembers[[groupIdx]]
-        if (isTRUE(modelIn[[el]]$noHcube)) {
-          return(NA)
-        }
-        if (identical(modelIn[[el]]$type, "checkbox")) {
-          return(list(
-            type = "dropdown",
-            baseType = "checkbox",
-            alias = modelIn[[el]]$checkbox$alias,
-            name = el,
-            widgetId = widgetId,
-            label = modelIn[[el]]$checkbox$label,
-            choices = c(0L, 1L),
-            selected = modelIn[[el]]$checkbox$value,
-            multiple = TRUE
-          ))
-        }
-        if (identical(modelIn[[el]]$type, "dropdown")) {
-          if (isTRUE(modelIn[[el]]$dropdown$multiple)) {
-            return(NA)
-          }
-          if (identical(modelIn[[el]]$symtype, "set")) {
-            return(NA)
-          }
-          ret <- modelIn[[el]]$dropdown
-          ret$type <- "dropdown"
-          ret$baseType <- "dropdown"
-          ret$multiple <- TRUE
-          ret$name <- el
-          ret$widgetId <- widgetId
-          if (length(ret$aliases)) {
-            ret$choices <- setNames(ret$choices, ret$aliases)
-          }
-          return(ret)
-        }
-        if (identical(modelIn[[el]]$type, "slider")) {
-          ret <- modelIn[[el]]$slider
-          ret$type <- "slider"
-          ret$baseType <- "slider"
-          ret$name <- el
-          ret$widgetId <- widgetId
-          ret$ticks <- !isFALSE(ret$ticks)
-          if (!length(ret$minStep)) {
-            ret$minStep <- 0L
-          }
-          if (length(ret$default) == 1) {
-            ret$single <- TRUE
-            ret$default <- rep(ret$default, 2L)
-          } else {
-            ret$single <- FALSE
-          }
-          return(ret)
-        }
-        return(NA)
-      })
-      isValidMember <- !is.na(membersTmp)
-      membersTmp <- membersTmp[isValidMember]
-      if (!length(membersTmp)) {
+      widgetIndices <- match(groupMembers, names(hcWidgetsTmp))
+      isValidMember <- !is.na(widgetIndices)
+      widgetIndices <- widgetIndices[isValidMember]
+      if (!length(widgetIndices)) {
         return(NA)
       }
+      membersTmp <- hcWidgetsTmp[widgetIndices]
       hcubeWidgetsAlreadyAssigned <<- c(hcubeWidgetsAlreadyAssigned, group$members[isValidMember])
       return(list(name = group$name, members = membersTmp))
     })
     config$hcModule$scalarsConfig <- config$hcModule$scalarsConfig[!is.na(config$hcModule$scalarsConfig)]
+    unassignedWidgets <- !names(hcWidgetsTmp) %in% hcubeWidgetsAlreadyAssigned
+    if (any(unassignedWidgets)) {
+      warningMsgTmp <- sprintf(
+        "Widget(s): '%s' are not assigned to any Hypercube widget group.",
+        paste(names(hcWidgetsTmp)[unassignedWidgets], collapse = "', '")
+      )
+      warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
+      warning(warningMsgTmp)
+      config$hcModule$scalarsConfig <- c(
+        list(list(name = NULL, members = hcWidgetsTmp[unassignedWidgets])),
+        config$hcModule$scalarsConfig
+      )
+    }
     if (!length(config$hcModule$scalarsConfig)) {
       warningMsgTmp <- "You have selected to enable the Hypercube module, but no widgets could be found that are suitable for use with the Hypercube module. Hypercube module has therefore been disabled..."
       warning(warningMsgTmp)
