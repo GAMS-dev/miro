@@ -104,6 +104,32 @@ test_that(
   }
 )
 
+configJSON$hcubeWidgetGroups <- list(
+  list(
+    name = "test group 1",
+    members = c("clearvalueset", "solver")
+  ),
+  list(
+    name = "2nd tests group",
+    members = c("maxstock")
+  )
+)
+
+jsonlite::write_json(configJSON, configJSONFileName,
+  pretty = TRUE, auto_unbox = TRUE, null = "null"
+)
+
+if (file.exists(file.path("~", ".miro", paste0(".cred_", tolower(modelToTest))))) {
+  unlink(file.path("~", ".miro", paste0(".cred_", tolower(modelToTest))), force = TRUE)
+}
+
+test_that(
+  "Hypercube widget groups work",
+  {
+    source(file.path(testDir, "shinytest", "hcube_module_widget_groups_test.R"), local = TRUE)
+  }
+)
+
 removeUser(apiURL, inviterUser, inviterPass, inviteeName)
 
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_REMOTE_EXEC"))
