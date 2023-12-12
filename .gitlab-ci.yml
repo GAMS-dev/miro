@@ -161,9 +161,11 @@ lint_job:
           - yarn.lock
       paths:
         - node_modules/
-    - key: pre-commit
+    - key:
+        files:
+          - .pre-commit-config.yaml
       paths:
-        - $PRE_COMMIT_HOME
+        - .cache/pre-commit/
   needs: []
   rules:
     - if: $CI_MERGE_REQUEST_ID
