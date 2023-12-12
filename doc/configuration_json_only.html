@@ -1985,6 +1985,111 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                   <!--//section-block-->
                 </section>
                 <!--//doc-section-->
+                <section id="hcube-widget-groups" class="doc-section">
+                  <h2 class="section-title">Hypercube module: Widget groups</h2>
+                  <div class="section-block">
+                    <p>
+                      If you want more control over the layout of the widgets in
+                      the <a href="./hc-module.html">Hypercube module</a>, you
+                      can use the configuration option
+                      <code class="language-json">"hcubeWidgetGroups"</code>.
+                      This option accepts an array of objects, where each object
+                      must contain the
+                      <code class="language-json">"name"</code> (string) of the
+                      group as well as the
+                      <code class="language-json">"members"</code> (array of
+                      strings). The members must be names of symbols for which
+                      you have defined scalar input widgets that are
+                      <a href="./hc-module.html#widget-expansion-table"
+                        >supported by the Hypercube module</a
+                      >.
+                    </p>
+                    <p>
+                      Below you find an sample configuration for the
+                      <i>transport</i> example:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-json">{
+  "activateModules": {
+    "hcube": true
+  },
+  "inputWidgets": {
+    "f": {
+      "widgetType": "slider",
+      "label": "freight in dollars per case per thousand miles",
+      "min": 1,
+      "max": 500,
+      "default": 100,
+      "step": 1
+    },
+    "mins": {
+      "widgetType": "slider",
+      "label": "minimum shipment (MIP- and MINLP-only)",
+      "min": 0,
+      "max": 500,
+      "default": 100,
+      "step": 1,
+      "minStep": 0
+    },
+    "beta": {
+      "widgetType": "slider",
+      "label": "beta (MINLP-only)",
+      "min": 0,
+      "max": 1,
+      "default": 0.95,
+      "step": 0.01
+    },
+    "type": {
+      "widgetType": "dropdown",
+      "label": "Select the model type",
+      "selected": "lp",
+      "choices": [
+        "lp",
+        "mip",
+        "minlp"
+      ]
+    }
+  },
+  "hcubeWidgetGroups": [
+    {
+      "name": "General",
+      "members": [
+        "f",
+        "mins"
+      ]
+    },
+    {
+      "name": "Advanced",
+      "members": [
+        "type",
+        "beta"
+      ]
+    }
+  ]
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      This configuration leads to the following Hypercube
+                      submission dialog:
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 350pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                        "
+                        src="assets/images/configuration_mode/hcube_widget_groups.png"
+                        alt="Hypercube widget groups Example"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
               </div>
               <!--//content-inner-->
             </div>
@@ -2017,6 +2122,9 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                   >
                   <a class="nav-link scrollto" href="#custom-compare-mode"
                     >Custom scenario comparison</a
+                  >
+                  <a class="nav-link scrollto" href="#hcube-widget-groups"
+                    >Hypercube module: Widget groups</a
                   >
                 </nav>
                 <!--//doc-menu-->
