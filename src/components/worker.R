@@ -1542,7 +1542,12 @@ Worker <- R6Class("Worker", public = list(
         statusCode <- status_code(ret)
       },
       error = function(e) {
-        flog.warn("Problems reading log from remote executor. Error message: %s", conditionMessage(e))
+        errMsgTmp <- conditionMessage(e)
+        if (identical(errMsgTmp, "Operation was aborted by an application callback")) {
+          flog.debug("Problems reading log from remote executor. Error message: %s", errMsgTmp)
+        } else {
+          flog.warn("Problems reading log from remote executor. Error message: %s", errMsgTmp)
+        }
         statusCode <<- 403L
       }
     )
