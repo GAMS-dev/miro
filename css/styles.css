@@ -563,6 +563,9 @@ a:hover {
 .miro-launcher-input:disabled {
   cursor: not-allowed !important;
 }
+.db-path-field {
+  margin-bottom: 20px;
+}
 .custom-file-label::after {
   padding: .375rem .5rem;
 }
