@@ -1019,6 +1019,56 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                       <code class="language-json">"additionalData"</code>
                       array of your configuration.
                     </p>
+                    <p>
+                      Note that custom widgets cannot be automatically expanded
+                      to use them for
+                      <a href="./hc-module.html">Hypercube jobs</a>. Therefore,
+                      if you include scalar symbols in custom widgets (either as
+                      the symbol for which the widget is defined or via
+                      <code class="language-json">"widgetSymbols"</code>) and
+                      still want to include these symbols in the Hypercube job
+                      configuration, you must also define a scalar widget
+                      configuration for Hypercube jobs. You can do this with the
+                      <code class="language-json">"hcubeWidgets"</code>
+                      configuration option. Below you will find an example of
+                      the scalar <span class="code">force_unique_sol</span>,
+                      which is to be used both as a custom widget and as a
+                      slider in the
+                      <a href="./hc-module.html">Hypercube module</a>:
+                    </p>
+                    <pre><code class="language-json">{
+  "activateModules": {
+    "hcubeModule": true
+  },
+  "hcubeWidgets": {
+    "force_unique_sol": {
+      "widgetType": "checkbox",
+      "alias": "Force initial solution",
+      "value": 1,
+      "class": "checkbox-material"
+    }
+  },
+  "inputWidgets": {
+    "force_unique_sol": {
+      "widgetType": "custom",
+      "rendererName": "mirowidget_force_unique_sol",
+      "alias": "Initial state",
+      "apiVersion": 2,
+      "widgetSymbols": ["initial_state"],
+      "options": {
+        "isInput": true
+      }
+    }
+  }
+}</code></pre>
+                    <p>
+                      The checkbox is then expanded to a dropdown menu in the
+                      Hypercube submission dialog (see
+                      <a href="./hc-module.html#widget-expansion-table"
+                        >this table</a
+                      >, which widgets are supported and how they are expanded
+                      in the Hypercube submission dialog).
+                    </p>
                   </div>
                 </section>
                 <!--//doc-section-->
@@ -1985,6 +2035,111 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                   <!--//section-block-->
                 </section>
                 <!--//doc-section-->
+                <section id="hcube-widget-groups" class="doc-section">
+                  <h2 class="section-title">Hypercube module: Widget groups</h2>
+                  <div class="section-block">
+                    <p>
+                      If you want more control over the layout of the widgets in
+                      the <a href="./hc-module.html">Hypercube module</a>, you
+                      can use the configuration option
+                      <code class="language-json">"hcubeWidgetGroups"</code>.
+                      This option accepts an array of objects, where each object
+                      must contain the
+                      <code class="language-json">"name"</code> (string) of the
+                      group as well as the
+                      <code class="language-json">"members"</code> (array of
+                      strings). The members must be names of symbols for which
+                      you have defined scalar input widgets that are
+                      <a href="./hc-module.html#widget-expansion-table"
+                        >supported by the Hypercube module</a
+                      >.
+                    </p>
+                    <p>
+                      Below you find an sample configuration for the
+                      <i>transport</i> example:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-json">{
+  "activateModules": {
+    "hcube": true
+  },
+  "inputWidgets": {
+    "f": {
+      "widgetType": "slider",
+      "label": "freight in dollars per case per thousand miles",
+      "min": 1,
+      "max": 500,
+      "default": 100,
+      "step": 1
+    },
+    "mins": {
+      "widgetType": "slider",
+      "label": "minimum shipment (MIP- and MINLP-only)",
+      "min": 0,
+      "max": 500,
+      "default": 100,
+      "step": 1,
+      "minStep": 0
+    },
+    "beta": {
+      "widgetType": "slider",
+      "label": "beta (MINLP-only)",
+      "min": 0,
+      "max": 1,
+      "default": 0.95,
+      "step": 0.01
+    },
+    "type": {
+      "widgetType": "dropdown",
+      "label": "Select the model type",
+      "selected": "lp",
+      "choices": [
+        "lp",
+        "mip",
+        "minlp"
+      ]
+    }
+  },
+  "hcubeWidgetGroups": [
+    {
+      "name": "General",
+      "members": [
+        "f",
+        "mins"
+      ]
+    },
+    {
+      "name": "Advanced",
+      "members": [
+        "type",
+        "beta"
+      ]
+    }
+  ]
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      This configuration leads to the following Hypercube
+                      submission dialog:
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 350pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                        "
+                        src="assets/images/configuration_mode/hcube_widget_groups.png"
+                        alt="Hypercube widget groups Example"
+                      />
+                    </div>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
               </div>
               <!--//content-inner-->
             </div>
@@ -2017,6 +2172,9 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                   >
                   <a class="nav-link scrollto" href="#custom-compare-mode"
                     >Custom scenario comparison</a
+                  >
+                  <a class="nav-link scrollto" href="#hcube-widget-groups"
+                    >Hypercube module: Widget groups</a
                   >
                 </nav>
                 <!--//doc-menu-->

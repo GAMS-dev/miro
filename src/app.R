@@ -359,6 +359,17 @@ if (is.null(errMsg)) {
         modelIn[[i]][["template"]] <- modelInTemplate[[i]]
       }
     }
+    if (length(config$hcModule$scalarsConfig) && is.null(config$hcModule$scalarsConfig[[1]]$widgetId)) {
+      # legacy app (<2.9.0), need to migrate to support hcubeWidgetGroups
+      config$hcModule$scalarsConfig <- list(list(
+        name = NULL,
+        members = lapply(seq_along(config$hcModule$scalarsConfig), function(widgetId) {
+          widgetConfig <- config$hcModule$scalarsConfig[[widgetId]]
+          widgetConfig$widgetId <- widgetId
+          return(widgetConfig)
+        })
+      ))
+    }
     suppressWarnings(rm(lang))
     for (customRendererName in customRendererNames) {
       assign(customRendererName, get(customRendererName), envir = .GlobalEnv)

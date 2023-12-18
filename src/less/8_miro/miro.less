@@ -757,6 +757,23 @@ animation: none !important;
     display: inline;
     cursor: pointer;
 }
+/* widget groups */
+.hc-widget-group-title {
+  margin-bottom: 10px;
+  background: none;
+  background-color: #ecf1f4;
+}
+@media only screen and (max-width: 991px){
+  .hc-widget-group-title {
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+}
+@media (prefers-color-scheme: dark) {
+    .hc-widget-group-title {
+        background-color: #292d32;
+    }
+}
 /* material checkboxes */
 .cb-label{
     display: inline;
@@ -996,20 +1013,33 @@ animation: none !important;
        color: @text-color-dark;
     });
 }
+/* Job submission */
+#jobSubmissionWrapper > .gmsalert.gmsalert-success {
+  word-wrap: break-word;
+}
 /* Hypercube module */
+#newHcWrapper {
+  padding-bottom:25px;
+}
 .hc-container {
   max-height:600px;
   max-height:60vh;
-  padding-bottom:25px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 html {
   -webkit-touch-callout: default;
 }
-.hc-container .hc-widget-row:nth-child(odd) {
-  padding-left: 0;
-}
-.hc-container .hc-widget-row:nth-child(even) {
-  padding-right: 0;
+@media only screen and (min-width: 992px){
+  .hc-tags-row,
+  #newHcJobInfo  {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  #newHcJobError  {
+    margin-left: 15px;
+    margin-right: 15px;
+  }
 }
 @media only screen and (max-width: 991px){
   .hc-container {
@@ -1127,15 +1157,17 @@ html {
   background-color: @modal-bg-dark;
  });
 }
-.item-or-query{
+.item-or-query,
+.choose-scen-btn {
   margin-top: 15px;
   display: inline-block;
-  > .btn {
+}
+.item-or-query > .btn {
     width: 140px;
-  }
 }
 @media only screen and (max-width: 767px){
-  .item-or-query{
+  .item-or-query,
+  .choose-scen-btn {
     margin-top: 15px;
     display: block;
     > .btn {

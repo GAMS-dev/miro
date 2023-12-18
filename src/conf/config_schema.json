@@ -4,6 +4,235 @@
    "description":"GAMS MIRO configuration file schema",
    "type":"object",
    "definitions": {
+    "sliderWidget":{
+      "description":"Slider input widget",
+      "type":"object",
+      "properties":{
+        "widgetType":{
+          "description":"Style of widget",
+          "type":"string",
+          "enum":[
+            "slider"
+          ]
+        },
+        "alias":{
+          "type":"string",
+          "minLength":1
+        },
+        "noHcube":{
+          "description":"Boolean that specifies whether element should not be used in Hypercube mode",
+          "type":"boolean"
+        },
+        "noImport":{
+          "description":"Boolean that specifies whether data should not be imported from external source",
+          "type":"boolean"
+        },
+        "label":{
+          "description":"Label of considered inputdata",
+          "type":["string","null"],
+          "minLength":1
+        },
+        "tooltip":{
+          "description":"Widget tooltip",
+          "type":["string","null"],
+          "minLength":1
+        },
+        "min":{
+          "description":"Minimum value of inputdata",
+          "type":[
+            "number",
+            "string"
+          ]
+        },
+        "max":{
+          "description":"Maximum value of inputdata",
+          "type":[
+            "number",
+            "string"
+          ]
+        },
+        "default":{
+          "description":"Default/starting value of inputdata",
+          "type":[
+            "number",
+            "string",
+            "array"
+          ]
+        },
+        "step":{
+          "description":"Specifies the interval between each selectable value",
+          "type":[
+            "number",
+            "string"
+          ]
+        },
+        "minStep":{
+          "description":"Specifies the minimum step size that the user is allowed to specify in the Hypercube mode",
+          "type":"number",
+          "minimum": 0
+        },
+        "width":{
+          "description":"Width of the slider (optional)",
+          "type":"number"
+        },
+        "ticks":{
+          "description":"Boolean that specifies whether to hide or show tick marks (optional)",
+          "type":"boolean"
+        }
+        },
+        "required":[
+            "widgetType", "step", "min", "max"
+        ],
+        "additionalProperties": false
+    },
+    "dropdownWidget": {
+      "description": "Dropdown input widget",
+      "type": "object",
+      "properties":{
+        "widgetType":{
+          "description":"Style of widget",
+          "type":"string",
+          "enum":[
+            "dropdown"
+          ]
+        },
+        "alias":{
+          "type":"string",
+          "minLength":1
+        },
+        "noHcube":{
+          "description":"Boolean that specifies whether element should not be used in Hypercube mode",
+          "type":"boolean"
+        },
+        "noImport":{
+          "description":"Boolean that specifies whether data should not be imported from external source",
+          "type":"boolean"
+        },
+        "label":{
+            "description":"display label for the dropdown menu",
+            "type":["string","null"],
+            "minLength":1
+          },
+        "tooltip":{
+          "description":"Widget tooltip",
+          "type":["string","null"],
+          "minLength":1
+        },
+          "choices":{
+            "description":"List of values to select from.",
+            "type":[
+              "array",
+              "string",
+              "number"
+            ],
+            "uniqueItems":true,
+            "minItems":1,
+            "items":{
+              "type":[
+                "string",
+                "number"
+              ]
+            }
+          },
+          "multiple":{
+            "description":"Boolean that specifies whether multiple options are allowed to be selected in dropdown menu",
+            "type":"boolean"
+          },
+          "aliases":{
+            "type":[
+              "array",
+              "string",
+              "null"
+            ],
+            "minLength":1,
+            "uniqueItems":true,
+            "minItems":1,
+            "items":{
+              "type":"string"
+            }
+          },
+          "selected":{
+            "description":"The initially selected value.",
+            "type":[
+              "string",
+              "number",
+              "null"
+            ]
+          },
+          "clearValue":{
+            "description":"Whether to communicate value as element text when writing/reading from/to GDX. This will not mess up the UEL order.",
+            "type":"boolean"
+          }
+        },
+        "required":[
+            "widgetType",
+            "choices"
+        ],
+        "additionalProperties": false
+    },
+    "checkboxWidget": {
+      "description": "Checkbox input widget",
+      "type": "object",
+      "properties":{
+        "widgetType":{
+          "description":"Style of widget",
+          "type":"string",
+          "enum":[
+            "checkbox"
+          ]
+        },
+        "alias":{
+          "type":"string",
+          "minLength":1
+        },
+        "noHcube":{
+          "description":"Boolean that specifies whether element should not be used in Hypercube mode",
+          "type":"boolean"
+        },
+        "noImport":{
+          "description":"Boolean that specifies whether data should not be imported from external source",
+          "type":"boolean"
+        },
+        "label":{
+          "description":"display label for the checkbox",
+          "type":["string","null"],
+          "minLength":1
+        },
+        "tooltip":{
+          "description":"Widget tooltip",
+          "type":["string","null"],
+          "minLength":1
+        },
+        "value":{
+          "description":"default value",
+          "type": "integer",
+          "minimum":0,
+          "maximum":1
+        },
+        "max":{
+          "description":"Maximum allowed value",
+          "type":"string",
+          "minLength":3
+        },
+        "class":{
+          "description":"css class",
+          "type":"string",
+          "minLength":1
+        },
+        "width":{
+          "description":"width of the input",
+          "type":[
+            "string",
+            "integer"
+          ],
+          "minLength":1
+        }
+      },
+      "required":[
+          "widgetType"
+      ],
+      "additionalProperties": false
+    },
     "miroPivotOptions":{
       "description":"MIRO pivot options",
       "type":"object",
@@ -503,175 +732,29 @@
          "type":"boolean",
          "default":true
       },
-      "inputWidgets":{
-        "description":"Format in which input or output data is to be displayed in MIRO.",
+      "hcubeWidgets":{
+        "description":"Format in which input scalars are displayed in Hypercube module.",
          "type":"object",
          "additionalProperties":{
             "type":"object",
             "minProperties":1,
             "oneOf":[
-               {
-                 "properties":{
-                   "widgetType":{
-                     "description":"Style of widget",
-                     "type":"string",
-                     "enum":[
-                       "slider"
-                     ]
-                   },
-                   "alias":{
-                     "type":"string",
-                     "minLength":1
-                   },
-                   "noHcube":{
-                    "description":"Boolean that specifies whether element should not be used in Hypercube mode",
-                    "type":"boolean"
-                   },
-                   "noImport":{
-                    "description":"Boolean that specifies whether data should not be imported from external source",
-                    "type":"boolean"
-                   },
-                   "label":{
-                     "description":"Label of considered inputdata",
-                     "type":["string","null"],
-                     "minLength":1
-                   },
-                   "tooltip":{
-                     "description":"Widget tooltip",
-                     "type":["string","null"],
-                     "minLength":1
-                   },
-                   "min":{
-                     "description":"Minimum value of inputdata",
-                     "type":[
-                       "number",
-                       "string"
-                     ]
-                   },
-                   "max":{
-                     "description":"Maximum value of inputdata",
-                     "type":[
-                       "number",
-                       "string"
-                     ]
-                   },
-                   "default":{
-                     "description":"Default/starting value of inputdata",
-                     "type":[
-                       "number",
-                       "string",
-                       "array"
-                     ]
-                   },
-                   "step":{
-                     "description":"Specifies the interval between each selectable value",
-                     "type":[
-                       "number",
-                       "string"
-                     ]
-                   },
-                   "minStep":{
-                     "description":"Specifies the minimum step size that the user is allowed to specify in the Hypercube mode",
-                     "type":"number",
-                     "minimum": 0
-                   },
-                   "width":{
-                     "description":"Width of the slider (optional)",
-                     "type":"number"
-                   },
-                   "ticks":{
-                     "description":"Boolean that specifies whether to hide or show tick marks (optional)",
-                     "type":"boolean"
-                   }
-                  },
-                  "required":[
-                      "widgetType", "step", "min", "max"
-                   ],
-                  "additionalProperties": false
-               },
-               {
-                 "properties":{
-                   "widgetType":{
-                     "description":"Style of widget",
-                     "type":"string",
-                     "enum":[
-                       "dropdown"
-                     ]
-                   },
-                   "alias":{
-                     "type":"string",
-                     "minLength":1
-                   },
-                   "noHcube":{
-                    "description":"Boolean that specifies whether element should not be used in Hypercube mode",
-                    "type":"boolean"
-                   },
-                   "noImport":{
-                    "description":"Boolean that specifies whether data should not be imported from external source",
-                    "type":"boolean"
-                   },
-                   "label":{
-                      "description":"display label for the dropdown menu",
-                      "type":["string","null"],
-                      "minLength":1
-                    },
-                   "tooltip":{
-                     "description":"Widget tooltip",
-                     "type":["string","null"],
-                     "minLength":1
-                   },
-                    "choices":{
-                      "description":"List of values to select from.",
-                      "type":[
-                        "array",
-                        "string",
-                        "number"
-                      ],
-                      "uniqueItems":true,
-                      "minItems":1,
-                      "items":{
-                        "type":[
-                          "string",
-                          "number"
-                        ]
-                      }
-                    },
-                    "multiple":{
-                      "description":"Boolean that specifies whether multiple options are allowed to be selected in dropdown menu",
-                      "type":"boolean"
-                    },
-                    "aliases":{
-                      "type":[
-                        "array",
-                        "string",
-                        "null"
-                      ],
-                      "minLength":1,
-                      "uniqueItems":true,
-                      "minItems":1,
-                      "items":{
-                        "type":"string"
-                      }
-                    },
-                    "selected":{
-                      "description":"The initially selected value.",
-                      "type":[
-                        "string",
-                        "number",
-                        "null"
-                      ]
-                    },
-                    "clearValue":{
-                      "description":"Whether to communicate value as element text when writing/reading from/to GDX. This will not mess up the UEL order.",
-                      "type":"boolean"
-                    }
-                  },
-                   "required":[
-                      "widgetType",
-                      "choices"
-                   ],
-                  "additionalProperties": false
-               },
+              { "$ref": "#/definitions/sliderWidget" },
+              { "$ref": "#/definitions/dropdownWidget" },
+              { "$ref": "#/definitions/checkboxWidget" }
+            ]
+         }
+      },
+      "inputWidgets":{
+        "description":"Format in which input data is to be displayed in MIRO.",
+         "type":"object",
+         "additionalProperties":{
+            "type":"object",
+            "minProperties":1,
+            "oneOf":[
+              { "$ref": "#/definitions/sliderWidget" },
+              { "$ref": "#/definitions/dropdownWidget" },
+              { "$ref": "#/definitions/checkboxWidget" },
                {
                  "properties":{
                    "widgetType":{
@@ -874,67 +957,6 @@
                    "autoclose":{
                      "description":"Whether or not to close the datepicker immediately when a date is selected",
                      "type":"boolean"
-                   }
-                 },
-                 "required":[
-                    "widgetType"
-                 ],
-                 "additionalProperties": false
-               },
-               {
-                 "properties":{
-                   "widgetType":{
-                     "description":"Style of widget",
-                     "type":"string",
-                     "enum":[
-                       "checkbox"
-                     ]
-                   },
-                   "alias":{
-                     "type":"string",
-                     "minLength":1
-                   },
-                   "noHcube":{
-                    "description":"Boolean that specifies whether element should not be used in Hypercube mode",
-                    "type":"boolean"
-                   },
-                   "noImport":{
-                    "description":"Boolean that specifies whether data should not be imported from external source",
-                    "type":"boolean"
-                   },
-                   "label":{
-                     "description":"display label for the checkbox",
-                     "type":["string","null"],
-                     "minLength":1
-                   },
-                   "tooltip":{
-                     "description":"Widget tooltip",
-                     "type":["string","null"],
-                     "minLength":1
-                   },
-                   "value":{
-                     "description":"default value",
-                     "type": "integer",
-                     "minimum":0,
-                     "maximum":1
-                   },
-                   "max":{
-                     "description":"Maximum allowed value",
-                     "type":"string",
-                     "minLength":3
-                   },
-                   "class":{
-                     "description":"css class",
-                     "type":"string",
-                     "minLength":1
-                   },
-                   "width":{
-                     "description":"width of the input",
-                     "type":[
-                       "string",
-                       "integer"
-                     ],
-                     "minLength":1
                    }
                  },
                  "required":[
@@ -2421,6 +2443,33 @@
               }
            }
          }
+      },
+      "hcubeWidgetGroups": {
+        "description": "Specify widgets that should be grouped in Hypercube submission dialog",
+        "type": "array",
+        "uniqueItems":true,
+        "minItems":1,
+        "items":{
+          "type":"object",
+          "additionalProperties":false,
+          "required": ["name", "members"],
+          "properties":{
+             "name":{
+               "description":"Specify the name of the group",
+               "type":"string",
+               "minLength":1
+             },
+             "members":{
+               "description":"Specify the group members",
+               "type":["array", "string"],
+               "uniqueItems":true,
+               "items":{
+                 "type":"string",
+                 "minLength":1
+               }
+             }
+          }
+        }
       },
       "customDataImport": {
         "description": "Import data using a custom function",

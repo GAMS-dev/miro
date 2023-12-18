@@ -477,201 +477,289 @@ inc/inc2.inc
                       Once you specified the files that belong to your model,
                       you are ready to export your MIRO app!
                     </p>
-                    <div class="section-block" style="text-align: center">
-                      <img
-                        class="img-fluid"
-                        style="max-height: 350pt"
-                        src="assets/images/deployment/deploy.png"
-                        alt="Deploy MIRO model"
-                      />
-                    </div>
-                    <p>
-                      In GAMS Studio, select <i>Assembly and Deploy</i>. In the
-                      <i>Deploy Configuration</i> section, you need to decide
-                      how your model shall be executed (<i
-                        >execution environment</i
-                      >). There are three options:
-                    </p>
-                    <ol>
-                      <li>
-                        Multi-user: This option allows your app to be used by
-                        multiple users simultaneously. Your model files are
-                        extracted at a random location, which is different for
-                        each user, and your model is executed from there.
-                      </li>
-                      <li>
-                        Single-user: Your model is executed inside the model
-                        directory. No extraction of your model files is
-                        required, but this means that you can NOT have multiple
-                        users accessing your MIRO app at the same time.
-                      </li>
-                      <li id="local-multi-user">
-                        Local multi-user (uses <i>idir</i>): With this third
-                        option, your model is again executed from a random
-                        location, but this time no model data is extracted here.
-                        Instead, GAMS is executed with an
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item">
                         <a
-                          href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir"
-                          target="_blank"
-                          >input directory</a
+                          class="nav-link active"
+                          id="deploy-gams-tab"
+                          data-toggle="tab"
+                          href="#deploy-gams"
+                          role="tab"
+                          aria-controls="deploy-gams"
+                          aria-selected="true"
+                          >GAMS</a
                         >
-                        pointing to the path where your model files are located.
-                        Choose this option ONLY if you have many large files
-                        that belong to your model and extracting them would take
-                        a long time. Be aware that due to the fact that
-                        <span class="code">idir</span> is used, your model might
-                        brake! For example, if you use
-                        <code class="language-gams">$call</code> or the
-                        execution-time equivalent
-                        <code class="language-gams">execute</code> (or related
-                        functions), the relative paths used in these calls will
-                        no longer exist (since the
-                        <a
-                          href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOcurdir"
-                          >curdir</a
-                        >
-                        is now a random location). The solution is to prefix all
-                        these relative paths with
-                        <code class="language-gams">%gams.idir1%</code>. For
-                        example, in order to import an Excel file
-                        <span class="code">test.xlsx</span>, GDXXRW needs to be
-                        called like this:
-                        <kbd>$call gdxxrw i=%gams.idir1%test.xlsx</kbd>.
-                        Alternatively, you can also use absolute paths (e.g. via
-                        <code class="language-gams"
-                          >$setNames "%gams.input%" fp fn fe</code
-                        >
-                        (see
-                        <a
-                          href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARsetnames"
-                          target="_blank"
-                          >here</a
-                        >). <br />Adjusting all affected paths is potentially a
-                        lot of work, so we strongly advise against using this
-                        option unless you know what you are doing!
                       </li>
-                    </ol>
-                    <div class="callout-block callout-warning">
-                      <div class="icon-holder">
-                        <i class="fas fa-info-circle"></i>
-                      </div>
-                      <!--//icon-holder-->
-                      <div class="content">
-                        <b class="callout-title">Advice</b>
-                        <p>
-                          We advise you to test your MIRO app before
-                          distributing it. GAMS Studio offers an option
-                          <i>test deployment</i>. This simulates how your end
-                          users will experience the MIRO app (MIRO is launched
-                          in the specified execution environment). In
-                          particular, you should check whether you forgot to
-                          include important files in the
-                          <a href="#model-assembly-file" class="scrollto"
-                            >model assembly file</a
-                          >.
-                        </p>
-                      </div>
-                      <!--//content-->
-                    </div>
-                    <!--//callout-block-->
-                    <p>
-                      If everything is set, click on <i>Deploy</i>. That's it! A
-                      new file
-                      <span class="code">&lt;modelname&gt;.miroapp</span> is
-                      created in your model directory. You can now distribute
-                      this MIRO app directly to your end users!
-                    </p>
-                    <div class="expandable-box-outline">
-                      <h3
-                        id="export-cl"
-                        class="block-title"
-                        onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                        style="cursor: pointer"
+                      <li class="nav-item">
+                        <a
+                          class="nav-link"
+                          id="deploy-gamspy-tab"
+                          data-toggle="tab"
+                          href="#deploy-gamspy"
+                          role="tab"
+                          aria-controls="deploy-gamspy"
+                          aria-selected="false"
+                          >GAMSPy</a
+                        >
+                      </li>
+                    </ul>
+                    <div class="tab-content tab-console-content">
+                      <div
+                        class="tab-pane fade show active"
+                        id="deploy-gams"
+                        role="tabpanel"
+                        aria-labelledby="deploy-gams-tab"
                       >
-                        <i class="fas fa-plus slide-toggle"></i> Advanced:
-                        Export MIRO app using the command line
-                      </h3>
-                      <div class="section-block" style="display: none">
-                        <p>
-                          In case you want to use the command line instead of
-                          GAMS Studio to export your MIRO app, you should
-                          proceed as follows: First, set the environment
-                          variable <span class="code">MIRO_BUILD</span> to
-                          <span class="code">true</span> and
-                          <span class="code">MIRO_MODEL_PATH</span> to the
-                          absolute path of your main
-                          <span class="code">.gms</span> file (see
-                          <a href="./start.html#start-miro">here</a> for more
-                          information on how to set these environment variables
-                          on your operating system). The environment variables
-                          used to control what execution mode to choose are
-                          listed in the following table:
-                        </p>
-                        <div class="table-responsive">
-                          <table class="table table-striped">
-                            <thead>
-                              <tr>
-                                <th style="width: 35%">Execution mode</th>
-                                <th>Environment variables</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td>Multi-user</td>
-                                <td>
-                                  <span class="code">MIRO_USE_TMP=true</span>
-                                  and
-                                  <span class="code"
-                                    >MIRO_BUILD_ARCHIVE=true</span
-                                  >
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Single-user</td>
-                                <td>
-                                  <span class="code">MIRO_USE_TMP=false</span>
-                                  and
-                                  <span class="code"
-                                    >MIRO_BUILD_ARCHIVE=false</span
-                                  >
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Local multi-user (uses idir)</td>
-                                <td>
-                                  <span class="code">MIRO_USE_TMP=true</span>
-                                  and
-                                  <span class="code"
-                                    >MIRO_BUILD_ARCHIVE=false</span
-                                  >
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
+                        <div class="section-block" style="text-align: center">
+                          <img
+                            class="img-fluid"
+                            style="max-height: 350pt"
+                            src="assets/images/deployment/deploy.png"
+                            alt="Deploy MIRO model"
+                          />
                         </div>
-                        <!--//table-responsive-->
+                        <p>
+                          In GAMS Studio, select <i>Assembly and Deploy</i>. In
+                          the <i>Deploy Configuration</i> section, you need to
+                          decide how your model shall be executed (<i
+                            >execution environment</i
+                          >). There are three options:
+                        </p>
+                        <ol>
+                          <li>
+                            Multi-user: This option allows your app to be used
+                            by multiple users simultaneously. Your model files
+                            are extracted at a random location, which is
+                            different for each user, and your model is executed
+                            from there.
+                          </li>
+                          <li>
+                            Single-user: Your model is executed inside the model
+                            directory. No extraction of your model files is
+                            required, but this means that you can NOT have
+                            multiple users accessing your MIRO app at the same
+                            time.
+                          </li>
+                          <li id="local-multi-user">
+                            Local multi-user (uses <i>idir</i>): With this third
+                            option, your model is again executed from a random
+                            location, but this time no model data is extracted
+                            here. Instead, GAMS is executed with an
+                            <a
+                              href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir"
+                              target="_blank"
+                              >input directory</a
+                            >
+                            pointing to the path where your model files are
+                            located. Choose this option ONLY if you have many
+                            large files that belong to your model and extracting
+                            them would take a long time. Be aware that due to
+                            the fact that
+                            <span class="code">idir</span> is used, your model
+                            might brake! For example, if you use
+                            <code class="language-gams">$call</code> or the
+                            execution-time equivalent
+                            <code class="language-gams">execute</code> (or
+                            related functions), the relative paths used in these
+                            calls will no longer exist (since the
+                            <a
+                              href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOcurdir"
+                              >curdir</a
+                            >
+                            is now a random location). The solution is to prefix
+                            all these relative paths with
+                            <code class="language-gams">%gams.idir1%</code>. For
+                            example, in order to import an Excel file
+                            <span class="code">test.xlsx</span>, GDXXRW needs to
+                            be called like this:
+                            <kbd>$call gdxxrw i=%gams.idir1%test.xlsx</kbd>.
+                            Alternatively, you can also use absolute paths (e.g.
+                            via
+                            <code class="language-gams"
+                              >$setNames "%gams.input%" fp fn fe</code
+                            >
+                            (see
+                            <a
+                              href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARsetnames"
+                              target="_blank"
+                              >here</a
+                            >). <br />Adjusting all affected paths is
+                            potentially a lot of work, so we strongly advise
+                            against using this option unless you know what you
+                            are doing!
+                          </li>
+                        </ol>
                         <div class="callout-block callout-warning">
                           <div class="icon-holder">
                             <i class="fas fa-info-circle"></i>
                           </div>
                           <!--//icon-holder-->
                           <div class="content">
-                            <b class="callout-title">Test deployment</b>
+                            <b class="callout-title">Advice</b>
                             <p>
-                              In order to test the deployment you chose, set
-                              <span class="code">MIRO_DEV_MODE</span> to
-                              <span class="code">true</span>,
-                              <span class="code">MIRO_BUILD</span> to
-                              <span class="code">false</span> and
-                              <span class="code">MIRO_TEST_DEPLOY</span> to
-                              <span class="code">true</span>.
+                              We advise you to test your MIRO app before
+                              distributing it. GAMS Studio offers an option
+                              <i>test deployment</i>. This simulates how your
+                              end users will experience the MIRO app (MIRO is
+                              launched in the specified execution environment).
+                              In particular, you should check whether you forgot
+                              to include important files in the
+                              <a href="#model-assembly-file" class="scrollto"
+                                >model assembly file</a
+                              >.
                             </p>
                           </div>
                           <!--//content-->
                         </div>
                         <!--//callout-block-->
+                        <p>
+                          If everything is set, click on <i>Deploy</i>. That's
+                          it! A new file
+                          <span class="code">&lt;modelname&gt;.miroapp</span> is
+                          created in your model directory. You can now
+                          distribute this MIRO app directly to your end users!
+                        </p>
+                        <div class="expandable-box-outline">
+                          <h3
+                            id="export-cl"
+                            class="block-title"
+                            onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                            style="cursor: pointer"
+                          >
+                            <i class="fas fa-plus slide-toggle"></i> Advanced:
+                            Export MIRO app using the command line
+                          </h3>
+                          <div class="section-block" style="display: none">
+                            <p>
+                              In case you want to use the command line instead
+                              of GAMS Studio to export your MIRO app, you should
+                              proceed as follows: First, set the environment
+                              variable <span class="code">MIRO_BUILD</span> to
+                              <span class="code">true</span> and
+                              <span class="code">MIRO_MODEL_PATH</span> to the
+                              absolute path of your main
+                              <span class="code">.gms</span> file (see
+                              <a href="./start.html#start-miro">here</a> for
+                              more information on how to set these environment
+                              variables on your operating system). The
+                              environment variables used to control what
+                              execution mode to choose are listed in the
+                              following table:
+                            </p>
+                            <div class="table-responsive">
+                              <table class="table table-striped">
+                                <thead>
+                                  <tr>
+                                    <th style="width: 35%">Execution mode</th>
+                                    <th>Environment variables</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td>Multi-user</td>
+                                    <td>
+                                      <span class="code"
+                                        >MIRO_USE_TMP=true</span
+                                      >
+                                      and
+                                      <span class="code"
+                                        >MIRO_BUILD_ARCHIVE=true</span
+                                      >
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td>Single-user</td>
+                                    <td>
+                                      <span class="code"
+                                        >MIRO_USE_TMP=false</span
+                                      >
+                                      and
+                                      <span class="code"
+                                        >MIRO_BUILD_ARCHIVE=false</span
+                                      >
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td>Local multi-user (uses idir)</td>
+                                    <td>
+                                      <span class="code"
+                                        >MIRO_USE_TMP=true</span
+                                      >
+                                      and
+                                      <span class="code"
+                                        >MIRO_BUILD_ARCHIVE=false</span
+                                      >
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                            <!--//table-responsive-->
+                            <div class="callout-block callout-warning">
+                              <div class="icon-holder">
+                                <i class="fas fa-info-circle"></i>
+                              </div>
+                              <!--//icon-holder-->
+                              <div class="content">
+                                <b class="callout-title">Test deployment</b>
+                                <p>
+                                  In order to test the deployment you chose, set
+                                  <span class="code">MIRO_DEV_MODE</span> to
+                                  <span class="code">true</span>,
+                                  <span class="code">MIRO_BUILD</span> to
+                                  <span class="code">false</span> and
+                                  <span class="code">MIRO_TEST_DEPLOY</span> to
+                                  <span class="code">true</span>.
+                                </p>
+                              </div>
+                              <!--//content-->
+                            </div>
+                            <!--//callout-block-->
+                          </div>
+                          <!--//section-block-->
+                        </div>
                       </div>
-                      <!--//section-block-->
+                      <div
+                        class="tab-pane fade"
+                        id="deploy-gamspy"
+                        role="tabpanel"
+                        aria-labelledby="deploy-gamspy-tab"
+                      >
+                        <p>
+                          In order to deploy a GAMSPy/MIRO app, you first need
+                          to create a
+                          <a href="#model-assembly-file" class="scrollto"
+                            >model assembly file</a
+                          >. If everything is set, simply run the command below.
+                          That's it! A new file
+                          <span class="code">&lt;modelname&gt;.miroapp</span> is
+                          created in your model directory. You can now
+                          distribute this MIRO app directly to your end users!
+                        </p>
+                        <div class="console-box">
+                          <span class="console-content">
+                            &gt; gamspy run miro --mode="deploy" --path
+                            &lt;path_to_your_MIRO_installation&gt; --model
+                            &lt;path_to_your_model&gt;
+                          </span>
+                        </div>
+                        <p>
+                          where
+                          <kbd>&lt;path_to_your_MIRO_installation&gt;</kbd> is
+                          the path to your MIRO executable file (e.g.
+                          <kbd>C:\Program Files\GAMS MIRO\GAMS MIRO.exe</kbd> on
+                          Windows, <kbd>/Applications/GAMS MIRO.app</kbd> on
+                          macOS or <kbd>~/GAMS-MIRO-2.9.0.AppImage</kbd> on
+                          Linux) and <kbd>&lt;path_to_your_model&gt;</kbd> is
+                          the path to your main <i>.gms</i> file.
+                        </p>
+                        <p>
+                          Note that you can also set the MIRO installation path
+                          as an environment variable: <kbd>MIRO_PATH</kbd>, so
+                          that you do not have to enter it every time you use
+                          the GAMSPy CLI.
+                        </p>
+                      </div>
                     </div>
                     <div
                       class="callout-block callout-warning"
