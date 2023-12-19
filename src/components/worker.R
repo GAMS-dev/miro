@@ -2201,8 +2201,8 @@ Worker <- R6Class("Worker", public = list(
   getProcEnv = function() {
     if (identical(private$metadata$isGamsPy, TRUE)) {
       procEnv <- Sys.getenv()
-      procEnv[["GAMS_IDC_GDX_INPUT"]] <- private$metadata$MIROGdxInName
-      procEnv[["GAMS_IDC_GDX_OUTPUT"]] <- private$metadata$MIROGdxOutName
+      procEnv[["GAMS_IDC_GDX_INPUT"]] <- file.path(private$workDir, private$metadata$MIROGdxInName)
+      procEnv[["GAMS_IDC_GDX_OUTPUT"]] <- file.path(private$workDir, private$metadata$MIROGdxOutName)
       return(procEnv)
     }
     # workaround since GAMS31 has a bug on Linux that causes an infinite loop in case
