@@ -84,13 +84,13 @@ demand(j).. sum(i, x(i,j)) =g= b(j);
 
 Model transportLP / all /;
 
-scalar bigM big M;
+scalar bigM 'big M';
 bigM = min(smax(i,a(i)), smax(j,b(j)));
 
 binary variable ship(i,j) '1 if we ship from i to j, otherwise 0';
 
-equation minship(i,j) minimum shipment
-         maxship(i,j) maximum shipment;
+equation minship(i,j) 'minimum shipment'
+         maxship(i,j) 'maximum shipment';
 
 minship(i,j) .. x(i,j) =g= minS * ship(i,j);
 maxship(i,j) .. x(i,j) =l= bigM * ship(i,j);
