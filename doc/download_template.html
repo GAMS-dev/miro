@@ -92,46 +92,120 @@
                 <section id="installation-section" class="doc-section">
                   <h2 class="section-title">Install GAMS MIRO Desktop</h2>
                   <div class="section-block">
-                    <div class="callout-block callout-warning">
-                      <div class="icon-holder">
-                        <i class="fas fa-info-circle"></i>
-                      </div>
-                      <!--//icon-holder-->
-                      <div class="content">
-                        <b class="callout-title">Note:</b>
-                        <p>
-                          To be able to solve models in GAMS MIRO, GAMS 30.2 or
-                          later is required. You can download the latest GAMS
-                          version
-                          <a
-                            href="https://www.gams.com/download/"
-                            target="_blank"
-                            >here</a
-                          >.
-                        </p>
-                      </div>
-                      <!--//content-->
-                    </div>
-                    <!--//callout-block-->
-                    <p>
-                      GAMS MIRO Desktop itself is open source software. In order
-                      for GAMS to interact with MIRO, the
-                      <a
-                        href="https://www.gams.com/sales/pricing_regular/"
-                        target="_blank"
-                        >MIRO connector</a
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item">
+                        <a
+                          class="nav-link active"
+                          id="gams-tab-1"
+                          data-toggle="tab"
+                          href="#gams-1"
+                          role="tab"
+                          aria-controls="gams-1"
+                          aria-selected="true"
+                          >GAMS</a
+                        >
+                      </li>
+                      <li class="nav-item">
+                        <a
+                          class="nav-link"
+                          id="gamspy-tab-1"
+                          data-toggle="tab"
+                          href="#gamspy-1"
+                          role="tab"
+                          aria-controls="gamspy-1"
+                          aria-selected="false"
+                          >GAMSPy</a
+                        >
+                      </li>
+                    </ul>
+                    <div class="tab-content tab-console-content tab-section">
+                      <div
+                        class="tab-pane fade show active"
+                        id="gams-1"
+                        role="tabpanel"
+                        aria-labelledby="gams-tab-1"
                       >
-                      is required, which is included in the GAMS system
-                      <a href="https://www.gams.com/download" target="_blank"
-                        >from GAMS version 30.2</a
-                      >. Without a valid license, the connector has limitations
-                      on the number of indexed symbols that can be communicated
-                      with MIRO. A maximum of 10 indexed symbols can be included
-                      in
-                      <a href="./model.html#model-adjustments"
-                        >$on/offExternalInput and $on/offExternalOutput</a
-                      >.
-                    </p>
+                        <div class="section-block">
+                          <div class="callout-block callout-warning">
+                            <div class="icon-holder">
+                              <i class="fas fa-info-circle"></i>
+                            </div>
+                            <!--//icon-holder-->
+                            <div class="content">
+                              <b class="callout-title">Note:</b>
+                              <p>
+                                To be able to solve models in GAMS MIRO, GAMS
+                                30.2 or later is required. You can download the
+                                latest GAMS version
+                                <a
+                                  href="https://www.gams.com/download/"
+                                  target="_blank"
+                                  >here</a
+                                >.
+                              </p>
+                            </div>
+                            <!--//content-->
+                          </div>
+                          <!--//callout-block-->
+                          <p>
+                            GAMS MIRO Desktop itself is open source software. In
+                            order for GAMS to interact with MIRO, the
+                            <a
+                              href="https://www.gams.com/sales/pricing_regular/"
+                              target="_blank"
+                              >MIRO connector</a
+                            >
+                            is required, which is included in the GAMS system
+                            <a
+                              href="https://www.gams.com/download"
+                              target="_blank"
+                              >from GAMS version 30.2</a
+                            >. Without a valid license, the connector has
+                            limitations on the number of indexed symbols that
+                            can be communicated with MIRO. A maximum of 10
+                            indexed symbols can be included in
+                            <a href="./model.html#model-adjustments"
+                              >$on/offExternalInput and $on/offExternalOutput</a
+                            >.
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        class="tab-pane fade"
+                        id="gamspy-1"
+                        role="tabpanel"
+                        aria-labelledby="gamspy-tab-1"
+                      >
+                        <div class="section-block">
+                          <div class="callout-block callout-warning">
+                            <div class="icon-holder">
+                              <i class="fas fa-info-circle"></i>
+                            </div>
+                            <!--//icon-holder-->
+                            <div class="content">
+                              <b class="callout-title">Note:</b>
+                              <p>
+                                To be able to solve models in GAMS MIRO, GAMSPy
+                                0.12 or later is required.
+                              </p>
+                            </div>
+                            <!--//content-->
+                          </div>
+                          <!--//callout-block-->
+                          <p>
+                            GAMS MIRO Desktop itself is open source software. In
+                            order for GAMSPy to interact with MIRO, the
+                            <a
+                              href="https://www.gams.com/sales/pricing_regular/"
+                              target="_blank"
+                              >MIRO connector</a
+                            >
+                            is required, which is included in GAMSPy from GAMS
+                            version 0.12.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                     <p>
                       Please check the
                       <a href="./release.html">release notes</a>.
@@ -396,13 +470,6 @@
                 <section id="demo-section" class="doc-section">
                   <h2 class="section-title">Demo applications</h2>
                   <div class="section-block">
-                    <p>
-                      We provide some GAMS MIRO demo applications. You can use
-                      these to get to know some of MIRO's basic features. To run
-                      the sample applications, you must first extract them. More
-                      about this
-                      <a href="./start.html#demo-applications">here</a>.
-                    </p>
                     <div class="callout-block callout-warning">
                       <div class="icon-holder">
                         <i class="fas fa-info-circle"></i>
@@ -411,15 +478,20 @@
                       <div class="content">
                         <b class="callout-title">Note:</b>
                         <p>
-                          A well-known model from the GAMS model library is
-                          called <i>trnsport</i>. One of the MIRO demo models is
-                          based on this model and has been titled
-                          <i>transport</i> to avoid two models of the same name.
+                          Demo applications are only available in GAMS syntax.
+                          No sample applications are currently available for
+                          GAMSPy.
                         </p>
                       </div>
                       <!--//content-->
                     </div>
-                    <!--//callout-block-->
+                    <p>
+                      We provide some GAMS MIRO demo applications. You can use
+                      these to get to know some of MIRO's basic features. To run
+                      the sample applications, you must first extract them. More
+                      about this
+                      <a href="./start.html#demo-applications">here</a>.
+                    </p>
                     <div class="cta-container">
                       <a
                         id="demo-download"
@@ -444,6 +516,21 @@
                           class="col-sm-12 col-md-12 col-lg-6"
                           style="text-align: left"
                         >
+                          <div class="callout-block callout-warning">
+                            <div class="icon-holder">
+                              <i class="fas fa-info-circle"></i>
+                            </div>
+                            <!--//icon-holder-->
+                            <div class="content">
+                              <b class="callout-title">Note:</b>
+                              <p>
+                                Currently, GAMS MIRO Server is only available
+                                for MIRO applications based on GAMS models, not
+                                for GAMSPy models.
+                              </p>
+                            </div>
+                            <!--//content-->
+                          </div>
                           <p>
                             Like GAMS MIRO Desktop,
                             <a href="./server.html">GAMS MIRO Server</a> is open

@@ -1449,6 +1449,12 @@ body{
   border-bottom: 1px solid #dee2e6;
   margin-bottom: 30px;
 }
+.tab-console-content.tab-section {
+  padding: 0;
+  border-bottom: none;
+  border-left: none;
+  margin-bottom: 0;
+}
 .long-word-wrap{
   overflow-wrap: break-word;
   word-wrap: break-word;

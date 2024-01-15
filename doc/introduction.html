@@ -121,14 +121,19 @@
                           <p>
                             GAMS MIRO (Model Interface with Rapid Orchestration)
                             is a deployment environment that enables you to turn
-                            your GAMS models into fully-fledged end-user
-                            applications that are easy to distribute. An
-                            intuitive, user-friendly interface allows you to
-                            interact with the underlying GAMS model, quickly
-                            create scenarios, compare results and much more.
-                            MIRO's extensive data visualization capabilities
-                            provide you with the ability to create powerful
-                            charts, time series, maps, widgets, etc. with ease.
+                            your GAMS and
+                            <a
+                              href="https://gamspy.readthedocs.io/en/latest/index.html"
+                              >GAMSPy</a
+                            >
+                            models into fully-fledged end-user applications that
+                            are easy to distribute. An intuitive, user-friendly
+                            interface allows you to interact with the underlying
+                            model, quickly create scenarios, compare results and
+                            much more. MIRO's extensive data visualization
+                            capabilities provide you with the ability to create
+                            powerful charts, time series, maps, widgets, etc.
+                            with ease.
                           </p>
                         </div>
                       </div>
@@ -298,10 +303,15 @@
                   <div class="section-block">
                     <p>
                       <i>GAMS MIRO</i> is the deployment environment for GAMS
+                      and
+                      <a
+                        href="https://gamspy.readthedocs.io/en/latest/index.html"
+                        >GAMSPy</a
+                      >
                       models. To understand the different components, let's
                       first look at the simplest setup: MIRO is installed
-                      locally on a computer that also runs GAMS. The generic
-                      term for the MIRO components of this setup is
+                      locally on a computer that also runs GAMS or GAMSPy. The
+                      generic term for the MIRO components of this setup is
                       <i>GAMS MIRO Desktop</i>.
                     </p>
                     <div class="callout-block callout-success">
@@ -495,7 +505,10 @@
                             responsible for the computation of GAMS jobs. The
                             access to deployed MIRO applications is no longer
                             done via the local MIRO library, but via a slightly
-                            modified variant on the server.
+                            modified variant on the server. Note that GAMS MIRO
+                            Server is currently only available for MIRO
+                            applications based on GAMS models, not for GAMSPy
+                            models.
                           </p>
                           <a
                             class="
