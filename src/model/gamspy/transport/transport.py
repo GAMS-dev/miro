@@ -25,7 +25,7 @@ from gamspy.math import Min
 
 
 def main():
-    m = Container(delayed_execution=True)
+    m = Container()
 
     # Prepare data
     distances = [
@@ -64,7 +64,7 @@ def main():
             "chicago", "topeka"], description="markets")
     loc_hdr = Set(m, name="loc_hdr", records=[
                   "lat", "lng"], description="location data header")
-    model_type = Set(m, name="model_type", records=[
+    model_type = Set(m, name="type", records=[
                      "lp"], is_singleton=True, is_miro_input=True, description="selected model type")
 
     # Data
@@ -76,14 +76,14 @@ def main():
                   records=distances, is_miro_input=True, description="distance in thousands of miles")
     f = Parameter(m, name="f", records=90, is_miro_input=True,
                   description="freight in dollars per case per thousand miles")
-    min_s = Parameter(m, name="min_s", records=100, is_miro_input=True,
+    min_s = Parameter(m, name="mins", records=100, is_miro_input=True,
                       description="minimum shipment (MIP- and MINLP-only)")
     beta = Parameter(m, name="beta", records=0.95,
                      is_miro_input=True, description="beta (MINLP-only)")
-    i_loc_data = Parameter(m, name="i_loc_data", records=loc_data['i'], domain=[
-                           i, loc_hdr], is_miro_input=True, description="Plant location information")
-    j_loc_data = Parameter(m, name="j_loc_data", records=loc_data['j'], domain=[
-                           j, loc_hdr], is_miro_input=True, description="Market location information")
+    i_loc_data = Parameter(m, name="ilocdata", records=loc_data['i'], domain=[
+                           i, loc_hdr], is_miro_input=True, is_miro_table=True, description="Plant location information")
+    j_loc_data = Parameter(m, name="jlocdata", records=loc_data['j'], domain=[
+                           j, loc_hdr], is_miro_input=True, is_miro_table=True, description="Market location information")
 
     c = Parameter(m, name="c", domain=[
                   i, j], description="transport cost in thousands of dollars per case")
@@ -124,7 +124,7 @@ def main():
         objective=z,
     )
 
-    big_m = Parameter(m, name="big_m", description="big M")
+    big_m = Parameter(m, name="bigm", description="big M")
 
     big_m[...] = Min(Smax(i, a[i]), Smax(j, b[j]))
 
@@ -156,7 +156,7 @@ def main():
         m,
         name="transport_nlp",
         equations=[supply, demand, minship, maxship, costnlp],
-        problem="MIP",
+        problem="MINLP",
         sense=Sense.MIN,
         objective=z,
     )
@@ -164,11 +164,27 @@ def main():
     # some starting point
     x.l[i, j] = 1
 
+    model_type_str = model_type.records.loc[0, "uni"]
+    if model_type_str == "lp":
+        transport_lp.solve(output=sys.stdout)
+        if transport_lp.status.value > 2 and transport_lp.status.value != 8:
+            raise Exception("No feasible solution found")
+    elif model_type_str == "mip":
+        transport_mip.solve(output=sys.stdout)
+        if transport_mip.status.value > 2 and transport_mip.status.value != 8:
+            raise Exception("No feasible solution found")
+    elif model_type_str == "minlp":
+        transport_nlp.solve(output=sys.stdout)
+        if transport_nlp.status.value > 2 and transport_nlp.status.value != 8:
+            raise Exception("No feasible solution found")
+    else:
+        raise Exception("Unknown problem type")
+
     schedule_hdr = Set(m, name="schedule_hdr", records=[
                        'lngP', 'latP', 'lngM', 'latM', 'cap', 'demand', 'quantities'],
                        description="schedule header")
     schedule = Parameter(m, name="schedule", domain=[
-                         i, j, schedule_hdr], is_miro_output=True, description="shipment quantities in cases")
+                         i, j, schedule_hdr], is_miro_output=True, is_miro_table=True, description="shipment quantities in cases")
     total_cost = Parameter(m, name="total_cost", is_miro_output=True,
                            description="total transportation costs in thousands of dollars")
 
@@ -180,17 +196,6 @@ def main():
     schedule[i, j, 'cap'] = a[i]
     schedule[i, j, 'demand'] = b[j]
     schedule[i, j, 'quantities'] = x.l[i, j]
-
-    model_type_str = model_type.records.loc[0, "uni"]
-    if model_type_str == "lp":
-        transport_lp.solve(output=sys.stdout)
-    elif model_type_str == "mip":
-        transport_mip.solve(output=sys.stdout)
-    elif model_type_str == "nlp":
-        transport_nlp.solve(output=sys.stdout)
-
-    if transport_lp.status.value > 2 and transport_lp.solver_status != 8:
-        raise Exception("No feasible solution found")
 
 
 if __name__ == "__main__":

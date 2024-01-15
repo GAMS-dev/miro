@@ -67,8 +67,8 @@
         },
         "markers": {
           "1": {
-            "lng": "lngp",
-            "lat": "latp",
+            "lng": "lngP",
+            "lat": "latP",
             "iconOptions": {
               "icon": "gear",
               "iconColor": "#000000",
@@ -85,8 +85,8 @@
             "group": "Canning plants"
           },
           "2": {
-            "lng": "lngm",
-            "lat": "latm",
+            "lng": "lngM",
+            "lat": "latM",
             "iconOptions": {
               "icon": "circle-user",
               "iconColor": "#000000",
@@ -105,10 +105,10 @@
         },
         "flows": {
           "1": {
-            "lng0": "lngp",
-            "lat0": "latp",
-            "lng1": "lngm",
-            "lat1": "latm",
+            "lng0": "lngP",
+            "lat0": "latP",
+            "lng1": "lngM",
+            "lat1": "latM",
             "flow": "quantities",
             "color": "#000000",
             "minThickness": 0,
