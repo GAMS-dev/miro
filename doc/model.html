@@ -162,7 +162,7 @@
                       <li class="nav-item">
                         <a
                           class="nav-link"
-                          id="gamspy-1-tab"
+                          id="gamspy-tab-1"
                           data-toggle="tab"
                           href="#gamspy-1"
                           role="tab"
@@ -241,12 +241,17 @@ Parameter
                             Every GAMSPy model can be deployed with MIRO in just
                             a few steps. First, those GAMS symbols that you want
                             to be visible in the interface need to be annotated.
-                            This can be done by adding
-                            <code class="language-python">is_miro_input</code>
+                            This can be achieved by adding
+                            <code class="language-python"
+                              >is_miro_input=True</code
+                            >
                             for input data and
-                            <code class="language-gams">is_miro_output</code>
-                            for output data. Symbols without these annotations
-                            won’t be visible in the web interface.
+                            <code class="language-gams"
+                              >is_miro_output=True</code
+                            >
+                            for output data in the constructors of the GAMSPy
+                            symbols. Symbols without these arguments won't be
+                            visible in the web interface.
                           </p>
 
                           <p>The code below shows a small example:</p>
@@ -321,14 +326,14 @@ symbol_3 = Parameter(m, name="symbol_3", domain=[dim4])</code></pre>
                         <a
                           href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine"
                           target="_blank"
-                          >GAMS Options</a
+                          >GAMS Options (not for GAMSPy)</a
                         >
                       </li>
                       <li>
                         <a
                           href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample"
                           target="_blank"
-                          >Double dash parameters</a
+                          >Double dash parameters (not for GAMSPy)</a
                         >
                       </li>
                     </ul>
@@ -561,8 +566,8 @@ Positive Variable x;
                           <p>
                             <b>Example:</b><br />Let's try this for the model
                             <i>trnsport</i> now. This is what the input data
-                            section of the model looks like when we have loaded
-                            it from the GAMSPy Model Library:
+                            section of the model looks like in the example
+                            application:
                           </p>
                           <pre><code class="language-python"># Sets
 i = Set(m, name="i", records=["seattle", "san-diego"], description="canning plants")
@@ -583,8 +588,10 @@ f = Parameter(m, name="f", records=90, description="freight in dollars per case 
                             <span class="code">d</span> as well as the scalar
                             <span class="code">f</span>. In order to tell MIRO
                             that you want these symbols to come from there, we
-                            now flag them with the mentioned annotation
-                            <code class="language-python">is_miro_input</code>:
+                            now flag them with the mentioned argument
+                            <code class="language-python"
+                              >is_miro_input=True</code
+                            >:
                           </p>
                           <pre><code class="language-python"># Sets
 i = Set(m, name="i", records=["seattle", "san-diego"], description="canning plants")
@@ -650,8 +657,12 @@ b = Parameter(m, name="b", domain=[j], records=demands, domain_forwarding=True, 
                           </p>
                           <p>
                             In addition, we want MIRO to display the variables
-                            of the model. To do so, we simply annotate the
-                            declaration statement of the variables:
+                            of the model. To do this, we simply assign the
+                            argument
+                            <code class="language-python"
+                              >is_miro_output=True</code
+                            >
+                            to the corresponding symbol constructors:
                           </p>
                           <pre><code class="language-python"># Variables
 x = Variable(m, name="x", domain=[i, j], type="Positive", is_miro_output=True, description="shipment quantities in cases")
@@ -769,8 +780,8 @@ z = Variable(m, name="z", is_miro_output=True, description="total transportation
                             where
                             <kbd>&lt;path_to_your_MIRO_installation&gt;</kbd> is
                             the path to your MIRO executable file (e.g.
-                            <kbd>C:\Program Files\GAMS MIRO\GAMS MIRO.exe</kbd
-                            > on Windows,
+                            <kbd>C:\Program Files\GAMS MIRO\GAMS MIRO.exe</kbd>
+                            on Windows,
                             <kbd>/Applications/GAMS MIRO.app</kbd> on macOS or
                             <kbd>~/GAMS-MIRO-2.9.0.AppImage</kbd> on Linux) and
                             <kbd>&lt;path_to_your_model&gt;</kbd> is the path to
@@ -973,8 +984,8 @@ $offExternalInput
                             Sets are basic elements of a GAMS model. In this
                             chapter we will see how they can be integrated into
                             MIRO. <br />To integrate a set in MIRO, set the
-                            <code class="language-python">is_miro_input </code>
-                            attribute to
+                            <code class="language-python">is_miro_input</code>
+                            argument to
                             <code class="language-python">True</code>:
                           </p>
                           <pre><code class="language-python">i = Set(m, name="i", records=["seattle", "san-diego"], is_miro_input=True, description="canning plants")
@@ -1101,14 +1112,14 @@ $offExternalInput
                             <code class="language-python"
                               >is_miro_input=True
                             </code>
-                            attribute. However, they are defined implicitly by
+                            argument. However, they are defined implicitly by
                             the parameter
                             <code class="language-python">d</code>, which is
                             defined by data coming from MIRO, via the
                             <code class="language-python"
                               >domain_forwarding
                             </code>
-                            attribute.
+                            argument.
                           </p>
                           <pre><code class="language-python">i = Set(m, name="i", description="canning plants")
 j = Set(m, name="j", description="markets")
@@ -1119,7 +1130,7 @@ d = Parameter(m, name="d", domain=[i,j], domain_forwarding=True, is_miro_input=T
                             <code class="language-python"
                               >domain_forwarding
                             </code>
-                            attribute signals GAMSPy that the sets
+                            argument signals GAMSPy that the sets
                             <span class="code">i</span> and
                             <span class="code">j</span> will be defined
                             implicitly via the parameter
@@ -1956,14 +1967,10 @@ price = Parameter(m, name="price", domain=[date,symbol], domain_forwarding=True,
                         would be a violation of the above rule: Declare a table
                         ONLY if the structure of this table (that is, the number
                         and names of the columns) does not depend on the data.
-                        If this rule is not fulfilled, MIRO will automatically
+                        If this rule is not fulfilled, GAMS will automatically
                         drop the "table request" and declare the symbol as a
-                        parameter instead.
-                      </p>
-                      <p>
-                        In the following examples the symbol declared as a table
-                        in GAMS would still be displayed in the regular list
-                        view:
+                        parameter instead. In GAMSPy, an exception is raised if
+                        this rule is not fulfilled.
                       </p>
                       <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item">
@@ -1999,6 +2006,11 @@ price = Parameter(m, name="price", domain=[date,symbol], domain_forwarding=True,
                           aria-labelledby="gams-tab-13"
                         >
                           <div class="section-block">
+                            <p>
+                              In the following examples, the symbol declared as
+                              a table in GAMS would still be displayed in the
+                              regular list view:
+                            </p>
                             <ul>
                               <li>
                                 The set of the of the affected parameter index
@@ -2114,6 +2126,10 @@ $onExternalOutput
                           aria-labelledby="gamspy-tab-13"
                         >
                           <div class="section-block">
+                            <p>
+                              In the following examples, the symbol declared as
+                              a table in GAMSPy will trigger an exception:
+                            </p>
                             <ul>
                               <li>
                                 The set of the of the affected parameter index
@@ -2136,7 +2152,8 @@ price = Parameter(m, name="price", domain=[date,symbol], is_miro_input=True, is_
                                   <span class="code">price</span>. As a dynamic
                                   number of set elements would result in a
                                   dynamic number of columns, this constellation
-                                  is not allowed in the table view.
+                                  is not allowed in the table view and GAMSPy
+                                  raises an Exception.
                                 </p>
                               </li>
 
@@ -2175,18 +2192,15 @@ price = Parameter(m, name="price", domain=[date,symbol], domain_forwarding=True,
                                   <span class="code">symbol</span> is implicitly
                                   defined in MIRO by parameter
                                   <span class="code">price</span>. To avoid
-                                  conflicts, the parameter
-                                  <span class="code">price</span> is displayed
-                                  in the list view.
+                                  conflicts, GAMSPy raises an exception.
                                 </p>
                               </li>
 
                               <li>
                                 Only multi-dimensional parameters can be
-                                pivoted. In the following example the parameter
-                                <span class="code">oneDim</span> would be
-                                displayed in list view even when the table
-                                statement is used:
+                                pivoted. In the following example, the parameter
+                                <span class="code">oneDim</span> parameter
+                                cannot be defined as a table:
                                 <pre><code class="language-python">oneDim = Parameter(m, name="oneDim", domain=[dom1], is_miro_input=True, is_miro_table=True, description="One dimension")
 </code></pre>
                               </li>
@@ -2659,7 +2673,7 @@ multidim2 = Set(m, name="multidim", domain = [i,j], is_miro_input=True, records 
                             double pipe ('||').
                           </p>
 
-                          <pre><code class="language-python">i = Set(m, name="i", is_singleton=True, is_miro_input=True, records = ["label", "elementtext"], description="set description")
+                          <pre><code class="language-python">i = Set(m, name="i", is_singleton=True, is_miro_input=True, records = [("label", "elementtext")], description="set description")
 a = Parameter(m, name="a", is_miro_input=True, records = 5, description="scalar description")
 </code></pre>
 
@@ -2692,7 +2706,7 @@ a = Parameter(m, name="a", is_miro_input=True, records = 5, description="scalar 
                       <code class="language-gams">$onExternalOutput </code> /
                       <code class="language-gams">$offExternalOutput </code>
                       tags (in GAMSPY:
-                      <code class="language-gams">is_miro_output=TRUE </code>) .
+                      <code class="language-gams">is_miro_output=TRUE</code>) .
                     </p>
                     <p>
                       Another property of variables: While a GAMS parameter has
@@ -3121,10 +3135,10 @@ $log What you see here is the %fn%
                           <code class="language-gams">$offExternalOutput </code>
                           tags (in GAMSPY:
                           <code class="language-python"
-                            >is_miro_input=TRUE
-                          </code>
+                            >is_miro_input=TRUE</code
+                          >
                           or
-                          <code class="language-gams">is_miro_output=TRUE </code
+                          <code class="language-gams">is_miro_output=TRUE</code
                           >) are included in the GAMS/MIRO data contract and are
                           visible in the interface from now on. If not yet
                           existing, a folder <i>conf_&lt;modelname&gt;</i> is
