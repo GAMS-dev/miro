@@ -227,59 +227,122 @@
                   <!--//section-block-->
                   <div id="demo-applications" class="section-block">
                     <h3 class="block-title">Demo Applications</h3>
-                    <p>
-                      To get a feeling for the use of GAMS MIRO, we recommend to
-                      have a look at the demo applications first which you can
-                      download <a href="./download.html#demo-section">here</a>.
-                      To use the demo applications, unzip the archive and put
-                      the extracted folder <i>miro_lib</i> into the user model
-                      library directory. Via GAMS Studio you can find this
-                      location by clicking on <i>File</i> &rarr;
-                      <i>Settings</i> &rarr; <i>Misc.</i> &rarr;
-                      <i>user model library</i>:
-                    </p>
-                    <div
-                      class="section-block"
-                      style="display: block; margin: auto; text-align: center"
-                    >
-                      <img
-                        class="img-fluid"
-                        style="max-height: 150pt"
-                        src="assets/images/miro_lib.png"
-                        alt="MIRO model library"
-                      />
-                    </div>
-                    <p>
-                      Next, if you are using GAMS Studio, go to
-                      <i>GAMS</i> &rarr; <i>Model Library Explorer</i> (shortcut
-                      <i>F6</i>) and click on the new entry
-                      <i>GAMS MIRO model collection</i>. There you will find the
-                      ready-to-use demo applications:
-                    </p>
-                    <div
-                      class="section-block"
-                      style="display: block; margin: auto; text-align: center"
-                    >
-                      <img
-                        class="img-fluid"
-                        style="max-height: 140pt"
-                        src="assets/images/miro_model_collection.png"
-                        alt="GAMS MIRO model collection"
-                      />
-                    </div>
-                    <p>
-                      If you are using the command line, you can use the
-                      following command to access the applications:
-                      <span class="code"
-                        >gamslib -lib /location/to/the/miro_lib/mirolib.glb
-                        &lt;modelname&gt;</span
-                      >, e.g:
-                    </p>
-                    <div class="console-box">
-                      <span class="console-content">
-                        &gt; gamslib -lib /location/to/the/miro_lib/mirolib.glb
-                        sudoku<br />
-                      </span>
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item">
+                        <a
+                          class="nav-link active"
+                          id="demo-apps-gams-tab"
+                          data-toggle="tab"
+                          href="#demo-apps-gams"
+                          role="tab"
+                          aria-controls="demo-apps-gams"
+                          aria-selected="true"
+                          >GAMS</a
+                        >
+                      </li>
+                      <li class="nav-item">
+                        <a
+                          class="nav-link"
+                          id="demo-apps-gamspy-tab"
+                          data-toggle="tab"
+                          href="#demo-apps-gamspy"
+                          role="tab"
+                          aria-controls="demo-apps-gamspy"
+                          aria-selected="false"
+                          >GAMSPy</a
+                        >
+                      </li>
+                    </ul>
+                    <div class="tab-content tab-console-content">
+                      <div
+                        class="tab-pane fade show active"
+                        id="demo-apps-gams"
+                        role="tabpanel"
+                        aria-labelledby="demo-apps-gams-tab"
+                      >
+                        <p>
+                          To get a feeling for the use of GAMS MIRO, we
+                          recommend to have a look at the demo applications
+                          first which you can download
+                          <a href="./download.html#demo-section">here</a>. To
+                          use the demo applications, unzip the archive and put
+                          the extracted folder <i>miro_lib</i> into the user
+                          model library directory. Via GAMS Studio you can find
+                          this location by clicking on <i>File</i> &rarr;
+                          <i>Settings</i> &rarr; <i>Misc.</i> &rarr;
+                          <i>user model library</i>:
+                        </p>
+                        <div
+                          class="section-block"
+                          style="
+                            display: block;
+                            margin: auto;
+                            text-align: center;
+                          "
+                        >
+                          <img
+                            class="img-fluid"
+                            style="max-height: 150pt"
+                            src="assets/images/miro_lib.png"
+                            alt="MIRO model library"
+                          />
+                        </div>
+                        <p>
+                          Next, if you are using GAMS Studio, go to
+                          <i>GAMS</i> &rarr;
+                          <i>Model Library Explorer</i> (shortcut <i>F6</i>) and
+                          click on the new entry
+                          <i>GAMS MIRO model collection</i>. There you will find
+                          the ready-to-use demo applications:
+                        </p>
+                        <div
+                          class="section-block"
+                          style="
+                            display: block;
+                            margin: auto;
+                            text-align: center;
+                          "
+                        >
+                          <img
+                            class="img-fluid"
+                            style="max-height: 140pt"
+                            src="assets/images/miro_model_collection.png"
+                            alt="GAMS MIRO model collection"
+                          />
+                        </div>
+                        <p>
+                          If you are using the command line, you can use the
+                          following command to access the applications:
+                          <span class="code"
+                            >gamslib -lib /location/to/the/miro_lib/mirolib.glb
+                            &lt;modelname&gt;</span
+                          >, e.g:
+                        </p>
+                        <div class="console-box">
+                          <span class="console-content">
+                            &gt; gamslib -lib
+                            /location/to/the/miro_lib/mirolib.glb sudoku<br />
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        class="tab-pane fade"
+                        id="demo-apps-gamspy"
+                        role="tabpanel"
+                        aria-labelledby="demo-apps-gamspy-tab"
+                      >
+                        <p>
+                          To get a feeling for the use of GAMS MIRO, we
+                          recommend to have a look at the demo applications
+                          first which you can download
+                          <a href="./download.html#demo-section">here</a>. To
+                          use the demo applications, simply unzip the archive.
+                          You will find the demo applications in a directory
+                          <i>miro_lib_gampsy</i> from where you can directly
+                          <a href="#start-miro" class="scrollto">run</a> the
+                          apps.
+                        </p>
+                      </div>
                     </div>
                   </div>
                   <div id="start-miro" class="section-block">
@@ -402,13 +465,16 @@
                             href="https://gamspy.readthedocs.io/en/latest/user/advanced/miro.html"
                             target="_blank"
                             >GAMSPy CLI</a
-                          >, we simply run the following command:
+                          >, we simply navigate to the
+                          <i>transport</i> directory within the
+                          <i>miro_lib_gampsy</i> directory and execute the
+                          following command:
                         </p>
                         <div class="console-box">
                           <span class="console-content">
                             &gt; gamspy run miro --mode="base" --path
                             &lt;path_to_your_MIRO_installation&gt; --model
-                            &lt;path_to_your_model&gt;
+                            transport.py
                           </span>
                         </div>
                         <p>
@@ -418,8 +484,7 @@
                           <kbd>C:\Program Files\GAMS MIRO\GAMS MIRO.exe</kbd> on
                           Windows, <kbd>/Applications/GAMS MIRO.app</kbd> on
                           macOS or <kbd>~/GAMS-MIRO-2.9.0.AppImage</kbd> on
-                          Linux) and <kbd>&lt;path_to_your_model&gt;</kbd> is
-                          the path to the <i>transport.py</i> file.
+                          Linux).
                         </p>
                         <p>
                           Note that you can also set the MIRO installation path
