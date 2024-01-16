@@ -206,13 +206,13 @@
 
                           <p>The code below shows a small example:</p>
                           <pre><code class="language-gams">$onExternalInput
-      Parameter
-         symbol_1(dim1, dim2)  'Displayed in MIRO (model input data)'
-         symbol_2(dim3)        'Displayed in MIRO (model input data)';
-      $offExternalInput
+Parameter
+    symbol_1(dim1, dim2)  'Displayed in MIRO (model input data)'
+    symbol_2(dim3)        'Displayed in MIRO (model input data)';
+$offExternalInput
 
-      Parameter
-         symbol_3(dim4)        'NOT displayed in MIRO';</code></pre>
+Parameter
+    symbol_3(dim4)        'NOT displayed in MIRO';</code></pre>
                           <p>
                             Here, the parameters
                             <span class="code">symbol_1</span> and
@@ -242,9 +242,9 @@
                             a few steps. First, those GAMS symbols that you want
                             to be visible in the interface need to be annotated.
                             This can be done by adding
-                            <code class="language-python">is_miro_input </code>
+                            <code class="language-python">is_miro_input</code>
                             for input data and
-                            <code class="language-gams">is_miro_output </code>
+                            <code class="language-gams">is_miro_output</code>
                             for output data. Symbols without these annotations
                             won’t be visible in the web interface.
                           </p>
@@ -258,7 +258,7 @@ symbol_3 = Parameter(m, name="symbol_3", domain=[dim4])</code></pre>
                             <span class="code">symbol_1</span> and
                             <span class="code">symbol_2</span> are defined using
                             <code class="language-python"
-                              >is_miro_input=True </code
+                              >is_miro_input=True</code
                             >. They will be visible in MIRO (e.g. as tables).
                             <span class="code">symbol_3</span> will not be
                             visible in MIRO (however, of course it is still
@@ -584,7 +584,7 @@ f = Parameter(m, name="f", records=90, description="freight in dollars per case 
                             <span class="code">f</span>. In order to tell MIRO
                             that you want these symbols to come from there, we
                             now flag them with the mentioned annotation
-                            <code class="language-python">is_miro_input </code>:
+                            <code class="language-python">is_miro_input</code>:
                           </p>
                           <pre><code class="language-python"># Sets
 i = Set(m, name="i", records=["seattle", "san-diego"], description="canning plants")
