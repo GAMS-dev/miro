@@ -5,22 +5,22 @@ fastmap, 1.1.1
 backports, 1.4.1
 assertthat, 0.2.1
 crayon, 1.5.2
-glue, 1.6.2
+glue, 1.7.0
 fansi, 1.0.6
 cli, 3.6.2
 utf8, 1.2.3
-Rcpp, 1.0.11
+Rcpp, 1.0.12
 R6, 2.5.1
-BH, 1.81.0-1
+BH, 1.84.0-0
 magrittr, 2.0.3
-rlang, 1.1.2
+rlang, 1.1.3
 ellipsis, 0.3.2
 later, 1.3.2
 promises, 1.2.1
 httpuv, 1.6.13
 mime, 0.12
 jsonlite
-digest, 0.6.33
+digest, 0.6.34
 sourcetools, 0.1.7-1
 xtable, 1.8-4
 curl, 5.2.0
@@ -28,7 +28,7 @@ V8, 4.4.1
 base64enc, 0.1-3
 htmltools, 0.5.7
 jquerylib, 0.1.4
-withr, 2.5.2
+withr, 3.0.0
 leaflet.providers, 2.0.0
 commonmark, 1.9.0
 cachem, 1.0.8
@@ -76,7 +76,7 @@ askpass, 1.2.0
 openssl
 prettyunits, 1.2.0
 stringi, 1.8.3
-DBI, 1.1.3
+DBI, 1.2.1
 blob, 1.2.4
 hms, 1.1.3
 stringr, 1.5.1
@@ -106,12 +106,12 @@ leaflet.minicharts, 0.6.2
 xts, 0.13.1
 dygraphs, 1.1.1.6
 parallelly, 1.36.0
-future, 1.33.0
+future, 1.33.1
 bit, 4.0.5
 bit64, 4.0.5
 tzdb, 0.4.0
 vroom, 1.6.5
-readr, 2.1.4
+readr, 2.1.5
 miroUtil
 rhandsontable
 sortable
