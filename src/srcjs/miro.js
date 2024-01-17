@@ -594,7 +594,7 @@ font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
           content += contentToAppend;
           break;
         }
-        if (content[crPosition + 1] === '\n') {
+        if (content[crPosition + 1] === '\n' || content[crPosition + 1] === '\r') {
           // \r\n should not cause line to be removed
           continue; // eslint-disable-line no-continue
         }
