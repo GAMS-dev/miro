@@ -1011,104 +1011,6 @@
           },
           "minProperties": 8
         },
-        "dialogRemoteLogin": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "title": {
-              "type": "string",
-              "minLength": 1
-            },
-            "desc": {
-              "type": "string",
-              "minLength": 1
-            },
-            "url": {
-              "type": "string",
-              "minLength": 1
-            },
-            "username": {
-              "type": "string",
-              "minLength": 1
-            },
-            "password": {
-              "type": "string",
-              "minLength": 1
-            },
-            "namespace": {
-              "type": "string",
-              "minLength": 1
-            },
-            "useRegistered": {
-              "type": "string",
-              "minLength": 1
-            },
-            "remember": {
-              "type": "string",
-              "minLength": 1
-            },
-            "okButton": {
-              "type": "string",
-              "minLength": 1
-            },
-            "cancelButton": {
-              "type": "string",
-              "minLength": 1
-            },
-            "hostNotFound": {
-              "type": "string",
-              "minLength": 1
-            },
-            "nsNotFound": {
-              "type": "string",
-              "minLength": 1
-            },
-            "modelNotFound": {
-              "type": "string",
-              "minLength": 1
-            },
-            "invalidCred": {
-              "type": "string",
-              "minLength": 1
-            },
-            "insuffPerm": {
-              "type": "string",
-              "minLength": 1
-            },
-            "invalidProtocol": {
-              "type": "string",
-              "minLength": 1
-            },
-            "contentNotFoundError": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "minProperties": 17
-        },
-        "dialogRemoteLogout": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "title": {
-              "type": "string",
-              "minLength": 1
-            },
-            "desc": {
-              "type": "string",
-              "minLength": 1
-            },
-            "cancelButton": {
-              "type": "string",
-              "minLength": 1
-            },
-            "okButton": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "minProperties": 4
-        },
         "dialogRemoveScen": {
           "type": "object",
           "additionalProperties": false,
@@ -2547,7 +2449,7 @@
           }
         }
       },
-      "minProperties": 50
+      "minProperties": 48
     },
     "renderers": {
       "description": "language specific objects of renderers",

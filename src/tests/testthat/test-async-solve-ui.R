@@ -24,12 +24,16 @@ inviterPass <- Sys.getenv("ENGINE_PASSWORD")
 namespace <- Sys.getenv("ENGINE_NS")
 
 inviteeName <- paste0(Sys.getenv("ENGINE_USER"), "_", round(runif(1, 1, 100000)))
-Sys.setenv(ENGINE_USER_INVITEE = inviteeName)
 
 createUser(apiURL, inviterUser, inviterPass, namespace,
   inviteeName, inviterPass,
-  volumeQuota = 165L
+  volumeQuota = 160L
 )
+
+Sys.setenv("MIRO_REMOTE_EXEC_URL" = apiURL)
+Sys.setenv("MIRO_REMOTE_EXEC_USERNAME" = inviteeName)
+Sys.setenv("MIRO_REMOTE_EXEC_TOKEN" = getEngineToken(apiURL, inviteeName, inviterPass))
+Sys.setenv("MIRO_REMOTE_EXEC_NS" = namespace)
 
 modelToTest <- "transport"
 modelToTestUpper <- paste0(toupper(substr(modelToTest, 1, 1)), substring(modelToTest, 2))
@@ -94,6 +98,8 @@ createUser(
   apiURL, inviterUser, inviterPass, namespace,
   inviteeName, inviterPass
 )
+
+Sys.setenv("MIRO_REMOTE_EXEC_TOKEN" = getEngineToken(apiURL, inviteeName, inviterPass))
 
 configJSON$extraClArgs <- c(configJSON$extraClArgs, "--sleep=30")
 configJSON$activateModules$logFile <- TRUE

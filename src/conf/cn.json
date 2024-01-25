@@ -258,31 +258,6 @@
       "success": "成功删除重复记录",
       "pivotReadonlyWarning": "由于符号中包含重复记录，表格被设置为只读。\n您可以使用 \"场景选项\"->\"删除重复项\" 对话框删除重复记录。"
     },
-    "dialogRemoteLogin": {
-      "title": "请登陆",
-      "desc": "请输入登陆信息:",
-      "url": "GAMS Engine公司的网站",
-      "username": "用户名",
-      "password": "密码",
-      "namespace": "命名空间",
-      "useRegistered": "该模型在命名空间中注册了吗？",
-      "remember": "记住我",
-      "cancelButton":"取消",
-      "okButton": "确认",
-      "hostNotFound": "GAMS Engine无法从本网站访问。",
-      "nsNotFound": "找不到该命名空间。",
-      "modelNotFound": "模型无法在指定的命名空间中找到。",
-      "invalidCred": "该密匙无效",
-      "insuffPerm": "没有足够的权限来执行该模型。",
-      "invalidProtocol": "指定的协议无效，仅支持HTTPS。",
-      "contentNotFoundError": "找不到所请求的内容。"
-    },
-    "dialogRemoteLogout": {
-      "title": "退出",
-      "desc": "确定要退出吗？",
-      "cancelButton":"取消",
-      "okButton": "退出"
-    },
     "dialogInconsistentOutput":{
       "title": "输出数据不一致",
       "desc": "输出数据可能与当前加载到沙箱中的输入数据不一致。 您仍然要导入结果吗？",

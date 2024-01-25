@@ -15,6 +15,7 @@
     />
     <link id="theme-style" rel="stylesheet" href="../css/styles.css" />
   </head>
+
   <body>
     <header id="header" class="sub-header">
       <div class="container">
@@ -64,6 +65,18 @@
               aria-controls="env"
               aria-selected="false"
               >Environment</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              id="engine-tab"
+              data-toggle="tab"
+              href="#engine"
+              role="tab"
+              aria-controls="engine"
+              aria-selected="true"
+              >GAMS Engine</a
             >
           </li>
         </ul>
@@ -160,40 +173,6 @@
                   "
                   style="display: none"
                   data-key="colorTheme"
-                  >Reset to default</small
-                >
-              </div>
-            </div>
-            <div class="setting-wrapper">
-              <label
-                id="generalRemoteExec"
-                class="settings-label"
-                for="remoteExecution"
-                style="margin: 0"
-                >Execute model remotely?</label
-              >
-              <div class="settings-item settings-checkbox">
-                <label class="cb-label" for="remoteExecution"></label>
-                <div>
-                  <label class="checkbox-material">
-                    <div class="checkbox">
-                      <label>
-                        <input id="remoteExecution" type="checkbox" />
-                        <span></span>
-                      </label>
-                    </div>
-                  </label>
-                </div>
-                <small
-                  id="remoteExecReset"
-                  class="
-                    form-text
-                    btn-reset-nonpath
-                    settings-reset
-                    reset-db-path
-                  "
-                  style="display: none; margin-top: -10px; text-align: right"
-                  data-key="remoteExecution"
                   >Reset to default</small
                 >
               </div>
@@ -415,24 +394,201 @@
               </table>
             </div>
           </div>
-        </div>
-        <div class="settings-footer">
-          <a id="helpLink" class="help-footer" href="#">
-            <span id="needHelp">Need help?</span>
-          </a>
-          <input
-            id="btCancel"
-            class="btn btn-secondary cancel-btn"
-            value="Cancel"
-            type="reset"
-          />
-          <button
-            id="btSave"
-            class="btn btn-secondary confirm-btn btn-save-changes"
-            type="button"
+          <div
+            class="tab-pane fade"
+            id="engine"
+            role="tabpanel"
+            aria-labelledby="engine-tab"
           >
-            Apply
-          </button>
+            <div class="setting-wrapper">
+              <label
+                id="generalRemoteExec"
+                class="settings-label"
+                for="remoteExecution"
+                style="margin: 0"
+                >Execute models remotely?</label
+              >
+              <div class="settings-item settings-checkbox">
+                <label class="cb-label" for="remoteExecution"></label>
+                <div>
+                  <label class="checkbox-material">
+                    <div class="checkbox">
+                      <label>
+                        <input id="remoteExecution" type="checkbox" />
+                        <span></span>
+                      </label>
+                    </div>
+                  </label>
+                </div>
+                <small
+                  id="remoteExecReset"
+                  class="
+                    form-text
+                    btn-reset-nonpath
+                    settings-reset
+                    reset-db-path
+                  "
+                  style="display: none; margin-top: -10px; text-align: right"
+                  data-key="remoteExecution"
+                  >Reset to default</small
+                >
+              </div>
+            </div>
+            <div id="engineLoginForm" style="display: none">
+              <div class="setting-wrapper">
+                <label
+                  id="engineUrlLabel"
+                  class="settings-label"
+                  for="engineUrl"
+                  >Engine URL</label
+                >
+                <div class="settings-item">
+                  <input
+                    id="engineUrl"
+                    class="miro-launcher-input engine-input form-control"
+                    style="width: 100%"
+                    type="url"
+                    placeholder="https://engine.gams.com"
+                    required
+                  />
+                </div>
+              </div>
+              <div id="engineLoginMethodForm" style="display: none">
+                <div class="setting-wrapper">
+                  <label
+                    id="engineNsLabel"
+                    class="settings-label"
+                    for="engineNs"
+                    >Engine Namespace</label
+                  >
+                  <div class="settings-item">
+                    <div class="input-group has-validation">
+                      <input
+                        id="engineNs"
+                        class="miro-launcher-input engine-input form-control"
+                        style="width: 100%"
+                        type="text"
+                        required
+                      />
+                      <div id="engineNsValidation" class="invalid-feedback">
+                        The namespace you entered could not be found.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="setting-wrapper">
+                  <label
+                    id="engineLoginMethodLabel"
+                    class="settings-label"
+                    for="engineLoginMethod"
+                    >Login via</label
+                  >
+                  <div class="settings-item">
+                    <select class="form-select" id="engineLoginMethod"></select>
+                    <div
+                      id="engineLoginMethodValidation"
+                      class="invalid-feedback"
+                    >
+                      Login failed.
+                    </div>
+                  </div>
+                </div>
+                <div id="engineLoginPassword">
+                  <div class="setting-wrapper">
+                    <label
+                      id="engineUsernameLabel"
+                      class="settings-label"
+                      for="engineUsername"
+                      >Username</label
+                    >
+                    <div class="settings-item">
+                      <div class="input-group has-validation">
+                        <input
+                          id="engineUsername"
+                          class="miro-launcher-input engine-input"
+                          style="width: 100%"
+                          type="text"
+                          required
+                        />
+                        <div
+                          id="engineUsernameValidation"
+                          class="invalid-feedback"
+                        >
+                          Invalid username or password.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="setting-wrapper">
+                    <label
+                      id="enginePasswordLabel"
+                      class="settings-label"
+                      for="enginePassword"
+                      >Password</label
+                    >
+                    <div class="settings-item">
+                      <div class="input-group has-validation">
+                        <input
+                          id="enginePassword"
+                          class="miro-launcher-input engine-input"
+                          style="width: 100%"
+                          type="password"
+                          required
+                        />
+                        <div
+                          id="enginePasswordValidation"
+                          class="invalid-feedback"
+                        >
+                          Invalid username or password.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="engineLoginJWT" style="display: none">
+                  <div class="setting-wrapper" style="height: 150px">
+                    <label
+                      id="engineJWTLabel"
+                      class="settings-label"
+                      for="engineJWT"
+                      >JWT</label
+                    >
+                    <div class="settings-item">
+                      <div class="input-group has-validation">
+                        <textarea
+                          id="engineJWT"
+                          class="miro-launcher-input engine-input"
+                          style="width: 100%; height: unset; font-size: 8pt"
+                          rows="5"
+                        ></textarea>
+                      </div>
+                      <div id="engineJWTValidation" class="invalid-feedback">
+                        Invalid or expired token.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="settings-footer">
+            <a id="helpLink" class="help-footer" href="#">
+              <span id="needHelp">Need help?</span>
+            </a>
+            <input
+              id="btCancel"
+              class="btn btn-secondary cancel-btn"
+              value="Cancel"
+              type="reset"
+            />
+            <button
+              id="btSave"
+              class="btn btn-secondary confirm-btn btn-save-changes"
+              type="button"
+            >
+              Apply
+            </button>
+          </div>
         </div>
       </div>
     </div>

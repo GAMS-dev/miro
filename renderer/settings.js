@@ -1,6 +1,13 @@
 const { ipcRenderer, shell } = require('electron');
 window.Bootstrap = require('bootstrap');
 const $ = require('jquery');
+const log = require('electron-log/renderer');
+const { OAuthClient } = require('../components/oauth');
+const {
+  EngineConfig, getEngineAuthProviders,
+  getEngineUserInfo, getEngineJwt,
+  EngineError,
+} = require('../components/engine');
 
 const cbLaunchExternal = $('#launchExternal');
 const cbRemoteExecution = $('#remoteExecution');
@@ -10,6 +17,9 @@ const inputColorTheme = $('#colorTheme');
 const inputLogLevel = $('#logLevel');
 const saveButton = $('#btSave');
 const btEnvReset = $('#btEnvReset');
+
+let oAuthClient = null;
+const engineConfig = new EngineConfig();
 
 let lang = {};
 
@@ -55,8 +65,15 @@ const pathConfig = {
 };
 
 [inputLogLifetime, inputLanguage, inputColorTheme, inputLogLevel,
-  cbLaunchExternal, cbRemoteExecution].forEach((el) => {
+  cbLaunchExternal, cbRemoteExecution,
+  $('#engineNs'), $('#engineUsername'), $('#enginePassword'), $('#engineJWT')].forEach((el) => {
   el.on('change', () => {
+    saveButton.attr('disabled', false);
+  });
+});
+
+[$('#engineNs'), $('#engineUsername'), $('#enginePassword'), $('#engineJWT')].forEach((el) => {
+  el.on('input', () => {
     saveButton.attr('disabled', false);
   });
 });
@@ -91,7 +108,140 @@ $('#btEnvReset').on('click', () => {
   saveButton.attr('disabled', false);
 });
 
-saveButton.on('click', () => {
+const fetchEngineLoginMethods = async (url, defaultMethod) => {
+  $('#engineLoginPassword').hide();
+  $('#engineLoginJWT').hide();
+  $('#engineLoginMethod').empty().append($('<option>', {
+    value: '_main',
+    text: lang.engineLoginMethodUserPass,
+  }), $('<option>', {
+    value: '_jwt',
+    text: 'JWT',
+  }));
+  try {
+    const authProvidersTmp = await getEngineAuthProviders(url);
+    engineConfig.oauthProviders = authProvidersTmp.filter((idp) => {
+      if (idp?.oidc != null || idp?.oauth != null) {
+        $('#engineLoginMethod').append($('<option>', {
+          value: idp.name,
+          text: idp.label,
+        }));
+        return true;
+      }
+      return false;
+    }).map((idp) => idp.name);
+    engineConfig.ldapProviders = authProvidersTmp.filter((idp) => {
+      if (idp?.is_ldap_identity_provider === true) {
+        $('#engineLoginMethod').append($('<option>', {
+          value: idp.name,
+          text: idp.label,
+        }));
+        return true;
+      }
+      return false;
+    }).map((idp) => idp.name);
+  } catch (err) {
+    log.error(err);
+    $('#engine-tab').tab('show');
+    $('#engineUrl').addClass('is-invalid');
+    return;
+  }
+  engineConfig.url = url;
+  if (defaultMethod == null || defaultMethod === '_main') {
+    $('#engineLoginMethod').val('_main');
+    $('#engineLoginPassword').show();
+  } else if (defaultMethod === '_jwt') {
+    $('#engineLoginMethod').val('_jwt');
+    $('#engineLoginJWT').show();
+  } else {
+    $('#engineLoginMethod').val(defaultMethod);
+  }
+  $('#engineLoginMethodValidation').removeClass('is-invalid');
+  $('#engineLoginMethodForm').show();
+};
+
+$('#remoteExecution').on('change', (event) => {
+  if (event.currentTarget.checked) {
+    $('#engineLoginForm').show();
+  } else {
+    $('#engineLoginForm').hide();
+  }
+});
+
+$('#engineUrl').on('input', async function onEngineUrlInput() {
+  $('#engineLoginMethodForm').hide();
+  saveButton.attr('disabled', false);
+
+  engineConfig.init();
+
+  let enteredUrl = $(this).val().replace(/\/+$/, '');
+  try {
+    enteredUrl = new URL(enteredUrl).toString();
+    $('#engineUrl').removeClass('is-invalid');
+  } catch (err) {
+    $('#engine-tab').tab('show');
+    $('#engineUrl').addClass('is-invalid');
+    return;
+  }
+  if (!enteredUrl.endsWith('/api')) {
+    enteredUrl += 'api';
+  }
+  fetchEngineLoginMethods(enteredUrl);
+});
+
+$('#engineLoginMethod').on('change', async function onEngineLoginMethodInput() {
+  saveButton.attr('disabled', false);
+  const loginMethod = $(this).val();
+  $('#engineLoginMethodValidation').removeClass('is-invalid');
+  $('#engineLoginPassword').hide();
+  $('#engineLoginJWT').hide();
+  if (loginMethod === '' || loginMethod == null) {
+    return;
+  }
+  if (loginMethod === '_main' || engineConfig.ldapProviders.includes(loginMethod)) {
+    $('#engineLoginPassword').show();
+    return;
+  }
+  if (loginMethod === '_jwt') {
+    $('#engineLoginJWT').show();
+    return;
+  }
+  oAuthClient = await OAuthClient.build();
+  let engineUIUrl = engineConfig.url;
+  if (engineUIUrl.endsWith('/api')) {
+    engineUIUrl = engineUIUrl.substring(0, engineUIUrl.length - '/api'.length);
+  }
+  const ncPublicKey = await oAuthClient.getB64URLEncodedPublicKey();
+  const queryParams = [
+    'native_client_id=com.gams.miro',
+    'nc_redirect_uri=/auth/engine/oauth',
+    `provider=${loginMethod}`,
+    `nc_public_key=${ncPublicKey}`,
+  ];
+  engineConfig.jwt = null;
+  shell.openExternal(`${engineUIUrl}/login?${queryParams.join('&')}`);
+});
+
+ipcRenderer.on('oauth-response-received', async (_, oauthResponse) => {
+  try {
+    engineConfig.jwt = await oAuthClient.decryptData(
+      oauthResponse.jwt,
+      oauthResponse.aes_key,
+      oauthResponse.aes_iv,
+    );
+    $('#engineLoginMethodValidation').removeClass('is-invalid');
+  } catch (err) {
+    log.warn(`Problems decoding JWT. Error message: ${err}`);
+    $('#engineLoginMethodValidation').addClass('is-invalid');
+    ipcRenderer.send('show-error-msg', {
+      type: 'error',
+      title: 'Could not decrypt JWT',
+      message: 'Problems decrypting JWT. Check logs for more info.',
+    }, 'settings');
+  }
+});
+
+saveButton.on('click', async () => {
   if (pathValidating === true) {
     return;
   }
@@ -104,7 +254,6 @@ saveButton.on('click', () => {
   }
   newConfig.logLifeTime = logLifeVal;
   newConfig.launchExternal = cbLaunchExternal.is(':checked');
-  newConfig.remoteExecution = cbRemoteExecution.is(':checked');
 
   newConfig.language = optionAliasMap.language[inputLanguage.val()];
   newConfig.colorTheme = optionAliasMap.colorTheme[inputColorTheme.val()];
@@ -117,6 +266,77 @@ saveButton.on('click', () => {
   }
   newConfig.logLevel = inputLogLevel.val();
   saveButton.attr('disabled', true);
+  newConfig.remoteExecution = cbRemoteExecution.is(':checked');
+  if (newConfig.remoteExecution) {
+    const loginMethod = $('#engineLoginMethod').val();
+    let jwt;
+    if (loginMethod === '_main' || engineConfig.ldapProviders.includes(loginMethod)) {
+      try {
+        jwt = await getEngineJwt($('#engineUsername').val(), $('#enginePassword').val(), loginMethod, engineConfig);
+      } catch (err) {
+        log.info(`Failed to log in Engine user: ${err}`);
+        $('#engine-tab').tab('show');
+        if (err?.response?.status === 401) {
+          $('#engineUsername').addClass('is-invalid');
+          $('#enginePassword').addClass('is-invalid');
+          return;
+        }
+        ipcRenderer.send('show-error-msg', {
+          type: 'error',
+          title: 'Unexpected error',
+          message: 'An unexpected error occurred when logging into GAMS Engine. Please check the log for more information.',
+        }, 'settings');
+        return;
+      }
+      $('#engineUsername').removeClass('is-invalid');
+      $('#enginePassword').removeClass('is-invalid');
+    } else if (loginMethod === '_jwt') {
+      jwt = $('#engineJWT').val();
+    } else {
+      jwt = engineConfig.jwt;
+      if (jwt == null) {
+        $('#engine-tab').tab('show');
+        $('#engineLoginMethodValidation').addClass('is-invalid');
+        return;
+      }
+    }
+    try {
+      const engineUserInfo = await getEngineUserInfo(jwt, engineConfig, $('#engineNs').val().trim());
+      newConfig.remoteConfig = engineUserInfo;
+      $('#engineNs').removeClass('is-invalid');
+      $('#engineJWT').removeClass('is-invalid');
+    } catch (err) {
+      log.info(`Failed to get engine user info: ${err.message}`);
+      $('#engine-tab').tab('show');
+      if (err instanceof EngineError) {
+        if (err.field === 'namespace') {
+          if (err.statusCode === 404) {
+            document.getElementById('engineNsValidation').innerText = lang.engineNsValidation;
+          } else {
+            document.getElementById('engineNsValidation').innerText = lang.engineNsValidationPerm;
+          }
+          $('#engineNs').addClass('is-invalid');
+          return;
+        }
+        if (err.field === 'jwt') {
+          $('#engineJWT').addClass('is-invalid');
+          return;
+        }
+        if (err.field === 'username') {
+          $('#engineUsername').addClass('is-invalid');
+        }
+        log.error(`Invalid field in error object: ${err.field}`);
+      }
+      ipcRenderer.send('show-error-msg', {
+        type: 'error',
+        title: 'Unexpected error',
+        message: 'An unexpected error occurred when logging into GAMS Engine. Please check the log for more information.',
+      }, 'settings');
+      return;
+    }
+  } else {
+    newConfig.remoteConfig = {};
+  }
   ipcRenderer.send('save-general-config', newConfig, requireRestart);
 });
 
@@ -182,6 +402,9 @@ $('.btn-reset-nonpath').on('click', function resetClickNonPath() {
     cbLaunchExternal.prop('checked', defaultValues[elKey]);
   } else if (elKey === 'remoteExecution') {
     cbRemoteExecution.prop('checked', defaultValues[elKey]);
+    $('.engine-input').val('');
+    $('#engineLoginForm').hide();
+    $('#engineLoginMethodForm').hide();
   } else if (elKey === 'logLifeTime') {
     inputLogLifetime.val(defaultValues[elKey]);
   } else if (Object.keys(optionAliasMap).includes(elKey)) {
@@ -191,7 +414,7 @@ $('.btn-reset-nonpath').on('click', function resetClickNonPath() {
     } else if (elKey === 'colorTheme') {
       inputElTmp = inputColorTheme;
     } else {
-      console.error('COULD NOT FIND INPUT EL!!'); // eslint-disable-line no-console
+      log.error('COULD NOT FIND INPUT EL!!');
       return;
     }
     inputElTmp.val(Object.keys(optionAliasMap[elKey])
@@ -216,7 +439,10 @@ ipcRenderer.on('settings-loaded', (e, data, defaults, langData) => {
       'pathPython', 'pathPythonSelect', 'pathPythonReset', 'pathLog', 'pathLogSelect', 'pathLogReset', 'pathR', 'pathRSelect',
       'pathRReset', 'needHelp', 'btSave', 'btEnvImport', 'btEnvExport', 'btEnvReset', 'miroEnvHdrVar', 'miroEnvHdrVal',
       'generalColorTheme', 'colorThemeReset', 'colorThemeOptionDefault', 'colorThemeOptionBlackWhite',
-      'colorThemeOptionForest', 'colorThemeOptionTawny', 'colorThemeOptionDarkBlue', 'colorThemeOptionRedWine'].forEach((id) => {
+      'colorThemeOptionForest', 'colorThemeOptionTawny', 'colorThemeOptionDarkBlue', 'colorThemeOptionRedWine',
+      'engineUrlLabel', 'engineNsLabel', 'engineLoginMethodLabel', 'engineUsernameLabel', 'enginePasswordLabel',
+      'engineJWTLabel', 'engineNsValidation', 'engineLoginMethodValidation', 'engineUsernameValidation', 'enginePasswordValidation',
+      'engineJWTValidation'].forEach((id) => {
       const el = document.getElementById(id);
       if (el) {
         el.innerText = lang[id];
@@ -242,7 +468,7 @@ ipcRenderer.on('settings-loaded', (e, data, defaults, langData) => {
     importantKeys = [data.important];
   }
   requireRestart = false;
-  Object.entries(data).forEach(([key, value]) => {
+  Object.entries(data).forEach(async ([key, value]) => {
     if (key === 'important') {
       return;
     }
@@ -270,8 +496,23 @@ ipcRenderer.on('settings-loaded', (e, data, defaults, langData) => {
       }
     } else if (key === 'remoteExecution') {
       cbRemoteExecution.prop('checked', newValue);
+      if (newValue === true) {
+        $('#engineLoginForm').show();
+      }
       if (isImportant) {
         cbRemoteExecution.attr('disabled', true);
+      }
+    } else if (key === 'remoteConfig') {
+      engineConfig.init();
+      $('#engineUrl').val(newValue.url);
+      $('#engineNs').val(newValue.namespace);
+      $('#engineJWT').val(newValue.jwt);
+      fetchEngineLoginMethods(newValue.url, '_jwt');
+      if (isImportant) {
+        $('#engineLoginMethod').attr('disabled', true);
+        $('#engineUrl').attr('disabled', true);
+        $('#engineNs').attr('disabled', true);
+        $('#engineJWT').attr('disabled', true);
       }
     } else if (['logLifeTime', 'logLevel', 'language', 'colorTheme'].find((el) => el === key)) {
       $(`#${key}`).val(Object.keys(optionAliasMap).includes(key) ? Object.keys(optionAliasMap[key])

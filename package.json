@@ -58,6 +58,14 @@
         "mimeType": "application/miro"
       }
     ],
+    "protocols": [
+      {
+        "name": "GAMS MIRO Desktop URL",
+        "schemes": [
+          "com.gams.miro"
+        ]
+      }
+    ],
     "mac": {
       "extraResources": [
         "r"

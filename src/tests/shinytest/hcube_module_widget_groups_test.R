@@ -7,16 +7,6 @@ app <- AppDriver$new("../../",
 context("UI tests - Hypercube module - widget groups")
 
 # load base scenario
-expect_error(app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L), NA)
-app$set_inputs(remoteCredUrl = Sys.getenv("ENGINE_URL"))
-app$set_inputs(remoteCredUser = Sys.getenv("ENGINE_USER_INVITEE"))
-app$set_inputs(remoteCredPass = Sys.getenv("ENGINE_PASSWORD"))
-app$set_inputs(remoteCredNs = Sys.getenv("ENGINE_NS"))
-app$set_inputs(remoteCredReg = FALSE)
-app$set_inputs(remoteCredRemember = TRUE)
-app$run_js("$('#shiny-modal .bt-gms-confirm').click()")
-expect_error(app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L), NA)
-
 app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSubmitHcJob']")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)

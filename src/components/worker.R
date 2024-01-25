@@ -153,20 +153,8 @@ Worker <- R6Class("Worker", public = list(
   getQuotaWarning = function() {
     return(private$quotaWarning)
   },
-  logout = function() {
-    private$metadata$url <- ""
-    private$metadata$username <- ""
-    private$metadata$password <- ""
-    private$metadata$namespace <- ""
-    private$metadata$useRegistered <- FALSE
-    private$authHeader <- character(0L)
-    private$instanceInfo <- NULL
-    private$quotaWarning <- NULL
-    unlink(private$metadata$rememberMeFileName, force = TRUE)
-  },
   setCredentials = function(url, username, password, namespace,
-                            useRegistered, useBearer = TRUE,
-                            refreshToken = FALSE) {
+                            useRegistered, useBearer = TRUE) {
     engineUrl <- trimws(url, which = "right", whitespace = "/")
     if (!endsWith(engineUrl, "/api")) {
       engineUrl <- paste0(engineUrl, "/api")
@@ -178,144 +166,6 @@ Worker <- R6Class("Worker", public = list(
     private$metadata$namespace <- namespace
 
     private$authHeader <- private$buildAuthHeader(useBearer)
-    if (refreshToken) {
-      try(private$saveLoginCredentials(
-        private$metadata$url,
-        private$metadata$username,
-        private$metadata$namespace,
-        private$metadata$useRegistered
-      ))
-    }
-    return(invisible(self))
-  },
-  login = function(url, username, password, namespace,
-                   rememberMeFlag = FALSE,
-                   useRegistered = FALSE) {
-    stopifnot(isFALSE(private$metadata$noNeedCred))
-
-    private$metadata$url <- private$resolveRemoteURL(url)
-
-    if (!private$testConnection()) {
-      private$metadata$url <- ""
-      stop(426, call. = FALSE)
-    }
-    private$metadata$username <- username
-    private$metadata$useRegistered <- useRegistered
-    private$metadata$password <- password
-    private$authHeader <- private$buildAuthHeader()
-
-    private$metadata$namespace <- namespace
-
-    if (!length(private$apiInfo) || is.na(private$apiInfo$apiVersionInt) ||
-      private$apiInfo$apiVersionInt > 210603L) {
-      ret <- GET(
-        url = paste0(
-          private$metadata$url, "/namespaces/", namespace, "/permissions?username=",
-          URLencode(username, reserved = TRUE)
-        ),
-        add_headers(
-          Authorization = private$authHeader,
-          Timestamp = as.character(Sys.time(), usetz = TRUE)
-        ),
-        timeout(10L)
-      )
-    } else {
-      ret <- GET(
-        url = paste0(private$metadata$url, "/namespaces/", namespace, "/permissions/me"),
-        add_headers(
-          Authorization = private$authHeader,
-          Timestamp = as.character(Sys.time(), usetz = TRUE)
-        ),
-        timeout(10L)
-      )
-    }
-    if (identical(status_code(ret), 404L)) {
-      stop(444L, call. = FALSE)
-    }
-    if (identical(status_code(ret), 401L)) {
-      stop(401L, call. = FALSE)
-    }
-
-    retContent <- tryCatch(
-      {
-        content(ret,
-          type = "application/json",
-          encoding = "utf-8"
-        )
-      },
-      error = function(e) {
-        stop(404L, call. = FALSE)
-      }
-    )
-    if (identical(status_code(ret), 404L)) {
-      stop(400L, call. = FALSE)
-    }
-
-    if (identical(status_code(ret), 200L)) {
-      permissionLevel <- retContent$permission
-
-      if (identical(useRegistered, TRUE)) {
-        if (permissionLevel < 5L) {
-          stop(403L, call. = FALSE)
-        }
-
-        ret <- GET(
-          url = paste0(
-            private$metadata$url, "/namespaces/", namespace, "?model=",
-            URLencode(private$metadata$modelId, reserved = TRUE)
-          ),
-          add_headers(
-            Authorization = private$authHeader,
-            Timestamp = as.character(Sys.time(), usetz = TRUE),
-            "X-Fields" = "name"
-          ),
-          timeout(10L)
-        )
-        retContent <- tryCatch(
-          {
-            content(ret,
-              type = "application/json",
-              encoding = "utf-8"
-            )
-          },
-          error = function(e) {
-            return("Invalid JSON")
-          }
-        )
-        if (!identical(status_code(ret), 200L)) {
-          stop(sprintf(
-            "Problems fetching models on namespace: %s, Error message: %s",
-            namespace, retContent
-          ), call. = FALSE)
-        }
-        if (length(retContent) < 1L) {
-          stop(445L, call. = FALSE)
-        }
-        if (rememberMeFlag) {
-          private$saveLoginCredentials(
-            private$metadata$url, username,
-            namespace,
-            useRegistered
-          )
-        }
-        return(200L)
-      }
-      if (permissionLevel < 7L) {
-        stop(403L, call. = FALSE)
-      }
-      if (rememberMeFlag) {
-        private$saveLoginCredentials(
-          private$metadata$url, username,
-          namespace,
-          useRegistered
-        )
-      }
-      return(200L)
-    } else if (identical(status_code(ret), 403L)) {
-      stop(401L, call. = FALSE)
-    } else {
-      stop(500L, call. = FALSE)
-    }
     return(invisible(self))
   },
   getCredentials = function() {
@@ -1063,7 +913,6 @@ Worker <- R6Class("Worker", public = list(
   pingQueuePosition = FALSE,
   fRemoteSub = NULL,
   fJobRes = list(),
-  fRefreshToken = NULL,
   jobResultsFile = list(),
   resultFileSize = list(),
   fRemoteRes = NULL,
@@ -1988,34 +1837,6 @@ Worker <- R6Class("Worker", public = list(
         )
       ))
     ))
-  },
-  saveLoginCredentials = function(url, username, namespace, useRegistered) {
-    # create token that expires in a week
-    sessionToken <- private$validateAPIResponse(POST(
-      url = paste0(url, "/auth/"),
-      body = list(
-        expires_in = 604800
-      ),
-      add_headers(
-        Authorization = private$authHeader,
-        Timestamp = as.character(Sys.time(), usetz = TRUE)
-      ),
-      timeout(10L)
-    ))$token
-
-    private$metadata$password <- sessionToken
-    write_json(
-      list(
-        url = url,
-        username = username,
-        password = sessionToken,
-        namespace = namespace,
-        reg = useRegistered
-      ),
-      private$metadata$rememberMeFileName,
-      auto_unbox = TRUE
-    )
-    return(invisible(self))
   },
   initRun = function(sid) {
     private$sid <- sid

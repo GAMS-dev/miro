@@ -7,15 +7,6 @@ app <- AppDriver$new("../../",
 context("UI tests - Hypercube module - solve/discard/import")
 
 # load base scenario
-expect_error(app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L), NA)
-app$set_inputs(remoteCredUrl = Sys.getenv("ENGINE_URL"))
-app$set_inputs(remoteCredUser = Sys.getenv("ENGINE_USER_INVITEE"))
-app$set_inputs(remoteCredPass = Sys.getenv("ENGINE_PASSWORD"))
-app$set_inputs(remoteCredNs = Sys.getenv("ENGINE_NS"))
-app$set_inputs(remoteCredReg = FALSE)
-app$set_inputs(remoteCredRemember = TRUE)
-app$run_js("$('#shiny-modal .bt-gms-confirm').click()")
-expect_error(app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L), NA)
 
 app$expect_values(output = "inputDataTitle")
 
@@ -38,12 +29,13 @@ app$set_inputs(btSave = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)
 app$set_inputs(btRemoveOutput = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
+Sys.sleep(0.5)
 
 # open Hcube dialog and check that defaults are correct
 app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSubmitHcJob']")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)
-Sys.sleep(1L)
+Sys.sleep(2L)
 expect_true(app$get_js("$('#hcWidget_3_step').is(':visible');", timeout = 50))
 expect_true(app$get_js("$('#hcWidget_7').parents('.shiny-input-container').find('.irs-handle.from i').is(':visible')", timeout = 50))
 expect_true(app$get_js("$('#hcWidget_7_combinations').is(':visible');", timeout = 50))
@@ -343,7 +335,7 @@ app$wait_for_js("$('.shiny-notification-warning').is(':visible') && $('.shiny-no
 expect_identical(httr::status_code(httr::PUT(
   paste0(Sys.getenv("ENGINE_URL"), "/usage/quota"),
   body = list(
-    username = Sys.getenv("ENGINE_USER_INVITEE"),
+    username = Sys.getenv("MIRO_REMOTE_EXEC_USERNAME"),
     volume_quota = 0
   ),
   httr::authenticate(Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")),

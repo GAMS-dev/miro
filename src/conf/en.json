@@ -258,31 +258,6 @@
       "success": "Duplicate records successfully removed",
       "pivotReadonlyWarning": "The table was set to read-only because the symbol contains duplicate records.\nYou can remove duplicates using the \"Scenario\"->\"Remove duplicates\" dialog."
     },
-    "dialogRemoteLogin": {
-      "title": "Login required",
-      "desc": "Please enter your credentials below:",
-      "url": "URL of GAMS Engine",
-      "username": "Username",
-      "password": "Password",
-      "namespace": "Namespace",
-      "useRegistered": "Is your model registered in the namespace?",
-      "remember": "Remember me",
-      "cancelButton":"Cancel",
-      "okButton": "Ok",
-      "hostNotFound": "GAMS Engine could not be reached under the given URL.",
-      "nsNotFound": "The namespace you entered could not be found.",
-      "modelNotFound": "Model could not be found in the specified namespace.",
-      "invalidCred": "The credentials you entered are invalid.",
-      "insuffPerm": "You don't have sufficient permissions to execute the model.",
-      "invalidProtocol": "The protocol you specified is invalid. Only HTTPS supported.",
-      "contentNotFoundError": "The desired content could not be found."
-    },
-    "dialogRemoteLogout": {
-      "title": "Logout",
-      "desc": "Are you sure you want to log out?",
-      "cancelButton":"Cancel",
-      "okButton": "Logout"
-    },
     "dialogInconsistentOutput":{
       "title": "Inconsistent output data",
       "desc": "The output data may not be consistent with the input data currently loaded in your sandbox. Do you still want to import the results?",

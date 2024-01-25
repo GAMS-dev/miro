@@ -5,13 +5,25 @@
     "es2021": true
   },
   "root": true,
-  "extends": ["airbnb-base"],
+  "extends": [
+    "airbnb-base"
+  ],
   "parserOptions": {
-    "ecmaVersion": 12
+    "ecmaVersion": 13
   },
   "rules": {
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true
+      }
+    ],
     "no-multi-str": "off",
-    "no-underscore-dangle": [2, { "allowAfterThis": true }]
+    "no-underscore-dangle": [
+      2,
+      {
+        "allowAfterThis": true
+      }
+    ]
   }
 }

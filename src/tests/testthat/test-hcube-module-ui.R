@@ -24,7 +24,6 @@ inviterPass <- Sys.getenv("ENGINE_PASSWORD")
 namespace <- Sys.getenv("ENGINE_NS")
 
 inviteeName <- paste0(Sys.getenv("ENGINE_USER"), "_", round(runif(1, 1, 100000)))
-Sys.setenv(ENGINE_USER_INVITEE = inviteeName)
 
 createUser(apiURL, inviterUser, inviterPass, namespace,
   inviteeName, inviterPass,
@@ -43,6 +42,10 @@ configJSONFileName <- file.path(
 Sys.setenv(MIRO_MODEL_PATH = file.path(testModelDir, paste0(modelToTest, ".gms")))
 Sys.setenv(MIRO_MODEL_NAME = modelToTest)
 Sys.setenv(MIRO_REMOTE_EXEC = "true")
+Sys.setenv("MIRO_REMOTE_EXEC_URL" = apiURL)
+Sys.setenv("MIRO_REMOTE_EXEC_USERNAME" = inviteeName)
+Sys.setenv("MIRO_REMOTE_EXEC_TOKEN" = getEngineToken(apiURL, inviteeName, inviterPass))
+Sys.setenv("MIRO_REMOTE_EXEC_NS" = namespace)
 
 # activate local upload module, deactivate
 file.copy(file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), "_expected.json")),

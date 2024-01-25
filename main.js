@@ -10,6 +10,7 @@ const util = require('util');
 const log = require('electron-log/main');
 const menu = require('./components/menu');
 const installRPackages = require('./components/install-r');
+const { refreshEngineJwt } = require('./components/engine');
 
 const requiredAPIVersion = 1;
 const miroVersion = '2.8.9999';
@@ -1002,7 +1003,30 @@ function quitLauncher() {
     app.quit();
   }
 }
+function handleDeepLink(url) {
+  const parsedURL = new URL(url);
+  if (parsedURL.pathname === '/auth/engine/oauth') {
+    const urlSearchParams = new URLSearchParams(parsedURL.search);
+    settingsWindow.webContents.send(
+      'oauth-response-received',
+      {
+        jwt: urlSearchParams.get('jwt'),
+        aes_key: urlSearchParams.get('aes_key'),
+        aes_iv: urlSearchParams.get('aes_iv'),
+      },
+    );
+  } else {
+    log.warn(`MIRO launcher opened with invalid url: ${url}`);
+  }
+}
 if (!miroDevelopMode) {
+  if (process.defaultApp) {
+    if (process.argv.length >= 2) {
+      app.setAsDefaultProtocolClient('com.gams.miro', process.execPath, [path.resolve(process.argv[1])]);
+    }
+  } else {
+    app.setAsDefaultProtocolClient('com.gams.miro');
+  }
   const gotTheLock = app.requestSingleInstanceLock();
 
   if (!gotTheLock) {
@@ -1024,15 +1048,22 @@ if (!miroDevelopMode) {
             await addMiroscenFile(associatedFile);
             return;
           }
-          log.debug(`MIRO launcher opened by double clicking MIRO app at path: ${associatedFile}.`);
-          await addOrUpdateMIROApp(associatedFile);
+          if (associatedFile.toLowerCase().endsWith('.miroapp')) {
+            log.debug(`MIRO launcher opened by double clicking MIRO app at path: ${associatedFile}.`);
+            await addOrUpdateMIROApp(associatedFile);
+          }
+          try {
+            handleDeepLink(associatedFile);
+          } catch (err) {
+            log.warn(`MIRO launcher opened with invalid argument: ${associatedFile}: ${err}`);
+          }
         }
       }
     });
   }
 }
 
-function createMainWindow(showRunningApps = false, onSuccess = null) {
+function createMainWindow(showRunningApps = false, focus = true, onSuccess = null) {
   log.debug('Creating main window..');
   if (mainWindow) {
     log.debug('Main window already open.');
@@ -1056,7 +1087,9 @@ function createMainWindow(showRunningApps = false, onSuccess = null) {
   mainWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'), { query: { appPath: app.getAppPath() } });
   mainWindow.once('ready-to-show', () => {
     log.debug('Main window ready to show.');
-    mainWindow.show();
+    if (focus) {
+      mainWindow.show();
+    }
   });
   if (DEVELOPMENT_MODE) {
     mainWindow.webContents.openDevTools();
@@ -1138,7 +1171,7 @@ function createMainWindow(showRunningApps = false, onSuccess = null) {
 
 const miroAppWindows = [];
 
-async function createMIROAppWindow(appData) {
+async function createMIROAppWindow(appData, focus = true) {
   log.debug(`Request to launch MIRO app with id: ${appData.id} received.`);
   const progressCallback = async (event) => {
     log.info(event);
@@ -1291,8 +1324,10 @@ Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
       }
     });
     miroAppWindows[appID].once('ready-to-show', () => {
-      miroAppWindows[appID].show();
       miroAppWindows[appID].maximize();
+      if (focus) {
+        miroAppWindows[appID].show();
+      }
       log.debug(`Window for MIRO app with ID: ${appID} created.`);
       if (mainWindow) {
         mainWindow.send('hide-loading-screen', appID, true);
@@ -1527,9 +1562,13 @@ async function searchLibPath(devMode = false) {
     }
   }
 }
-ipcMain.on('show-error-msg', (e, options) => {
+ipcMain.on('show-error-msg', (e, options, windowObjName = 'main') => {
   log.debug(`New error message received. Title: ${options.title}, message: ${options.message}.`);
-  showErrorMsg(options);
+  let windowObj = mainWindow;
+  if (windowObjName === 'settings') {
+    windowObj = settingsWindow;
+  }
+  showErrorMsg(options, windowObj);
 });
 ipcMain.on('import-miroenv', async () => {
   if (!settingsWindow) {
@@ -2082,6 +2121,13 @@ app.on('will-finish-launching', () => {
     }
     fileToOpen = filePath;
   });
+  app.on('open-url', (e, url) => {
+    try {
+      handleDeepLink(url);
+    } catch (_) {
+      log.warn(`MIRO launcher opened with invalid url: ${url}`);
+    }
+  });
 });
 
 app.on('ready', async () => {
@@ -2139,6 +2185,31 @@ app.on('ready', async () => {
   );
   Menu.setApplicationMenu(applicationMenu);
 
+  let focusMainWindow = true;
+
+  if (await configData.get('remoteExecution') === true) {
+    const remoteConfig = await configData.get('remoteConfig');
+    if (remoteConfig.jwt != null) {
+      log.info('Refreshing Engine JWT');
+      try {
+        remoteConfig.jwt = await refreshEngineJwt(remoteConfig.url, remoteConfig.jwt);
+        configData.set('remoteConfig', remoteConfig);
+      } catch (err) {
+        log.error(`Problems refreshing Engine JWT. Error: ${err}`);
+        const openSettingsWindowDecision = await dialog.showMessageBox({
+          type: 'info',
+          title: lang.main.ErrorEngineTokenRefreshHdr,
+          message: lang.main.ErrorEngineTokenRefreshMsg,
+          buttons: [lang.main.BtnCancel, lang.main.OpenSettingsBtnYes],
+        });
+        if (openSettingsWindowDecision.response === 1) {
+          createSettingsWindow();
+          focusMainWindow = false;
+        }
+      }
+    }
+  }
+
   if (miroDevelopMode) {
     mainWindow = new BrowserWindow({
       show: false,
@@ -2182,9 +2253,9 @@ app.on('ready', async () => {
       forceScenImport: process.env.MIRO_FORCE_SCEN_IMPORT === 'true',
       buildArchive: process.env.MIRO_BUILD_ARCHIVE !== 'false',
       timeout: 3600,
-    });
+    }, focusMainWindow);
   } else {
-    createMainWindow(false, () => searchLibPath());
+    createMainWindow(false, focusMainWindow, () => searchLibPath());
   }
 
   log.info('MIRO launcher started successfully.');
