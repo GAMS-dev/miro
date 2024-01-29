@@ -2189,7 +2189,7 @@ app.on('ready', async () => {
 
   if (await configData.get('remoteExecution') === true) {
     const remoteConfig = await configData.get('remoteConfig');
-    if (remoteConfig.jwt != null) {
+    if (remoteConfig.jwt != null && false) {
       log.info('Refreshing Engine JWT');
       try {
         remoteConfig.jwt = await refreshEngineJwt(remoteConfig.url, remoteConfig.jwt);
