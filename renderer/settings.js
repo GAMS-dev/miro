@@ -213,7 +213,7 @@ $('#engineLoginMethod').on('change', async function onEngineLoginMethodInput() {
   }
   const ncPublicKey = await oAuthClient.getB64URLEncodedPublicKey();
   const queryParams = [
-    'native_client_id=com.gams.miro',
+    'nc_id=com.gams.miro',
     'nc_redirect_uri=/auth/engine/oauth',
     `provider=${loginMethod}`,
     `nc_public_key=${ncPublicKey}`,
