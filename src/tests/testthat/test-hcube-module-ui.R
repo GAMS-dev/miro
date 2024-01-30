@@ -27,7 +27,7 @@ inviteeName <- paste0(Sys.getenv("ENGINE_USER"), "_", round(runif(1, 1, 100000))
 
 createUser(apiURL, inviterUser, inviterPass, namespace,
   inviteeName, inviterPass,
-  volumeQuota = 72L
+  volumeQuota = 70L
 )
 
 modelToTest <- "pickstock_configuration"
