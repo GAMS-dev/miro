@@ -1,0 +1,161 @@
+{
+  "overwriteSheetOrder": {
+    "input": "_widgets"
+  },
+  "theme": "browser",
+  "defCompMode": "split",
+  "roundingDecimals": 4,
+  "activateModules": {
+    "logFile": true,
+    "lstFile": true,
+    "loadLocal": true,
+    "attachments": true,
+    "downloadTempFiles": false
+  },
+  "autoGenInputGraphs": true,
+  "aggregateWidgets": true,
+  "storeLogFilesDuration": 7,
+  "excelIncludeMeta": true,
+  "excelIncludeEmptySheets": true,
+  "pageTitle": "Circle Packing",
+  "dataRendering": {
+    "circledata": {
+      "outType": "graph",
+      "graph": {
+        "title": "Optimized (maximal) radius",
+        "tool": "plotly",
+        "type": "bubble",
+        "ydata": {
+          "y": {
+            "label": "y",
+            "mode": "markers",
+            "marker": {
+              "symbol": "circle-open",
+              "opacity": 1,
+              "size": "radius",
+              "sizemode": "diameter",
+              "line": {
+                "width": "3"
+              },
+              "color": "#ff8c00",
+              "maxsize": 33.85
+            },
+            "showlegend": false
+          }
+        },
+        "xdata": "x",
+        "showlegend": false,
+        "xaxis": {
+          "title": "x",
+          "showgrid": false,
+          "zeroline": false,
+          "showticklabels": true,
+          "categoryorder": "trace",
+          "rangefrom": -1.1,
+          "rangeto": 1.1
+        },
+        "yaxis": {
+          "title": "y",
+          "showgrid": false,
+          "zeroline": false,
+          "showticklabels": true,
+          "categoryorder": "trace",
+          "scaleratio": 1,
+          "scaleanchor": "x",
+          "rangefrom": -1.1,
+          "rangeto": 1.1
+        },
+        "fixedHeight": 700,
+        "fixedWidth": 700,
+        "staticPlot": true
+      },
+      "height": 700
+    }
+  },
+  "miroLogFile": "cpack_miroLog.dat",
+  "UILogo": "cpack.png",
+  "datatable": {
+    "class": "display",
+    "filter": "none",
+    "rownames": false,
+    "options": {
+      "pageLength": 15
+    }
+  },
+  "inputWidgets": {
+    "qcp": {
+      "widgetType": "dropdown",
+      "alias": "QCP solver",
+      "choices": [
+        "baron",
+        "conopt",
+        "conopt4",
+        "gurobi",
+        "ipopt",
+        "knitro",
+        "minos",
+        "scip",
+        "snopt"
+      ],
+      "selected": "scip",
+      "noHcube": false,
+      "multiple": false,
+      "label": "select the QCP solver"
+    },
+    "reslimval": {
+      "widgetType": "slider",
+      "alias": "solver time limit in seconds",
+      "min": 0,
+      "max": 120,
+      "step": 1,
+      "ticks": false,
+      "noHcube": false,
+      "label": "choose a solver time limit in seconds",
+      "default": 10
+    },
+    "optcrval": {
+      "widgetType": "numericinput",
+      "alias": "relative optimality criterion",
+      "value": 0.1,
+      "min": 0,
+      "max": 1,
+      "decimal": 3,
+      "sign": null,
+      "label": "Define the relative optimality criterion for global solvers"
+    },
+    "k": {
+      "widgetType": "slider",
+      "alias": "number of circles",
+      "min": 1,
+      "max": 100,
+      "default": 5,
+      "step": 1,
+      "ticks": true,
+      "noHcube": false,
+      "label": "Select the number of inner circles to be placed in the outer circle"
+    }
+  },
+  "pivottable": {
+    "bgColor": "transparent"
+  },
+  "readme": {
+    "tabTitle": "README",
+    "filename": "README.md"
+  },
+  "handsontable": {
+    "stretchH": "none",
+    "readonly": false,
+    "highlightCol": true,
+    "highlightRow": true,
+    "columnSorting": true,
+    "manualColumnResize": true,
+    "contextMenu": {
+      "enabled": true,
+      "allowRowEdit": true,
+      "allowColEdit": true,
+      "allowReadOnly": false
+    },
+    "height": 700,
+    "colWidths": 150
+  }
+}

@@ -1,0 +1,64 @@
+{
+    "modelTitle": "GAMSPy App",
+    "inputSymbols": {
+        "_scalars": {
+            "alias": "Input Scalars",
+            "symnames": [
+                "k",
+                "optcrval",
+                "reslimval",
+                "qcp"
+            ],
+            "symtext": [
+                "number of circles",
+                "optcr",
+                "reslim",
+                "QCP solver to use"
+            ],
+            "symtypes": [
+                "parameter",
+                "parameter",
+                "parameter",
+                "set"
+            ],
+            "headers": {
+                "scalar": {
+                    "type": "string",
+                    "alias": "Scalar Name"
+                },
+                "description": {
+                    "type": "string",
+                    "alias": "Scalar Description"
+                },
+                "value": {
+                    "type": "string",
+                    "alias": "Scalar Value"
+                }
+            }
+        }
+    },
+    "outputSymbols": {
+        "circledata": {
+            "alias": "circledata",
+            "symtype": "parameter",
+            "headers": {
+                "uni": {
+                    "type": "string",
+                    "alias": "uni"
+                },
+                "x": {
+                    "type": "numeric",
+                    "alias": "x"
+                },
+                "y": {
+                    "type": "numeric",
+                    "alias": "y"
+                },
+                "radius": {
+                    "type": "numeric",
+                    "alias": "radius"
+                }
+            }
+        }
+    }
+}

@@ -65,12 +65,17 @@ pushd src/model/gamspy > /dev/null
     cd pickstock
     $ZIP_TOOL -r pickstock.conf.unzip pickstock_files.txt dowjones2016.csv conf_pickstock scripts_pickstock/hcube_analysis.ipynb static_pickstock README.md -x "*.DS_Store"
     cd ..
+    cd cpack
+    $ZIP_TOOL -r cpack.conf.unzip cpack_files.txt conf_cpack data_cpack static_cpack README.md -x "*.DS_Store"
+    cd ..
     rm -rf miro_lib_gamspy || true
     mkdir miro_lib_gamspy
     mv transport/transport.conf.unzip miro_lib_gamspy
-    cp transport/transport.gms miro_lib_gamspy
+    cp transport/transport.py miro_lib_gamspy
     mv pickstock/pickstock.conf.unzip miro_lib_gamspy
-    cp pickstock/pickstock.gms miro_lib_gamspy
+    cp pickstock/pickstock.py miro_lib_gamspy
+    mv cpack/cpack.conf.unzip miro_lib_gamspy
+    cp cpack/cpack.py miro_lib_gamspy
     $ZIP_TOOL -r GAMS-MIRO-Demo-Apps-GAMSPy.zip miro_lib_gamspy -x "*.DS_Store"
 popd > /dev/null
 
