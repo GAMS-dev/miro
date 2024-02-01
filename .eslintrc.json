@@ -4,6 +4,9 @@
     "commonjs": true,
     "es2021": true
   },
+  "globals": {
+    "__electronLog": true
+  },
   "root": true,
   "extends": [
     "airbnb-base"

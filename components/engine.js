@@ -1,5 +1,4 @@
 const axios = require('axios');
-const log = require('electron-log/renderer');
 
 const TOKEN_EXPIRATION_SECONDS = 604800;
 const REQUIRED_SCOPES = 'NAMESPACES JOBS HYPERCUBE USAGE AUTH';
@@ -40,7 +39,7 @@ const getEngineUserInfo = async (jwt, engineConfig, namespace) => {
     userInfo.is_admin = userInfoRaw.roles.includes('admin');
   } catch (err) {
     if (err?.response?.status === 401) {
-      log.info(`Problems getting user info. Invalid JWT: ${err}`);
+      __electronLog.info(`Problems getting user info. Invalid JWT: ${JSON.stringify(err)}`);
       throw new EngineError('Invalid JWT', 401, 'jwt');
     }
     throw new Error(`Problems getting user info. Error message: ${err}`);

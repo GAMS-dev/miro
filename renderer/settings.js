@@ -1,7 +1,6 @@
 const { ipcRenderer, shell } = require('electron');
 window.Bootstrap = require('bootstrap');
 const $ = require('jquery');
-const log = require('electron-log/renderer');
 const { OAuthClient } = require('../components/oauth');
 const {
   EngineConfig, getEngineAuthProviders,
@@ -141,7 +140,7 @@ const fetchEngineLoginMethods = async (url, defaultMethod) => {
       return false;
     }).map((idp) => idp.name);
   } catch (err) {
-    log.error(err);
+    __electronLog.error(JSON.stringify(err));
     $('#engine-tab').tab('show');
     $('#engineUrl').addClass('is-invalid');
     return;
@@ -231,7 +230,7 @@ ipcRenderer.on('oauth-response-received', async (_, oauthResponse) => {
     );
     $('#engineLoginMethodValidation').removeClass('is-invalid');
   } catch (err) {
-    log.warn(`Problems decoding JWT. Error message: ${err}`);
+    __electronLog.warn(`Problems decoding JWT. Error message: ${err.message}`);
     $('#engineLoginMethodValidation').addClass('is-invalid');
     ipcRenderer.send('show-error-msg', {
       type: 'error',
@@ -274,7 +273,7 @@ saveButton.on('click', async () => {
       try {
         jwt = await getEngineJwt($('#engineUsername').val(), $('#enginePassword').val(), loginMethod, engineConfig);
       } catch (err) {
-        log.info(`Failed to log in Engine user: ${err}`);
+        __electronLog.info(`Failed to log in Engine user: ${err.message}`);
         $('#engine-tab').tab('show');
         if (err?.response?.status === 401) {
           $('#engineUsername').addClass('is-invalid');
@@ -306,7 +305,7 @@ saveButton.on('click', async () => {
       $('#engineNs').removeClass('is-invalid');
       $('#engineJWT').removeClass('is-invalid');
     } catch (err) {
-      log.info(`Failed to get engine user info: ${err.message}`);
+      __electronLog.info(`Failed to get engine user info: ${err.message}`);
       $('#engine-tab').tab('show');
       if (err instanceof EngineError) {
         if (err.field === 'namespace') {
@@ -325,7 +324,7 @@ saveButton.on('click', async () => {
         if (err.field === 'username') {
           $('#engineUsername').addClass('is-invalid');
         }
-        log.error(`Invalid field in error object: ${err.field}`);
+        __electronLog.error(`Invalid field in error object: ${err.field}`);
       }
       ipcRenderer.send('show-error-msg', {
         type: 'error',
@@ -414,7 +413,7 @@ $('.btn-reset-nonpath').on('click', function resetClickNonPath() {
     } else if (elKey === 'colorTheme') {
       inputElTmp = inputColorTheme;
     } else {
-      log.error('COULD NOT FIND INPUT EL!!');
+      __electronLog.error('COULD NOT FIND INPUT EL!!');
       return;
     }
     inputElTmp.val(Object.keys(optionAliasMap[elKey])

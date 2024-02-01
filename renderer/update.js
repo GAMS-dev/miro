@@ -1,7 +1,6 @@
 const { ipcRenderer, shell } = require('electron');
 const querystring = require('querystring');
 const https = require('https');
-const log = require('electron-log/renderer');
 const $ = require('jquery');
 
 const installedVersion = querystring.parse(global.location.search)['?miroVersion'].split('.');
@@ -62,12 +61,12 @@ ipcRenderer.on('lang-data-received', (e, lang) => {
         updateStatus(lang.upToDate);
         return;
       } catch (err) {
-        log.info(`Problems getting latest MIRO version. Error message: ${err.message}.`);
+        __electronLog.info(`Problems getting latest MIRO version. Error message: ${err.message}.`);
         updateStatus(lang.error);
       }
     });
   }).on('error', (err) => {
-    log.info(`Problems getting latest MIRO version. Error message: ${err.message}.`);
+    __electronLog.info(`Problems getting latest MIRO version. Error message: ${err.message}.`);
     updateStatus(lang.error);
   });
 });
