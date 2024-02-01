@@ -13,8 +13,12 @@ class EngineError extends Error {
   }
 }
 
-const getEngineAuthProviders = async (url) => {
-  const authProviderReq = await axios.get(`${url}/auth/providers`);
+const getEngineAuthProviders = async (url, signal) => {
+  let requestOptions;
+  if (signal != null) {
+    requestOptions = { signal };
+  }
+  const authProviderReq = await axios.get(`${url}/auth/providers`, requestOptions);
   if (!authProviderReq.data.find((idp) => idp.is_main_identity_provider)) {
     throw new Error('Not a valid Engine server');
   }

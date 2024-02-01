@@ -19,6 +19,7 @@ const btEnvReset = $('#btEnvReset');
 
 let oAuthClient = null;
 const engineConfig = new EngineConfig();
+let engineUrlAbortController;
 
 let lang = {};
 
@@ -107,7 +108,7 @@ $('#btEnvReset').on('click', () => {
   saveButton.attr('disabled', false);
 });
 
-const fetchEngineLoginMethods = async (url, defaultMethod) => {
+const fetchEngineLoginMethods = async (url, options) => {
   $('#engineLoginPassword').hide();
   $('#engineLoginJWT').hide();
   $('#engineLoginMethod').empty().append($('<option>', {
@@ -118,7 +119,7 @@ const fetchEngineLoginMethods = async (url, defaultMethod) => {
     text: 'JWT',
   }));
   try {
-    const authProvidersTmp = await getEngineAuthProviders(url);
+    const authProvidersTmp = await getEngineAuthProviders(url, options?.signal);
     engineConfig.oauthProviders = authProvidersTmp.filter((idp) => {
       if (idp?.oidc != null || idp?.oauth != null) {
         $('#engineLoginMethod').append($('<option>', {
@@ -140,24 +141,27 @@ const fetchEngineLoginMethods = async (url, defaultMethod) => {
       return false;
     }).map((idp) => idp.name);
   } catch (err) {
-    __electronLog.error(`Problems fetching auth providers. Error: ${JSON.stringify(err)}`);
+    __electronLog.info(`Problems fetching auth providers (url: ${url}). Error: ${JSON.stringify(err)}`);
     $('#engine-tab').tab('show');
     $('#engineUrl').addClass('is-invalid');
     return;
   }
+  __electronLog.debug(`Successfully retrieved IDPs for URL: ${url}`);
   $('#engineUrl').removeClass('is-invalid');
   $('#engineUsername').val('');
   $('#enginePassword').val('');
-  $('#engineJWT').val('');
+  if (options?.clearJWT !== false) {
+    $('#engineJWT').val('');
+  }
   engineConfig.url = url;
-  if (defaultMethod == null || defaultMethod === '_main') {
+  if (options?.defaultMethod == null || options.defaultMethod === '_main') {
     $('#engineLoginMethod').val('_main');
     $('#engineLoginPassword').show();
-  } else if (defaultMethod === '_jwt') {
+  } else if (options.defaultMethod === '_jwt') {
     $('#engineLoginMethod').val('_jwt');
     $('#engineLoginJWT').show();
   } else {
-    $('#engineLoginMethod').val(defaultMethod);
+    $('#engineLoginMethod').val(options.defaultMethod);
   }
   $('#engineLoginMethodValidation').removeClass('is-invalid');
   $('#engineLoginMethodForm').show();
@@ -186,9 +190,17 @@ $('#engineUrl').on('input', async function onEngineUrlInput() {
     return;
   }
   if (!enteredUrl.endsWith('/api')) {
-    enteredUrl += 'api';
+    if (enteredUrl.endsWith('/')) {
+      enteredUrl += 'api';
+    } else {
+      enteredUrl += '/api';
+    }
   }
-  fetchEngineLoginMethods(enteredUrl);
+  if (engineUrlAbortController) {
+    engineUrlAbortController.abort();
+  }
+  engineUrlAbortController = new AbortController();
+  fetchEngineLoginMethods(enteredUrl, { signal: engineUrlAbortController.signal });
 });
 
 $('#engineLoginMethod').on('change', async function onEngineLoginMethodInput() {
@@ -508,8 +520,8 @@ ipcRenderer.on('settings-loaded', (e, data, defaults, langData) => {
       engineConfig.init();
       $('#engineUrl').val(newValue.url);
       $('#engineNs').val(newValue.namespace);
-      fetchEngineLoginMethods(newValue.url, '_jwt');
       $('#engineJWT').val(newValue.jwt);
+      fetchEngineLoginMethods(newValue.url, { defaultMethod: '_jwt', clearJWT: false });
       if (isImportant) {
         $('#engineLoginMethod').attr('disabled', true);
         $('#engineUrl').attr('disabled', true);
