@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 const TOKEN_EXPIRATION_SECONDS = 604800;
-const REQUIRED_SCOPES = 'NAMESPACES JOBS HYPERCUBE USAGE AUTH';
+const REQUIRED_SCOPES = 'NAMESPACES JOBS HYPERCUBE USAGE AUTH USERS';
 
 class EngineError extends Error {
   constructor(message, statusCode, field) {
