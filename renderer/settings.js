@@ -140,11 +140,15 @@ const fetchEngineLoginMethods = async (url, defaultMethod) => {
       return false;
     }).map((idp) => idp.name);
   } catch (err) {
-    __electronLog.error(JSON.stringify(err));
+    __electronLog.error(`Problems fetching auth providers. Error: ${JSON.stringify(err)}`);
     $('#engine-tab').tab('show');
     $('#engineUrl').addClass('is-invalid');
     return;
   }
+  $('#engineUrl').removeClass('is-invalid');
+  $('#engineUsername').val('');
+  $('#enginePassword').val('');
+  $('#engineJWT').val('');
   engineConfig.url = url;
   if (defaultMethod == null || defaultMethod === '_main') {
     $('#engineLoginMethod').val('_main');
@@ -169,6 +173,7 @@ $('#remoteExecution').on('change', (event) => {
 
 $('#engineUrl').on('input', async function onEngineUrlInput() {
   $('#engineLoginMethodForm').hide();
+  $('#engineUrl').addClass('is-invalid');
   saveButton.attr('disabled', false);
 
   engineConfig.init();
@@ -176,10 +181,8 @@ $('#engineUrl').on('input', async function onEngineUrlInput() {
   let enteredUrl = $(this).val().replace(/\/+$/, '');
   try {
     enteredUrl = new URL(enteredUrl).toString();
-    $('#engineUrl').removeClass('is-invalid');
   } catch (err) {
     $('#engine-tab').tab('show');
-    $('#engineUrl').addClass('is-invalid');
     return;
   }
   if (!enteredUrl.endsWith('/api')) {
