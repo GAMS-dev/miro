@@ -508,8 +508,8 @@ ipcRenderer.on('settings-loaded', (e, data, defaults, langData) => {
       engineConfig.init();
       $('#engineUrl').val(newValue.url);
       $('#engineNs').val(newValue.namespace);
-      $('#engineJWT').val(newValue.jwt);
       fetchEngineLoginMethods(newValue.url, '_jwt');
+      $('#engineJWT').val(newValue.jwt);
       if (isImportant) {
         $('#engineLoginMethod').attr('disabled', true);
         $('#engineUrl').attr('disabled', true);
