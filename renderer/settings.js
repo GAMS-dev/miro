@@ -256,44 +256,91 @@ ipcRenderer.on('oauth-response-received', async (_, oauthResponse) => {
 });
 
 saveButton.on('click', async () => {
-  if (pathValidating === true) {
-    return;
-  }
-  let logLifeVal = inputLogLifetime.val();
-  if (logLifeVal !== '') {
-    logLifeVal = parseInt(logLifeVal, 10);
-    if (Number.isNaN(logLifeVal)) {
+  const saveSettingsFn = async () => {
+    if (pathValidating === true) {
       return;
     }
-  }
-  newConfig.logLifeTime = logLifeVal;
-  newConfig.launchExternal = cbLaunchExternal.is(':checked');
+    let logLifeVal = inputLogLifetime.val();
+    if (logLifeVal !== '') {
+      logLifeVal = parseInt(logLifeVal, 10);
+      if (Number.isNaN(logLifeVal)) {
+        return;
+      }
+    }
+    newConfig.logLifeTime = logLifeVal;
+    newConfig.launchExternal = cbLaunchExternal.is(':checked');
 
-  newConfig.language = optionAliasMap.language[inputLanguage.val()];
-  newConfig.colorTheme = optionAliasMap.colorTheme[inputColorTheme.val()];
-  let oldLanguage = defaultValues.language;
-  if (oldConfig.language) {
-    oldLanguage = oldConfig.language;
-  }
-  if (oldLanguage !== newConfig.language) {
-    requireRestart = true;
-  }
-  newConfig.logLevel = inputLogLevel.val();
-  saveButton.attr('disabled', true);
-  newConfig.remoteExecution = cbRemoteExecution.is(':checked');
-  if (newConfig.remoteExecution) {
-    const loginMethod = $('#engineLoginMethod').val();
-    let jwt;
-    if (loginMethod === '_main' || engineConfig.ldapProviders.includes(loginMethod)) {
-      try {
-        jwt = await getEngineJwt($('#engineUsername').val(), $('#enginePassword').val(), loginMethod, engineConfig);
-      } catch (err) {
-        __electronLog.info(`Failed to log in Engine user: ${err.message}`);
-        $('#engine-tab').tab('show');
-        if (err?.response?.status === 401) {
-          $('#engineUsername').addClass('is-invalid');
-          $('#enginePassword').addClass('is-invalid');
+    newConfig.language = optionAliasMap.language[inputLanguage.val()];
+    newConfig.colorTheme = optionAliasMap.colorTheme[inputColorTheme.val()];
+    let oldLanguage = defaultValues.language;
+    if (oldConfig.language) {
+      oldLanguage = oldConfig.language;
+    }
+    if (oldLanguage !== newConfig.language) {
+      requireRestart = true;
+    }
+    newConfig.logLevel = inputLogLevel.val();
+    saveButton.attr('disabled', true);
+    newConfig.remoteExecution = cbRemoteExecution.is(':checked');
+    if (newConfig.remoteExecution) {
+      const loginMethod = $('#engineLoginMethod').val();
+      let jwt;
+      if (loginMethod === '_main' || engineConfig.ldapProviders.includes(loginMethod)) {
+        try {
+          jwt = await getEngineJwt($('#engineUsername').val(), $('#enginePassword').val(), loginMethod, engineConfig);
+        } catch (err) {
+          __electronLog.info(`Failed to log in Engine user: ${err.message}`);
+          $('#engine-tab').tab('show');
+          if (err?.response?.status === 401) {
+            $('#engineUsername').addClass('is-invalid');
+            $('#enginePassword').addClass('is-invalid');
+            return;
+          }
+          ipcRenderer.send('show-error-msg', {
+            type: 'error',
+            title: 'Unexpected error',
+            message: 'An unexpected error occurred when logging into GAMS Engine. Please check the log for more information.',
+          }, 'settings');
           return;
+        }
+        $('#engineUsername').removeClass('is-invalid');
+        $('#enginePassword').removeClass('is-invalid');
+      } else if (loginMethod === '_jwt') {
+        jwt = $('#engineJWT').val();
+      } else {
+        jwt = engineConfig.jwt;
+        if (jwt == null) {
+          $('#engine-tab').tab('show');
+          $('#engineLoginMethodValidation').addClass('is-invalid');
+          return;
+        }
+      }
+      try {
+        const engineUserInfo = await getEngineUserInfo(jwt, engineConfig, $('#engineNs').val().trim());
+        newConfig.remoteConfig = engineUserInfo;
+        $('#engineNs').removeClass('is-invalid');
+        $('#engineJWT').removeClass('is-invalid');
+      } catch (err) {
+        __electronLog.info(`Failed to get engine user info: ${err.message}`);
+        $('#engine-tab').tab('show');
+        if (err instanceof EngineError) {
+          if (err.field === 'namespace') {
+            if (err.statusCode === 404) {
+              document.getElementById('engineNsValidation').innerText = lang.engineNsValidation;
+            } else {
+              document.getElementById('engineNsValidation').innerText = lang.engineNsValidationPerm;
+            }
+            $('#engineNs').addClass('is-invalid');
+            return;
+          }
+          if (err.field === 'jwt') {
+            $('#engineJWT').addClass('is-invalid');
+            return;
+          }
+          if (err.field === 'username') {
+            $('#engineUsername').addClass('is-invalid');
+          }
+          __electronLog.error(`Invalid field in error object: ${err.field}`);
         }
         ipcRenderer.send('show-error-msg', {
           type: 'error',
@@ -302,56 +349,15 @@ saveButton.on('click', async () => {
         }, 'settings');
         return;
       }
-      $('#engineUsername').removeClass('is-invalid');
-      $('#enginePassword').removeClass('is-invalid');
-    } else if (loginMethod === '_jwt') {
-      jwt = $('#engineJWT').val();
     } else {
-      jwt = engineConfig.jwt;
-      if (jwt == null) {
-        $('#engine-tab').tab('show');
-        $('#engineLoginMethodValidation').addClass('is-invalid');
-        return;
-      }
+      newConfig.remoteConfig = {};
     }
-    try {
-      const engineUserInfo = await getEngineUserInfo(jwt, engineConfig, $('#engineNs').val().trim());
-      newConfig.remoteConfig = engineUserInfo;
-      $('#engineNs').removeClass('is-invalid');
-      $('#engineJWT').removeClass('is-invalid');
-    } catch (err) {
-      __electronLog.info(`Failed to get engine user info: ${err.message}`);
-      $('#engine-tab').tab('show');
-      if (err instanceof EngineError) {
-        if (err.field === 'namespace') {
-          if (err.statusCode === 404) {
-            document.getElementById('engineNsValidation').innerText = lang.engineNsValidation;
-          } else {
-            document.getElementById('engineNsValidation').innerText = lang.engineNsValidationPerm;
-          }
-          $('#engineNs').addClass('is-invalid');
-          return;
-        }
-        if (err.field === 'jwt') {
-          $('#engineJWT').addClass('is-invalid');
-          return;
-        }
-        if (err.field === 'username') {
-          $('#engineUsername').addClass('is-invalid');
-        }
-        __electronLog.error(`Invalid field in error object: ${err.field}`);
-      }
-      ipcRenderer.send('show-error-msg', {
-        type: 'error',
-        title: 'Unexpected error',
-        message: 'An unexpected error occurred when logging into GAMS Engine. Please check the log for more information.',
-      }, 'settings');
-      return;
-    }
-  } else {
-    newConfig.remoteConfig = {};
-  }
-  ipcRenderer.send('save-general-config', newConfig, requireRestart);
+    ipcRenderer.send('save-general-config', newConfig, requireRestart);
+  };
+  const loadingScreen = $('#loadingScreen');
+  loadingScreen.show();
+  await saveSettingsFn();
+  loadingScreen.hide();
 });
 
 $('#btCancel').on('click', () => {
