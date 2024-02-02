@@ -923,19 +923,6 @@ inc/inc2.inc
                           </tr>
                           <tr>
                             <td></td>
-                            <td>Execution of models on GAMS Engine?</td>
-                            <td>
-                              If enabled, GAMS jobs can be
-                              <a href="./server.html">run in the cloud</a>
-                              instead of on the local machine. For this purpose
-                              the server information must be specified in the
-                              MIRO application. This option can also be enabled
-                              by setting the environment variable
-                              <i>MIRO_REMOTE_EXEC</i> to true.
-                            </td>
-                          </tr>
-                          <tr>
-                            <td></td>
                             <td>Logging level</td>
                             <td>
                               Determines the logging scope. <i>TRACE</i> = very
@@ -992,6 +979,53 @@ inc/inc2.inc
                               or later) is required for using GAMS MIRO. Since R
                               is bundled with MIRO on Windows and MacOS, this
                               option is only available on Linux systems.
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><b>GAMS Engine</b></td>
+                            <td>Execution of models on GAMS Engine?</td>
+                            <td>
+                              If enabled, GAMS jobs will be
+                              <a href="./server.html">run in the cloud</a>
+                              instead of on the local machine.
+                            </td>
+                          </tr>
+                          <tr>
+                            <td></td>
+                            <td>Engine URL</td>
+                            <td>
+                              URL where GAMS Engine is hosted, e.g.
+                              <kbd>https://engine.gams.com</kbd>.
+                            </td>
+                          </tr>
+                          <tr>
+                            <td></td>
+                            <td>Namespace</td>
+                            <td>
+                              The <i>namespace</i> to solve the model in. Engine
+                              uses these namespaces to organize GAMS models.
+                              Your user account needs at least write and execute
+                              permissions on that namespace. Further information
+                              can be found
+                              <a
+                                href="https://www.gams.com/engine/administration.html#namespaces"
+                                >here</a
+                              >.
+                            </td>
+                          </tr>
+                          <tr>
+                            <td></td>
+                            <td>Login via</td>
+                            <td>
+                              Login method to use. Options supported by MIRO
+                              are: <i>Username/Password</i> for logging in with
+                              username and password, <i>JWT</i> for logging in
+                              with an authentication token (can e.g. be
+                              generated from the Engine UI) or using an
+                              <a
+                                href="https://www.gams.com/engine/administration.html#identity-providers"
+                                >LDAP/OAuth2/OIDC identity provider</a
+                              >.
                             </td>
                           </tr>
                         </tbody>
