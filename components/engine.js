@@ -1,5 +1,6 @@
 const axios = require('axios');
 
+const REQUEST_TIMEOUT = 10000;
 const TOKEN_EXPIRATION_SECONDS = 604800;
 const REQUIRED_SCOPES = 'NAMESPACES JOBS HYPERCUBE USAGE AUTH USERS';
 
@@ -14,7 +15,7 @@ class EngineError extends Error {
 }
 
 const getEngineAuthProviders = async (url, signal) => {
-  let requestOptions;
+  let requestOptions = { timeout: REQUEST_TIMEOUT };
   if (signal != null) {
     requestOptions = { signal };
   }
@@ -30,7 +31,7 @@ const getEngineUserInfo = async (jwt, engineConfig, namespace) => {
   try {
     const userInfoReq = await axios.get(
       `${engineConfig.url}/users/?everyone=false`,
-      { headers: { Authorization: `Bearer ${jwt}` } },
+      { headers: { Authorization: `Bearer ${jwt}` }, timeout: REQUEST_TIMEOUT },
     );
     const userInfoRaw = userInfoReq.data[0];
     if (userInfoRaw.deleted === true) {
@@ -55,7 +56,7 @@ const getEngineUserInfo = async (jwt, engineConfig, namespace) => {
     }
     const userPermissionReq = await axios.get(
       `${engineConfig.url}/namespaces/${userInfo.namespace}/permissions?username=${encodeURIComponent(userInfo.username)}`,
-      { headers: { Authorization: `Bearer ${jwt}` } },
+      { headers: { Authorization: `Bearer ${jwt}` }, timeout: REQUEST_TIMEOUT },
     );
     if (!userInfo.is_admin) {
       if (!(userPermissionReq.permission & 2 // eslint-disable-line no-bitwise
@@ -85,7 +86,7 @@ const getEngineJwt = async (username, password, loginMethod, engineConfig) => {
       password,
       expires_in: TOKEN_EXPIRATION_SECONDS,
       scope: REQUIRED_SCOPES,
-    });
+    }, { timeout: REQUEST_TIMEOUT });
     return loginReq.data.token;
   } if (!engineConfig.ldapProviders.includes(loginMethod)) {
     throw new Error(`Invalid login method: ${loginMethod}`);
@@ -95,7 +96,7 @@ const getEngineJwt = async (username, password, loginMethod, engineConfig) => {
     password,
     expires_in: TOKEN_EXPIRATION_SECONDS,
     scope: REQUIRED_SCOPES,
-  });
+  }, { timeout: REQUEST_TIMEOUT });
   return loginReq.data.token;
 };
 
@@ -103,7 +104,7 @@ const refreshEngineJwt = async (url, jwt) => {
   const loginReq = await axios.post(`${url}/auth/`, {
     expires_in: TOKEN_EXPIRATION_SECONDS,
     scope: REQUIRED_SCOPES,
-  }, { headers: { Authorization: `Bearer ${jwt}` } });
+  }, { headers: { Authorization: `Bearer ${jwt}` }, timeout: REQUEST_TIMEOUT });
   return loginReq.data.token;
 };
 
