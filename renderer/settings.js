@@ -517,16 +517,18 @@ ipcRenderer.on('settings-loaded', (e, data, defaults, langData) => {
         cbRemoteExecution.attr('disabled', true);
       }
     } else if (key === 'remoteConfig') {
-      engineConfig.init();
-      $('#engineUrl').val(newValue.url);
-      $('#engineNs').val(newValue.namespace);
-      $('#engineJWT').val(newValue.jwt);
-      fetchEngineLoginMethods(newValue.url, { defaultMethod: '_jwt', clearJWT: false });
-      if (isImportant) {
-        $('#engineLoginMethod').attr('disabled', true);
-        $('#engineUrl').attr('disabled', true);
-        $('#engineNs').attr('disabled', true);
-        $('#engineJWT').attr('disabled', true);
+      if (newValue.url != null) {
+        engineConfig.init();
+        $('#engineUrl').val(newValue.url);
+        $('#engineNs').val(newValue.namespace);
+        $('#engineJWT').val(newValue.jwt);
+        fetchEngineLoginMethods(newValue.url, { defaultMethod: '_jwt', clearJWT: false });
+        if (isImportant) {
+          $('#engineLoginMethod').attr('disabled', true);
+          $('#engineUrl').attr('disabled', true);
+          $('#engineNs').attr('disabled', true);
+          $('#engineJWT').attr('disabled', true);
+        }
       }
     } else if (['logLifeTime', 'logLevel', 'language', 'colorTheme'].find((el) => el === key)) {
       $(`#${key}`).val(Object.keys(optionAliasMap).includes(key) ? Object.keys(optionAliasMap[key])
