@@ -57,8 +57,11 @@ const getEngineUserInfo = async (jwt, engineConfig, namespace) => {
       `${engineConfig.url}/namespaces/${userInfo.namespace}/permissions?username=${encodeURIComponent(userInfo.username)}`,
       { headers: { Authorization: `Bearer ${jwt}` } },
     );
-    if (!userInfo.is_admin && userPermissionReq.permission < 7) {
-      throw new EngineError('No permission on namespace', 403, 'namespace');
+    if (!userInfo.is_admin) {
+      if (!(userPermissionReq.permission & 2 // eslint-disable-line no-bitwise
+        && userPermissionReq.permission & 1)) { // eslint-disable-line no-bitwise
+        throw new EngineError('No permission on namespace', 403, 'namespace');
+      }
     }
   } catch (err) {
     if (err?.response?.status === 404) {
