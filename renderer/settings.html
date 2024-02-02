@@ -58,18 +58,6 @@
           <li class="nav-item">
             <a
               class="nav-link"
-              id="env-tab"
-              data-toggle="tab"
-              href="#env"
-              role="tab"
-              aria-controls="env"
-              aria-selected="false"
-              >Environment</a
-            >
-          </li>
-          <li class="nav-item">
-            <a
-              class="nav-link"
               id="engine-tab"
               data-toggle="tab"
               href="#engine"
@@ -77,6 +65,18 @@
               aria-controls="engine"
               aria-selected="true"
               >GAMS Engine</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              id="env-tab"
+              data-toggle="tab"
+              href="#env"
+              role="tab"
+              aria-controls="env"
+              aria-selected="false"
+              >Environment</a
             >
           </li>
         </ul>
@@ -355,47 +355,6 @@
           </div>
           <div
             class="tab-pane fade"
-            id="env"
-            role="tabpanel"
-            aria-labelledby="env-tab"
-          >
-            <div class="setting-wrapper env-button-wrapper btn-group">
-              <button
-                id="btEnvImport"
-                class="btn btn-sm btn-outline-secondary"
-                type="button"
-              >
-                Import
-              </button>
-              <button
-                id="btEnvExport"
-                class="btn btn-sm btn-outline-secondary"
-                type="button"
-              >
-                Export
-              </button>
-              <button
-                id="btEnvReset"
-                class="btn btn-sm btn-outline-danger"
-                type="button"
-              >
-                Reset
-              </button>
-            </div>
-            <div id="envTableWrapper" class="setting-wrapper">
-              <table class="table table-sm table-borderless">
-                <thead>
-                  <tr>
-                    <th id="miroEnvHdrVar" scope="col">Variable</th>
-                    <th id="miroEnvHdrVal" scope="col">Value</th>
-                  </tr>
-                </thead>
-                <tbody id="tbodyMiroEnv"></tbody>
-              </table>
-            </div>
-          </div>
-          <div
-            class="tab-pane fade"
             id="engine"
             role="tabpanel"
             aria-labelledby="engine-tab"
@@ -572,6 +531,47 @@
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+          <div
+            class="tab-pane fade"
+            id="env"
+            role="tabpanel"
+            aria-labelledby="env-tab"
+          >
+            <div class="setting-wrapper env-button-wrapper btn-group">
+              <button
+                id="btEnvImport"
+                class="btn btn-sm btn-outline-secondary"
+                type="button"
+              >
+                Import
+              </button>
+              <button
+                id="btEnvExport"
+                class="btn btn-sm btn-outline-secondary"
+                type="button"
+              >
+                Export
+              </button>
+              <button
+                id="btEnvReset"
+                class="btn btn-sm btn-outline-danger"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+            <div id="envTableWrapper" class="setting-wrapper">
+              <table class="table table-sm table-borderless">
+                <thead>
+                  <tr>
+                    <th id="miroEnvHdrVar" scope="col">Variable</th>
+                    <th id="miroEnvHdrVal" scope="col">Value</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyMiroEnv"></tbody>
+              </table>
             </div>
           </div>
           <div class="settings-footer">
