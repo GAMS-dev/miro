@@ -59,12 +59,15 @@ const getEngineUserInfo = async (jwt, engineConfig, namespace) => {
       { headers: { Authorization: `Bearer ${jwt}` }, timeout: REQUEST_TIMEOUT },
     );
     if (!userInfo.is_admin) {
-      if (!(userPermissionReq.permission & 2 // eslint-disable-line no-bitwise
-        && userPermissionReq.permission & 1)) { // eslint-disable-line no-bitwise
+      if (!(userPermissionReq.data.permission & 2 // eslint-disable-line no-bitwise
+        && userPermissionReq.data.permission & 1)) { // eslint-disable-line no-bitwise
         throw new EngineError('No permission on namespace', 403, 'namespace');
       }
     }
   } catch (err) {
+    if (err instanceof EngineError) {
+      throw err;
+    }
     if (err?.response?.status === 404) {
       throw new EngineError('Namespace not found', 404, 'namespace');
     }
