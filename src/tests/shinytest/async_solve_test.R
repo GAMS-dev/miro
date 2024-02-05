@@ -308,6 +308,20 @@ Sys.sleep(0.5)
 app$set_inputs(selLoadScen = paste0("1_", Sys.info()[["user"]]))
 expect_identical(startsWith(app$get_values()$input[["selLoadScen"]], "1_"), TRUE)
 app$set_inputs(btLoadScenConfirm = "click")
+currentVolumeQuotaUsed <- httr::content(httr::GET(
+  paste0(Sys.getenv("ENGINE_URL"), paste0("/usage/quota?username=", Sys.getenv("MIRO_REMOTE_EXEC_USERNAME"))),
+  httr::authenticate(Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")),
+  httr::timeout(2L)
+))[[1L]][["volume_used"]]
+expect_identical(httr::status_code(httr::PUT(
+  paste0(Sys.getenv("ENGINE_URL"), "/usage/quota"),
+  body = list(
+    username = Sys.getenv("MIRO_REMOTE_EXEC_USERNAME"),
+    volume_quota = currentVolumeQuotaUsed + 5L
+  ),
+  httr::authenticate(Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")),
+  httr::timeout(2L)
+)), 200L)
 Sys.sleep(1)
 app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSolve']")

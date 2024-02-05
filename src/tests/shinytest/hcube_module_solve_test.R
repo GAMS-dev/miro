@@ -326,6 +326,20 @@ app$click(selector = ".change-dd-button[data-action-id='btSubmitHcJob']")
 Sys.sleep(0.5)
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true;", timeout = 5000L)
 app$wait_for_js("$('#btSubmitHcJobConfirm').is(':enabled');", timeout = 5000L)
+currentVolumeQuotaUsed <- httr::content(httr::GET(
+  paste0(Sys.getenv("ENGINE_URL"), paste0("/usage/quota?username=", Sys.getenv("MIRO_REMOTE_EXEC_USERNAME"))),
+  httr::authenticate(Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")),
+  httr::timeout(2L)
+))[[1L]][["volume_used"]]
+expect_identical(httr::status_code(httr::PUT(
+  paste0(Sys.getenv("ENGINE_URL"), "/usage/quota"),
+  body = list(
+    username = Sys.getenv("MIRO_REMOTE_EXEC_USERNAME"),
+    volume_quota = currentVolumeQuotaUsed + 1L
+  ),
+  httr::authenticate(Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")),
+  httr::timeout(2L)
+)), 200L)
 Sys.sleep(0.5)
 app$click(selector = "#btSubmitHcJobConfirm")
 Sys.sleep(2)
