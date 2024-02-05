@@ -1015,6 +1015,7 @@ function handleDeepLink(url) {
         aes_iv: urlSearchParams.get('aes_iv'),
       },
     );
+    settingsWindow.focus();
   } else {
     log.warn(`MIRO launcher opened with invalid url: ${url}`);
   }
@@ -1036,7 +1037,6 @@ if (!miroDevelopMode) {
       log.debug('Second MIRO instance launched.');
       if (mainWindow) {
         if (mainWindow.isMinimized()) mainWindow.restore();
-        mainWindow.focus();
         if (process.platform === 'win32'
           && argv.length >= 2 && !DEVELOPMENT_MODE && !miroDevelopMode) {
           const associatedFile = argv[argv.length - 1];
@@ -1046,11 +1046,13 @@ if (!miroDevelopMode) {
           if (associatedFile.toLowerCase().endsWith('.miroscen')) {
             log.debug(`MIRO launcher opened by double clicking MIRO scenario file at path: ${associatedFile}.`);
             await addMiroscenFile(associatedFile);
+            mainWindow.focus();
             return;
           }
           if (associatedFile.toLowerCase().endsWith('.miroapp')) {
             log.debug(`MIRO launcher opened by double clicking MIRO app at path: ${associatedFile}.`);
             await addOrUpdateMIROApp(associatedFile);
+            mainWindow.focus();
           }
           try {
             handleDeepLink(associatedFile);
