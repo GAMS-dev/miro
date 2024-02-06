@@ -1038,7 +1038,7 @@ if (!miroDevelopMode) {
       if (mainWindow) {
         if (mainWindow.isMinimized()) mainWindow.restore();
         mainWindow.focus();
-        if (process.platform === 'win32'
+        if (process.platform !== 'darwin'
           && argv.length >= 2 && !DEVELOPMENT_MODE && !miroDevelopMode) {
           const associatedFile = argv[argv.length - 1];
           if (associatedFile.startsWith('--')) {
