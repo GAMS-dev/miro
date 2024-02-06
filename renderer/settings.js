@@ -311,7 +311,7 @@ saveButton.on('click', async () => {
         jwt = engineConfig.jwt;
         if (jwt == null) {
           $('#engine-tab').tab('show');
-          $('#engineLoginMethodValidation').addClass('is-invalid');
+          $('#engineLoginMethod').addClass('is-invalid');
           return;
         }
       }
