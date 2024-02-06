@@ -49,13 +49,13 @@
         "ext": "miroapp",
         "name": "MIRO App",
         "description": "MIRO Application",
-        "mimeType": "application/miro"
+        "mimeType": "application/x-miroapp"
       },
       {
         "ext": "miroscen",
         "name": "MIRO Scenario",
         "description": "MIRO Scenario",
-        "mimeType": "application/miro"
+        "mimeType": "application/x-miroscen"
       }
     ],
     "protocols": [
