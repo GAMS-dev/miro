@@ -14,6 +14,8 @@ class EngineError extends Error {
   }
 }
 
+const isTokenExpired = (token) => Date.now() >= (JSON.parse(atob(token.split('.')[1]))).exp * 1000;
+
 const getEngineAuthProviders = async (url, signal) => {
   let requestOptions = { timeout: REQUEST_TIMEOUT };
   if (signal != null) {
@@ -128,4 +130,5 @@ module.exports = {
   refreshEngineJwt,
   EngineConfig,
   EngineError,
+  isTokenExpired,
 };

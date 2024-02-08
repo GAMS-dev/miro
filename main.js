@@ -10,7 +10,7 @@ const util = require('util');
 const log = require('electron-log/main');
 const menu = require('./components/menu');
 const installRPackages = require('./components/install-r');
-const { refreshEngineJwt } = require('./components/engine');
+const { refreshEngineJwt, isTokenExpired } = require('./components/engine');
 
 const requiredAPIVersion = 1;
 const miroVersion = '2.8.9999';
@@ -2190,22 +2190,41 @@ app.on('ready', async () => {
 
   if (await configData.get('remoteExecution') === true) {
     const remoteConfig = await configData.get('remoteConfig');
-    if (remoteConfig.jwt != null && false) {
-      log.info('Refreshing Engine JWT');
-      try {
-        remoteConfig.jwt = await refreshEngineJwt(remoteConfig.url, remoteConfig.jwt);
-        configData.set('remoteConfig', remoteConfig);
-      } catch (err) {
-        log.error(`Problems refreshing Engine JWT. Error: ${err}`);
-        const openSettingsWindowDecision = await dialog.showMessageBox({
-          type: 'info',
-          title: lang.main.ErrorEngineTokenRefreshHdr,
-          message: lang.main.ErrorEngineTokenRefreshMsg,
-          buttons: [lang.main.BtnCancel, lang.main.OpenSettingsBtnYes],
-        });
-        if (openSettingsWindowDecision.response === 1) {
-          createSettingsWindow();
-          focusMainWindow = false;
+    if (remoteConfig.jwt != null) {
+      log.info('Checking if Engine JWT is expired');
+      if (false) {
+        try {
+          remoteConfig.jwt = await refreshEngineJwt(remoteConfig.url, remoteConfig.jwt);
+          configData.set('remoteConfig', remoteConfig);
+        } catch (err) {
+          log.error(`Problems refreshing Engine JWT. Error: ${err}`);
+          const openSettingsWindowDecision = await dialog.showMessageBox({
+            type: 'info',
+            title: lang.main.ErrorEngineTokenRefreshHdr,
+            message: lang.main.ErrorEngineTokenRefreshMsg,
+            buttons: [lang.main.BtnCancel, lang.main.OpenSettingsBtnYes],
+          });
+          if (openSettingsWindowDecision.response === 1) {
+            createSettingsWindow();
+            focusMainWindow = false;
+          }
+        }
+      } else {
+        try {
+          if (isTokenExpired(remoteConfig.jwt)) {
+            const openSettingsWindowDecision = await dialog.showMessageBox({
+              type: 'info',
+              title: lang.main.ErrorEngineTokenRefreshHdr,
+              message: lang.main.ErrorEngineTokenRefreshMsg,
+              buttons: [lang.main.BtnCancel, lang.main.OpenSettingsBtnYes],
+            });
+            if (openSettingsWindowDecision.response === 1) {
+              createSettingsWindow();
+              focusMainWindow = false;
+            }
+          }
+        } catch (err) {
+          log.error(`Problems checking whether Engine JWT is expired . Error: ${err}`);
         }
       }
     }
