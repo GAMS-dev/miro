@@ -163,7 +163,7 @@ const fetchEngineLoginMethods = async (url, options) => {
   } else {
     $('#engineLoginMethod').val(options.defaultMethod);
   }
-  $('#engineLoginMethodValidation').removeClass('is-invalid');
+  $('#engineLoginMethod').removeClass('is-invalid is-valid');
   $('#engineLoginMethodForm').show();
 };
 
@@ -206,7 +206,7 @@ $('#engineUrl').on('input', async function onEngineUrlInput() {
 $('#engineLoginMethod').on('change', async function onEngineLoginMethodInput() {
   saveButton.attr('disabled', false);
   const loginMethod = $(this).val();
-  $('#engineLoginMethodValidation').removeClass('is-invalid');
+  $('#engineLoginMethod').removeClass('is-invalid is-valid');
   $('#engineLoginPassword').hide();
   $('#engineLoginJWT').hide();
   if (loginMethod === '' || loginMethod == null) {
@@ -243,10 +243,12 @@ ipcRenderer.on('oauth-response-received', async (_, oauthResponse) => {
       oauthResponse.aes_key,
       oauthResponse.aes_iv,
     );
-    $('#engineLoginMethodValidation').removeClass('is-invalid');
+    $('#engineLoginMethod').removeClass('is-invalid');
+    $('#engineLoginMethod').addClass('is-valid');
   } catch (err) {
     __electronLog.warn(`Problems decoding JWT. Error message: ${err.message}`);
-    $('#engineLoginMethodValidation').addClass('is-invalid');
+    $('#engineLoginMethod').addClass('is-invalid');
+    $('#engineLoginMethod').removeClass('is-valid');
     ipcRenderer.send('show-error-msg', {
       type: 'error',
       title: 'Could not decrypt JWT',
@@ -312,6 +314,7 @@ saveButton.on('click', async () => {
         if (jwt == null) {
           $('#engine-tab').tab('show');
           $('#engineLoginMethod').addClass('is-invalid');
+          $('#engineLoginMethod').removeClass('is-valid');
           return;
         }
       }
@@ -461,8 +464,8 @@ ipcRenderer.on('settings-loaded', (e, data, defaults, langData) => {
       'generalColorTheme', 'colorThemeReset', 'colorThemeOptionDefault', 'colorThemeOptionBlackWhite',
       'colorThemeOptionForest', 'colorThemeOptionTawny', 'colorThemeOptionDarkBlue', 'colorThemeOptionRedWine',
       'engineUrlLabel', 'engineNsLabel', 'engineLoginMethodLabel', 'engineUsernameLabel', 'enginePasswordLabel',
-      'engineJWTLabel', 'engineNsValidation', 'engineLoginMethodValidation', 'engineUsernameValidation', 'enginePasswordValidation',
-      'engineJWTValidation'].forEach((id) => {
+      'engineJWTLabel', 'engineNsValidation', 'engineLoginMethodValidation', 'engineLoginMethodValidationSuccess',
+      'engineUsernameValidation', 'enginePasswordValidation', 'engineJWTValidation'].forEach((id) => {
       const el = document.getElementById(id);
       if (el) {
         el.innerText = lang[id];
