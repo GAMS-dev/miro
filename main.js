@@ -2212,6 +2212,7 @@ app.on('ready', async () => {
       } else {
         try {
           if (isTokenExpired(remoteConfig.jwt)) {
+            log.info('Engine JWT is expired');
             const openSettingsWindowDecision = await dialog.showMessageBox({
               type: 'info',
               title: lang.main.ErrorEngineTokenRefreshHdr,
@@ -2222,6 +2223,8 @@ app.on('ready', async () => {
               createSettingsWindow();
               focusMainWindow = false;
             }
+          } else {
+            log.info('Engine JWT is not expired');
           }
         } catch (err) {
           log.error(`Problems checking whether Engine JWT is expired . Error: ${err}`);
