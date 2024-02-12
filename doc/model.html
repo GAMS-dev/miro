@@ -851,9 +851,9 @@ z = Variable(m, name="z", is_miro_output=True, description="total transportation
                       <code class="language-gams">$onExternalOutput </code> /
                       <code class="language-gams">$offExternalOutput </code>
                       tags (in GAMSPY:
-                      <code class="language-python">is_miro_input=TRUE </code>
+                      <code class="language-python">is_miro_input=True </code>
                       or
-                      <code class="language-gams">is_miro_output=TRUE </code>)
+                      <code class="language-gams">is_miro_output=True </code>)
                       define the <i>GAMS/MIRO data contract</i>. This contract
                       contains the metadata of all included symbols and is
                       generated automatically each time MIRO is run in
@@ -1363,7 +1363,7 @@ $offExternalOutput
 j = Set(m, name="j", description="markets")
 scheduleHdr = Set(m, name="scheduleHdr", records=["lngP", "latP", "lngM", "latM", "cap", "demand", "quantities"], description="schedule header")
 
-schedule = Parameter(m, name="schedule", domain=[i,j,scheduleHdr], is_miro_input=True, description="shipment quantities in cases")
+schedule = Parameter(m, name="schedule", domain=[i,j,scheduleHdr], is_miro_output=True, description="shipment quantities in cases")
                          </code></pre>
                           </div>
                         </div>
@@ -1477,7 +1477,7 @@ $offExternalInput
 j = Set(m, name="j", description="markets")
 scheduleHdr = Set(m, name="scheduleHdr", records=["lngP", "latP", "lngM", "latM", "cap", "demand", "quantities"], description="schedule header")
 
-schedule = Parameter(m, name="schedule", domain=[i,j,scheduleHdr], is_miro_input=True, is_miro_table=True, description="shipment quantities in cases")
+schedule = Parameter(m, name="schedule", domain=[i,j,scheduleHdr], is_miro_output=True, is_miro_table=True, description="shipment quantities in cases")
                          </code></pre>
                             <div
                               class="section-block"
@@ -1610,7 +1610,7 @@ $offExternalOutput
 j = Set(m, name="j", description="markets")
 scheduleHdr = Set(m, name="scheduleHdr", records=["lngP", "latP", "lngM", "latM", "cap", "demand", "quantities"], description="schedule header")
 
-schedule = Parameter(m, name="schedule", domain=[i,j,scheduleHdr], is_miro_input=True, description="shipment quantities in cases")
+schedule = Parameter(m, name="schedule", domain=[i,j,scheduleHdr], is_miro_output=True, description="shipment quantities in cases")
                          </code></pre>
                           </div>
                         </div>
@@ -1701,7 +1701,7 @@ $offExternalOutput
 j = Set(m, name="j", description="markets")
 scheduleHdr = Set(m, name="scheduleHdr", records=["lngP", "latP", "lngM", "latM", "cap", "demand", "quantities"], description="schedule header")
 
-schedule = Parameter(m, name="schedule", domain=[i,j,scheduleHdr], is_miro_input=True, is_miro_table=True, description="shipment quantities in cases")
+schedule = Parameter(m, name="schedule", domain=[i,j,scheduleHdr], is_miro_output=True, is_miro_table=True, description="shipment quantities in cases")
                          </code></pre>
                           </div>
                         </div>
@@ -1786,7 +1786,7 @@ schedule('San-Diego','Topeka',   '32.715736', '-117.161087', '39.056198', '-95.6
                               aria-labelledby="gamspy-tab-11"
                             >
                               <div class="section-block">
-                                <pre><code class="language-python">schedule = Parameter(m, name="schedule", domain=[i,j,latP,lngP,latM,lngM], is_miro_input=True, description="shipment quantities in cases")
+                                <pre><code class="language-python">schedule = Parameter(m, name="schedule", domain=[i,j,latP,lngP,latM,lngM], is_miro_output=True, description="shipment quantities in cases")
 
 schedule['Seattle',  'New-York', '47.608013', '-122.335167', '40.730610', '-73.935242'] = 50
 schedule['Seattle',  'Chicago',  '47.608013', '-122.335167', '41.881832', '-87.623177'] = 300
@@ -2706,7 +2706,7 @@ a = Parameter(m, name="a", is_miro_input=True, records = 5, description="scalar 
                       <code class="language-gams">$onExternalOutput </code> /
                       <code class="language-gams">$offExternalOutput </code>
                       tags (in GAMSPY:
-                      <code class="language-gams">is_miro_output=TRUE</code>) .
+                      <code class="language-gams">is_miro_output=True</code>) .
                     </p>
                     <p>
                       Another property of variables: While a GAMS parameter has
@@ -3135,10 +3135,10 @@ $log What you see here is the %fn%
                           <code class="language-gams">$offExternalOutput </code>
                           tags (in GAMSPY:
                           <code class="language-python"
-                            >is_miro_input=TRUE</code
+                            >is_miro_input=True</code
                           >
                           or
-                          <code class="language-gams">is_miro_output=TRUE</code
+                          <code class="language-gams">is_miro_output=True</code
                           >) are included in the GAMS/MIRO data contract and are
                           visible in the interface from now on. If not yet
                           existing, a folder <i>conf_&lt;modelname&gt;</i> is
