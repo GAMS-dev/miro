@@ -1443,6 +1443,13 @@ DTbuildColHeaderContainer <- function(colNames, noRowHeaders, rowHeaders,
   colNameList <- stri_split_fixed(colNameHeaders, "\U2024")
   if (length(colNameList)) {
     noColDim <- length(colNameList[[1L]])
+    if (!identical(length(colNameList[[length(colNameList)]]), noColDim)) {
+      # row summary function (last column name is name of summary function)
+      colNameList[[length(colNameList)]] <- c(
+        replicate(noColDim - 1L, ""),
+        colNameList[[length(colNameList)]]
+      )
+    }
     colNameList <- purrr::transpose(colNameList)
   } else {
     noColDim <- 1L
