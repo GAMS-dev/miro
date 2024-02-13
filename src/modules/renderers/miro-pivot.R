@@ -882,6 +882,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             )
             newView$domainFilter <- domainFilterDomains[[1]]
           }
+          if (identical(newView$domainFilter, "_none")) {
+            newView$domainFilter <- NULL
+          }
         }
         if (length(viewOptions$name)) {
           setTextContent(session, paste0("#", ns("toggleViewButton")),
