@@ -12,23 +12,6 @@ getNumberJobsInJobList <- function(app) {
 
 Sys.sleep(1)
 
-expect_error(app$click(selector = "#remoteExecLogoutDiv"), NA)
-Sys.sleep(1)
-app$click(selector = "#confirmModal .bt-gms-confirm")
-Sys.sleep(1)
-
-app$click(selector = "#btRemoteExecLogin")
-Sys.sleep(1)
-app$set_inputs(remoteCredUrl = Sys.getenv("ENGINE_URL"))
-app$set_inputs(remoteCredUser = Sys.getenv("ENGINE_USER_INVITEE"))
-app$set_inputs(remoteCredPass = Sys.getenv("ENGINE_PASSWORD"))
-app$set_inputs(remoteCredNs = Sys.getenv("ENGINE_NS"))
-app$set_inputs(remoteCredReg = FALSE)
-app$set_inputs(remoteCredRemember = TRUE)
-Sys.sleep(1)
-app$click(selector = "#shiny-modal .bt-gms-confirm")
-Sys.sleep(1)
-
 app$set_inputs(btImport = "click")
 Sys.sleep(0.5)
 app$set_inputs(selLoadScen = paste0("1_", Sys.info()[["user"]]))

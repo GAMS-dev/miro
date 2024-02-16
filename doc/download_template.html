@@ -275,6 +275,13 @@
                           download
                           >Download for Windows</a
                         >
+                        <div class="download-sha-hash">
+                          <span
+                            title="To verify: CertUtil -hashfile GAMS-MIRO-Setup-__VERSION_FULL__.exe SHA256"
+                          >
+                            <b>SHA-256 hash:</b> __SHA_HASH_WIN__</span
+                          >
+                        </div>
                       </div>
                       <div class="section-block">
                         <p>
@@ -310,6 +317,13 @@
                           download
                           >Download for macOS (Apple silicon)</a
                         >
+                        <div class="download-sha-hash">
+                          <span
+                            title="To verify: shasum -a 256 GAMS-MIRO-__VERSION_FULL__.dmg"
+                          >
+                            <b>SHA-256 hash:</b> __SHA_HASH_MAC_ARM__
+                          </span>
+                        </div>
                         <a
                           class="btn btn-primary btn-cta"
                           style="margin-top: 10pt; -webkit-transition: unset"
@@ -317,6 +331,13 @@
                           download
                           >Download for macOS (x86_64)</a
                         >
+                        <div class="download-sha-hash">
+                          <span
+                            title="To verify: shasum -a 256 GAMS-MIRO-__VERSION_FULL__.dmg"
+                          >
+                            <b>SHA-256 hash:</b> __SHA_HASH_MAC_X86__</span
+                          >
+                        </div>
                       </div>
                       <div class="section-block">
                         <p>
@@ -347,6 +368,13 @@
                           download
                           >Download for Linux</a
                         >
+                        <div class="download-sha-hash">
+                          <span
+                            title="To verify: sha256sum GAMS-MIRO-__VERSION_FULL__.AppImage"
+                          >
+                            <b>SHA-256 hash:</b> __SHA_HASH_LINUX__
+                          </span>
+                        </div>
                       </div>
                       <div class="section-block">
                         <p>
@@ -405,6 +433,26 @@
                             guided through this installation process.
                           </li>
                         </ol>
+                        <div class="callout-block callout-warning">
+                          <div class="icon-holder">
+                            <i class="fas fa-info-circle"></i>
+                          </div>
+                          <!--//icon-holder-->
+                          <div class="content">
+                            <b class="callout-title">Note:</b>
+                            <p>
+                              For a complete system integration of the MIRO
+                              AppImage (e.g. file associations and custom URL
+                              schemes), please install the AppImage via the
+                              <a
+                                href="https://github.com/TheAssassin/AppImageLauncher"
+                                target="_blank"
+                                >AppImageLauncher</a
+                              >.
+                            </p>
+                          </div>
+                          <!--//content-->
+                        </div>
                       </div>
                       <!--//section-block-->
                     </div>

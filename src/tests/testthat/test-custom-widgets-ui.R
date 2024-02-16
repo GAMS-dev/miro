@@ -27,6 +27,10 @@ Sys.setenv(MIRO_MODEL_PATH = file.path(
 ))
 
 Sys.setenv(MIRO_REMOTE_EXEC = "true")
+Sys.setenv("MIRO_REMOTE_EXEC_URL" = Sys.getenv("ENGINE_URL"))
+Sys.setenv("MIRO_REMOTE_EXEC_USERNAME" = Sys.getenv("ENGINE_USER"))
+Sys.setenv("MIRO_REMOTE_EXEC_TOKEN" = getEngineToken(Sys.getenv("ENGINE_URL"), Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")))
+Sys.setenv("MIRO_REMOTE_EXEC_NS" = Sys.getenv("ENGINE_NS"))
 
 if (file.exists(file.path("~", ".miro", ".cred_sudoku"))) {
   unlink(file.path("~", ".miro", ".cred_sudoku"), force = TRUE)

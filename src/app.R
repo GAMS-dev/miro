@@ -1045,10 +1045,6 @@ if (is.null(errMsg)) {
     }
   )
   remoteUser <- uid
-  rememberMeFileName <- paste0(
-    miroWorkspace, .Platform$file.sep, ".cred_",
-    modelName
-  )
   credConfig <- NULL
   if (isShinyProxy) {
     if (identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) {
@@ -1093,42 +1089,12 @@ if (is.null(errMsg)) {
         ), sep = "\n")
       }
     )
-    tryCatch(
-      {
-        credConfigTmp <- NULL
-        if (file.exists(rememberMeFileName)) {
-          credConfigTmp <- suppressWarnings(fromJSON(rememberMeFileName,
-            simplifyDataFrame = FALSE,
-            simplifyMatrix = FALSE
-          ))
-          if (!is.list(credConfigTmp) || !all(c("url", "username", "password", "namespace", "reg")
-          %in% names(credConfigTmp)) ||
-            !all(vapply(credConfigTmp[1:4], is.character,
-              logical(1L),
-              USE.NAMES = FALSE
-            )) ||
-            !is.logical(credConfigTmp[[5L]])) {
-            errMsgTmp <- "Malformatted credential file. Looks like someone tried to tamper with the app!"
-            flog.error(errMsgTmp)
-            errMsg <<- paste(errMsg, errMsgTmp, sep = "\n")
-            return(NULL)
-          }
-          credConfig <- list(
-            url = credConfigTmp$url,
-            username = credConfigTmp$username,
-            password = credConfigTmp$password,
-            namespace = credConfigTmp$namespace,
-            useRegistered = credConfigTmp$reg,
-            refreshToken = TRUE
-          )
-        }
-      },
-      error = function(e) {
-        errMsgTmp <- "Problems reading JSON file: '%s'. Please make sure you have sufficient access permissions."
-        flog.error(errMsgTmp)
-        errMsg <<- paste(errMsg, errMsgTmp, sep = "\n")
-      },
-      finally = rm(credConfigTmp)
+    credConfig <- list(
+      url = Sys.getenv("MIRO_REMOTE_EXEC_URL"),
+      username = Sys.getenv("MIRO_REMOTE_EXEC_USERNAME"),
+      password = Sys.getenv("MIRO_REMOTE_EXEC_TOKEN"),
+      namespace = Sys.getenv("MIRO_REMOTE_EXEC_NS"),
+      useRegistered = FALSE
     )
   }
 }
@@ -1973,7 +1939,6 @@ if (!is.null(errMsg)) {
           csvDelim = config$csvDelim,
           isGamsPy = config$isGamsPy,
           serverOS = getOS(), modelData = modelData,
-          rememberMeFileName = rememberMeFileName,
           hiddenLogFile = !config$activateModules$logFile
         ),
         remote = config$activateModules$remoteExecution,

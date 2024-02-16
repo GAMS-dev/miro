@@ -5,13 +5,7 @@ app <- AppDriver$new("../../",
 )
 
 authHeader <- paste0(
-  "Basic ",
-  processx::base64_encode(charToRaw(
-    paste0(
-      Sys.getenv("ENGINE_USER_INVITEE"),
-      ":", Sys.getenv("ENGINE_PASSWORD")
-    )
-  ))
+  "Bearer ", Sys.getenv("MIRO_REMOTE_EXEC_TOKEN")
 )
 getLatestJobToken <- function() {
   httr::content(
@@ -36,11 +30,9 @@ getJobStatus <- function(token) {
   )$status
 }
 
-context("UI tests - asynchronous solve - solve without login")
-# expect login screen to appear. Don't log in first.
-expect_error(app$wait_for_js("$('#shiny-modal .bt-gms-confirm').is(':visible');", timeout = 5000L), NA)
-app$run_js("$('#shiny-modal .btn-default').get(0).click()")
-Sys.sleep(1)
+# correctly login and remember credentials
+context("UI tests - asynchronous solve - login and solve both synchronous and asynchronous")
+
 # load data
 app$click(selector = "#btRemove1")
 Sys.sleep(0.5)
@@ -52,70 +44,6 @@ app$set_inputs(selLoadScen = paste0("1_", Sys.info()[["user"]]))
 expect_identical(startsWith(app$get_values()$input[["selLoadScen"]], "1_"), TRUE)
 app$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(1)
-# try to solve and to submit (not logged in)
-app$click(selector = ".btSolve .dropdown-toggle")
-app$click(selector = ".change-dd-button[data-action-id='btSolve']")
-Sys.sleep(1)
-expect_error(app$run_js("$('#shiny-modal .btn-default').get(0).click()"), NA)
-Sys.sleep(1)
-app$click(selector = ".btSolve .dropdown-toggle")
-app$click(selector = ".change-dd-button[data-action-id='btSubmitJob']")
-Sys.sleep(0.5)
-expect_error(app$run_js("$('#shiny-modal .btn-default').get(0).click()"), NA)
-
-# login with wrong credentials (test each field)
-context("UI tests - asynchronous solve - login with wrong credentials")
-app$click(selector = "#btRemoteExecLogin")
-Sys.sleep(1)
-app$set_inputs(remoteCredUrl = paste0(Sys.getenv("ENGINE_URL"), "s"))
-app$set_inputs(remoteCredUser = Sys.getenv("ENGINE_USER_INVITEE"))
-app$set_inputs(remoteCredPass = Sys.getenv("ENGINE_PASSWORD"))
-app$set_inputs(remoteCredNs = Sys.getenv("ENGINE_NS"))
-app$set_inputs(remoteCredReg = FALSE)
-app$set_inputs(remoteCredRemember = TRUE)
-Sys.sleep(0.5)
-app$click(selector = "#shiny-modal .bt-gms-confirm")
-Sys.sleep(0.5)
-expect_error(app$wait_for_js("$('#remoteLoginHostNotFound').is(':visible')", timeout = 5000), NA)
-Sys.sleep(2)
-app$set_inputs(remoteCredUrl = Sys.getenv("ENGINE_URL"))
-app$set_inputs(remoteCredUser = paste0(Sys.getenv("ENGINE_USER_INVITEE"), "s"))
-app$click(selector = "#shiny-modal .bt-gms-confirm")
-Sys.sleep(0.5)
-expect_error(app$wait_for_js("$('#remoteLoginInvalidCred').is(':visible')", timeout = 5000), NA)
-Sys.sleep(2)
-app$set_inputs(remoteCredUser = Sys.getenv("ENGINE_USER_INVITEE"))
-app$set_inputs(remoteCredPass = paste0(Sys.getenv("ENGINE_PASSWORD"), "s"))
-app$click(selector = "#shiny-modal .bt-gms-confirm")
-expect_error(app$wait_for_js("$('#remoteLoginInvalidCred').is(':visible')", timeout = 5000), NA)
-Sys.sleep(2)
-app$set_inputs(remoteCredPass = Sys.getenv("ENGINE_PASSWORD"))
-app$set_inputs(remoteCredNs = paste0(Sys.getenv("ENGINE_NS"), "s"))
-app$click(selector = "#shiny-modal .bt-gms-confirm")
-Sys.sleep(0.5)
-expect_error(app$wait_for_js("$('#remoteLoginNsNotFound').is(':visible')", timeout = 5000), NA)
-Sys.sleep(2)
-# check that model is registered (it's not) and try to solve
-app$set_inputs(remoteCredNs = Sys.getenv("ENGINE_NS"))
-app$set_inputs(remoteCredReg = TRUE)
-app$click(selector = "#shiny-modal .bt-gms-confirm")
-Sys.sleep(0.5)
-expect_error(app$wait_for_js("$('#remoteLoginModelNotFound').is(':visible')", timeout = 50000), NA)
-Sys.sleep(2)
-# expect_identical(app$get_js("if ($('#modelStatus')[0].textContent.match('^Run did not terminate successfully: Host could not be reached').length) true"), TRUE)
-
-# correctly login and remember credentials
-context("UI tests - asynchronous solve - login and solve both synchronous and asynchronous")
-app$set_inputs(remoteCredUrl = Sys.getenv("ENGINE_URL"))
-app$set_inputs(remoteCredUser = Sys.getenv("ENGINE_USER_INVITEE"))
-app$set_inputs(remoteCredPass = Sys.getenv("ENGINE_PASSWORD"))
-app$set_inputs(remoteCredNs = Sys.getenv("ENGINE_NS"))
-app$set_inputs(remoteCredReg = FALSE)
-app$set_inputs(remoteCredRemember = TRUE)
-Sys.sleep(1)
-app$click(selector = "#shiny-modal .bt-gms-confirm")
-Sys.sleep(1)
-expect_error(app$wait_for_js("$('#shiny-modal .btn-default').length===0", timeout = 5000), NA)
 
 # solve 3 jobs synchronous, interrupt first one, stop app before last one finishes
 app$click(selector = "#sidebarItemExpanded a[data-value='inputData']")
@@ -305,49 +233,6 @@ expect_error(app$wait_for_js("$(\"#shiny-modal button[onclick*='showJobsDialog']
 expect_error(app$click(selector = "#shiny-modal button[onclick*='showJobsDialog']"), NA)
 Sys.sleep(1)
 
-# expect to be logged in. log out and test whether user can import/delete scenario or see log
-expect_error(app$click(selector = "#remoteExecLogoutDiv"), NA)
-Sys.sleep(1)
-app$click(selector = "#confirmModal .bt-gms-confirm")
-Sys.sleep(1)
-expect_error(app$run_js("$('#jImport_output button[onclick*=\\'downloadJobData\\']').get(0).click()"), NA)
-Sys.sleep(2L)
-expect_true(app$get_js("$('#remoteCredUrl').is(':visible');"))
-app$click(selector = "#shiny-modal button[data-dismiss='modal']")
-Sys.sleep(1)
-
-# try to download a second time due to an bug that occurred here before
-app$run_js("$('#jImport_output button[onclick*=\\'downloadJobData\\']').get(0).click()")
-Sys.sleep(2L)
-expect_true(app$get_js("$('#remoteCredUrl').is(':visible');"))
-app$click(selector = "#shiny-modal button[data-dismiss='modal']")
-Sys.sleep(1)
-app$run_js("$('#jImport_output button[onclick*=\\'showJobLog\\']').get(0).click()")
-Sys.sleep(2L)
-expect_true(app$get_js("$('#remoteCredUrl').is(':visible');"))
-app$click(selector = "#shiny-modal button[data-dismiss='modal']")
-Sys.sleep(1)
-app$run_js("$('#jImport_output button[onclick*=\\'discardJob\\']').get(0).click()")
-Sys.sleep(0.5)
-app$click(selector = "#confirmModal .bt-gms-confirm")
-Sys.sleep(2L)
-expect_true(app$get_js("$('#remoteCredUrl').is(':visible');"))
-app$click(selector = "#shiny-modal button[data-dismiss='modal']")
-Sys.sleep(1)
-
-# login and inspect get results
-app$click(selector = "#btRemoteExecLogin")
-Sys.sleep(1)
-app$set_inputs(remoteCredUrl = Sys.getenv("ENGINE_URL"))
-app$set_inputs(remoteCredUser = Sys.getenv("ENGINE_USER_INVITEE"))
-app$set_inputs(remoteCredPass = Sys.getenv("ENGINE_PASSWORD"))
-app$set_inputs(remoteCredNs = Sys.getenv("ENGINE_NS"))
-app$set_inputs(remoteCredReg = FALSE)
-app$set_inputs(remoteCredRemember = TRUE)
-Sys.sleep(1)
-app$click(selector = "#shiny-modal .bt-gms-confirm")
-Sys.sleep(1)
-
 # download job test3 and test2 directly one after the other. test3 will be imported to sandbox test2 can be imported afterwards
 app$run_js("$('#jImport_output button[onclick*=\\'downloadJobData\\']').get(0).click()")
 app$wait_for_js("$('#outputTableView').is(':visible');", timeout = 10000)
@@ -423,6 +308,20 @@ Sys.sleep(0.5)
 app$set_inputs(selLoadScen = paste0("1_", Sys.info()[["user"]]))
 expect_identical(startsWith(app$get_values()$input[["selLoadScen"]], "1_"), TRUE)
 app$set_inputs(btLoadScenConfirm = "click")
+currentVolumeQuotaUsed <- httr::content(httr::GET(
+  paste0(Sys.getenv("ENGINE_URL"), paste0("/usage/quota?username=", Sys.getenv("MIRO_REMOTE_EXEC_USERNAME"))),
+  httr::authenticate(Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")),
+  httr::timeout(2L)
+))[[1L]][["volume_used"]]
+expect_identical(httr::status_code(httr::PUT(
+  paste0(Sys.getenv("ENGINE_URL"), "/usage/quota"),
+  body = list(
+    username = Sys.getenv("MIRO_REMOTE_EXEC_USERNAME"),
+    volume_quota = currentVolumeQuotaUsed + 5L
+  ),
+  httr::authenticate(Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")),
+  httr::timeout(2L)
+)), 200L)
 Sys.sleep(1)
 app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSolve']")
@@ -437,7 +336,7 @@ expect_true(app$get_js("$('.shiny-notification-content').text().includes('Quota 
 expect_identical(httr::status_code(httr::PUT(
   paste0(Sys.getenv("ENGINE_URL"), "/usage/quota"),
   body = list(
-    username = Sys.getenv("ENGINE_USER_INVITEE"),
+    username = Sys.getenv("MIRO_REMOTE_EXEC_USERNAME"),
     volume_quota = 0
   ),
   httr::authenticate(Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")),

@@ -1536,6 +1536,11 @@ body{
   border: 1px solid gray;
   color: #000000;
 }
+.page-wrapper .download-sha-hash {
+  margin-top: 10px;
+  font-size: 60%;
+  word-break: break-all;
+}
 .page-wrapper .btn-primary:not(:disabled):not(.disabled).active,
 .page-wrapper .btn-primary:not(:disabled):not(.disabled):active,
 .page-wrapper .show>.btn-primary.dropdown-toggle {

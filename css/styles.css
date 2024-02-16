@@ -1004,6 +1004,9 @@ a:hover {
     color: #fff;
   }
 }
+.form-control:disabled {
+  background-color: unset;
+}
 select.form-control, select.form-control:focus {
   color: unset;
   background-color: unset;

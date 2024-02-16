@@ -258,31 +258,6 @@
       "success": "Doppelte Datensätze erfolgreich entfernt",
       "pivotReadonlyWarning": "Die Tabelle wurde auf schreibgeschützt gesetzt, weil das Symbol doppelte Datensätze enthält.\nSie können Duplikate über das Dialogfeld \"Szenario\" -> \"Duplikate entfernen\" entfernen."
     },
-    "dialogRemoteLogin": {
-      "title": "Login erforderlich",
-      "desc": "Bitte geben Sie Ihre Zugangsdaten unten ein:",
-      "url": "GAMS Engine URL",
-      "username": "Benutzername",
-      "password": "Passwort",
-      "namespace": "Namensraum",
-      "cancelButton":"Abbrechen",
-      "useRegistered": "Ist Ihr Modell im Namensraum registriert?",
-      "remember": "Login speichern",
-      "okButton": "Ok",
-      "hostNotFound": "GAMS Engine konnte unter der angegebenen URL nicht erreicht werden.",
-      "nsNotFound": "Der von Ihnen angegebene Namensraum konnte nicht gefunden werden.",
-      "modelNotFound": "Modell konnte im angegebenen Namensraum nicht gefunden werden.",
-      "invalidCred": "Die von Ihnen eingegebenen Zugangsdaten sind ungültig.",
-      "insuffPerm": "Sie haben nicht genügend Berechtigungen, um das Modell auszuführen.",
-      "invalidProtocol": "Das von Ihnen angegebene Protokoll ist ungültig. Nur HTTPS wird unterstützt.",
-      "contentNotFoundError": "Der gewünschte Inhalt konnte nicht gefunden werden."
-    },
-    "dialogRemoteLogout": {
-      "title": "Ausloggen",
-      "desc": "Sind Sie sicher, dass Sie sich ausloggen möchten?",
-      "cancelButton":"Abbrechen",
-      "okButton": "Ausloggen"
-    },
     "dialogInconsistentOutput":{
       "title": "Inkonsistente Ausgangsdaten",
       "desc": "Die Ausgabedaten passen möglicherweise nicht zu den Eingabedaten, die derzeit in Ihrer Sandbox geladen sind. Möchten Sie die Ergebnisse trotzdem importieren?",

@@ -84,7 +84,7 @@ Sys.sleep(0.5)
 expect_identical(httr::status_code(httr::PUT(
   paste0(Sys.getenv("ENGINE_URL"), "/usage/quota"),
   body = list(
-    username = Sys.getenv("ENGINE_USER_INVITEE"),
+    username = Sys.getenv("MIRO_REMOTE_EXEC_USERNAME"),
     volume_quota = 200L
   ),
   httr::authenticate(Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")),

@@ -39,6 +39,31 @@ const schema = {
   remoteExecution: {
     type: 'boolean',
   },
+  remoteConfig: {
+    type: 'object',
+    properties: {
+      url: {
+        type: 'string',
+        minLength: 2,
+      },
+      username: {
+        type: 'string',
+        minLength: 2,
+      },
+      jwt: {
+        type: 'string',
+        minLength: 2,
+      },
+      namespace: {
+        type: 'string',
+        minLength: 1,
+      },
+      verifypeer: {
+        type: 'boolean',
+      },
+    },
+    additionalProperties: false,
+  },
   logLifeTime: {
     type: 'integer',
     minimum: -1,
@@ -76,6 +101,7 @@ const schema = {
         'logpath',
         'launchExternal',
         'remoteExecution',
+        'remoteConfig',
         'logLifeTime',
         'language',
         'colorTheme',
@@ -109,7 +135,7 @@ class ConfigManager extends Store {
           name: 'settings',
         });
         ['gamspath', 'pythonpath', 'rpath', 'logpath', 'launchExternal', 'remoteExecution',
-          'logLifeTime', 'language', 'colorTheme', 'logLevel', 'miroEnv'].forEach((el) => {
+          'remoteConfig', 'logLifeTime', 'language', 'colorTheme', 'logLevel', 'miroEnv'].forEach((el) => {
           this[el] = superPathConfigData.get(el, '');
         });
         this.important = superPathConfigData.get('important', []);
@@ -124,7 +150,7 @@ class ConfigManager extends Store {
     this.logpathDefault = path.join(miroWorkspaceDir, 'logs');
 
     ['gamspath', 'pythonpath', 'rpath', 'logpath', 'launchExternal', 'remoteExecution',
-      'logLifeTime', 'language', 'colorTheme', 'logLevel', 'miroEnv'].forEach((el) => {
+      'remoteConfig', 'logLifeTime', 'language', 'colorTheme', 'logLevel', 'miroEnv'].forEach((el) => {
       if (this.important.find((iel) => iel === el)) {
         return;
       }

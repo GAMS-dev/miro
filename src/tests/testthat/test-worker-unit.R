@@ -19,7 +19,6 @@ worker <- Worker$new(
     modelGmsName = "pickstock.gms", gamsSysDir = Sys.getenv("GAMS_SYS_DIR"), csvDelim = ",",
     timeout = 10L, serverOS = getOS(),
     modelData = file.path(getwd(), "..", "model", "pickstock", "pickstock.zip"),
-    rememberMeFileName = "",
     hiddenLogFile = FALSE
   ),
   remote = TRUE

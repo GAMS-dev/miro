@@ -173,6 +173,14 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       libPathForwardSlashes = libPath;
     }
 
+    const remoteExecution = await generalConfig.remoteExecution;
+
+    let remoteConfig = {};
+
+    if (remoteExecution === true) {
+      remoteConfig = await this.configData.get('remoteConfig');
+    }
+
     const procEnv = Object.assign(miroEnv, {
       WITHIN_ELECTRON: '1',
       R_HOME_DIR: await rpath,
@@ -193,7 +201,11 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       PYTHON_EXEC_PATH: await pythonpath,
       MIRO_LOG_PATH: await logpath,
       LAUNCHINBROWSER: await generalConfig.launchExternal,
-      MIRO_REMOTE_EXEC: await generalConfig.remoteExecution,
+      MIRO_REMOTE_EXEC: remoteExecution,
+      MIRO_REMOTE_EXEC_USERNAME: remoteConfig.username,
+      MIRO_REMOTE_EXEC_TOKEN: remoteConfig.jwt,
+      MIRO_REMOTE_EXEC_URL: remoteConfig.url,
+      MIRO_REMOTE_EXEC_NS: remoteConfig.namespace,
       MIRO_LANG: await generalConfig.language,
       MIRO_THEME: await generalConfig.colorTheme,
       MIRO_LOG_LEVEL: await generalConfig.logLevel,

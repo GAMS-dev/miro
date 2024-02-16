@@ -421,6 +421,13 @@ populateDb <- function(procEnv, modelName, modelPath = NULL) {
     print(miroProc$stderr)
   }
 }
+getEngineToken <- function(apiURL, username, password) {
+  resp <- httr::POST(paste0(apiURL, "/auth/login"),
+    body = list(username = username, password = password, expires_in = 3600), httr::timeout(10L)
+  )
+  stopifnot(identical(httr::status_code(resp), 200L))
+  return(httr::content(resp)$token)
+}
 createUser <- function(apiURL, inviterUser, inviterPass, namespace,
                        username, password, roles = NULL, volumeQuota = NULL, diskQuota = NULL, deleteIfExists = TRUE) {
   requestBody <- list(namespace_permissions = paste0("7@", namespace))
