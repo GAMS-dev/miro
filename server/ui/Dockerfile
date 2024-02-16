@@ -80,7 +80,7 @@ ARG CURL_VERSION=7.83.1
 RUN wget https://curl.se/download/curl-${CURL_VERSION}.tar.gz && \
     tar -xvzf curl-${CURL_VERSION}.tar.gz && \
     cd curl-${CURL_VERSION} && \
-    env PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig ./configure --with-openssl --disable-shared && \
+    env PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig ./configure --with-openssl --without-libpsl --disable-shared && \
     make && \
     make install
 
