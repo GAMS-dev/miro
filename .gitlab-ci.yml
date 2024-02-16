@@ -195,7 +195,7 @@ build_linux_job:
             python3 miro_server.py build
             python3 miro_server.py push --unstable --custom-tag latest
         popd
-      elif [[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]]; then
+      elif [[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]; then
         pushd server
             python3 miro_server.py build
             python3 miro_server.py push --unstable --custom-tag unstable
@@ -317,7 +317,7 @@ container_scanning:
     GIT_STRATEGY: "fetch"
     CS_IGNORE_UNFIXED: "true"
   before_script:
-    - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]]) && IMAGE_TAG=unstable
+    - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]) && IMAGE_TAG=unstable
     - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-ui:$IMAGE_TAG
   after_script:
     - cp gl-container-scanning-report.json gl-container-scanning-report-ui.json
@@ -339,7 +339,7 @@ container_scanning_admin:
     GIT_STRATEGY: "fetch"
     CS_IGNORE_UNFIXED: "true"
   before_script:
-    - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]]) && IMAGE_TAG=unstable
+    - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]) && IMAGE_TAG=unstable
     - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-admin:$IMAGE_TAG
   after_script:
     - cp gl-container-scanning-report.json gl-container-scanning-report-admin.json
@@ -361,7 +361,7 @@ container_scanning_auth:
     GIT_STRATEGY: "fetch"
     CS_IGNORE_UNFIXED: "true"
   before_script:
-    - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]]) && IMAGE_TAG=unstable
+    - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]) && IMAGE_TAG=unstable
     - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-auth:$IMAGE_TAG
   after_script:
     - cp gl-container-scanning-report.json gl-container-scanning-report-auth.json
@@ -382,7 +382,7 @@ container_scanning_proxy:
     CS_DOCKERFILE_PATH: "server/proxy/Dockerfile"
     GIT_STRATEGY: "fetch"
   before_script:
-    - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]]) && IMAGE_TAG=unstable
+    - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]) && IMAGE_TAG=unstable
     - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-proxy:$IMAGE_TAG
   after_script:
     - cp gl-container-scanning-report.json gl-container-scanning-report-proxy.json
@@ -403,7 +403,7 @@ container_scanning_sproxy:
     CS_DOCKERFILE_PATH: "server/docker-socket-proxy/Dockerfile"
     GIT_STRATEGY: "fetch"
   before_script:
-    - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]]) && IMAGE_TAG=unstable
+    - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]) && IMAGE_TAG=unstable
     - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-sproxy:$IMAGE_TAG
   after_script:
     - cp gl-container-scanning-report.json gl-container-scanning-report-sproxy.json
