@@ -68,6 +68,9 @@ pushd src/model/gamspy > /dev/null
     cd cpack
     $ZIP_TOOL -r cpack.conf.unzip cpack_files.txt conf_cpack data_cpack static_cpack README.md -x "*.DS_Store"
     cd ..
+    cd sudoku
+    $ZIP_TOOL -r sudoku.conf.unzip sudoku_files.txt conf_sudoku data_sudoku static_sudoku -x "*.DS_Store"
+    cd ..
     rm -rf miro_lib_gamspy || true
     mkdir miro_lib_gamspy
     mv transport/transport.conf.unzip miro_lib_gamspy
@@ -76,6 +79,8 @@ pushd src/model/gamspy > /dev/null
     cp pickstock/pickstock.py miro_lib_gamspy
     mv cpack/cpack.conf.unzip miro_lib_gamspy
     cp cpack/cpack.py miro_lib_gamspy
+    mv sudoku/sudoku.conf.unzip miro_lib_gamspy
+    cp sudoku/sudoku.py miro_lib_gamspy
     $ZIP_TOOL -r GAMS-MIRO-Demo-Apps-GAMSPy.zip miro_lib_gamspy -x "*.DS_Store"
 popd > /dev/null
 

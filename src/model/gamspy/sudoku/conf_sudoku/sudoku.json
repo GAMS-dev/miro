@@ -1,0 +1,79 @@
+{
+  "overwriteSheetOrder": {
+    "input": ["initial_state", "_widgets"]
+  },
+  "pivottable": {
+    "bgColor": "rgb(255,128,0)"
+  },
+  "theme": "browser",
+  "defCompMode": "split",
+  "roundingDecimals": 2,
+  "activateModules": {
+    "logFile": false,
+    "lstFile": false,
+    "loadLocal": true,
+    "attachments": true,
+    "downloadTempFiles": false,
+    "hcube": false
+  },
+  "autoGenInputGraphs": true,
+  "aggregateWidgets": true,
+  "storeLogFilesDuration": 7,
+  "excelIncludeMeta": true,
+  "excelIncludeEmptySheets": true,
+  "saveTraceFile": true,
+  "dataRendering": {
+    "results": {
+      "outType": "mirowidget_initial_state"
+    },
+    "initial_state": {
+      "outType": "mirowidget_initial_state"
+    }
+  },
+  "inputWidgets": {
+    "initial_state": {
+      "widgetType": "custom",
+      "rendererName": "mirowidget_initial_state",
+      "alias": "Initial state",
+      "apiVersion": 2,
+      "widgetSymbols": "force_unique_sol",
+      "options": {
+        "isInput": true
+      }
+    },
+    "force_unique_sol": {
+      "widgetType": "checkbox",
+      "alias": "Force unique solution",
+      "value": 1,
+      "noHcube": false,
+      "class": "checkbox-material",
+      "label": "Compute only if solution is unique?"
+    }
+  },
+  "pageTitle": "Sudoku solver",
+  "miroLogFile": "miro.log",
+  "overwriteAliases": {
+    "initial_state": {
+      "newAlias": "initial_state"
+    },
+    "results": {
+      "newAlias": "results"
+    },
+    "force_unique_sol": {
+      "newAlias": "force_unique_sol"
+    }
+  },
+  "defaultRendererOutput": "miroPivot",
+  "handsontable": {
+    "stretchH": "none",
+    "readonly": false,
+    "manualColumnResize": true,
+    "contextMenu": {
+      "enabled": true,
+      "allowRowEdit": true,
+      "allowColEdit": true
+    },
+    "height": 700,
+    "colWidths": 150
+  }
+}
