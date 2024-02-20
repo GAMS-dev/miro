@@ -1,54 +1,21 @@
 {
-    "modelTitle": "GAMSPy App",
     "inputSymbols": {
-        "initial_state": {
-            "alias": "initial_state",
-            "symtype": "parameter",
-            "headers": {
-                "row": {
-                    "type": "string",
-                    "alias": "row"
-                },
-                "col1": {
-                    "type": "numeric",
-                    "alias": "col1"
-                },
-                "col2": {
-                    "type": "numeric",
-                    "alias": "col2"
-                },
-                "col3": {
-                    "type": "numeric",
-                    "alias": "col3"
-                },
-                "col4": {
-                    "type": "numeric",
-                    "alias": "col4"
-                },
-                "col5": {
-                    "type": "numeric",
-                    "alias": "col5"
-                },
-                "col6": {
-                    "type": "numeric",
-                    "alias": "col6"
-                },
-                "col7": {
-                    "type": "numeric",
-                    "alias": "col7"
-                },
-                "col8": {
-                    "type": "numeric",
-                    "alias": "col8"
-                },
-                "col9": {
-                    "type": "numeric",
-                    "alias": "col9"
-                }
-            }
-        },
         "_scalars": {
             "alias": "Input Scalars",
+            "headers": {
+                "description": {
+                    "alias": "Scalar Description",
+                    "type": "string"
+                },
+                "scalar": {
+                    "alias": "Scalar Name",
+                    "type": "string"
+                },
+                "value": {
+                    "alias": "Scalar Value",
+                    "type": "string"
+                }
+            },
             "symnames": [
                 "force_unique_sol"
             ],
@@ -57,69 +24,102 @@
             ],
             "symtypes": [
                 "parameter"
-            ],
+            ]
+        },
+        "initial_state": {
+            "alias": "initial_state",
             "headers": {
-                "scalar": {
-                    "type": "string",
-                    "alias": "Scalar Name"
+                "col1": {
+                    "alias": "col1",
+                    "type": "numeric"
                 },
-                "description": {
-                    "type": "string",
-                    "alias": "Scalar Description"
+                "col2": {
+                    "alias": "col2",
+                    "type": "numeric"
                 },
-                "value": {
-                    "type": "string",
-                    "alias": "Scalar Value"
+                "col3": {
+                    "alias": "col3",
+                    "type": "numeric"
+                },
+                "col4": {
+                    "alias": "col4",
+                    "type": "numeric"
+                },
+                "col5": {
+                    "alias": "col5",
+                    "type": "numeric"
+                },
+                "col6": {
+                    "alias": "col6",
+                    "type": "numeric"
+                },
+                "col7": {
+                    "alias": "col7",
+                    "type": "numeric"
+                },
+                "col8": {
+                    "alias": "col8",
+                    "type": "numeric"
+                },
+                "col9": {
+                    "alias": "col9",
+                    "type": "numeric"
+                },
+                "row": {
+                    "alias": "row",
+                    "type": "string"
                 }
-            }
+            },
+            "symtype": "parameter"
         }
     },
+    "modelTitle": "GAMSPy App",
     "outputSymbols": {
         "results": {
             "alias": "results",
-            "symtype": "parameter",
             "headers": {
-                "row": {
-                    "type": "string",
-                    "alias": "row"
-                },
                 "col1": {
-                    "type": "numeric",
-                    "alias": "col1"
+                    "alias": "col1",
+                    "type": "numeric"
                 },
                 "col2": {
-                    "type": "numeric",
-                    "alias": "col2"
+                    "alias": "col2",
+                    "type": "numeric"
                 },
                 "col3": {
-                    "type": "numeric",
-                    "alias": "col3"
+                    "alias": "col3",
+                    "type": "numeric"
                 },
                 "col4": {
-                    "type": "numeric",
-                    "alias": "col4"
+                    "alias": "col4",
+                    "type": "numeric"
                 },
                 "col5": {
-                    "type": "numeric",
-                    "alias": "col5"
+                    "alias": "col5",
+                    "type": "numeric"
                 },
                 "col6": {
-                    "type": "numeric",
-                    "alias": "col6"
+                    "alias": "col6",
+                    "type": "numeric"
                 },
                 "col7": {
-                    "type": "numeric",
-                    "alias": "col7"
+                    "alias": "col7",
+                    "type": "numeric"
                 },
                 "col8": {
-                    "type": "numeric",
-                    "alias": "col8"
+                    "alias": "col8",
+                    "type": "numeric"
                 },
                 "col9": {
-                    "type": "numeric",
-                    "alias": "col9"
+                    "alias": "col9",
+                    "type": "numeric"
+                },
+                "row": {
+                    "alias": "row",
+                    "type": "string"
                 }
-            }
+            },
+            "symtype": "parameter"
         }
     }
 }

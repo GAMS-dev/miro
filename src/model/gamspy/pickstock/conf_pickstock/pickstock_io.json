@@ -1,26 +1,21 @@
 {
-    "modelTitle": "GAMSPy App",
     "inputSymbols": {
-        "price": {
-            "alias": "price of stock on date",
-            "symtype": "parameter",
-            "headers": {
-                "date": {
-                    "type": "string",
-                    "alias": "trading date"
-                },
-                "symbol": {
-                    "type": "string",
-                    "alias": "stock symbol"
-                },
-                "value": {
-                    "type": "numeric",
-                    "alias": "value"
-                }
-            }
-        },
         "_scalars": {
             "alias": "Input Scalars",
+            "headers": {
+                "description": {
+                    "alias": "Scalar Description",
+                    "type": "string"
+                },
+                "scalar": {
+                    "alias": "Scalar Name",
+                    "type": "string"
+                },
+                "value": {
+                    "alias": "Scalar Value",
+                    "type": "string"
+                }
+            },
             "symnames": [
                 "trainingdays",
                 "maxstock",
@@ -35,94 +30,45 @@
                 "parameter",
                 "parameter",
                 "set"
-            ],
+            ]
+        },
+        "price": {
+            "alias": "price of stock on date",
             "headers": {
-                "scalar": {
-                    "type": "string",
-                    "alias": "Scalar Name"
+                "date": {
+                    "alias": "trading date",
+                    "type": "string"
                 },
-                "description": {
-                    "type": "string",
-                    "alias": "Scalar Description"
+                "symbol": {
+                    "alias": "stock symbol",
+                    "type": "string"
                 },
                 "value": {
-                    "type": "string",
-                    "alias": "Scalar Value"
+                    "alias": "value",
+                    "type": "numeric"
                 }
-            }
+            },
+            "symtype": "parameter"
         }
     },
+    "modelTitle": "GAMSPy App",
     "outputSymbols": {
-        "abserror": {
-            "alias": "absolute error",
-            "symtype": "parameter",
-            "headers": {
-                "date": {
-                    "type": "string",
-                    "alias": "trading date"
-                },
-                "absolute error train": {
-                    "type": "numeric",
-                    "alias": "absolute error train"
-                },
-                "absolute error test": {
-                    "type": "numeric",
-                    "alias": "absolute error test"
-                }
-            }
-        },
-        "stock_weight": {
-            "alias": "Ratio between error test and error train",
-            "symtype": "parameter",
-            "headers": {
-                "symbol": {
-                    "type": "string",
-                    "alias": "stock symbol"
-                },
-                "value": {
-                    "type": "numeric",
-                    "alias": "value"
-                }
-            }
-        },
-        "dowvsindex": {
-            "alias": "dow jones vs. index fund",
-            "symtype": "parameter",
-            "headers": {
-                "date": {
-                    "type": "string",
-                    "alias": "trading date"
-                },
-                "dj": {
-                    "type": "numeric",
-                    "alias": "dj"
-                },
-                "index fund": {
-                    "type": "numeric",
-                    "alias": "index fund"
-                }
-            }
-        },
-        "pricemerge": {
-            "alias": "Price (stocks & dow jones)",
-            "symtype": "parameter",
-            "headers": {
-                "date": {
-                    "type": "string",
-                    "alias": "trading date"
-                },
-                "uni": {
-                    "type": "string",
-                    "alias": "uni"
-                },
-                "value": {
-                    "type": "numeric",
-                    "alias": "value"
-                }
-            }
-        },
         "_scalars_out": {
             "alias": "Output Scalars",
+            "headers": {
+                "description": {
+                    "alias": "Scalar Description",
+                    "type": "string"
+                },
+                "scalar": {
+                    "alias": "Scalar Name",
+                    "type": "string"
+                },
+                "value": {
+                    "alias": "Scalar Value",
+                    "type": "string"
+                }
+            },
             "symnames": [
                 "error_train",
                 "error_test",
@@ -143,21 +89,75 @@
                 "parameter",
                 "set",
                 "set"
-            ],
+            ]
+        },
+        "abserror": {
+            "alias": "absolute error",
             "headers": {
-                "scalar": {
-                    "type": "string",
-                    "alias": "Scalar Name"
+                "absolute error test": {
+                    "alias": "absolute error test",
+                    "type": "numeric"
                 },
-                "description": {
-                    "type": "string",
-                    "alias": "Scalar Description"
+                "absolute error train": {
+                    "alias": "absolute error train",
+                    "type": "numeric"
+                },
+                "date": {
+                    "alias": "trading date",
+                    "type": "string"
+                }
+            },
+            "symtype": "parameter"
+        },
+        "dowvsindex": {
+            "alias": "dow jones vs. index fund",
+            "headers": {
+                "date": {
+                    "alias": "trading date",
+                    "type": "string"
+                },
+                "dj": {
+                    "alias": "dj",
+                    "type": "numeric"
+                },
+                "index fund": {
+                    "alias": "index fund",
+                    "type": "numeric"
+                }
+            },
+            "symtype": "parameter"
+        },
+        "pricemerge": {
+            "alias": "Price (stocks & dow jones)",
+            "headers": {
+                "date": {
+                    "alias": "trading date",
+                    "type": "string"
+                },
+                "uni": {
+                    "alias": "uni",
+                    "type": "string"
                 },
                 "value": {
-                    "type": "string",
-                    "alias": "Scalar Value"
+                    "alias": "value",
+                    "type": "numeric"
                 }
-            }
+            },
+            "symtype": "parameter"
+        },
+        "stock_weight": {
+            "alias": "Ratio between error test and error train",
+            "headers": {
+                "symbol": {
+                    "alias": "stock symbol",
+                    "type": "string"
+                },
+                "value": {
+                    "alias": "value",
+                    "type": "numeric"
+                }
+            },
+            "symtype": "parameter"
         }
     }
 }

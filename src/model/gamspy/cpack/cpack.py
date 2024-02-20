@@ -36,7 +36,7 @@ import math
 
 
 def main():
-    c = Container(working_directory=".")
+    c = Container()
     k = Parameter(
         c,
         name="k",
