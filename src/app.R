@@ -1,7 +1,7 @@
 # version number
 MIROVersion <- "2.9.0"
 APIVersion <- "1"
-MIRORDate <- "Feb 20 2024"
+MIRORDate <- "Feb 21 2024"
 
 MIROVersionString <<- paste0("GAMS MIRO v.", MIROVersion)
 
