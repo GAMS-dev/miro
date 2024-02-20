@@ -1,21 +1,21 @@
 {
     "modelTitle": "GAMSPy App",
     "inputSymbols": {
-        "jlocdata": {
-            "alias": "Market location information",
+        "d": {
+            "alias": "distance in thousands of miles",
             "symtype": "parameter",
             "headers": {
+                "i": {
+                    "type": "string",
+                    "alias": "canning plants"
+                },
                 "j": {
                     "type": "string",
                     "alias": "markets"
                 },
-                "lat": {
+                "value": {
                     "type": "numeric",
-                    "alias": "lat"
-                },
-                "lng": {
-                    "type": "numeric",
-                    "alias": "lng"
+                    "alias": "value"
                 }
             }
         },
@@ -51,24 +51,6 @@
                 }
             }
         },
-        "d": {
-            "alias": "distance in thousands of miles",
-            "symtype": "parameter",
-            "headers": {
-                "i": {
-                    "type": "string",
-                    "alias": "canning plants"
-                },
-                "j": {
-                    "type": "string",
-                    "alias": "markets"
-                },
-                "value": {
-                    "type": "numeric",
-                    "alias": "value"
-                }
-            }
-        },
         "b": {
             "alias": "demand at market j in cases",
             "symtype": "parameter",
@@ -80,6 +62,24 @@
                 "value": {
                     "type": "numeric",
                     "alias": "value"
+                }
+            }
+        },
+        "jlocdata": {
+            "alias": "Market location information",
+            "symtype": "parameter",
+            "headers": {
+                "j": {
+                    "type": "string",
+                    "alias": "markets"
+                },
+                "lat": {
+                    "type": "numeric",
+                    "alias": "lat"
+                },
+                "lng": {
+                    "type": "numeric",
+                    "alias": "lng"
                 }
             }
         },

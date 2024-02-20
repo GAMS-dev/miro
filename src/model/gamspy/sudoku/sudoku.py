@@ -4,7 +4,6 @@ import numpy as np
 
 from gamspy import Container, Equation, Model, Parameter, Sense, Set, Sum, Variable, Ord, Number, ModelStatus, SolveStatus
 from gamspy.math import mod
-import gams.transfer as gt
 
 
 def main():
@@ -99,7 +98,7 @@ def main():
         raise Exception("Infeasible.")
 
     if force_unique_sol.records.value.loc[0]:
-        m_solnpool = gt.Container(os.path.join(
+        m_solnpool = Container(os.path.join(
             m.working_directory, "solnpool.gdx"))
         if len(m_solnpool["index"].records.index) > 1:
             with open("miro.log", "a") as f:
