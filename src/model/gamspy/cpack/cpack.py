@@ -128,7 +128,7 @@ def main():
     else:
         solver_options = None
     m.solve(
-        solver=qcp_solver_val,
+        solver=qcp_solver_val.upper(),
         options=Options(
             relative_optimality_gap=optcr.records.value.loc[0],
             time_limit=reslim.records.value.loc[0],
