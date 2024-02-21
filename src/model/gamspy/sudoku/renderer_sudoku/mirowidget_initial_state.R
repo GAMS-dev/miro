@@ -92,7 +92,7 @@ renderMirowidget_initial_state <- function(input, output, session, data, options
         if (is.null(input$sudoku)) {
           return(NULL)
         }
-        dataTmp <- hot_to_r(input$sudoku)# %>% mutate(across(everything(), as.integer))
+        dataTmp <- hot_to_r(input$sudoku)
         if (all(is.na(dataTmp))) {
           return(isolate(data[["initial_state"]]()))
         }
