@@ -818,18 +818,10 @@ test_job_gamspy:
     - linux
   stage: test
   image: python
-  variables:
-    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   before_script:
-    - pip install virtualenv
-    - virtualenv venv
-    - source venv/bin/activate
-    - pip install git+https://github.com/GAMS-dev/gamspy.git@develop
+    - pip install --force-reinstall git+https://github.com/GAMS-dev/gamspy.git@develop
   script:
     - ./scripts/test_gamspy_models.sh
-  cache:
-    paths:
-      - .cache/pip
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
       when: on_success
