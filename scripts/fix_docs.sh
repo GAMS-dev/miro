@@ -31,6 +31,5 @@ sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g' ./
 }
 sed -i -e "s/>Get GAMS MIRO .*<\/a/>Get GAMS MIRO $MIRO_VERSION_FULL<\/a/g" ./doc/index.html
 sed -e 's/__VERSION__/'${MIRO_VERSION_SHORT}'/g' ./doc/download_template.html | sed -e 's/__VERSION_FULL__/'${MIRO_VERSION_FULL}'/g'>./doc/download.html
-sed -e 's/__SHA_HASH_WIN__/'${MIRO_SHA_HASH_WIN}'/g' ./doc/download_template.html | sed -e 's/__SHA_HASH_MAC_ARM__/'${MIRO_SHA_HASH_MAC_ARM}'/g'>./doc/download.html
-sed -e 's/__SHA_HASH_MAC_X86__/'${MIRO_SHA_HASH_MAC_X86}'/g' ./doc/download_template.html | sed -e 's/__SHA_HASH_LINUX__/'${MIRO_SHA_HASH_LINUX}'/g'>./doc/download.html
+sed -e 's/__SHA_HASH_WIN__/'${MIRO_SHA_HASH_WIN}'/g' ./doc/download_template.html | sed -e 's/__SHA_HASH_MAC_ARM__/'${MIRO_SHA_HASH_MAC_ARM}'/g' | sed -e 's/__SHA_HASH_MAC_X86__/'${MIRO_SHA_HASH_MAC_X86}'/g' ./doc/download_template.html | sed -e 's/__SHA_HASH_LINUX__/'${MIRO_SHA_HASH_LINUX}'/g'>./doc/download.html
 sed -i -e "s/(xxxx-xx-xx)/($MIRO_RELEASE_DATE)/" ./doc/release.html
