@@ -1,21 +1,8 @@
 {
+    "modelTitle": "GAMSPy App",
     "inputSymbols": {
         "_scalars": {
             "alias": "Input Scalars",
-            "headers": {
-                "description": {
-                    "alias": "Scalar Description",
-                    "type": "string"
-                },
-                "scalar": {
-                    "alias": "Scalar Name",
-                    "type": "string"
-                },
-                "value": {
-                    "alias": "Scalar Value",
-                    "type": "string"
-                }
-            },
             "symnames": [
                 "k",
                 "optcrval",
@@ -33,32 +20,45 @@
                 "parameter",
                 "parameter",
                 "set"
-            ]
+            ],
+            "headers": {
+                "scalar": {
+                    "type": "string",
+                    "alias": "Scalar Name"
+                },
+                "description": {
+                    "type": "string",
+                    "alias": "Scalar Description"
+                },
+                "value": {
+                    "type": "string",
+                    "alias": "Scalar Value"
+                }
+            }
         }
     },
-    "modelTitle": "GAMSPy App",
     "outputSymbols": {
         "circledata": {
             "alias": "circledata",
+            "symtype": "parameter",
             "headers": {
-                "radius": {
-                    "alias": "radius",
-                    "type": "numeric"
-                },
                 "uni": {
-                    "alias": "uni",
-                    "type": "string"
+                    "type": "string",
+                    "alias": "uni"
                 },
                 "x": {
-                    "alias": "x",
-                    "type": "numeric"
+                    "type": "numeric",
+                    "alias": "x"
                 },
                 "y": {
-                    "alias": "y",
-                    "type": "numeric"
+                    "type": "numeric",
+                    "alias": "y"
+                },
+                "radius": {
+                    "type": "numeric",
+                    "alias": "radius"
                 }
-            },
-            "symtype": "parameter"
+            }
         }
     }
 }
