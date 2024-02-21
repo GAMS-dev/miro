@@ -133,397 +133,184 @@
                         >support@gams.com</a
                       >.
                     </p>
-                    <ul
-                      class="nav nav-tabs row"
-                      style="border: none"
-                      id="installOS"
-                      role="tablist"
-                    >
-                      <li
-                        class="
-                          nav-item
-                          col-sm-12 col-md-12 col-lg-6
-                          no-margin-sm
-                        "
-                      >
-                        <a
-                          class="nav-link active"
-                          id="linux-tab"
-                          data-toggle="tab"
-                          href="#linux"
-                          role="tab"
-                          aria-controls="linux"
-                          aria-selected="true"
-                          ><i class="fab fa-linux" style="font-size: 40pt"></i
-                          ><br />Linux</a
-                        >
-                      </li>
-                      <li
-                        class="
-                          nav-item
-                          col-sm-12 col-md-12 col-lg-6
-                          no-margin-sm
-                        "
-                      >
-                        <a
-                          class="nav-link"
-                          id="win-tab"
-                          data-toggle="tab"
-                          href="#windows"
-                          role="tab"
-                          aria-controls="windows"
-                          aria-selected="false"
-                          ><i class="fab fa-windows" style="font-size: 40pt"></i
-                          ><br />Windows</a
-                        >
-                      </li>
-                    </ul>
-                    <div
-                      class="tab-content"
-                      style="padding-top: 30px"
-                      id="myTabContent"
-                    >
-                      <div
-                        class="tab-pane fade show active"
-                        id="linux"
-                        role="tabpanel"
-                        aria-labelledby="linux-tab"
-                      >
-                        <ol>
-                          <li>
-                            Install Docker from
-                            <a
-                              href="https://docs.docker.com/engine/install/"
-                              target="_blank"
-                              >https://docs.docker.com/engine/install/</a
-                            >. Start Docker afterwards. We further recommend to
-                            configure Docker to
-                            <a
-                              href="https://docs.docker.com/engine/install/linux-postinstall/#configure-docker-to-start-on-boot"
-                              >start on boot</a
-                            >. To use the Docker CLI without <i>sudo</i>, you
-                            must
-                            <a
-                              href="https://docs.docker.com/install/linux/linux-postinstall/#manage-docker-as-a-non-root-user"
-                              target="_blank"
-                              >add your user to the docker group</a
-                            >.
-                          </li>
-                          <li>
-                            Install Docker Compose from
-                            <a
-                              href="https://docs.docker.com/compose/install/"
-                              target="_blank"
-                              >https://docs.docker.com/compose/install/</a
-                            >.
-                          </li>
-                          <li>
-                            Extract <kbd>miro_server.zip</kbd>. This will create
-                            a subfolder <kbd>miro_server</kbd>.
-                            <a id="miro_server" class="anchor"></a>
-                          </li>
-                          <li>
-                            Open a terminal and <kbd>cd</kbd> into that folder.
-                            <div class="callout-block callout-success">
-                              <div class="icon-holder">
-                                <i class="fas fa-thumbs-up"></i>
-                              </div>
-                              <!--//icon-holder-->
-                              <div class="content">
-                                <b class="callout-title">Tip:</b>
-                                <p>
-                                  GAMS MIRO applications will later be stored at
-                                  this location.
-                                </p>
-                              </div>
-                              <!--//content-->
-                            </div>
-                            <!--//callout-block-->
-                          </li>
-                          <li>
-                            In case MIRO Server and GAMS Engine run on the same
-                            machine: Get the IP of the
-                            <kbd>docker0</kbd> network interface via:
-                            <kbd
-                              >sudo ip addr show docker0 |grep -Po 'inet
-                              \K[\d.]+'</kbd
-                            >. You will need this IP in the next step.
-                          </li>
-                          <li>
-                            <p>
-                              Install MIRO Sever by running
-                              <kbd>./miro-server install</kbd>. You will be
-                              asked to enter the GAMS Engine host and the
-                              <a
-                                href="https://gams.com/engine/administration.html#namespaces"
-                                >namespace</a
-                              >
-                              to be used by MIRO Server.
-                              <a id="step6" class="anchor"></a>
-                            </p>
-                            <ul>
-                              <li>
-                                If MIRO Server and GAMS Engine are running on
-                                the same machine, enter for the host:
-                                <kbd
-                                  >http://&lt;IP extracted from previous
-                                  step&gt;/&lt;engine location&gt;/api</kbd
-                                >
-                                . The <i>Engine location</i> is root/empty per
-                                default. Note that the MIRO Server location is
-                                also root/empty per default. Thus, you need to
-                                make sure that there is no conflict between the
-                                two services (i.e. one of them has a different
-                                location).
-                                <br />
-                                If you specified a port when installing GAMS
-                                Engine, this port must also be specified here:
-                                <kbd
-                                  >http://&lt;IP extracted from previous
-                                  step&gt;:&lt;engine port&gt;/&lt;engine
-                                  location&gt;/api</kbd
-                                >.
-                              </li>
-                              <li>
-                                If GAMS Engine is running on a separate machine,
-                                enter the URL here, e.g.
-                                <kbd>http(s)://mydomain.com/api</kbd>.
-                              </li>
-                            </ul>
-                            <p>
-                              The default namespace is <kbd>global</kbd>. You
-                              can also specify any other namespace created in
-                              GAMS Engine. You can change the GAMS Engine
-                              connection info at any time by modifying the
-                              auto-generated <kbd>.env</kbd> file that is
-                              located inside the miro_server directory. The
-                              following environment variables have to be set:
-                            </p>
-                            <div
-                              class="table-responsive"
-                              style="margin: 15px auto"
-                            >
-                              <table class="table table-striped">
-                                <thead>
-                                  <tr>
-                                    <th style="width: 30%">
-                                      Environment Variable Name
-                                    </th>
-                                    <th>Environment Variable Value</th>
-                                    <th>Example</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td>GMS_MIRO_ENGINE_HOST</td>
-                                    <td>IP adress and port/DNS of Engine</td>
-                                    <td>https://mydomain.com/api</td>
-                                  </tr>
-                                  <tr>
-                                    <td>GMS_MIRO_ENGINE_NS</td>
-                                    <td>
-                                      Engine namespace to be used by MIRO Server
-                                    </td>
-                                    <td>miro_server</td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
-                            <!--//table-responsive-->
-                            <p>
-                              Note that MIRO Server must be restarted if the
-                              <kbd>.env</kbd> has been changed.
-                            </p>
-                            <p>
-                              You will also be asked whether you want to use
-                              MIRO Server with or without authentication
-                              service, i.e. whether users have to log in with an
-                              existing GAMS Engine account (default) or whether
-                              everyone with the valid URL should have free
-                              access to the app(s). Read more about the user
-                              management
-                              <a
-                                href="./server_administration.html#authentication-user-management"
-                                >here</a
-                              >.
-                            </p>
-                            <p>
-                              The installation script will inform you whether
-                              the installation was successful or not.
-                            </p>
-                          </li>
-                        </ol>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
                       </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          GAMS Engine is currently only supported on x86_64
+                          Linux distributions that are
+                          <a
+                            href="https://docs.docker.com/engine/install/#supported-platforms"
+                            target="_blank"
+                            >supported by Docker</a
+                          >!
+                        </p>
+                      </div>
+                      <!--//content-->
                     </div>
-                    <div
-                      class="tab-content"
-                      style="padding-top: 30px"
-                      id="myTabContent"
-                    >
-                      <div
-                        class="tab-pane fade show"
-                        id="windows"
-                        role="tabpanel"
-                        aria-labelledby="win-tab"
-                      >
-                        <div class="callout-block callout-warning">
+                    <!--//callout-block-->
+                    <ol>
+                      <li>
+                        Install Docker from
+                        <a
+                          href="https://docs.docker.com/engine/install/"
+                          target="_blank"
+                          >https://docs.docker.com/engine/install/</a
+                        >. Start Docker afterwards. We further recommend to
+                        configure Docker to
+                        <a
+                          href="https://docs.docker.com/engine/install/linux-postinstall/#configure-docker-to-start-on-boot"
+                          >start on boot</a
+                        >. To use the Docker CLI without <i>sudo</i>, you must
+                        <a
+                          href="https://docs.docker.com/install/linux/linux-postinstall/#manage-docker-as-a-non-root-user"
+                          target="_blank"
+                          >add your user to the docker group</a
+                        >.
+                      </li>
+                      <li>
+                        Install Docker Compose from
+                        <a
+                          href="https://docs.docker.com/compose/install/"
+                          target="_blank"
+                          >https://docs.docker.com/compose/install/</a
+                        >.
+                      </li>
+                      <li>
+                        Extract <kbd>miro_server.zip</kbd>. This will create a
+                        subfolder <kbd>miro_server</kbd>.
+                        <a id="miro_server" class="anchor"></a>
+                      </li>
+                      <li>
+                        Open a terminal and <kbd>cd</kbd> into that folder.
+                        <div class="callout-block callout-success">
                           <div class="icon-holder">
-                            <i class="fas fa-info-circle"></i>
+                            <i class="fas fa-thumbs-up"></i>
                           </div>
                           <!--//icon-holder-->
                           <div class="content">
-                            <b class="callout-title">Warning:</b>
+                            <b class="callout-title">Tip:</b>
                             <p>
-                              We strongly recommend to use MIRO Server on a
-                              Linux server in a production environment!
+                              GAMS MIRO applications will later be stored at
+                              this location.
                             </p>
                           </div>
                           <!--//content-->
                         </div>
                         <!--//callout-block-->
-                        <ol>
+                      </li>
+                      <li>
+                        In case MIRO Server and GAMS Engine run on the same
+                        machine: Get the IP of the
+                        <kbd>docker0</kbd> network interface via:
+                        <kbd
+                          >sudo ip addr show docker0 |grep -Po 'inet
+                          \K[\d.]+'</kbd
+                        >. You will need this IP in the next step.
+                      </li>
+                      <li>
+                        <p>
+                          Install MIRO Sever by running
+                          <kbd>./miro-server install</kbd>. You will be asked to
+                          enter the GAMS Engine host and the
+                          <a
+                            href="https://gams.com/engine/administration.html#namespaces"
+                            >namespace</a
+                          >
+                          to be used by MIRO Server.
+                          <a id="step6" class="anchor"></a>
+                        </p>
+                        <ul>
                           <li>
-                            Install Docker from
-                            <a
-                              href="https://docs.docker.com/engine/install/"
-                              target="_blank"
-                              >https://docs.docker.com/engine/install/</a
+                            If MIRO Server and GAMS Engine are running on the
+                            same machine, enter for the host:
+                            <kbd
+                              >http://&lt;IP extracted from previous
+                              step&gt;/&lt;engine location&gt;/api</kbd
                             >
-                            (note the
-                            <a
-                              href="https://docs.docker.com/docker-for-windows/install/#system-requirements"
-                              target="_blank"
-                              >system requirements</a
-                            >). Start docker afterwards. We further recommend to
-                            configure Docker to
-                            <a
-                              href="https://docs.docker.com/docker-for-windows/#general"
-                              target="_blank"
-                              >start on login</a
+                            . The <i>Engine location</i> is root/empty per
+                            default. Note that the MIRO Server location is also
+                            root/empty per default. Thus, you need to make sure
+                            that there is no conflict between the two services
+                            (i.e. one of them has a different location).
+                            <br />
+                            If you specified a port when installing GAMS Engine,
+                            this port must also be specified here:
+                            <kbd
+                              >http://&lt;IP extracted from previous
+                              step&gt;:&lt;engine port&gt;/&lt;engine
+                              location&gt;/api</kbd
                             >.
                           </li>
                           <li>
-                            Extract <kbd>miro_server.zip</kbd>. This will create
-                            a subfolder <kbd>miro_server</kbd>.
+                            If GAMS Engine is running on a separate machine,
+                            enter the URL here, e.g.
+                            <kbd>http(s)://mydomain.com/api</kbd>.
                           </li>
-                          <li>
-                            Open a terminal and <kbd>cd</kbd> into that folder.
-                            <div class="callout-block callout-success">
-                              <div class="icon-holder">
-                                <i class="fas fa-thumbs-up"></i>
-                              </div>
-                              <!--//icon-holder-->
-                              <div class="content">
-                                <b class="callout-title">Tip:</b>
-                                <p>
-                                  GAMS MIRO applications will later be stored at
-                                  this location.
-                                </p>
-                              </div>
-                              <!--//content-->
-                            </div>
-                            <!--//callout-block-->
-                          </li>
-                          <li>
-                            Install MIRO Sever by running
-                            <kbd>miro-server.cmd install</kbd>. You will be
-                            asked to enter the GAMS Engine host and the
-                            <a
-                              href="https://gams.com/engine/administration.html#namespaces"
-                              >namespace</a
-                            >
-                            to be used by MIRO Server.
-                            <ul>
-                              <li>
-                                If MIRO Server and GAMS Engine are running on
-                                the same machine, enter for the host:
-                                <kbd
-                                  >http://host.docker.internal/&lt;engine
-                                  location&gt;/api</kbd
-                                >
-                                . The <i>Engine location</i> is root/empty per
-                                default. Note that the MIRO Server location is
-                                also root/empty per default. Thus, you need to
-                                make sure that there is no conflict between the
-                                two services (i.e. one of them has a different
-                                location).
-                                <br />
-                                If you specified a port when installing GAMS
-                                Engine, this port must also be specified here:
-                                <kbd
-                                  >http://host.docker.internal:&lt;engine
-                                  port&gt;/&lt;engine location&gt;/api</kbd
-                                >.
-                              </li>
-                              <li>
-                                If GAMS Engine is running on a separate machine,
-                                enter the URL where it can be reached, e.g.
-                                <kbd>http(s)://mydomain.com/api</kbd>.
-                              </li>
-                            </ul>
-                            The default namespace is <kbd>global</kbd>. You can
-                            also specify any other namespace created in GAMS
-                            Engine. You can change the GAMS Engine connection
-                            info at any time by modifying the auto-generated
-                            <kbd>.env</kbd> file that is located inside the
-                            miro_server directory. The following environment
-                            variables have to be set:
-                            <div
-                              class="table-responsive"
-                              style="margin: 15px auto"
-                            >
-                              <table class="table table-striped">
-                                <thead>
-                                  <tr>
-                                    <th style="width: 30%">
-                                      Environment Variable Name
-                                    </th>
-                                    <th>Environment Variable Value</th>
-                                    <th>Example</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td>GMS_MIRO_ENGINE_HOST</td>
-                                    <td>IP adress and port/DNS of Engine</td>
-                                    <td>https://mydomain.com/api</td>
-                                  </tr>
-                                  <tr>
-                                    <td>GMS_MIRO_ENGINE_NS</td>
-                                    <td>
-                                      Engine namespace to be used by MIRO Server
-                                    </td>
-                                    <td>miro_server</td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
-                            <!--//table-responsive-->
-                            <p>
-                              Note that MIRO Server must be restarted if the
-                              <kbd>.env</kbd> has been changed.
-                            </p>
-                            <p>
-                              You will also be asked whether you want to use
-                              MIRO Server with or without authentication
-                              service, i.e. whether users have to log in with an
-                              existing GAMS Engine account (default) or whether
-                              everyone with the valid URL should have free
-                              access to the app(s). Read more about the user
-                              management
-                              <a
-                                href="./server_administration.html#authentication-user-management"
-                                >here</a
-                              >.
-                            </p>
-                            <p>
-                              The installation script will inform you whether
-                              the installation was successful or not.
-                            </p>
-                          </li>
-                        </ol>
-                      </div>
-                    </div>
+                        </ul>
+                        <p>
+                          The default namespace is <kbd>global</kbd>. You can
+                          also specify any other namespace created in GAMS
+                          Engine. You can change the GAMS Engine connection info
+                          at any time by modifying the auto-generated
+                          <kbd>.env</kbd> file that is located inside the
+                          miro_server directory. The following environment
+                          variables have to be set:
+                        </p>
+                        <div class="table-responsive" style="margin: 15px auto">
+                          <table class="table table-striped">
+                            <thead>
+                              <tr>
+                                <th style="width: 30%">
+                                  Environment Variable Name
+                                </th>
+                                <th>Environment Variable Value</th>
+                                <th>Example</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>GMS_MIRO_ENGINE_HOST</td>
+                                <td>IP adress and port/DNS of Engine</td>
+                                <td>https://mydomain.com/api</td>
+                              </tr>
+                              <tr>
+                                <td>GMS_MIRO_ENGINE_NS</td>
+                                <td>
+                                  Engine namespace to be used by MIRO Server
+                                </td>
+                                <td>miro_server</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <!--//table-responsive-->
+                        <p>
+                          Note that MIRO Server must be restarted if the
+                          <kbd>.env</kbd> has been changed.
+                        </p>
+                        <p>
+                          You will also be asked whether you want to use MIRO
+                          Server with or without authentication service, i.e.
+                          whether users have to log in with an existing GAMS
+                          Engine account (default) or whether everyone with the
+                          valid URL should have free access to the app(s). Read
+                          more about the user management
+                          <a
+                            href="./server_administration.html#authentication-user-management"
+                            >here</a
+                          >.
+                        </p>
+                        <p>
+                          The installation script will inform you whether the
+                          installation was successful or not.
+                        </p>
+                      </li>
+                    </ol>
                   </div>
                 </section>
                 <section id="server-interaction" class="doc-section">
@@ -531,12 +318,6 @@
                     Start / Stop / Update / Uninstall
                   </h2>
                   <div class="section-block">
-                    <p>
-                      This section assumes a Linux operating system. On Windows,
-                      <kbd>./miro-server</kbd> must be replaced by
-                      <kbd>miro-server.cmd</kbd> in the commands, e,g,
-                      <kbd>miro-server.cmd start</kbd>.
-                    </p>
                     <b>Start</b>
                     <p>
                       Once you have GAMS MIRO Server installed, you can launch
@@ -1231,10 +1012,10 @@ server:
                       >
                     </div>
                     <p>
-                      (on Windows <kbd>miro-server.cmd build</kbd>). Please note
-                      that additional packages may cause version conflicts with
-                      packages used internally by MIRO. We therefore recommend
-                      keeping the number of additional packages to a minimum.
+                      Please note that additional packages may cause version
+                      conflicts with packages used internally by MIRO. We
+                      therefore recommend keeping the number of additional
+                      packages to a minimum.
                     </p>
                   </div>
                 </section>
