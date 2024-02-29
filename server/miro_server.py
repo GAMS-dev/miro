@@ -125,8 +125,8 @@ class MiroServer(object):
 
         dc_args_miro = ['docker', 'compose', 'down']
 
-        self.stop_proxies('registry.gams.com/fproske/gmswebui/miro-admin')
-        self.stop_proxies('registry.gams.com/fproske/gmswebui/miro-ui')
+        self.stop_proxies('registry.gams.com/miro/miro/miro-admin')
+        self.stop_proxies('registry.gams.com/miro/miro/miro-ui')
         self.stop_proxies('gams/miro-admin')
         self.stop_proxies('gams/miro-ui')
         self.stop_proxies('miro-admin')
@@ -289,7 +289,7 @@ class MiroServer(object):
             ['docker', 'tag', f'{image_server}/{image_name_hub}', image_name_local])
 
     def push_image(self, image_name_local, image_name_hub, unstable=False, custom_tag=None):
-        GITLAB_REGISTRY_HOST = 'registry.gams.com/fproske/gmswebui'
+        GITLAB_REGISTRY_HOST = 'registry.gams.com/miro/miro'
         if unstable:
             dhost = GITLAB_REGISTRY_HOST
             if custom_tag:
