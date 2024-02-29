@@ -67,6 +67,7 @@ prepare_all:
   tags:
     - linux
   stage: prepare
+  image: curlimages/curl
   script:
     - 'echo "Building on branch: $CI_COMMIT_BRANCH"'
     - >
