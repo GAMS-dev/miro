@@ -57,10 +57,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="GAMS MIRO Server" />
     <meta name="author" content="GAMS Development Corp." />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="script-src 'self' 'sha256-L40SkVP8pk6BzxwxCdc/0Y2mTevWlWQ7ZPn32auKRXk=';"
-    />
 
     <!--<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />-->
     <link rel="shortcut icon" th:href="@{/assets/img/favicon.ico}" />
@@ -70,12 +66,10 @@
       th:href="@{/assets/css/bootstrap.min.css}"
     />
     <link id="theme-style" rel="stylesheet" th:href="@{${themeCss}}" />
-    <script th:src="@{${jqueryJs}}"></script>
-    <script th:src="@{${bootstrapJs}}"></script>
   </head>
 
   <body>
-    <div th:replace="../fragments/navbar :: navbar"></div>
+    <div th:replace="fragments/navbar :: navbar"></div>
     <div class="site-wrapper">
       <section
         class="cards-section text-center"

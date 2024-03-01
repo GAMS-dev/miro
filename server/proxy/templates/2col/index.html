@@ -34,24 +34,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="GAMS MIRO Server" />
     <meta name="author" content="GAMS Development Corp." />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="script-src 'self' 'sha256-rI6IBZgcWkZAZgn8EPKq8ljhpULQ8YbtFK19t4Ub+LY=';"
+    <link
+      rel="shortcut icon"
+      th:href="@{${resourcePrefix} + '/assets/img/favicon.ico'}"
     />
     <link
       rel="stylesheet"
       media="screen"
-      th:href="@{/assets/css/bootstrap.min.css}"
+      th:href="@{${resourcePrefix} + '/css/default.css'}"
     />
-    <link rel="stylesheet" media="screen" th:href="@{/css/default.css}" />
-    <link id="theme-style" rel="stylesheet" th:href="@{${themeCss}}" />
-    <script th:src="@{${jqueryJs}}"></script>
+    <link
+      rel="stylesheet"
+      media="screen"
+      th:href="@{${resourcePrefix} + ${bootstrapCss}}"
+    />
+    <link
+      rel="stylesheet"
+      media="screen"
+      th:href="@{${resourcePrefix} + ${themeCss}}"
+    />
+    <script th:src="@{${resourcePrefix} + ${jqueryJs}}"></script>
   </head>
 
   <body>
     <div class="site-wrapper">
       <!-- ******Header****** -->
-      <div th:replace="../fragments/navbar :: navbar"></div>
+      <div th:replace="fragments/navbar :: navbar"></div>
       <div class="container">
         <div class="app-wrapper row">
           <div
@@ -63,7 +71,7 @@
               <div>
                 <div style="height: 200px">
                   <div
-                    th:style="'background:url('+@{/assets/logos/{name}(name=${app.logoURL})}+');background-size:cover;'"
+                    th:style="'background:url('+${resourcePrefix}+@{/assets/logos/{name}(name=${app.logoURL})}+');background-size:cover;'"
                     class="app-logo"
                   ></div>
                 </div>
@@ -98,14 +106,14 @@
         </div>
       </div>
     </div>
-    <script type="text/javascript" th:src="@{/assets/js/main.js}"></script>
     <script
       type="text/javascript"
-      th:src="@{/assets/js/bootstrap.min.js}"
+      th:src="@{${resourcePrefix} + '/assets/js/main.js'}"
     ></script>
+    <script th:src="@{${resourcePrefix} + ${bootstrapJs}}"></script>
     <script
       type="text/javascript"
-      th:src="@{/assets/js/stickyfill.min.js}"
+      th:src="@{${resourcePrefix} + '/assets/js/stickyfill.min.js'}"
     ></script>
   </body>
 </html>

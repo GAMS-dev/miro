@@ -8,6 +8,7 @@ proxy:
   port: 8080
   heartbeat-rate: 10000
   heartbeat-timeout: 120000
+  same-site-cookie: Lax
   admin-groups: admins
   container-log-path: /logs/container-logs
   force-signed-apps: false
@@ -48,6 +49,8 @@ spring:
       max-request-size: 200MB
 
 server:
+  frame-options: sameorigin
+  secure-cookies: false
   forward-headers-strategy: native
   servlet:
     session.timeout: 21600

@@ -33,19 +33,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="GAMS MIRO Server" />
     <meta name="author" content="GAMS Development Corp." />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="script-src 'self' 'sha256-rI6IBZgcWkZAZgn8EPKq8ljhpULQ8YbtFK19t4Ub+LY=';"
+    <link
+      rel="shortcut icon"
+      th:href="@{${resourcePrefix} + '/assets/img/favicon.ico'}"
     />
-    <link rel="stylesheet" media="screen" th:href="@{${bootstrapCss}}" />
-    <link rel="stylesheet" media="screen" th:href="@{${themeCss}}" />
-    <script th:src="@{/assets/js/jquery.min.js}"></script>
-    <script th:src="@{${bootstrapJs}}"></script>
-    <script th:src="@{${cookieJs}}"></script>
-    <script th:src="@{/js/shiny.app.js}"></script>
-    <script th:src="@{/js/shiny.connections.js}"></script>
-    <script th:src="@{/js/shiny.ui.js}"></script>
-    <script th:src="@{/js/shiny.common.js}"></script>
+    <link
+      rel="stylesheet"
+      media="screen"
+      th:href="@{${resourcePrefix} + ${bootstrapCss}}"
+    />
+    <link
+      rel="stylesheet"
+      media="screen"
+      th:href="@{${resourcePrefix} + ${themeCss}}"
+    />
+    <script th:src="@{${resourcePrefix} + ${jqueryJs}}"></script>
+    <script th:src="@{${resourcePrefix} + ${bootstrapJs}}"></script>
+    <script th:src="@{${resourcePrefix} + ${handlebars}}"></script>
+    <script th:src="@{${resourcePrefix} + '/js/shiny.app.js'}"></script>
+    <script th:src="@{${resourcePrefix} + '/js/shiny.api.js'}"></script>
+    <script th:src="@{${resourcePrefix} + '/js/shiny.connections.js'}"></script>
+    <script th:src="@{${resourcePrefix} + '/js/shiny.ui.js'}"></script>
+    <script th:src="@{${resourcePrefix} + '/js/shiny.common.js'}"></script>
   </head>
   <body style="overflow: hidden; margin: 0; padding: 0">
     <div class="navbar-handle-wrapper">
@@ -84,27 +93,56 @@
         <div></div>
       </div>
     </div>
+    <div id="startFailed" class="load-app-error load-app-error-absolute">
+      This app has failed to start.<br /><br />
+      <button class="btn btn-default btn-restart-app">Restart app</button>
+      <a th:href="@{/}" class="btn btn-default">Go to Home</a>
+    </div>
+    <div id="appCrashed" class="load-app-error load-app-error-absolute">
+      This app has crashed.<br /><br />
+      <button class="btn btn-default btn-restart-app">Restart app</button>
+      <a th:href="@{/}" class="btn btn-default">Go to Home</a>
+    </div>
     <div id="appStopped" class="load-app-error load-app-error-absolute">
       This app has been stopped, you can now close this tab.<br /><br />
       <button class="btn btn-default btn-restart-app">Restart app</button>
+      <a th:href="@{/}" class="btn btn-default">Go to Home</a>
     </div>
     <div id="userLoggedOut" class="load-app-error load-app-error-absolute">
-      You logged out using another browser tab, you can now close this tab.<br /><br />
+      You are now (automatically) logged out, you can now close this tab.<br /><br />
       <a th:href="@{/}" class="btn btn-default">Login again</a>
     </div>
     <div id="reloadFailed" class="load-app-error load-app-error-absolute">
       An error has occurred reloading your app.<br /><br />
       <button class="btn btn-default btn-restart-app">Refresh page</button>
+      <a th:href="@{/}" class="btn btn-default">Go to Home</a>
     </div>
     <div id="navbarWrapper" style="display: none; position: absolute">
-      <div th:replace="../fragments/navbar :: navbar"></div>
+      <div th:replace="fragments/navbar :: navbar"></div>
     </div>
-    <div
-      id="appConfig"
-      style="display: none"
-      th:attr="data-context_path=${contextPath},data-application_name=${application_name},data-container_path=${containerPath},data-websocket_reconnection_mode=${webSocketReconnectionMode},data-proxy_id=${proxyId},data-heartbeat_rate=${heartbeatRate},data-app_name=${appName},data-app_instance=${appInstance},data-max_instances=${maxInstances}"
-    ></div>
     <div id="iframeinsert"></div>
-    <script type="text/javascript" th:src="@{/assets/js/app.js}"></script>
+    <script
+      type="text/javascript"
+      th:src="@{${resourcePrefix} + '/assets/js/app.js'}"
+    ></script>
+    <script type="text/javascript" th:inline="javascript">
+      $(window).on('load', function() {
+        window.Shiny.common.init([[${contextPath}]], [[${application_name}]], [[${spInstance}]], [[${appMaxInstances}]], [[${myAppsMode}]], [[${pauseSupported}]]);
+        window.Shiny.app.start(
+            [[${proxy}]],
+            [[${heartbeatRate}]],
+            [[${appName}]],
+            [[${appInstance}]],
+                      [[${parameterAllowedCombinations}]],
+                      [[${parameterDefinitions}]],
+                      [[${parameterIds}]],
+            [[${appPath}]],
+            [[${containerSubPath}]],
+        );
+        if ([[${refreshOpenidEnabled}]]) {
+          window.Shiny.connections.startOpenidRefresh();
+        }
+      });
+    </script>
   </body>
 </html>

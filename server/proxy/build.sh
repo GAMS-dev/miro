@@ -17,7 +17,7 @@ pushd /app/shinyproxy > /dev/null || exit 1
     mvn -U clean install
 popd > /dev/null
 
-SP_PATH=`find /app/shinyproxy/target -regex '.*[0-9]\.jar'`
+SP_PATH=`find /app/shinyproxy/target -regex '.*[0-9]-exec\.jar'`
 echo $SP_PATH
 
 mv $SP_PATH /app/shinyproxy/target/shinyproxy.jar
