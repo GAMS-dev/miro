@@ -71,16 +71,6 @@
           </div>
         </div>
       </nav>
-      <script lang="JavaScript">
-        $(document).ready(function() {
-             const currLocation = window.location.href;
-             if ( currLocation.endsWith('app/admin') ) {
-                 $('#navAdminPanel').addClass('active').attr('href', '#');
-                 $("#navbarWrapper").show().attr('href', '#');
-             }
-             $('input[name="currentLocation"]').val(currLocation);
-         });
-      </script>
     </div>
   </body>
 </html>
