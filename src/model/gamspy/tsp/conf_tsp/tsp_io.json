@@ -1,0 +1,114 @@
+{
+    "modelTitle": "GAMSPy App",
+    "inputSymbols": {
+        "iilocdata": {
+            "alias": "City location information",
+            "symtype": "parameter",
+            "headers": {
+                "ii": {
+                    "type": "string",
+                    "alias": "Cities used in the model"
+                },
+                "lat": {
+                    "type": "numeric",
+                    "alias": "lat"
+                },
+                "lng": {
+                    "type": "numeric",
+                    "alias": "lng"
+                }
+            }
+        },
+        "_scalars": {
+            "alias": "Input Scalars",
+            "symnames": [
+                "maxcities",
+                "maxcuts"
+            ],
+            "symtext": [
+                "Limit numbers of cities in tour",
+                "Limit numbers of cuts"
+            ],
+            "symtypes": [
+                "parameter",
+                "parameter"
+            ],
+            "headers": {
+                "scalar": {
+                    "type": "string",
+                    "alias": "Scalar Name"
+                },
+                "description": {
+                    "type": "string",
+                    "alias": "Scalar Description"
+                },
+                "value": {
+                    "type": "string",
+                    "alias": "Scalar Value"
+                }
+            }
+        }
+    },
+    "outputSymbols": {
+        "tourdetails": {
+            "alias": "tourdetails",
+            "symtype": "parameter",
+            "headers": {
+                "ii": {
+                    "type": "string",
+                    "alias": "Cities used in the model"
+                },
+                "jj": {
+                    "type": "string",
+                    "alias": "Cities used in the model"
+                },
+                "lngA": {
+                    "type": "numeric",
+                    "alias": "lngA"
+                },
+                "latA": {
+                    "type": "numeric",
+                    "alias": "latA"
+                },
+                "lngB": {
+                    "type": "numeric",
+                    "alias": "lngB"
+                },
+                "latB": {
+                    "type": "numeric",
+                    "alias": "latB"
+                },
+                "Flow": {
+                    "type": "numeric",
+                    "alias": "Flow"
+                }
+            }
+        },
+        "_scalars_out": {
+            "alias": "Output Scalars",
+            "symnames": [
+                "total_cost"
+            ],
+            "symtext": [
+                "Total Distance (miles)"
+            ],
+            "symtypes": [
+                "parameter"
+            ],
+            "headers": {
+                "scalar": {
+                    "type": "string",
+                    "alias": "Scalar Name"
+                },
+                "description": {
+                    "type": "string",
+                    "alias": "Scalar Description"
+                },
+                "value": {
+                    "type": "string",
+                    "alias": "Scalar Value"
+                }
+            }
+        }
+    }
+}
