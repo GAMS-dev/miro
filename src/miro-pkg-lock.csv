@@ -1,4 +1,4 @@
-data.table, 1.15.0
+data.table, 1.15.2
 cpp11, 0.4.7
 xfun, 0.42
 fastmap, 1.1.1
@@ -23,8 +23,8 @@ jsonlite
 digest, 0.6.34
 sourcetools, 0.1.7-1
 xtable, 1.8-4
-curl, 5.2.0
-V8, 4.4.1
+curl, 5.2.1
+V8, 4.4.2
 base64enc, 0.1-3
 htmltools, 0.5.7
 jquerylib, 0.1.4
@@ -76,7 +76,7 @@ askpass, 1.2.0
 openssl
 prettyunits, 1.2.0
 stringi, 1.8.3
-DBI, 1.2.1
+DBI, 1.2.2
 blob, 1.2.4
 hms, 1.1.3
 stringr, 1.5.1
@@ -105,7 +105,7 @@ zip, 2.3.1
 leaflet.minicharts, 0.6.2
 xts, 0.13.2
 dygraphs, 1.1.1.6
-parallelly, 1.37.0
+parallelly, 1.37.1
 future, 1.33.1
 bit, 4.0.5
 bit64, 4.0.5
