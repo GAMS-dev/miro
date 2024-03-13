@@ -158,6 +158,9 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     filesInBundle <- filesInBundleRaw[["filename"]]
     logoCandidates <- startsWith(filesInBundle, file.path(
       private$getStaticFilePath(),
+      paste0(self$getAppId(), "_logo.")
+    )) | startsWith(filesInBundle, file.path(
+      private$getStaticFilePath(),
       paste0(self$getModelId(), "_logo.")
     )) |
       startsWith(filesInBundle, file.path(private$getStaticFilePath(), "app_logo."))

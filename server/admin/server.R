@@ -199,7 +199,7 @@ server <- function(input, output, session) {
         logoPath <- miroAppValidator$getLogoFile()
         logoURL <- "default_logo.png"
         if (length(logoPath)) {
-          logoURL <- getLogoName(modelId, logoPath)
+          logoURL <- getLogoName(appId, logoPath)
         } else {
           logoPath <- NULL
         }
@@ -373,7 +373,7 @@ server <- function(input, output, session) {
           if (!length(logoPath)) {
             stop("Logo file not found.", call. = FALSE)
           }
-          newLogoName <- getLogoName(modelId, logoPath)
+          newLogoName <- getLogoName(appId, logoPath)
           addAppLogo(appId, logoPath)
         }
 
