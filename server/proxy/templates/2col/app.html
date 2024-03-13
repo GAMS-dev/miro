@@ -30,7 +30,10 @@
   <head lang="en">
     <title th:text="${appTitle}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self';" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      th:attr="content='script-src \'self\' \'nonce-' + ${nonce} + '\''"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="GAMS MIRO Server" />
     <meta name="author" content="GAMS Development Corp." />
@@ -126,10 +129,28 @@
       type="text/javascript"
       th:src="@{${resourcePrefix} + '/assets/js/app.js'}"
     ></script>
-    <div
-      id="appConfig"
-      style="display: none"
-      th:attr="data-context-path=${contextPath},data-application_name=${application_name},data-sp-instance=${spInstance},data-app-max-instances=${appMaxInstances},data-my-apps-mode=${myAppsMode},data-pause-supported=${pauseSupported},data-proxy=${proxy},data-heartbeat-rate=${heartbeatRate},data-app-name=${appName},data-app-instance=${appInstance},data-parameter-allowed-combinations=${parameterAllowedCombinations},data-parameter-definitions=${parameterDefinitions},data-parameter-ids=${parameterIds},data-app-path=${appPath},data-container-sub-path=${containerSubPath},data-refresh-openid-enabled=${refreshOpenidEnabled}"
-    ></div>
+    <script
+      type="text/javascript"
+      th:inline="javascript"
+      th:attr="nonce=${nonce}"
+    >
+      $(window).on('load', function() {
+        window.Shiny.common.init([[${contextPath}]], [[${application_name}]], [[${spInstance}]], [[${appMaxInstances}]], [[${myAppsMode}]], [[${pauseSupported}]]);
+        window.Shiny.app.start(
+            [[${proxy}]],
+            [[${heartbeatRate}]],
+            [[${appName}]],
+            [[${appInstance}]],
+                      [[${parameterAllowedCombinations}]],
+                      [[${parameterDefinitions}]],
+                      [[${parameterIds}]],
+            [[${appPath}]],
+            [[${containerSubPath}]],
+        );
+        if ([[${refreshOpenidEnabled}]]) {
+          window.Shiny.connections.startOpenidRefresh();
+        }
+      });
+    </script>
   </body>
 </html>

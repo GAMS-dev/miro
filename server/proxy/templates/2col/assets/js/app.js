@@ -24,29 +24,4 @@ $(function () {
   $('.btn-restart-app').on('click', () => {
     window.location.reload();
   });
-
-  const appConfig = document.getElementById('appConfig')?.dataset;
-  if (appConfig) {
-    window.Shiny.common.init(
-      appConfig.contextPath??null,
-      appConfig.application_name??null,
-      appConfig.spInstance??null,
-      appConfig.appMaxInstances??null,
-      appConfig.myAppsMode??null,
-      appConfig.pauseSupported==='true');
-    window.Shiny.app.start(
-      appConfig.proxy??null,
-      appConfig.heartbeatRate == null? 10000: parseInt(appConfig.heartbeatRate),
-      appConfig.appName??null,
-      appConfig.appInstance??null,
-      appConfig.parameterAllowedCombinations??null,
-      appConfig.parameterDefinitions??null,
-      appConfig.parameterIds??null,
-      appConfig.appPath??"",
-      appConfig.containerSubPath??"",
-    );
-    if (appConfig.refreshOpenidEnabled==='true') {
-      window.Shiny.connections.startOpenidRefresh();
-    }
-  }
 });
