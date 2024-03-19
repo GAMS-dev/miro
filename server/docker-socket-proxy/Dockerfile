@@ -1,4 +1,4 @@
-FROM haproxy:2.5.0-alpine3.15
+FROM --platform=linux/amd64 haproxy:2.5.0-alpine3.15
 
 USER root
 EXPOSE 2375

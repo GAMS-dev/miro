@@ -1,4 +1,4 @@
-FROM miro-auth
+FROM --platform=linux/amd64 miro-auth
 
 USER root
 

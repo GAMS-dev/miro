@@ -1,4 +1,4 @@
-FROM maven:3.8.6-jdk-11 as builder
+FROM --platform=linux/amd64 maven:3.8.6-jdk-11 as builder
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ RUN chmod +x build.sh
 
 RUN ./build.sh
 
-FROM alpine:3.19
+FROM --platform=linux/amd64 alpine:3.19
 
 RUN apk update && \
     apk upgrade --available && \

@@ -1,4 +1,4 @@
-FROM miro-ui
+FROM --platform=linux/amd64 miro-ui
 
 LABEL com.gamsmiroadmin.vendor="GAMS Development Corp."\
 com.gamsmiroadmin.version="2.9.9999"\

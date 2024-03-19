@@ -1,6 +1,6 @@
-FROM miro-admin as base
+FROM --platform=linux/amd64 miro-admin as base
 
-FROM base as builder
+FROM --platform=linux/amd64 base as builder
 
 USER root
 
@@ -12,7 +12,7 @@ COPY requirements.txt /requirements.txt
 RUN pip install --no-cache-dir --upgrade --user -r /requirements.txt
 
 
-FROM base
+FROM --platform=linux/amd64 base
 
 LABEL com.gamsmiroauth.vendor="GAMS Development Corp."\
     com.gamsmiroauth.version="2.9.9999"\
