@@ -178,8 +178,7 @@ observeEvent(input$localInput, {
   } else {
     hideEl(session, "#localInputExcelOptions")
     hideEl(session, "#localInputCsvOptions")
-    if (identical(fileExt, "zip") ||
-      (useGdx && fileExt %in% c("miroscen", "gdx"))) {
+    if (fileExt %in% c("miroscen", "gdx", "zip")) {
       enableEl(session, "#btImportLocal")
       return()
     }
@@ -190,8 +189,7 @@ observeEvent(input$localInput, {
         lang$errMsg$invalidFileType$desc,
         paste0(
           c(
-            "zip", xlsio$getValidExtensions(), csvio$getValidExtensions(),
-            if (useGdx) c("miroscen", "gdx")
+            c("miroscen", "gdx", "zip"), xlsio$getValidExtensions(), csvio$getValidExtensions()
           ),
           collapse = ","
         )
@@ -380,7 +378,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
 
   dfClArgs <- NULL
 
-  if (identical(fileType, "miroscen") && useGdx) {
+  if (identical(fileType, "miroscen")) {
     if (!tryCatch(validateMiroScen(input$localInput$datapath), error = function(e) {
       flog.info("Invalid miroscen file. Error message: '%s'.", conditionMessage(e))
       showHideEl(session, "#importScenInvalidFile", 4000L)
@@ -415,7 +413,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
     loadModeFileName <- "data.gdx"
     loadMode <- "gdx"
     datasetsToFetch <- names(modelIn)
-  } else if (identical(fileType, "gdx") && useGdx) {
+  } else if (identical(fileType, "gdx")) {
     loadMode <- "gdx"
     datasetsToFetch <- names(modelIn)
   } else if (identical(fileType, "zip")) {
@@ -478,8 +476,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
       sprintf(
         lang$errMsg$invalidFileType$desc,
         paste0(c(
-          "zip", xlsio$getValidExtensions(), csvio$getValidExtensions(),
-          if (useGdx) c("miroscen", "gdx")
+          c("miroscen", "gdx", "zip"), xlsio$getValidExtensions(), csvio$getValidExtensions()
         ), collapse = ",")
       )
     )
