@@ -61,7 +61,7 @@ def main():
 
     td = Set(m, "td", domain=[date], description="training days")
     ntd = Set(m, "ntd", domain=[date], description="none-training days")
-    td.setRecords(date.records["uni"][:int(trainingdays.records.value[0])])
+    td.setRecords(date.records["uni"][:int(trainingdays.toValue())])
     ntd[:] = ~td[:]
 
     p = Variable(m, "p", "binary", symbol, description="is stock included?")
@@ -137,7 +137,7 @@ def main():
     first_day_training[td] = td.pos == 1
     error_train.setRecords(pickstock.objective_value)
     error_test[:] = Sum(ntd, error[ntd])
-    if error_train.records.value[0] > 0:
+    if error_train.toValue() > 0:
         error_ratio[:] = error_test/error_train
     else:
         error_ratio.setRecords(float('inf'))

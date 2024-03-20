@@ -748,7 +748,7 @@ observeEvent(input$localInput, {
 
   fileType <- tolower(tools::file_ext(isolate(input$localInput$datapath)))
   errMsg <- NULL
-  if (identical(fileType, "gdx") && useGdx) {
+  if (identical(fileType, "gdx")) {
     loadMode <- "gdx"
     datasetsToFetch <- modelInTabularData
   } else if (fileType %in% xlsio$getValidExtensions()) {

@@ -36,7 +36,7 @@ if (!miroBuildOnly) {
     requiredPackages, "shiny", "shinydashboard", "rhandsontable",
     "rpivotTable", "stringi", "processx",
     "dplyr", "readxl", "writexl", "tidyr",
-    "DT", "sortable", "chartjs"
+    "DT", "sortable", "chartjs", "gdxrrwMIRO"
   )
 }
 config <<- list()
@@ -44,17 +44,12 @@ modelFiles <- character()
 gamsSysDir <- Sys.getenv("GAMS_SYS_DIR")
 
 installedPackages <<- installed.packages()[, "Package"]
-useGdx <<- FALSE
-if ("gdxrrwMIRO" %in% installedPackages) {
-  useGdx <<- TRUE
-  requiredPackages <- c(requiredPackages, "gdxrrwMIRO")
-}
 source("./components/install_packages.R")
 errMsg <- installAndRequirePackages(requiredPackages, installedPackages, RLibPath, CRANMirror, miroWorkspace, TRUE)
 installedPackages <<- installed.packages()[, "Package"]
 # vector of required files
 filesToInclude <- c(
-  "./global.R", "./components/util.R", if (useGdx) "./components/gdxio.R",
+  "./global.R", "./components/util.R", "./components/gdxio.R",
   "./components/json.R", "./components/scenario_extensions.R", "./components/views.R",
   "./components/attachments.R", "./components/miroscenio.R",
   "./components/load_scen_data.R", "./components/localfileio.R",
@@ -407,13 +402,6 @@ if (is.null(errMsg)) {
     scenTableNamesToDisplay = scenTableNamesToDisplay,
     textOnlySymbols = config$textOnlySymbols
   )
-  if (!useGdx && identical(config$fileExchange, "gdx") && !miroBuildOnly) {
-    errMsg <- paste(errMsg,
-      sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrw library is not installed.\n
-Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw-miro) installation in your R library: '%s'.", .libPaths()[1]),
-      sep = "\n"
-    )
-  }
   GAMSClArgs <- c(
     paste0("execMode=", gamsExecMode),
     paste0('IDCGDXOutput="', MIROGdxOutName, '"')
@@ -1022,22 +1010,19 @@ if (is.null(errMsg)) {
 if (is.null(errMsg)) {
   tryCatch(
     {
-      gdxio <<- NULL
-      if (useGdx) {
-        gdxio <<- GdxIO$new(
-          file.path(
-            .libPaths()[1], "gdxrrwMIRO",
-            if (identical(tolower(Sys.info()[["sysname"]]), "windows")) {
-              file.path("bin", "x64")
-            } else {
-              "bin"
-            }
-          ),
-          c(modelInRaw, modelOut), scalarsFileName,
-          scalarsOutName, scalarEquationsName, scalarEquationsOutName,
-          dropdownAliases
-        )
-      }
+      gdxio <<- GdxIO$new(
+        file.path(
+          .libPaths()[1], "gdxrrwMIRO",
+          if (identical(tolower(Sys.info()[["sysname"]]), "windows")) {
+            file.path("bin", "x64")
+          } else {
+            "bin"
+          }
+        ),
+        c(modelInRaw, modelOut), scalarsFileName,
+        scalarsOutName, scalarEquationsName, scalarEquationsOutName,
+        dropdownAliases
+      )
     },
     error = function(e) {
       flog.error(conditionMessage(e))
@@ -1358,7 +1343,7 @@ if (!is.null(errMsg)) {
     # IMPORTANT!!!!!!
     # if list of valid data file types is updated, it also has to be updated in
     # supportedDataFileTypes array in /renderer/index.js
-    miroDataFiles <- miroDataFilesRaw[dataFileExt %in% c(if (useGdx) c("gdx", "miroscen"), "xlsx", "xlsm", "xls", "zip")]
+    miroDataFiles <- miroDataFilesRaw[dataFileExt %in% c("gdx", "miroscen", "xlsx", "xlsm", "xls", "zip")]
     dataFileExt <- tolower(tools::file_ext(miroDataFiles))
     newScen <- NULL
     tryCatch(
@@ -2317,11 +2302,7 @@ if (!is.null(errMsg)) {
 
       observeEvent(input$btExportScen, {
         stopifnot(is.integer(input$btExportScen), length(input$btExportScen) == 1L)
-        if (useGdx) {
-          exportTypes <- setNames(c("miroscen", "gdx", "csv", "xlsx"), lang$nav$fileExport$fileTypes)
-        } else {
-          exportTypes <- setNames(c("csv", "xlsx"), lang$nav$fileExport$fileTypes[-c(1, 2)])
-        }
+        exportTypes <- setNames(c("miroscen", "gdx", "csv", "xlsx"), lang$nav$fileExport$fileTypes)
         if (length(datasetsRemoteExport)) {
           exportTypes <- c(exportTypes, setNames(
             paste0("custom_", seq_along(datasetsRemoteExport)),

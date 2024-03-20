@@ -56,10 +56,10 @@ def main():
         if error01.records is not None:
             f.writelines(
                 ["initial_state:: Digits must be integers between 0 and 9!\n"])
+            initial_state_data = initial_state.records
             for _, row in error01.records.iterrows():
-                value = initial_state.records[initial_state.records["row"] == row["row"]]
-                value = value[value.iloc[:, 1] ==
-                              row["col"]]["value"].values[0]
+                value = initial_state_data[(initial_state_data["row"] == row["row"]) & (
+                    initial_state_data["col"] == row["col"])]["value"].values[0]
                 f.writelines(
                     [f'Cell {row["row"]}:{row["col"]} has invalid value of {value}\n'])
             raise Exception("Data errors detected")
@@ -97,7 +97,7 @@ def main():
             f.writelines(["No solution exists for your input data.\n"])
         raise Exception("Infeasible.")
 
-    if force_unique_sol.records.value.loc[0]:
+    if force_unique_sol.toValue():
         m_solnpool = Container(os.path.join(
             m.working_directory, "solnpool.gdx"))
         if len(m_solnpool["index"].records.index) > 1:

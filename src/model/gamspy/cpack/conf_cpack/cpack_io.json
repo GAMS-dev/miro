@@ -48,11 +48,11 @@
                 },
                 "x": {
                     "type": "numeric",
-                    "alias": "x"
+                    "alias": "abscissa of circle"
                 },
                 "y": {
                     "type": "numeric",
-                    "alias": "y"
+                    "alias": "ordinate of circle"
                 },
                 "radius": {
                     "type": "numeric",

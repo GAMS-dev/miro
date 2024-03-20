@@ -72,7 +72,7 @@ def main():
         c,
         name="i",
         description="circles",
-        records=[str(i) for i in range(int(k.records.value.loc[0]))],
+        records=[str(i) for i in range(int(k.toValue()))],
     )
     j = Alias(c, name="j", alias_with=i)
     ij = Set(c, name="ij", domain=[i, j])
@@ -130,8 +130,8 @@ def main():
     m.solve(
         solver=qcp_solver_val,
         options=Options(
-            relative_optimality_gap=optcr.records.value.loc[0],
-            time_limit=reslim.records.value.loc[0],
+            relative_optimality_gap=optcr.toValue(),
+            time_limit=reslim.toValue(),
         ),
         output=sys.stdout,
         solver_options=solver_options,
@@ -164,7 +164,7 @@ def main():
                 f"Outer Circle Area          : {round(math.pi, 4)}\n",
                 (
                     "Area covered by start point:"
-                    f" {round(len(i.records.index) * math.pi*((1/k.records.value.loc[0])**2), 4)}\n"
+                    f" {round(len(i.records.index) * math.pi*((1/k.toValue())**2), 4)}\n"
                 ),
                 (
                     "Area covered by solution   :"
