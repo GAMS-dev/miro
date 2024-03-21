@@ -369,6 +369,219 @@
             }
          }
       }
+    },
+    "dashboardOptions":{
+      "description":"Dashboard options",
+      "type":"object",
+      "additionalProperties":false,
+      "properties":{
+        "valueBoxesTitle": { "type": "string" },
+        "valueBoxes": {
+          "type": "object",
+          "properties": {
+            "Id": {
+              "description":"Each valuebox needs a unique id. If a click on a valuebox should show a view, both Ids need to be identical. No spaces allowed.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "Color": {
+              "description":"Background color of value box",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "Icon": {
+              "description":"Icon for value box from the https://fontawesome.com/ library",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "Title": {
+              "description":"Title that is displayed in the valuebox.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "ValueScalar": {
+              "description":"Name of a scalar output symbol whose value is to be displayed in the value box",
+              "type": "array",
+              "items": {
+                "type": ["string", "null"]
+              }
+            },
+            "Prefix": {
+              "description":"String that is displayed ahead of the value. When using a '+', negative values will be prefixed with a '-'",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "Postfix": {
+              "description":"String that is displayed after the value.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "redPositive": {
+              "description":"Positive values are displayed in green by default, negative values in red. redPositive reverses this logicif set to true.",
+              "type": "array",
+              "items": {
+                "type": "boolean"
+              }
+            },
+            "NoColor": {
+              "description":"Set to true if the value of the valuebox should not have a red/green color, but should be gray instead.",
+              "type": "array",
+              "items": {
+                "type": "boolean"
+              }
+            },
+            "Decimals": {
+              "description":"Specify the rounding to use for the valuebox value",
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          "required": ["Id", "Color", "Icon", "Title", "Prefix", "Postfix", "redPositive", "NoColor", "ValueScalar", "Decimals"]
+        },
+        "dataViews": {
+          "description":"A data view is shown if  the corresponding value box is clicked in the user interface. The id must match the id of a valuebox.",
+          "type": "object",
+          "additionalProperties":{
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "dataViewsConfig": {
+          "description":"Configuraiton of the individual charts/tables.",
+          "type": "object",
+          "additionalProperties":{
+            "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "rows":{
+                   "description":"Columns in the symbol to prepopulate the rows of the pivot table.",
+                   "type":["array", "string", "null"],
+                   "minLength":1,
+                   "uniqueItems":true,
+                   "minItems":0,
+                   "items":{
+                      "type":"string",
+                      "minLength":1
+                   },
+                   "default":null
+                },
+                "cols":{
+                   "description":"Columns in the symbol to prepopulate the columns of the pivot table.",
+                   "type":"object",
+                   "additionalProperties":{
+                      "type":["array", "string", "null"],
+                      "uniqueItems":true
+                   }
+                },
+                "aggregations":{
+                   "description":"Columns in the symbol to prepopulate the aggregations of the pivot table.",
+                   "type":"object",
+                   "additionalProperties":{
+                      "type":["array", "string", "null"],
+                      "uniqueItems":true
+                   }
+                },
+                "aggregationFunction":{
+                   "description":"Function to use for aggregating data.",
+                   "type":"string",
+                   "enum": ["sum", "mean", "median", "min", "max", "count"]
+                },
+                "filter":{
+                   "description":"Columns in the symbol to prepopulate the filter of the pivot table (key) and the element to be filtered by (value).",
+                   "type":"object",
+                   "additionalProperties":{
+                      "type":["array", "string"],
+                      "uniqueItems":true
+                   }
+                },
+                "pivotRenderer":{
+                  "description":"Sepcify the default renderer.",
+                   "type":"string",
+                   "enum": ["table", "heatmap", "line", "bar", "stackedbar", "radar"]
+                },
+                "chartOptions": {
+                  "description":"Additional chart options",
+                   "type":"object",
+                   "additionalProperties":false,
+                   "properties":{
+                      "xTitle":{
+                        "description":"X-axis label",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "yTitle":{
+                        "description":"Y-axis label",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "yLogScale":{
+                        "description":"Use logarithmic scale on y-axis",
+                        "type": "boolean",
+                        "minLength": 1
+                      },
+                      "customChartColors": {
+                        "description": "Custom color for each UEL. Every second color is the hover color of previous one.",
+                        "additionalProperties": {
+                          "type": "array"
+                        }
+                      },
+                      "customLabels": {
+                        "description": "Custom labels for UELs.",
+                        "additionalProperties": {
+                          "type": "string"
+                        }
+                      }
+                   }
+                },
+                "data": {
+                  "description":"Symbol name that the data should come from.",
+                  "type": "string"
+                },
+                "decimals": {
+                  "description":"Number of decimal places to be displayed.",
+                  "type": "integer"
+                },
+                "userFilter": {
+                  "description":"Adds multi-dropdown menu(s) to a chart/table. Can also be a dataViewsConfig ID.",
+                  "type": ["string", "array"],
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "colWidth": {
+                  "description":"Specifies the width of the chart. Must be between 1 and 12.",
+                  "type": "integer"
+                },
+                "height": {
+                  "description":"Specifies the height of a single chart. Must be any valid css unit, e.g. '40vh' or '450px'.",
+                  "type": "string"
+                }
+              }
+            }
+            ]
+          }
+        }
+      }
     }
    },
    "additionalProperties":false,
@@ -2017,6 +2230,35 @@
                      "options":{
                         "$ref": "#/definitions/miroPivotOptions"
                       }
+                  },
+                  "additionalProperties":false,
+                  "required":[
+                     "outType"
+                  ]
+               },
+               {
+                  "properties":{
+                     "outType":{
+                        "description":"Style of graph.",
+                        "type":"string",
+                        "enum":[
+                           "dashboard"
+                        ]
+                     },
+                     "options":{
+                       "$ref": "#/definitions/dashboardOptions"
+                     },
+                     "additionalData":{
+                       "description":"Specify additional symbols whose data should be handed to renderer. data parameter will be a named list of dataframes with names being symbol names",
+                        "type":["array", "string"],
+                        "minLength":1,
+                        "minItems":1,
+                        "uniqueItems":true,
+                        "items":{
+                           "type":"string",
+                           "minLength":1
+                        }
+                     }
                   },
                   "additionalProperties":false,
                   "required":[

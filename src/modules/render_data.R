@@ -68,6 +68,8 @@ renderDataUI <- function(id, type, graphTool = NULL, height = NULL, customOption
     data <- uiOutput(ns("scalarBoxes"))
   } else if (identical(type, "miropivot")) {
     data <- miroPivotOutput(ns("miroPivot"), height = height, options = customOptions)
+  } else if (identical(type, "dashboard")) {
+    data <- dashboardOutput(ns("dashboard"), height = height, options = customOptions)
   } else {
     tryCatch(
       {
@@ -254,6 +256,12 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
       options = customOptions,
       roundPrecision = roundPrecision,
       rendererEnv = rendererEnv, views = views
+    )
+  } else if (type == "dashboard") {
+    renderDashboard("dashboard", data,
+      options = customOptions,
+      rendererEnv = rendererEnv, views = views,
+      outputScalarsFull = configData
     )
   } else {
     tryCatch(
