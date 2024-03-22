@@ -5,7 +5,7 @@ app <- AppDriver$new("../../",
 )
 
 Sys.sleep(2L)
-jsonPath <- file.path("..", "model", "pickstock_configuration", "conf_pickstock_configuration")
+jsonPath <- file.path("..", "model", "pickstock_config_mode", "conf_pickstock_configuration")
 configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"),
   simplifyDataFrame = FALSE,
   simplifyMatrix = FALSE

@@ -30,7 +30,10 @@ updateSelectInputNoClear <- function(session, id, choices) {
     selected = selected
   )
 }
-isNonSingletonSet <- function(symName) {
+isNonSingletonSet <- function(symName, multiDim = FALSE) {
+  if (multiDim) {
+    return(length(modelInRaw[[symName]]$headers) >= 2L)
+  }
   return(length(modelInRaw[[symName]]$headers) == 2L)
 }
 isParameter <- function(symName) {
@@ -551,6 +554,8 @@ observeEvent(
         widgetOptions <- langSpecificWidget$widgetOptionsParameter
       } else if (isNonSingletonSet(input$widget_symbol)) {
         widgetOptions <- langSpecificWidget$widgetOptionsSet
+      } else if (isNonSingletonSet(input$widget_symbol, multiDim = TRUE)) {
+        widgetOptions <- langSpecificWidget$widgetOptionsParameter
       } else {
         flog.error("Unknown input symbol: '%s'.", input$widget_symbol)
         showHideEl(session, "#unknownErrorWidgets", 4000L)
@@ -2094,6 +2099,7 @@ observeEvent(
 )
 
 getSymbolHotOptions <- function() {
+  isSet <- isNonSingletonSet(input$widget_symbol, TRUE)
   tagList(
     tags$div(
       class = "option-wrapper",
@@ -2138,10 +2144,10 @@ getSymbolHotOptions <- function() {
       ),
       tags$div(
         class = "option-wrapper shiny-input-container",
-        style = if (!length(pivotCols)) "display:none",
+        style = if (!length(pivotCols) || isSet) "display:none",
         selectInput("table_pivotCols", lang$adminMode$widgets$table$pivotCols,
           choices = c(`_` = "_", pivotCols),
-          selected = if (length(rv$widgetConfig$pivotCols)) rv$widgetConfig$pivotCols else "_"
+          selected = if (length(rv$widgetConfig$pivotCols) && !isSet) rv$widgetConfig$pivotCols else "_"
         )
       )
     ),

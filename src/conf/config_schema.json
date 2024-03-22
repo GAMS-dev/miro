@@ -365,7 +365,16 @@
                  "description":"Y-axis label",
                  "type": "string",
                  "minLength": 1
-               }
+               },
+               "yLogScale": {
+                "description": "Y-axis label",
+                "type": "string",
+                "minLength": 1
+              },
+              "customChartColors": {
+                "description": "Custom color palette. Every second color is the hover color of previous one.",
+                "type": "array"
+              }
             }
          }
       }
@@ -1151,7 +1160,7 @@
                       }
                     },
                     "pivotCols":{
-                      "description":"Array of columns to pivot",
+                      "description":"Array of columns to pivot (currently only supported for parameters)",
                       "type":["array", "string"],
                       "minLength":1,
                       "items":{
