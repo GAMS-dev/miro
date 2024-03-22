@@ -160,7 +160,7 @@ validateDashboardConfig <- function(graphConfig) {
     for (id in c("rows", "cols", "aggregations", "filter", "userFilter")) {
       if (length(config[[id]])) {
         if (id %in% c("rows", "userFilter")) {
-          if (identical(id, "userFilter") && config[[id]] %in% names(dc)) {
+          if (identical(id, "userFilter") && length(config[[id]]) == 1 && config[[id]] %in% names(dc)) {
             # If a dataViewsConfig ID is set as userFilter, the IDs filters are applied here as well.
             next
           }

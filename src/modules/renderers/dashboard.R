@@ -534,6 +534,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                       dataTableOutput(ns(paste0(id, "Table"))),
                       tags$div(
                         id = ns(paste0(id, "ChartWrapper")), class = "dashboard-chart-wrapper",
+                        style = paste0("height: ", if (length(dataViewsConfig[[id]]$height)) dataViewsConfig[[id]]$height else "33vh"),
                         chartjs::chartjsOutput(ns(paste0(id, "Chart")),
                           height = if (length(dataViewsConfig[[id]]$height)) dataViewsConfig[[id]]$height else "33vh"
                         )
