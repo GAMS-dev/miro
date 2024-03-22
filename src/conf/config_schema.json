@@ -375,7 +375,9 @@
       "type":"object",
       "additionalProperties":false,
       "properties":{
-        "valueBoxesTitle": { "type": "string" },
+        "valueBoxesTitle": {
+          "type": "string"
+        },
         "valueBoxes": {
           "type": "object",
           "properties": {
@@ -581,7 +583,8 @@
             ]
           }
         }
-      }
+      },
+      "required": ["valueBoxes", "dataViews", "dataViewsConfig"]
     }
    },
    "additionalProperties":false,

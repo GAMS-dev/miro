@@ -243,11 +243,12 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
         currentConfig <- dataViewsConfig[[view]]
 
-        if (!is.null(currentConfig$data)) {
-          if (currentConfig$data %in% names(data)) {
+        # If no data symbol is provided, the renderer's base symbol is used.
+        if (is.list(data)) {
+          if (!is.null(currentConfig$data)) {
             viewData <- data[[tolower(currentConfig$data)]]
           } else {
-            abortSafe(sprintf("Data for symbol '%s' is not available in this renderer. Please make sure to provide all necessary data in the app configuration.", currentConfig$data))
+            viewData <- data[[options[["_metadata_"]]$symname]]
           }
         } else {
           viewData <- data
@@ -380,13 +381,17 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         box_columns <- lapply(options$valueBoxes$Id, function(box_name) {
           column(12, class = "box-styles col-xs-6 col-sm-6", shinydashboard::valueBoxOutput(ns(box_name), width = 12))
         })
-        tagList(
-          column(12,
-            class = "col-xs-12 col-sm-12 custom-highlight-block custom-padding",
-            tags$h4(options$valueBoxesTitle[[1]], class = "highlight-block")
-          ),
+        if (length(options$valueBoxesTitle)) {
+          tagList(
+            column(12,
+              class = "col-xs-12 col-sm-12 custom-highlight-block custom-padding",
+              tags$h4(options$valueBoxesTitle, class = "highlight-block")
+            ),
+            do.call(tagList, box_columns)
+          )
+        } else {
           do.call(tagList, box_columns)
-        )
+        }
       })
 
       lapply(1:length(options$valueBoxes$Id), function(i) {
@@ -401,7 +406,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           valueTmp <- outputScalarsFull %>%
             filter(scalar == tolower(options$valueBoxes$ValueScalar[i]))
           if (!nrow(valueTmp)) {
-            abortSafe(sprintf("No scalar symbol '%s' found for valueBox '%s'"), options$valueBoxes$ValueScalar[i], options$valueBoxes$Id[i])
+            abortSafe(sprintf("No scalar symbol '%s' found for valueBox '%s'", options$valueBoxes$ValueScalar[i], options$valueBoxes$Id[i]))
           }
         }
 
