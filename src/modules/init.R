@@ -124,6 +124,10 @@ validateDashboardConfig <- function(graphConfig) {
   for (view in names(dc)) {
     config <- dc[[view]]
 
+    if (!is.list(config)) {
+      # custom user output
+      next
+    }
     if (length(config$data)) {
       if (config$data %in% c(graphConfig$options[["_metadata_"]]$symname, graphConfig$additionalData)) {
         symbol <- config$data
