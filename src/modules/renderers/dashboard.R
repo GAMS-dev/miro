@@ -224,6 +224,43 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         sum(numericCols) > 1
       }
 
+      getData <- function(indicator) {
+        noRowHeaders <- attr(dashboardChartData[[indicator]], "noRowHeaders")
+        dataTmp <- dashboardChartData[[indicator]]
+        if (length(dataViewsConfig[[indicator]]$decimals)) {
+          dataTmp <- dataTmp %>%
+            mutate(across(where(is.numeric), ~ round(., as.numeric(dataViewsConfig[[indicator]]$decimals))))
+        }
+
+        # filter user selection
+        if (length(dataViewsConfig[[indicator]]$userFilter)) {
+          indicatorTmp <- indicator
+          if (length(dataViewsConfig[[indicator]]$userFilter) == 1 &&
+            dataViewsConfig[[indicator]]$userFilter %in% names(dataViewsConfig)) {
+            indicatorTmp <- dataViewsConfig[[indicator]]$userFilter
+          }
+
+          for (filterName in dataViewsConfig[[indicatorTmp]]$userFilter) {
+            if (length(input[[paste0(indicatorTmp, "userFilter_", filterName)]])) {
+              filterEl <- input[[paste0(indicatorTmp, "userFilter_", filterName)]]
+              if (filterName %in% names(dataViewsConfig[[indicatorTmp]]$cols)) {
+                dataTmp <- dataTmp %>%
+                  select(
+                    1:as.numeric(noRowHeaders),
+                    (matches(paste0("^", filterEl, "$")) |
+                      contains(paste0(filterEl, "\U2024")) |
+                      contains(paste0("\U2024", filterEl)))
+                  )
+              } else {
+                dataTmp <- dataTmp %>%
+                  filter(!!rlang::sym(filterName) %in% filterEl)
+              }
+            }
+          }
+        }
+        return(dataTmp)
+      }
+
       dashboardChartData <- list()
       currentConfig <- c()
       for (view in names(dataViewsConfig)) {
@@ -573,39 +610,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             return()
           }
 
+          dataTmp <- getData(indicator)
           noRowHeaders <- attr(dashboardChartData[[indicator]], "noRowHeaders")
-          dataTmp <- dashboardChartData[[indicator]]
-          if (length(dataViewsConfig[[indicator]]$decimals)) {
-            dataTmp <- dataTmp %>%
-              mutate(across(where(is.numeric), ~ round(., as.numeric(dataViewsConfig[[indicator]]$decimals))))
-          }
-
-          # filter user selection
-          if (length(dataViewsConfig[[indicator]]$userFilter)) {
-            indicatorTmp <- indicator
-            if (length(dataViewsConfig[[indicator]]$userFilter) == 1 &&
-              dataViewsConfig[[indicator]]$userFilter %in% names(dataViewsConfig)) {
-              indicatorTmp <- dataViewsConfig[[indicator]]$userFilter
-            }
-
-            for (filterName in dataViewsConfig[[indicatorTmp]]$userFilter) {
-              if (length(input[[paste0(indicatorTmp, "userFilter_", filterName)]])) {
-                filterEl <- input[[paste0(indicatorTmp, "userFilter_", filterName)]]
-                if (filterName %in% names(dataViewsConfig[[indicatorTmp]]$cols)) {
-                  dataTmp <- dataTmp %>%
-                    select(
-                      1:as.numeric(noRowHeaders),
-                      (matches(paste0("^", filterEl, "$")) |
-                        contains(paste0(filterEl, "\U2024")) |
-                        contains(paste0("\U2024", filterEl)))
-                    )
-                } else {
-                  dataTmp <- dataTmp %>%
-                    filter(!!rlang::sym(filterName) %in% filterEl)
-                }
-              }
-            }
-          }
 
           # heatmap
           if (input[[paste0(indicator, "ChartType")]] == "heatmap") {
@@ -693,6 +699,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               paging = FALSE, dom = "t",
               scrollX = TRUE,
               scrollY = if (length(dataViewsConfig[[indicator]]$height)) dataViewsConfig[[indicator]]$height else "33vh",
+              scrollCollapse = TRUE,
               columnDefs = list(list(
                 className = "dt-left", targets = "_all"
               ))
@@ -733,38 +740,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
         # charts output
         output[[paste0(indicator, "Chart")]] <- chartjs::renderChartjs({
-          dataTmp <- dashboardChartData[[indicator]]
-          if (length(dataViewsConfig[[indicator]]$decimals)) {
-            dataTmp <- dataTmp %>%
-              mutate(across(where(is.numeric), ~ round(., as.numeric(dataViewsConfig[[indicator]]$decimals))))
-          }
-
-          # filter user selection
-          if (length(dataViewsConfig[[indicator]]$userFilter)) {
-            indicatorTmp <- indicator
-            if (length(dataViewsConfig[[indicator]]$userFilter) == 1 &&
-              dataViewsConfig[[indicator]]$userFilter %in% names(dataViewsConfig)) {
-              indicatorTmp <- dataViewsConfig[[indicator]]$userFilter
-            }
-
-            for (filterName in dataViewsConfig[[indicatorTmp]]$userFilter) {
-              if (length(input[[paste0(indicatorTmp, "userFilter_", filterName)]])) {
-                filterEl <- input[[paste0(indicatorTmp, "userFilter_", filterName)]]
-                if (filterName %in% names(dataViewsConfig[[indicatorTmp]]$cols)) {
-                  dataTmp <- dataTmp %>%
-                    select(
-                      1:as.numeric(attr(dashboardChartData[[indicatorTmp]], "noRowHeaders")),
-                      (matches(paste0("^", filterEl, "$")) |
-                        contains(paste0(filterEl, "\U2024")) |
-                        contains(paste0("\U2024", filterEl)))
-                    )
-                } else {
-                  dataTmp <- dataTmp %>%
-                    filter(!!rlang::sym(filterName) %in% filterEl)
-                }
-              }
-            }
-          }
+          dataTmp <- getData(indicator)
 
           chartType <- tolower(input[[paste0(indicator, "ChartType")]])
           currentView <- dataViewsConfig[[indicator]]
@@ -969,7 +945,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         output[[paste0(indicator, "DownloadCsv")]] <- downloadHandler(
           filename = paste0(indicator, ".csv"),
           content = function(file) {
-            return(write_csv(dashboardChartData[[indicator]], file, na = ""))
+            dataTmp <- getData(indicator)
+            return(write_csv(dataTmp, file, na = ""))
           }
         )
       })
