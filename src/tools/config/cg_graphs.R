@@ -193,7 +193,7 @@ langSpecificGraphs$graphOptions <- setNames(
   )
 )
 langSpecificGraphs$graphOptionsNoScalars <- setNames(
-  c("pie", "bar", "scatter", "line", "bubble", "hist", "dygraphs", "leaflet", "timevis", "miropivot", "custom"),
+  c("pie", "bar", "scatter", "line", "bubble", "hist", "dygraphs", "leaflet", "timevis", "miropivot", "dashboard", "custom"),
   c(
     lang$adminMode$graphs$graphOptions$pie,
     lang$adminMode$graphs$graphOptions$bar,
@@ -205,6 +205,7 @@ langSpecificGraphs$graphOptionsNoScalars <- setNames(
     lang$adminMode$graphs$graphOptions$leaflet,
     lang$adminMode$graphs$graphOptions$timevis,
     lang$adminMode$graphs$graphOptions$miropivot,
+    lang$adminMode$graphs$graphOptions$dashboard,
     lang$adminMode$graphs$graphOptions$custom
   )
 )
@@ -2545,6 +2546,16 @@ observeEvent(input$customPackages,
   },
   ignoreNULL = FALSE
 )
+observeEvent(input$dashbaordAdditionalData,
+  {
+    if (activeSymbol$id > length(modelIn)) {
+      rv$graphConfig$additionalData <<- input$dashbaordAdditionalData
+    } else {
+      rv$graphConfig$additionalData <<- NULL
+    }
+  },
+  ignoreNULL = FALSE
+)
 observeEvent(input$customAdditionalData,
   {
     if (activeSymbol$id > length(modelIn)) {
@@ -2725,6 +2736,8 @@ observeEvent(input$gams_symbols, {
         graphType <- "pivot"
       } else if (identical(configJSON$dataRendering[[chartId]]$outType, "miroPivot")) {
         graphType <- "miropivot"
+      } else if (identical(configJSON$dataRendering[[chartId]]$outType, "dashboard")) {
+        graphType <- "dashboard"
       } else if (identical(configJSON$dataRendering[[chartId]]$outType, "datatable")) {
         graphType <- "datatable"
       } else if (!length(configJSON$dataRendering[[chartId]][["graph"]])) {
@@ -2752,6 +2765,8 @@ observeEvent(input$gams_symbols, {
       newChartTool <<- currentGraphConfig[["tool"]]
     } else if (identical(graphType, "miropivot")) {
       newChartTool <<- "miropivot"
+    } else if (identical(graphType, "dashboard")) {
+      newChartTool <<- "dashboard"
     } else if (identical(graphType, "pivot")) {
       newChartTool <<- "pivot"
     } else if (identical(graphType, "custom")) {
@@ -2823,8 +2838,10 @@ observeEvent(
     if (!identical(chartTool, "valuebox")) {
       rv$graphConfig$options <<- NULL
     }
-    if (!identical(chartTool, "custom")) {
+    if (!chartTool %in% c("custom", "dashboard")) {
       rv$graphConfig$additionalData <<- NULL
+    }
+    if (!identical(chartTool, "custom")) {
       rv$graphConfig$packages <<- NULL
     }
     saveAndReload(chartTool)
@@ -3232,6 +3249,19 @@ observeEvent(
         where = "beforeEnd"
       )
       rv$graphConfig$graph$symname <- activeSymbol$name
+      allDataAvailable <<- TRUE
+    } else if (identical(chartTool, "dashboard")) {
+      insertUI(
+        selector = "#tool_options",
+        tagList(
+          if (!activeSymbol$isInput) {
+            textAreaInput("renderer_label", lang$adminMode$graphs$ui$label,
+              value = currentGraphLabel
+            )
+          },
+          tags$div(id = "dashboard_options", getDashboardOptions())
+        ), where = "beforeEnd"
+      )
       allDataAvailable <<- TRUE
     } else if (identical(chartTool, "custom")) {
       showEl(session, ".category-btn-custom")
@@ -4557,6 +4587,38 @@ getPivotOptions <- reactive({
     )
   )
 })
+getDashboardOptions <- reactive({
+  rv$initData
+  rv$refreshContent
+  indices <- activeSymbol$indices
+  scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
+  isolate({
+    rv$graphConfig$additionalData <<- checkLength(configuredWithThisTool, currentGraphConfig[["additionalData"]], NULL)
+    rv$graphConfig$options <<- checkLength(configuredWithThisTool, currentGraphConfig[["options"]], list())
+  })
+  tagList(
+    tags$div(
+      class = "cat-body cat-body-48a",
+      if (activeSymbol$id > length(modelIn)) {
+        # active symbol is an output symbol
+        selectizeInput("dashbaordAdditionalData", lang$adminMode$graphs$customOptions$additionalData,
+          choices = setNames(
+            list(
+              c(inputSymMultiDimChoices),
+              c(outputSymMultiDimChoices)[-(activeSymbol$id - length(modelIn))]
+            ),
+            c(
+              lang$adminMode$graphs$ui$input,
+              lang$adminMode$graphs$ui$output
+            )
+          ),
+          selected = rv$graphConfig$additionalData,
+          multiple = TRUE, options = list("dropdownParent" = "body")
+        )
+      }
+    )
+  )
+})
 getCustomOptions <- reactive({
   rv$initData
   rv$refreshContent
@@ -5047,6 +5109,16 @@ observe(
           hideEl(session, "#preview-content-leaflet")
           hideEl(session, "#preview-content-timevis")
           hideEl(session, "#preview-content-custom")
+        } else if (isolate(rv$graphConfig$graph$tool) == "dashboard") {
+          hideEl(session, "#preview-content-timevis")
+          hideEl(session, "#preview-content-plotly")
+          hideEl(session, "#pieValues")
+          hideEl(session, "#preview-content-leaflet")
+          hideEl(session, "#preview-content-pivot")
+          hideEl(session, "#preview-content-miropivot")
+          hideEl(session, "#preview-content-dygraphs")
+          hideEl(session, "#preview-content-valuebox")
+          hideEl(session, "#preview-content-custom")
         } else if (isolate(rv$graphConfig$graph$tool) == "custom") {
           showEl(session, "#preview-content-custom")
           hideEl(session, "#preview-content-pivot")
@@ -5212,6 +5284,11 @@ observeEvent(rv$saveGraphConfirm, {
     configJSON$dataRendering[[activeSymbol$name]]$height <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$pivottable <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$outType <<- "valueBox"
+  } else if (rv$graphConfig$graph$tool == "dashboard") {
+    configJSON$dataRendering[[activeSymbol$name]]$graph <<- NULL
+    configJSON$dataRendering[[activeSymbol$name]]$height <<- NULL
+    configJSON$dataRendering[[activeSymbol$name]]$pivottable <<- NULL
+    configJSON$dataRendering[[activeSymbol$name]]$outType <<- "dashboard"
   } else if (rv$graphConfig$graph$tool == "custom") {
     configJSON$dataRendering[[activeSymbol$name]]$graph <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$height <<- NULL

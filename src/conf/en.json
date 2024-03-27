@@ -1629,6 +1629,7 @@
         "leaflet": "Map chart",
         "timevis": "Gantt chart",
         "miropivot": "Pivot table and pivot charts",
+        "dashboard": "Dashboard",
         "valuebox": "Valuebox for scalar values",
         "custom": "Custom renderer"
       },
