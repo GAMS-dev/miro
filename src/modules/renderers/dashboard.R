@@ -415,7 +415,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
       )
       # Valueboxes output
       output$valueboxes <- renderUI({
-        box_columns <- lapply(options$valueBoxes$Id, function(box_name) {
+        box_columns <- lapply(options$valueBoxes$id, function(box_name) {
           column(12, class = "box-styles col-xs-6 col-sm-6", shinydashboard::valueBoxOutput(ns(box_name), width = 12))
         })
         if (length(options$valueBoxesTitle)) {
@@ -431,19 +431,19 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         }
       })
 
-      lapply(1:length(options$valueBoxes$Id), function(i) {
-        valBoxName <- options$valueBoxes$Id[i]
+      lapply(1:length(options$valueBoxes$id), function(i) {
+        valBoxName <- options$valueBoxes$id[i]
 
-        if (is.na(options$valueBoxes$ValueScalar[i])) {
+        if (is.na(options$valueBoxes$valueScalar[i])) {
           valueTmp <- NULL
         } else {
           if (is.null(outputScalarsFull)) {
             abortSafe("No scalar symbols found for valueBoxes")
           }
           valueTmp <- outputScalarsFull %>%
-            filter(scalar == tolower(options$valueBoxes$ValueScalar[i]))
+            filter(scalar == tolower(options$valueBoxes$valueScalar[i]))
           if (!nrow(valueTmp)) {
-            abortSafe(sprintf("No scalar symbol '%s' found for valueBox '%s'", options$valueBoxes$ValueScalar[i], options$valueBoxes$Id[i]))
+            abortSafe(sprintf("No scalar symbol '%s' found for valueBox '%s'", options$valueBoxes$valueScalar[i], options$valueBoxes$id[i]))
           }
         }
 
@@ -454,21 +454,21 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             valueTmp <- valueTmp %>%
               pull(value) %>%
               as.numeric()
-            if (!is.na(options$valueBoxes$Decimals[i])) {
-              valueTmp <- valueTmp %>% round(as.numeric(options$valueBoxes$Decimals[i]))
+            if (!is.na(options$valueBoxes$decimals[i])) {
+              valueTmp <- valueTmp %>% round(as.numeric(options$valueBoxes$decimals[i]))
             }
           }
 
           infoBoxCustom(
             value = valueTmp,
-            prefix = options$valueBoxes$Prefix[i],
-            postfix = options$valueBoxes$Postfix[i],
-            noColor = options$valueBoxes$NoColor[i],
+            prefix = options$valueBoxes$prefix[i],
+            postfix = options$valueBoxes$postfix[i],
+            noColor = options$valueBoxes$noColor[i],
             invert = options$valueBoxes$redPositive[i],
-            title = options$valueBoxes$Title[i],
-            color = if (startsWith(options$valueBoxes$Color[i], "#")) "aqua" else options$valueBoxes$Color[i],
-            icon = icon(options$valueBoxes$Icon[i]),
-            customColor = if (startsWith(options$valueBoxes$Color[i], "#")) options$valueBoxes$Color[i] else NULL,
+            title = options$valueBoxes$title[i],
+            color = if (startsWith(options$valueBoxes$color[i], "#")) "aqua" else options$valueBoxes$color[i],
+            icon = icon(options$valueBoxes$icon[i]),
+            customColor = if (startsWith(options$valueBoxes$color[i], "#")) options$valueBoxes$color[i] else NULL,
             noView = if (!valBoxName %in% names(options$dataViews)) TRUE else FALSE
           )
         })
@@ -477,13 +477,13 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
       # Data View switch
       observeEvent(input$showChart, {
         views <- names(options$dataViews)
-        boxWithoutView <- options$valueBoxes$Id[!options$valueBoxes$Id %in% views]
+        boxWithoutView <- options$valueBoxes$id[!options$valueBoxes$id %in% views]
 
         reportToRender <- substr(input$showChart, nchar(session$ns("")) + 1L, nchar(input$showChart))
         if (reportToRender %in% boxWithoutView) {
           return()
         }
-        reportToRender <- if (reportToRender %in% views) reportToRender else options$valueBoxes$Id[[1]]
+        reportToRender <- if (reportToRender %in% views) reportToRender else options$valueBoxes$id[[1]]
 
         for (view in views) {
           if (identical(reportToRender, view)) {
@@ -495,7 +495,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
       })
 
       # Data views
-      # names(options$dataViews) must match options$valueBoxes$Id entries
+      # names(options$dataViews) must match options$valueBoxes$id entries
       output$dataViews <- renderUI({
         sections <- lapply(names(options$dataViews), function(viewList) {
           view <- options$dataViews[[viewList]]
@@ -509,7 +509,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
           tags$div(
             id = ns(paste0(viewList, "View")),
-            style = ifelse(viewList == options$valueBoxes$Id[[1]], "", "display:none;"),
+            style = ifelse(viewList == options$valueBoxes$id[[1]], "", "display:none;"),
             lapply(seq_along(idList), function(i) {
               id <- idList[[i]]
               title <- titleList[[i]]

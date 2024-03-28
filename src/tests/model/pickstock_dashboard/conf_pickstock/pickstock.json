@@ -245,16 +245,16 @@
       "options": {
         "valueBoxesTitle": "Summary indicators",
         "valueBoxes": {
-          "Id": ["error_test", "error_train", "error_ratio"],
-          "Color": ["#848991", "#ffb327", "#29B675"],
-          "Icon": ["smog", "plug-circle-bolt", "truck"],
-          "Title": ["error test", "error train", "error ratio"],
-          "Prefix": ["", "", ""],
-          "Postfix": ["", "", ""],
+          "id": ["error_test", "error_train", "error_ratio"],
+          "color": ["#848991", "#ffb327", "#29B675"],
+          "icon": ["smog", "plug-circle-bolt", "truck"],
+          "title": ["error test", "error train", "error ratio"],
+          "prefix": ["", "", ""],
+          "postfix": ["", "", ""],
           "redPositive": [false, true, false],
-          "NoColor": [true, false, true],
-          "ValueScalar": ["error_train", "error_test", "error_ratio"],
-          "Decimals": [2, 2, 2]
+          "noColor": [true, false, true],
+          "valueScalar": ["error_train", "error_test", "error_ratio"],
+          "decimals": [2, 2, 2]
         },
         "dataViews": {
           "error_test": {

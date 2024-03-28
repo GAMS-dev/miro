@@ -2195,7 +2195,7 @@ firstDayTraining(td)                   = td.pos = 1;
                     </p>
                     <h5>additionalData</h5>
                     <p>
-                      A dashbaord can display the data of other GAMS input and
+                      A dashboard can display the data of other GAMS input and
                       output symbols that are included in MIRO. For the
                       dashboard to access this data, the corresponding symbols
                       must be specified under
@@ -2288,7 +2288,7 @@ firstDayTraining(td)                   = td.pos = 1;
                     <h5>valueBoxes</h5>
                     <p>
                       Configuration for the value boxes (tiles) in the
-                      dashboard. A valuebox can display a title and a scalar
+                      dashboard. A value box can display a title and a scalar
                       value (optional). A value box can be linked to a data view
                       that it is displayed when the box is clicked.
                     </p>
@@ -2309,7 +2309,7 @@ firstDayTraining(td)                   = td.pos = 1;
                       />
                     </div>
                     <p>
-                      A valuebox has several properties that can be configured.
+                      A value box has several properties that can be configured.
                       Each property of the
                       <code class="language-json">"valueBoxes"</code>
                       configuration must always be specified so that all lists
@@ -2317,18 +2317,18 @@ firstDayTraining(td)                   = td.pos = 1;
                     </p>
                     <ul>
                       <li>
-                        <code class="language-json">"Id"</code>: Each value box
+                        <code class="language-json">"id"</code>: Each value box
                         needs a unique id. The id of a data view (with charts
                         and tables) is linked to the id of a value box. This can
                         be any string without spaces. Value boxes can also be
                         used without a corresponding view.
                       </li>
                       <li>
-                        <code class="language-json">"Title"</code>: Title that
+                        <code class="language-json">"title"</code>: Title that
                         is displayed in the value box.
                       </li>
                       <li>
-                        <code class="language-json">"Color"</code>: Each value
+                        <code class="language-json">"color"</code>: Each value
                         box can have an individual color. The color code can
                         either be provided as
                         <a
@@ -2342,7 +2342,7 @@ firstDayTraining(td)                   = td.pos = 1;
                         'fuchsia', 'purple', 'maroon', 'black'.
                       </li>
                       <li>
-                        <code class="language-json">"Icon"</code>: Each value
+                        <code class="language-json">"icon"</code>: Each value
                         box can have an individual icon. For all available icons
                         see
                         <a
@@ -2352,21 +2352,21 @@ firstDayTraining(td)                   = td.pos = 1;
                         >.
                       </li>
                       <li>
-                        <code class="language-json">"ValueScalar"</code>: If the
+                        <code class="language-json">"valueScalar"</code>: If the
                         value box should display a value, this needs to be
                         configured here. Valid <i>ValueScalar</i> entries are
                         scalar output symbols of the model, which are used in
-                        MIRO. Names must be specified in the lowercase.
+                        MIRO. Names must be specified in lower case.
                       </li>
                       <li>
-                        <code class="language-json">"Prefix"</code>: String that
-                        is displayed ahead of the value. If '+' is defined as a
-                        prefix, a '+' is appended to a positive value. If the
-                        value is negative, the sign automatically changes to
+                        <code class="language-json">"prefix"</code>: Any string
+                        that is displayed ahead of the value. If '+' is defined
+                        as a prefix, a '+' is appended to a positive value. If
+                        the value is negative, the sign automatically changes to
                         '-'.
                       </li>
                       <li>
-                        <code class="language-json">"Postfix"</code>: String
+                        <code class="language-json">"postfix"</code>: String
                         that is displayed after the value.
                       </li>
                       <li>
@@ -2378,13 +2378,13 @@ firstDayTraining(td)                   = td.pos = 1;
                         to <i>true</i>, otherwise <i>false</i>.
                       </li>
                       <li>
-                        <code class="language-json">"NoColor"</code>: If the
+                        <code class="language-json">"noColor"</code>: If the
                         value of the value box should not have a red/green
                         color, but should be gray instead, the NoColor property
                         needs to be set to <i>true</i>, otherwise <i>false</i>.
                       </li>
                       <li>
-                        <code class="language-json">"Decimals"</code>: Number of
+                        <code class="language-json">"decimals"</code>: Number of
                         decimal places that should be displayed for a value.
                       </li>
                     </ul>
@@ -2398,16 +2398,16 @@ firstDayTraining(td)                   = td.pos = 1;
       "options": {
         "valueBoxesTitle": "Summary indicators",
         "valueBoxes": {
-          "Id": ["summary","gdp","absorption","production"],
-          "Color": ["#848991","olive","aqua","#3c8dbc"],
-          "Icon": ["chart-line","money-bill-trend-up","credit-card","industry"],
-          "Title": ["MACROECONOMIC INDICATORS","GDP","ABSORPTION","PRODUCTION"],
-          "Prefix": ["+","+","+","+"],
-          "Postfix": ["%","%","%","%"],
+          "id": ["summary","gdp","absorption","production"],
+          "color": ["#848991","olive","aqua","#3c8dbc"],
+          "icon": ["chart-line","money-bill-trend-up","credit-card","industry"],
+          "title": ["MACROECONOMIC INDICATORS","GDP","ABSORPTION","PRODUCTION"],
+          "prefix": ["+","+","+","+"],
+          "postfix": ["%","%","%","%"],
           "redPositive": [false,false,false,false],
-          "NoColor": [false,false,false,false],
-          "ValueScalar": [null,"gdp","absorption","production"],
-          "Decimals": [2,2,2,2]
+          "noColor": [false,false,false,false],
+          "valueScalar": [null,"gdp","absorption","production"],
+          "decimals": [2,2,2,2]
         },
         "dataViews": {
             [...]
@@ -2462,7 +2462,7 @@ firstDayTraining(td)                   = td.pos = 1;
       "options": {
         "valueBoxesTitle": "Summary indicators",
         "valueBoxes": {
-          "Id": ["summary","gdp","absorption","production"],
+          "id": ["summary","gdp","absorption","production"],
           [...]
         },
         "dataViews": {
@@ -2589,7 +2589,7 @@ firstDayTraining(td)                   = td.pos = 1;
                           </li>
                           <li>
                             <code class="language-json">"userFilter"</code>:
-                            Adds multi-dropdown menu(s) to a chart/table in
+                            Adds multi drop down menu(s) to a chart/table in
                             which elements of the configured dimension can be
                             selected for being rendered.
                             <div class="section-block" style="text-align: left">
@@ -2622,7 +2622,7 @@ firstDayTraining(td)                   = td.pos = 1;
 </code></pre>
                             In this example, the
                             <code class="language-json">"macro1"</code> chart
-                            will have a filter dropdown menu based on all
+                            will have a filter drop down menu based on all
                             elements in the
                             <code class="language-json">"mac"</code> dimension
                             of the symbol
@@ -2661,7 +2661,7 @@ firstDayTraining(td)                   = td.pos = 1;
 </code></pre>
                           </li>
                           <li>
-                            <code class="language-json">"Decimals"</code>:
+                            <code class="language-json">"decimals"</code>:
                             Number of decimal places to be displayed in a
                             chart/table.
                           </li>
@@ -2694,7 +2694,7 @@ firstDayTraining(td)                   = td.pos = 1;
       "options": {
         "valueBoxesTitle": "Summary indicators",
         "valueBoxes": {
-          "Id": ["summary","gdp","absorption","production"],
+          "id": ["summary","gdp","absorption","production"],
           [...]
         },
         "dataViews": {

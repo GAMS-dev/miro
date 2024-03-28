@@ -76,17 +76,17 @@ validateDashboardConfig <- function(graphConfig) {
     errMsgTmp <- "All lists in the 'valueBoxes' configuration must have the same length."
   }
 
-  if (any(grepl(" ", vb$Id))) {
+  if (any(grepl(" ", vb$id))) {
     errMsgTmp <- paste(
       errMsgTmp,
       sprintf(
-        "\nSpaces are not allowed in valueBox Ids. The following valueBox Id(s) contain(s) a space: '%s'",
-        paste(vb$Id[grepl(" ", vb$Id)], collapse = ", ")
+        "\nSpaces are not allowed in valueBox ids. The following valueBox id(s) contain(s) a space: '%s'",
+        paste(vb$id[grepl(" ", vb$id)], collapse = ", ")
       )
     )
   }
 
-  vbSymbols <- vb$ValueScalar[!is.na(vb$ValueScalar)]
+  vbSymbols <- vb$valueScalar[!is.na(vb$valueScalar)]
   noSymbol <- vbSymbols[!(vbSymbols %in% modelOut[[scalarsOutName]]$symnames)]
   if (length(noSymbol)) {
     errMsgTmp <- paste(
@@ -98,12 +98,12 @@ validateDashboardConfig <- function(graphConfig) {
     )
   }
 
-  noMatchingId <- names(dv)[!names(dv) %in% vb$Id]
+  noMatchingId <- names(dv)[!names(dv) %in% vb$id]
   if (length(noMatchingId)) {
     errMsgTmp <- paste(
       errMsgTmp,
       sprintf(
-        "\nThe following dataView Id(s) do not match with any valuebox Id: '%s'",
+        "\nThe following dataView id(s) do not match with any valuebox id: '%s'",
         paste(noMatchingId, collapse = ", ")
       )
     )
@@ -114,7 +114,7 @@ validateDashboardConfig <- function(graphConfig) {
     errMsgTmp <- paste(
       errMsgTmp,
       sprintf(
-        "\nSpaces are not allowed in dataViews Ids. The following dataView Id(s) contain(s) a space: '%s'",
+        "\nSpaces are not allowed in dataViews Ids. The following dataView id(s) contain(s) a space: '%s'",
         paste(chartIds[grepl(" ", chartIds)], collapse = ", ")
       )
     )

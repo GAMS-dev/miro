@@ -381,49 +381,49 @@
         "valueBoxes": {
           "type": "object",
           "properties": {
-            "Id": {
+            "id": {
               "description":"Each valuebox needs a unique id. If a click on a valuebox should show a view, both Ids need to be identical. No spaces allowed.",
               "type": "array",
               "items": {
                 "type": "string"
               }
             },
-            "Color": {
+            "color": {
               "description":"Background color of value box",
               "type": "array",
               "items": {
                 "type": "string"
               }
             },
-            "Icon": {
+            "icon": {
               "description":"Icon for value box from the https://fontawesome.com/ library",
               "type": "array",
               "items": {
                 "type": "string"
               }
             },
-            "Title": {
+            "title": {
               "description":"Title that is displayed in the valuebox.",
               "type": "array",
               "items": {
                 "type": "string"
               }
             },
-            "ValueScalar": {
+            "valueScalar": {
               "description":"Name of a scalar output symbol whose value is to be displayed in the value box",
               "type": "array",
               "items": {
                 "type": ["string", "null"]
               }
             },
-            "Prefix": {
+            "prefix": {
               "description":"String that is displayed ahead of the value. When using a '+', negative values will be prefixed with a '-'",
               "type": "array",
               "items": {
                 "type": "string"
               }
             },
-            "Postfix": {
+            "postfix": {
               "description":"String that is displayed after the value.",
               "type": "array",
               "items": {
@@ -437,14 +437,14 @@
                 "type": "boolean"
               }
             },
-            "NoColor": {
+            "noColor": {
               "description":"Set to true if the value of the valuebox should not have a red/green color, but should be gray instead.",
               "type": "array",
               "items": {
                 "type": "boolean"
               }
             },
-            "Decimals": {
+            "decimals": {
               "description":"Specify the rounding to use for the valuebox value",
               "type": "array",
               "items": {
@@ -452,7 +452,7 @@
               }
             }
           },
-          "required": ["Id", "Color", "Icon", "Title", "Prefix", "Postfix", "redPositive", "NoColor", "ValueScalar", "Decimals"]
+          "required": ["id", "color", "icon", "title", "prefix", "postfix", "redPositive", "noColor", "valueScalar", "decimals"]
         },
         "dataViews": {
           "description":"A data view is shown if  the corresponding value box is clicked in the user interface. The id must match the id of a valuebox.",
