@@ -1994,6 +1994,7 @@
           "options": "Zusätzliche Chart-Optionen",
           "width": "Wählen Sie die maximale Breite der erstellten Elemente",
           "height": "Wählen Sie die maximale Höhe der erstellten Elemente",
+          "variableSize": "Sollte die Größe der Diagramme proportional zu den Werten sein?",
           "opacity": "Deckkraft des Diagramms",
           "showlabels": "Sollen Werte über den Diagrammen angezeigt werden?",
           "transitionTime": "Wählen Sie die Dauer der Übergänge, wenn eine Eigenschaft eines Diagramms aktualisiert wird (in Millisekunden)",

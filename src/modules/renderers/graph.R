@@ -708,8 +708,13 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
           type = options$minicharts[[j]]$type,
           fillColor = d3.schemeCategory10[1],
           colorPalette = d3.schemeCategory10,
-          width = options$minicharts[[j]]$width,
-          height = options$minicharts[[j]]$height,
+          width = as.numeric(options$minicharts[[j]]$width) *
+            if (options$minicharts[[j]]$variableSize) {
+              rowSums(data[, options$minicharts[[j]]$chartdata], na.rm = TRUE) /
+                max(rowSums(data[, options$minicharts[[j]]$chartdata], na.rm = TRUE))
+            } else {
+              1
+            },
           opacity = options$minicharts[[j]]$opacity,
           showLabels = options$minicharts[[j]]$showLabels,
           labelText = NULL, labelMinSize = 8,

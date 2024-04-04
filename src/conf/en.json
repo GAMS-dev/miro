@@ -1995,6 +1995,7 @@
           "options": "Additional chart options",
           "width": "Choose the maximal width of the created elements",
           "height": "Choose the maximal height of the created elements",
+          "variableSize": "Should the size of the charts be proportional to the values?",
           "opacity": "Opacity of the chart",
           "showlabels": "Should values be displayed above chart elements?",
           "transitionTime": "Select the duration of transitions when a property of a chart is updated (in milliseconds)",

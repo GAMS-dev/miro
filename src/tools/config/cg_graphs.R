@@ -917,12 +917,8 @@ observeEvent(input$leafChart_width, {
     rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_width[1])]]]]$width <<- NULL
   }
 })
-observeEvent(input$leafChart_height, {
-  if (nchar(input$leafChart_height[2])) {
-    rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_height[1])]]]]$height <<- as.numeric(input$leafChart_height[2])
-  } else {
-    rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_height[1])]]]]$height <<- NULL
-  }
+observeEvent(input$leafChart_variableSize, {
+  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_variableSize[1])]]]]$variableSize <<- as.logical(input$leafChart_variableSize[2])
 })
 observeEvent(input$leafChart_opacity, {
   if (nchar(input$leafChart_opacity[2]) && as.numeric(input$leafChart_opacity[2]) >= 0 && as.numeric(input$leafChart_opacity[2]) <= 1) {
@@ -2419,7 +2415,7 @@ observeEvent(input$add_array_el, {
       chartdata = input$add_array_el[2][1],
       type = "auto",
       width = 30,
-      height = 30,
+      variableSize = FALSE,
       opacity = 1,
       showLabels = FALSE,
       transitionTime = 750,

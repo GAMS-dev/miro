@@ -354,14 +354,13 @@ const arrayTypes = {
     return ([elements, { elRequired: false }]);
   },
   leaflet_minicharts(defaults) {
-    let lng; let lat; let chartdata; let type; let width; let height;
-    let opacity; let showLabels; let transitionTime; let legend;
-    let legendPosition; let time; let
-      layerId;
+    let lng; let lat; let chartdata; let type; let width;
+    let variableSize; let opacity; let showLabels; let transitionTime;
+    let legend; let legendPosition; let time; let layerId;
     if (defaults != null) {
       [, {
-        lng, lat, chartdata, type, width, height, opacity, showLabels,
-        transitionTime, legend, legendPosition, time, layerId,
+        lng, lat, chartdata, type, width, variableSize, opacity,
+        showLabels, transitionTime, legend, legendPosition, time, layerId,
       }] = defaults;
     }
     const elements = {
@@ -372,7 +371,7 @@ const arrayTypes = {
       leafChart_type: ['select', lang.addLeafletMinicharts.type, ['bar', 'pie', 'polar-area', 'polar-radius', 'auto'], lang.addLeafletMinicharts.typeChoices, type],
       optionsStart: ['optionsStart', lang.addLeafletMinicharts.options],
       leafChart_width: ['numeric', lang.addLeafletMinicharts.width, width == null ? 30 : width, 0],
-      leafChart_height: ['numeric', lang.addLeafletMinicharts.height, height == null ? 30 : height, 0],
+      leafChart_variableSize: ['checkbox', lang.addLeafletMinicharts.variableSize, variableSize],
       leafChart_opacity: ['numeric', lang.addLeafletMinicharts.opacity, opacity == null ? 1 : opacity, 0, 1, 0.1],
       leafChart_showlabels: ['checkbox', lang.addLeafletMinicharts.showlabels, showLabels],
       leafChart_transitionTime: ['numeric', lang.addLeafletMinicharts.transitionTime, transitionTime == null ? 750 : transitionTime, 0],

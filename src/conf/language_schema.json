@@ -8009,6 +8009,10 @@
                       "type": "string",
                       "minLength": 1
                     },
+                    "variableSize": {
+                      "type": "string",
+                      "minLength": 1
+                    },
                     "opacity": {
                       "type": "string",
                       "minLength": 1
@@ -8044,7 +8048,7 @@
                       }
                     }
                   },
-                  "minProperties": 16
+                  "minProperties": 17
                 },
                 "addPieDataEl": {
                   "type": "object",
