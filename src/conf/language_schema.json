@@ -2603,6 +2603,10 @@
               "type": "string",
               "minLength": 1
             },
+            "newViewMultiChartSeries": {
+              "type": "string",
+              "minLength": 1
+            },
             "newViewCbCustomColors": {
               "type": "string",
               "minLength": 1
@@ -2745,11 +2749,27 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "pie": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "doughnut": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "bar": {
                   "type": "string",
                   "minLength": 1
                 },
+                "horizontalbar": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "stackedbar": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "horizontalstackedbar": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -2778,7 +2798,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 10
+              "minProperties": 14
             },
             "invalidFilters": {
               "type": "object",
@@ -2796,7 +2816,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 54
+          "minProperties": 55
         },
         "datatable": {
           "type": "object",

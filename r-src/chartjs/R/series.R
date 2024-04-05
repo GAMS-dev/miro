@@ -19,7 +19,7 @@ cjsSeries <- function(cjs, data, type, label, scale, ...){
 #' @export
 cjsSeries.cjs_bar <- function(cjs, data, type = "bar", label = NULL, scale = NULL, fill = FALSE, fillOpacity = 0.7, ...){
   n <- length(cjs$x$data$datasets)
-  colours <- cjs %>% cjs_get_colours(n, fill = fill, fillOpacity = fillOpacity)
+  colours <- cjs %>% cjs_get_colours(n, fill = fill, fillOpacity = fillOpacity, type = type)
   dataset <- list(c(data = list(I(data)), colours, label = label, ...))
   if (!is.null(type)) dataset[[1]]$type <- type
   if (!is.null(scale)) dataset[[1]]$yAxisID <- paste0("y-axis-", scale - 1)

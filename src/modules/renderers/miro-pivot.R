@@ -394,12 +394,20 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         class = "col-sm-12 col-md-2 col-charttype-wrapper",
         selectInput(ns("pivotRenderer"), "",
           setNames(
-            c("table", "heatmap", "bar", "stackedbar", "line", "scatter", "area", "stackedarea", "radar", "timeseries"),
+            c(
+              "table", "heatmap", "pie", "doughnut", "bar", "horizontalbar",
+              "stackedbar", "horizontalstackedbar", "line", "scatter", "area",
+              "stackedarea", "radar", "timeseries"
+            ),
             c(
               lang$renderers$miroPivot$renderer$table,
               lang$renderers$miroPivot$renderer$heatmap,
+              lang$renderers$miroPivot$renderer$pie,
+              lang$renderers$miroPivot$renderer$doughnut,
               lang$renderers$miroPivot$renderer$bar,
+              lang$renderers$miroPivot$renderer$horizontalbar,
               lang$renderers$miroPivot$renderer$stackedbar,
+              lang$renderers$miroPivot$renderer$horizontalstackedbar,
               lang$renderers$miroPivot$renderer$line,
               lang$renderers$miroPivot$renderer$scatter,
               lang$renderers$miroPivot$renderer$area,
@@ -834,7 +842,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if (length(viewOptions[["pivotRenderer"]]) &&
           viewOptions[["pivotRenderer"]] %in% c(
             "table", "heatmap", "line", "scatter", "area", "stackedarea",
-            "bar", "stackedbar", "radar", "timeseries"
+            "bar", "stackedbar", "radar", "timeseries", "doughnut", "pie",
+            "horizontalstackedbar", "horizontalbar"
           )) {
           updateSelectInput(session, "pivotRenderer", selected = viewOptions[["pivotRenderer"]])
         } else {
@@ -1017,9 +1026,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         showAddViewDialog <- function(pivotRenderer, viewOptions = NULL) {
           miroPivotState$editView <<- length(viewOptions) > 0L
           if (length(pivotRenderer) &&
-            pivotRenderer %in% c("line", "scatter", "area", "stackedarea", "bar", "stackedbar", "radar", "timeseries")) {
+            pivotRenderer %in% c(
+              "line", "scatter", "area", "stackedarea", "pie", "doughnut",
+              "bar", "stackedbar", "radar", "timeseries", "horizontalbar",
+              "horizontalstackedbar"
+            )) {
             moreOptions <- NULL
-            if (pivotRenderer %in% c("bar", "stackedbar", "line", "scatter", "area", "stackedarea", "timeseries")) {
+            if (pivotRenderer %in% c(
+              "bar", "stackedbar", "line", "scatter", "area", "stackedarea",
+              "timeseries", "horizontalbar", "horizontalstackedbar"
+            )) {
               moreOptions <- tagList(
                 tags$div(
                   class = "row",
@@ -1055,6 +1071,39 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                     checkboxInput_MIRO(ns("useLogScaleY"),
                       label = lang$renderers$miroPivot$newViewyLogScale,
                       value = identical(viewOptions$chartOptions$yLogScale, TRUE)
+                    )
+                  ),
+                  tags$div(
+                    class = "col-sm-6",
+                    selectInput(ns("addMultiChartSeries"),
+                      label = sprintf(
+                        lang$renderers$miroPivot$newViewMultiChartSeries,
+                        if (pivotRenderer %in%
+                          c(
+                            "line", "area", "stackedarea", "timeseries"
+                          )) {
+                          "bar"
+                        } else {
+                          "line"
+                        }
+                      ),
+                      choices = miroPivotState$currentSeriesLabels,
+                      selected = viewOptions$chartOptions$multiChartSeries,
+                      multiple = TRUE
+                    )
+                  )
+                )
+              )
+            } else if (pivotRenderer %in% c("pie", "doughnut", "radar")) {
+              moreOptions <- tagList(
+                tags$div(
+                  class = "row",
+                  tags$div(
+                    class = "col-sm-12",
+                    textInput(ns("advancedTitle"),
+                      width = "100%",
+                      lang$renderers$miroPivot$newViewChartTitle,
+                      value = viewOptions$chartOptions$title
                     )
                   )
                 )
@@ -1260,7 +1309,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             if (length(isolate(input$pivotRenderer)) &&
               isolate(input$pivotRenderer) %in% c(
                 "line", "scatter", "area", "stackedarea",
-                "bar", "stackedbar", "radar", "timeseries"
+                "bar", "stackedbar", "radar", "timeseries",
+                "pie", "doughnut", "horizontalbar", "horizontalstackedbar"
               )) {
               for (advancedOption in list(
                 list(
@@ -1309,6 +1359,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               if (isTRUE(input[["useLogScaleY"]])) {
                 refreshRequired <- TRUE
                 newViewConfig$chartOptions$yLogScale <- TRUE
+              }
+              if (length(input[["addMultiChartSeries"]])) {
+                refreshRequired <- TRUE
+                newViewConfig$chartOptions$multiChartSeries <- input[["addMultiChartSeries"]]
               }
             }
             views$add(session, viewName, newViewConfig)
@@ -1923,7 +1977,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         if (!pivotRenderer %in% c(
           "line", "scatter", "area", "stackedarea", "bar",
-          "stackedbar", "radar", "timeseries"
+          "stackedbar", "radar", "timeseries", "pie", "doughnut",
+          "horizontalbar", "horizontalstackedbar"
         )) {
           return()
         }
@@ -2064,7 +2119,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               position = "nearest"
             )
           }
-        } else if (identical(pivotRenderer, "stackedbar")) {
+        } else if (pivotRenderer %in% c("stackedbar", "horizontalstackedbar")) {
           chartJsObj <- chartjs(
             customColors = chartColorsToUse,
             title = currentView$chartOptions$title
@@ -2084,6 +2139,18 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             title = currentView$chartOptions$title
           ) %>%
             cjsRadar(labels = labels)
+        } else if (identical(pivotRenderer, "pie")) {
+          chartJsObj <- chartjs(
+            customColors = chartColorsToUse,
+            title = currentView$chartOptions$title
+          ) %>%
+            cjsPie(labels = labels)
+        } else if (identical(pivotRenderer, "doughnut")) {
+          chartJsObj <- chartjs(
+            customColors = chartColorsToUse,
+            title = currentView$chartOptions$title
+          ) %>%
+            cjsDoughnut(labels = labels, cutout = 80)
         } else {
           chartJsObj <- chartjs(
             customColors = chartColorsToUse,
@@ -2095,7 +2162,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               yTitle = currentView$chartOptions$yTitle
             )
         }
-        if (identical(currentView$chartOptions$yLogScale, TRUE) &&
+        if (pivotRenderer %in% c("horizontalbar", "horizontalstackedbar")) {
+          if (identical(currentView$chartOptions$yLogScale, TRUE) &&
+            identical(chartJsObj$x$scales$y$type, "linear")) {
+            chartJsObj$x$scales$x$type <- "logarithmic"
+          } else {
+            chartJsObj$x$scales$x$type <- "linear"
+          }
+          chartJsObj$x$options$indexAxis <- "y"
+          chartJsObj$x$scales$y$type <- "category"
+        } else if (identical(currentView$chartOptions$yLogScale, TRUE) &&
           identical(chartJsObj$x$scales$y$type, "linear")) {
           chartJsObj$x$scales$y$type <- "logarithmic"
         }
@@ -2115,18 +2191,37 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             mode = "xy"
           )
         )
+        for (i in seq_len(min(noSeries, 40L))) {
+          label <- names(dataTmp)[rowHeaderLen + i]
+          if (label %in% currentView$chartOptions$multiChartSeries) {
+            if (pivotRenderer %in% c("line", "area", "stackedarea", "timeseries")) {
+              chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
+                label = label,
+                type = "bar",
+                order = 2
+              )
+            } else {
+              chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
+                label = label,
+                type = "line",
+                order = 0
+              )
+            }
+          } else {
+            chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
+              label = label,
+              fill = pivotRenderer %in% c("area", "stackedarea"),
+              fillOpacity = if (identical(pivotRenderer, "stackedarea")) 1 else 0.15,
+              order = 1
+            )
+          }
+        }
         if (length(currentView$chartOptions)) {
           # reset chart options
           rendererEnv[[ns("chartOptions")]] <- currentView$chartOptions
           currentView$chartOptions <<- NULL
         }
-        for (i in seq_len(min(noSeries, 40L))) {
-          chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
-            label = names(dataTmp)[rowHeaderLen + i],
-            fill = pivotRenderer %in% c("area", "stackedarea"),
-            fillOpacity = if (identical(pivotRenderer, "stackedarea")) 1 else 0.15
-          )
-        }
+
         hideEl(session, paste0("#", ns("loadPivotTable")))
         chartJsObj$x$options$maintainAspectRatio <- FALSE
         if (length(currentView[["_didRender_"]])) {
