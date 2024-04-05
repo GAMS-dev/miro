@@ -2204,6 +2204,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
                 label = label,
                 type = "line",
+                showLine = TRUE,
                 order = 0
               )
             }
