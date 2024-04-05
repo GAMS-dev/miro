@@ -367,8 +367,8 @@
                  "minLength": 1
                },
                "yLogScale": {
-                "description": "Y-axis label",
-                "type": "string",
+                "description": "Use logarithmic scale on y-axis",
+                "type": "boolean",
                 "minLength": 1
               },
               "customChartColors": {
