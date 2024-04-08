@@ -1686,3 +1686,8 @@ input[type=text], select {
 .shortcode-youtube img {
     display: block;
 }
+figcaption {
+  font-style: italic;
+  padding: 2px;
+  text-align: center;
+}
