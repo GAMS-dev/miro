@@ -2175,6 +2175,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           identical(chartJsObj$x$scales$y$type, "linear")) {
           chartJsObj$x$scales$y$type <- "logarithmic"
         }
+        chartJsObj$x$options$locale <- "en-US"
         chartJsObj$x$options$plugins$zoom <- list(
           zoom = list(
             wheel = list(
