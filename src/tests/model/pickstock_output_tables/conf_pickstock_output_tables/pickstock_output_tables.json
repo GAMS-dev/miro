@@ -5,7 +5,7 @@
   "inputWidgets": {
     "price": {
       "widgetType": "table",
-      "label": "<h3>Data:</h3>\n<p><em>test</em> <strong>asd</strong></p>\n",
+      "label": "<h3>Data:</h3>\n<p><em>test</em> <strong>asd</strong></p>\n$\\sum_1^{10}x$5\\$6\\$",
       "bigData": true,
       "pivotCols": "symbol"
     },

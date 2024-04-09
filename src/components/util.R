@@ -2135,3 +2135,7 @@ dfApplyChanges <- function(df, changes) {
   }
   return(df)
 }
+
+markdownKatex <- function(text) {
+  markdown(stringi::stri_replace_all_regex(text, "(?<!\\\\)\\\\\\$", "<span>\\$</span>"))
+}

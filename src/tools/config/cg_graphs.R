@@ -634,10 +634,13 @@ output$rendererLabelWrapper <- renderUI({
     return()
   }
   if (length(rv$graphConfig$label) && !identical(trimws(rv$graphConfigg$label), "")) {
-    tags$div(
-      id = "rendererLabel",
-      class = "readme-wrapper label-wrapper",
-      markdown(rv$graphConfig$label)
+    tagList(
+      tags$div(
+        id = "rendererLabel",
+        class = "readme-wrapper label-wrapper",
+        markdownKatex(rv$graphConfig$label)
+      ),
+      tags$script("setTimeout(function(){Miro.parseKatex(document.getElementById('rendererLabel'))},500)")
     )
   }
 })

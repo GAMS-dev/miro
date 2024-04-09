@@ -346,7 +346,7 @@ if (buildUI) {
                 tags$div(
                   id = paste0("tableLabel_", i),
                   class = "readme-wrapper label-wrapper label-collapsed",
-                  markdown(modelIn[[i]]$label)
+                  markdownKatex(modelIn[[i]]$label)
                 ),
                 tags$div(
                   class = "label-toggle",
@@ -898,7 +898,7 @@ if (buildUI) {
             tags$div(
               id = paste0("tableOutLabel_", i),
               class = "readme-wrapper label-wrapper label-collapsed",
-              markdown(configGraphsOut[[i]]$label)
+              markdownKatex(configGraphsOut[[i]]$label)
             ),
             tags$div(
               class = "label-toggle",
@@ -1118,10 +1118,16 @@ if (buildUI) {
             tags$script(type = "application/javascript", `defer src` = "katex.min.js"),
             tags$script(
               type = "application/javascript", `defer src` = "auto-render.min.js",
-              onload = if (isTRUE(config$readme$enableMath)) {
-                "renderMathInElement(document.getElementsByClassName('readme-wrapper')[0],
-{throwOnError:false,delimiters:[{left:'$$',right:'$$',display:true},{left: '$',right:'$',display:false}]});"
-              }
+              onload = "Array.prototype.forEach.call(document.getElementsByClassName('readme-wrapper'), function(el) {Miro.parseKatex(el);});"
+            )
+          )
+        } else {
+          tagList(
+            tags$link(type = "text/css", rel = "stylesheet", href = "katex.min.css"),
+            tags$script(type = "application/javascript", `defer src` = "katex.min.js"),
+            tags$script(
+              type = "application/javascript", `defer src` = "auto-render.min.js",
+              onload = "Array.prototype.forEach.call(document.getElementsByClassName('label-wrapper'), function(el) {Miro.parseKatex(el);});"
             )
           )
         },

@@ -1,4 +1,4 @@
-# Adding/removing rows in input table works.
+# Table settings works
 
     "price.csv"
 

@@ -404,10 +404,13 @@ output$widgetTableLabelWrapper <- renderUI({
     return()
   }
   if (length(rv$widgetConfig$label) && !identical(trimws(rv$widgetConfig$label), "")) {
-    tags$div(
-      id = "widgetTableLabel",
-      class = "readme-wrapper label-wrapper",
-      markdown(rv$widgetConfig$label)
+    tagList(
+      tags$div(
+        id = "widgetTableLabel",
+        class = "readme-wrapper label-wrapper",
+        markdownKatex(rv$widgetConfig$label)
+      ),
+      tags$script("setTimeout(function(){Miro.parseKatex(document.getElementById('widgetTableLabel'))},500)")
     )
   }
 })
