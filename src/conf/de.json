@@ -1628,6 +1628,7 @@
         "leaflet": "Kartendiagramm",
         "timevis": "Gantt-Diagramm",
         "miropivot": "Pivot-Tabelle und Pivot-Charts",
+        "dashboard": "Dashboard",
         "valuebox": "Wertebox für skalare Werte",
         "custom": "Eigener Renderer"
       },
