@@ -514,7 +514,6 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               id <- idList[[i]]
               title <- titleList[[i]]
 
-              # allow custom renderer here?
               if (is.list(dataViewsConfig[[id]])) {
                 userFilter <- NULL
                 if (length(dataViewsConfig[[id]]$userFilter)) {
