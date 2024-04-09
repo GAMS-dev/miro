@@ -448,7 +448,6 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         }
 
         output[[valBoxName]] <- renderValueBox({
-
           # Note: Modify in case (optional) valueBox values should be calculated differently
           if (!is.null(valueTmp)) {
             valueTmp <- valueTmp %>%
