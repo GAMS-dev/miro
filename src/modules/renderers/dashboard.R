@@ -146,18 +146,12 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         # apply custom labels
         if (length(config$chartOptions$customLabels)) {
           labelCols <- dataTmp[, sapply(dataTmp, class) == "character"]
-          for (i in seq_len(nrow(dataTmp))) {
-            for (j in seq_len(length(labelCols))) {
-              if (is.na(dataTmp[[i, j]])) {
-                next
-              }
-              for (key in names(config$chartOptions$customLabels)) {
-                if (dataTmp[[i, j]] == key) {
-                  dataTmp[[i, j]] <- config$chartOptions$customLabels[[key]]
-                  break
-                }
-              }
-            }
+          for (col in seq_len(length(labelCols))) {
+            dataTmp[[col]] <- ifelse(
+              dataTmp[[col]] %in% names(config$chartOptions$customLabels),
+              config$chartOptions$customLabels[dataTmp[[col]]],
+              dataTmp[[col]]
+            )
           }
         }
 
@@ -243,7 +237,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           for (filterName in dataViewsConfig[[indicatorTmp]]$userFilter) {
             if (length(input[[paste0(indicatorTmp, "userFilter_", filterName)]])) {
               filterEl <- input[[paste0(indicatorTmp, "userFilter_", filterName)]]
-              if (filterName %in% names(dataViewsConfig[[indicatorTmp]]$cols)) {
+              if (filterName %in% names(dataViewsConfig[[indicator]]$cols)) {
                 dataTmp <- dataTmp %>%
                   select(
                     1:as.numeric(noRowHeaders),
@@ -307,7 +301,6 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         preparedData <- prepareData(currentConfig, viewData)
         dashboardChartData[[view]] <- preparedData
       }
-
 
       # Boxes for  KPIs (custom infobox)
       infoBoxCustom <-
@@ -688,9 +681,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             container = DTbuildColHeaderContainer(
               names(dataTmp),
               noRowHeaders,
-              unlist(nonNumericCols[names(dataTmp)[seq_len(noRowHeaders)]],
-                use.names = FALSE
-              ),
+              nonNumericCols,
               colSummary = colSummarySettings
             ),
             options = list(
