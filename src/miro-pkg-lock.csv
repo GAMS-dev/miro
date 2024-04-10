@@ -1,6 +1,6 @@
-data.table, 1.15.2
+data.table, 1.15.4
 cpp11, 0.4.7
-xfun, 0.42
+xfun, 0.43
 fastmap, 1.1.1
 backports, 1.4.1
 assertthat, 0.2.1
@@ -8,7 +8,7 @@ crayon, 1.5.2
 glue, 1.7.0
 fansi, 1.0.6
 cli, 3.6.2
-utf8, 1.2.3
+utf8, 1.2.4
 Rcpp, 1.0.12
 R6, 2.5.1
 BH, 1.84.0-0
@@ -16,17 +16,17 @@ magrittr, 2.0.3
 rlang, 1.1.3
 ellipsis, 0.3.2
 later, 1.3.2
-promises, 1.2.1
-httpuv, 1.6.14
+promises, 1.3.0
+httpuv, 1.6.15
 mime, 0.12
 jsonlite
-digest, 0.6.34
+digest, 0.6.35
 sourcetools, 0.1.7-1
 xtable, 1.8-4
 curl, 5.2.1
 V8, 4.4.2
 base64enc, 0.1-3
-htmltools, 0.5.7
+htmltools, 0.5.8.1
 jquerylib, 0.1.4
 withr, 3.0.0
 leaflet.providers, 2.0.0
@@ -38,23 +38,23 @@ lifecycle, 1.0.4
 vctrs, 0.6.5
 fs, 1.6.3
 rappdirs, 0.3.3
-sass, 0.4.8
-bslib, 0.6.1
+sass, 0.4.9
+bslib, 0.7.0
 shiny
 shinyAce, 0.4.2
 colorspace, 2.1-0
 purrr, 1.0.2
 yaml, 2.3.8
 labeling, 0.4.3
-munsell, 0.5.0
+munsell, 0.5.1
 lazyeval, 0.2.2
 pkgconfig, 2.0.3
-tidyselect, 1.2.0
+tidyselect, 1.2.1
 plogr, 0.2.0
-htmlwidgets, 1.5.4
+htmlwidgets, 1.6.4
 png, 0.1-8
 RColorBrewer, 1.1-3
-lattice, 0.22-5
+lattice, 0.22-6
 sp, 2.1-3
 viridisLite, 0.4.2
 raster, 3.4-13
@@ -94,9 +94,9 @@ progress, 1.2.3
 lambda.r, 1.2.4
 futile.options, 1.0.1
 zoo, 1.8-12
-globals, 0.16.2
+globals, 0.16.3
 listenv, 0.9.1
-processx, 3.8.3
+processx, 3.8.4
 readxl, 1.4.3
 writexl, 1.5.0
 rpivotTable, 0.3.0
@@ -106,7 +106,7 @@ leaflet.minicharts, 0.6.2
 xts, 0.13.2
 dygraphs, 1.1.1.6
 parallelly, 1.37.1
-future, 1.33.1
+future, 1.33.2
 bit, 4.0.5
 bit64, 4.0.5
 tzdb, 0.4.0
@@ -116,4 +116,4 @@ miroUtil
 rhandsontable
 sortable
 chartjs
-RSQLite, 2.3.5
+RSQLite, 2.3.6
