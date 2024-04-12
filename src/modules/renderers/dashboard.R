@@ -1,4 +1,4 @@
-dashboardOutput <- function(id, height = NULL, options = NULL, path = NULL) {
+dashboardOutput <- function(id, height = NULL, options = NULL, path = NULL, ...) {
   ns <- NS(id)
 
   tagList(
@@ -31,7 +31,7 @@ dashboardOutput <- function(id, height = NULL, options = NULL, path = NULL) {
   )
 }
 
-renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL) {
+renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
   moduleServer(
     id,
     function(input, output, session) {
@@ -240,7 +240,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               if (filterName %in% names(dataViewsConfig[[indicator]]$cols)) {
                 dataTmp <- dataTmp %>%
                   select(
-                    1:as.numeric(noRowHeaders),
+                    seq_len(noRowHeaders),
                     (matches(paste0("^", filterEl, "$")) |
                       contains(paste0(filterEl, "\U2024")) |
                       contains(paste0("\U2024", filterEl)))
@@ -287,12 +287,12 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
         # GAMS Tables need to be lengthened to only have one value column
         # as this is how a view is stored
-        numericColumnNames <- viewData[sapply(viewData, is.numeric)] %>% names()
+        numericColumnNames <- names(viewData[sapply(viewData, is.numeric)])
 
         if (length(numericColumnNames) > 1) {
           viewData <- viewData %>%
             pivot_longer(
-              cols = numericColumnNames,
+              cols = all_of(numericColumnNames),
               names_to = "Hdr",
               values_to = "value"
             )

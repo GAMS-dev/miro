@@ -382,7 +382,7 @@
           "type": "object",
           "properties": {
             "id": {
-              "description":"Each valuebox needs a unique id. If a click on a valuebox should show a view, both Ids need to be identical. No spaces allowed.",
+              "description":"Each valuebox needs a unique id. If a click on a valuebox should show a view, both ids need to be identical. No spaces allowed.",
               "type": "array",
               "items": {
                 "type": "string"
@@ -417,7 +417,7 @@
               }
             },
             "prefix": {
-              "description":"String that is displayed ahead of the value. When using a '+', negative values will be prefixed with a '-'",
+              "description":"String that is displayed before the value. When using a '+', negative values will be prefixed with a '-'",
               "type": "array",
               "items": {
                 "type": "string"
@@ -431,7 +431,7 @@
               }
             },
             "redPositive": {
-              "description":"Positive values are displayed in green by default, negative values in red. redPositive reverses this logicif set to true.",
+              "description":"Positive values are displayed in green by default, negative values in red. redPositive reverses this logic if set to true.",
               "type": "array",
               "items": {
                 "type": "boolean"
@@ -445,7 +445,7 @@
               }
             },
             "decimals": {
-              "description":"Specify the rounding to use for the valuebox value",
+              "description":"Specify the number of decimal places to which the value of the valuebox should be rounded",
               "type": "array",
               "items": {
                 "type": "integer"

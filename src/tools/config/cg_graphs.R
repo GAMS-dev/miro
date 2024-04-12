@@ -2546,7 +2546,7 @@ observeEvent(input$customPackages,
   },
   ignoreNULL = FALSE
 )
-observeEvent(input$dashbaordAdditionalData,
+observeEvent(input$dashboardAdditionalData,
   {
     if (activeSymbol$id > length(modelIn)) {
       rv$graphConfig$additionalData <<- input$dashbaordAdditionalData

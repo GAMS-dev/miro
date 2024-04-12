@@ -2290,7 +2290,7 @@ firstDayTraining(td)                   = td.pos = 1;
                       Configuration for the value boxes (tiles) in the
                       dashboard. A value box can display a title and a scalar
                       value (optional). A value box can be linked to a data view
-                      that it is displayed when the box is clicked.
+                      that is displayed when the box is clicked.
                     </p>
                     <div
                       class="section-block"
@@ -2312,7 +2312,7 @@ firstDayTraining(td)                   = td.pos = 1;
                       A value box has several properties that can be configured.
                       Each property of the
                       <code class="language-json">"valueBoxes"</code>
-                      configuration must always be specified so that all lists
+                      configuration must always be specified so that all arrays
                       have the same length. An example will be given below.
                     </p>
                     <ul>
@@ -2354,13 +2354,13 @@ firstDayTraining(td)                   = td.pos = 1;
                       <li>
                         <code class="language-json">"valueScalar"</code>: If the
                         value box should display a value, this needs to be
-                        configured here. Valid <i>ValueScalar</i> entries are
+                        configured here. Valid <i>valueScalar</i> entries are
                         scalar output symbols of the model, which are used in
                         MIRO. Names must be specified in lower case.
                       </li>
                       <li>
                         <code class="language-json">"prefix"</code>: Any string
-                        that is displayed ahead of the value. If '+' is defined
+                        that is displayed before the value. If '+' is defined
                         as a prefix, a '+' is appended to a positive value. If
                         the value is negative, the sign automatically changes to
                         '-'.
@@ -2380,7 +2380,7 @@ firstDayTraining(td)                   = td.pos = 1;
                       <li>
                         <code class="language-json">"noColor"</code>: If the
                         value of the value box should not have a red/green
-                        color, but should be gray instead, the NoColor property
+                        color, but should be gray instead, the <i>noColor</i> property
                         needs to be set to <i>true</i>, otherwise <i>false</i>.
                       </li>
                       <li>
@@ -2444,13 +2444,13 @@ firstDayTraining(td)                   = td.pos = 1;
                       example below) must match the id of a value box in
                       <code class="language-json">"valueBoxes"</code>. This
                       represents the link between the value box and the view.
-                      The elements within the Id object identify the individual
+                      The elements within the ID object identify the individual
                       charts/tables. After such an id of an individual chart,
                       (e.g. <code class="language-json">"macro1"</code> in the
                       example below), the title is specified, which is displayed
                       above the chart/table in the dashboard. One can also use
                       the empty string <code class="language-json">""</code> to
-                      display no header. Note that Ids must not contain spaces.
+                      display no header. Note that IDs must not contain spaces.
                     </p>
                     <p>Example:</p>
                     <pre><code class="language-json">
@@ -2492,7 +2492,7 @@ firstDayTraining(td)                   = td.pos = 1;
                       separate configuration in
                       <code class="language-json">"dataViewsConfig"</code> is
                       required for each chart listed in the
-                      <code class="language-json">"dataViews"</code>. The Ids
+                      <code class="language-json">"dataViews"</code>. The IDs
                       need to be the same.
                     </p>
                     <p>
@@ -2602,7 +2602,7 @@ firstDayTraining(td)                   = td.pos = 1;
                             Instead of providing symbol dimensions, one can also
                             set a
                             <code class="language-json">"dataViewsConfig"</code>
-                            Id. As a result, the filter(s) set in the
+                            ID. As a result, the filter(s) set in the
                             corresponding chart of that ID is/are also applied
                             here. Example:
                             <pre><code class="language-json">{
@@ -2629,7 +2629,7 @@ firstDayTraining(td)                   = td.pos = 1;
                             <code class="language-json">"macroperc"</code>.
                             Filters selected in that chart will automatically be
                             applied to
-                            <code class="language-json">"macro2"</code> too
+                            <code class="language-json">"macro2"</code> as well
                             since it uses
                             <code class="language-json"
                               >"userFilter": "macro1"</code
@@ -2640,7 +2640,7 @@ firstDayTraining(td)                   = td.pos = 1;
                             Listing of individual elements that should be
                             relabeled in the chart/table. Note that applying
                             custom labels to a dataset can be compute-intensive
-                            depending on the amount of data. Rendering the
+                            depending on the amount of data. The time it takes to render the
                             output might increase significantly. It is always a
                             good idea to use appropriate labels in the GAMS
                             model already. Example:
@@ -2668,9 +2668,9 @@ firstDayTraining(td)                   = td.pos = 1;
                           <li>
                             <code class="language-json">"colWidth"</code>:
                             Specifies the width of the chart. Must be between 1
-                            and 12. If not provided, the chart uses the all
+                            and 12. If not provided, the chart uses the entire
                             available width (12). If a view contains 2 graphics
-                            with a colWidth of 6 each, they are displayed next
+                            with a <i>colWidth</i> of 6 each, they are displayed next
                             to each other.
                           </li>
                           <li>
@@ -2831,7 +2831,7 @@ firstDayTraining(td)                   = td.pos = 1;
                     </ol>
                     <p>
                       To use custom R code instead of a pivot table view, the
-                      <code class="language-json">"dataViewsConfig"</code> Id in
+                      <code class="language-json">"dataViewsConfig"</code> ID in
                       the <span class="code">&lt;modelname&gt;.json</span> file
                       must not be assigned a view (list) as before, but any
                       string, e.g.
@@ -2860,8 +2860,8 @@ firstDayTraining(td)                   = td.pos = 1;
                     </p>
                     <p>
                       Custom R code can now be written in the renderer file,
-                      which is then rendered in the dedicated data view. The Id
-                      of the chart is used as the Id for the output function.
+                      which is then rendered in the dedicated data view. The ID
+                      of the chart is used as the ID for the output function.
                       Make sure that you place the custom code within the
                       renderer function (here: within
                       <code class="language-r"
