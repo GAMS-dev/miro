@@ -304,16 +304,17 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
       # Boxes for  KPIs (custom infobox)
       infoBoxCustom <-
-        function(value = NULL,
+        function(id = NULL,
+                 value = NULL,
                  prefix = "+",
                  postfix = "%",
                  noColor = FALSE,
                  invert = FALSE,
-                 title,
+                 title = "",
                  subtitle = NULL,
                  icon = shiny::icon("bar-chart"),
                  color = "aqua",
-                 width = 4,
+                 width = 12,
                  href = NULL,
                  fill = FALSE,
                  customColor = NULL,
@@ -392,9 +393,11 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           }
 
           div(
+            class = "shiny-html-output",
             class = if (!is.null(width)) {
               paste0("col-sm-", width)
             },
+            id = id,
             boxContent
           )
         }
@@ -408,8 +411,47 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
       )
       # Valueboxes output
       output$valueboxes <- renderUI({
-        box_columns <- lapply(options$valueBoxes$id, function(box_name) {
-          column(12, class = "box-styles col-xs-6 col-sm-6", shinydashboard::valueBoxOutput(ns(box_name), width = 12))
+        box_columns <- lapply(1:length(options$valueBoxes$id), function(i) {
+
+          # Note: Modify in case (optional) valueBox values should be calculated differently
+          if (is.na(options$valueBoxes$valueScalar[i])) {
+            valueTmp <- NULL
+          } else {
+            if (is.null(outputScalarsFull)) {
+              abortSafe("No scalar symbols found for valueBoxes")
+            }
+            valueTmp <- outputScalarsFull %>%
+              filter(scalar == tolower(options$valueBoxes$valueScalar[i]))
+
+            if (!nrow(valueTmp)) {
+              abortSafe(sprintf("No scalar symbol '%s' found for valueBox '%s'", options$valueBoxes$valueScalar[i], options$valueBoxes$id[i]))
+            }
+
+            valueTmp <- as.numeric(valueTmp$value)
+
+            if (!is.na(options$valueBoxes$decimals[i])) {
+              valueTmp <- round(valueTmp, digits = as.numeric(options$valueBoxes$decimals[i]))
+            }
+          }
+
+          valBoxName <- options$valueBoxes$id[i]
+
+          column(12,
+            class = "box-styles col-xs-6 col-sm-6",
+            infoBoxCustom(
+              id = ns(valBoxName),
+              value = valueTmp,
+              prefix = options$valueBoxes$prefix[i],
+              postfix = options$valueBoxes$postfix[i],
+              noColor = options$valueBoxes$noColor[i],
+              invert = options$valueBoxes$redPositive[i],
+              title = options$valueBoxes$title[i],
+              color = if (startsWith(options$valueBoxes$color[i], "#")) "aqua" else options$valueBoxes$color[i],
+              icon = icon(options$valueBoxes$icon[i]),
+              customColor = if (startsWith(options$valueBoxes$color[i], "#")) options$valueBoxes$color[i] else NULL,
+              noView = if (!valBoxName %in% names(options$dataViews)) TRUE else FALSE
+            )
+          )
         })
         if (length(options$valueBoxesTitle)) {
           tagList(
@@ -422,48 +464,6 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         } else {
           do.call(tagList, box_columns)
         }
-      })
-
-      lapply(1:length(options$valueBoxes$id), function(i) {
-        valBoxName <- options$valueBoxes$id[i]
-
-        if (is.na(options$valueBoxes$valueScalar[i])) {
-          valueTmp <- NULL
-        } else {
-          if (is.null(outputScalarsFull)) {
-            abortSafe("No scalar symbols found for valueBoxes")
-          }
-          valueTmp <- outputScalarsFull %>%
-            filter(scalar == tolower(options$valueBoxes$valueScalar[i]))
-          if (!nrow(valueTmp)) {
-            abortSafe(sprintf("No scalar symbol '%s' found for valueBox '%s'", options$valueBoxes$valueScalar[i], options$valueBoxes$id[i]))
-          }
-        }
-
-        output[[valBoxName]] <- renderValueBox({
-          # Note: Modify in case (optional) valueBox values should be calculated differently
-          if (!is.null(valueTmp)) {
-            valueTmp <- valueTmp %>%
-              pull(value) %>%
-              as.numeric()
-            if (!is.na(options$valueBoxes$decimals[i])) {
-              valueTmp <- valueTmp %>% round(as.numeric(options$valueBoxes$decimals[i]))
-            }
-          }
-
-          infoBoxCustom(
-            value = valueTmp,
-            prefix = options$valueBoxes$prefix[i],
-            postfix = options$valueBoxes$postfix[i],
-            noColor = options$valueBoxes$noColor[i],
-            invert = options$valueBoxes$redPositive[i],
-            title = options$valueBoxes$title[i],
-            color = if (startsWith(options$valueBoxes$color[i], "#")) "aqua" else options$valueBoxes$color[i],
-            icon = icon(options$valueBoxes$icon[i]),
-            customColor = if (startsWith(options$valueBoxes$color[i], "#")) options$valueBoxes$color[i] else NULL,
-            noView = if (!valBoxName %in% names(options$dataViews)) TRUE else FALSE
-          )
-        })
       })
 
       # Data View switch
