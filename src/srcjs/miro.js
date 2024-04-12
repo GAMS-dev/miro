@@ -419,6 +419,12 @@ $(document).ready(() => {
     const data = document.getElementById(this.dataset.canvasid).toDataURL('image/png');
     this.href = data;
   });
+  // miro dashboard value boxes click handler
+  $(document).on('click', '.miro-dashboard-valueboxes-wrapper .shiny-html-output', function () {
+    let namespaceId = this.id.split('-');
+    namespaceId = `${namespaceId[0]}-${namespaceId[1]}`;
+    Shiny.setInputValue(`${namespaceId}-showChart`, this.id, { priority: 'event' });
+  });
   $('.sidebar-toggle').click(() => {
     rerenderHot(400);
   });

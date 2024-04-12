@@ -2360,9 +2360,9 @@ firstDayTraining(td)                   = td.pos = 1;
                       </li>
                       <li>
                         <code class="language-json">"prefix"</code>: Any string
-                        that is displayed before the value. If '+' is defined
-                        as a prefix, a '+' is appended to a positive value. If
-                        the value is negative, the sign automatically changes to
+                        that is displayed before the value. If '+' is defined as
+                        a prefix, a '+' is appended to a positive value. If the
+                        value is negative, the sign automatically changes to
                         '-'.
                       </li>
                       <li>
@@ -2380,8 +2380,9 @@ firstDayTraining(td)                   = td.pos = 1;
                       <li>
                         <code class="language-json">"noColor"</code>: If the
                         value of the value box should not have a red/green
-                        color, but should be gray instead, the <i>noColor</i> property
-                        needs to be set to <i>true</i>, otherwise <i>false</i>.
+                        color, but should be gray instead, the
+                        <i>noColor</i> property needs to be set to <i>true</i>,
+                        otherwise <i>false</i>.
                       </li>
                       <li>
                         <code class="language-json">"decimals"</code>: Number of
@@ -2544,9 +2545,7 @@ firstDayTraining(td)                   = td.pos = 1;
                       </li>
                       <li>
                         Open the downloaded json file and auto-format the
-                        contents if necessary (e.g. via
-                        <a href="https://unminify.com/">unminify.com</a>). The
-                        result can look like this:
+                        contents if necessary. The result can look like this:
                         <pre><code class="language-json">
 {
   "macroperc": {
@@ -2640,10 +2639,10 @@ firstDayTraining(td)                   = td.pos = 1;
                             Listing of individual elements that should be
                             relabeled in the chart/table. Note that applying
                             custom labels to a dataset can be compute-intensive
-                            depending on the amount of data. The time it takes to render the
-                            output might increase significantly. It is always a
-                            good idea to use appropriate labels in the GAMS
-                            model already. Example:
+                            depending on the amount of data. The time it takes
+                            to render the output might increase significantly.
+                            It is always a good idea to use appropriate labels
+                            in the GAMS model already. Example:
                             <pre><code class="language-json">
 {
   "macroperc": {
@@ -2670,8 +2669,8 @@ firstDayTraining(td)                   = td.pos = 1;
                             Specifies the width of the chart. Must be between 1
                             and 12. If not provided, the chart uses the entire
                             available width (12). If a view contains 2 graphics
-                            with a <i>colWidth</i> of 6 each, they are displayed next
-                            to each other.
+                            with a <i>colWidth</i> of 6 each, they are displayed
+                            next to each other.
                           </li>
                           <li>
                             <code class="language-json">"height"</code>:

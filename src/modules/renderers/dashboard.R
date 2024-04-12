@@ -2,22 +2,17 @@ dashboardOutput <- function(id, height = NULL, options = NULL, path = NULL, ...)
   ns <- NS(id)
 
   tagList(
-    tags$head(
-      tags$script(JS(paste0("$(document).on('click', '#", ns("valueboxes"), " .shiny-html-output',
-              function(){
-                  Shiny.setInputValue('", ns("showChart"), "',this.id,{ priority:'event'})
-
-              })")))
-    ),
     tags$div(
       class = "dashboard-css",
       fluidRow(
-        class = "outer-row", style = "margin:0px;",
+        class = "outer-row",
         column(12,
           class = "custom-grid-right",
           fluidRow(
             class = "display-flex valueboxes",
-            uiOutput(ns("valueboxes"))
+            uiOutput(ns("valueboxes"),
+              class = "miro-dashboard-valueboxes-wrapper"
+            )
           )
         ),
         column(12,
@@ -241,9 +236,10 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 dataTmp <- dataTmp %>%
                   select(
                     seq_len(noRowHeaders),
-                    (matches(paste0("^", filterEl, "$")) |
-                      contains(paste0(filterEl, "\U2024")) |
-                      contains(paste0("\U2024", filterEl)))
+                    (any_of(filterEl) |
+                      contains(paste0("\U2024", filterEl, "\U2024")) |
+                      starts_with(paste0(filterEl, "\U2024")) |
+                      ends_with(paste0("\U2024", filterEl)))
                   )
               } else {
                 dataTmp <- dataTmp %>%
@@ -491,13 +487,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
       output$dataViews <- renderUI({
         sections <- lapply(names(options$dataViews), function(viewList) {
           view <- options$dataViews[[viewList]]
-          idList <- list()
-          titleList <- list()
-
-          for (i in seq_along(view)) {
-            idList[[i]] <- names(view)[i]
-            titleList[[i]] <- view[[i]]
-          }
+          idList <- as.list(names(view))
+          titleList <- view
 
           tags$div(
             id = ns(paste0(viewList, "View")),
