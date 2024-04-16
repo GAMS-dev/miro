@@ -1900,6 +1900,11 @@ if (is.null(errMsg)) {
             "You may only pivot symbols that have at least 2 dimensions and have at most 1 value column (symbol: '%s').",
             modelInAlias[i]
           ))
+        } else if (identical(modelIn[[i]]$symtype, "set")) {
+          errMsg <<- paste(errMsg, sprintf(
+            "PivotCols option is currently not supported for sets (symbol: '%s').",
+            modelInAlias[i]
+          ))
         }
       }
 

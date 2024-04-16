@@ -1,0 +1,369 @@
+{
+	"modelTitle":	"Stock Selection Optimization",
+	"inputSymbols":	{
+		"price":	{
+			"alias":	"Price",
+			"symtype":	"parameter",
+			"headers":	{
+				"date":	{
+					"type":	"string",
+					"alias":	"date"
+				},
+				"symbol":	{
+					"type":	"string",
+					"alias":	"stock symbol"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Price"
+				}
+			}
+		},
+		"_scalars":	{
+			"alias":	"Input Scalars",
+			"symnames":	["maxstock", "trainingdays", "solver", "clearvalueset"],
+			"symtext":	["maximum number of stocks to select", "number of days for training", "solver", "clearvalueset"],
+			"symtypes":	["parameter", "parameter", "set", "set"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		},
+		"test12345":	{
+			"alias":	"Multi-dim test set",
+			"symtype":	"set",
+			"headers":	{
+				"uni":	{
+					"type":	"string",
+					"alias":	"Universal set"
+				},
+				"uni#1":	{
+					"type":	"string",
+					"alias":	"Universal set"
+				},
+				"text":	{
+					"type":	"string",
+					"alias":	"Set text Multi-dim test set"
+				}
+			}
+		},
+		"maptest":	{
+			"alias":	"Market location information",
+			"symtype":	"set",
+			"headers":	{
+				"j":	{
+					"type":	"string",
+					"alias":	"j"
+				},
+				"latitude":	{
+					"type":	"string",
+					"alias":	"latitude"
+				},
+				"longitude":	{
+					"type":	"string",
+					"alias":	"longitude"
+				},
+				"text":	{
+					"type":	"string",
+					"alias":	"Set text Market location information"
+				}
+			}
+		}
+	},
+	"outputSymbols":	{
+		"_scalars_out":	{
+			"alias":	"Output Scalars",
+			"symnames":	["error_train", "error_test", "error_ratio", "firstdaytraining", "lastdaytraining"],
+			"symtext":	["Absolute error in entire training phase", "Absolute error in entire testing phase", "Ratio between error test and error train", "first date of training period", "last date of training period"],
+			"symtypes":	["parameter", "parameter", "parameter", "set", "set"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		},
+		"stock_weight":	{
+			"alias":	"weight",
+			"symtype":	"parameter",
+			"headers":	{
+				"symbol":	{
+					"type":	"string",
+					"alias":	"stock symbol"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"weight"
+				}
+			}
+		},
+		"dowvsindex":	{
+			"alias":	"dow jones vs. index fund",
+			"symtype":	"parameter",
+			"headers":	{
+				"date":	{
+					"type":	"string",
+					"alias":	"date"
+				},
+				"dj":	{
+					"type":	"numeric",
+					"alias":	"dow jones"
+				},
+				"index fund":	{
+					"type":	"numeric",
+					"alias":	"index fund"
+				}
+			}
+		},
+		"abserror":	{
+			"alias":	"absolute error",
+			"symtype":	"parameter",
+			"headers":	{
+				"date":	{
+					"type":	"string",
+					"alias":	"date"
+				},
+				"absolute error train":	{
+					"type":	"numeric",
+					"alias":	"absolute error train"
+				},
+				"absolute error test":	{
+					"type":	"numeric",
+					"alias":	"absolute error test"
+				}
+			}
+		},
+		"pricemerge":	{
+			"alias":	"Price (stocks & dow jones)",
+			"symtype":	"parameter",
+			"headers":	{
+				"date":	{
+					"type":	"string",
+					"alias":	"date"
+				},
+				"uni":	{
+					"type":	"string",
+					"alias":	"Universal set"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Price (stocks & dow jones)"
+				}
+			}
+		},
+		"schedule":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"i"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"j"
+				},
+				"lngp":	{
+					"type":	"numeric",
+					"alias":	"lngp"
+				},
+				"latp":	{
+					"type":	"numeric",
+					"alias":	"latp"
+				},
+				"lngm":	{
+					"type":	"numeric",
+					"alias":	"lngm"
+				},
+				"latm":	{
+					"type":	"numeric",
+					"alias":	"latm"
+				},
+				"cap":	{
+					"type":	"numeric",
+					"alias":	"cap"
+				},
+				"demand":	{
+					"type":	"numeric",
+					"alias":	"demand"
+				},
+				"quantities":	{
+					"type":	"numeric",
+					"alias":	"quantities"
+				}
+			}
+		},
+		"mapnogroup":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"i"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"j"
+				},
+				"lngp":	{
+					"type":	"numeric",
+					"alias":	"lngp"
+				},
+				"latp":	{
+					"type":	"numeric",
+					"alias":	"latp"
+				},
+				"lngm":	{
+					"type":	"numeric",
+					"alias":	"lngm"
+				},
+				"latm":	{
+					"type":	"numeric",
+					"alias":	"latm"
+				},
+				"cap":	{
+					"type":	"numeric",
+					"alias":	"cap"
+				},
+				"demand":	{
+					"type":	"numeric",
+					"alias":	"demand"
+				},
+				"quantities":	{
+					"type":	"numeric",
+					"alias":	"quantities"
+				}
+			}
+		},
+		"gantt":	{
+			"alias":	"asdasd",
+			"symtype":	"parameter",
+			"headers":	{
+				"id":	{
+					"type":	"string",
+					"alias":	"gannt_id"
+				},
+				"start":	{
+					"type":	"string",
+					"alias":	"gannt_start"
+				},
+				"end":	{
+					"type":	"string",
+					"alias":	"gannt_end"
+				},
+				"content":	{
+					"type":	"string",
+					"alias":	"gannt_content"
+				},
+				"group":	{
+					"type":	"string",
+					"alias":	"gantt_group"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"asdasd"
+				}
+			}
+		},
+		"repc":	{
+			"alias":	"crop report",
+			"symtype":	"parameter",
+			"headers":	{
+				"c":	{
+					"type":	"string",
+					"alias":	"c"
+				},
+				"planted":	{
+					"type":	"numeric",
+					"alias":	"crop planted [acres]"
+				},
+				"seedcost":	{
+					"type":	"numeric",
+					"alias":	"seed cost [$]"
+				},
+				"yield":	{
+					"type":	"numeric",
+					"alias":	"crop yield [tons]"
+				},
+				"sold":	{
+					"type":	"numeric",
+					"alias":	"crop sold [tons]"
+				},
+				"sales":	{
+					"type":	"numeric",
+					"alias":	"crop revenue [$]"
+				},
+				"purchased":	{
+					"type":	"numeric",
+					"alias":	"crop purchased [tons]"
+				},
+				"pcost":	{
+					"type":	"numeric",
+					"alias":	"purchase cost [$]"
+				}
+			}
+		},
+		"pressurethickness":	{
+			"alias":	"pressurethickness",
+			"symtype":	"parameter",
+			"headers":	{
+				"j0":	{
+					"type":	"string",
+					"alias":	"j0"
+				},
+				"x":	{
+					"type":	"numeric",
+					"alias":	"x"
+				},
+				"pressure":	{
+					"type":	"numeric",
+					"alias":	"pressure"
+				},
+				"thickness":	{
+					"type":	"numeric",
+					"alias":	"thickness"
+				}
+			}
+		},
+		"hovercraft":	{
+			"alias":	"hovercraft",
+			"symtype":	"parameter",
+			"headers":	{
+				"ind":	{
+					"type":	"string",
+					"alias":	"Individuals"
+				},
+				"time":	{
+					"type":	"string",
+					"alias":	"Time points"
+				},
+				"x":	{
+					"type":	"numeric",
+					"alias":	"x"
+				},
+				"y":	{
+					"type":	"numeric",
+					"alias":	"y"
+				}
+			}
+		}
+	}
+}

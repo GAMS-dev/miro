@@ -4,11 +4,11 @@ test_that(
     createTestDb()
 
     Sys.setenv(MIRO_MODEL_PATH = file.path(
-      testDir, "model", "pickstock_configuration",
+      testDir, "model", "pickstock_config_mode",
       "pickstock_configuration.gms"
     ))
     Sys.setenv(MIRO_MODE = "config")
-    configJSONPath <- file.path(testDir, "model", "pickstock_configuration", "conf_pickstock_configuration")
+    configJSONPath <- file.path(testDir, "model", "pickstock_config_mode", "conf_pickstock_configuration")
     file.copy(file.path(configJSONPath, "pickstock_configuration_expected.json"),
       file.path(configJSONPath, "pickstock_configuration.json"),
       overwrite = TRUE

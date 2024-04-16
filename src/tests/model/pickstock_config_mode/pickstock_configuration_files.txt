@@ -1,0 +1,3 @@
+scripts_pickstock_configuration/test_script.gms
+dowjones2016.csv
+pickstock_configuration.gms

@@ -1271,7 +1271,7 @@ observeEvent(input$btEditReadme, {
         tags$textarea(
           id = "mdContent", class = "readme-wrapper readme-preview-markdown",
           oninput = paste0(
-            "Miro.mdToHTML(this.value,'#mdConvertedContent',",
+            "Miro.mdToHTML(this.value,'mdConvertedContent',",
             if (isTRUE(input$general_readmeEnableMath)) "true" else "false", ")"
           ),
           readmeContent
@@ -1286,7 +1286,7 @@ observeEvent(input$btEditReadme, {
         )
       ),
       tags$script(paste0(
-        "setTimeout(function(){Miro.mdToHTML(document.getElementById('mdContent').value,'#mdConvertedContent',",
+        "setTimeout(function(){Miro.mdToHTML(document.getElementById('mdContent').value,'mdConvertedContent',",
         if (isTRUE(input$general_readmeEnableMath)) "true" else "false", ")},500)"
       ))
     ),

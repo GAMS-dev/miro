@@ -1,10 +1,13 @@
 import 'core-js/stable';
 import InputArrayFactory from './input_array';
 import { debounce, colorPickerBinding } from './util';
+import { parseKatex } from './miro';
 
-export { confirmModalShow, slideToggleEl, resetDropdownFilter } from './miro';
+export {
+  confirmModalShow, slideToggleEl, resetDropdownFilter, parseKatex,
+} from './miro';
 
-/* global $:false Shiny:false showdown:false renderMathInElement:false */
+/* global $:false Shiny:false showdown:false */
 
 const converter = new showdown.Converter({
   tables: true,
@@ -12,14 +15,6 @@ const converter = new showdown.Converter({
   strikethrough: true,
   noHeaderId: true,
   openLinksInNewWindow: true,
-});
-const converterMath = new showdown.Converter({
-  tables: true,
-  tasklists: true,
-  strikethrough: true,
-  noHeaderId: true,
-  openLinksInNewWindow: true,
-  extensions: ['mathjax'],
 });
 let lang = {};
 let indices = [];
@@ -573,17 +568,11 @@ const arrayTypes = {
 };
 export function mdToHTML(mdContent, destId, useKatex) {
   if (useKatex === true) {
-    $(destId).html(converterMath.makeHtml(mdContent));
-    renderMathInElement($(destId)[0], {
-      throwOnError: false,
-      delimiters: [{
-        left: '$$',
-        right: '$$',
-        display: true,
-      }, { left: '$', right: '$', display: false }],
-    });
+    const element = document.getElementById(destId);
+    element.innerHTML = converter.makeHtml(mdContent.replace(/(?<!\\)\\\$/g, '<span>$$</span>'));
+    parseKatex(element);
   } else {
-    $(destId).html(converter.makeHtml(mdContent));
+    document.getElementById(destId).innerHTML = converter.makeHtml(mdContent);
   }
 }
 
