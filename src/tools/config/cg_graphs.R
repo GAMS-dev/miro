@@ -2549,7 +2549,7 @@ observeEvent(input$customPackages,
 observeEvent(input$dashboardAdditionalData,
   {
     if (activeSymbol$id > length(modelIn)) {
-      rv$graphConfig$additionalData <<- input$dashbaordAdditionalData
+      rv$graphConfig$additionalData <<- input$dashboardAdditionalData
     } else {
       rv$graphConfig$additionalData <<- NULL
     }
@@ -4601,7 +4601,7 @@ getDashboardOptions <- reactive({
       class = "cat-body cat-body-48a",
       if (activeSymbol$id > length(modelIn)) {
         # active symbol is an output symbol
-        selectizeInput("dashbaordAdditionalData", lang$adminMode$graphs$customOptions$additionalData,
+        selectizeInput("dashboardAdditionalData", lang$adminMode$graphs$customOptions$additionalData,
           choices = setNames(
             list(
               c(inputSymMultiDimChoices),
