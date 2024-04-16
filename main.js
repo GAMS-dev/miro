@@ -13,7 +13,7 @@ const installRPackages = require('./components/install-r');
 const { refreshEngineJwt, isTokenExpired } = require('./components/engine');
 
 const requiredAPIVersion = 1;
-const miroVersion = '2.9.1';
+const miroVersion = '2.9.9999';
 const miroRelease = 'Apr 12 2024';
 const libVersion = '2.6';
 const exampleAppsData = require('./components/example-apps')(miroVersion, requiredAPIVersion);
