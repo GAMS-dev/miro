@@ -906,7 +906,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 title = lang$renderers$miroPivot$btDownloadCsv
               ),
               tags$a(
-                id = ns(paste0(indicator, "DownloadPng")), # ns("downloadPng"),
+                id = ns(paste0(indicator, "DownloadPng")),
                 class = "btn btn-default bt-export-canvas btn-custom pivot-btn-custom dashboard-btn dashboard-btn-png",
                 style = if (input[[paste0(indicator, "ChartType")]] %in% c("table", "heatmap")) "display:none;",
                 download = paste0(canvasId, ".png"),
