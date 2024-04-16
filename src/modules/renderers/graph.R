@@ -699,6 +699,12 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
         )
       })
       lapply(seq_along(options$minicharts), function(j) {
+        if (options$minicharts[[j]]$variableSize) {
+          multiplier <- rowSums(data[, options$minicharts[[j]]$chartdata], na.rm = TRUE) /
+            max(rowSums(data[, options$minicharts[[j]]$chartdata], na.rm = TRUE))
+        } else {
+          multiplier <- 1
+        }
         p <<- addMinicharts(p,
           lng = data[[options$minicharts[[j]]$lng]],
           lat = data[[options$minicharts[[j]]$lat]],
@@ -708,13 +714,8 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
           type = options$minicharts[[j]]$type,
           fillColor = d3.schemeCategory10[1],
           colorPalette = d3.schemeCategory10,
-          width = as.numeric(options$minicharts[[j]]$width) *
-            if (options$minicharts[[j]]$variableSize) {
-              rowSums(data[, options$minicharts[[j]]$chartdata], na.rm = TRUE) /
-                max(rowSums(data[, options$minicharts[[j]]$chartdata], na.rm = TRUE))
-            } else {
-              1
-            },
+          width = as.numeric(options$minicharts[[j]]$width) * multiplier,
+          height = as.numeric(options$minicharts[[j]]$height) * multiplier,
           opacity = options$minicharts[[j]]$opacity,
           showLabels = options$minicharts[[j]]$showLabels,
           labelText = NULL, labelMinSize = 8,
