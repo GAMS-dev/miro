@@ -70,7 +70,8 @@ Worker <- R6Class("Worker", public = list(
       },
       globals = list(
         metadata = private$metadata, authHeader = private$authHeader, apiInfoGlobal = private$apiInfo
-      )
+      ),
+      packages = c("curl", "httr")
     )
     getInstances <- function(instanceInfo) {
       if (!identical(instanceInfo[["error"]], FALSE)) {
@@ -675,22 +676,24 @@ Worker <- R6Class("Worker", public = list(
       if (isHcJob) {
         private$fJobRes[[jIDChar]] <- future(
           {
-            library(httr)
             private$getRemoteHcubeResults(resultsPath, pID)
           },
           globals = list(
             private = private, pID = self$getPid(jID),
             resultsPath = paste0(private$jobResultsFile[[jIDChar]], ".dl")
-          )
+          ),
+          packages = c("curl", "httr")
         )
       } else {
-        private$fJobRes[[jIDChar]] <- future({
-          library(httr)
-          private$readRemoteOutput(self$getPid(jID),
-            workDir = dirname(private$jobResultsFile[[jIDChar]]),
-            resultsPath = paste0(private$jobResultsFile[[jIDChar]], ".dl")
-          )
-        })
+        private$fJobRes[[jIDChar]] <- future(
+          {
+            private$readRemoteOutput(self$getPid(jID),
+              workDir = dirname(private$jobResultsFile[[jIDChar]]),
+              resultsPath = paste0(private$jobResultsFile[[jIDChar]], ".dl")
+            )
+          },
+          packages = c("curl", "httr")
+        )
       }
       return(5L)
     }
@@ -966,14 +969,6 @@ Worker <- R6Class("Worker", public = list(
     private$quotaWarning <- NULL
     private$fRemoteSub <- future(
       {
-        suppressWarnings(suppressMessages({
-          library(zip)
-          library(httr)
-          library(R6)
-          library(readr)
-          library(jsonlite)
-        }))
-
         dataFilesToFetch <- metadata$modelDataFiles
 
         requestBody <- list(
@@ -1119,7 +1114,8 @@ Worker <- R6Class("Worker", public = list(
         authHeader = private$authHeader,
         gmsFilePath = gmsFilePath,
         isWindows = isWindows, hcubeData = hcubeData, solveOptions = solveOptions
-      )
+      ),
+      packages = c("zip", "curl", "httr", "R6", "readr", "jsonlite", "digest")
     )
     return(self)
   },
@@ -1439,10 +1435,12 @@ Worker <- R6Class("Worker", public = list(
             private$wait <- 0L
             private$waitCnt <- 0L
             private$pingQueuePosition <- FALSE
-            private$fRemoteRes <- future({
-              library(httr)
-              private$readRemoteOutput()
-            })
+            private$fRemoteRes <- future(
+              {
+                private$readRemoteOutput()
+              },
+              packages = c("curl", "httr")
+            )
             private$status <- "d"
           } else {
             private$status <- NULL
@@ -1463,10 +1461,12 @@ Worker <- R6Class("Worker", public = list(
         private$wait <- 0L
         private$waitCnt <- 0L
         private$pingQueuePosition <- FALSE
-        private$fRemoteRes <- future({
-          library(httr)
-          private$readRemoteOutput()
-        })
+        private$fRemoteRes <- future(
+          {
+            private$readRemoteOutput()
+          },
+          packages = c("curl", "httr")
+        )
         private$status <- "d"
       } else {
         private$status <- NULL
