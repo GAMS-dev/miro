@@ -7,19 +7,19 @@ dashboardOutput <- function(id, height = NULL, options = NULL, path = NULL, ...)
       fluidRow(
         class = "outer-row",
         column(12,
-               class = "custom-grid-right",
-               fluidRow(
-                 class = "display-flex valueboxes",
-                 uiOutput(ns("valueboxes"),
-                          class = "miro-dashboard-valueboxes-wrapper"
-                 )
-               )
+          class = "custom-grid-right",
+          fluidRow(
+            class = "display-flex valueboxes",
+            uiOutput(ns("valueboxes"),
+              class = "miro-dashboard-valueboxes-wrapper"
+            )
+          )
         ),
         column(12,
-               id = ns("dataView"), class = "custom-grid-left padding-custom",
-               fluidRow(
-                 uiOutput(ns("dataViews")),
-               )
+          id = ns("dataView"), class = "custom-grid-left padding-custom",
+          fluidRow(
+            uiOutput(ns("dataViews")),
+          )
         )
       )
     )
@@ -105,7 +105,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           if (identical(aggregationFunction, "")) {
             aggregationFunction <- "count"
           } else if (length(aggregationFunction) != 1L ||
-                     !aggregationFunction %in% c("sum", "count", "min", "max", "mean", "median", "sd")) {
+            !aggregationFunction %in% c("sum", "count", "min", "max", "mean", "median", "sd")) {
             flog.warn(
               "Attempt to tamper with the app detected! User entered: '%s' as aggregation function.",
               aggregationFunction
@@ -153,7 +153,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         userFilterData <- list()
 
         if (length(config$userFilter) &&
-            !(length(config$userFilter) == 1 && config$userFilter %in% names(dataViewsConfig))) {
+          !(length(config$userFilter) == 1 && config$userFilter %in% names(dataViewsConfig))) {
           for (filter in config$userFilter) {
             userFilterData[[filter]] <- unique(dataTmp[[filter]])
           }
@@ -225,7 +225,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         if (length(dataViewsConfig[[indicator]]$userFilter)) {
           indicatorTmp <- indicator
           if (length(dataViewsConfig[[indicator]]$userFilter) == 1 &&
-              dataViewsConfig[[indicator]]$userFilter %in% names(dataViewsConfig)) {
+            dataViewsConfig[[indicator]]$userFilter %in% names(dataViewsConfig)) {
             indicatorTmp <- dataViewsConfig[[indicator]]$userFilter
           }
 
@@ -237,9 +237,9 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                   select(
                     seq_len(noRowHeaders),
                     (any_of(filterEl) |
-                       contains(paste0("\U2024", filterEl, "\U2024")) |
-                       starts_with(paste0(filterEl, "\U2024")) |
-                       ends_with(paste0("\U2024", filterEl)))
+                      contains(paste0("\U2024", filterEl, "\U2024")) |
+                      starts_with(paste0(filterEl, "\U2024")) |
+                      ends_with(paste0("\U2024", filterEl)))
                   )
               } else {
                 dataTmp <- dataTmp %>%
@@ -260,10 +260,10 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         }
         # Check whether last view uses same data as current one
         if (length(currentConfig) &&
-            identical(
-              currentConfig[setdiff(names(currentConfig), c("pivotRenderer", "decimals"))],
-              dataViewsConfig[[view]][setdiff(names(dataViewsConfig[[view]]), c("pivotRenderer", "decimals"))]
-            )) {
+          identical(
+            currentConfig[setdiff(names(currentConfig), c("pivotRenderer", "decimals"))],
+            dataViewsConfig[[view]][setdiff(names(dataViewsConfig[[view]]), c("pivotRenderer", "decimals"))]
+          )) {
           dashboardChartData[[view]] <- preparedData
           next
         }
@@ -351,10 +351,10 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                   style = if (is.na(suppressWarnings(as.numeric(value))) || noColor) {
                     "color:''"
                   } else if (!is.na(suppressWarnings(as.numeric(value))) &&
-                             as.numeric(value) == 0) {
+                    as.numeric(value) == 0) {
                     "color:''"
                   } else if (!is.na(suppressWarnings(as.numeric(value))) &&
-                             as.numeric(value) > 0) {
+                    as.numeric(value) > 0) {
                     if (invert) {
                       "color:#dd4b39!important"
                     } else {
@@ -366,10 +366,10 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                     "color:#dd4b39!important"
                   },
                   if (!is.na(suppressWarnings(as.numeric(value))) &&
-                      as.numeric(value) > 0) {
+                    as.numeric(value) > 0) {
                     paste0(prefix, value, postfix)
                   } else if (!is.na(suppressWarnings(as.numeric(value))) &&
-                             as.numeric(value) == 0) {
+                    as.numeric(value) == 0) {
                     paste0("0", postfix)
                   } else if (!is.na(suppressWarnings(as.numeric(value)))) {
                     paste0(value, postfix)
@@ -448,27 +448,27 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           valBoxName <- options$valueBoxes$id[i]
 
           column(12,
-                 class = "box-styles col-xs-6 col-sm-6",
-                 infoBoxCustom(
-                   id = ns(valBoxName),
-                   value = valueTmp,
-                   prefix = options$valueBoxes$prefix[i],
-                   postfix = options$valueBoxes$postfix[i],
-                   noColor = options$valueBoxes$noColor[i],
-                   invert = options$valueBoxes$redPositive[i],
-                   title = options$valueBoxes$title[i],
-                   color = if (startsWith(options$valueBoxes$color[i], "#")) "aqua" else options$valueBoxes$color[i],
-                   icon = icon(options$valueBoxes$icon[i]),
-                   customColor = if (startsWith(options$valueBoxes$color[i], "#")) options$valueBoxes$color[i] else NULL,
-                   noView = if (!valBoxName %in% names(options$dataViews)) TRUE else FALSE
-                 )
+            class = "box-styles col-xs-6 col-sm-6",
+            infoBoxCustom(
+              id = ns(valBoxName),
+              value = valueTmp,
+              prefix = options$valueBoxes$prefix[i],
+              postfix = options$valueBoxes$postfix[i],
+              noColor = options$valueBoxes$noColor[i],
+              invert = options$valueBoxes$redPositive[i],
+              title = options$valueBoxes$title[i],
+              color = if (startsWith(options$valueBoxes$color[i], "#")) "aqua" else options$valueBoxes$color[i],
+              icon = icon(options$valueBoxes$icon[i]),
+              customColor = if (startsWith(options$valueBoxes$color[i], "#")) options$valueBoxes$color[i] else NULL,
+              noView = if (!valBoxName %in% names(options$dataViews)) TRUE else FALSE
+            )
           )
         })
         if (length(options$valueBoxesTitle)) {
           tagList(
             column(12,
-                   class = "col-xs-12 col-sm-12 custom-highlight-block custom-padding",
-                   tags$h4(options$valueBoxesTitle, class = "highlight-block")
+              class = "col-xs-12 col-sm-12 custom-highlight-block custom-padding",
+              tags$h4(options$valueBoxesTitle, class = "highlight-block")
             ),
             do.call(tagList, box_columns)
           )
@@ -534,10 +534,10 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                         tags$div(
                           class = "custom-dropdown",
                           selectizeInput(ns(paste0(id, "ChartType")),
-                                         label = NULL,
-                                         choices = chartChoices,
-                                         selected = dataViewsConfig[[id]]$pivotRenderer,
-                                         options = list(onInitialize = I(paste0("function(value) {
+                            label = NULL,
+                            choices = chartChoices,
+                            selected = dataViewsConfig[[id]]$pivotRenderer,
+                            options = list(onInitialize = I(paste0("function(value) {
                   document.querySelector('.selectize-input input[id^=\"", ns(paste0(id, "ChartType")), "\"]').setAttribute('readonly', 'readonly');
                 }")))
                           )
@@ -550,10 +550,10 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                             class = "custom-dropdown-wide user-filter",
                             class = if (length(userFilter) %% 2 == 0) "even-inline" else if (length(userFilter) == 1) "one-inline" else "odd-inline",
                             selectizeInput(ns(paste0(id, "userFilter_", filterName)),
-                                           label = NULL,
-                                           choices = c("All" = "", attr(dashboardChartData[[id]], paste0("userFilterData_", filterName))),
-                                           multiple = TRUE, width = "100%",
-                                           options = list(onInitialize = I(paste0("function(value) {
+                              label = NULL,
+                              choices = c("All" = "", attr(dashboardChartData[[id]], paste0("userFilterData_", filterName))),
+                              multiple = TRUE, width = "100%",
+                              options = list(onInitialize = I(paste0("function(value) {
                                          document.querySelector('.selectize-input input[id^=\"", ns(paste0(id, "userFilter_", filterName)), "\"]').setAttribute('readonly', 'readonly');
                                        }")))
                             )
@@ -570,7 +570,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                         id = ns(paste0(id, "ChartWrapper")), class = "dashboard-chart-wrapper",
                         style = paste0("height: ", if (length(dataViewsConfig[[id]]$height)) dataViewsConfig[[id]]$height else "33vh"),
                         chartjs::chartjsOutput(ns(paste0(id, "Chart")),
-                                               height = if (length(dataViewsConfig[[id]]$height)) dataViewsConfig[[id]]$height else "33vh"
+                          height = if (length(dataViewsConfig[[id]]$height)) dataViewsConfig[[id]]$height else "33vh"
                         )
                       )
                     )
@@ -603,7 +603,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         # table for each view
         output[[paste0(indicator, "Table")]] <- renderDT({
           if (!nrow(dashboardChartData[[indicator]]) ||
-              (!input[[paste0(indicator, "ChartType")]] %in% c("table", "heatmap"))) {
+            (!input[[paste0(indicator, "ChartType")]] %in% c("table", "heatmap"))) {
             return()
           }
 
@@ -613,7 +613,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           # heatmap
           if (input[[paste0(indicator, "ChartType")]] == "heatmap") {
             brks <- quantile(dataTmp[-seq_len(as.numeric(noRowHeaders))],
-                             probs = seq(.05, .95, .05), na.rm = TRUE
+              probs = seq(.05, .95, .05), na.rm = TRUE
             )
             clrs <- round(seq(255, 40, length.out = length(brks) + 1), 0) %>%
               {
@@ -637,8 +637,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                   lang$renderers$miroPivot$aggregationFunctions$sum,
                   "\U2003\U2003"
                 ) := rowSums(dataTmp[vapply(dataTmp, is.numeric,
-                                            logical(1L),
-                                            USE.NAMES = FALSE
+                  logical(1L),
+                  USE.NAMES = FALSE
                 )], na.rm = TRUE)
               )
             } else if (identical(tablesummarySettings$rowSummaryFunction, "mean")) {
@@ -648,8 +648,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                   lang$renderers$miroPivot$aggregationFunctions$mean,
                   "\U2003\U2003"
                 ) := rowMeans(dataTmp[vapply(dataTmp, is.numeric,
-                                             logical(1L),
-                                             USE.NAMES = FALSE
+                  logical(1L),
+                  USE.NAMES = FALSE
                 )], na.rm = TRUE)
               )
             } else {
@@ -660,8 +660,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                   lang$renderers$miroPivot$aggregationFunctions$count,
                   "\U2003\U2003"
                 ) := rowSums(!is.na(dataTmp[vapply(dataTmp, is.numeric,
-                                                   logical(1L),
-                                                   USE.NAMES = FALSE
+                  logical(1L),
+                  USE.NAMES = FALSE
                 )]))
               )
             }
@@ -670,8 +670,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             roundPrecision <- if (length(dataViewsConfig[[indicator]]$decimals)) as.numeric(dataViewsConfig[[indicator]]$decimals) else 2L
             if (identical(tablesummarySettings$colSummaryFunction, "count")) {
               colSummarySettings$data <- round(colSums(!is.na(dataTmp[vapply(dataTmp, is.numeric,
-                                                                             logical(1L),
-                                                                             USE.NAMES = FALSE
+                logical(1L),
+                USE.NAMES = FALSE
               )])), digits = roundPrecision)
             } else {
               colSummarySettings$data <- round(as.numeric(slice(summarise(dataTmp, across(
@@ -705,8 +705,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             return(tableObj)
           }
           return(formatStyle(tableObj, seq(noRowHeaders + 1, length(dataTmp)),
-                             color = "#000",
-                             backgroundColor = styleInterval(brks, clrs)
+            color = "#000",
+            backgroundColor = styleInterval(brks, clrs)
           ))
         })
 
@@ -741,7 +741,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           currentView <- dataViewsConfig[[indicator]]
 
           if (!nrow(dataTmp) ||
-              !chartType %in%
+            !chartType %in%
               c(
                 "line", "scatter", "area", "stackedarea", "bar",
                 "stackedbar", "radar", "timeseries", "pie", "doughnut",
@@ -760,7 +760,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           currentSeriesLabels <- names(dataTmp)[seq(rowHeaderLen + 1L, noSeries + rowHeaderLen)]
 
           if (length(currentView$chartOptions$customChartColors) &&
-              length(names(currentView$chartOptions$customChartColors))) {
+            length(names(currentView$chartOptions$customChartColors))) {
             # custom chart colors specified
 
             colorLabels <- names(currentView$chartOptions$customChartColors)
@@ -868,7 +868,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           }
           if (chartType %in% c("horizontalbar", "horizontalstackedbar")) {
             if (identical(currentView$chartOptions$yLogScale, TRUE) &&
-                identical(chartJsObj$x$scales$y$type, "linear")) {
+              identical(chartJsObj$x$scales$y$type, "linear")) {
               chartJsObj$x$scales$x$type <- "logarithmic"
             } else {
               chartJsObj$x$scales$x$type <- "linear"
@@ -876,7 +876,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             chartJsObj$x$options$indexAxis <- "y"
             chartJsObj$x$scales$y$type <- "category"
           } else if (identical(currentView$chartOptions$yLogScale, TRUE) &&
-                     identical(chartJsObj$x$scales$y$type, "linear")) {
+            identical(chartJsObj$x$scales$y$type, "linear")) {
             chartJsObj$x$scales$y$type <- "logarithmic"
           }
 
@@ -886,30 +886,31 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
             if (label %in% currentView$chartOptions$customLabels) {
               originalLabel <- names(currentView$chartOptions$customLabels)[
-                which(currentView$chartOptions$customLabels == label)]
+                which(currentView$chartOptions$customLabels == label)
+              ]
             }
 
             if (originalLabel %in% currentView$chartOptions$multiChartSeries) {
               if (chartType %in% c("line", "area", "stackedarea", "timeseries")) {
                 chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
-                                        label = label,
-                                        type = "bar",
-                                        order = 2
+                  label = label,
+                  type = "bar",
+                  order = 2
                 )
               } else {
                 chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
-                                        label = label,
-                                        type = "line",
-                                        showLine = TRUE,
-                                        order = 0
+                  label = label,
+                  type = "line",
+                  showLine = TRUE,
+                  order = 0
                 )
               }
             } else {
               chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
-                                      label = label,
-                                      fill = chartType %in% c("area", "stackedarea"),
-                                      fillOpacity = if (identical(chartType, "stackedarea")) 1 else 0.15,
-                                      order = 1
+                label = label,
+                fill = chartType %in% c("area", "stackedarea"),
+                fillOpacity = if (identical(chartType, "stackedarea")) 1 else 0.15,
+                order = 1
               )
             }
           }
