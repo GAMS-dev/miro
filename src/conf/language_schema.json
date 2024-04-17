@@ -6449,6 +6449,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "dashboard": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "valuebox": {
                   "type": "string",
                   "minLength": 1
@@ -6458,7 +6462,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 12
+              "minProperties": 13
             },
             "validate": {
               "type": "object",

@@ -1,4 +1,4 @@
-/* global $:false Shiny: false Selectize:false */
+/* global $:false Shiny: false Selectize:false renderMathInElement:false */
 
 import 'core-js/stable';
 import AutoNumeric from 'autonumeric';
@@ -220,12 +220,23 @@ export function modal(
   }
 }
 
+export function parseKatex(element) {
+  renderMathInElement(element, {
+    throwOnError: false,
+    delimiters: [{
+      left: '$$',
+      right: '$$',
+      display: true,
+    }, { left: '$', right: '$', display: false }],
+  });
+}
+
 const shortcutManager = new ShortcutManager(50);
 $(document).on('keyup', (event) => {
   shortcutManager.handleKeyPressEvent(event);
 });
 
-$(document).ready(() => {
+$(() => {
   if (typeof window.matchMedia('(prefers-color-scheme: dark)').addEventListener !== 'undefined') {
     // browser supports listening to matchMedia change
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
@@ -418,6 +429,12 @@ $(document).ready(() => {
   $(document).on('click', '.bt-export-canvas', function () {
     const data = document.getElementById(this.dataset.canvasid).toDataURL('image/png');
     this.href = data;
+  });
+  // miro dashboard value boxes click handler
+  $(document).on('click', '.miro-dashboard-valueboxes-wrapper .shiny-html-output', function () {
+    let namespaceId = this.id.split('-');
+    namespaceId = `${namespaceId[0]}-${namespaceId[1]}`;
+    Shiny.setInputValue(`${namespaceId}-showChart`, this.id, { priority: 'event' });
   });
   $('.sidebar-toggle').click(() => {
     rerenderHot(400);

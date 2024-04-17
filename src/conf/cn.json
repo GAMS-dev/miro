@@ -1632,6 +1632,7 @@
         "leaflet": "地图工具",
         "timevis": "甘特图",
         "miropivot": "数据透视表",
+        "dashboard": "仪表盘",
         "valuebox": "标量值的值框",
         "custom": "自定义绘制器"
       },

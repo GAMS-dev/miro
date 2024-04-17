@@ -124,10 +124,13 @@ observeEvent(input$table_type, {
 
 output$tableLabelWrapper <- renderUI({
   if (length(rv$tableWidgetConfig$label) && !identical(trimws(rv$tableWidgetConfig$label), "")) {
-    tags$div(
-      id = "inputTableLabel",
-      class = "readme-wrapper label-wrapper",
-      markdown(rv$tableWidgetConfig$label)
+    tagList(
+      tags$div(
+        id = "inputTableLabel",
+        class = "readme-wrapper label-wrapper",
+        markdownKatex(rv$tableWidgetConfig$label)
+      ),
+      tags$script("setTimeout(function(){Miro.parseKatex(document.getElementById('inputTableLabel'))},500)")
     )
   }
 })

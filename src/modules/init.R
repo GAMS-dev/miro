@@ -64,6 +64,136 @@ validateGraphConfig <- function(graphConfig, skipOutTypeCheck = FALSE) {
   return(errMsgTmp)
 }
 
+validateDashboardConfig <- function(graphConfig) {
+  errMsgTmp <- NULL
+
+  vb <- graphConfig$options$valueBoxes
+  dv <- graphConfig$options$dataViews
+  dc <- graphConfig$options$dataViewsConfig
+
+  allLengths <- sapply(vb, length)
+  if (any(allLengths != allLengths[1])) {
+    errMsgTmp <- "All lists in the 'valueBoxes' configuration must have the same length."
+  }
+
+  if (any(grepl(" ", vb$id))) {
+    errMsgTmp <- paste(
+      errMsgTmp,
+      sprintf(
+        "\nSpaces are not allowed in valueBox ids. The following valueBox id(s) contain(s) a space: '%s'",
+        paste(vb$id[grepl(" ", vb$id)], collapse = ", ")
+      )
+    )
+  }
+
+  vbSymbols <- vb$valueScalar[!is.na(vb$valueScalar)]
+  noSymbol <- vbSymbols[!(vbSymbols %in% modelOut[[scalarsOutName]]$symnames)]
+  if (length(noSymbol)) {
+    errMsgTmp <- paste(
+      errMsgTmp,
+      sprintf(
+        "\nNo scalar symbol '%s' found for valueBox",
+        paste(noSymbol, collapse = ", ")
+      )
+    )
+  }
+
+  noMatchingId <- names(dv)[!names(dv) %in% vb$id]
+  if (length(noMatchingId)) {
+    errMsgTmp <- paste(
+      errMsgTmp,
+      sprintf(
+        "\nThe following dataView id(s) do not match with any valuebox id: '%s'",
+        paste(noMatchingId, collapse = ", ")
+      )
+    )
+  }
+
+  chartIds <- unname(unlist(lapply(dv, function(x) names(x))))
+  if (any(grepl(" ", chartIds))) {
+    errMsgTmp <- paste(
+      errMsgTmp,
+      sprintf(
+        "\nSpaces are not allowed in dataViews Ids. The following dataView id(s) contain(s) a space: '%s'",
+        paste(chartIds[grepl(" ", chartIds)], collapse = ", ")
+      )
+    )
+  }
+
+
+  for (view in names(dc)) {
+    config <- dc[[view]]
+
+    if (!is.list(config)) {
+      # custom user output
+      next
+    }
+    if (length(config$data)) {
+      if (config$data %in% c(graphConfig$options[["_metadata_"]]$symname, graphConfig$additionalData)) {
+        symbol <- config$data
+      } else {
+        errMsgTmp <- paste(
+          errMsgTmp,
+          sprintf(
+            "\nSymbol '%s' not found among the symbols that the renderer has access to.",
+            config$data
+          )
+        )
+        next
+      }
+    } else {
+      symbol <- graphConfig$options[["_metadata_"]]$symname
+    }
+
+    noNumericHeaders <- sum(vapply(modelOut[[symbol]]$header,
+      function(header) {
+        identical(header$type, "numeric")
+      }, logical(1L),
+      USE.NAMES = FALSE
+    ))
+    validHeaders <- names(modelOut[[symbol]]$headers)
+    if (noNumericHeaders > 1L) {
+      validHeaders <- c(
+        validHeaders[seq_len(length(validHeaders) - noNumericHeaders)],
+        "Hdr"
+      )
+    } else {
+      validHeaders <- validHeaders[-length(validHeaders)]
+    }
+
+    for (id in c("rows", "cols", "aggregations", "filter", "userFilter")) {
+      if (length(config[[id]])) {
+        if (id %in% c("rows", "userFilter")) {
+          if (identical(id, "userFilter") && length(config[[id]]) == 1 && config[[id]] %in% names(dc)) {
+            # If a dataViewsConfig ID is set as userFilter, the IDs filters are applied here as well.
+            next
+          }
+          indices <- config[[id]]
+        } else {
+          indices <- names(config[[id]])
+        }
+        invalidIndices <- !indices %in% validHeaders
+        if (any(invalidIndices)) {
+          errMsgTmp <- paste(
+            errMsgTmp,
+            paste0(
+              "\nInvalid ", id, ": ",
+              paste(indices[invalidIndices],
+                collapse = ", "
+              )
+            )
+          )
+        }
+      }
+    }
+  }
+
+  if (is.null(errMsgTmp)) {
+    return(TRUE)
+  }
+  return(errMsgTmp)
+}
+
 errMsg <- installAndRequirePackages("V8", installedPackages, RLibPath, CRANMirror, miroWorkspace)
 # check whether there exists a config file and if not create an empty one
 if (is.null(errMsg)) {
@@ -2113,6 +2243,20 @@ if (is.null(errMsg)) {
                 next
               }
               errMsg <- paste(errMsg, paste0(errMsgTmp, " Start the Configuration Mode to reconfigure your app."), sep = "\n")
+              next
+            }
+          } else if (identical(configGraphsOut[[i]]$outType, "dashboard")) {
+            validGraphConfig <- validateDashboardConfig(configGraphsOut[[i]])
+            if (!identical(validGraphConfig, TRUE)) {
+              errMsgTmp <- paste0(
+                "Invalid graph config for symbol '", names(modelOut)[i],
+                "': ", validGraphConfig, "."
+              )
+              if (LAUNCHCONFIGMODE) {
+                warning(errMsgTmp, call. = FALSE)
+                next
+              }
+              errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
               next
             }
           } else if (identical(configGraphsOut[[i]]$outType, "valueBox")) {
