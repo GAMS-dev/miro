@@ -1,6 +1,6 @@
 dashboardOutput <- function(id, height = NULL, options = NULL, path = NULL, ...) {
   ns <- NS(id)
-  
+
   tagList(
     tags$div(
       class = "dashboard-css",
@@ -31,21 +31,21 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
     id,
     function(input, output, session) {
       ns <- session$ns
-      
+
       dataViewsConfig <- options$dataViewsConfig
-      
+
       prepareData <- function(config, viewData) {
         dataTmp <- viewData
-        
+
         filterIndexList <- names(config$filter)
         aggFilterIndexList <- names(config$aggregations)
         colFilterIndexList <- names(config$cols)
         filterIndexList <- c(filterIndexList, aggFilterIndexList, colFilterIndexList)
-        
+
         filterElements <- vector("list", length(filterIndexList))
         names(filterElements) <- filterIndexList
         multiFilterIndices <- c()
-        
+
         for (filterIndex in filterIndexList) {
           filterElements[[filterIndex]] <- sort(unique(dataTmp[[filterIndex]]))
           optionId <- "filter"
@@ -55,7 +55,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             optionId <- "cols"
           }
           filterVal <- config[[optionId]][[filterIndex]]
-          
+
           if (!any(filterVal %in% filterElements[[filterIndex]])) {
             if (filterIndex %in% c(aggFilterIndexList, colFilterIndexList)) {
               # nothing selected = no filter for aggregations/cols
@@ -88,8 +88,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             !!rlang::parse_expr(filterExpression)
           )
         }
-        
-        
+
+
         rowIndexList <- config$rows
         aggregationFunction <- config$aggregationFunction
         setIndices <- names(dataTmp)[-length(dataTmp)]
@@ -129,7 +129,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             names(dataTmp)[length(dataTmp)] <- valueColName
           }
         }
-        
+
         if (length(rowIndexList)) {
           dataTmp <- dataTmp %>%
             select(!!!c(rowIndexList, colFilterIndexList, valueColName)) %>%
@@ -137,7 +137,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         } else {
           dataTmp <- dataTmp %>% select(!!!c(colFilterIndexList, valueColName))
         }
-        
+
         # apply custom labels
         if (length(config$chartOptions$customLabels)) {
           labelCols <- dataTmp[, sapply(dataTmp, class) == "character"]
@@ -149,16 +149,16 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             )
           }
         }
-        
+
         userFilterData <- list()
-        
+
         if (length(config$userFilter) &&
             !(length(config$userFilter) == 1 && config$userFilter %in% names(dataViewsConfig))) {
           for (filter in config$userFilter) {
             userFilterData[[filter]] <- unique(dataTmp[[filter]])
           }
         }
-        
+
         if (length(colFilterIndexList)) {
           # note that names_sep is not an ASCII full stop, but UNICODE U+2024
           tryCatch(
@@ -200,19 +200,19 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             }
           )
         }
-        
+
         attr(dataTmp, "noRowHeaders") <- length(rowIndexList)
         for (filterName in names(userFilterData)) {
           attr(dataTmp, paste0("userFilterData_", filterName)) <- userFilterData[[filterName]]
         }
         return(dataTmp)
       }
-      
+
       hasMultipleNumeric <- function(df) {
         numericCols <- sapply(df, is.numeric)
         sum(numericCols) > 1
       }
-      
+
       getData <- function(indicator) {
         noRowHeaders <- attr(dashboardChartData[[indicator]], "noRowHeaders")
         dataTmp <- dashboardChartData[[indicator]]
@@ -220,7 +220,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           dataTmp <- dataTmp %>%
             mutate(across(where(is.numeric), ~ round(., as.numeric(dataViewsConfig[[indicator]]$decimals))))
         }
-        
+
         # filter user selection
         if (length(dataViewsConfig[[indicator]]$userFilter)) {
           indicatorTmp <- indicator
@@ -228,7 +228,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               dataViewsConfig[[indicator]]$userFilter %in% names(dataViewsConfig)) {
             indicatorTmp <- dataViewsConfig[[indicator]]$userFilter
           }
-          
+
           for (filterName in dataViewsConfig[[indicatorTmp]]$userFilter) {
             if (length(input[[paste0(indicatorTmp, "userFilter_", filterName)]])) {
               filterEl <- input[[paste0(indicatorTmp, "userFilter_", filterName)]]
@@ -250,7 +250,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         }
         return(dataTmp)
       }
-      
+
       dashboardChartData <- list()
       currentConfig <- c()
       for (view in names(dataViewsConfig)) {
@@ -267,9 +267,9 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           dashboardChartData[[view]] <- preparedData
           next
         }
-        
+
         currentConfig <- dataViewsConfig[[view]]
-        
+
         # If no data symbol is provided, the renderer's base symbol is used.
         if (is.list(data)) {
           if (!is.null(currentConfig$data)) {
@@ -280,11 +280,11 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         } else {
           viewData <- data
         }
-        
+
         # GAMS Tables need to be lengthened to only have one value column
         # as this is how a view is stored
         numericColumnNames <- names(viewData[sapply(viewData, is.numeric)])
-        
+
         if (length(numericColumnNames) > 1) {
           viewData <- viewData %>%
             pivot_longer(
@@ -293,11 +293,11 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               values_to = "value"
             )
         }
-        
+
         preparedData <- prepareData(currentConfig, viewData)
         dashboardChartData[[view]] <- preparedData
       }
-      
+
       # Boxes for  KPIs (custom infobox)
       infoBoxCustom <-
         function(id = NULL,
@@ -317,7 +317,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                  noView = FALSE) {
           shinydashboard:::validateColor(color)
           shinydashboard:::tagAssert(icon, type = "i")
-          
+
           colorClass <- paste0("bg-", color)
           boxContent <- div(
             class = "info-box custom-info-box",
@@ -383,11 +383,11 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               }
             )
           )
-          
+
           if (!is.null(href)) {
             boxContent <- a(href = href, boxContent)
           }
-          
+
           div(
             class = "shiny-html-output",
             class = if (!is.null(width)) {
@@ -397,7 +397,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             boxContent
           )
         }
-      
+
       chartChoices <- setNames(
         c(
           "table", "heatmap", "pie", "doughnut", "bar", "horizontalbar",
@@ -433,20 +433,20 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             }
             valueTmp <- outputScalarsFull %>%
               filter(scalar == tolower(options$valueBoxes$valueScalar[i]))
-            
+
             if (!nrow(valueTmp)) {
               abortSafe(sprintf("No scalar symbol '%s' found for valueBox '%s'", options$valueBoxes$valueScalar[i], options$valueBoxes$id[i]))
             }
-            
+
             valueTmp <- as.numeric(valueTmp$value)
-            
+
             if (!is.na(options$valueBoxes$decimals[i])) {
               valueTmp <- round(valueTmp, digits = as.numeric(options$valueBoxes$decimals[i]))
             }
           }
-          
+
           valBoxName <- options$valueBoxes$id[i]
-          
+
           column(12,
                  class = "box-styles col-xs-6 col-sm-6",
                  infoBoxCustom(
@@ -476,18 +476,18 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           do.call(tagList, box_columns)
         }
       })
-      
+
       # Data View switch
       observeEvent(input$showChart, {
         views <- names(options$dataViews)
         boxWithoutView <- options$valueBoxes$id[!options$valueBoxes$id %in% views]
-        
+
         reportToRender <- substr(input$showChart, nchar(session$ns("")) + 1L, nchar(input$showChart))
         if (reportToRender %in% boxWithoutView) {
           return()
         }
         reportToRender <- if (reportToRender %in% views) reportToRender else options$valueBoxes$id[[1]]
-        
+
         for (view in views) {
           if (identical(reportToRender, view)) {
             showEl(session, paste0("#", session$ns(paste0(view, "View"))))
@@ -496,7 +496,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           }
         }
       })
-      
+
       # Data views
       # names(options$dataViews) must match options$valueBoxes$id entries
       output$dataViews <- renderUI({
@@ -504,20 +504,20 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           view <- options$dataViews[[viewList]]
           idList <- as.list(names(view))
           titleList <- view
-          
+
           tags$div(
             id = ns(paste0(viewList, "View")),
             style = ifelse(viewList == options$valueBoxes$id[[1]], "", "display:none;"),
             lapply(seq_along(idList), function(i) {
               id <- idList[[i]]
               title <- titleList[[i]]
-              
+
               if (is.list(dataViewsConfig[[id]])) {
                 userFilter <- NULL
                 if (length(dataViewsConfig[[id]]$userFilter)) {
                   userFilter <- dataViewsConfig[[id]]$userFilter
                 }
-                
+
                 column(
                   width = if (length(dataViewsConfig[[id]]$colWidth)) as.numeric(dataViewsConfig[[id]]$colWidth) else 12,
                   class = if (!nchar(title)) "add-margin",
@@ -559,7 +559,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                             )
                           )
                         })
-                        
+
                         do.call(tagList, filterInputs)
                       }
                     ),
@@ -582,10 +582,10 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             })
           )
         })
-        
+
         do.call(tagList, sections)
       })
-      
+
       # show/hide Chart for view with multi-chart layout. Show/hide table is done in renderDT() directly
       toggleChartType <- function(indicator) {
         if (input[[paste0(indicator, "ChartType")]] %in% c("table", "heatmap")) {
@@ -594,22 +594,22 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           showEl(session, paste0("#", session$ns(paste0(indicator, "ChartWrapper"))))
         }
       }
-      
+
       lapply(names(dashboardChartData), function(indicator) {
         observeEvent(input[[paste0(indicator, "ChartType")]], {
           toggleChartType(indicator)
         })
-        
+
         # table for each view
         output[[paste0(indicator, "Table")]] <- renderDT({
           if (!nrow(dashboardChartData[[indicator]]) ||
               (!input[[paste0(indicator, "ChartType")]] %in% c("table", "heatmap"))) {
             return()
           }
-          
+
           dataTmp <- getData(indicator)
           noRowHeaders <- attr(dashboardChartData[[indicator]], "noRowHeaders")
-          
+
           # heatmap
           if (input[[paste0(indicator, "ChartType")]] == "heatmap") {
             brks <- quantile(dataTmp[-seq_len(as.numeric(noRowHeaders))],
@@ -620,14 +620,14 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 paste0("rgb(255,", ., ",", ., ")")
               }
           }
-          
+
           # Table Summary
           colSummarySettings <- NULL
-          
+
           nonNumericCols <- dataTmp %>%
             select(where(~ !is.numeric(.))) %>%
             names()
-          
+
           if (dataViewsConfig[[indicator]]$tableSummarySettings$enabled) {
             tablesummarySettings <- dataViewsConfig[[indicator]]$tableSummarySettings
             if (identical(tablesummarySettings$rowSummaryFunction, "sum")) {
@@ -665,7 +665,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 )]))
               )
             }
-            
+
             colSummarySettings <- list(caption = lang$renderers$miroPivot$aggregationFunctions[[tablesummarySettings$colSummaryFunction]])
             roundPrecision <- if (length(dataViewsConfig[[indicator]]$decimals)) as.numeric(dataViewsConfig[[indicator]]$decimals) else 2L
             if (identical(tablesummarySettings$colSummaryFunction, "count")) {
@@ -680,7 +680,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               )), 1L)), digits = roundPrecision)
             }
           }
-          
+
           tableObj <- DT::datatable(
             dataTmp,
             rownames = FALSE,
@@ -700,7 +700,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               ))
             )
           )
-          
+
           if (!identical(input[[paste0(indicator, "ChartType")]], "heatmap")) {
             return(tableObj)
           }
@@ -709,7 +709,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                              backgroundColor = styleInterval(brks, clrs)
           ))
         })
-        
+
         customColors <- c(
           "#a6cee3", "#1f78b4", "#b2df8a", "#33a02c",
           "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00",
@@ -732,14 +732,14 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           "#7efee0", "#00ffc5", "#c28eb1", "#6c3a5c",
           "#df7192", "#8b1e3f", "#95D86B", "#3E721D"
         )
-        
+
         # charts output
         output[[paste0(indicator, "Chart")]] <- chartjs::renderChartjs({
           dataTmp <- getData(indicator)
-          
+
           chartType <- tolower(input[[paste0(indicator, "ChartType")]])
           currentView <- dataViewsConfig[[indicator]]
-          
+
           if (!nrow(dataTmp) ||
               !chartType %in%
               c(
@@ -749,20 +749,20 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               )) {
             return()
           }
-          
+
           rowHeaderLen <- attr(dashboardChartData[[indicator]], "noRowHeaders")
           noSeries <- length(dataTmp) - rowHeaderLen
           labels <- do.call(paste, c(dataTmp[seq_len(rowHeaderLen)], list(sep = ".")))
           if (!length(labels)) {
             labels <- "value"
           }
-          
+
           currentSeriesLabels <- names(dataTmp)[seq(rowHeaderLen + 1L, noSeries + rowHeaderLen)]
-          
+
           if (length(currentView$chartOptions$customChartColors) &&
               length(names(currentView$chartOptions$customChartColors))) {
             # custom chart colors specified
-            
+
             colorLabels <- names(currentView$chartOptions$customChartColors)
             colorLabelsNew <- colorLabels
             if (length(currentView$chartOptions$customLabels)) {
@@ -780,7 +780,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 colorLabelsNew <- c(colorLabelsNew, label)
               }
             }
-            
+
             chartColorIdx <- match(
               currentSeriesLabels,
               colorLabelsNew
@@ -791,7 +791,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           } else {
             chartColorsToUse <- customColors
           }
-          
+
           if (chartType %in% c(
             "line", "scatter", "area", "stackedarea",
             "timeseries"
@@ -879,16 +879,16 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                      identical(chartJsObj$x$scales$y$type, "linear")) {
             chartJsObj$x$scales$y$type <- "logarithmic"
           }
-          
+
           for (i in seq_len(min(noSeries, 40L))) {
             label <- names(dataTmp)[rowHeaderLen + i]
             originalLabel <- label
-            
+
             if (label %in% currentView$chartOptions$customLabels) {
               originalLabel <- names(currentView$chartOptions$customLabels)[
                 which(currentView$chartOptions$customLabels == label)]
             }
-            
+
             if (originalLabel %in% currentView$chartOptions$multiChartSeries) {
               if (chartType %in% c("line", "area", "stackedarea", "timeseries")) {
                 chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
@@ -913,7 +913,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               )
             }
           }
-          
+
           if (chartType %in% c("stackedbar", "stackedarea")) {
             chartJsObj$x$options$plugins$tooltip$callbacks$afterBody <- htmlwidgets::JS("function(tooltipItem, chart) {
                                                                     const rawValues = this.dataPoints.map(point => point.formattedValue);
@@ -922,13 +922,13 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                                                                     return 'Total: ' + parseFloat(rowSums).toFixed(2);
                                                                     }")
           }
-          
+
           # Fit chart to screen
           chartJsObj$x$options$maintainAspectRatio <- FALSE
-          
+
           # set locale for '.' as decimal sign
           chartJsObj$x$options$locale <- "en-US"
-          
+
           # enable zoom
           chartJsObj$x$options$plugins$zoom <- list(
             zoom = list(
@@ -946,14 +946,14 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               mode = "xy"
             )
           )
-          
+
           return(chartJsObj %>% cjsLegend())
         })
-        
+
         # download buttons: png & csv
         output[[paste0(indicator, "DownloadButtons")]] <- renderUI({
           canvasId <- paste0(indicator, "Chart")
-          
+
           tagList(
             tags$div(
               class = " dashboard-btn-wrapper",
@@ -983,7 +983,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             )
           )
         })
-        
+
         # download csv data
         output[[paste0(indicator, "DownloadCsv")]] <- downloadHandler(
           filename = paste0(indicator, ".csv"),
