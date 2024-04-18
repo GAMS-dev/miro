@@ -68,7 +68,7 @@ class TestEngine:
         invite_user("mirotests_auth_1", 0)
         response = client.post("/login",
                                json={"username": "mirotests_auth_1",
-                                     "password": "mirotests_auth_1"})
+                                     "password": "mirotests_auth_11234"})
         print(response.json())
         assert response.status_code == 403
         response = requests.post(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups/mygroup",
@@ -79,14 +79,14 @@ class TestEngine:
         # user without permissions but member of group should get access only if models exist
         response = client.post("/login",
                                json={"username": "mirotests_auth_1",
-                                     "password": "mirotests_auth_1"})
+                                     "password": "mirotests_auth_11234"})
         print(response.json())
         assert response.status_code == 403
 
         register_transport(client, ["mygroup"])
         response = client.post("/login",
                                json={"username": "mirotests_auth_1",
-                                     "password": "mirotests_auth_1"})
+                                     "password": "mirotests_auth_11234"})
         print(response.json())
         assert response.status_code == 200
 
@@ -94,7 +94,7 @@ class TestEngine:
         invite_user("mirotests_auth_1", 1)
         response = client.post("/login",
                                json={"username": "mirotests_auth_1",
-                                     "password": "mirotests_auth_1"})
+                                     "password": "mirotests_auth_11234"})
         print(response.json())
         assert response.status_code == 200
         response = client.post("/login",
@@ -107,12 +107,12 @@ class TestEngine:
         # groups with uppercase letters in labels should not be accepted by MIRO Server
         invite_user("mirotests_auth_1", 7, "mygroup", inviter=True)
         response = requests.post(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups?label=Mygroup",
-                                 auth=("mirotests_auth_1", "mirotests_auth_1"))
+                                 auth=("mirotests_auth_1", "mirotests_auth_11234"))
         print(response.json())
         assert response.status_code == 201
         response = client.post("/login",
                                json={"username": "mirotests_auth_1",
-                                     "password": "mirotests_auth_1"})
+                                     "password": "mirotests_auth_11234"})
         response_data = response.json()
         print(response_data)
         assert response_data["roles"] == ['mygroup', 'users', 'admins']
