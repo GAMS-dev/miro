@@ -1720,7 +1720,7 @@ serverSelectInput <- function(session, inputId, label, choices, selected = NULL,
   # very hacky, but unfortunately shiny doesn't export the selectizeJSON function
   url <- session$registerDataObj(inputId, choicesDf, shiny:::selectizeJSON)
   selectizeInput(inputId, label,
-    choices = c(), multiple = multiple, width = width,
+    choices = if (length(selected)) selected else c(), selected = if (length(selected)) selected else NULL, multiple = multiple, width = width,
     options = modifyList(list(preload = TRUE, load = I(paste0("function(query, callback) {
             var selectize = this;
             var settings = selectize.settings;

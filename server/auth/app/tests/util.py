@@ -90,7 +90,7 @@ def invite_user(name, permissions, group=None, inviter=False):
     invitation_code = response.json()["invitation_token"]
     response = requests.post(f"{settings['ENGINE_URL']}/users/",
                              data={"username": name,
-                                   "password": name,
+                                   "password": f"{name}1234",
                                    "invitation_code": invitation_code},
                              auth=settings["VALID_AUTH_TUPLE"])
     print(response.json())

@@ -86,7 +86,7 @@ class TestScenarios:
                                data={
                                    'overwrite_data': True
                                },
-                               auth=("mirotests_auth_1", "mirotests_auth_1"))
+                               auth=("mirotests_auth_1", "mirotests_auth_11234"))
         print(response.json())
         assert response.status_code == 404
 
@@ -99,7 +99,7 @@ class TestScenarios:
                                    'overwrite_data': True,
                                    'read_perm': ["mirotests_auth_1", "#invalidgroup"]
                                },
-                               auth=("mirotests_auth_1", "mirotests_auth_1"))
+                               auth=("mirotests_auth_1", "mirotests_auth_11234"))
         assert "#invalidgroup" in response.json()["detail"]
         assert response.status_code == 400
 
@@ -110,7 +110,7 @@ class TestScenarios:
                                    'overwrite_data': True,
                                    'read_perm': ["mirotests_auth_1", "mygroup"]
                                },
-                               auth=("mirotests_auth_1", "mirotests_auth_1"))
+                               auth=("mirotests_auth_1", "mirotests_auth_11234"))
         assert "mygroup" in response.json()["detail"]
         assert response.status_code == 400
 
@@ -122,7 +122,7 @@ class TestScenarios:
                                    'read_perm': ["mirotests_auth_1", "#mygroup"],
                                    'write_perm': ["mirotests_auth_1"]
                                },
-                               auth=("mirotests_auth_1", "mirotests_auth_1"))
+                               auth=("mirotests_auth_1", "mirotests_auth_11234"))
         print(response.json())
         assert response.status_code == 201
 
@@ -158,7 +158,7 @@ class TestScenarios:
         assert "My test" in scen_names
 
         response = client.get("/api/scenarios/transport/",
-                              auth=("mirotests_auth_1", "mirotests_auth_1"))
+                              auth=("mirotests_auth_1", "mirotests_auth_11234"))
         scen_metadata = response.json()
         print(scen_metadata)
         assert response.status_code == 200
@@ -246,7 +246,7 @@ class TestScenarios:
                                data={
                                    'overwrite_data': True
                                },
-                               auth=("mirotests_auth_1", "mirotests_auth_1"))
+                               auth=("mirotests_auth_1", "mirotests_auth_11234"))
         print(response.json())
         assert response.status_code == 201
         response = client.get("/api/scenarios/transport/",
@@ -339,7 +339,7 @@ class TestScenarios:
                                data={
                                    'overwrite_data': True
                                },
-                               auth=("mirotests_auth_1", "mirotests_auth_1"))
+                               auth=("mirotests_auth_1", "mirotests_auth_11234"))
         print(response.json())
         assert response.status_code == 201
 
@@ -399,7 +399,7 @@ class TestScenarios:
                                    'write_perm': ["mirotests_auth_1"],
                                    'execPerm': ["mirotests_auth_1"]
                                },
-                               auth=("mirotests_auth_1", "mirotests_auth_1"))
+                               auth=("mirotests_auth_1", "mirotests_auth_11234"))
         print(response.json())
         assert response.status_code == 201
 
@@ -409,12 +409,12 @@ class TestScenarios:
         assert response.status_code == 404
 
         response = client.delete("/api/scenarios/transport/?name=My%20test&owner=mirotests_auth_1",
-                                 auth=("mirotests_auth_1", "mirotests_auth_1"))
+                                 auth=("mirotests_auth_1", "mirotests_auth_11234"))
         print(response.json())
         assert response.status_code == 200
 
         response = client.delete("/api/scenarios/transport/?name=My%20test&owner=mirotests_auth_1",
-                                 auth=("mirotests_auth_1", "mirotests_auth_1"))
+                                 auth=("mirotests_auth_1", "mirotests_auth_11234"))
         print(response.json())
         assert response.status_code == 404
 
@@ -427,7 +427,7 @@ class TestScenarios:
                                    'write_perm': ["mirotests_auth_1", "#mygroup"],
                                    'execPerm': ["mirotests_auth_1", "#mygroup"]
                                },
-                               auth=("mirotests_auth_1", "mirotests_auth_1"))
+                               auth=("mirotests_auth_1", "mirotests_auth_11234"))
         print(response.json())
         assert response.status_code == 201
 
