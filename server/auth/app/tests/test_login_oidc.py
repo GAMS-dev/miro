@@ -82,7 +82,7 @@ class TestOidc:
         invite_user("mirotests_auth_1", 0)
 
         with patch("requests.post", return_value=create_mock_login(
-                "mirotests_auth_1", "mirotests_auth_1")):
+                "mirotests_auth_1", "mirotests_auth_11234")):
             response = client.post("/login/oidc",
                                    json={"id_token": "valid"})
         print(response.json())
@@ -94,7 +94,7 @@ class TestOidc:
         assert response.status_code == 201
         # user without permissions but member of group should get access only if models exist
         with patch("requests.post", return_value=create_mock_login(
-                "mirotests_auth_1", "mirotests_auth_1")):
+                "mirotests_auth_1", "mirotests_auth_11234")):
             response = client.post("/login/oidc",
                                    json={"id_token": "valid"})
         print(response.json())
@@ -102,7 +102,7 @@ class TestOidc:
 
         register_transport(client, ["mygroup"])
         with patch("requests.post", return_value=create_mock_login(
-                "mirotests_auth_1", "mirotests_auth_1")):
+                "mirotests_auth_1", "mirotests_auth_11234")):
             response = client.post("/login/oidc",
                                    json={"id_token": "valid"})
         print(response.json())
@@ -112,7 +112,7 @@ class TestOidc:
         invite_user("mirotests_auth_1", 1)
 
         with patch("requests.post", return_value=create_mock_login(
-                "mirotests_auth_1", "mirotests_auth_1")):
+                "mirotests_auth_1", "mirotests_auth_11234")):
             response = client.post("/login/oidc",
                                    json={"id_token": "valid"})
         print(response.json())
@@ -128,12 +128,12 @@ class TestOidc:
         # groups with uppercase letters in labels should not be accepted by MIRO Server
         invite_user("mirotests_auth_1", 7, "mygroup", inviter=True)
         response = requests.post(f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/user-groups?label=Mygroup",
-                                 auth=("mirotests_auth_1", "mirotests_auth_1"))
+                                 auth=("mirotests_auth_1", "mirotests_auth_11234"))
         print(response.json())
         assert response.status_code == 201
 
         with patch("requests.post", return_value=create_mock_login(
-                "mirotests_auth_1", "mirotests_auth_1")):
+                "mirotests_auth_1", "mirotests_auth_11234")):
             response = client.post("/login/oidc",
                                    json={"id_token": "valid"})
 
