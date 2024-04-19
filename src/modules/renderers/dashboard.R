@@ -880,7 +880,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             chartJsObj$x$scales$y$type <- "logarithmic"
           }
 
-          for (i in seq_len(min(noSeries, 40L))) {
+          for (i in seq_len(noSeries)) {
             label <- names(dataTmp)[rowHeaderLen + i]
             originalLabel <- label
 
