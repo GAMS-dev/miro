@@ -1331,6 +1331,7 @@ if (is.null(errMsg)) {
     idsToDisplay = inputSheetIdsToDisplay, widgetIds = widgetIds
   )
   inputTabTitles <- inputTabs$tabTitles
+  config$inputTabSettings <- inputTabs$tabSettings
   tabSheetMap <- list(input = NULL, output = NULL)
   tabSheetMap$input <- inputTabs$tabSheetMap
   inputTabs <- inputTabs$tabs
@@ -2017,6 +2018,7 @@ if (is.null(errMsg)) {
     idsToDisplay = outputSheetIdsToDisplay
   )
   outputTabTitles <- outputTabs$tabTitles
+  config$outputTabSettings <- outputTabs$tabSettings
   tabSheetMap$output <- outputTabs$tabSheetMap
   outputTabs <- outputTabs$tabs
   isGroupOfSheets <- vapply(seq_len(length(outputTabTitles) + length(scenInputTabTitles)), function(tabId) {

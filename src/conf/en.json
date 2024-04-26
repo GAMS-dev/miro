@@ -1886,13 +1886,15 @@
           "symbolWidgetgroups": "Name of the widget group",
           "groupMemberIn": "Select group members",
           "groupMemberWidget": "Select group members",
-          "groupSameTabIn": "Show all symbols side by side on the same tab",
+          "groupSameTabIn": "Show all symbols on the same tab",
+          "groupSameTabInNoCols": "Number of symbols next to each other",
           "groupSameTabWidget": "Show all widgets side by side on the same tab"
         },
         "addOutputGroup":{
           "symbolOutputgroups": "Name of the output group",
           "groupMemberOut": "Select group members",
-          "groupSameTabOut": "Show all symbols side by side on the same tab"
+          "groupSameTabOut": "Show all symbols on the same tab",
+          "groupSameTabOutNoCols": "Number of symbols next to each other"
         },
         "addSymlink":{
           "source": "Name of the output symbol",

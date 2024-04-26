@@ -7540,12 +7540,16 @@
                       "type": "string",
                       "minLength": 1
                     },
+                    "groupSameTabInNoCols": {
+                      "type": "string",
+                      "minLength": 1
+                    },
                     "groupSameTabWidget": {
                       "type": "string",
                       "minLength": 1
                     }
                   },
-                  "minProperties": 6
+                  "minProperties": 7
                 },
                 "addOutputGroup": {
                   "type": "object",
@@ -7562,9 +7566,13 @@
                     "groupSameTabOut": {
                       "type": "string",
                       "minLength": 1
+                    },
+                    "groupSameTabOutNoCols": {
+                      "type": "string",
+                      "minLength": 1
                     }
                   },
-                  "minProperties": 3
+                  "minProperties": 4
                 },
                 "addSymlink": {
                   "type": "object",

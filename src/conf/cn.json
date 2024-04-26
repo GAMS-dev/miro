@@ -1884,13 +1884,15 @@
           "symbolWidgetgroups": "小组件组的名称",
           "groupMemberIn": "选择该组成员",
           "groupMemberWidget": "选择该组成员",
-          "groupSameTabIn": "在同一标签上并排显示所有符号",
+          "groupSameTabIn": "在同一选项卡上显示所有符号",
+          "groupSameTabInNoCols": "彼此相邻的符号数量",
           "groupSameTabWidget": "在同一个标签页上并排显示所有小部件"
         },
         "addOutputGroup":{
           "symbolOutputgroups": "输出组的名称",
           "groupMemberOut": "选择该组成员",
-          "groupSameTabOut": "在同一标签上并排显示所有符号"
+          "groupSameTabOut": "在同一选项卡上显示所有符号",
+          "groupSameTabOutNoCols": "彼此相邻的符号数量"
         },
         "addSymlink":{
           "source": "输出符号的名称",

@@ -451,7 +451,7 @@ if (buildUI) {
         ))
       }
       if (length(inputTabs[[tabId]]) > 1L) {
-        return(column(width = 6L, tabContent))
+        return(column(width = if (length(config$inputTabSettings)) config$inputTabSettings[[tabId]]$colWidth else 6L, tabContent))
       }
       return(tabContent)
     })
@@ -927,7 +927,7 @@ if (buildUI) {
         ))
       }
       if (length(outputTabs[[tabId]]) > 1L) {
-        return(column(width = 6, tabContent))
+        return(column(width = if (length(config$outputTabSettings)) config$outputTabSettings[[tabId]]$colWidth else 6L, tabContent))
       }
       return(tabContent)
     })

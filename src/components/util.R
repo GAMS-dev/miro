@@ -1567,6 +1567,7 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
   j <- 1L
   tabs <- vector("list", length(names))
   tabTitles <- vector("list", length(names))
+  tabSettings <- vector("list", length(names))
   tabSheetMap <- vector("list", length(names))
   isAssigned <- vector("logical", length(names))
   scalarAssigned <- FALSE
@@ -1585,6 +1586,7 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
     if (length(scalarIds) > 0L) {
       tabs[[1L]] <- 0L
       tabTitles[[1L]] <- scalarsTabName
+      tabSettings[[1L]] <- list()
       if (length(scalarTabId)) {
         tabSheetMap[[match(scalarsFileName, names)]] <- 1L
       }
@@ -1630,16 +1632,16 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
         }
         tabs[[j]] <- groupMemberIds
         tabSheetMap[groupMemberIds] <- j
-        if (!isTRUE(groups[[groupId]][["sameTab"]])) {
+        if (isTRUE(groups[[groupId]][["sameTab"]])) {
+          tabTitles[[j]] <- groups[[groupId]]$name
+          tabSettings[[j]] <- list(colWidth = if (length(groups[[groupId]]$sameTabNoCols)) 12 / groups[[groupId]]$sameTabNoCols else 6)
+        } else {
           for (k in seq_along(groupMemberIds)) {
             groupMemberId <- groupMemberIds[k]
             tabSheetMap[[groupMemberId]] <- c(tabSheetMap[[groupMemberId]], k)
           }
-        }
-        if (isTRUE(groups[[groupId]][["sameTab"]])) {
-          tabTitles[[j]] <- groups[[groupId]]$name
-        } else {
           tabTitles[[j]] <- c(groups[[groupId]]$name, aliases[groupMemberIds])
+          tabSettings[[j]] <- list()
         }
         isAssigned[groupMemberIds] <- TRUE
         j <- j + 1L
@@ -1651,12 +1653,14 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
     tabs[[j]] <- sheetId
 
     tabTitles[[j]] <- aliases[[i]]
+    tabSettings[[j]] <- list()
     tabSheetMap[sheetId] <- j
     j <- j + 1L
     next
   }
   return(list(
     tabs = tabs[!vapply(tabs, is.null, logical(1L), USE.NAMES = FALSE)],
+    tabSettings = tabSettings[!vapply(tabSettings, is.null, logical(1L), USE.NAMES = FALSE)],
     tabTitles = tabTitles[!vapply(tabTitles, is.null, logical(1L), USE.NAMES = FALSE)],
     tabSheetMap = tabSheetMap
   ))

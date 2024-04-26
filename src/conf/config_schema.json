@@ -2662,6 +2662,12 @@
                 "description":"Gather grouped symbols on same tab",
                 "type":"boolean",
                 "default":false
+              },
+              "sameTabNoCols":{
+                "description":"Number symbols next to each other",
+                "type":"integer",
+                "minimum": 1,
+                "maximum": 3
               }
            }
          }
@@ -2694,6 +2700,15 @@
                 "description":"Gather grouped symbols on same tab",
                 "type":"boolean",
                 "default":false
+              },
+              "sameTabNoCols":{
+                "description":"Number symbols next to each other",
+                "type":"string",
+                "enum":[
+                  "1",
+                  "2",
+                  "3"
+                ]
               }
            }
          }

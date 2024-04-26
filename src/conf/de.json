@@ -1885,13 +1885,15 @@
           "symbolWidgetgroups": "Name der Eingabe-Widget-Gruppe",
           "groupMemberIn": "Gruppenmitglieder auswählen",
           "groupMemberWidget": "Gruppenmitglieder auswählen",
-          "groupSameTabIn": "Alle Symbole nebeneinander in demselben Tab anzeigen",
+          "groupSameTabIn": "Alle Symbole in demselben Tab anzeigen",
+          "groupSameTabInNoCols": "Anzahl Symbole nebeneinander",
           "groupSameTabWidget": "Alle Widgets nebeneinander in demselben Tab anzeigen"
         },
         "addOutputGroup":{
           "symbolOutputgroups": "Name der Ausgabegruppe",
           "groupMemberOut": "Gruppenmitglieder auswählen",
-          "groupSameTabOut": "Alle Symbole nebeneinander in demselben Tab anzeigen"
+          "groupSameTabOut": "Alle Symbole in demselben Tab anzeigen",
+          "groupSameTabInNoCols": "Anzahl Symbole nebeneinander"
         },
         "addSymlink":{
           "source": "Name des Ausgabesymbols",
