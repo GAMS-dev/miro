@@ -573,7 +573,7 @@ if (is.null(errMsg)) {
   if (useTempDir &&
     file.exists(file.path(currentModelDir, paste0(modelName, ".zip")))) {
     modelData <- file.path(currentModelDir, paste0(modelName, ".zip"))
-  } else if (config$activateModules$remoteExecution) {
+  } else if (config$activateModules$remoteExecution && !LAUNCHCONFIGMODE) {
     errMsg <- paste(errMsg, sprintf(
       "No model data ('%s.zip') found.\nPlease make sure that you specify the files that belong to your model in a text file named '%s_files.txt' (model assembly file).",
       modelName, modelName
