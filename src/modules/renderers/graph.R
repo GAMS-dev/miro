@@ -699,16 +699,20 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
         )
       })
       lapply(seq_along(options$minicharts), function(j) {
-        if (options$minicharts[[j]]$variableSize) {
-          multiplier <- rowSums(data[, options$minicharts[[j]]$chartdata], na.rm = TRUE) /
-            max(rowSums(data[, options$minicharts[[j]]$chartdata], na.rm = TRUE))
+        chartDataTmp <- data[, options$minicharts[[j]]$chartdata]
+        if (!nrow(chartDataTmp)) {
+          return() # to avoid ugly errors in log
+        }
+        if (identical(options$minicharts[[j]]$variableSize, TRUE)) {
+          rowSumsTmp <- rowSums(chartDataTmp, na.rm = TRUE)
+          multiplier <- rowSumsTmp / max(rowSumsTmp)
         } else {
           multiplier <- 1
         }
         p <<- addMinicharts(p,
           lng = data[[options$minicharts[[j]]$lng]],
           lat = data[[options$minicharts[[j]]$lat]],
-          chartdata = data[, options$minicharts[[j]]$chartdata],
+          chartdata = chartDataTmp,
           time = if (length(options$minicharts[[j]]$time)) data[[options$minicharts[[j]]$time]],
           # maxValues = options$minicharts[[j]]$maxValues,
           type = options$minicharts[[j]]$type,
