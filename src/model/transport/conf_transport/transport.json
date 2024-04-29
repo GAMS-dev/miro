@@ -186,56 +186,30 @@
     },
     "_scalars_out": {
       "newAlias": "Cost"
-    },
-    "type": {
-      "newAlias": "selected model type"
-    },
-    "f": {
-      "newAlias": "freight in dollars per case per thousand miles"
-    },
-    "mins": {
-      "newAlias": "minimum shipment (MIP- and MINLP-only)"
-    },
-    "beta": {
-      "newAlias": "beta (MINLP-only)"
-    },
-    "total_cost": {
-      "newAlias": "total transportation costs in thousands of dollars"
     }
-  },
-  "readme": {
-    "tabTitle": "Readme",
-    "filename": "README.md",
-    "enableMath": false
-  },
-  "customCss": false,
-  "layoutSettings": {
-    "maxTabsExpandedInput": 5,
-    "maxTabsExpandedOutput": 5,
-    "maxTabsExpandedPivotComp": 5,
-    "maxTabsExpandedSplitComp": 5,
-    "maxTabsExpandedTabComp": 5
-  },
-  "defaultRendererOutput": "miroPivot",
-  "pivotCompSettings": {
-    "hidePivotControls": false,
-    "fixedColumns": true
   },
   "inputGroups": [
     {
       "name": "Location information",
-      "members": ["ilocdata", "jlocdata"],
-      "sameTab": true,
-      "sameTabNoCols": 3
+      "members": ["ilocdata", "jlocdata"]
     }
   ],
+  "readme": {
+    "tabTitle": "Readme",
+    "filename": "README.md"
+  },
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
+    "highlightCol": true,
+    "highlightRow": true,
+    "columnSorting": true,
+    "manualColumnResize": true,
     "contextMenu": {
       "enabled": true,
       "allowRowEdit": true,
-      "allowColEdit": true
+      "allowColEdit": true,
+      "allowReadOnly": false
     },
     "height": 700,
     "colWidths": 150
