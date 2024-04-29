@@ -271,7 +271,8 @@ test_that("getTabs works", {
       mergeScalars = FALSE, widgetIdsMultiDim = integer(0L)
     ),
     list(
-      tabs = list(1L, c(2L, 4L), 3L), tabTitles = list("A", c("Group 1", "B", "D"), "C"),
+      tabs = list(1L, c(2L, 4L), 3L), tabSettings = list(list(), list(), list()),
+      tabTitles = list("A", c("Group 1", "B", "D"), "C"),
       tabSheetMap = list(1L, 2:1, 3L, c(2L, 2L))
     )
   )
@@ -282,7 +283,8 @@ test_that("getTabs works", {
       mergeScalars = FALSE, widgetIdsMultiDim = integer(0L)
     ),
     list(
-      tabs = list(1:2, 3L), tabTitles = list(c("Group 1", "A", "B"), "C"),
+      tabs = list(1:2, 3L), tabSettings = list(list(), list()),
+      tabTitles = list(c("Group 1", "A", "B"), "C"),
       tabSheetMap = list(c(1L, 1L), 1:2, 2L, NULL)
     )
   )
@@ -293,7 +295,8 @@ test_that("getTabs works", {
       mergeScalars = FALSE, widgetIdsMultiDim = integer(0L)
     ),
     list(
-      tabs = list(1:2, 3L), tabTitles = list(c("Group 1", "A", "B"), "C"),
+      tabs = list(1:2, 3L), tabSettings = list(list(), list()),
+      tabTitles = list(c("Group 1", "A", "B"), "C"),
       tabSheetMap = list(c(1L, 1L), 1:2, 2L, NULL)
     )
   )
@@ -304,7 +307,8 @@ test_that("getTabs works", {
       mergeScalars = TRUE, widgetIdsMultiDim = integer(0L)
     ),
     list(
-      tabs = list(0L, 1:2), tabTitles = list("Scalars", c("Group 1", "A", "B")),
+      tabs = list(0L, 1:2), tabSettings = list(list(), list()),
+      tabTitles = list("Scalars", c("Group 1", "A", "B")),
       tabSheetMap = list(c(2L, 1L), c(2L, 2L), NULL, NULL)
     )
   )
@@ -315,7 +319,8 @@ test_that("getTabs works", {
       mergeScalars = TRUE, widgetIdsMultiDim = integer(0L)
     ),
     list(
-      tabs = list(0L, 1L, 3L), tabTitles = list("Scalars", c("Group 1", "A"), "C"),
+      tabs = list(0L, 1L, 3L), tabSettings = list(list(), list(), list()),
+      tabTitles = list("Scalars", c("Group 1", "A"), "C"),
       tabSheetMap = list(c(2L, 1L), 1L, 3L, NULL)
     )
   )
@@ -326,7 +331,8 @@ test_that("getTabs works", {
       mergeScalars = TRUE, widgetIdsMultiDim = integer(0L)
     ),
     list(
-      tabs = list(0L, 1L, 2L), tabTitles = list("Scalars", c("Group 1", "A"), "C"),
+      tabs = list(0L, 1L, 2L), tabSettings = list(list(), list(), list()),
+      tabTitles = list("Scalars", c("Group 1", "A"), "C"),
       tabSheetMap = list(c(2L, 1L), 3L, NULL, 1L)
     )
   )
@@ -337,7 +343,8 @@ test_that("getTabs works", {
       mergeScalars = TRUE, widgetIdsMultiDim = 3
     ),
     list(
-      tabs = list(0L, 1L, 2L, 3L), tabTitles = list("Scalars", c("Group 1", "A"), "C", "D"),
+      tabs = list(0L, 1L, 2L, 3L), tabSettings = list(list(), list(), list(), list()),
+      tabTitles = list("Scalars", c("Group 1", "A"), "C", "D"),
       tabSheetMap = list(c(2L, 1L), 3L, 4L, 1L)
     )
   )
@@ -351,7 +358,7 @@ test_that("getTabs works", {
       mergeScalars = TRUE, widgetIdsMultiDim = integer()
     ),
     list(
-      tabs = list(c(2L, 1L), c(3L, 4L)),
+      tabs = list(c(2L, 1L), c(3L, 4L)), tabSettings = list(list(), list()),
       tabTitles = list(c("Group 1", "B", "A"), c("Group 2", "C", "D")),
       tabSheetMap = list(c(1L, 2L), c(1L, 1L), c(2L, 1L), c(2L, 2L))
     )
@@ -366,7 +373,7 @@ test_that("getTabs works", {
       mergeScalars = TRUE, widgetIdsMultiDim = integer()
     ),
     list(
-      tabs = list(0L, 2L, 4L),
+      tabs = list(0L, 2L, 4L), tabSettings = list(list(), list(), list()),
       tabTitles = list("Scalars", c("Group 1", "B"), c("Group 2", "D")),
       tabSheetMap = list(NULL, c(2L, 1L), NULL, c(3L, 1L))
     )
@@ -381,7 +388,7 @@ test_that("getTabs works", {
       mergeScalars = TRUE, widgetIdsMultiDim = c(3L)
     ),
     list(
-      tabs = list(0L, 2L, c(3L, 4L)),
+      tabs = list(0L, 2L, c(3L, 4L)), tabSettings = list(list(), list(), list()),
       tabTitles = list("Scalars", c("Group 1", "B"), c("Group 2", "C", "D")),
       tabSheetMap = list(NULL, c(2L, 1L), c(3L, 1L), c(3L, 2L))
     )
