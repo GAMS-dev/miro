@@ -1893,7 +1893,7 @@
           "symbolOutputgroups": "Name der Ausgabegruppe",
           "groupMemberOut": "Gruppenmitglieder auswählen",
           "groupSameTabOut": "Alle Symbole in demselben Tab anzeigen",
-          "groupSameTabInNoCols": "Anzahl Symbole nebeneinander"
+          "groupSameTabOutNoCols": "Anzahl Symbole nebeneinander"
         },
         "addSymlink":{
           "source": "Name des Ausgabesymbols",
