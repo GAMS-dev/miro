@@ -129,43 +129,42 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
   # make output type case insensitive
   typeCustom <- type
   type <- tolower(type)
-  filterCol <- NULL
-  if (length(graphOptions$filter) && graphOptions$filter$col %in% names(data)) {
-    showEl(session, "#" %+% session$ns("data_filter_wrapper"))
-    filterCol <- as.name(graphOptions$filter$col)
-    if (isTRUE(graphOptions$filter$date)) {
-      choices <- data[[graphOptions$filter$col]]
-      updateDateRangeInput(session, "data_filter",
-        min = choices[1],
-        max = choices[length(choices)],
-        start = choices[1], end = choices[length(choices)]
-      )
-    } else {
-      choices <- data[[graphOptions$filter$col]]
-      updateSelectInput(session, "data_filter",
-        choices = choices,
-        selected = choices[1]
-      )
-    }
-  }
   if (type == "pivot") {
     output$pivottable <- renderPivot(data, options = pivotOptions, roundPrecision = roundPrecision)
-  } else if (type == "graph") {
+  } else if (type %in% c("graph", "dtgraph")) {
+    if (length(graphOptions$filter) && graphOptions$filter$col %in% names(data)) {
+      showEl(session, "#" %+% session$ns("data_filter_wrapper"))
+      filterCol <- as.name(graphOptions$filter$col)
+      if (isTRUE(graphOptions$filter$date)) {
+        choices <- data[[graphOptions$filter$col]]
+        updateDateRangeInput(session, "data_filter",
+          min = choices[1],
+          max = choices[length(choices)],
+          start = choices[1], end = choices[length(choices)]
+        )
+      } else {
+        choices <- data[[graphOptions$filter$col]]
+        updateSelectInput(session, "data_filter",
+          choices = choices,
+          selected = choices[1]
+        )
+      }
+    }
     output$graph <- renderGraph(data,
       configData = configData, options = graphOptions,
       input = input, filterCol = if (!is.null(filterCol)) filterCol
     )
-  } else if (type == "datatable" || type == "dtgraph") {
-    output$datatable <- renderDTable(data,
-      options = dtOptions, roundPrecision = roundPrecision,
-      metadata = if (length(customOptions)) customOptions[["_metadata_"]]
-    )
-    if (!is.null(graphOptions)) {
-      output$graph <- renderGraph(data,
-        configData = configData, options = graphOptions,
-        input = input, filterCol = if (!is.null(filterCol)) filterCol
+    if (type == "dtgraph") {
+      output$datatable <- renderDTable(data,
+        options = dtOptions, roundPrecision = roundPrecision,
+        metadata = if (length(customOptions)) customOptions[["_metadata_"]]
       )
     }
+  } else if (type == "datatable") {
+    output$datatable <- renderDTable(data,
+      options = graphOptions, roundPrecision = roundPrecision,
+      metadata = if (length(customOptions)) customOptions[["_metadata_"]]
+    )
   } else if (type == "valuebox") {
     output$scalarBoxes <- renderUI({
       if (!length(customOptions) || !length(names(customOptions[[1]]))) {

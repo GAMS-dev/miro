@@ -29,7 +29,15 @@
   },
   "aggregateWidgets": true,
   "overwriteSheetOrder": {
-    "input": ["test2", "test4", "test3", "test1", "test5", "test6", "_widgets"]
+    "input": [
+      "test2",
+      "test4",
+      "test3",
+      "test1",
+      "test5",
+      "test6",
+      "_widgets"
+    ]
   },
   "overwriteAliases": {
     "test1": {
@@ -78,22 +86,52 @@
     "height": 700,
     "colWidths": 200
   },
+  "dataRendering": {
+    "out1": {
+      "outType": "datatable",
+      "class": "display",
+      "filter": "bottom",
+      "rownames": false,
+      "extensions": [
+        "Scroller",
+        "FixedColumns"
+      ],
+      "options": {
+        "pageLength": 15,
+        "scroller": true,
+        "scrollY": 200,
+        "scrollX": true,
+        "fixedColumns": {
+          "leftColumns": 3
+        }
+      }
+    }
+  },
   "inputGroups": [
     {
       "name": "group 2",
-      "members": ["test3", "test6"],
+      "members": [
+        "test3",
+        "test6"
+      ],
       "sameTab": true,
       "colsPerRow": 3
     },
     {
       "name": "group 3",
-      "members": ["test5", "test1"],
+      "members": [
+        "test5",
+        "test1"
+      ],
       "sameTab": true,
       "colsPerRow": 1
     },
     {
       "name": "group 1",
-      "members": ["test2", "test4"],
+      "members": [
+        "test2",
+        "test4"
+      ],
       "sameTab": false,
       "colsPerRow": 1
     }
@@ -101,13 +139,19 @@
   "outputGroups": [
     {
       "name": "Output group 1",
-      "members": ["out1", "out3"],
+      "members": [
+        "out1",
+        "out3"
+      ],
       "sameTab": true,
       "colsPerRow": 1
     },
     {
       "name": "Output group 2",
-      "members": ["out2", "out4"],
+      "members": [
+        "out2",
+        "out4"
+      ],
       "sameTab": false,
       "colsPerRow": 1
     }

@@ -95,6 +95,22 @@
 					"type":	"string",
 					"alias":	"test1"
 				},
+				"test2":	{
+					"type":	"string",
+					"alias":	"test2"
+				},
+				"test3":	{
+					"type":	"string",
+					"alias":	"test3"
+				},
+				"test4":	{
+					"type":	"string",
+					"alias":	"test4"
+				},
+				"test5":	{
+					"type":	"string",
+					"alias":	"test5"
+				},
 				"value":	{
 					"type":	"numeric",
 					"alias":	"out1"

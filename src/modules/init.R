@@ -2233,7 +2233,10 @@ if (is.null(errMsg)) {
               symtype = modelOut[[i]]$symtype
             ))
           )
-          if (identical(configGraphsOut[[i]]$outType, "miroPivot")) {
+          if (identical(configGraphsOut[[i]]$outType, "datatable")) {
+            configGraphsOut[[i]]$graph <- configGraphsOut[[i]]
+            configGraphsOut[[i]]$graph$outType <- NULL
+          } else if (identical(configGraphsOut[[i]]$outType, "miroPivot")) {
             validGraphConfig <- validateGraphConfig(configGraphsOut[[i]])
             if (!identical(validGraphConfig, TRUE)) {
               errMsgTmp <- paste0(
