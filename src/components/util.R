@@ -1634,7 +1634,7 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
         tabSheetMap[groupMemberIds] <- j
         if (isTRUE(groups[[groupId]][["sameTab"]])) {
           tabTitles[[j]] <- groups[[groupId]]$name
-          tabSettings[[j]] <- list(colWidth = if (length(groups[[groupId]]$sameTabNoCols)) 12 / groups[[groupId]]$sameTabNoCols else 6)
+          tabSettings[[j]] <- list(colWidth = if (length(groups[[groupId]]$colsPerRow)) 12 / groups[[groupId]]$colsPerRow else 6)
         } else {
           for (k in seq_along(groupMemberIds)) {
             groupMemberId <- groupMemberIds[k]

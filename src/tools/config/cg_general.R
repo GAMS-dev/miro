@@ -535,7 +535,11 @@ observeEvent(input$add_general, {
         name = newName,
         members = groupTemp[[arrayID]][[arrayIdxAll]]$members,
         sameTab = isTRUE(groupTemp[[arrayID]][[arrayIdxAll]]$sameTab),
-        sameTabNoCols = groupTemp[[arrayID]][[arrayIdxAll]]$sameTabNoCols
+        colsPerRow = if (length(groupTemp[[arrayID]][[arrayIdxAll]]$colsPerRow)) {
+          groupTemp[[arrayID]][[arrayIdxAll]]$colsPerRow
+        } else {
+          1L
+        }
       )
       if (identical(arrayID, "inputWidgetGroups")) {
         updateSheetOrderInput(arrayIdxAll, newName)
@@ -1071,7 +1075,11 @@ changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID, mi
         name = newName,
         members = newMembers,
         sameTab = isTRUE(groupTemp[[arrayID]][[arrayIdxAll]]$sameTab),
-        sameTabNoCols = groupTemp[[arrayID]][[arrayIdxAll]]$sameTabNoCols
+        colsPerRow = if (length(groupTemp[[arrayID]][[arrayIdxAll]]$colsPerRow)) {
+          groupTemp[[arrayID]][[arrayIdxAll]]$colsPerRow
+        } else {
+          1L
+        }
       )
       if (identical(arrayID, "inputWidgetGroups")) {
         updateSheetOrderInput(arrayIdxAll, newName)
@@ -1173,15 +1181,15 @@ observeEvent(input$group_sameTabIn, {
   if (arrayIdx <= length(rv$generalConfig[["inputGroups"]]) &&
     length(rv$generalConfig[["inputGroups"]][[arrayIdx]])) {
     rv$generalConfig[["inputGroups"]][[arrayIdx]]$sameTab <<- sameTabNewVal
-    rv$generalConfig[["inputGroups"]][[arrayIdx]]$sameTabNoCols <<- newVal
+    rv$generalConfig[["inputGroups"]][[arrayIdx]]$colsPerRow <<- newVal
   } else if (arrayIdxAll <= length(groupTemp[["inputGroups"]]) &&
     length(groupTemp[["inputGroups"]][[arrayIdxAll]])) {
     groupTemp[["inputGroups"]][[arrayIdxAll]]$sameTab <<- sameTabNewVal
-    groupTemp[["inputGroups"]][[arrayIdxAll]]$sameTabNoCols <<- newVal
+    groupTemp[["inputGroups"]][[arrayIdxAll]]$colsPerRow <<- newVal
   } else {
     groupTemp[["inputGroups"]][[arrayIdxAll]] <<- list(
       sameTab = sameTabNewVal,
-      sameTabNoCols = newVal
+      colsPerRow = newVal
     )
   }
 })
@@ -1221,13 +1229,13 @@ observeEvent(input$group_sameTabOut, {
   if (arrayIdx <= length(rv$generalConfig[["outputGroups"]]) &&
     length(rv$generalConfig[["outputGroups"]][[arrayIdx]])) {
     rv$generalConfig[["outputGroups"]][[arrayIdx]]$sameTab <<- sameTabNewVal
-    rv$generalConfig[["outputGroups"]][[arrayIdx]]$sameTabNoCols <<- newVal
+    rv$generalConfig[["outputGroups"]][[arrayIdx]]$colsPerRow <<- newVal
   } else if (arrayIdxAll <= length(groupTemp[["outputGroups"]]) &&
     length(groupTemp[["outputGroups"]][[arrayIdxAll]])) {
     groupTemp[["outputGroups"]][[arrayIdxAll]]$sameTab <<- sameTabNewVal
-    groupTemp[["outputGroups"]][[arrayIdxAll]]$sameTabNoCols <<- newVal
+    groupTemp[["outputGroups"]][[arrayIdxAll]]$colsPerRow <<- newVal
   } else {
-    groupTemp[["outputGroups"]][[arrayIdxAll]] <<- list(sameTab = sameTabNewVal, sameTabNoCols = newVal)
+    groupTemp[["outputGroups"]][[arrayIdxAll]] <<- list(sameTab = sameTabNewVal, colsPerRow = newVal)
   }
 })
 observeEvent(input$remove_general, {

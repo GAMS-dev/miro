@@ -71,17 +71,17 @@ const arrayTypes = {
     let name;
     let members;
     let sameTab = false;
-    let sameTabNoCols = '2';
+    let colsPerRow = '2';
     if (defaults !== undefined) {
       if (defaults.sameTab !== undefined) {
-        ({ sameTab, sameTabNoCols } = defaults);
+        ({ sameTab, colsPerRow } = defaults);
       }
       ({ name, members } = defaults);
     }
     const elements = {
       symbol_inputGroups: ['text', lang.addInputGroup.symbolInputgroups, name],
       group_memberIn: ['select', lang.addInputGroup.groupMemberIn, inputSymbols, inputSymbolsAliases, members, true],
-      group_sameTabIn: ['selectDep', [lang.addInputGroup.groupSameTabIn, 'select', lang.addInputGroup.groupSameTabInNoCols, ['1', '2', '3'], ['1', '2', '3'], sameTabNoCols || '2'], lang.addInputGroup.groupSameTabInNoCols, ['_'], ['1'], '_', sameTab === true],
+      group_sameTabIn: ['selectDep', [lang.addInputGroup.groupSameTabIn, 'select', lang.addInputGroup.groupSameTabInNoCols, ['1', '2', '3'], ['1', '2', '3'], colsPerRow || '2'], lang.addInputGroup.groupSameTabInNoCols, ['_'], ['1'], '_', sameTab === true],
     };
     return ([elements, { elRequired: false }, 'general']);
   },
@@ -107,17 +107,17 @@ const arrayTypes = {
     let name;
     let members;
     let sameTab = false;
-    let sameTabNoCols = '2';
+    let colsPerRow = '2';
     if (defaults !== undefined) {
       if (defaults.sameTab !== undefined) {
-        ({ sameTab, sameTabNoCols } = defaults);
+        ({ sameTab, colsPerRow } = defaults);
       }
       ({ name, members } = defaults);
     }
     const elements = {
       symbol_outputGroups: ['text', lang.addOutputGroup.symbolOutputgroups, name],
       group_memberOut: ['select', lang.addOutputGroup.groupMemberOut, outputSymbols, outputSymbolsAliases, members, true],
-      group_sameTabOut: ['selectDep', [lang.addOutputGroup.groupSameTabOut, 'select', lang.addOutputGroup.groupSameTabOutNoCols, ['1', '2', '3'], ['1', '2', '3'], sameTabNoCols || '2', false], lang.addOutputGroup.groupSameTabOutNoCols, ['_'], ['1'], '1', sameTab === true],
+      group_sameTabOut: ['selectDep', [lang.addOutputGroup.groupSameTabOut, 'select', lang.addOutputGroup.groupSameTabOutNoCols, ['1', '2', '3'], ['1', '2', '3'], colsPerRow || '2', false], lang.addOutputGroup.groupSameTabOutNoCols, ['_'], ['1'], '1', sameTab === true],
     };
     return ([elements, { elRequired: false }, 'general']);
   },

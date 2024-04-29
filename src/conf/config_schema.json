@@ -2663,8 +2663,8 @@
                 "type":"boolean",
                 "default":false
               },
-              "sameTabNoCols":{
-                "description":"Number symbols next to each other",
+              "colsPerRow":{
+                "description":"Number symbols next to each other (per row)",
                 "type":"integer",
                 "minimum": 1,
                 "maximum": 3
@@ -2701,14 +2701,11 @@
                 "type":"boolean",
                 "default":false
               },
-              "sameTabNoCols":{
-                "description":"Number symbols next to each other",
-                "type":"string",
-                "enum":[
-                  "1",
-                  "2",
-                  "3"
-                ]
+              "colsPerRow":{
+                "description":"Number symbols next to each other (per row)",
+                "type":"integer",
+                "minimum": 1,
+                "maximum": 3
               }
            }
          }
