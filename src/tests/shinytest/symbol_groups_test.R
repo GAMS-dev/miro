@@ -3,7 +3,6 @@ app <- AppDriver$new("../../",
   load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
   timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
 )
-app$view()
 Sys.sleep(2)
 expect_identical(app$get_js("$('a[data-value=inputTabset_1]').text()"), "group 1")
 expect_identical(app$get_js("$('a[data-value=inputTabset_2]').text()"), "group 2")
