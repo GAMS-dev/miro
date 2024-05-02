@@ -132,6 +132,7 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
   if (type == "pivot") {
     output$pivottable <- renderPivot(data, options = pivotOptions, roundPrecision = roundPrecision)
   } else if (type %in% c("graph", "dtgraph")) {
+    filterCol <- NULL
     if (length(graphOptions$filter) && graphOptions$filter$col %in% names(data)) {
       showEl(session, "#" %+% session$ns("data_filter_wrapper"))
       filterCol <- as.name(graphOptions$filter$col)
