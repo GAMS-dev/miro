@@ -411,7 +411,7 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
             callModule(renderData, paste0("table_", tabsetIdChar, "_", tabId),
               type = "datatable",
               data = scenData$get(refId, symNames = sheetName, drop = TRUE),
-              dtOptions = graphConfig$datatable, customOptions = graphConfig$options,
+              graphOptions = graphConfig$datatable, customOptions = graphConfig$options,
               roundPrecision = roundPrecision
             )
             dynamicUILoaded$dynamicTabsets[[tabsetIdChar]][["content"]][tabId] <<- TRUE
