@@ -295,4 +295,20 @@ expect_identical(
   getVisibleDtData(app, "data-in_3-inputPivot-pivotTable"),
   structure(list(), class = c("tbl_df", "tbl", "data.frame"), row.names = integer(0), names = character(0))
 )
+app$set_inputs(`data-in_3-inputPivot-btAddRow` = "click")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
+Sys.sleep(0.5)
+addSelectizeOption(app, "#data-in_3-inputPivot-newRow_1", "test1")
+selectSelectizeOption(app, "#data-in_3-inputPivot-newRow_1", "test1")
+addSelectizeOption(app, "#data-in_3-inputPivot-newRow_2", "test2")
+selectSelectizeOption(app, "#data-in_3-inputPivot-newRow_2", "test2")
+app$set_inputs(`data-in_3-inputPivot-newRow_3` = "1.2345")
+app$set_inputs(`data-in_3-inputPivot-btAddRowConfirm` = "click")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L)
+Sys.sleep(0.5)
+expect_identical(app$get_text(selector = "#inputDataTitle"), "<New Scenario> (*)")
+expect_identical(
+  getVisibleDtData(app, "data-in_3-inputPivot-pivotTable"),
+  structure(list(`...1` = "test1", `...2` = "1.2345"), class = c("tbl_df", "tbl", "data.frame"), row.names = c(NA, -1L))
+)
 app$stop()

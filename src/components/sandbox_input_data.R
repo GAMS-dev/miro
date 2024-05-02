@@ -1104,6 +1104,7 @@ CustomWidget <- R6::R6Class("CustomWidget",
       }, integer(1L), USE.NAMES = FALSE))
       names(private$ignoreUpdate) <- widgetSymNames
       if (!identical(symConfig$apiVersion, 2L)) {
+        private$ignoreUpdate[] <- 0L
         private$reinitOutputObservers <- reactiveVal(0L)
       }
       return(super$initialize(id, symConfig, input, output, session, rv, sandboxInputDataObj, symName))
@@ -1136,7 +1137,7 @@ CustomWidget <- R6::R6Class("CustomWidget",
       if (is.null(symName)) {
         symName <- private$symName
       }
-      if (private$dataNeedsUpdate(data, symName)) {
+      if (identical(private$config$apiVersion, 2L) && private$dataNeedsUpdate(data, symName)) {
         private$ignoreUpdate[[symName]] <- 1L
       }
       private$inputReactiveData[[symName]] <- data
