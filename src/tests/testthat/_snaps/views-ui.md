@@ -1,4 +1,4 @@
-# Views metadata menu works
+# Views work
 
     "New Scenario_views.json"
 
@@ -6,7 +6,7 @@
 
     "New Scenario_views.json"
 
-# Import views from data folder works
+---
 
     "default_views.json"
 
