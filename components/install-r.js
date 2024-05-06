@@ -1,7 +1,7 @@
 const { dialog, ipcMain } = require('electron');
 const log = require('electron-log/main');
 const execa = require('execa');
-const path = require('path');
+const path = require('node:path');
 
 async function installRPackages(rpath, apppath, libpath, mainWindow, devMode = false) {
   if (!rpath) {

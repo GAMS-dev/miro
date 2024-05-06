@@ -1,10 +1,10 @@
 const { app } = require('electron');
 const Store = require('electron-store');
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const which = require('which');
 const execa = require('execa');
-const { tmpdir } = require('os');
+const { tmpdir } = require('node:os');
 const log = require('electron-log/main');
 
 const minGams = '30.2';

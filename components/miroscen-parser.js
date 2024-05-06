@@ -1,6 +1,6 @@
 const yauzl = require('yauzl');
-const path = require('path');
-const { format } = require('util');
+const path = require('node:path');
+const { format } = require('node:util');
 const { dialog } = require('electron');
 const log = require('electron-log/main');
 const addModelData = require('./import-data');

@@ -1,7 +1,7 @@
-const path = require('path');
-const fs = require('fs');
+const path = require('node:path');
+const fs = require('node:fs');
 const yauzl = require('yauzl');
-const { Transform } = require('stream');
+const { Transform } = require('node:stream');
 
 function mkdirp(dir, cb) {
   if (dir === '.') return cb();

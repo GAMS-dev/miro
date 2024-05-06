@@ -1,8 +1,8 @@
 const {
   dialog, BrowserWindow,
 } = require('electron');
-const path = require('path');
-const { format } = require('util');
+const path = require('node:path');
+const { format } = require('node:util');
 const log = require('electron-log/main');
 
 async function addModelData(
