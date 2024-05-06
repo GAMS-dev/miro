@@ -1,0 +1,9 @@
+/*! @preserve
+ * bootbox.js
+ * version: 6.0.0
+ * author: Nick Payne <nick@kurai.co.uk>
+ * license: MIT
+ * http://bootboxjs.com/
+ */
+
+/** @license URI.js v4.4.1 (c) 2011 Gary Court. License: http://github.com/garycourt/uri-js */
