@@ -2916,6 +2916,9 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
       if (length(rv$widgetConfig$options$emptyUEL)) {
         newConfig$options$emptyUEL <- rv$widgetConfig$options$emptyUEL
       }
+      if (identical(newConfig$options$aggregationFunction, "")) {
+        newConfig$options$aggregationFunction <- "sum"
+      }
       for (indexEl in list(c("rows", "rowIndexList"))) {
         indexVal <- input[[paste0("preview_inputTable_pivot-miroPivot-", indexEl[[2]])]]
         if (length(indexVal)) {
