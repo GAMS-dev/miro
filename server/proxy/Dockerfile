@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 maven:3.8.6-jdk-11 as builder
+FROM --platform=linux/amd64 maven:3.9.6-eclipse-temurin-17 as builder
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ FROM --platform=linux/amd64 alpine:3.19
 
 RUN apk update && \
     apk upgrade --available && \
-    apk --no-cache add openjdk11-jre
+    apk --no-cache add openjdk17-jre
 
 RUN addgroup -g 1000 -S miro && \
     adduser -u 1000 -S miro -G miro

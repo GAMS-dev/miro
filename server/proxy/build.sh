@@ -14,7 +14,7 @@ mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file \
 
 
 pushd /app/shinyproxy > /dev/null || exit 1
-    mvn -U clean install
+    mvn -U clean install -DskipTests
 popd > /dev/null
 
 SP_PATH=`find /app/shinyproxy/target -regex '.*[0-9]-exec\.jar'`

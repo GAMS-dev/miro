@@ -122,7 +122,7 @@
       <a th:href="@{/}" class="btn btn-default">Go to Home</a>
     </div>
     <div id="navbarWrapper" style="display: none; position: absolute">
-      <div th:replace="fragments/navbar :: navbar"></div>
+      <div th:replace="~{fragments/navbar :: navbar}"></div>
     </div>
     <div id="iframeinsert"></div>
     <script
