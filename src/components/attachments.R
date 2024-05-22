@@ -423,7 +423,6 @@ Attachments <- R6Class("Attachments",
 
       localPaths <- character(0L)
       remotePaths <- character(0L)
-      unmodifiedData <- TRUE
       fileNamesRemote <- fileNames
 
       if (is.null(scenId)) {
@@ -527,7 +526,7 @@ Attachments <- R6Class("Attachments",
       }
 
       data <- private$db$importDataset("_scenAttach",
-        if (allExecPerm && unmodifiedData) {
+        if (allExecPerm) {
           tibble("execPerm", if (inherits(private$conn, "PqConnection")) TRUE else 1)
         } else {
           tibble(rep.int("fileName", length(fileNamesRemote)), fileNamesRemote)
@@ -536,7 +535,7 @@ Attachments <- R6Class("Attachments",
         subsetSids = if (is.null(scenId)) private$sid else scenId
       )
       if (length(data)) {
-        if (allExecPerm && unmodifiedData) {
+        if (allExecPerm || is.null(fileNames)) {
           remotePaths <- file.path(filePath, data[["fileName"]])
         } else {
           remotePaths <- filePaths[match(data[["fileName"]], fileNames)]

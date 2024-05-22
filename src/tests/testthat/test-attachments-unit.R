@@ -465,4 +465,38 @@ test_that("getData method works", {
   )
 })
 
+test_that("download method works with modified exec perm of remote files", {
+  fakeSessionIn1 <- FakeSession$new("in_1")
+  file.copy(
+    c(
+      file.path(testDir, "data", "_scalars.csv"),
+      file.path(testDir, "data", "bad-views2.json")
+    ),
+    c(file.path("data", "_scalars.csv"), file.path("data", "bad-views2.json"))
+  )
+  attachments$add(
+    session = fakeSessionIn1, c(
+      file.path(testDir, "data", "_scalars.csv"),
+      file.path(testDir, "data", "bad-views2.json")
+    ),
+    fileNames = NULL, overwrite = FALSE, execPerm = NULL
+  )
+  writeToDb(attachments$flushOpQueue(), sid = 1L)
+  attachments$clear(cleanLocal = TRUE)
+  expect_false(any(file.exists(file.path(workDir, c("_scalars.csv", "bad-views2.json")))))
+  attachments$setSid(1L)
+  attachments$remove(fakeSessionIn1, "_scalars.csv")
+  expect_error(attachments$download(workDir, allExecPerm = TRUE), NA)
+  expect_false(file.exists(file.path(workDir, c("_scalars.csv"))))
+  expect_true(file.exists(file.path(workDir, c("bad-views2.json"))))
+
+  file.move(
+    c(file.path("data", "_scalars.csv"), file.path("data", "bad-views2.json")),
+    c(
+      file.path(testDir, "data", "_scalars.csv"),
+      file.path(testDir, "data", "bad-views2.json")
+    )
+  )
+})
+
 db$finalize()
