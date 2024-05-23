@@ -425,7 +425,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
       output$valueboxes <- renderUI({
         box_columns <- lapply(1:length(options$valueBoxes$id), function(i) {
           # Note: Modify in case (optional) valueBox values should be calculated differently
-          if (is.na(options$valueBoxes$valueScalar[i])) {
+          if (is.null(options$valueBoxes$valueScalar[i]) || is.na(options$valueBoxes$valueScalar[i])) {
             valueTmp <- NULL
           } else {
             if (is.null(outputScalarsFull)) {
