@@ -628,7 +628,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             select(where(~ !is.numeric(.))) %>%
             names()
 
-          if (dataViewsConfig[[indicator]]$tableSummarySettings$enabled) {
+          if (!is.null(dataViewsConfig[[indicator]]$tableSummarySettings) &&
+            dataViewsConfig[[indicator]]$tableSummarySettings$enabled) {
             tablesummarySettings <- dataViewsConfig[[indicator]]$tableSummarySettings
             if (identical(tablesummarySettings$rowSummaryFunction, "sum")) {
               dataTmp <- mutate(
