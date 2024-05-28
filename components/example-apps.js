@@ -1,6 +1,7 @@
-const path = require('node:path');
+import path from 'node:path';
+import { miroVersion, apiVersion } from './globals.js';
 
-module.exports = (miroVersion, apiVersion) => [{
+export default [{
   id: 'pickstock',
   title: 'Stock Selection Optimization',
   description: 'Optimization model to pick a small subset of the stocks together with \

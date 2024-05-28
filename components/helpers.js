@@ -1,5 +1,5 @@
-const portscanner = require('portscanner');
-const treeKill = require('tree-kill');
+import portscanner from 'portscanner';
+import treeKill from 'tree-kill';
 
 const isNull = (el) => el === null;
 /*
@@ -54,7 +54,7 @@ const kill = (pid, signal = 'SIGTERM') => new Promise((resolve, reject) => {
   });
 });
 
-module.exports = {
+export {
   waitFor,
   randomPort,
   isNull,

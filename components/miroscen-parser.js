@@ -1,9 +1,9 @@
-const yauzl = require('yauzl');
-const path = require('node:path');
-const { format } = require('node:util');
-const { dialog } = require('electron');
-const log = require('electron-log/main');
-const addModelData = require('./import-data');
+import yauzl from 'yauzl';
+import path from 'node:path';
+import { format } from 'node:util';
+import { dialog } from 'electron';
+import log from 'electron-log/main.js';
+import addModelData from './import-data.js';
 
 function miroscenGetModelName(scenFilePath, successCallback, errCallback) {
   yauzl.open(scenFilePath, { lazyEntries: true }, (err, zipfile) => {
@@ -90,4 +90,4 @@ function addMiroscen(
   });
 }
 
-module.exports = addMiroscen;
+export default addMiroscen;

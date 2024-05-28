@@ -2,20 +2,20 @@
 eval(parse(text = readLines("./src/app.R",
   n = 5L, warn = FALSE
 )))
-mainJS <- readLines("./main.js", warn = FALSE)
-mainJS <- gsub(
-  "const requiredAPIVersion = \\d+;",
-  paste0("const requiredAPIVersion = ", APIVersion, ";"), mainJS
+globalsJS <- readLines("./components/globals.js", warn = FALSE)
+globalsJS <- gsub(
+  "const apiVersion = \\d+;",
+  paste0("const apiVersion = ", APIVersion, ";"), globalsJS
 )
-mainJS <- gsub(
+globalsJS <- gsub(
   "const miroVersion = '[^']+';",
-  paste0("const miroVersion = '", MIROVersion, "';"), mainJS
+  paste0("const miroVersion = '", MIROVersion, "';"), globalsJS
 )
-mainJS <- gsub(
+globalsJS <- gsub(
   "const miroRelease = '[^']+';",
-  paste0("const miroRelease = '", MIRORDate, "';"), mainJS
+  paste0("const miroRelease = '", MIRORDate, "';"), globalsJS
 )
-writeLines(mainJS, "./main.js")
+writeLines(globalsJS, "./components/globals.js")
 packageJSON <- readLines("./package.json", warn = FALSE)
 packageJSON <- gsub(
   '"version": "[^"]+",',

@@ -4,7 +4,8 @@
   "version": "2.9.9999",
   "description": "GAMS MIRO is an interactive web application for GAMS models. It is designed for people working with GAMS looking for an easy and automated way to deploy their models. Extensive visualization options support you to make decisions based on optimization.",
   "homepage": "https://gams.com/miro",
-  "main": "main.js",
+  "type": "module",
+  "main": "./main.js",
   "scripts": {
     "postinstall": "electron-builder install-app-deps && (cd src && npm install)",
     "test": "node ./test/run-ui-tests.js",
@@ -119,7 +120,7 @@
   "author": "GAMS Development Corp.",
   "license": "GPL-3.0-only",
   "devDependencies": {
-    "electron": "^30.0.2",
+    "electron": "^30.0.8",
     "electron-builder": "24.13.3",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -128,10 +129,10 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.2",
-    "ajv": "^8.13.0",
-    "axios": "^1.6.8",
+    "ajv": "^8.14.0",
+    "axios": "^1.7.2",
     "bootstrap": "^4.6.2",
-    "electron-log": "^5.1.2",
+    "electron-log": "^5.1.5",
     "electron-store": "^8.2.0",
     "execa": "^5.1.1",
     "fs-extra": "^11.2.0",

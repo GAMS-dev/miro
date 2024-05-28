@@ -1,4 +1,4 @@
-const Store = require('electron-store');
+import Store from 'electron-store';
 
 const schema = {
   apps: {
@@ -130,4 +130,4 @@ class AppDataStore extends Store {
   }
 }
 
-module.exports = AppDataStore;
+export default AppDataStore;

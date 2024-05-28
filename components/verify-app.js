@@ -1,9 +1,9 @@
-const { dialog } = require('electron');
-const log = require('electron-log/main');
-const execa = require('execa');
-const path = require('node:path');
-const fs = require('node:fs');
-const { format } = require('node:util');
+import { dialog } from 'electron';
+import log from 'electron-log/main.js';
+import execa from 'execa';
+import path from 'node:path';
+import fs from 'node:fs';
+import { format } from 'node:util';
 
 async function verifyApp(configData, libPath, miroResourcePath, mainWindow, appPath) {
   const rpath = configData.get('rpath');
@@ -155,4 +155,4 @@ async function verifyApp(configData, libPath, miroResourcePath, mainWindow, appP
   }
 }
 
-module.exports = verifyApp;
+export default verifyApp;

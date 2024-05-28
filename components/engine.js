@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 
 const REQUEST_TIMEOUT = 10000;
 const TOKEN_EXPIRATION_SECONDS = 604800;
@@ -123,7 +123,7 @@ EngineConfig.prototype.init = () => {
   this.oauthProviders = [];
 };
 
-module.exports = {
+export {
   getEngineAuthProviders,
   getEngineUserInfo,
   getEngineJwt,

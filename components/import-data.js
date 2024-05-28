@@ -1,9 +1,9 @@
-const {
+import {
   dialog, BrowserWindow,
-} = require('electron');
-const path = require('node:path');
-const { format } = require('node:util');
-const log = require('electron-log/main');
+} from 'electron';
+import path from 'node:path';
+import { format } from 'node:util';
+import log from 'electron-log/main.js';
 
 async function addModelData(
   miroProcessManager,
@@ -175,4 +175,4 @@ async function addModelData(
     restartCount += 1;
   } while (restartRProc && restartCount < 3);
 }
-module.exports = addModelData;
+export default addModelData;

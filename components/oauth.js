@@ -86,4 +86,4 @@ const OAuthClient = class {
   }
 };
 
-module.exports = { OAuthClient };
+export default OAuthClient;

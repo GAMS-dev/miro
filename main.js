@@ -1,33 +1,35 @@
-const {
+import {
   app, BrowserWindow, Menu, TouchBar, ipcMain, dialog, session,
-} = require('electron');
+} from 'electron';
+import path from 'node:path';
+import fs from 'fs-extra';
+import yauzl from 'yauzl';
+import util from 'node:util';
+import { fileURLToPath } from 'node:url';
+import log from 'electron-log/main.js';
+import menu from './components/menu.js';
+import installRPackages from './components/install-r.js';
+import { refreshEngineJwt, isTokenExpired } from './components/engine.js';
+
+import exampleAppsData from './components/example-apps.js';
+import LangParser from './components/LangParser.js';
+import addModelData from './components/import-data.js';
+import verifyApp from './components/verify-app.js';
+import addMiroscen from './components/miroscen-parser.js';
+import AppDataStore from './components/AppDataStore.js';
+import ConfigManager from './components/ConfigManager.js';
+import unzip from './components/Unzip.js';
+import MiroProcessManager from './components/MiroProcessManager.js';
+import {
+  getAppDbPath,
+} from './components/util.js';
+import {
+  apiVersion, miroVersion, miroRelease, libVersion,
+} from './components/globals.js';
 
 const { TouchBarButton, TouchBarSpacer } = TouchBar;
-const path = require('path');
-const fs = require('fs-extra');
-const yauzl = require('yauzl');
-const util = require('util');
-const log = require('electron-log/main');
-const menu = require('./components/menu');
-const installRPackages = require('./components/install-r');
-const { refreshEngineJwt, isTokenExpired } = require('./components/engine');
-
-const requiredAPIVersion = 1;
-const miroVersion = '2.9.9999';
-const miroRelease = 'Apr 18 2024';
-const libVersion = '2.6';
-const exampleAppsData = require('./components/example-apps')(miroVersion, requiredAPIVersion);
-const LangParser = require('./components/LangParser');
-const addModelData = require('./components/import-data');
-const verifyApp = require('./components/verify-app');
-const addMiroscen = require('./components/miroscen-parser');
-const AppDataStore = require('./components/AppDataStore');
-const ConfigManager = require('./components/ConfigManager');
-const unzip = util.promisify(require('./components/Unzip'));
-const MiroProcessManager = require('./components/MiroProcessManager');
-const {
-  getAppDbPath,
-} = require('./components/util');
+// eslint-disable-next-line no-underscore-dangle
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 log.initialize({ preload: true });
 
@@ -410,7 +412,7 @@ MIRO version: ${newAppConf.miroversion}.`);
           return;
         }
         if (!newAppConf.apiversion
-          || newAppConf.apiversion !== requiredAPIVersion) {
+          || newAppConf.apiversion !== apiVersion) {
           if (mainWindow) {
             mainWindow.setProgressBar(-1);
           }
@@ -1204,10 +1206,10 @@ async function createMIROAppWindow(appData, focus = true) {
     return;
   }
   if (!appData.apiversion
-    || parseInt(appData.apiversion, 10) !== requiredAPIVersion) {
+    || parseInt(appData.apiversion, 10) !== apiVersion) {
     log.info(`MIRO app: ${appData.id} has API version: ${appData.apiversion} \
 and is incompatible with MIRO version installed which requires API version: \
-${requiredAPIVersion}.`);
+${apiVersion}.`);
     mainWindow.send('hide-loading-screen', appData.id);
     showErrorMsg({
       type: 'info',
@@ -1698,7 +1700,6 @@ ipcMain.on('settings-select-new-path', async (e, id, defaultPath) => {
               buttons: [lang.main.BtnOk],
             },
           );
-          return;
         }
       } catch (err) {
         log.error(`Error while validating ${idUpper} version. Error message: ${err.message}`);
@@ -2192,7 +2193,7 @@ app.on('ready', async () => {
     const remoteConfig = await configData.get('remoteConfig');
     if (remoteConfig.jwt != null) {
       log.info('Checking if Engine JWT is expired');
-      if (false) {
+      if (false) { // eslint-disable no-constant-condition
         try {
           remoteConfig.jwt = await refreshEngineJwt(remoteConfig.url, remoteConfig.jwt);
           configData.set('remoteConfig', remoteConfig);
@@ -2271,7 +2272,7 @@ app.on('ready', async () => {
       modelPath,
       mode: process.env.MIRO_MODE,
       usetmpdir: process.env.MIRO_USE_TMP ? process.env.MIRO_USE_TMP === 'true' : false,
-      apiversion: requiredAPIVersion,
+      apiversion: apiVersion,
       miroversion: miroVersion,
       forceScenImport: process.env.MIRO_FORCE_SCEN_IMPORT === 'true',
       buildArchive: process.env.MIRO_BUILD_ARCHIVE !== 'false',

@@ -1,4 +1,4 @@
-const Ajv = require('ajv');
+import Ajv from 'ajv';
 
 const ajv = new Ajv();
 const schema = {
@@ -1935,4 +1935,4 @@ class LangParser {
     return this.lang;
   }
 }
-module.exports = LangParser;
+export default LangParser;
