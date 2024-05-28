@@ -55,7 +55,7 @@ RUN New-Item $($env:APPDATA + '\npm') -Type Directory ; \
     $env:PATH = 'C:\nodejs;{0}\npm;C:\yarn\bin;{1}' -f $env:APPDATA, $env:PATH ; \
     Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment\' -Name Path -Value $env:PATH
 
-RUN Invoke-WebRequest "https://cloud.r-project.org/bin/windows/Rtools/rtools43/files/rtools43-5958-5975.exe" -OutFile "Rtools.exe" -UseBasicParsing ; \
+RUN Invoke-WebRequest "https://cran.r-project.org/bin/windows/Rtools/rtools44/files/rtools44-6104-6039.exe" -OutFile "Rtools.exe" -UseBasicParsing ; \
     Start-Process Rtools.exe -ArgumentList '/TYPE=full', '/VERYSILENT', -NoNewWindow -Wait
 
 RUN Invoke-WebRequest $('https://constexpr.org/innoextract/files/innoextract-{0}-windows.zip' -f $env:INNOEXTRACT_VERSION) -OutFile innoextract.zip -UseBasicParsing ; \
