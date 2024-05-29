@@ -1,12 +1,12 @@
 const { ipcRenderer, shell } = require('electron');
 window.Bootstrap = require('bootstrap');
 const $ = require('jquery');
-const { OAuthClient } = require('../components/oauth');
+const { OAuthClient } = require('../components/oauth.cjs');
 const {
   EngineConfig, getEngineAuthProviders,
   getEngineUserInfo, getEngineJwt,
   EngineError,
-} = require('../components/engine');
+} = require('../components/engine.cjs');
 
 const cbLaunchExternal = $('#launchExternal');
 const cbRemoteExecution = $('#remoteExecution');

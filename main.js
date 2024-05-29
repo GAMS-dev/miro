@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import log from 'electron-log/main.js';
 import menu from './components/menu.js';
 import installRPackages from './components/install-r.js';
-import { refreshEngineJwt, isTokenExpired } from './components/engine.js';
+import { refreshEngineJwt, isTokenExpired } from './components/engine.cjs';
 
 import exampleAppsData from './components/example-apps.js';
 import LangParser from './components/LangParser.js';
