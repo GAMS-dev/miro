@@ -27,6 +27,7 @@ print("Library paths:")
 print(.libPaths())
 print("Development library path:")
 print(RlibPathDevel)
+print(sessionInfo())
 if (CIBuild) {
   installedPackagesNotInTmpLib <- !installedPackages %in% c(installedPackagesTmp, "base", "boot", "class", "cluster", "codetools", "compiler", "datasets", "foreign", "graphics", "grDevices", "grid", "KernSmooth", "lattice", "MASS", "Matrix", "methods", "mgcv", "nlme", "nnet", "parallel", "rpart", "spatial", "splines", "stats", "stats4", "survival", "tcltk", "tools", "translations", "utils")
   if (any(installedPackagesNotInTmpLib)) {
