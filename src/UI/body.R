@@ -383,7 +383,7 @@ if (buildUI) {
                   ),
                   tags$div(
                     class = "miro-show-on-mobile-devices", style = "display:none",
-                    dataTableOutput(paste0("in_m_", i)),
+                    DTOutput(paste0("in_m_", i)),
                     tags$div(
                       class = "buttons-mobile-wrapper",
                       style = "margin-top:10px;",
@@ -411,7 +411,7 @@ if (buildUI) {
                       class = "bt-remove"
                     )
                   ),
-                  dataTableOutput(paste0("in_", i))
+                  DTOutput(paste0("in_", i))
                 )
               } else {
                 tryCatch(
@@ -641,7 +641,7 @@ if (buildUI) {
           ),
           genSpinner(id = "hyperQueryLoad", hidden = TRUE, absolute = FALSE),
           tags$div(id = "queryBuilderError", class = "gmsalert gmsalert-error"),
-          tags$div(style = "min-height: 80px;margin-top: 15px;", dataTableOutput("batchLoadResults")),
+          tags$div(style = "min-height: 80px;margin-top: 15px;", DTOutput("batchLoadResults")),
           tags$div(
             id = "batchLoadNoData",
             style = "text-align:center;font-size:16px;font-weight:bold;margin:20px;display:none;",

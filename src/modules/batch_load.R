@@ -477,7 +477,7 @@ observeEvent(input$batchLoadResults_cell_edit, {
   }
 })
 
-output$batchLoadResults <- renderDataTable(
+output$batchLoadResults <- renderDT(
   if (rv$updateBatchLoadData > 0L) {
     if (length(batchLoadData) && nrow(batchLoadData)) {
       showEl(session, "#batchLoadButtons")

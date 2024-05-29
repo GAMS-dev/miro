@@ -9,7 +9,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height = NULL, customOption
   }
 
   if (identical(type, "datatable")) {
-    data <- dataTableOutput(ns("datatable"))
+    data <- DTOutput(ns("datatable"))
   } else if (type %in% c("graph", "dtgraph")) {
     if (graphTool == "plotly") {
       if (identical(type, "graph")) {
@@ -54,7 +54,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height = NULL, customOption
         tags$div(
           class = "dtgraph-wrapper",
           tags$div(class = "col-md-6 col-md-push-6 dtgraph-graph", data, style = "overflow-x:auto;"),
-          tags$div(class = "col-md-6 col-md-pull-6", dataTableOutput(ns("datatable")), style = "overflow-x:auto;")
+          tags$div(class = "col-md-6 col-md-pull-6", DTOutput(ns("datatable")), style = "overflow-x:auto;")
         )
       )
     }
