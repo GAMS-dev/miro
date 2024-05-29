@@ -1,6 +1,6 @@
 import { dialog } from 'electron';
 import log from 'electron-log/main.js';
-import execa from 'execa';
+import { execa } from 'execa';
 import path from 'node:path';
 import fs from 'node:fs';
 import { format } from 'node:util';

@@ -3,7 +3,7 @@ import Store from 'electron-store';
 import fs from 'node:fs';
 import path from 'node:path';
 import which from 'which';
-import execa from 'execa';
+import { execa } from 'execa';
 import { tmpdir } from 'node:os';
 import log from 'electron-log/main.js';
 

@@ -1,6 +1,6 @@
 import log from 'electron-log/main.js';
 import http from 'axios';
-import execa from 'execa';
+import { execa } from 'execa';
 import path from 'node:path';
 import {
   getAppDbPath, isFalse,

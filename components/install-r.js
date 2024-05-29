@@ -1,6 +1,6 @@
 import { dialog, ipcMain } from 'electron';
 import log from 'electron-log/main.js';
-import execa from 'execa';
+import { execa } from 'execa';
 import path from 'node:path';
 
 async function installRPackages(rpath, apppath, libpath, mainWindow, devMode = false) {

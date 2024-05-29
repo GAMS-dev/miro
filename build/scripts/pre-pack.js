@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import path from 'node:path';
 import fs from 'fs-extra';
-import execa from 'execa';
+import { execa } from 'execa';
 import https from 'node:https';
 
 let rExists = false;

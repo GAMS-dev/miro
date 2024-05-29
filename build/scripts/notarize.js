@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import execa from 'execa';
+import { execa } from 'execa';
 import path from 'node:path';
 
 export default async function notarizing(context) {
