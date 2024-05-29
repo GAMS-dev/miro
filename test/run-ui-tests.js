@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-const path = require('path');
-const fs = require('fs');
-const execa = require('execa');
+import path from 'node:path';
+import fs from 'node:fs';
+import { execa } from 'execa';
 
 let gamsSysDir = '';
 
