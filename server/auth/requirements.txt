@@ -6,9 +6,9 @@
 #
 aiofiles==23.2.1
     # via -r requirements.in
-annotated-types==0.6.0
+annotated-types==0.7.0
     # via pydantic
-anyio==4.3.0
+anyio==4.4.0
     # via
     #   httpx
     #   starlette
@@ -29,10 +29,8 @@ dnspython==2.6.1
 email-validator==2.1.1
     # via fastapi
 fastapi==0.111.0
-    # via
-    #   -r requirements.in
-    #   fastapi-cli
-fastapi-cli==0.0.2
+    # via -r requirements.in
+fastapi-cli==0.0.4
     # via fastapi
 gunicorn==22.0.0
     # via -r requirements.in
@@ -64,12 +62,12 @@ orjson==3.10.3
     # via fastapi
 packaging==24.0
     # via gunicorn
-pydantic==2.7.1
+pydantic==2.7.2
     # via
     #   -r requirements.in
     #   fastapi
     #   pydantic-settings
-pydantic-core==2.18.2
+pydantic-core==2.18.3
     # via pydantic
 pydantic-settings==2.2.1
     # via -r requirements.in
@@ -87,7 +85,7 @@ pyyaml==6.0.1
     # via
     #   -r requirements.in
     #   uvicorn
-requests==2.31.0
+requests==2.32.3
     # via -r requirements.in
 rich==13.7.1
     # via typer
@@ -101,24 +99,23 @@ starlette==0.37.2
     # via fastapi
 typer==0.12.3
     # via fastapi-cli
-typing-extensions==4.11.0
+typing-extensions==4.12.0
     # via
     #   fastapi
     #   pydantic
     #   pydantic-core
     #   typer
-ujson==5.9.0
+ujson==5.10.0
     # via fastapi
 urllib3==2.2.1
     # via requests
-uvicorn[standard]==0.29.0
+uvicorn[standard]==0.30.0
     # via
     #   -r requirements.in
     #   fastapi
-    #   fastapi-cli
 uvloop==0.19.0
     # via uvicorn
-watchfiles==0.21.0
+watchfiles==0.22.0
     # via uvicorn
 websockets==12.0
     # via uvicorn
