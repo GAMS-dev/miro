@@ -1,7 +1,11 @@
 /* eslint-disable no-console */
 import path from 'node:path';
 import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { execa } from 'execa';
+
+// eslint-disable-next-line no-underscore-dangle
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let gamsSysDir = '';
 
