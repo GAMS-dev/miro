@@ -20,14 +20,14 @@ from gamspy import (
     Ord,
     Domain,
 )
-from gamspy.math import Max
+from gamspy.math import sqr, sqrt
 
 
 def main():
     m = Container()
 
-    #data = pd.read_csv("r101_solomon.txt", sep=",")
-    data = pd.read_csv("small_data.txt", sep=",")
+    # data = pd.read_csv("r101_solomon.txt", sep=",")
+    data = pd.read_csv("small_data.txt", sep=",", index_col=False)
 
     # compute euclidean distance matrix between all customers
     coordinates = data[["XCOORD.", "YCOORD."]].to_numpy()
@@ -36,7 +36,7 @@ def main():
     )
 
     # do lineariz the start time equation, where the slack is the allows timeframe at the depot
-    M = data["DUEDATE"][0]-data["READYTIME"][0]
+    M = data["DUEDATE"][0] - data["READYTIME"][0]
 
     vehicle_number = 10
     vehicle_capacity = 200
@@ -51,7 +51,23 @@ def main():
         description="vehicles",
     )
 
+    coustomerDataHeader = Set(
+        m,
+        "coustomerDataHeader",
+        records=["XCOORD.", "YCOORD.", "DEMAND", "READYTIME", "DUEDATE", "SERVICETIME"],
+    )
+
     # Data
+    coustomerData = Parameter(
+        m,
+        "coustomerData",
+        domain=[i, coustomerDataHeader],
+        domain_forwarding=[True, False],
+        records=data.melt(id_vars="CUSTNO."),
+        is_miro_input=True,
+        is_miro_table=True,
+        description="Cusotmer information",
+    )
     q = Parameter(
         m,
         name="q",
@@ -86,6 +102,15 @@ def main():
         domain=[i, j],
         records=distance_matrix,
         description="distance from customer ci to cj",
+    )
+
+    q[i] = coustomerData[i, "DEMAND"]
+    s[i] = coustomerData[i, "SERVICETIME"]
+    e[i] = coustomerData[i, "READYTIME"]
+    l[i] = coustomerData[i, "DUEDATE"]
+    d[i, j] = sqrt(
+        sqr(coustomerData[i, "XCOORD."] - coustomerData[j, "XCOORD."])
+        + sqr(coustomerData[i, "YCOORD."] - coustomerData[j, "YCOORD."])
     )
 
     # Variable
@@ -175,16 +200,25 @@ def main():
         domain=[i],
         description="check that the start_time is in the timeframe",
     )
+    vehicle_does_not_jump = Equation(
+        m,
+        name="vehicle_does_not_jump",
+        domain=[k, i],
+        description="if k goes into j it also has to leave j",
+    )
 
     max_K_starts_at_depot[i] = (
         Sum(Domain(j, k).where[Ord(j) > 1], x[i, j, k]) <= vehicle_number
     )
     start_at_depot[k] = Sum(j, x["0", j, k]) <= 1
     end_at_depot[k] = Sum(j, x[j, "0", k]) <= 1
+    vehicle_does_not_jump[k, i] = Sum(j, x[i, j, k]) == Sum(j, x[j, i, k])
     each_node_enterd_once[i].where[Ord(i) != 1] = (
         Sum(Domain(j, k).where[Ord(i) != Ord(j)], x[i, j, k]) == 1
     )
-    each_node_left_once[j].where[Ord(j) != 1] = Sum(Domain(i, k).where[Ord(i) != Ord(j)], x[i, j, k]) == 1
+    each_node_left_once[j].where[Ord(j) != 1] = (
+        Sum(Domain(i, k).where[Ord(i) != Ord(j)], x[i, j, k]) == 1
+    )
     capacity[k] = (
         Sum(Domain(i, j).where[Ord(i) != Ord(j)], x[i, j, k] * q[i]) <= vehicle_capacity
     )
@@ -208,6 +242,7 @@ def main():
         objective=obj,
     )
     vrptw.solve(solver="CPLEX", output=sys.stdout)
+
 
 if __name__ == "__main__":
     main()
