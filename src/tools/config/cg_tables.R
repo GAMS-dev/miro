@@ -649,7 +649,7 @@ observeEvent(virtualActionButton(input$saveTableConfirm, rv$saveTableConfirm), {
       configJSON$outputTables[[currentTableSymbolName]]$pivotCols <<- NULL
     }
     if (isTRUE(input$outputTable_noGraph)) {
-      configJSON$dataRendering[[currentTableSymbolName]] <<- rv$tableWidgetConfig
+      configJSON$dataRendering[[currentTableSymbolName]] <<- configJSON$outputTables[[currentTableSymbolName]]
       configJSON$dataRendering[[currentTableSymbolName]]$outType <<- "datatable"
       if (identical(tolower(input$table_symbol), tolower(activeSymbol$name))) {
         newChartTool <<- "datatable"
