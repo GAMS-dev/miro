@@ -566,6 +566,12 @@ renderMirorenderer_optsched &#x3C;- function(input, output, session, data, optio
 }</code></pre>
                     </div>
                     <!--//code-block-->
+                    The <code class="language-r">data</code> object can be used
+                    to access the data within your custom renderer. It will be a
+                    named list of tibbles. For example, to access
+                    <code class="language-r">symbol_a</code>, use
+                    <code class="language-r">data[[symbol_a]]</code> to access
+                    the specific tibble.
                     <div class="callout-block callout-warning">
                       <div class="icon-holder">
                         <i class="fas fa-info-circle"></i>
