@@ -26,14 +26,7 @@ from gamspy.math import sin, cos, sqrt, sqr, atan2
 def main():
     m = Container()
 
-    # data = pd.read_csv("r101_solomon.txt", sep=",")
     data = pd.read_csv("small_data.txt", sep=",", index_col=False)
-
-    # compute euclidean distance matrix between all customers
-    coordinates = data[["lat", "lng"]].to_numpy()
-    distance_matrix = np.sqrt(
-        np.einsum("ijk->ij", (coordinates[:, None, :] - coordinates) ** 2)
-    )
 
     # Set
     i = Set(m, name="i", records=data["i"], description="customers")
@@ -140,6 +133,28 @@ def main():
             customerData.records["customerDataHeader"] == "readyTime"
         ]["value"].iloc[0]
     )
+
+    # check that no customer wants delivary befor the car can possible get there
+    if l.records is None:
+        print("No due times were set!")
+        raise Exception("Data errors detected")
+
+    depot_name = d.records["i"].iloc[0]
+    distances = d.records[d.records["i"]==depot_name]
+    due_times = l.records[1:]
+
+    if (distances.shape[0] != due_times.shape[0]):
+        no_due_date_set = distances[~distances["j"].isin(due_times["i"])]
+        no_due_date_set = no_due_date_set["j"].astype(str).str.cat(sep=", ")
+        print(f'The following city/cities the due time is set to zero, therefore they cannot be reached: {no_due_date_set}.')
+        raise Exception("Data errors detected")
+    
+    compare_dist_due = (distances["value"].reset_index() > due_times["value"].reset_index())["value"]
+    if(compare_dist_due.any()):
+        not_accessible_cities = l.records[1:].reset_index()[compare_dist_due]
+        not_accessible_cities = not_accessible_cities["i"].astype(str).str.cat(sep=", ")
+        print(f'The following city/cities are too far away to be deliverd under the due time: {not_accessible_cities}.')
+        raise Exception("Data errors detected")
 
     # Variable
     x = Variable(

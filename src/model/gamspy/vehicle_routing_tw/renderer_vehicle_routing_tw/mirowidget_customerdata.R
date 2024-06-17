@@ -8,10 +8,6 @@ mirowidget_customerdataOutput <- function(id, height, options, path) {
     column(
       width = 12,
       DT::DTOutput(ns("table"))
-    ),
-    column(
-      width = 6,
-      textOutput(ns("title"))
     )
   )
 }
@@ -19,31 +15,41 @@ mirowidget_customerdataOutput <- function(id, height, options, path) {
 renderMirowidget_customerdata <- function(input, output, session, data, options = NULL, path = NULL, ...) {
   markerCnt <- 0L
   depotName <- "Depot"
-  output$title <- renderText({
-    input$table_cell_edit
-    depotName
-  })
+  init <- FALSE
+
+  icons <- leaflet::awesomeIcons(
+    icon = "fa-solid fa-warehouse",
+    iconColor = "white",
+    markerColor = "green",
+    library = "fa"
+  )
 
   rv <- reactiveValues(
     markerPositions = list(),
     customerData = tibble(
-      u = character(), lat = numeric(), lng = numeric(),
+      i = character(), lat = numeric(), lng = numeric(),
       demand = numeric(), readyTime = numeric(), dueDate = numeric(), serviceTime = numeric()
     )
   )
 
-  output$table <- DT::renderDT({
+  tableProxy <- DT::dataTableProxy("table")
+
+  updateCustomerData <- function() {
     customerDataTmp <- tibble(
-      u = names(rv$markerPositions),
-      lat = vapply(rv$markerPositions, "[[", numeric(1L), "lat"),
-      lng = vapply(rv$markerPositions, "[[", numeric(1L), "lng"),
-      demand = vapply(rv$markerPositions, "[[", numeric(1L), "demand"),
-      readyTime = vapply(rv$markerPositions, "[[", numeric(1L), "readyTime"),
-      dueDate = vapply(rv$markerPositions, "[[", numeric(1L), "dueDate"),
-      serviceTime = vapply(rv$markerPositions, "[[", numeric(1L), "serviceTime")
-    )
-    isolate(rv$customerData <- customerDataTmp)
-    DT::datatable(customerDataTmp, editable = TRUE) %>% DT::formatRound(c("lat", "lng"), digits = 3L)
+        i = names(rv$markerPositions),
+        lat = vapply(rv$markerPositions, "[[", numeric(1L), "lat"),
+        lng = vapply(rv$markerPositions, "[[", numeric(1L), "lng"),
+        demand = vapply(rv$markerPositions, "[[", numeric(1L), "demand"),
+        readyTime = vapply(rv$markerPositions, "[[", numeric(1L), "readyTime"),
+        dueDate = vapply(rv$markerPositions, "[[", numeric(1L), "dueDate"),
+        serviceTime = vapply(rv$markerPositions, "[[", numeric(1L), "serviceTime")
+      )
+      rv$customerData <- customerDataTmp
+      DT::replaceData(tableProxy, customerDataTmp, resetPaging=FALSE, rownames=FALSE)
+  }
+
+  output$table <- DT::renderDT({
+    DT::datatable(data(), editable = TRUE, rownames=FALSE) %>% DT::formatRound(c("lat", "lng"), digits = 3L)
   })
 
   # TODO no duplicate names after edit
@@ -54,23 +60,26 @@ renderMirowidget_customerdata <- function(input, output, session, data, options 
     }
     {
       row <- input$table_cell_edit$row
-      clmn <- input$table_cell_edit$col
+      clmn <- input$table_cell_edit$col + 1
 
       isolate({
-        oldMarkerName <- rv$customerData[["u"]][row]
+        oldMarkerName <- rv$customerData[["i"]][row]
+        markerName <- oldMarkerName
         if (clmn == 1) {
           idx <- match(oldMarkerName, names(rv$markerPositions))
-          names(rv$markerPositions)[idx] <- input$table_cell_edit$value
           markerName <- input$table_cell_edit$value
+          names(rv$markerPositions)[idx] <- markerName
           if (oldMarkerName == depotName) {
             depotName <<- markerName
           }
+        } else {
+          rv$markerPositions[[oldMarkerName]][[names(rv$customerData)[clmn]]] <- input$table_cell_edit$value
         }
-        rv$markerPositions[[oldMarkerName]][[names(rv$customerData)[clmn]]] <- input$table_cell_edit$value
+        updateCustomerData()
         if (clmn > 3L) {
           return()
         }
-        markerName <- oldMarkerName
+        
         leaflet::leafletProxy("vrptw_input") %>%
           leaflet::removeMarker(oldMarkerName) %>%
           leaflet::addMarkers(
@@ -83,28 +92,28 @@ renderMirowidget_customerdata <- function(input, output, session, data, options 
 
 
   observe({
-    if (length(data()) != 7L && !nrow(data())) {
+    dataTmp <- data()
+    if (!init) {
       return()
     }
     isolate({
-      rv$markerPositions <- lapply(seq_len(nrow(data())), function(i) {
+      rv$markerPositions <- lapply(seq_len(nrow(dataTmp)), function(i) {
         list(
-          lat = data()[[2]][i], lng = data()[[3]][i], demand = data()[[4]][i],
-          readyTime = data()[[5]][i], dueDate = data()[[6]][i], serviceTime = data()[[7]][i]
+          lat = dataTmp[[2]][i], lng = dataTmp[[3]][i], demand = dataTmp[[4]][i],
+          readyTime = dataTmp[[5]][i], dueDate = dataTmp[[6]][i], serviceTime = dataTmp[[7]][i]
         )
       })
-      names(rv$markerPositions) <- data()[[1]]
-      depotName <<- data()[[1]][1]
+      if (length(rv$markerPositions)) {
+        names(rv$markerPositions) <- dataTmp[[1]]
+        depotName <<- dataTmp[[1]][1]
+      } else {
+        depotName <<- "Depot"
+      }
+      updateCustomerData()
     })
   })
 
   output$vrptw_input <- leaflet::renderLeaflet({
-    icons <- leaflet::awesomeIcons(
-      icon = "fa-solid fa-warehouse",
-      iconColor = "white",
-      markerColor = "green",
-      library = "fa"
-    )
     
     if (length(data()) == 7L && nrow(data())) {
       return(leaflet::leaflet() %>% leaflet::addTiles() %>%
@@ -124,7 +133,6 @@ renderMirowidget_customerdata <- function(input, output, session, data, options 
       return(leaflet::leaflet() %>% leaflet::addTiles())
     }
   })
-  init <- FALSE
 
   observe({
     input$vrptw_input_marker_click
@@ -135,6 +143,7 @@ renderMirowidget_customerdata <- function(input, output, session, data, options 
       markerId <- input$vrptw_input_marker_click$id
       if (markerId != depotName) {
         rv$markerPositions[[markerId]] <<- NULL
+        updateCustomerData()
         leaflet::leafletProxy("vrptw_input") %>%
           leaflet::removeMarker(markerId)
       }
@@ -149,6 +158,7 @@ renderMirowidget_customerdata <- function(input, output, session, data, options 
       markerId <- input$vrptw_input_marker_dragend$id
       rv$markerPositions[[markerId]]$lat <- input$vrptw_input_marker_dragend$lat
       rv$markerPositions[[markerId]]$lng <- input$vrptw_input_marker_dragend$lng
+      updateCustomerData()
     })
   })
 
@@ -160,9 +170,6 @@ renderMirowidget_customerdata <- function(input, output, session, data, options 
     }
     isolate({
       markerId <- paste0("Location", markerCnt)
-      if (!length(rv$markerPositions)) {
-        markerId <<- depotName
-      }
       newMarker <- list(
         lat = input$vrptw_input_click$lat,
         lng = input$vrptw_input_click$lng,
@@ -171,14 +178,31 @@ renderMirowidget_customerdata <- function(input, output, session, data, options 
         dueDate = 0L,
         readyTime = 0L
       )
+      if (!length(rv$markerPositions)) {
+        markerId <- depotName
+      }
+
       rv$markerPositions[[markerId]] <<- newMarker
+
+      updateCustomerData()
       markerCnt <<- markerCnt + 1L
 
-      leaflet::leafletProxy("vrptw_input") %>%
-        leaflet::addMarkers(
-          lat = newMarker$lat, lng = newMarker$lng, group = "markers",
-          options = leaflet::markerOptions(draggable = TRUE), layerId = markerId, label = markerId
-        )
+      if (markerId == depotName) {
+        leaflet::leafletProxy("vrptw_input") %>%
+          leaflet::addAwesomeMarkers(lat = newMarker$lat, lng = newMarker$lng,
+            icon = icons,
+            group = "markers",
+            label = markerId,
+            options  = leaflet::markerOptions(draggable = TRUE),
+            layerId = markerId,
+          )
+      } else {
+        leaflet::leafletProxy("vrptw_input") %>%
+          leaflet::addMarkers(
+            lat = newMarker$lat, lng = newMarker$lng, group = "markers",
+            options = leaflet::markerOptions(draggable = TRUE), layerId = markerId, label = markerId
+          )
+      }
     })
   })
   return(reactive({

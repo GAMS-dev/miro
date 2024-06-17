@@ -57,12 +57,12 @@
   "dataRendering": {
     "x": {
       "outType": "mirorenderer_x",
-      "height": 1000,
+      "height": 800,
       "options": {
         "title": "Optimal vehicle routes"
       },
       "additionalData": ["customerdata", "t", "w"],
-      "packages": ["leaflet.minicharts"]
+      "packages": "leaflet.minicharts"
     }
   },
   "inputWidgets": {
@@ -98,6 +98,7 @@
     "filename": "README.md",
     "enableMath": true
   },
+  "hiddenOutputSymbols": ["t", "w"],
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
@@ -108,6 +109,5 @@
     },
     "height": 700,
     "colWidths": 200
-  },
-  "hiddenOutputSymbols": ["t", "w"]
+  }
 }
