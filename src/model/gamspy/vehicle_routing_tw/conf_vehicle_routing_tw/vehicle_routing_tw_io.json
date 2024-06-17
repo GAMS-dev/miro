@@ -1,0 +1,168 @@
+{
+    "modelTitle": "GAMSPy App",
+    "inputSymbols": {
+        "customerdata": {
+            "alias": "Cusotmer information",
+            "symtype": "parameter",
+            "headers": {
+                "i": {
+                    "type": "string",
+                    "alias": "customers"
+                },
+                "lat": {
+                    "type": "numeric",
+                    "alias": "lat"
+                },
+                "lng": {
+                    "type": "numeric",
+                    "alias": "lng"
+                },
+                "demand": {
+                    "type": "numeric",
+                    "alias": "demand"
+                },
+                "readyTime": {
+                    "type": "numeric",
+                    "alias": "readyTime"
+                },
+                "dueDate": {
+                    "type": "numeric",
+                    "alias": "dueDate"
+                },
+                "serviceTime": {
+                    "type": "numeric",
+                    "alias": "serviceTime"
+                }
+            }
+        },
+        "_scalars": {
+            "alias": "Input Scalars",
+            "symnames": [
+                "vehicle_number",
+                "vehicle_capacity"
+            ],
+            "symtext": [
+                "vehicle_number",
+                "vehicle_capacity"
+            ],
+            "symtypes": [
+                "parameter",
+                "parameter"
+            ],
+            "headers": {
+                "scalar": {
+                    "type": "string",
+                    "alias": "Scalar Name"
+                },
+                "description": {
+                    "type": "string",
+                    "alias": "Scalar Description"
+                },
+                "value": {
+                    "type": "string",
+                    "alias": "Scalar Value"
+                }
+            }
+        }
+    },
+    "outputSymbols": {
+        "x": {
+            "alias": "states if vehicle k travels from ci to cj",
+            "symtype": "variable",
+            "headers": {
+                "i": {
+                    "type": "string",
+                    "alias": "customers"
+                },
+                "j": {
+                    "type": "string",
+                    "alias": "customers"
+                },
+                "k": {
+                    "type": "string",
+                    "alias": "vehicles"
+                },
+                "level": {
+                    "type": "numeric",
+                    "alias": "level"
+                },
+                "marginal": {
+                    "type": "numeric",
+                    "alias": "marginal"
+                },
+                "lower": {
+                    "type": "numeric",
+                    "alias": "lower"
+                },
+                "upper": {
+                    "type": "numeric",
+                    "alias": "upper"
+                },
+                "scale": {
+                    "type": "numeric",
+                    "alias": "scale"
+                }
+            }
+        },
+        "t": {
+            "alias": "arrival time at customer ci",
+            "symtype": "variable",
+            "headers": {
+                "i": {
+                    "type": "string",
+                    "alias": "customers"
+                },
+                "level": {
+                    "type": "numeric",
+                    "alias": "level"
+                },
+                "marginal": {
+                    "type": "numeric",
+                    "alias": "marginal"
+                },
+                "lower": {
+                    "type": "numeric",
+                    "alias": "lower"
+                },
+                "upper": {
+                    "type": "numeric",
+                    "alias": "upper"
+                },
+                "scale": {
+                    "type": "numeric",
+                    "alias": "scale"
+                }
+            }
+        },
+        "w": {
+            "alias": "waiting time at customer ci: ei-ti",
+            "symtype": "variable",
+            "headers": {
+                "i": {
+                    "type": "string",
+                    "alias": "customers"
+                },
+                "level": {
+                    "type": "numeric",
+                    "alias": "level"
+                },
+                "marginal": {
+                    "type": "numeric",
+                    "alias": "marginal"
+                },
+                "lower": {
+                    "type": "numeric",
+                    "alias": "lower"
+                },
+                "upper": {
+                    "type": "numeric",
+                    "alias": "upper"
+                },
+                "scale": {
+                    "type": "numeric",
+                    "alias": "scale"
+                }
+            }
+        }
+    }
+}

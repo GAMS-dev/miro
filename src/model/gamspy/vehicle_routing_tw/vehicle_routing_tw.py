@@ -20,7 +20,7 @@ from gamspy import (
     Ord,
     Domain,
 )
-from gamspy.math import sqr, sqrt
+from gamspy.math import sin, cos, sqrt, sqr, atan2
 
 
 def main():
@@ -30,87 +30,115 @@ def main():
     data = pd.read_csv("small_data.txt", sep=",", index_col=False)
 
     # compute euclidean distance matrix between all customers
-    coordinates = data[["XCOORD.", "YCOORD."]].to_numpy()
+    coordinates = data[["lat", "lng"]].to_numpy()
     distance_matrix = np.sqrt(
         np.einsum("ijk->ij", (coordinates[:, None, :] - coordinates) ** 2)
     )
 
-    # do lineariz the start time equation, where the slack is the allows timeframe at the depot
-    M = data["DUEDATE"][0] - data["READYTIME"][0]
-
-    vehicle_number = 10
-    vehicle_capacity = 200
-
     # Set
-    i = Set(m, name="i", records=data["CUSTNO."], description="customers")
+    i = Set(m, name="i", records=data["i"], description="customers")
     j = Alias(m, name="j", alias_with=i)
+
+    vehicle_number = Parameter(
+        m,
+        "vehicle_number",
+        records=10,
+        is_miro_input=True,
+    )
     k = Set(
         m,
         name="k",
-        records=["k" + str(i) for i in range(vehicle_number)],
+        records=["k" + str(i) for i in range(int(vehicle_number.toValue()))],
         description="vehicles",
     )
 
-    coustomerDataHeader = Set(
+    customerDataHeader = Set(
         m,
-        "coustomerDataHeader",
-        records=["XCOORD.", "YCOORD.", "DEMAND", "READYTIME", "DUEDATE", "SERVICETIME"],
+        "customerDataHeader",
+        records=["lat", "lng", "demand", "readyTime", "dueDate", "serviceTime"],
     )
 
     # Data
-    coustomerData = Parameter(
+    customerData = Parameter(
         m,
-        "coustomerData",
-        domain=[i, coustomerDataHeader],
+        "customerData",
+        domain=[i, customerDataHeader],
         domain_forwarding=[True, False],
-        records=data.melt(id_vars="CUSTNO."),
+        records=data.melt(id_vars="i", var_name="customerDataHeader"),
         is_miro_input=True,
         is_miro_table=True,
         description="Cusotmer information",
     )
+
+    vehicle_capacity = Parameter(
+        m,
+        "vehicle_capacity",
+        records=200,
+        is_miro_input=True,
+    )
+
     q = Parameter(
         m,
         name="q",
         domain=[i],
-        records=data[["CUSTNO.", "DEMAND"]],
         description="demand of customer ci",
     )
     s = Parameter(
         m,
         name="s",
         domain=[i],
-        records=data[["CUSTNO.", "SERVICETIME"]],
         description="service time of customer ci",
     )
     e = Parameter(
         m,
         name="e",
         domain=[i],
-        records=data[["CUSTNO.", "READYTIME"]],
         description="earliest time to start servicing customer ci",
     )
     l = Parameter(
         m,
         name="l",
         domain=[i],
-        records=data[["CUSTNO.", "DUEDATE"]],
         description="latest time to start servicing customer ci",
     )
     d = Parameter(
         m,
         name="d",
         domain=[i, j],
-        records=distance_matrix,
         description="distance from customer ci to cj",
     )
+    help_d = Parameter(
+        m,
+        name="d",
+        domain=[i, j],
+        description="help parameter for computing the distance from customer ci to cj",
+    )
 
-    q[i] = coustomerData[i, "DEMAND"]
-    s[i] = coustomerData[i, "SERVICETIME"]
-    e[i] = coustomerData[i, "READYTIME"]
-    l[i] = coustomerData[i, "DUEDATE"]
-    d[i, j] = sqrt(
-        sqr(coustomerData[i, "XCOORD."] - coustomerData[j, "XCOORD."])
-        + sqr(coustomerData[i, "YCOORD."] - coustomerData[j, "YCOORD."])
+    q[i] = customerData[i, "demand"]
+    s[i] = customerData[i, "serviceTime"]
+    e[i] = customerData[i, "readyTime"]
+    l[i] = customerData[i, "dueDate"]
+
+    earth_radius = 6371
+    help_d[i, j] = sqr(sin((customerData[i, "lat"] - customerData[j, "lat"])*np.pi / (2*180))) + (
+        cos(customerData[i, "lat"]*np.pi / 180) * cos(customerData[j, "lat"]*np.pi / 180)
+        * sqr(sin((customerData[i, "lng"] - customerData[j, "lng"]) *np.pi / (2*180)))
+    )
+
+    d[i, j] = (
+        2
+        * earth_radius
+        * atan2(sqrt(help_d[i,j]), sqrt(1-help_d[i,j]))
+    )
+
+    # to lineariz the start time equation, where the slack is the allows timeframe at the depot
+    M = (
+        customerData.records[customerData.records["customerDataHeader"] == "dueDate"][
+            "value"
+        ].iloc[0]
+        - customerData.records[
+            customerData.records["customerDataHeader"] == "readyTime"
+        ]["value"].iloc[0]
     )
 
     # Variable
@@ -210,8 +238,8 @@ def main():
     max_K_starts_at_depot[i] = (
         Sum(Domain(j, k).where[Ord(j) > 1], x[i, j, k]) <= vehicle_number
     )
-    start_at_depot[k] = Sum(j, x["0", j, k]) <= 1
-    end_at_depot[k] = Sum(j, x[j, "0", k]) <= 1
+    start_at_depot[k] = Sum(Domain(j, i).where[Ord(i) == 1], x[i, j, k]) <= 1
+    end_at_depot[k] = Sum(Domain(j, i).where[Ord(i) == 1], x[j, i, k]) <= 1
     vehicle_does_not_jump[k, i] = Sum(j, x[i, j, k]) == Sum(j, x[j, i, k])
     each_node_enterd_once[i].where[Ord(i) != 1] = (
         Sum(Domain(j, k).where[Ord(i) != Ord(j)], x[i, j, k]) == 1

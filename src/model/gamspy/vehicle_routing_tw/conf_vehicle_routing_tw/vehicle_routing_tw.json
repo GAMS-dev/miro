@@ -1,0 +1,113 @@
+{
+  "theme": "browser",
+  "customCss": false,
+  "layoutSettings": {
+    "maxTabsExpandedInput": 5,
+    "maxTabsExpandedOutput": 5,
+    "maxTabsExpandedPivotComp": 5,
+    "maxTabsExpandedSplitComp": 5,
+    "maxTabsExpandedTabComp": 5
+  },
+  "excelIncludeMeta": true,
+  "excelIncludeEmptySheets": true,
+  "defaultRendererOutput": "miroPivot",
+  "autoGenInputGraphs": true,
+  "storeLogFilesDuration": 7,
+  "defCompMode": "split",
+  "pivotCompSettings": {
+    "hidePivotControls": false,
+    "fixedColumns": true
+  },
+  "activateModules": {
+    "loadLocal": true,
+    "logFile": true,
+    "lstFile": false,
+    "attachments": true,
+    "hcube": false,
+    "downloadTempFiles": false
+  },
+  "aggregateWidgets": true,
+  "overwriteSheetOrder": {
+    "input": ["customerdata", "_widgets"]
+  },
+  "overwriteAliases": {
+    "customerdata": {
+      "newAlias": "Cusotmer information"
+    },
+    "x": {
+      "newAlias": "states if vehicle k travels from ci to cj"
+    },
+    "vehicle_number": {
+      "newAlias": "vehicle_number"
+    },
+    "vehicle_capacity": {
+      "newAlias": "vehicle_capacity"
+    },
+    "_scalars": {
+      "newAlias": "Scalars"
+    },
+    "t": {
+      "newAlias": "arrival time at customer ci"
+    },
+    "w": {
+      "newAlias": "waiting time at customer ci: ei-ti"
+    }
+  },
+  "roundingDecimals": 2,
+  "dataRendering": {
+    "x": {
+      "outType": "mirorenderer_x",
+      "height": 1000,
+      "options": {
+        "title": "Optimal vehicle routes"
+      },
+      "additionalData": ["customerdata", "t", "w"],
+      "packages": ["leaflet.minicharts"]
+    }
+  },
+  "inputWidgets": {
+    "customerdata": {
+      "widgetType": "custom",
+      "rendererName": "mirowidget_customerdata",
+      "apiVersion": 2,
+      "alias": "City location information"
+    },
+    "vehicle_number": {
+      "widgetType": "numericinput",
+      "decimal": 0,
+      "decimalCharacter": ".",
+      "digitGroupSeparator": ",",
+      "label": "Number of available vehicles",
+      "min": 1,
+      "value": 10
+    },
+    "vehicle_capacity": {
+      "widgetType": "numericinput",
+      "max": null,
+      "decimal": 0,
+      "decimalCharacter": ".",
+      "digitGroupSeparator": ",",
+      "sign": null,
+      "label": "Capacity of the vehicles",
+      "min": 0,
+      "value": 200
+    }
+  },
+  "readme": {
+    "tabTitle": "Introduction",
+    "filename": "README.md",
+    "enableMath": true
+  },
+  "handsontable": {
+    "stretchH": "none",
+    "readonly": false,
+    "contextMenu": {
+      "enabled": true,
+      "allowRowEdit": true,
+      "allowColEdit": true
+    },
+    "height": 700,
+    "colWidths": 200
+  },
+  "hiddenOutputSymbols": ["t", "w"]
+}
