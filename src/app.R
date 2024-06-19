@@ -34,7 +34,7 @@ requiredPackages <- c("R6", "jsonlite", "zip", "tibble", "readr", "futile.logger
 if (!miroBuildOnly) {
   requiredPackages <- c(
     requiredPackages, "shiny", "shinydashboard", "rhandsontable",
-    "rpivotTable", "stringi", "processx",
+    "stringi", "processx",
     "dplyr", "readxl", "writexl", "tidyr",
     "DT", "sortable", "chartjs", "gdxrrwMIRO"
   )

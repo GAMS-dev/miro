@@ -402,7 +402,6 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
               configData = scenData$getScalars(refId),
               dtOptions = graphConfig$datatable,
               graphOptions = graphConfig$graph,
-              pivotOptions = graphConfig$pivottable,
               customOptions = graphConfig$options,
               roundPrecision = roundPrecision,
               modelDir = modelDir,

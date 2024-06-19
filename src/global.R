@@ -84,7 +84,7 @@ MIROGdxOutName <- "_miro_gdxout_.gdx"
 # default access group
 defaultGroup <- "users"
 # list all supported standard renderers
-standardRenderers <- c("datatable", "dtgraph", "pivot", "graph", "valuebox", "miropivot")
+standardRenderers <- c("datatable", "dtgraph", "graph", "valuebox", "miropivot")
 # name of the folder where hcube jobs will be executed
 hcubeDirName <- "hcube_jobs"
 # maximum number of scenarios that can be solved per hcube run

@@ -61,7 +61,6 @@ these components are included below):
 - V8 (R package) https://github.com/jeroen/V8 or https://cran.r-project.org/web/packages/V8/index.html
 - V8 https://github.com/v8/v8
 - jsonlite https://github.com/jeroen/jsonlite or https://cran.r-project.org/web/packages/jsonlite/index.html
-- rpivotTable https://github.com/smartinsightsfromdata/rpivotTable or https://cran.r-project.org/web/packages/rpivotTable/index.html
 - futile.logger https://github.com/zatonovo/futile.logger or https://cran.r-project.org/web/packages/futile.logger/index.html
 - KaTeX https://github.com/KaTeX/KaTeX or https://katex.org
 - zip https://github.com/r-lib/zip or https://cran.r-project.org/web/packages/zip/index.html
@@ -898,7 +897,6 @@ Section 8 -- Interpretation.
         - shinyAce, Copyright (c) 2016 Vincent Nijs [aut, cre], Forest Fang [aut], Trestle Technology, LLC [aut], Jeff Allen [aut], Institut de Radioprotection et de Surete Nucleaire [cph], Ajax.org B.V. [ctb, cph] (Ace)
         - V8 (R package), Copyright (c) 2017 Jeroen Ooms
         - jsonlite, Copyright (c) 2020 Jeroen Ooms
-        - rpivotTable, Copyright (c) 2015 Enzo Martoglio
         - dygraphs, Copyright (c) 2015-2016 Dan Vanderkam; RStudio, Inc.
         - xfun, Copyright (c) 2018-2022 Yihui Xie ORCID iD [aut, cre, cph], Wush Wu [ctb], Daijiang Li [ctb], Xianying Tan [ctb], Salim Brüggemann ORCID iD [ctb], Christophe Dervieux [ctb]
         - stringr, Copyright (c) 2020 Hadley Wickham [aut, cre, cph], RStudio [cph, fnd]

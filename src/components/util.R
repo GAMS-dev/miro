@@ -691,21 +691,6 @@ reactiveFileReaderAppend <- function(intervalMillis, session, filePath) {
 
   return(list("re" = re, "obs" = obs))
 }
-prepopPivot <- function(symbol) {
-  pivotConf <- list(rows = c(), vals = character(1L), aggregatorName = "Sum")
-  setEl <- vector("character", length(symbol$headers))
-  j <- 1L
-  for (i in seq_along(symbol$headers)) {
-    if (symbol$headers[[i]]$type == "numeric") {
-      pivotConf$vals <- names(symbol$headers)[[i]]
-    } else {
-      setEl[j] <- names(symbol$headers)[[i]]
-      j <- j + 1L
-    }
-  }
-  pivotConf$rows <- setEl[nchar(setEl) > 0.5]
-  return(pivotConf)
-}
 
 getNestedDep <- function(depStr) {
   if (length(depStr) > 1L) {

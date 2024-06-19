@@ -1149,9 +1149,6 @@
       "hiddenOutputScalars":{
         "label": "对于不能用标量图表显示的标量，使用其他图形表示"
       },
-      "pivotcolor":{
-        "label": "指定数据透视表中行和列标题的背景颜色"
-      },
       "mirologfile":{
         "label": "包括自定义日志文件？",
         "tooltip": "输入MIRO日志文件的名称（最少3个字符）。如果没有MIRO日志文件，请将该字段留空。"

@@ -619,9 +619,6 @@ observeEvent(rv$tableConfig, {
     "dt" = {
       configJSON$datatable <<- rv$tableConfig$datatable
     },
-    "piv" = {
-      configJSON$pivottable <<- rv$tableConfig$pivottable
-    },
     {
       return()
     }

@@ -99,7 +99,6 @@ listenv, 0.9.1
 processx, 3.8.4
 readxl, 1.4.3
 writexl, 1.5.0
-rpivotTable, 0.3.0
 futile.logger, 1.4.3
 zip, 2.3.1
 leaflet.minicharts, 0.6.2

@@ -1909,7 +1909,7 @@ if (is.null(errMsg)) {
         }
       }
 
-      # abort since rpivottable crashes when setting table to readonly if there exist columns with the same name
+      # abort since handsontable crashes when setting table to readonly if there exist columns with the same name
       if (!LAUNCHCONFIGMODE &&
         identical(modelIn[[i]]$type, "hot") && any(duplicated(attr(modelInTemplate[[i]], "aliases"))) &&
         (identical(modelIn[[i]]$readonly, TRUE) || any(vapply(modelIn[[i]]$headers, function(header) {
@@ -2174,9 +2174,6 @@ if (is.null(errMsg)) {
       }
     } else {
       config$dataRendering[[elName]]$outType <- config$defaultRendererOutput
-      if (identical(config$defaultRendererOutput, "pivot")) {
-        config$dataRendering[[elName]]$pivottable <- prepopPivot(modelOut[[i]])
-      }
     }
   }
   # assign default output format for input sheets that were not set in config
@@ -2196,9 +2193,6 @@ if (is.null(errMsg)) {
           config$dataRendering[[elName]]$outType <- "datatable"
         } else {
           config$dataRendering[[elName]]$outType <- defInType
-          if (identical(defInType, "pivot")) {
-            config$dataRendering[[elName]]$pivottable <- prepopPivot(modelIn[[i]])
-          }
         }
       }
     }

@@ -146,7 +146,6 @@ renderInputGraph <- function(i) {
         data = data,
         dtOptions = config$datatable,
         graphOptions = configGraphsIn[[i]]$graph,
-        pivotOptions = configGraphsIn[[i]]$pivottable,
         customOptions = configGraphsIn[[i]]$options,
         roundPrecision = roundPrecision, modelDir = modelDir,
         rendererEnv = rendererEnv[[paste0("in_", i)]],

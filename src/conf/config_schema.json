@@ -2009,150 +2009,6 @@
                         "description":"Style of widget (table, pivottable, graph, graph+table).",
                         "type":"string",
                         "enum":[
-                           "pivot"
-                        ]
-                     },
-                     "label":{
-                        "description":"A label to be displayed above renderer (markdown supported)",
-                         "type":"string"
-                      },
-                     "height":{
-                        "description":"Height of the output element.",
-                        "type":"integer",
-                        "minimum":0
-                     },
-                     "pivottable":{
-                        "description":"Parameters used to customize pivottable (used to render input or output data).",
-                        "type":"object",
-                        "properties":{
-                           "rows":{
-                              "description":"Array of the names of rows in the data.frame to prepopulate the rows of the pivot table.",
-                              "type":["array", "string"],
-                              "minLength":1,
-                              "uniqueItems":true,
-                              "minItems":0,
-                              "items":{
-                                 "type":"string",
-                                 "minLength":1
-                              }
-                           },
-                           "cols":{
-                              "description":"Array of the names of columns in the data.frame to prepopulate the columns of the pivot table.",
-                              "type":["array", "string"],
-                              "minLength":1,
-                              "uniqueItems":true,
-                              "minItems":0,
-                              "items":{
-                                 "type":"string",
-                                 "minLength":1
-                              }
-                           },
-                           "aggregatorName":{
-                              "description":"Aggregator to use (see enum for list of possible aggregators)",
-                              "type":"string",
-                              "enum":[
-                                 "Count",
-                                 "Count Unique Values",
-                                 "List Unique Values",
-                                 "Sum",
-                                 "Integer Sum",
-                                 "Average",
-                                 "Median",
-                                 "Sample Variance",
-                                 "Sample Standard Deviation",
-                                 "Minimum",
-                                 "Maximum",
-                                 "First",
-                                 "Last",
-                                 "Sum over Sum",
-                                 "80% Upper Bound",
-                                 "80% Lower Bound",
-                                 "Sum as Fraction of Total",
-                                 "Sum as Fraction of Rows",
-                                 "Sum as Fraction of Columns",
-                                 "Count as Fraction of Total",
-                                 "Count as Fraction of Rows",
-                                 "Count as Fraction of Columns"
-                              ],
-                              "default":"Count"
-                           },
-                           "vals":{
-                              "description":"String or Array of Strings name(s) of the column(s) in the data.frame to use with aggregatorName. Must be additive (i.e a number).",
-                              "type":["array", "string"],
-                              "items":{
-                                 "type":"string"
-                              }
-                           },
-                           "rendererName":{
-                              "description":"Name of the renderer selected, e.g. Table, Heatmap, Treemap etc",
-                              "type":"string",
-                              "enum":[
-                                 "Table",
-                                 "Table Barchart",
-                                 "Heatmap",
-                                 "Row Heatmap",
-                                 "Col Heatmap",
-                                 "Treemap",
-                                 "Horizontal Bar Chart",
-                                 "Horizontal Stacked Bar Chart",
-                                 "Bar Chart",
-                                 "Stacked Bar Chart",
-                                 "Line Chart",
-                                 "Area Chart",
-                                 "Scatter Chart"
-                              ],
-                              "default":"Table"
-                           },
-                           "locale":{
-                              "description":"Localization options",
-                              "type":"string",
-                              "enum":[
-                                 "cs",
-                                 "da",
-                                 "de",
-                                 "en",
-                                 "es",
-                                 "fr",
-                                 "it",
-                                 "nl",
-                                 "pl",
-                                 "pt",
-                                 "ru",
-                                 "sq",
-                                 "tr",
-                                 "zh"
-                              ],
-                              "default":"en"
-                           },
-                           "subtotals":{
-                              "description":"Should the subtotals plugin be used?",
-                              "type":"boolean",
-                              "default":false
-                           },
-                           "width":{
-                              "description":"width of pivottable",
-                              "type":"integer",
-                              "minimum":1
-                           },
-                           "height":{
-                              "description":"height of pivottable",
-                              "type":"integer",
-                              "minimum":1
-                           }
-                        }
-                     }
-                  },
-                  "additionalProperties":true,
-                  "required":[
-                     "outType"
-                  ]
-               },
-               {
-                  "properties":{
-                     "outType":{
-                        "description":"Style of widget (table, pivottable, graph, graph+table).",
-                        "type":"string",
-                        "enum":[
                            "dtGraph",
                            "graph"
                         ]
@@ -2289,7 +2145,6 @@
                               "graph",
                               "dtGraph",
                               "datatable",
-                              "pivot",
                               "miroPivot"
                            ]
                         }
@@ -2466,7 +2321,7 @@
          }
       },
       "pivottable":{
-         "description":"Parameters used to customize pivottable (used to render output data).",
+         "description":"DEPRECATED: PLEASE NO LONGER USE!",
          "type":"object",
          "additionalProperties":false,
          "properties":{

@@ -1038,52 +1038,6 @@ observe(rv$graphConfig$graph$layersControl$overlayGroups <<- input$leaflc_overla
 observe(rv$graphConfig$graph$layersControl$position <<- input$leaflc_position)
 observe(rv$graphConfig$graph$layersControl$options$collapsed <<- input$leaflc_collapsed)
 
-observeEvent(input$pivot_rows, ignoreNULL = FALSE, {
-  if (length(input$pivot_rows) > 0) {
-    rv$graphConfig$pivottable$rows <<- input$pivot_rows
-  } else {
-    rv$graphConfig$pivottable$rows <<- NULL
-  }
-})
-observeEvent(input$pivot_cols, ignoreNULL = FALSE, {
-  if (length(input$pivot_cols) > 0) {
-    rv$graphConfig$pivottable$cols <<- input$pivot_cols
-  } else {
-    rv$graphConfig$pivottable$cols <<- NULL
-  }
-})
-observeEvent(input$pivot_aggregatorName, {
-  rv$graphConfig$pivottable$aggregatorName <<- input$pivot_aggregatorName
-})
-observeEvent(c(input$pivot_vals, input$pivot_vals2), {
-  if (identical(input$pivot_vals, "_") || is.null(input$pivot_vals)) {
-    valstmp1 <<- NULL
-  } else {
-    valstmp1 <<- input$pivot_vals
-  }
-  if (identical(input$pivot_vals2, "_") || is.null(input$pivot_vals2)) {
-    valstmp2 <<- NULL
-  } else {
-    valstmp2 <<- input$pivot_vals2
-  }
-  if (is.null(valstmp2)) {
-    rv$graphConfig$pivottable$vals <<- valstmp1
-  } else if (is.null(valstmp1)) {
-    rv$graphConfig$pivottable$vals <<- c("", valstmp2)
-  } else {
-    rv$graphConfig$pivottable$vals <<- c(valstmp1, valstmp2)
-  }
-})
-observeEvent(input$pivot_rendererName, {
-  rv$graphConfig$pivottable$rendererName <<- input$pivot_rendererName
-})
-observeEvent(input$pivot_locale, {
-  rv$graphConfig$pivottable$locale <<- input$pivot_locale
-})
-observeEvent(input$pivot_subtotals, {
-  rv$graphConfig$pivottable$subtotals <<- input$pivot_subtotals
-})
-
 # observeEvent(input$timevis_series, {
 #  rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_symbol[1])]]]] <<- input$timevis_series
 # })
@@ -2676,9 +2630,7 @@ getCurrentGraphConfig <- function() {
     currentGraphConfig <<- configJSON$dataRendering[[chartId]][["options"]]
   } else {
     if (!is.na(chartId)) {
-      if (length(configJSON$dataRendering[[chartId]][["pivottable"]])) {
-        currentGraphConfig <<- configJSON$dataRendering[[chartId]][["pivottable"]]
-      } else if (length(configJSON$dataRendering[[chartId]][["graph"]])) {
+      if (length(configJSON$dataRendering[[chartId]][["graph"]])) {
         currentGraphConfig <<- configJSON$dataRendering[[chartId]][["graph"]]
       } else {
         currentGraphConfig <<- configJSON$dataRendering[[chartId]]
@@ -2739,9 +2691,7 @@ observeEvent(input$gams_symbols, {
     graphType <- NULL
     chartId <- match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]
     if (!is.na(chartId)) {
-      if (length(configJSON$dataRendering[[chartId]][["pivottable"]])) {
-        graphType <- "pivot"
-      } else if (identical(configJSON$dataRendering[[chartId]]$outType, "miroPivot")) {
+      if (identical(configJSON$dataRendering[[chartId]]$outType, "miroPivot")) {
         graphType <- "miropivot"
       } else if (identical(configJSON$dataRendering[[chartId]]$outType, "dashboard")) {
         graphType <- "dashboard"
@@ -2774,8 +2724,6 @@ observeEvent(input$gams_symbols, {
       newChartTool <<- "miropivot"
     } else if (identical(graphType, "dashboard")) {
       newChartTool <<- "dashboard"
-    } else if (identical(graphType, "pivot")) {
-      newChartTool <<- "pivot"
     } else if (identical(graphType, "custom")) {
       newChartTool <<- "custom"
     } else if (identical(graphType, "datatable")) {
@@ -2835,9 +2783,6 @@ observeEvent(
       configuredWithThisTool <<- TRUE
     } else {
       configuredWithThisTool <<- FALSE
-    }
-    if (!identical(chartTool, "pivot")) {
-      rv$graphConfig$pivottable <<- NULL
     }
     if (!identical(chartTool, "leaflet")) {
       rv$graphConfig$graph$layersControl <<- NULL
@@ -3226,20 +3171,6 @@ observeEvent(
           rv$graphConfig$graph$custom <- customTmp
         }
       }
-      allDataAvailable <<- TRUE
-    } else if (identical(chartTool, "pivot")) {
-      showEl(session, ".category-btn-pivot")
-      addClassEl(session, id = "#categoryPivot1", "category-btn-active")
-      insertUI(
-        selector = "#tool_options",
-        tags$div(id = "pivot_options", tagList(
-          if (!activeSymbol$isInput) {
-            textAreaInput("renderer_label", lang$adminMode$graphs$ui$label,
-              value = currentGraphLabel
-            )
-          }, getPivotOptions()
-        )), where = "beforeEnd"
-      )
       allDataAvailable <<- TRUE
     } else if (identical(chartTool, "miropivot")) {
       # make sure pivot table is refreshed when changing symbol
@@ -4510,90 +4441,6 @@ getTimevisOptions <- reactive({
     )
   )
 })
-getPivotOptions <- reactive({
-  rv$initData
-  rv$refreshContent
-  indices <- activeSymbol$indices
-  scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
-  isolate({
-    rv$graphConfig$pivottable <<- NULL
-    rv$graphConfig$pivottable$rows <<- checkLength(configuredWithThisTool, currentGraphConfig[["rows"]], NULL)
-    rv$graphConfig$pivottable$cols <<- checkLength(configuredWithThisTool, currentGraphConfig[["cols"]], NULL)
-    rv$graphConfig$pivottable$aggregatorName <<- checkLength(configuredWithThisTool, currentGraphConfig[["aggregatorName"]], "Sum")
-
-    valOne <- if (isTRUE(configuredWithThisTool) &&
-      length(currentGraphConfig[["vals"]][1]) &&
-      !is.na(currentGraphConfig[["vals"]][1])) {
-      currentGraphConfig[["vals"]][1]
-    } # allows to configure empty values that would otherwise not be loaded empty at the next startup
-    else if (!length(currentGraphConfig) && length(scalarIndices)) scalarIndices[[1]] else "_"
-    valTwo <- if (isTRUE(configuredWithThisTool) &&
-      length(currentGraphConfig[["vals"]][2]) &&
-      !is.na(currentGraphConfig[["vals"]][2])) {
-      currentGraphConfig[["vals"]][[2]]
-    } else {
-      NULL
-    }
-    if (is.null(valTwo)) {
-      rv$graphConfig$pivottable$vals <<- valOne
-    } else {
-      rv$graphConfig$pivottable$vals <<- list(valOne, valTwo)
-    }
-    rv$graphConfig$pivottable$rendererName <<- checkLength(configuredWithThisTool, currentGraphConfig[["rendererName"]], "Table")
-    rv$graphConfig$pivottable$locale <<- checkLength(configuredWithThisTool, currentGraphConfig[["locale"]], "en")
-    rv$graphConfig$pivottable$subtotals <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["subtotals"]])
-  })
-  tagList(
-    tags$div(
-      class = "cat-body cat-body-46",
-      selectInput("pivot_rows", lang$adminMode$graphs$pivotOptions$rows,
-        choices = indices, multiple = TRUE,
-        selected = rv$graphConfig$pivottable$rows
-      ),
-      selectInput("pivot_cols", lang$adminMode$graphs$pivotOptions$cols,
-        choices = indices, multiple = TRUE,
-        selected = rv$graphConfig$pivottable$cols
-      ),
-      selectInput("pivot_aggregatorName", lang$adminMode$graphs$pivotOptions$aggregator,
-        choices = langSpecificGraphs$aggregatorChoices,
-        selected = rv$graphConfig$pivottable$aggregatorName
-      ),
-      tags$div(
-        class = "shiny-input-container",
-        style = "max-height:800px;max-height: 80vh;padding-right:30px;padding-left:40px;",
-        conditionalPanel(
-          condition = "input.pivot_aggregatorName && !input.pivot_aggregatorName.startsWith('Count')",
-          selectInput("pivot_vals", lang$adminMode$graphs$pivotOptions$vals,
-            choices = c("_", indices),
-            selected = rv$graphConfig$pivottable$vals[1]
-          )
-        ),
-        conditionalPanel(
-          condition = "input.pivot_aggregatorName === 'Sum over Sum' || input.pivot_aggregatorName === '80% Upper Bound' ||
-                     input.pivot_aggregatorName === '80% Lower Bound'",
-          selectInput("pivot_vals2", lang$adminMode$graphs$pivotOptions$vals,
-            choices = c("_", indices),
-            selected = rv$graphConfig$pivottable$vals[2]
-          )
-        )
-      ),
-      selectInput("pivot_rendererName", lang$adminMode$graphs$pivotOptions$renderer,
-        choices = langSpecificGraphs$rendererChoices,
-        selected = rv$graphConfig$pivottable$rendererName
-      )
-    ),
-    tags$div(
-      class = "cat-body cat-body-47", style = "display:none;",
-      selectInput("pivot_locale", lang$adminMode$graphs$pivotOptions$options$locale,
-        choices = langSpecificGraphs$localeChoices,
-        selected = rv$graphConfig$pivottable$locale
-      ),
-      checkboxInput_SIMPLE("pivot_subtotals", span(lang$adminMode$graphs$pivotOptions$options$subtotals, tags$a(href = "http://nagarajanchinnasamy.com/subtotal/", target = "_blank", "http://nagarajanchinnasamy.com/subtotal/")),
-        value = rv$graphConfig$pivottable$subtotals
-      )
-    )
-  )
-})
 getDashboardOptions <- reactive({
   rv$initData
   rv$refreshContent
@@ -4978,7 +4825,6 @@ observe(
           }
           hideEl(session, "#preview-content-dygraphs")
           hideEl(session, "#preview-content-leaflet")
-          hideEl(session, "#preview-content-pivot")
           hideEl(session, "#preview-content-miropivot")
           hideEl(session, "#preview-content-timevis")
           hideEl(session, "#preview-content-valuebox")
@@ -4994,24 +4840,7 @@ observe(
           hideEl(session, "#preview-content-plotly")
           hideEl(session, "#pieValues")
           hideEl(session, "#preview-content-leaflet")
-          hideEl(session, "#preview-content-pivot")
           hideEl(session, "#preview-content-miropivot")
-          hideEl(session, "#preview-content-timevis")
-          hideEl(session, "#preview-content-valuebox")
-          hideEl(session, "#preview-content-custom")
-        } else if (isolate(rv$graphConfig$graph$tool) == "pivot") {
-          callModule(renderData, "preview_output_pivot",
-            type = "pivot",
-            data = data, configData = configScalars,
-            pivotOptions = rv$graphConfig$pivottable,
-            roundPrecision = 2, modelDir = modelDir
-          )
-          showEl(session, "#preview-content-pivot")
-          hideEl(session, "#preview-content-miropivot")
-          hideEl(session, "#preview-content-dygraphs")
-          hideEl(session, "#preview-content-plotly")
-          hideEl(session, "#pieValues")
-          hideEl(session, "#preview-content-leaflet")
           hideEl(session, "#preview-content-timevis")
           hideEl(session, "#preview-content-valuebox")
           hideEl(session, "#preview-content-custom")
@@ -5073,7 +4902,6 @@ observe(
             roundPrecision = 2, modelDir = modelDir, views = views
           ))
           showEl(session, "#preview-content-miropivot")
-          hideEl(session, "#preview-content-pivot")
           hideEl(session, "#preview-content-dygraphs")
           hideEl(session, "#preview-content-plotly")
           hideEl(session, "#pieValues")
@@ -5092,7 +4920,6 @@ observe(
           hideEl(session, "#preview-content-plotly")
           hideEl(session, "#pieValues")
           hideEl(session, "#preview-content-leaflet")
-          hideEl(session, "#preview-content-pivot")
           hideEl(session, "#preview-content-miropivot")
           hideEl(session, "#preview-content-dygraphs")
           hideEl(session, "#preview-content-valuebox")
@@ -5108,7 +4935,6 @@ observe(
             modelDir = modelDir
           )
           showEl(session, "#preview-content-valuebox")
-          hideEl(session, "#preview-content-pivot")
           hideEl(session, "#preview-content-miropivot")
           hideEl(session, "#preview-content-dygraphs")
           hideEl(session, "#preview-content-plotly")
@@ -5121,14 +4947,12 @@ observe(
           hideEl(session, "#preview-content-plotly")
           hideEl(session, "#pieValues")
           hideEl(session, "#preview-content-leaflet")
-          hideEl(session, "#preview-content-pivot")
           hideEl(session, "#preview-content-miropivot")
           hideEl(session, "#preview-content-dygraphs")
           hideEl(session, "#preview-content-valuebox")
           hideEl(session, "#preview-content-custom")
         } else if (isolate(rv$graphConfig$graph$tool) == "custom") {
           showEl(session, "#preview-content-custom")
-          hideEl(session, "#preview-content-pivot")
           hideEl(session, "#preview-content-miropivot")
           hideEl(session, "#preview-content-dygraphs")
           hideEl(session, "#preview-content-plotly")
@@ -5183,7 +5007,6 @@ observe(
           hideEl(session, "#preview-content-plotly")
           hideEl(session, "#pieValues")
           hideEl(session, "#preview-content-dygraphs")
-          hideEl(session, "#preview-content-pivot")
           hideEl(session, "#preview-content-miropivot")
           hideEl(session, "#preview-content-timevis")
           hideEl(session, "#preview-content-valuebox")
@@ -5196,7 +5019,6 @@ observe(
         hideEl(session, "#preview-content-plotly")
         hideEl(session, "#pieValues")
         hideEl(session, "#preview-content-leaflet")
-        hideEl(session, "#preview-content-pivot")
         hideEl(session, "#preview-content-miropivot")
         hideEl(session, "#preview-content-timevis")
         hideEl(session, "#preview-content-valuebox")
@@ -5245,7 +5067,6 @@ observeEvent(rv$saveGraphConfirm, {
   }
   if (rv$graphConfig$graph$tool == "miropivot") {
     configJSON$dataRendering[[activeSymbol$name]]$graph <<- NULL
-    configJSON$dataRendering[[activeSymbol$name]]$pivottable <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$options <<- list(
       aggregationFunction = input[["preview_output_miropivot-miroPivot-aggregationFunction"]],
       pivotRenderer = input[["preview_output_miropivot-miroPivot-pivotRenderer"]],
@@ -5282,24 +5103,17 @@ observeEvent(rv$saveGraphConfirm, {
     }
     configJSON$dataRendering[[activeSymbol$name]]$outType <<- "miroPivot"
     saveGlobalViews()
-  } else if (rv$graphConfig$graph$tool == "pivot") {
-    configJSON$dataRendering[[activeSymbol$name]]$graph <<- NULL
-    configJSON$dataRendering[[activeSymbol$name]]$options <<- NULL
-    configJSON$dataRendering[[activeSymbol$name]]$outType <<- "pivot"
   } else if (rv$graphConfig$graph$tool == "valuebox") {
     configJSON$dataRendering[[activeSymbol$name]]$graph <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$height <<- NULL
-    configJSON$dataRendering[[activeSymbol$name]]$pivottable <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$outType <<- "valueBox"
   } else if (rv$graphConfig$graph$tool == "dashboard") {
     configJSON$dataRendering[[activeSymbol$name]]$graph <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$height <<- NULL
-    configJSON$dataRendering[[activeSymbol$name]]$pivottable <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$outType <<- "dashboard"
   } else if (rv$graphConfig$graph$tool == "custom") {
     configJSON$dataRendering[[activeSymbol$name]]$graph <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$height <<- NULL
-    configJSON$dataRendering[[activeSymbol$name]]$pivottable <<- NULL
     if (!length(configJSON$dataRendering[[activeSymbol$name]]$options)) {
       configJSON$dataRendering[[activeSymbol$name]]$options <<- NULL
     }
@@ -5363,7 +5177,6 @@ observeEvent(rv$saveGraphConfirm, {
       }
     }
   } else {
-    configJSON$dataRendering[[activeSymbol$name]]$pivottable <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$options <<- NULL
     if (!identical(rv$graphConfig$graph$tool, "leaflet")) {
       configJSON$dataRendering[[activeSymbol$name]]$graph$layersControl <<- NULL

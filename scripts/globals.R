@@ -41,7 +41,7 @@ packageVersionMap <- list(c("data.table", "1.14.8"), c("cpp11", "0.4.5"), c("bac
     c("progress", "1.2.2"), c("lambda.r", "1.2.4"), c("futile.options",
     "1.0.1"), c("zoo", "1.8-12"), c("globals", "0.16.2"), c("listenv",
     "0.9.0"), c("processx", "3.8.2"), c("readxl", "1.4.3"), c("writexl",
-    "1.4.2"), c("rpivotTable", "0.3.0"), c("futile.logger", "1.4.3"
+    "1.4.2"),  c("futile.logger", "1.4.3"
     ), c("zip", "2.3.0"), c("leaflet.minicharts", "0.6.2"), c("xts",
     "0.13.1"), c("dygraphs", "1.1.1.6"), c("parallelly", "1.36.0"
     ), c("future", "1.33.0"), c("bit", "4.0.5"), c("bit64", "4.0.5"

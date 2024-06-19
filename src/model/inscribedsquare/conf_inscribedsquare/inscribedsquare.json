@@ -2,9 +2,6 @@
   "overwriteSheetOrder": {
     "input": "_widgets"
   },
-  "pivottable": {
-    "bgColor": "transparent"
-  },
   "theme": "browser",
   "defCompMode": "split",
   "roundingDecimals": 4,

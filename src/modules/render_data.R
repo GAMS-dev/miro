@@ -8,13 +8,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height = NULL, customOption
     type <- "datatable"
   }
 
-  if (identical(type, "pivot")) {
-    # set default height
-    if (is.null(height)) {
-      height <- pivotDefaultHeight
-    }
-    data <- rpivotTableOutput(ns("pivottable"), height = height)
-  } else if (identical(type, "datatable")) {
+  if (identical(type, "datatable")) {
     data <- dataTableOutput(ns("datatable"))
   } else if (type %in% c("graph", "dtgraph")) {
     if (graphTool == "plotly") {
@@ -97,7 +91,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height = NULL, customOption
 }
 
 renderData <- function(input, output, session, data, type, configData = NULL, dtOptions = NULL,
-                       graphOptions = NULL, pivotOptions = NULL, customOptions = NULL,
+                       graphOptions = NULL, customOptions = NULL,
                        roundPrecision = 2, modelDir = NULL, rendererEnv = NULL, views = NULL,
                        attachments = NULL) {
   if (!is.null(graphOptions)) {
@@ -129,9 +123,7 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
   # make output type case insensitive
   typeCustom <- type
   type <- tolower(type)
-  if (type == "pivot") {
-    output$pivottable <- renderPivot(data, options = pivotOptions, roundPrecision = roundPrecision)
-  } else if (type %in% c("graph", "dtgraph")) {
+  if (type %in% c("graph", "dtgraph")) {
     filterCol <- NULL
     if (length(graphOptions$filter) && graphOptions$filter$col %in% names(data)) {
       showEl(session, "#" %+% session$ns("data_filter_wrapper"))

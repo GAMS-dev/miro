@@ -1150,9 +1150,6 @@
       "hiddenOutputScalars":{
         "label": "Output scalars that should not be displayed in the scalars table but can be used in graphs etc."
       },
-      "pivotcolor":{
-        "label": "Background color of row and column headers in pivot tables."
-      },
       "mirologfile":{
         "label": "Include custom log file?",
         "tooltip": "Enter the name of the MIRO log file (minimum 3 characters). Otherwise, leave this field empty."

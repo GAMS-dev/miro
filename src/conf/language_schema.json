@@ -4476,17 +4476,6 @@
               },
               "minProperties": 1
             },
-            "pivotcolor": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "label": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "minProperties": 1
-            },
             "mirologfile": {
               "type": "object",
               "additionalProperties": false,
@@ -4821,7 +4810,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 40
+          "minProperties": 39
         },
         "tables": {
           "type": "object",

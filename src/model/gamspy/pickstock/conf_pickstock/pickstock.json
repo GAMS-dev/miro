@@ -358,9 +358,6 @@
       "height": 700
     }
   },
-  "pivottable": {
-    "bgColor": "transparent"
-  },
   "storeLogFilesDuration": 7,
   "roundingDecimals": 2,
   "activateModules": {

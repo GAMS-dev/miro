@@ -1150,9 +1150,6 @@
       "hiddenOutputScalars":{
         "label": "Skalare, die nicht in der Outputskalartabelle angezeigt werden sollen, aber in Grafiken usw. verwendet werden können."
       },
-      "pivotcolor":{
-        "label": "Hintergrundfarbe der Zeilen- und Spaltenüberschriften in Pivot-Tabellen."
-      },
       "mirologfile":{
         "label": "Benutzerdefinierte Log-Datei einbinden?",
         "tooltip": "Geben Sie den Namen der Log-Datei ein (mindestens 3 Zeichen). Ansonsten lassen Sie dieses Feld leer."

@@ -95,9 +95,6 @@
       }
     }
   },
-  "pivottable": {
-    "bgColor": "rgb(255,128,0)"
-  },
   "theme": "browser",
   "defCompMode": "split",
   "roundingDecimals": 2,

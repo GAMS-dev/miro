@@ -418,14 +418,6 @@ $(() => {
       });
     }
   });
-
-  $(document).click((e) => {
-    const { target } = e;
-
-    if (!$(target).is('.pvtAttr') && !$(target).parents('.pvtAttr').length && !$(target).is('.pvtFilterBox') && !$(target).parents('.pvtFilterBox').length) {
-      $('.pvtFilterBox').hide();
-    }
-  });
   $(document).on('click', '.bt-export-canvas', function () {
     const data = document.getElementById(this.dataset.canvasid).toDataURL('image/png');
     this.href = data;

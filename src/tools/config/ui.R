@@ -607,13 +607,6 @@ font-size: 12px;
                 )
               ),
               tags$div(
-                id = "preview-content-pivot", style = "display:none; overflow:auto;",
-                renderDataUI("preview_output_pivot",
-                  type = "pivot",
-                  height = 400
-                )
-              ),
-              tags$div(
                 id = "preview-content-timevis", style = "display:none; overflow:auto;",
                 renderDataUI("preview_output_timevis",
                   type = "graph",
