@@ -167,6 +167,8 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
       metadata = if (length(customOptions)) customOptions[["_metadata_"]]
     )
   } else if (type == "valuebox") {
+    force(customOptions)
+    force(roundPrecision)
     output$scalarBoxes <- renderUI({
       if (!length(customOptions) || !length(names(customOptions[[1]]))) {
         boxWidth <- if (length(customOptions$width)) customOptions$width else 4L
