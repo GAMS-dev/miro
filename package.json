@@ -120,7 +120,7 @@
   "author": "GAMS Development Corp.",
   "license": "GPL-3.0-only",
   "devDependencies": {
-    "electron": "^31.0.1",
+    "electron": "^31.0.2",
     "electron-builder": "24.13.3",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -133,7 +133,7 @@
     "axios": "^1.7.2",
     "bootstrap": "^4.6.2",
     "electron-log": "^5.1.5",
-    "electron-store": "^9.0.0",
+    "electron-store": "^10.0.0",
     "execa": "^9.2.0",
     "fs-extra": "^11.2.0",
     "jquery": "^3.7.1",
