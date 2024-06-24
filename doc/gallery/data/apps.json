@@ -75,6 +75,13 @@
         "author": "GAMS Development Corp",
         "desc": "Partition students into cohorts so that inter-cohort connections are minimized",
         "upvotes": 0
+    },
+    {
+        "id": "vrptw",
+        "title": "Vehicle Routing Problem with TW",
+        "author": "GAMS Development Corp, Janina Hasselbring",
+        "desc": "Vehicle Routing Problem with Time Windows",
+        "upvotes": 0
     }
     ]
 }

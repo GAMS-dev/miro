@@ -70,7 +70,7 @@
       "widgetType": "custom",
       "rendererName": "mirowidget_customerdata",
       "apiVersion": 2,
-      "alias": "City location information"
+      "alias": "Customer informations"
     },
     "vehicle_number": {
       "widgetType": "numericinput",

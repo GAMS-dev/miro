@@ -250,7 +250,7 @@ def main():
         description="if k goes into j it also has to leave j",
     )
 
-    max_K_starts_at_depot[i] = (
+    max_K_starts_at_depot[i].where[Ord(i) == 1] = (
         Sum(Domain(j, k).where[Ord(j) > 1], x[i, j, k]) <= vehicle_number
     )
     start_at_depot[k] = Sum(Domain(j, i).where[Ord(i) == 1], x[i, j, k]) <= 1
