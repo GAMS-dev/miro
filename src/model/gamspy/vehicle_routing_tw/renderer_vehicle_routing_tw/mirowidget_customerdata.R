@@ -80,12 +80,24 @@ renderMirowidget_customerdata <- function(input, output, session, data, options 
           return()
         }
         
-        leaflet::leafletProxy("vrptw_input") %>%
-          leaflet::removeMarker(oldMarkerName) %>%
-          leaflet::addMarkers(
-            lat = rv$markerPositions[[markerName]]$lat, lng = rv$markerPositions[[markerName]]$lng, group = "markers",
-            options = leaflet::markerOptions(draggable = TRUE), layerId = markerName, label = markerName
-          )
+        if (clmn == 1) {
+          leaflet::leafletProxy("vrptw_input") %>%
+            leaflet::removeMarker(oldMarkerName) %>%
+            leaflet::addAwesomeMarkers(lat = rv$markerPositions[[markerName]]$lat, lng = rv$markerPositions[[markerName]]$lng,
+              icon = icons,
+              group = "markers",
+              label = markerName,
+              options  = leaflet::markerOptions(draggable = TRUE),
+              layerId = markerName,
+            )
+        } else{
+          leaflet::leafletProxy("vrptw_input") %>%
+            leaflet::removeMarker(oldMarkerName) %>%
+            leaflet::addMarkers(
+              lat = rv$markerPositions[[markerName]]$lat, lng = rv$markerPositions[[markerName]]$lng, group = "markers",
+              options = leaflet::markerOptions(draggable = TRUE), layerId = markerName, label = markerName
+            )
+        }
       })
     }
   })
