@@ -26,24 +26,11 @@
     <!-- Cookie consent by https://cookieconsent.osano.com -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='plugins/cookieconsent/cookieconsent.min.css') }}" />
     <script defer src="{{ url_for('static', filename='plugins/cookieconsent/cookieconsent.min.js') }}"></script>
-    <script>
-    window.addEventListener("load", function(){
-    window.cookieconsent.initialise({
-      "palette": {
-        "popup": {
-          "background": "#000"
-        },
-        "button": {
-          "background": "#F39619"
-        }
-      }
-    })});
-    </script>
     <!--#include virtual="/wheader.html" -->
 </head>
 
 <body class="body-orange">
-<div id="loading-screen" style="display:none;"><div class="lds-ellipsis" style="position:relative;top:50%;left:50%">
+<div id="loading-screen"><div class="lds-ellipsis">
 <div></div><div></div><div></div><div></div></div></div>
 
     <!--#include virtual="/navbar_full.html" -->
@@ -55,7 +42,7 @@
                 <div class="branding">
                     <h1 class="logo">
                         <a href="https://www.gams.com/miro/index.html">
-                          <img class="img-fluid" style="height:50px;" src="{{ url_for('static', filename='images/logo.svg') }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/logo.png') }}'" alt="GAMS MIRO"/>
+                          <img class="img-fluid" src="{{ url_for('static', filename='images/logo.svg') }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/logo.png') }}'" alt="GAMS MIRO"/>
                         </a>
                     </h1>
                 </div><!--//branding-->
@@ -84,17 +71,17 @@
                                 <div class="section-block" id="configure-graphs">
                                   <p>This gallery should give you an insight into what is possible with MIRO. But also interesting GAMS models / problems to solve shall be addressed here.</p>
                                   <p>Just try out the MIRO applications directly in your browser! </p>
-                                  <div id="gallery-wrapper" class="cards-section text-center cards-wrapper row" style="background:white;">
+                                  <div id="gallery-wrapper" class="cards-section text-center cards-wrapper row">
                                       {% for app in apps %}
                                           <div class="item col-lg-4 col-6">
                                              <div class="item-inner app-container">
-                                                 <div style="height:200px;">
-                                                     <img class="img-fluid" style= "max-height:180px; display: block; margin:auto;" src="{{ url_for('static', filename='images/gallery/' + app.id + '.png') }}" alt="{{app.title}} logo" />
+                                                 <div class="app-logo-wrapper">
+                                                     <img class="app-logo img-fluid" src="{{ url_for('static', filename='images/gallery/' + app.id + '.png') }}" alt="{{app.title}} logo" />
                                                  </div>
                                                  <div>
-                                                 <h3 class="title" style="text-align:left;margin-top:15pt;">{{app.title}}</h3>
-                                                 <p class="intro" style="text-align:left;">{{app.desc}}</p>
-                                                 <p style="right: 0;position: absolute;bottom: 0;margin: 15px;"><i class="intro">by {{app.author}}</i></p>
+                                                 <h3 class="app-title title">{{app.title}}</h3>
+                                                 <p class="app-desc intro">{{app.desc}}</p>
+                                                 <p class="app-author"><i class="intro">by {{app.author}}</i></p>
                                                  </div>
                                                  <a class="link" href="https://miro.gams.com/gallery/app_direct/{{app.id}}/"><span></span></a>
                                              </div><!--//item-inner-->
@@ -176,51 +163,5 @@
     <script type="text/javascript" src="{{ url_for('static', filename='plugins/stickyfill/dist/stickyfill.min.js') }}"></script>
 
     <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script type="text/javascript">
-        $('.app-container').on('click', function(e) {
-            $('#loading-screen').show();
-        });
-        $('.btn-upvote').on('click', function(e) {
-            this.disabled = true;
-            var appId = this.dataset.id;
-            $.post( "api/vote-up", { id: appId })
-              .done(function( data ) {
-                var noUpvotesEl = $('#' + appId + '_noupvotes');
-                var noUpvotes = noUpvotesEl.text();
-                noUpvotes = parseInt(noUpvotes.substring(1, noUpvotes.length - 1), 10) + 1;
-                $('#' + appId + '_noupvotes').text('(' + noUpvotes + ')');
-              });
-        });
-        $("#newAppForm").on('submit', function(e){
-            e.preventDefault();
-            $.ajax({
-                type: 'POST',
-                url: 'api/add-app',
-                data: new FormData(this),
-                dataType: 'json',
-                contentType: false,
-                cache: false,
-                processData:false,
-                beforeSend: function(){
-                    $('.submitBtn').attr("disabled","disabled");
-                    $('#newAppForm').css("opacity",".5");
-                },
-                success: function(response){
-                    $('.statusMsg').html('');
-                    if(response.status == 0){
-                        $('#newAppForm')[0].reset();
-                        $('.statusMsg').html('<p class="alert alert-success">'+response.message+'</p>');
-                    }else{
-                        $('.statusMsg').html('<p class="alert alert-danger">'+response.message+'</p>');
-                    }
-                    $('#newAppForm').css("opacity","");
-                    $(".submitBtn").removeAttr("disabled");
-                },
-                error: function(req, err) {
-                    $('.statusMsg').html('<p class="alert alert-danger">An unexpected error has occurred. Please try again later or contact miro@gams.com if this error persists.</p>');
-                }
-            });
-        });
-    </script>
 </body>
 </html>
