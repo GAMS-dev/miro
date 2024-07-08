@@ -2,7 +2,7 @@
     "modelTitle": "GAMSPy App",
     "inputSymbols": {
         "customerdata": {
-            "alias": "Cusotmer information",
+            "alias": "Customer information",
             "symtype": "parameter",
             "headers": {
                 "i": {

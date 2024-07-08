@@ -1,11 +1,10 @@
 mirorenderer_xOutput <- function(id, height = NULL, options = NULL, path = NULL) {
   ns <- NS(id)
-  leaflet::leafletOutput(ns("map"), height=height) 
+  leaflet::leafletOutput(ns("map"), height = height)
 }
 
 renderMirorenderer_x <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...) {
-
-  icons <- leaflet::awesomeIcons(
+  depotIcon <- leaflet::awesomeIcons(
     icon = "fa-solid fa-warehouse",
     iconColor = "white",
     markerColor = "green",
@@ -16,9 +15,9 @@ renderMirorenderer_x <- function(input, output, session, data, options = NULL, p
   customerdataData <- data$customerdata
   tData <- data$t
   wData <- data$w
-  activeConnections <- xData[xData$level == 1, ][c("i", "j", "k")]
+  activeConnections <- xData[xData$level > 0.5, c("i", "j", "k")]
 
-  flows <- left_join(activeConnections, customerdataData[c("i", "lat", "lng")], "i") %>%
+  flows <- left_join(activeConnections, customerdataData[c("i", "lat", "lng")], by = join_by("i")) %>%
     rename(lat_i = "lat", lng_i = "lng") %>%
     left_join(customerdataData[c("i", "lat", "lng")], by = c(j = "i")) %>%
     rename(lat_j = "lat", lng_j = "lng") %>%
@@ -31,27 +30,29 @@ renderMirorenderer_x <- function(input, output, session, data, options = NULL, p
   names(wData)[names(wData) == "level"] <- "waitingTime"
   wData["waitingTime"] <- round(wData["waitingTime"], 2)
   customerdataData <- left_join(customerdataData, wData[c("i", "waitingTime")])
-  customerdataData["demand"] <- paste(rep("Demand:", nrow(customerdataData)), customerdataData$demand, sep = " ")
-  customerdataData["readyTime"] <- paste(rep("Ready time:", nrow(customerdataData)), customerdataData$readyTime, sep = " ")
-  customerdataData["dueDate"] <- paste(rep("Due date:", nrow(customerdataData)), customerdataData$dueDate, sep = " ")
-  customerdataData["serviceTime"] <- paste(rep("Servicetime:", nrow(customerdataData)), customerdataData$serviceTime, sep = " ")
-  customerdataData["arrivalTime"] <- paste(rep("Arrival time:", nrow(customerdataData)), customerdataData$arrivalTime, sep = " ")
-  customerdataData["waitingTime"] <- paste(rep("Waiting time:", nrow(customerdataData)), customerdataData$waitingTime, sep = " ")
+  customerdataData["demand"] <- paste("Demand:", customerdataData$demand)
+  customerdataData["readyTime"] <- paste("Ready time:", customerdataData$readyTime)
+  customerdataData["dueDate"] <- paste("Due date:", customerdataData$dueDate)
+  customerdataData["serviceTime"] <- paste("Servicetime:", customerdataData$serviceTime)
+  customerdataData["arrivalTime"] <- paste("Arrival time:", customerdataData$arrivalTime)
+  customerdataData["waitingTime"] <- paste("Waiting time:", customerdataData$waitingTime)
 
   markerLabels <- paste(paste0("<b>", htmltools::htmlEscape(customerdataData$i), "</b>"),
-  htmltools::htmlEscape(customerdataData$arrivalTime),
-  htmltools::htmlEscape(customerdataData$waitingTime),
+    htmltools::htmlEscape(customerdataData$arrivalTime),
+    htmltools::htmlEscape(customerdataData$waitingTime),
     htmltools::htmlEscape(customerdataData$dueDate),
     htmltools::htmlEscape(customerdataData$serviceTime),
     htmltools::htmlEscape(customerdataData$demand),
-    htmltools::htmlEscape(customerdataData$readyTime), sep = "<br>")
+    htmltools::htmlEscape(customerdataData$readyTime),
+    sep = "<br>"
+  )
 
   mapData <- leaflet::leaflet() %>%
     leaflet::addTiles() %>%
-    leaflet::addMarkers(customerdataData$lng[-(1)], customerdataData$lat[-(1)], popup = markerLabels[-(1)],label=customerdataData[['i']][-(1)])%>%
+    leaflet::addMarkers(customerdataData$lng[-(1)], customerdataData$lat[-(1)], popup = markerLabels[-(1)], label = customerdataData[["i"]][-(1)]) %>%
     leaflet::addAwesomeMarkers(customerdataData$lng[1], customerdataData$lat[1],
-      icon = icons,
-      label = customerdataData[['i']][1],
+      icon = depotIcon,
+      label = customerdataData[["i"]][1],
     )
 
   flowColors <- c(

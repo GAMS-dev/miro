@@ -1,8 +1,3 @@
-"""
-From http://web.cba.neu.edu/~msolomon/problems.htm
-R1-type: R101
-"""
-
 import pandas as pd
 import numpy as np
 import sys
@@ -60,7 +55,7 @@ def main():
         records=data.melt(id_vars="i", var_name="customerDataHeader"),
         is_miro_input=True,
         is_miro_table=True,
-        description="Cusotmer information",
+        description="Customer information",
     )
 
     vehicle_capacity = Parameter(
@@ -113,18 +108,19 @@ def main():
     l[i] = customerData[i, "dueDate"]
 
     earth_radius = 6371
-    help_d[i, j] = sqr(sin((customerData[i, "lat"] - customerData[j, "lat"])*np.pi / (2*180))) + (
-        cos(customerData[i, "lat"]*np.pi / 180) * cos(customerData[j, "lat"]*np.pi / 180)
-        * sqr(sin((customerData[i, "lng"] - customerData[j, "lng"]) *np.pi / (2*180)))
+    help_d[i, j] = sqr(
+        sin((customerData[i, "lat"] - customerData[j, "lat"]) * np.pi / (2 * 180))
+    ) + (
+        cos(customerData[i, "lat"] * np.pi / 180)
+        * cos(customerData[j, "lat"] * np.pi / 180)
+        * sqr(
+            sin((customerData[i, "lng"] - customerData[j, "lng"]) * np.pi / (2 * 180))
+        )
     )
 
-    d[i, j] = (
-        2
-        * earth_radius
-        * atan2(sqrt(help_d[i,j]), sqrt(1-help_d[i,j]))
-    )
+    d[i, j] = 2 * earth_radius * atan2(sqrt(help_d[i, j]), sqrt(1 - help_d[i, j]))
 
-    # to lineariz the start time equation, where the slack is the allows timeframe at the depot
+    # to linearize the start time equation, where the slack is the allowed timeframe at the depot
     M = (
         customerData.records[customerData.records["customerDataHeader"] == "dueDate"][
             "value"
@@ -134,26 +130,32 @@ def main():
         ]["value"].iloc[0]
     )
 
-    # check that no customer wants delivary befor the car can possible get there
+    # check that no customer wants delivery before the car can possible get there
     if l.records is None:
         print("No due times were set!")
         raise Exception("Data errors detected")
 
     depot_name = d.records["i"].iloc[0]
-    distances = d.records[d.records["i"]==depot_name]
+    distances = d.records[d.records["i"] == depot_name]
     due_times = l.records[1:]
 
-    if (distances.shape[0] != due_times.shape[0]):
+    if distances.shape[0] != due_times.shape[0]:
         no_due_date_set = distances[~distances["j"].isin(due_times["i"])]
         no_due_date_set = no_due_date_set["j"].astype(str).str.cat(sep=", ")
-        print(f'The following city/cities the due time is set to zero, therefore they cannot be reached: {no_due_date_set}.')
+        print(
+            f"The due date is set to zero for the following city(ies), so they cannot be reached: {no_due_date_set}."
+        )
         raise Exception("Data errors detected")
-    
-    compare_dist_due = (distances["value"].reset_index() > due_times["value"].reset_index())["value"]
-    if(compare_dist_due.any()):
+
+    compare_dist_due = (
+        distances["value"].reset_index() > due_times["value"].reset_index()
+    )["value"]
+    if compare_dist_due.any():
         not_accessible_cities = l.records[1:].reset_index()[compare_dist_due]
         not_accessible_cities = not_accessible_cities["i"].astype(str).str.cat(sep=", ")
-        print(f'The following city/cities are too far away to be deliverd under the due time: {not_accessible_cities}.')
+        print(
+            f"The following city(ies) is/are too far away to be reached in the specified due time: : {not_accessible_cities}."
+        )
         raise Exception("Data errors detected")
 
     # Variable
@@ -213,18 +215,6 @@ def main():
         domain=[k],
         description="each vehicle must not be loaded with more than its capacity",
     )
-    start_time_depot = Equation(
-        m,
-        name="start_time_depot",
-        domain=[i],
-        description="fix start time at depot to zero",
-    )
-    waiting_time_depot = Equation(
-        m,
-        name="waiting_time_depot",
-        domain=[i],
-        description="fix waiting time at depot to zero",
-    )
     start_time = Equation(
         m,
         name="start_time",
@@ -265,14 +255,16 @@ def main():
     capacity[k] = (
         Sum(Domain(i, j).where[Ord(i) != Ord(j)], x[i, j, k] * q[i]) <= vehicle_capacity
     )
-    start_time_depot[i].where[Ord(i) == 1] = t[i] == 0
-    waiting_time_depot[i].where[Ord(i) == 1] = w[i] == 0
     start_time[i, j, k].where[(Ord(i) != Ord(j)) & (Ord(j) != 1)] = (
         t[i] + d[i, j] + s[i] + w[i] - t[j] <= (1 - x[i, j, k]) * M
     )
 
     serviced_after_earliest[i] = e[i] <= t[i] + w[i]
     serviced_before_latest[i] = t[i] + w[i] <= l[i]
+
+    # fix start and waiting time at depot to 0
+    t.fx[i].where[Ord(i) == 1] = 0
+    w.fx[i].where[Ord(i) == 1] = 0
 
     obj = Sum(Domain(i, j, k).where[Ord(i) != Ord(j)], x[i, j, k] * d[i, j])
 
