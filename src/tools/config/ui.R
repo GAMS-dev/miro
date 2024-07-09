@@ -1372,7 +1372,7 @@ font-size: 12px;
                             lapply(seq_along(symHeaders), function(hdrIdx) {
                               tags$input(
                                 id = paste0("general_overwriteSymHeaders_", name, "_", hdrIdx),
-                                type = "text", class = "form-control shiny-bound-input",
+                                type = "text", class = "form-control shiny-input-text",
                                 style = "margin-bottom:3px;",
                                 placeholder = modelInRaw[[name]]$headers[[hdrIdx]]$alias,
                                 value = symHeaders[[hdrIdx]]
@@ -1443,7 +1443,7 @@ font-size: 12px;
                             lapply(seq_along(symHeaders), function(hdrIdx) {
                               tags$input(
                                 id = paste0("general_overwriteSymHeaders_", name, "_", hdrIdx),
-                                type = "text", class = "form-control shiny-bound-input",
+                                type = "text", class = "form-control shiny-input-text",
                                 style = "margin-bottom:3px;",
                                 placeholder = modelOut[[name]]$headers[[hdrIdx]]$alias,
                                 value = symHeaders[[hdrIdx]]
