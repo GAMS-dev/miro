@@ -4,7 +4,7 @@
 #
 #    pip-compile requirements.in
 #
-aiofiles==23.2.1
+aiofiles==24.1.0
     # via -r requirements.in
 annotated-types==0.7.0
     # via pydantic
@@ -13,7 +13,7 @@ anyio==4.4.0
     #   httpx
     #   starlette
     #   watchfiles
-certifi==2024.6.2
+certifi==2024.7.4
     # via
     #   httpcore
     #   httpx
@@ -58,18 +58,18 @@ markupsafe==2.1.5
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
-orjson==3.10.5
+orjson==3.10.6
     # via fastapi
 packaging==24.1
     # via gunicorn
-pydantic==2.7.4
+pydantic==2.8.2
     # via
     #   -r requirements.in
     #   fastapi
     #   pydantic-settings
-pydantic-core==2.18.4
+pydantic-core==2.20.1
     # via pydantic
-pydantic-settings==2.3.3
+pydantic-settings==2.3.4
     # via -r requirements.in
 pygments==2.18.0
     # via rich
