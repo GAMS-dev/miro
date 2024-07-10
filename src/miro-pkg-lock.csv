@@ -7,7 +7,7 @@ assertthat, 0.2.1
 crayon, 1.5.3
 glue, 1.7.0
 fansi, 1.0.6
-cli, 3.6.2
+cli, 3.6.3
 utf8, 1.2.4
 Rcpp, 1.0.12
 R6, 2.5.1
@@ -20,7 +20,7 @@ promises, 1.3.0
 httpuv, 1.6.15
 mime, 0.12
 jsonlite
-digest, 0.6.35
+digest, 0.6.36
 sourcetools, 0.1.7-1
 xtable, 1.8-4
 curl, 5.2.1
@@ -44,7 +44,7 @@ shiny
 shinyAce, 0.4.2
 colorspace, 2.1-0
 purrr, 1.0.2
-yaml, 2.3.8
+yaml, 2.3.9
 labeling, 0.4.3
 munsell, 0.5.1
 lazyeval, 0.2.2
@@ -87,7 +87,7 @@ shinydashboard
 timevis
 rematch, 2.0.0
 formatR, 1.14
-ps, 1.7.6
+ps, 1.7.7
 clipr, 0.8.0
 cellranger, 1.1.0
 progress, 1.2.3
