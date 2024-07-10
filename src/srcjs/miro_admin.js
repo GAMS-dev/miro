@@ -16,6 +16,14 @@ const converter = new showdown.Converter({
   noHeaderId: true,
   openLinksInNewWindow: true,
 });
+const converterMath = new showdown.Converter({
+  tables: true,
+  tasklists: true,
+  strikethrough: true,
+  noHeaderId: true,
+  openLinksInNewWindow: true,
+  extensions: ['mathjax'],
+});
 let lang = {};
 let indices = [];
 let indexAliases = [];
@@ -571,7 +579,9 @@ const arrayTypes = {
 export function mdToHTML(mdContent, destId, useKatex) {
   if (useKatex === true) {
     const element = document.getElementById(destId);
-    element.innerHTML = converter.makeHtml(mdContent.replace(/(?<!\\)\\\$/g, '<span>$$</span>'));
+    element.innerHTML = converterMath.makeHtml(
+      mdContent.replace(/(?<!\\)\\\$/g, '<span>$$</span>'),
+    );
     parseKatex(element);
   } else {
     document.getElementById(destId).innerHTML = converter.makeHtml(mdContent);

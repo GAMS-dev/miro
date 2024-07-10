@@ -5,6 +5,7 @@ app <- AppDriver$new("../../",
 )
 
 Sys.sleep(2)
+expect_true(app$get_js("$('.readme-wrapper:visible').html().includes('</span> will be cand <span><span class=\"katex\">');", timeout = 50))
 app$set_inputs(inputTabset = "inputTabset_1")
 Sys.sleep(1)
 app$expect_values(output = "inputDataTitle")

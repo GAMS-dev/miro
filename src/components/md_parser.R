@@ -4,10 +4,16 @@ MarkdownParser <- R6Class("MarkdownParser",
       private$enableMath <- enableMath
       private$ctx <- v8()
       private$ctx$source(file.path(libPath, "showdown.min.js"))
+      if (enableMath) {
+        private$ctx$source(file.path(libPath, "mathjax-extension.js"))
+      }
       private$ctx$assign(
         "converter",
-        JS("new showdown.Converter({tables: true,
-           tasklists:true, strikethrough:true, noHeaderId: true, openLinksInNewWindow: true})")
+        JS(paste0(
+          "new showdown.Converter({tables: true, tasklists:true, strikethrough:true, noHeaderId: true,
+                                   openLinksInNewWindow: true",
+          if (enableMath) ",extensions: ['mathjax']", "})"
+        ))
       )
       return(invisible(self))
     },
