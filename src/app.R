@@ -354,7 +354,7 @@ if (is.null(errMsg)) {
         modelIn[[i]][["template"]] <- modelInTemplate[[i]]
       }
     }
-    if (length(config$hcModule$scalarsConfig) && is.null(config$hcModule$scalarsConfig[[1]]$widgetId)) {
+    if (length(config$hcModule$scalarsConfig) && !is.null(config$hcModule$scalarsConfig[[1]]$type)) {
       # legacy app (<2.9.0), need to migrate to support hcubeWidgetGroups
       config$hcModule$scalarsConfig <- list(list(
         name = NULL,
