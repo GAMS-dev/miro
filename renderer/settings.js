@@ -283,7 +283,7 @@ saveButton.on('click', async () => {
     }
     newConfig.logLevel = inputLogLevel.val();
     saveButton.attr('disabled', true);
-    newConfig.remoteExecution = cbRemoteExecution.is(':checked');
+    newConfig.remoteExecution = cbRemoteExecution.is(':checked') && engineConfig.url != null;
     if (newConfig.remoteExecution) {
       const loginMethod = $('#engineLoginMethod').val();
       let jwt;
