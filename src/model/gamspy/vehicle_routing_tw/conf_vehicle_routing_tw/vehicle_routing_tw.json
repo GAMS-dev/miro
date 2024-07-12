@@ -11,6 +11,7 @@
   "excelIncludeMeta": true,
   "excelIncludeEmptySheets": true,
   "defaultRendererOutput": "miroPivot",
+  "defaultScenName": "default",
   "autoGenInputGraphs": true,
   "storeLogFilesDuration": 7,
   "defCompMode": "split",
