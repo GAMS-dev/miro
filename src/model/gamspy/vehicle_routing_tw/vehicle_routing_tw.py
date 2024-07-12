@@ -120,14 +120,17 @@ def main():
 
     d[i, j] = 2 * earth_radius * atan2(sqrt(help_d[i, j]), sqrt(1 - help_d[i, j]))
 
+    depot_name = d.records["i"].iloc[0]
+
     # to linearize the start time equation, where the slack is the allowed timeframe at the depot
+    depot_data = customerData.records[customerData.records["i"] == depot_name]
     M = (
-        customerData.records[customerData.records["customerDataHeader"] == "dueDate"][
+        next(iter(depot_data[depot_data["customerDataHeader"] == "dueDate"][
             "value"
-        ].iloc[0]
-        - customerData.records[
-            customerData.records["customerDataHeader"] == "readyTime"
-        ]["value"].iloc[0]
+        ].values), 0)
+        - next(iter(depot_data[
+            depot_data["customerDataHeader"] == "readyTime"
+        ]["value"].values), 0)
     )
 
     # check that no customer wants delivery before the car can possible get there
@@ -135,7 +138,6 @@ def main():
         print("No due times were set!")
         raise Exception("Data errors detected")
 
-    depot_name = d.records["i"].iloc[0]
     distances = d.records[d.records["i"] == depot_name]
     due_times = l.records[1:]
 
