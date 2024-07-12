@@ -1,5 +1,6 @@
 {
   "theme": "browser",
+  "pageTitle": "Vehicle Routing Problem",
   "customCss": false,
   "layoutSettings": {
     "maxTabsExpandedInput": 5,
