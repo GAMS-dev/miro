@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-const execa = require('execa');
-const path = require('path');
+import { execa } from 'execa';
+import path from 'node:path';
 
-exports.default = async function signing(context) {
+export default async function signing(context) {
   const { electronPlatformName, appOutDir } = context;
   if (electronPlatformName !== 'darwin') {
     return;
@@ -49,4 +49,4 @@ exports.default = async function signing(context) {
     console.log(`Problems signing app. Error message: ${e.message}`);
     throw e;
   }
-};
+}

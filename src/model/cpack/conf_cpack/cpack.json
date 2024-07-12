@@ -126,9 +126,6 @@
       "label": "Define the relative optimality criterion for global solvers"
     }
   },
-  "pivottable": {
-    "bgColor": "transparent"
-  },
   "readme": {
     "tabTitle": "README",
     "filename": "README.md"

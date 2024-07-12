@@ -2,9 +2,6 @@
   "UILogo": "pickstock.png",
   "miroLogFile": "miro.log",
   "defaultScenName": "default",
-  "pivottable": {
-    "bgColor": "rgb(255,128,0)"
-  },
   "storeLogFilesDuration": 7,
   "roundingDecimals": 2,
   "activateModules": {

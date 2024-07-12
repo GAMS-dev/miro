@@ -402,7 +402,6 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
               configData = scenData$getScalars(refId),
               dtOptions = graphConfig$datatable,
               graphOptions = graphConfig$graph,
-              pivotOptions = graphConfig$pivottable,
               customOptions = graphConfig$options,
               roundPrecision = roundPrecision,
               modelDir = modelDir,
@@ -411,7 +410,7 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
             callModule(renderData, paste0("table_", tabsetIdChar, "_", tabId),
               type = "datatable",
               data = scenData$get(refId, symNames = sheetName, drop = TRUE),
-              dtOptions = graphConfig$datatable, customOptions = graphConfig$options,
+              graphOptions = graphConfig$datatable, customOptions = graphConfig$options,
               roundPrecision = roundPrecision
             )
             dynamicUILoaded$dynamicTabsets[[tabsetIdChar]][["content"]][tabId] <<- TRUE

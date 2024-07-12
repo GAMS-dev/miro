@@ -708,6 +708,7 @@
       "newViewxTitle": "X-Achsen-Beschriftung (optional)",
       "newViewyTitle": "Y-Achsen-Beschriftung (optional)",
       "newViewyLogScale": "Logarithmische Skala auf der y-Achse verwenden?",
+      "newViewMultiChartSeries": "Serien als %s-Diagramme rendern?",
       "newViewCbCustomColors": "Benutzerdefinierte Farben verwenden?",
       "newViewCbManualColors": "Farben manuell eingeben?",
       "newViewBtCancel": "Abbrechen",
@@ -744,8 +745,12 @@
       "renderer":{
         "table": "Tabelle",
         "heatmap": "Heatmap",
+        "pie": "Tortendiagramm",
+        "doughnut": "Donutdiagramm",
         "bar": "Balkendiagramm",
+        "horizontalbar": "Balkendiagramm (horizontal)",
         "stackedbar": "Gestapeltes Balkendiagramm",
+        "horizontalstackedbar": "Gestapeltes Balkendiagramm (horizontal)",
         "radar": "Radardiagramm",
         "line": "Liniendiagramm",
         "scatter": "Streudiagramm",
@@ -1144,9 +1149,6 @@
       },
       "hiddenOutputScalars":{
         "label": "Skalare, die nicht in der Outputskalartabelle angezeigt werden sollen, aber in Grafiken usw. verwendet werden können."
-      },
-      "pivotcolor":{
-        "label": "Hintergrundfarbe der Zeilen- und Spaltenüberschriften in Pivot-Tabellen."
       },
       "mirologfile":{
         "label": "Benutzerdefinierte Log-Datei einbinden?",
@@ -1628,6 +1630,7 @@
         "leaflet": "Kartendiagramm",
         "timevis": "Gantt-Diagramm",
         "miropivot": "Pivot-Tabelle und Pivot-Charts",
+        "dashboard": "Dashboard",
         "valuebox": "Wertebox für skalare Werte",
         "custom": "Eigener Renderer"
       },
@@ -1879,13 +1882,15 @@
           "symbolWidgetgroups": "Name der Eingabe-Widget-Gruppe",
           "groupMemberIn": "Gruppenmitglieder auswählen",
           "groupMemberWidget": "Gruppenmitglieder auswählen",
-          "groupSameTabIn": "Alle Symbole nebeneinander in demselben Tab anzeigen",
+          "groupSameTabIn": "Alle Symbole in demselben Tab anzeigen",
+          "groupSameTabInNoCols": "Anzahl Symbole nebeneinander",
           "groupSameTabWidget": "Alle Widgets nebeneinander in demselben Tab anzeigen"
         },
         "addOutputGroup":{
           "symbolOutputgroups": "Name der Ausgabegruppe",
           "groupMemberOut": "Gruppenmitglieder auswählen",
-          "groupSameTabOut": "Alle Symbole nebeneinander in demselben Tab anzeigen"
+          "groupSameTabOut": "Alle Symbole in demselben Tab anzeigen",
+          "groupSameTabOutNoCols": "Anzahl Symbole nebeneinander"
         },
         "addSymlink":{
           "source": "Name des Ausgabesymbols",
@@ -1988,6 +1993,7 @@
           "options": "Zusätzliche Chart-Optionen",
           "width": "Wählen Sie die maximale Breite der erstellten Elemente",
           "height": "Wählen Sie die maximale Höhe der erstellten Elemente",
+          "variableSize": "Sollte die Größe der Diagramme proportional zu den Werten sein?",
           "opacity": "Deckkraft des Diagramms",
           "showlabels": "Sollen Werte über den Diagrammen angezeigt werden?",
           "transitionTime": "Wählen Sie die Dauer der Übergänge, wenn eine Eigenschaft eines Diagramms aktualisiert wird (in Millisekunden)",

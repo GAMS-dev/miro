@@ -13,6 +13,8 @@ print(logPathTests)
 library("testthat")
 library("stringi")
 library("tibble")
+library("dplyr")
+library("tidyr")
 library("R6")
 library("shinytest2")
 

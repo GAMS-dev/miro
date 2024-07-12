@@ -1,0 +1,159 @@
+{
+  "theme": "browser",
+  "customCss": false,
+  "layoutSettings": {
+    "maxTabsExpandedInput": 5,
+    "maxTabsExpandedOutput": 5,
+    "maxTabsExpandedPivotComp": 5,
+    "maxTabsExpandedSplitComp": 5,
+    "maxTabsExpandedTabComp": 5
+  },
+  "excelIncludeMeta": true,
+  "excelIncludeEmptySheets": true,
+  "defaultRendererOutput": "miroPivot",
+  "autoGenInputGraphs": true,
+  "storeLogFilesDuration": 7,
+  "defCompMode": "split",
+  "defaultScenName": "default",
+  "pivotCompSettings": {
+    "hidePivotControls": false,
+    "fixedColumns": true
+  },
+  "activateModules": {
+    "loadLocal": true,
+    "logFile": true,
+    "lstFile": true,
+    "attachments": true,
+    "hcube": false,
+    "downloadTempFiles": false
+  },
+  "aggregateWidgets": true,
+  "overwriteSheetOrder": {
+    "input": [
+      "test2",
+      "test4",
+      "test3",
+      "test1",
+      "test5",
+      "test6",
+      "_widgets"
+    ]
+  },
+  "overwriteAliases": {
+    "test1": {
+      "newAlias": "test1"
+    },
+    "test2": {
+      "newAlias": "test2"
+    },
+    "test3": {
+      "newAlias": "test3"
+    },
+    "test4": {
+      "newAlias": "test4"
+    },
+    "test5": {
+      "newAlias": "test5"
+    },
+    "test6": {
+      "newAlias": "test6"
+    },
+    "out1": {
+      "newAlias": "out1"
+    },
+    "out2": {
+      "newAlias": "out2"
+    },
+    "out3": {
+      "newAlias": "out3"
+    },
+    "out4": {
+      "newAlias": "out4"
+    },
+    "out5": {
+      "newAlias": "out5"
+    }
+  },
+  "roundingDecimals": 2,
+  "handsontable": {
+    "stretchH": "none",
+    "readonly": false,
+    "contextMenu": {
+      "enabled": true,
+      "allowRowEdit": true,
+      "allowColEdit": true
+    },
+    "height": 700,
+    "colWidths": 200
+  },
+  "dataRendering": {
+    "out1": {
+      "outType": "datatable",
+      "class": "display",
+      "filter": "bottom",
+      "rownames": false,
+      "extensions": [
+        "Scroller",
+        "FixedColumns"
+      ],
+      "options": {
+        "pageLength": 15,
+        "scroller": true,
+        "scrollY": 200,
+        "scrollX": true,
+        "fixedColumns": {
+          "leftColumns": 3
+        }
+      }
+    }
+  },
+  "inputGroups": [
+    {
+      "name": "group 2",
+      "members": [
+        "test3",
+        "test6"
+      ],
+      "sameTab": true,
+      "colsPerRow": 3
+    },
+    {
+      "name": "group 3",
+      "members": [
+        "test5",
+        "test1"
+      ],
+      "sameTab": true,
+      "colsPerRow": 1
+    },
+    {
+      "name": "group 1",
+      "members": [
+        "test2",
+        "test4"
+      ],
+      "sameTab": false,
+      "colsPerRow": 1
+    }
+  ],
+  "outputGroups": [
+    {
+      "name": "Output group 1",
+      "members": [
+        "out1",
+        "out3"
+      ],
+      "sameTab": true,
+      "colsPerRow": 1
+    },
+    {
+      "name": "Output group 2",
+      "members": [
+        "out2",
+        "out4"
+      ],
+      "sameTab": false,
+      "colsPerRow": 1
+    }
+  ]
+}

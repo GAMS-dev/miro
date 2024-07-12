@@ -1,5 +1,6 @@
 /* loading spinner (https://loading.io/css/)*/
 #loading-screen {
+    display: none;
     position: fixed;
     width: 100%;
     height: 100%;
@@ -12,6 +13,9 @@
     z-index: 10000;
 }
 .lds-ellipsis {
+  position: relative;
+  top: 50%;
+  left: 50%;
   display: inline-block;
   position: relative;
   width: 64px;
@@ -760,6 +764,33 @@ body{
 }
 .page-wrapper .screenshot-holder img {
   border: 1px solid #f0f0f0;
+}
+.page-wrapper .branding .img-fluid {
+  height: 50px;
+}
+.page-wrapper #gallery-wrapper {
+  background: white;
+}
+.page-wrapper .app-logo-wrapper {
+  height: 200px;
+}
+.page-wrapper .app-logo {
+  max-height: 180px;
+  display: block;
+  margin: auto;
+}
+.page-wrapper .app-title {
+  text-align: left;
+  margin-top: 15pt;
+}
+.page-wrapper .app-desc {
+  text-align: left;
+}
+.page-wrapper .app-author {
+  right: 0;
+  position: absolute;
+  bottom: 0;
+  margin: 15px;
 }
 .page-wrapper .screenshot-holder .mask {
   display: block;

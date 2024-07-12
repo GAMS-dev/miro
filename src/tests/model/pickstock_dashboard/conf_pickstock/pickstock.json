@@ -1,0 +1,508 @@
+{
+  "UILogo": "pickstock.png",
+  "miroLogFile": "miro.log",
+  "inputWidgets": {
+    "price": {
+      "widgetType": "table",
+      "readonlyCols": "date"
+    },
+    "maxstock": {
+      "label": "select the maximum number of stocks",
+      "widgetType": "slider",
+      "alias": "maximum number of stocks to select",
+      "min": 1,
+      "max": "card(price$symbol)",
+      "default": 3,
+      "step": 1,
+      "ticks": false,
+      "noHcube": false
+    },
+    "trainingdays": {
+      "label": "select the number of days for training",
+      "min": 1,
+      "default": 99,
+      "step": 1,
+      "max": "card(price$date)",
+      "alias": "number of days for training",
+      "widgetType": "slider"
+    },
+    "_gmsopt_mip": {
+      "alias": "MIP-Solver",
+      "widgetType": "dropdown",
+      "label": "Solver to use",
+      "choices": ["CBC", "CPLEX", "MOSEK", "SCIP", "XPRESS"],
+      "selected": "CPLEX"
+    }
+  },
+  "dataRendering": {
+    "price": {
+      "outType": "graph",
+      "height": 700,
+      "graph": {
+        "tool": "dygraphs",
+        "title": "Stock prices over time (year: 2016)",
+        "color": "symbol",
+        "dyOptions": {
+          "includeZero": true,
+          "logscale": false,
+          "drawGrid": true,
+          "drawPoints": false,
+          "pointSize": 2,
+          "fillGraph": false,
+          "fillAlpha": 0.15
+        },
+        "dylegend": {
+          "width": 450,
+          "show": "always",
+          "hideOnMouseOut": true
+        },
+        "dyHighlight": {
+          "highlightSeriesOpts": {
+            "strokeWidth": 3,
+            "strokeBorderWidth": 1,
+            "highlightCircleSize": 5
+          },
+          "hideOnMouseOut": true
+        },
+        "dyRangeSelector": {
+          "height": 20,
+          "strokeColor": ""
+        },
+        "xdata": "date",
+        "ydata": {
+          "Price": {
+            "label": "symbol"
+          }
+        },
+        "xaxis": {
+          "title": "date",
+          "showgrid": true
+        },
+        "yaxis": {
+          "title": "value",
+          "showgrid": true
+        }
+      }
+    },
+    "dowvsindex": {
+      "outType": "graph",
+      "height": 700,
+      "graph": {
+        "tool": "dygraphs",
+        "title": "Dow Jones vs. Index Fund",
+        "dyOptions": {
+          "includeZero": false,
+          "logscale": false,
+          "drawGrid": true,
+          "drawPoints": false,
+          "pointSize": 2,
+          "fillGraph": false,
+          "fillAlpha": 0.15
+        },
+        "dyHighlight": {
+          "highlightSeriesOpts": {
+            "strokeWidth": 3,
+            "strokeBorderWidth": 1,
+            "highlightCircleSize": 5
+          },
+          "hideOnMouseOut": true
+        },
+        "dylegend": {
+          "width": 450,
+          "show": "always",
+          "hideOnMouseOut": true
+        },
+        "dyRangeSelector": {
+          "height": 20,
+          "strokeColor": ""
+        },
+        "dyEvent": {
+          "lastdaytraining": {
+            "label": "End of training phase",
+            "labelLoc": "bottom",
+            "color": "red"
+          }
+        },
+        "xdata": "date",
+        "ydata": {
+          "dj": {
+            "label": "Dow Jones index",
+            "stepPlot": false,
+            "stemPlot": false,
+            "fillGraph": false,
+            "drawpoints": true
+          },
+          "index fund": {
+            "label": "Index fund",
+            "stepPlot": false,
+            "stemPlot": false,
+            "fillGraph": false,
+            "drawpoints": true
+          }
+        },
+        "xaxis": {
+          "title": "Date"
+        },
+        "yaxis": {
+          "title": "Price"
+        }
+      }
+    },
+    "abserror": {
+      "outType": "dtGraph",
+      "height": 700,
+      "graph": {
+        "tool": "plotly",
+        "type": "hist",
+        "histnorm": "percent",
+        "nbins": 20,
+        "barmode": "overlay",
+        "alpha": 0.6,
+        "title": "Absolute Error: Dow Jones vs. Index Fund",
+        "xdata": {
+          "absolute error train": {
+            "labels": "training",
+            "color": "darkgreen",
+            "alpha": 0.6
+          },
+          "absolute error test": {
+            "labels": "test",
+            "color": "red",
+            "alpha": 0.6
+          }
+        },
+        "xaxis": {
+          "title": "Absolute Error"
+        },
+        "yaxis": {
+          "title": "Frequency"
+        }
+      }
+    },
+    "priceMerge": {
+      "outType": "graph",
+      "height": 700,
+      "graph": {
+        "tool": "dygraphs",
+        "title": "Price (stocks & dow jones)",
+        "color": "uni",
+        "filter": {
+          "col": "uni",
+          "multiple": true,
+          "label": "Select stock symbol"
+        },
+        "dyOptions": {
+          "includeZero": true,
+          "logscale": false,
+          "drawGrid": true,
+          "drawPoints": false,
+          "pointSize": 2,
+          "fillGraph": false,
+          "fillAlpha": 0.15
+        },
+        "dylegend": {
+          "width": 450,
+          "show": "always",
+          "hideOnMouseOut": true
+        },
+        "dyHighlight": {
+          "highlightSeriesOpts": {
+            "strokeWidth": 3,
+            "strokeBorderWidth": 1,
+            "highlightCircleSize": 5
+          },
+          "hideOnMouseOut": true
+        },
+        "dyRangeSelector": {
+          "height": 20,
+          "strokeColor": ""
+        },
+        "xdata": "date",
+        "ydata": {
+          "Price (stocks & dow jones)": {
+            "label": "symbol"
+          }
+        },
+        "xaxis": {
+          "title": "date",
+          "showgrid": true
+        },
+        "yaxis": {
+          "title": "value",
+          "showgrid": true
+        },
+        "dyEvent": {
+          "lastdaytraining": {
+            "label": "End of training phase",
+            "labelLoc": "top",
+            "color": "red"
+          }
+        }
+      }
+    },
+    "stock_weight": {
+      "outType": "dashboard",
+      "options": {
+        "valueBoxesTitle": "Summary indicators",
+        "valueBoxes": {
+          "id": ["error_test", "error_train", "error_ratio"],
+          "color": ["#848991", "#ffb327", "#29B675"],
+          "icon": ["smog", "plug-circle-bolt", "truck"],
+          "title": ["error test", "error train", "error ratio"],
+          "prefix": ["", "", ""],
+          "postfix": ["", "", ""],
+          "redPositive": [false, true, false],
+          "noColor": [true, false, true],
+          "valueScalar": ["error_train", "error_test", "error_ratio"],
+          "decimals": [2, 2, 2]
+        },
+        "dataViews": {
+          "error_test": {
+            "dowVSindex": "dow VS index",
+            "abserror": "Absolute Error"
+          },
+          "error_train": {
+            "stockWeight": "Sock Weight",
+            "stockWeight2": "Sock Weight"
+          },
+          "error_ratio": {
+            "pricemerge": "All index prices including DJ"
+          }
+        },
+        "dataViewsConfig": {
+          "stockWeight": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": false,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "sum"
+            },
+            "rows": "symbol",
+            "chartOptions": {
+              "title": "Weight",
+              "xTitle": "Stock",
+              "yTitle": "Weight"
+            },
+            "data": "stock_weight",
+            "decimals": 2,
+            "userFilter": "symbol"
+          },
+          "stockWeight2": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": true,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "sum"
+            },
+            "rows": "symbol",
+            "chartOptions": {
+              "title": "Weight",
+              "xTitle": "Stock",
+              "yTitle": "Weight"
+            },
+            "data": "stock_weight",
+            "decimals": 2,
+            "userFilter": "stockWeight"
+          },
+          "dowVSindex": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "timeseries",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": true,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "count"
+            },
+            "rows": "date",
+            "cols": {
+              "Hdr": null
+            },
+            "chartOptions": {
+              "title": "Dow Jones vs Index Fund",
+              "xTitle": "Date",
+              "yTitle": "Value",
+              "customLabels": {
+                "dj": "Dow Jones",
+                "index fund": "Index Fund"
+              }
+            },
+            "data": "dowvsindex",
+            "decimals": 2
+          },
+          "abserror": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "area",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": false,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "sum"
+            },
+            "rows": "date",
+            "cols": {
+              "Hdr": null
+            },
+            "chartOptions": {
+              "title": "Absolute Error",
+              "xTitle": "Date",
+              "yTitle": "Error"
+            },
+            "data": "abserror",
+            "decimals": 2
+          },
+          "pricemerge": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "timeseries",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": false,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "sum"
+            },
+            "rows": "date",
+            "cols": {
+              "uni": null
+            },
+            "chartOptions": {
+              "title": "Price (stocks and DJ)",
+              "xTitle": "Date",
+              "yTitle": "Price"
+            },
+            "userFilter": ["uni", "date"],
+            "data": "pricemerge",
+            "decimals": 2
+          }
+        }
+      },
+      "additionalData": ["dowvsindex", "abserror", "pricemerge"]
+    }
+  },
+  "storeLogFilesDuration": 7,
+  "roundingDecimals": 2,
+  "activateModules": {
+    "loadLocal": true,
+    "logFile": true,
+    "lstFile": true,
+    "attachments": true,
+    "remoteExecution": false,
+    "downloadTempFiles": false,
+    "hcube": false
+  },
+  "aggregateWidgets": true,
+  "excelIncludeMeta": true,
+  "excelIncludeEmptySheets": true,
+  "saveTraceFile": true,
+  "autoGenInputGraphs": true,
+  "theme": "browser",
+  "defCompMode": "split",
+  "datatable": {
+    "class": "display",
+    "filter": "none",
+    "rownames": false,
+    "options": {
+      "pageLength": 15
+    }
+  },
+  "symbolLinks": [
+    {
+      "source": "pricemerge",
+      "target": "price"
+    }
+  ],
+  "overwriteSheetOrder": {
+    "input": ["price", "_widgets"],
+    "output": ["stock_weight", "_scalars_out", "dowvsindex", "abserror", "pricemerge"]
+  },
+  "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
+  "readme": {
+    "tabTitle": "Readme",
+    "filename": "Readme.md",
+    "enableMath": false
+  },
+  "customCss": false,
+  "layoutSettings": {
+    "maxTabsExpandedInput": 5,
+    "maxTabsExpandedOutput": 5,
+    "maxTabsExpandedPivotComp": 5,
+    "maxTabsExpandedSplitComp": 5,
+    "maxTabsExpandedTabComp": 5
+  },
+  "defaultRendererOutput": "miroPivot",
+  "pivotCompSettings": {
+    "hidePivotControls": false,
+    "fixedColumns": true
+  },
+  "overwriteAliases": {
+    "maxstock": {
+      "newAlias": "maximum number of stocks to select"
+    },
+    "trainingdays": {
+      "newAlias": "number of days for training"
+    },
+    "error_train": {
+      "newAlias": "Absolute error in entire training phase"
+    },
+    "error_test": {
+      "newAlias": "Absolute error in entire testing phase"
+    },
+    "error_ratio": {
+      "newAlias": "Ratio between error test and error train"
+    },
+    "firstdaytraining": {
+      "newAlias": "first date of training period"
+    },
+    "lastdaytraining": {
+      "newAlias": "last date of training period"
+    },
+    "price": {
+      "newAlias": "Price"
+    },
+    "_scalars_out": {
+      "newAlias": "Output Scalars"
+    },
+    "stock_weight": {
+      "newAlias": "weight"
+    },
+    "dowvsindex": {
+      "newAlias": "dow jones vs. index fund"
+    },
+    "abserror": {
+      "newAlias": "absolute error"
+    },
+    "pricemerge": {
+      "newAlias": "Price (stocks & dow jones)"
+    }
+  },
+  "defaultScenName": "default",
+  "outputGroups": [
+    {
+      "name": "Dow Jones vs. Index Fund 🙀",
+      "members": ["dowvsindex", "abserror"]
+    }
+  ],
+  "handsontable": {
+    "stretchH": "all",
+    "readonly": false,
+    "contextMenu": {
+      "enabled": true,
+      "allowRowEdit": true,
+      "allowColEdit": true
+    },
+    "height": 700,
+    "colWidths": 300
+  }
+}

@@ -1,12 +1,12 @@
-FROM node:18-bullseye
+FROM node:20-bookworm
 
-ARG R_BASE_VERSION=4.3.1
+ARG R_BASE_VERSION=4.4.0
 ENV R_BASE_VERSION=${R_BASE_VERSION}
-ARG OPENSSL_VERSION=3.1.0
+ARG OPENSSL_VERSION=3.1.5
 ENV OPENSSL_VERSION=${OPENSSL_VERSION}
 
-ARG GAMS_MAJOR=41
-ARG GAMS_MINOR=3
+ARG GAMS_MAJOR=46
+ARG GAMS_MINOR=5
 ARG GAMS_MAINT=0
 
 # R installation mostly taken from r base image (https://github.com/rocker-org/rocker) (GPL >= 2)
@@ -36,7 +36,7 @@ ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
 
 ## Use Debian unstable via pinning -- new style via APT::Default-Release
-RUN echo "deb http://cloud.r-project.org/bin/linux/debian bullseye-cran40/" >> /etc/apt/sources.list
+RUN echo "deb http://cloud.r-project.org/bin/linux/debian bookworm-cran40/" >> /etc/apt/sources.list
 
 ## During the freeze, new (source) packages are in experimental and we place the binaries in our PPA
 #RUN echo "deb http://deb.debian.org/debian experimental main" > /etc/apt/sources.list.d/experimental.list \

@@ -2,9 +2,6 @@
   "UILogo": "pickstock.png",
   "miroLogFile": "miro.log",
   "defaultScenName": "default",
-  "pivottable": {
-    "bgColor": "rgb(255,128,0)"
-  },
   "storeLogFilesDuration": 7,
   "roundingDecimals": 2,
   "activateModules": {
@@ -49,9 +46,103 @@
     {
       "name": "Dow Jones vs. Index Fund 🙀",
       "members": ["dowvsindex", "abserror"]
+    },
+    {
+      "name": "test",
+      "members": ["_scalars_out", "pricemerge"],
+      "sameTab": true
     }
   ],
   "dataRendering":{
+    "pricemerge": {
+      "outType": "graph",
+      "graph": {
+        "tool": "dygraphs",
+        "xdata": "date",
+        "title": "Price (stocks & dow jones)",
+        "dyOptions": {
+          "logscale": false,
+          "stepPlot": false,
+          "stemPlot": false,
+          "fillGraph": false,
+          "fillAlpha": 0.15,
+          "drawPoints": false,
+          "pointShape": "dot",
+          "pointSize": 2
+        },
+        "xaxis": {
+          "name": "x",
+          "label": "Date",
+          "axisLineWidth": 0.3,
+          "axisLabelFontSize": 14,
+          "gridLineWidth": 0.3,
+          "drawGrid": true
+        },
+        "yaxis": {
+          "name": "y",
+          "label": "Price",
+          "axisLineWidth": 0.3,
+          "axisLabelFontSize": 14,
+          "gridLineWidth": 0.3,
+          "gridLineColor": "gray",
+          "valueRange": [null, null],
+          "independentTicks": true
+        },
+        "yaxis2": {
+          "name": "y2",
+          "label": "Price (stocks & dow jones)",
+          "axisLineWidth": 0.3,
+          "axisLabelFontSize": 14,
+          "gridLineWidth": 0.3,
+          "drawGrid": true,
+          "valueRange": [null, null],
+          "independentTicks": true
+        },
+        "ydata": {
+          "value": {
+            "label": "Price (stocks & dow jones)",
+            "stemPlot": false,
+            "stepPlot": false,
+            "fillGraph": false,
+            "drawPoints": false,
+            "pointShape": "dot",
+            "pointSize": 2,
+            "yaxis": "y"
+          }
+        },
+        "dyHighlight": {
+          "hideOnMouseOut": true,
+          "highlightCircleSize": 0,
+          "highlightSeriesBackgroundAlpha": 1,
+          "highlightSeriesOpts": {
+            "strokeWidth": 0
+          }
+        },
+        "color": "uni",
+        "filter": {
+          "col": "uni",
+          "label": "Select stock symbol",
+          "multiple": true,
+          "date": false
+        },
+        "dyEvent": {
+          "lastdaytraining": {
+            "labelLoc": "top",
+            "strokePattern": "dashed",
+            "label": "End of training phase",
+            "color": "#ff0000"
+          }
+        },
+        "dyRangeSelector": {
+          "height": 25,
+          "strokeColor": "#808fab",
+          "fillColor": "#a7b1c4",
+          "retainDateWindow": false,
+          "keepMouseZoom": true
+        }
+      },
+      "height": 700
+    },
     "_scalars_out": {
       "outType": "valueBox",
       "options": [

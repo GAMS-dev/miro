@@ -1,8 +1,8 @@
-const { app, Menu, shell } = require('electron');
+import { app, Menu, shell } from 'electron';
 
 const isMac = process.platform === 'darwin';
 
-module.exports = (
+export default (
   addExampleAppsCallback,
   activateEditCallback,
   addMiroscenCallback,

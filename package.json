@@ -1,10 +1,11 @@
 {
   "name": "com.gams.miro",
   "productName": "GAMS MIRO",
-  "version": "2.9.2",
+  "version": "2.9.9999",
   "description": "GAMS MIRO is an interactive web application for GAMS models. It is designed for people working with GAMS looking for an easy and automated way to deploy their models. Extensive visualization options support you to make decisions based on optimization.",
   "homepage": "https://gams.com/miro",
-  "main": "main.js",
+  "type": "module",
+  "main": "./main.js",
   "scripts": {
     "postinstall": "electron-builder install-app-deps && (cd src && npm install)",
     "test": "node ./test/run-ui-tests.js",
@@ -119,27 +120,27 @@
   "author": "GAMS Development Corp.",
   "license": "GPL-3.0-only",
   "devDependencies": {
-    "electron": "^29.2.0",
+    "electron": "^31.2.0",
     "electron-builder": "24.13.3",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.29.1",
-    "prettier": "3.2.5"
+    "prettier": "3.3.2"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.2",
-    "ajv": "^8.12.0",
-    "axios": "^1.6.8",
+    "ajv": "^8.16.0",
+    "axios": "^1.7.2",
     "bootstrap": "^4.6.2",
-    "electron-log": "^5.1.2",
-    "electron-store": "^8.2.0",
-    "execa": "^5.1.1",
+    "electron-log": "^5.1.5",
+    "electron-store": "^10.0.0",
+    "execa": "^9.2.0",
     "fs-extra": "^11.2.0",
     "jquery": "^3.7.1",
     "popper.js": "^1.16.1",
     "portscanner": "^2.2.0",
     "tree-kill": "^1.2.2",
     "which": "^4.0.0",
-    "yauzl": "^3.1.2"
+    "yauzl": "^3.1.3"
   }
 }

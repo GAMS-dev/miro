@@ -1,4 +1,63 @@
-$(document).ready(function() {
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        $('#loading-screen').hide();
+    }
+});
+$(function() {
+    window.cookieconsent.initialise({
+        "palette": {
+          "popup": {
+            "background": "#000"
+          },
+          "button": {
+            "background": "#F39619"
+          }
+        }
+    });
+    $('.app-container').on('click', function() {
+        $('#loading-screen').show();
+    });
+    $('.btn-upvote').on('click', function() {
+        this.disabled = true;
+        var appId = this.dataset.id;
+        $.post( "api/vote-up", { id: appId })
+          .done(function( data ) {
+            var noUpvotesEl = $('#' + appId + '_noupvotes');
+            var noUpvotes = noUpvotesEl.text();
+            noUpvotes = parseInt(noUpvotes.substring(1, noUpvotes.length - 1), 10) + 1;
+            $('#' + appId + '_noupvotes').text('(' + noUpvotes + ')');
+          });
+    });
+    $("#newAppForm").on('submit', function(e){
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: 'api/add-app',
+            data: new FormData(this),
+            dataType: 'json',
+            contentType: false,
+            cache: false,
+            processData:false,
+            beforeSend: function(){
+                $('.submitBtn').attr("disabled","disabled");
+                $('#newAppForm').css("opacity",".5");
+            },
+            success: function(response){
+                $('.statusMsg').html('');
+                if(response.status == 0){
+                    $('#newAppForm')[0].reset();
+                    $('.statusMsg').html('<p class="alert alert-success">'+response.message+'</p>');
+                }else{
+                    $('.statusMsg').html('<p class="alert alert-danger">'+response.message+'</p>');
+                }
+                $('#newAppForm').css("opacity","");
+                $(".submitBtn").removeAttr("disabled");
+            },
+            error: function(req, err) {
+                $('.statusMsg').html('<p class="alert alert-danger">An unexpected error has occurred. Please try again later or contact miro@gams.com if this error persists.</p>');
+            }
+        });
+    });
 
     /* ===== Stickyfill ===== */
     /* Ref: https://github.com/wilddeer/stickyfill */

@@ -531,199 +531,6 @@ miroexport_&#x3C;exporterName&#x3E; &#x3C;- function(data, path = NULL, views = 
                   </div>
                 </section>
                 <!--//doc-section-->
-                <section id="remote-import-export" class="doc-section">
-                  <h2 class="section-title">
-                    DEPRECATED: Remote data import and export
-                  </h2>
-                  <div class="section-block">
-                    <div class="callout-block callout-warning">
-                      <div class="icon-holder">
-                        <i class="fas fa-info-circle"></i>
-                      </div>
-                      <!--//icon-holder-->
-                      <div class="content">
-                        <b class="callout-title">Warning:</b>
-                        <p>
-                          This function is deprecated as of MIRO 2.3 and should
-                          no longer be used. It will be removed in one of the
-                          next MIRO versions! Please use the
-                          <a href="#custom-import-export" class="scrollto"
-                            >custom data connectors</a
-                          >
-                          instead.
-                        </p>
-                      </div>
-                      <!--//content-->
-                    </div>
-                    <p>
-                      A MIRO application can be supplied with data from various
-                      sources:
-                    </p>
-                    <ul>
-                      <li>Internal database: Import existing scenario data</li>
-                      <li>Local files: GDX, Excel</li>
-                      <li>Manually entered data</li>
-                    </ul>
-                    <p>
-                      In addition to these default interfaces, the data can also
-                      come from or go to <b>external sources</b>.
-                    </p>
-                    <p>
-                      This MIRO data connector is implemented as a
-                      <a
-                        href="https://en.wikipedia.org/wiki/Representational_state_transfer"
-                        target="_blank"
-                        >REST</a
-                      >
-                      service. To set up a new external data source, you have to
-                      edit the
-                      <a href="./faqs.html#file-config"
-                        ><i>&lt;modelname&gt;.json</i></a
-                      >
-                      file which is located in the directory:
-                      <i>conf_&lt;modelname&gt;</i>. The following example shows
-                      how to set up an external data source to populate the
-                      symbol <i>price</i>:
-                    </p>
-                    <pre><code class="language-json">"remoteImport": [
-    {
-    "name": "Importer",
-      "templates": [
-        {
-          "symNames": "price",
-          "url": "http://127.0.0.1:5000/io",
-          "method": "GET",
-          "authentication": {
-            "username": "@env:API_USER",
-            "password": "@env:API_PASS"
-          },
-          "httpBody": [
-            {
-              "key": "filename",
-              "value": "/Users/miro/Documents/importer/pickstock/price_data.csv"
-            }
-          ]
-        }
-      ]
-    }
-  ]</code></pre>
-                    <p>
-                      The configuration of external data sources is
-                      template-based. This means that you can specify one and
-                      the same template for multiple input symbols. First, we
-                      have to specify which input symbols this template should
-                      apply to. Then we have to tell MIRO about the endpoint to
-                      connect to (in this case a server running on localhost on
-                      port 5000). Supported protocols are HTTP and HTTPS.
-                    </p>
-                    <p>
-                      When the user requests to import data via this data source
-                      "Importer", the resulting HTTP request looks as follows:
-                      <kbd
-                        >GET
-                        /io?filename=%2FUsers%2Fmiro%2FDocuments%2Fimporter%2Fpickstock%2Fprice_data.csv&modelname=pickstock&dataset=price
-                        HTTP/1.1</kbd
-                      >. When observing the request, you will notice that in
-                      addition to the <kbd>filename</kbd> key that you
-                      specified, MIRO sends two more key-value pairs:
-                      <kbd>modelname</kbd> and <kbd>dataset</kbd> set to the
-                      name of the model and dataset being requested. These will
-                      always be appended to the body provided by you.
-                    </p>
-                    <p>
-                      MIRO waits for the REST endpoint to respond with the
-                      requested dataset. Before we talk about the format in
-                      which MIRO expects the data, let's look at how the data is
-                      exported from MIRO to a remote destination. The format
-                      MIRO exports data is the same as data should be sent to
-                      MIRO!
-                    </p>
-                    <p>
-                      One more aspect worth talking about is authentication.
-                      When your API is not running on the local machine, but a
-                      remote server, you might want to provide credentials with
-                      your request. In the example above, we provided the
-                      username and password used to authenticate to the API.
-                      However, instead of hardcoding these credentials in the
-                      configuration file (which is possible), it is recommended
-                      to use the special prefix
-                      <kbd>@env:</kbd> that instructs MIRO to read the
-                      credentials from environment variables. Currently, the
-                      only supported authentication method is
-                      <a
-                        href="https://en.wikipedia.org/wiki/Basic_access_authentication"
-                        target="_blank"
-                        >basic access authentication</a
-                      >. In case you need another method, send us an email or a
-                      pull request!
-                    </p>
-                    <div class="callout-block callout-warning">
-                      <div class="icon-holder">
-                        <i class="fas fa-info-circle"></i>
-                      </div>
-                      <!--//icon-holder-->
-                      <div class="content">
-                        <b class="callout-title">Warning:</b>
-                        <p>
-                          When using basic access authentication, username and
-                          password are sent in plain text! Therefore, you have
-                          to use HTTPS instead of HTTP to provide
-                          confidentiality!!
-                        </p>
-                      </div>
-                      <!--//content-->
-                    </div>
-                    <!--//callout-block-->
-                    <p>
-                      Instead of importing data from a remote data source, you
-                      can also export data to a remote destination. In this
-                      example the data of the symbol stock_weight should be
-                      exported to a CSV file: <i>export_stock_weight.csv</i>. As
-                      we now push data to the API, we use the POST HTTP method.
-                      The structure of the JSON configuration is identical to
-                      that of remote importers you have seen before:
-                    </p>
-                    <pre><code class="language-json">"remoteExport": [
-    {
-      "name": "Exporter",
-      "templates": [
-        {
-          "symNames": "stock_weight",
-          "url": "http://127.0.0.1:5000/io",
-          "method": "POST",
-          "authentication": {
-            "username": "@env:API_USER",
-            "password": "@env:API_PASS"
-          },
-          "httpBody": [
-            {
-              "key": "filename",
-              "value": "/Users/miro/Documents/exporter/pickstock/export_stock_weight.csv"
-            }
-          ]
-        }
-      ]
-    }
-  ]</code></pre>
-                    <p>
-                      What's more interesting is the request body that MIRO
-                      sends to the remote server:
-                    </p>
-                    <pre><code class="language-json">{"data":[{"symbol":"AXP","value":0.472295069483016},{"symbol":"MMM","value":0.316292266161662},{"symbol":"MSFT","value":0.406195141778428}],"modelname":"pickstock","dataset":"stock_weight","options":{"filename":"/Users/miro/Documents/importer/pickstock/price_data.csv"}}</code></pre>
-                    <p>
-                      MIRO sends data serialized as JSON. The
-                      <kbd>modelname</kbd> and <kbd>dataset</kbd> keys are sent
-                      along just like in the GET request we saw previously when
-                      importing data. In addition, we get the custom key-value
-                      pairs we specified in a special object called
-                      <kbd>options</kbd> as well as the actual data of the
-                      symbol in <kbd>data</kbd>. Note how the table is
-                      serialized. In case you need MIRO to serialize tables in a
-                      different format, send us an email or a pull request.
-                    </p>
-                  </div>
-                </section>
-                <!--//doc-section-->
                 <section id="custom-input-widgets" class="doc-section">
                   <h2 class="section-title">Custom input widgets</h2>
                   <div class="section-block">
@@ -1070,6 +877,416 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                       in the Hypercube submission dialog).
                     </p>
                   </div>
+                </section>
+                <!--//doc-section-->
+                <section id="custom-compare-mode" class="doc-section">
+                  <h2 class="section-title">Custom scenario comparison</h2>
+                  <div class="section-block">
+                    <p>
+                      GAMS MIRO natively supports three modes for scenario
+                      comparison: split view, tab view, and pivot view. But what
+                      if you are interested in different statistics or charts
+                      tailored to compare multiple scenarios? For this purpose,
+                      there are user-defined scenario comparison modules. The
+                      data can be loaded into the custom comparison modules via
+                      the
+                      <a href="./start.html#scenario-loading">Batch Load</a>
+                      module. The drop-down menu for selecting the comparison
+                      mode in which the selected scenarios are to be loaded is
+                      expanded accordingly.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 350pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                        "
+                        src="assets/images/custom-comparison-actions.png"
+                        alt="Custom comparison module selection in Batch Load module"
+                      />
+                    </div>
+                    <!--//section-block-->
+                    <p>
+                      Custom scenario comparison modules work in a similar way
+                      to
+                      <a href="./configuration_advanced.html#custom-renderers"
+                        >custom renderers</a
+                      >. Therefore, we strongly recommend that you read the
+                      chapter on custom renderers first. Just like a custom
+                      renderer, a custom scenario comparison module consists of
+                      a JSON configuration block and an <i>.R</i> file
+                      containing the code in your application's renderer
+                      directory (<span class="code"
+                        >renderer_&lt;modelname&gt;</span
+                      >). Let's go through this process by creating a new
+                      comparison module for the <i>pickstock</i> model.
+                    </p>
+                    <p>
+                      We start by creating the boilerplate code for our renderer
+                      in a new file
+                      <span class="code">mirocompare_&lt;id&gt;.R</span> inside
+                      the <span class="code">renderer_pickstock</span> directory
+                      where <i>&lt;id&gt;</i> is the ID of our custom comparison
+                      module. The ID can be freely chosen. It must be 2-20
+                      characters long and contain only ASCII lowercase letters
+                      or digits. We choose the name
+                      <span class="code">maxstock1</span> for our example and
+                      create the file
+                      <span class="code">mirocompare_maxstock1.R</span>
+                      accordingly.
+                    </p>
+                    <p>
+                      Just like custom renderers, custom scenario comparison
+                      modules consist of two functions: the placeholder or
+                      output function and the renderer function:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+mirocompare_&#x3C;id&#x3E;Output &#x3C;- function(id, height = NULL, options = NULL, path = NULL) {
+  ns &#x3C;- NS(id)
+}
+
+renderMirocompare_&#x3C;id&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      If you have already written your own renderers, the
+                      argument list of the output and renderer functions will
+                      look familiar. Therefore, we will focus on the
+                      differences: First, unlike custom renderers, the
+                      <span class="code">data</span> argument is not a
+                      dataframe, but an
+                      <a href="https://r6.r-lib.org/index.html" target="_blank"
+                        >R6</a
+                      >
+                      object of class
+                      <span class="code">CustomComparisonData</span>. The
+                      different methods of this class are described in the
+                      <a href="#custom-comparison-data" class="scrollto"
+                        >next section</a
+                      >. Second, you have access to the attachment data of the
+                      scenarios via the
+                      <kbd>data$getAttachmentData()</kbd> method instead of a
+                      separate object.
+                    </p>
+                    <p>
+                      <a
+                        href="configuration_advanced.html#custom-renderer-views"
+                        >Views</a
+                      >
+                      can be used in custom comparison renderers just like in
+                      custom renderers for output data.
+                    </p>
+                    <p>
+                      Let's return to our example and write an initial renderer
+                      that plots the relative test error against the maximum
+                      number of stocks.
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+mirocompare_maxstock1Output &#x3C;- function(id, height = NULL, options = NULL, path = NULL) {
+  ns &#x3C;- NS(id)
+  return(plotOutput(ns("maxstockVsErrorTest")))
+}
+
+renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
+  scalarsPivoted &#x3C;- dplyr::bind_rows(lapply(data$get("_scalars"), tidyr::pivot_wider, names_from = "scalar", values_from = "value", id_cols = character()))
+  scalarsOutPivoted &#x3C;- dplyr::bind_rows(lapply(data$get("_scalars_out"), tidyr::pivot_wider, names_from = "scalar", values_from = "value", id_cols = character()))
+  scalars &#x3C;- suppressWarnings(dplyr::mutate(dplyr::bind_cols(scalarsPivoted, scalarsOutPivoted), across(everything(), as.numeric)))
+  scalars[["error_test_rel"]] &#x3C;- scalars[["error_test"]] / scalars[["trainingdays"]]
+
+  output$maxstockVsErrorTest &#x3C;- renderPlot(boxplot(error_test_rel ~ maxstock, scalars, main = options$chartTitle))
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      We first use the <span class="code">get()</span> method of
+                      the <span class="code">data</span> object to retrieve
+                      input and output scalars. Scalars are treated specially in
+                      that they are bundled into a single data frame with the
+                      columns: <span class="code">scalar</span>,
+                      <span class="code">description</span> and
+                      <span class="code">value</span>. Therefore, we must first
+                      pivot them and merge the input and output scalars. Then we
+                      can calculate a new derived column
+                      <span class="code">error_test_rel</span> and create a
+                      boxplot with this relative test error against the maximum
+                      number of stocks.
+                    </p>
+                    <p>
+                      In order to use this custom comparison module in MIRO, we
+                      have to append the following JSON configuration to the
+                      <i>pickstock.json</i> file in the
+                      <i>conf_pickstock</i> directory:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-json">{
+  "customCompareModules": [
+    {
+      "id": "maxstock1",
+      "label": "Test error against maximum stocks",
+      "options": {
+        "chartTitle": "Testing error (rel.) vs maximum number of stocks"
+      }
+    }
+  ]
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      The only mandatory fields are
+                      <span class="code">id</span> and
+                      <span class="code">label</span>. The
+                      <span class="code">label</span> is displayed when
+                      selecting the comparison mode and the
+                      <span class="code">id</span> is used internally to
+                      identify your module. You can specify an optional object
+                      with <span class="code">options</span> provided to the
+                      output and renderer functions. This is especially useful
+                      if you want to reuse the same renderer function with
+                      different options. In this case, the id of the comparison
+                      module is not the same as the id of the output/renderer
+                      function. Therefore, you must specify the id of the
+                      renderer function using the
+                      <span class="code">externalRendererId</span> field.
+                      Additional R packages required for your comparison module
+                      can be specified via the
+                      <span class="code">packages</span> field.
+                    </p>
+                    <p>
+                      Below is the full schema used to validate the
+                      configuration of your custom comparison modules.
+                    </p>
+                    <h6
+                      id="custom-comparison-json-schema"
+                      class="block-title"
+                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-plus slide-toggle"></i> JSON validation
+                      schema for custom comparison modules
+                    </h6>
+                    <div class="expanded">
+                      <div class="code-block">
+                        <pre><code class="language-json">&quot;customCompareModules&quot;:{
+  &quot;type&quot;:&quot;array&quot;,
+  &quot;items&quot;:{
+      &quot;type&quot;:&quot;object&quot;,
+      &quot;description&quot;:&quot;Custom scenario comparison modules&quot;,
+      &quot;additionalProperties&quot;:false,
+      &quot;properties&quot;:{
+        &quot;id&quot;:{
+            &quot;description&quot;:&quot;Unique identifier of analysis module (a-z0-9)&quot;,
+            &quot;type&quot;:&quot;string&quot;,
+            &quot;minLength&quot;:2,
+            &quot;maxLength&quot;:20
+        },
+        &quot;label&quot;:{
+            &quot;description&quot;:&quot;Label to identify this analysis module&quot;,
+            &quot;type&quot;:&quot;string&quot;,
+            &quot;minLength&quot;:1
+        },
+        &quot;externalRendererId&quot;:{
+            &quot;description&quot;:&quot;If you want to use the same renderer multiple times (e.g. with different options), you can specify the id of the renderer to be used here. If provided, the output function should be named mirocompare_&lt;externalRendererId&gt;Output, the renderer function: renderMirocompare_&lt;externalRendererId&gt;.&quot;,
+            &quot;type&quot;:&quot;string&quot;,
+            &quot;minLength&quot;:2,
+            &quot;maxLength&quot;:20
+        },
+        &quot;packages&quot;:{
+            &quot;description&quot;:&quot;Packages that need to be installed&quot;,
+            &quot;type&quot;:[
+              &quot;array&quot;,
+              &quot;string&quot;
+            ],
+            &quot;minLength&quot;:2,
+            &quot;minItems&quot;:1,
+            &quot;uniqueItems&quot;:true,
+            &quot;items&quot;:{
+              &quot;type&quot;:&quot;string&quot;,
+              &quot;minLength&quot;:2
+            }
+        },
+        &quot;options&quot;:{
+            &quot;description&quot;:&quot;Additional options&quot;,
+            &quot;type&quot;:&quot;object&quot;
+        }
+      },
+      &quot;required&quot;: [&quot;id&quot;, &quot;label&quot;]
+  }
+}</code></pre>
+                      </div>
+                      <!--//code-block-->
+                    </div>
+                    <!--//expanded-->
+                  </div>
+                  <!--//section-block-->
+                  <div id="custom-comparison-data" class="section-block">
+                    <h3 class="block-title">Custom comparison data</h3>
+                    <p>
+                      The following section describes the different methods of
+                      the <span class="code">CustomComparisonData</span> R6
+                      class. An instance of this class is passed to custom
+                      comparison renderers in the form of the
+                      <span class="code">data</span> argument.
+                    </p>
+                    <h5>Get symbol names</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+  data$getAllSymbols()
+  </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Value</h6>
+                    <p>
+                      A character vector with the names of all available (input
+                      and output) symbols.
+                    </p>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      This method allows you to get the names of all available
+                      symbols.
+                    </p>
+                    <h5>Get symbol data</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+  data$get(symbolName)
+  </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Arguments</h6>
+                    <table class="api-arguments">
+                      <tbody>
+                        <tr>
+                          <th>symbolName</th>
+                          <td>
+                            The (lowercase) name of the GAMS symbol (or the
+                            special symbol(s)
+                            <span class="code">_scalars</span> for all input
+                            scalars or
+                            <span class="code">_scalars_out</span> for all
+                            output scalars). In case the specified symbol does
+                            not exist, an error with class
+                            <span class="code">error_invalid_symbol</span> is
+                            thrown.
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h6 class="api-header">Value</h6>
+                    <p>An unnamed list of dataframes (tibbles).</p>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      This method allows you to retrieve the data of the
+                      specified symbol for all loaded scenarios. The first
+                      element is always the sandbox scenario. To get the
+                      metadata (e.g. scenario name, scenario owner, etc.) of the
+                      different scenarios, use the
+                      <span class="code">getMetadata()</span> method. The order
+                      of the scenarios is the same for all symbols and the
+                      metadata.
+                    </p>
+                    <h5>Get metadata</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+  data$getMetadata()
+  </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Value</h6>
+                    <p>
+                      An unnamed list of dataframes (tibbles) with columns:
+                      <span class="code">_sid</span> (integer: internal scenario
+                      ID), <span class="code">_uid</span> (character: username
+                      of scenario owner),
+                      <span class="code">_sname</span> (character: scenario
+                      name), <span class="code">_stime</span> (character:
+                      timestamp of the last change, format: yyyy-mm-dd
+                      HH:MM:SS), <span class="code">_stag</span> (character:
+                      comma-separated list of scenario tags).
+                    </p>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      This method allows you to retrieve the metadata (e.g.
+                      scenario name, scenario owner, etc.) for all loaded
+                      scenarios. The order is the same as the
+                      <span class="code">data$get(symbolName)</span> method.
+                    </p>
+                    <h5>Get attachment (meta)data</h5>
+                    <div class="code-block">
+                      <pre><code class="language-r">
+  data$getAttachmentData(scenIds = NULL, fileNames = NULL, includeContent = FALSE, includeSandboxScen = TRUE)
+  </code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <h6 class="api-header">Arguments</h6>
+                    <table class="api-arguments">
+                      <tbody>
+                        <tr>
+                          <th>scenIds</th>
+                          <td>
+                            integer vector of scenario IDs (as returned by
+                            <span class="code">getMetadata()</span> method) or
+                            <span class="code">NULL</span> to include all loaded
+                            scenarios
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>fileNames</th>
+                          <td>
+                            character vector of attachment filenames to filter
+                            or <span class="code">NULL</span> to include all
+                            loaded scenarios
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>includeContent</th>
+                          <td>
+                            boolean specifying whether to include
+                            <span class="code">fileContent</span> column with
+                            attachment data
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>includeSandboxScen</th>
+                          <td>
+                            boolean specifying whether to include attachments of
+                            the sandbox scenario (will be included with scenario
+                            ID (<span class="code">_sid</span>) of
+                            <span class="code">0</span>)
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h6 class="api-header">Value</h6>
+                    <p>
+                      An dataframe (tibble) with columns:
+                      <span class="code">_sid</span> (integer: internal scenario
+                      ID, <span class="code">0</span> for sandbox scenario),
+                      <span class="code">fileName</span> (character: filename of
+                      the attachment),
+                      <span class="code">execPerm</span> (logical: whether model
+                      is allowed to read attachment),
+                      <span class="code">fileContent</span> (<a
+                        href="https://cran.r-project.org/web/packages/blob/index.html"
+                        target="_blank"
+                        >blob</a
+                      >: attachment data, only included if
+                      <span class="code">includeContent</span> is
+                      <span class="code">TRUE</span>).
+                    </p>
+                    <h6 class="api-header">Description</h6>
+                    <p>
+                      This method allows you to retrieve the metadata (e.g.
+                      scenario name, scenario owner, etc.) for all loaded
+                      scenarios. The order is the same as the
+                      <span class="code">data$get(symbolName)</span> method.
+                    </p>
+                  </div>
+                  <!--//section-block-->
                 </section>
                 <!--//doc-section-->
                 <section id="table-dropdown" class="doc-section">
@@ -1625,416 +1842,6 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                   </div>
                 </section>
                 <!--//doc-section-->
-                <section id="custom-compare-mode" class="doc-section">
-                  <h2 class="section-title">Custom scenario comparison</h2>
-                  <div class="section-block">
-                    <p>
-                      GAMS MIRO natively supports three modes for scenario
-                      comparison: split view, tab view, and pivot view. But what
-                      if you are interested in different statistics or charts
-                      tailored to compare multiple scenarios? For this purpose,
-                      there are user-defined scenario comparison modules. The
-                      data can be loaded into the custom comparison modules via
-                      the
-                      <a href="./start.html#scenario-loading">Batch Load</a>
-                      module. The drop-down menu for selecting the comparison
-                      mode in which the selected scenarios are to be loaded is
-                      expanded accordingly.
-                    </p>
-                    <div class="section-block">
-                      <img
-                        class="img-fluid"
-                        style="
-                          max-height: 350pt;
-                          display: block;
-                          margin-left: auto;
-                          margin-right: auto;
-                        "
-                        src="assets/images/custom-comparison-actions.png"
-                        alt="Custom comparison module selection in Batch Load module"
-                      />
-                    </div>
-                    <!--//section-block-->
-                    <p>
-                      Custom scenario comparison modules work in a similar way
-                      to
-                      <a href="./configuration_advanced.html#custom-renderers"
-                        >custom renderers</a
-                      >. Therefore, we strongly recommend that you read the
-                      chapter on custom renderers first. Just like a custom
-                      renderer, a custom scenario comparison module consists of
-                      a JSON configuration block and an <i>.R</i> file
-                      containing the code in your application's renderer
-                      directory (<span class="code"
-                        >renderer_&lt;modelname&gt;</span
-                      >). Let's go through this process by creating a new
-                      comparison module for the <i>pickstock</i> model.
-                    </p>
-                    <p>
-                      We start by creating the boilerplate code for our renderer
-                      in a new file
-                      <span class="code">mirocompare_&lt;id&gt;.R</span> inside
-                      the <span class="code">renderer_pickstock</span> directory
-                      where <i>&lt;id&gt;</i> is the ID of our custom comparison
-                      module. The ID can be freely chosen. It must be 2-20
-                      characters long and contain only ASCII lowercase letters
-                      or digits. We choose the name
-                      <span class="code">maxstock1</span> for our example and
-                      create the file
-                      <span class="code">mirocompare_maxstock1.R</span>
-                      accordingly.
-                    </p>
-                    <p>
-                      Just like custom renderers, custom scenario comparison
-                      modules consist of two functions: the placeholder or
-                      output function and the renderer function:
-                    </p>
-                    <div class="code-block">
-                      <pre><code class="language-r">
-mirocompare_&#x3C;id&#x3E;Output &#x3C;- function(id, height = NULL, options = NULL, path = NULL) {
-  ns &#x3C;- NS(id)
-}
-
-renderMirocompare_&#x3C;id&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
-}</code></pre>
-                    </div>
-                    <!--//code-block-->
-                    <p>
-                      If you have already written your own renderers, the
-                      argument list of the output and renderer functions will
-                      look familiar. Therefore, we will focus on the
-                      differences: First, unlike custom renderers, the
-                      <span class="code">data</span> argument is not a
-                      dataframe, but an
-                      <a href="https://r6.r-lib.org/index.html" target="_blank"
-                        >R6</a
-                      >
-                      object of class
-                      <span class="code">CustomComparisonData</span>. The
-                      different methods of this class are described in the
-                      <a href="#custom-comparison-data" class="scrollto"
-                        >next section</a
-                      >. Second, you have access to the attachment data of the
-                      scenarios via the
-                      <kbd>data$getAttachmentData()</kbd> method instead of a
-                      separate object.
-                    </p>
-                    <p>
-                      <a
-                        href="configuration_advanced.html#custom-renderer-views"
-                        >Views</a
-                      >
-                      can be used in custom comparison renderers just like in
-                      custom renderers for output data.
-                    </p>
-                    <p>
-                      Let's return to our example and write an initial renderer
-                      that plots the relative test error against the maximum
-                      number of stocks.
-                    </p>
-                    <div class="code-block">
-                      <pre><code class="language-r">
-mirocompare_maxstock1Output &#x3C;- function(id, height = NULL, options = NULL, path = NULL) {
-  ns &#x3C;- NS(id)
-  return(plotOutput(ns("maxstockVsErrorTest")))
-}
-
-renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
-  scalarsPivoted &#x3C;- dplyr::bind_rows(lapply(data$get("_scalars"), tidyr::pivot_wider, names_from = "scalar", values_from = "value", id_cols = character()))
-  scalarsOutPivoted &#x3C;- dplyr::bind_rows(lapply(data$get("_scalars_out"), tidyr::pivot_wider, names_from = "scalar", values_from = "value", id_cols = character()))
-  scalars &#x3C;- suppressWarnings(dplyr::mutate(dplyr::bind_cols(scalarsPivoted, scalarsOutPivoted), across(everything(), as.numeric)))
-  scalars[["error_test_rel"]] &#x3C;- scalars[["error_test"]] / scalars[["trainingdays"]]
-
-  output$maxstockVsErrorTest &#x3C;- renderPlot(boxplot(error_test_rel ~ maxstock, scalars, main = options$chartTitle))
-}</code></pre>
-                    </div>
-                    <!--//code-block-->
-                    <p>
-                      We first use the <span class="code">get()</span> method of
-                      the <span class="code">data</span> object to retrieve
-                      input and output scalars. Scalars are treated specially in
-                      that they are bundled into a single data frame with the
-                      columns: <span class="code">scalar</span>,
-                      <span class="code">description</span> and
-                      <span class="code">value</span>. Therefore, we must first
-                      pivot them and merge the input and output scalars. Then we
-                      can calculate a new derived column
-                      <span class="code">error_test_rel</span> and create a
-                      boxplot with this relative test error against the maximum
-                      number of stocks.
-                    </p>
-                    <p>
-                      In order to use this custom comparison module in MIRO, we
-                      have to append the following JSON configuration to the
-                      <i>pickstock.json</i> file in the
-                      <i>conf_pickstock</i> directory:
-                    </p>
-                    <div class="code-block">
-                      <pre><code class="language-json">{
-  "customCompareModules": [
-    {
-      "id": "maxstock1",
-      "label": "Test error against maximum stocks",
-      "options": {
-        "chartTitle": "Testing error (rel.) vs maximum number of stocks"
-      }
-    }
-  ]
-}</code></pre>
-                    </div>
-                    <!--//code-block-->
-                    <p>
-                      The only mandatory fields are
-                      <span class="code">id</span> and
-                      <span class="code">label</span>. The
-                      <span class="code">label</span> is displayed when
-                      selecting the comparison mode and the
-                      <span class="code">id</span> is used internally to
-                      identify your module. You can specify an optional object
-                      with <span class="code">options</span> provided to the
-                      output and renderer functions. This is especially useful
-                      if you want to reuse the same renderer function with
-                      different options. In this case, the id of the comparison
-                      module is not the same as the id of the output/renderer
-                      function. Therefore, you must specify the id of the
-                      renderer function using the
-                      <span class="code">externalRendererId</span> field.
-                      Additional R packages required for your comparison module
-                      can be specified via the
-                      <span class="code">packages</span> field.
-                    </p>
-                    <p>
-                      Below is the full schema used to validate the
-                      configuration of your custom comparison modules.
-                    </p>
-                    <h6
-                      id="custom-comparison-json-schema"
-                      class="block-title"
-                      onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
-                      style="cursor: pointer"
-                    >
-                      <i class="fas fa-plus slide-toggle"></i> JSON validation
-                      schema for custom comparison modules
-                    </h6>
-                    <div class="expanded">
-                      <div class="code-block">
-                        <pre><code class="language-json">&quot;customCompareModules&quot;:{
-  &quot;type&quot;:&quot;array&quot;,
-  &quot;items&quot;:{
-      &quot;type&quot;:&quot;object&quot;,
-      &quot;description&quot;:&quot;Custom scenario comparison modules&quot;,
-      &quot;additionalProperties&quot;:false,
-      &quot;properties&quot;:{
-        &quot;id&quot;:{
-            &quot;description&quot;:&quot;Unique identifier of analysis module (a-z0-9)&quot;,
-            &quot;type&quot;:&quot;string&quot;,
-            &quot;minLength&quot;:2,
-            &quot;maxLength&quot;:20
-        },
-        &quot;label&quot;:{
-            &quot;description&quot;:&quot;Label to identify this analysis module&quot;,
-            &quot;type&quot;:&quot;string&quot;,
-            &quot;minLength&quot;:1
-        },
-        &quot;externalRendererId&quot;:{
-            &quot;description&quot;:&quot;If you want to use the same renderer multiple times (e.g. with different options), you can specify the id of the renderer to be used here. If provided, the output function should be named mirocompare_&lt;externalRendererId&gt;Output, the renderer function: renderMirocompare_&lt;externalRendererId&gt;.&quot;,
-            &quot;type&quot;:&quot;string&quot;,
-            &quot;minLength&quot;:2,
-            &quot;maxLength&quot;:20
-        },
-        &quot;packages&quot;:{
-            &quot;description&quot;:&quot;Packages that need to be installed&quot;,
-            &quot;type&quot;:[
-              &quot;array&quot;,
-              &quot;string&quot;
-            ],
-            &quot;minLength&quot;:2,
-            &quot;minItems&quot;:1,
-            &quot;uniqueItems&quot;:true,
-            &quot;items&quot;:{
-              &quot;type&quot;:&quot;string&quot;,
-              &quot;minLength&quot;:2
-            }
-        },
-        &quot;options&quot;:{
-            &quot;description&quot;:&quot;Additional options&quot;,
-            &quot;type&quot;:&quot;object&quot;
-        }
-      },
-      &quot;required&quot;: [&quot;id&quot;, &quot;label&quot;]
-  }
-}</code></pre>
-                      </div>
-                      <!--//code-block-->
-                    </div>
-                    <!--//expanded-->
-                  </div>
-                  <!--//section-block-->
-                  <div id="custom-comparison-data" class="section-block">
-                    <h3 class="block-title">Custom comparison data</h3>
-                    <p>
-                      The following section describes the different methods of
-                      the <span class="code">CustomComparisonData</span> R6
-                      class. An instance of this class is passed to custom
-                      comparison renderers in the form of the
-                      <span class="code">data</span> argument.
-                    </p>
-                    <h5>Get symbol names</h5>
-                    <div class="code-block">
-                      <pre><code class="language-r">
-  data$getAllSymbols()
-  </code></pre>
-                    </div>
-                    <!--//code-block-->
-                    <h6 class="api-header">Value</h6>
-                    <p>
-                      A character vector with the names of all available (input
-                      and output) symbols.
-                    </p>
-                    <h6 class="api-header">Description</h6>
-                    <p>
-                      This method allows you to get the names of all available
-                      symbols.
-                    </p>
-                    <h5>Get symbol data</h5>
-                    <div class="code-block">
-                      <pre><code class="language-r">
-  data$get(symbolName)
-  </code></pre>
-                    </div>
-                    <!--//code-block-->
-                    <h6 class="api-header">Arguments</h6>
-                    <table class="api-arguments">
-                      <tbody>
-                        <tr>
-                          <th>symbolName</th>
-                          <td>
-                            The (lowercase) name of the GAMS symbol (or the
-                            special symbol(s)
-                            <span class="code">_scalars</span> for all input
-                            scalars or
-                            <span class="code">_scalars_out</span> for all
-                            output scalars). In case the specified symbol does
-                            not exist, an error with class
-                            <span class="code">error_invalid_symbol</span> is
-                            thrown.
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <h6 class="api-header">Value</h6>
-                    <p>An unnamed list of dataframes (tibbles).</p>
-                    <h6 class="api-header">Description</h6>
-                    <p>
-                      This method allows you to retrieve the data of the
-                      specified symbol for all loaded scenarios. The first
-                      element is always the sandbox scenario. To get the
-                      metadata (e.g. scenario name, scenario owner, etc.) of the
-                      different scenarios, use the
-                      <span class="code">getMetadata()</span> method. The order
-                      of the scenarios is the same for all symbols and the
-                      metadata.
-                    </p>
-                    <h5>Get metadata</h5>
-                    <div class="code-block">
-                      <pre><code class="language-r">
-  data$getMetadata()
-  </code></pre>
-                    </div>
-                    <!--//code-block-->
-                    <h6 class="api-header">Value</h6>
-                    <p>
-                      An unnamed list of dataframes (tibbles) with columns:
-                      <span class="code">_sid</span> (integer: internal scenario
-                      ID), <span class="code">_uid</span> (character: username
-                      of scenario owner),
-                      <span class="code">_sname</span> (character: scenario
-                      name), <span class="code">_stime</span> (character:
-                      timestamp of the last change, format: yyyy-mm-dd
-                      HH:MM:SS), <span class="code">_stag</span> (character:
-                      comma-separated list of scenario tags).
-                    </p>
-                    <h6 class="api-header">Description</h6>
-                    <p>
-                      This method allows you to retrieve the metadata (e.g.
-                      scenario name, scenario owner, etc.) for all loaded
-                      scenarios. The order is the same as the
-                      <span class="code">data$get(symbolName)</span> method.
-                    </p>
-                    <h5>Get attachment (meta)data</h5>
-                    <div class="code-block">
-                      <pre><code class="language-r">
-  data$getAttachmentData(scenIds = NULL, fileNames = NULL, includeContent = FALSE, includeSandboxScen = TRUE)
-  </code></pre>
-                    </div>
-                    <!--//code-block-->
-                    <h6 class="api-header">Arguments</h6>
-                    <table class="api-arguments">
-                      <tbody>
-                        <tr>
-                          <th>scenIds</th>
-                          <td>
-                            integer vector of scenario IDs (as returned by
-                            <span class="code">getMetadata()</span> method) or
-                            <span class="code">NULL</span> to include all loaded
-                            scenarios
-                          </td>
-                        </tr>
-                        <tr>
-                          <th>fileNames</th>
-                          <td>
-                            character vector of attachment filenames to filter
-                            or <span class="code">NULL</span> to include all
-                            loaded scenarios
-                          </td>
-                        </tr>
-                        <tr>
-                          <th>includeContent</th>
-                          <td>
-                            boolean specifying whether to include
-                            <span class="code">fileContent</span> column with
-                            attachment data
-                          </td>
-                        </tr>
-                        <tr>
-                          <th>includeSandboxScen</th>
-                          <td>
-                            boolean specifying whether to include attachments of
-                            the sandbox scenario (will be included with scenario
-                            ID (<span class="code">_sid</span>) of
-                            <span class="code">0</span>)
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <h6 class="api-header">Value</h6>
-                    <p>
-                      An dataframe (tibble) with columns:
-                      <span class="code">_sid</span> (integer: internal scenario
-                      ID, <span class="code">0</span> for sandbox scenario),
-                      <span class="code">fileName</span> (character: filename of
-                      the attachment),
-                      <span class="code">execPerm</span> (logical: whether model
-                      is allowed to read attachment),
-                      <span class="code">fileContent</span> (<a
-                        href="https://cran.r-project.org/web/packages/blob/index.html"
-                        target="_blank"
-                        >blob</a
-                      >: attachment data, only included if
-                      <span class="code">includeContent</span> is
-                      <span class="code">TRUE</span>).
-                    </p>
-                    <h6 class="api-header">Description</h6>
-                    <p>
-                      This method allows you to retrieve the metadata (e.g.
-                      scenario name, scenario owner, etc.) for all loaded
-                      scenarios. The order is the same as the
-                      <span class="code">data$get(symbolName)</span> method.
-                    </p>
-                  </div>
-                  <!--//section-block-->
-                </section>
-                <!--//doc-section-->
                 <section id="hcube-widget-groups" class="doc-section">
                   <h2 class="section-title">Hypercube module: Widget groups</h2>
                   <div class="section-block">
@@ -2140,6 +1947,199 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                   <!--//section-block-->
                 </section>
                 <!--//doc-section-->
+                <section id="remote-import-export" class="doc-section">
+                  <h2 class="section-title">
+                    DEPRECATED: Remote data import and export
+                  </h2>
+                  <div class="section-block">
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Warning:</b>
+                        <p>
+                          This function is deprecated as of MIRO 2.3 and should
+                          no longer be used. It will be removed in one of the
+                          next MIRO versions! Please use the
+                          <a href="#custom-import-export" class="scrollto"
+                            >custom data connectors</a
+                          >
+                          instead.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <p>
+                      A MIRO application can be supplied with data from various
+                      sources:
+                    </p>
+                    <ul>
+                      <li>Internal database: Import existing scenario data</li>
+                      <li>Local files: GDX, Excel</li>
+                      <li>Manually entered data</li>
+                    </ul>
+                    <p>
+                      In addition to these default interfaces, the data can also
+                      come from or go to <b>external sources</b>.
+                    </p>
+                    <p>
+                      This MIRO data connector is implemented as a
+                      <a
+                        href="https://en.wikipedia.org/wiki/Representational_state_transfer"
+                        target="_blank"
+                        >REST</a
+                      >
+                      service. To set up a new external data source, you have to
+                      edit the
+                      <a href="./faqs.html#file-config"
+                        ><i>&lt;modelname&gt;.json</i></a
+                      >
+                      file which is located in the directory:
+                      <i>conf_&lt;modelname&gt;</i>. The following example shows
+                      how to set up an external data source to populate the
+                      symbol <i>price</i>:
+                    </p>
+                    <pre><code class="language-json">"remoteImport": [
+    {
+    "name": "Importer",
+      "templates": [
+        {
+          "symNames": "price",
+          "url": "http://127.0.0.1:5000/io",
+          "method": "GET",
+          "authentication": {
+            "username": "@env:API_USER",
+            "password": "@env:API_PASS"
+          },
+          "httpBody": [
+            {
+              "key": "filename",
+              "value": "/Users/miro/Documents/importer/pickstock/price_data.csv"
+            }
+          ]
+        }
+      ]
+    }
+  ]</code></pre>
+                    <p>
+                      The configuration of external data sources is
+                      template-based. This means that you can specify one and
+                      the same template for multiple input symbols. First, we
+                      have to specify which input symbols this template should
+                      apply to. Then we have to tell MIRO about the endpoint to
+                      connect to (in this case a server running on localhost on
+                      port 5000). Supported protocols are HTTP and HTTPS.
+                    </p>
+                    <p>
+                      When the user requests to import data via this data source
+                      "Importer", the resulting HTTP request looks as follows:
+                      <kbd
+                        >GET
+                        /io?filename=%2FUsers%2Fmiro%2FDocuments%2Fimporter%2Fpickstock%2Fprice_data.csv&modelname=pickstock&dataset=price
+                        HTTP/1.1</kbd
+                      >. When observing the request, you will notice that in
+                      addition to the <kbd>filename</kbd> key that you
+                      specified, MIRO sends two more key-value pairs:
+                      <kbd>modelname</kbd> and <kbd>dataset</kbd> set to the
+                      name of the model and dataset being requested. These will
+                      always be appended to the body provided by you.
+                    </p>
+                    <p>
+                      MIRO waits for the REST endpoint to respond with the
+                      requested dataset. Before we talk about the format in
+                      which MIRO expects the data, let's look at how the data is
+                      exported from MIRO to a remote destination. The format
+                      MIRO exports data is the same as data should be sent to
+                      MIRO!
+                    </p>
+                    <p>
+                      One more aspect worth talking about is authentication.
+                      When your API is not running on the local machine, but a
+                      remote server, you might want to provide credentials with
+                      your request. In the example above, we provided the
+                      username and password used to authenticate to the API.
+                      However, instead of hardcoding these credentials in the
+                      configuration file (which is possible), it is recommended
+                      to use the special prefix
+                      <kbd>@env:</kbd> that instructs MIRO to read the
+                      credentials from environment variables. Currently, the
+                      only supported authentication method is
+                      <a
+                        href="https://en.wikipedia.org/wiki/Basic_access_authentication"
+                        target="_blank"
+                        >basic access authentication</a
+                      >. In case you need another method, send us an email or a
+                      pull request!
+                    </p>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Warning:</b>
+                        <p>
+                          When using basic access authentication, username and
+                          password are sent in plain text! Therefore, you have
+                          to use HTTPS instead of HTTP to provide
+                          confidentiality!!
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                    <p>
+                      Instead of importing data from a remote data source, you
+                      can also export data to a remote destination. In this
+                      example the data of the symbol stock_weight should be
+                      exported to a CSV file: <i>export_stock_weight.csv</i>. As
+                      we now push data to the API, we use the POST HTTP method.
+                      The structure of the JSON configuration is identical to
+                      that of remote importers you have seen before:
+                    </p>
+                    <pre><code class="language-json">"remoteExport": [
+    {
+      "name": "Exporter",
+      "templates": [
+        {
+          "symNames": "stock_weight",
+          "url": "http://127.0.0.1:5000/io",
+          "method": "POST",
+          "authentication": {
+            "username": "@env:API_USER",
+            "password": "@env:API_PASS"
+          },
+          "httpBody": [
+            {
+              "key": "filename",
+              "value": "/Users/miro/Documents/exporter/pickstock/export_stock_weight.csv"
+            }
+          ]
+        }
+      ]
+    }
+  ]</code></pre>
+                    <p>
+                      What's more interesting is the request body that MIRO
+                      sends to the remote server:
+                    </p>
+                    <pre><code class="language-json">{"data":[{"symbol":"AXP","value":0.472295069483016},{"symbol":"MMM","value":0.316292266161662},{"symbol":"MSFT","value":0.406195141778428}],"modelname":"pickstock","dataset":"stock_weight","options":{"filename":"/Users/miro/Documents/importer/pickstock/price_data.csv"}}</code></pre>
+                    <p>
+                      MIRO sends data serialized as JSON. The
+                      <kbd>modelname</kbd> and <kbd>dataset</kbd> keys are sent
+                      along just like in the GET request we saw previously when
+                      importing data. In addition, we get the custom key-value
+                      pairs we specified in a special object called
+                      <kbd>options</kbd> as well as the actual data of the
+                      symbol in <kbd>data</kbd>. Note how the table is
+                      serialized. In case you need MIRO to serialize tables in a
+                      different format, send us an email or a pull request.
+                    </p>
+                  </div>
+                </section>
+                <!--//doc-section-->
               </div>
               <!--//content-inner-->
             </div>
@@ -2150,11 +2150,11 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                   <a class="nav-link scrollto" href="#custom-import-export"
                     >Custom data connectors</a
                   >
-                  <a class="nav-link scrollto" href="#remote-import-export"
-                    >DEPRECATED: Remote data import and export</a
-                  >
                   <a class="nav-link scrollto" href="#custom-input-widgets"
                     >Custom input widgets</a
+                  >
+                  <a class="nav-link scrollto" href="#custom-compare-mode"
+                    >Custom scenario comparison</a
                   >
                   <a class="nav-link scrollto" href="#table-dropdown"
                     >Drop-down menu in input table</a
@@ -2170,11 +2170,11 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                     href="#pivot-compare-default-view"
                     >Default Views in Pivot Compare Mode</a
                   >
-                  <a class="nav-link scrollto" href="#custom-compare-mode"
-                    >Custom scenario comparison</a
-                  >
                   <a class="nav-link scrollto" href="#hcube-widget-groups"
                     >Hypercube module: Widget groups</a
+                  >
+                  <a class="nav-link scrollto" href="#remote-import-export"
+                    >DEPRECATED: Remote data import and export</a
                   >
                 </nav>
                 <!--//doc-menu-->

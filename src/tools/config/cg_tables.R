@@ -98,6 +98,24 @@ createTableData <- function(symbol, pivotCol = NULL, createColNames = FALSE) {
   ))
 }
 
+getPivotHeaders <- function(symbol) {
+  pivotCols <- NULL
+  if (length(outputSymHeaders[[symbol]]) > 2L) {
+    numericHeaders <- vapply(modelOut[[symbol]]$headers,
+      function(header) identical(header$type, "numeric"),
+      logical(1L),
+      USE.NAMES = FALSE
+    )
+    if (sum(numericHeaders) <= 1L) {
+      pivotCols <- setNames(
+        names(modelOut[[symbol]]$headers)[!numericHeaders],
+        outputSymHeaders[[symbol]][!numericHeaders]
+      )
+    }
+  }
+  return(pivotCols)
+}
+
 observeEvent(input$table_type, {
   req(length(input$table_type) > 0L)
 
@@ -283,20 +301,6 @@ observeEvent(
     isGamsTable <<- FALSE
 
     if (currentTableSymbolName %in% outputSymMultiDimChoices) {
-      pivotCols <<- NULL
-      if (length(outputSymHeaders[[currentTableSymbolName]]) > 2L) {
-        numericHeaders <- vapply(modelOut[[currentTableSymbolName]]$headers,
-          function(header) identical(header$type, "numeric"),
-          logical(1L),
-          USE.NAMES = FALSE
-        )
-        if (sum(numericHeaders) <= 1L) {
-          pivotCols <<- setNames(
-            names(modelOut[[currentTableSymbolName]]$headers)[!numericHeaders],
-            outputSymHeaders[[currentTableSymbolName]][!numericHeaders]
-          )
-        }
-      }
       if (currentTableSymbolName %in% names(configJSON$outputTables)) {
         currentConfig <- configJSON$outputTables[[currentTableSymbolName]]
         configuredTable <<- TRUE
@@ -323,6 +327,7 @@ observeEvent(
 )
 
 getOutputTableOptions <- reactive({
+  pivotCols <- getPivotHeaders(input$table_symbol)
   tagList(
     tags$div(
       class = "shiny-input-container option-wrapper", style = "max-width:400px;",
@@ -614,9 +619,6 @@ observeEvent(rv$tableConfig, {
     "dt" = {
       configJSON$datatable <<- rv$tableConfig$datatable
     },
-    "piv" = {
-      configJSON$pivottable <<- rv$tableConfig$pivottable
-    },
     {
       return()
     }
@@ -649,7 +651,7 @@ observeEvent(virtualActionButton(input$saveTableConfirm, rv$saveTableConfirm), {
       configJSON$outputTables[[currentTableSymbolName]]$pivotCols <<- NULL
     }
     if (isTRUE(input$outputTable_noGraph)) {
-      configJSON$dataRendering[[currentTableSymbolName]] <<- rv$tableWidgetConfig
+      configJSON$dataRendering[[currentTableSymbolName]] <<- configJSON$outputTables[[currentTableSymbolName]]
       configJSON$dataRendering[[currentTableSymbolName]]$outType <<- "datatable"
       if (identical(tolower(input$table_symbol), tolower(activeSymbol$name))) {
         newChartTool <<- "datatable"

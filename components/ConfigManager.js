@@ -1,11 +1,11 @@
-const { app } = require('electron');
-const Store = require('electron-store');
-const fs = require('fs');
-const path = require('path');
-const which = require('which');
-const execa = require('execa');
-const { tmpdir } = require('os');
-const log = require('electron-log/main');
+import { app } from 'electron';
+import Store from 'electron-store';
+import fs from 'node:fs';
+import path from 'node:path';
+import which from 'which';
+import { execa } from 'execa';
+import { tmpdir } from 'node:os';
+import log from 'electron-log/main.js';
 
 const minGams = '30.2';
 const minR = '4.0';
@@ -781,4 +781,4 @@ ${latestGamsInstalled}`);
     return false;
   }
 }
-module.exports = ConfigManager;
+export default ConfigManager;

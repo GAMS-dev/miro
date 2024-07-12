@@ -378,6 +378,222 @@
             }
          }
       }
+    },
+    "dashboardOptions":{
+      "description":"Dashboard options",
+      "type":"object",
+      "additionalProperties":false,
+      "properties":{
+        "valueBoxesTitle": {
+          "type": "string"
+        },
+        "valueBoxes": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "description":"Each valuebox needs a unique id. If a click on a valuebox should show a view, both ids need to be identical. No spaces allowed.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "color": {
+              "description":"Background color of value box",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "icon": {
+              "description":"Icon for value box from the https://fontawesome.com/ library",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "title": {
+              "description":"Title that is displayed in the valuebox.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "valueScalar": {
+              "description":"Name of a scalar output symbol whose value is to be displayed in the value box",
+              "type": "array",
+              "items": {
+                "type": ["string", "null"]
+              }
+            },
+            "prefix": {
+              "description":"String that is displayed before the value. When using a '+', negative values will be prefixed with a '-'",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "postfix": {
+              "description":"String that is displayed after the value.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "redPositive": {
+              "description":"Positive values are displayed in green by default, negative values in red. redPositive reverses this logic if set to true.",
+              "type": "array",
+              "items": {
+                "type": "boolean"
+              }
+            },
+            "noColor": {
+              "description":"Set to true if the value of the valuebox should not have a red/green color, but should be gray instead.",
+              "type": "array",
+              "items": {
+                "type": "boolean"
+              }
+            },
+            "decimals": {
+              "description":"Specify the number of decimal places to which the value of the valuebox should be rounded",
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          "required": ["id", "color", "icon", "title", "prefix", "postfix", "redPositive", "noColor", "valueScalar", "decimals"]
+        },
+        "dataViews": {
+          "description":"A data view is shown if  the corresponding value box is clicked in the user interface. The id must match the id of a valuebox.",
+          "type": "object",
+          "additionalProperties":{
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "dataViewsConfig": {
+          "description":"Configuraiton of the individual charts/tables.",
+          "type": "object",
+          "additionalProperties":{
+            "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "rows":{
+                   "description":"Columns in the symbol to prepopulate the rows of the pivot table.",
+                   "type":["array", "string", "null"],
+                   "minLength":1,
+                   "uniqueItems":true,
+                   "minItems":0,
+                   "items":{
+                      "type":"string",
+                      "minLength":1
+                   },
+                   "default":null
+                },
+                "cols":{
+                   "description":"Columns in the symbol to prepopulate the columns of the pivot table.",
+                   "type":"object",
+                   "additionalProperties":{
+                      "type":["array", "string", "null"],
+                      "uniqueItems":true
+                   }
+                },
+                "aggregations":{
+                   "description":"Columns in the symbol to prepopulate the aggregations of the pivot table.",
+                   "type":"object",
+                   "additionalProperties":{
+                      "type":["array", "string", "null"],
+                      "uniqueItems":true
+                   }
+                },
+                "aggregationFunction":{
+                   "description":"Function to use for aggregating data.",
+                   "type":"string",
+                   "enum": ["sum", "mean", "median", "min", "max", "count"]
+                },
+                "filter":{
+                   "description":"Columns in the symbol to prepopulate the filter of the pivot table (key) and the element to be filtered by (value).",
+                   "type":"object",
+                   "additionalProperties":{
+                      "type":["array", "string"],
+                      "uniqueItems":true
+                   }
+                },
+                "pivotRenderer":{
+                  "description":"Sepcify the default renderer.",
+                   "type":"string",
+                   "enum": ["table", "heatmap", "line", "bar", "stackedbar", "radar"]
+                },
+                "chartOptions": {
+                  "description":"Additional chart options",
+                   "type":"object",
+                   "additionalProperties":false,
+                   "properties":{
+                      "xTitle":{
+                        "description":"X-axis label",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "yTitle":{
+                        "description":"Y-axis label",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "yLogScale":{
+                        "description":"Use logarithmic scale on y-axis",
+                        "type": "boolean",
+                        "minLength": 1
+                      },
+                      "customChartColors": {
+                        "description": "Custom color for each UEL. Every second color is the hover color of previous one.",
+                        "additionalProperties": {
+                          "type": "array"
+                        }
+                      },
+                      "customLabels": {
+                        "description": "Custom labels for UELs.",
+                        "additionalProperties": {
+                          "type": "string"
+                        }
+                      }
+                   }
+                },
+                "data": {
+                  "description":"Symbol name that the data should come from.",
+                  "type": "string"
+                },
+                "decimals": {
+                  "description":"Number of decimal places to be displayed.",
+                  "type": "integer"
+                },
+                "userFilter": {
+                  "description":"Adds multi-dropdown menu(s) to a chart/table. Can also be a dataViewsConfig ID.",
+                  "type": ["string", "array"],
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "colWidth": {
+                  "description":"Specifies the width of the chart. Must be between 1 and 12.",
+                  "type": "integer"
+                },
+                "height": {
+                  "description":"Specifies the height of a single chart. Must be any valid css unit, e.g. '40vh' or '450px'.",
+                  "type": "string"
+                }
+              }
+            }
+            ]
+          }
+        }
+      },
+      "required": ["valueBoxes", "dataViews", "dataViewsConfig"]
     }
    },
    "additionalProperties":false,
@@ -1793,150 +2009,6 @@
                         "description":"Style of widget (table, pivottable, graph, graph+table).",
                         "type":"string",
                         "enum":[
-                           "pivot"
-                        ]
-                     },
-                     "label":{
-                        "description":"A label to be displayed above renderer (markdown supported)",
-                         "type":"string"
-                      },
-                     "height":{
-                        "description":"Height of the output element.",
-                        "type":"integer",
-                        "minimum":0
-                     },
-                     "pivottable":{
-                        "description":"Parameters used to customize pivottable (used to render input or output data).",
-                        "type":"object",
-                        "properties":{
-                           "rows":{
-                              "description":"Array of the names of rows in the data.frame to prepopulate the rows of the pivot table.",
-                              "type":["array", "string"],
-                              "minLength":1,
-                              "uniqueItems":true,
-                              "minItems":0,
-                              "items":{
-                                 "type":"string",
-                                 "minLength":1
-                              }
-                           },
-                           "cols":{
-                              "description":"Array of the names of columns in the data.frame to prepopulate the columns of the pivot table.",
-                              "type":["array", "string"],
-                              "minLength":1,
-                              "uniqueItems":true,
-                              "minItems":0,
-                              "items":{
-                                 "type":"string",
-                                 "minLength":1
-                              }
-                           },
-                           "aggregatorName":{
-                              "description":"Aggregator to use (see enum for list of possible aggregators)",
-                              "type":"string",
-                              "enum":[
-                                 "Count",
-                                 "Count Unique Values",
-                                 "List Unique Values",
-                                 "Sum",
-                                 "Integer Sum",
-                                 "Average",
-                                 "Median",
-                                 "Sample Variance",
-                                 "Sample Standard Deviation",
-                                 "Minimum",
-                                 "Maximum",
-                                 "First",
-                                 "Last",
-                                 "Sum over Sum",
-                                 "80% Upper Bound",
-                                 "80% Lower Bound",
-                                 "Sum as Fraction of Total",
-                                 "Sum as Fraction of Rows",
-                                 "Sum as Fraction of Columns",
-                                 "Count as Fraction of Total",
-                                 "Count as Fraction of Rows",
-                                 "Count as Fraction of Columns"
-                              ],
-                              "default":"Count"
-                           },
-                           "vals":{
-                              "description":"String or Array of Strings name(s) of the column(s) in the data.frame to use with aggregatorName. Must be additive (i.e a number).",
-                              "type":["array", "string"],
-                              "items":{
-                                 "type":"string"
-                              }
-                           },
-                           "rendererName":{
-                              "description":"Name of the renderer selected, e.g. Table, Heatmap, Treemap etc",
-                              "type":"string",
-                              "enum":[
-                                 "Table",
-                                 "Table Barchart",
-                                 "Heatmap",
-                                 "Row Heatmap",
-                                 "Col Heatmap",
-                                 "Treemap",
-                                 "Horizontal Bar Chart",
-                                 "Horizontal Stacked Bar Chart",
-                                 "Bar Chart",
-                                 "Stacked Bar Chart",
-                                 "Line Chart",
-                                 "Area Chart",
-                                 "Scatter Chart"
-                              ],
-                              "default":"Table"
-                           },
-                           "locale":{
-                              "description":"Localization options",
-                              "type":"string",
-                              "enum":[
-                                 "cs",
-                                 "da",
-                                 "de",
-                                 "en",
-                                 "es",
-                                 "fr",
-                                 "it",
-                                 "nl",
-                                 "pl",
-                                 "pt",
-                                 "ru",
-                                 "sq",
-                                 "tr",
-                                 "zh"
-                              ],
-                              "default":"en"
-                           },
-                           "subtotals":{
-                              "description":"Should the subtotals plugin be used?",
-                              "type":"boolean",
-                              "default":false
-                           },
-                           "width":{
-                              "description":"width of pivottable",
-                              "type":"integer",
-                              "minimum":1
-                           },
-                           "height":{
-                              "description":"height of pivottable",
-                              "type":"integer",
-                              "minimum":1
-                           }
-                        }
-                     }
-                  },
-                  "additionalProperties":true,
-                  "required":[
-                     "outType"
-                  ]
-               },
-               {
-                  "properties":{
-                     "outType":{
-                        "description":"Style of widget (table, pivottable, graph, graph+table).",
-                        "type":"string",
-                        "enum":[
                            "dtGraph",
                            "graph"
                         ]
@@ -2035,6 +2107,35 @@
                {
                   "properties":{
                      "outType":{
+                        "description":"Style of graph.",
+                        "type":"string",
+                        "enum":[
+                           "dashboard"
+                        ]
+                     },
+                     "options":{
+                       "$ref": "#/definitions/dashboardOptions"
+                     },
+                     "additionalData":{
+                       "description":"Specify additional symbols whose data should be handed to renderer. data parameter will be a named list of dataframes with names being symbol names",
+                        "type":["array", "string"],
+                        "minLength":1,
+                        "minItems":1,
+                        "uniqueItems":true,
+                        "items":{
+                           "type":"string",
+                           "minLength":1
+                        }
+                     }
+                  },
+                  "additionalProperties":false,
+                  "required":[
+                     "outType"
+                  ]
+               },
+               {
+                  "properties":{
+                     "outType":{
                         "description":"Custom style.",
                         "type":"string",
                         "minLength":2,
@@ -2044,7 +2145,6 @@
                               "graph",
                               "dtGraph",
                               "datatable",
-                              "pivot",
                               "miroPivot"
                            ]
                         }
@@ -2221,7 +2321,7 @@
          }
       },
       "pivottable":{
-         "description":"Parameters used to customize pivottable (used to render output data).",
+         "description":"DEPRECATED: PLEASE NO LONGER USE!",
          "type":"object",
          "additionalProperties":false,
          "properties":{
@@ -2417,6 +2517,12 @@
                 "description":"Gather grouped symbols on same tab",
                 "type":"boolean",
                 "default":false
+              },
+              "colsPerRow":{
+                "description":"Number symbols next to each other (per row)",
+                "type":"integer",
+                "minimum": 1,
+                "maximum": 3
               }
            }
          }
@@ -2449,6 +2555,12 @@
                 "description":"Gather grouped symbols on same tab",
                 "type":"boolean",
                 "default":false
+              },
+              "colsPerRow":{
+                "description":"Number symbols next to each other (per row)",
+                "type":"integer",
+                "minimum": 1,
+                "maximum": 3
               }
            }
          }

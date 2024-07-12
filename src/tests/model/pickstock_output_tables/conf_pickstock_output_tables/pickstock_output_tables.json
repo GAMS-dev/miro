@@ -214,9 +214,6 @@
       }
     }
   },
-  "pivottable": {
-    "bgColor": "rgb(255,128,0)"
-  },
   "storeLogFilesDuration": 7,
   "roundingDecimals": 2,
   "activateModules": {
@@ -287,7 +284,8 @@
   ],
   "readme": {
     "tabTitle": "Readme",
-    "filename": "Readme.md"
+    "enableMath": true,
+    "filename": "README.md"
   },
   "outputTables": {
     "_scalars_out": {

@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-const path = require('path');
-const fs = require('fs-extra');
-const execa = require('execa');
-const https = require('https');
+import path from 'node:path';
+import fs from 'fs-extra';
+import { execa } from 'execa';
+import https from 'node:https';
 
 let rExists = false;
 if (!fs.existsSync(path.join('.', 'r'))) {

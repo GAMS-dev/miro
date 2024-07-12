@@ -290,6 +290,8 @@ appsWrapper.on('click', '.btn-save-changes', function saveChangesHandler() {
   const appDescription = $(`#appDesc_${unicodeToHTMLID(appID)}`).text().trim();
   if (appDescription && appDescription !== lang.appDescPlaceholder) {
     newAppConfig.description = appDescription;
+  } else {
+    newAppConfig.description = '';
   }
   ipcRenderer.send('update-app-meta', newAppConfig);
 });

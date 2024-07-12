@@ -135,9 +135,6 @@
       "label": "Select the number of inner circles to be placed in the outer circle"
     }
   },
-  "pivottable": {
-    "bgColor": "transparent"
-  },
   "readme": {
     "tabTitle": "README",
     "filename": "README.md"

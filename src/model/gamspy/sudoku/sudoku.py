@@ -98,8 +98,7 @@ def main():
         raise Exception("Infeasible.")
 
     if force_unique_sol.toValue():
-        m_solnpool = Container(os.path.join(
-            m.working_directory, "solnpool.gdx"))
+        m_solnpool = Container("solnpool.gdx")
         if len(m_solnpool["index"].records.index) > 1:
             with open("miro.log", "a") as f:
                 f.writelines(

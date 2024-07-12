@@ -2603,6 +2603,10 @@
               "type": "string",
               "minLength": 1
             },
+            "newViewMultiChartSeries": {
+              "type": "string",
+              "minLength": 1
+            },
             "newViewCbCustomColors": {
               "type": "string",
               "minLength": 1
@@ -2745,11 +2749,27 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "pie": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "doughnut": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "bar": {
                   "type": "string",
                   "minLength": 1
                 },
+                "horizontalbar": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "stackedbar": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "horizontalstackedbar": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -2778,7 +2798,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 10
+              "minProperties": 14
             },
             "invalidFilters": {
               "type": "object",
@@ -2796,7 +2816,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 54
+          "minProperties": 55
         },
         "datatable": {
           "type": "object",
@@ -4456,17 +4476,6 @@
               },
               "minProperties": 1
             },
-            "pivotcolor": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "label": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "minProperties": 1
-            },
             "mirologfile": {
               "type": "object",
               "additionalProperties": false,
@@ -4801,7 +4810,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 40
+          "minProperties": 39
         },
         "tables": {
           "type": "object",
@@ -6429,6 +6438,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "dashboard": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "valuebox": {
                   "type": "string",
                   "minLength": 1
@@ -6438,7 +6451,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 12
+              "minProperties": 13
             },
             "validate": {
               "type": "object",
@@ -7516,12 +7529,16 @@
                       "type": "string",
                       "minLength": 1
                     },
+                    "groupSameTabInNoCols": {
+                      "type": "string",
+                      "minLength": 1
+                    },
                     "groupSameTabWidget": {
                       "type": "string",
                       "minLength": 1
                     }
                   },
-                  "minProperties": 6
+                  "minProperties": 7
                 },
                 "addOutputGroup": {
                   "type": "object",
@@ -7538,9 +7555,13 @@
                     "groupSameTabOut": {
                       "type": "string",
                       "minLength": 1
+                    },
+                    "groupSameTabOutNoCols": {
+                      "type": "string",
+                      "minLength": 1
                     }
                   },
-                  "minProperties": 3
+                  "minProperties": 4
                 },
                 "addSymlink": {
                   "type": "object",
@@ -7985,6 +8006,10 @@
                       "type": "string",
                       "minLength": 1
                     },
+                    "variableSize": {
+                      "type": "string",
+                      "minLength": 1
+                    },
                     "opacity": {
                       "type": "string",
                       "minLength": 1
@@ -8020,7 +8045,7 @@
                       }
                     }
                   },
-                  "minProperties": 16
+                  "minProperties": 17
                 },
                 "addPieDataEl": {
                   "type": "object",

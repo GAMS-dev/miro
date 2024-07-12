@@ -708,6 +708,7 @@
       "newViewxTitle": "X轴标签（可选的）",
       "newViewyTitle": "Y轴标签（可选的）",
       "newViewyLogScale": "在 y 轴上使用对数刻度？",
+      "newViewMultiChartSeries": "将系列渲染为 %s 图表？",
       "newViewCbCustomColors": "使用自定义颜色？",
       "newViewCbManualColors": "手动输入颜色？",
       "newViewBtCancel": "取消",
@@ -744,8 +745,12 @@
       "renderer":{
         "table": "表格",
         "heatmap": "热图",
+        "pie": "饼图",
+        "doughnut": "甜甜圈图表",
         "bar": "柱形图",
+        "horizontalbar": "水平条形图",
         "stackedbar": "堆积柱形图",
+        "horizontalstackedbar": "水平叠加条形图",
         "radar": "雷达图",
         "line": "折线图",
         "scatter": "散点图",
@@ -1143,9 +1148,6 @@
       },
       "hiddenOutputScalars":{
         "label": "对于不能用标量图表显示的标量，使用其他图形表示"
-      },
-      "pivotcolor":{
-        "label": "指定数据透视表中行和列标题的背景颜色"
       },
       "mirologfile":{
         "label": "包括自定义日志文件？",
@@ -1627,6 +1629,7 @@
         "leaflet": "地图工具",
         "timevis": "甘特图",
         "miropivot": "数据透视表",
+        "dashboard": "仪表盘",
         "valuebox": "标量值的值框",
         "custom": "自定义绘制器"
       },
@@ -1878,13 +1881,15 @@
           "symbolWidgetgroups": "小组件组的名称",
           "groupMemberIn": "选择该组成员",
           "groupMemberWidget": "选择该组成员",
-          "groupSameTabIn": "在同一标签上并排显示所有符号",
+          "groupSameTabIn": "在同一选项卡上显示所有符号",
+          "groupSameTabInNoCols": "彼此相邻的符号数量",
           "groupSameTabWidget": "在同一个标签页上并排显示所有小部件"
         },
         "addOutputGroup":{
           "symbolOutputgroups": "输出组的名称",
           "groupMemberOut": "选择该组成员",
-          "groupSameTabOut": "在同一标签上并排显示所有符号"
+          "groupSameTabOut": "在同一选项卡上显示所有符号",
+          "groupSameTabOutNoCols": "彼此相邻的符号数量"
         },
         "addSymlink":{
           "source": "输出符号的名称",
@@ -1987,6 +1992,7 @@
           "options": "其他图表选项",
           "width": "选择已创建元素的最大宽度",
           "height": "选择已创建元素的最大高度",
+          "variableSize": "图表的大小是否应与数值成比例？",
           "opacity": "选择图表的不透明度",
           "showlabels": "是否将值显示在图表元素上方？",
           "transitionTime": "指定更新图表属性的持续时间（以毫秒为单位）",

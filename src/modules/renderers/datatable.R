@@ -50,7 +50,7 @@ renderDTable <- function(data, options, roundPrecision = 2, render = TRUE, metad
   data <- roundDf(data, roundPrecision)
 
   if (render) {
-    return(renderDataTable(data, options = options))
+    return(renderDT(data, options = options))
   }
   return(datatable(data, options = options))
 }

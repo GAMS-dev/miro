@@ -8,7 +8,7 @@ renderMirowidget_iilocdata <- function(input, output, session, data, options = N
 
   rv <- reactiveValues(markerPositions = list())
   observe({
-    if (length(data()) != 3L && !nrow(data())) {
+    if (length(data()) != 3L || !nrow(data())) {
       return()
     }
     isolate({

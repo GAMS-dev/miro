@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-const execa = require('execa');
-const path = require('path');
+import { execa } from 'execa';
+import path from 'node:path';
 
-exports.default = async function notarizing(context) {
+export default async function notarizing(context) {
   if (process.platform !== 'darwin' || !process.env.CODESIGN_IDENTITY) {
     return;
   }
@@ -24,4 +24,4 @@ exports.default = async function notarizing(context) {
     console.log(`Problems notarizing app. Error message: ${e.message}`);
     throw e;
   }
-};
+}

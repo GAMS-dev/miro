@@ -16,6 +16,14 @@ const converter = new showdown.Converter({
   noHeaderId: true,
   openLinksInNewWindow: true,
 });
+const converterMath = new showdown.Converter({
+  tables: true,
+  tasklists: true,
+  strikethrough: true,
+  noHeaderId: true,
+  openLinksInNewWindow: true,
+  extensions: ['mathjax'],
+});
 let lang = {};
 let indices = [];
 let indexAliases = [];
@@ -71,16 +79,17 @@ const arrayTypes = {
     let name;
     let members;
     let sameTab = false;
+    let colsPerRow = '2';
     if (defaults !== undefined) {
       if (defaults.sameTab !== undefined) {
-        ({ sameTab } = defaults);
+        ({ sameTab, colsPerRow } = defaults);
       }
       ({ name, members } = defaults);
     }
     const elements = {
       symbol_inputGroups: ['text', lang.addInputGroup.symbolInputgroups, name],
       group_memberIn: ['select', lang.addInputGroup.groupMemberIn, inputSymbols, inputSymbolsAliases, members, true],
-      group_sameTabIn: ['checkbox', lang.addInputGroup.groupSameTabIn, sameTab],
+      group_sameTabIn: ['selectDep', [lang.addInputGroup.groupSameTabIn, 'select', lang.addInputGroup.groupSameTabInNoCols, ['1', '2', '3'], ['1', '2', '3'], colsPerRow || '2'], lang.addInputGroup.groupSameTabInNoCols, ['_'], ['1'], '_', sameTab === true],
     };
     return ([elements, { elRequired: false }, 'general']);
   },
@@ -106,16 +115,17 @@ const arrayTypes = {
     let name;
     let members;
     let sameTab = false;
+    let colsPerRow = '2';
     if (defaults !== undefined) {
       if (defaults.sameTab !== undefined) {
-        ({ sameTab } = defaults);
+        ({ sameTab, colsPerRow } = defaults);
       }
       ({ name, members } = defaults);
     }
     const elements = {
       symbol_outputGroups: ['text', lang.addOutputGroup.symbolOutputgroups, name],
       group_memberOut: ['select', lang.addOutputGroup.groupMemberOut, outputSymbols, outputSymbolsAliases, members, true],
-      group_sameTabOut: ['checkbox', lang.addOutputGroup.groupSameTabOut, sameTab],
+      group_sameTabOut: ['selectDep', [lang.addOutputGroup.groupSameTabOut, 'select', lang.addOutputGroup.groupSameTabOutNoCols, ['1', '2', '3'], ['1', '2', '3'], colsPerRow || '2', false], lang.addOutputGroup.groupSameTabOutNoCols, ['_'], ['1'], '1', sameTab === true],
     };
     return ([elements, { elRequired: false }, 'general']);
   },
@@ -355,13 +365,12 @@ const arrayTypes = {
   },
   leaflet_minicharts(defaults) {
     let lng; let lat; let chartdata; let type; let width; let height;
-    let opacity; let showLabels; let transitionTime; let legend;
-    let legendPosition; let time; let
-      layerId;
+    let variableSize; let opacity; let showLabels; let transitionTime;
+    let legend; let legendPosition; let time; let layerId;
     if (defaults != null) {
       [, {
-        lng, lat, chartdata, type, width, height, opacity, showLabels,
-        transitionTime, legend, legendPosition, time, layerId,
+        lng, lat, chartdata, type, width, height, variableSize, opacity,
+        showLabels, transitionTime, legend, legendPosition, time, layerId,
       }] = defaults;
     }
     const elements = {
@@ -373,6 +382,7 @@ const arrayTypes = {
       optionsStart: ['optionsStart', lang.addLeafletMinicharts.options],
       leafChart_width: ['numeric', lang.addLeafletMinicharts.width, width == null ? 30 : width, 0],
       leafChart_height: ['numeric', lang.addLeafletMinicharts.height, height == null ? 30 : height, 0],
+      leafChart_variableSize: ['checkbox', lang.addLeafletMinicharts.variableSize, variableSize],
       leafChart_opacity: ['numeric', lang.addLeafletMinicharts.opacity, opacity == null ? 1 : opacity, 0, 1, 0.1],
       leafChart_showlabels: ['checkbox', lang.addLeafletMinicharts.showlabels, showLabels],
       leafChart_transitionTime: ['numeric', lang.addLeafletMinicharts.transitionTime, transitionTime == null ? 750 : transitionTime, 0],
@@ -569,7 +579,9 @@ const arrayTypes = {
 export function mdToHTML(mdContent, destId, useKatex) {
   if (useKatex === true) {
     const element = document.getElementById(destId);
-    element.innerHTML = converter.makeHtml(mdContent.replace(/(?<!\\)\\\$/g, '<span>$$</span>'));
+    element.innerHTML = converterMath.makeHtml(
+      mdContent.replace(/(?<!\\)\\\$/g, '<span>$$</span>'),
+    );
     parseKatex(element);
   } else {
     document.getElementById(destId).innerHTML = converter.makeHtml(mdContent);

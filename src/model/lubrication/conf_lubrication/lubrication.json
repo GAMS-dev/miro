@@ -13,9 +13,6 @@
       "newAlias": "pressurethickness"
     }
   },
-  "pivottable": {
-    "bgColor": "transparent"
-  },
   "theme": "browser",
   "defCompMode": "split",
   "roundingDecimals": 2,

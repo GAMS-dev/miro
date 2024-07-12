@@ -1,13 +1,13 @@
-const log = require('electron-log/main');
-const http = require('axios');
-const execa = require('execa');
-const path = require('path');
-const {
+import log from 'electron-log/main.js';
+import http from 'axios';
+import { execa } from 'execa';
+import path from 'node:path';
+import {
   getAppDbPath, isFalse,
-} = require('./util');
-const {
+} from './util.js';
+import {
   randomPort, waitFor, isNull, kill,
-} = require('./helpers');
+} from './helpers.js';
 
 /*
     This code was largely inspired by and taken from:
@@ -360,4 +360,4 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
   }
 }
 
-module.exports = MiroProcessManager;
+export default MiroProcessManager;

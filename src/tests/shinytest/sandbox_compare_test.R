@@ -61,7 +61,7 @@ Sys.sleep(1)
 app$click(selector = ".btSplitView button")
 app$click(selector = ".btSplitView a[data-view='pivot']")
 
-expect_error(app$wait_for_js("$('.box-title button').is(':visible');", timeout = 5000L), NA)
+expect_error(app$wait_for_js("$('#pivotCompBtWrapper').is(':visible');", timeout = 5000L), NA)
 app$run_js("$('.box-title:visible button').eq(0).click();")
 expect_error(app$wait_for_js("$('.base-scen').text()==='bliblablub (Sandbox)'", timeout = 5000L), NA)
 app$set_inputs(btLoadScenConfirm = "click")

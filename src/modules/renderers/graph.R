@@ -699,17 +699,27 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
         )
       })
       lapply(seq_along(options$minicharts), function(j) {
+        chartDataTmp <- data[, options$minicharts[[j]]$chartdata]
+        if (!nrow(chartDataTmp)) {
+          return() # to avoid ugly errors in log
+        }
+        if (identical(options$minicharts[[j]]$variableSize, TRUE)) {
+          rowSumsTmp <- rowSums(chartDataTmp, na.rm = TRUE)
+          multiplier <- rowSumsTmp / max(rowSumsTmp)
+        } else {
+          multiplier <- 1
+        }
         p <<- addMinicharts(p,
           lng = data[[options$minicharts[[j]]$lng]],
           lat = data[[options$minicharts[[j]]$lat]],
-          chartdata = data[, options$minicharts[[j]]$chartdata],
+          chartdata = chartDataTmp,
           time = if (length(options$minicharts[[j]]$time)) data[[options$minicharts[[j]]$time]],
           # maxValues = options$minicharts[[j]]$maxValues,
           type = options$minicharts[[j]]$type,
           fillColor = d3.schemeCategory10[1],
           colorPalette = d3.schemeCategory10,
-          width = options$minicharts[[j]]$width,
-          height = options$minicharts[[j]]$height,
+          width = as.numeric(options$minicharts[[j]]$width) * multiplier,
+          height = as.numeric(options$minicharts[[j]]$height) * multiplier,
           opacity = options$minicharts[[j]]$opacity,
           showLabels = options$minicharts[[j]]$showLabels,
           labelText = NULL, labelMinSize = 8,

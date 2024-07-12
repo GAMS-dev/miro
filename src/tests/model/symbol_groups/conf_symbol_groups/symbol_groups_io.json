@@ -1,0 +1,177 @@
+{
+	"modelTitle":	"G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m",
+	"inputSymbols":	{
+		"test1":	{
+			"alias":	"test1",
+			"symtype":	"set",
+			"headers":	{
+				"uni":	{
+					"type":	"string",
+					"alias":	"Universal set"
+				},
+				"text":	{
+					"type":	"string",
+					"alias":	"Set text "
+				}
+			}
+		},
+		"test2":	{
+			"alias":	"test2",
+			"symtype":	"set",
+			"headers":	{
+				"uni":	{
+					"type":	"string",
+					"alias":	"Universal set"
+				},
+				"text":	{
+					"type":	"string",
+					"alias":	"Set text "
+				}
+			}
+		},
+		"test3":	{
+			"alias":	"test3",
+			"symtype":	"set",
+			"headers":	{
+				"uni":	{
+					"type":	"string",
+					"alias":	"Universal set"
+				},
+				"text":	{
+					"type":	"string",
+					"alias":	"Set text "
+				}
+			}
+		},
+		"test4":	{
+			"alias":	"test4",
+			"symtype":	"set",
+			"headers":	{
+				"uni":	{
+					"type":	"string",
+					"alias":	"Universal set"
+				},
+				"text":	{
+					"type":	"string",
+					"alias":	"Set text "
+				}
+			}
+		},
+		"test5":	{
+			"alias":	"test5",
+			"symtype":	"set",
+			"headers":	{
+				"uni":	{
+					"type":	"string",
+					"alias":	"Universal set"
+				},
+				"text":	{
+					"type":	"string",
+					"alias":	"Set text "
+				}
+			}
+		},
+		"test6":	{
+			"alias":	"test6",
+			"symtype":	"set",
+			"headers":	{
+				"uni":	{
+					"type":	"string",
+					"alias":	"Universal set"
+				},
+				"text":	{
+					"type":	"string",
+					"alias":	"Set text "
+				}
+			}
+		}
+	},
+	"outputSymbols":	{
+		"out1":	{
+			"alias":	"out1",
+			"symtype":	"parameter",
+			"headers":	{
+				"test1":	{
+					"type":	"string",
+					"alias":	"test1"
+				},
+				"test2":	{
+					"type":	"string",
+					"alias":	"test2"
+				},
+				"test3":	{
+					"type":	"string",
+					"alias":	"test3"
+				},
+				"test4":	{
+					"type":	"string",
+					"alias":	"test4"
+				},
+				"test5":	{
+					"type":	"string",
+					"alias":	"test5"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"out1"
+				}
+			}
+		},
+		"out2":	{
+			"alias":	"out2",
+			"symtype":	"parameter",
+			"headers":	{
+				"test2":	{
+					"type":	"string",
+					"alias":	"test2"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"out2"
+				}
+			}
+		},
+		"out3":	{
+			"alias":	"out3",
+			"symtype":	"parameter",
+			"headers":	{
+				"test1":	{
+					"type":	"string",
+					"alias":	"test1"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"out3"
+				}
+			}
+		},
+		"out4":	{
+			"alias":	"out4",
+			"symtype":	"parameter",
+			"headers":	{
+				"test6":	{
+					"type":	"string",
+					"alias":	"test6"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"out4"
+				}
+			}
+		},
+		"out5":	{
+			"alias":	"out5",
+			"symtype":	"parameter",
+			"headers":	{
+				"test5":	{
+					"type":	"string",
+					"alias":	"test5"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"out5"
+				}
+			}
+		}
+	}
+}

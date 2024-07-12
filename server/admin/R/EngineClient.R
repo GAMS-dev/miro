@@ -194,7 +194,7 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
           usetz = TRUE
         )
       ),
-      timeout(4)
+      timeout(10)
     )
 
     if (status_code(ret) != 200) {

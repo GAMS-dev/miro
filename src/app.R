@@ -1,5 +1,5 @@
 # version number
-MIROVersion <- "2.9.2"
+MIROVersion <- "2.9.9999"
 APIVersion <- "1"
 MIRORDate <- "Apr 18 2024"
 
@@ -34,7 +34,7 @@ requiredPackages <- c("R6", "jsonlite", "zip", "tibble", "readr", "futile.logger
 if (!miroBuildOnly) {
   requiredPackages <- c(
     requiredPackages, "shiny", "shinydashboard", "rhandsontable",
-    "rpivotTable", "stringi", "processx",
+    "stringi", "processx",
     "dplyr", "readxl", "writexl", "tidyr",
     "DT", "sortable", "chartjs", "gdxrrwMIRO"
   )
@@ -354,7 +354,7 @@ if (is.null(errMsg)) {
         modelIn[[i]][["template"]] <- modelInTemplate[[i]]
       }
     }
-    if (length(config$hcModule$scalarsConfig) && is.null(config$hcModule$scalarsConfig[[1]]$widgetId)) {
+    if (length(config$hcModule$scalarsConfig) && !is.null(config$hcModule$scalarsConfig[[1]]$type)) {
       # legacy app (<2.9.0), need to migrate to support hcubeWidgetGroups
       config$hcModule$scalarsConfig <- list(list(
         name = NULL,

@@ -1,26 +1,26 @@
 data.table, 1.15.4
 cpp11, 0.4.7
-xfun, 0.43
-fastmap, 1.1.1
-backports, 1.4.1
+xfun, 0.45
+fastmap, 1.2.0
+backports, 1.5.0
 assertthat, 0.2.1
-crayon, 1.5.2
+crayon, 1.5.3
 glue, 1.7.0
 fansi, 1.0.6
-cli, 3.6.2
+cli, 3.6.3
 utf8, 1.2.4
 Rcpp, 1.0.12
 R6, 2.5.1
 BH, 1.84.0-0
 magrittr, 2.0.3
-rlang, 1.1.3
+rlang, 1.1.4
 ellipsis, 0.3.2
 later, 1.3.2
 promises, 1.3.0
 httpuv, 1.6.15
 mime, 0.12
 jsonlite
-digest, 0.6.35
+digest, 0.6.36
 sourcetools, 0.1.7-1
 xtable, 1.8-4
 curl, 5.2.1
@@ -31,12 +31,12 @@ jquerylib, 0.1.4
 withr, 3.0.0
 leaflet.providers, 2.0.0
 commonmark, 1.9.1
-cachem, 1.0.8
+cachem, 1.1.0
 memoise, 2.0.1
 fontawesome, 0.5.2
 lifecycle, 1.0.4
 vctrs, 0.6.5
-fs, 1.6.3
+fs, 1.6.4
 rappdirs, 0.3.3
 sass, 0.4.9
 bslib, 0.7.0
@@ -44,7 +44,7 @@ shiny
 shinyAce, 0.4.2
 colorspace, 2.1-0
 purrr, 1.0.2
-yaml, 2.3.8
+yaml, 2.3.9
 labeling, 0.4.3
 munsell, 0.5.1
 lazyeval, 0.2.2
@@ -55,10 +55,10 @@ htmlwidgets, 1.5.4
 png, 0.1-8
 RColorBrewer, 1.1-3
 lattice, 0.22-6
-sp, 2.1-3
+sp, 2.1-4
 viridisLite, 0.4.2
 raster, 3.4-13
-farver, 2.1.0
+farver, 2.1.2
 scales, 1.3.0
 zeallot, 0.1.0
 crosstalk, 1.2.1
@@ -75,8 +75,8 @@ sys, 3.4.2
 askpass, 1.2.0
 openssl
 prettyunits, 1.2.0
-stringi, 1.8.3
-DBI, 1.2.2
+stringi, 1.8.4
+DBI, 1.2.3
 blob, 1.2.4
 hms, 1.1.3
 stringr, 1.5.1
@@ -87,7 +87,7 @@ shinydashboard
 timevis
 rematch, 2.0.0
 formatR, 1.14
-ps, 1.7.6
+ps, 1.7.7
 clipr, 0.8.0
 cellranger, 1.1.0
 progress, 1.2.3
@@ -99,11 +99,10 @@ listenv, 0.9.1
 processx, 3.8.4
 readxl, 1.4.3
 writexl, 1.5.0
-rpivotTable, 0.3.0
 futile.logger, 1.4.3
 zip, 2.3.1
 leaflet.minicharts, 0.6.2
-xts, 0.13.2
+xts, 0.14.0
 dygraphs, 1.1.1.6
 parallelly, 1.37.1
 future, 1.33.2

@@ -6,7 +6,7 @@ app <- AppDriver$new("../../",
 Sys.sleep(2)
 app$set_inputs(inputTabset = "inputTabset_3")
 app$set_inputs(btImport = "click")
-Sys.sleep(0.5)
+Sys.sleep(1)
 app$set_inputs(tb_importData = "tb_importData_local")
 app$upload_file(localInput = "../data/transport.xlsx")
 Sys.sleep(0.5)

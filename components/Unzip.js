@@ -1,7 +1,8 @@
-const path = require('path');
-const fs = require('fs');
-const yauzl = require('yauzl');
-const { Transform } = require('stream');
+import path from 'node:path';
+import fs from 'node:fs';
+import yauzl from 'yauzl';
+import { Transform } from 'node:stream';
+import { promisify } from 'node:util';
 
 function mkdirp(dir, cb) {
   if (dir === '.') return cb();
@@ -18,7 +19,7 @@ function mkdirp(dir, cb) {
   return true;
 }
 
-function unzip(zipname, destdir, callback) {
+function unzipCb(zipname, destdir, callback) {
   function handleZipFile(err, zipfile) {
     if (err) throw err;
 
@@ -102,4 +103,5 @@ function unzip(zipname, destdir, callback) {
   }
   yauzl.open(zipname, { lazyEntries: true }, handleZipFile);
 }
-module.exports = unzip;
+const unzip = promisify(unzipCb);
+export default unzip;
