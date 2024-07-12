@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir --upgrade --user -r /requirements.txt
 FROM --platform=linux/amd64 base
 
 LABEL com.gamsmiroauth.vendor="GAMS Development Corp."\
-    com.gamsmiroauth.version="2.9.9999"\
+    com.gamsmiroauth.version="2.10.0"\
     com.gamsmiroauth.license="GPL-3.0"\
     com.gamsmiroauth.description="GAMS MIRO Docker image for auth container"\
     maintainer="fproske@gams.com"
