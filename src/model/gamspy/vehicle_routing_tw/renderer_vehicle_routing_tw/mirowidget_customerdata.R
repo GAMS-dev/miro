@@ -118,9 +118,6 @@ renderMirowidget_customerdata <- function(input, output, session, data, options 
 
   observe({
     dataTmp <- data()
-    if (!init) {
-      return()
-    }
     isolate({
       rv$markerPositions <- lapply(seq_len(nrow(dataTmp)), function(i) {
         list(
