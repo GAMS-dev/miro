@@ -40,17 +40,17 @@ def main():
         description="vehicles",
     )
 
-    customerDataHeader = Set(
+    customer_data_header = Set(
         m,
         "customerDataHeader",
         records=["lat", "lng", "demand", "readyTime", "dueDate", "serviceTime"],
     )
 
     # Data
-    customerData = Parameter(
+    customer_data = Parameter(
         m,
         "customerData",
-        domain=[i, customerDataHeader],
+        domain=[i, customer_data_header],
         domain_forwarding=[True, False],
         records=data.melt(id_vars="i", var_name="customerDataHeader"),
         is_miro_input=True,
@@ -102,19 +102,19 @@ def main():
         description="help parameter for computing the distance from customer ci to cj",
     )
 
-    q[i] = customerData[i, "demand"]
-    s[i] = customerData[i, "serviceTime"]
-    e[i] = customerData[i, "readyTime"]
-    l[i] = customerData[i, "dueDate"]
+    q[i] = customer_data[i, "demand"]
+    s[i] = customer_data[i, "serviceTime"]
+    e[i] = customer_data[i, "readyTime"]
+    l[i] = customer_data[i, "dueDate"]
 
     earth_radius = 6371
     help_d[i, j] = sqr(
-        sin((customerData[i, "lat"] - customerData[j, "lat"]) * np.pi / (2 * 180))
+        sin((customer_data[i, "lat"] - customer_data[j, "lat"]) * np.pi / (2 * 180))
     ) + (
-        cos(customerData[i, "lat"] * np.pi / 180)
-        * cos(customerData[j, "lat"] * np.pi / 180)
+        cos(customer_data[i, "lat"] * np.pi / 180)
+        * cos(customer_data[j, "lat"] * np.pi / 180)
         * sqr(
-            sin((customerData[i, "lng"] - customerData[j, "lng"]) * np.pi / (2 * 180))
+            sin((customer_data[i, "lng"] - customer_data[j, "lng"]) * np.pi / (2 * 180))
         )
     )
 
@@ -123,7 +123,7 @@ def main():
     depot_name = d.records["i"].iloc[0]
 
     # to linearize the start time equation, where the slack is the allowed timeframe at the depot
-    depot_data = customerData.records[customerData.records["i"] == depot_name]
+    depot_data = customer_data.records[customer_data.records["i"] == depot_name]
     M = (
         next(iter(depot_data[depot_data["customerDataHeader"] == "dueDate"][
             "value"
@@ -187,7 +187,7 @@ def main():
     )
 
     # Equations
-    max_K_starts_at_depot = Equation(
+    max_k_starts_at_depot = Equation(
         m,
         name="max_K_starts_at_depot",
         domain=[i],
@@ -242,7 +242,7 @@ def main():
         description="if k goes into j it also has to leave j",
     )
 
-    max_K_starts_at_depot[i].where[Ord(i) == 1] = (
+    max_k_starts_at_depot[i].where[Ord(i) == 1] = (
         Sum(Domain(j, k).where[Ord(j) > 1], x[i, j, k]) <= vehicle_number
     )
     start_at_depot[k] = Sum(Domain(j, i).where[Ord(i) == 1], x[i, j, k]) <= 1
