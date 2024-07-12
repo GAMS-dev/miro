@@ -9,7 +9,7 @@ $i =$ customers, $j =$ alias of $i$, $k =$ vehicles
 ### Given Data:
 Two scalars: $K =$ number of vehicles and $Q = $ capacity of all vehicles (could easily be changed to $q_k$ to give individual capacities for each vehicle).
 
-For each customer, the latitude and longitude values from which the distance $d_{ij}$ is calculated. Furthermore, their demand $q_i$, the service time $s_i$, the ready time $e_i$ (earliest) and the due time $l_i$ (latest) for each of the $N$ customers. 
+For each customer, the latitude and longitude values from which the distance $d_{ij}$ is calculated. Furthermore, their demand $q_i$, the service time $s_i$, the ready time $e_i$ (earliest) and the due time $l_i$ (latest) for each of the $N$ customers.
 
 ### Decision Variables:
 $x_{ijk} =$ if vehicle $k$ drives from customer $i$ to $j$, $t_i = $ arrival time a customer $i$, $w_i = $ waiting time at customer $i$ ($e_i-t_i$) where $x_{ijk} \in  \{ 0,1\}, t_i, w_i  \ge0$ for all $i,j,k$.
@@ -59,7 +59,7 @@ To add a customer, click on the map. This will create an entry in the table belo
 
 The depot will always be the first customer entered in the table! It can't be removed, but the rest can be changed. Don't forgot to set a reasonable due date, otherwise the solution will be infeasible if the vehicles don't have enough time to return to the depot.
 
-<img src="/static_vehicle_routing_tw/input_demo.png" alt="input section" width="1000"/>
+<img src="static_vehicle_routing_tw/input_demo.png" alt="input section" width="1000"/>
 
 
 Furthermore, the number of vehicles and their capacity can be changed under the *Input widgets* tab.
