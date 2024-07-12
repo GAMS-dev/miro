@@ -326,7 +326,7 @@ DbSchema <- R6Class("DbSchema", public = list(
         " integer PRIMARY KEY,"
       },
       dbQuoteIdentifier(private$conn, schema$colNames[["uid"]]),
-      " varchar(50) NOT NULL,",
+      " varchar(255) NOT NULL,",
       dbQuoteIdentifier(private$conn, schema$colNames[["sname"]]),
       " varchar(255) NOT NULL,",
       dbQuoteIdentifier(private$conn, schema$colNames[["stime"]]),
@@ -361,7 +361,7 @@ DbSchema <- R6Class("DbSchema", public = list(
         " integer PRIMARY KEY,"
       },
       dbQuoteIdentifier(private$conn, schema$colNames[["uid"]]),
-      " varchar(50) NOT NULL,",
+      " varchar(255) NOT NULL,",
       dbQuoteIdentifier(private$conn, schema$colNames[["status"]]),
       " integer,",
       dbQuoteIdentifier(private$conn, schema$colNames[["time"]]),
