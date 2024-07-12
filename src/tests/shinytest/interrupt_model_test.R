@@ -20,6 +20,7 @@ Sys.sleep(0.5)
 app$expect_values(output = "outputDataTitle")
 expect_error(app$click(selector = "#outputTableView"), NA)
 app$click(selector = "#sidebarItemExpanded a[data-value='gamsinter']")
+Sys.sleep(0.5)
 app$wait_for_js("$('#logStatusContainer').is(':visible')", timeout = 5000L)
 app$wait_for_js("$('#logStatusContainer').text().includes('Problem aborted')",
   timeout = 5000L
