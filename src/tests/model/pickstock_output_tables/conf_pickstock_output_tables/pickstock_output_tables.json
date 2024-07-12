@@ -285,7 +285,7 @@
   "readme": {
     "tabTitle": "Readme",
     "enableMath": true,
-    "filename": "Readme.md"
+    "filename": "README.md"
   },
   "outputTables": {
     "_scalars_out": {
