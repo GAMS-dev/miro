@@ -53,7 +53,8 @@ renderMirowidget_customerdata <- function(input, output, session, data, options 
   }
 
   output$table <- DT::renderDT({
-    DT::datatable(data(), editable = TRUE, rownames = FALSE) %>% DT::formatRound(c("lat", "lng"), digits = 3L)
+    DT::datatable(data(), editable = TRUE, rownames = FALSE, options = list(scrollX = TRUE)) %>%
+      DT::formatRound(c("lat", "lng"), digits = 3L)
   })
 
   observe({
