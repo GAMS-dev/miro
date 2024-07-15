@@ -2739,6 +2739,10 @@ observeEvent(input$gams_symbols, {
       graphOptions <- langSpecificGraphs$graphOptionsSet
     } else {
       graphOptions <- langSpecificGraphs$graphOptionsNoScalars
+      if (activeSymbol$id <= length(modelIn)) {
+        # cant have dashboard renderer for input symbols
+        graphOptions <- graphOptions[graphOptions != "dashboard"]
+      }
     }
     updateSelectInput(session, "chart_tool", choices = graphOptions, selected = newChartTool)
     if (identical(newChartTool, "datatable")) {
