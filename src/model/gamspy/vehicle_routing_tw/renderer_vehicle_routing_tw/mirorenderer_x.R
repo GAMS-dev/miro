@@ -26,10 +26,10 @@ renderMirorenderer_x <- function(input, output, session, data, options = NULL, p
 
   names(tData)[names(tData) == "level"] <- "arrivalTime"
   tData["arrivalTime"] <- round(tData["arrivalTime"], 2)
-  customerdataData <- left_join(customerdataData, tData[c("i", "arrivalTime")])
+  customerdataData <- left_join(customerdataData, tData[c("i", "arrivalTime")], by = join_by("i"))
   names(wData)[names(wData) == "level"] <- "waitingTime"
   wData["waitingTime"] <- round(wData["waitingTime"], 2)
-  customerdataData <- left_join(customerdataData, wData[c("i", "waitingTime")])
+  customerdataData <- left_join(customerdataData, wData[c("i", "waitingTime")], by = join_by("i"))
   customerdataData["demand"] <- paste("Demand:", customerdataData$demand)
   customerdataData["readyTime"] <- paste("Ready time:", customerdataData$readyTime)
   customerdataData["dueDate"] <- paste("Due date:", customerdataData$dueDate)
