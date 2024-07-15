@@ -246,6 +246,10 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
       }, character(1L), USE.NAMES = FALSE)
       colsReadonly <- colsReadonly[!is.na(colsReadonly)]
 
+      if (is.null(symConfig$readonly)) {
+        symConfig$readonly <- config[["handsontable"]]$readonly
+      }
+
       private$staticTableConfig <- list(
         height = config[["handsontable"]]$height,
         width = config[["handsontable"]]$width,

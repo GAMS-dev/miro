@@ -137,3 +137,26 @@ expect_identical(
   "New Scenario"
 )
 app$stop()
+
+configNew <- configOld
+configNew$inputWidgets <- NULL
+configNew$handsontable$readonly <- TRUE
+jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
+  pretty = TRUE, auto_unbox = TRUE, null = "null"
+)
+app <- AppDriver$new("../../",
+  variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
+app$view()
+Sys.sleep(1)
+app$set_inputs(btImport = "click")
+Sys.sleep(1)
+app$set_inputs(btLoadScenConfirm = "click")
+Sys.sleep(2)
+expect_identical(app$get_js("$('.htDimmed:visible').length;"), 4L)
+Sys.sleep(2)
+app$set_inputs(inputTabset = "inputTabset_3")
+expect_identical(app$get_js("$('.htDimmed:visible').length;"), 18L)
+app$stop()
