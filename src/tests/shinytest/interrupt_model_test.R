@@ -9,6 +9,8 @@ app$set_inputs(inputTabset = "inputTabset_1")
 Sys.sleep(0.5)
 app$set_inputs(slider_2 = 15)
 app$set_inputs(slider_3 = 200)
+app$set_inputs(inputTabset = "inputTabset_3")
+app$set_inputs(dropdown_4 = "HIGHS")
 app$set_inputs(btSolve = "click")
 Sys.sleep(0.5)
 app$wait_for_js("$('#logStatusContainer').is(':visible')", timeout = 5000L)
@@ -22,7 +24,7 @@ expect_error(app$click(selector = "#outputTableView"), NA)
 app$click(selector = "#sidebarItemExpanded a[data-value='gamsinter']")
 Sys.sleep(0.5)
 app$wait_for_js("$('#logStatusContainer').is(':visible')", timeout = 5000L)
-app$wait_for_js("$('#logStatusContainer').text().includes('Problem aborted')",
+app$wait_for_js("$('#logStatusContainer').text().includes('Interrupted by user')",
   timeout = 5000L
 )
 expect_true(app$get_js("$('#btInterrupt .fa-skull').is(':visible')"))

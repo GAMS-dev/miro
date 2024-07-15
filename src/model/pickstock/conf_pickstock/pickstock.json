@@ -41,7 +41,7 @@
       "alias": "MIP-Solver",
       "widgetType": "dropdown",
       "label": "Solver to use",
-      "choices": ["BARON", "CBC", "CPLEX", "LINDO", "LINDOGLOBAL", "MOSEK", "SCIP", "XPRESS"],
+      "choices": ["BARON", "CBC", "CPLEX", "LINDO", "LINDOGLOBAL", "MOSEK", "SCIP", "XPRESS", "HIGHS"],
       "selected": "CPLEX"
     }
   },
