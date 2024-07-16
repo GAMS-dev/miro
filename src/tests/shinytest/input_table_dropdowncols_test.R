@@ -149,7 +149,6 @@ app <- AppDriver$new("../../",
   load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
   timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
 )
-app$view()
 Sys.sleep(1)
 app$set_inputs(btImport = "click")
 Sys.sleep(1)
