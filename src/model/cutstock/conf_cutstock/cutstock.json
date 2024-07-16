@@ -1,123 +1,168 @@
 {
-  "theme": "browser",
-  "excelIncludeMeta": true,
-  "pageTitle": "Cutting Stock Problem",
-  "excelIncludeEmptySheets": true,
-  "defaultScenName": "default",
-  "autoGenInputGraphs": true,
-  "storeLogFilesDuration": 7,
-  "defCompMode": "split",
-  "activateModules": {
-    "loadLocal": true,
-    "logFile": true,
-    "lstFile": true,
-    "attachments": true,
-    "downloadTempFiles": false
-  },
-  "aggregateWidgets": true,
-  "overwriteSheetOrder": {
-    "input": ["_widgets1", "demand_miro", "_widgets"]
-  },
-  "overwriteAliases": {
-    "_scalars": {
-      "newAlias": "Scalars"
+    "activateModules": {
+        "attachments": true,
+        "downloadTempFiles": false,
+        "hcube": false,
+        "loadLocal": true,
+        "logFile": true,
+        "lstFile": true
     },
-    "_scalars_out": {
-      "newAlias": "Paper rolls used"
-    },
-    "demand_miro": {
-      "newAlias": "Demand"
-    },
-    "patterns_used": {
-      "newAlias": "Patterns used"
-    }
-  },
-  "saveTraceFile": true,
-  "roundingDecimals": 0,
-  "dataRendering": {
-    "_scalars_out": {
-      "outType": "valueBox",
-      "options": [
-        {
-          "number": {
-            "description": "Number of paper rolls used",
-            "color": "aqua",
-            "icon": {
-              "name": "_",
-              "lib": "font-awesome"
-            },
-            "round": 2
-          },
-          "width_out": {
-            "description": "Paper roll width",
-            "color": "aqua",
-            "icon": {
-              "name": "_",
-              "lib": "font-awesome"
-            },
-            "round": 2
-          }
+    "aggregateWidgets": true,
+    "autoGenInputGraphs": true,
+    "customCss": false,
+    "dataRendering": {
+        "_scalars_out": {
+            "options": [
+                {
+                    "number": {
+                        "color": "aqua",
+                        "description": "Number of paper rolls used",
+                        "icon": {
+                            "lib": "font-awesome",
+                            "name": "_"
+                        },
+                        "round": 2
+                    },
+                    "width_out": {
+                        "color": "aqua",
+                        "description": "Paper roll width",
+                        "icon": {
+                            "lib": "font-awesome",
+                            "name": "_"
+                        },
+                        "round": 2
+                    }
+                }
+            ],
+            "outType": "valueBox"
+        },
+        "patterns_used": {
+            "additionalData": "_scalars_out",
+            "options": {},
+            "outType": "mirorenderer_patterns_used",
+            "packages": [
+                "plotly",
+                "dplyr",
+                "tidyr",
+                "purrr",
+                "RColorBrewer"
+            ]
         }
-      ]
     },
-    "patterns_used": {
-      "outType": "mirorenderer_patterns_used",
-      "options": {},
-      "packages": ["plotly", "dplyr", "tidyr", "purrr", "RColorBrewer"],
-      "additionalData": "_scalars_out"
-    }
-  },
-  "inputWidgets": {
-    "r": {
-      "widgetType": "numericinput",
-      "alias": "raw width",
-      "value": 500,
-      "min": 0,
-      "decimal": 0,
-      "decimalCharacter": ".",
-      "digitGroupSeparator": ","
-    }
-  },
-  "readme": {
-    "tabTitle": "Readme",
-    "filename": "README.md",
-    "enableMath": true
-  },
-  "datatable": {
-    "class": "display",
-    "filter": "bottom",
-    "rownames": false,
-    "options": {
-      "pageLength": 15
-    }
-  },
-  "overwriteHeaderAliases": {
-    "demand_miro": {
-      "newHeaders": ["Widths", "Demand"]
+    "datatable": {
+        "class": "display",
+        "filter": "bottom",
+        "options": {
+            "pageLength": 15
+        },
+        "rownames": false
     },
-    "patterns_used": {
-      "newHeaders": ["Width identifier", "Pattern identifier", "Width", "Times in pattern", "Used"]
+    "defaultRendererOutput": "miroPivot",
+    "defaultScenName": "default",
+    "defCompMode": "split",
+    "excelIncludeEmptySheets": true,
+    "excelIncludeMeta": true,
+    "handsontable": {
+        "colWidths": 200,
+        "contextMenu": {
+            "allowColEdit": true,
+            "allowRowEdit": true,
+            "enabled": true
+        },
+        "height": 700,
+        "readonly": false,
+        "stretchH": "none"
     },
-    "_scalars_out": {
-      "newHeaders": ["Name", "Description", "Value"]
-    }
-  },
-  "inputWidgetGroups": [
-    {
-      "name": "Raw width",
-      "members": "r"
-    }
-  ],
-  "handsontable": {
-    "stretchH": "none",
-    "readonly": false,
-    "manualColumnResize": true,
-    "contextMenu": {
-      "enabled": true,
-      "allowRowEdit": true,
-      "allowColEdit": true
+    "inputWidgetGroups": [
+        {
+            "members": "r",
+            "name": "Raw width"
+        }
+    ],
+    "inputWidgets": {
+        "r": {
+            "alias": "raw width",
+            "decimal": 0,
+            "decimalCharacter": ".",
+            "digitGroupSeparator": ",",
+            "min": 0,
+            "value": 500,
+            "widgetType": "numericinput"
+        }
     },
-    "height": 700,
-    "colWidths": 200
-  }
+    "layoutSettings": {
+        "maxTabsExpandedInput": 5,
+        "maxTabsExpandedOutput": 5,
+        "maxTabsExpandedPivotComp": 5,
+        "maxTabsExpandedSplitComp": 5,
+        "maxTabsExpandedTabComp": 5
+    },
+    "overwriteAliases": {
+        "_scalars": {
+            "newAlias": "Scalars"
+        },
+        "_scalars_out": {
+            "newAlias": "Paper rolls used"
+        },
+        "demand_miro": {
+            "newAlias": "Demand"
+        },
+        "number": {
+            "newAlias": "Number of paper rolls used"
+        },
+        "patterns_used": {
+            "newAlias": "Patterns used"
+        },
+        "r": {
+            "newAlias": "Raw width"
+        },
+        "width_out": {
+            "newAlias": "Paper roll width"
+        }
+    },
+    "overwriteHeaderAliases": {
+        "_scalars_out": {
+            "newHeaders": [
+                "Name",
+                "Description",
+                "Value"
+            ]
+        },
+        "demand_miro": {
+            "newHeaders": [
+                "Widths",
+                "Demand"
+            ]
+        },
+        "patterns_used": {
+            "newHeaders": [
+                "Width identifier",
+                "Pattern identifier",
+                "Width",
+                "Times in pattern",
+                "Used"
+            ]
+        }
+    },
+    "overwriteSheetOrder": {
+        "input": [
+            "_widgets1",
+            "demand_miro",
+            "_widgets"
+        ]
+    },
+    "pageTitle": "Cutting Stock Problem",
+    "pivotCompSettings": {
+        "fixedColumns": true,
+        "hidePivotControls": false
+    },
+    "readme": {
+        "enableMath": true,
+        "filename": "README.md",
+        "tabTitle": "Readme"
+    },
+    "roundingDecimals": 0,
+    "saveTraceFile": true,
+    "storeLogFilesDuration": 7,
+    "theme": "browser"
 }

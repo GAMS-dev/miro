@@ -1,79 +1,111 @@
 {
-  "overwriteSheetOrder": {
-    "input": "_widgets"
-  },
-  "theme": "browser",
-  "defCompMode": "split",
-  "roundingDecimals": 4,
-  "activateModules": {
-    "logFile": true,
-    "lstFile": false,
-    "loadLocal": true,
-    "attachments": true,
-    "downloadTempFiles": false
-  },
-  "autoGenInputGraphs": true,
-  "aggregateWidgets": true,
-  "storeLogFilesDuration": 7,
-  "excelIncludeMeta": false,
-  "excelIncludeEmptySheets": false,
-  "saveTraceFile": false,
-  "pageTitle": "Inscribed Square Problem",
-  "inputWidgets": {
-    "_gmspar_fx": {
-      "widgetType": "textinput",
-      "alias": "fx",
-      "value": "sin(t)*cos(t-t*t)",
-      "placeholder": "a",
-      "label": "closed curve x coordinate"
+    "activateModules": {
+        "attachments": true,
+        "downloadTempFiles": false,
+        "hcube": false,
+        "loadLocal": true,
+        "logFile": true,
+        "lstFile": false
     },
-    "_gmspar_fy": {
-      "widgetType": "textinput",
-      "alias": "fy",
-      "value": "t*sin(t)",
-      "placeholder": "b",
-      "label": "closed curve y coordinate"
+    "aggregateWidgets": true,
+    "autoGenInputGraphs": true,
+    "customCss": false,
+    "dataRendering": {
+        "t": {
+            "options": {
+                "title": "Curve with inscribed square"
+            },
+            "outType": "mirorenderer_t",
+            "packages": "graphics"
+        }
     },
-    "_gmsopt_solver": {
-      "widgetType": "dropdown",
-      "alias": "Solver",
-      "label": "Solver to use for DNLP models",
-      "choices": ["IPOPT", "CONOPT", "LINDO"],
-      "multiple": false,
-      "selected": "LINDO"
-    }
-  },
-  "datatable": {
-    "class": "display",
-    "filter": "none",
-    "rownames": false,
-    "options": {
-      "pageLength": 15
-    }
-  },
-  "dataRendering": {
-    "t": {
-      "outType": "mirorenderer_t",
-      "options": {
-        "title": "Curve with inscribed square"
-      },
-      "packages": "graphics"
-    }
-  },
-  "readme": {
-    "tabTitle": "Readme",
-    "filename": "README.md",
-    "enableMath": false
-  },
-  "overwriteAliases": {
-    "_scalarsve_out": {
-      "newAlias": "Output Variable/Equation Scalars"
+    "datatable": {
+        "class": "display",
+        "filter": "none",
+        "options": {
+            "pageLength": 15
+        },
+        "rownames": false
     },
-    "t": {
-      "newAlias": "position of square corner points on curve"
+    "defaultRendererOutput": "miroPivot",
+    "defCompMode": "split",
+    "excelIncludeEmptySheets": false,
+    "excelIncludeMeta": false,
+    "handsontable": {
+        "colWidths": 200,
+        "contextMenu": {
+            "allowColEdit": true,
+            "allowRowEdit": true,
+            "enabled": true
+        },
+        "height": 700,
+        "readonly": false,
+        "stretchH": "none"
     },
-    "_scalars_out": {
-      "newAlias": "Output Scalars"
-    }
-  }
+    "inputWidgets": {
+        "_gmsopt_solver": {
+            "alias": "Solver",
+            "choices": [
+                "IPOPT",
+                "CONOPT",
+                "LINDO"
+            ],
+            "label": "Solver to use for DNLP models",
+            "multiple": false,
+            "selected": "LINDO",
+            "widgetType": "dropdown"
+        },
+        "_gmspar_fx": {
+            "alias": "fx",
+            "label": "closed curve x coordinate",
+            "placeholder": "a",
+            "value": "sin(t)*cos(t-t*t)",
+            "widgetType": "textinput"
+        },
+        "_gmspar_fy": {
+            "alias": "fy",
+            "label": "closed curve y coordinate",
+            "placeholder": "b",
+            "value": "t*sin(t)",
+            "widgetType": "textinput"
+        }
+    },
+    "layoutSettings": {
+        "maxTabsExpandedInput": 5,
+        "maxTabsExpandedOutput": 5,
+        "maxTabsExpandedPivotComp": 5,
+        "maxTabsExpandedSplitComp": 5,
+        "maxTabsExpandedTabComp": 5
+    },
+    "overwriteAliases": {
+        "_scalars_out": {
+            "newAlias": "Output Scalars"
+        },
+        "_scalarsve_out": {
+            "newAlias": "Output Variable/Equation Scalars"
+        },
+        "area": {
+            "newAlias": "area"
+        },
+        "t": {
+            "newAlias": "position of square corner points on curve"
+        }
+    },
+    "overwriteSheetOrder": {
+        "input": "_widgets"
+    },
+    "pageTitle": "Inscribed Square Problem",
+    "pivotCompSettings": {
+        "fixedColumns": true,
+        "hidePivotControls": false
+    },
+    "readme": {
+        "enableMath": false,
+        "filename": "README.md",
+        "tabTitle": "Readme"
+    },
+    "roundingDecimals": 4,
+    "saveTraceFile": false,
+    "storeLogFilesDuration": 7,
+    "theme": "browser"
 }

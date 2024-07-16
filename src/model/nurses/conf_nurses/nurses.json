@@ -1,426 +1,509 @@
 {
-  "theme": "browser",
-  "excelIncludeMeta": true,
-  "excelIncludeEmptySheets": true,
-  "autoGenInputGraphs": true,
-  "storeLogFilesDuration": 7,
-  "defCompMode": "pivot",
-  "activateModules": {
-    "loadLocal": true,
-    "logFile": true,
-    "lstFile": true,
-    "attachments": true,
-    "downloadTempFiles": false,
-    "hcube": false
-  },
-  "miroLogFile": "report.lst",
-  "aggregateWidgets": true,
-  "overwriteSheetOrder": {
-    "input": ["nursedata", "shiftdata", "nurseskills", "skillrequirements", "vacation", "nurseassoc", "nurseincompat", "_widgets"],
-    "output": ["nurseassignments", "nurseworktime", "_scalars_out", "costbydepartments_miro", "nursemorethanavghours", "nurselessthanavghours"]
-  },
-  "overwriteAliases": {
-    "nursedata": {
-      "newAlias": "Nurse Data"
+    "activateModules": {
+        "attachments": true,
+        "downloadTempFiles": false,
+        "hcube": false,
+        "loadLocal": true,
+        "logFile": true,
+        "lstFile": true
     },
-    "shiftdata": {
-      "newAlias": "Shift Data"
-    },
-    "nurseskills": {
-      "newAlias": "Nurse has particular skill"
-    },
-    "skillrequirements": {
-      "newAlias": "Department skill requirements"
-    },
-    "vacation": {
-      "newAlias": "Vacation"
-    },
-    "nurseassoc": {
-      "newAlias": "Nurse association"
-    },
-    "nurseincompat": {
-      "newAlias": "Nurse incompatibility"
-    },
-    "_scalars": {
-      "newAlias": "Scalars"
-    },
-    "nurseassignments": {
-      "newAlias": "Working plans"
-    },
-    "nurseworktime": {
-      "newAlias": "Working times"
-    },
-    "nursemorethanavghours": {
-      "newAlias": "Overtime"
-    },
-    "nurselessthanavghours": {
-      "newAlias": "Undertime"
-    },
-    "costbydepartments_miro": {
-      "newAlias": "Costs by departments"
-    },
-    "maxworktime": {
-      "newAlias": "maxworktime"
-    },
-    "fairnessweight": {
-      "newAlias": "fairnessweight"
-    },
-    "assignmentweight": {
-      "newAlias": "assignmentweight"
-    },
-    "nurseavghours_miro": {
-      "newAlias": "average working hours"
-    },
-    "fairness_miro": {
-      "newAlias": "aggregation of all over- and undertime"
-    },
-    "obj_miro": {
-      "newAlias": "objective variable"
-    },
-    "salarycost": {
-      "newAlias": "Total salary cost"
-    },
-    "numberassignments": {
-      "newAlias": "Total number of assignments"
-    },
-    "overaveragework": {
-      "newAlias": "Total over-average worktime"
-    },
-    "underaveragework": {
-      "newAlias": "Total under-average worktime"
-    },
-    "_scalars_out": {
-      "newAlias": "Totals"
-    }
-  },
-  "saveTraceFile": true,
-  "roundingDecimals": 2,
-  "dataRendering": {
-    "nurseassignments": {
-      "outType": "mirorenderer_nurseassignments",
-      "additionalData": "shiftdata"
-    },
-    "nurseworktime": {
-      "outType": "miroPivot",
-      "height": 700,
-      "options": {
-        "aggregationFunction": "sum",
-        "pivotRenderer": "table",
-        "enableHideEmptyCols": false,
-        "hideEmptyCols": false,
-        "hidePivotControls": true,
-        "fixedColumns": true,
-        "emptyUEL": "-",
-        "rows": "nurse",
-        "cols": {
-          "Hdr": ["level", "upper"]
+    "aggregateWidgets": true,
+    "autoGenInputGraphs": true,
+    "customCss": false,
+    "dataRendering": {
+        "_scalars_out": {
+            "options": [
+                {
+                    "numberassignments": {
+                        "color": "light-blue",
+                        "description": "Total number of assignments",
+                        "icon": {
+                            "lib": "font-awesome",
+                            "name": "circle-check"
+                        },
+                        "round": 0
+                    },
+                    "obj_miro": {
+                        "color": "aqua",
+                        "description": "Objective variable",
+                        "round": 0
+                    },
+                    "salarycost": {
+                        "color": "yellow",
+                        "description": "Total salary cost",
+                        "icon": {
+                            "lib": "font-awesome",
+                            "name": "wallet"
+                        },
+                        "round": 0
+                    }
+                },
+                {
+                    "fairness_miro": {
+                        "color": "green",
+                        "description": "Aggregation of all over- and undertime",
+                        "round": 2
+                    },
+                    "nurseavghours_miro": {
+                        "color": "green",
+                        "description": "Average working hours",
+                        "round": 2
+                    },
+                    "overaveragework": {
+                        "color": "red",
+                        "description": "Total over-average worktime",
+                        "round": 2
+                    },
+                    "underaveragework": {
+                        "color": "orange",
+                        "description": "Total under-average worktime",
+                        "round": 2
+                    }
+                }
+            ],
+            "outType": "valueBox"
+        },
+        "costbydepartments_miro": {
+            "graph": {
+                "showlegend": true,
+                "staticPlot": false,
+                "title": "cost by department",
+                "tool": "plotly",
+                "traces": {
+                    "1": {
+                        "hole": 0.5,
+                        "labels": "department",
+                        "name": "costbydepartments_miro",
+                        "values": "value"
+                    }
+                },
+                "type": "pie",
+                "ydata": {
+                    "value": {
+                        "label": "Departments",
+                        "marker": {
+                            "line": {
+                                "width": 0
+                            }
+                        },
+                        "mode": "lines"
+                    }
+                }
+            },
+            "height": 700,
+            "outType": "dtGraph"
+        },
+        "nurseassignments": {
+            "additionalData": "shiftdata",
+            "outType": "mirorenderer_nurseassignments"
+        },
+        "nurselessthanavghours": {
+            "height": 700,
+            "options": {
+                "aggregationFunction": "sum",
+                "cols": {
+                    "Hdr": "level"
+                },
+                "emptyUEL": "-",
+                "enableHideEmptyCols": false,
+                "fixedColumns": true,
+                "hideEmptyCols": false,
+                "hidePivotControls": true,
+                "pivotRenderer": "table",
+                "rows": "nurse"
+            },
+            "outType": "miroPivot"
+        },
+        "nursemorethanavghours": {
+            "height": 700,
+            "options": {
+                "aggregationFunction": "sum",
+                "cols": {
+                    "Hdr": "level"
+                },
+                "emptyUEL": "-",
+                "enableHideEmptyCols": false,
+                "fixedColumns": true,
+                "hideEmptyCols": false,
+                "hidePivotControls": true,
+                "pivotRenderer": "table",
+                "rows": "nurse"
+            },
+            "outType": "miroPivot"
+        },
+        "nurseworktime": {
+            "height": 700,
+            "options": {
+                "aggregationFunction": "sum",
+                "cols": {
+                    "Hdr": [
+                        "level",
+                        "upper"
+                    ]
+                },
+                "emptyUEL": "-",
+                "enableHideEmptyCols": false,
+                "fixedColumns": true,
+                "hideEmptyCols": false,
+                "hidePivotControls": true,
+                "pivotRenderer": "table",
+                "rows": "nurse"
+            },
+            "outType": "miroPivot"
         }
-      }
     },
-    "nursemorethanavghours": {
-      "outType": "miroPivot",
-      "height": 700,
-      "options": {
-        "aggregationFunction": "sum",
-        "pivotRenderer": "table",
-        "enableHideEmptyCols": false,
-        "hideEmptyCols": false,
-        "hidePivotControls": true,
-        "fixedColumns": true,
-        "emptyUEL": "-",
-        "rows": "nurse",
-        "cols": {
-          "Hdr": "level"
-        }
-      }
+    "defaultRendererOutput": "miroPivot",
+    "defaultScenName": "default",
+    "defCompMode": "pivot",
+    "excelIncludeEmptySheets": true,
+    "excelIncludeMeta": true,
+    "handsontable": {
+        "colWidths": 200,
+        "contextMenu": {
+            "allowColEdit": true,
+            "allowRowEdit": true,
+            "enabled": true
+        },
+        "height": 700,
+        "readonly": false,
+        "stretchH": "none"
     },
-    "nurselessthanavghours": {
-      "outType": "miroPivot",
-      "height": 700,
-      "options": {
-        "aggregationFunction": "sum",
-        "pivotRenderer": "table",
-        "enableHideEmptyCols": false,
-        "hideEmptyCols": false,
-        "hidePivotControls": true,
-        "fixedColumns": true,
-        "emptyUEL": "-",
-        "rows": "nurse",
-        "cols": {
-          "Hdr": "level"
-        }
-      }
-    },
-    "_scalars_out": {
-      "outType": "valueBox",
-      "options": [
+    "inputGroups": [
         {
-          "obj_miro": {
-            "description": "Objective variable",
-            "color": "aqua",
-            "round": 0
-          },
-          "salarycost": {
-            "description": "Total salary cost",
-            "color": "yellow",
-            "icon": {
-              "name": "wallet",
-              "lib": "font-awesome"
-            },
-            "round": 0
-          },
-          "numberassignments": {
-            "description": "Total number of assignments",
-            "color": "light-blue",
-            "icon": {
-              "name": "circle-check",
-              "lib": "font-awesome"
-            },
-            "round": 0
-          }
+            "members": [
+                "nurseassoc",
+                "nurseincompat"
+            ],
+            "name": "Nurse association & incompatibility",
+            "sameTab": false
         },
         {
-          "nurseavghours_miro": {
-            "description": "Average working hours",
-            "color": "green",
-            "round": 2
-          },
-          "fairness_miro": {
-            "description": "Aggregation of all over- and undertime",
-            "color": "green",
-            "round": 2
-          },
-          "overaveragework": {
-            "description": "Total over-average worktime",
-            "color": "red",
-            "round": 2
-          },
-          "underaveragework": {
-            "description": "Total under-average worktime",
-            "color": "orange",
-            "round": 2
-          }
+            "members": [
+                "nurseskills",
+                "skillrequirements"
+            ],
+            "name": "Skill data",
+            "sameTab": false
         }
-      ]
-    },
-    "costbydepartments_miro": {
-      "outType": "dtGraph",
-      "graph": {
-        "tool": "plotly",
-        "type": "pie",
-        "traces": {
-          "1": {
-            "labels": "department",
-            "values": "value",
-            "hole": 0.5,
-            "name": "costbydepartments_miro"
-          }
+    ],
+    "inputWidgets": {
+        "assignmentweight": {
+            "default": 10,
+            "label": "Assignment weight: Shift Assignment Penalty",
+            "max": 100,
+            "min": 0,
+            "noHcube": false,
+            "step": 1,
+            "ticks": false,
+            "widgetType": "slider"
         },
-        "title": "cost by department",
-        "showlegend": true,
-        "staticPlot": false,
-        "ydata": {
-          "value": {
-            "label": "Departments",
-            "mode": "lines",
-            "marker": {
-              "line": {
-                "width": 0
-              }
-            }
-          }
-        }
-      },
-      "height": 700
-    }
-  },
-  "defaultScenName": "default",
-  "defaultRendererOutput": "miroPivot",
-  "pivotCompSettings": {
-    "hidePivotControls": false,
-    "fixedColumns": true
-  },
-  "inputWidgets": {
-    "maxworktime": {
-      "widgetType": "slider",
-      "min": 0,
-      "max": 70,
-      "default": 40,
-      "step": 1,
-      "ticks": true,
-      "noHcube": false,
-      "label": "Maximum working hours"
-    },
-    "fairnessweight": {
-      "widgetType": "slider",
-      "min": 0,
-      "max": 250,
-      "default": 100,
-      "step": 1,
-      "ticks": true,
-      "noHcube": false,
-      "label": "Fairness weight: Penalty for different hour assignments for nurses"
-    },
-    "assignmentweight": {
-      "widgetType": "slider",
-      "min": 0,
-      "max": 100,
-      "default": 10,
-      "step": 1,
-      "ticks": false,
-      "noHcube": false,
-      "label": "Assignment weight: Shift Assignment Penalty"
-    },
-    "nurseincompat": {
-      "widgetType": "table",
-      "tableType": "default",
-      "readonly": false,
-      "hideIndexCol": false,
-      "heatmap": false,
-      "dropdownCols": {
-        "nurse": {
-          "symbol": "nursedata",
-          "column": "nurse",
-          "colType": "dropdown"
+        "fairnessweight": {
+            "default": 100,
+            "label": "Fairness weight: Penalty for different hour assignments for nurses",
+            "max": 250,
+            "min": 0,
+            "noHcube": false,
+            "step": 1,
+            "ticks": true,
+            "widgetType": "slider"
         },
-        "nurse#1": {
-          "symbol": "nursedata",
-          "column": "nurse",
-          "colType": "dropdown"
-        }
-      },
-      "colWidths": [150, 150, 0.01]
-    },
-    "nurseassoc": {
-      "widgetType": "table",
-      "tableType": "default",
-      "readonly": false,
-      "hideIndexCol": false,
-      "heatmap": false,
-      "dropdownCols": {
-        "nurse": {
-          "symbol": "nursedata",
-          "column": "nurse",
-          "colType": "dropdown"
+        "maxworktime": {
+            "default": 40,
+            "label": "Maximum working hours",
+            "max": 70,
+            "min": 0,
+            "noHcube": false,
+            "step": 1,
+            "ticks": true,
+            "widgetType": "slider"
         },
-        "nurse#1": {
-          "symbol": "nursedata",
-          "column": "nurse",
-          "colType": "dropdown"
-        }
-      },
-      "colWidths": [150, 150, 0.01]
-    },
-    "shiftdata": {
-      "widgetType": "table",
-      "tableType": "default",
-      "readonly": false,
-      "hideIndexCol": false,
-      "heatmap": false,
-      "dropdownCols": {
-        "day": {
-          "static": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
-          "colType": "dropdown"
-        }
-      }
-    },
-    "nurseskills": {
-      "widgetType": "table",
-      "tableType": "default",
-      "readonly": false,
-      "hideIndexCol": false,
-      "heatmap": false,
-      "dropdownCols": {
-        "nurse": {
-          "symbol": "nursedata",
-          "column": "nurse",
-          "colType": "dropdown"
-        }
-      },
-      "colWidths": [150, 150, 0.01]
-    },
-    "vacation": {
-      "widgetType": "table",
-      "tableType": "default",
-      "readonly": false,
-      "hideIndexCol": false,
-      "heatmap": false,
-      "dropdownCols": {
-        "nurse": {
-          "symbol": "nursedata",
-          "column": "nurse",
-          "colType": "dropdown"
+        "nurseassoc": {
+            "colWidths": [
+                150,
+                150,
+                0.01
+            ],
+            "dropdownCols": {
+                "nurse": {
+                    "colType": "dropdown",
+                    "column": "nurse",
+                    "symbol": "nursedata"
+                },
+                "nurse#1": {
+                    "colType": "dropdown",
+                    "column": "nurse",
+                    "symbol": "nursedata"
+                }
+            },
+            "heatmap": false,
+            "hideIndexCol": false,
+            "readonly": false,
+            "tableType": "default",
+            "widgetType": "table"
         },
-        "day": {
-          "static": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
-          "colType": "dropdown"
-        }
-      },
-      "colWidths": [150, 150, 0.01]
-    },
-    "skillrequirements": {
-      "widgetType": "table",
-      "tableType": "default",
-      "readonly": false,
-      "hideIndexCol": false,
-      "heatmap": false,
-      "dropdownCols": {
-        "department": {
-          "symbol": "shiftdata",
-          "column": "department",
-          "colType": "dropdown"
+        "nurseincompat": {
+            "colWidths": [
+                150,
+                150,
+                0.01
+            ],
+            "dropdownCols": {
+                "nurse": {
+                    "colType": "dropdown",
+                    "column": "nurse",
+                    "symbol": "nursedata"
+                },
+                "nurse#1": {
+                    "colType": "dropdown",
+                    "column": "nurse",
+                    "symbol": "nursedata"
+                }
+            },
+            "heatmap": false,
+            "hideIndexCol": false,
+            "readonly": false,
+            "tableType": "default",
+            "widgetType": "table"
         },
-        "skill": {
-          "symbol": "nurseskills",
-          "column": "skill",
-          "colType": "dropdown"
+        "nurseskills": {
+            "colWidths": [
+                150,
+                150,
+                0.01
+            ],
+            "dropdownCols": {
+                "nurse": {
+                    "colType": "dropdown",
+                    "column": "nurse",
+                    "symbol": "nursedata"
+                }
+            },
+            "heatmap": false,
+            "hideIndexCol": false,
+            "readonly": false,
+            "tableType": "default",
+            "widgetType": "table"
+        },
+        "shiftdata": {
+            "dropdownCols": {
+                "day": {
+                    "colType": "dropdown",
+                    "static": [
+                        "monday",
+                        "tuesday",
+                        "wednesday",
+                        "thursday",
+                        "friday",
+                        "saturday",
+                        "sunday"
+                    ]
+                }
+            },
+            "heatmap": false,
+            "hideIndexCol": false,
+            "readonly": false,
+            "tableType": "default",
+            "widgetType": "table"
+        },
+        "skillrequirements": {
+            "dropdownCols": {
+                "department": {
+                    "colType": "dropdown",
+                    "column": "department",
+                    "symbol": "shiftdata"
+                },
+                "skill": {
+                    "colType": "dropdown",
+                    "column": "skill",
+                    "symbol": "nurseskills"
+                }
+            },
+            "heatmap": false,
+            "hideIndexCol": false,
+            "readonly": false,
+            "tableType": "default",
+            "widgetType": "table"
+        },
+        "vacation": {
+            "colWidths": [
+                150,
+                150,
+                0.01
+            ],
+            "dropdownCols": {
+                "day": {
+                    "colType": "dropdown",
+                    "static": [
+                        "monday",
+                        "tuesday",
+                        "wednesday",
+                        "thursday",
+                        "friday",
+                        "saturday",
+                        "sunday"
+                    ]
+                },
+                "nurse": {
+                    "colType": "dropdown",
+                    "column": "nurse",
+                    "symbol": "nursedata"
+                }
+            },
+            "heatmap": false,
+            "hideIndexCol": false,
+            "readonly": false,
+            "tableType": "default",
+            "widgetType": "table"
         }
-      }
-    }
-  },
-  "handsontable": {
-    "stretchH": "none",
-    "readonly": false,
-    "manualColumnResize": true,
-    "contextMenu": {
-      "enabled": true,
-      "allowRowEdit": true,
-      "allowColEdit": true
     },
-    "height": 700,
-    "colWidths": 200
-  },
-  "overwriteHeaderAliases": {
-    "nurseskills": {
-      "newHeaders": ["Nurses", "Nurse skills", " "]
+    "layoutSettings": {
+        "maxTabsExpandedInput": 5,
+        "maxTabsExpandedOutput": 5,
+        "maxTabsExpandedPivotComp": 5,
+        "maxTabsExpandedSplitComp": 5,
+        "maxTabsExpandedTabComp": 5
     },
-    "vacation": {
-      "newHeaders": ["Nurses", "Days of the week", " "]
+    "miroLogFile": "report.lst",
+    "outputGroups": [
+        {
+            "members": [
+                "nursemorethanavghours",
+                "nurselessthanavghours"
+            ],
+            "name": "Over- & Undertime",
+            "sameTab": false
+        }
+    ],
+    "overwriteAliases": {
+        "_scalars": {
+            "newAlias": "Scalars"
+        },
+        "_scalars_out": {
+            "newAlias": "Totals"
+        },
+        "assignmentweight": {
+            "newAlias": "assignmentweight"
+        },
+        "costbydepartments_miro": {
+            "newAlias": "Costs by departments"
+        },
+        "fairness_miro": {
+            "newAlias": "aggregation of all over- and undertime"
+        },
+        "fairnessweight": {
+            "newAlias": "fairnessweight"
+        },
+        "maxworktime": {
+            "newAlias": "maxworktime"
+        },
+        "numberassignments": {
+            "newAlias": "Total number of assignments"
+        },
+        "nurseassignments": {
+            "newAlias": "Working plans"
+        },
+        "nurseassoc": {
+            "newAlias": "Nurse association"
+        },
+        "nurseavghours_miro": {
+            "newAlias": "average working hours"
+        },
+        "nursedata": {
+            "newAlias": "Nurse Data"
+        },
+        "nurseincompat": {
+            "newAlias": "Nurse incompatibility"
+        },
+        "nurselessthanavghours": {
+            "newAlias": "Undertime"
+        },
+        "nursemorethanavghours": {
+            "newAlias": "Overtime"
+        },
+        "nurseskills": {
+            "newAlias": "Nurse has particular skill"
+        },
+        "nurseworktime": {
+            "newAlias": "Working times"
+        },
+        "obj_miro": {
+            "newAlias": "objective variable"
+        },
+        "overaveragework": {
+            "newAlias": "Total over-average worktime"
+        },
+        "salarycost": {
+            "newAlias": "Total salary cost"
+        },
+        "shiftdata": {
+            "newAlias": "Shift Data"
+        },
+        "skillrequirements": {
+            "newAlias": "Department skill requirements"
+        },
+        "underaveragework": {
+            "newAlias": "Total under-average worktime"
+        },
+        "vacation": {
+            "newAlias": "Vacation"
+        }
     },
-    "nurseassoc": {
-      "newHeaders": ["Nurses", "Nurses", " "]
+    "overwriteHeaderAliases": {
+        "nurseassoc": {
+            "newHeaders": [
+                "Nurses",
+                "Nurses",
+                " "
+            ]
+        },
+        "nurseincompat": {
+            "newHeaders": [
+                "Nurses",
+                "Nurses",
+                " "
+            ]
+        },
+        "nurseskills": {
+            "newHeaders": [
+                "Nurses",
+                "Nurse skills",
+                " "
+            ]
+        },
+        "vacation": {
+            "newHeaders": [
+                "Nurses",
+                "Days of the week",
+                " "
+            ]
+        }
     },
-    "nurseincompat": {
-      "newHeaders": ["Nurses", "Nurses", " "]
-    }
-  },
-  "inputGroups": [
-    {
-      "name": "Nurse association & incompatibility",
-      "members": ["nurseassoc", "nurseincompat"],
-      "sameTab": false
+    "overwriteSheetOrder": {
+        "input": [
+            "nursedata",
+            "shiftdata",
+            "nurseskills",
+            "skillrequirements",
+            "vacation",
+            "nurseassoc",
+            "nurseincompat",
+            "_widgets"
+        ],
+        "output": [
+            "nurseassignments",
+            "nurseworktime",
+            "_scalars_out",
+            "costbydepartments_miro",
+            "nursemorethanavghours",
+            "nurselessthanavghours"
+        ]
     },
-    {
-      "name": "Skill data",
-      "members": ["nurseskills", "skillrequirements"],
-      "sameTab": false
-    }
-  ],
-  "outputGroups": [
-    {
-      "name": "Over- & Undertime",
-      "members": ["nursemorethanavghours", "nurselessthanavghours"],
-      "sameTab": false
-    }
-  ]
+    "pivotCompSettings": {
+        "fixedColumns": true,
+        "hidePivotControls": false
+    },
+    "roundingDecimals": 2,
+    "saveTraceFile": true,
+    "storeLogFilesDuration": 7,
+    "theme": "browser"
 }

@@ -1,225 +1,284 @@
 {
-  "theme": "browser",
-  "excelIncludeMeta": true,
-  "excelIncludeEmptySheets": true,
-  "autoGenInputGraphs": true,
-  "storeLogFilesDuration": 7,
-  "defCompMode": "split",
-  "defaultScenName": "default",
-  "activateModules": {
-    "loadLocal": true,
-    "logFile": true,
-    "lstFile": true,
-    "attachments": true,
-    "downloadTempFiles": false
-  },
-  "aggregateWidgets": true,
-  "overwriteSheetOrder": {
-    "input": ["groupdata", "gsmap", "existingcohortgroupmap", "_widgets", "_widgets1"]
-  },
-  "overwriteAliases": {
-    "gsmap": {
-      "newAlias": "Students to groups mapping"
+    "activateModules": {
+        "attachments": true,
+        "downloadTempFiles": false,
+        "hcube": false,
+        "loadLocal": true,
+        "logFile": true,
+        "lstFile": true
     },
-    "existingcohortgroupmap": {
-      "newAlias": "Existing cohort map"
-    },
-    "_scalars": {
-      "newAlias": "Scalars"
-    },
-    "groupdata": {
-      "newAlias": "Groups"
-    },
-    "groupreport": {
-      "newAlias": "Report on groups"
-    },
-    "cohortreport": {
-      "newAlias": "Report on cohort"
-    },
-    "studentgroupcohort": {
-      "newAlias": "Student assignment"
-    }
-  },
-  "saveTraceFile": true,
-  "roundingDecimals": 0,
-  "inputWidgets": {
-    "groupdata": {
-      "widgetType": "table",
-      "tableType": "default",
-      "readonly": false,
-      "hideIndexCol": false,
-      "heatmap": false,
-      "dropdownCols": {
-        "mode": {
-          "static": ["split", "split even", "prevent split"],
-          "colType": "dropdown"
-        }
-      }
-    },
-    "existingcohortgroupmap": {
-      "widgetType": "custom",
-      "rendererName": "mirorenderer_existingcohortgroupmap",
-      "apiVersion": 2
-    },
-    "gsmap": {
-      "widgetType": "table",
-      "tableType": "default",
-      "readonly": false,
-      "hideIndexCol": false,
-      "heatmap": false,
-      "dropdownCols": {
-        "g": {
-          "symbol": "groupdata",
-          "column": "g",
-          "colType": "dropdown"
-        }
-      }
-    },
-    "priorityab": {
-      "widgetType": "slider",
-      "alias": "priority to keep the input assignment",
-      "min": 0,
-      "max": 99,
-      "default": 1,
-      "step": 1,
-      "ticks": false,
-      "noHcube": false,
-      "label": "priority to keep the existing cohort map"
-    }
-  },
-  "symbolLinks": [
-    {
-      "source": "studentgroupcohort",
-      "target": "existingcohortgroupmap"
-    }
-  ],
-  "overwriteHeaderAliases": {
-    "gsmap": {
-      "newHeaders": ["Groups", "Students", "Comment"]
-    },
-    "existingcohortgroupmap": {
-      "newHeaders": ["Students", "Groups", "Cohorts", "Comment"]
-    },
-    "groupdata": {
-      "newHeaders": ["Groups", "Splitting mode", "Max group size", "Priority"]
-    },
-    "groupreport": {
-      "newHeaders": ["Groups", "Size / penalty", "Value"]
-    },
-    "cohortreport": {
-      "newHeaders": ["Cohorts", "Size / (move) penalty", "Value"]
-    },
-    "studentgroupcohort": {
-      "newHeaders": ["students", "group/cohort", "cohorts", "Set text Student assignment"]
-    }
-  },
-  "dataRendering": {
-    "groupreport": {
-      "outType": "miroPivot",
-      "height": 700,
-      "options": {
-        "aggregationFunction": "count",
-        "pivotRenderer": "table",
-        "enableHideEmptyCols": false,
-        "emptyUEL": "-",
-        "rows": "g",
-        "cols": {
-          "uni": null
-        }
-      }
-    },
-    "cohortreport": {
-      "outType": "miroPivot",
-      "height": 700,
-      "options": {
-        "aggregationFunction": "count",
-        "pivotRenderer": "table",
-        "enableHideEmptyCols": false,
-        "emptyUEL": "-",
-        "rows": "c",
-        "cols": {
-          "uni": null
-        }
-      }
-    },
-    "studentgroupcohort": {
-      "outType": "miroPivot",
-      "height": 700,
-      "options": {
-        "aggregationFunction": "count",
-        "pivotRenderer": "table",
-        "enableHideEmptyCols": false,
-        "emptyUEL": "-",
-        "rows": "s",
-        "aggregations": {
-          "gc": ["A", "B"]
+    "aggregateWidgets": true,
+    "autoGenInputGraphs": true,
+    "customCss": false,
+    "dataRendering": {
+        "cohortreport": {
+            "height": 700,
+            "options": {
+                "aggregationFunction": "count",
+                "cols": {
+                    "uni": null
+                },
+                "emptyUEL": "-",
+                "enableHideEmptyCols": false,
+                "pivotRenderer": "table",
+                "rows": "c"
+            },
+            "outType": "miroPivot"
         },
-        "cols": {
-          "c": null
+        "groupreport": {
+            "height": 700,
+            "options": {
+                "aggregationFunction": "count",
+                "cols": {
+                    "uni": null
+                },
+                "emptyUEL": "-",
+                "enableHideEmptyCols": false,
+                "pivotRenderer": "table",
+                "rows": "g"
+            },
+            "outType": "miroPivot"
+        },
+        "studentgroupcohort": {
+            "height": 700,
+            "options": {
+                "aggregationFunction": "count",
+                "aggregations": {
+                    "gc": [
+                        "A",
+                        "B"
+                    ]
+                },
+                "cols": {
+                    "c": null
+                },
+                "emptyUEL": "-",
+                "enableHideEmptyCols": false,
+                "pivotRenderer": "table",
+                "rows": "s"
+            },
+            "outType": "miroPivot"
         }
-      }
-    }
-  },
-  "UILogo": "cohort.png",
-  "outputTables": {
-    "groupreport": {
-      "pivotCols": "uni",
-      "class": "display",
-      "filter": "bottom",
-      "options": {
-        "pageLength": 15,
-        "decimals": 0
-      },
-      "rownames": false
     },
-    "cohortreport": {
-      "pivotCols": "uni",
-      "class": "display",
-      "filter": "bottom",
-      "options": {
-        "pageLength": 15,
-        "decimals": 0
-      },
-      "rownames": false
-    }
-  },
-  "datatable": {
-    "class": "display",
-    "filter": "bottom",
-    "rownames": false,
-    "options": {
-      "pageLength": 15
-    }
-  },
-  "readme": {
-    "tabTitle": "Readme",
-    "filename": "README.md",
-    "enableMath": false
-  },
-  "inputGroups": [
-    {
-      "name": "Students / Groups",
-      "members": ["groupdata", "gsmap"],
-      "sameTab": false
-    }
-  ],
-  "inputWidgetGroups": [
-    {
-      "name": "Priority to keep the input assignment",
-      "members": "priorityab",
-      "sameTab": true
-    }
-  ],
-  "handsontable": {
-    "stretchH": "none",
-    "readonly": false,
-    "manualColumnResize": true,
-    "contextMenu": {
-      "enabled": true,
-      "allowRowEdit": true,
-      "allowColEdit": true
+    "datatable": {
+        "class": "display",
+        "filter": "bottom",
+        "options": {
+            "pageLength": 15
+        },
+        "rownames": false
     },
-    "height": 700,
-    "colWidths": 200
-  }
+    "defaultRendererOutput": "miroPivot",
+    "defaultScenName": "default",
+    "defCompMode": "split",
+    "excelIncludeEmptySheets": true,
+    "excelIncludeMeta": true,
+    "handsontable": {
+        "colWidths": 200,
+        "contextMenu": {
+            "allowColEdit": true,
+            "allowRowEdit": true,
+            "enabled": true
+        },
+        "height": 700,
+        "readonly": false,
+        "stretchH": "none"
+    },
+    "inputGroups": [
+        {
+            "members": [
+                "groupdata",
+                "gsmap"
+            ],
+            "name": "Students / Groups",
+            "sameTab": false
+        }
+    ],
+    "inputWidgetGroups": [
+        {
+            "members": "priorityab",
+            "name": "Priority to keep the input assignment",
+            "sameTab": true
+        }
+    ],
+    "inputWidgets": {
+        "existingcohortgroupmap": {
+            "apiVersion": 2,
+            "rendererName": "mirorenderer_existingcohortgroupmap",
+            "widgetType": "custom"
+        },
+        "groupdata": {
+            "dropdownCols": {
+                "mode": {
+                    "colType": "dropdown",
+                    "static": [
+                        "split",
+                        "split even",
+                        "prevent split"
+                    ]
+                }
+            },
+            "heatmap": false,
+            "hideIndexCol": false,
+            "readonly": false,
+            "tableType": "default",
+            "widgetType": "table"
+        },
+        "gsmap": {
+            "dropdownCols": {
+                "g": {
+                    "colType": "dropdown",
+                    "column": "g",
+                    "symbol": "groupdata"
+                }
+            },
+            "heatmap": false,
+            "hideIndexCol": false,
+            "readonly": false,
+            "tableType": "default",
+            "widgetType": "table"
+        },
+        "priorityab": {
+            "alias": "priority to keep the input assignment",
+            "default": 1,
+            "label": "priority to keep the existing cohort map",
+            "max": 99,
+            "min": 0,
+            "noHcube": false,
+            "step": 1,
+            "ticks": false,
+            "widgetType": "slider"
+        }
+    },
+    "layoutSettings": {
+        "maxTabsExpandedInput": 5,
+        "maxTabsExpandedOutput": 5,
+        "maxTabsExpandedPivotComp": 5,
+        "maxTabsExpandedSplitComp": 5,
+        "maxTabsExpandedTabComp": 5
+    },
+    "outputTables": {
+        "cohortreport": {
+            "class": "display",
+            "filter": "bottom",
+            "options": {
+                "decimals": 0,
+                "pageLength": 15
+            },
+            "pivotCols": "uni",
+            "rownames": false
+        },
+        "groupreport": {
+            "class": "display",
+            "filter": "bottom",
+            "options": {
+                "decimals": 0,
+                "pageLength": 15
+            },
+            "pivotCols": "uni",
+            "rownames": false
+        }
+    },
+    "overwriteAliases": {
+        "_scalars": {
+            "newAlias": "Scalars"
+        },
+        "cohortreport": {
+            "newAlias": "Report on cohort"
+        },
+        "existingcohortgroupmap": {
+            "newAlias": "Existing cohort map"
+        },
+        "groupdata": {
+            "newAlias": "Groups"
+        },
+        "groupreport": {
+            "newAlias": "Report on groups"
+        },
+        "gsmap": {
+            "newAlias": "Students to groups mapping"
+        },
+        "priorityab": {
+            "newAlias": "priority to keep the input assignment"
+        },
+        "studentgroupcohort": {
+            "newAlias": "Student assignment"
+        }
+    },
+    "overwriteHeaderAliases": {
+        "cohortreport": {
+            "newHeaders": [
+                "Cohorts",
+                "Size / (move) penalty",
+                "Value"
+            ]
+        },
+        "existingcohortgroupmap": {
+            "newHeaders": [
+                "Students",
+                "Groups",
+                "Cohorts",
+                "Comment"
+            ]
+        },
+        "groupdata": {
+            "newHeaders": [
+                "Groups",
+                "Splitting mode",
+                "Max group size",
+                "Priority"
+            ]
+        },
+        "groupreport": {
+            "newHeaders": [
+                "Groups",
+                "Size / penalty",
+                "Value"
+            ]
+        },
+        "gsmap": {
+            "newHeaders": [
+                "Groups",
+                "Students",
+                "Comment"
+            ]
+        },
+        "studentgroupcohort": {
+            "newHeaders": [
+                "students",
+                "group/cohort",
+                "cohorts",
+                "Set text Student assignment"
+            ]
+        }
+    },
+    "overwriteSheetOrder": {
+        "input": [
+            "groupdata",
+            "gsmap",
+            "existingcohortgroupmap",
+            "_widgets",
+            "_widgets1"
+        ]
+    },
+    "pivotCompSettings": {
+        "fixedColumns": true,
+        "hidePivotControls": false
+    },
+    "readme": {
+        "enableMath": false,
+        "filename": "README.md",
+        "tabTitle": "Readme"
+    },
+    "roundingDecimals": 0,
+    "saveTraceFile": true,
+    "storeLogFilesDuration": 7,
+    "symbolLinks": [
+        {
+            "source": "studentgroupcohort",
+            "target": "existingcohortgroupmap"
+        }
+    ],
+    "theme": "browser",
+    "UILogo": "cohort.png"
 }

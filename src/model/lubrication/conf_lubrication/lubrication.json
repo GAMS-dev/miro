@@ -1,162 +1,186 @@
 {
-  "overwriteSheetOrder": {
-    "input": "_widgets"
-  },
-  "overwriteAliases": {
-    "_scalars": {
-      "newAlias": "Scalars"
+    "activateModules": {
+        "attachments": true,
+        "downloadTempFiles": false,
+        "hcube": false,
+        "loadLocal": true,
+        "logFile": true,
+        "lstFile": true,
+        "remoteExecution": false
     },
-    "_scalars_out": {
-      "newAlias": "Output Scalars"
-    },
-    "pressurethickness": {
-      "newAlias": "pressurethickness"
-    }
-  },
-  "theme": "browser",
-  "defCompMode": "split",
-  "roundingDecimals": 2,
-  "activateModules": {
-    "logFile": true,
-    "lstFile": true,
-    "loadLocal": true,
-    "attachments": true,
-    "remoteExecution": false,
-    "downloadTempFiles": false
-  },
-  "autoGenInputGraphs": true,
-  "aggregateWidgets": true,
-  "storeLogFilesDuration": 7,
-  "excelIncludeMeta": true,
-  "excelIncludeEmptySheets": true,
-  "saveTraceFile": true,
-  "pageTitle": "Lubrication",
-  "UILogo": "lubrication-regimes-elastohydrodynamic.jpg",
-  "defaultScenName": "default",
-  "datatable": {
-    "class": "display",
-    "filter": "none",
-    "rownames": false,
-    "options": {
-      "pageLength": 15
-    }
-  },
-  "inputWidgets": {
-    "npoints": {
-      "widgetType": "slider",
-      "alias": "npoints",
-      "min": 10,
-      "max": 1000,
-      "default": 100,
-      "step": 10,
-      "ticks": true,
-      "noHcube": false,
-      "label": "Discretization points"
-    },
-    "load": {
-      "widgetType": "slider",
-      "alias": "load on cylinder in lbs",
-      "min": 80,
-      "max": 300,
-      "default": 100,
-      "step": 5,
-      "ticks": true,
-      "noHcube": false,
-      "label": "Load on cylinder (pounds)"
-    },
-    "speed": {
-      "widgetType": "slider",
-      "alias": "cylinder RPM",
-      "min": 300,
-      "max": 8000,
-      "default": 800,
-      "step": 50,
-      "ticks": true,
-      "noHcube": false,
-      "label": "cylinder (bearing) RPM"
-    }
-  },
-  "dataRendering": {
-    "pressurethickness": {
-      "outType": "graph",
-      "graph": {
-        "title": "Pressure & Thickness",
-        "tool": "plotly",
-        "type": "scatter",
-        "ydata": {
-          "pressure": {
-            "label": "pressure",
-            "mode": "lines",
-            "line": {
-              "width": 2,
-              "shape": "linear",
-              "dash": "solid"
+    "aggregateWidgets": true,
+    "autoGenInputGraphs": true,
+    "customCss": false,
+    "dataRendering": {
+        "pressurethickness": {
+            "graph": {
+                "showlegend": true,
+                "title": "Pressure & Thickness",
+                "tool": "plotly",
+                "type": "scatter",
+                "xaxis": {
+                    "categoryorder": "trace",
+                    "showgrid": false,
+                    "showticklabels": true,
+                    "title": "x",
+                    "zeroline": false
+                },
+                "xdata": "x",
+                "y2axis": {
+                    "categoryorder": "trace",
+                    "rangefrom": "",
+                    "rangeto": "",
+                    "showgrid": false,
+                    "showticklabels": true,
+                    "title": "thickness",
+                    "zeroline": false
+                },
+                "yaxis": {
+                    "categoryorder": "trace",
+                    "rangefrom": "",
+                    "rangeto": "",
+                    "showgrid": false,
+                    "showticklabels": true,
+                    "title": "pressure",
+                    "zeroline": false
+                },
+                "ydata": {
+                    "pressure": {
+                        "label": "pressure",
+                        "line": {
+                            "dash": "solid",
+                            "shape": "linear",
+                            "width": 2
+                        },
+                        "mode": "lines",
+                        "showlegend": true,
+                        "yaxis": "y"
+                    },
+                    "thickness": {
+                        "label": "thickness",
+                        "line": {
+                            "dash": "solid",
+                            "shape": "linear",
+                            "width": 2
+                        },
+                        "mode": "lines",
+                        "showlegend": true,
+                        "yaxis": "y2"
+                    }
+                }
             },
-            "showlegend": true,
-            "yaxis": "y"
-          },
-          "thickness": {
-            "label": "thickness",
-            "mode": "lines",
-            "line": {
-              "width": 2,
-              "shape": "linear",
-              "dash": "solid"
-            },
-            "showlegend": true,
-            "yaxis": "y2"
-          }
-        },
-        "xdata": "x",
-        "showlegend": true,
-        "xaxis": {
-          "title": "x",
-          "showgrid": false,
-          "zeroline": false,
-          "showticklabels": true,
-          "categoryorder": "trace"
-        },
-        "yaxis": {
-          "title": "pressure",
-          "showgrid": false,
-          "zeroline": false,
-          "showticklabels": true,
-          "categoryorder": "trace",
-          "rangefrom": "",
-          "rangeto": ""
-        },
-        "y2axis": {
-          "title": "thickness",
-          "showgrid": false,
-          "zeroline": false,
-          "showticklabels": true,
-          "categoryorder": "trace",
-          "rangefrom": "",
-          "rangeto": ""
+            "height": 700,
+            "outType": "graph"
         }
-      },
-      "height": 700
-    }
-  },
-  "readme": {
-    "tabTitle": "Introduction",
-    "filename": "README.md",
-    "enableMath": false
-  },
-  "handsontable": {
-    "stretchH": "none",
-    "readonly": false,
-    "highlightCol": true,
-    "highlightRow": true,
-    "columnSorting": true,
-    "manualColumnResize": true,
-    "contextMenu": {
-      "enabled": true,
-      "allowRowEdit": true,
-      "allowColEdit": true,
-      "allowReadOnly": false
     },
-    "height": 700,
-    "colWidths": 150
-  }
+    "datatable": {
+        "class": "display",
+        "filter": "none",
+        "options": {
+            "pageLength": 15
+        },
+        "rownames": false
+    },
+    "defaultRendererOutput": "miroPivot",
+    "defaultScenName": "default",
+    "defCompMode": "split",
+    "excelIncludeEmptySheets": true,
+    "excelIncludeMeta": true,
+    "handsontable": {
+        "colWidths": 150,
+        "contextMenu": {
+            "allowColEdit": true,
+            "allowRowEdit": true,
+            "enabled": true
+        },
+        "height": 700,
+        "readonly": false,
+        "stretchH": "none"
+    },
+    "inputWidgets": {
+        "load": {
+            "alias": "load on cylinder in lbs",
+            "default": 100,
+            "label": "Load on cylinder (pounds)",
+            "max": 300,
+            "min": 80,
+            "noHcube": false,
+            "step": 5,
+            "ticks": true,
+            "widgetType": "slider"
+        },
+        "npoints": {
+            "alias": "npoints",
+            "default": 100,
+            "label": "Discretization points",
+            "max": 1000,
+            "min": 10,
+            "noHcube": false,
+            "step": 10,
+            "ticks": true,
+            "widgetType": "slider"
+        },
+        "speed": {
+            "alias": "cylinder RPM",
+            "default": 800,
+            "label": "cylinder (bearing) RPM",
+            "max": 8000,
+            "min": 300,
+            "noHcube": false,
+            "step": 50,
+            "ticks": true,
+            "widgetType": "slider"
+        }
+    },
+    "layoutSettings": {
+        "maxTabsExpandedInput": 5,
+        "maxTabsExpandedOutput": 5,
+        "maxTabsExpandedPivotComp": 5,
+        "maxTabsExpandedSplitComp": 5,
+        "maxTabsExpandedTabComp": 5
+    },
+    "overwriteAliases": {
+        "_scalars": {
+            "newAlias": "Scalars"
+        },
+        "_scalars_out": {
+            "newAlias": "Output Scalars"
+        },
+        "alpha": {
+            "newAlias": "pressure viscosity coefficient"
+        },
+        "lambda": {
+            "newAlias": "model parameter used in Reynolds equation"
+        },
+        "load": {
+            "newAlias": "load on cylinder in lbs"
+        },
+        "npoints": {
+            "newAlias": "npoints"
+        },
+        "pressurethickness": {
+            "newAlias": "pressurethickness"
+        },
+        "speed": {
+            "newAlias": "cylinder RPM"
+        }
+    },
+    "overwriteSheetOrder": {
+        "input": "_widgets"
+    },
+    "pageTitle": "Lubrication",
+    "pivotCompSettings": {
+        "fixedColumns": true,
+        "hidePivotControls": false
+    },
+    "readme": {
+        "enableMath": false,
+        "filename": "README.md",
+        "tabTitle": "Introduction"
+    },
+    "roundingDecimals": 2,
+    "saveTraceFile": true,
+    "storeLogFilesDuration": 7,
+    "theme": "browser",
+    "UILogo": "lubrication-regimes-elastohydrodynamic.jpg"
 }

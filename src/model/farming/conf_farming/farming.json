@@ -1,319 +1,385 @@
 {
-  "overwriteSheetOrder": {
-    "input": ["cd", "pricecurve", "_widgets"],
-    "output": ["rep", "repcompare", "repfinance", "repc", "s_yf"]
-  },
-  "theme": "browser",
-  "defCompMode": "split",
-  "roundingDecimals": 2,
-  "activateModules": {
-    "logFile": false,
-    "lstFile": false,
-    "loadLocal": true,
-    "attachments": false,
-    "downloadTempFiles": true,
-    "hcube": true
-  },
-  "hiddenOutputSymbols": "s_yf",
-  "autoGenInputGraphs": true,
-  "aggregateWidgets": true,
-  "storeLogFilesDuration": 7,
-  "excelIncludeMeta": true,
-  "excelIncludeEmptySheets": true,
-  "saveTraceFile": true,
-  "pageTitle": "Crop planting",
-  "miroLogFile": "farming_miro.log",
-  "UILogo": "jack-bain-mEgPe7RSBTc-unsplash-cut.jpg",
-  "defaultScenName": "default",
-  "inputWidgets": {
-    "cd": {
-      "widgetType": "table",
-      "readonly": false,
-      "heatmap": false,
-      "bigData": false
+    "activateModules": {
+        "attachments": false,
+        "downloadTempFiles": true,
+        "hcube": true,
+        "loadLocal": true,
+        "logFile": false,
+        "lstFile": false
     },
-    "pricecurve": {
-      "widgetType": "table",
-      "readonly": false,
-      "heatmap": false,
-      "bigData": false
-    },
-    "yf": {
-      "widgetType": "slider",
-      "min": 0,
-      "max": 2,
-      "default": 1,
-      "step": 0.5,
-      "ticks": true,
-      "noHcube": false,
-      "label": "Yield factor"
-    },
-    "_gmspar_yfsd": {
-      "alias": "Yield factor standard deviation",
-      "widgetType": "slider",
-      "min": 0,
-      "max": 1,
-      "default": 0.1,
-      "step": 0.01,
-      "ticks": true,
-      "noHcube": false,
-      "label": "Set standard deviation of normal distribution of yield factor scenarios"
-    },
-    "land": {
-      "widgetType": "slider",
-      "min": 200,
-      "max": 1000,
-      "default": 500,
-      "step": 25,
-      "ticks": true,
-      "noHcube": false,
-      "label": "Available land [acre]"
-    },
-    "nums": {
-      "widgetType": "slider",
-      "min": 0,
-      "max": 1000,
-      "default": 0,
-      "step": 1,
-      "ticks": true,
-      "noHcube": false,
-      "label": "Number of scenarios"
-    },
-    "_gmsopt_emp": {
-      "widgetType": "dropdown",
-      "choices": ["DE", "DECIS", "LINDO"],
-      "selected": "DE",
-      "noHcube": false,
-      "multiple": false,
-      "label": "Stochastic solver"
-    }
-  },
-  "dataRendering": {
-    "repfinance": {
-      "outType": "graph",
-      "graph": {
-        "title": "financial report by scenario",
-        "tool": "plotly",
-        "type": "hist",
-        "traces": {
-          "1": {
-            "labels": "s",
-            "values": "value",
-            "hole": 0,
-            "name": "financial report by scenario"
-          }
+    "aggregateWidgets": true,
+    "autoGenInputGraphs": true,
+    "customCss": false,
+    "dataRendering": {
+        "rep": {
+            "additionalData": [
+                "cd",
+                "pricecurve",
+                "repc",
+                "repcompare",
+                "repfinance",
+                "s_yf"
+            ],
+            "outType": "mirorenderer_rep"
         },
-        "showlegend": true,
-        "xdata": {
-          "value": {}
+        "repc": {
+            "graph": {
+                "showlegend": true,
+                "staticPlot": false,
+                "title": "crop report",
+                "tool": "plotly",
+                "traces": {
+                    "1": {
+                        "hole": 0.4,
+                        "labels": "c",
+                        "name": "crop yield [tons]",
+                        "values": "yield"
+                    },
+                    "2": {
+                        "hole": 0.4,
+                        "labels": "c",
+                        "name": "crop planted [acres]",
+                        "values": "planted"
+                    },
+                    "3": {
+                        "hole": 0.4,
+                        "labels": "c",
+                        "name": "seed cost [€]",
+                        "values": "seedcost"
+                    },
+                    "4": {
+                        "hole": 0.4,
+                        "labels": "c",
+                        "name": "crop sold [tons]",
+                        "values": "sold"
+                    },
+                    "5": {
+                        "hole": 0.4,
+                        "labels": "c",
+                        "name": "sales",
+                        "values": "sales"
+                    },
+                    "6": {
+                        "hole": 0.4,
+                        "labels": "c",
+                        "name": "crop purchased [tons]",
+                        "values": "purchased"
+                    },
+                    "7": {
+                        "hole": 0.4,
+                        "labels": "c",
+                        "name": "purchase cost [€]",
+                        "values": "pcost"
+                    }
+                },
+                "type": "pie"
+            },
+            "height": 700,
+            "outType": "graph"
         },
-        "histnorm": "",
-        "nbins": 25,
-        "barmode": "overlay",
-        "alpha": 0.6,
-        "xaxis": {
-          "title": "financial report by scenario"
+        "repcompare": {
+            "height": 700,
+            "options": {
+                "aggregationFunction": "sum",
+                "cols": {
+                    "Hdr": null
+                },
+                "emptyUEL": "-",
+                "enableHideEmptyCols": false,
+                "hideEmptyCols": false,
+                "hidePivotControls": false,
+                "pivotRenderer": "bar",
+                "rows": "c"
+            },
+            "outType": "miroPivot"
         },
-        "cumulative": false,
-        "horizontal": false,
-        "yaxis": {
-          "title": ""
-        },
-        "dragmode": "zoom",
-        "color": "rh",
-        "filter": {
-          "col": "rh",
-          "label": "",
-          "multiple": false
+        "repfinance": {
+            "graph": {
+                "alpha": 0.6,
+                "barmode": "overlay",
+                "color": "rh",
+                "cumulative": false,
+                "dragmode": "zoom",
+                "filter": {
+                    "col": "rh",
+                    "label": "",
+                    "multiple": false
+                },
+                "histnorm": "",
+                "horizontal": false,
+                "nbins": 25,
+                "showlegend": true,
+                "title": "financial report by scenario",
+                "tool": "plotly",
+                "traces": {
+                    "1": {
+                        "hole": 0,
+                        "labels": "s",
+                        "name": "financial report by scenario",
+                        "values": "value"
+                    }
+                },
+                "type": "hist",
+                "xaxis": {
+                    "title": "financial report by scenario"
+                },
+                "xdata": {
+                    "value": {}
+                },
+                "yaxis": {
+                    "title": ""
+                }
+            },
+            "height": 700,
+            "outType": "graph"
         }
-      },
-      "height": 700
     },
-    "rep": {
-      "outType": "mirorenderer_rep",
-      "additionalData": ["cd", "pricecurve", "repc", "repcompare", "repfinance", "s_yf"]
-    },
-    "repcompare": {
-      "outType": "miroPivot",
-      "height": 700,
-      "options": {
-        "aggregationFunction": "sum",
-        "pivotRenderer": "bar",
-        "enableHideEmptyCols": false,
-        "hideEmptyCols": false,
-        "hidePivotControls": false,
-        "emptyUEL": "-",
-        "rows": "c",
-        "cols": {
-          "Hdr": null
-        }
-      }
-    },
-    "repc": {
-      "outType": "graph",
-      "graph": {
-        "tool": "plotly",
-        "type": "pie",
-        "traces": {
-          "1": {
-            "labels": "c",
-            "values": "yield",
-            "hole": 0.4,
-            "name": "crop yield [tons]"
-          },
-          "2": {
-            "labels": "c",
-            "values": "planted",
-            "name": "crop planted [acres]",
-            "hole": 0.4
-          },
-          "3": {
-            "labels": "c",
-            "values": "seedcost",
-            "name": "seed cost [€]",
-            "hole": 0.4
-          },
-          "4": {
-            "labels": "c",
-            "values": "sold",
-            "name": "crop sold [tons]",
-            "hole": 0.4
-          },
-          "5": {
-            "labels": "c",
-            "values": "sales",
-            "name": "sales",
-            "hole": 0.4
-          },
-          "6": {
-            "labels": "c",
-            "values": "purchased",
-            "name": "crop purchased [tons]",
-            "hole": 0.4
-          },
-          "7": {
-            "labels": "c",
-            "values": "pcost",
-            "name": "purchase cost [€]",
-            "hole": 0.4
-          }
+    "datatable": {
+        "class": "stripe",
+        "filter": "top",
+        "options": {
+            "pageLength": 15
         },
-        "title": "crop report",
-        "showlegend": true,
-        "staticPlot": false
-      },
-      "height": 700
-    }
-  },
-  "readme": {
-    "tabTitle": "Crop plant alloction problem with stochastic crop yield",
-    "filename": "README.md",
-    "enableMath": false
-  },
-  "defaultRendererOutput": "miroPivot",
-  "overwriteAliases": {
-    "yf": {
-      "newAlias": "Yield Factor"
+        "rownames": false
     },
-    "land": {
-      "newAlias": "Available Land [acre]"
+    "defaultRendererOutput": "miroPivot",
+    "defaultScenName": "default",
+    "defCompMode": "split",
+    "excelIncludeEmptySheets": true,
+    "excelIncludeMeta": true,
+    "handsontable": {
+        "colWidths": 150,
+        "contextMenu": {
+            "allowColEdit": true,
+            "allowRowEdit": true,
+            "enabled": true
+        },
+        "height": 700,
+        "readonly": false,
+        "stretchH": "all"
     },
-    "nums": {
-      "newAlias": "Number of Scenarios"
+    "hiddenOutputSymbols": "s_yf",
+    "inputWidgets": {
+        "_gmsopt_emp": {
+            "choices": [
+                "DE",
+                "DECIS",
+                "LINDO"
+            ],
+            "label": "Stochastic solver",
+            "multiple": false,
+            "noHcube": false,
+            "selected": "DE",
+            "widgetType": "dropdown"
+        },
+        "_gmspar_yfsd": {
+            "alias": "Yield factor standard deviation",
+            "default": 0.1,
+            "label": "Set standard deviation of normal distribution of yield factor scenarios",
+            "max": 1,
+            "min": 0,
+            "noHcube": false,
+            "step": 0.01,
+            "ticks": true,
+            "widgetType": "slider"
+        },
+        "cd": {
+            "bigData": false,
+            "heatmap": false,
+            "readonly": false,
+            "widgetType": "table"
+        },
+        "land": {
+            "default": 500,
+            "label": "Available land [acre]",
+            "max": 1000,
+            "min": 200,
+            "noHcube": false,
+            "step": 25,
+            "ticks": true,
+            "widgetType": "slider"
+        },
+        "nums": {
+            "default": 0,
+            "label": "Number of scenarios",
+            "max": 1000,
+            "min": 0,
+            "noHcube": false,
+            "step": 1,
+            "ticks": true,
+            "widgetType": "slider"
+        },
+        "pricecurve": {
+            "bigData": false,
+            "heatmap": false,
+            "readonly": false,
+            "widgetType": "table"
+        },
+        "yf": {
+            "default": 1,
+            "label": "Yield factor",
+            "max": 2,
+            "min": 0,
+            "noHcube": false,
+            "step": 0.5,
+            "ticks": true,
+            "widgetType": "slider"
+        }
     },
-    "cd": {
-      "newAlias": "Crop Data"
+    "layoutSettings": {
+        "maxTabsExpandedInput": 5,
+        "maxTabsExpandedOutput": 5,
+        "maxTabsExpandedPivotComp": 5,
+        "maxTabsExpandedSplitComp": 5,
+        "maxTabsExpandedTabComp": 5
     },
-    "pricecurve": {
-      "newAlias": "Price Curve Data"
+    "miroLogFile": "farming_miro.log",
+    "outputTables": {
+        "repc": {
+            "class": "display",
+            "filter": "none",
+            "options": {
+                "decimals": 3,
+                "pageLength": 15
+            },
+            "rownames": false
+        },
+        "repcompare": {
+            "class": "display",
+            "filter": "none",
+            "options": {
+                "decimals": 3,
+                "pageLength": 15
+            },
+            "rownames": false
+        },
+        "repfinance": {
+            "class": "display",
+            "filter": "none",
+            "options": {
+                "decimals": 3,
+                "pageLength": 15
+            },
+            "pivotCols": "rh",
+            "rownames": false
+        }
     },
-    "rep": {
-      "newAlias": "Dashboard"
+    "overwriteAliases": {
+        "cd": {
+            "newAlias": "Crop Data"
+        },
+        "land": {
+            "newAlias": "Available Land [acre]"
+        },
+        "nums": {
+            "newAlias": "Number of Scenarios"
+        },
+        "pricecurve": {
+            "newAlias": "Price Curve Data"
+        },
+        "rep": {
+            "newAlias": "Dashboard"
+        },
+        "repc": {
+            "newAlias": "Crop Report"
+        },
+        "repcompare": {
+            "newAlias": "Crop Comparison Deterministic vs. Stochastic"
+        },
+        "repfinance": {
+            "newAlias": "Financial Report by Scenario"
+        },
+        "s_yf": {
+            "newAlias": "Yield factor realization by scenario"
+        },
+        "yf": {
+            "newAlias": "Yield Factor"
+        }
     },
-    "repc": {
-      "newAlias": "Crop Report"
+    "overwriteHeaderAliases": {
+        "cd": {
+            "newHeaders": [
+                "Crops",
+                "Yield [tons/acre]",
+                "Plant cost [€/acre]",
+                "Purchase price [€/ton]",
+                "Minimum requirements of crop to feed cattle [tons]"
+            ]
+        },
+        "pricecurve": {
+            "newHeaders": [
+                "Crops",
+                "Price curve segments",
+                "Crop sales price [€/ton]",
+                "Max amount of crop sold at sales price [tons]"
+            ]
+        },
+        "rep": {
+            "newHeaders": [
+                "Report",
+                "Value"
+            ]
+        },
+        "repc": {
+            "newHeaders": [
+                "Crops",
+                "Crop yield [tons]",
+                "Crop planted [acres]",
+                "Seed cost [€]",
+                "Crop sold [tons]",
+                "Crop revenue [€]",
+                "Crop purchased [tons]",
+                "Purchase cost [€]"
+            ]
+        },
+        "repcompare": {
+            "newHeaders": [
+                "Crops",
+                "Deterministic: crop planted [acres]",
+                "Stochastic: crop planted [acres]"
+            ]
+        },
+        "repfinance": {
+            "newHeaders": [
+                "Scenarios",
+                "Reports",
+                "Value"
+            ]
+        },
+        "s_yf": {
+            "newHeaders": [
+                "Scenarios",
+                "Yield factor realization by scenario"
+            ]
+        }
     },
-    "repcompare": {
-      "newAlias": "Crop Comparison Deterministic vs. Stochastic"
+    "overwriteSheetOrder": {
+        "input": [
+            "cd",
+            "pricecurve",
+            "_widgets"
+        ],
+        "output": [
+            "rep",
+            "repcompare",
+            "repfinance",
+            "repc",
+            "s_yf"
+        ]
     },
-    "repfinance": {
-      "newAlias": "Financial Report by Scenario"
+    "pageTitle": "Crop planting",
+    "pivotCompSettings": {
+        "fixedColumns": true,
+        "hidePivotControls": false
     },
-    "s_yf": {
-      "newAlias": "Yield factor realization by scenario"
-    }
-  },
-  "outputTables": {
-    "repfinance": {
-      "pivotCols": "rh",
-      "class": "display",
-      "filter": "none",
-      "options": {
-        "pageLength": 15,
-        "decimals": 3
-      },
-      "rownames": false
+    "readme": {
+        "enableMath": false,
+        "filename": "README.md",
+        "tabTitle": "Crop plant alloction problem with stochastic crop yield"
     },
-    "repcompare": {
-      "class": "display",
-      "filter": "none",
-      "options": {
-        "pageLength": 15,
-        "decimals": 3
-      },
-      "rownames": false
-    },
-    "repc": {
-      "class": "display",
-      "filter": "none",
-      "options": {
-        "pageLength": 15,
-        "decimals": 3
-      },
-      "rownames": false
-    }
-  },
-  "datatable": {
-    "class": "stripe",
-    "filter": "top",
-    "rownames": false,
-    "options": {
-      "pageLength": 15
-    }
-  },
-  "handsontable": {
-    "stretchH": "all",
-    "readonly": false,
-    "manualColumnResize": true,
-    "contextMenu": {
-      "enabled": true,
-      "allowRowEdit": true,
-      "allowColEdit": true
-    },
-    "height": 700,
-    "colWidths": 150
-  },
-  "overwriteHeaderAliases": {
-    "cd": {
-      "newHeaders": ["Crops", "Yield [tons/acre]", "Plant cost [€/acre]", "Purchase price [€/ton]", "Minimum requirements of crop to feed cattle [tons]"]
-    },
-    "pricecurve": {
-      "newHeaders": ["Crops", "Price curve segments", "Crop sales price [€/ton]", "Max amount of crop sold at sales price [tons]"]
-    },
-    "repc": {
-      "newHeaders": ["Crops", "Crop yield [tons]", "Crop planted [acres]", "Seed cost [€]", "Crop sold [tons]", "Crop revenue [€]", "Crop purchased [tons]", "Purchase cost [€]"]
-    },
-    "repcompare": {
-      "newHeaders": ["Crops", "Deterministic: crop planted [acres]", "Stochastic: crop planted [acres]"]
-    },
-    "s_yf": {
-      "newHeaders": ["Scenarios", "Yield factor realization by scenario"]
-    },
-    "repfinance": {
-      "newHeaders": ["Scenarios", "Reports", "Value"]
-    },
-    "rep": {
-      "newHeaders": ["Report", "Value"]
-    }
-  }
+    "roundingDecimals": 2,
+    "saveTraceFile": true,
+    "storeLogFilesDuration": 7,
+    "theme": "browser",
+    "UILogo": "jack-bain-mEgPe7RSBTc-unsplash-cut.jpg"
 }

@@ -1,115 +1,125 @@
 {
-  "theme": "browser",
-  "pageTitle": "Vehicle Routing Problem",
-  "customCss": false,
-  "layoutSettings": {
-    "maxTabsExpandedInput": 5,
-    "maxTabsExpandedOutput": 5,
-    "maxTabsExpandedPivotComp": 5,
-    "maxTabsExpandedSplitComp": 5,
-    "maxTabsExpandedTabComp": 5
-  },
-  "excelIncludeMeta": true,
-  "excelIncludeEmptySheets": true,
-  "defaultRendererOutput": "miroPivot",
-  "defaultScenName": "default",
-  "autoGenInputGraphs": true,
-  "storeLogFilesDuration": 7,
-  "defCompMode": "split",
-  "pivotCompSettings": {
-    "hidePivotControls": false,
-    "fixedColumns": true
-  },
-  "activateModules": {
-    "loadLocal": true,
-    "logFile": true,
-    "lstFile": false,
-    "attachments": true,
-    "hcube": false,
-    "downloadTempFiles": false
-  },
-  "aggregateWidgets": true,
-  "overwriteSheetOrder": {
-    "input": ["customerdata", "_widgets"]
-  },
-  "overwriteAliases": {
-    "customerdata": {
-      "newAlias": "Cusotmer information"
+    "activateModules": {
+        "attachments": true,
+        "downloadTempFiles": false,
+        "hcube": false,
+        "loadLocal": true,
+        "logFile": true,
+        "lstFile": false
     },
-    "x": {
-      "newAlias": "states if vehicle k travels from ci to cj"
+    "aggregateWidgets": true,
+    "autoGenInputGraphs": true,
+    "customCss": false,
+    "dataRendering": {
+        "x": {
+            "additionalData": [
+                "customerdata",
+                "t",
+                "w"
+            ],
+            "height": 800,
+            "options": {
+                "title": "Optimal vehicle routes"
+            },
+            "outType": "mirorenderer_x",
+            "packages": "leaflet.minicharts"
+        }
     },
-    "vehicle_number": {
-      "newAlias": "vehicle_number"
+    "defaultRendererOutput": "miroPivot",
+    "defaultScenName": "default",
+    "defCompMode": "split",
+    "excelIncludeEmptySheets": true,
+    "excelIncludeMeta": true,
+    "handsontable": {
+        "colWidths": 200,
+        "contextMenu": {
+            "allowColEdit": true,
+            "allowRowEdit": true,
+            "enabled": true
+        },
+        "height": 700,
+        "readonly": false,
+        "stretchH": "none"
     },
-    "vehicle_capacity": {
-      "newAlias": "vehicle_capacity"
+    "hiddenOutputSymbols": [
+        "t",
+        "w"
+    ],
+    "inputWidgets": {
+        "customerdata": {
+            "alias": "Customer informations",
+            "apiVersion": 2,
+            "rendererName": "mirowidget_customerdata",
+            "widgetType": "custom"
+        },
+        "vehicle_capacity": {
+            "decimal": 0,
+            "decimalCharacter": ".",
+            "digitGroupSeparator": ",",
+            "label": "Capacity of the vehicles",
+            "max": null,
+            "min": 0,
+            "sign": null,
+            "value": 200,
+            "widgetType": "numericinput"
+        },
+        "vehicle_number": {
+            "decimal": 0,
+            "decimalCharacter": ".",
+            "digitGroupSeparator": ",",
+            "label": "Number of available vehicles",
+            "min": 1,
+            "value": 10,
+            "widgetType": "numericinput"
+        }
     },
-    "_scalars": {
-      "newAlias": "Scalars"
+    "layoutSettings": {
+        "maxTabsExpandedInput": 5,
+        "maxTabsExpandedOutput": 5,
+        "maxTabsExpandedPivotComp": 5,
+        "maxTabsExpandedSplitComp": 5,
+        "maxTabsExpandedTabComp": 5
     },
-    "t": {
-      "newAlias": "arrival time at customer ci"
+    "overwriteAliases": {
+        "_scalars": {
+            "newAlias": "Scalars"
+        },
+        "customerdata": {
+            "newAlias": "Cusotmer information"
+        },
+        "t": {
+            "newAlias": "arrival time at customer ci"
+        },
+        "vehicle_capacity": {
+            "newAlias": "vehicle_capacity"
+        },
+        "vehicle_number": {
+            "newAlias": "vehicle_number"
+        },
+        "w": {
+            "newAlias": "waiting time at customer ci: ei-ti"
+        },
+        "x": {
+            "newAlias": "states if vehicle k travels from ci to cj"
+        }
     },
-    "w": {
-      "newAlias": "waiting time at customer ci: ei-ti"
-    }
-  },
-  "roundingDecimals": 2,
-  "dataRendering": {
-    "x": {
-      "outType": "mirorenderer_x",
-      "height": 800,
-      "options": {
-        "title": "Optimal vehicle routes"
-      },
-      "additionalData": ["customerdata", "t", "w"],
-      "packages": "leaflet.minicharts"
-    }
-  },
-  "inputWidgets": {
-    "customerdata": {
-      "widgetType": "custom",
-      "rendererName": "mirowidget_customerdata",
-      "apiVersion": 2,
-      "alias": "Customer informations"
+    "overwriteSheetOrder": {
+        "input": [
+            "customerdata",
+            "_widgets"
+        ]
     },
-    "vehicle_number": {
-      "widgetType": "numericinput",
-      "decimal": 0,
-      "decimalCharacter": ".",
-      "digitGroupSeparator": ",",
-      "label": "Number of available vehicles",
-      "min": 1,
-      "value": 10
+    "pageTitle": "Vehicle Routing Problem",
+    "pivotCompSettings": {
+        "fixedColumns": true,
+        "hidePivotControls": false
     },
-    "vehicle_capacity": {
-      "widgetType": "numericinput",
-      "max": null,
-      "decimal": 0,
-      "decimalCharacter": ".",
-      "digitGroupSeparator": ",",
-      "sign": null,
-      "label": "Capacity of the vehicles",
-      "min": 0,
-      "value": 200
-    }
-  },
-  "readme": {
-    "tabTitle": "Introduction",
-    "filename": "README.md",
-    "enableMath": true
-  },
-  "hiddenOutputSymbols": ["t", "w"],
-  "handsontable": {
-    "stretchH": "none",
-    "readonly": false,
-    "contextMenu": {
-      "enabled": true,
-      "allowRowEdit": true,
-      "allowColEdit": true
+    "readme": {
+        "enableMath": true,
+        "filename": "README.md",
+        "tabTitle": "Introduction"
     },
-    "height": 700,
-    "colWidths": 200
-  }
+    "roundingDecimals": 2,
+    "storeLogFilesDuration": 7,
+    "theme": "browser"
 }

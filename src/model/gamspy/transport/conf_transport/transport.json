@@ -1,214 +1,262 @@
 {
-  "miroLogFile": "miro.log",
-  "inputWidgets": {
-    "f": {
-      "widgetType": "slider",
-      "alias": "freight in dollars per case per thousand miles",
-      "min": 1,
-      "max": 500,
-      "default": 100,
-      "step": 1,
-      "ticks": true,
-      "noHcube": false,
-      "label": "freight in dollars per case per thousand miles"
+    "activateModules": {
+        "attachments": true,
+        "downloadTempFiles": true,
+        "hcube": true,
+        "loadLocal": true,
+        "logFile": true,
+        "lstFile": true
     },
-    "mins": {
-      "widgetType": "slider",
-      "alias": "minimum shipment (MIP- and MINLP-only)",
-      "min": 0,
-      "max": 500,
-      "default": 100,
-      "step": 1,
-      "ticks": true,
-      "noHcube": false,
-      "minStep": 0,
-      "label": "minimum shipment (MIP- and MINLP-only)"
-    },
-    "beta": {
-      "widgetType": "slider",
-      "alias": "beta (MINLP-only)",
-      "label": "beta (MINLP-only)",
-      "min": 0,
-      "max": 1,
-      "default": 0.95,
-      "step": 0.01
-    },
-    "d": {
-      "widgetType": "table",
-      "alias": "distance in thousands of miles",
-      "readonly": false,
-      "heatmap": false,
-      "bigData": false,
-      "pivotCols": "i"
-    },
-    "type": {
-      "widgetType": "dropdown",
-      "alias": "model type",
-      "selected": "lp",
-      "noHcube": false,
-      "multiple": false,
-      "label": "Select the model type",
-      "choices": ["lp", "mip", "minlp"],
-      "aliases": ["LP", "MIP", "MINLP"]
-    }
-  },
-  "dataRendering": {
-    "schedule": {
-      "outType": "graph",
-      "graph": {
-        "title": "shipment quantities in cases",
-        "tool": "leaflet",
-        "layersControl": {
-          "options": {
-            "collapsed": true
-          },
-          "position": "topright",
-          "overlayGroups": ["Canning plants", "Markets"]
+    "aggregateWidgets": true,
+    "autoGenInputGraphs": true,
+    "customCss": false,
+    "dataRendering": {
+        "_scalars_out": {
+            "options": {
+                "color": "red",
+                "icon": {
+                    "lib": "font-awesome",
+                    "name": "dollar-sign"
+                },
+                "width": 4
+            },
+            "outType": "valueBox"
         },
-        "markers": {
-          "1": {
-            "lng": "lngP",
-            "lat": "latP",
-            "iconOptions": {
-              "icon": "gear",
-              "iconColor": "#000000",
-              "markerColor": "red"
+        "schedule": {
+            "graph": {
+                "flows": {
+                    "1": {
+                        "color": "#000000",
+                        "flow": "quantities",
+                        "lat0": "latP",
+                        "lat1": "latM",
+                        "layerId": "From [i] to [j]",
+                        "lng0": "lngP",
+                        "lng1": "lngM",
+                        "maxThickness": 10,
+                        "minThickness": 0
+                    }
+                },
+                "layersControl": {
+                    "options": {
+                        "collapsed": true
+                    },
+                    "overlayGroups": [
+                        "Canning plants",
+                        "Markets"
+                    ],
+                    "position": "topright"
+                },
+                "markers": {
+                    "1": {
+                        "group": "Canning plants",
+                        "iconOptions": {
+                            "icon": "gear",
+                            "iconColor": "#000000",
+                            "markerColor": "red"
+                        },
+                        "label": "[i] (capacity: [cap])",
+                        "labelOptions": {
+                            "permanent": false,
+                            "style": {
+                                "color": "#ff0000"
+                            },
+                            "textsize": "16px"
+                        },
+                        "lat": "latP",
+                        "lng": "lngP"
+                    },
+                    "2": {
+                        "group": "Markets",
+                        "iconOptions": {
+                            "icon": "circle-user",
+                            "iconColor": "#000000",
+                            "markerColor": "blue"
+                        },
+                        "label": "[j] (demand: [demand])",
+                        "labelOptions": {
+                            "permanent": false,
+                            "style": {
+                                "color": "#08629d"
+                            },
+                            "textsize": "16px"
+                        },
+                        "lat": "latM",
+                        "lng": "lngM"
+                    }
+                },
+                "title": "shipment quantities in cases",
+                "tool": "leaflet"
             },
-            "labelOptions": {
-              "textsize": "16px",
-              "permanent": false,
-              "style": {
-                "color": "#ff0000"
-              }
-            },
-            "label": "[i] (capacity: [cap])",
-            "group": "Canning plants"
-          },
-          "2": {
-            "lng": "lngM",
-            "lat": "latM",
-            "iconOptions": {
-              "icon": "circle-user",
-              "iconColor": "#000000",
-              "markerColor": "blue"
-            },
-            "labelOptions": {
-              "textsize": "16px",
-              "permanent": false,
-              "style": {
-                "color": "#08629d"
-              }
-            },
-            "label": "[j] (demand: [demand])",
-            "group": "Markets"
-          }
+            "height": 700,
+            "outType": "graph"
+        }
+    },
+    "datatable": {
+        "class": "display",
+        "filter": "none",
+        "options": {
+            "pageLength": 15
         },
-        "flows": {
-          "1": {
-            "lng0": "lngP",
-            "lat0": "latP",
-            "lng1": "lngM",
-            "lat1": "latM",
-            "flow": "quantities",
-            "color": "#000000",
-            "minThickness": 0,
-            "maxThickness": 10,
-            "layerId": "From [i] to [j]"
-          }
+        "rownames": false
+    },
+    "defaultRendererOutput": "miroPivot",
+    "defaultScenName": "default",
+    "defCompMode": "split",
+    "excelIncludeEmptySheets": true,
+    "excelIncludeMeta": true,
+    "handsontable": {
+        "colWidths": 150,
+        "contextMenu": {
+            "allowColEdit": true,
+            "allowRowEdit": true,
+            "enabled": true
+        },
+        "height": 700,
+        "readonly": false,
+        "stretchH": "none"
+    },
+    "inputGroups": [
+        {
+            "members": [
+                "ilocdata",
+                "jlocdata"
+            ],
+            "name": "Location information"
         }
-      },
-      "height": 700
-    },
-    "_scalars_out": {
-      "outType": "valueBox",
-      "options": {
-        "width": 4,
-        "color": "red",
-        "icon": {
-          "name": "dollar-sign",
-          "lib": "font-awesome"
+    ],
+    "inputWidgets": {
+        "beta": {
+            "alias": "beta (MINLP-only)",
+            "default": 0.95,
+            "label": "beta (MINLP-only)",
+            "max": 1,
+            "min": 0,
+            "step": 0.01,
+            "widgetType": "slider"
+        },
+        "d": {
+            "alias": "distance in thousands of miles",
+            "bigData": false,
+            "heatmap": false,
+            "pivotCols": "i",
+            "readonly": false,
+            "widgetType": "table"
+        },
+        "f": {
+            "alias": "freight in dollars per case per thousand miles",
+            "default": 100,
+            "label": "freight in dollars per case per thousand miles",
+            "max": 500,
+            "min": 1,
+            "noHcube": false,
+            "step": 1,
+            "ticks": true,
+            "widgetType": "slider"
+        },
+        "mins": {
+            "alias": "minimum shipment (MIP- and MINLP-only)",
+            "default": 100,
+            "label": "minimum shipment (MIP- and MINLP-only)",
+            "max": 500,
+            "min": 0,
+            "minStep": 0,
+            "noHcube": false,
+            "step": 1,
+            "ticks": true,
+            "widgetType": "slider"
+        },
+        "type": {
+            "alias": "model type",
+            "aliases": [
+                "LP",
+                "MIP",
+                "MINLP"
+            ],
+            "choices": [
+                "lp",
+                "mip",
+                "minlp"
+            ],
+            "label": "Select the model type",
+            "multiple": false,
+            "noHcube": false,
+            "selected": "lp",
+            "widgetType": "dropdown"
         }
-      }
-    }
-  },
-  "theme": "browser",
-  "defCompMode": "split",
-  "roundingDecimals": 2,
-  "activateModules": {
-    "logFile": true,
-    "lstFile": true,
-    "loadLocal": true,
-    "attachments": true,
-    "downloadTempFiles": true,
-    "hcube": true
-  },
-  "autoGenInputGraphs": true,
-  "aggregateWidgets": true,
-  "storeLogFilesDuration": 0,
-  "excelIncludeMeta": true,
-  "excelIncludeEmptySheets": true,
-  "saveTraceFile": true,
-  "datatable": {
-    "class": "display",
-    "filter": "none",
-    "rownames": false,
-    "options": {
-      "pageLength": 15
-    }
-  },
-  "overwriteSheetOrder": {
-    "input": ["_widgets", "a", "b", "d", "ilocdata", "jlocdata"],
-    "output": ["schedule", "_scalars_out"]
-  },
-  "pageTitle": "A transportation problem",
-  "defaultScenName": "default",
-  "overwriteAliases": {
-    "a": {
-      "newAlias": "Capacity"
     },
-    "b": {
-      "newAlias": "Demand"
+    "layoutSettings": {
+        "maxTabsExpandedInput": 5,
+        "maxTabsExpandedOutput": 5,
+        "maxTabsExpandedPivotComp": 5,
+        "maxTabsExpandedSplitComp": 5,
+        "maxTabsExpandedTabComp": 5
     },
-    "d": {
-      "newAlias": "Distance"
+    "miroLogFile": "miro.log",
+    "overwriteAliases": {
+        "_scalars_out": {
+            "newAlias": "Cost"
+        },
+        "a": {
+            "newAlias": "Capacity"
+        },
+        "b": {
+            "newAlias": "Demand"
+        },
+        "beta": {
+            "newAlias": "beta (MINLP-only)"
+        },
+        "d": {
+            "newAlias": "Distance"
+        },
+        "f": {
+            "newAlias": "freight in dollars per case per thousand miles"
+        },
+        "ilocdata": {
+            "newAlias": "Plant location"
+        },
+        "jlocdata": {
+            "newAlias": "Market location"
+        },
+        "mins": {
+            "newAlias": "minimum shipment (MIP- and MINLP-only)"
+        },
+        "schedule": {
+            "newAlias": "Shipment quantities"
+        },
+        "total_cost": {
+            "newAlias": "total transportation costs in thousands of dollars"
+        },
+        "type": {
+            "newAlias": "selected model type"
+        }
     },
-    "ilocdata": {
-      "newAlias": "Plant location"
+    "overwriteSheetOrder": {
+        "input": [
+            "_widgets",
+            "a",
+            "b",
+            "d",
+            "ilocdata",
+            "jlocdata"
+        ],
+        "output": [
+            "schedule",
+            "_scalars_out"
+        ]
     },
-    "jlocdata": {
-      "newAlias": "Market location"
+    "pageTitle": "A transportation problem",
+    "pivotCompSettings": {
+        "fixedColumns": true,
+        "hidePivotControls": false
     },
-    "schedule": {
-      "newAlias": "Shipment quantities"
+    "readme": {
+        "enableMath": false,
+        "filename": "README.md",
+        "tabTitle": "Readme"
     },
-    "_scalars_out": {
-      "newAlias": "Cost"
-    }
-  },
-  "inputGroups": [
-    {
-      "name": "Location information",
-      "members": ["ilocdata", "jlocdata"]
-    }
-  ],
-  "readme": {
-    "tabTitle": "Readme",
-    "filename": "README.md"
-  },
-  "handsontable": {
-    "stretchH": "none",
-    "readonly": false,
-    "highlightCol": true,
-    "highlightRow": true,
-    "columnSorting": true,
-    "manualColumnResize": true,
-    "contextMenu": {
-      "enabled": true,
-      "allowRowEdit": true,
-      "allowColEdit": true,
-      "allowReadOnly": false
-    },
-    "height": 700,
-    "colWidths": 150
-  }
+    "roundingDecimals": 2,
+    "saveTraceFile": true,
+    "storeLogFilesDuration": 0,
+    "theme": "browser"
 }

@@ -1,140 +1,180 @@
 {
-  "overwriteSheetOrder": {
-    "input": ["_widgets", "iilocdata", "_scalars"],
-    "output": ["tourdetails", "_scalars_out"]
-  },
-  "theme": "browser",
-  "defCompMode": "split",
-  "roundingDecimals": 2,
-  "activateModules": {
-    "logFile": true,
-    "lstFile": false,
-    "loadLocal": true,
-    "attachments": true,
-    "downloadTempFiles": false
-  },
-  "autoGenInputGraphs": false,
-  "aggregateWidgets": true,
-  "storeLogFilesDuration": 7,
-  "excelIncludeMeta": true,
-  "excelIncludeEmptySheets": true,
-  "saveTraceFile": true,
-  "pageTitle": "Traveling Salesman",
-  "dataRendering": {
-    "tourdetails": {
-      "outType": "graph",
-      "graph": {
-        "title": "tourdetails",
-        "tool": "leaflet",
-        "layersControl": {
-          "options": {
-            "collapsed": true
-          },
-          "position": "topright"
-        },
-        "markers": {
-          "1": {
-            "lng": "lnga",
-            "lat": "lata",
-            "iconOptions": {
-              "icon": "circle-user",
-              "iconColor": "#f3f709",
-              "markerColor": "blue"
+    "activateModules": {
+        "attachments": true,
+        "downloadTempFiles": false,
+        "hcube": false,
+        "loadLocal": true,
+        "logFile": true,
+        "lstFile": false
+    },
+    "aggregateWidgets": true,
+    "autoGenInputGraphs": false,
+    "customCss": false,
+    "dataRendering": {
+        "iilocdata": {
+            "graph": {
+                "layersControl": {
+                    "options": {
+                        "collapsed": true
+                    },
+                    "position": "topright"
+                },
+                "markers": {
+                    "1": {
+                        "group": "Cities",
+                        "label": "[u]",
+                        "labelOptions": {
+                            "permanent": false,
+                            "textsize": "12px"
+                        },
+                        "lat": "lat",
+                        "lng": "lng"
+                    }
+                },
+                "title": "",
+                "tool": "leaflet"
             },
-            "labelOptions": {
-              "textsize": "12px",
-              "permanent": false
-            },
-            "label": "[ii]",
-            "group": "Cities"
-          }
+            "height": 700,
+            "outType": "dtGraph"
         },
-        "flows": {
-          "1": {
-            "lng0": "lnga",
-            "lat0": "lata",
-            "lng1": "lngb",
-            "lat1": "latb",
-            "flow": "flow",
-            "color": "#b50c16",
-            "minThickness": 5,
-            "maxThickness": 5,
-            "layerId": "[ii] - [jj]"
-          }
+        "tourdetails": {
+            "graph": {
+                "flows": {
+                    "1": {
+                        "color": "#b50c16",
+                        "flow": "flow",
+                        "lat0": "lata",
+                        "lat1": "latb",
+                        "layerId": "[ii] - [jj]",
+                        "lng0": "lnga",
+                        "lng1": "lngb",
+                        "maxThickness": 5,
+                        "minThickness": 5
+                    }
+                },
+                "layersControl": {
+                    "options": {
+                        "collapsed": true
+                    },
+                    "position": "topright"
+                },
+                "markers": {
+                    "1": {
+                        "group": "Cities",
+                        "iconOptions": {
+                            "icon": "circle-user",
+                            "iconColor": "#f3f709",
+                            "markerColor": "blue"
+                        },
+                        "label": "[ii]",
+                        "labelOptions": {
+                            "permanent": false,
+                            "textsize": "12px"
+                        },
+                        "lat": "lata",
+                        "lng": "lnga"
+                    }
+                },
+                "title": "tourdetails",
+                "tool": "leaflet"
+            },
+            "height": 700,
+            "outType": "graph"
         }
-      },
-      "height": 700
     },
-    "iilocdata": {
-      "outType": "dtGraph",
-      "graph": {
-        "title": "",
-        "tool": "leaflet",
-        "layersControl": {
-          "options": {
-            "collapsed": true
-          },
-          "position": "topright"
+    "datatable": {
+        "class": "display",
+        "filter": "none",
+        "options": {
+            "pageLength": 15
         },
-        "markers": {
-          "1": {
-            "lng": "lng",
-            "lat": "lat",
-            "labelOptions": {
-              "textsize": "12px",
-              "permanent": false
-            },
-            "label": "[u]",
-            "group": "Cities"
-          }
+        "rownames": false
+    },
+    "defaultRendererOutput": "miroPivot",
+    "defaultScenName": "default",
+    "defCompMode": "split",
+    "excelIncludeEmptySheets": true,
+    "excelIncludeMeta": true,
+    "handsontable": {
+        "colWidths": 150,
+        "contextMenu": {
+            "allowColEdit": true,
+            "allowRowEdit": true,
+            "enabled": true
+        },
+        "height": 700,
+        "readonly": false,
+        "stretchH": "none"
+    },
+    "inputWidgets": {
+        "_scalars": {
+            "alias": "Advanced Settings",
+            "bigData": false,
+            "heatmap": false,
+            "readonly": false,
+            "widgetType": "table"
+        },
+        "iilocdata": {
+            "alias": "City location information",
+            "apiVersion": 2,
+            "rendererName": "mirowidget_iilocdata",
+            "widgetType": "custom"
         }
-      },
-      "height": 700
-    }
-  },
-  "datatable": {
-    "class": "display",
-    "filter": "none",
-    "rownames": false,
-    "options": {
-      "pageLength": 15
-    }
-  },
-  "defaultScenName": "default",
-  "inputWidgets": {
-    "iilocdata": {
-      "widgetType": "custom",
-      "rendererName": "mirowidget_iilocdata",
-      "apiVersion": 2,
-      "alias": "City location information"
     },
-    "_scalars": {
-      "widgetType": "table",
-      "alias": "Advanced Settings",
-      "readonly": false,
-      "heatmap": false,
-      "bigData": false
-    }
-  },
-  "miroLogFile": "tspMiro.log",
-  "readme": {
-    "tabTitle": "Introduction",
-    "filename": "README.md"
-  },
-  "handsontable": {
-    "stretchH": "none",
-    "readonly": false,
-    "highlightCol": true,
-    "highlightRow": true,
-    "columnSorting": true,
-    "manualColumnResize": true,
-    "contextMenu": {
-      "enabled": true,
-      "allowRowEdit": true,
-      "allowColEdit": true,
-      "allowReadOnly": false
+    "layoutSettings": {
+        "maxTabsExpandedInput": 5,
+        "maxTabsExpandedOutput": 5,
+        "maxTabsExpandedPivotComp": 5,
+        "maxTabsExpandedSplitComp": 5,
+        "maxTabsExpandedTabComp": 5
     },
-    "height": 700,
-    "colWidths": 150
-  }
+    "miroLogFile": "tspMiro.log",
+    "overwriteAliases": {
+        "_scalars": {
+            "newAlias": "Scalars"
+        },
+        "_scalars_out": {
+            "newAlias": "Output Scalars"
+        },
+        "iilocdata": {
+            "newAlias": "City location information"
+        },
+        "maxcities": {
+            "newAlias": "Limit numbers of cities in tour"
+        },
+        "maxcuts": {
+            "newAlias": "Limit number of cuts"
+        },
+        "total_cost": {
+            "newAlias": "Total Distance (miles)"
+        },
+        "tourdetails": {
+            "newAlias": "tourdetails"
+        }
+    },
+    "overwriteSheetOrder": {
+        "input": [
+            "_widgets",
+            "iilocdata",
+            "_scalars"
+        ],
+        "output": [
+            "tourdetails",
+            "_scalars_out"
+        ]
+    },
+    "pageTitle": "Traveling Salesman",
+    "pivotCompSettings": {
+        "fixedColumns": true,
+        "hidePivotControls": false
+    },
+    "readme": {
+        "enableMath": false,
+        "filename": "README.md",
+        "tabTitle": "Introduction"
+    },
+    "roundingDecimals": 2,
+    "saveTraceFile": true,
+    "storeLogFilesDuration": 7,
+    "theme": "browser"
 }
