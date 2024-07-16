@@ -177,7 +177,7 @@ validateDashboardConfig <- function(graphConfig) {
           errMsgTmp <- paste(
             errMsgTmp,
             paste0(
-              "\nInvalid ", id, ": ",
+              "\nInvalid ", id, " in view ", view, ": ",
               paste(indices[invalidIndices],
                 collapse = ", "
               )
