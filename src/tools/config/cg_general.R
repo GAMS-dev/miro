@@ -1367,5 +1367,5 @@ observeEvent(rv$generalConfig, {
   configJSON$symbolLinks <<- rv$generalConfig$symbolLinks
   configJSON$scripts <<- rv$generalConfig$scripts
   configJSON$outputAttachments <<- rv$generalConfig$outputAttachments
-  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
+  jsonConfig$write(configJSON)
 })

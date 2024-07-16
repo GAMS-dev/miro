@@ -2998,7 +2998,7 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
       hideEl(session, "#pivotColsRestriction")
     }
   }
-  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
+  jsonConfig$write(configJSON)
 
   if (symbolDDNeedsUpdate) {
     updateSelectInput(session, "widget_symbol", choices = allInputSymbols)
@@ -3045,7 +3045,7 @@ observeEvent(input$deleteWidgetConfirm, {
   req(length(currentWidgetSymbolName) > 0L, nchar(currentWidgetSymbolName) > 0L)
 
   configJSON$inputWidgets[[currentWidgetSymbolName]] <<- NULL
-  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
+  jsonConfig$write(configJSON)
   if (any(startsWith(currentWidgetSymbolName, c(prefixDDPar, prefixGMSOpt)))) {
     allInputSymbols <<- allInputSymbols[!allInputSymbols %in% currentWidgetSymbolName]
     updateSelectInput(session, "widget_symbol", choices = allInputSymbols)

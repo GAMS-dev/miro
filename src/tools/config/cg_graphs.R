@@ -5187,7 +5187,7 @@ observeEvent(rv$saveGraphConfirm, {
     }
     configJSON$dataRendering[[activeSymbol$name]]$outType <<- if (isTRUE(input$outType)) "dtGraph" else "graph"
   }
-  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
+  jsonConfig$write(configJSON)
   removeModal()
   showHideEl(session, "#graphUpdateSuccess", 4000L)
   showEl(session, "#deleteGraph")
@@ -5228,7 +5228,7 @@ observeEvent(input$deleteGraphConfirm, {
   }
   removeGlobalViews()
   configJSON$dataRendering[[graphId]] <<- NULL
-  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
+  jsonConfig$write(configJSON)
   removeModal()
   showHideEl(session, "#graphUpdateSuccess", 4000L)
   hideEl(session, "#deleteGraph")

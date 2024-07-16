@@ -623,7 +623,7 @@ observeEvent(rv$tableConfig, {
       return()
     }
   )
-  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
+  jsonConfig$write(configJSON)
 })
 
 observeEvent(input$saveTableWidget, {
@@ -673,7 +673,7 @@ observeEvent(virtualActionButton(input$saveTableConfirm, rv$saveTableConfirm), {
       }
     }
   }
-  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
+  jsonConfig$write(configJSON)
 
   if (noTableSymbols) {
     hideEl(session, "#noTableSymbolMsg")
@@ -705,7 +705,7 @@ observeEvent(input$deleteTableWidgetConfirm, {
       configJSON$outputTables <<- NULL
     }
   }
-  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
+  jsonConfig$write(configJSON)
   disableEl(session, "#deleteTableWidget")
   removeModal()
   showHideEl(session, "#tableWidgetUpdateSuccess", 4000L)

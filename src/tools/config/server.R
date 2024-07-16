@@ -1,5 +1,6 @@
 source(file.path("tools", "config", "util.R"))
 source("./components/db_migrator.R")
+source("./components/json_sorter.R")
 dbMigrator <- DbMigrator$new(db)
 
 appDisconnected <- FALSE
@@ -7,6 +8,7 @@ configJSONFileName <- paste0(
   currentModelDir, .Platform$file.sep, "conf_", modelName,
   .Platform$file.sep, modelName, ".json"
 )
+jsonConfig <- JSONSorter$new(filePath = configJSONFileName)
 dateFormatChoices <- c("1910-06-22" = "yyyy-mm-dd", "22.06.1910" = "dd.mm.yyyy")
 
 outputSymMultiDimChoices <- character(0L)
@@ -274,10 +276,7 @@ server_admin <- function(input, output, session) {
         }, logical(1L),
         USE.NAMES = FALSE
       )]
-      write_json(configJSON, configJSONFileName,
-        pretty = TRUE,
-        auto_unbox = TRUE, null = "null"
-      )
+      jsonConfig$write(configJSON)
       invalidWidgetsToRender <<- character(0L)
       if (length(invalidGraphsToRender)) {
         hideEl(session, "#btRemoveInvalidWidgets")
@@ -297,10 +296,7 @@ server_admin <- function(input, output, session) {
         }, logical(1L),
         USE.NAMES = FALSE
       )]
-      write_json(configJSON, configJSONFileName,
-        pretty = TRUE,
-        auto_unbox = TRUE, null = "null"
-      )
+      jsonConfig$write(configJSON)
       invalidGraphsToRender <<- character(0L)
       if (length(invalidWidgetsToRender)) {
         hideEl(session, "#btRemoveInvalidGraphs")
