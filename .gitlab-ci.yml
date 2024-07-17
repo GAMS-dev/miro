@@ -171,6 +171,7 @@ lint_job:
 build_linux_job:
   tags:
     - linux
+    - puma
   stage: build
   services:
     - docker:20.10-dind
