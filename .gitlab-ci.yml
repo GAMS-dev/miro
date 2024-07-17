@@ -130,8 +130,9 @@ build_build_image_windows:
   script:
     - $buildConfig=Get-Content build-config.json | ConvertFrom-Json
     - $rVersion=$buildConfig.rVersion
+    - $gamsVersion=$buildConfig.gamsVersion
     - cd ci/windows
-    - docker build -t $env:CI_REGISTRY_IMAGE/builder-windows:latest --build-arg R_VERSION=$rVersion .
+    - docker build -t $env:CI_REGISTRY_IMAGE/builder-windows:latest --build-arg R_VERSION=$rVersion --build-arg GAMS_VERSION=$gamsVersion .
     - docker push $env:CI_REGISTRY_IMAGE/builder-windows:latest
   rules:
     - if: $FORCE_BUILD_WINDOWS_BUILDER == "yes"
