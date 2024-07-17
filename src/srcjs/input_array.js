@@ -449,7 +449,7 @@ class InputArray {
     if (!$.isArray(selected)) {
       selected = [selected];
     }
-    selected = selected.map((el) => el.toString());
+    selected = selected.map((el) => el?.toString());
     if (choices) {
       /* eslint-disable no-plusplus */
       for (let i = 0, itemLen = choices.length; i < itemLen;
