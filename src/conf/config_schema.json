@@ -374,6 +374,13 @@
               "customChartColors": {
                 "description": "Custom color palette. Every second color is the hover color of previous one.",
                 "type": "array"
+              },
+              "multiChartSeries": {
+                "description": "Mix charting types (e.g. bar and line chart) as part of a view",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
               }
             }
          }
@@ -554,6 +561,13 @@
                         "description": "Custom color for each UEL. Every second color is the hover color of previous one.",
                         "additionalProperties": {
                           "type": "array"
+                        }
+                      },
+                      "multiChartSeries": {
+                        "description": "Mix charting types (e.g. bar and line chart) as part of a view",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
                         }
                       },
                       "customLabels": {
