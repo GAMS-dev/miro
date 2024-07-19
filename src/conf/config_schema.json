@@ -2145,7 +2145,8 @@
                               "graph",
                               "dtGraph",
                               "datatable",
-                              "miroPivot"
+                              "miroPivot",
+                              "dashboard"
                            ]
                         }
                      },
