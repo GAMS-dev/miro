@@ -142,11 +142,13 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         if (length(config$chartOptions$customLabels)) {
           labelCols <- dataTmp[, sapply(dataTmp, class) == "character"]
           for (col in seq_len(length(labelCols))) {
-            dataTmp[[col]] <- ifelse(
-              dataTmp[[col]] %in% names(config$chartOptions$customLabels),
-              config$chartOptions$customLabels[dataTmp[[col]]],
-              dataTmp[[col]]
-            )
+            dataTmp[[col]] <- sapply(dataTmp[[col]], function(x) {
+              if (x %in% names(config$chartOptions$customLabels)) {
+                config$chartOptions$customLabels[[x]]
+              } else {
+                x
+              }
+            })
           }
         }
 
