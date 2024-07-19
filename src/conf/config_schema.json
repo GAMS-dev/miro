@@ -457,7 +457,7 @@
               "description":"Specify the number of decimal places to which the value of the valuebox should be rounded",
               "type": "array",
               "items": {
-                "type": "integer"
+                "type": ["integer", "null"]
               }
             }
           },
