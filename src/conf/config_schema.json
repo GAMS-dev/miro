@@ -310,7 +310,7 @@
          "pivotRenderer":{
            "description":"Sepcify the default renderer.",
             "type":"string",
-            "enum": ["table", "heatmap", "line", "bar", "stackedbar", "radar"]
+            "enum": ["table", "heatmap", "pie", "doughnut", "bar", "horizontalbar", "stackedbar", "horizontalstackedbar", "line", "scatter", "area", "stackedarea", "radar", "timeseries"]
          },
          "fixedColumns": {
            "description":"Enable fixed columns (default: true).",
@@ -528,7 +528,7 @@
                 "pivotRenderer":{
                   "description":"Sepcify the default renderer.",
                    "type":"string",
-                   "enum": ["table", "heatmap", "line", "bar", "stackedbar", "radar"]
+                   "enum": ["table", "heatmap", "pie", "doughnut", "bar", "horizontalbar", "stackedbar", "horizontalstackedbar", "line", "scatter", "area", "stackedarea", "radar", "timeseries"]
                 },
                 "chartOptions": {
                   "description":"Additional chart options",
