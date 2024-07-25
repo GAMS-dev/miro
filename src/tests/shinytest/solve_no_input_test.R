@@ -3,6 +3,12 @@ app <- AppDriver$new("../../",
   load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
   timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
 )
+app$set_inputs(btImport = "click")
+Sys.sleep(0.5)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
+app$run_js('$(\'button[data-dismiss="modal"]:visible\').click();')
+Sys.sleep(1L)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L)
 app$set_inputs(btSolve = "click")
 expect_error(app$wait_for_js('$("#outputTableView").is(":visible")', timeout = 10000), NA)
 app$set_inputs(btSave = "click")
