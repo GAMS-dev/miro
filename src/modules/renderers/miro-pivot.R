@@ -1411,6 +1411,24 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 )
               )
             )
+          } else if (length(pivotRenderer) &&
+            pivotRenderer %in% c("table", "heatmap")) {
+            additionalOptionsContent <- tags$div(
+              id = ns("newViewOptionsWrapper"), style = "text-align:left;",
+              tags$div(
+                tags$div(
+                  class = "row",
+                  tags$div(
+                    class = "col-sm-12",
+                    textInput(ns("advancedTitle"),
+                      width = "100%",
+                      lang$renderers$miroPivot$newView$chartTitle,
+                      value = viewOptions$chartOptions$title
+                    )
+                  )
+                )
+              )
+            )
           } else {
             additionalOptionsContent <- NULL
           }
@@ -1579,7 +1597,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               isolate(input$pivotRenderer) %in% c(
                 "line", "scatter", "area", "stackedarea",
                 "bar", "stackedbar", "radar", "timeseries",
-                "pie", "doughnut", "horizontalbar", "horizontalstackedbar"
+                "pie", "doughnut", "horizontalbar", "horizontalstackedbar",
+                "table", "heatmap"
               )) {
               for (advancedOption in list(
                 list(
@@ -2681,7 +2700,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       # ===================================================
 
       output$pivotTable <- renderDT({
+        updateRenderer()
         pivotRenderer <- input$pivotRenderer
+        if (!is.null(rendererEnv[[ns("chartOptions")]])) {
+          # reset chart options
+          rendererEnv[[ns("chartOptions")]] <- NULL
+        }
         if (initRenderer && isTRUE(options$resetOnInit)) {
           if (length(currentView[["pivotRenderer"]])) {
             if (!identical(pivotRenderer, currentView[["pivotRenderer"]])) {
@@ -2839,6 +2863,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           extensions = c("Scroller", "FixedColumns"),
           selection = if (isEditableTable) "multiple" else "none", editable = isEditableTable,
           callback = JS("setTimeout(function() { table.draw(true); }, 500);"),
+          title = currentView$chartOptions$title,
           container = DTbuildColHeaderContainer(
             names(dataTmp),
             noRowHeaders,
@@ -2883,6 +2908,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           ret <- formatRound(ret, seq(noRowHeaders + 1, length(dataTmp)),
             digits = roundPrecision
           )
+        }
+        if (length(currentView$chartOptions)) {
+          # reset chart options
+          rendererEnv[[ns("chartOptions")]] <- currentView$chartOptions
+          currentView$chartOptions <<- NULL
         }
         if (length(currentView[["_didRender_"]])) {
           if (currentView[["_didRender_"]] < 2L) {
