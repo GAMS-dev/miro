@@ -209,7 +209,8 @@ output[["scenExportHandler"]] <- downloadHandler(
         {
           scenData$loadSandbox(
             getInputDataFromSandbox(),
-            modelInFileNames, activeScen$getMetadataDf()
+            if (length(modelInFileNames)) modelInFileNames else character(),
+            activeScen$getMetadataDf()
           )
           NULL
         },
@@ -327,7 +328,8 @@ observeEvent(input[["scenRemoteExportHandler"]], {
       {
         scenData$loadSandbox(
           getInputDataFromSandbox(),
-          modelInFileNames, activeScen$getMetadataDf()
+          if (length(modelInFileNames)) modelInFileNames else character(),
+          activeScen$getMetadataDf()
         )
         FALSE
       },
