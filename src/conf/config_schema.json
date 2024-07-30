@@ -542,6 +542,11 @@
                    "type":"object",
                    "additionalProperties":false,
                    "properties":{
+                      "title":{
+                        "description":"Chart title",
+                        "type": "string",
+                        "minLength": 1
+                      },
                       "xTitle":{
                         "description":"X-axis label",
                         "type": "string",
