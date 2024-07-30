@@ -471,13 +471,26 @@
           "required": ["id", "color", "icon", "title", "prefix", "postfix", "redPositive", "noColor", "valueScalar", "decimals"]
         },
         "dataViews": {
-          "description":"A data view is shown if  the corresponding value box is clicked in the user interface. The id must match the id of a valuebox.",
+          "description":"A data view is shown if  the corresponding value box is clicked in the user interface. The id must match the id of a valuebox. The preferred format is an array of objects, but an object is also allowed for compatibility reasons.",
           "type": "object",
-          "additionalProperties":{
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            ]
           }
         },
         "dataViewsConfig": {
