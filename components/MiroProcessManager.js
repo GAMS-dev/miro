@@ -221,7 +221,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       });
     }
     this.miroProcesses[internalPid] = execa(
-      path.join(await rpath, 'bin', 'R'),
+      path.join(await rpath, process.platform === 'win32' ? path.join('bin', 'x64') : 'bin', 'R'),
       ['--no-echo', '--no-restore', '--vanilla',
         '-f', path.join(this.miroResourcePath, 'start-shiny.R')],
       {
