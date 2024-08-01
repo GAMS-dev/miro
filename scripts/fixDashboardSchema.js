@@ -7,7 +7,6 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 
 const KEYS_TO_IGNORE = [
-  'chartOptions.properties.customChartColors',
   'fixedColumns',
   'emptyUEL',
   'enableHideEmptyCols',
