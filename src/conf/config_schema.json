@@ -345,7 +345,10 @@
             },
             "default": {
               "description": "Domain that is filtered on startup. If you want to show all data per default, set showAll to true and default to _none. (optional)",
-              "type": "string"
+              "type": [
+                "string",
+                "null"
+              ]
             },
             "filterVal": {
               "description": "String (UEL) to filter by (optional)",
@@ -710,7 +713,10 @@
                       },
                       "default": {
                         "description": "Domain that is filtered on startup. If you want to show all data per default, set showAll to true and default to _none. (optional)",
-                        "type": "string"
+                        "type": [
+                          "string",
+                          "null"
+                        ]
                       },
                       "filterVal": {
                         "description": "String (UEL) to filter by (optional)",
