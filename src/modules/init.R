@@ -2545,14 +2545,29 @@ if (is.null(errMsg)) {
 
 if (is.null(errMsg)) {
   compareModuleConfigs <- list()
-  for (compareModuleIdx in seq_along(config[["customCompareModules"]])) {
+  noCompareModules <- 0L
+  for (compareModuleIdx in seq_along(config[["compareModules"]])) {
+    compareModuleConfig <- config[["compareModules"]][[compareModuleIdx]]
+    compareModuleConfig$id <- paste0("__dashboard_", compareModuleIdx)
+    compareModuleConfigs[[compareModuleConfig$id]] <- compareModuleConfig
+
+    compareModuleConfigs[[compareModuleConfig$id]][["outType"]] <- "dashboardCompare"
+    compareModuleConfigs[[compareModuleConfig$id]][["rendererFnName"]] <- "renderDashboardCompare"
+    compareModuleConfigs[[compareModuleConfig$id]][["outputFnName"]] <- "dashboardCompareOutput"
+    compareModuleConfigs[[compareModuleConfig$id]][["idx"]] <- compareModuleIdx
+    noCompareModules <- compareModuleIdx
+  }
+
+  for (customCompareModuleIdx in seq_along(config[["customCompareModules"]])) {
+    compareModuleIdx <- customCompareModuleIdx + noCompareModules
     compareModuleConfig <- config[["customCompareModules"]][[compareModuleIdx]]
     if (compareModuleConfig$id %in% names(compareModuleConfigs)) {
       errMsg <- sprintf(
         "Analysis module ids must be unique (%s).",
         compareModuleConfig$id
       )
-    } else if (compareModuleConfig$id %in% c("split", "tab", "pivot")) {
+    } else if (compareModuleConfig$id %in% c("split", "tab", "pivot") ||
+      startsWith(compareModuleConfig$id, "__dashboard_")) {
       errMsg <- sprintf(
         "Analysis module id: '%s' is reserved and cannot be used.",
         compareModuleConfig$id
