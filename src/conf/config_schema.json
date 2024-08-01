@@ -273,7 +273,7 @@
             "type": "string",
             "minLength": 1
           },
-          "default": null
+          "default": "null"
         },
         "cols": {
           "description": "Columns in the symbol to prepopulate the columns of the pivot table.",
@@ -339,7 +339,7 @@
               "items": {
                 "type": [
                   "string",
-                  null
+                  "null"
                 ]
               }
             },
@@ -635,7 +635,7 @@
                       "type": "string",
                       "minLength": 1
                     },
-                    "default": null
+                    "default": "null"
                   },
                   "cols": {
                     "description": "Columns in the symbol to prepopulate the columns of the pivot table.",
@@ -706,7 +706,7 @@
                         "description": "Domain that is filtered on startup. If you want to show all data per default, set showAll to true and default to _none. (optional)",
                         "type": [
                           "string",
-                          null
+                          "null"
                         ]
                       },
                       "filterVal": {
@@ -2553,7 +2553,7 @@
                 "description": "Height of the output element.",
                 "type": "integer",
                 "minimum": 0,
-                "default": null
+                "default": "null"
               },
               "options": {
                 "$ref": "#/definitions/miroPivotOptions"
