@@ -275,7 +275,10 @@
                         onclick="window.open(this.src, '_blank');"
                       />
                     </div>
-                    <p id="pivot-view">
+                    <h3 id="pivot-view" class="block-title">
+                      Pivot Table View
+                    </h3>
+                    <p>
                       The MIRO pivot table renderer allows you to store "views"
                       - the current representation of the data - to the database
                       and load it together with the scenario data. Simply click
@@ -289,12 +292,41 @@
                         alt="Add view"
                       />
                       button and assign a name to the view. In the dialog that
-                      opens, you can also give the view a title and, depending
-                      on the chart type, create axis labels, use logarithmic
-                      axes, and use mixed chart types. When you save the
-                      scenario, all your views are automatically stored as well.
-                      Load a view by first clicking on the "Load view" button
-                      and then selecting which view to load.
+                      opens, you can make further (optional) view-specific
+                      settings:
+                    </p>
+                    <ul>
+                      <li>
+                        <b>Title</b>: Title that is displayed above the
+                        chart/table.
+                      </li>
+                      <li>
+                        <b>X-axis label</b>: Label that is displayed on the
+                        x-axis.
+                      </li>
+                      <li>
+                        <b>Y-axis label</b>: Label that is displayed on the
+                        y-axis.
+                      </li>
+                      <li>
+                        <b>Custom colors</b>: Specify custom colors for each
+                        series.
+                      </li>
+                      <li>
+                        <b>Logarithmic scale</b>: Whether to use a logarithmic
+                        scale on the y-axis.
+                      </li>
+                      <li>
+                        <b>Multi chart series</b>: Depending on the base chart
+                        type, you can add additional bar/line series to the
+                        chart.
+                      </li>
+                    </ul>
+                    <p>
+                      When you save the scenario, all your views are
+                      automatically stored as well. Load a view by first
+                      clicking on the "Load view" button and then selecting
+                      which view to load.
                     </p>
                     <div class="section-block">
                       <img
@@ -2171,7 +2203,10 @@ firstDayTraining(td)                   = td.pos = 1;
                     <p>
                       In contrast to other types of visualization, data from
                       several symbols can be displayed in the dashboard (similar
-                      to a custom renderer).
+                      to a custom renderer). However, note that, as with a
+                      custom renderer, this is in fact a visualization for one
+                      symbol (i.e. one tab in your application) and is
+                      configured accordingly.
                     </p>
                     <div class="section-block" style="text-align: left">
                       <img
