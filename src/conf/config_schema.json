@@ -269,7 +269,7 @@
          "aggregationFunction":{
             "description":"Function to use for aggregating data.",
             "type":"string",
-            "enum": ["sum", "mean", "median", "min", "max", "count"]
+            "enum": ["sum", "mean", "median", "min", "max", "count", "sd"]
          },
          "filter":{
             "description":"Columns in the symbol to prepopulate the filter of the pivot table (key) and the element to be filtered by (value).",
@@ -305,6 +305,26 @@
                  "description":"Add option to show unfiltered table (default: false).",
                  "type":"boolean"
                }
+            }
+         },
+         "tableSummarySettings": {
+            "description":"Show summary function for rows and columns",
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "description":"Enable summary functions",
+                "type": "boolean"
+              },
+              "rowSummaryFunction": {
+                "description":"Row summary functions",
+                "type": "string",
+                "enum": ["sum", "count", "mean"]
+              },
+              "colSummaryFunction": {
+                "description":"Column summary functions",
+                "type": "string",
+                "enum": ["sum", "count", "min", "max", "mean", "median", "sd"]
+              }
             }
          },
          "pivotRenderer":{
@@ -535,7 +555,7 @@
                 "aggregationFunction":{
                    "description":"Function to use for aggregating data.",
                    "type":"string",
-                   "enum": ["sum", "mean", "median", "min", "max", "count"]
+                   "enum": ["sum", "mean", "median", "min", "max", "count", "sd"]
                 },
                 "filter":{
                    "description":"Columns in the symbol to prepopulate the filter of the pivot table (key) and the element to be filtered by (value).",
@@ -543,6 +563,54 @@
                    "additionalProperties":{
                       "type":["array", "string"],
                       "uniqueItems":true
+                   }
+                },
+                "domainFilter":{
+                  "description":"Domain filter that will be displayed as tabs and filter a domain by all elements except for the filter value - ignored in dashboard",
+                   "type":"object",
+                   "additionalProperties":false,
+                   "properties":{
+                      "domains":{
+                         "description":"Domains that can be filtered.",
+                         "type":["array", "string"],
+                         "minItems":1,
+                         "uniqueItems":true,
+                         "items":{
+                            "type":"string"
+                         }
+                      },
+                      "default":{
+                        "description":"Domain that is filtered on startup. If you want to show all data per default, set showAll to true and default to _none. (optional)",
+                         "type":"string"
+                      },
+                      "filterVal":{
+                        "description":"String (UEL) to filter by (optional)",
+                         "type":"string"
+                      },
+                      "showAll": {
+                        "description":"Add option to show unfiltered table (default: false).",
+                        "type":"boolean"
+                      }
+                   }
+                },
+                "tableSummarySettings": {
+                   "description":"Show summary function for rows and columns",
+                   "type": "object",
+                   "properties": {
+                     "enabled": {
+                       "description":"Enable summary functions",
+                       "type": "boolean"
+                     },
+                     "rowSummaryFunction": {
+                       "description":"Row summary functions",
+                       "type": "string",
+                       "enum": ["sum", "count", "mean"]
+                     },
+                     "colSummaryFunction": {
+                       "description":"Column summary functions",
+                       "type": "string",
+                       "enum": ["sum", "count", "min", "max", "mean", "median", "sd"]
+                     }
                    }
                 },
                 "pivotRenderer":{
@@ -556,7 +624,7 @@
                    "additionalProperties":false,
                    "properties":{
                       "title":{
-                        "description":"Chart title",
+                        "description":"Chart title - ignored in dashboard",
                         "type": "string",
                         "minLength": 1
                       },
