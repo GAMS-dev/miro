@@ -561,6 +561,24 @@
                         "additionalProperties": {
                           "type": "string"
                         }
+                      },
+                      "customLabelsOrder": {
+                        "description": "Custom labels order. Missing labels will be placed at the end.",
+                        "type": "array",
+                        "uniqueItems":true,
+                        "items":{
+                           "type":"string",
+                           "minLength":1
+                        }
+                      },
+                      "hideLegend": {
+                        "description": "Hide legend in chart.",
+                        "type": "boolean",
+                        "minLength": 1
+                      },
+                      "heatmapType": {
+                        "description":"Type of Heatmap to display.",
+                        "type": "integer"
                       }
                    }
                 },

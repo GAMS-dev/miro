@@ -251,6 +251,100 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         return(dataTmp)
       }
 
+      heatmapColors <- function(symbolData, noRowHeaders, heatmaptype = 1L) {
+        if (heatmaptype == 1L) {
+          brks <- quantile(symbolData[-seq_len(as.numeric(noRowHeaders))],
+            probs = seq(.05, .95, .05), na.rm = TRUE
+          )
+          clrs <- round(seq(255, 40, length.out = length(brks) + 1), 0) %>%
+            {
+              paste0("rgb(255,", ., ",", ., ")")
+            }
+          return(list(brks = brks, clrs = clrs))
+        }
+
+        symbolPositiveData <- c()
+        symbolNegativeData <- c()
+        for (name in names(symbolData[-seq_len(as.numeric(noRowHeaders))])) {
+          symbolPositiveValuesCol <- symbolData[[name]][symbolData[[name]] >= 0]
+          symbolPositiveValuesCol <- symbolPositiveValuesCol[!is.na(symbolPositiveValuesCol)]
+          symbolPositiveData <- c(symbolPositiveData, symbolPositiveValuesCol) %>%
+            unique()
+          symbolNegativeValuesCol <- symbolData[[name]][symbolData[[name]] < 0]
+          symbolNegativeValuesCol <- symbolNegativeValuesCol[!is.na(symbolNegativeValuesCol)]
+          symbolNegativeData <- c(symbolNegativeData, symbolNegativeValuesCol) %>%
+            unique()
+        }
+        if (length(symbolNegativeData) && !any(is.na(symbolNegativeData))) {
+          symbolLowestNegative <- min(symbolNegativeData, na.rm = TRUE)
+        } else if (length(symbolPositiveData) && !any(is.na(symbolPositiveData))) {
+          symbolLowestNegative <- min(symbolPositiveData, na.rm = TRUE)
+        } else {
+          symbolLowestNegative <- 0
+        }
+        if (length(symbolPositiveData) && !any(is.na(symbolPositiveData))) {
+          symbolHighestPositive <- max(symbolPositiveData, na.rm = TRUE)
+        } else if (length(symbolNegativeData) && !any(is.na(symbolNegativeData))) {
+          symbolHighestPositive <- max(symbolNegativeData, na.rm = TRUE)
+        } else {
+          symbolHighestPositive <- 0
+        }
+
+        symbolAbsMax <- max(abs(symbolLowestNegative), abs(symbolHighestPositive))
+
+        # Generate quantiles for positive and negative values separately
+        symbolQuantilesPositive <- seq(0, symbolAbsMax, length.out = 10)
+        symbolQuantilesNegative <- seq(-symbolAbsMax, 0, length.out = 10)
+
+        brks <- unique(c(symbolQuantilesNegative, symbolQuantilesPositive))
+
+        # Generate color values for positive values (shades of green)
+        symbolPositiveColors <- round(seq(90, 50,
+          length.out = length(symbolQuantilesPositive)
+        ), 0) %>%
+          {
+            paste0("hsl(202,52%,", ., "%)")
+          }
+
+        # Generate color values for negative values (shades of red)
+        symbolNegativeColors <- round(seq(50, 90,
+          length.out = length(symbolQuantilesNegative)
+        ), 0) %>%
+          {
+            paste0("hsl(34,90%,", ., "%)")
+          }
+
+        # Combine the positive and negative color sets
+        clrs <- c(symbolNegativeColors, symbolPositiveColors)
+
+        return(list(brks = brks, clrs = clrs))
+      }
+
+      applyCustomLabelsOrder <- function(data, noRowHeaders, customLabelsOrder) {
+        # TODO: find better column name solution
+        mergedCols <- paste0("\U2024", "mergedCols")
+        orderCol <- paste0(mergedCols, "\U2024")
+        orderTmpCol <- paste0(orderCol, "\U2024")
+        orderTibble <- tibble(
+          !!mergedCols := customLabelsOrder,
+          !!orderTmpCol := seq_along(customLabelsOrder)
+        )
+
+        data <- data %>%
+          mutate(!!mergedCols := apply(select(., 1:noRowHeaders), 1, function(row) paste(row, collapse = "\U2024")))
+
+        data <- data %>%
+          left_join(orderTibble, by = mergedCols) %>%
+          mutate(!!orderCol := ifelse(is.na(!!sym(orderTmpCol)),
+            max(!!sym(orderTmpCol), na.rm = TRUE) + row_number(),
+            !!sym(orderTmpCol)
+          )) %>%
+          arrange(!!sym(orderCol)) %>%
+          select(-all_of(c(mergedCols, orderTmpCol, orderCol)))
+
+        return(data)
+      }
+
       dashboardChartData <- list()
       currentConfig <- c()
       for (view in names(dataViewsConfig)) {
@@ -443,6 +537,9 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             if (!is.na(options$valueBoxes$decimals[i])) {
               valueTmp <- round(valueTmp, digits = as.numeric(options$valueBoxes$decimals[i]))
             }
+
+            valueTmp <- valueTmp %>%
+              format(big.mark = ",")
           }
 
           valBoxName <- options$valueBoxes$id[i]
@@ -565,7 +662,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                     ),
                     tags$div(
                       class = "table-chart-wide-wrapper",
-                      DTOutput(ns(paste0(id, "Table"))),
+                      DT::DTOutput(ns(paste0(id, "Table"))),
                       tags$div(
                         id = ns(paste0(id, "ChartWrapper")), class = "dashboard-chart-wrapper",
                         style = paste0("height: ", if (length(dataViewsConfig[[id]]$height)) dataViewsConfig[[id]]$height else "33vh"),
@@ -610,15 +707,22 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           dataTmp <- getData(indicator)
           noRowHeaders <- attr(dashboardChartData[[indicator]], "noRowHeaders")
 
+          # apply custom labels order
+          if (length(dataViewsConfig[[indicator]]$chartOptions$customLabelsOrder)) {
+            dataTmp <- applyCustomLabelsOrder(
+              dataTmp,
+              noRowHeaders,
+              dataViewsConfig[[indicator]]$chartOptions$customLabelsOrder
+            )
+          }
+
           # heatmap
           if (input[[paste0(indicator, "ChartType")]] == "heatmap") {
-            brks <- quantile(dataTmp[-seq_len(as.numeric(noRowHeaders))],
-              probs = seq(.05, .95, .05), na.rm = TRUE
-            )
-            clrs <- round(seq(255, 40, length.out = length(brks) + 1), 0) %>%
-              {
-                paste0("rgb(255,", ., ",", ., ")")
-              }
+            if (identical(dataViewsConfig[[indicator]]$chartOptions$heatmapType, 2L)) {
+              dataColors <- heatmapColors(dataTmp, noRowHeaders, 2L)
+            } else {
+              dataColors <- heatmapColors(dataTmp, noRowHeaders, 1L)
+            }
           }
 
           # Table Summary
@@ -697,17 +801,23 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               scrollCollapse = TRUE,
               columnDefs = list(list(
                 className = "dt-left", targets = "_all"
-              ))
+              )),
+              drawCallback = if (identical(input[[paste0(indicator, "ChartType")]], "heatmap")) JS('function() {$(this.api().table().body()).addClass("heatmap") }')
             )
           )
 
           if (!identical(input[[paste0(indicator, "ChartType")]], "heatmap")) {
             return(tableObj)
           }
-          return(formatStyle(tableObj, seq(noRowHeaders + 1, length(dataTmp)),
-            color = "#000",
-            backgroundColor = styleInterval(brks, clrs)
-          ))
+          return(
+            formatStyle(tableObj, seq(noRowHeaders + 1, length(dataTmp)),
+              color = "#333",
+              backgroundColor = styleInterval(
+                dataColors$brks,
+                dataColors$clrs
+              )
+            )
+          )
         })
 
         customColors <- c(
@@ -752,12 +862,22 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
           rowHeaderLen <- attr(dashboardChartData[[indicator]], "noRowHeaders")
           noSeries <- length(dataTmp) - rowHeaderLen
+
+          currentSeriesLabels <- names(dataTmp)[seq(rowHeaderLen + 1L, noSeries + rowHeaderLen)]
+
+          # apply custom labels order
+          if (length(currentView$chartOptions$customLabelsOrder)) {
+            dataTmp <- applyCustomLabelsOrder(
+              dataTmp,
+              rowHeaderLen,
+              currentView$chartOptions$customLabelsOrder
+            )
+          }
+
           labels <- do.call(paste, c(dataTmp[seq_len(rowHeaderLen)], list(sep = ".")))
           if (!length(labels)) {
             labels <- "value"
           }
-
-          currentSeriesLabels <- names(dataTmp)[seq(rowHeaderLen + 1L, noSeries + rowHeaderLen)]
 
           if (length(currentView$chartOptions$customChartColors) &&
             length(names(currentView$chartOptions$customChartColors))) {
@@ -880,6 +1000,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             chartJsObj$x$scales$y$type <- "logarithmic"
           }
 
+          chartJsObj <- chartJsObj %>% cjsLegend()
+
           for (i in seq_len(noSeries)) {
             label <- names(dataTmp)[rowHeaderLen + i]
             originalLabel <- label
@@ -888,6 +1010,10 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               originalLabel <- names(currentView$chartOptions$customLabels)[
                 which(currentView$chartOptions$customLabels == label)
               ]
+            }
+
+            if (identical(currentView$chartOptions$hideLegend, TRUE)) {
+              chartJsObj$x$options$plugins$legend$display <- FALSE
             }
 
             if (originalLabel %in% currentView$chartOptions$multiChartSeries) {
@@ -948,7 +1074,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             )
           )
 
-          return(chartJsObj %>% cjsLegend())
+          return(chartJsObj)
         })
 
         # download buttons: png & csv

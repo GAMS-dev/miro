@@ -2709,6 +2709,75 @@ firstDayTraining(td)                   = td.pos = 1;
 </code></pre>
                           </li>
                           <li>
+                            <code class="language-json"
+                              >"customLabelsOrder"</code
+                            >: Labels named here are displayed in charts/tables
+                            in the order specified by the user. Labels that are
+                            not mentioned retain the original sort order and are
+                            positioned after the explicitly listed labels. If
+                            labels that have already been given a new name using
+                            <code class="language-json">"customLabels"</code>
+                            are to be sorted, the new name must be used in
+                            <code class="language-json"
+                              >"customLabelsOrder"</code
+                            >. Example:
+                            <pre><code class="language-json">
+{
+  "macroperc": {
+      "macro1": {
+          [...],
+          "chartOptions": {
+            "customLabels": {
+               "a_Agr": "Agriculture",
+               "a_Const": "Construction"
+             },
+             "customLabelsOrder": ["Construction", "Agriculture"]
+          }
+      }
+  }
+}
+</code></pre>
+                          </li>
+                          <li>
+                            <code class="language-json">"hideLegend"</code>: If
+                            set to <code class="language-json">true</code>, no
+                            legend is displayed in the corresponding chart. This
+                            can be useful, for example, to avoid
+                            <span class="code">value</span> legend entries for
+                            individual data series. Example:
+                            <pre><code class="language-json">
+{
+  "macroperc": {
+      "macro1": {
+          [...],
+          "chartOptions": {
+            "hideLegend": true
+          }
+      }
+  }
+}
+</code></pre>
+                          </li>
+                          <li>
+                            <code class="language-json">"heatmapType"</code>: If
+                            set to <code class="language-json">2</code>, an
+                            alternative heatmap renderer will be used that shows
+                            different colors for positive and negative values.
+                            Example:
+                            <pre><code class="language-json">
+{
+  "macroperc": {
+      "macro1": {
+          [...],
+          "chartOptions": {
+            "heatmapType": 2
+          }
+      }
+  }
+}
+</code></pre>
+                          </li>
+                          <li>
                             <code class="language-json">"decimals"</code>:
                             Number of decimal places to be displayed in a
                             chart/table.
