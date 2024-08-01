@@ -407,6 +407,158 @@
   "excelIncludeEmptySheets": true,
   "saveTraceFile": true,
   "autoGenInputGraphs": true,
+  "compareModules": [
+      {
+          "label": "Dashboard comparison view",
+          "options": {
+              "dataViews": {
+                  "error_ratio": {
+                      "pricemerge": "All index prices including DJ"
+                  },
+                  "error_test": {
+                      "abserror": "Absolute Error",
+                      "dowVSindex": "dow VS index"
+                  },
+                  "error_train": {
+                      "stockWeight": "Sock Weight",
+                      "stockWeight2": "Sock Weight"
+                  }
+              },
+              "dataViewsConfig": {
+                "stockWeight": {
+                  "aggregationFunction": "sum",
+                  "pivotRenderer": "bar",
+                  "domainFilter": {
+                    "default": null
+                  },
+                  "tableSummarySettings": {
+                    "enabled": false,
+                    "rowSummaryFunction": "sum",
+                    "colSummaryFunction": "sum"
+                  },
+                  "rows": "symbol",
+                  "cols": {
+                    "_scenName": null
+                  },
+                  "chartOptions": {
+                    "title": "Weight",
+                    "xTitle": "Stock",
+                    "yTitle": "Weight"
+                  },
+                  "data": "stock_weight",
+                  "decimals": 2,
+                  "userFilter": "symbol"
+                },
+                "stockWeight2": {
+                  "aggregationFunction": "sum",
+                  "pivotRenderer": "bar",
+                  "domainFilter": {
+                    "default": null
+                  },
+                  "tableSummarySettings": {
+                    "enabled": true,
+                    "rowSummaryFunction": "sum",
+                    "colSummaryFunction": "sum"
+                  },
+                  "rows": "symbol",
+                  "cols": {
+                    "_scenName": null
+                  },
+                  "chartOptions": {
+                    "title": "Weight",
+                    "xTitle": "Stock",
+                    "yTitle": "Weight"
+                  },
+                  "data": "stock_weight",
+                  "decimals": 2,
+                  "userFilter": "stockWeight"
+                },
+                "dowVSindex": {
+                  "aggregationFunction": "sum",
+                  "pivotRenderer": "timeseries",
+                  "domainFilter": {
+                    "default": null
+                  },
+                  "tableSummarySettings": {
+                    "enabled": true,
+                    "rowSummaryFunction": "sum",
+                    "colSummaryFunction": "count"
+                  },
+                  "rows": "date",
+                  "cols": {
+                    "Hdr": null,
+                    "_scenName": null
+                  },
+                  "chartOptions": {
+                    "title": "Dow Jones vs Index Fund",
+                    "xTitle": "Date",
+                    "yTitle": "Value",
+                    "customLabels": {
+                      "dj": "Dow Jones",
+                      "index fund": "Index Fund"
+                    }
+                  },
+                  "data": "dowvsindex",
+                  "decimals": 2
+                }
+              },
+              "valueBoxes": {
+                  "color": [
+                      "#848991",
+                      "#ffb327",
+                      "#29B675"
+                  ],
+                  "decimals": [
+                      2,
+                      2,
+                      2
+                  ],
+                  "icon": [
+                      "smog",
+                      "plug-circle-bolt",
+                      "truck"
+                  ],
+                  "id": [
+                      "error_test",
+                      "error_train",
+                      "error_ratio"
+                  ],
+                  "noColor": [
+                      true,
+                      false,
+                      true
+                  ],
+                  "postfix": [
+                      "",
+                      "",
+                      ""
+                  ],
+                  "prefix": [
+                      "",
+                      "",
+                      ""
+                  ],
+                  "redPositive": [
+                      false,
+                      true,
+                      false
+                  ],
+                  "title": [
+                      "error test",
+                      "error train",
+                      "error ratio"
+                  ],
+                  "valueScalar": [
+                      "error_train",
+                      "error_test",
+                      "error_ratio"
+                  ]
+              },
+              "valueBoxesTitle": "Summary indicators"
+          },
+          "type": "dashboard"
+      }
+  ],
   "theme": "browser",
   "defCompMode": "split",
   "datatable": {
