@@ -2591,6 +2591,24 @@ if (is.null(errMsg)) {
 }
 
 if (is.null(errMsg)) {
+  if (length(config[["defCompMode"]])) {
+    ids <- c()
+    for (moduleName in names(config[["customCompareModules"]])) {
+      module <- config[["customCompareModules"]][[moduleName]]
+      if (!is.null(module$id)) {
+        ids <- c(ids, module$id)
+      }
+    }
+    if (!config[["defCompMode"]] %in% c(ids, "split", "tab", "pivot")) {
+      errMsg <- sprintf(
+        "Invalid defCompMode (default comparison mode) id found. Id: %s doesn't exist. Valid ids are: %s.",
+        config[["defCompMode"]], paste(c(ids, "split", "tab", "pivot"), collapse = ", ")
+      )
+    }
+  }
+}
+
+if (is.null(errMsg)) {
   validViewSymnames <- c(
     inputDsNames, paste0("_pivotcomp_", inputDsNames),
     names(modelOut), paste0("_pivotcomp_", names(modelOut)),
