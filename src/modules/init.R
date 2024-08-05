@@ -2592,13 +2592,7 @@ if (is.null(errMsg)) {
 
 if (is.null(errMsg)) {
   if (length(config[["defCompMode"]])) {
-    ids <- c()
-    for (moduleName in names(config[["customCompareModules"]])) {
-      module <- config[["customCompareModules"]][[moduleName]]
-      if (!is.null(module$id)) {
-        ids <- c(ids, module$id)
-      }
-    }
+    ids <- vapply(config[["customCompareModules"]], "[[", character(1L), "id", USE.NAMES = FALSE)
     if (!config[["defCompMode"]] %in% c(ids, "split", "tab", "pivot")) {
       errMsg <- sprintf(
         "Invalid defCompMode (default comparison mode) id found. Id: %s doesn't exist. Valid ids are: %s.",
