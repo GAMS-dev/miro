@@ -2245,6 +2245,13 @@ if (is.null(errMsg)) {
               next
             }
           } else if (identical(configGraphsOut[[i]]$outType, "dashboard")) {
+            configGraphsOut[[i]]$options$dataViews <- lapply(configGraphsOut[[i]]$options$dataViews, function(viewList) {
+              if (is.null(names(viewList))) {
+                unlist(viewList, recursive = FALSE)
+              } else {
+                viewList
+              }
+            })
             validGraphConfig <- validateDashboardConfig(configGraphsOut[[i]])
             if (!identical(validGraphConfig, TRUE)) {
               errMsgTmp <- paste0(

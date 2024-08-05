@@ -504,9 +504,6 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
       output$dataViews <- renderUI({
         sections <- lapply(names(options$dataViews), function(viewList) {
           view <- options$dataViews[[viewList]]
-          if (all(vapply(view, is.list, logical(1L), USE.NAMES = FALSE))) {
-            view <- unlist(view, recursive = FALSE)
-          }
           idList <- as.list(names(view))
           titleList <- view
 
