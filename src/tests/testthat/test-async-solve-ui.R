@@ -50,10 +50,6 @@ test_that(
       file.path(testModelDir, paste0(modelToTest, ".gms")),
       file.path(testModelDir, paste0("bk_", modelToTest, ".gms"))
     )
-    file.move(
-      file.path(testModelDir, paste0(modelToTest, "_files.txt")),
-      file.path(testModelDir, paste0("bk_", modelToTest, "_files.txt"))
-    )
     file.copy(
       file.path(testModelDir, paste0("bk_", modelToTest, ".gms")),
       file.path(testModelDir, paste0(modelToTestUpper, ".gms"))
@@ -118,8 +114,8 @@ test_that(
       file.path(testModelDir, paste0("bk_", tolower(modelToTest), ".gms")),
       file.path(testModelDir, paste0(tolower(modelToTest), ".gms"))
     )
-    file.move(
-      file.path(testModelDir, paste0("bk_", tolower(modelToTest), "_files.txt")),
+    writeLines(
+      paste0(tolower(modelToTest), ".gms"),
       file.path(testModelDir, paste0(tolower(modelToTest), "_files.txt"))
     )
 
