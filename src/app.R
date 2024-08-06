@@ -456,6 +456,14 @@ if (is.null(errMsg)) {
             ),
             encoding = "UTF-8", warn = FALSE
           ))
+          if (!modelGmsName %in% modelFiles) {
+            errMsg <- paste(errMsg, sprintf(
+              "Problems reading file: '%s_files.txt'. Main GAMS model file not found in model assembly file.",
+              modelName
+            ),
+            sep = "\n"
+            )
+          }
         },
         error = function(e) {
           errMsg <<- paste(errMsg, sprintf(
@@ -466,14 +474,6 @@ if (is.null(errMsg)) {
           )
         }
       )
-      if (!modelGmsName %in% modelFiles) {
-        errMsg <- paste(errMsg, sprintf(
-          "Problems reading file: '%s_files.txt'. Main GAMS model file not found in model assembly file.",
-          modelName
-        ),
-        sep = "\n"
-        )
-      }
       buildArchive <- !identical(Sys.getenv("MIRO_BUILD_ARCHIVE"), "false")
       if (is.null(errMsg) && useTempDir && buildArchive) {
         tryCatch(
