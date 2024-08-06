@@ -1,3 +1,6 @@
 {"server_admin": {
     "https://github.com/advisories/GHSA-m4ch-4m5f-2gp6": null
+},
+"launcher": {
+    "https://github.com/advisories/GHSA-vc8w-jr9v-vj7f": null
 }}
