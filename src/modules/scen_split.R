@@ -54,7 +54,8 @@ loadSandboxScen <- function(scenId, refresh = FALSE) {
     {
       scenData$loadSandbox(
         getInputDataFromSandbox(),
-        modelInFileNames, activeScen$getMetadataDf()
+        if (length(modelInFileNames)) modelInFileNames else character(),
+        activeScen$getMetadataDf()
       )
       FALSE
     },

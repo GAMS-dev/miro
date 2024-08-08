@@ -39,6 +39,18 @@ expect_error(app$click(selector = "#scenTabset #btLoadScen"), NA)
 Sys.sleep(2L)
 app$stop()
 
+# default = invalid
+configJSON[["defCompMode"]] <- "asd"
+writeConfig()
+app <- AppDriver$new("../../",
+  name = "default_compare_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
+expect_true(app$get_js("$('#errorMessages').text().startsWith('Invalid defCompMode');"))
+Sys.sleep(2L)
+app$stop()
+
 # default = pivot view
 configJSON[["defCompMode"]] <- "pivot"
 writeConfig()

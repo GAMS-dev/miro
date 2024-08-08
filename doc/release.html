@@ -112,6 +112,53 @@
                     (2024-07-17)
                   </div>
                   <div class="section-block">
+                    <h5 style="display: inline-block">GAMS MIRO 2.10.1</h5>
+                    <div style="display: inline-block; padding-left: 15px">
+                      (2024-08-08)
+                    </div>
+                    <ul>
+                      <li>
+                        Improve error message when trying to render a map with
+                        flows that have incomplete latitude/longitude
+                        information.
+                      </li>
+                      <li>
+                        Fix multiple issues with MIRO apps that have no input
+                        symbols.
+                      </li>
+                      <li>
+                        Fix misformatted log output when running MIRO from
+                        Windows command-line interpreters.
+                      </li>
+                      <li>
+                        Fix json schema validation for some chart types in
+                        <a href="./charts.html#pivot-chart">pivot renderer</a>
+                        and
+                        <a href="./charts.html#dashboard">dashboard renderer</a
+                        >.
+                      </li>
+                      <li>
+                        Fix json schema validation for value boxes in the
+                        <a href="./charts.html#dashboard">dashboard renderer</a>
+                        to allow for <kbd>null</kbd> values in the
+                        <kbd>decimals</kbd> property.
+                      </li>
+                      <li>
+                        <a href="./charts.html#dashboard">Dashboard</a>: Since
+                        GAMS MIRO v2.10.0, all keys in the
+                        &lt;modelname&gt;.json file are sorted alphabetically
+                        when the Configuration Mode is started. In order to
+                        leave the order of charts/tables within a dataView in
+                        the dashboard unaffected by this, it is now possible to
+                        use an array of objects for the dataViews. More on this
+                        <a href="./charts.html#dashboard-dataviews">here</a>.
+                      </li>
+                      <li>
+                        Fix crash when the app configuration has an invalid
+                        default comparison mode setting (<kbd>defCompMode</kbd>
+                        property).
+                      </li>
+                    </ul>
                     <h3>Breaking changes</h3>
                     <ul>
                       <li>

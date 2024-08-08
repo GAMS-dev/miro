@@ -140,13 +140,15 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
         # apply custom labels
         if (length(config$chartOptions$customLabels)) {
-          labelCols <- dataTmp[, sapply(dataTmp, class) == "character"]
+          labelCols <- dataTmp[, vapply(dataTmp, class, character(1L), USE.NAMES = FALSE) == "character"]
           for (col in seq_len(length(labelCols))) {
-            dataTmp[[col]] <- ifelse(
-              dataTmp[[col]] %in% names(config$chartOptions$customLabels),
-              config$chartOptions$customLabels[dataTmp[[col]]],
-              dataTmp[[col]]
-            )
+            dataTmp[[col]] <- sapply(dataTmp[[col]], function(x) {
+              if (x %in% names(config$chartOptions$customLabels)) {
+                config$chartOptions$customLabels[[x]]
+              } else {
+                x
+              }
+            })
           }
         }
 
@@ -209,7 +211,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
       }
 
       hasMultipleNumeric <- function(df) {
-        numericCols <- sapply(df, is.numeric)
+        numericCols <- vapply(df, is.numeric, logical(1L), USE.NAMES = FALSE)
         sum(numericCols) > 1
       }
 
@@ -283,7 +285,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
         # GAMS Tables need to be lengthened to only have one value column
         # as this is how a view is stored
-        numericColumnNames <- names(viewData[sapply(viewData, is.numeric)])
+        numericColumnNames <- names(viewData[vapply(viewData, is.numeric, logical(1L), USE.NAMES = FALSE)])
 
         if (length(numericColumnNames) > 1) {
           viewData <- viewData %>%

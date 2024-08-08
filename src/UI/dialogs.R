@@ -229,33 +229,35 @@ getLoadDbPanel <- function(title, scenList, tagList, iconName) {
         class = "scen-sort-by scen-sort-by-selected"
       )
     ),
-    fluidRow(
-      div(
-        class = "choose-input",
-        column(
-          6,
-          tags$label(
-            class = "checkbox-material flex-design",
-            "for" = "cbSelectManuallyDb",
-            checkboxInput("cbSelectManuallyDb", "", FALSE),
-            lang$nav$dialogImport$cbSelectManually
-          )
-        ),
-        column(
-          6,
-          conditionalPanel(
-            condition = "input.cbSelectManuallyDb === true",
-            selectInput("selInputDataDb", lang$nav$dialogImport$selInputData,
-              setNames(
-                names(modelInToImport),
-                modelInToImportAlias
-              ),
-              multiple = TRUE, width = "100%"
+    if (length(modelInToImport)) {
+      fluidRow(
+        div(
+          class = "choose-input",
+          column(
+            6,
+            tags$label(
+              class = "checkbox-material flex-design",
+              "for" = "cbSelectManuallyDb",
+              checkboxInput("cbSelectManuallyDb", "", FALSE),
+              lang$nav$dialogImport$cbSelectManually
+            )
+          ),
+          column(
+            6,
+            conditionalPanel(
+              condition = "input.cbSelectManuallyDb === true",
+              selectInput("selInputDataDb", lang$nav$dialogImport$selInputData,
+                setNames(
+                  names(modelInToImport),
+                  modelInToImportAlias
+                ),
+                multiple = TRUE, width = "100%"
+              )
             )
           )
         )
       )
-    ),
+    },
     tags$div(class = "small-space"),
     tags$div(
       style = "text-align: center;",
@@ -326,33 +328,35 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL, selectLocalTab = FA
           })
         )
       ),
-      fluidRow(
-        div(
-          class = "choose-input",
-          column(
-            6,
-            tags$label(
-              class = "checkbox-material flex-design",
-              "for" = "cbSelectManuallyExt",
-              checkboxInput("cbSelectManuallyExt", "", FALSE),
-              lang$nav$dialogImport$cbSelectManually
-            )
-          ),
-          column(
-            6,
-            conditionalPanel(
-              condition = "input.cbSelectManuallyExt === true",
-              selectInput("selInputDataExt", lang$nav$dialogImport$selInputData,
-                setNames(
-                  names(modelInToImport),
-                  modelInToImportAlias
-                ),
-                multiple = TRUE, width = "100%"
+      if (length(modelInToImport)) {
+        fluidRow(
+          div(
+            class = "choose-input",
+            column(
+              6,
+              tags$label(
+                class = "checkbox-material flex-design",
+                "for" = "cbSelectManuallyExt",
+                checkboxInput("cbSelectManuallyExt", "", FALSE),
+                lang$nav$dialogImport$cbSelectManually
+              )
+            ),
+            column(
+              6,
+              conditionalPanel(
+                condition = "input.cbSelectManuallyExt === true",
+                selectInput("selInputDataExt", lang$nav$dialogImport$selInputData,
+                  setNames(
+                    names(modelInToImport),
+                    modelInToImportAlias
+                  ),
+                  multiple = TRUE, width = "100%"
+                )
               )
             )
           )
         )
-      ),
+      },
       fluidRow(
         tags$div(
           style = "text-align: center;",
@@ -411,37 +415,39 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL, selectLocalTab = FA
             ),
           )
         ),
-        fluidRow(
-          div(
-            id = "localInputSelectManually", class = "choose-input",
-            column(
-              6,
-              tags$label(
-                class = "checkbox-material flex-design",
-                "for" = "cbSelectManuallyLoc",
-                checkboxInput("cbSelectManuallyLoc", "", FALSE),
-                lang$nav$dialogImport$cbSelectManually
-              )
-            ),
-            column(
-              6,
-              conditionalPanel(
-                condition = "input.cbSelectManuallyLoc === true",
-                selectInput("selInputDataLoc", lang$nav$dialogImport$selInputData,
-                  if (length(modelInToImport)) {
-                    setNames(
-                      names(modelInToImport),
-                      modelInToImportAlias
-                    )
-                  } else {
-                    NULL
-                  },
-                  multiple = TRUE, width = "100%"
+        if (length(modelInToImport)) {
+          fluidRow(
+            div(
+              id = "localInputSelectManually", class = "choose-input",
+              column(
+                6,
+                tags$label(
+                  class = "checkbox-material flex-design",
+                  "for" = "cbSelectManuallyLoc",
+                  checkboxInput("cbSelectManuallyLoc", "", FALSE),
+                  lang$nav$dialogImport$cbSelectManually
+                )
+              ),
+              column(
+                6,
+                conditionalPanel(
+                  condition = "input.cbSelectManuallyLoc === true",
+                  selectInput("selInputDataLoc", lang$nav$dialogImport$selInputData,
+                    if (length(modelInToImport)) {
+                      setNames(
+                        names(modelInToImport),
+                        modelInToImportAlias
+                      )
+                    } else {
+                      NULL
+                    },
+                    multiple = TRUE, width = "100%"
+                  )
                 )
               )
             )
           )
-        ),
+        },
         fluidRow(
           div(
             id = "localInputCsvOptions", style = "display: none",
