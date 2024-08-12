@@ -2185,7 +2185,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               enabled = TRUE
             ),
             mode = "xy",
-            overScaleMode = "y"
+            scaleMode = "y"
           ),
           pan = list(
             enabled = TRUE,

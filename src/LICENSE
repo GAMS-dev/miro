@@ -949,7 +949,7 @@ Section 8 -- Interpretation.
         - scales, Copyright (c) 2010-2016 Hadley Wickham
         - farver, Copyright (c) 2018 Thomas Lin Pedersen [cre, aut], Berendea Nicolae [aut] (Author of the ColorSpace C++ library), Romain François ORCID iD [aut]
         - chartjs (R link), Copyright (c) 2015-2016 Pierre Formont
-        - Chart.js, Copyright (c) 2014-2021 Chart.js Contributors
+        - Chart.js, Copyright (c) 2014-2024 Chart.js Contributors
         - hammer.js, Copyright (c) 2011-2017 by Jorik Tangelder (Eight Media)
         - sortable, Copyright (c) 2019 Andrie de Vries [cre, aut], Barret Schloerke [aut], Kenton Russell [aut, ccp] (Original author), Lebedev Konstantin [cph] ('SortableJS', http://sortablejs.github.io/Sortable/)
         - httr, Copyright (c) 2014 Hadley Wickham; RStudio

@@ -5,10 +5,10 @@ dependencies:
     script:
       - hammer.min.js
   - name: Chart.js
-    version: 3.7.0
+    version: 4.4.3
     src: htmlwidgets/lib/Chart.js
     script:
-      - chart.min.js
+      - chart.umd.js
       - chartjs-plugin-zoom.min.js
   - name: chartjs
     version: 0.3.3
