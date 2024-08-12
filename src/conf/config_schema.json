@@ -505,28 +505,40 @@
           "properties": {
             "id": {
               "description": "Each valuebox needs a unique id. If a click on a valuebox should show a view, both ids need to be identical. No spaces allowed.",
-              "type": "array",
+              "type": [
+                "string",
+                "array"
+              ],
               "items": {
                 "type": "string"
               }
             },
             "color": {
               "description": "Background color of value box",
-              "type": "array",
+              "type": [
+                "string",
+                "array"
+              ],
               "items": {
                 "type": "string"
               }
             },
             "icon": {
               "description": "Icon for value box from the https://fontawesome.com/ library",
-              "type": "array",
+              "type": [
+                "string",
+                "array"
+              ],
               "items": {
                 "type": "string"
               }
             },
             "title": {
               "description": "Title that is displayed in the valuebox.",
-              "type": "array",
+              "type": [
+                "string",
+                "array"
+              ],
               "items": {
                 "type": "string"
               }
@@ -543,14 +555,20 @@
             },
             "prefix": {
               "description": "String that is displayed before the value. When using a '+', negative values will be prefixed with a '-'",
-              "type": "array",
+              "type": [
+                "string",
+                "array"
+              ],
               "items": {
                 "type": "string"
               }
             },
             "postfix": {
               "description": "String that is displayed after the value.",
-              "type": "array",
+              "type": [
+                "string",
+                "array"
+              ],
               "items": {
                 "type": "string"
               }
@@ -1151,11 +1169,15 @@
         "properties": {
           "newHeaders": {
             "description": "Specify new headers (number needs to match dimension of symbol)",
-            "type": "array",
+            "type": [
+              "string",
+              "array"
+            ],
             "items": {
               "type": "string",
               "minLength": 1
-            }
+            },
+            "minLength": 1
           }
         }
       }
@@ -3187,7 +3209,10 @@
               },
               "accept": {
                 "description": "A character vector of unique file type specifiers which gives the browser a hint as to the type of file the server expects. Many browsers use this to prevent the user from selecting an invalid file.",
-                "type": "array",
+                "type": [
+                  "string",
+                  "array"
+                ],
                 "items": {
                   "type": "string"
                 }
