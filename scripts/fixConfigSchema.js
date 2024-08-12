@@ -70,6 +70,30 @@ function mergeObjects(obj1, obj2, keyPath = '') {
   return obj2;
 }
 
+function fixLengthOneStringArrays(obj) {
+  if (typeof obj === 'object' && !Array.isArray(obj) && obj !== null) {
+    Object.keys(obj).forEach((key) => {
+      if (
+        key === 'type'
+        && obj[key] === 'array'
+        && obj.items
+        && typeof obj.items === 'object'
+        && obj.items.type === 'string'
+      ) {
+        obj[key] = ['string', 'array'];
+        Object.keys(obj.items).forEach((itemKey) => {
+          if (
+            ['minLength', 'maxLength', 'pattern', 'format'].includes(itemKey)
+          ) {
+            obj[itemKey] = obj.items[itemKey];
+          }
+        });
+      }
+      fixLengthOneStringArrays(obj[key]);
+    });
+  }
+}
+
 let rootDir = '';
 if (!path.basename(__filename) !== 'src') {
   rootDir = 'src';
@@ -78,10 +102,16 @@ if (!path.basename(__filename) !== 'src') {
 const configSchemaPath = path.join(rootDir, 'conf', 'config_schema.json');
 const configSchema = JSON.parse(fs.readFileSync(configSchemaPath, 'utf8'));
 
+// make sure dashboard's dataViewsConfig is superset of miroPivotOptions
+// to allow user's copy&pasting views from MIRO pivot to dashboard views
 configSchema.definitions.dashboardOptions.properties.dataViewsConfig.additionalProperties.oneOf[1].properties = mergeObjects(
   configSchema.definitions.miroPivotOptions.properties,
-  configSchema.definitions.dashboardOptions.properties.dataViewsConfig.additionalProperties.oneOf[1].properties,
+  configSchema.definitions.dashboardOptions.properties.dataViewsConfig
+    .additionalProperties.oneOf[1].properties,
 );
+
+// length one string arrays should also accept strings
+fixLengthOneStringArrays(configSchema);
 
 fs.writeFileSync(
   configSchemaPath,
