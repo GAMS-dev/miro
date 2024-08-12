@@ -942,7 +942,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 enabled = TRUE
               ),
               mode = "xy",
-              overScaleMode = "y"
+              scaleMode = "y"
             ),
             pan = list(
               enabled = TRUE,
