@@ -180,7 +180,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
     # apply custom labels
     if (length(config$chartOptions$customLabels)) {
-      labelCols <- dataTmp[, sapply(dataTmp, class) == "character"]
+      labelCols <- dataTmp[, vapply(dataTmp, class, character(1L), USE.NAMES = FALSE) == "character"]
       for (col in seq_len(length(labelCols))) {
         dataTmp[[col]] <- sapply(dataTmp[[col]], function(x) {
           if (x %in% names(config$chartOptions$customLabels)) {
@@ -251,7 +251,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
   }
 
   hasMultipleNumeric <- function(df) {
-    numericCols <- sapply(df, is.numeric)
+    numericCols <- vapply(df, is.numeric, logical(1L), USE.NAMES = FALSE)
     sum(numericCols) > 1
   }
 
@@ -406,11 +406,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
     currentConfig <- dataViewsConfig[[view]]
 
-    if (length(currentConfig$data)) {
-      viewData <- combineData(data$get(currentConfig$data), scenarioNames)
-    } else {
-      abortSafe("Must provide a symbol name (property `data`) to each view.")
-    }
+    viewData <- combineData(data$get(currentConfig$data), scenarioNames)
 
     # Scenario columns need to be lengthened to only have one value column
     viewData <- viewData %>%
@@ -662,9 +658,6 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
   output$dataViews <- renderUI({
     sections <- lapply(names(options$dataViews), function(viewList) {
       view <- options$dataViews[[viewList]]
-      if (all(sapply(view, is.list))) {
-        view <- unlist(view, recursive = FALSE)
-      }
       idList <- as.list(names(view))
       titleList <- view
 

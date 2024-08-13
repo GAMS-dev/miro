@@ -64,7 +64,7 @@ validateGraphConfig <- function(graphConfig, skipOutTypeCheck = FALSE) {
   return(errMsgTmp)
 }
 
-validateDashboardConfig <- function(graphConfig) {
+validateDashboardConfig <- function(graphConfig, dashboardType) {
   errMsgTmp <- NULL
 
   vb <- graphConfig$options$valueBoxes
@@ -128,7 +128,20 @@ validateDashboardConfig <- function(graphConfig) {
       # custom user output
       next
     }
-    if (length(config$data)) {
+    if (identical(dashboardType, "compare")) {
+      if (!is.null(config$data) && config$data %in% names(modelOut)) {
+        symbol <- config$data
+      } else {
+        errMsgTmp <- paste(
+          errMsgTmp,
+          sprintf(
+            "\nSymbol '%s' in dataViewConfig '%s' not found among the symbols that the dashboard compare mode has access to. Make sure to provide a valid symbol name (property `data`).",
+            if (!is.null(config$data)) config$data else "[NULL]", view
+          )
+        )
+        next
+      }
+    } else if (length(config$data)) {
       if (config$data %in% c(graphConfig$options[["_metadata_"]]$symname, graphConfig$additionalData)) {
         symbol <- config$data
       } else {
@@ -160,7 +173,11 @@ validateDashboardConfig <- function(graphConfig) {
     } else {
       validHeaders <- validHeaders[-length(validHeaders)]
     }
+    if (identical(dashboardType, "compare")) {
+      validHeaders <- c(validHeaders, "_scenName")
+    }
 
+    allIndices <- c()
     for (id in c("rows", "cols", "aggregations", "filter", "userFilter")) {
       if (length(config[[id]])) {
         if (id %in% c("rows", "userFilter")) {
@@ -172,6 +189,7 @@ validateDashboardConfig <- function(graphConfig) {
         } else {
           indices <- names(config[[id]])
         }
+        allIndices <- c(allIndices, indices)
         invalidIndices <- !indices %in% validHeaders
         if (any(invalidIndices)) {
           errMsgTmp <- paste(
@@ -185,6 +203,14 @@ validateDashboardConfig <- function(graphConfig) {
           )
         }
       }
+    }
+    if (identical(dashboardType, "compare") && !"_scenName" %in% allIndices) {
+      errMsgTmp <- paste(
+        errMsgTmp,
+        paste0(
+          "\nMissing '_scenName' index in dataViewConfig '", view, "'"
+        )
+      )
     }
   }
 
@@ -2252,7 +2278,7 @@ if (is.null(errMsg)) {
                 viewList
               }
             })
-            validGraphConfig <- validateDashboardConfig(configGraphsOut[[i]])
+            validGraphConfig <- validateDashboardConfig(configGraphsOut[[i]], "graph")
             if (!identical(validGraphConfig, TRUE)) {
               errMsgTmp <- paste0(
                 "Invalid graph config for symbol '", names(modelOut)[i],
@@ -2555,19 +2581,41 @@ if (is.null(errMsg)) {
   noCompareModules <- 0L
   for (compareModuleIdx in seq_along(config[["compareModules"]])) {
     compareModuleConfig <- config[["compareModules"]][[compareModuleIdx]]
-    compareModuleConfig$id <- paste0("__dashboard_", compareModuleIdx)
-    compareModuleConfigs[[compareModuleConfig$id]] <- compareModuleConfig
+    if (identical(compareModuleConfig$type, "dashboard")) {
+      compareModuleConfig$options$dataViews <- lapply(compareModuleConfig$options$dataViews, function(viewList) {
+        if (is.null(names(viewList))) {
+          unlist(viewList, recursive = FALSE)
+        } else {
+          viewList
+        }
+      })
+      validGraphConfig <- validateDashboardConfig(compareModuleConfig, "compare")
+      if (!identical(validGraphConfig, TRUE)) {
+        errMsgTmp <- paste0(
+          "Invalid config for dashboard comparison '", compareModuleIdx,
+          "': ", validGraphConfig, "."
+        )
+        if (LAUNCHCONFIGMODE) {
+          warning(errMsgTmp, call. = FALSE)
+          next
+        }
+        errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
+        next
+      }
 
-    compareModuleConfigs[[compareModuleConfig$id]][["outType"]] <- "dashboardCompare"
-    compareModuleConfigs[[compareModuleConfig$id]][["rendererFnName"]] <- "renderDashboardCompare"
-    compareModuleConfigs[[compareModuleConfig$id]][["outputFnName"]] <- "dashboardCompareOutput"
-    compareModuleConfigs[[compareModuleConfig$id]][["idx"]] <- compareModuleIdx
+      compareModuleConfig$id <- paste0("__dashboard_", compareModuleIdx)
+      compareModuleConfigs[[compareModuleConfig$id]] <- compareModuleConfig
+      compareModuleConfigs[[compareModuleConfig$id]][["outType"]] <- "dashboardCompare"
+      compareModuleConfigs[[compareModuleConfig$id]][["rendererFnName"]] <- "renderDashboardCompare"
+      compareModuleConfigs[[compareModuleConfig$id]][["outputFnName"]] <- "dashboardCompareOutput"
+      compareModuleConfigs[[compareModuleConfig$id]][["idx"]] <- compareModuleIdx
+    }
     noCompareModules <- compareModuleIdx
   }
 
   for (customCompareModuleIdx in seq_along(config[["customCompareModules"]])) {
     compareModuleIdx <- customCompareModuleIdx + noCompareModules
-    compareModuleConfig <- config[["customCompareModules"]][[compareModuleIdx]]
+    compareModuleConfig <- config[["customCompareModules"]][[customCompareModuleIdx]]
     if (compareModuleConfig$id %in% names(compareModuleConfigs)) {
       errMsg <- sprintf(
         "Analysis module ids must be unique (%s).",
