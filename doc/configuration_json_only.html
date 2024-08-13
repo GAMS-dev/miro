@@ -889,8 +889,15 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                       mode, an application-specific configuration is required.
                       All information about the dashboard and its configuration
                       can be found in the section on the regular
-                      <a href="./charts.html#dashboard">dashboard renderer</a> .
+                      <a href="./charts.html#dashboard">dashboard renderer</a>.
                     </p>
+                    <div class="section-block" style="text-align: left">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/dashboard/dashboard_compare.png"
+                        alt="Configured dashboard comparison"
+                      />
+                    </div>
                     <p>
                       If you have already configured a dashboard for an output
                       symbol, the effort for a counterpart in the scenario
@@ -927,6 +934,9 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                         A <span class="code">"label"</span> is assigned which is
                         displayed when you select the scenario comparison mode
                         (next to split view, tab view, pivot view).
+                        <p></p>
+                        Example: dashboard and dashboard comparison
+                        configuration
                       </li>
                       <pre><code class="language-json">
   {
@@ -994,7 +1004,11 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                         displaying multiple scenarios. In this case, the view
                         configuration (distribution of the dimensions in
                         rows/cols/aggregation, etc.) can be adjusted if
-                        necessary.
+                        necessary. The
+                        <a href="./start.html#compare-pivot"
+                          >pivot comparison mode</a
+                        >
+                        can help here to prepare the views.
                       </li>
                       <li>
                         If the value boxes are to display numbers (<span
@@ -1013,7 +1027,7 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                           class="code"
                           >"data"</span
                         >
-                        property)
+                        property).
                       </li>
                     </ul>
                     <p>
@@ -1086,6 +1100,92 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                     </div>
                     <!--//callout-block-->
                   </div>
+                  <b>Using custom code in the dashboard comparison</b>
+                  <p>
+                    As in the normal dashboard, one can also provide custom R
+                    code, which is rendered instead of the charts/tables
+                    configured in
+                    <code class="language-json">"dataViewsConfig"</code>. To do
+                    this, proceed as follows:
+                  </p>
+                  <ol>
+                    <li>
+                      Download the
+                      <a
+                        href="https://github.com/GAMS-dev/miro/blob/master/src/modules/renderers/mirocompare_dashboard.R"
+                        target="_blank"
+                        >latest dashboard scenario comparison renderer file</a
+                      >
+                      from the MIRO repository on GitHub and put it into your
+                      <span class="code">renderer_&lt;modelname&gt;</span>
+                      directory. If the folder does not already exist, you can
+                      create it manually.
+                    </li>
+                    <li>
+                      In the mirocompare_dashboard.R file, make the following
+                      changes:
+                      <pre><code class="diff-highlight language-diff">- dashboardCompareOutput <- function(id, height = NULL, options = NULL, path = NULL, ...) {
++ mirocompare_&lt;id&gt;Output <- function(id, height = NULL, options = NULL, path = NULL) {
+  [...]
+}
+- renderDashboardCompare <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
++ renderMirocompare_&lt;id&gt; <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
+  [...]
+}
+</code></pre>
+                      Replace the &lt;id&gt; above with any id that you want to
+                      use for your custom scenario comparison. You will need
+                      this id again in step 4.
+                    </li>
+                    <li>
+                      In the
+                      <span class="code">&lt;modelname&gt;.json</span> file add
+                      a section
+                      <code class="language-json">customCompareModules</code>
+                      and move the dashboard configuration from
+                      <code class="language-json">compareModules</code> into it.
+                      If you only have the one dashboard configuration in
+                      <code class="language-json">compareModules</code>, then
+                      you can simply rename
+                      <span class="code">compareModules</span> to
+                      <span class="code">customComparemodules</span>.
+                    </li>
+                    <li>
+                      Instead of the
+                      <code class="language-json">"type"</code> in the dashboard
+                      scenario comparison configuration, add an entry
+                      <code class="language-json">"id"</code> and give it the
+                      name you used in 2. As before, the label is displayed when
+                      you select the scenario comparison mode (next to split
+                      view, tab view, pivot view).
+                      <p></p>
+                      Changes in the &lt;modelname&gt;.json file:
+                      <pre><code class="diff-highlight language-diff">{
+- "compareModules": [
++ "customCompareModules": [
+  {
+-   "type": "dashboard",
++   "id": "custom",
+    "label": "Dashboard compare",
+    "options": {
+      [...]
+    }
+  }
+  ]
+}
+                        </code></pre>
+                    </li>
+                    <li>
+                      That's it. You can now extend the dashboard scenario
+                      comparison renderer as a custom scenario comparison
+                      module. Since the procedure is identical to the regular
+                      dashboard render from now on, please refer to the second
+                      half of the
+                      <a href="./charts.html#dashboard-custom-code">
+                        corresponding section</a
+                      >.
+                    </li>
+                  </ol>
                 </section>
                 <section id="custom-compare-mode" class="doc-section">
                   <h2 class="section-title">Custom scenario comparison</h2>
@@ -2412,6 +2512,10 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
     <script
       type="text/javascript"
       src="assets/plugins/prism/min/prism-min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/prism/min/prism-diff-yaml.min.js"
     ></script>
     <script
       type="text/javascript"
