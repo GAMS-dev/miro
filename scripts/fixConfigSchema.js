@@ -71,23 +71,50 @@ function mergeObjects(obj1, obj2, keyPath = '') {
 }
 
 function fixLengthOneStringArrays(obj) {
+  const primitiveTypes = ['null', 'number', 'integer', 'boolean', 'string'];
   if (typeof obj === 'object' && !Array.isArray(obj) && obj !== null) {
     Object.keys(obj).forEach((key) => {
       if (
-        key === 'type'
-        && obj[key] === 'array'
-        && obj.items
-        && typeof obj.items === 'object'
-        && obj.items.type === 'string'
+        key === 'type' &&
+        obj[key] === 'array' &&
+        obj.items &&
+        typeof obj.items === 'object'
       ) {
-        obj[key] = ['string', 'array'];
-        Object.keys(obj.items).forEach((itemKey) => {
-          if (
-            ['minLength', 'maxLength', 'pattern', 'format'].includes(itemKey)
-          ) {
-            obj[itemKey] = obj.items[itemKey];
+        let primitiveItems;
+        if (Array.isArray(obj.items.type)) {
+          primitiveItems = obj.items.type.filter((type) =>
+            primitiveTypes.includes(type),
+          );
+        } else {
+          primitiveItems = primitiveTypes.find(
+            (type) => type === obj.items.type,
+          );
+        }
+        if (primitiveItems != null) {
+          if (Array.isArray(primitiveItems)) {
+            obj[key] = ['array', ...primitiveItems];
+          } else {
+            obj[key] = ['array', primitiveItems];
           }
-        });
+
+          Object.keys(obj.items).forEach((itemKey) => {
+            if (
+              [
+                'minLength',
+                'maxLength',
+                'pattern',
+                'format',
+                'multipleOf',
+                'exclusiveMinimum',
+                'exclusiveMaximum',
+                'minimum',
+                'maximum',
+              ].includes(itemKey)
+            ) {
+              obj[itemKey] = obj.items[itemKey];
+            }
+          });
+        }
       }
       fixLengthOneStringArrays(obj[key]);
     });
@@ -104,11 +131,12 @@ const configSchema = JSON.parse(fs.readFileSync(configSchemaPath, 'utf8'));
 
 // make sure dashboard's dataViewsConfig is superset of miroPivotOptions
 // to allow user's copy&pasting views from MIRO pivot to dashboard views
-configSchema.definitions.dashboardOptions.properties.dataViewsConfig.additionalProperties.oneOf[1].properties = mergeObjects(
-  configSchema.definitions.miroPivotOptions.properties,
-  configSchema.definitions.dashboardOptions.properties.dataViewsConfig
-    .additionalProperties.oneOf[1].properties,
-);
+configSchema.definitions.dashboardOptions.properties.dataViewsConfig.additionalProperties.oneOf[1].properties =
+  mergeObjects(
+    configSchema.definitions.miroPivotOptions.properties,
+    configSchema.definitions.dashboardOptions.properties.dataViewsConfig
+      .additionalProperties.oneOf[1].properties,
+  );
 
 // length one string arrays should also accept strings
 fixLengthOneStringArrays(configSchema);
