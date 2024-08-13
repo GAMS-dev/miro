@@ -545,7 +545,11 @@
             },
             "valueScalar": {
               "description": "Name of a scalar output symbol whose value is to be displayed in the value box",
-              "type": "array",
+              "type": [
+                "string",
+                "array",
+                "null"
+              ],
               "items": {
                 "type": [
                   "string",
@@ -575,21 +579,31 @@
             },
             "redPositive": {
               "description": "Positive values are displayed in green by default, negative values in red. redPositive reverses this logic if set to true.",
-              "type": "array",
+              "type": [
+                "array",
+                "boolean"
+              ],
               "items": {
                 "type": "boolean"
               }
             },
             "noColor": {
               "description": "Set to true if the value of the valuebox should not have a red/green color, but should be gray instead.",
-              "type": "array",
+              "type": [
+                "array",
+                "boolean"
+              ],
               "items": {
                 "type": "boolean"
               }
             },
             "decimals": {
               "description": "Specify the number of decimal places to which the value of the valuebox should be rounded",
-              "type": "array",
+              "type": [
+                "array",
+                "integer",
+                "null"
+              ],
               "items": {
                 "type": [
                   "integer",
