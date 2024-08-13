@@ -2217,7 +2217,9 @@ firstDayTraining(td)                   = td.pos = 1;
                     </div>
                   </div>
                   <div class="section-block">
-                    <h3 class="block-title">Configuration</h3>
+                    <h3 id="dashboard-configuration" class="block-title">
+                      Configuration
+                    </h3>
                     <p>
                       The dashboard configuration takes place in the
                       <span class="code">dataRendering</span> section of the
@@ -2277,7 +2279,7 @@ firstDayTraining(td)                   = td.pos = 1;
                       demonstrated using a parameter
                       <span class="code">macrolevel(mac,sim_miro)</span>.
                     </p>
-                    <h5>additionalData</h5>
+                    <h5 id="dashboard-additionaldata">additionalData</h5>
                     <p>
                       A dashboard can display the data of other GAMS input and
                       output symbols that are included in MIRO. For the
@@ -2334,7 +2336,7 @@ firstDayTraining(td)                   = td.pos = 1;
                       <!--//content-->
                     </div>
                     <!--//callout-block-->
-                    <h5>valueBoxesTitle</h5>
+                    <h5 id="dashboard-valueboxestitle">valueBoxesTitle</h5>
                     <p>
                       Title to be displayed above the value boxes section in the
                       dashboard.
@@ -2369,7 +2371,7 @@ firstDayTraining(td)                   = td.pos = 1;
                         alt="valueBoxesTitle"
                       />
                     </div>
-                    <h5>valueBoxes</h5>
+                    <h5 id="dashboard-valueboxes">valueBoxes</h5>
                     <p>
                       Configuration for the value boxes (tiles) in the
                       dashboard. A value box can display a title and a scalar
@@ -2512,7 +2514,7 @@ firstDayTraining(td)                   = td.pos = 1;
                         alt="value boxes"
                       />
                     </div>
-                    <h5>dataViews</h5>
+                    <h5 id="dashboard-dataviews">dataViews</h5>
                     <p>
                       A data view is shown if the corresponding value box is
                       clicked in the dashboard. It can display multiple charts
@@ -2529,12 +2531,13 @@ firstDayTraining(td)                   = td.pos = 1;
                       example below) must match the id of a value box in
                       <code class="language-json">"valueBoxes"</code>. This
                       represents the link between the value box and the view.
-                      The elements within the ID object identify the individual
-                      charts/tables. After such an id of an individual chart,
-                      (e.g. <code class="language-json">"macro1"</code> in the
-                      example below), the title is specified, which is displayed
-                      above the chart/table in the dashboard. One can also use
-                      the empty string <code class="language-json">""</code> to
+                      The elements within the ID array (or object) identify the
+                      individual charts/tables. After such an id of an
+                      individual chart, (e.g.
+                      <code class="language-json">"macro1"</code> in the example
+                      below), the title is specified, which is displayed above
+                      the chart/table in the dashboard. One can also use the
+                      empty string <code class="language-json">""</code> to
                       display no header. Note that IDs must not contain spaces.
                     </p>
                     <p>Example:</p>
@@ -2551,16 +2554,16 @@ firstDayTraining(td)                   = td.pos = 1;
           [...]
         },
         "dataViews": {
-          "summary": {
-              "macro1": "Macroeconomic indicators (real, percentage change)",
-              "macro2": ""
-          },
-          "gdp": {
-              "gdp1": "Composition of GDP (nominal, percentage change)",
-              "gdp2": "Composition of GDP (real, percentage change)"
-          },
-          "absorption": {...},
-          "production": {...}
+          "summary": [
+            {"macro1": "Macroeconomic indicators (real, percentage change)"},
+            {"macro2": ""}
+          ],
+          "gdp": [
+              {"gdp1": "Composition of GDP (nominal, percentage change)"},
+              {"gdp2": "Composition of GDP (real, percentage change)"}
+          ],
+          "absorption": [...],
+          "production": [...]
         },
         "dataViewsConfig": {
             [...]
@@ -2570,8 +2573,26 @@ firstDayTraining(td)                   = td.pos = 1;
   }
 }
 </code></pre>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          All keys in the &lt;modelname&gt;.json file are sorted
+                          alphabetically when the Configuration Mode is started.
+                          In order to leave the order of charts/ tables within a
+                          dataView in the dashboard unaffected by this, we
+                          recommend using an array of objects for the dataViews.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
                     <p></p>
-                    <h5>dataViewsConfig</h5>
+                    <h5 id="dashboard-dataviewsconfig">dataViewsConfig</h5>
                     <p>
                       All individual charts/tables are configured here. A
                       separate configuration in
@@ -2850,10 +2871,10 @@ firstDayTraining(td)                   = td.pos = 1;
           [...]
         },
         "dataViews": {
-          "summary": {
-              "macro1": "Macroeconomic indicators (real, percentage change)",
-              "macro2": ""
-          },
+          "summary": [
+              {"macro1": "Macroeconomic indicators (real, percentage change)"},
+              {"macro2": ""}
+          ],
           [...]
         },
         "dataViewsConfig": {
@@ -2993,10 +3014,10 @@ firstDayTraining(td)                   = td.pos = 1;
 {
   [...]
   "dataViews": {
-    "summary": {
-        "macro1": "Macroeconomic indicators (real, percentage change)",
-        "macro2": ""
-    }
+    "summary": [
+        {"macro1": "Macroeconomic indicators (real, percentage change)"},
+        {"macro2": ""}
+    ]
   },
   "dataViewsConfig": {
     "macro1": {...},
@@ -3042,9 +3063,9 @@ firstDayTraining(td)                   = td.pos = 1;
                       <pre><code class="language-json">{
   [...]
   "dataViews": {
-    "summary": {
-        "macro2": ""
-    }
+    "summary": [
+        {"macro2": ""}
+    ]
   },
   "dataViewsConfig": {
     "macro2": "customCode"

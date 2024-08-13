@@ -167,7 +167,8 @@ prepareModelRun <- function(saveAttachments = TRUE) {
     return()
   }
   scenData$loadSandbox(
-    dataTmp, if (length(modelInFileNames)) modelInFileNames else character(),
+    dataTmp,
+    if (length(modelInFileNames)) modelInFileNames else character(),
     activeScen$getMetadataDf()
   )
   inputData <- InputDataInstance$new(

@@ -681,11 +681,27 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
       eps <- 1e-14
 
       lapply(seq_along(options$flows), function(j) {
+        lng0 <- data[[options$flows[[j]]$lng0]]
+        if (any(is.na(lng0))) {
+          stop("Missing lng0 data for flow", call. = FALSE)
+        }
+        lat0 <- data[[options$flows[[j]]$lat0]]
+        if (any(is.na(lat0))) {
+          stop("Missing lat0 data for flow", call. = FALSE)
+        }
+        lng1 <- data[[options$flows[[j]]$lng1]]
+        if (any(is.na(lng1))) {
+          stop("Missing lng1 data for flow", call. = FALSE)
+        }
+        lat1 <- data[[options$flows[[j]]$lat1]]
+        if (any(is.na(lat1))) {
+          stop("Missing lat1 data for flow", call. = FALSE)
+        }
         p <<- addFlows(p,
-          lng0 = data[[options$flows[[j]]$lng0]] + (j - 1) * eps,
-          lat0 = data[[options$flows[[j]]$lat0]] + (j - 1) * eps,
-          lng1 = data[[options$flows[[j]]$lng1]] + (j - 1) * eps,
-          lat1 = data[[options$flows[[j]]$lat1]] + (j - 1) * eps,
+          lng0 = lng0 + (j - 1) * eps,
+          lat0 = lat0 + (j - 1) * eps,
+          lng1 = lng1 + (j - 1) * eps,
+          lat1 = lat1 + (j - 1) * eps,
           color = options$flows[[j]]$color,
           flow = coalesce(data[[options$flows[[j]]$flow]], 0), opacity = options$flows[[j]]$opacity,
           minThickness = options$flows[[j]]$minThickness,

@@ -6,7 +6,8 @@ validFatals <- c(
   "The column(s): 'value2' of table: 'd' specified in colFormat does not exist.",
   "colFormat is not supported when pivotCols are active (table: d).",
   "Column: 'topeka' of the GAMS symbol: 'd': For the column validation, a minimum value was specified that is greater than the specified maximum value!",
-  "Column: 'topeka' of the GAMS symbol: 'd': The column validation has values that are declared as choices and should be excluded at the same time!"
+  "Column: 'topeka' of the GAMS symbol: 'd': The column validation has values that are declared as choices and should be excluded at the same time!",
+  "Invalid defCompMode (default comparison mode) id found. Id: asd doesn't exist. Valid ids are: split, tab, pivot."
 )
 validErrors <- c("Confirm download of temporary files button clicked without any files specified.")
 validWarnings <- c("Hypercube job directory: '")

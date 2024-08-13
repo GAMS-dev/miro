@@ -2245,6 +2245,13 @@ if (is.null(errMsg)) {
               next
             }
           } else if (identical(configGraphsOut[[i]]$outType, "dashboard")) {
+            configGraphsOut[[i]]$options$dataViews <- lapply(configGraphsOut[[i]]$options$dataViews, function(viewList) {
+              if (is.null(names(viewList))) {
+                unlist(viewList, recursive = FALSE)
+              } else {
+                viewList
+              }
+            })
             validGraphConfig <- validateDashboardConfig(configGraphsOut[[i]])
             if (!identical(validGraphConfig, TRUE)) {
               errMsgTmp <- paste0(
@@ -2599,6 +2606,18 @@ if (is.null(errMsg)) {
 }
 
 if (is.null(errMsg)) {
+  if (length(config[["defCompMode"]])) {
+    ids <- vapply(config[["customCompareModules"]], "[[", character(1L), "id", USE.NAMES = FALSE)
+    if (!config[["defCompMode"]] %in% c(ids, "split", "tab", "pivot")) {
+      errMsg <- sprintf(
+        "Invalid defCompMode (default comparison mode) id found. Id: %s doesn't exist. Valid ids are: %s.",
+        config[["defCompMode"]], paste(c(ids, "split", "tab", "pivot"), collapse = ", ")
+      )
+    }
+  }
+}
+
+if (is.null(errMsg)) {
   validViewSymnames <- c(
     inputDsNames, paste0("_pivotcomp_", inputDsNames),
     names(modelOut), paste0("_pivotcomp_", names(modelOut)),
@@ -2614,6 +2633,7 @@ if (is.null(errMsg)) {
 }
 if (endsWith(tolower(modelGmsName), ".py")) {
   config$isGamsPy <- TRUE
-  # lst file not supported with gamspy
+  # lst/trace file not supported with gamspy
   config$activateModules$lstFile <- FALSE
+  config$saveTraceFile <- FALSE
 }

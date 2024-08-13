@@ -5,7 +5,7 @@ packageVersionMap <- read.csv("./src/miro-pkg-lock.csv", header = FALSE, strings
 packages <- trimws(packageVersionMap[[1]])
 versions <- trimws(packageVersionMap[[2]])
 versions[versions == ""] <- "*"
-auditReport <- audit("haven", "0.2.0", "cran")
+auditReport <- audit(packages, versions, "cran")
 
 vulnerabilities <- get_vulnerabilities(auditReport)
 print(vulnerabilities)

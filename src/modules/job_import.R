@@ -321,7 +321,8 @@ observeEvent(virtualActionButton(
       }
       scenData$clearSandbox()
       scenData$loadSandbox(
-        scenInputData, if (length(modelInFileNames)) modelInFileNames else character(),
+        scenInputData,
+        if (length(modelInFileNames)) modelInFileNames else character(),
         activeScen$getMetadataDf()
       )
       if (file.exists(file.path(tmpdir, MIROGdxOutName))) {

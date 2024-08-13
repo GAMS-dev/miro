@@ -138,8 +138,6 @@ class MiroProcessManager {
 
     if (appData.stdOut != null) {
       stdOutPipe = appData.stdOut;
-    } else if (this.inDevelopmentMode) {
-      stdOutPipe = 'inherit';
     }
 
     let stdErrPipe = 'pipe';
@@ -223,7 +221,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       });
     }
     this.miroProcesses[internalPid] = execa(
-      path.join(await rpath, 'bin', 'R'),
+      path.join(await rpath, process.platform === 'win32' ? path.join('bin', 'x64') : 'bin', 'R'),
       ['--no-echo', '--no-restore', '--vanilla',
         '-f', path.join(this.miroResourcePath, 'start-shiny.R')],
       {
@@ -243,6 +241,11 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
         } else {
           process.stderr.write(msg);
         }
+      });
+    }
+    if (this.inDevelopmentMode) {
+      this.miroProcesses[internalPid].stdout.on('data', (data) => {
+        process.stdout.write(data);
       });
     }
     this.miroProcesses[internalPid].catch(async (e) => {

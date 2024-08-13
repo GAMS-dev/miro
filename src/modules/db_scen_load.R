@@ -317,7 +317,8 @@ observeEvent(input$btRefreshComp, {
       {
         scenData$loadSandbox(
           getInputDataFromSandbox(),
-          modelInFileNames, activeScen$getMetadataDf()
+          if (length(modelInFileNames)) modelInFileNames else character(),
+          activeScen$getMetadataDf()
         )
         FALSE
       },
@@ -674,7 +675,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           {
             scenData$loadSandbox(
               getInputDataFromSandbox(),
-              modelInFileNames, activeScen$getMetadataDf()
+              if (length(modelInFileNames)) modelInFileNames else character(),
+              activeScen$getMetadataDf()
             )
             if (length(refId)) {
               # there are multiple ref ids in tab comparison mode.
