@@ -23,7 +23,13 @@ cjsSeries.cjs_bar <- function(cjs, data, type = "bar", label = NULL, scale = NUL
   dataset <- list(c(data = list(I(data)), colours, label = label, ...))
   if (!is.null(type)) dataset[[1]]$type <- type
   if (!is.null(scale)) dataset[[1]]$yAxisID <- paste0("y-axis-", scale - 1)
-  if (!is.null(scaleID)) dataset[[1]]$yAxisID <- scaleID
+  if (!is.null(scaleID)) {
+    if (startsWith(scaleID, "x")) {
+      dataset[[1]]$xAxisID <- scaleID
+    } else {
+      dataset[[1]]$yAxisID <- scaleID
+    }
+  }
   cjs$x$data$datasets <- if (is.null(cjs$x$data$datasets)) dataset else c(cjs$x$data$datasets, dataset)
   cjs
 }

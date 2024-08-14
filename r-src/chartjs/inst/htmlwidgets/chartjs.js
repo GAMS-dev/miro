@@ -1,16 +1,16 @@
 HTMLWidgets.widget({
-  name: "chartjs",
+  name: 'chartjs',
 
-  type: "output",
+  type: 'output',
 
   initialize: function (el, width, height) {
     if (
       window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
+      window.matchMedia('(prefers-color-scheme: dark)').matches
     ) {
-      Chart.defaults.color = "white";
+      Chart.defaults.color = 'white';
     } else {
-      Chart.defaults.color = "#666";
+      Chart.defaults.color = '#666';
     }
     return {};
   },
@@ -30,7 +30,7 @@ HTMLWidgets.widget({
 
     // Get element in page
     var canvas = document.getElementById(el.id);
-    var ctx = canvas.getContext("2d");
+    var ctx = canvas.getContext('2d');
 
     // If a previous chart exists, destroy it
     if (instance.cjs) {
