@@ -2321,8 +2321,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             type = if (identical(currentView$chartOptions$y2axis$y2LogScale, TRUE)) "logarithmic" else "linear",
             display = "auto",
             title = list(
-              text = currentView$chartOptions$y2axis$y2Title,
-              display = TRUE
+              text = if (length(currentView$chartOptions$y2axis$y2Title)) currentView$chartOptions$y2axis$y2Title else NULL,
+              display = if (length(currentView$chartOptions$y2axis$y2Title)) TRUE else FALSE
             )
           )
 
