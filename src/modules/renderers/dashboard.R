@@ -868,20 +868,60 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 yTitle = currentView$chartOptions$yTitle
               )
           }
-          if (chartType %in% c("horizontalbar", "horizontalstackedbar")) {
-            if (identical(currentView$chartOptions$yLogScale, TRUE) &&
-              identical(chartJsObj$x$scales$y$type, "linear")) {
-              chartJsObj$x$scales$x$type <- "logarithmic"
-            } else {
-              chartJsObj$x$scales$x$type <- "linear"
+          if (length(currentView$chartOptions$y2axis$series)) {
+            axisType <- if (chartType %in% c("horizontalbar", "horizontalstackedbar")) "x2" else "y2"
+            position <- if (axisType == "x2") "top" else "right"
+
+            chartJsObj <- cjsAddScale(chartJsObj,
+              axis = axisType,
+              position = position,
+              type = if (identical(currentView$chartOptions$y2axis$y2LogScale, TRUE)) "logarithmic" else "linear",
+              display = "auto",
+              title = list(
+                text = currentView$chartOptions$y2axis$y2Title,
+                display = TRUE
+              )
+            )
+
+            if (identical(currentView$chartOptions$y2axis$y2Grid, FALSE)) {
+              chartJsObj$x$scales[[axisType]]$grid$display <- FALSE
             }
-            chartJsObj$x$options$indexAxis <- "y"
-            chartJsObj$x$scales$y$type <- "category"
-          } else if (identical(currentView$chartOptions$yLogScale, TRUE) &&
-            identical(chartJsObj$x$scales$y$type, "linear")) {
-            chartJsObj$x$scales$y$type <- "logarithmic"
           }
 
+          if (identical(currentView$chartOptions$yLogScale, TRUE)) {
+            if (chartType %in% c("horizontalbar", "horizontalstackedbar")) {
+              chartJsObj$x$scales$x$type <- "logarithmic"
+              chartJsObj$x$options$indexAxis <- "y"
+              chartJsObj$x$scales$y$type <- "category"
+            } else if (identical(chartJsObj$x$scales$y$type, "linear")) {
+              chartJsObj$x$scales$y$type <- "logarithmic"
+            }
+          } else if (chartType %in% c("horizontalbar", "horizontalstackedbar")) {
+            chartJsObj$x$scales$x$type <- "linear"
+            chartJsObj$x$options$indexAxis <- "y"
+            chartJsObj$x$scales$y$type <- "category"
+          }
+
+          if (identical(currentView$chartOptions$drawDataPoints, FALSE) &&
+            !identical(chartType, "scatter")) {
+            chartJsObj$x$options$normalized <- TRUE
+            chartJsObj$x$options$animation <- FALSE
+            chartJsObj$x$options$elements <- list(
+              point = list(
+                radius = 0L,
+                hitRadius = 4L
+              )
+            )
+            chartJsObj$x$options$plugins$tooltip <- list(
+              mode = "index",
+              position = "nearest"
+            )
+          }
+
+          multiChartRenderer <- character(0)
+          if (length(currentView$chartOptions$multiChartRenderer)) {
+            multiChartRenderer <- currentView$chartOptions$multiChartRenderer
+          }
           for (i in seq_len(noSeries)) {
             label <- names(dataTmp)[rowHeaderLen + i]
             originalLabel <- label
@@ -892,27 +932,44 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               ]
             }
 
+            scaleID <- NULL
+            if (length(currentView$chartOptions$y2axis$series) && originalLabel %in% currentView$chartOptions$y2axis$series) {
+              if (chartType %in% c("horizontalbar", "horizontalstackedbar")) {
+                scaleID <- "x2"
+              } else {
+                scaleID <- "y2"
+              }
+            }
+
             if (originalLabel %in% currentView$chartOptions$multiChartSeries) {
               if (chartType %in% c("line", "area", "stackedarea", "timeseries")) {
-                chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
-                  label = label,
-                  type = "bar",
-                  order = 2
-                )
+                multiChartRenderer <- if (length(multiChartRenderer)) multiChartRenderer else "bar"
               } else {
-                chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
-                  label = label,
-                  type = "line",
-                  showLine = TRUE,
-                  order = 0
-                )
+                multiChartRenderer <- if (length(multiChartRenderer)) multiChartRenderer else "line"
               }
+              if (multiChartRenderer %in% c("line", "scatter") ||
+                identical(chartType, "stackedarea")) {
+                order <- 0
+              } else {
+                order <- 2
+              }
+
+              chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
+                label = label,
+                type = multiChartRenderer,
+                showLine = multiChartRenderer %in% c("line", "area", "stackedarea", "timeseries"),
+                order = order,
+                scaleID = scaleID,
+                pointHitRadius = if (identical(currentView$chartOptions$drawMultiChartDataPoints, TRUE)) 1L else 0,
+                pointRadius = if (identical(currentView$chartOptions$drawMultiChartDataPoints, TRUE)) 3L else 0,
+              )
             } else {
               chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
                 label = label,
                 fill = chartType %in% c("area", "stackedarea"),
                 fillOpacity = if (identical(chartType, "stackedarea")) 1 else 0.15,
-                order = 1
+                order = 1,
+                scaleID = scaleID
               )
             }
           }
