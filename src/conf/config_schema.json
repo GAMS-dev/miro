@@ -499,6 +499,56 @@
               "items": {
                 "type": "string"
               }
+            },
+            "drawDataPoints": {
+              "description": "Whether to draw data points on the chart",
+              "type": "boolean"
+            },
+            "drawMultiChartDataPoints": {
+              "description": "Whether to draw data points on multi-chart series",
+              "type": "boolean"
+            },
+            "multiChartRenderer": {
+              "description": "Type of chart to use for multi-chart series",
+              "type": "string",
+              "enum": [
+                "line",
+                "bar",
+                "scatter"
+              ]
+            },
+            "y2axis": {
+              "description": "Options for an optional secondary axis",
+              "type": "object",
+              "properties": {
+                "series": {
+                  "description": "Series to be plotted on the secondary axis",
+                  "type": [
+                    "array",
+                    "string"
+                  ],
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "y2Title": {
+                  "description": "Title for the second axis",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "y2Grid": {
+                  "description": "Whether to show grid lines for the secondary axis",
+                  "type": "boolean"
+                },
+                "y2LogScale": {
+                  "description": "Use logarithmic scale on the secondary axis",
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "series"
+              ]
             }
           }
         }
@@ -877,6 +927,56 @@
                         "additionalProperties": {
                           "type": "string"
                         }
+                      },
+                      "drawDataPoints": {
+                        "description": "Whether to draw data points on the chart",
+                        "type": "boolean"
+                      },
+                      "drawMultiChartDataPoints": {
+                        "description": "Whether to draw data points on multi-chart series",
+                        "type": "boolean"
+                      },
+                      "multiChartRenderer": {
+                        "description": "Type of chart to use for multi-chart series",
+                        "type": "string",
+                        "enum": [
+                          "line",
+                          "bar",
+                          "scatter"
+                        ]
+                      },
+                      "y2axis": {
+                        "description": "Options for an optional secondary axis",
+                        "type": "object",
+                        "properties": {
+                          "series": {
+                            "description": "Series to be plotted on the secondary axis",
+                            "type": [
+                              "array",
+                              "string"
+                            ],
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "y2Title": {
+                            "description": "Title for the second axis",
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "y2Grid": {
+                            "description": "Whether to show grid lines for the secondary axis",
+                            "type": "boolean"
+                          },
+                          "y2LogScale": {
+                            "description": "Use logarithmic scale on the secondary axis",
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "series"
+                        ]
                       }
                     }
                   },

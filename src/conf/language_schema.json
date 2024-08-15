@@ -2579,6 +2579,22 @@
               "type": "string",
               "minLength": 1
             },
+            "newViewTabGeneral": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewTabMultiChart": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewTabSecondAxix": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewTabColors": {
+              "type": "string",
+              "minLength": 1
+            },
             "newViewTitle": {
               "type": "string",
               "minLength": 1
@@ -2603,7 +2619,39 @@
               "type": "string",
               "minLength": 1
             },
+            "newViewdrawDataPoints": {
+              "type": "string",
+              "minLength": 1
+            },
             "newViewMultiChartSeries": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewMultiChartSeriesTypeSelection": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewdrawMultiChartDataPoints": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewy2axis": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewY2axisSeries": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewY2axisTitle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewY2axisGrid": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewY2axisLogScale": {
               "type": "string",
               "minLength": 1
             },
@@ -2816,7 +2864,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 55
+          "minProperties": 67
         },
         "datatable": {
           "type": "object",
