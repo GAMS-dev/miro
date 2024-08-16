@@ -12,7 +12,6 @@ HTMLWidgets.widget({
       Chart.defaults.borderColor = '#9c9c9c';
     } else {
       Chart.defaults.color = '#666';
-      Chart.defaults.borderColor = '#666';
     }
     return {};
   },
