@@ -886,6 +886,12 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             if (identical(currentView$chartOptions$y2axis$y2Grid, FALSE)) {
               chartJsObj$x$scales[[axisType]]$grid$display <- FALSE
             }
+            if (length(currentView$chartOptions$y2axis$y2Min)) {
+              chartJsObj$x$scales[[axisType]]$min <- currentView$chartOptions$y2axis$y2Min
+            }
+            if (length(currentView$chartOptions$y2axis$y2Max)) {
+              chartJsObj$x$scales[[axisType]]$max <- currentView$chartOptions$y2axis$y2Max
+            }
           }
 
           if (identical(currentView$chartOptions$yLogScale, TRUE)) {
@@ -902,6 +908,20 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             chartJsObj$x$scales$y$type <- "category"
           }
 
+          axisType <- if (chartType %in% c("horizontalbar", "horizontalstackedbar")) "x" else "y"
+          xGrid <- if (chartType %in% c("horizontalbar", "horizontalstackedbar")) "y" else "x"
+          if (length(currentView$chartOptions$yMin)) {
+            chartJsObj$x$scales[[axisType]]$min <- currentView$chartOptions$yMin
+          }
+          if (length(currentView$chartOptions$yMax)) {
+            chartJsObj$x$scales[[axisType]]$max <- currentView$chartOptions$yMax
+          }
+          if (identical(currentView$chartOptions$xGrid, FALSE)) {
+            chartJsObj$x$scales[[xGrid]]$grid$display <- FALSE
+          }
+          if (identical(currentView$chartOptions$yGrid, FALSE)) {
+            chartJsObj$x$scales[[axisType]]$grid$display <- FALSE
+          }
           if (identical(currentView$chartOptions$drawDataPoints, FALSE) &&
             !identical(chartType, "scatter")) {
             chartJsObj$x$options$normalized <- TRUE

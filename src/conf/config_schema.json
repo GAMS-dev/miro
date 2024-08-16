@@ -472,6 +472,26 @@
               "type": "string",
               "minLength": 1
             },
+            "yMin": {
+              "description": "Lower bound for the Y-axis",
+              "type": "number",
+              "minLength": 1
+            },
+            "yMax": {
+              "description": "Upper bound for the Y-axis",
+              "type": "number",
+              "minLength": 1
+            },
+            "xGrid": {
+              "description": "Draw grid on x-axis",
+              "type": "boolean",
+              "minLength": 1
+            },
+            "yGrid": {
+              "description": "Draw grid on y-axis",
+              "type": "boolean",
+              "minLength": 1
+            },
             "yLogScale": {
               "description": "Use logarithmic scale on y-axis",
               "type": "boolean",
@@ -535,6 +555,16 @@
                 "y2Title": {
                   "description": "Title for the second axis",
                   "type": "string",
+                  "minLength": 1
+                },
+                "y2Min": {
+                  "description": "Lower bound for the second axis",
+                  "type": "number",
+                  "minLength": 1
+                },
+                "y2Max": {
+                  "description": "Upper bound for the second axis",
+                  "type": "number",
                   "minLength": 1
                 },
                 "y2Grid": {
@@ -894,6 +924,26 @@
                         "type": "string",
                         "minLength": 1
                       },
+                      "yMin": {
+                        "description": "Lower bound for the Y-axis",
+                        "type": "number",
+                        "minLength": 1
+                      },
+                      "yMax": {
+                        "description": "Upper bound for the Y-axis",
+                        "type": "number",
+                        "minLength": 1
+                      },
+                      "xGrid": {
+                        "description": "Draw grid on x-axis",
+                        "type": "boolean",
+                        "minLength": 1
+                      },
+                      "yGrid": {
+                        "description": "Draw grid on y-axis",
+                        "type": "boolean",
+                        "minLength": 1
+                      },
                       "yLogScale": {
                         "description": "Use logarithmic scale on y-axis",
                         "type": "boolean",
@@ -963,6 +1013,16 @@
                           "y2Title": {
                             "description": "Title for the second axis",
                             "type": "string",
+                            "minLength": 1
+                          },
+                          "y2Min": {
+                            "description": "Lower bound for the second axis",
+                            "type": "number",
+                            "minLength": 1
+                          },
+                          "y2Max": {
+                            "description": "Upper bound for the second axis",
+                            "type": "number",
                             "minLength": 1
                           },
                           "y2Grid": {
