@@ -1072,16 +1072,59 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                       class = "row",
                       tags$div(
                         class = "col-sm-6",
-                        checkboxInput_MIRO(ns("useLogScaleY"),
-                          label = lang$renderers$miroPivot$newViewyLogScale,
-                          value = identical(viewOptions$chartOptions$yLogScale, TRUE)
+                        checkboxInput_MIRO(ns("drawDataPoints"),
+                          label = lang$renderers$miroPivot$newViewdrawDataPoints,
+                          value = identical(viewOptions$chartOptions$drawDataPoints, TRUE)
+                        )
+                      )
+                    )
+                  ),
+                  tabPanel(
+                    lang$renderers$miroPivot$newViewTabScales,
+                    tags$div(class = "small-space"),
+                    tags$div(
+                      class = "row",
+                      tags$div(
+                        class = "col-sm-6",
+                        numericInput(ns("yMin"),
+                          width = "100%",
+                          label = lang$renderers$miroPivot$newViewMinY,
+                          value = viewOptions$chartOptions$yMin
                         )
                       ),
                       tags$div(
                         class = "col-sm-6",
-                        checkboxInput_MIRO(ns("drawDataPoints"),
-                          label = lang$renderers$miroPivot$newViewdrawDataPoints,
-                          value = identical(viewOptions$chartOptions$drawDataPoints, TRUE)
+                        numericInput(ns("yMax"),
+                          width = "100%",
+                          label = lang$renderers$miroPivot$newViewMaxY,
+                          value = viewOptions$chartOptions$yMax
+                        )
+                      )
+                    ),
+                    tags$div(
+                      class = "row",
+                      tags$div(
+                        class = "col-sm-6",
+                        checkboxInput_MIRO(ns("xGrid"),
+                          label = lang$renderers$miroPivot$newViewxgrid,
+                          value = !isFALSE(viewOptions$chartOptions$xGrid)
+                        )
+                      ),
+                      tags$div(
+                        class = "col-sm-6",
+                        checkboxInput_MIRO(ns("yGrid"),
+                          label = lang$renderers$miroPivot$newViewygrid,
+                          value = !isFALSE(viewOptions$chartOptions$yGrid)
+                        )
+                      )
+                    ),
+                    tags$div(
+                      class = "row",
+                      tags$div(
+                        class = "col-sm-6",
+                        checkboxInput_MIRO(ns("useLogScaleY"),
+                          label = lang$renderers$miroPivot$newViewyLogScale,
+                          value = identical(viewOptions$chartOptions$yLogScale, TRUE)
                         )
                       )
                     )
@@ -1094,6 +1137,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                       tags$div(
                         class = "col-sm-12",
                         selectInput(ns("addMultiChartSeries"),
+                          width = "100%",
                           label = lang$renderers$miroPivot$newViewMultiChartSeries,
                           choices = miroPivotState$currentSeriesLabels,
                           selected = viewOptions$chartOptions$multiChartSeries,
@@ -1108,6 +1152,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                         `data-display-if` = "input.addMultiChartSeries.length>0",
                         `data-ns-prefix` = ns(""),
                         selectInput(ns("miroPivotMultiChartRenderer"),
+                          width = "100%",
                           label = lang$renderers$miroPivot$newViewMultiChartSeriesTypeSelection,
                           choices = setNames(
                             c("line", "bar", "scatter"),
@@ -1159,6 +1204,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                         tags$div(
                           class = "col-sm-6",
                           selectInput(ns("y2axisSeries"),
+                            width = "100%",
                             label = lang$renderers$miroPivot$newViewY2axisSeries,
                             choices = miroPivotState$currentSeriesLabels,
                             selected = viewOptions$chartOptions$y2axis$series,
@@ -1188,6 +1234,25 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                           checkboxInput_MIRO(ns("y2axisDrawGrid"),
                             label = lang$renderers$miroPivot$newViewY2axisGrid,
                             value = identical(viewOptions$chartOptions$y2axis$y2Grid, TRUE)
+                          )
+                        )
+                      ),
+                      tags$div(
+                        class = "row",
+                        tags$div(
+                          class = "col-sm-6",
+                          numericInput(ns("y2Min"),
+                            width = "100%",
+                            label = lang$renderers$miroPivot$newViewMinY2,
+                            value = viewOptions$chartOptions$y2axis$y2Min
+                          )
+                        ),
+                        tags$div(
+                          class = "col-sm-6",
+                          numericInput(ns("y2Max"),
+                            width = "100%",
+                            label = lang$renderers$miroPivot$newViewMaxY2,
+                            value = viewOptions$chartOptions$y2axis$y2Max
                           )
                         )
                       )
@@ -1237,6 +1302,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             additionalOptionsContent <- tags$div(
               id = ns("newViewOptionsWrapper"), style = "text-align:left;",
               tags$div(
+                class = "tabs-ul-mobile-helper view-menu",
                 do.call(
                   tabsetPanel,
                   c(
@@ -1291,6 +1357,13 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             ),
             additionalOptionsContent,
             footer = tagList(
+              tags$div(
+                style = if (!pivotRenderer %in% c("horizontalbar", "horizontalstackedbar")) "display:none;" else "text-align:left;",
+                tags$span(
+                  class = "fas fa-circle-info info-icon"
+                ),
+                lang$renderers$miroPivot$newViewInfo
+              ),
               tags$div(
                 id = ns("saveViewButtonsWrapper"),
                 modalButton(lang$renderers$miroPivot$newViewBtCancel),
@@ -1454,6 +1527,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                   }
                 }
               }
+              if (length(input[["yMin"]])) {
+                refreshRequired <- TRUE
+                newViewConfig$chartOptions[["yMin"]] <- if (is.na(input[["yMin"]])) NULL else input[["yMin"]]
+              }
+              if (length(input[["yMax"]])) {
+                refreshRequired <- TRUE
+                newViewConfig$chartOptions[["yMax"]] <- if (is.na(input[["yMax"]])) NULL else input[["yMax"]]
+              }
               if (isTRUE(input[["useCustomChartColors"]])) {
                 refreshRequired <- TRUE
                 newViewConfig$chartOptions[["customChartColors"]] <- setNames(
@@ -1487,6 +1568,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 list(
                   inputId = "drawMultiChartDataPoints",
                   optionId = "drawMultiChartDataPoints"
+                ),
+                list(
+                  inputId = "xGrid",
+                  optionId = "xGrid"
+                ),
+                list(
+                  inputId = "yGrid",
+                  optionId = "yGrid"
                 )
               )) {
                 if (length(input[[advancedOption$inputId]])) {
@@ -1505,12 +1594,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 y2axisTitle <- trimws(input[["y2axisTitle"]])
                 y2axisDrawGrid <- isTRUE(input[["y2axisDrawGrid"]])
                 y2axisUseLogScaleY <- isTRUE(input[["y2axisUseLogScaleY"]])
+                y2axisy2Min <- input[["y2Min"]]
+                y2axisy2Max <- input[["y2Max"]]
 
-                newViewConfig$chartOptions[["y2axis"]] <- Filter(Negate(is.null), list(
+                newViewConfig$chartOptions[["y2axis"]] <- Filter(Negate(function(x) is.null(x) || is.na(x)), list(
                   series = if (length(y2axisSeries)) y2axisSeries else NULL,
                   y2Title = if (nchar(y2axisTitle) > 0L) y2axisTitle else NULL,
                   y2Grid = y2axisDrawGrid,
-                  y2LogScale = y2axisUseLogScaleY
+                  y2LogScale = y2axisUseLogScaleY,
+                  y2Min = y2axisy2Min,
+                  y2Max = y2axisy2Max
                 ))
               }
             }
@@ -2329,6 +2422,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           if (identical(currentView$chartOptions$y2axis$y2Grid, FALSE)) {
             chartJsObj$x$scales[[axisType]]$grid$display <- FALSE
           }
+          if (length(currentView$chartOptions$y2axis$y2Min)) {
+            chartJsObj$x$scales[[axisType]]$min <- currentView$chartOptions$y2axis$y2Min
+          }
+          if (length(currentView$chartOptions$y2axis$y2Max)) {
+            chartJsObj$x$scales[[axisType]]$max <- currentView$chartOptions$y2axis$y2Max
+          }
         }
 
         if (identical(currentView$chartOptions$yLogScale, TRUE)) {
@@ -2343,6 +2442,21 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           chartJsObj$x$scales$x$type <- "linear"
           chartJsObj$x$options$indexAxis <- "y"
           chartJsObj$x$scales$y$type <- "category"
+        }
+
+        axisType <- if (pivotRenderer %in% c("horizontalbar", "horizontalstackedbar")) "x" else "y"
+        xGrid <- if (pivotRenderer %in% c("horizontalbar", "horizontalstackedbar")) "y" else "x"
+        if (length(currentView$chartOptions$yMin)) {
+          chartJsObj$x$scales[[axisType]]$min <- currentView$chartOptions$yMin
+        }
+        if (length(currentView$chartOptions$yMax)) {
+          chartJsObj$x$scales[[axisType]]$max <- currentView$chartOptions$yMax
+        }
+        if (identical(currentView$chartOptions$xGrid, FALSE)) {
+          chartJsObj$x$scales[[xGrid]]$grid$display <- FALSE
+        }
+        if (identical(currentView$chartOptions$yGrid, FALSE)) {
+          chartJsObj$x$scales[[axisType]]$grid$display <- FALSE
         }
 
         if (identical(currentView$chartOptions$drawDataPoints, FALSE) &&

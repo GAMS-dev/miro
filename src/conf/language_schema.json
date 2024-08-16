@@ -2583,6 +2583,10 @@
               "type": "string",
               "minLength": 1
             },
+            "newViewTabScales": {
+              "type": "string",
+              "minLength": 1
+            },
             "newViewTabMultiChart": {
               "type": "string",
               "minLength": 1
@@ -2603,6 +2607,10 @@
               "type": "string",
               "minLength": 1
             },
+            "newViewInfo": {
+              "type": "string",
+              "minLength": 1
+            },
             "newViewChartTitle": {
               "type": "string",
               "minLength": 1
@@ -2619,7 +2627,23 @@
               "type": "string",
               "minLength": 1
             },
+            "newViewxgrid": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewygrid": {
+              "type": "string",
+              "minLength": 1
+            },
             "newViewdrawDataPoints": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewMinY": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewMaxY": {
               "type": "string",
               "minLength": 1
             },
@@ -2652,6 +2676,14 @@
               "minLength": 1
             },
             "newViewY2axisLogScale": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewMinY2": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewMaxY2": {
               "type": "string",
               "minLength": 1
             },
@@ -2864,7 +2896,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 67
+          "minProperties": 75
         },
         "datatable": {
           "type": "object",
