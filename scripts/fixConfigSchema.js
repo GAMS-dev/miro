@@ -72,53 +72,58 @@ function mergeObjects(obj1, obj2, keyPath = '') {
 
 function fixLengthOneStringArrays(obj) {
   const primitiveTypes = ['null', 'number', 'integer', 'boolean', 'string'];
-  if (typeof obj === 'object' && !Array.isArray(obj) && obj !== null) {
-    Object.keys(obj).forEach((key) => {
-      if (
-        key === 'type' &&
-        obj[key] === 'array' &&
-        obj.items &&
-        typeof obj.items === 'object'
-      ) {
-        let primitiveItems;
-        if (Array.isArray(obj.items.type)) {
-          primitiveItems = obj.items.type.filter((type) =>
-            primitiveTypes.includes(type),
-          );
-        } else {
-          primitiveItems = primitiveTypes.find(
-            (type) => type === obj.items.type,
-          );
-        }
-        if (primitiveItems != null) {
-          if (Array.isArray(primitiveItems)) {
-            obj[key] = ['array', ...primitiveItems];
-          } else {
-            obj[key] = ['array', primitiveItems];
-          }
-
-          Object.keys(obj.items).forEach((itemKey) => {
-            if (
-              [
-                'minLength',
-                'maxLength',
-                'pattern',
-                'format',
-                'multipleOf',
-                'exclusiveMinimum',
-                'exclusiveMaximum',
-                'minimum',
-                'maximum',
-              ].includes(itemKey)
-            ) {
-              obj[itemKey] = obj.items[itemKey];
-            }
-          });
-        }
-      }
-      fixLengthOneStringArrays(obj[key]);
-    });
+  if (typeof obj !== 'object' || obj === null) {
+    return;
   }
+  if (Array.isArray(obj)) {
+    obj.forEach((el) => fixLengthOneStringArrays(el));
+    return;
+  }
+  Object.keys(obj).forEach((key) => {
+    if (
+      key === 'type' &&
+      obj[key] === 'array' &&
+      obj.items &&
+      typeof obj.items === 'object'
+    ) {
+      let primitiveItems;
+      if (Array.isArray(obj.items.type)) {
+        primitiveItems = obj.items.type.filter((type) =>
+          primitiveTypes.includes(type),
+        );
+      } else {
+        primitiveItems = primitiveTypes.find(
+          (type) => type === obj.items.type,
+        );
+      }
+      if (primitiveItems != null) {
+        if (Array.isArray(primitiveItems)) {
+          obj[key] = ['array', ...primitiveItems];
+        } else {
+          obj[key] = ['array', primitiveItems];
+        }
+
+        Object.keys(obj.items).forEach((itemKey) => {
+          if (
+            [
+              'minLength',
+              'maxLength',
+              'pattern',
+              'format',
+              'multipleOf',
+              'exclusiveMinimum',
+              'exclusiveMaximum',
+              'minimum',
+              'maximum',
+            ].includes(itemKey)
+          ) {
+            obj[itemKey] = obj.items[itemKey];
+          }
+        });
+      }
+    }
+    fixLengthOneStringArrays(obj[key]);
+  });
 }
 
 let rootDir = '';
