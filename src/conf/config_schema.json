@@ -444,7 +444,13 @@
         },
         "customChartColors": {
           "description": "Custom color palette. Every second color is the hover color of previous one.",
-          "type": "array"
+          "type": [
+            "array",
+            "string"
+          ],
+          "items": {
+            "type": "string"
+          }
         },
         "chartOptions": {
           "description": "Additional chart options",
@@ -475,7 +481,13 @@
               "description": "Custom color palette. Every second color is the hover color of previous one.",
               "type": "object",
               "additionalProperties": {
-                "type": "array"
+                "type": [
+                  "array",
+                  "string"
+                ],
+                "items": {
+                  "type": "string"
+                }
               }
             },
             "multiChartSeries": {
@@ -841,7 +853,13 @@
                         "description": "Custom color for each UEL. Every second color is the hover color of previous one.",
                         "type": "object",
                         "additionalProperties": {
-                          "type": "array"
+                          "type": [
+                            "array",
+                            "string"
+                          ],
+                          "items": {
+                            "type": "string"
+                          }
                         }
                       },
                       "multiChartSeries": {
@@ -1425,14 +1443,19 @@
               },
               "datesdisabled": {
                 "description": "disallow certain dates to be selected",
-                "type": "array",
+                "type": [
+                  "array",
+                  "string"
+                ],
                 "uniqueItems": true,
                 "minItems": 1,
                 "items": {
                   "type": "string",
                   "minLength": 10,
                   "maxLength": 10
-                }
+                },
+                "minLength": 10,
+                "maxLength": 10
               },
               "autoclose": {
                 "description": "Whether or not to close the datepicker immediately when a date is selected",
@@ -2451,7 +2474,6 @@
                       {
                         "type": "object",
                         "properties": {
-                          "type": "object",
                           "additionalProperties": {
                             "type": "object",
                             "additionalProperties": false,
