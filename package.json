@@ -131,7 +131,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.2",
     "ajv": "^8.16.0",
-    "axios": "^1.7.2",
+    "axios": "^1.7.4",
     "bootstrap": "^4.6.2",
     "electron-log": "^5.1.5",
     "electron-store": "^10.0.0",
