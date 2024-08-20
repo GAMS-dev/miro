@@ -129,10 +129,11 @@
                   <div id="miro-installation-location" class="section-block">
                     <h3 class="block-title">MIRO installation location</h3>
                     <p>
-                      After installing GAMS MIRO, make sure that Studio and MIRO
-                      know about each other. In Studio go to <i>File</i> &rarr;
-                      <i>Settings</i> &rarr; <i>Remote</i> and check whether the
-                      MIRO installation location is correct:
+                      After installing GAMS MIRO, make sure that Studio and
+                      MIRO know about each other. In Studio go to
+                      <i>File</i> &rarr; <i>Settings</i> &rarr;
+                      <i>Remote</i> and check whether the MIRO installation
+                      location is correct:
                     </p>
                     <div
                       class="section-block"
@@ -153,9 +154,9 @@
                       <div class="content">
                         <b class="callout-title">Note:</b>
                         <p>
-                          There is a known issue in GAMS Studio when it comes to
-                          specifying the MIRO location on macOS. Make sure that
-                          the path does not stop at
+                          There is a known issue in GAMS Studio when it comes
+                          to specifying the MIRO location on macOS. Make sure
+                          that the path does not stop at
                           <kbd>/Applications/GAMS MIRO.app</kbd>, but points to
                           the executable inside the app bundle:
                           <kbd
@@ -172,9 +173,9 @@
                   <div id="studio-main-file" class="section-block">
                     <h3 class="block-title">Main file in Studio</h3>
                     <p>
-                      GAMS Studio is not executing the file currently visible in
-                      the editor, but the file which is set as main file in the
-                      corresponding group in the
+                      GAMS Studio is not executing the file currently visible
+                      in the editor, but the file which is set as main file in
+                      the corresponding group in the
                       <a
                         href="https://www.gams.com/latest/docs/T_STUDIO.html#STUDIO_PROJECT_EXPLORER"
                         target="_blank"
@@ -200,8 +201,9 @@
                     <h3 class="block-title">File encoding</h3>
                     <p>
                       Your GAMS model files need to be encoded with UTF-8. In
-                      GAMS Studio this is the default file encoding from version
-                      0.14.5 on. You can change the encoding of your file via
+                      GAMS Studio this is the default file encoding from
+                      version 0.14.5 on. You can change the encoding of your
+                      file via
                       <i>Edit</i> &rarr; <i>Encoding</i> &rarr;
                       <i>convert to</i> ... &rarr; <i>UTF-8</i>. Other file
                       encodings are not supported in GAMS MIRO!
@@ -263,8 +265,8 @@
                       This option starts the MIRO Base Mode. In the Base Mode,
                       you can supply your models with input data, generate,
                       display and save the results of your optimization as well
-                      as compare different scenarios with each other, everything
-                      visually supported by various plotting tools.
+                      as compare different scenarios with each other,
+                      everything visually supported by various plotting tools.
                     </p>
                     <div
                       class="section-block"
@@ -327,9 +329,9 @@
                     <p>
                       In the MIRO menu of GAMS Studio there is the entry "Skip
                       model execution". If this option is activated, the model
-                      is not executed before MIRO is started, but MIRO is called
-                      directly instead. This can be helpful if the model takes a
-                      long time to be solved.
+                      is not executed before MIRO is started, but MIRO is
+                      called directly instead. This can be helpful if the model
+                      takes a long time to be solved.
                     </p>
                     <div
                       class="section-block"
@@ -430,8 +432,9 @@
                     </div>
                     <p>
                       In GAMS Studio, select <i>Assembly and Deploy</i>. In the
-                      <i>Deploy Configuration</i> section you need to decide how
-                      your model shall be executed (<i>execution environment</i
+                      <i>Deploy Configuration</i> section you need to decide
+                      how your model shall be executed (<i
+                        >execution environment</i
                       >). There are three options:
                     </p>
                     <ol>
@@ -450,19 +453,20 @@
                       <li>
                         Local multi-user (uses <i>idir</i>): With this third
                         option, your model is again executed from a random
-                        location, but this time no model data is extracted here.
-                        Instead, GAMS is executed with an
+                        location, but this time no model data is extracted
+                        here. Instead, GAMS is executed with an
                         <a
                           href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir"
                           target="_blank"
                           >input directory</a
                         >
-                        pointing to the path where your model files are located.
-                        Choose this option ONLY if you have many large files
-                        that belong to your model and extracting them would take
-                        a long time. Be aware that due to the fact that
-                        <span class="code">idir</span> is used, your model might
-                        break! For example, if you use
+                        pointing to the path where your model files are
+                        located. Choose this option ONLY if you have many large
+                        files that belong to your model and extracting them
+                        would take a long time. Be aware that due to the fact
+                        that
+                        <span class="code">idir</span> is used, your model
+                        might break! For example, if you use
                         <code class="language-gams">$call</code> or the
                         execution-time equivalent
                         <code class="language-gams">execute</code> (or related
@@ -472,14 +476,15 @@
                           href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOcurdir"
                           >curdir</a
                         >
-                        is now a random location). The solution is to prefix all
-                        these relative paths with
+                        is now a random location). The solution is to prefix
+                        all these relative paths with
                         <code class="language-gams">%gams.idir1%</code>. For
                         example, in order to import an Excel file
                         <span class="code">test.xlsx</span>, GDXXRW needs to be
                         called like this:
                         <kbd>$call gdxxrw i=%gams.idir1%test.xlsx</kbd>.
-                        Alternatively, you can also use absolute paths (e.g. via
+                        Alternatively, you can also use absolute paths (e.g.
+                        via
                         <code class="language-gams"
                           >$setNames "%gams.input%" fp fn fe</code
                         >
@@ -528,8 +533,8 @@
                           users will experience the MIRO app (e.g. for the
                           <i>Base Mode</i> MIRO is launched in the specified
                           execution environment). In particular, you should
-                          check whether you forgot to include important files in
-                          the
+                          check whether you forgot to include important files
+                          in the
                           <a href="#studio-create-assembly" class="scrollto"
                             >model assembly</a
                           >.
@@ -566,14 +571,18 @@
                     <a class="nav-link scrollto" href="#studio-file-encoding"
                       >File encoding</a
                     >
-                    <a class="nav-link scrollto" href="#studio-miro-interaction"
+                    <a
+                      class="nav-link scrollto"
+                      href="#studio-miro-interaction"
                       >MIRO interaction</a
                     >
                   </nav>
                   <a class="nav-link scrollto" href="#studio-base-mode"
                     >Run Base Mode</a
                   >
-                  <a class="nav-link scrollto" href="#studio-configuration-mode"
+                  <a
+                    class="nav-link scrollto"
+                    href="#studio-configuration-mode"
                     >Run Configuration Mode</a
                   >
                   <a class="nav-link scrollto" href="#studio-skip-execution"

@@ -104,9 +104,10 @@ $(document).ready(function(){
                     <p>
                       <i>Input widgets</i> are all items that communicate input
                       data with GAMS. While these are primarily tables for
-                      multidimensional GAMS symbols, various widgets can be used
-                      for scalar input data. Examples of such widgets include:
-                      sliders, dropdown menus, date selectors or checkboxes.
+                      multidimensional GAMS symbols, various widgets can be
+                      used for scalar input data. Examples of such widgets
+                      include: sliders, dropdown menus, date selectors or
+                      checkboxes.
                     </p>
                     <div class="section-block">
                       <img
@@ -162,19 +163,22 @@ $(document).ready(function(){
                             target="_blank"
                             >double-dash parameters</a
                           >
-                          can be configured here as an input widget. <br />Since
-                          those parameters are specified via the command line in
-                          GAMS, they can not be tagged in the GAMS code with
-                          <code class="language-gams">$onExternalInput </code> /
-                          <code class="language-gams">$offExternalInput </code>.
-                          So that they can be set for a GAMS run via MIRO, they
-                          must be explicitly specified in the configuration.
+                          can be configured here as an input widget.
+                          <br />Since those parameters are specified via the
+                          command line in GAMS, they can not be tagged in the
+                          GAMS code with
+                          <code class="language-gams">$onExternalInput </code>
+                          /
+                          <code class="language-gams">$offExternalInput </code
+                          >. So that they can be set for a GAMS run via MIRO,
+                          they must be explicitly specified in the
+                          configuration.
                         </p>
                         <p>
-                          If a GAMS option or a double dash parameter is set via
-                          MIRO, your GAMS model will automatically be called
-                          with these command line parameters. The values the
-                          user selected are therefore available to the GAMS
+                          If a GAMS option or a double dash parameter is set
+                          via MIRO, your GAMS model will automatically be
+                          called with these command line parameters. The values
+                          the user selected are therefore available to the GAMS
                           model at
                           <a
                             href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_TwoPass"
@@ -222,14 +226,14 @@ $(document).ready(function(){
                       allow your users to edit certain tables or even only
                       certain columns within a table, you can customize the
                       table for the underlying GAMS parameter. You can also use
-                      a different type of table to enter your data. For example,
-                      if you have large amounts of data (>100,000 records) in
-                      your table, we recommend using either the
+                      a different type of table to enter your data. For
+                      example, if you have large amounts of data (>100,000
+                      records) in your table, we recommend using either the
                       <i>Big Data Table</i> or the <i>pivot</i> table. In
                       addition, input tables can be annotated with Markdown
                       syntax. This way you can give your users additional
-                      information, e.g. what kind of data should be entered here
-                      and in which format.
+                      information, e.g. what kind of data should be entered
+                      here and in which format.
                     </p>
                     <div class="section-block">
                       <img
@@ -261,10 +265,10 @@ $(document).ready(function(){
                     </h6>
                     <div class="expanded">
                       <p>
-                        This option prevents the user from making manual changes
-                        in the input table of a scenario. If active, the table
-                        can only be filled with scenario data from the
-                        database/local files.
+                        This option prevents the user from making manual
+                        changes in the input table of a scenario. If active,
+                        the table can only be filled with scenario data from
+                        the database/local files.
                       </p>
                     </div>
                     <h6
@@ -292,15 +296,16 @@ $(document).ready(function(){
                       </div>
                       <p>
                         Unlike the
-                        <a href="./model.html#table-miro">table statement</a> in
-                        the GAMS model itself (<code class="language-gams"
+                        <a href="./model.html#table-miro">table statement</a>
+                        in the GAMS model itself (<code class="language-gams"
                           >Table symbolname;</code
                         >), this option does not affect the
                         <a href="./model.html#data-contract">data contract</a>
                         between GAMS and MIRO. Hence, the columns of the symbol
-                        remain variable, since the symbol itself is communicated
-                        in list format. The pivoting of the configured column
-                        then happens "live" in the MIRO application.<br />
+                        remain variable, since the symbol itself is
+                        communicated in list format. The pivoting of the
+                        configured column then happens "live" in the MIRO
+                        application.<br />
                         Variable columns do not only mean that the column
                         elements can change their names. It is also possible to
                         add or delete whole columns. On the GAMS model side,
@@ -340,8 +345,8 @@ $(document).ready(function(){
                       </ul>
                       <p id="avoid-table">
                         Now let's look at a case where we should probably
-                        <b>avoid</b> using this pivot functionality: For this we
-                        look at the parameter
+                        <b>avoid</b> using this pivot functionality: For this
+                        we look at the parameter
                         <code class="language-gams">Price</code> of the
                         <i>Pickstock</i> model:
                       </p>
@@ -354,8 +359,8 @@ $offExternalInput
 </code></pre>
                       <p>
                         If we decide to pivot the set
-                        <span class="code">symbol</span>, we would end up with a
-                        table where all stock symbols (<span class="code"
+                        <span class="code">symbol</span>, we would end up with
+                        a table where all stock symbols (<span class="code"
                           >AAPL</span
                         >, <span class="code">AXP</span>,
                         <span class="code">BA</span>, etc.) are displayed in a
@@ -413,15 +418,15 @@ $offExternalInput
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Select columns to
-                      be readonly
+                      <i class="fas fa-plus slide-toggle"></i> Select columns
+                      to be readonly
                     </h6>
                     <div class="expanded">
                       <p>
-                        This option prevents the user from making manual changes
-                        in selected columns of the input table. Note that this
-                        option is only available for table columns that have not
-                        been pivoted (see option above).
+                        This option prevents the user from making manual
+                        changes in selected columns of the input table. Note
+                        that this option is only available for table columns
+                        that have not been pivoted (see option above).
                       </p>
                       <div class="section-block">
                         <img
@@ -443,14 +448,16 @@ $offExternalInput
                     <div class="expanded">
                       <p>
                         Sets the column width (in pixels) of each column in the
-                        table. The Configuration Mode supports the specification
-                        of one column width for all columns of the table. To
-                        specify the width of each column individually, the
+                        table. The Configuration Mode supports the
+                        specification of one column width for all columns of
+                        the table. To specify the width of each column
+                        individually, the
                         <a href="./faqs.html#file-config"
                           ><i>&lt;modelname&gt;.json</i></a
                         >
                         file must be
-                        <a href="./configuration_json_only.html#table-colwidths"
+                        <a
+                          href="./configuration_json_only.html#table-colwidths"
                           >modified manually</a
                         >.
                       </p>
@@ -492,8 +499,8 @@ $offExternalInput
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Turn table into a
-                      heatmap?
+                      <i class="fas fa-plus slide-toggle"></i> Turn table into
+                      a heatmap?
                     </h6>
                     <div class="expanded">
                       <p>Turns the table into a heatmap.</p>
@@ -533,11 +540,11 @@ $offExternalInput
                     </p>
                     <p>
                       The following options are available for the Big Data
-                      table. This table type is intended for situations in which
-                      large amounts of data are to be displayed within a table.
-                      Instead of a long, 1-page table, a multi-page table is
-                      displayed. Only the data currently visible on the client
-                      side is loaded in this table.
+                      table. This table type is intended for situations in
+                      which large amounts of data are to be displayed within a
+                      table. Instead of a long, 1-page table, a multi-page
+                      table is displayed. Only the data currently visible on
+                      the client side is loaded in this table.
                     </p>
                     <h6
                       id="table-option-readonly-bigdata"
@@ -550,10 +557,10 @@ $offExternalInput
                     </h6>
                     <div class="expanded">
                       <p>
-                        This option prevents the user from making manual changes
-                        in the input table of a scenario. If active, the table
-                        can only be filled with scenario data from the
-                        database/local files.
+                        This option prevents the user from making manual
+                        changes in the input table of a scenario. If active,
+                        the table can only be filled with scenario data from
+                        the database/local files.
                       </p>
                     </div>
                     <h6
@@ -607,8 +614,8 @@ $offExternalInput
                       interactively filter, pivot or aggregate data. See
                       <a href="./charts.html#pivot-chart">here</a> for more
                       information about the MIRO Pivot Table. The configuration
-                      of this table can be done directly from the preview on the
-                      right side.
+                      of this table can be done directly from the preview on
+                      the right side.
                     </p>
                     <div class="callout-block callout-warning">
                       <div class="icon-holder">
@@ -618,16 +625,16 @@ $offExternalInput
                       <div class="content">
                         <b class="callout-title">Note:</b>
                         <p>
-                          The MIRO Pivot Table has no concept of "order" because
-                          the table can be sorted interactively by changing the
-                          order of the rows. When you add or change UELs, they
-                          are always appended to the underlying data source. So
-                          when MIRO passes the data to GAMS, you cannot rely on
-                          the order of the elements coming from this table type.
-                          If you need UELs in a certain order, you should either
-                          use one of the other input table types or declare the
-                          sets you need sorted as additional external input
-                          (instead of using the
+                          The MIRO Pivot Table has no concept of "order"
+                          because the table can be sorted interactively by
+                          changing the order of the rows. When you add or
+                          change UELs, they are always appended to the
+                          underlying data source. So when MIRO passes the data
+                          to GAMS, you cannot rely on the order of the elements
+                          coming from this table type. If you need UELs in a
+                          certain order, you should either use one of the other
+                          input table types or declare the sets you need sorted
+                          as additional external input (instead of using the
                           <a
                             href="https://www.gams.com/31/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition"
                             >implicit set definition</a
@@ -715,8 +722,8 @@ $offExternalInput
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Enter the element
-                      name as it should be displayed in a tab
+                      <i class="fas fa-plus slide-toggle"></i> Enter the
+                      element name as it should be displayed in a tab
                     </h6>
                     <div class="expanded">
                       <p>
@@ -808,8 +815,8 @@ $offExternalInput
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Minimum / maximum
-                      / default value
+                      <i class="fas fa-plus slide-toggle"></i> Minimum /
+                      maximum / default value
                     </h6>
                     <div class="expanded">
                       <p>
@@ -828,9 +835,9 @@ $offExternalInput
                       <p>
                         All three parameters can be set either statically or
                         dynamically. If the range of the slider is independent
-                        of the data loaded, it is a good idea to configure it as
-                        a static slider. This means, for example, that the lower
-                        and upper limits of a slider are always 1 and 10.
+                        of the data loaded, it is a good idea to configure it
+                        as a static slider. This means, for example, that the
+                        lower and upper limits of a slider are always 1 and 10.
                         Scenario data does not change these.
                       </p>
                       <div class="section-block">
@@ -883,11 +890,11 @@ $offExternalInput
                         The maximum value for the
                         <i>maximum number of stocks</i> is 30, since the data
                         set <i>Price</i> that is currently loaded contains 30
-                        stocks. If the user deletes e.g. all values of the stock
-                        <i>AAPL</i> from the data, the maximum value of the
-                        slider changes to 29. The same is true for the second
-                        slider: the <i>number of training days</i>. Here the
-                        maximum value of 252 results from the number of
+                        stocks. If the user deletes e.g. all values of the
+                        stock <i>AAPL</i> from the data, the maximum value of
+                        the slider changes to 29. The same is true for the
+                        second slider: the <i>number of training days</i>. Here
+                        the maximum value of 252 results from the number of
                         available <i>dates</i> in <i>price</i>. <br />In the
                         Configuration Mode we can easily define such dynamic
                         limits. For the first slider the configuration looks as
@@ -971,7 +978,8 @@ $offExternalInput
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Minimum step size
+                      <i class="fas fa-plus slide-toggle"></i> Minimum step
+                      size
                     </h6>
                     <div class="expanded">
                       <div
@@ -1007,12 +1015,12 @@ $offExternalInput
                         slider range is used, scenarios are generated depending
                         on the specified step size. Example: We configure a
                         single slider with a lower bound of 70, an upper bound
-                        of 100 and a step size of 5. When submitting a Hypercube
-                        job, this single slider becomes a slider range with the
-                        same limits and the same step size. In the image below
-                        the selected limits of 75 to 90 and a step size of 5
-                        result in 4 different variants (75, 80, 85, 90), i.e. 4
-                        scenarios to be calculated.
+                        of 100 and a step size of 5. When submitting a
+                        Hypercube job, this single slider becomes a slider
+                        range with the same limits and the same step size. In
+                        the image below the selected limits of 75 to 90 and a
+                        step size of 5 result in 4 different variants (75, 80,
+                        85, 90), i.e. 4 scenarios to be calculated.
                       </p>
                       <p></p>
                       <div class="section-block">
@@ -1082,8 +1090,9 @@ $offExternalInput
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Should element be
-                      expanded automatically when submitting a Hypercube job?
+                      <i class="fas fa-plus slide-toggle"></i> Should element
+                      be expanded automatically when submitting a Hypercube
+                      job?
                     </h6>
                     <div class="expanded">
                       <p>
@@ -1136,16 +1145,16 @@ $offExternalInput
                     <h3 class="block-title">Configuration</h3>
                     <p>
                       A range slider returns two numeric values. For this
-                      reason, such a slider is not suitable for GAMS scales, but
-                      only for GAMS command line parameters, i.e. double-dash
-                      parameters.
+                      reason, such a slider is not suitable for GAMS scales,
+                      but only for GAMS command line parameters, i.e.
+                      double-dash parameters.
                     </p>
                     <p>Example:</p>
                     <p>
                       In the Configuration Mode we define a double-dash
                       parameter <i>--range</i> with the bounds <i>1</i> and
-                      <i>100</i>. The lower default value shall be <i>42</i> and
-                      the upper default value <i>75</i>:
+                      <i>100</i>. The lower default value shall be
+                      <i>42</i> and the upper default value <i>75</i>:
                     </p>
                     <div class="section-block">
                       <img
@@ -1172,8 +1181,8 @@ $offExternalInput
                       Range sliders for Hypercube jobs
                     </h6>
                     <p>
-                      A range slider in Base Mode becomes a range slider with an
-                      additional checkbox when submitting a Hypercube job:
+                      A range slider in Base Mode becomes a range slider with
+                      an additional checkbox when submitting a Hypercube job:
                     </p>
                     <div class="section-block">
                       <img
@@ -1184,17 +1193,17 @@ $offExternalInput
                       />
                     </div>
                     <p>
-                      With this checkbox you can determine if the selected range
-                      of the slider should result in a single scenario (<i
+                      With this checkbox you can determine if the selected
+                      range of the slider should result in a single scenario
+                      (<i>All combinations?</i> unchecked) or if all possible
+                      combinations within this range should be used (<i
                         >All combinations?</i
                       >
-                      unchecked) or if all possible combinations within this
-                      range should be used (<i>All combinations?</i> checked).
-                      In the example above - <i>All combinations?</i> is checked
-                      - the selected step size determines which scenarios are
-                      generated for the Hypercube job. With a step size of 5
-                      this would result in 10 different symbol ranges /
-                      scenarios:
+                      checked). In the example above -
+                      <i>All combinations?</i> is checked - the selected step
+                      size determines which scenarios are generated for the
+                      Hypercube job. With a step size of 5 this would result in
+                      10 different symbol ranges / scenarios:
                     </p>
                     <ul>
                       <li>75 - 90</li>
@@ -1210,8 +1219,8 @@ $offExternalInput
                     </ul>
                     <p>
                       An unchecked <i>All combinations?</i> would result in a
-                      single scenario. In this scenario, the symbol would have a
-                      range from 75 to 90.
+                      single scenario. In this scenario, the symbol would have
+                      a range from 75 to 90.
                     </p>
                   </div>
 
@@ -1223,16 +1232,16 @@ $offExternalInput
                       those of a
                       <a href="#widget-slider-options" class="scrollto"
                         >normal slider</a
-                      >. The only difference is that instead of a single default
-                      value, two of these values need to be specified.
+                      >. The only difference is that instead of a single
+                      default value, two of these values need to be specified.
                     </p>
                   </div>
                   <!--//section-block-->
                   <div class="section-block" id="widget-sliderrange-json">
                     <h3 class="block-title">JSON example</h3>
                     <p>
-                      Note: In order for MIRO to recognize whether the symbol is
-                      a double dash parameter or a GAMS option, they are
+                      Note: In order for MIRO to recognize whether the symbol
+                      is a double dash parameter or a GAMS option, they are
                       prefixed with either <kbd>_gmspar_</kbd> for double dash
                       parameters or <kbd>_gmsopt_</kbd> for GAMS options.
                     </p>
@@ -1258,7 +1267,10 @@ $offExternalInput
                 </section>
                 <section id="widget-checkbox" class="doc-section">
                   <h2 class="section-title">Checkbox</h2>
-                  <div class="section-block" id="widget-checkbox-configuration">
+                  <div
+                    class="section-block"
+                    id="widget-checkbox-configuration"
+                  >
                     <h3 class="block-title">Configuration</h3>
                     <p>
                       A checkbox returns 0 or 1 and is therefore suitable for
@@ -1287,7 +1299,8 @@ $offExternalInput
                   <div class="section-block" id="widget-checkbox-options">
                     <h3 class="block-title">Available Options</h3>
                     <p>
-                      The following options are available for a checkbox widget:
+                      The following options are available for a checkbox
+                      widget:
                     </p>
                     <h6
                       id="checkbox-option-name"
@@ -1295,8 +1308,8 @@ $offExternalInput
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Enter the element
-                      name as it should be displayed in a tab
+                      <i class="fas fa-plus slide-toggle"></i> Enter the
+                      element name as it should be displayed in a tab
                     </h6>
                     <div class="expanded">
                       <p>
@@ -1367,8 +1380,9 @@ $offExternalInput
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Should element be
-                      expanded automatically when submitting a Hypercube job?
+                      <i class="fas fa-plus slide-toggle"></i> Should element
+                      be expanded automatically when submitting a Hypercube
+                      job?
                     </h6>
                     <div class="expanded">
                       <p>
@@ -1376,10 +1390,11 @@ $offExternalInput
                         <a href="./hc-module.html#hcube-config"
                           >corresponding chapter</a
                         >, widgets will be expanded when submitting a Hypercube
-                        job. When submitting a Hypercube job, a checkbox becomes
-                        a multi dropdwon menu with the entries <i>yes</i> and
-                        <i>no</i>. With the option available here, the automatic
-                        expansion of a widget can be switched off.
+                        job. When submitting a Hypercube job, a checkbox
+                        becomes a multi dropdwon menu with the entries
+                        <i>yes</i> and <i>no</i>. With the option available
+                        here, the automatic expansion of a widget can be
+                        switched off.
                       </p>
                     </div>
                   </div>
@@ -1405,7 +1420,10 @@ $offExternalInput
                 </section>
                 <section id="widget-dropdown" class="doc-section">
                   <h2 class="section-title">Dropdown menu</h2>
-                  <div class="section-block" id="widget-dropdown-configuration">
+                  <div
+                    class="section-block"
+                    id="widget-dropdown-configuration"
+                  >
                     <h3 class="block-title">Configuration</h3>
                     <p id="singleton-set-dropdown">
                       Besides normal GAMS scalars, a dropdown menu can also be
@@ -1452,8 +1470,8 @@ solve transport%type% using %type% minimizing z;
                                     </code></pre>
                     <p>
                       The value of the singleton set which comes from MIRO is
-                      stored in the compile-time variable <i>type</i> by using
-                      the Dollar Control Option
+                      stored in the compile-time variable
+                      <i>type</i> by using the Dollar Control Option
                       <a
                         href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset"
                         target="__blank"
@@ -1472,10 +1490,10 @@ solve transport%type% using %type% minimizing z;
                       <div class="content">
                         <b class="callout-title">Tip:</b>
                         <p>
-                          If you configure a dropdown menu and you want a choice
-                          to be <i>nothing</i>, use the symbol "_" as a choice.
-                          MIRO treats an underscore internally as if nothing is
-                          set.
+                          If you configure a dropdown menu and you want a
+                          choice to be <i>nothing</i>, use the symbol "_" as a
+                          choice. MIRO treats an underscore internally as if
+                          nothing is set.
                         </p>
                       </div>
                       <!--//content-->
@@ -1507,7 +1525,8 @@ solve transport%type% using %type% minimizing z;
                   <div class="section-block" id="widget-dropdown-options">
                     <h3 class="block-title">Available options</h3>
                     <p>
-                      The following options are available for a checkbox widget:
+                      The following options are available for a checkbox
+                      widget:
                     </p>
                     <h6
                       id="dropdown-option-name"
@@ -1515,8 +1534,8 @@ solve transport%type% using %type% minimizing z;
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Enter the element
-                      name as it should be displayed in a tab
+                      <i class="fas fa-plus slide-toggle"></i> Enter the
+                      element name as it should be displayed in a tab
                     </h6>
                     <div class="expanded">
                       <p>
@@ -1578,12 +1597,12 @@ solve transport%type% using %type% minimizing z;
                     </h6>
                     <div class="expanded">
                       <p>
-                        As with a slider, the values/elements of a dropdown menu
-                        can be filled either statically or dynamically. Static
-                        choices remain unchanged, regardless of the loaded data.
-                        In contrast to this the selectable elements of a
-                        dropdown menu with dynamic choices are filled depending
-                        on the loaded data.
+                        As with a slider, the values/elements of a dropdown
+                        menu can be filled either statically or dynamically.
+                        Static choices remain unchanged, regardless of the
+                        loaded data. In contrast to this the selectable
+                        elements of a dropdown menu with dynamic choices are
+                        filled depending on the loaded data.
                       </p>
                       <br />
                       <h4 id="static-dropdown">Static choices:</h4>
@@ -1602,13 +1621,13 @@ solve transport%type% using %type% minimizing z;
                           an alias — rather than the choice — is displayed to
                           the user. Aliases are optional. The choice-alias
                           mapping follows the order in which the elements are
-                          specified. If aliases are given, the number of aliases
-                          must match the number of choices.
+                          specified. If aliases are given, the number of
+                          aliases must match the number of choices.
                         </li>
                         <li>
                           Default value: <br />The default value specifies the
-                          initial selection of the dropdown menu. This option is
-                          only available for static dropdown menus.
+                          initial selection of the dropdown menu. This option
+                          is only available for static dropdown menus.
                         </li>
                       </ul>
                       <p>
@@ -1636,8 +1655,8 @@ solve transport%type% using %type% minimizing z;
                       <h4 id="dynamic-dropdown">Dynamic choices:</h4>
                       <p>
                         In the following example a dropdown menu with dynamic
-                        choices is configured in the model <i>Pickstock</i> for
-                        a <i>Singleton Set</i>:
+                        choices is configured in the model
+                        <i>Pickstock</i> for a <i>Singleton Set</i>:
                       </p>
                       <pre><code class="language-gams">
 $onExternalInput
@@ -1658,8 +1677,9 @@ $offExternalInput
                           Select symbol and header to depend upon: <br />If the
                           selection options of a dropdown menu are to be filled
                           dynamically, the set from whose elements the choices
-                          are to be derived must be specified. For this purpose,
-                          those symbols are available which are used as
+                          are to be derived must be specified. For this
+                          purpose, those symbols are available which are used
+                          as
                           <a href="./model.html#model-adjustments"
                             >input symbols</a
                           >
@@ -1697,8 +1717,8 @@ $offExternalInput
                               <p>
                                 Instead of a single symbol, all input symbols
                                 whose domain the selected set is part of can be
-                                used to fill the drop-down menu with data. To do
-                                this, simply remove the selected symbol. An
+                                used to fill the drop-down menu with data. To
+                                do this, simply remove the selected symbol. An
                                 <i>All</i> is shown then:
                               </p>
                               <div class="section-block">
@@ -1737,8 +1757,9 @@ $offExternalInput
                               <b class="callout-title">Note:</b>
                               <p>
                                 Only unique elements of a column are extracted.
-                                If an element is contained more than once in the
-                                selected column, duplicate entries are removed.
+                                If an element is contained more than once in
+                                the selected column, duplicate entries are
+                                removed.
                               </p>
                             </div>
                             <!--//content-->
@@ -1767,14 +1788,14 @@ $offExternalInput
                           </div>
                           <!--//callout-block-->
                           <p>
-                            These two options are sufficient to dynamically fill
-                            the choices of the dropdown menu.
+                            These two options are sufficient to dynamically
+                            fill the choices of the dropdown menu.
                           </p>
                         </li>
                         <li>
                           Should the symbol table(s) be filtered depending on
-                          the selection in the dropdown menu?: <br />This option
-                          is optional.
+                          the selection in the dropdown menu?:
+                          <br />This option is optional.
                           <div class="section-block">
                             <img
                               class="img-fluid"
@@ -1867,8 +1888,8 @@ $offExternalInput
                       <p>
                         Singleton sets can have an element label and an element
                         text. If the set is configured as a dropdown menu, both
-                        components will be communicated with GAMS by default. If
-                        this option is activated, the choice of the dropdown
+                        components will be communicated with GAMS by default.
+                        If this option is activated, the choice of the dropdown
                         menu will become the element text of the set, whereas
                         the label will be set to the empty string. This allows
                         for the communication of strings between MIRO and GAMS
@@ -1895,8 +1916,9 @@ $offExternalInput
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Should element be
-                      expanded automatically when submitting a Hypercube job?
+                      <i class="fas fa-plus slide-toggle"></i> Should element
+                      be expanded automatically when submitting a Hypercube
+                      job?
                     </h6>
                     <div class="expanded">
                       <p>
@@ -1996,8 +2018,8 @@ $offExternalInput
                       <div class="content">
                         <b class="callout-title">Note:</b>
                         <p>
-                          The only difference between configuring a single and a
-                          multi-dropdown menu is the checkbox
+                          The only difference between configuring a single and
+                          a multi-dropdown menu is the checkbox
                           <i>Should multiple items be selectable?</i>.
                         </p>
                       </div>
@@ -2007,14 +2029,14 @@ $offExternalInput
                     <p>
                       Note that we do not use static choices for the dropdown
                       menu but fill the choices with all dates of the symbol
-                      <i>price</i>. Furthermore, we activate the option that the
-                      table of symbol <i>price</i> shall be filtered based on
-                      the user's selection in the dropdown menu of
-                      <i>subdate</i>. This means that if the user selects one or
-                      more dates in the dropdown menu, only the entries
+                      <i>price</i>. Furthermore, we activate the option that
+                      the table of symbol <i>price</i> shall be filtered based
+                      on the user's selection in the dropdown menu of
+                      <i>subdate</i>. This means that if the user selects one
+                      or more dates in the dropdown menu, only the entries
                       containing these dates are visible in the
-                      <i>Price</i> table. More information on dependencies among
-                      widgets can be found in the options of a dynamic
+                      <i>Price</i> table. More information on dependencies
+                      among widgets can be found in the options of a dynamic
                       <a href="#dropdown-option-choices" class="scrollto"
                         >dropdown menu</a
                       >
@@ -2108,8 +2130,8 @@ $offExternalInput
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Enter the element
-                      name as it should be displayed in a tab
+                      <i class="fas fa-plus slide-toggle"></i> Enter the
+                      element name as it should be displayed in a tab
                     </h6>
                     <div class="expanded">
                       <p>
@@ -2196,9 +2218,9 @@ $offExternalInput
                     <div class="expanded">
                       <p>
                         This option specifies the format of the date to display
-                        in the browser. The defaults is <i>yyyy-mm-dd</i>. This
-                        setting does not affect the actual format of the string
-                        the widget returns.
+                        in the browser. The defaults is
+                        <i>yyyy-mm-dd</i>. This setting does not affect the
+                        actual format of the string the widget returns.
                       </p>
                     </div>
                     <h6
@@ -2252,9 +2274,9 @@ $offExternalInput
                         </div>
                       </div>
                       <p>
-                        If you click on a year, the monthly overview opens. From
-                        there, you can click on a month to go to the detailed
-                        day view.
+                        If you click on a year, the monthly overview opens.
+                        From there, you can click on a month to go to the
+                        detailed day view.
                       </p>
                     </div>
                     <h6
@@ -2263,8 +2285,8 @@ $offExternalInput
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> What day shall be
-                      the start of the week?
+                      <i class="fas fa-plus slide-toggle"></i> What day shall
+                      be the start of the week?
                     </h6>
                     <div class="expanded">
                       <p>
@@ -2318,8 +2340,8 @@ $offExternalInput
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Should datepicker
-                      be closed immediately when a date is selected?
+                      <i class="fas fa-plus slide-toggle"></i> Should
+                      datepicker be closed immediately when a date is selected?
                     </h6>
                     <div class="expanded">
                       <p>
@@ -2335,8 +2357,9 @@ $offExternalInput
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Should element be
-                      expanded automatically when submitting a Hypercube job?
+                      <i class="fas fa-plus slide-toggle"></i> Should element
+                      be expanded automatically when submitting a Hypercube
+                      job?
                     </h6>
                     <div class="expanded">
                       <p>
@@ -2397,7 +2420,8 @@ $offExternalInput
                     </p>
                     <p>Example:</p>
                     <p>
-                      Date range selector for double-dash parameter <i>date</i>:
+                      Date range selector for double-dash parameter
+                      <i>date</i>:
                     </p>
                     <p></p>
                     <div class="section-block">
@@ -2430,10 +2454,10 @@ $offExternalInput
                     </h6>
                     <div class="expanded">
                       <p>
-                        Since the widget is used for date <i>ranges</i> the date
-                        range selector needs two default dates instead of one.
-                        The configuration of these does not differ from that of
-                        the
+                        Since the widget is used for date <i>ranges</i> the
+                        date range selector needs two default dates instead of
+                        one. The configuration of these does not differ from
+                        that of the
                         <a href="#date-option-minmaxdef" class="scrollto"
                           >standard date selector</a
                         >.
@@ -2527,8 +2551,8 @@ $offExternalInput
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Enter the element
-                      name as it should be displayed in a tab
+                      <i class="fas fa-plus slide-toggle"></i> Enter the
+                      element name as it should be displayed in a tab
                     </h6>
                     <div class="expanded">
                       <p>
@@ -2590,9 +2614,9 @@ $offExternalInput
                     </h6>
                     <div class="expanded">
                       <p>
-                        The default value is the initial value of the text input
-                        i.e. the text set when starting the application. This is
-                        optional.
+                        The default value is the initial value of the text
+                        input i.e. the text set when starting the application.
+                        This is optional.
                       </p>
                     </div>
                     <h6
@@ -2662,11 +2686,11 @@ $offExternalInput
                       </div>
                       <p>
                         If this option is activated, the entire content of the
-                        text input widget is communicated as the element text of
-                        the singleton set to GAMS. The element label in turn is
-                        communicated as an empty string. Migrating a singleton
-                        set into a compile time variable in GAMS can then be
-                        done using the
+                        text input widget is communicated as the element text
+                        of the singleton set to GAMS. The element label in turn
+                        is communicated as an empty string. Migrating a
+                        singleton set into a compile time variable in GAMS can
+                        then be done using the
                         <a
                           href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset"
                           >$eval.set</a
@@ -2706,7 +2730,8 @@ $offExternalInput
                         </div>
                         <p>
                           Find more information
-                          <a href="./model.html#singleton-set-separator">here</a
+                          <a href="./model.html#singleton-set-separator"
+                            >here</a
                           >.
                         </p>
                       </div>
@@ -2761,8 +2786,8 @@ $offExternalInput
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Enter the element
-                      name as it should be displayed in a tab
+                      <i class="fas fa-plus slide-toggle"></i> Enter the
+                      element name as it should be displayed in a tab
                     </h6>
                     <div class="expanded">
                       <p>
@@ -2862,8 +2887,8 @@ $offExternalInput
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Number of decimal
-                      places
+                      <i class="fas fa-plus slide-toggle"></i> Number of
+                      decimal places
                     </h6>
                     <div class="expanded">
                       <p>
@@ -2877,8 +2902,8 @@ $offExternalInput
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Decimal separator
-                      to use
+                      <i class="fas fa-plus slide-toggle"></i> Decimal
+                      separator to use
                     </h6>
                     <div class="expanded">
                       <p>
@@ -2892,8 +2917,8 @@ $offExternalInput
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Thousand grouping
-                      separator to use
+                      <i class="fas fa-plus slide-toggle"></i> Thousand
+                      grouping separator to use
                     </h6>
                     <div class="expanded">
                       <p>

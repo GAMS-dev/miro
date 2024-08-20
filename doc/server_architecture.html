@@ -101,8 +101,8 @@
                       <a href="./server.html">GAMS MIRO Server</a> is a
                       containerized application that provides a web interface
                       that can be accessed by any modern web browser ("client")
-                      that supports communication via WebSockets. It consists of
-                      several components that run in Docker containers. They
+                      that supports communication via WebSockets. It consists
+                      of several components that run in Docker containers. They
                       communicate with each other via Docker networks. The data
                       is kept in Docker volumes.
                     </p>
@@ -135,20 +135,21 @@
                       <a href="https://www.shinyproxy.io">ShinyProxy</a> is an
                       open source project developed to spawn Shiny applications
                       that run in Docker containers (in MIRO Server we use a
-                      <a href="https://github.com/GAMS-dev/shinyproxy/tree/v2.5"
+                      <a
+                        href="https://github.com/GAMS-dev/shinyproxy/tree/v2.5"
                         >custom version</a
                       >
                       of this project). It provides an option to authenticate
                       users via a REST API (implemented in the Auth proxy
                       container described below). <br />
-                      A new Docker container is created for each user requesting
-                      access to a MIRO application. All traffic (HTTP/WebSocket)
-                      from these containers is then forwarded to the client via
-                      ShinyProxy. This architecture results in each MIRO session
-                      running in its own container. Requests to the Docker API
-                      are proxied via the Socket proxy. Logs (stdout/stderr) of
-                      containers spawned by ShinyProxy are written to a Docker
-                      volume.
+                      A new Docker container is created for each user
+                      requesting access to a MIRO application. All traffic
+                      (HTTP/WebSocket) from these containers is then forwarded
+                      to the client via ShinyProxy. This architecture results
+                      in each MIRO session running in its own container.
+                      Requests to the Docker API are proxied via the Socket
+                      proxy. Logs (stdout/stderr) of containers spawned by
+                      ShinyProxy are written to a Docker volume.
                     </p>
                   </div>
                 </section>
@@ -157,11 +158,12 @@
                   <div class="section-block">
                     <p>
                       The Auth proxy provides a REST API that is used by the
-                      ShinyProxy container to authenticate users. Authentication
-                      requests are then forwarded to the GAMS Engine REST API
-                      (user management is done in GAMS Engine). If the
-                      authentication is successful, the user groups are queried
-                      from GAMS Engine and returned to the ShinyProxy container.
+                      ShinyProxy container to authenticate users.
+                      Authentication requests are then forwarded to the GAMS
+                      Engine REST API (user management is done in GAMS Engine).
+                      If the authentication is successful, the user groups are
+                      queried from GAMS Engine and returned to the ShinyProxy
+                      container.
                     </p>
                     <p>
                       This REST API can also be used for registering/updating
@@ -188,11 +190,11 @@
                     <p>
                       The MIRO Admin Panel container is accessible only to
                       admins (ensured by ShinyProxy's authorization system). It
-                      can be used to register new MIRO apps as well as to update
-                      or remove existing ones. It has read/write access to a
-                      Docker volume to write app data as well as the database to
-                      store scenarios. It communicates with GAMS Engine to
-                      register/update/remove models.
+                      can be used to register new MIRO apps as well as to
+                      update or remove existing ones. It has read/write access
+                      to a Docker volume to write app data as well as the
+                      database to store scenarios. It communicates with GAMS
+                      Engine to register/update/remove models.
                     </p>
                   </div>
                 </section>
@@ -200,10 +202,11 @@
                   <h2 class="section-title">MIRO UI</h2>
                   <div class="section-block">
                     <p>
-                      The MIRO UI container hosts the MIRO UI. App configuration
-                      is read from a Docker volume that the UI container has
-                      read-only access. All scenario data is stored in a
-                      PostgreSQL database. The MIRO UI container is based on
+                      The MIRO UI container hosts the MIRO UI. App
+                      configuration is read from a Docker volume that the UI
+                      container has read-only access. All scenario data is
+                      stored in a PostgreSQL database. The MIRO UI container is
+                      based on
                       <a href="https://shiny.rstudio.com">R/Shiny</a> and uses
                       websockets to communicate with the client. Static
                       resources (JS/CSS/images/...) are sent over HTTP. It
@@ -216,14 +219,14 @@
                   <h2 class="section-title">Database</h2>
                   <div class="section-block">
                     <p>
-                      A PostgreSQL database is used to store MIRO scenario data.
-                      A new Postgres schema and a user with read/write access to
-                      this schema is created for each MIRO application. When a
-                      new MIRO UI container is created, the database credentials
-                      of this user are communicated with the container via
-                      environment variables. This means that if a MIRO UI
-                      container is compromised, only the data of this MIRO app
-                      can be accessed.
+                      A PostgreSQL database is used to store MIRO scenario
+                      data. A new Postgres schema and a user with read/write
+                      access to this schema is created for each MIRO
+                      application. When a new MIRO UI container is created, the
+                      database credentials of this user are communicated with
+                      the container via environment variables. This means that
+                      if a MIRO UI container is compromised, only the data of
+                      this MIRO app can be accessed.
                     </p>
                   </div>
                 </section>
@@ -237,8 +240,12 @@
                   <a class="nav-link scrollto" href="#server-introduction"
                     >Introduction</a
                   >
-                  <a class="nav-link scrollto" href="#shinyproxy">ShinyProxy</a>
-                  <a class="nav-link scrollto" href="#auth-proxy">Auth proxy</a>
+                  <a class="nav-link scrollto" href="#shinyproxy"
+                    >ShinyProxy</a
+                  >
+                  <a class="nav-link scrollto" href="#auth-proxy"
+                    >Auth proxy</a
+                  >
                   <a class="nav-link scrollto" href="#socket-proxy"
                     >Socket proxy</a
                   >

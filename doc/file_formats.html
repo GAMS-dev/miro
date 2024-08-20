@@ -103,8 +103,9 @@
                   <div class="section-block">
                     <p>
                       The following section describes the custom file formats
-                      used in GAMS MIRO, namely <i>.miroapp</i> for app bundles
-                      and <i>.miroscen</i> for MIRO scenarios.
+                      used in GAMS MIRO, namely
+                      <i>.miroapp</i> for app bundles and <i>.miroscen</i> for
+                      MIRO scenarios.
                     </p>
                     <p>
                       The section is intended for people with a technical
@@ -158,8 +159,9 @@
                               the model files specified in the
                               <a href="./deployment.html#model-assembly-file"
                                 >model assembly file</a
-                              >. Here <i>modelName</i> is the lowercase filename
-                              of the main GMS file without the file extension.
+                              >. Here <i>modelName</i> is the lowercase
+                              filename of the main GMS file without the file
+                              extension.
                             </td>
                           </tr>
                           <tr>
@@ -175,8 +177,9 @@
                             <td>
                               (optional) Directory with static files such as
                               images and stylesheets. This directory will be
-                              added to the Shiny web server so that all files in
-                              this directory are accessible from the browser.
+                              added to the Shiny web server so that all files
+                              in this directory are accessible from the
+                              browser.
                             </td>
                           </tr>
                           <tr>
@@ -189,7 +192,8 @@
                           <tr>
                             <td><i>scripts_&lt;modelName&gt;/</i></td>
                             <td>
-                              (optional) Directory with custom analysis scripts.
+                              (optional) Directory with custom analysis
+                              scripts.
                             </td>
                           </tr>
                         </tbody>
@@ -273,14 +277,14 @@
                           >&lt;fileName&gt;\/\&lt;sha256Hash&gt;</span
                         >
                         where <i>fileName</i> is the full path of the file
-                        relative to the root of the <i>.miroapp</i> archive. The
-                        lines are sorted in ascending order.
+                        relative to the root of the <i>.miroapp</i> archive.
+                        The lines are sorted in ascending order.
                       </li>
                       <li>
                         The file <i>.miro_hashes</i> created in 1) is hashed
-                        using the SHA-512 algorithm and then signed with the RSA
-                        private key using the <i>EVP_PKEY_sign</i> function of
-                        openssl. The resulting signature is written to the
+                        using the SHA-512 algorithm and then signed with the
+                        RSA private key using the <i>EVP_PKEY_sign</i> function
+                        of openssl. The resulting signature is written to the
                         binary file: <i>.miro_sig</i>.
                       </li>
                       <li>
@@ -308,8 +312,9 @@
                       </li>
                       <li>
                         The signatures of all files found in the archive are
-                        calculated and a <i>.miro_hashes_actual</i> file is
-                        created using the same scheme as described in step 1).
+                        calculated and a
+                        <i>.miro_hashes_actual</i> file is created using the
+                        same scheme as described in step 1).
                       </li>
                       <li>
                         The <i>.miro_hashes</i> file is compared with the
@@ -359,8 +364,8 @@
                           <tr>
                             <td><i>data.gdx</i></td>
                             <td>
-                              A GDX file containing the input and output data of
-                              all symbols specified in the GAMS/MIRO data
+                              A GDX file containing the input and output data
+                              of all symbols specified in the GAMS/MIRO data
                               contract.
                             </td>
                           </tr>
