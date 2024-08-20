@@ -485,6 +485,7 @@
   heartbeat-timeout: 120000
   admin-groups: admins
   container-log-path: /logs/container-logs
+  max-upload-size: 200
   force-signed-apps: false
   disable-readonly-mode: false
   anonymous-readonly-mode: false
@@ -596,6 +597,18 @@ server:
                             >how to change the language for an individual
                             app.</a
                           >
+                        </p>
+                      </li>
+                      <li>
+                        <b
+                          >Maximum file size when uploading (MB)
+                          (<i>proxy.max-upload-size</i>):</b
+                        >
+                        <a id="config-max-upload-size" class="anchor"></a>
+                        <p>
+                          The maximum size (in megabytes) that files (e.g. apps
+                          in admin panel or data in MIRO apps) may have when
+                          uploading.
                         </p>
                       </li>
                       <li>

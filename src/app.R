@@ -90,7 +90,7 @@ if (is.null(errMsg)) {
     }
   })
   # set maximum upload size
-  options(shiny.maxRequestSize = maxUploadSize * 1024^2)
+  options(shiny.maxRequestSize = as.integer(Sys.getenv("MIRO_MAX_UPLOAD_SIZE", "5000")) * 1024^2)
   # get model path and name
   modelPath <<- getModelPath(modelPath, "MIRO_MODEL_PATH")
   modelNameRaw <<- modelPath[[4]]

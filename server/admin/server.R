@@ -1,4 +1,4 @@
-options(shiny.maxRequestSize = 5000 * 1024^2)
+options(shiny.maxRequestSize = as.integer(Sys.getenv("MIRO_MAX_UPLOAD_SIZE", "5000")) * 1024^2)
 
 source("../app/tools/db_migration/modules/form_db_migration.R", local = TRUE)
 

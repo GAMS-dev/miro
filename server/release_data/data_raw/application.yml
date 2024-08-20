@@ -11,6 +11,7 @@ proxy:
   same-site-cookie: Lax
   admin-groups: admins
   container-log-path: /logs/container-logs
+  max-upload-size: 200
   force-signed-apps: false
   disable-readonly-mode: false
   anonymous-readonly-mode: false
@@ -40,15 +41,10 @@ proxy:
     miro-image-name: ${GMS_MIRO_UI_IMAGE}
     admin-image-name: ${GMS_MIRO_ADMIN_IMAGE}
 logging:
-  file:
-    /logs/miroproxy.log
+  file: /logs/miroproxy.log
 
 spring:
   application.name: GAMS MIRO Server
-  servlet:
-    multipart:
-      max-file-size: 200MB
-      max-request-size: 200MB
 
 server:
   frame-options: sameorigin
