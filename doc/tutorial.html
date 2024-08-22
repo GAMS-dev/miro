@@ -91,8 +91,8 @@
                   <div class="section-block">
                     <p>
                       In this section we show you how a typical workflow in the
-                      development of a MIRO application can look like - from the
-                      GAMS or GAMSPy model to the initialization and
+                      development of a MIRO application can look like - from
+                      the GAMS or GAMSPy model to the initialization and
                       customization of a MIRO application up to its deployment.
                       This tutorial is a quick guide to the most important
                       aspects of the MIRO application development. The
@@ -104,14 +104,14 @@
                     </p>
                     <p></p>
                     <p>
-                      The easiest way to develop a MIRO application from scratch
-                      based on a GAMS model is to use
+                      The easiest way to develop a MIRO application from
+                      scratch based on a GAMS model is to use
                       <a href="https://www.gams.com/latest/docs/T_STUDIO.html"
                         >GAMS Studio</a
                       >. It offers built-in functionality of the most important
                       interactions with MIRO. Learn more about this
-                      <a href="./studio.html">here</a>. If you want to develop a
-                      MIRO application for a GAMSPy model, communication with
+                      <a href="./studio.html">here</a>. If you want to develop
+                      a MIRO application for a GAMSPy model, communication with
                       MIRO takes place on the command line. More on this in the
                       following chapters.
                     </p>
@@ -179,7 +179,9 @@
                             want to see in the application. We do this by
                             wrapping the corresponding
                             <i>symbol declarations</i> with the tags
-                            <code class="language-gams">$onExternalInput </code>
+                            <code class="language-gams"
+                              >$onExternalInput
+                            </code>
                             /
                             <code class="language-gams"
                               >$offExternalInput
@@ -254,17 +256,18 @@
                         <div class="section-block">
                           <p>
                             After starting MIRO for the first time, all the
-                            selected symbols are available in tabular form. With
-                            the basic configuration you can load data, modify it
-                            from within the interface and start or stop a GAMS
-                            job. You also have access to the <i>log</i> and
-                            <i>listing</i> (<i>lst</i>) files of GAMS as well as
-                            all files generated during the run. When the model
-                            has finished the execution phase successfully, the
-                            results can be examined. Since MIRO is connected to
-                            a database, you can store results there, fetch
-                            previously saved results and modify them or use them
-                            to compare with other scenarios.
+                            selected symbols are available in tabular form.
+                            With the basic configuration you can load data,
+                            modify it from within the interface and start or
+                            stop a GAMS job. You also have access to the
+                            <i>log</i> and <i>listing</i> (<i>lst</i>) files of
+                            GAMS as well as all files generated during the run.
+                            When the model has finished the execution phase
+                            successfully, the results can be examined. Since
+                            MIRO is connected to a database, you can store
+                            results there, fetch previously saved results and
+                            modify them or use them to compare with other
+                            scenarios.
                           </p>
                           <div
                             class="section-block"
@@ -290,12 +293,12 @@
                       >
                         <div class="section-block">
                           <p>
-                            Ideally, you start off with a fully developed GAMSPy
-                            model or a model in which no major changes are made
-                            to the symbols that will later be visible in MIRO
-                            (of course, you can also start from scratch and
-                            adjust your symbols as you go). In our example we
-                            use the classic
+                            Ideally, you start off with a fully developed
+                            GAMSPy model or a model in which no major changes
+                            are made to the symbols that will later be visible
+                            in MIRO (of course, you can also start from scratch
+                            and adjust your symbols as you go). In our example
+                            we use the classic
                             <a
                               href="https://gamspy.readthedocs.io/en/latest/user/notebooks/trnsport.html"
                               target="_blank"
@@ -343,23 +346,24 @@ model.solve()
                           </span>
                         </div>
                         <div>
-                          This initializes the default values for your GAMS MIRO
-                          app and creates the necessary data contract. Then, it
-                          spawns a GAMS MIRO app with base mode by default.
+                          This initializes the default values for your GAMS
+                          MIRO app and creates the necessary data contract.
+                          Then, it spawns a GAMS MIRO app with base mode by
+                          default.
                         </div>
                         <div class="section-block">
                           <p>
                             After starting MIRO for the first time, all the
-                            selected symbols are available in tabular form. With
-                            the basic configuration you can load data, modify it
-                            from within the interface and start or stop a GAMS
-                            job. You also have access to the <i>log</i> file and
-                            all files generated during the run. When the model
-                            has finished, the results can be examined. Since
-                            MIRO is connected to a database, you can store
-                            results there, fetch previously saved results and
-                            modify them or use them to compare with other
-                            scenarios.
+                            selected symbols are available in tabular form.
+                            With the basic configuration you can load data,
+                            modify it from within the interface and start or
+                            stop a GAMS job. You also have access to the
+                            <i>log</i> file and all files generated during the
+                            run. When the model has finished, the results can
+                            be examined. Since MIRO is connected to a database,
+                            you can store results there, fetch previously saved
+                            results and modify them or use them to compare with
+                            other scenarios.
                           </p>
                           <div
                             class="section-block"
@@ -396,7 +400,11 @@ model.solve()
                           class="info-wrapper-small"
                           href="./configuration_general.html"
                           ><i
-                            class="icon fa fa-external-link-alt info-icon-small"
+                            class="
+                              icon
+                              fa fa-external-link-alt
+                              info-icon-small
+                            "
                           ></i></a
                         ><br />
                         Appearance and general behavior of the app.
@@ -408,7 +416,11 @@ model.solve()
                           class="info-wrapper-small"
                           href="./configuration_symbols.html"
                           ><i
-                            class="icon fa fa-external-link-alt info-icon-small"
+                            class="
+                              icon
+                              fa fa-external-link-alt
+                              info-icon-small
+                            "
                           ></i></a
                         ><br />
                         Symbol naming, ordering, grouping, etc.
@@ -420,7 +432,11 @@ model.solve()
                           class="info-wrapper-small"
                           href="./configuration_tables.html"
                           ><i
-                            class="icon fa fa-external-link-alt info-icon-small"
+                            class="
+                              icon
+                              fa fa-external-link-alt
+                              info-icon-small
+                            "
                           ></i></a
                         ><br />
                         Global table and individual output table settings.
@@ -432,12 +448,17 @@ model.solve()
                           class="info-wrapper-small"
                           href="./widgets.html"
                           ><i
-                            class="icon fa fa-external-link-alt info-icon-small"
+                            class="
+                              icon
+                              fa fa-external-link-alt
+                              info-icon-small
+                            "
                           ></i></a
                         ><br />
-                        Input widgets can be used to communicate input data with
-                        GAMS/GAMSPy. Examples of such widgets include: tables,
-                        sliders, dropdown menus, date selectors or checkboxes.
+                        Input widgets can be used to communicate input data
+                        with GAMS/GAMSPy. Examples of such widgets include:
+                        tables, sliders, dropdown menus, date selectors or
+                        checkboxes.
                       </li>
                       <li>
                         Graphs:
@@ -446,15 +467,19 @@ model.solve()
                           class="info-wrapper-small"
                           href="./charts.html"
                           ><i
-                            class="icon fa fa-external-link-alt info-icon-small"
+                            class="
+                              icon
+                              fa fa-external-link-alt
+                              info-icon-small
+                            "
                           ></i></a
                         ><br />
                         GAMS/GAMSPy symbols can be visualized as graphs. A lot
                         of plotting types are available and only need to be
-                        configured, i.e. adapted to your model-specific data. To
-                        create graphics that are perfectly tailored to your data
-                        and not available in MIRO yet, you can also write your
-                        own custom renderer.
+                        configured, i.e. adapted to your model-specific data.
+                        To create graphics that are perfectly tailored to your
+                        data and not available in MIRO yet, you can also write
+                        your own custom renderer.
                       </li>
                       <li>
                         Scenario Analysis:
@@ -463,7 +488,11 @@ model.solve()
                           class="info-wrapper-small"
                           href="./configuration_analysis.html"
                           ><i
-                            class="icon fa fa-external-link-alt info-icon-small"
+                            class="
+                              icon
+                              fa fa-external-link-alt
+                              info-icon-small
+                            "
                           ></i></a
                         ><br />
                         Run custom analysis scripts.
@@ -599,9 +628,9 @@ model.solve()
                       />
                     </div>
                     <p>
-                      If the app is to be used on a local computer, it is simply
-                      added to the personal MIRO library. There, all deployed
-                      MIRO apps can be accessed and started.
+                      If the app is to be used on a local computer, it is
+                      simply added to the personal MIRO library. There, all
+                      deployed MIRO apps can be accessed and started.
                     </p>
                     <div class="section-block" style="text-align: center">
                       <img

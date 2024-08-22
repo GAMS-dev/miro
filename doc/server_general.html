@@ -98,8 +98,8 @@
                   <h2 class="section-title">GAMS MIRO Server</h2>
                   <div class="section-block">
                     <p>
-                      With GAMS MIRO Server, the model calculations and the MIRO
-                      applications themselves are moved to the cloud. Apps
+                      With GAMS MIRO Server, the model calculations and the
+                      MIRO applications themselves are moved to the cloud. Apps
                       deployed with MIRO Server can be accessed from any device
                       with a modern web browser. Local MIRO or GAMS
                       installations and licenses are no longer necessary. This
@@ -109,8 +109,9 @@
                       (optional) and you are ready to go.
                     </p>
                     <p>
-                      A detailed overview of the MIRO Server architecture can be
-                      found <a href="./server_architecture.html">here</a>.
+                      A detailed overview of the MIRO Server architecture can
+                      be found
+                      <a href="./server_architecture.html">here</a>.
                     </p>
                     <div class="section-block" id="app-overview">
                       <img
@@ -136,7 +137,8 @@
                       <li>
                         <a href="#solve-async" class="scrollto"
                           >Asynchronous solving</a
-                        >: Submit jobs and log back in later to get the results.
+                        >: Submit jobs and log back in later to get the
+                        results.
                       </li>
                       <li>
                         <a href="#scenario-sharing" class="scrollto"
@@ -148,9 +150,9 @@
                         <a href="./server_administration.html#user-groups"
                           >User- and group management</a
                         >: Map structures of your work environment by dividing
-                        MIRO users into groups with different privileges. Decide
-                        who can see which apps and/or who has control over
-                        adding new ones.
+                        MIRO users into groups with different privileges.
+                        Decide who can see which apps and/or who has control
+                        over adding new ones.
                       </li>
                       <li>
                         App updates: Update MIRO apps without the risk of
@@ -172,8 +174,8 @@
                       </li>
                       <li>
                         A MIRO application does not have to keep running during
-                        the calculations, i.e. you can close the application and
-                        return at a later time to view the results.
+                        the calculations, i.e. you can close the application
+                        and return at a later time to view the results.
                       </li>
                     </ul>
                     <p>
@@ -204,25 +206,25 @@
                           The workflow is identical to the synchronous solving
                           in MIRO Desktop. After clicking on
                           <i>Solve model</i> the view changes to the
-                          <i>GAMS interaction</i> section, where log and listing
-                          files are shown during the calculations (if they are
-                          not hidden). After solving the view changes to the
-                          output section.
+                          <i>GAMS interaction</i> section, where log and
+                          listing files are shown during the calculations (if
+                          they are not hidden). After solving the view changes
+                          to the output section.
                         </p>
                         <p>
-                          Note that unlike MIRO Desktop, the job is now executed
-                          asynchronously. You can therefore close the MIRO app
-                          during the calculations. From the moment you log out
-                          and log back in, the job will be treated as a job that
-                          you submitted by clicking <i>submit job</i> rather
-                          than <i>solve model</i>. This means no log will be
-                          displayed anymore in the
-                          <i>GAMS interaction</i> section. Also, the results are
-                          not loaded automatically after solving. Instead the
-                          job is moved to the
+                          Note that unlike MIRO Desktop, the job is now
+                          executed asynchronously. You can therefore close the
+                          MIRO app during the calculations. From the moment you
+                          log out and log back in, the job will be treated as a
+                          job that you submitted by clicking
+                          <i>submit job</i> rather than <i>solve model</i>.
+                          This means no log will be displayed anymore in the
+                          <i>GAMS interaction</i> section. Also, the results
+                          are not loaded automatically after solving. Instead
+                          the job is moved to the
                           <a href="#job-list" class="scrollto">job list</a>.
-                          From there you can get the results after finishing the
-                          calculations.
+                          From there you can get the results after finishing
+                          the calculations.
                         </p>
                       </li>
                       <li>
@@ -231,9 +233,9 @@
                         <a href="#job-list" class="scrollto">job list</a>. No
                         log is displayed, and results are not automatically
                         loaded into the interface. Instead, the results can be
-                        imported later. Submitting a job in this way makes sense
-                        especially if you want to solve multiple jobs in a row
-                        without waiting for the results to come in.
+                        imported later. Submitting a job in this way makes
+                        sense especially if you want to solve multiple jobs in
+                        a row without waiting for the results to come in.
                       </li>
                     </ul>
                   </div>
@@ -266,13 +268,14 @@
                     <p>
                       Results that have not yet been imported or are still
                       pending can be discarded. As soon as a job has finished,
-                      the results can be loaded into the sandbox with a click on
+                      the results can be loaded into the sandbox with a click
+                      on
                       <i>Download results</i>. Note that this does not save a
                       scenario in the database.
                     </p>
                     <p>
-                      If you want to see jobs that previously have been imported
-                      or discarded, you can do so by clicking on
+                      If you want to see jobs that previously have been
+                      imported or discarded, you can do so by clicking on
                       <i>Show history</i>:
                     </p>
                     <div class="section-block">
@@ -324,15 +327,15 @@
                           with user groups.
                         </li>
                         <li>
-                          Scenarios can only be shared with groups or users of a
-                          group in which you are a member yourself.
+                          Scenarios can only be shared with groups or users of
+                          a group in which you are a member yourself.
                           <a
                             href="https://www.gams.com/engine/administration.html#user-management"
                             >Inviters</a
                           >
-                          can also see users in groups of invitees of which they
-                          themselves are not members. Admins can see all users
-                          and groups.
+                          can also see users in groups of invitees of which
+                          they themselves are not members. Admins can see all
+                          users and groups.
                         </li>
                         <li>
                           The user who shares a scenario with others is the
@@ -346,13 +349,13 @@
                         </li>
                         <li>
                           Access permissions are assigned to a shared scenario.
-                          As scenario owner you decide about who has read, write
-                          and/or execute permissions. Users with read
+                          As scenario owner you decide about who has read,
+                          write and/or execute permissions. Users with read
                           permissions can load the owner's scenario but are not
                           authorized to edit or execute it. The scenario is
                           marked with a lock symbol (<i class="fas fa-lock"></i
-                          >). Write permissions give you the right to change the
-                          scenario (data) and save it again. With execute
+                          >). Write permissions give you the right to change
+                          the scenario (data) and save it again. With execute
                           permissions you are authorized to solve the scenario.
                         </li>
                         <li>
@@ -427,13 +430,13 @@
                       </div>
                       <p>
                         In the example below, Rebecca is scenario owner. She
-                        gives the single user 'rschuchmann' and the group 'group
-                        1' read permission for her scenario. Since she does not
-                        want her scenario data to be changed, she decides not to
-                        give write permissions to any other user. Members of
-                        'group 1' usually only look at results and do not want
-                        to start optimization runs. Therefore, Rebecca only
-                        grants execution rights to "rschuchmann".
+                        gives the single user 'rschuchmann' and the group
+                        'group 1' read permission for her scenario. Since she
+                        does not want her scenario data to be changed, she
+                        decides not to give write permissions to any other
+                        user. Members of 'group 1' usually only look at results
+                        and do not want to start optimization runs. Therefore,
+                        Rebecca only grants execution rights to "rschuchmann".
                       </p>
                       <div class="section-block">
                         <img
@@ -462,22 +465,22 @@
                     <p>
                       With <i>GAMS MIRO Desktop - Boosted by GAMS Engine</i>,
                       you can solve GAMS jobs in the cloud with your locally
-                      running MIRO applications. This setup requires GAMS Engine
-                      (read more about the installation of GAMS Engine
+                      running MIRO applications. This setup requires GAMS
+                      Engine (read more about the installation of GAMS Engine
                       <a href="https://www.gams.com/engine/installation.html"
                         >here</a
                       >). To switch from running your optimization jobs on your
-                      local machine to solving them in the cloud, open your MIRO
-                      library, go to <i>Preferences</i> &rarr;
+                      local machine to solving them in the cloud, open your
+                      MIRO library, go to <i>Preferences</i> &rarr;
                       <i>GAMS Engine</i> and check the "Execution of models on
                       GAMS Engine" checkbox. This setting affects all deployed
-                      MIRO apps (started via the MIRO library) and all MIRO apps
-                      in development (started via GAMS Studio or the command
-                      line). A form opens in which you must enter the Engine URL
-                      (e.g. <kbd>https://engine.gams.com</kbd> if you are using
-                      Engine SaaS), an Engine namespace for which you have at
-                      least write and execute rights, as well as your login
-                      data.
+                      MIRO apps (started via the MIRO library) and all MIRO
+                      apps in development (started via GAMS Studio or the
+                      command line). A form opens in which you must enter the
+                      Engine URL (e.g. <kbd>https://engine.gams.com</kbd> if
+                      you are using Engine SaaS), an Engine namespace for which
+                      you have at least write and execute rights, as well as
+                      your login data.
                     </p>
                     <div class="section-block">
                       <img
@@ -512,8 +515,8 @@
                     </p>
                     <ul>
                       <li>
-                        <b>Engine URL</b>: URL where GAMS Engine is hosted, e.g.
-                        <kbd>http(s)://mydomain.com/engine/api</kbd>.
+                        <b>Engine URL</b>: URL where GAMS Engine is hosted,
+                        e.g. <kbd>http(s)://mydomain.com/engine/api</kbd>.
                       </li>
                       <li>
                         <b>Username &amp; password</b>: Your GAMS Engine
@@ -551,8 +554,8 @@
                       </li>
                       <li>
                         <b>Remember me</b>: Your credentials will be saved so
-                        that you will not have to log in again the next time you
-                        start the application.
+                        that you will not have to log in again the next time
+                        you start the application.
                       </li>
                     </ul>
                     <p>
@@ -578,8 +581,8 @@
                       are not available and a corresponding call in the model
                       will lead to an error on GAMS Engine. Furthermore it has
                       to be considered that Linux is case-sensitive. It should
-                      therefore be ensured that file system calls (file paths as
-                      well as file names) from within the model code are
+                      therefore be ensured that file system calls (file paths
+                      as well as file names) from within the model code are
                       correctly capitalized. The model is executed in an
                       isolated environment ("container"). Therefore it is
                       important that file paths can be applied correctly (e.g.

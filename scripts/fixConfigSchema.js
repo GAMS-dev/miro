@@ -70,6 +70,62 @@ function mergeObjects(obj1, obj2, keyPath = '') {
   return obj2;
 }
 
+function fixLengthOneStringArrays(obj) {
+  const primitiveTypes = ['null', 'number', 'integer', 'boolean', 'string'];
+  if (typeof obj !== 'object' || obj === null) {
+    return;
+  }
+  if (Array.isArray(obj)) {
+    obj.forEach((el) => fixLengthOneStringArrays(el));
+    return;
+  }
+  Object.keys(obj).forEach((key) => {
+    if (
+      key === 'type' &&
+      obj[key] === 'array' &&
+      obj.items &&
+      typeof obj.items === 'object'
+    ) {
+      let primitiveItems;
+      if (Array.isArray(obj.items.type)) {
+        primitiveItems = obj.items.type.filter((type) =>
+          primitiveTypes.includes(type),
+        );
+      } else {
+        primitiveItems = primitiveTypes.find(
+          (type) => type === obj.items.type,
+        );
+      }
+      if (primitiveItems != null) {
+        if (Array.isArray(primitiveItems)) {
+          obj[key] = ['array', ...primitiveItems];
+        } else {
+          obj[key] = ['array', primitiveItems];
+        }
+
+        Object.keys(obj.items).forEach((itemKey) => {
+          if (
+            [
+              'minLength',
+              'maxLength',
+              'pattern',
+              'format',
+              'multipleOf',
+              'exclusiveMinimum',
+              'exclusiveMaximum',
+              'minimum',
+              'maximum',
+            ].includes(itemKey)
+          ) {
+            obj[itemKey] = obj.items[itemKey];
+          }
+        });
+      }
+    }
+    fixLengthOneStringArrays(obj[key]);
+  });
+}
+
 let rootDir = '';
 if (!path.basename(__filename) !== 'src') {
   rootDir = 'src';
@@ -78,10 +134,17 @@ if (!path.basename(__filename) !== 'src') {
 const configSchemaPath = path.join(rootDir, 'conf', 'config_schema.json');
 const configSchema = JSON.parse(fs.readFileSync(configSchemaPath, 'utf8'));
 
-configSchema.definitions.dashboardOptions.properties.dataViewsConfig.additionalProperties.oneOf[1].properties = mergeObjects(
-  configSchema.definitions.miroPivotOptions.properties,
-  configSchema.definitions.dashboardOptions.properties.dataViewsConfig.additionalProperties.oneOf[1].properties,
-);
+// make sure dashboard's dataViewsConfig is superset of miroPivotOptions
+// to allow user's copy&pasting views from MIRO pivot to dashboard views
+configSchema.definitions.dashboardOptions.properties.dataViewsConfig.additionalProperties.oneOf[1].properties =
+  mergeObjects(
+    configSchema.definitions.miroPivotOptions.properties,
+    configSchema.definitions.dashboardOptions.properties.dataViewsConfig
+      .additionalProperties.oneOf[1].properties,
+  );
+
+// length one string arrays should also accept strings
+fixLengthOneStringArrays(configSchema);
 
 fs.writeFileSync(
   configSchemaPath,

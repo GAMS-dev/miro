@@ -120,9 +120,9 @@
                     </h3>
                     <div class="answer">
                       No. You can read external data from any data source
-                      supported by GAMS just as you did before. For example, you
-                      can place an Excel file in your model folder and import
-                      the data from this file into GAMS using the
+                      supported by GAMS just as you did before. For example,
+                      you can place an Excel file in your model folder and
+                      import the data from this file into GAMS using the
                       <a
                         href="https://www.gams.com/latest/docs/T_GDXXRW.html"
                         target="_blank"
@@ -138,11 +138,11 @@
                       supported?
                     </h3>
                     <div class="answer">
-                      Currently GAMS MIRO ships with language files for English,
-                      German and Chinese. If you would like to add another
-                      language, we are more than happy to add more languages to
-                      this list. For more information about how to generate
-                      language files see the section on
+                      Currently GAMS MIRO ships with language files for
+                      English, German and Chinese. If you would like to add
+                      another language, we are more than happy to add more
+                      languages to this list. For more information about how to
+                      generate language files see the section on
                       <a href="./configuration_advanced.html#language-files"
                         >Language Files</a
                       >
@@ -151,13 +151,14 @@
                   <!--//section-block-->
                   <div class="section-block">
                     <h3 class="question">
-                      <i class="fas fa-question-circle"></i> Can I contribute to
-                      improve GAMS MIRO?
+                      <i class="fas fa-question-circle"></i> Can I contribute
+                      to improve GAMS MIRO?
                     </h3>
                     <div class="answer">
                       Yes, absolutely! If you find bugs or have ideas about how
                       to improve MIRO, you are more than welcome to share those
-                      with us! Additionally, you can contribute by supplying new
+                      with us! Additionally, you can contribute by supplying
+                      new
                       <a
                         href="./configuration_advanced.html#language-files"
                         target="_blank"
@@ -206,10 +207,10 @@
                       without a GAMS model but work with data only?
                     </h3>
                     <div class="answer">
-                      Yes, but it should be noted that GAMS MIRO is very closely
-                      interwoven with GAMS. In order to be able to use MIRO
-                      without GAMS, adaptations to the code of GAMS MIRO are
-                      necessary.
+                      Yes, but it should be noted that GAMS MIRO is very
+                      closely interwoven with GAMS. In order to be able to use
+                      MIRO without GAMS, adaptations to the code of GAMS MIRO
+                      are necessary.
                     </div>
                   </div>
                   <!--//section-block-->
@@ -235,22 +236,22 @@
                   <!--//section-block-->
                   <div class="section-block">
                     <h3 class="question">
-                      <i class="fas fa-question-circle"></i> After updating some
-                      system libraries on Linux, MIRO displays an error when
-                      starting an application. How can I fix it?
+                      <i class="fas fa-question-circle"></i> After updating
+                      some system libraries on Linux, MIRO displays an error
+                      when starting an application. How can I fix it?
                     </h3>
                     <div class="answer">
                       Most likely, updating your system libraries has resulted
-                      in the removal of an existing library against which one of
-                      the R dependencies was linked when MIRO was installed. You
-                      should see an error message similar to this:
+                      in the removal of an existing library against which one
+                      of the R dependencies was linked when MIRO was installed.
+                      You should see an error message similar to this:
                       <span class="code"
                         >libicui18n.so.70: cannot open shared object file: No
                         such file or directory.</span
-                      >. The error message usually also contains the name of the
-                      affected R library as well as the path where the library
-                      is located. To fix this problem, the library must be
-                      recompiled. To force recompilation of one of the R
+                      >. The error message usually also contains the name of
+                      the affected R library as well as the path where the
+                      library is located. To fix this problem, the library must
+                      be recompiled. To force recompilation of one of the R
                       libraries that MIRO depends on, simply remove the
                       directory from the MIRO R library (e.g.
                       <span class="code"
@@ -277,16 +278,16 @@
                       addition, existing code and application logic are
                       frequently re-evaluated and discussed. To be able to do
                       this, our developers constantly keep up to date with the
-                      latest developments in the Infosec community regarding new
-                      vulnerabilities as well as new strategies to attack
+                      latest developments in the Infosec community regarding
+                      new vulnerabilities as well as new strategies to attack
                       software. This includes regular informal penetration
                       testing by our developers on our development servers. In
                       addition to manual reviews, all of our code is tested as
                       part of our continuous integration pipelines using
-                      multiple static (SAST) application security testing tools.
-                      We also use automated tools to test all of our third-party
-                      dependencies for known vulnerabilities (Software
-                      Composition Analysis). You can find the latest
+                      multiple static (SAST) application security testing
+                      tools. We also use automated tools to test all of our
+                      third-party dependencies for known vulnerabilities
+                      (Software Composition Analysis). You can find the latest
                       vulnerability report
                       <a href="./security_ci_report.html">here</a>.
                     </div>
@@ -299,17 +300,17 @@
                   <h2 class="section-title">Features</h2>
                   <div class="section-block">
                     <h3 class="question">
-                      <i class="fas fa-question-circle"></i> How can I customize
-                      my MIRO app?
+                      <i class="fas fa-question-circle"></i> How can I
+                      customize my MIRO app?
                     </h3>
                     <div class="answer">
                       <p>
                         The configuration can be done via a
                         <a href="./customize.html#configurationMode"
                           >graphical configuration interface</a
-                        >, with which you can create plots and widgets or change
-                        certain settings with a few mouse clicks, visually
-                        supported by a live preview. In addition, the
+                        >, with which you can create plots and widgets or
+                        change certain settings with a few mouse clicks,
+                        visually supported by a live preview. In addition, the
                         configuration can also be done
                         <a href="./configuration_advanced.html.html#jsonfiles"
                           >manually</a
@@ -332,7 +333,8 @@
                       </h3>
                       <div class="answer">
                         Yes. You can write your own
-                        <a href="./configuration_advanced.html#custom-renderers"
+                        <a
+                          href="./configuration_advanced.html#custom-renderers"
                           >Custom Renderers</a
                         >
                         in R using MIRO's R API.
@@ -375,44 +377,45 @@
 
                     <div class="section-block">
                       <h3 class="question">
-                        <i class="fas fa-question-circle"></i> Can I set up GAMS
-                        MIRO on a server where multiple users can solve GAMS
-                        models?
+                        <i class="fas fa-question-circle"></i> Can I set up
+                        GAMS MIRO on a server where multiple users can solve
+                        GAMS models?
                       </h3>
                       <div class="answer">
                         Yes. Besides the presented MIRO Desktop version we also
                         develop a
                         <a href="./server.html">MIRO Server version</a>, which
                         will offer features like multi-application management,
-                        user access management, load balancing, rolling updates,
-                        etc.
+                        user access management, load balancing, rolling
+                        updates, etc.
                       </div>
                     </div>
                     <!--//section-block-->
 
                     <div class="section-block">
                       <h3 class="question">
-                        <i class="fas fa-question-circle"></i> What happens when
-                        using input data which results in infeasible or
+                        <i class="fas fa-question-circle"></i> What happens
+                        when using input data which results in infeasible or
                         unbounded results?
                       </h3>
                       <div class="answer">
                         In GAMS MIRO both the log and the lst file of the
-                        current GAMS model run can be displayed. Any information
-                        about infeasibilities and unboundness is also visible
-                        here. Further checks on infeasibilities and unboundness
-                        are not performed. If a model is infeasible (or
-                        unbounded) this still leads to a normal completion of
-                        the GAMS job (unless you check the model status and
-                        trigger an abort based on an unexpected model status). A
-                        normal completion of GAMS is interpreted by GAMS MIRO as
-                        an error-free run. The view switches to the output
-                        section and will show the content of your output symbols
-                        (even if they are empty or show the infeasible solution
-                        provided by some first phase algorithm). If the GAMS
-                        model is aborted for any reason, this will also result
-                        in an abort in GAMS MIRO. A corresponding message is
-                        displayed in GAMS MIRO and no output is displayed.
+                        current GAMS model run can be displayed. Any
+                        information about infeasibilities and unboundness is
+                        also visible here. Further checks on infeasibilities
+                        and unboundness are not performed. If a model is
+                        infeasible (or unbounded) this still leads to a normal
+                        completion of the GAMS job (unless you check the model
+                        status and trigger an abort based on an unexpected
+                        model status). A normal completion of GAMS is
+                        interpreted by GAMS MIRO as an error-free run. The view
+                        switches to the output section and will show the
+                        content of your output symbols (even if they are empty
+                        or show the infeasible solution provided by some first
+                        phase algorithm). If the GAMS model is aborted for any
+                        reason, this will also result in an abort in GAMS MIRO.
+                        A corresponding message is displayed in GAMS MIRO and
+                        no output is displayed.
                         <br /><b>Note</b>: You can write an
                         <a href="./configuration_general.html#miro-log"
                           >own report / log</a
@@ -481,8 +484,9 @@
                         configuration is the
                         <a href="./customize.html#configurationMode"
                           >Configuration Mode</a
-                        >. <br />Like the <i>&lt;modelname&gt;_io.json</i> file,
-                        the structure of this file is based on a
+                        >. <br />Like the
+                        <i>&lt;modelname&gt;_io.json</i> file, the structure of
+                        this file is based on a
                         <a href="./schema.html" target="_blank">schema</a> with
                         which the file is validated when a MIRO app is started.
                       </p>
@@ -497,8 +501,8 @@
                     <div class="answer">
                       <p>
                         Every time you start a MIRO app via GAMS Studio or the
-                        command line (i.e. in development mode), a gdx container
-                        is created in the directory
+                        command line (i.e. in development mode), a gdx
+                        container is created in the directory
                         <span class="code">data_&lt;modelname&gt;</span>. This
                         file contains data extracted from the GAMS model and
                         will be stored in the MIRO database under the scenario
@@ -540,8 +544,8 @@
                         <b>model</b> in the context of GAMS MIRO?
                       </h3>
                       <div class="answer">
-                        We call any <span class="code">.gms</span> file that you
-                        run with the command line option
+                        We call any <span class="code">.gms</span> file that
+                        you run with the command line option
                         <span class="code">miro</span> a model. Inside this
                         <span class="code">.gms</span> file you may include or
                         call other files or applications, just as you would do
@@ -629,14 +633,14 @@
                           <kbd>MIRO_DEV_MODE</kbd> set to <kbd>true</kbd>).
                           Every time you launch MIRO in development mode, your
                           app resources (configuration, README file, data files
-                          etc.) are loaded and validated, so your application is
-                          always in sync with your current GAMS source. Once you
-                          want to share your application with other people you
-                          can <a href="./deployment.html">deploy</a> it.
+                          etc.) are loaded and validated, so your application
+                          is always in sync with your current GAMS source. Once
+                          you want to share your application with other people
+                          you can <a href="./deployment.html">deploy</a> it.
                           Deployed apps work with a compiled version of your
                           resources, so they tend to launch faster. However,
-                          this also means that you can no longer change your app
-                          without deploying a new version.
+                          this also means that you can no longer change your
+                          app without deploying a new version.
                         </p>
                       </div>
                     </div>
@@ -662,7 +666,9 @@
                       software included in MIRO, can be found
                       <a href="./license.html">here</a>. The entire source code
                       of GAMS MIRO can be found on
-                      <a href="https://github.com/GAMS-dev/miro" target="_blank"
+                      <a
+                        href="https://github.com/GAMS-dev/miro"
+                        target="_blank"
                         >GitHub</a
                       >.
                     </div>

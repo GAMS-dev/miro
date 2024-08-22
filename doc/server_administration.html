@@ -95,24 +95,27 @@
             <div class="doc-content col-md-9 col-12 order-1">
               <div class="content-inner">
                 <section class="doc-section">
-                  <h2 id="authentication-user-management" class="section-title">
+                  <h2
+                    id="authentication-user-management"
+                    class="section-title"
+                  >
                     User Management
                   </h2>
                   <div class="section-block">
                     <p>
                       MIRO Server uses the authentication service of GAMS
-                      Engine. Everyone who wants to use MIRO Server needs a GAMS
-                      Engine user account with at least execute permissions on
-                      the
+                      Engine. Everyone who wants to use MIRO Server needs a
+                      GAMS Engine user account with at least execute
+                      permissions on the
                       <a
                         href="https://gams.com/engine/administration.html#namespaces"
                         >namespace</a
                       >
                       to be used. Or the other way around: Once you are a
-                      registered GAMS Engine user with the required permissions,
-                      you can use MIRO Server. Users without permissions in the
-                      namespace can log in if they can see a user group
-                      associated with a model.
+                      registered GAMS Engine user with the required
+                      permissions, you can use MIRO Server. Users without
+                      permissions in the namespace can log in if they can see a
+                      user group associated with a model.
                     </p>
                     <p>
                       If you are GAMS Engine administrator or inviter, you can
@@ -128,10 +131,10 @@
                       (e.g. to showcase applications as in the case of the
                       <a href="https://miro.gams.com">MIRO Gallery</a>), you
                       need to register one GAMS Engine user, e.g. a user
-                      <kbd>anonymous</kbd>. Anyone accessing your MIRO apps will
-                      then use this GAMS Engine user under the hood for
-                      authentication. You will need the credentials of that user
-                      in
+                      <kbd>anonymous</kbd>. Anyone accessing your MIRO apps
+                      will then use this GAMS Engine user under the hood for
+                      authentication. You will need the credentials of that
+                      user in
                       <a href="./server_setup.html#step6"
                         >step 6 of the installation</a
                       >. You can also provide the credentials of this user via
@@ -256,9 +259,10 @@
                       admininistrator and normal user (i.e. there is no admin
                       panel button). In this case you can reach the admin panel
                       via a
-                      <a href="#direct-app-link" class="scrollto">direct link</a
-                      >, just like with MIRO apps. The app id is <i>admin</i> in
-                      this case:
+                      <a href="#direct-app-link" class="scrollto"
+                        >direct link</a
+                      >, just like with MIRO apps. The app id is
+                      <i>admin</i> in this case:
                       <a href="mydomain.com/app_direct/admin/" target="_blank"
                         >mydomain.com/app_direct/admin/</a
                       >
@@ -267,10 +271,8 @@
                   <div id="add-app" class="section-block">
                     <h3 class="block-title">Add apps</h3>
                     <p>
-                      As with the local MIRO Desktop library, a new MIRO app (<a
-                        href="./deployment.html#sbs-create-app"
-                        >miroapp</a
-                      >
+                      As with the local MIRO Desktop library, a new MIRO app
+                      (<a href="./deployment.html#sbs-create-app">miroapp</a>
                       file) can be added easily via drag &amp; drop or by
                       clicking on the last tile:
                     </p>
@@ -302,12 +304,13 @@
                       <li>
                         Access groups (optional):<br />
                         By default, any Engine user who has access to the
-                        namespace used by MIRO Server can see all apps. To limit
-                        who is allowed to use the app you want to add, you can
-                        optionally assign <i>access groups</i>. A user who is
-                        not a member of one (or more) of the assigned access
-                        groups does not see the app in the app overview and
-                        cannot reach it via direct link (see an
+                        namespace used by MIRO Server can see all apps. To
+                        limit who is allowed to use the app you want to add,
+                        you can optionally assign
+                        <i>access groups</i>. A user who is not a member of one
+                        (or more) of the assigned access groups does not see
+                        the app in the app overview and cannot reach it via
+                        direct link (see an
                         <a href="#user-groups" class="scrollto">example</a>).
                         All GAMS Engine groups of the namespace used by MIRO
                         Server in which the MIRO administrator is a member or
@@ -325,16 +328,16 @@
                           Here you can define a customized environment to be
                           used by the MIRO app in JSON syntax. This can be
                           useful/mandatory, for example, if you want to run
-                          custom analysis scripts that require external software
-                          not in the PATH or to store credentials to be used by
-                          remote data exchange modules. A detailed description
-                          including an example can be found in the
+                          custom analysis scripts that require external
+                          software not in the PATH or to store credentials to
+                          be used by remote data exchange modules. A detailed
+                          description including an example can be found in the
                           <a href="./deployment.html#custom-environments"
                             >MIRO Desktop documentation</a
                           >. The only difference to the local version is that
                           with MIRO Server you can specify a separate
-                          environment for each app, while with MIRO Desktop this
-                          applies globally to all apps.
+                          environment for each app, while with MIRO Desktop
+                          this applies globally to all apps.
                         </p>
                         <p>
                           <b>Language</b>: While the
@@ -345,9 +348,9 @@
                           to change the language of an individual app. This
                           allows the use of apps in different languages within
                           one MIRO Server instance. The environment variable
-                          <kbd>MIRO_LANG</kbd> specifies the language. Available
-                          languages currently are English ('en'), Chinese ('cn')
-                          and German ('de'). Example:
+                          <kbd>MIRO_LANG</kbd> specifies the language.
+                          Available languages currently are English ('en'),
+                          Chinese ('cn') and German ('de'). Example:
                           <kbd>{"MIRO_LANG":"de"}</kbd>.
                         </p>
                         <div class="section-block">
@@ -373,7 +376,8 @@
                             >global color theme</a
                           >
                           of an individual app. Available themes are listed
-                          below. Example: <kbd>{"MIRO_THEME":"darkblue"}</kbd>.
+                          below. Example:
+                          <kbd>{"MIRO_THEME":"darkblue"}</kbd>.
                         </p>
                         <ul>
                           <li>Default theme (value: "default")</li>
@@ -412,10 +416,10 @@
                       <b>Remove apps:</b><br />
                       To remove an app, click on the
                       <span style="color: red; font-weight: 800">&#215;</span>
-                      icon in the upper right corner of an app tile. If you want
-                      to keep the database with all the scenario data of the app
-                      you want to delete, you can specify this in the following
-                      step.
+                      icon in the upper right corner of an app tile. If you
+                      want to keep the database with all the scenario data of
+                      the app you want to delete, you can specify this in the
+                      following step.
                     </p>
                   </div>
                   <div id="add-scenarios" class="section-block">
@@ -426,13 +430,15 @@
                         >bundling scenario data with an app</a
                       >, scenarios can also be added subsequently by dragging
                       and dropping the data files (<i>gdx</i>, <i>miroscen</i>,
-                      <i>xlsx</i>, <i>xlsm</i>, <i>xls</i>, <i>zip</i>) onto the
-                      respective app.
+                      <i>xlsx</i>, <i>xlsm</i>, <i>xls</i>, <i>zip</i>) onto
+                      the respective app.
                     </p>
                     <p>The following rules apply:</p>
                     <ul>
                       <li>Up to 10 scenarios can be added at once.</li>
-                      <li>Scenarios are assigned to the user who adds them.</li>
+                      <li>
+                        Scenarios are assigned to the user who adds them.
+                      </li>
                       <li>
                         The scenarios are made available (read and execute
                         permissions) to all users who have access to the app.
@@ -515,8 +521,8 @@
                             <p>
                               Within the iframe that is displayed under
                               /app/&lt;app_id&gt;, the
-                              /app_direct/&lt;app_id&gt; link is used to display
-                              the MIRO app.
+                              /app_direct/&lt;app_id&gt; link is used to
+                              display the MIRO app.
                             </p>
                           </div>
                           <!--//content-->
@@ -532,8 +538,8 @@
                   </h2>
                   <p>
                     If several MIRO apps are used, it may make sense to make
-                    certain apps accessible only to certain users. There are two
-                    possible ways to do this.
+                    certain apps accessible only to certain users. There are
+                    two possible ways to do this.
                   </p>
                   <div id="user-groups" class="section-block">
                     <h3 class="block-title">User Groups</h3>
@@ -566,8 +572,8 @@
                       />
                     </div>
                     <p>
-                      All users access MIRO Server via the same URL. However, as
-                      a member of a group, you don't see anything from other
+                      All users access MIRO Server via the same URL. However,
+                      as a member of a group, you don't see anything from other
                       apps from other groups.
                     </p>
                     <div class="callout-block callout-success">
@@ -600,8 +606,8 @@
                     <!--//callout-block-->
                     <p>
                       Creating user groups and assigning users to them is done
-                      quickly. So it's very easy to control who can access which
-                      apps with this approach.
+                      quickly. So it's very easy to control who can access
+                      which apps with this approach.
                     </p>
                     <ul>
                       <li>
@@ -613,8 +619,8 @@
                       </li>
                       <li>
                         <a href="#add-app"
-                          >Learn how to control which group can see which app on
-                          MIRO Server.</a
+                          >Learn how to control which group can see which app
+                          on MIRO Server.</a
                         >
                       </li>
                     </ul>
@@ -627,8 +633,9 @@
                       example setup is as follows: There are 3 different MIRO
                       Server instances, each accessible under a different URL.
                       The MIRO server instances all access the same GAMS Engine
-                      instance, but use different namespaces. Using groups is of
-                      course still possible, but not necessary in this example.
+                      instance, but use different namespaces. Using groups is
+                      of course still possible, but not necessary in this
+                      example.
                     </p>
                     <div class="section-block">
                       <img
@@ -682,7 +689,9 @@
                     >The admin panel</a
                   >
                   <nav class="doc-sub-menu nav flex-column">
-                    <a class="nav-link scrollto" href="#admin-access">Access</a>
+                    <a class="nav-link scrollto" href="#admin-access"
+                      >Access</a
+                    >
                     <a class="nav-link scrollto" href="#add-app">Add apps</a>
                     <a class="nav-link scrollto" href="#edit-remove-app"
                       >Edit and remove apps</a

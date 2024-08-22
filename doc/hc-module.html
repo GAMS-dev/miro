@@ -127,15 +127,15 @@
                       done. But what if we want to solve a multitude of such
                       scenarios with different parameterizations? Say, we are
                       interested in finding out how our model behaves with
-                      regard to a change in freight costs as well as other input
-                      parameters? To avoid having to configure and solve each
-                      scenario individually, we can configure a
+                      regard to a change in freight costs as well as other
+                      input parameters? To avoid having to configure and solve
+                      each scenario individually, we can configure a
                       <i>Hypercube job</i>. A Hypercube job allows us to
                       automatically solve and examine a subset of the parameter
                       space of our model. This is done by varying scalar model
                       parameters (zero-dimensional GAMS parameters) within a
-                      given range. As a consequence, a large number of scenarios
-                      can be configured and analyzed at once.
+                      given range. As a consequence, a large number of
+                      scenarios can be configured and analyzed at once.
                     </p>
                     <div class="section-block" style="text-align: center">
                       <img
@@ -159,18 +159,19 @@
                       output) parameters. If, for example, for a run of the
                       <i>transport</i> model, the freight cost is set to 90 and
                       the minimum shipment of goods is set to 100, then this
-                      parameterization characterizes the scenario (together with
-                      the other input parameters as well as attachments). The
-                      Hypercube configuration discussed here makes it possible
-                      to automatically submit several of those scenarios at
-                      once.
+                      parameterization characterizes the scenario (together
+                      with the other input parameters as well as attachments).
+                      The Hypercube configuration discussed here makes it
+                      possible to automatically submit several of those
+                      scenarios at once.
                     </p>
                     <div id="hcube-config" class="section-block">
                       <h3 class="block-title">Job configuration</h3>
                       <p>
                         If MIRO runs with GAMS Engine backend, you can submit
                         jobs via "Solve model" (synchronous execution) and
-                        "Submit job" (asynchronous execution) by default. If the
+                        "Submit job" (asynchronous execution) by default. If
+                        the
                         <a href="./configuration_general.html#activate-hcube"
                           >Activate Hypercube module</a
                         >
@@ -188,8 +189,8 @@
                       <p>
                         A modal dialog opens when you click on it. In this
                         dialog all scalar input widgets (sliders, dropdown
-                        menus, checkboxes, etc.) configured for the MIRO app are
-                        displayed. However, the display of some widgets has
+                        menus, checkboxes, etc.) configured for the MIRO app
+                        are displayed. However, the display of some widgets has
                         changed. They have been automatically transformed:
                       </p>
                       <div class="section-block" style="text-align: center">
@@ -206,9 +207,9 @@
                         Those are zero dimensional values. The same scalars can
                         now be specified within a given range: The sliders have
                         now become slider ranges. In addition, we can set a
-                        <i>step size</i> for each slider range. Furthermore, the
-                        single dropdown menu for selecting the problem type has
-                        been replaced by a multi dropdown menu.
+                        <i>step size</i> for each slider range. Furthermore,
+                        the single dropdown menu for selecting the problem type
+                        has been replaced by a multi dropdown menu.
                       </p>
                       <div class="callout-block callout-success">
                         <div class="icon-holder">
@@ -219,8 +220,8 @@
                           <b class="callout-title">Tip:</b>
                           <p>
                             Input widgets you defined for your scalars in the
-                            Base Mode are automatically expanded when submitting
-                            a Hypercube job.
+                            Base Mode are automatically expanded when
+                            submitting a Hypercube job.
                           </p>
                         </div>
                         <!--//content-->
@@ -229,8 +230,8 @@
                       <div class="section-block" id="widget-expansion-table">
                         <p>
                           The table below gives an overview of the scalar input
-                          widgets and their different appearance when submitting
-                          a Hypercube job.
+                          widgets and their different appearance when
+                          submitting a Hypercube job.
                         </p>
                         <div class="table-responsive">
                           <table
@@ -349,22 +350,24 @@
                           </li>
                           [...]
                           <li>
-                            Variant 10: <i>number of days for training</i> = 200
+                            Variant 10: <i>number of days for training</i> =
+                            200
                           </li>
                         </ul>
                         <p>
                           The third slider for the scalar parameter
                           <span class="code">beta</span> is not set to a range
                           but to a single value. Due to the non-existent
-                          variation of the scalar, only one variant results from
-                          it. The same is true for the last widget, a multi
-                          dropdown menu where we specify to only consider the
-                          <span class="code">MIP</span> version of our model.
+                          variation of the scalar, only one variant results
+                          from it. The same is true for the last widget, a
+                          multi dropdown menu where we specify to only consider
+                          the <span class="code">MIP</span> version of our
+                          model.
                         </p>
                         <p>
                           The cartesian product that results from the
-                          combination of all variations is now calculated: It is
-                          created from the different variants of the symbols
+                          combination of all variations is now calculated: It
+                          is created from the different variants of the symbols
                           <i>freight in dollars per case per thousand miles</i>
                           (16), <i>minimum shipment</i> (10), <i>beta</i> (1)
                           and <i>Select model type</i> (1) resulting in 16 x 10
@@ -432,19 +435,20 @@
                             <p>
                               Unlike scalar values, multidimensional symbols
                               such as sets, parameters and multidimensional
-                              singleton sets cannot be varied within a Hypercube
-                              job configuration. The data remains fixed in every
-                              created scenario of a job. However, this does not
-                              mean that Hypercube jobs can only be used for zero
-                              dimensional symbols. In order to be able to vary
-                              data of multidimensional symbols using a Hypercube
-                              job, this can be implemented in the GAMS model
-                              itself. For example, you can use a scalar in the
-                              model and assign different data to a
-                              multidimensional parameter in the model depending
-                              on the value of that scalar. If this scalar value
-                              is now varied in a Hypercube job, this also
-                              affects the multidimensional parameter.
+                              singleton sets cannot be varied within a
+                              Hypercube job configuration. The data remains
+                              fixed in every created scenario of a job.
+                              However, this does not mean that Hypercube jobs
+                              can only be used for zero dimensional symbols. In
+                              order to be able to vary data of multidimensional
+                              symbols using a Hypercube job, this can be
+                              implemented in the GAMS model itself. For
+                              example, you can use a scalar in the model and
+                              assign different data to a multidimensional
+                              parameter in the model depending on the value of
+                              that scalar. If this scalar value is now varied
+                              in a Hypercube job, this also affects the
+                              multidimensional parameter.
                             </p>
                           </div>
                           <!--//content-->
@@ -467,11 +471,11 @@
                       <p id="job-tag">
                         Job tags: <br />
                         When submitting a Hypercube job, you can optionally
-                        specify job tags which are an identifier attached to all
-                        scenarios of a Hypercube job. They can help you identify
-                        scenarios of a certain job or a group of jobs with
-                        similar attributes. This means that you can use those
-                        tags as part of your
+                        specify job tags which are an identifier attached to
+                        all scenarios of a Hypercube job. They can help you
+                        identify scenarios of a certain job or a group of jobs
+                        with similar attributes. This means that you can use
+                        those tags as part of your
                         <a href="./start.html#scenario-loading"
                           >database queries</a
                         >
@@ -488,11 +492,12 @@
                         executed, or if it should submit all of them again.<br />
                         There are a number of reasons why you might want to
                         re-submit certain scenarios. We will elaborate on these
-                        reasons in the next section that discusses the technical
-                        details of how MIRO sets up a Hypercube job. If you are
-                        reading this documentation for the first time, you might
-                        want to skip this next advanced (sub)section. If you are
-                        interested, just click on the headline.
+                        reasons in the next section that discusses the
+                        technical details of how MIRO sets up a Hypercube job.
+                        If you are reading this documentation for the first
+                        time, you might want to skip this next advanced
+                        (sub)section. If you are interested, just click on the
+                        headline.
                       </p>
                       <div
                         class="expandable-box-outline"
@@ -504,8 +509,8 @@
                           onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                           style="cursor: pointer"
                         >
-                          <i class="fas fa-plus slide-toggle"></i> Advanced: How
-                          MIRO identifies Hypercube jobs
+                          <i class="fas fa-plus slide-toggle"></i> Advanced:
+                          How MIRO identifies Hypercube jobs
                         </h3>
                         <div class="section-block" style="display: none">
                           <p>
@@ -514,15 +519,16 @@
                             identified. Each scenario is characterized by the
                             set of all input datasets that are populated by
                             MIRO. This means that when you change something in
-                            your model or your execution environment that is not
-                            known to MIRO, it will not be detected as a
+                            your model or your execution environment that is
+                            not known to MIRO, it will not be detected as a
                             different scenario. Let's consider the case where
                             you want to run a certain set of scenarios on on
                             different compute clusters in order to perform some
                             performance analyses. Since all of the input
                             datasets that come from MIRO remain the same, MIRO
                             thinks that the scenarios are identical. No
-                            attribute "compute environment" is known to MIRO.<br />
+                            attribute "compute environment" is known to
+                            MIRO.<br />
                             A scenario is identified by a 256-bit
                             <a
                               href="https://en.wikipedia.org/wiki/SHA-2"
@@ -551,11 +557,11 @@
                       <p>
                         Once you are happy with the set up of your Hypercube
                         job, you can submit it. This triggers the expansion of
-                        all scenarios resulting from your configuration and sets
-                        up your Hypercube job. When a Hypercube job has been
-                        submitted, it is shown in the
-                        <a href="./server_general.html#job-list">Job list</a> in
-                        the GAMS interaction section.
+                        all scenarios resulting from your configuration and
+                        sets up your Hypercube job. When a Hypercube job has
+                        been submitted, it is shown in the
+                        <a href="./server_general.html#job-list">Job list</a>
+                        in the GAMS interaction section.
                       </p>
                       <div class="callout-block callout-success">
                         <div class="icon-holder">

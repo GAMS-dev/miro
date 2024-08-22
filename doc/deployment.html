@@ -158,8 +158,8 @@
                           Files or folders created by MIRO (e.g.
                           <span class="code">conf_&lt;modelname&gt;</span>,
                           <span class="code">data_&lt;modelname&gt;</span>,
-                          <span class="code">static_&lt;modelname&gt;</span>) do
-                          not need to be included in the assembly file. MIRO
+                          <span class="code">static_&lt;modelname&gt;</span>)
+                          do not need to be included in the assembly file. MIRO
                           knows about these files and includes them
                           automatically.
                         </p>
@@ -171,8 +171,8 @@
                       If you want to create the text file on your own, specify
                       the relative paths to the files that are part of your
                       model separated by a new line. An example for a model
-                      named <span class="code">example</span> can be found
-                      below:
+                      named
+                      <span class="code">example</span> can be found below:
                     </p>
                     <h6 class="block-title" style="margin-top: 15px">
                       example_files.txt
@@ -205,17 +205,17 @@ inc/inc2.inc
                       read the chapter on
                       <a href="./start.html#startup-import"
                         >importing multiple scenarios on startup</a
-                      >. Note that the owner of these scenarios is the user that
-                      launches the MIRO app for the first time!
+                      >. Note that the owner of these scenarios is the user
+                      that launches the MIRO app for the first time!
                     </p>
                   </div>
                   <!--//section-block-->
                   <div id="default-logo" class="section-block">
                     <h3>Default Logo</h3>
                     <p>
-                      When adding the MIRO app to the MIRO library, the user has
-                      the option to choose a logo to quickly identify your app.
-                      If you want to suggest a logo, simply place an image
+                      When adding the MIRO app to the MIRO library, the user
+                      has the option to choose a logo to quickly identify your
+                      app. If you want to suggest a logo, simply place an image
                       (format: png/jpg/jpeg; aspect ratio: 8 &times; 5 fits
                       best) with the name
                       <span class="code">app_logo</span> inside the
@@ -248,10 +248,11 @@ inc/inc2.inc
                       When adding a new MIRO app to the library, a user can
                       specify an app title as well as a short description. If
                       you want to provide defaults for these, you can do so via
-                      a JSON file <span class="code">app_info.json</span> inside
-                      the
-                      <span class="code">static_&lt;modelname&gt;</span> folder.
-                      The JSON file has to have the following structure:
+                      a JSON file
+                      <span class="code">app_info.json</span> inside the
+                      <span class="code">static_&lt;modelname&gt;</span>
+                      folder. The JSON file has to have the following
+                      structure:
                     </p>
                     <pre><code class="language-json">{
     "title": "Example app",
@@ -267,13 +268,13 @@ inc/inc2.inc
                       <a href="./server_administration.html#direct-app-link"
                         >URL</a
                       >
-                      under which the app can be reached. The ID is also used to
-                      access an app via the MIRO Server
+                      under which the app can be reached. The ID is also used
+                      to access an app via the MIRO Server
                       <a href="./server_api.html">REST API</a>. Within a MIRO
                       instance (MIRO Desktop or MIRO Server), each ID must be
                       unique. The default app id is the lowercase modelname,
-                      i.e. the lowercase name of the main GMS file (without .gms
-                      extension).
+                      i.e. the lowercase name of the main GMS file (without
+                      .gms extension).
                     </p>
                     <p>An app id must meet the following requirements:</p>
                     <ul>
@@ -287,12 +288,13 @@ inc/inc2.inc
                       </li>
                     </ul>
                     <p>
-                      If the default app id does not meet the requirements (note
-                      that the default ID is always derived with lowercase
-                      characters), an alternative id must be specified manually.
-                      This can be done in the
+                      If the default app id does not meet the requirements
+                      (note that the default ID is always derived with
+                      lowercase characters), an alternative id must be
+                      specified manually. This can be done in the
                       <span class="code">app_info.json</span> inside the
-                      <span class="code">static_&lt;modelname&gt;</span> folder.
+                      <span class="code">static_&lt;modelname&gt;</span>
+                      folder.
                     </p>
                     <pre><code class="language-json">{
     "title": "Example app",
@@ -335,8 +337,8 @@ inc/inc2.inc
                       when your app is added to a user's home screen. To create
                       a custom manifest, simply create a new
                       <kbd>manifest.json</kbd> file in the
-                      <kbd>static_&lt;modelname&gt;</kbd> directory of your app.
-                      You can use the following template:
+                      <kbd>static_&lt;modelname&gt;</kbd> directory of your
+                      app. You can use the following template:
                     </p>
                     <pre><code class="language-json">{
     "theme_color": "#ffffff",
@@ -364,8 +366,8 @@ inc/inc2.inc
                       <kbd>logo192.png</kbd> (192x192 pixels) and
                       <kbd>logo512.png</kbd> (512x512 pixels) to the
                       <kbd>static_&lt;modelname&gt;</kbd> directory. They will
-                      be used when adding your app to the home screen on Android
-                      devices. For iOS devices, add another icon named
+                      be used when adding your app to the home screen on
+                      Android devices. For iOS devices, add another icon named
                       <kbd>apple-touch-icon.png</kbd> with a size of 180x180
                       pixels. The <kbd>pickstock</kbd> sample application
                       contains a manifest that you can use as a reference.
@@ -398,8 +400,8 @@ inc/inc2.inc
                       from developers you trust. To ensure the authenticity of
                       an app, MIRO uses asymmetric encryption. The first time
                       you import an app from an untrusted developer, you are
-                      asked if you want to trust that developer. To identify the
-                      developer, the fingerprint of the developer's
+                      asked if you want to trust that developer. To identify
+                      the developer, the fingerprint of the developer's
                       <a
                         href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)"
                         target="_blank"
@@ -410,13 +412,13 @@ inc/inc2.inc
                       used to get the app.
                     </p>
                     <p>
-                      In the following section we will explain how developers of
-                      MIRO apps can sign their apps.
+                      In the following section we will explain how developers
+                      of MIRO apps can sign their apps.
                     </p>
                     <p>
-                      To sign your apps, you need to have an RSA keypair. If you
-                      do not already have one, you can create one e.g. using
-                      your SSH client: on macOS/Linux you can use
+                      To sign your apps, you need to have an RSA keypair. If
+                      you do not already have one, you can create one e.g.
+                      using your SSH client: on macOS/Linux you can use
                       <a href="https://www.openssh.com" target="_blank"
                         >OpenSSH</a
                       >:
@@ -426,11 +428,12 @@ inc/inc2.inc
                       >
                       or
                       <a href="https://www.putty.org" target="_blank">PuTTY</a>
-                      on Windows: open the PuTTYgen tool, select RSA with a size
-                      of at least 2048 bits, follow the instructions and store
-                      the private key. Afterwards, you will need to convert your
-                      key to the PEM format. To do so, load the private key with
-                      PuTTYgen, go to the <i>Conversions</i> menu and select
+                      on Windows: open the PuTTYgen tool, select RSA with a
+                      size of at least 2048 bits, follow the instructions and
+                      store the private key. Afterwards, you will need to
+                      convert your key to the PEM format. To do so, load the
+                      private key with PuTTYgen, go to the
+                      <i>Conversions</i> menu and select
                       <i>Export OpenSSH key (force new file format)</i>.
                     </p>
                     <p>
@@ -448,8 +451,8 @@ inc/inc2.inc
                     </p>
                     <p>
                       Public keys that you have trusted are stored (in PEM
-                      format) in a directory named: <kbd>known_keys</kbd> in
-                      your <i>MIRO app path</i>.
+                      format) in a directory named:
+                      <kbd>known_keys</kbd> in your <i>MIRO app path</i>.
                     </p>
                     <div class="callout-block callout-warning">
                       <div class="icon-holder">
@@ -459,8 +462,8 @@ inc/inc2.inc
                       <div class="content">
                         <b class="callout-title">Note:</b>
                         <p>
-                          If you want to know how signing and validating MIROAPP
-                          files works in detail, read
+                          If you want to know how signing and validating
+                          MIROAPP files works in detail, read
                           <a href="./file_formats.html#signed-miroapp-file"
                             >here</a
                           >.
@@ -534,17 +537,17 @@ inc/inc2.inc
                             from there.
                           </li>
                           <li>
-                            Single-user: Your model is executed inside the model
-                            directory. No extraction of your model files is
-                            required, but this means that you can NOT have
+                            Single-user: Your model is executed inside the
+                            model directory. No extraction of your model files
+                            is required, but this means that you can NOT have
                             multiple users accessing your MIRO app at the same
                             time.
                           </li>
                           <li id="local-multi-user">
-                            Local multi-user (uses <i>idir</i>): With this third
-                            option, your model is again executed from a random
-                            location, but this time no model data is extracted
-                            here. Instead, GAMS is executed with an
+                            Local multi-user (uses <i>idir</i>): With this
+                            third option, your model is again executed from a
+                            random location, but this time no model data is
+                            extracted here. Instead, GAMS is executed with an
                             <a
                               href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir"
                               target="_blank"
@@ -552,29 +555,29 @@ inc/inc2.inc
                             >
                             pointing to the path where your model files are
                             located. Choose this option ONLY if you have many
-                            large files that belong to your model and extracting
-                            them would take a long time. Be aware that due to
-                            the fact that
+                            large files that belong to your model and
+                            extracting them would take a long time. Be aware
+                            that due to the fact that
                             <span class="code">idir</span> is used, your model
                             might brake! For example, if you use
                             <code class="language-gams">$call</code> or the
                             execution-time equivalent
                             <code class="language-gams">execute</code> (or
-                            related functions), the relative paths used in these
-                            calls will no longer exist (since the
+                            related functions), the relative paths used in
+                            these calls will no longer exist (since the
                             <a
                               href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOcurdir"
                               >curdir</a
                             >
-                            is now a random location). The solution is to prefix
-                            all these relative paths with
-                            <code class="language-gams">%gams.idir1%</code>. For
-                            example, in order to import an Excel file
-                            <span class="code">test.xlsx</span>, GDXXRW needs to
-                            be called like this:
+                            is now a random location). The solution is to
+                            prefix all these relative paths with
+                            <code class="language-gams">%gams.idir1%</code>.
+                            For example, in order to import an Excel file
+                            <span class="code">test.xlsx</span>, GDXXRW needs
+                            to be called like this:
                             <kbd>$call gdxxrw i=%gams.idir1%test.xlsx</kbd>.
-                            Alternatively, you can also use absolute paths (e.g.
-                            via
+                            Alternatively, you can also use absolute paths
+                            (e.g. via
                             <code class="language-gams"
                               >$setNames "%gams.input%" fp fn fe</code
                             >
@@ -602,8 +605,8 @@ inc/inc2.inc
                               <i>test deployment</i>. This simulates how your
                               end users will experience the MIRO app (MIRO is
                               launched in the specified execution environment).
-                              In particular, you should check whether you forgot
-                              to include important files in the
+                              In particular, you should check whether you
+                              forgot to include important files in the
                               <a href="#model-assembly-file" class="scrollto"
                                 >model assembly file</a
                               >.
@@ -615,8 +618,8 @@ inc/inc2.inc
                         <p>
                           If everything is set, click on <i>Deploy</i>. That's
                           it! A new file
-                          <span class="code">&lt;modelname&gt;.miroapp</span> is
-                          created in your model directory. You can now
+                          <span class="code">&lt;modelname&gt;.miroapp</span>
+                          is created in your model directory. You can now
                           distribute this MIRO app directly to your end users!
                         </p>
                         <div class="expandable-box-outline">
@@ -632,9 +635,10 @@ inc/inc2.inc
                           <div class="section-block" style="display: none">
                             <p>
                               In case you want to use the command line instead
-                              of GAMS Studio to export your MIRO app, you should
-                              proceed as follows: First, set the environment
-                              variable <span class="code">MIRO_BUILD</span> to
+                              of GAMS Studio to export your MIRO app, you
+                              should proceed as follows: First, set the
+                              environment variable
+                              <span class="code">MIRO_BUILD</span> to
                               <span class="code">true</span> and
                               <span class="code">MIRO_MODEL_PATH</span> to the
                               absolute path of your main
@@ -703,7 +707,8 @@ inc/inc2.inc
                               <div class="content">
                                 <b class="callout-title">Test deployment</b>
                                 <p>
-                                  In order to test the deployment you chose, set
+                                  In order to test the deployment you chose,
+                                  set
                                   <span class="code">MIRO_DEV_MODE</span> to
                                   <span class="code">true</span>,
                                   <span class="code">MIRO_BUILD</span> to
@@ -730,10 +735,10 @@ inc/inc2.inc
                           to create a
                           <a href="#model-assembly-file" class="scrollto"
                             >model assembly file</a
-                          >. If everything is set, simply run the command below.
-                          That's it! A new file
-                          <span class="code">&lt;modelname&gt;.miroapp</span> is
-                          created in your model directory. You can now
+                          >. If everything is set, simply run the command
+                          below. That's it! A new file
+                          <span class="code">&lt;modelname&gt;.miroapp</span>
+                          is created in your model directory. You can now
                           distribute this MIRO app directly to your end users!
                         </p>
                         <div class="console-box">
@@ -747,17 +752,18 @@ inc/inc2.inc
                           where
                           <kbd>&lt;path_to_your_MIRO_installation&gt;</kbd> is
                           the path to your MIRO executable file (e.g.
-                          <kbd>C:\Program Files\GAMS MIRO\GAMS MIRO.exe</kbd> on
-                          Windows, <kbd>/Applications/GAMS MIRO.app</kbd> on
-                          macOS or <kbd>~/GAMS-MIRO-2.9.0.AppImage</kbd> on
-                          Linux) and <kbd>&lt;path_to_your_model&gt;</kbd> is
-                          the path to your main <i>.py</i> file.
+                          <kbd>C:\Program Files\GAMS MIRO\GAMS MIRO.exe</kbd
+                          > on Windows,
+                          <kbd>/Applications/GAMS MIRO.app</kbd> on macOS or
+                          <kbd>~/GAMS-MIRO-2.9.0.AppImage</kbd> on Linux) and
+                          <kbd>&lt;path_to_your_model&gt;</kbd> is the path to
+                          your main <i>.py</i> file.
                         </p>
                         <p>
                           Note that you can also set the MIRO installation path
-                          as an environment variable: <kbd>MIRO_PATH</kbd>, so
-                          that you do not have to enter it every time you use
-                          the GAMSPy CLI.
+                          as an environment variable:
+                          <kbd>MIRO_PATH</kbd>, so that you do not have to
+                          enter it every time you use the GAMSPy CLI.
                         </p>
                       </div>
                     </div>
@@ -791,8 +797,8 @@ inc/inc2.inc
                   <div class="section-block">
                     <p>
                       To install a new MIRO app, launch GAMS MIRO Desktop. You
-                      will see your personal MIRO library with all the MIRO apps
-                      you have installed.
+                      will see your personal MIRO library with all the MIRO
+                      apps you have installed.
                     </p>
                     <div class="section-block" style="text-align: center">
                       <img
@@ -805,10 +811,11 @@ inc/inc2.inc
                       To add a new app to the library, either double click the
                       app in your file browser (only on Windows/macOS) or click
                       on "Edit" (<span class="key">Ctrl</span> +
-                      <span class="key">E</span> or <span class="key">⌘</span> +
-                      <span class="key">E</span> on macOS) and drag&drop the app
-                      onto the "+" button. Alternatively, you can click on the
-                      "+" button and browse to the location of the new app
+                      <span class="key">E</span> or
+                      <span class="key">⌘</span> +
+                      <span class="key">E</span> on macOS) and drag&drop the
+                      app onto the "+" button. Alternatively, you can click on
+                      the "+" button and browse to the location of the new app
                       manually.
                     </p>
                     <div class="section-block" style="text-align: center">
@@ -820,8 +827,8 @@ inc/inc2.inc
                       />
                     </div>
                     <p>
-                      Once MIRO validated the new app, you can assign a title, a
-                      short description as well as a logo.
+                      Once MIRO validated the new app, you can assign a title,
+                      a short description as well as a logo.
                     </p>
                     <div class="section-block" style="text-align: center">
                       <img
@@ -859,16 +866,18 @@ inc/inc2.inc
                       >
                       if you are on macOS). Alternatively, press
                       <span class="key">F7</span> (or
-                      <span class="key">⌘</span> + <span class="key">,</span> on
-                      macOS). You will notice that there are three categories of
-                      settings: <i>General</i> settings, settings related to
+                      <span class="key">⌘</span> +
+                      <span class="key">,</span> on macOS). You will notice
+                      that there are three categories of settings:
+                      <i>General</i> settings, settings related to
                       <i>Paths</i> and to the <i>Environment</i>. In the
                       <i>General</i> category you can specify whether you want
                       to launch your MIRO apps in a new window of the MIRO
                       Launcher or in your default browser. You can set the
                       language, the color theme, specify the level of detail of
-                      information to be logged as well as the number of days you
-                      want your log files to be stored for (-1 being no limit).
+                      information to be logged as well as the number of days
+                      you want your log files to be stored for (-1 being no
+                      limit).
                     </p>
                     <p>
                       In the <i>Paths</i> section, you can control the location
@@ -907,8 +916,8 @@ inc/inc2.inc
                             <td>Language</td>
                             <td>
                               Sets the language. The user can choose between
-                              English, German and Chinese. Further languages are
-                              planned.
+                              English, German and Chinese. Further languages
+                              are planned.
                             </td>
                           </tr>
                           <tr>
@@ -917,8 +926,8 @@ inc/inc2.inc
                             <td>
                               Sets the color theme for all apps. The following
                               themes are available: "Default theme", "Black and
-                              white", "Green forest", "Tawny", "Dark blue", "Red
-                              wine".
+                              white", "Green forest", "Tawny", "Dark blue",
+                              "Red wine".
                             </td>
                           </tr>
                           <tr>
@@ -959,9 +968,10 @@ inc/inc2.inc
                             <td>Python path</td>
                             <td>
                               Path to the Python installation folder. Note that
-                              both GAMSPy and all other third-party dependencies
-                              for this Python interpreter must be installed for
-                              your GAMSPy-MIRO application to work.
+                              both GAMSPy and all other third-party
+                              dependencies for this Python interpreter must be
+                              installed for your GAMSPy-MIRO application to
+                              work.
                             </td>
                           </tr>
                           <tr>
@@ -976,8 +986,8 @@ inc/inc2.inc
                             <td>R path (Linux only)</td>
                             <td>
                               Path to the R location. A current R version (3.6
-                              or later) is required for using GAMS MIRO. Since R
-                              is bundled with MIRO on Windows and MacOS, this
+                              or later) is required for using GAMS MIRO. Since
+                              R is bundled with MIRO on Windows and MacOS, this
                               option is only available on Linux systems.
                             </td>
                           </tr>
@@ -1002,11 +1012,11 @@ inc/inc2.inc
                             <td></td>
                             <td>Namespace</td>
                             <td>
-                              The <i>namespace</i> to solve the model in. Engine
-                              uses these namespaces to organize GAMS models.
-                              Your user account needs at least write and execute
-                              permissions on that namespace. Further information
-                              can be found
+                              The <i>namespace</i> to solve the model in.
+                              Engine uses these namespaces to organize GAMS
+                              models. Your user account needs at least write
+                              and execute permissions on that namespace.
+                              Further information can be found
                               <a
                                 href="https://www.gams.com/engine/administration.html#namespaces"
                                 >here</a
@@ -1064,8 +1074,9 @@ inc/inc2.inc
                     </p>
                     <p>
                       As an example, let's say we want to run the analysis
-                      script that comes with the <i>pickstock</i> example. We do
-                      this by first setting up a Python environment for it:
+                      script that comes with the
+                      <i>pickstock</i> example. We do this by first setting up
+                      a Python environment for it:
                     </p>
                     <ul class="nav nav-tabs" id="pickstockVenv" role="tablist">
                       <li class="nav-item">
@@ -1104,7 +1115,8 @@ inc/inc2.inc
                           <span class="console-content">
                             &gt; python -m venv venv<br />
                             &gt; venv\Scripts\activate.bat<br />
-                            (venv) &gt; pip install jupyter pandas matplotlib<br />
+                            (venv) &gt; pip install jupyter pandas
+                            matplotlib<br />
                             (venv) &gt; python
                             &lt;path_to_gams&gt;\apifiles\Python\api_39\setup.py
                             build -b %TEMP% install<br />
@@ -1121,7 +1133,8 @@ inc/inc2.inc
                           <span class="console-content">
                             &gt; python -m venv venv<br />
                             &gt; source venv/bin/activate<br />
-                            (venv) &gt; pip install jupyter pandas matplotlib<br />
+                            (venv) &gt; pip install jupyter pandas
+                            matplotlib<br />
                             (venv) &gt; python
                             &lt;path_to_gams&gt;/apifiles/Python/api_39/setup.py
                             build -b ${TMPDIR} install<br />
@@ -1131,8 +1144,8 @@ inc/inc2.inc
                     </div>
                     <p>
                       Now all we have to do is tell MIRO to use this Python
-                      environment by adding it to the <kbd>PATH</kbd> via the
-                      following environment file:
+                      environment by adding it to the
+                      <kbd>PATH</kbd> via the following environment file:
                     </p>
                     <pre><code class="language-json">{
     "PATH": "&lt;path_to_venv&gt;/venv/bin"
@@ -1155,19 +1168,17 @@ inc/inc2.inc
                       where MIRO apps are stored, go to
                       <i>Preferences</i> &rarr; <i>Paths</i> and change the
                       "MIRO app path" to a directory where all collaborating
-                      users have at least read access. Users that are allowed to
-                      add/edit/remove apps need write access as well. Note that
-                      this only handles the location of where the MIRO apps are
-                      stored and loaded from, not the location of the MIRO
-                      database that the apps use. If you want your users to
-                      share the same database (in order to collaborate), you can
-                      specify its location by clicking on <i>Edit</i> (<span
-                        class="key"
-                        >Ctrl</span
-                      >
-                      + <span class="key">E</span> or
-                      <span class="key">⌘</span> + <span class="key">E</span> on
-                      macOS).
+                      users have at least read access. Users that are allowed
+                      to add/edit/remove apps need write access as well. Note
+                      that this only handles the location of where the MIRO
+                      apps are stored and loaded from, not the location of the
+                      MIRO database that the apps use. If you want your users
+                      to share the same database (in order to collaborate), you
+                      can specify its location by clicking on
+                      <i>Edit</i> (<span class="key">Ctrl</span> +
+                      <span class="key">E</span> or
+                      <span class="key">⌘</span> +
+                      <span class="key">E</span> on macOS).
                     </p>
                     <div class="section-block" style="text-align: center">
                       <img
@@ -1199,20 +1210,21 @@ inc/inc2.inc
                     <p>
                       In addition to sharing MIRO apps, you may want to share
                       settings such as "Paths" to the GAMS/R installation or
-                      even "General" settings such as the log file verbosity. To
-                      do so, you have to create a file:
-                      <span class="code">settings.json</span> at the location of
-                      the shared MIRO app path.
+                      even "General" settings such as the log file verbosity.
+                      To do so, you have to create a file:
+                      <span class="code">settings.json</span> at the location
+                      of the shared MIRO app path.
                     </p>
                     <p>
                       Let's look at an example: You created a shared directory
                       <span class="code">&lt;sharedFolder&gt;</span> where you
-                      have read and write access and all the other collaborators
-                      only have read permissions. You select this directory in
-                      your MIRO settings (<i>Preferences</i> &rarr;
-                      <i>Paths</i> &rarr; <i>MIRO app path</i>) and install your
-                      MIRO applications here. In addition, you want to set some
-                      default settings. Therefore, you create a file
+                      have read and write access and all the other
+                      collaborators only have read permissions. You select this
+                      directory in your MIRO settings (<i>Preferences</i>
+                      &rarr; <i>Paths</i> &rarr; <i>MIRO app path</i>) and
+                      install your MIRO applications here. In addition, you
+                      want to set some default settings. Therefore, you create
+                      a file
                       <span class="code"
                         >&lt;sharedFolder&gt;\settings.json</span
                       >:
@@ -1226,11 +1238,11 @@ inc/inc2.inc
                     <p>
                       Users that set their MIRO app path to
                       <span class="code">&lt;sharedFolder&gt;</span> will now
-                      also load these settings in addition to the apps installed
-                      here (in this example the GAMS path is set to
-                      <span class="code">C:\GAMS\win64\30.2</span>, the MIRO app
-                      is not launched in the default browser but inside a native
-                      MIRO window and the logs are never removed).
+                      also load these settings in addition to the apps
+                      installed here (in this example the GAMS path is set to
+                      <span class="code">C:\GAMS\win64\30.2</span>, the MIRO
+                      app is not launched in the default browser but inside a
+                      native MIRO window and the logs are never removed).
                     </p>
                     <p>
                       The "important" key is special: settings listed here
@@ -1316,12 +1328,12 @@ inc/inc2.inc
                       <code class="language-gams">$onExternalOutput</code> /
                       <code class="language-gams">$offExternalOutput</code>
                       tags. MIRO stores all of your application's data in a
-                      relational database. This means that every time you change
-                      the domains of a symbol (add/remove/rename indices) or
-                      remove/rename external input and/or output symbols, the
-                      database must be migrated to the new data contract.
-                      Fortunately, MIRO offers a <i>Migration Wizard</i> to
-                      assist you with this process.
+                      relational database. This means that every time you
+                      change the domains of a symbol (add/remove/rename
+                      indices) or remove/rename external input and/or output
+                      symbols, the database must be migrated to the new data
+                      contract. Fortunately, MIRO offers a
+                      <i>Migration Wizard</i> to assist you with this process.
                     </p>
                     <p>
                       Let's look at an example where we have added a time
@@ -1341,17 +1353,19 @@ inc/inc2.inc
                     </div>
                     <p>
                       You can see that we need to migrate data from the three
-                      symbols: <code class="language-gams">schedule</code>,
+                      symbols:
+                      <code class="language-gams">schedule</code>,
                       <code class="language-gams">a0</code> and
                       <code class="language-gams">b</code>. The symbols
                       <code class="language-gams">schedule</code> and
                       <code class="language-gams">b</code> now have an
-                      additional dimension <code class="language-gams">t</code>.
-                      Before this new version, we did not have this dimension,
-                      so we choose <kbd>-</kbd> here to indicate that this data
-                      is missing. If we were to load a scenario that was saved
-                      with an old version of our app, the data in these columns
-                      would be marked as <i>NA</i>.
+                      additional dimension
+                      <code class="language-gams">t</code>. Before this new
+                      version, we did not have this dimension, so we choose
+                      <kbd>-</kbd> here to indicate that this data is missing.
+                      If we were to load a scenario that was saved with an old
+                      version of our app, the data in these columns would be
+                      marked as <i>NA</i>.
                     </p>
                     <p>
                       As we renamed the symbol
@@ -1362,8 +1376,8 @@ inc/inc2.inc
                       <code class="language-gams">a</code>.
                     </p>
                     <p>
-                      Note that as an alternative to migrating existing data, we
-                      also have the option to remove all existing data by
+                      Note that as an alternative to migrating existing data,
+                      we also have the option to remove all existing data by
                       clicking the <kbd>Delete all database tables</kbd> button
                       in the lower left corner.
                     </p>

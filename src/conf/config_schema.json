@@ -444,7 +444,13 @@
         },
         "customChartColors": {
           "description": "Custom color palette. Every second color is the hover color of previous one.",
-          "type": "array"
+          "type": [
+            "array",
+            "string"
+          ],
+          "items": {
+            "type": "string"
+          }
         },
         "chartOptions": {
           "description": "Additional chart options",
@@ -475,7 +481,13 @@
               "description": "Custom color palette. Every second color is the hover color of previous one.",
               "type": "object",
               "additionalProperties": {
-                "type": "array"
+                "type": [
+                  "array",
+                  "string"
+                ],
+                "items": {
+                  "type": "string"
+                }
               }
             },
             "multiChartSeries": {
@@ -505,35 +517,51 @@
           "properties": {
             "id": {
               "description": "Each valuebox needs a unique id. If a click on a valuebox should show a view, both ids need to be identical. No spaces allowed.",
-              "type": "array",
+              "type": [
+                "string",
+                "array"
+              ],
               "items": {
                 "type": "string"
               }
             },
             "color": {
               "description": "Background color of value box",
-              "type": "array",
+              "type": [
+                "string",
+                "array"
+              ],
               "items": {
                 "type": "string"
               }
             },
             "icon": {
               "description": "Icon for value box from the https://fontawesome.com/ library",
-              "type": "array",
+              "type": [
+                "string",
+                "array"
+              ],
               "items": {
                 "type": "string"
               }
             },
             "title": {
               "description": "Title that is displayed in the valuebox.",
-              "type": "array",
+              "type": [
+                "string",
+                "array"
+              ],
               "items": {
                 "type": "string"
               }
             },
             "valueScalar": {
               "description": "Name of a scalar output symbol whose value is to be displayed in the value box",
-              "type": "array",
+              "type": [
+                "string",
+                "array",
+                "null"
+              ],
               "items": {
                 "type": [
                   "string",
@@ -543,35 +571,51 @@
             },
             "prefix": {
               "description": "String that is displayed before the value. When using a '+', negative values will be prefixed with a '-'",
-              "type": "array",
+              "type": [
+                "string",
+                "array"
+              ],
               "items": {
                 "type": "string"
               }
             },
             "postfix": {
               "description": "String that is displayed after the value.",
-              "type": "array",
+              "type": [
+                "string",
+                "array"
+              ],
               "items": {
                 "type": "string"
               }
             },
             "redPositive": {
               "description": "Positive values are displayed in green by default, negative values in red. redPositive reverses this logic if set to true.",
-              "type": "array",
+              "type": [
+                "array",
+                "boolean"
+              ],
               "items": {
                 "type": "boolean"
               }
             },
             "noColor": {
               "description": "Set to true if the value of the valuebox should not have a red/green color, but should be gray instead.",
-              "type": "array",
+              "type": [
+                "array",
+                "boolean"
+              ],
               "items": {
                 "type": "boolean"
               }
             },
             "decimals": {
               "description": "Specify the number of decimal places to which the value of the valuebox should be rounded",
-              "type": "array",
+              "type": [
+                "array",
+                "integer",
+                "null"
+              ],
               "items": {
                 "type": [
                   "integer",
@@ -809,7 +853,13 @@
                         "description": "Custom color for each UEL. Every second color is the hover color of previous one.",
                         "type": "object",
                         "additionalProperties": {
-                          "type": "array"
+                          "type": [
+                            "array",
+                            "string"
+                          ],
+                          "items": {
+                            "type": "string"
+                          }
                         }
                       },
                       "multiChartSeries": {
@@ -1151,11 +1201,15 @@
         "properties": {
           "newHeaders": {
             "description": "Specify new headers (number needs to match dimension of symbol)",
-            "type": "array",
+            "type": [
+              "string",
+              "array"
+            ],
             "items": {
               "type": "string",
               "minLength": 1
-            }
+            },
+            "minLength": 1
           }
         }
       }
@@ -1389,14 +1443,19 @@
               },
               "datesdisabled": {
                 "description": "disallow certain dates to be selected",
-                "type": "array",
+                "type": [
+                  "array",
+                  "string"
+                ],
                 "uniqueItems": true,
                 "minItems": 1,
                 "items": {
                   "type": "string",
                   "minLength": 10,
                   "maxLength": 10
-                }
+                },
+                "minLength": 10,
+                "maxLength": 10
               },
               "autoclose": {
                 "description": "Whether or not to close the datepicker immediately when a date is selected",
@@ -2415,7 +2474,6 @@
                       {
                         "type": "object",
                         "properties": {
-                          "type": "object",
                           "additionalProperties": {
                             "type": "object",
                             "additionalProperties": false,
@@ -3187,7 +3245,10 @@
               },
               "accept": {
                 "description": "A character vector of unique file type specifiers which gives the browser a hint as to the type of file the server expects. Many browsers use this to prevent the user from selecting an invalid file.",
-                "type": "array",
+                "type": [
+                  "string",
+                  "array"
+                ],
                 "items": {
                   "type": "string"
                 }
