@@ -781,21 +781,24 @@ z = Variable(m, name="z", is_miro_output=True, description="total transportation
                           </p>
                           <div class="console-box">
                             <span class="console-content">
-                              &gt; gamspy run miro --mode="base" --path
-                              &lt;path_to_your_MIRO_installation&gt; --model
-                              &lt;path_to_your_model&gt;
+                              &gt; gamspy run miro --mode="base" --model
+                              &lt;path_to_your_model&gt; [--path
+                              &lt;path_to_your_MIRO_installation&gt;]
                             </span>
                           </div>
                           <p>
                             where
+                            <kbd>&lt;path_to_your_model&gt;</kbd> is the path
+                            to the <i>transport.py</i> file and
                             <kbd>&lt;path_to_your_MIRO_installation&gt;</kbd>
                             is the path to your MIRO executable file (e.g.
                             <kbd>C:\Program Files\GAMS MIRO\GAMS MIRO.exe</kbd>
                             on Windows,
                             <kbd>/Applications/GAMS MIRO.app</kbd> on macOS or
-                            <kbd>~/GAMS-MIRO-2.9.0.AppImage</kbd> on Linux) and
-                            <kbd>&lt;path_to_your_model&gt;</kbd> is the path
-                            to the <i>transport.py</i> file.
+                            <kbd>~/GAMS-MIRO-2.9.0.AppImage</kbd> on Linux).
+                            You can omit <kbd>--path</kbd> in case MIRO is
+                            installed in one of the standard locations on
+                            Windows or macOS.
                           </p>
                           <p>
                             Note that you can also set the MIRO installation

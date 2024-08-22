@@ -185,7 +185,11 @@
                       >
                         <p>
                           After that you should make sure that GAMSPy and MIRO
-                          know about each other. The best way to let the
+                          know about each other. In case you installed MIRO in
+                          one of the standard locations on Windows or macOS you
+                          can omit this step. GAMSPy will automatically detect
+                          it. In case you are using Linux or installed MIRO in
+                          a custom location, the best way to let the
                           <a
                             href="https://gamspy.readthedocs.io/en/latest/user/advanced/miro.html"
                             target="_blank"
@@ -471,19 +475,21 @@
                         </p>
                         <div class="console-box">
                           <span class="console-content">
-                            &gt; gamspy run miro --mode="base" --path
-                            &lt;path_to_your_MIRO_installation&gt; --model
-                            transport.py
+                            &gt; gamspy run miro --mode="base" --model
+                            transport.py [--path
+                            &lt;path_to_your_MIRO_installation&gt;]
                           </span>
                         </div>
                         <p>
                           where
                           <kbd>&lt;path_to_your_MIRO_installation&gt;</kbd> is
                           the path to your MIRO executable file (e.g.
-                          <kbd>C:\Program Files\GAMS MIRO\GAMS MIRO.exe</kbd
-                          > on Windows,
-                          <kbd>/Applications/GAMS MIRO.app</kbd> on macOS or
-                          <kbd>~/GAMS-MIRO-2.9.0.AppImage</kbd> on Linux).
+                          <kbd>C:\Program Files\GAMS MIRO\GAMS MIRO.exe</kbd>
+                          on Windows, <kbd>/Applications/GAMS MIRO.app</kbd> on
+                          macOS or <kbd>~/GAMS-MIRO-2.9.0.AppImage</kbd> on
+                          Linux). You can omit <kbd>--path</kbd> in case MIRO
+                          is installed in one of the standard locations on
+                          Windows or macOS.
                         </p>
                         <p>
                           Note that you can also set the MIRO installation path
@@ -806,9 +812,9 @@
                         >
                           <div class="console-box">
                             <span class="console-content">
-                              &gt; gamspy run miro --mode="base" --path
-                              &lt;path_to_your_MIRO_installation&gt; --model
+                              &gt; gamspy run miro --mode="base" --model
                               &lt;path_to_your_model&gt; --skip-execution
+                              [--path &lt;path_to_your_MIRO_installation&gt;]
                             </span>
                           </div>
                           <p>
