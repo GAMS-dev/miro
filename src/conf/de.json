@@ -714,7 +714,7 @@
       "errorTitle": "Fehler",
       "duplicateRecordError": "Der Datensatz: '%s' existiert bereits. Bitte entfernen Sie ihn und versuchen Sie es erneut.",
       "newView": {
-        "newViewTabGeneral": "Allgemein",
+        "tabGeneral": "Allgemein",
         "tabScales": "Achsen",
         "tabMultiChart": "Kombinationsdiagramm",
         "tabSecondAxix": "Zweite Achse",
