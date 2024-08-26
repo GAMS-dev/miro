@@ -524,18 +524,37 @@
               "description": "Whether to draw data points on the chart",
               "type": "boolean"
             },
-            "drawMultiChartDataPoints": {
-              "description": "Whether to draw data points on multi-chart series",
+            "stepPlot": {
+              "description": "Whether to draw a stepped line chart",
               "type": "boolean"
             },
-            "multiChartRenderer": {
-              "description": "Type of chart to use for multi-chart series",
-              "type": "string",
-              "enum": [
-                "line",
-                "bar",
-                "scatter"
-              ]
+            "multiChartOptions": {
+              "description": "Options for multiChartSeries",
+              "type": "object",
+              "properties": {
+                "multiChartRenderer": {
+                  "description": "Type of chart to use for multi-chart series",
+                  "type": "string",
+                  "enum": [
+                    "line",
+                    "bar",
+                    "scatter"
+                  ]
+                },
+                "stackMultiChartSeries": {
+                  "description": "Title for the second axis",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "multiChartStepPlot": {
+                  "description": "Whether to draw a stepped line chart for multi-chart series",
+                  "type": "boolean"
+                },
+                "drawMultiChartDataPoints": {
+                  "description": "Whether to draw data points on multi-chart series",
+                  "type": "boolean"
+                }
+              }
             },
             "y2axis": {
               "description": "Options for an optional secondary axis",
@@ -982,18 +1001,42 @@
                         "description": "Whether to draw data points on the chart",
                         "type": "boolean"
                       },
-                      "drawMultiChartDataPoints": {
-                        "description": "Whether to draw data points on multi-chart series",
+                      "stepPlot": {
+                        "description": "Whether to draw a stepped line chart",
                         "type": "boolean"
                       },
-                      "multiChartRenderer": {
-                        "description": "Type of chart to use for multi-chart series",
-                        "type": "string",
-                        "enum": [
-                          "line",
-                          "bar",
-                          "scatter"
-                        ]
+                      "multiChartOptions": {
+                        "description": "Options for multiChartSeries",
+                        "type": "object",
+                        "properties": {
+                          "multiChartRenderer": {
+                            "description": "Type of chart to use for multi-chart series",
+                            "type": "string",
+                            "enum": [
+                              "line",
+                              "bar",
+                              "scatter"
+                            ]
+                          },
+                          "stackMultiChartSeries": {
+                            "description": "Title for the second axis",
+                            "type": "string",
+                            "minLength": 1,
+                            "enum": [
+                              "no",
+                              "regularStack",
+                              "individualStack"
+                            ]
+                          },
+                          "multiChartStepPlot": {
+                            "description": "Whether to draw a stepped line chart for multi-chart series",
+                            "type": "boolean"
+                          },
+                          "drawMultiChartDataPoints": {
+                            "description": "Whether to draw data points on multi-chart series",
+                            "type": "boolean"
+                          }
+                        }
                       },
                       "y2axis": {
                         "description": "Options for an optional secondary axis",

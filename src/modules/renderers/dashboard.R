@@ -939,8 +939,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           }
 
           multiChartRenderer <- character(0)
-          if (length(currentView$chartOptions$multiChartRenderer)) {
-            multiChartRenderer <- currentView$chartOptions$multiChartRenderer
+          if (length(currentView$chartOptions$multiChartOptions$multiChartRenderer)) {
+            multiChartRenderer <- currentView$chartOptions$multiChartOptions$multiChartRenderer
           }
           for (i in seq_len(noSeries)) {
             label <- names(dataTmp)[rowHeaderLen + i]
@@ -961,14 +961,16 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               }
             }
 
+            stackCount <- 0
             if (originalLabel %in% currentView$chartOptions$multiChartSeries) {
+              stackCount <- stackCount + 1
               if (chartType %in% c("line", "area", "stackedarea", "timeseries")) {
                 multiChartRenderer <- if (length(multiChartRenderer)) multiChartRenderer else "bar"
               } else {
                 multiChartRenderer <- if (length(multiChartRenderer)) multiChartRenderer else "line"
               }
-              if (multiChartRenderer %in% c("line", "scatter") ||
-                identical(chartType, "stackedarea")) {
+              if ((multiChartRenderer %in% c("line", "scatter") || identical(chartType, "stackedarea")) &&
+                !identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "regularStack")) {
                 order <- 0
               } else {
                 order <- 2
@@ -980,8 +982,16 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 showLine = multiChartRenderer %in% c("line", "area", "stackedarea", "timeseries"),
                 order = order,
                 scaleID = scaleID,
-                pointHitRadius = if (identical(currentView$chartOptions$drawMultiChartDataPoints, TRUE)) 1L else 0,
-                pointRadius = if (identical(currentView$chartOptions$drawMultiChartDataPoints, TRUE)) 3L else 0,
+                pointHitRadius = if (identical(currentView$chartOptions$multiChartOptions$drawMultiChartDataPoints, TRUE)) 1L else 0,
+                pointRadius = if (identical(currentView$chartOptions$multiChartOptions$drawMultiChartDataPoints, TRUE)) 3L else 0,
+                stack = if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "regularStack")) {
+                  "1"
+                } else if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "individualStack")) {
+                  "0"
+                } else {
+                  i
+                },
+                stepped = identical(currentView$chartOptions$multiChartOptions$multiChartStepPlot, TRUE)
               )
             } else {
               chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
@@ -989,7 +999,9 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 fill = chartType %in% c("area", "stackedarea"),
                 fillOpacity = if (identical(chartType, "stackedarea")) 1 else 0.15,
                 order = 1,
-                scaleID = scaleID
+                scaleID = scaleID,
+                stack = if (chartType %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "1" else NULL,
+                stepped = identical(currentView$chartOptions$stepPlot, TRUE)
               )
             }
           }
