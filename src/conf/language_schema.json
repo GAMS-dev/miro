@@ -2579,138 +2579,6 @@
               "type": "string",
               "minLength": 1
             },
-            "newViewTabGeneral": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewTabScales": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewTabMultiChart": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewTabSecondAxix": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewTabColors": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewTitle": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewLabel": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewInfo": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewChartTitle": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewxTitle": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewyTitle": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewyLogScale": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewxgrid": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewygrid": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewdrawDataPoints": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewMinY": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewMaxY": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewMultiChartSeries": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewMultiChartSeriesTypeSelection": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewdrawMultiChartDataPoints": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewy2axis": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewY2axisSeries": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewY2axisTitle": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewY2axisGrid": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewY2axisLogScale": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewMinY2": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewMaxY2": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewCbCustomColors": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewCbManualColors": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewBtCancel": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewBtSave": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewBtCancelOverwrite": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewBtOverwrite": {
-              "type": "string",
-              "minLength": 1
-            },
             "updateSettingsTitle": {
               "type": "string",
               "minLength": 1
@@ -2754,6 +2622,165 @@
             "duplicateRecordError": {
               "type": "string",
               "minLength": 1
+            },
+            "newView": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "tabGeneral": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tabScales": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tabMultiChart": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tabSecondAxix": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tabColors": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "info": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "chartTitle": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "xTitle": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "yTitle": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "yLogScale": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "xgrid": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "ygrid": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "drawDataPoints": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "stepPlot": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minY": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "maxY": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "multiChartSeries": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "multiChartSeriesTypeSelection": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "drawMultiChartDataPoints": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "stackMultiChartSeries": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "stackType1": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "stackType2": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "stackType3": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "y2axis": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "y2axisSeries": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "y2axisTitle": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "y2axisGrid": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "y2axisLogScale": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minY2": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "maxY2": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbCustomColors": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbManualColors": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btCancel": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btSave": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btCancelOverwrite": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btOverwrite": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 38
             },
             "dialogAddRow": {
               "type": "object",
@@ -2896,7 +2923,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 75
+          "minProperties": 43
         },
         "datatable": {
           "type": "object",
