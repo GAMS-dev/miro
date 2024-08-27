@@ -1,1 +1,46 @@
-{"schedule":{"asd":{"aggregationFunction":"sum","pivotRenderer":"bar","domainFilter":{"default":null},"tableSummarySettings":{"enabled":false,"rowSummaryFunction":"sum","colSummaryFunction":"sum"},"rows":"i","filter":{"Hdr":"quantities"},"cols":{"j":null},"chartOptions":{"title":"test","xTitle":"xxx","yTitle":"yyy","multiChartRenderer":"scatter","yMin":15,"yLogScale":false,"drawDataPoints":false,"drawMultiChartDataPoints":true,"xGrid":false,"yGrid":true,"multiChartSeries":"Topeka","y2axis":{"series":"Topeka","y2Title":"zzz","y2Grid":false,"y2LogScale":true}}}}}
+{
+    "schedule": {
+        "asd": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": {
+                "default": null
+            },
+            "tableSummarySettings": {
+                "enabled": false,
+                "rowSummaryFunction": "sum",
+                "colSummaryFunction": "sum"
+            },
+            "rows": "i",
+            "filter": {
+                "Hdr": "quantities"
+            },
+            "cols": {
+                "j": null
+            },
+            "chartOptions": {
+                "title": "test",
+                "xTitle": "xxx",
+                "yTitle": "yyy",
+                "yMin": 15,
+                "yLogScale": false,
+                "drawDataPoints": false,
+                "xGrid": false,
+                "yGrid": true,
+                "multiChartSeries": "New-york",
+                "multiChartOptions": {
+                    "drawMultiChartDataPoints": true,
+                    "multiChartRenderer": "line",
+                    "stackMultiChartSeries": "no",
+                    "multiChartStepPlot": true
+                },
+                "y2axis": {
+                    "series": "Topeka",
+                    "y2Title": "zzz",
+                    "y2Grid": false,
+                    "y2LogScale": true
+                }
+            }
+        }
+    }
+}
