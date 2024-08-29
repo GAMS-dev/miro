@@ -267,7 +267,7 @@ def main():
         equation_listing_limit=0,
         variable_listing_limit=0,
         report_solution=2,
-        solver_link_type=5,
+        solve_link_type="memory",
     )
 
     proceed = 1
