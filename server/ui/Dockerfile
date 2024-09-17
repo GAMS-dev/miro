@@ -142,4 +142,6 @@ USER miro
 
 EXPOSE 3838
 
-CMD ["R", "-e", "shiny::runApp('/home/miro/app', port = 3838, host = '0.0.0.0')"]
+WORKDIR /home/miro/app/
+
+CMD ["R", "-e", "shiny::runApp('.', port = 3838, host = '0.0.0.0')"]
