@@ -809,7 +809,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             if (identical(chartType, "scatter")) {
               chartJsObj$x$options$showLine <- FALSE
             } else if (identical(chartType, "stackedarea")) {
-              chartJsObj$x$scales$y$stacked <- TRUE
+              chartJsObj$x$scales$y$stacked <- if (identical(currentView$chartOptions$singleStack, TRUE)) "single" else TRUE
               chartJsObj$x$options$plugins$tooltip <- list(
                 mode = "index",
                 position = "nearest"
@@ -837,6 +837,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 xTitle = currentView$chartOptions$xTitle,
                 yTitle = currentView$chartOptions$yTitle
               )
+            chartJsObj$x$scales$y$stacked <- if (identical(currentView$chartOptions$singleStack, TRUE)) "single" else TRUE
             chartJsObj$x$options$plugins$tooltip <- list(
               mode = "index",
               position = "nearest"
@@ -992,10 +993,25 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 stepped = identical(currentView$chartOptions$multiChartOptions$multiChartStepPlot, TRUE)
               )
             } else {
+              if (identical(chartType, "stackedarea")) {
+                fillOpacity <- if (length(currentView$chartOptions$fillOpacity)) {
+                  currentView$chartOptions$fillOpacity
+                } else {
+                  1
+                }
+              } else if (identical(chartType, "area")) {
+                fillOpacity <- if (length(currentView$chartOptions$fillOpacity)) {
+                  currentView$chartOptions$fillOpacity
+                } else {
+                  0.15
+                }
+              } else {
+                fillOpacity <- 0.15
+              }
               chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
                 label = label,
                 fill = chartType %in% c("area", "stackedarea"),
-                fillOpacity = if (identical(chartType, "stackedarea")) 1 else 0.15,
+                fillOpacity = fillOpacity,
                 order = 1,
                 scaleID = scaleID,
                 stack = if (chartType %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "stack1" else NULL,

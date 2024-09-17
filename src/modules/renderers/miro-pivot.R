@@ -1089,6 +1089,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                             value = identical(viewOptions$chartOptions$stepPlot, TRUE)
                           )
                         )
+                      } else if (pivotRenderer %in% c("stackedarea", "horizontalstackedbar", "stackedbar")) {
+                        tags$div(
+                          class = "col-sm-6",
+                          checkboxInput_MIRO(ns("singleStack"),
+                            label = lang$renderers$miroPivot$newView$singleStack,
+                            value = identical(viewOptions$chartOptions$singleStack, TRUE)
+                          )
+                        )
                       }
                     )
                   ),
@@ -1355,6 +1363,22 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                         class = "row",
                         tags$div(
                           class = "col-sm-6",
+                          `data-display-if` = "['stackedarea', 'area'].includes(input.pivotRenderer)",
+                          `data-ns-prefix` = ns(""),
+                          numericInput(ns("fillOpacity"),
+                            width = "100%",
+                            min = 0,
+                            max = 1,
+                            step = 0.1,
+                            label = lang$renderers$miroPivot$newView$fillOpacity,
+                            value = viewOptions$chartOptions$fillOpacity
+                          )
+                        )
+                      ),
+                      tags$div(
+                        class = "row",
+                        tags$div(
+                          class = "col-sm-6",
                           checkboxInput_MIRO(ns("useCustomChartColors"),
                             label = lang$renderers$miroPivot$newView$cbCustomColors,
                             value = length(viewOptions$chartOptions$customChartColors) > 0L
@@ -1571,6 +1595,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 refreshRequired <- TRUE
                 newViewConfig$chartOptions[["yMax"]] <- if (is.na(input[["yMax"]])) NULL else input[["yMax"]]
               }
+              if (length(input[["fillOpacity"]])) {
+                refreshRequired <- TRUE
+                newViewConfig$chartOptions[["fillOpacity"]] <- if (is.na(input[["fillOpacity"]])) NULL else input[["fillOpacity"]]
+              }
               if (isTRUE(input[["useCustomChartColors"]])) {
                 refreshRequired <- TRUE
                 newViewConfig$chartOptions[["customChartColors"]] <- setNames(
@@ -1612,6 +1640,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 list(
                   inputId = "yGrid",
                   optionId = "yGrid"
+                ),
+                list(
+                  inputId = "singleStack",
+                  optionId = "singleStack"
                 )
               )) {
                 if (length(input[[advancedOption$inputId]])) {
@@ -1629,7 +1661,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 y2axisy2Min <- input[["y2Min"]]
                 y2axisy2Max <- input[["y2Max"]]
 
-                newViewConfig$chartOptions[["y2axis"]] <- Filter(Negate(function(x) is.null(x) || is.na(x)), list(
+                newViewConfig$chartOptions[["y2axis"]] <- Filter(function(x) !is.null(x) && !any(is.na(x)), list(
                   series = if (length(y2axisSeries)) y2axisSeries else NULL,
                   y2Title = if (nchar(y2axisTitle) > 0L) y2axisTitle else NULL,
                   y2Grid = y2axisDrawGrid,
@@ -2390,7 +2422,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           if (identical(pivotRenderer, "scatter")) {
             chartJsObj$x$options$showLine <- FALSE
           } else if (identical(pivotRenderer, "stackedarea")) {
-            chartJsObj$x$scales$y$stacked <- TRUE
+            chartJsObj$x$scales$y$stacked <- if (identical(currentView$chartOptions$singleStack, TRUE)) "single" else TRUE
             chartJsObj$x$options$plugins$tooltip <- list(
               mode = "index",
               position = "nearest"
@@ -2419,6 +2451,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               xTitle = currentView$chartOptions$xTitle,
               yTitle = currentView$chartOptions$yTitle
             )
+          chartJsObj$x$scales$y$stacked <- if (identical(currentView$chartOptions$singleStack, TRUE)) "single" else TRUE
           chartJsObj$x$options$plugins$tooltip <- list(
             mode = "index",
             position = "nearest"
@@ -2584,10 +2617,25 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               stepped = identical(currentView$chartOptions$multiChartOptions$multiChartStepPlot, TRUE)
             )
           } else {
+            if (identical(pivotRenderer, "stackedarea")) {
+              fillOpacity <- if (length(currentView$chartOptions$fillOpacity)) {
+                currentView$chartOptions$fillOpacity
+              } else {
+                1
+              }
+            } else if (identical(pivotRenderer, "area")) {
+              fillOpacity <- if (length(currentView$chartOptions$fillOpacity)) {
+                currentView$chartOptions$fillOpacity
+              } else {
+                0.15
+              }
+            } else {
+              fillOpacity <- 0.15
+            }
             chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
               label = label,
               fill = pivotRenderer %in% c("area", "stackedarea"),
-              fillOpacity = if (identical(pivotRenderer, "stackedarea")) 1 else 0.15,
+              fillOpacity = fillOpacity,
               order = 1,
               scaleID = scaleID,
               stack = if (pivotRenderer %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "stack1" else NULL,
