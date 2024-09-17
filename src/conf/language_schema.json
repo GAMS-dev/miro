@@ -2675,6 +2675,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "singleStack": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "xgrid": {
                   "type": "string",
                   "minLength": 1
@@ -2763,6 +2767,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "fillOpacity": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "btCancel": {
                   "type": "string",
                   "minLength": 1
@@ -2780,7 +2788,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 38
+              "minProperties": 40
             },
             "dialogAddRow": {
               "type": "object",

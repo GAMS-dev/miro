@@ -528,6 +528,15 @@
               "description": "Whether to draw a stepped line chart",
               "type": "boolean"
             },
+            "singleStack": {
+              "description": "Normally, positive and negative values are stacked separately. This setting allows stacking positive and negative values together",
+              "type": "boolean"
+            },
+            "fillOpacity": {
+              "description": "Fill opacity for stacked and regular area charts.",
+              "type": "number",
+              "minLength": 1
+            },
             "multiChartOptions": {
               "description": "Options for multiChartSeries",
               "type": "object",
@@ -1004,6 +1013,15 @@
                       "stepPlot": {
                         "description": "Whether to draw a stepped line chart",
                         "type": "boolean"
+                      },
+                      "singleStack": {
+                        "description": "Normally, positive and negative values are stacked separately. This setting allows stacking positive and negative values together",
+                        "type": "boolean"
+                      },
+                      "fillOpacity": {
+                        "description": "Fill opacity for stacked and regular area charts.",
+                        "type": "number",
+                        "minLength": 1
                       },
                       "multiChartOptions": {
                         "description": "Options for multiChartSeries",
