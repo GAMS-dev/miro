@@ -2639,7 +2639,7 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "tabSecondAxix": {
+                "tabSecondAxis": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -2679,11 +2679,11 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "xgrid": {
+                "xGrid": {
                   "type": "string",
                   "minLength": 1
                 },
-                "ygrid": {
+                "yGrid": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -2728,6 +2728,10 @@
                   "minLength": 1
                 },
                 "stackType3": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "x2axis": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -2788,7 +2792,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 40
+              "minProperties": 41
             },
             "dialogAddRow": {
               "type": "object",

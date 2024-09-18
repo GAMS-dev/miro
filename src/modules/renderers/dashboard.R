@@ -876,22 +876,22 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             chartJsObj <- cjsAddScale(chartJsObj,
               axis = axisType,
               position = position,
-              type = if (identical(currentView$chartOptions$y2axis$y2LogScale, TRUE)) "logarithmic" else "linear",
+              type = if (identical(currentView$chartOptions$y2axis$logScale, TRUE)) "logarithmic" else "linear",
               display = "auto",
               title = list(
-                text = if (length(currentView$chartOptions$y2axis$y2Title)) currentView$chartOptions$y2axis$y2Title else NULL,
-                display = if (length(currentView$chartOptions$y2axis$y2Title)) TRUE else FALSE
+                text = if (length(currentView$chartOptions$y2axis$title)) currentView$chartOptions$y2axis$title else NULL,
+                display = if (length(currentView$chartOptions$y2axis$title)) TRUE else FALSE
               )
             )
 
-            if (identical(currentView$chartOptions$y2axis$y2Grid, FALSE)) {
+            if (identical(currentView$chartOptions$y2axis$showGrid, FALSE)) {
               chartJsObj$x$scales[[axisType]]$grid$display <- FALSE
             }
-            if (length(currentView$chartOptions$y2axis$y2Min)) {
-              chartJsObj$x$scales[[axisType]]$min <- currentView$chartOptions$y2axis$y2Min
+            if (length(currentView$chartOptions$y2axis$min)) {
+              chartJsObj$x$scales[[axisType]]$min <- currentView$chartOptions$y2axis$min
             }
-            if (length(currentView$chartOptions$y2axis$y2Max)) {
-              chartJsObj$x$scales[[axisType]]$max <- currentView$chartOptions$y2axis$y2Max
+            if (length(currentView$chartOptions$y2axis$max)) {
+              chartJsObj$x$scales[[axisType]]$max <- currentView$chartOptions$y2axis$max
             }
           }
 
@@ -917,10 +917,10 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           if (length(currentView$chartOptions$yMax)) {
             chartJsObj$x$scales[[axisType]]$max <- currentView$chartOptions$yMax
           }
-          if (identical(currentView$chartOptions$xGrid, FALSE)) {
+          if (identical(currentView$chartOptions$showXGrid, FALSE)) {
             chartJsObj$x$scales[[xGrid]]$grid$display <- FALSE
           }
-          if (identical(currentView$chartOptions$yGrid, FALSE)) {
+          if (identical(currentView$chartOptions$showYGrid, FALSE)) {
             chartJsObj$x$scales[[axisType]]$grid$display <- FALSE
           }
           if (identical(currentView$chartOptions$drawDataPoints, FALSE) &&

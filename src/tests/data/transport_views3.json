@@ -25,8 +25,8 @@
                 "yMin": 15,
                 "yLogScale": false,
                 "drawDataPoints": false,
-                "xGrid": false,
-                "yGrid": true,
+                "showXGrid": false,
+                "showYGrid": true,
                 "multiChartSeries": "New-york",
                 "multiChartOptions": {
                     "drawMultiChartDataPoints": true,
@@ -36,9 +36,9 @@
                 },
                 "y2axis": {
                     "series": "Topeka",
-                    "y2Title": "zzz",
-                    "y2Grid": false,
-                    "y2LogScale": true
+                    "title": "zzz",
+                    "showGrid": false,
+                    "logScale": true
                 }
             }
         }
