@@ -1145,8 +1145,13 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
         config$overwriteSheetOrder$input <- config$overwriteSheetOrder$input[-which(isWidgetGroup)]
       }
     }
-    if (any(is.na(match(config$overwriteSheetOrder$input, names(modelIn))))) {
-      errMsg <- paste(errMsg, "Some of the input elements in the 'overwriteSheetOrder' option are not defined in the data contract!",
+    invalidOverwriteSheetOrderElements <- is.na(match(config$overwriteSheetOrder$input, names(modelIn)))
+    if (any(invalidOverwriteSheetOrderElements)) {
+      errMsg <- paste(errMsg,
+        sprintf(
+          "Some of the input elements in the 'overwriteSheetOrder' option are not defined in the data contract: %s!",
+          paste(config$overwriteSheetOrder$input[invalidOverwriteSheetOrderElements], collapse = ", ")
+        ),
         sep = "\n"
       )
       inputSheetIdsToDisplay <- integer()
