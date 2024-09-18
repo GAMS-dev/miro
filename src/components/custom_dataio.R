@@ -53,6 +53,14 @@ CustomDataIO <- R6Class("CustomDataIO", public = list(
           private$remoteData <- list()
         }
       }
+      if (identical(dsName, scalarsFileName) &&
+        !scalarsFileName %in% private$config$datasetsToFetch) {
+        return(tibble(
+          scalar = private$config$scalarSymNames,
+          description = "",
+          value = as.character(private$remoteData[private$config$scalarSymNames])
+        ))
+      }
       return(private$remoteData[[dsName]])
     }
     if (!dsName %in% names(private$config)) {

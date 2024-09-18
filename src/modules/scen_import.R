@@ -331,7 +331,9 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
     extConf <- externalInputConfig[[externalSource]]
 
     if (length(externalInputConfig[[externalSource]]$functionName)) {
-      if (length(externalInputConfig[[externalSource]]$symNames)) {
+      if (length(externalInputConfig[[externalSource]]$symNamesToFetch)) {
+        datasetsToFetch <- externalInputConfig[[externalSource]]$symNamesToFetch
+      } else if (length(externalInputConfig[[externalSource]]$symNames)) {
         datasetsToFetch <- externalInputConfig[[externalSource]]$symNames
       } else {
         datasetsToFetch <- c(inputDsNames, names(modelOut))

@@ -31,7 +31,7 @@ test_that(
     configJSON$customDataImport <- list(
       list(
         label = "Importer without file",
-        symNames = c("a", "b"),
+        symNames = c("a", "b", "f", "beta"),
         functionName = "miroimport_noFile"
       ),
       list(

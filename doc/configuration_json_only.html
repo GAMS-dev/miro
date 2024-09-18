@@ -274,6 +274,33 @@ miroimport_&#x3C;importerName&#x3E; &#x3C;- function(symNames, localFile = NULL,
                       for custom import functions, below is the full schema
                       against which your configuration will be validated.
                     </p>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          To communicate scalars (and 0- or 1-dimensional
+                          singleton sets) via custom data importers, you can
+                          either specify them explicitly in the
+                          <i>symNames</i> array and send them individually with
+                          a 1-dimensional character, integer or numeric vector,
+                          or combine them in a tibble. The tibble must have the
+                          name <i>_scalars</i> and the columns: <i>scalar</i>,
+                          <i>description</i> and <i>value</i> (all of type
+                          <i>character</i>). The names of the scalars must be
+                          stored in the <i>scalar</i> column and the values in
+                          the <i>value</i> column. If you do not specify
+                          <i>symNames</i>, MIRO assumes that you provide the
+                          scalars in the form of the tibble described above
+                          (with key <i>_scalars</i>).
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
                     <h6
                       id="customDataImport-json-schema"
                       class="block-title"

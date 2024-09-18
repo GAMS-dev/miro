@@ -1359,95 +1359,6 @@ if (is.null(errMsg)) {
   # read graph data for input and output sheets
   config$activateModules$miroLogFile <- length(config$miroLogFile) > 0L &&
     nchar(config$miroLogFile) > 2L
-  # get remote import/export options
-  externalDataConfig <- list(
-    remoteImport = NULL, remoteExport = NULL,
-    customDataImport = NULL, customDataExport = NULL
-  )
-
-  for (direction in c("remoteImport", "remoteExport")) {
-    if (length(config[[direction]])) {
-      warningMsgTmp <- "Remote importers/exporter ('remoteImport'/'remoteExport') are deprecated. Please use 'customDataImport'/'customDataExport' instead. The remoteImport/remoteExport feature will be removed in a future release!"
-      warning(warningMsgTmp, call. = FALSE)
-      warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
-      externalDataConfig[[direction]] <- vector("list", length(config[[direction]]))
-      for (i in seq_along(config[[direction]])) {
-        remoteConfigs <- lapply(config[[direction]][[i]]$templates, function(remoteConfig) {
-          symNames <- tolower(remoteConfig[["symNames"]])
-          remoteConfig[["symNames"]] <- NULL
-
-          symIds <- match(symNames, c(names(modelIn), names(modelOut)))
-          if (any(is.na(symIds))) {
-            errMsg <<- paste(errMsg, sprintf(
-              "Some of the datasets you selected for remote export: '%s' are not valid: '%s'.",
-              config[[direction]][[i]]$name,
-              paste(symNames[is.na(symIds)],
-                collapse = "', '"
-              )
-            ))
-            return()
-          }
-          dupSym <- !is.na(match(symNames, names(externalDataConfig[[direction]][[i]])))
-          if (any(dupSym)) {
-            errMsg <<- paste(errMsg, sprintf(
-              "Duplicated datasets found in remote export: '%s'. Datasets: '%s'.",
-              config[[direction]][[i]]$name,
-              paste(symNames[dupSym],
-                collapse = "', '"
-              )
-            ))
-            return()
-          }
-
-          exportConfig <- rep.int(list(remoteConfig), length(symIds))
-          names(exportConfig) <- c(names(modelIn), names(modelOut))[symIds]
-          return(exportConfig)
-        })
-        externalDataConfig[[direction]][[i]] <- unlist(remoteConfigs, recursive = FALSE, use.names = TRUE)
-      }
-      if (!length(errMsg)) {
-        names(externalDataConfig[[direction]]) <- vapply(config[[direction]], "[[",
-          character(1L), "name",
-          USE.NAMES = FALSE
-        )
-      }
-      config[[direction]] <- NULL
-    }
-  }
-  for (direction in c("customDataImport", "customDataExport")) {
-    if (length(config[[direction]])) {
-      externalDataConfig[[direction]] <- vector("list", length(config[[direction]]))
-      for (i in seq_along(config[[direction]])) {
-        symNames <- tolower(config[[direction]][["symNames"]])
-        symIds <- match(symNames, c(names(modelIn), names(modelOut)))
-        if (any(is.na(symIds))) {
-          errMsg <- paste(errMsg, sprintf(
-            "Some of the datasets you selected for your custom importer/exporter: '%s' are not valid: '%s'.",
-            config[[direction]][[i]]$name,
-            paste(symNames[is.na(symIds)],
-              collapse = "', '"
-            )
-          ))
-          next
-        }
-      }
-      externalDataConfig[[direction]] <- config[[direction]]
-      names(externalDataConfig[[direction]]) <- vapply(config[[direction]], "[[",
-        character(1L), "label",
-        USE.NAMES = FALSE
-      )
-      config[[direction]] <- NULL
-    }
-  }
-  externalInputConfig <- c(
-    externalDataConfig[["customDataImport"]],
-    externalDataConfig[["remoteImport"]]
-  )
-  datasetsRemoteExport <- c(
-    externalDataConfig[["customDataExport"]],
-    externalDataConfig[["remoteExport"]]
-  )
-  rm(externalDataConfig)
 
   # get input sheets with dependencies on other sheets
   # get dropdown dependencies
@@ -2017,6 +1928,107 @@ if (is.null(errMsg)) {
     outputSheetIdsToDisplay <- seq_along(modelOut)[modelOutToDisplay]
   }
 }
+
+if (is.null(errMsg)) {
+  # get remote import/export options
+  externalDataConfig <- list(
+    remoteImport = NULL, remoteExport = NULL,
+    customDataImport = NULL, customDataExport = NULL
+  )
+
+  for (direction in c("remoteImport", "remoteExport")) {
+    if (length(config[[direction]])) {
+      warningMsgTmp <- "Remote importers/exporter ('remoteImport'/'remoteExport') are deprecated. Please use 'customDataImport'/'customDataExport' instead. The remoteImport/remoteExport feature will be removed in a future release!"
+      warning(warningMsgTmp, call. = FALSE)
+      warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
+      externalDataConfig[[direction]] <- vector("list", length(config[[direction]]))
+      for (i in seq_along(config[[direction]])) {
+        remoteConfigs <- lapply(config[[direction]][[i]]$templates, function(remoteConfig) {
+          symNames <- tolower(remoteConfig[["symNames"]])
+          remoteConfig[["symNames"]] <- NULL
+
+          symIds <- match(symNames, c(names(modelIn), names(modelOut)))
+          if (any(is.na(symIds))) {
+            errMsg <<- paste(errMsg, sprintf(
+              "Some of the datasets you selected for %s: '%s' are not valid: '%s'.",
+              direction, config[[direction]][[i]]$name,
+              paste(symNames[is.na(symIds)],
+                collapse = "', '"
+              )
+            ))
+            return()
+          }
+          dupSym <- !is.na(match(symNames, names(externalDataConfig[[direction]][[i]])))
+          if (any(dupSym)) {
+            errMsg <<- paste(errMsg, sprintf(
+              "Duplicated datasets found in %s: '%s'. Datasets: '%s'.",
+              direction, config[[direction]][[i]]$name,
+              paste(symNames[dupSym],
+                collapse = "', '"
+              )
+            ))
+            return()
+          }
+
+          exportConfig <- rep.int(list(remoteConfig), length(symIds))
+          names(exportConfig) <- c(names(modelIn), names(modelOut))[symIds]
+          return(exportConfig)
+        })
+        externalDataConfig[[direction]][[i]] <- unlist(remoteConfigs, recursive = FALSE, use.names = TRUE)
+      }
+      if (!length(errMsg)) {
+        names(externalDataConfig[[direction]]) <- vapply(config[[direction]], "[[",
+          character(1L), "name",
+          USE.NAMES = FALSE
+        )
+      }
+      config[[direction]] <- NULL
+    }
+  }
+  for (direction in c("customDataImport", "customDataExport")) {
+    if (length(config[[direction]])) {
+      externalDataConfig[[direction]] <- vector("list", length(config[[direction]]))
+      for (i in seq_along(config[[direction]])) {
+        symNames <- tolower(config[[direction]][[i]][["symNames"]])
+        isScalarSym <- !is.na(match(symNames, scalarInputSym))
+        if (any(isScalarSym)) {
+          config[[direction]][[i]]$symNamesToFetch <- symNames
+          scalarSymNames <- symNames[isScalarSym]
+          symNames <- symNames[!isScalarSym]
+          config[[direction]][[i]]$scalarSymNames <- scalarSymNames
+          config[[direction]][[i]]$symNames <- unique(c(symNames, scalarsFileName))
+        }
+        invalidSymIds <- is.na(match(symNames, c(names(modelInRaw), names(modelOut))))
+        if (any(invalidSymIds)) {
+          errMsg <- paste(errMsg, sprintf(
+            "Some of the datasets you selected for your %s: '%s' are not valid: '%s'.",
+            direction, config[[direction]][[i]]$label,
+            paste(symNames[invalidSymIds],
+              collapse = "', '"
+            )
+          ))
+          next
+        }
+      }
+      externalDataConfig[[direction]] <- config[[direction]]
+      names(externalDataConfig[[direction]]) <- vapply(config[[direction]], "[[",
+        character(1L), "label",
+        USE.NAMES = FALSE
+      )
+      config[[direction]] <- NULL
+    }
+  }
+  externalInputConfig <- c(
+    externalDataConfig[["customDataImport"]],
+    externalDataConfig[["remoteImport"]]
+  )
+  datasetsRemoteExport <- c(
+    externalDataConfig[["customDataExport"]],
+    externalDataConfig[["remoteExport"]]
+  )
+  rm(externalDataConfig)
+}
+
 if (is.null(errMsg)) {
   # declare output sheets as they will be displayed in UI
   outputTabs <- getTabs(names(modelOut), modelOutAlias, config$outputGroups,
