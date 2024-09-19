@@ -497,18 +497,9 @@ XlsIO <- R6::R6Class("XlsIO",
       if (!symName %in% names(private$metadata)) {
         stop_custom("error_notfound", sprintf(lang$errMsg$xlsio$errors$symbolNotFound, symName), call. = FALSE)
       }
-      scalarsToProcess <- private$metadata[[symName]]$symnames
-      scalarDesc <- private$metadata[[symName]]$symtext
-      if (identical(symName, scalarsFileName) && length(private$clOptScalars)) {
-        scalarsToProcess <- c(scalarsToProcess, private$clOptScalars)
-        scalarDesc <- c(scalarDesc, rep.int("", length(private$clOptScalars)))
-      }
+      scalarsDf <- self$getScalarTemplate(symName)
+      scalarsToProcess <- scalarsDf[[1]]
       scalarsProcessed <- character(0L)
-      scalarsDf <- tibble(
-        scalar = scalarsToProcess,
-        description = scalarDesc,
-        value = NA_character_
-      )
       if (symName %in% names(private$rIndex)) {
         scalarsDfTmp <- private$readFromIndex(symName)
         invalidScalars <- !scalarsDfTmp[[1]] %in% scalarsToProcess
@@ -554,18 +545,9 @@ XlsIO <- R6::R6Class("XlsIO",
           symName
         ), call. = FALSE)
       }
-      scalarsToProcess <- private$metadata[[symName]]$symnames
-      scalarDesc <- private$metadata[[symName]]$symtext
-      if (identical(symName, scalarsFileName) && length(private$clOptScalars)) {
-        scalarsToProcess <- c(scalarsToProcess, private$clOptScalars)
-        scalarDesc <- c(scalarDesc, rep.int("", length(private$clOptScalars)))
-      }
+      scalarsDf <- self$getScalarTemplate(symName)
+      scalarsToProcess <- scalarsDf[[1]]
       scalarsProcessed <- character(0L)
-      scalarsDf <- tibble(
-        scalar = scalarsToProcess,
-        description = scalarDesc,
-        value = NA_character_
-      )
 
       sheetId <- match(symName, tolower(private$rSheetsNoIndex))
       if (!is.na(sheetId)) {

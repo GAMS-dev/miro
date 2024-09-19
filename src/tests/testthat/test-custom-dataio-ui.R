@@ -52,6 +52,11 @@ test_that(
           accept = c(".json", "application/json")
         ),
         functionName = "miroimport_JSON"
+      ),
+      list(
+        label = "Importer without file (scalars)",
+        symNames = c("_scalars"),
+        functionName = "miroimport_noFile2"
       )
     )
     configJSON$customDataExport <- list(

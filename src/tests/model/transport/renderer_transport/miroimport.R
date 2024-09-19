@@ -10,6 +10,18 @@ miroimport_noFile <- function(symbolNames, localFile = NULL, views = NULL,
   return(list(a = tibble(i = "isBadA", value = 0), b = tibble(j = "isBadB", value = 0), f = 20, beta = 0.11))
 }
 
+miroimport_noFile2 <- function(symbolNames, localFile = NULL, views = NULL,
+                               attachments = NULL, metadata = NULL,
+                               customRendererDir = NULL, ...) {
+  if (!is.null(localFile) || !identical(symbolNames, c("_scalars")) ||
+    !startsWith(readr::read_file(file.path(customRendererDir, "miroimport.R")), "miroimport_noFile")) {
+    abortSafe("Bad, bad, bad...")
+  }
+  metadata$name <- "HeyHey"
+  metadata$tags <- c("heyhey", "hoho")
+  return(list(`_scalars` = tibble(scalar = c("f", "beta", "type"), value = c(30L, 0.33, "minlp"))))
+}
+
 miroimport_withFile <- function(symbolNames, localFile = NULL, views = NULL,
                                 attachments = NULL, metadata = NULL,
                                 customRendererDir = NULL, ...) {

@@ -288,14 +288,21 @@ miroimport_&#x3C;importerName&#x3E; &#x3C;- function(symNames, localFile = NULL,
                           <i>symNames</i> array and send them individually with
                           a 1-dimensional character, integer or numeric vector,
                           or combine them in a tibble. The tibble must have the
-                          name <i>_scalars</i> and the columns: <i>scalar</i>,
-                          <i>description</i> and <i>value</i> (all of type
+                          name <i>_scalars</i> and the columns:
+                          <i>scalar</i> and <i>value</i> (both of type
                           <i>character</i>). The names of the scalars must be
                           stored in the <i>scalar</i> column and the values in
-                          the <i>value</i> column. If you do not specify
-                          <i>symNames</i>, MIRO assumes that you provide the
-                          scalars in the form of the tibble described above
-                          (with key <i>_scalars</i>).
+                          the <i>value</i> column. Note that if you communicate
+                          the <i>_scalars</i> table, you should include all
+                          scalars (as well as GAMS options and double dash
+                          parameters) in this table. If you only want to
+                          communicate a subset of scalars, define these
+                          explicitly via the array <i>symNames</i>.
+                        </p>
+                        <p>
+                          If you do not specify <i>symNames</i>, MIRO assumes
+                          that you provide the scalars in the form of the
+                          tibble described above (with key <i>_scalars</i>).
                         </p>
                       </div>
                       <!--//content-->
