@@ -365,7 +365,11 @@
           "type": "object",
           "properties": {
             "enabled": {
-              "description": "Enable summary functions",
+              "description": "Enable summary functions (both rows and columns)",
+              "type": "boolean"
+            },
+            "rowEnabled": {
+              "description": "Enable summary functions (rows)",
               "type": "boolean"
             },
             "rowSummaryFunction": {
@@ -376,6 +380,10 @@
                 "count",
                 "mean"
               ]
+            },
+            "colEnabled": {
+              "description": "Enable summary functions (columns)",
+              "type": "boolean"
             },
             "colSummaryFunction": {
               "description": "Column summary functions",
@@ -889,7 +897,11 @@
                     "type": "object",
                     "properties": {
                       "enabled": {
-                        "description": "Enable summary functions",
+                        "description": "Enable summary functions (both rows and columns)",
+                        "type": "boolean"
+                      },
+                      "rowEnabled": {
+                        "description": "Enable summary functions (rows)",
                         "type": "boolean"
                       },
                       "rowSummaryFunction": {
@@ -900,6 +912,10 @@
                           "count",
                           "mean"
                         ]
+                      },
+                      "colEnabled": {
+                        "description": "Enable summary functions (columns)",
+                        "type": "boolean"
                       },
                       "colSummaryFunction": {
                         "description": "Column summary functions",

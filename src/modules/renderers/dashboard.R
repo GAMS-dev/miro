@@ -630,7 +630,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             select(where(~ !is.numeric(.))) %>%
             names()
 
-          if (identical(dataViewsConfig[[indicator]]$tableSummarySettings$enabled, TRUE)) {
+          if (identical(dataViewsConfig[[indicator]]$tableSummarySettings$rowEnabled, TRUE)) {
             tablesummarySettings <- dataViewsConfig[[indicator]]$tableSummarySettings
             if (identical(tablesummarySettings$rowSummaryFunction, "sum")) {
               dataTmp <- mutate(
@@ -667,7 +667,9 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 )]))
               )
             }
-
+          }
+          if (identical(dataViewsConfig[[indicator]]$tableSummarySettings$colEnabled, TRUE)) {
+            tablesummarySettings <- dataViewsConfig[[indicator]]$tableSummarySettings
             colSummarySettings <- list(caption = lang$renderers$miroPivot$aggregationFunctions[[tablesummarySettings$colSummaryFunction]])
             roundPrecision <- if (length(dataViewsConfig[[indicator]]$decimals)) as.numeric(dataViewsConfig[[indicator]]$decimals) else 2L
             if (identical(tablesummarySettings$colSummaryFunction, "count")) {

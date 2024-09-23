@@ -687,8 +687,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
       hideEmptyCols <- reactiveVal(identical(options$hideEmptyCols, TRUE))
       tableSummarySettings <- reactiveVal(list(
-        enabled = FALSE, rowSummaryFunction = "sum",
-        colSummaryFunction = "sum"
+        rowEnabled = FALSE, rowSummaryFunction = "sum",
+        colEnabled = FALSE, colSummaryFunction = "sum"
       ))
 
       if (isInput) {
@@ -853,9 +853,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           isolate(hideEmptyCols(identical(viewOptions[["hideEmptyCols"]], TRUE)))
         }
         if (length(viewOptions[["tableSummarySettings"]])) {
+          bothEnabled <- identical(viewOptions[["tableSummarySettings"]][["enabled"]], TRUE)
           newTableSummarySettings <- list(
-            enabled = identical(viewOptions[["tableSummarySettings"]][["enabled"]], TRUE),
+            rowEnabled = bothEnabled || identical(viewOptions[["tableSummarySettings"]][["rowEnabled"]], TRUE),
             rowSummaryFunction = "sum",
+            colEnabled = bothEnabled || identical(viewOptions[["tableSummarySettings"]][["colEnabled"]], TRUE),
             colSummaryFunction = "sum"
           )
           if (length(viewOptions[["tableSummarySettings"]][["rowSummaryFunction"]]) == 1L &&
@@ -868,8 +870,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
         } else {
           newTableSummarySettings <- list(
-            enabled = FALSE, rowSummaryFunction = "sum",
-            colSummaryFunction = "sum"
+            rowEnabled = FALSE, rowSummaryFunction = "sum",
+            colEnabled = FALSE, colSummaryFunction = "sum"
           )
         }
         isolate(tableSummarySettings(newTableSummarySettings))
@@ -1486,14 +1488,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                   class = "row",
                   tags$div(
                     class = "col-sm-6",
-                    checkboxInput_MIRO(ns("showTableSummary"),
-                      label = lang$renderers$miroPivot$cbShowTableSummary,
-                      value = tableSummarySettings()$enabled
+                    checkboxInput_MIRO(ns("showTableSummaryCol"),
+                      label = lang$renderers$miroPivot$cbShowTableSummaryCol,
+                      value = tableSummarySettings()$colEnabled
                     )
                   ),
                   tags$div(
                     class = "col-sm-6",
-                    `data-display-if` = "input.showTableSummary===true",
+                    `data-display-if` = "input.showTableSummaryCol===true",
                     `data-ns-prefix` = ns(""),
                     selectInput(ns("colSummaryFunction"),
                       label = lang$renderers$miroPivot$colSummaryFunction,
@@ -1501,10 +1503,20 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                       selected = tableSummarySettings()$colSummaryFunction,
                       width = "100%"
                     )
+                  )
+                ),
+                tags$div(
+                  class = "row",
+                  tags$div(
+                    class = "col-sm-6",
+                    checkboxInput_MIRO(ns("showTableSummaryRow"),
+                      label = lang$renderers$miroPivot$cbShowTableSummaryRow,
+                      value = tableSummarySettings()$rowEnabled
+                    )
                   ),
                   tags$div(
                     class = "col-sm-6",
-                    `data-display-if` = "input.showTableSummary===true",
+                    `data-display-if` = "input.showTableSummaryRow===true",
                     `data-ns-prefix` = ns(""),
                     selectInput(ns("rowSummaryFunction"),
                       label = lang$renderers$miroPivot$rowSummaryFunction,
@@ -1724,25 +1736,19 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             return()
           }
           isolate({
-            if (identical(input$showTableSummary, TRUE)) {
-              newTableSummarySettings <- list(
-                enabled = TRUE,
-                rowSummaryFunction = "sum",
-                colSummaryFunction = "sum"
-              )
-              if (length(input$rowSummaryFunction) == 1L &&
-                input$rowSummaryFunction %in% aggregationFunctions[aggregationFunctions %in% c("sum", "count", "mean")]) {
-                newTableSummarySettings[["rowSummaryFunction"]] <- input$rowSummaryFunction
-              }
-              if (length(input$colSummaryFunction) == 1L &&
-                input$colSummaryFunction %in% aggregationFunctions) {
-                newTableSummarySettings[["colSummaryFunction"]] <- input$colSummaryFunction
-              }
-            } else {
-              newTableSummarySettings <- list(
-                enabled = FALSE, rowSummaryFunction = "sum",
-                colSummaryFunction = "sum"
-              )
+            newTableSummarySettings <- list(
+              rowEnabled = identical(input$showTableSummaryRow, TRUE),
+              rowSummaryFunction = "sum",
+              colEnabled = identical(input$showTableSummaryCol, TRUE),
+              colSummaryFunction = "sum"
+            )
+            if (length(input$rowSummaryFunction) == 1L &&
+              input$rowSummaryFunction %in% aggregationFunctions[aggregationFunctions %in% c("sum", "count", "mean")]) {
+              newTableSummarySettings[["rowSummaryFunction"]] <- input$rowSummaryFunction
+            }
+            if (length(input$colSummaryFunction) == 1L &&
+              input$colSummaryFunction %in% aggregationFunctions) {
+              newTableSummarySettings[["colSummaryFunction"]] <- input$colSummaryFunction
             }
             tableSummarySettings(newTableSummarySettings)
             hideEmptyCols(identical(input$hideEmptyCols, TRUE))
@@ -2776,7 +2782,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         fixedColumnsConfig <- list(leftColumns = noRowHeaders)
         colSummarySettings <- NULL
 
-        if (tableSummarySettings()$enabled) {
+        if (tableSummarySettings()$rowEnabled) {
           if (identical(tableSummarySettings()$rowSummaryFunction, "sum")) {
             dataTmp <- mutate(
               ungroup(dataTmp),
@@ -2813,6 +2819,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             )
           }
           fixedColumnsConfig$rightColumns <- 1
+        }
+        if (tableSummarySettings()$colEnabled) {
           colSummarySettings <- list(caption = lang$renderers$miroPivot$aggregationFunctions[[tableSummarySettings()$colSummaryFunction]])
           if (identical(tableSummarySettings()$colSummaryFunction, "count")) {
             colSummarySettings$data <- round(colSums(!is.na(dataTmp[vapply(dataTmp, is.numeric,
@@ -3396,7 +3404,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
               newVal <- dataUpdated() + 1L
               dataUpdated(newVal)
-              if (tableSummarySettings()$enabled) {
+              if (tableSummarySettings()$rowEnabled || tableSummarySettings()$colEnabled) {
                 updateFilter(newUpdateFilterVal)
               }
               return()

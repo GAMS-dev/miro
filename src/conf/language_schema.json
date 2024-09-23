@@ -2531,7 +2531,11 @@
               "type": "string",
               "minLength": 1
             },
-            "cbShowTableSummary": {
+            "cbShowTableSummaryRow": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cbShowTableSummaryCol": {
               "type": "string",
               "minLength": 1
             },
@@ -2935,7 +2939,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 43
+          "minProperties": 44
         },
         "datatable": {
           "type": "object",

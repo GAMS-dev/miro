@@ -111,17 +111,17 @@ Sys.sleep(1)
 app$click(selector = "#tab_1_2-miroPivot-toggleViewButton")
 Sys.sleep(0.5)
 # load new default view (external view)
-expect_error(app$get_js("$('#tab_1_2-miroPivot-savedViewsDD li').eq(0).children('.dropdown-item').click();", timeout = 50), NA)
+app$wait_for_js("$('#tab_1_2-miroPivot-savedViewsDD li').eq(0).children('.dropdown-item').click();", timeout = 50)
 Sys.sleep(1)
 expect_equal(getData("tab_1_2"), list(c(950, 950, 950), c(600, 650, 550)))
 # delete view and load old default again
 app$click(selector = "#tab_1_2-miroPivot-toggleViewButton")
 Sys.sleep(0.5)
-expect_error(app$get_js("$('#tab_1_2-miroPivot-savedViewsDD li').eq(1).children('.miro-pivot-view-button').eq(1).click();", timeout = 50), NA)
+app$wait_for_js("$('#tab_1_2-miroPivot-savedViewsDD li').eq(1).children('.miro-pivot-view-button').eq(1).click();", timeout = 50)
 Sys.sleep(0.5)
 app$click(selector = "#tab_1_2-miroPivot-toggleViewButton")
 Sys.sleep(0.5)
-expect_error(app$get_js("$('#tab_1_2-miroPivot-savedViewsDD li').eq(0).children('.dropdown-item').click();", timeout = 50), NA)
+app$wait_for_js("$('#tab_1_2-miroPivot-savedViewsDD li').eq(0).children('.dropdown-item').click();", timeout = 50)
 Sys.sleep(0.5)
 expect_equal(getData("tab_1_2"), list(c(NA, 300), c(275, 50), c(275, NA)))
 
@@ -130,8 +130,18 @@ Sys.sleep(0.5)
 
 app$set_inputs(`tab_1_2-miroPivot-showSettings` = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
-app$set_inputs(`tab_1_2-miroPivot-showTableSummary` = TRUE)
+Sys.sleep(0.5)
+expect_false(app$get_js("$('#tab_1_2-miroPivot-colSummaryFunction-label').is(':visible')"))
+expect_false(app$get_js("$('#tab_1_2-miroPivot-rowSummaryFunction-label').is(':visible')"))
+app$set_inputs(`tab_1_2-miroPivot-showTableSummaryCol` = TRUE)
+Sys.sleep(0.5)
+expect_true(app$get_js("$('#tab_1_2-miroPivot-colSummaryFunction-label').is(':visible')"))
+expect_false(app$get_js("$('#tab_1_2-miroPivot-rowSummaryFunction-label').is(':visible')"))
 app$set_inputs(`tab_1_2-miroPivot-colSummaryFunction` = "mean")
+app$set_inputs(`tab_1_2-miroPivot-showTableSummaryRow` = TRUE)
+Sys.sleep(0.5)
+expect_true(app$get_js("$('#tab_1_2-miroPivot-colSummaryFunction-label').is(':visible')"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-rowSummaryFunction-label').is(':visible')"))
 app$set_inputs(`tab_1_2-miroPivot-rowSummaryFunction` = "count")
 app$set_inputs(`tab_1_2-miroPivot-updateSettings` = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L)
@@ -152,25 +162,16 @@ expect_identical(
     -2L
   ))
 )
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:first').text()==='Mean'",
-  timeout = 50
-))
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(1)').text()==='300'",
-  timeout = 50
-))
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(2)').text()==='162.5'",
-  timeout = 50
-))
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(3)').text()==='275'",
-  timeout = 50
-))
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(4)').text()==='2'",
-  timeout = 50
-))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:first').text()==='Mean'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(1)').text()==='300'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(2)').text()==='162.5'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(3)').text()==='275'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(4)').text()==='2'"))
 
 app$set_inputs(`tab_1_2-miroPivot-showSettings` = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
-app$set_inputs(`tab_1_2-miroPivot-showTableSummary` = TRUE)
+app$set_inputs(`tab_1_2-miroPivot-showTableSummaryRow` = TRUE)
+app$set_inputs(`tab_1_2-miroPivot-showTableSummaryCol` = TRUE)
 app$set_inputs(`tab_1_2-miroPivot-colSummaryFunction` = "min")
 app$set_inputs(`tab_1_2-miroPivot-rowSummaryFunction` = "mean")
 app$set_inputs(`tab_1_2-miroPivot-updateSettings` = "click")
@@ -195,25 +196,16 @@ expect_identical(
     -2L
   ))
 )
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:first').text()==='Min'",
-  timeout = 50
-))
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(1)').text()==='300'",
-  timeout = 50
-))
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(2)').text()==='50'",
-  timeout = 50
-))
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(3)').text()==='275'",
-  timeout = 50
-))
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(4)').text()==='175'",
-  timeout = 50
-))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:first').text()==='Min'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(1)').text()==='300'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(2)').text()==='50'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(3)').text()==='275'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(4)').text()==='175'"))
 
 app$set_inputs(`tab_1_2-miroPivot-showSettings` = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
-app$set_inputs(`tab_1_2-miroPivot-showTableSummary` = TRUE)
+app$set_inputs(`tab_1_2-miroPivot-showTableSummaryRow` = TRUE)
+app$set_inputs(`tab_1_2-miroPivot-showTableSummaryCol` = TRUE)
 app$set_inputs(`tab_1_2-miroPivot-colSummaryFunction` = "max")
 app$set_inputs(`tab_1_2-miroPivot-rowSummaryFunction` = "sum")
 app$set_inputs(`tab_1_2-miroPivot-updateSettings` = "click")
@@ -238,21 +230,68 @@ expect_identical(
     -2L
   ))
 )
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:first').text()==='Max'",
-  timeout = 50
-))
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(1)').text()==='300'",
-  timeout = 50
-))
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(2)').text()==='275'",
-  timeout = 50
-))
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(3)').text()==='275'",
-  timeout = 50
-))
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(4)').text()==='550'",
-  timeout = 50
-))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:first').text()==='Max'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(1)').text()==='300'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(2)').text()==='275'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(3)').text()==='275'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(4)').text()==='550'"))
+app$set_inputs(`tab_1_2-miroPivot-showSettings` = "click")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
+app$set_inputs(`tab_1_2-miroPivot-showTableSummaryRow` = TRUE)
+app$set_inputs(`tab_1_2-miroPivot-showTableSummaryCol` = FALSE)
+app$set_inputs(`tab_1_2-miroPivot-colSummaryFunction` = "max")
+app$set_inputs(`tab_1_2-miroPivot-rowSummaryFunction` = "sum")
+app$set_inputs(`tab_1_2-miroPivot-updateSettings` = "click")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L)
+Sys.sleep(0.5)
+expect_identical(
+  getVisibleDtData(app, "tab_1_2-miroPivot-pivotTable"),
+  structure(list(
+    ...1 = c("San-Diego", "Seattle"),
+    ...2 = c(
+      NA,
+      "300"
+    ),
+    ...3 = c("275", "50"),
+    ...4 = c("275", NA),
+    ...5 = c(
+      "550",
+      "350"
+    )
+  ), class = c("tbl_df", "tbl", "data.frame"), row.names = c(
+    NA,
+    -2L
+  ))
+)
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:first').text()===''"))
+app$set_inputs(`tab_1_2-miroPivot-showSettings` = "click")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
+app$set_inputs(`tab_1_2-miroPivot-showTableSummaryRow` = FALSE)
+app$set_inputs(`tab_1_2-miroPivot-showTableSummaryCol` = TRUE)
+app$set_inputs(`tab_1_2-miroPivot-colSummaryFunction` = "max")
+app$set_inputs(`tab_1_2-miroPivot-rowSummaryFunction` = "sum")
+app$set_inputs(`tab_1_2-miroPivot-updateSettings` = "click")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L)
+Sys.sleep(0.5)
+expect_identical(
+  getVisibleDtData(app, "tab_1_2-miroPivot-pivotTable"),
+  structure(list(
+    ...1 = c("San-Diego", "Seattle"),
+    ...2 = c(
+      NA,
+      "300"
+    ),
+    ...3 = c("275", "50"),
+    ...4 = c("275", NA)
+  ), class = c("tbl_df", "tbl", "data.frame"), row.names = c(
+    NA,
+    -2L
+  ))
+)
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:first').text()==='Max'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(1)').text()==='300'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(2)').text()==='275'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(3)').text()==='275'"))
 app$set_inputs(btEditMeta = "click")
 Sys.sleep(1)
 app$click(selector = '#editMetaUI a[data-value="views"]')
@@ -261,7 +300,7 @@ app$click(selector = 'button[data-dismiss="modal"]')
 Sys.sleep(1)
 app$click(selector = "#tab_1_2-miroPivot-toggleViewButton")
 Sys.sleep(0.5)
-expect_error(app$get_js("$('#tab_1_2-miroPivot-savedViewsDD li').eq(1).children('.dropdown-item').click();", timeout = 50), NA)
+app$wait_for_js("$('#tab_1_2-miroPivot-savedViewsDD li').eq(1).children('.dropdown-item').click();", timeout = 50)
 Sys.sleep(1)
 expect_identical(
   getVisibleDtData(app, "tab_1_2-miroPivot-pivotTable"),
@@ -280,7 +319,8 @@ expect_identical(
 )
 app$set_inputs(`tab_1_2-miroPivot-showSettings` = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
-app$set_inputs(`tab_1_2-miroPivot-showTableSummary` = TRUE)
+app$set_inputs(`tab_1_2-miroPivot-showTableSummaryCol` = TRUE)
+app$set_inputs(`tab_1_2-miroPivot-showTableSummaryRow` = TRUE)
 app$set_inputs(`tab_1_2-miroPivot-colSummaryFunction` = "max")
 app$set_inputs(`tab_1_2-miroPivot-rowSummaryFunction` = "sum")
 app$set_inputs(`tab_1_2-miroPivot-updateSettings` = "click")
@@ -302,22 +342,11 @@ expect_identical(
     -2L
   ))
 )
-Sys.sleep(30)
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:first').text()==='Max'",
-  timeout = 50
-))
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(1)').text()==='950'",
-  timeout = 50
-))
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(2)').text()==='1200'",
-  timeout = 50
-))
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(3)').text()==='1150'",
-  timeout = 50
-))
-expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(4)').text()==='3250'",
-  timeout = 50
-))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:first').text()==='Max'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(1)').text()==='950'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(2)').text()==='1200'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(3)').text()==='1150'"))
+expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(4)').text()==='3250'"))
 
 app$click(selector = "a[data-value='inputData']")
 Sys.sleep(0.5)
