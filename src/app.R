@@ -1225,7 +1225,11 @@ if (!is.null(errMsg)) {
         class = "initErrors"
       ),
       HTML("<br>"),
-      verbatimTextOutput("errorMessages"),
+      tags$pre(
+        id = "errorMessages",
+        style = "text-align:left;",
+        class = "shiny-text-output noplaceholder"
+      ),
       tags$div(
         style = "text-align:center;margin-top:20px;",
         actionButton("btCloseInitErrWindow", if (!exists("lang") || is.null(lang$errMsg$initErrors$okButton)) {

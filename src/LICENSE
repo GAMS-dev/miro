@@ -17,6 +17,7 @@ these components are included below):
 - selectize.js, https://github.com/selectize/selectize.js
 - es5-shim, https://github.com/es-shims/es5-shim
 - ajv, https://github.com/ajv-validator/ajv or https://ajv.js.org
+- better-ajv-errors, https://github.com/atlassian/better-ajv-errors
 - ion.rangeSlider, https://github.com/IonDen/ion.rangeSlider
 - strftime for Javascript, https://github.com/samsonjs/strftime
 - DataTables, https://github.com/DataTables/DataTables
@@ -2182,6 +2183,7 @@ DEALINGS IN THE SOFTWARE.
        - selectize.js
        - grisu3, Jukka Jylänki (Modifcations to dtoa_grisu3() referenced mikkelfj Copyright (c) 2016 Mikkel F. Jørgensen, dvide.com)
        - openssl (https://www.openssl.org)
+       - better-ajv-errors, Copyright (c) 2018 Atlassian Pty Ltd
 -----------------------------------------------------------------------------
 
                                  Apache License

@@ -4,256 +4,6 @@
   "description": "GAMS MIRO configuration file schema",
   "type": "object",
   "definitions": {
-    "sliderWidget": {
-      "description": "Slider input widget",
-      "type": "object",
-      "properties": {
-        "widgetType": {
-          "description": "Style of widget",
-          "type": "string",
-          "enum": [
-            "slider"
-          ]
-        },
-        "alias": {
-          "type": "string",
-          "minLength": 1
-        },
-        "noHcube": {
-          "description": "Boolean that specifies whether element should not be used in Hypercube mode",
-          "type": "boolean"
-        },
-        "noImport": {
-          "description": "Boolean that specifies whether data should not be imported from external source",
-          "type": "boolean"
-        },
-        "label": {
-          "description": "Label of considered inputdata",
-          "type": [
-            "string",
-            "null"
-          ],
-          "minLength": 1
-        },
-        "tooltip": {
-          "description": "Widget tooltip",
-          "type": [
-            "string",
-            "null"
-          ],
-          "minLength": 1
-        },
-        "min": {
-          "description": "Minimum value of inputdata",
-          "type": [
-            "number",
-            "string"
-          ]
-        },
-        "max": {
-          "description": "Maximum value of inputdata",
-          "type": [
-            "number",
-            "string"
-          ]
-        },
-        "default": {
-          "description": "Default/starting value of inputdata",
-          "type": [
-            "number",
-            "string",
-            "array"
-          ]
-        },
-        "step": {
-          "description": "Specifies the interval between each selectable value",
-          "type": [
-            "number",
-            "string"
-          ]
-        },
-        "minStep": {
-          "description": "Specifies the minimum step size that the user is allowed to specify in the Hypercube mode",
-          "type": "number",
-          "minimum": 0
-        },
-        "width": {
-          "description": "Width of the slider (optional)",
-          "type": "number"
-        },
-        "ticks": {
-          "description": "Boolean that specifies whether to hide or show tick marks (optional)",
-          "type": "boolean"
-        }
-      },
-      "required": [
-        "widgetType",
-        "step",
-        "min",
-        "max"
-      ],
-      "additionalProperties": false
-    },
-    "dropdownWidget": {
-      "description": "Dropdown input widget",
-      "type": "object",
-      "properties": {
-        "widgetType": {
-          "description": "Style of widget",
-          "type": "string",
-          "enum": [
-            "dropdown"
-          ]
-        },
-        "alias": {
-          "type": "string",
-          "minLength": 1
-        },
-        "noHcube": {
-          "description": "Boolean that specifies whether element should not be used in Hypercube mode",
-          "type": "boolean"
-        },
-        "noImport": {
-          "description": "Boolean that specifies whether data should not be imported from external source",
-          "type": "boolean"
-        },
-        "label": {
-          "description": "display label for the dropdown menu",
-          "type": [
-            "string",
-            "null"
-          ],
-          "minLength": 1
-        },
-        "tooltip": {
-          "description": "Widget tooltip",
-          "type": [
-            "string",
-            "null"
-          ],
-          "minLength": 1
-        },
-        "choices": {
-          "description": "List of values to select from.",
-          "type": [
-            "array",
-            "string",
-            "number"
-          ],
-          "uniqueItems": true,
-          "minItems": 1,
-          "items": {
-            "type": [
-              "string",
-              "number"
-            ]
-          }
-        },
-        "multiple": {
-          "description": "Boolean that specifies whether multiple options are allowed to be selected in dropdown menu",
-          "type": "boolean"
-        },
-        "aliases": {
-          "type": [
-            "array",
-            "string",
-            "null"
-          ],
-          "minLength": 1,
-          "uniqueItems": true,
-          "minItems": 1,
-          "items": {
-            "type": "string"
-          }
-        },
-        "selected": {
-          "description": "The initially selected value.",
-          "type": [
-            "string",
-            "number",
-            "null"
-          ]
-        },
-        "clearValue": {
-          "description": "Whether to communicate value as element text when writing/reading from/to GDX. This will not mess up the UEL order.",
-          "type": "boolean"
-        }
-      },
-      "required": [
-        "widgetType",
-        "choices"
-      ],
-      "additionalProperties": false
-    },
-    "checkboxWidget": {
-      "description": "Checkbox input widget",
-      "type": "object",
-      "properties": {
-        "widgetType": {
-          "description": "Style of widget",
-          "type": "string",
-          "enum": [
-            "checkbox"
-          ]
-        },
-        "alias": {
-          "type": "string",
-          "minLength": 1
-        },
-        "noHcube": {
-          "description": "Boolean that specifies whether element should not be used in Hypercube mode",
-          "type": "boolean"
-        },
-        "noImport": {
-          "description": "Boolean that specifies whether data should not be imported from external source",
-          "type": "boolean"
-        },
-        "label": {
-          "description": "display label for the checkbox",
-          "type": [
-            "string",
-            "null"
-          ],
-          "minLength": 1
-        },
-        "tooltip": {
-          "description": "Widget tooltip",
-          "type": [
-            "string",
-            "null"
-          ],
-          "minLength": 1
-        },
-        "value": {
-          "description": "default value",
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "max": {
-          "description": "Maximum allowed value",
-          "type": "string",
-          "minLength": 3
-        },
-        "class": {
-          "description": "css class",
-          "type": "string",
-          "minLength": 1
-        },
-        "width": {
-          "description": "width of the input",
-          "type": [
-            "string",
-            "integer"
-          ],
-          "minLength": 1
-        }
-      },
-      "required": [
-        "widgetType"
-      ],
-      "additionalProperties": false
-    },
     "miroPivotOptions": {
       "description": "MIRO pivot options",
       "type": "object",
@@ -273,7 +23,7 @@
             "type": "string",
             "minLength": 1
           },
-          "default": "null"
+          "default": null
         },
         "cols": {
           "description": "Columns in the symbol to prepopulate the columns of the pivot table.",
@@ -805,7 +555,7 @@
                       "type": "string",
                       "minLength": 1
                     },
-                    "default": "null"
+                    "default": null
                   },
                   "cols": {
                     "description": "Columns in the symbol to prepopulate the columns of the pivot table.",
@@ -1156,6 +906,1411 @@
         "valueBoxes",
         "dataViews",
         "dataViewsConfig"
+      ]
+    },
+    "sliderWidget": {
+      "description": "Slider input widget",
+      "type": "object",
+      "properties": {
+        "widgetType": {
+          "const": "slider"
+        },
+        "alias": {
+          "type": "string",
+          "minLength": 1
+        },
+        "noHcube": {
+          "description": "Boolean that specifies whether element should not be used in Hypercube mode",
+          "type": "boolean"
+        },
+        "noImport": {
+          "description": "Boolean that specifies whether data should not be imported from external source",
+          "type": "boolean"
+        },
+        "label": {
+          "description": "Label of considered inputdata",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "tooltip": {
+          "description": "Widget tooltip",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "min": {
+          "description": "Minimum value of inputdata",
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "max": {
+          "description": "Maximum value of inputdata",
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "default": {
+          "description": "Default/starting value of inputdata",
+          "type": [
+            "number",
+            "string",
+            "array"
+          ]
+        },
+        "step": {
+          "description": "Specifies the interval between each selectable value",
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "minStep": {
+          "description": "Specifies the minimum step size that the user is allowed to specify in the Hypercube mode",
+          "type": "number",
+          "minimum": 0
+        },
+        "width": {
+          "description": "Width of the slider (optional)",
+          "type": "number"
+        },
+        "ticks": {
+          "description": "Boolean that specifies whether to hide or show tick marks (optional)",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "widgetType",
+        "step",
+        "min",
+        "max"
+      ],
+      "additionalProperties": false
+    },
+    "dropdownWidget": {
+      "description": "Dropdown input widget",
+      "type": "object",
+      "properties": {
+        "widgetType": {
+          "const": "dropdown"
+        },
+        "alias": {
+          "type": "string",
+          "minLength": 1
+        },
+        "noHcube": {
+          "description": "Boolean that specifies whether element should not be used in Hypercube mode",
+          "type": "boolean"
+        },
+        "noImport": {
+          "description": "Boolean that specifies whether data should not be imported from external source",
+          "type": "boolean"
+        },
+        "label": {
+          "description": "display label for the dropdown menu",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "tooltip": {
+          "description": "Widget tooltip",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "choices": {
+          "description": "List of values to select from.",
+          "type": [
+            "array",
+            "string",
+            "number"
+          ],
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "type": [
+              "string",
+              "number"
+            ]
+          }
+        },
+        "multiple": {
+          "description": "Boolean that specifies whether multiple options are allowed to be selected in dropdown menu",
+          "type": "boolean"
+        },
+        "aliases": {
+          "type": [
+            "array",
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "selected": {
+          "description": "The initially selected value.",
+          "type": [
+            "string",
+            "number",
+            "null"
+          ]
+        },
+        "clearValue": {
+          "description": "Whether to communicate value as element text when writing/reading from/to GDX. This will not mess up the UEL order.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "widgetType",
+        "choices"
+      ],
+      "additionalProperties": false
+    },
+    "checkboxWidget": {
+      "description": "Checkbox input widget",
+      "type": "object",
+      "properties": {
+        "widgetType": {
+          "const": "checkbox"
+        },
+        "alias": {
+          "type": "string",
+          "minLength": 1
+        },
+        "noHcube": {
+          "description": "Boolean that specifies whether element should not be used in Hypercube mode",
+          "type": "boolean"
+        },
+        "noImport": {
+          "description": "Boolean that specifies whether data should not be imported from external source",
+          "type": "boolean"
+        },
+        "label": {
+          "description": "display label for the checkbox",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "tooltip": {
+          "description": "Widget tooltip",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "value": {
+          "description": "default value",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "max": {
+          "description": "Maximum allowed value",
+          "type": "string",
+          "minLength": 3
+        },
+        "class": {
+          "description": "css class",
+          "type": "string",
+          "minLength": 1
+        },
+        "width": {
+          "description": "width of the input",
+          "type": [
+            "string",
+            "integer"
+          ],
+          "minLength": 1
+        }
+      },
+      "required": [
+        "widgetType"
+      ],
+      "additionalProperties": false
+    },
+    "dateWidget": {
+      "properties": {
+        "widgetType": {
+          "const": "date"
+        },
+        "alias": {
+          "type": "string",
+          "minLength": 1
+        },
+        "noHcube": {
+          "description": "Boolean that specifies whether element should not be used in Hypercube mode",
+          "type": "boolean"
+        },
+        "noImport": {
+          "description": "Boolean that specifies whether data should not be imported from external source",
+          "type": "boolean"
+        },
+        "label": {
+          "description": "display label for the date selector",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "tooltip": {
+          "description": "Widget tooltip",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "value": {
+          "description": "initial start date",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 10,
+          "maxLength": 10
+        },
+        "min": {
+          "description": "minimum allowed date",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 10,
+          "maxLength": 10
+        },
+        "max": {
+          "description": "maximum allowed date",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 10,
+          "maxLength": 10
+        },
+        "format": {
+          "description": "format of the date to display in the browser.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 10
+        },
+        "startview": {
+          "description": "date range shown when the input object is first clicked",
+          "type": "string",
+          "enum": [
+            "month",
+            "year",
+            "decade"
+          ]
+        },
+        "weekstart": {
+          "description": "which day is displayed to be the first of the week ",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "daysofweekdisabled": {
+          "description": "disallow certain days of week to be selected",
+          "type": [
+            "integer",
+            "array",
+            "null"
+          ],
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 6
+          }
+        },
+        "datesdisabled": {
+          "description": "disallow certain dates to be selected",
+          "type": [
+            "array",
+            "string"
+          ],
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 10
+          },
+          "minLength": 10,
+          "maxLength": 10
+        },
+        "autoclose": {
+          "description": "Whether or not to close the datepicker immediately when a date is selected",
+          "type": "boolean"
+        },
+        "width": {
+          "description": "width of the input",
+          "type": [
+            "string",
+            "integer"
+          ],
+          "minLength": 1
+        }
+      },
+      "required": [
+        "widgetType"
+      ],
+      "additionalProperties": false
+    },
+    "dateRangeWidget": {
+      "properties": {
+        "widgetType": {
+          "const": "daterange"
+        },
+        "alias": {
+          "type": "string",
+          "minLength": 1
+        },
+        "noHcube": {
+          "description": "Boolean that specifies whether element should not be used in Hypercube mode",
+          "type": "boolean"
+        },
+        "noImport": {
+          "description": "Boolean that specifies whether data should not be imported from external source",
+          "type": "boolean"
+        },
+        "label": {
+          "description": "display label for the daterange selector",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "tooltip": {
+          "description": "Widget tooltip",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "start": {
+          "description": "initial start date",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 10,
+          "maxLength": 10
+        },
+        "end": {
+          "description": "initial end date",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 10,
+          "maxLength": 10
+        },
+        "min": {
+          "description": "minimum allowed date",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 10,
+          "maxLength": 10
+        },
+        "max": {
+          "description": "maximum allowed date",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 10,
+          "maxLength": 10
+        },
+        "format": {
+          "description": "format of the date to display in the browser.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 10
+        },
+        "startview": {
+          "description": "date range shown when the input object is first clicked",
+          "type": "string",
+          "enum": [
+            "month",
+            "year",
+            "decade"
+          ]
+        },
+        "weekstart": {
+          "description": "which day is displayed to be the first of the week ",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "separator": {
+          "description": "String to display between the start and end input boxes",
+          "type": "string",
+          "minLength": 1
+        },
+        "width": {
+          "description": "width of the input",
+          "type": [
+            "string",
+            "integer"
+          ],
+          "minLength": 1
+        },
+        "autoclose": {
+          "description": "Whether or not to close the datepicker immediately when a date is selected",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "widgetType"
+      ],
+      "additionalProperties": false
+    },
+    "textInputWidget": {
+      "properties": {
+        "widgetType": {
+          "const": "textinput"
+        },
+        "alias": {
+          "type": "string",
+          "minLength": 1
+        },
+        "noImport": {
+          "description": "Boolean that specifies whether data should not be imported from external source",
+          "type": "boolean"
+        },
+        "label": {
+          "description": "display label for the textinput",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "tooltip": {
+          "description": "Widget tooltip",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "value": {
+          "description": "default value",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "placeholder": {
+          "description": "placeholder (e.g. to give more information about what kind of value is expected from user)",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "width": {
+          "description": "width of the input",
+          "type": [
+            "string",
+            "integer"
+          ],
+          "minLength": 1
+        },
+        "clearValue": {
+          "description": "Whether to communicate value as element text when writing/reading from/to GDX. This will not mess up the UEL order.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "widgetType"
+      ],
+      "additionalProperties": false
+    },
+    "numericInputWidget": {
+      "properties": {
+        "widgetType": {
+          "const": "numericinput"
+        },
+        "alias": {
+          "type": "string",
+          "minLength": 1
+        },
+        "noImport": {
+          "description": "Boolean that specifies whether data should not be imported from external source",
+          "type": "boolean"
+        },
+        "label": {
+          "description": "display label for the numericinput",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "tooltip": {
+          "description": "Widget tooltip",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "value": {
+          "description": "default value",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "min": {
+          "description": "minimum value",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "max": {
+          "description": "maximum value",
+          "type": [
+            "number",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "decimal": {
+          "description": "Number of decimal places",
+          "type": [
+            "number",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "sign": {
+          "description": "currency sign",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "decimalCharacter": {
+          "description": "decimal separator to use",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "digitGroupSeparator": {
+          "description": "thousand grouping separator to use",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "widgetType"
+      ],
+      "additionalProperties": false
+    },
+    "tableWidget": {
+      "properties": {
+        "widgetType": {
+          "const": "table"
+        },
+        "alias": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string"
+        },
+        "tableType": {
+          "description": "Choose type of table",
+          "type": "string",
+          "enum": [
+            "default",
+            "bigdata",
+            "pivot"
+          ]
+        },
+        "bigData": {
+          "description": "DEPRECATED! Use tableType instead!",
+          "type": "boolean",
+          "default": false
+        },
+        "noImport": {
+          "description": "Boolean that specifies whether data should not be imported from external source",
+          "type": "boolean"
+        },
+        "readonly": {
+          "description": "Either true or false for entire table to be readonly",
+          "type": "boolean"
+        },
+        "heatmap": {
+          "description": "Turn table into a heatmap?",
+          "type": "boolean"
+        },
+        "hideIndexCol": {
+          "description": "Hide indexing column?",
+          "type": "boolean"
+        },
+        "colWidths": {
+          "description": "Width of columns.",
+          "type": [
+            "string",
+            "number",
+            "array"
+          ],
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "exclusiveMinimum": 0
+        },
+        "readonlyCols": {
+          "description": "Either true or false for certain columns of table to be readonly",
+          "type": [
+            "array",
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "pivotCols": {
+          "description": "Array of columns to pivot (currently only supported for parameters)",
+          "type": [
+            "array",
+            "string"
+          ],
+          "minLength": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "fixedColumnsLeft": {
+          "description": "Whether non-pivoted columns should be fixed",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minLength": 1,
+          "minimum": 1
+        },
+        "sortPivotCols": {
+          "description": "Whether pivoted columns should be sorted alphabetically",
+          "type": "boolean"
+        },
+        "colFormat": {
+          "description": "Column specific formatting options",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "format": {
+                "description": "Characer specifying column format. Numeric columns are formatted using Numbro.js.",
+                "type": "string"
+              },
+              "language": {
+                "description": "locale passed to Numbro.js; default is 'en-US'.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "format"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "dropdownCols": {
+          "description": "Columns where only certain values are allowed to be selected (only supported for default tables)",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "colType": {
+                "description": "Column type (default is 'autocomplete')",
+                "type": "string",
+                "enum": [
+                  "autocomplete",
+                  "dropdown"
+                ]
+              },
+              "static": {
+                "description": "Arrays of static choices allowed for this column",
+                "type": [
+                  "array",
+                  "string"
+                ],
+                "minLength": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "symbol": {
+                "description": "Symbol to fetch choices from",
+                "type": "string",
+                "minLength": 1
+              },
+              "column": {
+                "description": "Column (of symbol) to fetch choices from",
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "validateCols": {
+          "description": "Column values are validated against custom user criteria (only supported for default tables)",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "min": {
+                "description": "Minimum value allowed for this column",
+                "type": [
+                  "number"
+                ]
+              },
+              "max": {
+                "description": "Maximum value allowed for this column",
+                "type": [
+                  "number"
+                ]
+              },
+              "choices": {
+                "description": "Array of acceptable numeric values for this column",
+                "type": [
+                  "array",
+                  "number"
+                ],
+                "minLength": 1,
+                "items": {
+                  "type": "number",
+                  "minLength": 1
+                }
+              },
+              "exclude": {
+                "description": "Array of unacceptable numeric values for this column",
+                "type": [
+                  "array",
+                  "number"
+                ],
+                "minLength": 1,
+                "items": {
+                  "type": "number",
+                  "minLength": 1
+                }
+              },
+              "allowInvalid": {
+                "description": "Boolean that specifies whether invalid data will be accepted. Invalid data cells will be colored red.",
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "options": {
+          "$ref": "#/definitions/miroPivotOptions"
+        }
+      },
+      "required": [
+        "widgetType"
+      ],
+      "additionalProperties": false
+    },
+    "customWidget": {
+      "properties": {
+        "widgetType": {
+          "const": "custom"
+        },
+        "rendererName": {
+          "description": "Custom widget (name of generator)",
+          "type": "string",
+          "minLength": 3
+        },
+        "alias": {
+          "type": "string",
+          "minLength": 1
+        },
+        "height": {
+          "description": "Height of the output element.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "packages": {
+          "description": "Packages that need to be installed",
+          "type": [
+            "array",
+            "string"
+          ],
+          "minLength": 2,
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 2
+          }
+        },
+        "options": {
+          "description": "Additional options",
+          "type": "object"
+        },
+        "apiVersion": {
+          "description": "API version to use",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2,
+          "default": 1
+        },
+        "additionalData": {
+          "description": "Specify additional input symbols whose data should be handed to custom widget. Currently, only data from scalar widgets (sliders, dropdowns etc.) is supported.",
+          "type": [
+            "array",
+            "string"
+          ],
+          "minLength": 1,
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "widgetSymbols": {
+          "description": "Specify additional symbols for which this widget is defined.",
+          "type": [
+            "array",
+            "string"
+          ],
+          "minLength": 1,
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "noImport": {
+          "description": "Boolean that specifies whether data should not be imported from external source",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "widgetType",
+        "rendererName"
+      ],
+      "additionalProperties": false
+    },
+    "datatableRenderer": {
+      "properties": {
+        "outType": {
+          "const": "datatable"
+        },
+        "label": {
+          "description": "A label to be displayed above renderer (markdown supported)",
+          "type": "string"
+        },
+        "height": {
+          "description": "Height of the output element.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "class": {
+          "description": "css classes used for styling datatable",
+          "type": [
+            "array",
+            "string"
+          ],
+          "minItems": 1,
+          "default": "display"
+        },
+        "filter": {
+          "description": "Whether and where to include column filter",
+          "type": "string",
+          "enum": [
+            "none",
+            "bottom",
+            "top"
+          ],
+          "default": "bottom"
+        },
+        "pivotCols": {
+          "description": "Array of columns to pivot",
+          "type": [
+            "array",
+            "string"
+          ],
+          "minLength": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "sortPivotCols": {
+          "description": "Whether pivoted columns should be sorted alphabetically",
+          "type": "boolean"
+        },
+        "rownames": {
+          "description": "Boolean that specifies whether to show row names",
+          "type": "boolean",
+          "default": false
+        },
+        "autoHideNavigation": {
+          "description": "Boolean that specifies whether to automatically hide navigation elements when number of total records is less than page size",
+          "type": "boolean",
+          "default": false
+        },
+        "extensions": {
+          "description": "For a list of supported extensions see: https://rstudio.github.io/DT/extensions.html",
+          "type": [
+            "array",
+            "string"
+          ],
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "AutoFill",
+              "Buttons",
+              "ColReorder",
+              "ColVis",
+              "FixedColumns",
+              "FixedHeader",
+              "KeyTable",
+              "Responsive",
+              "RowReorder",
+              "Scroller",
+              "Select"
+            ]
+          }
+        },
+        "options": {
+          "description": "Additional options (e.g. column specific).",
+          "type": "object",
+          "default": {
+            "pageLength": 15,
+            "decimals": 2
+          },
+          "properties": {
+            "dom": {
+              "description": "Defines where the table control elements appear (position) and in what order",
+              "type": "string",
+              "minLength": 1
+            },
+            "buttons": {
+              "description": "Buttons or groups of buttons to insert",
+              "type": [
+                "array",
+                "string"
+              ],
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "copy",
+                  "csv",
+                  "excel",
+                  "pdf",
+                  "print",
+                  "colvis"
+                ]
+              }
+            },
+            "pageLength": {
+              "description": "Number of items to display per page",
+              "type": "integer",
+              "minimum": 1,
+              "default": 15
+            },
+            "decimals": {
+              "description": "Integer that specifies the number of decimal places to use",
+              "type": "integer",
+              "minimum": 0,
+              "default": 2
+            },
+            "columnDefs": {
+              "description": "Column specific options.",
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "object",
+                "required": [
+                  "targets"
+                ],
+                "properties": {
+                  "targets": {
+                    "anyOf": [
+                      {
+                        "description": "Column numbers to refer to.",
+                        "type": [
+                          "array",
+                          "integer"
+                        ],
+                        "minimum": 1,
+                        "minItems": 1,
+                        "items": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
+                      },
+                      {
+                        "description": "Use _all_ to refer to all the columns",
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    ]
+                  },
+                  "className": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "visible": {
+                    "type": "boolean"
+                  },
+                  "searchable": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "outType"
+      ],
+      "additionalProperties": false
+    },
+    "valueBoxRenderer": {
+      "properties": {
+        "outType": {
+          "const": "valueBox"
+        },
+        "label": {
+          "description": "A label to be displayed above renderer (markdown supported)",
+          "type": "string"
+        },
+        "options": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "width": {
+                  "description": "Width of the output element.",
+                  "type": "integer",
+                  "minimum": 0,
+                  "default": 4
+                },
+                "color": {
+                  "type": "string",
+                  "description": "Background color of value box",
+                  "minLength": 0,
+                  "default": "aqua"
+                },
+                "icon": {
+                  "description": "icon for value box",
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Name of icon. Icons are drawn from the Font Awesome and Glyphicons libraries.",
+                      "minLength": 0
+                    },
+                    "lib": {
+                      "type": "string",
+                      "description": "Name of library where icon is from.",
+                      "enum": [
+                        "glyphicon",
+                        "font-awesome"
+                      ],
+                      "default": "font-awesome"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "additionalProperties": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "icon": {
+                          "description": "Specify the icon to use for the valuebox",
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "lib": {
+                              "description": "Specify the library to use for the valuebox icon",
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "lib"
+                          ]
+                        },
+                        "color": {
+                          "description": "Specify the color to use for the valuebox",
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "description": {
+                          "description": "Custom description to use for the valuebox",
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "round": {
+                          "description": "Specify the rounding to use for the valuebox value",
+                          "type": [
+                            "integer",
+                            "string"
+                          ],
+                          "minLength": 1,
+                          "minimum": 0
+                        }
+                      }
+                    }
+                  },
+                  "maxProperties": 12
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "outType"
+      ],
+      "additionalProperties": false
+    },
+    "graphRenderer": {
+      "properties": {
+        "outType": {
+          "description": "Style of widget (table, pivottable, graph, graph+table).",
+          "type": "string",
+          "enum": [
+            "dtGraph",
+            "graph"
+          ]
+        },
+        "label": {
+          "description": "A label to be displayed above renderer (markdown supported)",
+          "type": "string"
+        },
+        "height": {
+          "description": "Height of the output element.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "graph": {
+          "type": "object",
+          "description": "Graph display options",
+          "properties": {
+            "tool": {
+              "type": "string",
+              "enum": [
+                "plotly",
+                "dygraphs",
+                "leaflet",
+                "timevis"
+              ]
+            },
+            "filter": {
+              "type": "object",
+              "description": "Add an interactive filter above the graph to slice the data",
+              "additionalProperties": false,
+              "properties": {
+                "col": {
+                  "description": "Column to filter on",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "multiple": {
+                  "description": "Allow multiple filter options to be selected",
+                  "type": "boolean",
+                  "default": false
+                },
+                "date": {
+                  "description": "Column to be filtered contains date data",
+                  "type": "boolean",
+                  "default": false
+                },
+                "label": {
+                  "description": "A label to be displayed above filter menu",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "col"
+              ]
+            }
+          },
+          "required": [
+            "tool"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "outType",
+        "graph"
+      ]
+    },
+    "miroPivotRenderer": {
+      "properties": {
+        "outType": {
+          "const": "miroPivot"
+        },
+        "label": {
+          "description": "A label to be displayed above renderer (markdown supported)",
+          "type": "string"
+        },
+        "height": {
+          "description": "Height of the output element.",
+          "type": "integer",
+          "minimum": 0,
+          "default": null
+        },
+        "options": {
+          "$ref": "#/definitions/miroPivotOptions"
+        }
+      },
+      "required": [
+        "outType"
+      ],
+      "additionalProperties": false
+    },
+    "dashboardRenderer": {
+      "properties": {
+        "outType": {
+          "const": "dashboard"
+        },
+        "options": {
+          "$ref": "#/definitions/dashboardOptions"
+        },
+        "additionalData": {
+          "description": "Specify additional symbols whose data should be handed to renderer. data parameter will be a named list of dataframes with names being symbol names",
+          "type": [
+            "array",
+            "string"
+          ],
+          "minLength": 1,
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "outType"
+      ],
+      "additionalProperties": false
+    },
+    "customRenderer": {
+      "properties": {
+        "outType": {
+          "description": "Custom style.",
+          "type": "string",
+          "minLength": 2,
+          "not": {
+            "enum": [
+              "valueBox",
+              "graph",
+              "dtGraph",
+              "datatable",
+              "miroPivot",
+              "dashboard"
+            ]
+          }
+        },
+        "label": {
+          "description": "A label to be displayed above renderer (markdown supported)",
+          "type": "string"
+        },
+        "height": {
+          "description": "Height of the output element.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "packages": {
+          "description": "Packages that need to be installed",
+          "type": [
+            "array",
+            "string"
+          ],
+          "minLength": 2,
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 2
+          }
+        },
+        "options": {
+          "description": "Additional options",
+          "type": "object"
+        },
+        "additionalData": {
+          "description": "Specify additional symbols whose data should be handed to renderer. data parameter will be a named list of dataframes with names being symbol names",
+          "type": [
+            "array",
+            "string"
+          ],
+          "minLength": 1,
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "outType"
       ]
     }
   },
@@ -1552,15 +2707,51 @@
       "additionalProperties": {
         "type": "object",
         "minProperties": 1,
-        "oneOf": [
+        "allOf": [
           {
-            "$ref": "#/definitions/sliderWidget"
+            "if": {
+              "properties": {
+                "widgetType": {
+                  "const": "slider"
+                }
+              },
+              "required": [
+                "widgetType"
+              ]
+            },
+            "then": {
+              "$ref": "#/definitions/sliderWidget"
+            }
           },
           {
-            "$ref": "#/definitions/dropdownWidget"
+            "if": {
+              "properties": {
+                "widgetType": {
+                  "const": "dropdown"
+                }
+              },
+              "required": [
+                "widgetType"
+              ]
+            },
+            "then": {
+              "$ref": "#/definitions/dropdownWidget"
+            }
           },
           {
-            "$ref": "#/definitions/checkboxWidget"
+            "if": {
+              "properties": {
+                "widgetType": {
+                  "const": "checkbox"
+                }
+              },
+              "required": [
+                "widgetType"
+              ]
+            },
+            "then": {
+              "$ref": "#/definitions/checkboxWidget"
+            }
           }
         ]
       }
@@ -1571,725 +2762,141 @@
       "additionalProperties": {
         "type": "object",
         "minProperties": 1,
-        "oneOf": [
+        "allOf": [
           {
-            "$ref": "#/definitions/sliderWidget"
-          },
-          {
-            "$ref": "#/definitions/dropdownWidget"
-          },
-          {
-            "$ref": "#/definitions/checkboxWidget"
-          },
-          {
-            "properties": {
-              "widgetType": {
-                "description": "Style of widget",
-                "type": "string",
-                "enum": [
-                  "date"
-                ]
-              },
-              "alias": {
-                "type": "string",
-                "minLength": 1
-              },
-              "noHcube": {
-                "description": "Boolean that specifies whether element should not be used in Hypercube mode",
-                "type": "boolean"
-              },
-              "noImport": {
-                "description": "Boolean that specifies whether data should not be imported from external source",
-                "type": "boolean"
-              },
-              "label": {
-                "description": "display label for the date selector",
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "minLength": 1
-              },
-              "tooltip": {
-                "description": "Widget tooltip",
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "minLength": 1
-              },
-              "value": {
-                "description": "initial start date",
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "minLength": 10,
-                "maxLength": 10
-              },
-              "min": {
-                "description": "minimum allowed date",
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "minLength": 10,
-                "maxLength": 10
-              },
-              "max": {
-                "description": "maximum allowed date",
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "minLength": 10,
-                "maxLength": 10
-              },
-              "format": {
-                "description": "format of the date to display in the browser.",
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 10
-              },
-              "startview": {
-                "description": "date range shown when the input object is first clicked",
-                "type": "string",
-                "enum": [
-                  "month",
-                  "year",
-                  "decade"
-                ]
-              },
-              "weekstart": {
-                "description": "which day is displayed to be the first of the week ",
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 6
-              },
-              "daysofweekdisabled": {
-                "description": "disallow certain days of week to be selected",
-                "type": [
-                  "integer",
-                  "array",
-                  "null"
-                ],
-                "uniqueItems": true,
-                "minItems": 1,
-                "items": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 6
+            "if": {
+              "properties": {
+                "widgetType": {
+                  "const": "slider"
                 }
               },
-              "datesdisabled": {
-                "description": "disallow certain dates to be selected",
-                "type": [
-                  "array",
-                  "string"
-                ],
-                "uniqueItems": true,
-                "minItems": 1,
-                "items": {
-                  "type": "string",
-                  "minLength": 10,
-                  "maxLength": 10
-                },
-                "minLength": 10,
-                "maxLength": 10
-              },
-              "autoclose": {
-                "description": "Whether or not to close the datepicker immediately when a date is selected",
-                "type": "boolean"
-              },
-              "width": {
-                "description": "width of the input",
-                "type": [
-                  "string",
-                  "integer"
-                ],
-                "minLength": 1
-              }
+              "required": [
+                "widgetType"
+              ]
             },
-            "required": [
-              "widgetType"
-            ],
-            "additionalProperties": false
+            "then": {
+              "$ref": "#/definitions/sliderWidget"
+            }
           },
           {
-            "properties": {
-              "widgetType": {
-                "description": "Style of widget",
-                "type": "string",
-                "enum": [
-                  "daterange"
-                ]
+            "if": {
+              "properties": {
+                "widgetType": {
+                  "const": "dropdown"
+                }
               },
-              "alias": {
-                "type": "string",
-                "minLength": 1
-              },
-              "noHcube": {
-                "description": "Boolean that specifies whether element should not be used in Hypercube mode",
-                "type": "boolean"
-              },
-              "noImport": {
-                "description": "Boolean that specifies whether data should not be imported from external source",
-                "type": "boolean"
-              },
-              "label": {
-                "description": "display label for the daterange selector",
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "minLength": 1
-              },
-              "tooltip": {
-                "description": "Widget tooltip",
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "minLength": 1
-              },
-              "start": {
-                "description": "initial start date",
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "minLength": 10,
-                "maxLength": 10
-              },
-              "end": {
-                "description": "initial end date",
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "minLength": 10,
-                "maxLength": 10
-              },
-              "min": {
-                "description": "minimum allowed date",
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "minLength": 10,
-                "maxLength": 10
-              },
-              "max": {
-                "description": "maximum allowed date",
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "minLength": 10,
-                "maxLength": 10
-              },
-              "format": {
-                "description": "format of the date to display in the browser.",
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 10
-              },
-              "startview": {
-                "description": "date range shown when the input object is first clicked",
-                "type": "string",
-                "enum": [
-                  "month",
-                  "year",
-                  "decade"
-                ]
-              },
-              "weekstart": {
-                "description": "which day is displayed to be the first of the week ",
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 6
-              },
-              "separator": {
-                "description": "String to display between the start and end input boxes",
-                "type": "string",
-                "minLength": 1
-              },
-              "width": {
-                "description": "width of the input",
-                "type": [
-                  "string",
-                  "integer"
-                ],
-                "minLength": 1
-              },
-              "autoclose": {
-                "description": "Whether or not to close the datepicker immediately when a date is selected",
-                "type": "boolean"
-              }
+              "required": [
+                "widgetType"
+              ]
             },
-            "required": [
-              "widgetType"
-            ],
-            "additionalProperties": false
+            "then": {
+              "$ref": "#/definitions/dropdownWidget"
+            }
           },
           {
-            "properties": {
-              "widgetType": {
-                "description": "Style of widget",
-                "type": "string",
-                "enum": [
-                  "textinput"
-                ]
+            "if": {
+              "properties": {
+                "widgetType": {
+                  "const": "checkbox"
+                }
               },
-              "alias": {
-                "type": "string",
-                "minLength": 1
-              },
-              "noImport": {
-                "description": "Boolean that specifies whether data should not be imported from external source",
-                "type": "boolean"
-              },
-              "label": {
-                "description": "display label for the textinput",
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "minLength": 1
-              },
-              "tooltip": {
-                "description": "Widget tooltip",
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "minLength": 1
-              },
-              "value": {
-                "description": "default value",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "placeholder": {
-                "description": "placeholder (e.g. to give more information about what kind of value is expected from user)",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "width": {
-                "description": "width of the input",
-                "type": [
-                  "string",
-                  "integer"
-                ],
-                "minLength": 1
-              },
-              "clearValue": {
-                "description": "Whether to communicate value as element text when writing/reading from/to GDX. This will not mess up the UEL order.",
-                "type": "boolean"
-              }
+              "required": [
+                "widgetType"
+              ]
             },
-            "required": [
-              "widgetType"
-            ],
-            "additionalProperties": false
+            "then": {
+              "$ref": "#/definitions/checkboxWidget"
+            }
           },
           {
-            "properties": {
-              "widgetType": {
-                "description": "Style of widget",
-                "type": "string",
-                "enum": [
-                  "numericinput"
-                ]
+            "if": {
+              "properties": {
+                "widgetType": {
+                  "const": "date"
+                }
               },
-              "alias": {
-                "type": "string",
-                "minLength": 1
-              },
-              "noImport": {
-                "description": "Boolean that specifies whether data should not be imported from external source",
-                "type": "boolean"
-              },
-              "label": {
-                "description": "display label for the numericinput",
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "minLength": 1
-              },
-              "tooltip": {
-                "description": "Widget tooltip",
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "minLength": 1
-              },
-              "value": {
-                "description": "default value",
-                "type": [
-                  "number",
-                  "null"
-                ]
-              },
-              "min": {
-                "description": "minimum value",
-                "type": [
-                  "number",
-                  "null"
-                ]
-              },
-              "max": {
-                "description": "maximum value",
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "minLength": 1
-              },
-              "decimal": {
-                "description": "Number of decimal places",
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "minLength": 1
-              },
-              "sign": {
-                "description": "currency sign",
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "minLength": 1
-              },
-              "decimalCharacter": {
-                "description": "decimal separator to use",
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "minLength": 1
-              },
-              "digitGroupSeparator": {
-                "description": "thousand grouping separator to use",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              }
+              "required": [
+                "widgetType"
+              ]
             },
-            "required": [
-              "widgetType"
-            ],
-            "additionalProperties": false
+            "then": {
+              "$ref": "#/definitions/dateWidget"
+            }
           },
           {
-            "properties": {
-              "widgetType": {
-                "description": "Style of widget",
-                "type": "string",
-                "enum": [
-                  "table"
-                ]
-              },
-              "alias": {
-                "type": "string",
-                "minLength": 1
-              },
-              "label": {
-                "type": "string"
-              },
-              "tableType": {
-                "description": "Choose type of table",
-                "type": "string",
-                "enum": [
-                  "default",
-                  "bigdata",
-                  "pivot"
-                ]
-              },
-              "bigData": {
-                "description": "DEPRECATED! Use tableType instead!",
-                "type": "boolean",
-                "default": false
-              },
-              "noImport": {
-                "description": "Boolean that specifies whether data should not be imported from external source",
-                "type": "boolean"
-              },
-              "readonly": {
-                "description": "Either true or false for entire table to be readonly",
-                "type": "boolean"
-              },
-              "heatmap": {
-                "description": "Turn table into a heatmap?",
-                "type": "boolean"
-              },
-              "hideIndexCol": {
-                "description": "Hide indexing column?",
-                "type": "boolean"
-              },
-              "colWidths": {
-                "description": "Width of columns.",
-                "type": [
-                  "string",
-                  "number",
-                  "array"
-                ],
-                "items": {
-                  "type": "number",
-                  "exclusiveMinimum": 0
-                },
-                "exclusiveMinimum": 0
-              },
-              "readonlyCols": {
-                "description": "Either true or false for certain columns of table to be readonly",
-                "type": [
-                  "array",
-                  "string",
-                  "null"
-                ],
-                "minLength": 1,
-                "items": {
-                  "type": "string",
-                  "minLength": 1
+            "if": {
+              "properties": {
+                "widgetType": {
+                  "const": "daterange"
                 }
               },
-              "pivotCols": {
-                "description": "Array of columns to pivot (currently only supported for parameters)",
-                "type": [
-                  "array",
-                  "string"
-                ],
-                "minLength": 1,
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "fixedColumnsLeft": {
-                "description": "Whether non-pivoted columns should be fixed",
-                "type": [
-                  "integer",
-                  "null"
-                ],
-                "minLength": 1,
-                "minimum": 1
-              },
-              "sortPivotCols": {
-                "description": "Whether pivoted columns should be sorted alphabetically",
-                "type": "boolean"
-              },
-              "colFormat": {
-                "description": "Column specific formatting options",
-                "type": "object",
-                "additionalProperties": {
-                  "type": "object",
-                  "properties": {
-                    "format": {
-                      "description": "Characer specifying column format. Numeric columns are formatted using Numbro.js.",
-                      "type": "string"
-                    },
-                    "language": {
-                      "description": "locale passed to Numbro.js; default is 'en-US'.",
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "format"
-                  ],
-                  "additionalProperties": false
-                }
-              },
-              "dropdownCols": {
-                "description": "Columns where only certain values are allowed to be selected (only supported for default tables)",
-                "type": "object",
-                "additionalProperties": {
-                  "type": "object",
-                  "properties": {
-                    "colType": {
-                      "description": "Column type (default is 'autocomplete')",
-                      "type": "string",
-                      "enum": [
-                        "autocomplete",
-                        "dropdown"
-                      ]
-                    },
-                    "static": {
-                      "description": "Arrays of static choices allowed for this column",
-                      "type": [
-                        "array",
-                        "string"
-                      ],
-                      "minLength": 1,
-                      "items": {
-                        "type": "string",
-                        "minLength": 1
-                      }
-                    },
-                    "symbol": {
-                      "description": "Symbol to fetch choices from",
-                      "type": "string",
-                      "minLength": 1
-                    },
-                    "column": {
-                      "description": "Column (of symbol) to fetch choices from",
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  }
-                }
-              },
-              "validateCols": {
-                "description": "Column values are validated against custom user criteria (only supported for default tables)",
-                "type": "object",
-                "additionalProperties": {
-                  "type": "object",
-                  "properties": {
-                    "min": {
-                      "description": "Minimum value allowed for this column",
-                      "type": [
-                        "number"
-                      ]
-                    },
-                    "max": {
-                      "description": "Maximum value allowed for this column",
-                      "type": [
-                        "number"
-                      ]
-                    },
-                    "choices": {
-                      "description": "Array of acceptable numeric values for this column",
-                      "type": [
-                        "array",
-                        "number"
-                      ],
-                      "minLength": 1,
-                      "items": {
-                        "type": "number",
-                        "minLength": 1
-                      }
-                    },
-                    "exclude": {
-                      "description": "Array of unacceptable numeric values for this column",
-                      "type": [
-                        "array",
-                        "number"
-                      ],
-                      "minLength": 1,
-                      "items": {
-                        "type": "number",
-                        "minLength": 1
-                      }
-                    },
-                    "allowInvalid": {
-                      "description": "Boolean that specifies whether invalid data will be accepted. Invalid data cells will be colored red.",
-                      "type": "boolean"
-                    }
-                  }
-                }
-              },
-              "options": {
-                "$ref": "#/definitions/miroPivotOptions"
-              }
+              "required": [
+                "widgetType"
+              ]
             },
-            "required": [
-              "widgetType"
-            ],
-            "additionalProperties": false
+            "then": {
+              "$ref": "#/definitions/dateRangeWidget"
+            }
           },
           {
-            "properties": {
-              "widgetType": {
-                "description": "Style of widget",
-                "type": "string",
-                "enum": [
-                  "custom"
-                ]
-              },
-              "rendererName": {
-                "description": "Custom widget (name of generator)",
-                "type": "string",
-                "minLength": 3
-              },
-              "alias": {
-                "type": "string",
-                "minLength": 1
-              },
-              "height": {
-                "description": "Height of the output element.",
-                "type": "integer",
-                "minimum": 0
-              },
-              "packages": {
-                "description": "Packages that need to be installed",
-                "type": [
-                  "array",
-                  "string"
-                ],
-                "minLength": 2,
-                "minItems": 1,
-                "uniqueItems": true,
-                "items": {
-                  "type": "string",
-                  "minLength": 2
+            "if": {
+              "properties": {
+                "widgetType": {
+                  "const": "textinput"
                 }
               },
-              "options": {
-                "description": "Additional options",
-                "type": "object"
-              },
-              "apiVersion": {
-                "description": "API version to use",
-                "type": "integer",
-                "minimum": 1,
-                "maximum": 2,
-                "default": 1
-              },
-              "additionalData": {
-                "description": "Specify additional input symbols whose data should be handed to custom widget. Currently, only data from scalar widgets (sliders, dropdowns etc.) is supported.",
-                "type": [
-                  "array",
-                  "string"
-                ],
-                "minLength": 1,
-                "minItems": 1,
-                "uniqueItems": true,
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "widgetSymbols": {
-                "description": "Specify additional symbols for which this widget is defined.",
-                "type": [
-                  "array",
-                  "string"
-                ],
-                "minLength": 1,
-                "minItems": 1,
-                "uniqueItems": true,
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "noImport": {
-                "description": "Boolean that specifies whether data should not be imported from external source",
-                "type": "boolean"
-              }
+              "required": [
+                "widgetType"
+              ]
             },
-            "required": [
-              "widgetType",
-              "rendererName"
-            ],
-            "additionalProperties": false
+            "then": {
+              "$ref": "#/definitions/textInputWidget"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "widgetType": {
+                  "const": "numericinput"
+                }
+              },
+              "required": [
+                "widgetType"
+              ]
+            },
+            "then": {
+              "$ref": "#/definitions/numericInputWidget"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "widgetType": {
+                  "const": "table"
+                }
+              },
+              "required": [
+                "widgetType"
+              ]
+            },
+            "then": {
+              "$ref": "#/definitions/tableWidget"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "widgetType": {
+                  "const": "custom"
+                }
+              },
+              "required": [
+                "widgetType"
+              ]
+            },
+            "then": {
+              "$ref": "#/definitions/customWidget"
+            }
           }
         ]
       }
@@ -2470,503 +3077,110 @@
       "additionalProperties": {
         "type": "object",
         "minProperties": 1,
-        "oneOf": [
+        "allOf": [
           {
-            "properties": {
-              "outType": {
-                "description": "Style of widget (table, pivottable, graph, graph+table).",
-                "type": "string",
-                "enum": [
-                  "datatable"
-                ]
-              },
-              "label": {
-                "description": "A label to be displayed above renderer (markdown supported)",
-                "type": "string"
-              },
-              "height": {
-                "description": "Height of the output element.",
-                "type": "integer",
-                "minimum": 0
-              },
-              "class": {
-                "description": "css classes used for styling datatable",
-                "type": [
-                  "array",
-                  "string"
-                ],
-                "minItems": 1,
-                "default": "display"
-              },
-              "filter": {
-                "description": "Whether and where to include column filter",
-                "type": "string",
-                "enum": [
-                  "none",
-                  "bottom",
-                  "top"
-                ],
-                "default": "bottom"
-              },
-              "pivotCols": {
-                "description": "Array of columns to pivot",
-                "type": [
-                  "array",
-                  "string"
-                ],
-                "minLength": 1,
-                "items": {
-                  "type": "string",
-                  "minLength": 1
+            "if": {
+              "properties": {
+                "outType": {
+                  "const": "datatable"
                 }
               },
-              "sortPivotCols": {
-                "description": "Whether pivoted columns should be sorted alphabetically",
-                "type": "boolean"
+              "required": [
+                "outType"
+              ]
+            },
+            "then": {
+              "$ref": "#/definitions/datatableRenderer"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "outType": {
+                  "const": "valueBox"
+                }
               },
-              "rownames": {
-                "description": "Boolean that specifies whether to show row names",
-                "type": "boolean",
-                "default": false
-              },
-              "autoHideNavigation": {
-                "description": "Boolean that specifies whether to automatically hide navigation elements when number of total records is less than page size",
-                "type": "boolean",
-                "default": false
-              },
-              "extensions": {
-                "description": "For a list of supported extensions see: https://rstudio.github.io/DT/extensions.html",
-                "type": [
-                  "array",
-                  "string"
-                ],
-                "uniqueItems": true,
-                "items": {
-                  "type": "string",
+              "required": [
+                "outType"
+              ]
+            },
+            "then": {
+              "$ref": "#/definitions/valueBoxRenderer"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "outType": {
                   "enum": [
-                    "AutoFill",
-                    "Buttons",
-                    "ColReorder",
-                    "ColVis",
-                    "FixedColumns",
-                    "FixedHeader",
-                    "KeyTable",
-                    "Responsive",
-                    "RowReorder",
-                    "Scroller",
-                    "Select"
-                  ]
-                }
-              },
-              "options": {
-                "description": "Additional options (e.g. column specific).",
-                "type": "object",
-                "default": {
-                  "pageLength": 15,
-                  "decimals": 2
-                },
-                "properties": {
-                  "dom": {
-                    "description": "Defines where the table control elements appear (position) and in what order",
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "buttons": {
-                    "description": "Buttons or groups of buttons to insert",
-                    "type": [
-                      "array",
-                      "string"
-                    ],
-                    "uniqueItems": true,
-                    "items": {
-                      "type": "string",
-                      "enum": [
-                        "copy",
-                        "csv",
-                        "excel",
-                        "pdf",
-                        "print",
-                        "colvis"
-                      ]
-                    }
-                  },
-                  "pageLength": {
-                    "description": "Number of items to display per page",
-                    "type": "integer",
-                    "minimum": 1,
-                    "default": 15
-                  },
-                  "decimals": {
-                    "description": "Integer that specifies the number of decimal places to use",
-                    "type": "integer",
-                    "minimum": 0,
-                    "default": 2
-                  },
-                  "columnDefs": {
-                    "description": "Column specific options.",
-                    "type": "array",
-                    "uniqueItems": true,
-                    "items": {
-                      "type": "object",
-                      "required": [
-                        "targets"
-                      ],
-                      "properties": {
-                        "targets": {
-                          "anyOf": [
-                            {
-                              "description": "Column numbers to refer to.",
-                              "type": [
-                                "array",
-                                "integer"
-                              ],
-                              "minimum": 1,
-                              "minItems": 1,
-                              "items": {
-                                "type": "integer",
-                                "minimum": 1
-                              }
-                            },
-                            {
-                              "description": "Use _all_ to refer to all the columns",
-                              "type": "string",
-                              "minLength": 1
-                            }
-                          ]
-                        },
-                        "className": {
-                          "type": "string",
-                          "minLength": 1
-                        },
-                        "visible": {
-                          "type": "boolean"
-                        },
-                        "searchable": {
-                          "type": "boolean"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "additionalProperties": false,
-            "required": [
-              "outType"
-            ]
-          },
-          {
-            "properties": {
-              "outType": {
-                "description": "Style of widget (table, pivottable, graph, graph+table).",
-                "type": "string",
-                "enum": [
-                  "valueBox"
-                ]
-              },
-              "label": {
-                "description": "A label to be displayed above renderer (markdown supported)",
-                "type": "string"
-              },
-              "options": {
-                "oneOf": [
-                  {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "properties": {
-                      "width": {
-                        "description": "Width of the output element.",
-                        "type": "integer",
-                        "minimum": 0,
-                        "default": 4
-                      },
-                      "color": {
-                        "type": "string",
-                        "description": "Background color of value box",
-                        "minLength": 0,
-                        "default": "aqua"
-                      },
-                      "icon": {
-                        "description": "icon for value box",
-                        "type": "object",
-                        "properties": {
-                          "name": {
-                            "type": "string",
-                            "description": "Name of icon. Icons are drawn from the Font Awesome and Glyphicons libraries.",
-                            "minLength": 0
-                          },
-                          "lib": {
-                            "type": "string",
-                            "description": "Name of library where icon is from.",
-                            "enum": [
-                              "glyphicon",
-                              "font-awesome"
-                            ],
-                            "default": "font-awesome"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "array",
-                    "items": [
-                      {
-                        "type": "object",
-                        "properties": {
-                          "additionalProperties": {
-                            "type": "object",
-                            "additionalProperties": false,
-                            "properties": {
-                              "icon": {
-                                "description": "Specify the icon to use for the valuebox",
-                                "type": "object",
-                                "properties": {
-                                  "name": {
-                                    "type": "string",
-                                    "minLength": 1
-                                  },
-                                  "lib": {
-                                    "description": "Specify the library to use for the valuebox icon",
-                                    "type": "string",
-                                    "minLength": 1
-                                  }
-                                },
-                                "required": [
-                                  "name",
-                                  "lib"
-                                ]
-                              },
-                              "color": {
-                                "description": "Specify the color to use for the valuebox",
-                                "type": "string",
-                                "minLength": 1
-                              },
-                              "description": {
-                                "description": "Custom description to use for the valuebox",
-                                "type": "string",
-                                "minLength": 1
-                              },
-                              "round": {
-                                "description": "Specify the rounding to use for the valuebox value",
-                                "type": [
-                                  "integer",
-                                  "string"
-                                ],
-                                "minLength": 1,
-                                "minimum": 0
-                              }
-                            }
-                          }
-                        },
-                        "maxProperties": 12
-                      }
-                    ]
-                  }
-                ]
-              }
-            },
-            "additionalProperties": false,
-            "required": [
-              "outType"
-            ]
-          },
-          {
-            "properties": {
-              "outType": {
-                "description": "Style of widget (table, pivottable, graph, graph+table).",
-                "type": "string",
-                "enum": [
-                  "dtGraph",
-                  "graph"
-                ]
-              },
-              "label": {
-                "description": "A label to be displayed above renderer (markdown supported)",
-                "type": "string"
-              },
-              "height": {
-                "description": "Height of the output element.",
-                "type": "integer",
-                "minimum": 0
-              },
-              "graph": {
-                "type": "object",
-                "description": "Graph display options",
-                "properties": {
-                  "tool": {
-                    "type": "string",
-                    "enum": [
-                      "plotly",
-                      "dygraphs",
-                      "leaflet",
-                      "timevis"
-                    ]
-                  },
-                  "filter": {
-                    "type": "object",
-                    "description": "Add an interactive filter above the graph to slice the data",
-                    "additionalProperties": false,
-                    "properties": {
-                      "col": {
-                        "description": "Column to filter on",
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "multiple": {
-                        "description": "Allow multiple filter options to be selected",
-                        "type": "boolean",
-                        "default": false
-                      },
-                      "date": {
-                        "description": "Column to be filtered contains date data",
-                        "type": "boolean",
-                        "default": false
-                      },
-                      "label": {
-                        "description": "A label to be displayed above filter menu",
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "col"
-                    ]
-                  }
-                },
-                "required": [
-                  "tool"
-                ]
-              }
-            },
-            "additionalProperties": false,
-            "required": [
-              "outType",
-              "graph"
-            ]
-          },
-          {
-            "properties": {
-              "outType": {
-                "description": "Style of widget (table, pivottable, graph, graph+table).",
-                "type": "string",
-                "enum": [
-                  "miroPivot"
-                ]
-              },
-              "label": {
-                "description": "A label to be displayed above renderer (markdown supported)",
-                "type": "string"
-              },
-              "height": {
-                "description": "Height of the output element.",
-                "type": "integer",
-                "minimum": 0,
-                "default": "null"
-              },
-              "options": {
-                "$ref": "#/definitions/miroPivotOptions"
-              }
-            },
-            "additionalProperties": false,
-            "required": [
-              "outType"
-            ]
-          },
-          {
-            "properties": {
-              "outType": {
-                "description": "Style of graph.",
-                "type": "string",
-                "enum": [
-                  "dashboard"
-                ]
-              },
-              "options": {
-                "$ref": "#/definitions/dashboardOptions"
-              },
-              "additionalData": {
-                "description": "Specify additional symbols whose data should be handed to renderer. data parameter will be a named list of dataframes with names being symbol names",
-                "type": [
-                  "array",
-                  "string"
-                ],
-                "minLength": 1,
-                "minItems": 1,
-                "uniqueItems": true,
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              }
-            },
-            "additionalProperties": false,
-            "required": [
-              "outType"
-            ]
-          },
-          {
-            "properties": {
-              "outType": {
-                "description": "Custom style.",
-                "type": "string",
-                "minLength": 2,
-                "not": {
-                  "enum": [
-                    "valueBox",
                     "graph",
-                    "dtGraph",
-                    "datatable",
-                    "miroPivot",
-                    "dashboard"
+                    "dtGraph"
                   ]
                 }
               },
-              "label": {
-                "description": "A label to be displayed above renderer (markdown supported)",
-                "type": "string"
-              },
-              "height": {
-                "description": "Height of the output element.",
-                "type": "integer",
-                "minimum": 0
-              },
-              "packages": {
-                "description": "Packages that need to be installed",
-                "type": [
-                  "array",
-                  "string"
-                ],
-                "minLength": 2,
-                "minItems": 1,
-                "uniqueItems": true,
-                "items": {
-                  "type": "string",
-                  "minLength": 2
-                }
-              },
-              "options": {
-                "description": "Additional options",
-                "type": "object"
-              },
-              "additionalData": {
-                "description": "Specify additional symbols whose data should be handed to renderer. data parameter will be a named list of dataframes with names being symbol names",
-                "type": [
-                  "array",
-                  "string"
-                ],
-                "minLength": 1,
-                "minItems": 1,
-                "uniqueItems": true,
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              }
+              "required": [
+                "outType"
+              ]
             },
-            "additionalProperties": false,
-            "required": [
-              "outType"
-            ]
+            "then": {
+              "$ref": "#/definitions/graphRenderer"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "outType": {
+                  "const": "miroPivot"
+                }
+              },
+              "required": [
+                "outType"
+              ]
+            },
+            "then": {
+              "$ref": "#/definitions/miroPivotRenderer"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "outType": {
+                  "const": "dashboard"
+                }
+              },
+              "required": [
+                "outType"
+              ]
+            },
+            "then": {
+              "$ref": "#/definitions/dashboardRenderer"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "outType": {
+                  "type": "string",
+                  "minLength": 2,
+                  "not": {
+                    "enum": [
+                      "valueBox",
+                      "graph",
+                      "dtGraph",
+                      "datatable",
+                      "miroPivot",
+                      "dashboard"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "outType"
+              ]
+            },
+            "then": {
+              "$ref": "#/definitions/customRenderer"
+            }
           }
         ]
       }
