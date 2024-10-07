@@ -16,20 +16,20 @@ RUN chown -R miro /home/miro
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        software-properties-common \
-        dirmngr \
-        locales \
-        ca-certificates \
-        wget \
-        gpg-agent \
+    software-properties-common \
+    dirmngr \
+    locales \
+    ca-certificates \
+    wget \
+    gpg-agent \
     && wget -q -O - https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
-        | tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc \
+    | tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc \
     && add-apt-repository --enable-source --yes "ppa:marutter/rrutter4.0"
 
 ## Configure default locale, see https://github.com/rocker-org/rocker/issues/19
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
-	&& locale-gen en_US.utf8 \
-	&& /usr/sbin/update-locale LANG=en_US.UTF-8
+    && locale-gen en_US.utf8 \
+    && /usr/sbin/update-locale LANG=en_US.UTF-8
 
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
@@ -40,12 +40,12 @@ ENV TZ UTC
 ## Now install R
 ## Also set a default CRAN repo
 RUN apt-get update \
-	&& apt-get install -y --no-install-recommends \
-		r-base=${R_BASE_VERSION}* \
-		r-recommended=${R_BASE_VERSION}* \
-        && echo 'options(repos = c(CRAN = "https://cloud.r-project.org/"), download.file.method = "libcurl")' >> /etc/R/Rprofile.site \
-	&& rm -rf /tmp/downloaded_packages/ /tmp/*.rds \
-	&& rm -rf /var/lib/apt/lists/*
+    && apt-get install -y --no-install-recommends \
+    r-base=${R_BASE_VERSION}* \
+    r-recommended=${R_BASE_VERSION}* \
+    && echo 'options(repos = c(CRAN = "https://cloud.r-project.org/"), download.file.method = "libcurl")' >> /etc/R/Rprofile.site \
+    && rm -rf /tmp/downloaded_packages/ /tmp/*.rds \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /home/miro/r
 
@@ -121,10 +121,10 @@ RUN Rscript ./home/miro/scripts/install_source.R
 FROM miro-base
 
 LABEL com.gamsmiro.vendor="GAMS Development Corp."\
-com.gamsmiro.version="2.10.9999"\
-com.gamsmiro.license="GPL-3.0"\
-com.gamsmiro.description="GAMS MIRO Docker image"\
-maintainer="fproske@gams.com"
+    com.gamsmiro.version="2.10.9999"\
+    com.gamsmiro.license="GPL-3.0"\
+    com.gamsmiro.description="GAMS MIRO Docker image"\
+    maintainer="fproske@gams.com"
 
 # copy R packages from miro-pkg-builder
 COPY --from=miro-pkg-builder /usr/local/pgsql/lib/libpq.so.5 /usr/local/lib/libpq.so.5
@@ -142,4 +142,6 @@ USER miro
 
 EXPOSE 3838
 
-CMD ["R", "-e", "shiny::runApp('/home/miro/app', port = 3838, host = '0.0.0.0')"]
+WORKDIR /home/miro/app/
+
+CMD ["R", "-e", "shiny::runApp('.', port = 3838, host = '0.0.0.0')"]

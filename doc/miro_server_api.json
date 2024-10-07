@@ -603,14 +603,9 @@
                         "in": "query",
                         "required": false,
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/components/schemas/ExportFileType"
-                                }
-                            ],
+                            "$ref": "#/components/schemas/ExportFileType",
                             "description": "In which file type should the scenario be exported?",
-                            "default": "miroscen",
-                            "title": "File Type"
+                            "default": "miroscen"
                         },
                         "description": "In which file type should the scenario be exported?"
                     },

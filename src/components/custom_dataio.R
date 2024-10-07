@@ -1,7 +1,7 @@
-CustomDataIO <- R6Class("CustomDataIO", public = list(
+CustomDataIO <- R6Class("CustomDataIO", inherit = LocalFileIO, public = list(
   initialize = function(customRendererDir) {
     private$customRendererDir <- customRendererDir
-    return(invisible(self))
+    return(super$initialize())
   },
   getLabel = function() {
     return(private$config$label)
@@ -52,6 +52,18 @@ CustomDataIO <- R6Class("CustomDataIO", public = list(
           flog.warn("The custom importer function returned NULL. Please avoid this and output an error instead (e.g. with abortSafe(message)).")
           private$remoteData <- list()
         }
+      }
+      if (identical(dsName, scalarsFileName)) {
+        if (scalarsFileName %in% private$config$datasetsToFetch) {
+          return(self$fixScalarDf(private$remoteData[[dsName]], dsName,
+            ignoreInvalidScalars = TRUE
+          ))
+        }
+        return(self$fixScalarDf(tibble(
+          scalar = private$config$scalarSymNames,
+          description = "",
+          value = as.character(private$remoteData[private$config$scalarSymNames])
+        ), dsName, ignoreInvalidScalars = TRUE))
       }
       return(private$remoteData[[dsName]])
     }

@@ -28,6 +28,49 @@ LocalFileIO <- R6::R6Class("LocalFileIO",
         private$metadata[[scalarsOutName]]$symtype <- "set"
       }
       return(self)
+    },
+    getScalarTemplate = function(symName) {
+      scalarsToProcess <- private$metadata[[symName]]$symnames
+      scalarDesc <- private$metadata[[symName]]$symtext
+      if (identical(symName, scalarsFileName) && length(private$clOptScalars)) {
+        scalarsToProcess <- c(scalarsToProcess, private$clOptScalars)
+        scalarDesc <- c(scalarDesc, rep.int("", length(private$clOptScalars)))
+      }
+      return(tibble(
+        scalar = scalarsToProcess,
+        description = scalarDesc,
+        value = NA_character_
+      ))
+    },
+    fixScalarDf = function(data, symName, ignoreInvalidScalars = FALSE) {
+      scalarColumnName <- names(private$metadata[[symName]]$headers)[1]
+      valueColumnName <- names(private$metadata[[symName]]$headers)[3]
+      requiredColumnsFound <- c(scalarColumnName, valueColumnName) %in% names(data)
+      if (!all(requiredColumnsFound)) {
+        stop_custom("error_validation", sprintf(
+          "Invalid scalar dataframe. Required column(s): %s not found.",
+          paste(c(scalarColumnName, valueColumnName)[!requiredColumnsFound], collapse = ", ")
+        ))
+      }
+      scalarDfTmp <- self$getScalarTemplate(symName)
+      scalarIds <- match(data[[scalarColumnName]], scalarDfTmp[[1L]])
+      isInvalidScalar <- is.na(scalarIds)
+      scalarIds <- scalarIds[!isInvalidScalar]
+      if (any(isInvalidScalar)) {
+        invalidScalars <- paste(data[[scalarColumnName]][isInvalidScalar],
+          collapse = ", "
+        )
+        if (ignoreInvalidScalars) {
+          flog.info("Invalid scalar(s) found in scalar dataframe: %s", invalidScalars)
+        } else {
+          stop_custom("error_validation", sprintf(
+            "Invalid scalar(s) found in scalar dataframe: %s.",
+            invalidScalars
+          ))
+        }
+      }
+      scalarDfTmp[scalarIds, 3] <- as.character(data[[valueColumnName]][!isInvalidScalar])
+      return(scalarDfTmp)
     }
   ),
   private = list(

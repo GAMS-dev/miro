@@ -710,7 +710,7 @@ ${latestGamsInstalled}`);
               { withFileTypes: true },
             );
             if (process.platform === 'win32') {
-              const contentPythonDirTmp = contentPythonDir.filter((el) => (el.isFile() || el.isSymbolicLink()) && el.name === 'python.exe');
+              const contentPythonDirTmp = contentPythonDir.filter((el) => (el.isFile() || el.isSymbolicLink()) && el.name.toLowerCase() === 'python.exe');
               if (contentPythonDirTmp.length > 0) {
                 pythonpathTmp = path.join(dirsToExplore[i], contentPythonDirTmp[0].name);
               }
