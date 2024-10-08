@@ -129,7 +129,7 @@ author: {author_name}\nemail: {author_mail}")
 
     try:
         msg = Message(
-            "New MIRO app", sender="noreply@gams.com", recipients=["miro@gams.com"]
+            "New MIRO app", sender="distrib@gams.com", recipients=["miro@gams.com"]
         )
         msg.body = f"New MIRO app: {app_title} from: {author_name} ({author_mail}) uploaded. App description: {app_desc}"
         with app.open_resource(os.path.join("..", miro_app_filepath)) as fp:
