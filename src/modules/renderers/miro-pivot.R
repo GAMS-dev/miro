@@ -1617,8 +1617,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 optionValTmp <- input[[advancedOption$inputId]]
                 if (length(optionValTmp)) {
                   optionValTmp <- trimws(optionValTmp)
+                  refreshRequired <- TRUE
                   if (nchar(optionValTmp) > 0L) {
-                    refreshRequired <- TRUE
                     newViewConfig$chartOptions[[advancedOption$optionId]] <- optionValTmp
                   }
                 }
