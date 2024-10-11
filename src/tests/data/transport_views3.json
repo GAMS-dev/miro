@@ -24,12 +24,12 @@
                 "yTitle": "yyy",
                 "yMin": 15,
                 "yLogScale": false,
-                "drawDataPoints": false,
+                "showDataMarkers": false,
                 "showXGrid": false,
                 "showYGrid": true,
                 "multiChartSeries": "New-york",
                 "multiChartOptions": {
-                    "drawMultiChartDataPoints": true,
+                    "showMultiChartDataMarkers": true,
                     "multiChartRenderer": "line",
                     "stackMultiChartSeries": "no",
                     "multiChartStepPlot": true
