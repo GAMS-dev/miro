@@ -923,7 +923,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           if (identical(currentView$chartOptions$showYGrid, FALSE)) {
             chartJsObj$x$scales[[axisType]]$grid$display <- FALSE
           }
-          if (identical(currentView$chartOptions$drawDataPoints, FALSE) &&
+          if (identical(currentView$chartOptions$showDataMarkers, FALSE) &&
             !identical(chartType, "scatter")) {
             chartJsObj$x$options$normalized <- TRUE
             chartJsObj$x$options$animation <- FALSE
@@ -981,8 +981,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 showLine = multiChartRenderer %in% c("line", "area", "stackedarea", "timeseries"),
                 order = order,
                 scaleID = scaleID,
-                pointHitRadius = if (identical(currentView$chartOptions$multiChartOptions$drawMultiChartDataPoints, TRUE)) 1L else 0,
-                pointRadius = if (identical(currentView$chartOptions$multiChartOptions$drawMultiChartDataPoints, TRUE)) 3L else 0,
+                pointHitRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 1L else 0,
+                pointRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 3L else 0,
                 stack = if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "regularStack")) {
                   "stack1"
                 } else if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "individualStack")) {
