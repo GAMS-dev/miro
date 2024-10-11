@@ -820,7 +820,7 @@ test_job_gamspy:
   tags:
     - linux
   stage: test
-  image: python
+  image: python:3.13
   before_script:
     - pip install --force-reinstall git+https://github.com/GAMS-dev/gamspy.git@develop
   script:
