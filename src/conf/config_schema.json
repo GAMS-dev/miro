@@ -520,7 +520,7 @@
                 "type": "string"
               }
             },
-            "drawDataPoints": {
+            "showDataMarkers": {
               "description": "Whether to draw data points on the chart",
               "type": "boolean"
             },
@@ -551,15 +551,19 @@
                   ]
                 },
                 "stackMultiChartSeries": {
-                  "description": "Title for the second axis",
+                  "description": "Whether and how to stack data in multi-chart series",
                   "type": "string",
-                  "minLength": 1
+                  "enum": [
+                    "no",
+                    "regularStack",
+                    "individualStack"
+                  ]
                 },
                 "multiChartStepPlot": {
                   "description": "Whether to draw a stepped line chart for multi-chart series",
                   "type": "boolean"
                 },
-                "drawMultiChartDataPoints": {
+                "showMultiChartDataMarkers": {
                   "description": "Whether to draw data points on multi-chart series",
                   "type": "boolean"
                 }
@@ -1006,7 +1010,7 @@
                           "type": "string"
                         }
                       },
-                      "drawDataPoints": {
+                      "showDataMarkers": {
                         "description": "Whether to draw data points on the chart",
                         "type": "boolean"
                       },
@@ -1037,9 +1041,8 @@
                             ]
                           },
                           "stackMultiChartSeries": {
-                            "description": "Title for the second axis",
+                            "description": "Whether and how to stack data in multi-chart series",
                             "type": "string",
-                            "minLength": 1,
                             "enum": [
                               "no",
                               "regularStack",
@@ -1050,7 +1053,7 @@
                             "description": "Whether to draw a stepped line chart for multi-chart series",
                             "type": "boolean"
                           },
-                          "drawMultiChartDataPoints": {
+                          "showMultiChartDataMarkers": {
                             "description": "Whether to draw data points on multi-chart series",
                             "type": "boolean"
                           }

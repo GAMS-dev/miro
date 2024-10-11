@@ -1073,13 +1073,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                       if (pivotRenderer %in% c("line", "area", "stackedarea", "radar")) {
                         tags$div(
                           class = "col-sm-6",
-                          checkboxInput_MIRO(ns("drawDataPoints"),
-                            label = lang$renderers$miroPivot$newView$drawDataPoints,
-                            value = if (identical(pivotRenderer, "timeseries")) {
-                              identical(viewOptions$chartOptions$drawDataPoints, TRUE)
-                            } else {
-                              !identical(viewOptions$chartOptions$drawDataPoints, FALSE)
-                            }
+                          checkboxInput_MIRO(ns("showDataMarkers"),
+                            label = lang$renderers$miroPivot$newView$showDataMarkers,
+                            value = !identical(viewOptions$chartOptions$showDataMarkers, FALSE)
                           )
                         )
                       },
@@ -1172,7 +1168,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                       class = "row",
                       tags$div(
                         class = "col-sm-6",
-                        `data-display-if` = "input.addMultiChartSeries.length>0",
+                        `data-display-if` = "input.addMultiChartSeries?.length>0",
                         `data-ns-prefix` = ns(""),
                         selectInput(ns("miroPivotMultiChartRenderer"),
                           width = "100%",
@@ -1198,7 +1194,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                       ),
                       tags$div(
                         class = "col-sm-6",
-                        `data-display-if` = "input.addMultiChartSeries.length>0 && ['stackedarea', 'horizontalstackedbar', 'stackedbar'].includes(input.pivotRenderer)",
+                        `data-display-if` = "input.addMultiChartSeries?.length>0 && ['stackedarea', 'horizontalstackedbar', 'stackedbar'].includes(input.pivotRenderer)",
                         `data-ns-prefix` = ns(""),
                         selectInput(ns("stackMultiChartSeries"),
                           width = "100%",
@@ -1216,7 +1212,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                       ),
                       tags$div(
                         class = "col-sm-6",
-                        `data-display-if` = "input.addMultiChartSeries.length>0 && input.miroPivotMultiChartRenderer==='line'",
+                        `data-display-if` = "input.addMultiChartSeries?.length>0 && input.miroPivotMultiChartRenderer==='line'",
                         `data-ns-prefix` = ns(""),
                         checkboxInput_MIRO(ns("multiChartStepPlot"),
                           label = lang$renderers$miroPivot$newView$stepPlot,
@@ -1225,11 +1221,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                       ),
                       tags$div(
                         class = "col-sm-6",
-                        `data-display-if` = "input.addMultiChartSeries.length>0 && input.miroPivotMultiChartRenderer==='line'",
+                        `data-display-if` = "input.addMultiChartSeries?.length>0 && input.miroPivotMultiChartRenderer==='line'",
                         `data-ns-prefix` = ns(""),
-                        checkboxInput_MIRO(ns("drawMultiChartDataPoints"),
-                          label = lang$renderers$miroPivot$newView$drawMultiChartDataPoints,
-                          value = identical(viewOptions$chartOptions$multiChartOptions$drawMultiChartDataPoints, TRUE)
+                        checkboxInput_MIRO(ns("showMultiChartDataMarkers"),
+                          label = lang$renderers$miroPivot$newView$showMultiChartDataMarkers,
+                          value = identical(viewOptions$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)
                         )
                       )
                     )
@@ -1367,19 +1363,20 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                       tags$div(class = "small-space"),
                       tags$div(
                         class = "row",
-                        tags$div(
-                          class = "col-sm-6",
-                          `data-display-if` = "['stackedarea', 'area'].includes(input.pivotRenderer)",
-                          `data-ns-prefix` = ns(""),
-                          numericInput(ns("fillOpacity"),
-                            width = "100%",
-                            min = 0,
-                            max = 1,
-                            step = 0.1,
-                            label = lang$renderers$miroPivot$newView$fillOpacity,
-                            value = viewOptions$chartOptions$fillOpacity
+                        if (pivotRenderer %in% c("stackedarea", "area")) {
+                          tags$div(
+                            class = "col-sm-6",
+                            `data-ns-prefix` = ns(""),
+                            numericInput(ns("fillOpacity"),
+                              width = "100%",
+                              min = 0,
+                              max = 1,
+                              step = 0.1,
+                              label = lang$renderers$miroPivot$newView$fillOpacity,
+                              value = viewOptions$chartOptions$fillOpacity
+                            )
                           )
-                        )
+                        }
                       ),
                       tags$div(
                         class = "row",
@@ -1427,13 +1424,15 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             ),
             additionalOptionsContent,
             footer = tagList(
-              tags$div(
-                style = if (!pivotRenderer %in% c("horizontalbar", "horizontalstackedbar")) "display:none;" else "text-align:left;",
-                tags$span(
-                  class = "fas fa-circle-info info-icon"
-                ),
-                lang$renderers$miroPivot$newView$info
-              ),
+              if (pivotRenderer %in% c("horizontalbar", "horizontalstackedbar")) {
+                tags$div(
+                  style = "text-align:left;",
+                  tags$span(
+                    class = "fas fa-circle-info info-icon"
+                  ),
+                  lang$renderers$miroPivot$newView$info
+                )
+              },
               tags$div(
                 id = ns("saveViewButtonsWrapper"),
                 modalButton(lang$renderers$miroPivot$newView$btCancel),
@@ -1632,8 +1631,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                   optionId = "yLogScale"
                 ),
                 list(
-                  inputId = "drawDataPoints",
-                  optionId = "drawDataPoints"
+                  inputId = "showDataMarkers",
+                  optionId = "showDataMarkers"
                 ),
                 list(
                   inputId = "stepPlot",
@@ -1680,13 +1679,13 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 refreshRequired <- TRUE
                 newViewConfig$chartOptions$multiChartSeries <- input[["addMultiChartSeries"]]
 
-                drawMultiChartDataPoints <- isTRUE(input[["drawMultiChartDataPoints"]])
+                showMultiChartDataMarkers <- isTRUE(input[["showMultiChartDataMarkers"]])
                 multiChartRenderer <- trimws(input[["miroPivotMultiChartRenderer"]])
                 stackMultiChartSeries <- input[["stackMultiChartSeries"]]
                 multiChartStepPlot <- isTRUE(input[["multiChartStepPlot"]])
 
                 newViewConfig$chartOptions[["multiChartOptions"]] <- Filter(Negate(function(x) is.null(x) || is.na(x)), list(
-                  drawMultiChartDataPoints = drawMultiChartDataPoints,
+                  showMultiChartDataMarkers = showMultiChartDataMarkers,
                   multiChartRenderer = multiChartRenderer,
                   stackMultiChartSeries = stackMultiChartSeries,
                   multiChartStepPlot = multiChartStepPlot
@@ -2546,7 +2545,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           chartJsObj$x$scales[[axisType]]$grid$display <- FALSE
         }
 
-        if (identical(currentView$chartOptions$drawDataPoints, FALSE) &&
+        if (identical(currentView$chartOptions$showDataMarkers, FALSE) &&
           !identical(pivotRenderer, "scatter")) {
           chartJsObj$x$options$normalized <- TRUE
           chartJsObj$x$options$animation <- FALSE
@@ -2611,8 +2610,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               showLine = multiChartRenderer %in% c("line", "area", "stackedarea", "timeseries"),
               order = order,
               scaleID = scaleID,
-              pointHitRadius = if (identical(currentView$chartOptions$multiChartOptions$drawMultiChartDataPoints, TRUE)) 1L else 0,
-              pointRadius = if (identical(currentView$chartOptions$multiChartOptions$drawMultiChartDataPoints, TRUE)) 3L else 0,
+              pointHitRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 1L else 0,
+              pointRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 3L else 0,
               stack = if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "regularStack")) {
                 "stack1"
               } else if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "individualStack")) {
