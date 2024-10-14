@@ -17,6 +17,7 @@ library("dplyr")
 library("tidyr")
 library("R6")
 library("shinytest2")
+library("futile.logger")
 
 source("global.R")
 source(file.path("tests", "util.R"))

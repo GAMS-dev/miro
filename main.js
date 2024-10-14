@@ -1619,11 +1619,14 @@ ipcMain.on('export-miroenv', async () => {
     );
   } catch (err) {
     log.info(`Problems fetching current environment. Error message: '${err.message}'`);
-    showErrorMsg({
-      type: 'error',
-      title: lang.main.ErrorUnexpectedHdr,
-      message: lang.main.ErrorUnexpectedMsg,
-    }, settingsWindow);
+    showErrorMsg(
+      {
+        type: 'error',
+        title: lang.main.ErrorUnexpectedHdr,
+        message: `${lang.main.ErrorUnexpectedMsg2} '${err.message}'`,
+      },
+      settingsWindow,
+    );
   }
 });
 ipcMain.on('settings-select-new-path', async (e, id, defaultPath) => {

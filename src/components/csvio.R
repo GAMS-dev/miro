@@ -211,17 +211,8 @@ CsvIO <- R6::R6Class("CsvIO", inherit = LocalFileIO, public = list(
     return(data)
   },
   readScalars = function(symName) {
-    scalarsToProcess <- private$metadata[[symName]]$symnames
-    scalarDesc <- private$metadata[[symName]]$symtext
-    if (identical(symName, scalarsFileName) && length(private$clOptScalars)) {
-      scalarsToProcess <- c(scalarsToProcess, private$clOptScalars)
-      scalarDesc <- c(scalarDesc, rep.int("", length(private$clOptScalars)))
-    }
-    scalarsDf <- tibble(
-      scalar = scalarsToProcess,
-      description = scalarDesc,
-      value = NA_character_
-    )
+    scalarsDf <- self$getScalarTemplate(symName)
+    scalarsToProcess <- scalarsDf[[1]]
     scalarsDfTmp <- private$readSymbol(symName)
     invalidScalars <- !scalarsDfTmp[[1]] %in% scalarsToProcess
     if (any(invalidScalars)) {
