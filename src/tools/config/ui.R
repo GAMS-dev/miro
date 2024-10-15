@@ -26,6 +26,13 @@ inputTabs <- c(
   )
 )
 inputTabs <- inputTabs[!inputTabs %in% inputWidgets]
+customScalarInputWidgets <- names(modelIn)[vapply(modelIn, function(el) {
+  if (identical(el$type, "custom")) {
+    return(TRUE)
+  }
+  return(FALSE)
+}, logical(1L), USE.NAMES = FALSE)]
+inputTabs <- c(inputTabs, customScalarInputWidgets)
 if (length(configJSON$inputWidgetGroups)) {
   inputTabs <- c(
     inputTabs,

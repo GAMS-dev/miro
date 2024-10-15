@@ -501,7 +501,7 @@ font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
   Shiny.addCustomMessageHandler('gms-setTextContent', (data) => {
     if (data.keepChildNodes === true) {
       $(data.selector).contents().filter(function () { return this.nodeType === 3; }).first()
-        .replaceWith(data.content);
+        .replaceWith(new Text(data.content));
     } else {
       $(data.selector).text(data.content);
     }

@@ -2,12 +2,8 @@ import log from 'electron-log/main.js';
 import http from 'axios';
 import { execa } from 'execa';
 import path from 'node:path';
-import {
-  getAppDbPath, isFalse,
-} from './util.js';
-import {
-  randomPort, waitFor, isNull, kill,
-} from './helpers.js';
+import { getAppDbPath, isFalse } from './util.js';
+import { randomPort, waitFor, isNull, kill } from './helpers.js';
 
 /*
     This code was largely inspired by and taken from:
@@ -36,7 +32,13 @@ import {
     SOFTWARE.
 */
 class MiroProcessManager {
-  constructor(configData, inDevelopmentMode, isInBuildMode, miroResourcePath, appDataPath) {
+  constructor(
+    configData,
+    inDevelopmentMode,
+    isInBuildMode,
+    miroResourcePath,
+    appDataPath,
+  ) {
     this.configData = configData;
     this.inDevelopmentMode = inDevelopmentMode;
     this.isInBuildMode = isInBuildMode;
@@ -97,14 +99,18 @@ class MiroProcessManager {
     onMIROError = null,
   ) {
     if (appData.allowMultiple !== true && this.processIdMap[appData.id]) {
-      log.error('Process for this model already running. This should not happen. Reference not freed.');
+      log.error(
+        'Process for this model already running. This should not happen. Reference not freed.',
+      );
       return null;
     }
     let internalPid = this.miroProcesses.findIndex(isNull);
     if (internalPid === -1) {
       internalPid = this.miroProcesses.length;
     }
-    log.debug(`Request to start web server for app: ${appData.id} with internal pid: ${internalPid} submitted.`);
+    log.debug(
+      `Request to start web server for app: ${appData.id} with internal pid: ${internalPid} submitted.`,
+    );
     if (appData.allowMultiple !== true) {
       this.processIdMap[appData.id] = internalPid;
     }
@@ -112,14 +118,18 @@ class MiroProcessManager {
     try {
       shinyPort = await randomPort();
     } catch (e) {
-      log.debug(`Process could not be started, as scanning open ports failed with error: ${e.message}`);
+      log.debug(
+        `Process could not be started, as scanning open ports failed with error: ${e.message}`,
+      );
       if (onErrorStartup) {
         await onErrorStartup(appData.id, e);
       }
       return null;
     }
     this.pidPortMap[internalPid.toString()] = shinyPort;
-    log.debug(`Process: ${internalPid} is being started on port: ${shinyPort}.`);
+    log.debug(
+      `Process: ${internalPid} is being started on port: ${shinyPort}.`,
+    );
     const rpath = this.configData.get('rpath');
     const gamspath = this.configData.get('gamspath');
     const pythonpath = this.configData.get('pythonpath');
@@ -149,19 +159,19 @@ class MiroProcessManager {
 developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
 
     let miroEnv = await this.configData.get('miroEnv');
-    if (miroEnv != null && Object.keys(miroEnv).includes('PATH')) {
-      // we append the current PATH
-      const tidyPath = miroEnv.PATH
-        .split(path.delimiter)
-        .filter((el) => el.length > 0)
-        .join(path.delimiter);
+    if (miroEnv == null) {
+      miroEnv = {};
+    } else {
       // we need to clone object as we don't want to overwrite
       // config data
       miroEnv = JSON.parse(JSON.stringify(miroEnv));
-      miroEnv.PATH = tidyPath + path.delimiter + process.env.PATH;
-    }
-    if (miroEnv == null) {
-      miroEnv = {};
+      if (Object.keys(miroEnv).includes('PATH')) {
+        // we append the current PATH
+        const tidyPath = miroEnv.PATH.split(path.delimiter)
+          .filter((el) => el.length > 0)
+          .join(path.delimiter);
+        miroEnv.PATH = tidyPath + path.delimiter + process.env.PATH;
+      }
     }
 
     let libPathForwardSlashes;
@@ -189,7 +199,8 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       R_LIBS_SITE: libPathForwardSlashes,
       R_LIB_PATHS: libPathForwardSlashes,
       MIRO_NO_DEBUG: !this.inDevelopmentMode,
-      MIRO_FORCE_SCEN_IMPORT: this.inDevelopmentMode && appData.forceScenImport,
+      MIRO_FORCE_SCEN_IMPORT:
+        this.inDevelopmentMode && appData.forceScenImport,
       MIRO_USE_TMP: !isFalse(appData.usetmpdir),
       MIRO_WS_PATH: this.configData.getConfigPath(),
       MIRO_DB_PATH: dbPath,
@@ -208,8 +219,13 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       MIRO_THEME: await generalConfig.colorTheme,
       MIRO_LOG_LEVEL: await generalConfig.logLevel,
       MIRO_VERSION_STRING: appData.miroversion,
-      MIRO_MODEL_PATH: this.inDevelopmentMode ? appData.modelPath
-        : path.join(this.appDataPath, appData.id, appData.gmsName == null ? `${appData.id}.gms` : appData.gmsName),
+      MIRO_MODEL_PATH: this.inDevelopmentMode
+        ? appData.modelPath
+        : path.join(
+            this.appDataPath,
+            appData.id,
+            appData.gmsName == null ? `${appData.id}.gms` : appData.gmsName,
+          ),
       MIRO_APP_ID: appData.id,
     });
     if (process.platform === 'linux') {
@@ -221,9 +237,18 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       });
     }
     this.miroProcesses[internalPid] = execa(
-      path.join(await rpath, process.platform === 'win32' ? path.join('bin', 'x64') : 'bin', 'R'),
-      ['--no-echo', '--no-restore', '--vanilla',
-        '-f', path.join(this.miroResourcePath, 'start-shiny.R')],
+      path.join(
+        await rpath,
+        process.platform === 'win32' ? path.join('bin', 'x64') : 'bin',
+        'R',
+      ),
+      [
+        '--no-echo',
+        '--no-restore',
+        '--vanilla',
+        '-f',
+        path.join(this.miroResourcePath, 'start-shiny.R'),
+      ],
       {
         env: procEnv,
         stdout: stdOutPipe,
@@ -248,30 +273,36 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
         process.stdout.write(data);
       });
     }
-    this.miroProcesses[internalPid].catch(async (e) => {
-      log.debug(`Process of MIRO app with pid: ${internalPid} stopped.\nStdout: ${e.stdout}.\nStderr: ${e.stderr}`);
-      this.miroProcesses[internalPid] = null;
-      delete this.pidPortMap[internalPid.toString()];
-      if (appData.allowMultiple !== true) {
-        delete this.processIdMap[appData.id];
-      }
-      if (onErrorLater) {
-        await onErrorLater(appData.id, e);
-      }
-    }).then(async (e) => {
-      if (!this.miroProcesses[internalPid]) {
-        return;
-      }
-      log.debug(`Process of MIRO app with pid: ${internalPid} ended.\nStdout: ${e.stdout}.\nStderr: ${e.stderr}`);
-      this.miroProcesses[internalPid] = null;
-      delete this.pidPortMap[internalPid.toString()];
-      if (appData.allowMultiple !== true) {
-        delete this.processIdMap[appData.id];
-      }
-      if (onProcessFinished) {
-        await onProcessFinished(appData.id);
-      }
-    });
+    this.miroProcesses[internalPid]
+      .catch(async (e) => {
+        log.debug(
+          `Process of MIRO app with pid: ${internalPid} stopped.\nStdout: ${e.stdout}.\nStderr: ${e.stderr}`,
+        );
+        this.miroProcesses[internalPid] = null;
+        delete this.pidPortMap[internalPid.toString()];
+        if (appData.allowMultiple !== true) {
+          delete this.processIdMap[appData.id];
+        }
+        if (onErrorLater) {
+          await onErrorLater(appData.id, e);
+        }
+      })
+      .then(async (e) => {
+        if (!this.miroProcesses[internalPid]) {
+          return;
+        }
+        log.debug(
+          `Process of MIRO app with pid: ${internalPid} ended.\nStdout: ${e.stdout}.\nStderr: ${e.stderr}`,
+        );
+        this.miroProcesses[internalPid] = null;
+        delete this.pidPortMap[internalPid.toString()];
+        if (appData.allowMultiple !== true) {
+          delete this.processIdMap[appData.id];
+        }
+        if (onProcessFinished) {
+          await onProcessFinished(appData.id);
+        }
+      });
     return internalPid;
   }
 
@@ -297,7 +328,9 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       }
       await waitFor(Math.min(i * 100, 1000));
       try {
-        const res = await http.head(`${url}/manifest.json`, { timeout: 10000 });
+        const res = await http.head(`${url}/manifest.json`, {
+          timeout: 10000,
+        });
         if (res.status === 200) {
           await progressCallback({ code: 'success', port: shinyPort });
           onSuccess(url, this.miroProcesses[internalPid]);
@@ -305,7 +338,9 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
         }
       } catch (e) {
         if (i > 10) {
-          log.debug(`Process: ${internalPid} not responding after ${i + 1} seconds.`);
+          log.debug(
+            `Process: ${internalPid} not responding after ${i + 1} seconds.`,
+          );
           if (progressCallback) {
             await progressCallback({ code: 'notresponding' });
           }
@@ -324,7 +359,9 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
   }
 
   async terminate(internalPid) {
-    log.debug(`Request to terminate app with internal pid: ${internalPid} received.`);
+    log.debug(
+      `Request to terminate app with internal pid: ${internalPid} received.`,
+    );
     if (Number.isInteger(internalPid)) {
       const { pid } = this.miroProcesses[internalPid];
       try {
@@ -332,7 +369,9 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
         log.debug(`R process with pid: ${pid} killed.`);
         this.miroProcesses[internalPid] = null;
       } catch (e) {
-        log.debug(`Problems killing R process with pid: ${pid}. Error message: ${e.message}`);
+        log.debug(
+          `Problems killing R process with pid: ${pid}. Error message: ${e.message}`,
+        );
       }
     }
   }
@@ -353,9 +392,13 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
     const resolvedTermPromises = await Promise.allSettled(termPromises);
     resolvedTermPromises.forEach((termStatus) => {
       if (termStatus.status === 'rejected') {
-        log.debug(`Problems killing R process. Error message: ${termStatus.reason.message}.`);
+        log.debug(
+          `Problems killing R process. Error message: ${termStatus.reason.message}.`,
+        );
       } else if (termStatus.value.pid) {
-        log.debug(`R process with pid: ${termStatus.value.pid} successfully terminated.`);
+        log.debug(
+          `R process with pid: ${termStatus.value.pid} successfully terminated.`,
+        );
       }
     });
     this.processIdMap = {};

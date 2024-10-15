@@ -5,7 +5,7 @@ app <- AppDriver$new("../../",
 )
 Sys.sleep(2)
 
-app$set_inputs(inputTabset = "inputTabset_1")
+app$set_inputs(inputTabset = "inputTabset_2")
 Sys.sleep(1)
 expect_equivalent(
   getHotData(app, "data-in_8-custom-sudoku"),
@@ -53,7 +53,7 @@ expect_equivalent(
 expect_identical(app$get_values()$output[["data-in_8-custom-testOutput"]], "2.3")
 expect_identical(app$get_values()$input[["data-in_8-custom-force_unique_sol"]], TRUE)
 expect_identical(app$get_values()$output[["data-in_8-custom-uniqueSolWarning"]], "Model will abort if more than one solution exists.")
-app$set_inputs(inputTabset = "inputTabset_6")
+app$set_inputs(inputTabset = "inputTabset_1")
 Sys.sleep(1)
 expect_identical(app$get_values()$output[["data-in_11-custom-i"]], "seattle,san-diego")
 expect_identical(app$get_values()$output[["data-in_11-custom-j"]], "new-york,chicago,topeka")
