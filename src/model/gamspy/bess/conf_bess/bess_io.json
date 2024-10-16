@@ -1,0 +1,264 @@
+{
+    "modelTitle": "GAMSPy App",
+    "inputSymbols": {
+        "generator_specifications": {
+            "alias": "Specifications of each generator",
+            "symtype": "parameter",
+            "headers": {
+                "i": {
+                    "type": "string",
+                    "alias": "generators"
+                },
+                "cost_per_unit": {
+                    "type": "numeric",
+                    "alias": "cost_per_unit"
+                },
+                "fixed_cost": {
+                    "type": "numeric",
+                    "alias": "fixed_cost"
+                },
+                "min_power_output": {
+                    "type": "numeric",
+                    "alias": "min_power_output"
+                },
+                "max_power_output": {
+                    "type": "numeric",
+                    "alias": "max_power_output"
+                },
+                "min_up_time": {
+                    "type": "numeric",
+                    "alias": "min_up_time"
+                },
+                "min_down_time": {
+                    "type": "numeric",
+                    "alias": "min_down_time"
+                }
+            }
+        },
+        "timewise_load_demand_and_cost_external_grid_data": {
+            "alias": "Timewise list for load demand and cost of the external grid.",
+            "symtype": "parameter",
+            "headers": {
+                "j": {
+                    "type": "string",
+                    "alias": "hours"
+                },
+                "load_demand": {
+                    "type": "numeric",
+                    "alias": "load demand at hour j"
+                },
+                "cost_external_grid": {
+                    "type": "numeric",
+                    "alias": "cost of the external grid at hour j"
+                }
+            }
+        },
+        "_scalars": {
+            "alias": "Input Scalars",
+            "symnames": [
+                "cost_bat_power",
+                "cost_bat_energy",
+                "max_input_external_grid"
+            ],
+            "symtext": [
+                "cost_bat_power",
+                "cost_bat_energy",
+                "maximal power that can be imported from the external grid every hour"
+            ],
+            "symtypes": [
+                "parameter",
+                "parameter",
+                "parameter"
+            ],
+            "headers": {
+                "scalar": {
+                    "type": "string",
+                    "alias": "Scalar Name"
+                },
+                "description": {
+                    "type": "string",
+                    "alias": "Scalar Description"
+                },
+                "value": {
+                    "type": "string",
+                    "alias": "Scalar Value"
+                }
+            }
+        }
+    },
+    "outputSymbols": {
+        "gen_power": {
+            "alias": "dipatch power from generator i at hour j",
+            "symtype": "variable",
+            "headers": {
+                "i": {
+                    "type": "string",
+                    "alias": "generators"
+                },
+                "j": {
+                    "type": "string",
+                    "alias": "hours"
+                },
+                "level": {
+                    "type": "numeric",
+                    "alias": "level"
+                },
+                "marginal": {
+                    "type": "numeric",
+                    "alias": "marginal"
+                },
+                "lower": {
+                    "type": "numeric",
+                    "alias": "lower"
+                },
+                "upper": {
+                    "type": "numeric",
+                    "alias": "upper"
+                },
+                "scale": {
+                    "type": "numeric",
+                    "alias": "scale"
+                }
+            }
+        },
+        "gen_active": {
+            "alias": "states if generator i is active at hour j",
+            "symtype": "variable",
+            "headers": {
+                "i": {
+                    "type": "string",
+                    "alias": "generators"
+                },
+                "j": {
+                    "type": "string",
+                    "alias": "hours"
+                },
+                "level": {
+                    "type": "numeric",
+                    "alias": "level"
+                },
+                "marginal": {
+                    "type": "numeric",
+                    "alias": "marginal"
+                },
+                "lower": {
+                    "type": "numeric",
+                    "alias": "lower"
+                },
+                "upper": {
+                    "type": "numeric",
+                    "alias": "upper"
+                },
+                "scale": {
+                    "type": "numeric",
+                    "alias": "scale"
+                }
+            }
+        },
+        "battery_power": {
+            "alias": "power charged or discharged from the battery at hour j",
+            "symtype": "variable",
+            "headers": {
+                "j": {
+                    "type": "string",
+                    "alias": "hours"
+                },
+                "level": {
+                    "type": "numeric",
+                    "alias": "level"
+                },
+                "marginal": {
+                    "type": "numeric",
+                    "alias": "marginal"
+                },
+                "lower": {
+                    "type": "numeric",
+                    "alias": "lower"
+                },
+                "upper": {
+                    "type": "numeric",
+                    "alias": "upper"
+                },
+                "scale": {
+                    "type": "numeric",
+                    "alias": "scale"
+                }
+            }
+        },
+        "external_grid_power": {
+            "alias": "imported power at hour j",
+            "symtype": "variable",
+            "headers": {
+                "j": {
+                    "type": "string",
+                    "alias": "hours"
+                },
+                "level": {
+                    "type": "numeric",
+                    "alias": "level"
+                },
+                "marginal": {
+                    "type": "numeric",
+                    "alias": "marginal"
+                },
+                "lower": {
+                    "type": "numeric",
+                    "alias": "lower"
+                },
+                "upper": {
+                    "type": "numeric",
+                    "alias": "upper"
+                },
+                "scale": {
+                    "type": "numeric",
+                    "alias": "scale"
+                }
+            }
+        },
+        "_scalarsve_out": {
+            "alias": "Output Variable/Equation Scalars",
+            "symnames": [
+                "battery_delivery_rate",
+                "battery_stoarge"
+            ],
+            "symtext": [
+                "power (delivery) rate of the battery energy system",
+                "energy (storage) rate of the battery energy system"
+            ],
+            "symtypes": [
+                "variable",
+                "variable"
+            ],
+            "headers": {
+                "scalar": {
+                    "type": "string",
+                    "alias": "Scalar Name"
+                },
+                "description": {
+                    "type": "string",
+                    "alias": "Scalar Description"
+                },
+                "level": {
+                    "type": "numeric",
+                    "alias": "Level"
+                },
+                "marginal": {
+                    "type": "numeric",
+                    "alias": "Marginal"
+                },
+                "lower": {
+                    "type": "numeric",
+                    "alias": "Lower"
+                },
+                "upper": {
+                    "type": "numeric",
+                    "alias": "Upper"
+                },
+                "scale": {
+                    "type": "numeric",
+                    "alias": "Scale"
+                }
+            }
+        }
+    }
+}
