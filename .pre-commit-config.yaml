@@ -72,6 +72,6 @@ repos:
           - jsonlite
       - id: fix-dashboard-schema
         name: fix-dashboard-schema
-        entry: node ./scripts/fixDashboardSchema.js
+        entry: node ./scripts/fixConfigSchema.js
         language: node
         files: ^src/conf/config_schema\.json$

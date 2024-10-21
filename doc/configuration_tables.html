@@ -100,9 +100,10 @@
                   <div class="section-block">
                     <p>
                       In this section you can customize the general
-                      configuration of input and output tables (global settings)
-                      as well as the individual settings of output tables.
-                      Tables for individual input symbols are configured in the
+                      configuration of input and output tables (global
+                      settings) as well as the individual settings of output
+                      tables. Tables for individual input symbols are
+                      configured in the
                       <a href="./widgets.html#widget-table">Input widgets</a>
                       category.
                     </p>
@@ -136,8 +137,8 @@
                         <i>stretch all columns</i>. Stretched columns mean that
                         the table always fills the entire window width. With
                         large tables, this can have a negative effect on the
-                        performance of the application. Columns that are not set
-                        to stretch have a default column with of 200px.
+                        performance of the application. Columns that are not
+                        set to stretch have a default column with of 200px.
                       </p>
                     </div>
                     <div id="column-widths" class="section-block">
@@ -146,8 +147,8 @@
                         Here, the default column with of a single non-streched
                         column (default: 200px) can be adjusted. It is
                         recommended not to choose column widths that are too
-                        small, otherwise the table contents may not be displayed
-                        correctly.
+                        small, otherwise the table contents may not be
+                        displayed correctly.
                       </p>
                     </div>
                     <div id="context-menu" class="section-block">
@@ -162,7 +163,9 @@
                   </div>
                 </section>
                 <section id="output-tables" class="doc-section">
-                  <h2 class="section-title">Output Tables (global settings)</h2>
+                  <h2 class="section-title">
+                    Output Tables (global settings)
+                  </h2>
                   <div class="section-block">
                     <div id="table-style" class="section-block">
                       <h3 class="block-title">Table style</h3>
@@ -194,10 +197,11 @@
                       <p>
                         Table filters can be used to search each table column
                         individually for entries. If there are strings in the
-                        column, the filter is a text search. For numeric values,
-                        a numeric range can be specified as the filter with the
-                        help of a slider. The filters can be displayed above or
-                        below the table or can be deactivated completely.
+                        column, the filter is a text search. For numeric
+                        values, a numeric range can be specified as the filter
+                        with the help of a slider. The filters can be displayed
+                        above or below the table or can be deactivated
+                        completely.
                       </p>
                       <div class="section-block">
                         <img
@@ -235,9 +239,9 @@
                       <h3 class="block-title">Export Buttons</h3>
                       <p>
                         The export buttons <i>copy</i>, <i>CSV</i>,
-                        <i>Excel</i>, <i>PDF</i> and <i>print</i> are available.
-                        Additionally, you can hide/show individual columns with
-                        the <i>column visibility</i> button.
+                        <i>Excel</i>, <i>PDF</i> and <i>print</i> are
+                        available. Additionally, you can hide/show individual
+                        columns with the <i>column visibility</i> button.
                       </p>
                       <div class="callout-block callout-warning">
                         <div class="icon-holder">
@@ -248,10 +252,10 @@
                           <b class="callout-title">Note:</b>
                           <p>
                             Note that only the currently visible data is
-                            exported! If a symbol contains multiple table pages,
-                            using a button only affects the currently visible
-                            table page! It is recommended to use the native
-                            export functionality of MIRO instead.
+                            exported! If a symbol contains multiple table
+                            pages, using a button only affects the currently
+                            visible table page! It is recommended to use the
+                            native export functionality of MIRO instead.
                           </p>
                         </div>
                         <!--//content-->
@@ -309,15 +313,16 @@
                         Allows you to pivot a table column of a symbol, i.e. to
                         have a new column from each of the elements in this
                         column. Unlike the
-                        <a href="./model.html#table-miro">table statement</a> in
-                        the GAMS model itself (<code class="language-gams"
+                        <a href="./model.html#table-miro">table statement</a>
+                        in the GAMS model itself (<code class="language-gams"
                           >Table symbolname;</code
                         >), this option does not affect the
                         <a href="./model.html#data-contract">data contract</a>
                         between GAMS and MIRO. Hence, the columns of the symbol
-                        remain variable, since the symbol itself is communicated
-                        in list format. The pivoting of the configured column
-                        then happens "live" in the MIRO application.
+                        remain variable, since the symbol itself is
+                        communicated in list format. The pivoting of the
+                        configured column then happens "live" in the MIRO
+                        application.
                       </p>
                     </div>
                     <div
@@ -372,7 +377,9 @@
                       href="#column-widths"
                       >Column Widths</a
                     >
-                    <a class="nav-link scrollto save-space" href="#context-menu"
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#context-menu"
                       >Context Menu</a
                     >
                   </nav>
@@ -469,7 +476,7 @@
     <!-- gifplayer plugin -->
     <script type="text/javascript" src="assets/js/gifplayer.js"></script>
     <script>
-      $(".gifplayer").gifplayer();
+      $('.gifplayer').gifplayer();
     </script>
     <!-- KaTeX -->
     <script

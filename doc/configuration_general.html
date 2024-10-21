@@ -99,9 +99,9 @@
                   <h2 class="section-title">Introduction</h2>
                   <div class="section-block">
                     <p>
-                      Here you can customize the general behavior and appearance
-                      of MIRO. Changes made in this category are automatically
-                      saved.
+                      Here you can customize the general behavior and
+                      appearance of MIRO. Changes made in this category are
+                      automatically saved.
                     </p>
                   </div>
                 </section>
@@ -135,8 +135,8 @@
                       <h3 class="block-title">Logo</h3>
                       <p>
                         Upload a custom logo (png/jpg file) for your MIRO app,
-                        which is displayed in the upper left corner. Best ratio:
-                        4,6:1.
+                        which is displayed in the upper left corner. Best
+                        ratio: 4,6:1.
                       </p>
                       <div class="section-block">
                         <img
@@ -150,9 +150,9 @@
                     <div id="dark-mode" class="section-block">
                       <h3 class="block-title">Color Mode</h3>
                       <p>
-                        Allows you to choose between MIRO light and dark mode as
-                        well as the dynamic adaptation of the theme based on the
-                        user's system settings.
+                        Allows you to choose between MIRO light and dark mode
+                        as well as the dynamic adaptation of the theme based on
+                        the user's system settings.
                       </p>
                       <div class="row">
                         <div class="col-md-6">
@@ -212,9 +212,9 @@
                     <div id="app-readme" class="section-block">
                       <h3 class="block-title">Readme File</h3>
                       <p>
-                        You have the possibility to integrate a README file into
-                        the MIRO application. Its content is displayed in the
-                        input section in the first tab and is therefore the
+                        You have the possibility to integrate a README file
+                        into the MIRO application. Its content is displayed in
+                        the input section in the first tab and is therefore the
                         first thing the user sees after starting the
                         application. This tab can be used by the developer to
                         introduce and explain the MIRO application or the
@@ -260,8 +260,8 @@
                           In case you want to use mathematical notation in your
                           README file, activate this checkbox. You can use
                           inline math by wrapping your equations between
-                          <kbd>$</kbd> signs. To render the equation centered on
-                          its own line, use two dollar signs: <kbd>$$</kbd>.
+                          <kbd>$</kbd> signs. To render the equation centered
+                          on its own line, use two dollar signs: <kbd>$$</kbd>.
                           <p>
                             <b>Example:</b><br />
                             <kbd
@@ -338,20 +338,23 @@
                     </div>
                   </div>
                 </section>
-                <section id="scenario-data-and-attachments" class="doc-section">
+                <section
+                  id="scenario-data-and-attachments"
+                  class="doc-section"
+                >
                   <h2 class="section-title">Scenario Data and Attachments</h2>
                   <div class="section-block">
                     <div id="default-scenario" class="section-block">
                       <h3 class="block-title">Default Scenario</h3>
                       <p>
                         Allows you to pre-populate tables and widgets with data
-                        when starting MIRO. If this option is set and a scenario
-                        name is specified, MIRO looks for the corresponding
-                        scenario in the database at the application startup and
-                        automatically loads all data into the interface. In case
-                        always the same input data is used as base data, the
-                        step of importing data into MIRO can be skipped with
-                        this option.
+                        when starting MIRO. If this option is set and a
+                        scenario name is specified, MIRO looks for the
+                        corresponding scenario in the database at the
+                        application startup and automatically loads all data
+                        into the interface. In case always the same input data
+                        is used as base data, the step of importing data into
+                        MIRO can be skipped with this option.
                       </p>
                     </div>
                   </div>
@@ -396,13 +399,13 @@
                         the option to choose what should happen when an
                         attachment is not found after a successful GAMS run.
                         Should the user be informed of this by an error message
-                        or should it be silently ignored. You can also choose to
-                        automatically extract the attachment to the working
+                        or should it be silently ignored. You can also choose
+                        to automatically extract the attachment to the working
                         directory when you start another GAMS run with this
                         scenario. This function adds a state to your scenarios.
-                        Per default, scenarios in MIRO are stateless. This means
-                        that running two consecutive GAMS runs with the same
-                        input data will result in the same output data. By
+                        Per default, scenarios in MIRO are stateless. This
+                        means that running two consecutive GAMS runs with the
+                        same input data will result in the same output data. By
                         adding an attachment to the scenario that GAMS is
                         allowed to read on consecutive executions, the results
                         may no longer be the same.
@@ -418,13 +421,14 @@ putclose;
                       <p>
                         When you run this GAMS model for the first time, it
                         creates a file <kbd>report.put</kbd>. When running it a
-                        second time, it aborts with a compilation error: "Report
-                        was found". If you add the file <kbd>report.put</kbd> as
-                        an output attachment and select to extract it into the
-                        working directory whenever you run this scenario again,
-                        your scenario will carry a state. This gives you the
-                        possibility to implement processes of any complexity in
-                        your MIRO application.
+                        second time, it aborts with a compilation error:
+                        "Report was found". If you add the file
+                        <kbd>report.put</kbd> as an output attachment and
+                        select to extract it into the working directory
+                        whenever you run this scenario again, your scenario
+                        will carry a state. This gives you the possibility to
+                        implement processes of any complexity in your MIRO
+                        application.
                       </p>
                       <div class="callout-block callout-warning">
                         <div class="icon-holder">
@@ -434,9 +438,9 @@ putclose;
                         <div class="content">
                           <b class="callout-title">Note:</b>
                           <p>
-                            When this option is activated, additional files will
-                            be saved to each solved scenario. You should make
-                            sure that the disk space used does not become
+                            When this option is activated, additional files
+                            will be saved to each solved scenario. You should
+                            make sure that the disk space used does not become
                             excessive (e.g. by limiting the output written to
                             the lst file).
                           </p>
@@ -468,7 +472,11 @@ putclose;
                       </p>
                       <div
                         class="section-block"
-                        style="display: block; margin: auto; text-align: center"
+                        style="
+                          display: block;
+                          margin: auto;
+                          text-align: center;
+                        "
                       >
                         <img
                           class="img-fluid"
@@ -544,8 +552,8 @@ putclose;
                       <h3 class="block-title">Hypercube Mode</h3>
                       <p>
                         This option enables the submission of
-                        <a href="./hc-module.html">Hypercube jobs</a>. Note that
-                        you must use GAMS MIRO with a
+                        <a href="./hc-module.html">Hypercube jobs</a>. Note
+                        that you must use GAMS MIRO with a
                         <a href="./server.html">GAMS Engine backend</a> (GAMS
                         MIRO Server or GAMS MIRO Desktop - boosted by GAMS
                         Engine) when you want to submit Hypercube jobs.
@@ -557,8 +565,8 @@ putclose;
                       <h3 class="block-title">Extra Command Line Arguments</h3>
                       <p>
                         With this option, command line arguments can be
-                        specified that are set for each GAMS run that is started
-                        from MIRO. This can be GAMS options like
+                        specified that are set for each GAMS run that is
+                        started from MIRO. This can be GAMS options like
                         <span class="code">limrow=10</span> or
                         <span class="code">threads=4</span> but also custom
                         double-dash parameters. Note, that the these command
@@ -594,7 +602,8 @@ putclose;
                       <h3 class="block-title">Listing File</h3>
                       <p>
                         Determine whether the GAMS listing (<i>lst</i>) file is
-                        displayed in the section <i>GAMS interaction</i> or not.
+                        displayed in the section
+                        <i>GAMS interaction</i> or not.
                       </p>
                     </div>
                   </div>
@@ -602,12 +611,12 @@ putclose;
                     <div id="miro-log" class="section-block">
                       <h3 class="block-title">Custom Log File</h3>
                       <p>
-                        You can write a custom MIRO log file and display this in
-                        MIRO. Per default, the GAMS <i>log</i> and
-                        <i>listing</i> (<i>lst</i>) files are visible in the
-                        <i>GAMS interaction</i> section. Besides these files
-                        generated by GAMS you can also write your own log (e.g.
-                        with the
+                        You can write a custom MIRO log file and display this
+                        in MIRO. Per default, the GAMS
+                        <i>log</i> and <i>listing</i> (<i>lst</i>) files are
+                        visible in the <i>GAMS interaction</i> section. Besides
+                        these files generated by GAMS you can also write your
+                        own log (e.g. with the
                         <a
                           href="https://www.gams.com/latest/docs/UG_Put.html"
                           target="_blank"
@@ -617,15 +626,15 @@ putclose;
                         option.
                       </p>
                       <p>
-                        All you have to do is specify the name of this file. The
-                        file must be a text file and needs to be located in the
-                        MIRO working directory at the end of the model run in
-                        order to be included.
+                        All you have to do is specify the name of this file.
+                        The file must be a text file and needs to be located in
+                        the MIRO working directory at the end of the model run
+                        in order to be included.
                       </p>
                       <p>
                         <b>Example:</b><br />
-                        In this example we extend our transport model with a few
-                        lines of code for creating a report
+                        In this example we extend our transport model with a
+                        few lines of code for creating a report
                         <i>transport.dat</i>:
                       </p>
                       <pre><code class="language-gams">File log /transport.dat/;
@@ -676,12 +685,13 @@ loop((i,j), put i.tl, @12, j.tl, @24, x.l(i,j):8:4 /);
                         <div class="content">
                           <b class="callout-title">Note:</b>
                           <p>
-                            Be careful with logs that are not written with every
-                            GAMS run, but only if, for example, a data test in
-                            the model fails. MIRO does not know if a log belongs
-                            to the current or an earlier run. If a log file was
-                            specified, MIRO looks into the working directory and
-                            includes this file after each GAMS run.
+                            Be careful with logs that are not written with
+                            every GAMS run, but only if, for example, a data
+                            test in the model fails. MIRO does not know if a
+                            log belongs to the current or an earlier run. If a
+                            log file was specified, MIRO looks into the working
+                            directory and includes this file after each GAMS
+                            run.
                           </p>
                         </div>
                         <!--//content-->
@@ -689,10 +699,11 @@ loop((i,j), put i.tl, @12, j.tl, @24, x.l(i,j):8:4 /);
                       <!--//callout-block-->
                       <h4>Data validation</h4>
                       <p>
-                        The MIRO log is particularly suitable for the validation
-                        of input data. Checking the consistency of input data
-                        and providing reports when inconsistencies are found is
-                        a critical factor in avoiding end-user frustration.
+                        The MIRO log is particularly suitable for the
+                        validation of input data. Checking the consistency of
+                        input data and providing reports when inconsistencies
+                        are found is a critical factor in avoiding end-user
+                        frustration.
                       </p>
                       <p>
                         If a certain syntax is followed in the MIRO log, data
@@ -764,8 +775,8 @@ putclose log;
                       </div>
                       <p>
                         In this way, erroneous data can be found quickly and
-                        corrected by the user before an expensive calculation is
-                        carried out.
+                        corrected by the user before an expensive calculation
+                        is carried out.
                       </p>
                       <p>
                         The syntax that must be used for MIRO to jump directly
@@ -783,11 +794,11 @@ putclose log;
                         >
                       </p>
                       <p>
-                        The name of the symbol whose data is incorrect, followed
-                        by two colons, signals MIRO to jump to the table of the
-                        corresponding symbol if the model run is aborted. The
-                        specified error message that follows the colons is then
-                        displayed above the table.
+                        The name of the symbol whose data is incorrect,
+                        followed by two colons, signals MIRO to jump to the
+                        table of the corresponding symbol if the model run is
+                        aborted. The specified error message that follows the
+                        colons is then displayed above the table.
                       </p>
                     </div>
                   </div>
@@ -820,9 +831,9 @@ putclose log;
                         scenarios (more information about scenario comparison
                         can be found
                         <a href="./start.html#scenario-comparison">here</a>).
-                        Regardless of the selected option, you can always switch
-                        between split view, tab view and pivot view within the
-                        MIRO application.
+                        Regardless of the selected option, you can always
+                        switch between split view, tab view and pivot view
+                        within the MIRO application.
                       </p>
                     </div>
                   </div>
@@ -885,12 +896,12 @@ putclose log;
                       </h3>
                       <p>
                         If this option is activated, the columns of the pivot
-                        table are fixed to the left side of the table and remain
-                        visible when scrolling horizontally. Note that this can
-                        cause display problems for very wide tables (e.g. with
-                        many columns), especially on small screens. For this
-                        reason, this option is automatically disabled for
-                        screens less than 768 pixels wide.
+                        table are fixed to the left side of the table and
+                        remain visible when scrolling horizontally. Note that
+                        this can cause display problems for very wide tables
+                        (e.g. with many columns), especially on small screens.
+                        For this reason, this option is automatically disabled
+                        for screens less than 768 pixels wide.
                       </p>
                     </div>
                   </div>
@@ -953,7 +964,9 @@ putclose log;
                       href="#default-scenario"
                       >Default Scenario</a
                     >
-                    <a class="nav-link scrollto save-space" href="#local-upload"
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#local-upload"
                       >Local Data Upload</a
                     >
                     <a class="nav-link scrollto save-space" href="#attachments"
@@ -1100,7 +1113,7 @@ putclose log;
     <!-- gifplayer plugin -->
     <script type="text/javascript" src="assets/js/gifplayer.js"></script>
     <script>
-      $(".gifplayer").gifplayer();
+      $('.gifplayer').gifplayer();
     </script>
     <!-- KaTeX -->
     <script

@@ -10,19 +10,26 @@
 #' @param label a character, the name of the series
 #' @param scale an integer, the numeric position of the scale to attach the series to
 #' @export
-cjsSeries <- function(cjs, data, type, label, scale, ...){
+cjsSeries <- function(cjs, data, type, label, scale, ...) {
   UseMethod("cjsSeries")
 }
 
 #' @describeIn cjsSeries Add series to a bar chart
 #' @keywords internal
 #' @export
-cjsSeries.cjs_bar <- function(cjs, data, type = "bar", label = NULL, scale = NULL, fill = FALSE, fillOpacity = 0.7, ...){
+cjsSeries.cjs_bar <- function(cjs, data, type = "bar", label = NULL, scale = NULL, fill = FALSE, fillOpacity = 0.7, scaleID = NULL, ...) {
   n <- length(cjs$x$data$datasets)
   colours <- cjs %>% cjs_get_colours(n, fill = fill, fillOpacity = fillOpacity, type = type)
   dataset <- list(c(data = list(I(data)), colours, label = label, ...))
   if (!is.null(type)) dataset[[1]]$type <- type
   if (!is.null(scale)) dataset[[1]]$yAxisID <- paste0("y-axis-", scale - 1)
+  if (!is.null(scaleID)) {
+    if (startsWith(scaleID, "x")) {
+      dataset[[1]]$xAxisID <- scaleID
+    } else {
+      dataset[[1]]$yAxisID <- scaleID
+    }
+  }
   cjs$x$data$datasets <- if (is.null(cjs$x$data$datasets)) dataset else c(cjs$x$data$datasets, dataset)
   cjs
 }
@@ -31,22 +38,24 @@ cjsSeries.cjs_bar <- function(cjs, data, type = "bar", label = NULL, scale = NUL
 #' @keywords internal
 #' @export
 cjsSeries.cjs_line <- function(cjs, data, type = "line", label = NULL, scale = NULL,
-                               fill = FALSE, fillOpacity = 0.7, ...){
-  cjsSeries.cjs_bar(cjs, data, type, label, scale, lineTension = 0L, fill = fill,
-                    fillOpacity = fillOpacity, ...)
+                               fill = FALSE, fillOpacity = 0.7, ...) {
+  cjsSeries.cjs_bar(cjs, data, type, label, scale,
+    lineTension = 0L, fill = fill,
+    fillOpacity = fillOpacity, ...
+  )
 }
 
 #' @describeIn cjsSeries Add series to a horizontal bar chart
 #' @keywords internal
 #' @export
-cjsSeries.cjs_horizontalBar <- function(cjs, data, type = "horizontalBar", label = NULL, scale = NULL, ...){
+cjsSeries.cjs_horizontalBar <- function(cjs, data, type = "horizontalBar", label = NULL, scale = NULL, ...) {
   cjsSeries.cjs_bar(cjs, data, type, label, scale, ...)
 }
 
 #' @describeIn cjsSeries Add series to a radar chart
 #' @keywords internal
 #' @export
-cjsSeries.cjs_radar <- function(cjs, data, type = NULL, label = NULL, scale = NULL, ...){
+cjsSeries.cjs_radar <- function(cjs, data, type = NULL, label = NULL, scale = NULL, ...) {
   cjsSeries.cjs_bar(cjs, data, type, label, scale, ...)
 }
 
@@ -54,7 +63,7 @@ cjsSeries.cjs_radar <- function(cjs, data, type = NULL, label = NULL, scale = NU
 #' @keywords internal
 #' @keywords internal
 #' @export
-cjsSeries.cjs_pie <- function(cjs, data, type = NULL, label = NULL, scale = NULL, ...){
+cjsSeries.cjs_pie <- function(cjs, data, type = NULL, label = NULL, scale = NULL, ...) {
   n <- length(data)
   colours <- cjs %>% cjs_get_colours(n)
   dataset <- list(c(data = list(I(data)), colours, ...))

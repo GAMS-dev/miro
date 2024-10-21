@@ -1,7 +1,7 @@
 # version number
 MIROVersion <- "2.10.9999"
 APIVersion <- "1"
-MIRORDate <- "Aug 08 2024"
+MIRORDate <- "Oct 07 2024"
 
 MIROVersionString <<- paste0("GAMS MIRO v.", MIROVersion)
 
@@ -90,7 +90,7 @@ if (is.null(errMsg)) {
     }
   })
   # set maximum upload size
-  options(shiny.maxRequestSize = maxUploadSize * 1024^2)
+  options(shiny.maxRequestSize = as.integer(Sys.getenv("MIRO_MAX_UPLOAD_SIZE", "5000")) * 1024^2)
   # get model path and name
   modelPath <<- getModelPath(modelPath, "MIRO_MODEL_PATH")
   modelNameRaw <<- modelPath[[4]]
@@ -1225,7 +1225,11 @@ if (!is.null(errMsg)) {
         class = "initErrors"
       ),
       HTML("<br>"),
-      verbatimTextOutput("errorMessages"),
+      tags$pre(
+        id = "errorMessages",
+        style = "text-align:left;",
+        class = "shiny-text-output noplaceholder"
+      ),
       tags$div(
         style = "text-align:center;margin-top:20px;",
         actionButton("btCloseInitErrWindow", if (!exists("lang") || is.null(lang$errMsg$initErrors$okButton)) {

@@ -92,11 +92,11 @@
                     <p>
                       This chapter guides you through the first steps of using
                       GAMS MIRO and shows you how to deploy your own GAMS
-                      models. You will learn how you can supply your models with
-                      input data, generate, display and save the results of your
-                      optimization as well as compare different scenarios with
-                      each other, everything visually supported by various
-                      plotting tools.
+                      models. You will learn how you can supply your models
+                      with input data, generate, display and save the results
+                      of your optimization as well as compare different
+                      scenarios with each other, everything visually supported
+                      by various plotting tools.
                     </p>
                   </div>
                   <!--//section-block-->
@@ -162,8 +162,8 @@
                         <p>
                           On the MIRO side, open MIRO and go to
                           <i>Preferences</i> &rarr; <i>Paths</i>. Ensure that
-                          the location of the correct GAMS version is specified,
-                          e.g.:
+                          the location of the correct GAMS version is
+                          specified, e.g.:
                         </p>
                         <div
                           class="section-block"
@@ -185,7 +185,11 @@
                       >
                         <p>
                           After that you should make sure that GAMSPy and MIRO
-                          know about each other. The best way to let the
+                          know about each other. In case you installed MIRO in
+                          one of the standard locations on Windows or macOS you
+                          can omit this step. GAMSPy will automatically detect
+                          it. In case you are using Linux or installed MIRO in
+                          a custom location, the best way to let the
                           <a
                             href="https://gamspy.readthedocs.io/en/latest/user/advanced/miro.html"
                             target="_blank"
@@ -194,18 +198,19 @@
                           know about MIRO is to set the
                           <kbd>MIRO_PATH</kbd> environment variable to the path
                           of your MIRO executable (e.g.
-                          <kbd>C:\Program Files\GAMS MIRO\GAMS MIRO.exe</kbd> on
-                          Windows, <kbd>/Applications/GAMS MIRO.app</kbd> on
+                          <kbd>C:\Program Files\GAMS MIRO\GAMS MIRO.exe</kbd>
+                          on Windows, <kbd>/Applications/GAMS MIRO.app</kbd> on
                           macOS or <kbd>~/GAMS-MIRO-2.9.0.AppImage</kbd> on
-                          Linux). Alternatively, you can specify the path to the
-                          executable file each time you call the GAMSPy CLI
+                          Linux). Alternatively, you can specify the path to
+                          the executable file each time you call the GAMSPy CLI
                           using the <kbd>--path</kbd> argument.
                         </p>
                         <p>
                           On the MIRO side, open MIRO and go to
                           <i>Preferences</i> &rarr; <i>Paths</i>. Ensure that
-                          the location of the correct Python version (the one on
-                          which you have installed GAMSPy) is specified, e.g.:
+                          the location of the correct Python version (the one
+                          on which you have installed GAMSPy) is specified,
+                          e.g.:
                         </p>
                         <div
                           class="section-block"
@@ -287,10 +292,10 @@
                         <p>
                           Next, if you are using GAMS Studio, go to
                           <i>GAMS</i> &rarr;
-                          <i>Model Library Explorer</i> (shortcut <i>F6</i>) and
-                          click on the new entry
-                          <i>GAMS MIRO model collection</i>. There you will find
-                          the ready-to-use demo applications:
+                          <i>Model Library Explorer</i> (shortcut <i>F6</i>)
+                          and click on the new entry
+                          <i>GAMS MIRO model collection</i>. There you will
+                          find the ready-to-use demo applications:
                         </p>
                         <div
                           class="section-block"
@@ -457,7 +462,8 @@
                         aria-labelledby="run-miro-gamspy-tab"
                       >
                         <p>
-                          In order to launch the MIRO app for this model via the
+                          In order to launch the MIRO app for this model via
+                          the
                           <a
                             href="https://gamspy.readthedocs.io/en/latest/user/advanced/miro.html"
                             target="_blank"
@@ -469,25 +475,27 @@
                         </p>
                         <div class="console-box">
                           <span class="console-content">
-                            &gt; gamspy run miro --mode="base" --path
-                            &lt;path_to_your_MIRO_installation&gt; --model
-                            transport.py
+                            &gt; gamspy run miro --mode="base" --model
+                            transport.py [--path
+                            &lt;path_to_your_MIRO_installation&gt;]
                           </span>
                         </div>
                         <p>
                           where
                           <kbd>&lt;path_to_your_MIRO_installation&gt;</kbd> is
                           the path to your MIRO executable file (e.g.
-                          <kbd>C:\Program Files\GAMS MIRO\GAMS MIRO.exe</kbd> on
-                          Windows, <kbd>/Applications/GAMS MIRO.app</kbd> on
+                          <kbd>C:\Program Files\GAMS MIRO\GAMS MIRO.exe</kbd>
+                          on Windows, <kbd>/Applications/GAMS MIRO.app</kbd> on
                           macOS or <kbd>~/GAMS-MIRO-2.9.0.AppImage</kbd> on
-                          Linux).
+                          Linux). You can omit <kbd>--path</kbd> in case MIRO
+                          is installed in one of the standard locations on
+                          Windows or macOS.
                         </p>
                         <p>
                           Note that you can also set the MIRO installation path
-                          as an environment variable: <kbd>MIRO_PATH</kbd>, so
-                          that you do not have to enter it every time you use
-                          the GAMSPy CLI.
+                          as an environment variable:
+                          <kbd>MIRO_PATH</kbd>, so that you do not have to
+                          enter it every time you use the GAMSPy CLI.
                         </p>
                       </div>
                     </div>
@@ -497,8 +505,8 @@
                         GAMS Studio/The GAMSPy CLI allow you to "Skip model
                         execution". If this option is activated, the model is
                         not executed before MIRO is started, but MIRO is called
-                        directly instead. This can be helpful if the model takes
-                        a long time to be solved.
+                        directly instead. This can be helpful if the model
+                        takes a long time to be solved.
                       </p>
                       <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item">
@@ -554,9 +562,9 @@
                             data contract is not created or renewed. This means
                             that changes made in the model are not communicated
                             to MIRO. If you have a model that takes a long time
-                            to be solved and you don't want to run through it in
-                            order to launch MIRO, you can simply set the GAMS
-                            option
+                            to be solved and you don't want to run through it
+                            in order to launch MIRO, you can simply set the
+                            GAMS option
                             <a
                               href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOaction"
                               target="_blank"
@@ -564,10 +572,10 @@
                             >
                             (action=compile) via the command line instead of
                             skipping the model execution completely. This will
-                            only compile the model which is sufficient to update
-                            the data contract. Note that in this case a new
-                            default scenario is created, but it contains only
-                            input data and no output data.
+                            only compile the model which is sufficient to
+                            update the data contract. Note that in this case a
+                            new default scenario is created, but it contains
+                            only input data and no output data.
                           </p>
                           <div class="expandable-box-outline">
                             <h3
@@ -576,14 +584,14 @@
                               onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                               style="cursor: pointer"
                             >
-                              <i class="fas fa-plus slide-toggle"></i> Advanced:
-                              Start MIRO using the command line
+                              <i class="fas fa-plus slide-toggle"></i>
+                              Advanced: Start MIRO using the command line
                             </h3>
                             <div class="section-block" style="display: none">
                               <p>
-                                In case you want to launch MIRO from the command
-                                line, the data contract between GAMS and MIRO
-                                must be created first (<i
+                                In case you want to launch MIRO from the
+                                command line, the data contract between GAMS
+                                and MIRO must be created first (<i
                                   ><a href="./faqs.html#file-io"
                                     >&lt;modelname&gt;_io.json</a
                                   ></i
@@ -594,8 +602,8 @@
                                 >.
                               </p>
                               <p>
-                                For the <i>transport</i> model this would result
-                                in the following call:
+                                For the <i>transport</i> model this would
+                                result in the following call:
                               </p>
                               <div
                                 class="console-box"
@@ -647,11 +655,11 @@
                                   <b class="callout-title">Tip:</b>
                                   <p>
                                     When launching MIRO via GAMS Studio, you
-                                    will find a scenario named <i>default</i> in
-                                    the database after the startup. When
-                                    starting MIRO via the command line you can
-                                    create this default scenario with the GAMS
-                                    option
+                                    will find a scenario named
+                                    <i>default</i> in the database after the
+                                    startup. When starting MIRO via the command
+                                    line you can create this default scenario
+                                    with the GAMS option
                                     <span class="code"
                                       >IDCGenerateGDX=data_&lt;modelname&gt;/default.gdx</span
                                     >.
@@ -662,8 +670,8 @@
                               <!--//callout-block-->
                               <p>
                                 Before you can start MIRO, a few environment
-                                variables need to be set. On Windows the default
-                                installation location is
+                                variables need to be set. On Windows the
+                                default installation location is
                                 <span class="code"
                                   >C:\Program Files\GAMS MIRO\GAMS
                                   MIRO.exe</span
@@ -764,7 +772,7 @@
                                     <span class="console-content">
                                       &gt; export MIRO_DEV_MODE=true<br />
                                       &gt; export
-                                      MIRO_MODEL_PATH=/Users/&lt;user&gt;/Documents/model/transport/transport.gms<br />
+                                      MIRO_MODEL_PATH=/home/&lt;user&gt;/model/transport/transport.gms<br />
                                       &gt; export MIRO_MODE=base<br />
                                       &gt; /GAMS-MIRO-1.0.AppImage<br />
                                     </span>
@@ -779,12 +787,14 @@
                                 <div class="content">
                                   <b class="callout-title">Note:</b>
                                   <p>
-                                    By default MIRO uses the GAMS version, which
-                                    is in the PATH of your operating system. By
-                                    setting another environment variable
-                                    <i>GAMS_SYS_DIR</i>, you can tell MIRO where
-                                    to look for GAMS instead. Note that at least
-                                    GAMS version 30.2 is required to use MIRO.
+                                    By default MIRO uses the GAMS version,
+                                    which is in the PATH of your operating
+                                    system. By setting another environment
+                                    variable
+                                    <i>GAMS_SYS_DIR</i>, you can tell MIRO
+                                    where to look for GAMS instead. Note that
+                                    at least GAMS version 30.2 is required to
+                                    use MIRO.
                                   </p>
                                 </div>
                                 <!--//content-->
@@ -802,9 +812,9 @@
                         >
                           <div class="console-box">
                             <span class="console-content">
-                              &gt; gamspy run miro --mode="base" --path
-                              &lt;path_to_your_MIRO_installation&gt; --model
+                              &gt; gamspy run miro --mode="base" --model
                               &lt;path_to_your_model&gt; --skip-execution
+                              [--path &lt;path_to_your_MIRO_installation&gt;]
                             </span>
                           </div>
                           <p>
@@ -868,13 +878,15 @@
                         here too.
                       </li>
                       <li>
-                        <span class="fa-li"><i class="fa fa-database"></i></span
+                        <span class="fa-li"
+                          ><i class="fa fa-database"></i></span
                         ><b>Load scenarios:</b><br />
-                        "Slice &amp; dice" the database to fetch those scenarios
-                        you are interested in.
+                        "Slice &amp; dice" the database to fetch those
+                        scenarios you are interested in.
                       </li>
                       <li>
-                        <span class="fa-li"><i class="fas fa-columns"></i></span
+                        <span class="fa-li"
+                          ><i class="fas fa-columns"></i></span
                         ><b>Compare scenarios:</b><br />
                         Module for the comparison of results / scenarios in a
                         split view mode or two different multi-scenario
@@ -896,27 +908,27 @@
                         <span style="color: #f39619" class="fa-li"
                           ><i class="fas fa-square"></i></span
                         ><b>Solve model:</b><br />
-                        Solve the GAMS model with the current set of input data.
-                        This will run your GAMS model and collect the results
-                        when it finished executing.
+                        Solve the GAMS model with the current set of input
+                        data. This will run your GAMS model and collect the
+                        results when it finished executing.
                       </li>
                     </ol>
 
                     <h6>Main window:</h6>
                     <p>
-                      The main window always displays the content of the section
-                      selected by the user in the navigation bar. Here, for
-                      example, data is visualized, scenarios are compared and
-                      analyses are carried out. In the screenshot above you can
-                      also see a
+                      The main window always displays the content of the
+                      section selected by the user in the navigation bar. Here,
+                      for example, data is visualized, scenarios are compared
+                      and analyses are carried out. In the screenshot above you
+                      can also see a
                       <a href="./configuration_general.html#app-readme"
                         >README</a
                       >
                       section that is displayed to the user.
                     </p>
                     <p>
-                      Besides navigation bar and main window, some functions are
-                      accessible in the header bar:
+                      Besides navigation bar and main window, some functions
+                      are accessible in the header bar:
                     </p>
                     <ul>
                       <li>
@@ -944,8 +956,8 @@
                         <b class="callout-title">Tip:</b>
                         <p>
                           Take a look at our
-                          <a href="./index.html#cheatsheets">cheat sheets</a> to
-                          get to know the MIRO interface and its components
+                          <a href="./index.html#cheatsheets">cheat sheets</a>
+                          to get to know the MIRO interface and its components
                           better!
                         </p>
                       </div>
@@ -1011,16 +1023,19 @@
                     <p>
                       A GAMS MIRO app is quite useful if there is data to be
                       visualized, e.g. in the form of tables, diagrams or other
-                      charts. This applies to output data as well as input data.
-                      Data that is to be visualized in MIRO can be imported
-                      either from existing scenarios in the database or via a
-                      local file (currently, this can be a MIROSCEN file, a GDX
-                      container, an Excel spreadsheet, or CSV files).
+                      charts. This applies to output data as well as input
+                      data. Data that is to be visualized in MIRO can be
+                      imported either from existing scenarios in the database
+                      or via a local file (currently, this can be a MIROSCEN
+                      file, a GDX container, an Excel spreadsheet, or CSV
+                      files).
                       <span id="miroscen">A MIROSCEN file</span> is a special
                       file format used by MIRO to export and import a complete
-                      MIRO scenario. In contrast to other supported file formats
-                      like GDX, Excel or CSV, a MIROSCEN file includes
-                      <a href="#scenario-metadata" class="scrollto">metadata</a>
+                      MIRO scenario. In contrast to other supported file
+                      formats like GDX, Excel or CSV, a MIROSCEN file includes
+                      <a href="#scenario-metadata" class="scrollto"
+                        >metadata</a
+                      >
                       such as tags,
                       <a href="#metadata-views" class="scrollto">views</a>,
                       <a href="#file-attachments" class="scrollto"
@@ -1062,8 +1077,8 @@
                           >development mode</a
                         >
                         via GAMS Studio or the command line. A special scenario
-                        with the name <i>default</i> is created for this purpose
-                        and overridden every time you rebuild your app!
+                        with the name <i>default</i> is created for this
+                        purpose and overridden every time you rebuild your app!
                       </p>
                       <div class="callout-block callout-success">
                         <div class="icon-holder">
@@ -1093,12 +1108,12 @@
                         To import a file from your local machine, either in the
                         form of a MIROSCEN file, a GDX container, an Excel
                         spreadsheet or a CSV file, select the menu item
-                        <i>Local</i> and click on <i>browse</i>. Navigate to the
-                        directory where your file resides and select it. Confirm
-                        the data import with a click on <i>import</i>. If you
-                        started with an empty sheet, a new, unnamed scenario is
-                        now shown in the interface. To save it, click on
-                        <i>Save as</i> and give it a name.
+                        <i>Local</i> and click on <i>browse</i>. Navigate to
+                        the directory where your file resides and select it.
+                        Confirm the data import with a click on <i>import</i>.
+                        If you started with an empty sheet, a new, unnamed
+                        scenario is now shown in the interface. To save it,
+                        click on <i>Save as</i> and give it a name.
                       </p>
                       <div class="callout-block callout-success">
                         <div class="icon-holder">
@@ -1176,9 +1191,9 @@
                             <li>
                               Either all scalar values are combined in one tab
                               named <kbd>_scalars</kbd> or
-                              <kbd>_scalars_out</kbd> (separate sheets for input
-                              and output scalars). These tables must have 3
-                              columns: <i>scalar</i>, <i>description</i> and
+                              <kbd>_scalars_out</kbd> (separate sheets for
+                              input and output scalars). These tables must have
+                              3 columns: <i>scalar</i>, <i>description</i> and
                               <i>value</i>.
                             </li>
                             <div
@@ -1196,8 +1211,8 @@
                               Alternatively, each scalar value is stored in a
                               separate sheet as with other symbols (tab name =
                               symbol name). The "table" then consists only of
-                              the scalar value in cell A1. There is therefore no
-                              header.
+                              the scalar value in cell A1. There is therefore
+                              no header.
                             </li>
                             <div
                               class="section-block"
@@ -1211,16 +1226,17 @@
                               />
                             </div>
                             <li>
-                              If you want to import command line parameters/GAMS
-                              options, the symbol name must be preceded by
+                              If you want to import command line
+                              parameters/GAMS options, the symbol name must be
+                              preceded by
                               <kbd>_gmspar_</kbd> or <kbd>_gmsopt_</kbd> (see
                               screenshot above).
                             </li>
                             <li>
                               To import scalar output variables and/or
                               equations, the sheet name must be
-                              <kbd>_scalarsve_out</kbd>. The table has to have 7
-                              columns: <i>scalar</i>, <i>description</i>,
+                              <kbd>_scalarsve_out</kbd>. The table has to have
+                              7 columns: <i>scalar</i>, <i>description</i>,
                               <i>level</i>, <i>marginal</i>, <i>lower</i>,
                               <i>upper</i>, <i>scale</i>.
                             </li>
@@ -1298,8 +1314,8 @@
                           </p>
                           <p>
                             The fourth and subsequent columns can be used for
-                            additional options. The column heading indicates the
-                            option name and the cell contents indicate the
+                            additional options. The column heading indicates
+                            the option name and the cell contents indicate the
                             option value. Note that although GDXXRW allows
                             options also in a comma-separated option=value
                             format, MIRO does not support this.
@@ -1312,7 +1328,8 @@
                             <div class="content">
                               <b class="callout-title">Domain Sets (dSet):</b>
                               <p>
-                                Just like GDXXRW, MIRO supports reading a set as
+                                Just like GDXXRW, MIRO supports reading a set
+                                as
                                 <i>domain set</i> by specifying it as type
                                 <kbd>dSet</kbd>. This option is supported only
                                 for one-dimensional sets. Duplicates and set
@@ -1333,7 +1350,8 @@
                                   >Implicit Set Definition</a
                                 >
                                 feature of GAMS! This avoids domain violations
-                                caused by having to maintain two tables in MIRO.
+                                caused by having to maintain two tables in
+                                MIRO.
                               </p>
                             </div>
                             <!--//content-->
@@ -1394,31 +1412,31 @@
                             <kbd>ignoreRows</kbd> and
                             <kbd>ignoreColumns</kbd> options. In this example,
                             we want to ignore the row <i>16</i> because it does
-                            not belong to the data for <kbd>d</kbd>, but for the
-                            set <kbd>j</kbd>, which is also read from the same
-                            range (<i>sheet1!L15:N16</i>). This brings us to the
-                            next option: <kbd>values</kbd>. Each tuple in a set
-                            can have associated text. To read a set from a
-                            spreadsheet, the <kbd>values</kbd> option is used to
-                            indicate whether there is data, and if so, whether
-                            the data should be interpreted as associated text or
-                            as an indicator of whether or not the tuple should
-                            be included in the set. In our example here, we use
-                            the <i>YN</i> option, which specifies that only
-                            tuples that have a data cell that is not empty and
-                            does not contain <i>0</i>, <i>N</i>, or
-                            <i>No</i> will be included. This means that in our
-                            example <i>j</i> only the tuple <i>New-York</i> is
-                            read. MIRO supports all options GDXXRW supports:
-                            <i>auto</i>, <i>noData</i>, <i>YN</i>,
-                            <i>sparse</i> and <i>dense</i>. See the
+                            not belong to the data for <kbd>d</kbd>, but for
+                            the set <kbd>j</kbd>, which is also read from the
+                            same range (<i>sheet1!L15:N16</i>). This brings us
+                            to the next option: <kbd>values</kbd>. Each tuple
+                            in a set can have associated text. To read a set
+                            from a spreadsheet, the <kbd>values</kbd> option is
+                            used to indicate whether there is data, and if so,
+                            whether the data should be interpreted as
+                            associated text or as an indicator of whether or
+                            not the tuple should be included in the set. In our
+                            example here, we use the <i>YN</i> option, which
+                            specifies that only tuples that have a data cell
+                            that is not empty and does not contain <i>0</i>,
+                            <i>N</i>, or <i>No</i> will be included. This means
+                            that in our example <i>j</i> only the tuple
+                            <i>New-York</i> is read. MIRO supports all options
+                            GDXXRW supports: <i>auto</i>, <i>noData</i>,
+                            <i>YN</i>, <i>sparse</i> and <i>dense</i>. See the
                             <a
                               href="https://www.gams.com/latest/docs/T_GDXXRW.html#GDXXRW_EXAMPLES_READ_SPREADSHEET_SET_DATATEXT"
                               target="_blank"
                               >related section of the GDXXRW documentation</a
                             >
-                            for more information on the other options. Below you
-                            find a list of all options supported by MIRO.
+                            for more information on the other options. Below
+                            you find a list of all options supported by MIRO.
                           </p>
                           <p></p>
                           <h6>Supported options</h6>
@@ -1437,9 +1455,9 @@
                                   <td>
                                     Excel range: Open and closed ranges are
                                     supported. It must be of the form
-                                    <i>SheetName!TopLeft:BottomRight</i>. If the
-                                    sheet name is omitted, the first sheet in
-                                    the workbook is used by default. If the
+                                    <i>SheetName!TopLeft:BottomRight</i>. If
+                                    the sheet name is omitted, the first sheet
+                                    in the workbook is used by default. If the
                                     <i>BottomRight</i> corner is omitted, the
                                     data is read until
                                     <span class="code"
@@ -1504,8 +1522,8 @@
                                   <td>Columns to ignore</td>
                                   <td>
                                     <i
-                                      >comma-separated list of positive integers
-                                      or column letters</i
+                                      >comma-separated list of positive
+                                      integers or column letters</i
                                     >
                                   </td>
                                 </tr>
@@ -1534,10 +1552,11 @@
                                   <td>
                                     This controls the reading of explanatory
                                     text for set elements of domain sets. By
-                                    default, no text is read for domain sets. If
-                                    this option is activated this is changed. If
-                                    an element appears more than once, the first
-                                    one defines the explanatory text read.
+                                    default, no text is read for domain sets.
+                                    If this option is activated this is
+                                    changed. If an element appears more than
+                                    once, the first one defines the explanatory
+                                    text read.
                                   </td>
                                   <td>
                                     <i>y</i>, <i>1</i>, <i>n</i>, <i>0</i>
@@ -1590,9 +1609,9 @@
                             individual scalars. Scalars that are missing from
                             the table are appended if they are individually
                             declared. If a scalar is found both in one of the
-                            special tables and individually declared, the scalar
-                            in the table takes precedence and the individually
-                            declared scalar is ignored.
+                            special tables and individually declared, the
+                            scalar in the table takes precedence and the
+                            individually declared scalar is ignored.
                           </p>
                           <div class="callout-block callout-warning">
                             <div class="icon-holder">
@@ -1602,9 +1621,9 @@
                             <div class="content">
                               <b class="callout-title">Note:</b>
                               <p>
-                                Command line parameters/GAMS options are treated
-                                like <i>normal</i> input scalars with the
-                                special prefixes <kbd>_gmspar_</kbd> and
+                                Command line parameters/GAMS options are
+                                treated like <i>normal</i> input scalars with
+                                the special prefixes <kbd>_gmspar_</kbd> and
                                 <kbd>_gmsopt_</kbd>.
                               </p>
                             </div>
@@ -1637,14 +1656,15 @@
                               skipEmpty, squeeze
                             </li>
                             <li>
-                              Option=value columns are not supported and will be
-                              skipped. Please specify the option names as column
-                              headers and the values as cell contents.
+                              Option=value columns are not supported and will
+                              be skipped. Please specify the option names as
+                              column headers and the values as cell contents.
                             </li>
                             <li>
-                              <i>skipEmpty</i> must be specified for each symbol
-                              individually. The state of this option is not
-                              transferred to the next symbols as with GDXXRW.
+                              <i>skipEmpty</i> must be specified for each
+                              symbol individually. The state of this option is
+                              not transferred to the next symbols as with
+                              GDXXRW.
                             </li>
                             <li>Named ranges are not supported.</li>
                             <li>
@@ -1676,28 +1696,28 @@
                               with 3 columns: <kbd>Scalar</kbd>,
                               <kbd>Description</kbd>, <kbd>Value</kbd>. The
                               <kbd>Description</kbd> column can be omitted. You
-                              can also mix declaration of individual scalars and
-                              scalar tables. Scalars that are missing in the
-                              scalar table are appended if they are declared
-                              individually. If an individually declared scalar
-                              is also in a scalar table, the individually
-                              declared scalar is ignored.
+                              can also mix declaration of individual scalars
+                              and scalar tables. Scalars that are missing in
+                              the scalar table are appended if they are
+                              declared individually. If an individually
+                              declared scalar is also in a scalar table, the
+                              individually declared scalar is ignored.
                             </li>
                             <li>
-                              In tables/variables/equations, if squeeze=1, empty
-                              cells and NA are indistinguishable
+                              In tables/variables/equations, if squeeze=1,
+                              empty cells and NA are indistinguishable
                             </li>
                             <li>
-                              Output scalar variables and equations must be in a
-                              single table named <kbd>_scalarsve_out</kbd> with
-                              dimensions: <kbd>scalar</kbd>,
-                              <kbd>description</kbd>, <kbd>type</kbd>, where
-                              type must not contain any elements other than:
-                              <kbd>level</kbd>, <kbd>marginal</kbd>,
-                              <kbd>upper</kbd>, <kbd>lower</kbd>,
-                              <kbd>scale</kbd>. Please note that the
-                              <kbd>Description</kbd> dimension must be present
-                              (unlike the <kbd>_scalars</kbd>/<kbd
+                              Output scalar variables and equations must be in
+                              a single table named
+                              <kbd>_scalarsve_out</kbd> with dimensions:
+                              <kbd>scalar</kbd>, <kbd>description</kbd>,
+                              <kbd>type</kbd>, where type must not contain any
+                              elements other than: <kbd>level</kbd>,
+                              <kbd>marginal</kbd>, <kbd>upper</kbd>,
+                              <kbd>lower</kbd>, <kbd>scale</kbd>. Please note
+                              that the <kbd>Description</kbd> dimension must be
+                              present (unlike the <kbd>_scalars</kbd>/<kbd
                                 >_scalars_out</kbd
                               >
                               tables), but is ignored when MIRO imports it.
@@ -1719,29 +1739,31 @@
                         Import multiple scenarios on startup
                       </h5>
                       <p>
-                        In addition to the options mentioned above, which can be
-                        accessed directly from MIRO, (multiple) scenarios can
-                        also be imported automatically when starting an
+                        In addition to the options mentioned above, which can
+                        be accessed directly from MIRO, (multiple) scenarios
+                        can also be imported automatically when starting an
                         application. To do this, the scenarios to be imported
                         (MIROSCEN, GDX, CSV or Excel files) must be put in the
                         folder
                         <span class="code">data_&lt;modelname&gt;</span>
-                        (located in the model directory). With the next start of
-                        MIRO, those scenarios are imported automatically. Note
-                        that in development mode MIRO skips the import of files
-                        that have not changed since the last start.
+                        (located in the model directory). With the next start
+                        of MIRO, those scenarios are imported automatically.
+                        Note that in development mode MIRO skips the import of
+                        files that have not changed since the last start.
                       </p>
                       <p>
                         In addition to scenario data,
-                        <a href="#metadata-views" class="scrollto">views</a> can
-                        also be imported together with the scenario data. Simply
-                        place the JSON file with the view data here as well. The
-                        file has to be named
-                        <span class="code">&lt;scenarioName&gt;_views.json</span
+                        <a href="#metadata-views" class="scrollto">views</a>
+                        can also be imported together with the scenario data.
+                        Simply place the JSON file with the view data here as
+                        well. The file has to be named
+                        <span class="code"
+                          >&lt;scenarioName&gt;_views.json</span
                         >. For example if you want to provide data in the form
                         of a GDX file and views for a scenario with the name
-                        <span class="code">my_scenario</span>, you have to place
-                        both <span class="code">my_scenario.gdx</span> and
+                        <span class="code">my_scenario</span>, you have to
+                        place both
+                        <span class="code">my_scenario.gdx</span> and
                         <span class="code">my_scenario_views.json</span> into
                         the
                         <span class="code">data_&lt;modelname&gt;</span>
@@ -1785,10 +1807,10 @@
                       can help you automatically find and remove duplicate
                       records in your input data sets using the
                       <i>Scenario</i> &rarr; <i>Remove duplicates</i> menu in
-                      the header. MIRO first checks if any of your input records
-                      contain duplicate records, and gives you the option to
-                      keep only the first or only the last occurrence of the
-                      duplicate.
+                      the header. MIRO first checks if any of your input
+                      records contain duplicate records, and gives you the
+                      option to keep only the first or only the last occurrence
+                      of the duplicate.
                     </p>
                   </div>
 
@@ -1801,8 +1823,8 @@
                       <span class="code">transport.gms</span> is started. The
                       values set by us in MIRO now serve as input data for the
                       model. <br />During the calculations, MIRO automatically
-                      switches to the section <i>GAMS interaction</i>. There you
-                      can see the current
+                      switches to the section <i>GAMS interaction</i>. There
+                      you can see the current
                       <a
                         href="https://www.gams.com/latest/docs/UG_GAMSOutput.html"
                         target="_blank"
@@ -1821,8 +1843,8 @@
                       />
                     </div>
                     <p>
-                      <b>Note:</b> Since the models of the demo applications are
-                      solved very quickly, this step is sometimes hardly
+                      <b>Note:</b> Since the models of the demo applications
+                      are solved very quickly, this step is sometimes hardly
                       visible. The menu entry <i>GAMS interaction</i> can also
                       be viewed at any time after a model run.
                     </p>
@@ -1831,8 +1853,8 @@
                       <i>Stop</i> button on the left can be clicked. A first
                       click on this button sends an interrupt request to the
                       running job in order to perform a graceful stop and
-                      collect an incumbent result back from the execution if the
-                      solver supports this feature. A second click sends a
+                      collect an incumbent result back from the execution if
+                      the solver supports this feature. A second click sends a
                       request to stop the running job immediately. <br />After
                       the run, the view changes again to the
                       <i>Output</i> section.
@@ -1843,14 +1865,14 @@
                     <h3 class="block-title">Inspect results</h3>
                     <p>
                       In the <i>Output</i> section the results are visualized.
-                      As with the input data, a distinction is made between GAMS
-                      parameters and scalar values. The GAMS parameters are each
-                      visualized in a separate tab and the scalars are
+                      As with the input data, a distinction is made between
+                      GAMS parameters and scalar values. The GAMS parameters
+                      are each visualized in a separate tab and the scalars are
                       summarized in a table. <br />If you have configured a
-                      graphical representation of your data, you can also see it
-                      here. In the model <i>Transport</i> a plot for the
-                      transport schedule is configured in the form of a map, see
-                      figure below.
+                      graphical representation of your data, you can also see
+                      it here. In the model <i>Transport</i> a plot for the
+                      transport schedule is configured in the form of a map,
+                      see figure below.
                     </p>
                     <div class="section-block">
                       <img
@@ -1873,10 +1895,10 @@
                       plot and the tabular representation of the data.
                     </p>
                     <p>
-                      The <i>Costs</i> tab shows the objective function value of
-                      the model calculation in a tile. Like before, you can
-                      switch between graphical and tabular representation with a
-                      click on the
+                      The <i>Costs</i> tab shows the objective function value
+                      of the model calculation in a tile. Like before, you can
+                      switch between graphical and tabular representation with
+                      a click on the
                       <img
                         class="img-fluid"
                         src="assets/images/tabular-btn.png"
@@ -1905,8 +1927,8 @@
                       <a href="./configuration_general.html#general-temp-dir"
                         >option</a
                       >
-                      is enabled, all temporarily created files of the model run
-                      (like solution reports or the
+                      is enabled, all temporarily created files of the model
+                      run (like solution reports or the
                       <span class="code">lst</span> and
                       <span class="code">log</span> files) can be downloaded
                       either separately or as a ZIP archive with a click on the
@@ -1939,9 +1961,9 @@
                     </h3>
                     <div id="save-general" class="section-block">
                       <p>
-                        The set of all the input and output data is what we call
-                        a scenario. Data that is currently loaded in the MIRO
-                        interface (in memory) is what we call a
+                        The set of all the input and output data is what we
+                        call a scenario. Data that is currently loaded in the
+                        MIRO interface (in memory) is what we call a
                         <i>sandbox scenario</i> (more on this
                         <a href="#scenario-concept" class="scrollto">here</a>).
                         A sandbox scenario can be saved at any point. The menu
@@ -1950,7 +1972,11 @@
                       </p>
                       <div
                         class="section-block"
-                        style="display: block; margin: auto; text-align: center"
+                        style="
+                          display: block;
+                          margin: auto;
+                          text-align: center;
+                        "
                       >
                         <img
                           class="img-fluid"
@@ -1966,9 +1992,9 @@
                             class="anchor"
                           ></a
                           >Allows you to edit scenario metadata, i.e. the
-                          scenario name and/or the tags assigned as well as file
-                          attachments and scenario access permissions. Read more
-                          about scenario metadata
+                          scenario name and/or the tags assigned as well as
+                          file attachments and scenario access permissions.
+                          Read more about scenario metadata
                           <a href="#scenario-metadata" class="scrollto">here</a
                           >.
                         </li>
@@ -2018,20 +2044,21 @@
                               alt="Save sandbox scenario in database"
                             />
                           </div>
-                          Optionally, you can add tags to the scenario. Tags are
-                          stored together with the scenario data. If you want to
-                          find a scenario later on, you can search for a given
-                          tag. This may help you to better find a certain
-                          scenario or a set of scenarios that share certain
-                          attributes. Also, if your sandbox scenario contains
+                          Optionally, you can add tags to the scenario. Tags
+                          are stored together with the scenario data. If you
+                          want to find a scenario later on, you can search for
+                          a given tag. This may help you to better find a
+                          certain scenario or a set of scenarios that share
+                          certain attributes. Also, if your sandbox scenario
+                          contains
                           <a href="#file-attachments" class="scrollto"
                             >attachments</a
                           >
                           or you have defined
                           <a href="#access-permissions" class="scrollto"
                             >user access permissions</a
-                          >, you can adopt these settings for the scenario to be
-                          saved.
+                          >, you can adopt these settings for the scenario to
+                          be saved.
                         </li>
                         <li>
                           <b>Export</b> <br />Download of the scenario data in
@@ -2104,9 +2131,9 @@
                         <p>
                           You can change the name and/or job tag(s) of a
                           scenario by double-clicking the corresponding cell in
-                          the table. This can be especially useful for scenarios
-                          that were generated via a Hypercube Job and have a
-                          (SHA-256) hash as name by default.
+                          the table. This can be especially useful for
+                          scenarios that were generated via a Hypercube Job and
+                          have a (SHA-256) hash as name by default.
                         </p>
                       </div>
                       <!--//content-->
@@ -2146,7 +2173,9 @@
                       <li>
                         <b>Load into sandbox:</b><br />
                         Load the selected scenario into the
-                        <a href="#scenario-concept" class="scrollto">sandbox</a>
+                        <a href="#scenario-concept" class="scrollto"
+                          >sandbox</a
+                        >
                         (only visible if you have selected exactly one
                         scenario).
                       </li>
@@ -2154,10 +2183,10 @@
                         <b>Compare: </b><br />
                         <a href="#scenario-comparison" class="scrollto"
                           >Interactive scenario comparison</a
-                        >: Compare different scenarios directly in split, tab or
-                        pivot view. Best suited for a small number of scenarios
-                        to be compared (maximum allowed number of scenarios:
-                        10).
+                        >: Compare different scenarios directly in split, tab
+                        or pivot view. Best suited for a small number of
+                        scenarios to be compared (maximum allowed number of
+                        scenarios: 10).
                       </li>
                     </ul>
                     <div class="callout-block callout-success">
@@ -2169,10 +2198,10 @@
                         <b class="callout-title">Tip:</b>
                         <p>
                           When comparing or downloading multiple scenarios, it
-                          is sometimes useful to name them according to a common
-                          naming scheme based on input/output scalars or other
-                          metadata such as creation time. This is especially
-                          useful for
+                          is sometimes useful to name them according to a
+                          common naming scheme based on input/output scalars or
+                          other metadata such as creation time. This is
+                          especially useful for
                           <a href="hc-module.html">Hypercube scenarios</a>,
                           since their names are generated automatically. MIRO
                           allows you to choose one or more columns of the Batch
@@ -2180,11 +2209,12 @@
                           example, if we select the "freight Cost" and "minimum
                           shipment" columns to name our scenarios, the first
                           scenario (25E3641B...) in the above image will be
-                          named "86_100", the second (da1a8c4b...) will be named
-                          "85_100", and so on. As soon as at least one column
-                          has been selected for naming the scenarios, another
-                          text field appears in which you can additionally
-                          specify a (static) prefix for the scenario names.
+                          named "86_100", the second (da1a8c4b...) will be
+                          named "85_100", and so on. As soon as at least one
+                          column has been selected for naming the scenarios,
+                          another text field appears in which you can
+                          additionally specify a (static) prefix for the
+                          scenario names.
                         </p>
                       </div>
                       <!--//content-->
@@ -2197,10 +2227,10 @@
                     <p>
                       The scenario comparison mode is useful if you want to
                       compare the input and/or output data of different model
-                      runs. Scenarios from the database as well as the currently
-                      loaded sandbox scenario can be used for comparison. There
-                      are three different types of comparison available, split
-                      view, tab view and pivot view mode.
+                      runs. Scenarios from the database as well as the
+                      currently loaded sandbox scenario can be used for
+                      comparison. There are three different types of comparison
+                      available, split view, tab view and pivot view mode.
                     </p>
                     <div class="callout-block callout-success">
                       <div class="icon-holder">
@@ -2211,9 +2241,9 @@
                         <b class="callout-title">Tip:</b>
                         <p>
                           In case you want to compare multiple scenarios in a
-                          different way than the default comparison modes (split
-                          view, tab view and pivot view mode) allow, MIRO also
-                          supports
+                          different way than the default comparison modes
+                          (split view, tab view and pivot view mode) allow,
+                          MIRO also supports
                           <a
                             href="configuration_json_only.html#custom-compare-mode"
                             >custom scenario comparison modes</a
@@ -2279,17 +2309,17 @@
                         />
                       </div>
                       <p>
-                        <a href="./start.html#metadata-views">Views</a> can also
-                        be used in pivot view mode. They are attached to the
-                        sandbox/base scenario. Thus, the scenario you currently
-                        have in your sandbox determines what views will be
-                        available to you in the pivot view scenario comparison.
-                        To save a new view, you only need to save your sandbox
-                        scenario once the new view has been added.
+                        <a href="./start.html#metadata-views">Views</a> can
+                        also be used in pivot view mode. They are attached to
+                        the sandbox/base scenario. Thus, the scenario you
+                        currently have in your sandbox determines what views
+                        will be available to you in the pivot view scenario
+                        comparison. To save a new view, you only need to save
+                        your sandbox scenario once the new view has been added.
                       </p>
                       <p>
-                        Views from the pivot view comparison mode can be managed
-                        (imported/exported/deleted) just like
+                        Views from the pivot view comparison mode can be
+                        managed (imported/exported/deleted) just like
                         <i>normal</i> views via the <i>Views</i> dialog in the
                         <i>Scenario</i> &rarr; <i>Edit Metadata</i> menu. You
                         can learn more about views
@@ -2336,8 +2366,8 @@
                         </li>
                         <li>
                           Load sandbox:<br />
-                          Load the sandbox scenario which is opened in the Input
-                          / Output section.
+                          Load the sandbox scenario which is opened in the
+                          Input / Output section.
                         </li>
                       </ul>
                       <div class="callout-block callout-success">
@@ -2362,8 +2392,9 @@
                       <h5 class="block-title">Tab view</h5>
                       <p>
                         Scenarios can also be loaded into tabs (as you know it
-                        from e.g. your internet browser). This allows to compare
-                        more than two scenarios including their graphics.
+                        from e.g. your internet browser). This allows to
+                        compare more than two scenarios including their
+                        graphics.
                       </p>
                       <div class="section-block" style="text-align: center">
                         <img
@@ -2401,10 +2432,10 @@
                         split view and the tab view. As soon as this option is
                         activated via the <i>synchronize tabs</i> button in the
                         navigation bar, the switch to another dataset of a
-                        scenario is also performed for all other open scenarios.
-                        This means that if you change the dataset to be
-                        displayed in one scenario (e.g. switch from 'Price' to
-                        'absolute error' in the image above), the view also
+                        scenario is also performed for all other open
+                        scenarios. This means that if you change the dataset to
+                        be displayed in one scenario (e.g. switch from 'Price'
+                        to 'absolute error' in the image above), the view also
                         changes for all the other scenario(s) loaded in the
                         comparison mode.
                       </p>
@@ -2470,9 +2501,9 @@
                       </li>
                       <li>The model is now run with the updated data.</li>
                       <li>
-                        Afterwards the results are sent to MIRO and displayed in
-                        the output section. From there, data can be saved in the
-                        internal database and/or exported as a file.
+                        Afterwards the results are sent to MIRO and displayed
+                        in the output section. From there, data can be saved in
+                        the internal database and/or exported as a file.
                       </li>
                     </ol>
                     <p>A little more detail:</p>
@@ -2501,14 +2532,16 @@
                       onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
                       style="cursor: pointer"
                     >
-                      <i class="fas fa-plus slide-toggle"></i> Advanced: Working
-                      with <i>NAs</i>, <i>zeros</i> and <i>EPS</i>
+                      <i class="fas fa-plus slide-toggle"></i> Advanced:
+                      Working with <i>NAs</i>, <i>zeros</i> and
+                      <i>EPS</i>
                     </h3>
                     <div class="section-block" style="display: none">
                       <p>
-                        Special attention should be paid to the communication of
-                        <i>zeros</i>, <i>NAs</i> and <i>EPS</i> between GAMS and
-                        MIRO. The following rules describe how the data is
+                        Special attention should be paid to the communication
+                        of
+                        <i>zeros</i>, <i>NAs</i> and <i>EPS</i> between GAMS
+                        and MIRO. The following rules describe how the data is
                         communicated in detail:
                       </p>
                       <ul>
@@ -2518,8 +2551,8 @@
                           via GDX. <i>Zeros</i> are not stored in GDX files. A
                           value of <i>zero</i> in GAMS is therefore not
                           communicated with MIRO and is not visible there. If a
-                          GAMS symbol is displayed as a table in MIRO - i.e. the
-                          symbol is pivoted by using the
+                          GAMS symbol is displayed as a table in MIRO - i.e.
+                          the symbol is pivoted by using the
                           <a href="./model.html#display-tables"
                             >table statement</a
                           >
@@ -2536,8 +2569,8 @@
                           MIRO, a <i>0</i> is displayed for the corresponding
                           entries. If a GAMS model is solved out of MIRO,
                           <i>zeros</i> are stored in the GDX file. In the model
-                          these can then be interpreted as <i>zeros</i> by using
-                          the GAMS option
+                          these can then be interpreted as <i>zeros</i> by
+                          using the GAMS option
                           <a
                             href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARonoffeps"
                             target="_blank"
@@ -2550,8 +2583,8 @@
                           <i>NAs</i> in GAMS become <i>NAs</i> in MIRO and vice
                           versa. But: <i>NAs</i> are only displayed in the
                           default input tables used in MIRO and only if the
-                          table is not pivoted (see above). In output tables (or
-                          in input tables where the option to use
+                          table is not pivoted (see above). In output tables
+                          (or in input tables where the option to use
                           <a href="./widgets.html#input-bigdata-table"
                             >large amounts of data</a
                           >
@@ -2643,10 +2676,10 @@
                   <div class="section-block">
                     <p>
                       In addition to the classic data of a scenario, which is
-                      visualized in the form of tables, widgets and graphics and
-                      with which the user interacts primarily for and after a
-                      model run, a scenario also consists of metadata. Metadata
-                      can be edited under <i>Scenario</i> &rarr;
+                      visualized in the form of tables, widgets and graphics
+                      and with which the user interacts primarily for and after
+                      a model run, a scenario also consists of metadata.
+                      Metadata can be edited under <i>Scenario</i> &rarr;
                       <i>Edit metadata</i>. This includes the following:
                     </p>
                     <div
@@ -2673,27 +2706,31 @@
                     <div id="file-attachments" class="section-block">
                       <h3 class="block-title">Attachments</h3>
                       <p>
-                        With the <i>attachments</i> option, you can attach files
-                        to the (sandbox) scenario you currently have open. These
-                        can be files of any format. MIRO distinguishes between
-                        attachments that can be seen and read by your GAMS model
-                        and files that can not be seen. For example, if you want
-                        to provide data to your model that doesn't need to be
-                        visible/modifiable in the UI (e.g. in the form of a GDX
-                        container or Excel files), attachments that your model
-                        can read are what you are looking for. In case you just
-                        want to add some report about a particular scenario,
-                        which is irrelevant for the GAMS model, you should not
-                        allow the model to read this file. Note that all files
-                        that you allow your model to read need to be first
-                        downloaded into the working directory before GAMS is
-                        executed. Thus, it is advisable to select only those
-                        files to be readable that are actually relevant for the
-                        optimization run.
+                        With the <i>attachments</i> option, you can attach
+                        files to the (sandbox) scenario you currently have
+                        open. These can be files of any format. MIRO
+                        distinguishes between attachments that can be seen and
+                        read by your GAMS model and files that can not be seen.
+                        For example, if you want to provide data to your model
+                        that doesn't need to be visible/modifiable in the UI
+                        (e.g. in the form of a GDX container or Excel files),
+                        attachments that your model can read are what you are
+                        looking for. In case you just want to add some report
+                        about a particular scenario, which is irrelevant for
+                        the GAMS model, you should not allow the model to read
+                        this file. Note that all files that you allow your
+                        model to read need to be first downloaded into the
+                        working directory before GAMS is executed. Thus, it is
+                        advisable to select only those files to be readable
+                        that are actually relevant for the optimization run.
                       </p>
                       <div
                         class="section-block"
-                        style="display: block; margin: auto; text-align: center"
+                        style="
+                          display: block;
+                          margin: auto;
+                          text-align: center;
+                        "
                       >
                         <img
                           class="img-fluid"
@@ -2760,13 +2797,14 @@
                         />
                       </div>
                       <p>
-                        Views can either be bound to a scenario like attachments
-                        or registered app-wide. From now on, scenario-specific
-                        views will be referred to as <kbd>local</kbd> views,
-                        while app-wide views will be referred to as
-                        <kbd>global</kbd> views. You can import and export view
-                        configurations in the form of JSON files. Each view has
-                        an id that has to be unique per GAMS symbol.
+                        Views can either be bound to a scenario like
+                        attachments or registered app-wide. From now on,
+                        scenario-specific views will be referred to as
+                        <kbd>local</kbd> views, while app-wide views will be
+                        referred to as <kbd>global</kbd> views. You can import
+                        and export view configurations in the form of JSON
+                        files. Each view has an id that has to be unique per
+                        GAMS symbol.
                       </p>
                       <div class="callout-block callout-success">
                         <div class="icon-holder">
@@ -2797,9 +2835,9 @@
                       </div>
                       <!--//callout-block-->
                       <p>
-                        To get a more intuitive understanding of what a view is,
-                        the following videos give an example that leads through
-                        the most important aspects. With the
+                        To get a more intuitive understanding of what a view
+                        is, the following videos give an example that leads
+                        through the most important aspects. With the
                         <a href="./charts.html#pivot-chart">pivot table</a>
                         renderer, we can filter and aggregate input and output
                         data by dragging and dropping domains. The video below
@@ -2838,11 +2876,12 @@
                       </p>
                       <p>
                         Global views are bundled with a MIRO app and are
-                        scenario-independent. A local view can <i>shadow</i> a
-                        global view if it has the same name as the global view.
-                        This means that when you apply this view, the
-                        configuration of the local view is applied. When the
-                        local view is removed, the global view is applied again.
+                        scenario-independent. A local view can
+                        <i>shadow</i> a global view if it has the same name as
+                        the global view. This means that when you apply this
+                        view, the configuration of the local view is applied.
+                        When the local view is removed, the global view is
+                        applied again.
                       </p>
                       <p>
                         Global views can be bundled with an application by
@@ -2874,10 +2913,10 @@
                         Access permissions / Scenario sharing
                       </h3>
                       <p>
-                        If multiple users have access to the same MIRO app, they
-                        can share scenarios. Shared scenarios can be loaded from
-                        the database into the sandbox in the same way as your
-                        own scenarios.
+                        If multiple users have access to the same MIRO app,
+                        they can share scenarios. Shared scenarios can be
+                        loaded from the database into the sandbox in the same
+                        way as your own scenarios.
                       </p>
                       <div class="section-block">
                         <img
@@ -2940,13 +2979,13 @@
                   <h2 class="section-title">Performance Aspects</h2>
                   <div class="section-block">
                     <p>
-                      The size and/or complexity of a GAMS model does not affect
-                      the performance of a MIRO application. As the
+                      The size and/or complexity of a GAMS model does not
+                      affect the performance of a MIRO application. As the
                       <a href="#data-concept" class="scrollto">data concept</a>
                       shows, only data declared as external input and output
                       (data contract) is communicated between the model and the
-                      application. The amount of data to be exchanged as well as
-                      the complexity of its visualization influence the
+                      application. The amount of data to be exchanged as well
+                      as the complexity of its visualization influence the
                       performance of your application. Important factors are:
                     </p>
                     <ul>
@@ -2955,12 +2994,12 @@
                         The more symbols you want to display in MIRO, the more
                         tables and charts need to be set up. MIRO renders most
                         of them lazily, that is, only when the user actually
-                        activates a particular tab. However, each of the symbols
-                        has a slight overhead and you should ask yourself
-                        whether displaying all of them is really necessary. For
-                        example, it is usually not a good idea to declare each
-                        domain set separately as external input. Instead, use
-                        the
+                        activates a particular tab. However, each of the
+                        symbols has a slight overhead and you should ask
+                        yourself whether displaying all of them is really
+                        necessary. For example, it is usually not a good idea
+                        to declare each domain set separately as external
+                        input. Instead, use the
                         <a
                           href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition"
                           target="_blank"
@@ -2973,12 +3012,12 @@
                       </li>
                       <li>
                         Amount of data that is communicated with MIRO<br />
-                        Each dataset is displayed in MIRO in the form of a table
-                        and a graph. The larger the amount of data, the more
-                        computationally intensive this process becomes. In
+                        Each dataset is displayed in MIRO in the form of a
+                        table and a graph. The larger the amount of data, the
+                        more computationally intensive this process becomes. In
                         addition, the rendering of graphics can vary in
-                        complexity. While a simple pie chart is usually rendered
-                        fairly quickly, graphs that contain
+                        complexity. While a simple pie chart is usually
+                        rendered fairly quickly, graphs that contain
                         <a href="./charts.html#animation">animations</a> can
                         take significantly more time. In the case of very large
                         amounts of data that are only displayed in MIRO for
@@ -3009,12 +3048,12 @@
                       </li>
                       <li>
                         <a href="./start.html#file-attachments">Attachments</a>
-                        provide a convenient way to communicate large amounts of
-                        data from MIRO to the GAMS model without significantly
-                        impacting application performance. Since attachments are
-                        communicated as a file and therefore do not require data
-                        to be rendered, they require very few computational
-                        resources.
+                        provide a convenient way to communicate large amounts
+                        of data from MIRO to the GAMS model without
+                        significantly impacting application performance. Since
+                        attachments are communicated as a file and therefore do
+                        not require data to be rendered, they require very few
+                        computational resources.
                       </li>
                     </ul>
                   </div>
@@ -3034,7 +3073,8 @@
                       <a href="./hc-module.html"><i>Hypercube jobs</i></a
                       >. Hypercube jobs allow you to efficiently and
                       automatically create, store and analyze a variety of
-                      scenarios. Learn more <a href="./hc-module.html">here</a>.
+                      scenarios. Learn more
+                      <a href="./hc-module.html">here</a>.
                     </p>
                   </div>
                   <div id="miro-server" class="section-block">
@@ -3105,7 +3145,9 @@
                     >How to work with GAMS MIRO</a
                   >
                   <nav class="doc-sub-menu nav flex-column">
-                    <a class="nav-link scrollto has-sub-sub" href="#import-data"
+                    <a
+                      class="nav-link scrollto has-sub-sub"
+                      href="#import-data"
                       >Import data</a
                     >
                     <nav class="sub-sub-menu nav flex-column">
@@ -3253,14 +3295,14 @@
     <!-- gifplayer plugin -->
     <script type="text/javascript" src="assets/js/gifplayer.js"></script>
     <script>
-      $(".gifplayer").gifplayer();
+      $('.gifplayer').gifplayer();
     </script>
     <script type="application/javascript">
-      if (navigator.appVersion.indexOf("Mac") !== -1) {
-        $('#startMIRO a[href="#macos"]').tab("show");
+      if (navigator.appVersion.indexOf('Mac') !== -1) {
+        $('#startMIRO a[href="#macos"]').tab('show');
       }
-      if (navigator.appVersion.indexOf("Linux") !== -1) {
-        $('#startMIRO a[href="#linux"]').tab("show");
+      if (navigator.appVersion.indexOf('Linux') !== -1) {
+        $('#startMIRO a[href="#linux"]').tab('show');
       }
     </script>
   </body>

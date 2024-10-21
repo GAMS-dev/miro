@@ -1,0 +1,46 @@
+{
+    "schedule": {
+        "asd": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": {
+                "default": null
+            },
+            "tableSummarySettings": {
+                "enabled": false,
+                "rowSummaryFunction": "sum",
+                "colSummaryFunction": "sum"
+            },
+            "rows": "i",
+            "filter": {
+                "Hdr": "quantities"
+            },
+            "cols": {
+                "j": null
+            },
+            "chartOptions": {
+                "title": "test",
+                "xTitle": "xxx",
+                "yTitle": "yyy",
+                "yMin": 15,
+                "yLogScale": false,
+                "showDataMarkers": false,
+                "showXGrid": false,
+                "showYGrid": true,
+                "multiChartSeries": "New-york",
+                "multiChartOptions": {
+                    "showMultiChartDataMarkers": true,
+                    "multiChartRenderer": "line",
+                    "stackMultiChartSeries": "no",
+                    "multiChartStepPlot": true
+                },
+                "y2axis": {
+                    "series": "Topeka",
+                    "title": "zzz",
+                    "showGrid": false,
+                    "logScale": true
+                }
+            }
+        }
+    }
+}

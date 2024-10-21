@@ -129,10 +129,10 @@
                           categorical one that defines the labels of the slices
                           - a bar chart allows three dimensions to be
                           visualized: a numerical dimension that defines the
-                          height of the bars, a categorical one that defines the
-                          discrete set of bars on the x-axis, and another
-                          categorical one that defines the color of the bars. In
-                          fact, we could even display a fourth, numerical
+                          height of the bars, a categorical one that defines
+                          the discrete set of bars on the x-axis, and another
+                          categorical one that defines the color of the bars.
+                          In fact, we could even display a fourth, numerical
                           dimension that defines the width of the bars.
                         </p>
                         <p>
@@ -189,8 +189,8 @@
                           <a href="./charts.html#animation"
                             >animate our chart</a
                           >
-                          (e.g. to show how our data changes over time). Another
-                          way is to use a
+                          (e.g. to show how our data changes over time).
+                          Another way is to use a
                           <a href="./charts.html#filter-option">filter</a> that
                           allows us to select a particular slice of our data.
                         </p>
@@ -231,8 +231,8 @@
                       <div class="content">
                         <b class="callout-title">Tip:</b>
                         <p>
-                          To create graphics that are perfectly tailored to your
-                          data and not available in MIRO yet, you can also
+                          To create graphics that are perfectly tailored to
+                          your data and not available in MIRO yet, you can also
                           implement your own renderers. More information can be
                           found
                           <a
@@ -252,20 +252,21 @@
                   <div class="section-block">
                     <p>
                       The default renderer for all symbols is the MIRO pivot
-                      table. This powerful tool offers many useful features that
-                      allow you to explore your data interactively. Its basic
-                      functionality is to filter, aggregate and pivot data. In
-                      addition, the tool includes a variety of rendering
-                      capabilities that enable dynamic data visualization and
-                      analysis. Options range from a traditional table to
-                      visually appealing displays such as heat maps, line
-                      charts, bar charts, pie charts, scatter plots, time
-                      series, and more, making it easy to create charts that
-                      meet your analytical needs. Moreover, you can integrate
-                      multiple chart types within a single view, allowing for
-                      comprehensive data exploration and interpretation. With a
-                      good balance between server and client resource usage, it
-                      is designed to handle very large amounts of data.
+                      table. This powerful tool offers many useful features
+                      that allow you to explore your data interactively. Its
+                      basic functionality is to filter, aggregate and pivot
+                      data. In addition, the tool includes a variety of
+                      rendering capabilities that enable dynamic data
+                      visualization and analysis. Options range from a
+                      traditional table to visually appealing displays such as
+                      heat maps, line charts, bar charts, pie charts, scatter
+                      plots, time series, and more, making it easy to create
+                      charts that meet your analytical needs. Moreover, you can
+                      integrate multiple chart types within a single view,
+                      allowing for comprehensive data exploration and
+                      interpretation. With a good balance between server and
+                      client resource usage, it is designed to handle very
+                      large amounts of data.
                     </p>
                     <div class="section-block">
                       <img
@@ -280,9 +281,9 @@
                     </h3>
                     <p>
                       The MIRO pivot table renderer allows you to store "views"
-                      - the current representation of the data - to the database
-                      and load it together with the scenario data. Simply click
-                      the
+                      - the current representation of the data - to the
+                      database and load it together with the scenario data.
+                      Simply click the
                       <img
                         class="img-fluid"
                         src="assets/images/configuration_mode/miropivot_addview_btn.png"
@@ -292,8 +293,8 @@
                         alt="Add view"
                       />
                       button and assign a name to the view. In the dialog that
-                      opens, you can make further (optional) view-specific
-                      settings:
+                      opens, you can make further (optional)
+                      chart-type-specific settings:
                     </p>
                     <ul>
                       <li>
@@ -345,7 +346,9 @@
                         <p>
                           Views can either be bound to a scenario or registered
                           app-wide. More on this
-                          <a href="./start.html#metadata-views" class="scrollto"
+                          <a
+                            href="./start.html#metadata-views"
+                            class="scrollto"
                             >here</a
                           >.
                         </p>
@@ -367,9 +370,10 @@
                       allows the pivot tool to look like a normal graphic
                       renderer without pivot controls. The combination of
                       predefined views and the presentation mode, which can be
-                      set as the default display, offers extensive possibilities
-                      for data visualization and in-depth analyses. A slice, or
-                      "view" of data can be exported as a PNG or CSV file.
+                      set as the default display, offers extensive
+                      possibilities for data visualization and in-depth
+                      analyses. A slice, or "view" of data can be exported as a
+                      PNG or CSV file.
                     </p>
                     <div class="section-block">
                       <figure>
@@ -388,12 +392,12 @@
                     <p>
                       You can specify the default view as well as the default
                       renderer (table/chart) of the pivot table renderer in the
-                      Configuration Mode. Note that unlike other charting tools,
-                      you configure most of the MIRO pivot table directly in the
-                      preview on the right. Drag and drop the domains where you
-                      want them to be and click on "Save". The symbol is loaded
-                      in MIRO with the same view that you have set up in the
-                      Configuration Mode.
+                      Configuration Mode. Note that unlike other charting
+                      tools, you configure most of the MIRO pivot table
+                      directly in the preview on the right. Drag and drop the
+                      domains where you want them to be and click on "Save".
+                      The symbol is loaded in MIRO with the same view that you
+                      have set up in the Configuration Mode.
                     </p>
                     <p>
                       Example: Model <i>Transport</i>, parameter
@@ -452,9 +456,9 @@
                       For example, if you have location information in the two
                       parameters:
                       <code class="language-gams">ilocData(i,locHdr)</code> and
-                      <code class="language-gams">jlocData(j,locHdr)</code>, you
-                      can combine them into a cube with four dimensions: one
-                      dimension to store the name of the GAMS symbols:
+                      <code class="language-gams">jlocData(j,locHdr)</code>,
+                      you can combine them into a cube with four dimensions:
+                      one dimension to store the name of the GAMS symbols:
                       <code class="language-gams">symname</code> and the three
                       dimensions <code class="language-gams">i</code>,
                       <code class="language-gams">j</code> and
@@ -509,14 +513,14 @@
                     </div>
                     <p>
                       You probably noticed that in this example missing
-                      dimensions in a symbol are filled with <kbd>-</kbd>. But
-                      we could have chosen any other UEL to indicate missing
-                      values. If you would visualize the data of this parameter
-                      with the MIRO Pivot Table, you might not want to see
-                      columns containing only <kbd>-</kbd>. Therefore, the MIRO
-                      Pivot Table has the options to hide these
-                      <i> empty</i> columns. The button to hide/show empty
-                      columns is located in the settings
+                      dimensions in a symbol are filled with
+                      <kbd>-</kbd>. But we could have chosen any other UEL to
+                      indicate missing values. If you would visualize the data
+                      of this parameter with the MIRO Pivot Table, you might
+                      not want to see columns containing only <kbd>-</kbd>.
+                      Therefore, the MIRO Pivot Table has the options to hide
+                      these <i> empty</i> columns. The button to hide/show
+                      empty columns is located in the settings
                       <img
                         class="img-fluid"
                         src="assets/images/pivot-settings-btn.png"
@@ -543,13 +547,13 @@
                     </div>
                     <p id="presentation-mode">
                       <b>Hide pivot controls (presentation mode):</b><br />
-                      This option activates the presentation mode by default. In
-                      this mode, all pivot controls are hidden so that the chart
-                      or table takes center stage. Only configured views and
-                      export buttons remain visible. The presentation mode can
-                      be very useful for users who do not want to play around
-                      with the data in the pivot tool, but only want to view
-                      predefined views/reports.
+                      This option activates the presentation mode by default.
+                      In this mode, all pivot controls are hidden so that the
+                      chart or table takes center stage. Only configured views
+                      and export buttons remain visible. The presentation mode
+                      can be very useful for users who do not want to play
+                      around with the data in the pivot tool, but only want to
+                      view predefined views/reports.
                     </p>
                     <div class="section-block" style="cursor: pointer">
                       <img
@@ -608,7 +612,8 @@ $offExternalOutput
 stock_weight(s) = w.l(s);
 </code></pre>
                     <p>
-                      In a resulting <i>GDX</i> this parameter looks as follows:
+                      In a resulting <i>GDX</i> this parameter looks as
+                      follows:
                     </p>
                     <div class="section-block">
                       <img
@@ -631,15 +636,17 @@ stock_weight(s) = w.l(s);
                       />
                     </div>
                     <p>
-                      <b>Note:</b> <br />Instead of the parameter <i>weight</i>,
-                      to which you assign the values of the variable <i>w</i>,
-                      you could have used a pie chart directly for the levels of
-                      variable <i>w</i>. However, this variable also contains
-                      all the zero values (due to nonzero upper bounds and scale
-                      factors) that would then become visible in the pie chart,
-                      see below. If you assign the levels of the variable
-                      <i>w</i> (<code class="language-gams">w.l(symbol)</code>)
-                      to the parameter <i>weight</i> instead, zeros will be
+                      <b>Note:</b> <br />Instead of the parameter
+                      <i>weight</i>, to which you assign the values of the
+                      variable <i>w</i>, you could have used a pie chart
+                      directly for the levels of variable <i>w</i>. However,
+                      this variable also contains all the zero values (due to
+                      nonzero upper bounds and scale factors) that would then
+                      become visible in the pie chart, see below. If you assign
+                      the levels of the variable <i>w</i> (<code
+                        class="language-gams"
+                        >w.l(symbol)</code
+                      >) to the parameter <i>weight</i> instead, zeros will be
                       squeezed out.
                     </p>
                     <div class="section-block" id="pie-variable">
@@ -658,8 +665,9 @@ stock_weight(s) = w.l(s);
                       However, it is possible to display several pie charts for
                       one symbol at the same time. This makes it possible to
                       easily distribute a multidimensional symbol over several
-                      pie charts. This is comparable to e.g. a line chart, where
-                      new lines can be displayed by including new table headers.
+                      pie charts. This is comparable to e.g. a line chart,
+                      where new lines can be displayed by including new table
+                      headers.
                     </p>
                     <div class="section-block">
                       <img
@@ -778,8 +786,8 @@ stock_weight(s) = w.l(s);
                     <p>
                       If a symbol is to be visualized as a bar chart, an index
                       must be specified for the x-axis as well as for the
-                      y-axis. Several data series can be plotted together on the
-                      x-axis.
+                      y-axis. Several data series can be plotted together on
+                      the x-axis.
                     </p>
                     <p>
                       Example: Model <i>Pickstock</i>, parameter <i>weight</i>
@@ -794,7 +802,8 @@ $offExternalOutput
 stock_weight(s) = w.l(s);
 </code></pre>
                     <p>
-                      In a resulting <i>GDX</i> this parameter looks as follows:
+                      In a resulting <i>GDX</i> this parameter looks as
+                      follows:
                     </p>
                     <div class="section-block">
                       <img
@@ -817,12 +826,12 @@ stock_weight(s) = w.l(s);
                       />
                     </div>
                     <p>
-                      <b>Note:</b> <br />Instead of the parameter <i>weight</i>,
-                      to which you assign the values of the variable <i>w</i>,
-                      you could have used a bar chart directly for the levels of
-                      variable <i>w</i>. However, this variable also contains
-                      all the zero values that would then become visible in the
-                      chart, see the
+                      <b>Note:</b> <br />Instead of the parameter
+                      <i>weight</i>, to which you assign the values of the
+                      variable <i>w</i>, you could have used a bar chart
+                      directly for the levels of variable <i>w</i>. However,
+                      this variable also contains all the zero values that
+                      would then become visible in the chart, see the
                       <a href="#pie-variable" class="scrollto"
                         >pie chart example</a
                       >.
@@ -902,10 +911,12 @@ stock_weight(s) = w.l(s);
                       <code class="language-gams"
                         >abserror(td, 'absolute error train')</code
                       >
-                      (last row), to which we assign the values of the parameter
+                      (last row), to which we assign the values of the
+                      parameter
                       <code class="language-gams">error(d)</code>, but only
                       those values where
-                      <code class="language-gams">ord(d) <= trainingdays</code>.
+                      <code class="language-gams">ord(d) <= trainingdays</code
+                      >.
                     </p>
                     <pre><code class="language-gams">Set         date           'date';
 Parameter   error(date)    'Absolute error';
@@ -927,7 +938,8 @@ abserror(td, 'absolute error train')   = error(td);
 abserror(ntd,'absolute error test')    = error(ntd);
 </code></pre>
                     <p>
-                      In a resulting <i>GDX</i> this parameter looks as follows:
+                      In a resulting <i>GDX</i> this parameter looks as
+                      follows:
                     </p>
                     <div class="section-block">
                       <img
@@ -1107,7 +1119,9 @@ abserror(ntd,'absolute error test')    = error(ntd);
                   <div class="section-block">
                     <p>
                       MIRO uses
-                      <a href="https://plot.ly/r/bubble-charts/" target="_blank"
+                      <a
+                        href="https://plot.ly/r/bubble-charts/"
+                        target="_blank"
                         >Plotly</a
                       >
                       to render bubble charts.
@@ -1286,7 +1300,8 @@ abserror(ntd,'absolute error test')    = error(ntd);
                     </p>
                     <p>
                       The parameter to plot represents the shipment quantities
-                      between canning plants and markets. <br />
+                      between canning plants and markets.
+                      <br />
                     </p>
                     <pre><code class="language-gams">Set
     i           'canning plants'
@@ -1308,9 +1323,9 @@ schedule(i,j, 'quantities') = x.l(i,j);
                     <p>
                       To be able to set markers on a map, the map tool requires
                       latitude and longitude information. By declaring the
-                      parameter <code class="language-gams">schedule</code> as a
-                      <code class="language-gams">table</code>, the elements of
-                      the last index set
+                      parameter <code class="language-gams">schedule</code> as
+                      a <code class="language-gams">table</code>, the elements
+                      of the last index set
                       <code class="language-gams">scheduleHdr</code> (<code
                         class="language-gams"
                         >lngP, latP, lngM, latM, cap, demand, quantities</code
@@ -1319,7 +1334,8 @@ schedule(i,j, 'quantities') = x.l(i,j);
                       <a href="./model.html#table-miro">here</a>.
                     </p>
                     <p>
-                      In a resulting <i>GDX</i> this parameter looks as follows:
+                      In a resulting <i>GDX</i> this parameter looks as
+                      follows:
                     </p>
                     <div class="section-block" id="map-data">
                       <img
@@ -1362,18 +1378,19 @@ schedule('San-Diego','New-York', '32.715736', '-117.161087', '40.730610', '-73.9
 schedule('San-Diego','Topeka',   '32.715736', '-117.161087', '39.056198', '-95.695312') = 275;
 </code></pre>
                         <p>
-                          The geographic information is then no longer available
-                          in numerical form, but the map tool interprets the
-                          data properly.
+                          The geographic information is then no longer
+                          available in numerical form, but the map tool
+                          interprets the data properly.
                         </p>
                       </div>
                       <!--//content-->
                     </div>
                     <!--//callout-block-->
                     <p>
-                      With regard to map-based graphics, a multitude of possible
-                      visualizations are conceivable. In the Configuration Mode
-                      of MIRO, the following features can be realized on a map:
+                      With regard to map-based graphics, a multitude of
+                      possible visualizations are conceivable. In the
+                      Configuration Mode of MIRO, the following features can be
+                      realized on a map:
                     </p>
                     <ul>
                       <li>
@@ -1411,11 +1428,10 @@ schedule('San-Diego','Topeka',   '32.715736', '-117.161087', '39.056198', '-95.6
                         from the
                         <a href="#map-data" class="scrollto">table above</a>
                         also helps to understand this: In the example below the
-                        flows have been configured to point from <i>lngP</i>/<i
-                          >latP</i
-                        >
-                        to <i>lngM</i>/<i>latM</i>. The thickness depends on the
-                        data in the column <i>quantities</i>.
+                        flows have been configured to point from
+                        <i>lngP</i>/<i>latP</i> to <i>lngM</i>/<i>latM</i>. The
+                        thickness depends on the data in the column
+                        <i>quantities</i>.
                         <div class="callout-block callout-warning">
                           <div class="icon-holder">
                             <i class="fas fa-info-circle"></i>
@@ -1424,8 +1440,8 @@ schedule('San-Diego','Topeka',   '32.715736', '-117.161087', '39.056198', '-95.6
                           <div class="content">
                             <b class="callout-title">Note:</b>
                             <p>
-                              Flows cannot be configured for sets, since numeric
-                              values are required for the flow data.
+                              Flows cannot be configured for sets, since
+                              numeric values are required for the flow data.
                             </p>
                           </div>
                           <!--//content-->
@@ -1442,14 +1458,15 @@ schedule('San-Diego','Topeka',   '32.715736', '-117.161087', '39.056198', '-95.6
                         <p>
                           When configuring flows, you can optionally specify a
                           unique label for each flow. This label appears when
-                          you click on a flow. It is important that the label is
-                          different for each flow. If this is not the case, only
-                          one flow is displayed for each duplicated label. A
-                          suitable configuration for a label is to specify the
-                          originator and the recipient for each flow. You can
-                          achieve this by using the square brackets syntax to
-                          address the symbol/data domains. In the example above
-                          the symbol <i>schedule</i> is used to display a map:
+                          you click on a flow. It is important that the label
+                          is different for each flow. If this is not the case,
+                          only one flow is displayed for each duplicated label.
+                          A suitable configuration for a label is to specify
+                          the originator and the recipient for each flow. You
+                          can achieve this by using the square brackets syntax
+                          to address the symbol/data domains. In the example
+                          above the symbol <i>schedule</i> is used to display a
+                          map:
                         </p>
                         <pre><code class="language-gams">Set
     i           'canning plants'
@@ -1508,8 +1525,8 @@ $offExternalOutput
                         Mode with <i>Renewable</i> and <i>Fossil</i>. <br />
                         You also have the option to define a time dimension in
                         the charts. The data of the example covers a period of
-                        one year with a resolution of one hour. The first column
-                        was defined as the time dimension (starting with
+                        one year with a resolution of one hour. The first
+                        column was defined as the time dimension (starting with
                         <i>t001</i>. In this way, a separate pie chart is
                         displayed for each period for each state (see play
                         button at the bottom right of the map).
@@ -1545,8 +1562,8 @@ $offExternalOutput
                     </ul>
                     <p>
                       <b>Layers</b><br />For map visualizations it can be
-                      helpful to display different layers, e.g. with markers. In
-                      Configuration Mode you can specify such layers. In the
+                      helpful to display different layers, e.g. with markers.
+                      In Configuration Mode you can specify such layers. In the
                       resulting graphic you can select the different layers and
                       display only the corresponding markers.
                     </p>
@@ -1699,8 +1716,8 @@ dowVSindex(d,'index fund')     = fund(d);
                       The picture in this example shows a red dotted vertical
                       line showing the "last day of training phase". A scalar
                       output value has been integrated into the graph to define
-                      this event. <br /><b>Note:</b> To use such a scalar in the
-                      graphic, MIRO must of course know this symbol. You
+                      this event. <br /><b>Note:</b> To use such a scalar in
+                      the graphic, MIRO must of course know this symbol. You
                       therefore need to tag it with
                       <code class="language-gams">$onExternalInput </code> /
                       <code class="language-gams">$offExternalInput </code> or
@@ -1735,7 +1752,8 @@ dowVSindex(d,'index fund')     = fund(d);
                       value could show a limit in the data in the form of a
                       horizontal line. A dynamic scalar can be a date which
                       results from the model calculations (i.e. output scalar)
-                      and is displayed in the graphic as an vertical event line.
+                      and is displayed in the graphic as an vertical event
+                      line.
                     </p>
                     <div class="callout-block callout-warning">
                       <div class="icon-holder">
@@ -1903,8 +1921,8 @@ dowVSindex(d,'index fund')     = fund(d);
                       <li>
                         Content<br />
                         Each event must have a content which is then shown as a
-                        label. The GAMS elements of the underlying set can be of
-                        any format.
+                        label. The GAMS elements of the underlying set can be
+                        of any format.
                       </li>
                     </ul>
                     <p>Optional index sets of the GAMS Symbol:</p>
@@ -1912,8 +1930,8 @@ dowVSindex(d,'index fund')     = fund(d);
                       <li>
                         End<br />
                         If an event is not a single point in time, but rather a
-                        range, you can specify an end date. The GAMS elements of
-                        this set must be in date format.
+                        range, you can specify an end date. The GAMS elements
+                        of this set must be in date format.
                       </li>
                       <li>
                         Title<br />
@@ -1922,9 +1940,9 @@ dowVSindex(d,'index fund')     = fund(d);
                       </li>
                       <li>
                         Group<br />
-                        When a group variable is specified, elements of the same
-                        group are grouped together. The GAMS elements of this
-                        set can be of any format.
+                        When a group variable is specified, elements of the
+                        same group are grouped together. The GAMS elements of
+                        this set can be of any format.
                       </li>
                     </ul>
                     <div class="callout-block callout-warning">
@@ -1968,7 +1986,8 @@ gantt('4', '2016-01-07 14:00:00', '2016-01-08 14:00:00', 'test4', 'b') = 1;
 gantt('5', '2016-01-08 14:45:00', '2016-01-09 14:45:00', 'test5', 'b') = 1;
 gantt('6', '2016-01-09 19:00:00', '2016-01-10 19:00:00', 'test6', 'b') = 1;</code></pre>
                     <p>
-                      In a resulting <i>GDX</i> this parameter looks as follows:
+                      In a resulting <i>GDX</i> this parameter looks as
+                      follows:
                     </p>
                     <div class="section-block">
                       <img
@@ -2049,10 +2068,10 @@ gantt('6', '2016-01-09 19:00:00', '2016-01-10 19:00:00', 'test6', 'b') = 1;</cod
                     </p>
                     <p>
                       Value boxes are special in the sense that only scalar
-                      output values (including singleton sets declared as output
-                      data) can be displayed as such. The other way around,
-                      scalar output values can only be visualized as value boxes
-                      in addition to the classic table.
+                      output values (including singleton sets declared as
+                      output data) can be displayed as such. The other way
+                      around, scalar output values can only be visualized as
+                      value boxes in addition to the classic table.
                     </p>
                     <p>
                       The three scalars to plot represent the absolute error in
@@ -2072,8 +2091,8 @@ gantt('6', '2016-01-09 19:00:00', '2016-01-10 19:00:00', 'test6', 'b') = 1;</cod
                         >error_ratio = error_test/error_train;</code
                       >. <br />
                       In addition to these numerical values, two singleton sets
-                      are used to indicate the dates of the beginning and end of
-                      the training period.
+                      are used to indicate the dates of the beginning and end
+                      of the training period.
                     </p>
                     <pre><code class="language-gams">$onExternalOutput
 Scalar error_train                     'Absolute error in entire training phase'
@@ -2096,8 +2115,9 @@ lastDayTraining(td)                    = td.pos = card(td);
 firstDayTraining(td)                   = td.pos = 1;
 </code></pre>
                     <p>
-                      <br />In the Configuration Mode we can configure the value
-                      boxes by selecting the symbol <i>Output Scalars</i>:
+                      <br />In the Configuration Mode we can configure the
+                      value boxes by selecting the symbol
+                      <i>Output Scalars</i>:
                     </p>
                     <div class="section-block">
                       <img
@@ -2110,10 +2130,11 @@ firstDayTraining(td)                   = td.pos = 1;
                     <p>
                       For a value box, the descriptive text (default:
                       explanatory text of the symbol), the color of the box, an
-                      optional icon and the rounding behavior can be configured.
-                      The width of a value box results from the number of boxes
-                      in a row. Each box can be placed in the desired position
-                      by drag &amp; drop. Free rows are ignored.
+                      optional icon and the rounding behavior can be
+                      configured. The width of a value box results from the
+                      number of boxes in a row. Each box can be placed in the
+                      desired position by drag &amp; drop. Free rows are
+                      ignored.
                     </p>
                   </div>
                   <!--//section-block-->
@@ -2190,8 +2211,8 @@ firstDayTraining(td)                   = td.pos = 1;
                     <p>
                       A dashboard is an interactive tool with different data
                       views. It is navigated via the ‘tiles’ (value boxes) on
-                      the right-hand side of the screen. A data view is shown if
-                      the corresponding value box is clicked. It can display
+                      the right-hand side of the screen. A data view is shown
+                      if the corresponding value box is clicked. It can display
                       multiple charts and tables. Further possible interactions
                       include:
                     </p>
@@ -2202,10 +2223,10 @@ firstDayTraining(td)                   = td.pos = 1;
                     </ul>
                     <p>
                       In contrast to other types of visualization, data from
-                      several symbols can be displayed in the dashboard (similar
-                      to a custom renderer). However, note that, as with a
-                      custom renderer, this is in fact a visualization for one
-                      symbol (i.e. one tab in your application) and is
+                      several symbols can be displayed in the dashboard
+                      (similar to a custom renderer). However, note that, as
+                      with a custom renderer, this is in fact a visualization
+                      for one symbol (i.e. one tab in your application) and is
                       configured accordingly.
                     </p>
                     <div class="section-block" style="text-align: left">
@@ -2223,14 +2244,14 @@ firstDayTraining(td)                   = td.pos = 1;
                     <p>
                       The dashboard configuration takes place in the
                       <span class="code">dataRendering</span> section of the
-                      <span class="code">&lt;modelname&gt;.json</span> file. The
-                      configuration includes:
+                      <span class="code">&lt;modelname&gt;.json</span> file.
+                      The configuration includes:
                     </p>
                     <ul>
                       <li>
-                        Configuration of the tiles (value boxes), which are used
-                        to navigate between views in the dashboard. The boxes
-                        can display scalar values (optional).
+                        Configuration of the tiles (value boxes), which are
+                        used to navigate between views in the dashboard. The
+                        boxes can display scalar values (optional).
                       </li>
                       <li>
                         Configuration of the view to be displayed when clicking
@@ -2338,8 +2359,8 @@ firstDayTraining(td)                   = td.pos = 1;
                     <!--//callout-block-->
                     <h5 id="dashboard-valueboxestitle">valueBoxesTitle</h5>
                     <p>
-                      Title to be displayed above the value boxes section in the
-                      dashboard.
+                      Title to be displayed above the value boxes section in
+                      the dashboard.
                     </p>
                     <p>Example:</p>
                     <pre><code class="language-json">
@@ -2375,8 +2396,8 @@ firstDayTraining(td)                   = td.pos = 1;
                     <p>
                       Configuration for the value boxes (tiles) in the
                       dashboard. A value box can display a title and a scalar
-                      value (optional). A value box can be linked to a data view
-                      that is displayed when the box is clicked.
+                      value (optional). A value box can be linked to a data
+                      view that is displayed when the box is clicked.
                     </p>
                     <div
                       class="section-block"
@@ -2395,8 +2416,8 @@ firstDayTraining(td)                   = td.pos = 1;
                       />
                     </div>
                     <p>
-                      A value box has several properties that can be configured.
-                      Each property of the
+                      A value box has several properties that can be
+                      configured. Each property of the
                       <code class="language-json">"valueBoxes"</code>
                       configuration must always be specified so that all arrays
                       have the same length. An example will be given below.
@@ -2405,9 +2426,9 @@ firstDayTraining(td)                   = td.pos = 1;
                       <li>
                         <code class="language-json">"id"</code>: Each value box
                         needs a unique id. The id of a data view (with charts
-                        and tables) is linked to the id of a value box. This can
-                        be any string without spaces. Value boxes can also be
-                        used without a corresponding view.
+                        and tables) is linked to the id of a value box. This
+                        can be any string without spaces. Value boxes can also
+                        be used without a corresponding view.
                       </li>
                       <li>
                         <code class="language-json">"title"</code>: Title that
@@ -2429,8 +2450,8 @@ firstDayTraining(td)                   = td.pos = 1;
                       </li>
                       <li>
                         <code class="language-json">"icon"</code>: Each value
-                        box can have an individual icon. For all available icons
-                        see
+                        box can have an individual icon. For all available
+                        icons see
                         <a
                           href="https://fontawesome.com/search?o=r&m=free"
                           target="_blank"
@@ -2438,18 +2459,18 @@ firstDayTraining(td)                   = td.pos = 1;
                         >.
                       </li>
                       <li>
-                        <code class="language-json">"valueScalar"</code>: If the
-                        value box should display a value, this needs to be
+                        <code class="language-json">"valueScalar"</code>: If
+                        the value box should display a value, this needs to be
                         configured here. Valid <i>valueScalar</i> entries are
                         scalar output symbols of the model, which are used in
                         MIRO. Names must be specified in lower case.
                       </li>
                       <li>
                         <code class="language-json">"prefix"</code>: Any string
-                        that is displayed before the value. If '+' is defined as
-                        a prefix, a '+' is appended to a positive value. If the
-                        value is negative, the sign automatically changes to
-                        '-'.
+                        that is displayed before the value. If '+' is defined
+                        as a prefix, a '+' is appended to a positive value. If
+                        the value is negative, the sign automatically changes
+                        to '-'.
                       </li>
                       <li>
                         <code class="language-json">"postfix"</code>: String
@@ -2458,10 +2479,10 @@ firstDayTraining(td)                   = td.pos = 1;
                       <li>
                         <code class="language-json">"redPositive"</code>:
                         Positive values are displayed in green by default,
-                        negative values in red. If this logic should be reversed
-                        (positive: red, negative: green), the
-                        <i>redPositive</i> property of the value box must be set
-                        to <i>true</i>, otherwise <i>false</i>.
+                        negative values in red. If this logic should be
+                        reversed (positive: red, negative: green), the
+                        <i>redPositive</i> property of the value box must be
+                        set to <i>true</i>, otherwise <i>false</i>.
                       </li>
                       <li>
                         <code class="language-json">"noColor"</code>: If the
@@ -2471,8 +2492,8 @@ firstDayTraining(td)                   = td.pos = 1;
                         otherwise <i>false</i>.
                       </li>
                       <li>
-                        <code class="language-json">"decimals"</code>: Number of
-                        decimal places that should be displayed for a value.
+                        <code class="language-json">"decimals"</code>: Number
+                        of decimal places that should be displayed for a value.
                       </li>
                     </ul>
                     <p>Example:</p>
@@ -2534,11 +2555,12 @@ firstDayTraining(td)                   = td.pos = 1;
                       The elements within the ID array (or object) identify the
                       individual charts/tables. After such an id of an
                       individual chart, (e.g.
-                      <code class="language-json">"macro1"</code> in the example
-                      below), the title is specified, which is displayed above
-                      the chart/table in the dashboard. One can also use the
-                      empty string <code class="language-json">""</code> to
-                      display no header. Note that IDs must not contain spaces.
+                      <code class="language-json">"macro1"</code> in the
+                      example below), the title is specified, which is
+                      displayed above the chart/table in the dashboard. One can
+                      also use the empty string
+                      <code class="language-json">""</code> to display no
+                      header. Note that IDs must not contain spaces.
                     </p>
                     <p>Example:</p>
                     <pre><code class="language-json">
@@ -2581,11 +2603,12 @@ firstDayTraining(td)                   = td.pos = 1;
                       <div class="content">
                         <b class="callout-title">Note:</b>
                         <p>
-                          All keys in the &lt;modelname&gt;.json file are sorted
-                          alphabetically when the Configuration Mode is started.
-                          In order to leave the order of charts/ tables within a
-                          dataView in the dashboard unaffected by this, we
-                          recommend using an array of objects for the dataViews.
+                          All keys in the &lt;modelname&gt;.json file are
+                          sorted alphabetically when the Configuration Mode is
+                          started. In order to leave the order of charts/
+                          tables within a dataView in the dashboard unaffected
+                          by this, we recommend using an array of objects for
+                          the dataViews.
                         </p>
                       </div>
                       <!--//content-->
@@ -2608,9 +2631,9 @@ firstDayTraining(td)                   = td.pos = 1;
                       a chart is almost the same as that of a configured
                       <a href="./start.html#metadata-views">view</a> in the
                       pivot table (learn more about pivot table views
-                      <a href="./charts.html#pivot-chart">here</a>). The easiest
-                      way to configure a dashboard chart is therefore as
-                      follows:
+                      <a href="./charts.html#pivot-chart">here</a>). The
+                      easiest way to configure a dashboard chart is therefore
+                      as follows:
                     </p>
                     <ol>
                       <li>
@@ -2638,8 +2661,8 @@ firstDayTraining(td)                   = td.pos = 1;
                       </li>
                       <li>
                         Click on <span class="code">Scenario</span> →
-                        <span class="code">Edit metadata</span> in the top right
-                        corner of the app and switch to the
+                        <span class="code">Edit metadata</span> in the top
+                        right corner of the app and switch to the
                         <span class="code">View</span> tab in the dialog box
                         that opens.
                       </li>
@@ -2659,7 +2682,7 @@ firstDayTraining(td)                   = td.pos = 1;
           "pivotRenderer": "bar",
           "domainFilter": { "default": null },
           "tableSummarySettings": {
-            "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum"
+            "rowEnabled": false, "rowSummaryFunction": "sum", "colEnabled": false, "colSummaryFunction": "sum"
           },
           "rows": "mac",
           "filter": { "sim_miro": "scenario" },
@@ -2682,8 +2705,8 @@ firstDayTraining(td)                   = td.pos = 1;
                       </li>
                       <li>
                         In addition to the attributes of the downloaded
-                        pivot-table view, there are further attributes available
-                        in the dashboard configuration:
+                        pivot-table view, there are further attributes
+                        available in the dashboard configuration:
                         <ol type="a">
                           <li>
                             <code class="language-json">"data"</code>: Symbol
@@ -2696,16 +2719,21 @@ firstDayTraining(td)                   = td.pos = 1;
                             Adds multi drop down menu(s) to a chart/table in
                             which elements of the configured dimension can be
                             selected for being rendered.
-                            <div class="section-block" style="text-align: left">
+                            <div
+                              class="section-block"
+                              style="text-align: left"
+                            >
                               <img
                                 class="img-fluid"
                                 src="assets/images/dashboard/user_filter.png"
                                 alt="user filter"
                               />
                             </div>
-                            Instead of providing symbol dimensions, one can also
-                            set a
-                            <code class="language-json">"dataViewsConfig"</code>
+                            Instead of providing symbol dimensions, one can
+                            also set a
+                            <code class="language-json"
+                              >"dataViewsConfig"</code
+                            >
                             ID. As a result, the filter(s) set in the
                             corresponding chart of that ID is/are also applied
                             here. Example:
@@ -2731,8 +2759,8 @@ firstDayTraining(td)                   = td.pos = 1;
                             <code class="language-json">"mac"</code> dimension
                             of the symbol
                             <code class="language-json">"macroperc"</code>.
-                            Filters selected in that chart will automatically be
-                            applied to
+                            Filters selected in that chart will automatically
+                            be applied to
                             <code class="language-json">"macro2"</code> as well
                             since it uses
                             <code class="language-json"
@@ -2769,9 +2797,10 @@ firstDayTraining(td)                   = td.pos = 1;
                               >"customLabelsOrder"</code
                             >: Labels named here are displayed in charts/tables
                             in the order specified by the user. Labels that are
-                            not mentioned retain the original sort order and are
-                            positioned after the explicitly listed labels. If
-                            labels that have already been given a new name using
+                            not mentioned retain the original sort order and
+                            are positioned after the explicitly listed labels.
+                            If labels that have already been given a new name
+                            using
                             <code class="language-json">"customLabels"</code>
                             are to be sorted, the new name must be used in
                             <code class="language-json"
@@ -2797,8 +2826,8 @@ firstDayTraining(td)                   = td.pos = 1;
                           <li>
                             <code class="language-json">"hideLegend"</code>: If
                             set to <code class="language-json">true</code>, no
-                            legend is displayed in the corresponding chart. This
-                            can be useful, for example, to avoid
+                            legend is displayed in the corresponding chart.
+                            This can be useful, for example, to avoid
                             <span class="code">value</span> legend entries for
                             individual data series. Example:
                             <pre><code class="language-json">
@@ -2815,11 +2844,11 @@ firstDayTraining(td)                   = td.pos = 1;
 </code></pre>
                           </li>
                           <li>
-                            <code class="language-json">"heatmapType"</code>: If
-                            set to <code class="language-json">2</code>, an
-                            alternative heatmap renderer will be used that shows
-                            different colors for positive and negative values.
-                            Example:
+                            <code class="language-json">"heatmapType"</code>:
+                            If set to <code class="language-json">2</code>, an
+                            alternative heatmap renderer will be used that
+                            shows different colors for positive and negative
+                            values. Example:
                             <pre><code class="language-json">
 {
   "macroperc": {
@@ -2843,13 +2872,14 @@ firstDayTraining(td)                   = td.pos = 1;
                             Specifies the width of the chart. Must be between 1
                             and 12. If not provided, the chart uses the entire
                             available width (12). If a view contains 2 graphics
-                            with a <i>colWidth</i> of 6 each, they are displayed
-                            next to each other.
+                            with a <i>colWidth</i> of 6 each, they are
+                            displayed next to each other.
                           </li>
                           <li>
                             <code class="language-json">"height"</code>:
-                            Specifies the height of the chart. Must be any valid
-                            css height, e.g. <span class="code">"40vh"</span> or
+                            Specifies the height of the chart. Must be any
+                            valid css height, e.g.
+                            <span class="code">"40vh"</span> or
                             <span class="code">"450px"</span>. If not provided,
                             the chart uses 33% of the height of the viewport
                             (<span class="code">"33vh"</span>).
@@ -2881,7 +2911,7 @@ firstDayTraining(td)                   = td.pos = 1;
           "macro1": {
             "aggregationFunction": "sum",
             "pivotRenderer": "bar",
-            "tableSummarySettings": { "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "tableSummarySettings": { "rowEnabled": false, "rowSummaryFunction": "sum", "colEnabled": false, "colSummaryFunction": "sum" },
             "rows": "mac",
             "aggregations": { "sim_miro": null },
             "chartOptions": { "title": "Macroeconomic indicators (real, percentage change)" },
@@ -2892,7 +2922,7 @@ firstDayTraining(td)                   = td.pos = 1;
           "macro2": {
             "aggregationFunction": "sum",
             "pivotRenderer": "table",
-            "tableSummarySettings": { "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "tableSummarySettings": { "rowEnabled": false, "rowSummaryFunction": "sum", "colEnabled": false, "colSummaryFunction": "sum" },
             "rows": "mac",
             "aggregations": { "sim_miro": null },
             "data": "macroperc",
@@ -2917,11 +2947,11 @@ firstDayTraining(td)                   = td.pos = 1;
                     >
                     <p>
                       Besides a chart configuration based on a pivot table view
-                      in <code class="language-json">"dataViewsConfig"</code>,
-                      one can also provide custom R code, which is rendered at
-                      the corresponding position. The dashboard renderer has
-                      been prepared in such a way that this requires minimal
-                      effort.
+                      in
+                      <code class="language-json">"dataViewsConfig"</code>, one
+                      can also provide custom R code, which is rendered at the
+                      corresponding position. The dashboard renderer has been
+                      prepared in such a way that this requires minimal effort.
                     </p>
                     <div class="section-block" style="text-align: left">
                       <img
@@ -2945,8 +2975,8 @@ firstDayTraining(td)                   = td.pos = 1;
                         >
                         from the MIRO repository on GitHub and put it into your
                         <span class="code">renderer_&lt;modelname&gt;</span>
-                        directory. If the folder does not already exist, you can
-                        create it manually.
+                        directory. If the folder does not already exist, you
+                        can create it manually.
                       </li>
                       <li>
                         In the dashboard.R file, make the following changes:
@@ -2968,7 +2998,8 @@ firstDayTraining(td)                   = td.pos = 1;
 -)
 }
  </code></pre>
-                        In this example the dashboard is rendered for the symbol
+                        In this example the dashboard is rendered for the
+                        symbol
                         <span class="code">macrolevel</span>. Make sure to
                         replace <span class="code">macrolevel</span> with your
                         symbol name.
@@ -3000,17 +3031,19 @@ firstDayTraining(td)                   = td.pos = 1;
                         That's it. You can now extend the dashboard renderer as
                         a custom renderer. Of course, all the code can be
                         customized here. The aforementioned preparation of the
-                        dashboard renderer with regard to custom code instead of
-                        a pivot table view can be addressed as follows.
+                        dashboard renderer with regard to custom code instead
+                        of a pivot table view can be addressed as follows.
                       </li>
                     </ol>
                     <p>
                       To use custom R code instead of a pivot table view, the
-                      <code class="language-json">"dataViewsConfig"</code> ID in
-                      the <span class="code">&lt;modelname&gt;.json</span> file
+                      <code class="language-json">"dataViewsConfig"</code> ID
+                      in the
+                      <span class="code">&lt;modelname&gt;.json</span> file
                       must not be assigned a view (list) as before, but any
                       string, e.g.
-                      <code class="language-json">"macro2": "customCode"</code>:
+                      <code class="language-json">"macro2": "customCode"</code
+                      >:
                     </p>
                     <pre><code class="language-json">
 {
@@ -3121,9 +3154,9 @@ firstDayTraining(td)                   = td.pos = 1;
                     </p>
                     <p>
                       The Configuration Mode can help you create your own
-                      renderers. If a symbol is selected for the use of a custom
-                      renderer in Configuration Mode, the following screen
-                      appears:
+                      renderers. If a symbol is selected for the use of a
+                      custom renderer in Configuration Mode, the following
+                      screen appears:
                     </p>
                     <div class="section-block" style="text-align: center">
                       <img
@@ -3144,8 +3177,9 @@ firstDayTraining(td)                   = td.pos = 1;
                       >
                       first. When you click the "Update" button, the code is
                       executed in both cells and the graph appears on the right
-                      (or an error message if you made a mistake). As an example
-                      consider the map created for the transport model below
+                      (or an error message if you made a mistake). As an
+                      example consider the map created for the transport model
+                      below
                     </p>
                     <div class="section-block" style="text-align: center">
                       <img
@@ -3161,7 +3195,8 @@ firstDayTraining(td)                   = td.pos = 1;
                       <span class="code">renderer_&lt;modelname&gt;</span> in
                       your current working directory and saves your code in a
                       file called:
-                      <span class="code">mirorenderer_&lt;symbolname&gt;.R</span
+                      <span class="code"
+                        >mirorenderer_&lt;symbolname&gt;.R</span
                       >.
                     </p>
                     <div class="section-block" style="text-align: center">
@@ -3185,8 +3220,8 @@ firstDayTraining(td)                   = td.pos = 1;
                       when you share your renderer between different symbols.
                     </p>
                     <p>
-                      The resulting JSON snippet for our transport example looks
-                      like this:
+                      The resulting JSON snippet for our transport example
+                      looks like this:
                     </p>
                     <pre><code class="language-json">
 {
@@ -3266,8 +3301,8 @@ $offExternalInput
                         <i>Price</i> is not declared as a table but as a normal
                         parameter. For MIRO, this means that the data is
                         available in list format with the headers
-                        <i>date</i> and <i>symbol</i>. The individual stocks are
-                        listed in the rows:
+                        <i>date</i> and <i>symbol</i>. The individual stocks
+                        are listed in the rows:
                       </p>
                       <div class="section-block" style="text-align: center">
                         <img
@@ -3280,11 +3315,11 @@ $offExternalInput
                       <p>
                         We want to configure a line chart in which the price
                         trend of each stock symbol is plotted separately. Now
-                        MIRO needs the price information of each symbol for each
-                        date. The problem is that MIRO only knows about one
-                        value column: <i>Price</i>. Hence, we cannot distinguish
-                        between the prices of individual stocks. In the
-                        resulting line chart a single line is plotted which
+                        MIRO needs the price information of each symbol for
+                        each date. The problem is that MIRO only knows about
+                        one value column: <i>Price</i>. Hence, we cannot
+                        distinguish between the prices of individual stocks. In
+                        the resulting line chart a single line is plotted which
                         contains all prices of all stock symbols:
                       </p>
                       <div class="section-block" style="text-align: center">
@@ -3344,10 +3379,11 @@ $offExternalInput
                     </h6>
                     <div class="expanded">
                       <p>
-                        One dimension of a symbol visualized as a graphic can be
-                        configured as a filter dimension. Its elements can then
-                        be selected via a (multi-)drop-down menu. Only the data
-                        belonging to this selection is displayed in the graphic.
+                        One dimension of a symbol visualized as a graphic can
+                        be configured as a filter dimension. Its elements can
+                        then be selected via a (multi-)drop-down menu. Only the
+                        data belonging to this selection is displayed in the
+                        graphic.
                       </p>
                       <p>
                         Example: Model <i>Pickstock</i>, parameter <i>price</i>
@@ -3368,11 +3404,12 @@ $offExternalInput
                           >Should one domain of the symbol be selectable via a
                           dropdown menu?</i
                         >
-                        in the same category <i>Filters & Domains</i> and select
-                        the dimension <i>stocks</i> as filter dimension. In the
-                        result a (multi-) dropdown menu appears above the chart,
-                        in which we can select the individual stocks. Only those
-                        stocks are displayed which are selected in the filter.
+                        in the same category <i>Filters & Domains</i> and
+                        select the dimension <i>stocks</i> as filter dimension.
+                        In the result a (multi-) dropdown menu appears above
+                        the chart, in which we can select the individual
+                        stocks. Only those stocks are displayed which are
+                        selected in the filter.
                       </p>
                       <div class="section-block">
                         <img
@@ -3390,9 +3427,9 @@ $offExternalInput
                           <b class="callout-title">Tip:</b>
                           <p>
                             If your filter dimension contains data in date
-                            format (e.g. <i>2020-05-06</i>), you will see a date
-                            range selector instead of a multi-dropdown menu for
-                            selection.
+                            format (e.g. <i>2020-05-06</i>), you will see a
+                            date range selector instead of a multi-dropdown
+                            menu for selection.
                           </p>
                         </div>
                         <!--//content-->
@@ -3455,13 +3492,13 @@ $offExternalInput
                     </h6>
                     <div class="expanded">
                       <p>
-                        Chart data can be animated in order to show how the data
-                        changes over time. Example: We want to animate a chart
-                        that shows the individual stocks of the Dow Jones index
-                        over time. The Y axis shows the price of a stock, the X
-                        axis shows the date. Now we want to display all stocks
-                        one after the other with an animation. For this we
-                        select in the category <i>Y axix</i> the dimension,
+                        Chart data can be animated in order to show how the
+                        data changes over time. Example: We want to animate a
+                        chart that shows the individual stocks of the Dow Jones
+                        index over time. The Y axis shows the price of a stock,
+                        the X axis shows the date. Now we want to display all
+                        stocks one after the other with an animation. For this
+                        we select in the category <i>Y axix</i> the dimension,
                         which should be used in the animation for the single
                         frames. Since we want to show all stock symbols one
                         after the other, we choose <i>stock symbol</i>:
@@ -3476,12 +3513,12 @@ $offExternalInput
                       <p>
                         After the selection the animation is rendered and a
                         slider with play button appears under the graphic.
-                        <br /><b>Note</b>: The animation of graphics can require
-                        a lot of computing power. It is therefore possible that
-                        it takes a little time until the preview graphics are
-                        rendered. This is especially true if you select a
-                        dimension for animation that consists of many individual
-                        values.
+                        <br /><b>Note</b>: The animation of graphics can
+                        require a lot of computing power. It is therefore
+                        possible that it takes a little time until the preview
+                        graphics are rendered. This is especially true if you
+                        select a dimension for animation that consists of many
+                        individual values.
                       </p>
                       <p>
                         Under <i>Animation</i> we can further customize the
@@ -3508,9 +3545,10 @@ $offExternalInput
                           <b class="callout-title">Tip:</b>
                           <p>
                             When using animations, it is often useful to define
-                            the visible areas for both axes in the corresponding
-                            axis categories. Otherwise it can happen that areas
-                            are pre-selected in which no data is visible.
+                            the visible areas for both axes in the
+                            corresponding axis categories. Otherwise it can
+                            happen that areas are pre-selected in which no data
+                            is visible.
                           </p>
                         </div>
                         <!--//content-->
@@ -3541,7 +3579,9 @@ $offExternalInput
                   <a class="nav-link scrollto" href="#scatter-chart"
                     >Scatter plot</a
                   >
-                  <a class="nav-link scrollto" href="#line-chart">Line chart</a>
+                  <a class="nav-link scrollto" href="#line-chart"
+                    >Line chart</a
+                  >
                   <a class="nav-link scrollto" href="#bubble-chart"
                     >Bubble chart</a
                   >
@@ -3560,7 +3600,9 @@ $offExternalInput
                   <a class="nav-link scrollto" href="#custom-graphics"
                     >Custom renderer</a
                   >
-                  <a class="nav-link scrollto" href="#graph-options">Options</a>
+                  <a class="nav-link scrollto" href="#graph-options"
+                    >Options</a
+                  >
                 </nav>
                 <!--//doc-menu-->
               </div>
@@ -3611,7 +3653,7 @@ $offExternalInput
     <!-- gifplayer plugin -->
     <script type="text/javascript" src="assets/js/gifplayer.js"></script>
     <script>
-      $(".gifplayer").gifplayer();
+      $('.gifplayer').gifplayer();
     </script>
   </body>
 </html>

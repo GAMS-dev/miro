@@ -1,4 +1,4 @@
-options(shiny.maxRequestSize = 500 * 1024^2)
+options(shiny.maxRequestSize = as.integer(Sys.getenv("MIRO_MAX_UPLOAD_SIZE", "5000")) * 1024^2)
 
 source("../app/tools/db_migration/modules/form_db_migration.R", local = TRUE)
 
@@ -287,6 +287,18 @@ server <- function(input, output, session) {
                   conditionMessage(e)
                 )
                 flog.info(errMsg)
+                tryCatch(
+                  {
+                    removeAppData(appId, logoURL)
+                    flog.info("Files for MIRO app: %s removed successfully (cleaning up after error during app registration).", appId)
+                  },
+                  error = function(ei) {
+                    flog.warn(
+                      "Error while trying to clean up (due to error during app registration) already registered app files of MIRO app: %s. Error message: %s",
+                      appId, conditionMessage(ei)
+                    )
+                  }
+                )
                 session$sendCustomMessage("onError", list(requestType = "addApp", message = errMsg))
               }
             )

@@ -86,8 +86,8 @@
           </div>
           <div id="doc-header" class="doc-header text-center">
             <h1 class="doc-title">
-              <span aria-hidden="true" class="icon fas fa-server"></span> Server
-              Setup
+              <span aria-hidden="true" class="icon fas fa-server"></span>
+              Server Setup
             </h1>
           </div>
           <!--//doc-header-->
@@ -215,8 +215,8 @@
                       <li>
                         <p>
                           Install MIRO Sever by running
-                          <kbd>./miro-server install</kbd>. You will be asked to
-                          enter the GAMS Engine host and the
+                          <kbd>./miro-server install</kbd>. You will be asked
+                          to enter the GAMS Engine host and the
                           <a
                             href="https://gams.com/engine/administration.html#namespaces"
                             >namespace</a
@@ -238,8 +238,8 @@
                             that there is no conflict between the two services
                             (i.e. one of them has a different location).
                             <br />
-                            If you specified a port when installing GAMS Engine,
-                            this port must also be specified here:
+                            If you specified a port when installing GAMS
+                            Engine, this port must also be specified here:
                             <kbd
                               >http://&lt;IP extracted from previous
                               step&gt;:&lt;engine port&gt;/&lt;engine
@@ -255,13 +255,16 @@
                         <p>
                           The default namespace is <kbd>global</kbd>. You can
                           also specify any other namespace created in GAMS
-                          Engine. You can change the GAMS Engine connection info
-                          at any time by modifying the auto-generated
+                          Engine. You can change the GAMS Engine connection
+                          info at any time by modifying the auto-generated
                           <kbd>.env</kbd> file that is located inside the
                           miro_server directory. The following environment
                           variables have to be set:
                         </p>
-                        <div class="table-responsive" style="margin: 15px auto">
+                        <div
+                          class="table-responsive"
+                          style="margin: 15px auto"
+                        >
                           <table class="table table-striped">
                             <thead>
                               <tr>
@@ -366,7 +369,9 @@
                       <kbd>./miro-server start</kbd>.
                     </p>
                     <b>Update</b>
-                    <p>To update GAMS MIRO Server to the latest version, run</p>
+                    <p>
+                      To update GAMS MIRO Server to the latest version, run
+                    </p>
                     <div class="console-box">
                       <span class="console-content"
                         >&gt; ./miro-server update</span
@@ -397,15 +402,16 @@
                       <kbd>./backup/dump_db_${BACKUP_TIME}.gz</kbd> and
                       <kbd>./backup/dump_miro_server_${BACKUP_TIME}.gz</kbd>
                       with a backup of the MIRO PostgreSQL database and the
-                      current directory respectively. <kbd>BACKUP_TIME</kbd> is
-                      a timestamp with the following format:
-                      <kbd>%d-%m-%Y_%H_%M_%S</kbd>.
+                      current directory respectively.
+                      <kbd>BACKUP_TIME</kbd> is a timestamp with the following
+                      format: <kbd>%d-%m-%Y_%H_%M_%S</kbd>.
                     </p>
                     <b>Restore (Linux only)</b>
                     <p>
-                      To restore GAMS MIRO Server from a backup created with the
-                      <kbd>./miro-server backup</kbd> command, first unzip a new
-                      <kbd>miro_server.zip</kbd> and navigate to the
+                      To restore GAMS MIRO Server from a backup created with
+                      the
+                      <kbd>./miro-server backup</kbd> command, first unzip a
+                      new <kbd>miro_server.zip</kbd> and navigate to the
                       <kbd>miro_server</kbd> directory. Next, copy the
                       <kbd>backup</kbd> directory with your backup files into
                       this directory and run
@@ -433,7 +439,8 @@
                     </div>
                     <p>
                       Additionally, you can remove the directory where you
-                      extracted the configuration files of the GAMS MIRO Server.
+                      extracted the configuration files of the GAMS MIRO
+                      Server.
                     </p>
                   </div>
                 </section>
@@ -449,8 +456,8 @@
                     <p>
                       Most of the settings can be done in the
                       <i>data/application.yml</i> file in the
-                      <i>miro_server</i> directory. Note that you must stay with
-                      the file's YAML format. It is also important that no
+                      <i>miro_server</i> directory. Note that you must stay
+                      with the file's YAML format. It is also important that no
                       adjustments are made to the file other than the following
                       settings. Changes directly affect the functionality of
                       MIRO Server!
@@ -478,6 +485,7 @@
   heartbeat-timeout: 120000
   admin-groups: admins
   container-log-path: /logs/container-logs
+  max-upload-size: 200
   force-signed-apps: false
   disable-readonly-mode: false
   anonymous-readonly-mode: false
@@ -558,7 +566,8 @@ server:
                           You can set a different color theme individually for
                           each app, which overrides the global setting. Read
                           more about the app environment
-                          <a href="./server_administration.html#app-environment"
+                          <a
+                            href="./server_administration.html#app-environment"
                             >here</a
                           >.
                         </p>
@@ -583,10 +592,23 @@ server:
                           language individually for each app, which overrides
                           the global setting. This allows to host apps in
                           different languages. Read more about
-                          <a href="./server_administration.html#app-environment"
+                          <a
+                            href="./server_administration.html#app-environment"
                             >how to change the language for an individual
                             app.</a
                           >
+                        </p>
+                      </li>
+                      <li>
+                        <b
+                          >Maximum file size when uploading (MB)
+                          (<i>proxy.max-upload-size</i>):</b
+                        >
+                        <a id="config-max-upload-size" class="anchor"></a>
+                        <p>
+                          The maximum size (in megabytes) that files (e.g. apps
+                          in admin panel or data in MIRO apps) may have when
+                          uploading.
                         </p>
                       </li>
                       <li>
@@ -604,11 +626,11 @@ server:
                           default, MIRO Server imports all apps. No signature
                           verification is enforced. To enable signature
                           verification, set this option to:
-                          <i>true</i>. MIRO will then issue an error in case you
-                          try to import an app that is not signed by a trusted
-                          developer. You should store all public keys (in PEM
-                          format) of the developers you trust in the directory:
-                          <i>miro_server/data/known_keys</i>.
+                          <i>true</i>. MIRO will then issue an error in case
+                          you try to import an app that is not signed by a
+                          trusted developer. You should store all public keys
+                          (in PEM format) of the developers you trust in the
+                          directory: <i>miro_server/data/known_keys</i>.
                         </p>
                       </li>
                       <li>
@@ -621,10 +643,10 @@ server:
                           By default, when a user without permissions on the
                           MIRO Server namespace opens an application, MIRO
                           starts in read-only mode. This means that the GAMS
-                          interaction section and the "Solve" button are hidden.
-                          In addition, the sandbox scenario cannot be saved or
-                          deleted. To disable this behaviour, set this option
-                          to: <i>true</i>.
+                          interaction section and the "Solve" button are
+                          hidden. In addition, the sandbox scenario cannot be
+                          saved or deleted. To disable this behaviour, set this
+                          option to: <i>true</i>.
                         </p>
                       </li>
                       <li>
@@ -636,9 +658,10 @@ server:
                         <p>
                           Only relevant when authentication is disabled (<i
                             >proxy.authentication: none</i
-                          >): Activates read-only mode (GAMS interaction section
-                          and solve button hidden and sandbox scenario cannot be
-                          saved/deleted). It is recommended not to give the
+                          >): Activates read-only mode (GAMS interaction
+                          section and solve button hidden and sandbox scenario
+                          cannot be saved/deleted). It is recommended not to
+                          give the
                           <a
                             href="./server_administration.html#authentication-user-management"
                             >anonymous user</a
@@ -664,15 +687,16 @@ server:
                         setting. The following options are available:
                         <ul>
                           <li>
-                            <i>proxy.authentication: webservice</i>: GAMS Engine
-                            authentication
+                            <i>proxy.authentication: webservice</i>: GAMS
+                            Engine authentication
                           </li>
                           <li>
                             <i>proxy.authentication: openid</i>: OpenID Connect
                             authentication
                           </li>
                           <li>
-                            <i>proxy.authentication: none</i>: No authentication
+                            <i>proxy.authentication: none</i>: No
+                            authentication
                           </li>
                         </ul>
                       </li>
@@ -695,25 +719,27 @@ server:
                         for more information.
                       </p>
                       <li>
-                        <b>Context-path (<i>server.servlet.context-path</i>):</b
+                        <b
+                          >Context-path
+                          (<i>server.servlet.context-path</i>):</b
                         ><br />
-                        If you want to host MIRO Server on a different path than
-                        root, you must adjust the context path under
+                        If you want to host MIRO Server on a different path
+                        than root, you must adjust the context path under
                         <i>server.servlet.context-path</i>. For example, if you
                         want to access the MIRO apps at
                         <a href="https://mydomain.com/miroapps"
                           >https://mydomain.com/miroapps</a
                         >, then the context-path must be set to
                         <kbd>/miroapps</kbd>. Beside the adjustment of the path
-                        in the <i>application.yml</i> file, the configuration of
-                        the reverse proxy (<a
+                        in the <i>application.yml</i> file, the configuration
+                        of the reverse proxy (<a
                           href="#server-nginx"
                           class="scrollto"
                           >Nginx</a
-                        >: <i>location</i> property) has to be adjusted as well.
-                        Note that this has no effect on the
-                        <a href="./server_api.html">MIRO Server REST API</a>. To
-                        also change the root path of the REST API, you must
+                        >: <i>location</i> property) has to be adjusted as
+                        well. Note that this has no effect on the
+                        <a href="./server_api.html">MIRO Server REST API</a>.
+                        To also change the root path of the REST API, you must
                         specify the root path via the
                         <i>SCRIPT_NAME</i> environment variable in the
                         <i>docker-compose.yml</i> file:
@@ -734,20 +760,20 @@ server:
                         ><br />
                         <ul>
                           <li>
-                            <i>Lax</i>: (<b>recommended</b>) provides protection
-                            against CSRF attacks
+                            <i>Lax</i>: (<b>recommended</b>) provides
+                            protection against CSRF attacks
                           </li>
                           <li>
                             <i>Strict</i>: provides protection against CSRF
                             attacks. However, note that this will block cookies
                             when a user clicks on a link to MIRO Server. For
-                            example, assume the user is logged-in to MIRO Server
-                            on https://miro-server.local and there is a link to
-                            https://miro-server.local on your intranet at
-                            https://myintranet.local. When the user clicks on
-                            this link, they will not be logged-in. Therefore we
-                            do not recommended this option, without being aware
-                            of the consequences.
+                            example, assume the user is logged-in to MIRO
+                            Server on https://miro-server.local and there is a
+                            link to https://miro-server.local on your intranet
+                            at https://myintranet.local. When the user clicks
+                            on this link, they will not be logged-in. Therefore
+                            we do not recommended this option, without being
+                            aware of the consequences.
                           </li>
                         </ul>
                       </li>
@@ -978,12 +1004,14 @@ server:
                         terminating it at IDP).
                       </li>
                       <li>
-                        <b>Client ID (<i>proxy.openid.client-id</i>):</b><br />A
-                        unique ID generated by your identity provider for GAMS
-                        MIRO Server.
+                        <b>Client ID (<i>proxy.openid.client-id</i>):</b
+                        ><br />A unique ID generated by your identity provider
+                        for GAMS MIRO Server.
                       </li>
                       <li>
-                        <b>Client Secret (<i>proxy.openid.client-secret</i>):</b
+                        <b
+                          >Client Secret
+                          (<i>proxy.openid.client-secret</i>):</b
                         ><br />A secret generated by your identity provider for
                         GAMS MIRO Server.
                       </li>
@@ -1060,7 +1088,9 @@ server:
                   </div>
                 </section>
                 <section id="server-extend" class="doc-section">
-                  <h2 class="section-title">Extending the MIRO Docker image</h2>
+                  <h2 class="section-title">
+                    Extending the MIRO Docker image
+                  </h2>
                   <div class="section-block">
                     <p>
                       In case your MIRO applications need additional packages,
@@ -1098,9 +1128,10 @@ server:
                       <a href="https://www.nginx.com/" target="_blank">nginx</a
                       >. You can find an example configuration in the file
                       <kbd>miro.conf</kbd> located inside the
-                      <i>miro_server</i> directory mentioned in the installation
-                      instructions. To apply this configuration, simply copy it
-                      to the configuration location of your nginx (e.g.
+                      <i>miro_server</i> directory mentioned in the
+                      installation instructions. To apply this configuration,
+                      simply copy it to the configuration location of your
+                      nginx (e.g.
                       <kbd>sudo cp miro.conf /etc/nginx/conf.d/</kbd>). Note
                       that you will have to reload nginx afterwards using
                       <kbd>sudo nginx -s reload</kbd>.
@@ -1177,8 +1208,8 @@ server {
 }</code></pre>
                     </div>
                     <p>
-                      Note that even though both GAMS Engine and MIRO Server run
-                      on the same host, the GAMS Engine host is not
+                      Note that even though both GAMS Engine and MIRO Server
+                      run on the same host, the GAMS Engine host is not
                       <kbd>localhost</kbd>. In case TLS, port/certificate info
                       etc. is used, this needs to be added here as well. If you
                       need help with this, please contact us. Nginx needs to be
@@ -1186,8 +1217,8 @@ server {
                       <kbd>sudo nginx -s reload</kbd>.
                     </p>
                     <p>
-                      If you want to host MIRO Server on a path other than root,
-                      you must change the context path in the file
+                      If you want to host MIRO Server on a path other than
+                      root, you must change the context path in the file
                       <i>data/application.yml</i> accordingly (entry
                       <i>server.servlet.context-path</i>).
                     </p>
@@ -1217,8 +1248,8 @@ server {
                       >
                       instance is running on the same machine as MIRO Server,
                       there are a few things to consider. The following example
-                      shows the installation procedure to run MIRO and Engine on
-                      a freshly installed Ubuntu 20.04 server.
+                      shows the installation procedure to run MIRO and Engine
+                      on a freshly installed Ubuntu 20.04 server.
                     </p>
                     <h3 class="block-title">Planned configuration</h3>
                     <ul>
@@ -1264,8 +1295,8 @@ server {
                       </li>
                       <li>
                         For the installation of MIRO Server and GAMS Engine you
-                        need a tool to unzip archives, e.g. <i>unzip</i>:
-                        <kbd>sudo apt install unzip</kbd>.
+                        need a tool to unzip archives, e.g.
+                        <i>unzip</i>: <kbd>sudo apt install unzip</kbd>.
                       </li>
                     </ol>
                   </div>
@@ -1289,8 +1320,8 @@ server {
                         <kbd>gams_engine</kbd> directory.
                       </li>
                       <li>
-                        Run the script <kbd>./up.sh</kbd> with admin privileges,
-                        e.g.
+                        Run the script <kbd>./up.sh</kbd> with admin
+                        privileges, e.g.
                         <kbd
                           >sudo ./up.sh -a test1234 -m engine -p 8095 -w 4</kbd
                         >.
@@ -1302,9 +1333,9 @@ server {
                         </li>
                         <li>
                           <kbd>-m engine</kbd>: By default, GAMS Engine is
-                          mounted under <kbd>/</kbd>. Since we want to access it
-                          under https://my-miro.com/engine/, we need to specify
-                          this here.
+                          mounted under <kbd>/</kbd>. Since we want to access
+                          it under https://my-miro.com/engine/, we need to
+                          specify this here.
                         </li>
                         <li>
                           <kbd>-p 8095</kbd>: We specify an Engine port to be
@@ -1417,12 +1448,12 @@ server {
                   </h2>
                   <div class="section-block">
                     <p>
-                      Besides running Engine and MIRO Server on the same machine
-                      it is also possible to have multiple MIRO Server instances
-                      running there. This could be useful, for example, if some
-                      MIRO applications should be showcased, while others should
-                      only be accessible to registered users. The following
-                      example builds on the
+                      Besides running Engine and MIRO Server on the same
+                      machine it is also possible to have multiple MIRO Server
+                      instances running there. This could be useful, for
+                      example, if some MIRO applications should be showcased,
+                      while others should only be accessible to registered
+                      users. The following example builds on the
                       <a href="#same-machine-example" class="scrollto"
                         >previous configuration</a
                       >
@@ -1475,8 +1506,8 @@ server {
                         <li>
                           Change <kbd>server.servlet.context-path</kbd> from
                           <kbd>/</kbd> to <kbd>/server_2</kbd>. the
-                          <kbd>context-path</kbd> specifies under which URL MIRO
-                          Server should be accessible. By specifying
+                          <kbd>context-path</kbd> specifies under which URL
+                          MIRO Server should be accessible. By specifying
                           <kbd>/server_2</kbd> the second MIRO Server instance
                           will be accessible under
                           https://my-miro.com/server_2/.
@@ -1541,12 +1572,14 @@ server {
                           <kbd>8090</kbd> which we also specified in the
                           <kbd>docker-compose.yml</kbd> and the
                           <kbd>data_raw/application.yml</kbd> file. The MIRO
-                          REST API can be accessed via <kbd>/server_2/api</kbd>.
-                          The port corresponds to the one used in
-                          <kbd>docker-compose.yml</kbd>.
+                          REST API can be accessed via
+                          <kbd>/server_2/api</kbd>. The port corresponds to the
+                          one used in <kbd>docker-compose.yml</kbd>.
                         </p>
                       </li>
-                      <li>Reload Nginx via <kbd>sudo nginx -s reload</kbd>.</li>
+                      <li>
+                        Reload Nginx via <kbd>sudo nginx -s reload</kbd>.
+                      </li>
                     </ol>
                   </div>
                 </section>
@@ -1583,8 +1616,8 @@ server {
                     machine</a
                   >
                   <a class="nav-link scrollto" href="#multiple-server-example"
-                    >Example: Install multiple MIRO Server instances on the same
-                    machine</a
+                    >Example: Install multiple MIRO Server instances on the
+                    same machine</a
                   >
                   <!--//nav-->
                 </nav>

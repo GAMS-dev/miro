@@ -734,7 +734,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             select(where(~ !is.numeric(.))) %>%
             names()
 
-          if (identical(dataViewsConfig[[indicator]]$tableSummarySettings$enabled, TRUE)) {
+          fullSummaryEnabled <- identical(viewOptions[["tableSummarySettings"]][["enabled"]], TRUE)
+          if (fullSummaryEnabled || identical(dataViewsConfig[[indicator]]$tableSummarySettings$rowEnabled, TRUE)) {
             tablesummarySettings <- dataViewsConfig[[indicator]]$tableSummarySettings
             if (identical(tablesummarySettings$rowSummaryFunction, "sum")) {
               dataTmp <- mutate(
@@ -771,7 +772,9 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 )]))
               )
             }
-
+          }
+          if (fullSummaryEnabled || identical(dataViewsConfig[[indicator]]$tableSummarySettings$colEnabled, TRUE)) {
+            tablesummarySettings <- dataViewsConfig[[indicator]]$tableSummarySettings
             colSummarySettings <- list(caption = lang$renderers$miroPivot$aggregationFunctions[[tablesummarySettings$colSummaryFunction]])
             roundPrecision <- if (length(dataViewsConfig[[indicator]]$decimals)) as.numeric(dataViewsConfig[[indicator]]$decimals) else 2L
             if (identical(tablesummarySettings$colSummaryFunction, "count")) {
@@ -929,7 +932,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             if (identical(chartType, "scatter")) {
               chartJsObj$x$options$showLine <- FALSE
             } else if (identical(chartType, "stackedarea")) {
-              chartJsObj$x$scales$y$stacked <- TRUE
+              chartJsObj$x$scales$y$stacked <- if (identical(currentView$chartOptions$singleStack, TRUE)) "single" else TRUE
               chartJsObj$x$options$plugins$tooltip <- list(
                 mode = "index",
                 position = "nearest"
@@ -957,6 +960,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 xTitle = currentView$chartOptions$xTitle,
                 yTitle = currentView$chartOptions$yTitle
               )
+            chartJsObj$x$scales$y$stacked <- if (identical(currentView$chartOptions$singleStack, TRUE)) "single" else TRUE
             chartJsObj$x$options$plugins$tooltip <- list(
               mode = "index",
               position = "nearest"
@@ -988,22 +992,82 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 yTitle = currentView$chartOptions$yTitle
               )
           }
-          if (chartType %in% c("horizontalbar", "horizontalstackedbar")) {
-            if (identical(currentView$chartOptions$yLogScale, TRUE) &&
-              identical(chartJsObj$x$scales$y$type, "linear")) {
-              chartJsObj$x$scales$x$type <- "logarithmic"
-            } else {
-              chartJsObj$x$scales$x$type <- "linear"
+          if (length(currentView$chartOptions$y2axis$series)) {
+            axisType <- if (chartType %in% c("horizontalbar", "horizontalstackedbar")) "x2" else "y2"
+            position <- if (axisType == "x2") "top" else "right"
+
+            chartJsObj <- cjsAddScale(chartJsObj,
+              axis = axisType,
+              position = position,
+              type = if (identical(currentView$chartOptions$y2axis$logScale, TRUE)) "logarithmic" else "linear",
+              display = "auto",
+              title = list(
+                text = if (length(currentView$chartOptions$y2axis$title)) currentView$chartOptions$y2axis$title else NULL,
+                display = if (length(currentView$chartOptions$y2axis$title)) TRUE else FALSE
+              )
+            )
+
+            if (identical(currentView$chartOptions$y2axis$showGrid, FALSE)) {
+              chartJsObj$x$scales[[axisType]]$grid$display <- FALSE
             }
-            chartJsObj$x$options$indexAxis <- "y"
-            chartJsObj$x$scales$y$type <- "category"
-          } else if (identical(currentView$chartOptions$yLogScale, TRUE) &&
-            identical(chartJsObj$x$scales$y$type, "linear")) {
-            chartJsObj$x$scales$y$type <- "logarithmic"
+            if (length(currentView$chartOptions$y2axis$min)) {
+              chartJsObj$x$scales[[axisType]]$min <- currentView$chartOptions$y2axis$min
+            }
+            if (length(currentView$chartOptions$y2axis$max)) {
+              chartJsObj$x$scales[[axisType]]$max <- currentView$chartOptions$y2axis$max
+            }
           }
 
           chartJsObj <- chartJsObj %>% cjsLegend()
 
+          if (identical(currentView$chartOptions$yLogScale, TRUE)) {
+            if (chartType %in% c("horizontalbar", "horizontalstackedbar")) {
+              chartJsObj$x$scales$x$type <- "logarithmic"
+              chartJsObj$x$options$indexAxis <- "y"
+              chartJsObj$x$scales$y$type <- "category"
+            } else if (identical(chartJsObj$x$scales$y$type, "linear")) {
+              chartJsObj$x$scales$y$type <- "logarithmic"
+            }
+          } else if (chartType %in% c("horizontalbar", "horizontalstackedbar")) {
+            chartJsObj$x$scales$x$type <- "linear"
+            chartJsObj$x$options$indexAxis <- "y"
+            chartJsObj$x$scales$y$type <- "category"
+          }
+
+          axisType <- if (chartType %in% c("horizontalbar", "horizontalstackedbar")) "x" else "y"
+          xGrid <- if (chartType %in% c("horizontalbar", "horizontalstackedbar")) "y" else "x"
+          if (length(currentView$chartOptions$yMin)) {
+            chartJsObj$x$scales[[axisType]]$min <- currentView$chartOptions$yMin
+          }
+          if (length(currentView$chartOptions$yMax)) {
+            chartJsObj$x$scales[[axisType]]$max <- currentView$chartOptions$yMax
+          }
+          if (identical(currentView$chartOptions$showXGrid, FALSE)) {
+            chartJsObj$x$scales[[xGrid]]$grid$display <- FALSE
+          }
+          if (identical(currentView$chartOptions$showYGrid, FALSE)) {
+            chartJsObj$x$scales[[axisType]]$grid$display <- FALSE
+          }
+          if (identical(currentView$chartOptions$showDataMarkers, FALSE) &&
+            !identical(chartType, "scatter")) {
+            chartJsObj$x$options$normalized <- TRUE
+            chartJsObj$x$options$animation <- FALSE
+            chartJsObj$x$options$elements <- list(
+              point = list(
+                radius = 0L,
+                hitRadius = 4L
+              )
+            )
+            chartJsObj$x$options$plugins$tooltip <- list(
+              mode = "index",
+              position = "nearest"
+            )
+          }
+
+          multiChartRenderer <- character(0)
+          if (length(currentView$chartOptions$multiChartOptions$multiChartRenderer)) {
+            multiChartRenderer <- currentView$chartOptions$multiChartOptions$multiChartRenderer
+          }
           for (i in seq_len(noSeries)) {
             label <- names(dataTmp)[rowHeaderLen + i]
             originalLabel <- label
@@ -1014,33 +1078,75 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               ]
             }
 
-            if (identical(currentView$chartOptions$hideLegend, TRUE)) {
-              chartJsObj$x$options$plugins$legend$display <- FALSE
+            scaleID <- NULL
+            if (length(currentView$chartOptions$y2axis$series) && originalLabel %in% currentView$chartOptions$y2axis$series) {
+              if (chartType %in% c("horizontalbar", "horizontalstackedbar")) {
+                scaleID <- "x2"
+              } else {
+                scaleID <- "y2"
+              }
             }
 
             if (originalLabel %in% currentView$chartOptions$multiChartSeries) {
               if (chartType %in% c("line", "area", "stackedarea", "timeseries")) {
-                chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
-                  label = label,
-                  type = "bar",
-                  order = 2
-                )
+                multiChartRenderer <- if (length(multiChartRenderer)) multiChartRenderer else "bar"
               } else {
-                chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
-                  label = label,
-                  type = "line",
-                  showLine = TRUE,
-                  order = 0
-                )
+                multiChartRenderer <- if (length(multiChartRenderer)) multiChartRenderer else "line"
               }
+              if ((multiChartRenderer %in% c("line", "scatter") || identical(chartType, "stackedarea")) &&
+                !identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "regularStack")) {
+                order <- 0
+              } else {
+                order <- 2
+              }
+
+              chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
+                label = label,
+                type = multiChartRenderer,
+                showLine = multiChartRenderer %in% c("line", "area", "stackedarea", "timeseries"),
+                order = order,
+                scaleID = scaleID,
+                pointHitRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 1L else 0,
+                pointRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 3L else 0,
+                stack = if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "regularStack")) {
+                  "stack1"
+                } else if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "individualStack")) {
+                  "stack0"
+                } else {
+                  as.character(i)
+                },
+                stepped = identical(currentView$chartOptions$multiChartOptions$multiChartStepPlot, TRUE)
+              )
             } else {
+              if (identical(chartType, "stackedarea")) {
+                fillOpacity <- if (length(currentView$chartOptions$fillOpacity)) {
+                  currentView$chartOptions$fillOpacity
+                } else {
+                  1
+                }
+              } else if (identical(chartType, "area")) {
+                fillOpacity <- if (length(currentView$chartOptions$fillOpacity)) {
+                  currentView$chartOptions$fillOpacity
+                } else {
+                  0.15
+                }
+              } else {
+                fillOpacity <- 0.15
+              }
               chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
                 label = label,
                 fill = chartType %in% c("area", "stackedarea"),
-                fillOpacity = if (identical(chartType, "stackedarea")) 1 else 0.15,
-                order = 1
+                fillOpacity = fillOpacity,
+                order = 1,
+                scaleID = scaleID,
+                stack = if (chartType %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "stack1" else NULL,
+                stepped = identical(currentView$chartOptions$stepPlot, TRUE)
               )
             }
+          }
+
+          if (identical(currentView$chartOptions$hideLegend, TRUE)) {
+            chartJsObj$x$options$plugins$legend$display <- FALSE
           }
 
           if (chartType %in% c("stackedbar", "stackedarea")) {
@@ -1068,7 +1174,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 enabled = TRUE
               ),
               mode = "xy",
-              overScaleMode = "y"
+              scaleMode = "y"
             ),
             pan = list(
               enabled = TRUE,

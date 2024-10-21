@@ -130,7 +130,8 @@
                           <i>static_&lt;modelname&gt;</i>,
                           <i>renderer_&lt;modelname&gt;</i>,
                           <i>scripts_&lt;modelname&gt;</i> and
-                          <i>&lt;modelname&gt_files.txt</i>) must be lower case!
+                          <i>&lt;modelname&gt_files.txt</i>) must be lower
+                          case!
                         </p>
                       </div>
                       <!--//content-->
@@ -181,12 +182,15 @@
                       >
                         <div class="section-block">
                           <p>
-                            Every GAMS model can be deployed with MIRO in just a
-                            few steps. First, those GAMS symbols that you want
-                            to be visible in the interface need to be declared.
-                            This can be done by wrapping the corresponding
+                            Every GAMS model can be deployed with MIRO in just
+                            a few steps. First, those GAMS symbols that you
+                            want to be visible in the interface need to be
+                            declared. This can be done by wrapping the
+                            corresponding
                             <i>symbol declarations</i> with the tags
-                            <code class="language-gams">$onExternalInput </code>
+                            <code class="language-gams"
+                              >$onExternalInput
+                            </code>
                             /
                             <code class="language-gams"
                               >$offExternalInput
@@ -218,9 +222,12 @@ Parameter
                             <span class="code">symbol_1</span> and
                             <span class="code">symbol_2</span> are declared
                             between the tags
-                            <code class="language-gams">$onExternalInput </code>
+                            <code class="language-gams"
+                              >$onExternalInput
+                            </code>
                             and
-                            <code class="language-gams">$offExternalInput </code
+                            <code class="language-gams"
+                              >$offExternalInput </code
                             >. They will be visible in MIRO (e.g. as tables).
                             <br /><span class="code">symbol_3</span>, on the
                             other hand, was declared outside the keywords. This
@@ -238,10 +245,10 @@ Parameter
                       >
                         <div class="section-block">
                           <p>
-                            Every GAMSPy model can be deployed with MIRO in just
-                            a few steps. First, those GAMS symbols that you want
-                            to be visible in the interface need to be annotated.
-                            This can be achieved by adding
+                            Every GAMSPy model can be deployed with MIRO in
+                            just a few steps. First, those GAMS symbols that
+                            you want to be visible in the interface need to be
+                            annotated. This can be achieved by adding
                             <code class="language-python"
                               >is_miro_input=True</code
                             >
@@ -261,7 +268,8 @@ symbol_3 = Parameter(m, name="symbol_3", domain=[dim4])</code></pre>
                           <p>
                             Here, the parameters
                             <span class="code">symbol_1</span> and
-                            <span class="code">symbol_2</span> are defined using
+                            <span class="code">symbol_2</span> are defined
+                            using
                             <code class="language-python"
                               >is_miro_input=True</code
                             >. They will be visible in MIRO (e.g. as tables).
@@ -476,16 +484,16 @@ $offExternalInput
                             We have decided to display the parameter
                             <span class="code">a</span> with the index
                             <span class="code">i</span> in MIRO and the
-                            parameter <span class="code">b</span> with the index
-                            <span class="code">j</span>. It is therefore
-                            possible for us to make changes to the elements of i
-                            and j from within MIRO (i.e. modify the elements of
-                            i and/or j). However, as we declared i and j outside
-                            of the
+                            parameter <span class="code">b</span> with the
+                            index <span class="code">j</span>. It is therefore
+                            possible for us to make changes to the elements of
+                            i and j from within MIRO (i.e. modify the elements
+                            of i and/or j). However, as we declared i and j
+                            outside of the
                             <span class="code">$on-/offExternalInput</span>
                             tags, we would get domain violations if we were to
-                            modify the set elements! To get around this problem,
-                            we will use the
+                            modify the set elements! To get around this
+                            problem, we will use the
                             <a
                               href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition"
                               target="_blank"
@@ -520,8 +528,9 @@ $offExternalInput
                               <span class="code">&lt; operator</span></a
                             >
                             causes the sets <span class="code">i</span> and
-                            <span class="code">j</span> to be defined implicitly
-                            via the parameters <span class="code">a</span> and
+                            <span class="code">j</span> to be defined
+                            implicitly via the parameters
+                            <span class="code">a</span> and
                             <span class="code">b</span> (see also
                             <a href="#implicit-set" class="scrollto">here</a>).
                             Alternatively, we could declare the first column of
@@ -545,9 +554,9 @@ Positive Variable x;
 
 [...]</code></pre>
                           <p>
-                            That's it. We defined both input and output data for
-                            use in MIRO. If you use GAMS Studio, the model is
-                            now ready to be launched in MIRO. If you use the
+                            That's it. We defined both input and output data
+                            for use in MIRO. If you use GAMS Studio, the model
+                            is now ready to be launched in MIRO. If you use the
                             command line instead, please follow
                             <a href="./start.html#start-via-command-line"
                               >these steps</a
@@ -610,13 +619,13 @@ f = Parameter(m, name="f", records=90, is_miro_input=True, description="freight 
                             We have decided to display the parameter
                             <span class="code">a</span> with the index
                             <span class="code">i</span> in MIRO and the
-                            parameter <span class="code">b</span> with the index
-                            <span class="code">j</span>. It is therefore
-                            possible for us to make changes to the elements of i
-                            and j from within MIRO (i.e. modify the elements of
-                            i and/or j). However, as we did not include i and j
-                            in MIRO, we would get domain violations if we were
-                            to modify the set elements! To get around this
+                            parameter <span class="code">b</span> with the
+                            index <span class="code">j</span>. It is therefore
+                            possible for us to make changes to the elements of
+                            i and j from within MIRO (i.e. modify the elements
+                            of i and/or j). However, as we did not include i
+                            and j in MIRO, we would get domain violations if we
+                            were to modify the set elements! To get around this
                             problem, we will use
                             <a
                               href="https://gamspy.readthedocs.io/en/latest/user/basics/set.html#implicit-set-definition"
@@ -644,8 +653,9 @@ b = Parameter(m, name="b", domain=[j], records=demands, domain_forwarding=True, 
                               Implicit Set Definition</a
                             >
                             causes the sets <span class="code">i</span> and
-                            <span class="code">j</span> to be defined implicitly
-                            via the parameters <span class="code">a</span> and
+                            <span class="code">j</span> to be defined
+                            implicitly via the parameters
+                            <span class="code">a</span> and
                             <span class="code">b</span> (see also
                             <a href="#implicit-set" class="scrollto">here</a>).
                             Alternatively, we could declare the first column of
@@ -668,9 +678,9 @@ b = Parameter(m, name="b", domain=[j], records=demands, domain_forwarding=True, 
 x = Variable(m, name="x", domain=[i, j], type="Positive", is_miro_output=True, description="shipment quantities in cases")
 z = Variable(m, name="z", is_miro_output=True, description="total transportation costs in thousands of dollars")</code></pre>
                           <p>
-                            That's it. We defined both input and output data for
-                            use in MIRO and the model is ready to be launched in
-                            MIRO.
+                            That's it. We defined both input and output data
+                            for use in MIRO and the model is ready to be
+                            launched in MIRO.
                           </p>
                         </div>
                       </div>
@@ -714,8 +724,8 @@ z = Variable(m, name="z", is_miro_output=True, description="total transportation
                       >
                         <div class="section-block">
                           <p>
-                            To launch MIRO from within GAMS Studio, simply click
-                            on
+                            To launch MIRO from within GAMS Studio, simply
+                            click on
                             <i>Run Base Mode</i>.
                           </p>
                           <div
@@ -771,21 +781,24 @@ z = Variable(m, name="z", is_miro_output=True, description="total transportation
                           </p>
                           <div class="console-box">
                             <span class="console-content">
-                              &gt; gamspy run miro --mode="base" --path
-                              &lt;path_to_your_MIRO_installation&gt; --model
-                              &lt;path_to_your_model&gt;
+                              &gt; gamspy run miro --mode="base" --model
+                              &lt;path_to_your_model&gt; [--path
+                              &lt;path_to_your_MIRO_installation&gt;]
                             </span>
                           </div>
                           <p>
                             where
-                            <kbd>&lt;path_to_your_MIRO_installation&gt;</kbd> is
-                            the path to your MIRO executable file (e.g.
+                            <kbd>&lt;path_to_your_model&gt;</kbd> is the path
+                            to the <i>transport.py</i> file and
+                            <kbd>&lt;path_to_your_MIRO_installation&gt;</kbd>
+                            is the path to your MIRO executable file (e.g.
                             <kbd>C:\Program Files\GAMS MIRO\GAMS MIRO.exe</kbd>
                             on Windows,
                             <kbd>/Applications/GAMS MIRO.app</kbd> on macOS or
-                            <kbd>~/GAMS-MIRO-2.9.0.AppImage</kbd> on Linux) and
-                            <kbd>&lt;path_to_your_model&gt;</kbd> is the path to
-                            the <i>transport.py</i> file.
+                            <kbd>~/GAMS-MIRO-2.9.0.AppImage</kbd> on Linux).
+                            You can omit <kbd>--path</kbd> in case MIRO is
+                            installed in one of the standard locations on
+                            Windows or macOS.
                           </p>
                           <p>
                             Note that you can also set the MIRO installation
@@ -816,10 +829,10 @@ z = Variable(m, name="z", is_miro_output=True, description="total transportation
                       You also have access to the <i>log</i> and
                       <i>listing</i> (<i>lst</i>) files of GAMS as well as all
                       files generated during the run. When the model has
-                      finished the execution phase successfully, the results can
-                      be examined. Since MIRO is connected to a database, you
-                      can store results there, fetch previously saved results
-                      and modify them or use them to compare with other
+                      finished the execution phase successfully, the results
+                      can be examined. Since MIRO is connected to a database,
+                      you can store results there, fetch previously saved
+                      results and modify them or use them to compare with other
                       scenarios.
                     </p>
                     <div class="callout-block callout-success">
@@ -871,18 +884,18 @@ z = Variable(m, name="z", is_miro_output=True, description="total transportation
                       <div class="content">
                         <b class="callout-title">Warning:</b>
                         <p>
-                          The <i>&lt;modelname&gt;_io.json</i> file should never
-                          be touched!
+                          The <i>&lt;modelname&gt;_io.json</i> file should
+                          never be touched!
                         </p>
                       </div>
                       <!--//content-->
                     </div>
                     <!--//callout-block-->
                     <p>
-                      The database schema that GAMS MIRO uses internally depends
-                      directly on the structure of the symbols in the data
-                      contract. When you launch a MIRO application for the first
-                      time, database tables are created according to this
+                      The database schema that GAMS MIRO uses internally
+                      depends directly on the structure of the symbols in the
+                      data contract. When you launch a MIRO application for the
+                      first time, database tables are created according to this
                       schema. If you change the structure of your data contract
                       in a way that is incompatible with the current database
                       layout, MIRO will prompt you with a
@@ -959,7 +972,9 @@ z = Variable(m, name="z", is_miro_output=True, description="total transportation
                             chapter we will see how they can be integrated into
                             MIRO. <br />To integrate a set in MIRO, declare it
                             between the
-                            <code class="language-gams">$onExternalInput </code>
+                            <code class="language-gams"
+                              >$onExternalInput
+                            </code>
                             /
                             <code class="language-gams"
                               >$offExternalInput
@@ -1005,11 +1020,11 @@ j = Set(m, name="j", records=["new-york", "chicago", "topeka"], is_miro_input=Tr
                     </p>
                     <p>
                       <b>Note</b>: Be careful when you want to load both a set
-                      and a parameter whose domain this set is part of! You will
-                      end up with two distinct tables, one for the set and one
-                      for the parameter. If you now change the domain of the
-                      parameter but not the set, you will end up with domain
-                      violations!
+                      and a parameter whose domain this set is part of! You
+                      will end up with two distinct tables, one for the set and
+                      one for the parameter. If you now change the domain of
+                      the parameter but not the set, you will end up with
+                      domain violations!
                     </p>
                     <p id="implicit-set">
                       <b>Implicit set definition</b>
@@ -1052,18 +1067,20 @@ j = Set(m, name="j", records=["new-york", "chicago", "topeka"], is_miro_input=Tr
                             Populating a set can be done implicitly. This means
                             that you don't import the set elements explicitly,
                             but implicitly via a certain parameter. Instead of
-                            two tables, you end up with a single table, and your
-                            MIRO users won't run into ugly domain violations.
-                            This can be accomplished using the
+                            two tables, you end up with a single table, and
+                            your MIRO users won't run into ugly domain
+                            violations. This can be accomplished using the
                             <a
                               href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition"
                               target="_blank"
                               ><i>Implicit Set Definition</i></a
                             >
-                            (or: <i>Domain Defining Symbol Declarations</i>). In
-                            the following example, the sets are declared outside
-                            the
-                            <code class="language-gams">$onExternalInput </code>
+                            (or: <i>Domain Defining Symbol Declarations</i>).
+                            In the following example, the sets are declared
+                            outside the
+                            <code class="language-gams"
+                              >$onExternalInput
+                            </code>
                             /
                             <code class="language-gams"
                               >$offExternalInput
@@ -1081,8 +1098,8 @@ Parameter d(i&lt;,j&lt;) 'distance in thousands of miles';
 $offExternalInput
 </code></pre>
                           <p>
-                            The <span class="code">&lt;</span> signs signal GAMS
-                            that the sets <span class="code">i</span> and
+                            The <span class="code">&lt;</span> signs signal
+                            GAMS that the sets <span class="code">i</span> and
                             <span class="code">j</span> will be defined
                             implicitly via the parameter
                             <span class="code">d</span>.
@@ -1100,9 +1117,9 @@ $offExternalInput
                             Populating a set can be done implicitly. This means
                             that you don't import the set elements explicitly,
                             but implicitly via a certain parameter. Instead of
-                            two tables, you end up with a single table, and your
-                            MIRO users won't run into ugly domain violations.
-                            This can be accomplished using the
+                            two tables, you end up with a single table, and
+                            your MIRO users won't run into ugly domain
+                            violations. This can be accomplished using the
                             <a
                               href="https://gamspy.readthedocs.io/en/latest/user/basics/set.html#implicit-set-definition"
                               target="_blank"
@@ -1145,9 +1162,10 @@ d = Parameter(m, name="d", domain=[i,j], domain_forwarding=True, is_miro_input=T
                     <h3 class="block-title">Parameters</h3>
                     <p>
                       By default, parameters are displayed in MIRO in tabular
-                      form. In the default configuration, each <i>index</i> of a
-                      GAMS parameter is displayed in a separate column. The last
-                      column contains the parameter <i>values</i>.
+                      form. In the default configuration, each
+                      <i>index</i> of a GAMS parameter is displayed in a
+                      separate column. The last column contains the parameter
+                      <i>values</i>.
                     </p>
                     <p>
                       Example: <br />In this example the parameter <i>price</i>
@@ -1212,9 +1230,9 @@ price = Parameter(m, name="price", domain=[date,symbol], domain_forwarding=True,
                       </div>
                     </div>
                     <p>
-                      When we start GAMS MIRO and load the default scenario that
-                      was automatically created, we see the following input
-                      screen:
+                      When we start GAMS MIRO and load the default scenario
+                      that was automatically created, we see the following
+                      input screen:
                     </p>
                     <div
                       class="section-block"
@@ -1232,8 +1250,8 @@ price = Parameter(m, name="price", domain=[date,symbol], domain_forwarding=True,
                       In this example the parameter
                       <span class="code">price</span> has two indices:
                       <span class="code">date</span> and
-                      <span class="code">symbol</span>. Each index is shown in a
-                      separate column named after the explanatory text of the
+                      <span class="code">symbol</span>. Each index is shown in
+                      a separate column named after the explanatory text of the
                       corresponding set (or in case no explanatory text is
                       available, the name of the symbol). The value column of a
                       parameter is always called <i>value</i> and aliased with
@@ -1369,11 +1387,11 @@ schedule = Parameter(m, name="schedule", domain=[i,j,scheduleHdr], is_miro_outpu
                         </div>
                       </div>
                       <p>
-                        The parameter <span class="code">schedule</span> reports
-                        on transport volumes and also provides information on
-                        the geodata of the locations of plants and markets.
-                        Declared as a normal parameter, the symbol looks like
-                        this in MIRO:
+                        The parameter
+                        <span class="code">schedule</span> reports on transport
+                        volumes and also provides information on the geodata of
+                        the locations of plants and markets. Declared as a
+                        normal parameter, the symbol looks like this in MIRO:
                       </p>
                       <div class="section-block" style="text-align: center">
                         <img
@@ -1503,14 +1521,14 @@ schedule = Parameter(m, name="schedule", domain=[i,j,scheduleHdr], is_miro_outpu
                         between GAMS and MIRO. Instead of the last dimension of
                         the symbol, its elements are now communicated as
                         columns. The database schema that GAMS MIRO uses
-                        internally depends directly on the data contract between
-                        GAMS and MIRO, i.e. the structure of your exported
-                        parameters, equations, variables, and quantities. When
-                        you save a scenario for the first time, database tables
-                        are created according to this schema. If you change the
-                        structure of your data contract in a way that is
-                        incompatible with the current database layout, MIRO will
-                        prompt you with a
+                        internally depends directly on the data contract
+                        between GAMS and MIRO, i.e. the structure of your
+                        exported parameters, equations, variables, and
+                        quantities. When you save a scenario for the first
+                        time, database tables are created according to this
+                        schema. If you change the structure of your data
+                        contract in a way that is incompatible with the current
+                        database layout, MIRO will prompt you with a
                         <a href="deployment.html#db-migration"
                           >database migration wizard</a
                         >
@@ -1551,8 +1569,9 @@ schedule = Parameter(m, name="schedule", domain=[i,j,scheduleHdr], is_miro_outpu
                         the data contract between GAMS and MIRO and thus, since
                         MIRO only knows about the columns of a symbol, the
                         information MIRO has access to. As an example, let's
-                        look at the symbol <span class="code">schedule</span> of
-                        the <i>transport</i> model again:
+                        look at the symbol
+                        <span class="code">schedule</span> of the
+                        <i>transport</i> model again:
                       </p>
                       <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item">
@@ -1640,10 +1659,11 @@ schedule = Parameter(m, name="schedule", domain=[i,j,scheduleHdr], is_miro_outpu
                         />
                       </div>
                       <p>
-                        However, the map tool needs one column each for latitude
-                        and longitude information to set a marker. Hence, we
-                        can't configure a map this way. <br />
-                        Now let's use a table statement for that symbol instead:
+                        However, the map tool needs one column each for
+                        latitude and longitude information to set a marker.
+                        Hence, we can't configure a map this way. <br />
+                        Now let's use a table statement for that symbol
+                        instead:
                       </p>
                       <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item">
@@ -1728,8 +1748,8 @@ schedule = Parameter(m, name="schedule", domain=[i,j,scheduleHdr], is_miro_outpu
                           <b class="callout-title">Tip:</b>
                           <p>
                             Instead of a table with the geographic information
-                            in the header, we can also use a parameter or even a
-                            set that contains all latitude and longitude
+                            in the header, we can also use a parameter or even
+                            a set that contains all latitude and longitude
                             information in separate domains:
                           </p>
                           <ul class="nav nav-tabs" role="tablist">
@@ -1807,10 +1827,10 @@ schedule['San-Diego','Topeka',   '32.715736', '-117.161087', '39.056198', '-95.6
                       <!--//callout-block-->
 
                       <p>
-                        Maps and Gantt charts are examples of tools that require
-                        separate columns for information such as geodata,
-                        start/end time etc. Other tools allow pivoting of the
-                        parameters internally. Example:
+                        Maps and Gantt charts are examples of tools that
+                        require separate columns for information such as
+                        geodata, start/end time etc. Other tools allow pivoting
+                        of the parameters internally. Example:
                       </p>
                       <p>
                         In the model Pickstock there is the parameter
@@ -1886,8 +1906,8 @@ price = Parameter(m, name="price", domain=[date,symbol], domain_forwarding=True,
                       <p>
                         We want to configure a line chart in which the price
                         trend of each stock symbol is plotted separately. Now
-                        MIRO needs the price information of each symbol for each
-                        date. The problem is that - as with the map
+                        MIRO needs the price information of each symbol for
+                        each date. The problem is that - as with the map
                         configuration in the previous example - MIRO only knows
                         about one value column: <i>Price</i>. Hence, we cannot
                         distinguish between the prices of individual stocks. In
@@ -1908,17 +1928,17 @@ price = Parameter(m, name="price", domain=[date,symbol], domain_forwarding=True,
                         previous example, the structure of the table was
                         independent of the data: when a new shipment is added,
                         we simple add another row to the table. The number and
-                        names of the columns is static! Now the structure of the
-                        table depends on the data. If we were to import data
-                        from another stock index - say the French CAC40 - the
-                        table would have 40 columns with totally different
+                        names of the columns is static! Now the structure of
+                        the table depends on the data. If we were to import
+                        data from another stock index - say the French CAC40 -
+                        the table would have 40 columns with totally different
                         names. Thus, the pivoting - the transformation of the
                         table from the list view to the table view - has to be
                         done internally: In the section
                         <i>Filters & Domains</i> we can can select a domain we
                         want to pivot. If we select the domain
-                        <i>stock symbol</i> here, the tool plots a line for each
-                        individual stock symbol:
+                        <i>stock symbol</i> here, the tool plots a line for
+                        each individual stock symbol:
                       </p>
                       <div class="section-block" style="text-align: center">
                         <img
@@ -1942,13 +1962,13 @@ price = Parameter(m, name="price", domain=[date,symbol], domain_forwarding=True,
                         <a href="./charts.html#group-domain">here</a>.
                       </p>
                       <p>
-                        To sum up: If the structure of your table is fixed (that
-                        is, it does NOT depend on the data), you can declare the
-                        GAMS symbol as a table. This is especially important if
-                        you want to visualize your data in the form of a map or
-                        Gantt chart. If the structure of your table is not rigid
-                        but depends on the data, you must declare it as a
-                        parameter and not as a table.
+                        To sum up: If the structure of your table is fixed
+                        (that is, it does NOT depend on the data), you can
+                        declare the GAMS symbol as a table. This is especially
+                        important if you want to visualize your data in the
+                        form of a map or Gantt chart. If the structure of your
+                        table is not rigid but depends on the data, you must
+                        declare it as a parameter and not as a table.
                       </p>
                     </div>
                     <!--//section-block-->
@@ -1958,19 +1978,20 @@ price = Parameter(m, name="price", domain=[date,symbol], domain_forwarding=True,
                         There are some restrictions when using the GAMS Table
                         statement. Only sets whose elements are not populated
                         from MIRO can be used as headers. In other words: The
-                        explicit or implicit <i>definition</i> of the set needs
-                        to be done independent of MIRO (e.g. coming from an
-                        external Excel file, a corporate database or defined
-                        right inside your GAMS model). Only sets where the
-                        number of elements as well as the values of those
-                        elements are fixed can be used as header. Anything else
-                        would be a violation of the above rule: Declare a table
-                        ONLY if the structure of this table (that is, the number
-                        and names of the columns) does not depend on the data.
-                        If this rule is not fulfilled, GAMS will automatically
-                        drop the "table request" and declare the symbol as a
-                        parameter instead. In GAMSPy, an exception is raised if
-                        this rule is not fulfilled.
+                        explicit or implicit
+                        <i>definition</i> of the set needs to be done
+                        independent of MIRO (e.g. coming from an external Excel
+                        file, a corporate database or defined right inside your
+                        GAMS model). Only sets where the number of elements as
+                        well as the values of those elements are fixed can be
+                        used as header. Anything else would be a violation of
+                        the above rule: Declare a table ONLY if the structure
+                        of this table (that is, the number and names of the
+                        columns) does not depend on the data. If this rule is
+                        not fulfilled, GAMS will automatically drop the "table
+                        request" and declare the symbol as a parameter instead.
+                        In GAMSPy, an exception is raised if this rule is not
+                        fulfilled.
                       </p>
                       <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item">
@@ -2029,8 +2050,8 @@ $offExternalInput
                                   <span class="code">date</span> and
                                   <span class="code">symbol</span> are declared
                                   to be MIRO input elements. This means that
-                                  they are populated from MIRO. At the same time
-                                  the set
+                                  they are populated from MIRO. At the same
+                                  time the set
                                   <span class="code">symbol</span> should serve
                                   as header for the parameter
                                   <span class="code">price</span>. As a dynamic
@@ -2079,12 +2100,12 @@ $offExternalInput
                                   <a href="#implicit-set" class="scrollto"
                                     >here</a
                                   >). The set
-                                  <span class="code">symbol</span> should be the
-                                  header of parameter
+                                  <span class="code">symbol</span> should be
+                                  the header of parameter
                                   <span class="code">price</span> but at the
                                   same time the set
-                                  <span class="code">symbol</span> is implicitly
-                                  defined in MIRO by parameter
+                                  <span class="code">symbol</span> is
+                                  implicitly defined in MIRO by parameter
                                   <span class="code">price</span>. To avoid
                                   conflicts, the parameter
                                   <span class="code">price</span> is displayed
@@ -2145,8 +2166,8 @@ price = Parameter(m, name="price", domain=[date,symbol], is_miro_input=True, is_
                                   <span class="code">date</span> and
                                   <span class="code">symbol</span> are declared
                                   to be MIRO input elements. This means that
-                                  they are populated from MIRO. At the same time
-                                  the set
+                                  they are populated from MIRO. At the same
+                                  time the set
                                   <span class="code">symbol</span> should serve
                                   as header for the parameter
                                   <span class="code">price</span>. As a dynamic
@@ -2178,19 +2199,20 @@ price = Parameter(m, name="price", domain=[date,symbol], domain_forwarding=True,
                                     >domain_forwarding
                                   </code>
                                   attribute. This attribute signals GAMSPy that
-                                  the sets <span class="code">date</span> and
+                                  the sets
+                                  <span class="code">date</span> and
                                   <span class="code">symbol</span> will be
                                   defined implicitly via the parameter
                                   <span class="code">price</span> (see also
                                   <a href="#implicit-set" class="scrollto"
                                     >here</a
                                   >). The set
-                                  <span class="code">symbol</span> should be the
-                                  header of parameter
+                                  <span class="code">symbol</span> should be
+                                  the header of parameter
                                   <span class="code">price</span> but at the
                                   same time the set
-                                  <span class="code">symbol</span> is implicitly
-                                  defined in MIRO by parameter
+                                  <span class="code">symbol</span> is
+                                  implicitly defined in MIRO by parameter
                                   <span class="code">price</span>. To avoid
                                   conflicts, GAMSPy raises an exception.
                                 </p>
@@ -2198,7 +2220,8 @@ price = Parameter(m, name="price", domain=[date,symbol], domain_forwarding=True,
 
                               <li>
                                 Only multi-dimensional parameters can be
-                                pivoted. In the following example, the parameter
+                                pivoted. In the following example, the
+                                parameter
                                 <span class="code">oneDim</span> parameter
                                 cannot be defined as a table:
                                 <pre><code class="language-python">oneDim = Parameter(m, name="oneDim", domain=[dom1], is_miro_input=True, is_miro_table=True, description="One dimension")
@@ -2297,24 +2320,24 @@ price = Parameter(m, name="price", domain=[date,symbol], domain_forwarding=True,
                           </div>
                           <!--//callout-block-->
                           <p>
-                            They are merged in a joint table in the interface by
-                            default. This means that all scalars defined in the
-                            GAMS model within the
+                            They are merged in a joint table in the interface
+                            by default. This means that all scalars defined in
+                            the GAMS model within the
                             <span class="code">$on</span>/<span class="code"
                               >offExternalInput</span
                             >
                             and -<span class="code">output</span> are shown in
                             MIRO in one single table called
                             <span class="code">scalars</span>. The same is also
-                            true for output scalars. These are summarized in the
-                            results section in a table called
+                            true for output scalars. These are summarized in
+                            the results section in a table called
                             <span class="code">scalars_out</span>. This saves
-                            screen real estate and also makes adding new scalars
-                            easy as all you have to do is add a new row to the
-                            <span class="code">scalars</span> table. Thus, it
-                            improves compactness and flexibility - the database
-                            schema stays fixed even when you add or remove
-                            certain scalars.
+                            screen real estate and also makes adding new
+                            scalars easy as all you have to do is add a new row
+                            to the <span class="code">scalars</span> table.
+                            Thus, it improves compactness and flexibility - the
+                            database schema stays fixed even when you add or
+                            remove certain scalars.
                           </p>
                           <p>Example:</p>
                           <pre><code class="language-gams">$onExternalInput
@@ -2334,7 +2357,10 @@ $offExternalInput
                             tags. In MIRO, they are all displayed in the same
                             table:
                           </p>
-                          <div class="section-block" style="text-align: center">
+                          <div
+                            class="section-block"
+                            style="text-align: center"
+                          >
                             <img
                               class="img-fluid"
                               style="max-height: 200pt"
@@ -2418,20 +2444,20 @@ $offExternalInput
                           </div>
                           <!--//callout-block-->
                           <p>
-                            They are merged in a joint table in the interface by
-                            default. This means that all scalars in the GAMSPy
-                            model that are visble in MIRO are shown in the app
-                            in one single table called
+                            They are merged in a joint table in the interface
+                            by default. This means that all scalars in the
+                            GAMSPy model that are visble in MIRO are shown in
+                            the app in one single table called
                             <span class="code">scalars</span>. The same is also
-                            true for output scalars. These are summarized in the
-                            results section in a table called
+                            true for output scalars. These are summarized in
+                            the results section in a table called
                             <span class="code">scalars_out</span>. This saves
-                            screen real estate and also makes adding new scalars
-                            easy as all you have to do is add a new row to the
-                            <span class="code">scalars</span> table. Thus, it
-                            improves compactness and flexibility - the database
-                            schema stays fixed even when you add or remove
-                            certain scalars.
+                            screen real estate and also makes adding new
+                            scalars easy as all you have to do is add a new row
+                            to the <span class="code">scalars</span> table.
+                            Thus, it improves compactness and flexibility - the
+                            database schema stays fixed even when you add or
+                            remove certain scalars.
                           </p>
                           <p>Example:</p>
                           <pre><code class="language-python">f = Parameter(m, name="f", is_miro_input=True, records=90)
@@ -2445,11 +2471,14 @@ single = Set(m, name="single", is_miro_input=True, is_singleton = True, records 
                             <span class="code">f</span>,
                             <span class="code">minS</span> and
                             <span class="code">beta</span> as well as a
-                            singleton set <span class="code">single</span> to be
-                            used in MIRO. They are all displayed in the same
+                            singleton set <span class="code">single</span> to
+                            be used in MIRO. They are all displayed in the same
                             table:
                           </p>
-                          <div class="section-block" style="text-align: center">
+                          <div
+                            class="section-block"
+                            style="text-align: center"
+                          >
                             <img
                               class="img-fluid"
                               style="max-height: 200pt"
@@ -2529,7 +2558,7 @@ single = Set(m, name="single", is_miro_input=True, is_singleton = True, records 
                           <p>
                             A
                             <a
-                              href="https://www.gams.com/26/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets"
+                              href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets"
                               >singleton set</a
                             >
                             in GAMS is a special set that has at most one
@@ -2539,8 +2568,8 @@ single = Set(m, name="single", is_miro_input=True, is_singleton = True, records 
                             <a href="#display-scalars" class="scrollto">here</a
                             >, 1-dimensional singleton sets are displayed
                             together with scalars in a joint table.
-                            Multi-dimensional singleton sets, on the other hand,
-                            are each displayed in a separate table.
+                            Multi-dimensional singleton sets, on the other
+                            hand, are each displayed in a separate table.
                           </p>
                           <p>Example:</p>
                           <pre><code class="language-gams">$onExternalInput
@@ -2549,7 +2578,10 @@ Singleton Set
    multidim2(i,j) 'another multidimensional singleton set' / seattle.chicago /;
 $offExternalInput
 </code></pre>
-                          <div class="section-block" style="text-align: center">
+                          <div
+                            class="section-block"
+                            style="text-align: center"
+                          >
                             <img
                               class="img-fluid"
                               style="max-height: 150pt"
@@ -2558,11 +2590,11 @@ $offExternalInput
                             />
                           </div>
                           <p id="singleton-set-separator">
-                            What singleton sets and scalar values have in common
-                            is a symbol name and an explanatory text. However,
-                            the value is different. Unlike scalars (a numeric
-                            value), singleton sets can have a label and an
-                            element text. To be able to display both in the
+                            What singleton sets and scalar values have in
+                            common is a symbol name and an explanatory text.
+                            However, the value is different. Unlike scalars (a
+                            numeric value), singleton sets can have a label and
+                            an element text. To be able to display both in the
                             scalars table in MIRO, label and element text are
                             shown in the value column and separated with a
                             double pipe ('||').
@@ -2574,7 +2606,10 @@ Scalar        a 'scalar description' / 5 /;
 $offExternalInput
 </code></pre>
 
-                          <div class="section-block" style="text-align: center">
+                          <div
+                            class="section-block"
+                            style="text-align: center"
+                          >
                             <img
                               class="img-fluid"
                               style="max-height: 150pt"
@@ -2593,25 +2628,26 @@ $offExternalInput
                             <div class="content">
                               <b class="callout-title">Tip:</b>
                               <p>
-                                Both the element label and the element text of a
-                                Singleton Set can be migrated to compile time
+                                Both the element label and the element text of
+                                a Singleton Set can be migrated to compile time
                                 variables using the Dollar Control Options
                                 <a
-                                  href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset"
+                                  href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset"
                                   target="__blank"
                                   >eval.Set</a
                                 >,
                                 <a
-                                  href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalglobalset"
+                                  href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalglobalset"
                                   target="__blank"
                                   >evalGlobal.Set</a
                                 >, and
                                 <a
-                                  href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevallocalset"
+                                  href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevallocalset"
                                   target="__blank"
                                   >evalLocal.Set</a
                                 >. For more information see
-                                <a href="#command-line" class="scrollto">here</a
+                                <a href="#command-line" class="scrollto"
+                                  >here</a
                                 >.
                               </p>
                             </div>
@@ -2640,8 +2676,8 @@ $offExternalInput
                             <a href="#display-scalars" class="scrollto">here</a
                             >, 1-dimensional singleton sets are displayed
                             together with scalars in a joint table.
-                            Multi-dimensional singleton sets, on the other hand,
-                            are each displayed in a separate table.
+                            Multi-dimensional singleton sets, on the other
+                            hand, are each displayed in a separate table.
                           </p>
                           <p>Example:</p>
                           <pre><code class="language-python">s = pd.Series(
@@ -2654,7 +2690,10 @@ t = pd.Series(
 multidim =  Set(m, name="multidim", domain = [i,j], is_miro_input=True, records = s)
 multidim2 = Set(m, name="multidim", domain = [i,j], is_miro_input=True, records = t)
 </code></pre>
-                          <div class="section-block" style="text-align: center">
+                          <div
+                            class="section-block"
+                            style="text-align: center"
+                          >
                             <img
                               class="img-fluid"
                               style="max-height: 150pt"
@@ -2663,11 +2702,11 @@ multidim2 = Set(m, name="multidim", domain = [i,j], is_miro_input=True, records 
                             />
                           </div>
                           <p id="singleton-set-separator">
-                            What singleton sets and scalar values have in common
-                            is a symbol name and an explanatory text. However,
-                            the value is different. Unlike scalars (a numeric
-                            value), singleton sets can have a label and an
-                            element text. To be able to display both in the
+                            What singleton sets and scalar values have in
+                            common is a symbol name and an explanatory text.
+                            However, the value is different. Unlike scalars (a
+                            numeric value), singleton sets can have a label and
+                            an element text. To be able to display both in the
                             scalars table in MIRO, label and element text are
                             shown in the value column and separated with a
                             double pipe ('||').
@@ -2677,7 +2716,10 @@ multidim2 = Set(m, name="multidim", domain = [i,j], is_miro_input=True, records 
 a = Parameter(m, name="a", is_miro_input=True, records = 5, description="scalar description")
 </code></pre>
 
-                          <div class="section-block" style="text-align: center">
+                          <div
+                            class="section-block"
+                            style="text-align: center"
+                          >
                             <img
                               class="img-fluid"
                               style="max-height: 150pt"
@@ -2718,9 +2760,9 @@ a = Parameter(m, name="a", is_miro_input=True, records = 5, description="scalar 
                       <span class="code">upper bound</span> and
                       <span class="code">scale</span>). When you tag a variable
                       to be displayed in MIRO, all of its attributes will be
-                      displayed. If you are only interested in a subset of these
-                      attributes, you need to assign them to a parameter and tag
-                      this parameter for display in MIRO.
+                      displayed. If you are only interested in a subset of
+                      these attributes, you need to assign them to a parameter
+                      and tag this parameter for display in MIRO.
                     </p>
                     <p>
                       In the following example we display the variable
@@ -2867,13 +2909,13 @@ $offExternalOutput
                   <div id="display-scalar-vareq" class="section-block">
                     <h3 class="block-title">Scalar Variables & Equations</h3>
                     <p>
-                      As with the scalars, 0-dimensional variables and equations
-                      are also specially handled to save space. Examples for
-                      0-dimensional variables and equations are the objective
-                      function value and the objective function. Since the
-                      dimension of both types is the same, 0-dimensional
-                      variables and equations are displayed together in one
-                      table (similar to
+                      As with the scalars, 0-dimensional variables and
+                      equations are also specially handled to save space.
+                      Examples for 0-dimensional variables and equations are
+                      the objective function value and the objective function.
+                      Since the dimension of both types is the same,
+                      0-dimensional variables and equations are displayed
+                      together in one table (similar to
                       <a href="#display-scalars" class="scrollto"
                         >scalars and 0/1-dimensional singleton sets</a
                       >).
@@ -3011,28 +3053,28 @@ cost = Equation(m, name = "cost", is_miro_output=True, description = "define obj
                       </li>
                       <li id="singleton-compile">
                         <b>Singleton Sets:</b><br />
-                        Both the element label and the element text of a set can
-                        be migrated to compile time variables using the Dollar
-                        Control Options
+                        Both the element label and the element text of a set
+                        can be migrated to compile time variables using the
+                        Dollar Control Options
                         <a
-                          href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset"
+                          href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset"
                           target="__blank"
                           >eval.Set</a
                         >,
                         <a
-                          href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalglobalset"
+                          href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalglobalset"
                           target="__blank"
                           >evalGlobal.Set</a
                         >, and
                         <a
-                          href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevallocalset"
+                          href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevallocalset"
                           target="__blank"
                           >evalLocal.Set</a
                         >. Since Singleton Sets are handled, communicated and
-                        stored like any other GAMS symbol, this approach has the
-                        advantage (in contrast to the method above) that the
-                        information about command line parameters is not lost
-                        during GDX, xlsx or CSV export.
+                        stored like any other GAMS symbol, this approach has
+                        the advantage (in contrast to the method above) that
+                        the information about command line parameters is not
+                        lost during GDX, xlsx or CSV export.
                         <pre><code class="language-gams">$onExternalInput
 Singleton Set i 'set description'    / 'label' elementtext /;
 $offExternalInput
@@ -3061,8 +3103,8 @@ $log What you see here is the %fn%
                             <b class="callout-title">Tip:</b>
                             <p>
                               If a Singleton Set is used to define a compile
-                              time variable in the GAMS model, it can be helpful
-                              to
+                              time variable in the GAMS model, it can be
+                              helpful to
                               <a
                                 href="./widgets.html#dropdown-option-clearvalue"
                                 >only communicate the element text of the
@@ -3125,25 +3167,28 @@ $log What you see here is the %fn%
                       </p>
                       <ol>
                         <li id="json-configuration-files">
-                          The GAMS model is parsed. All symbols declared between
-                          the
-                          <code class="language-gams">$onExternalInput </code> /
+                          The GAMS model is parsed. All symbols declared
+                          between the
+                          <code class="language-gams">$onExternalInput </code>
+                          /
                           <code class="language-gams">$offExternalInput </code>
                           and
                           <code class="language-gams">$onExternalOutput </code>
                           /
-                          <code class="language-gams">$offExternalOutput </code>
+                          <code class="language-gams"
+                            >$offExternalOutput
+                          </code>
                           tags (in GAMSPY:
                           <code class="language-python"
                             >is_miro_input=True</code
                           >
                           or
                           <code class="language-gams">is_miro_output=True</code
-                          >) are included in the GAMS/MIRO data contract and are
-                          visible in the interface from now on. If not yet
+                          >) are included in the GAMS/MIRO data contract and
+                          are visible in the interface from now on. If not yet
                           existing, a folder <i>conf_&lt;modelname&gt;</i> is
-                          created in the model directory where the data contract
-                          is stored in the file
+                          created in the model directory where the data
+                          contract is stored in the file
                           <a href="./faqs.html#file-io"
                             ><i>&lt;modelname&gt;_io.json</i></a
                           >.
@@ -3166,15 +3211,17 @@ $log What you see here is the %fn%
                               <b class="callout-title">Tip:</b>
                               <p>
                                 You can use the
-                                <span class="code">data_&lt;modelname&gt;</span>
+                                <span class="code"
+                                  >data_&lt;modelname&gt;</span
+                                >
                                 folder to automatically import multiple
                                 scenarios into your database when MIRO is
                                 launched. Files inside this folder will be
                                 stored in the MIRO database the next time your
                                 MIRO app is launched! The name of the file
                                 determines the name of the scenario. This way
-                                you can easily import several scenarios at once.
-                                For more information, see
+                                you can easily import several scenarios at
+                                once. For more information, see
                                 <a href="./start.html#startup-import">here</a>.
                               </p>
                             </div>
@@ -3187,10 +3234,11 @@ $log What you see here is the %fn%
                           <a href="./faqs.html#file-config"
                             ><i>&lt;modelname&gt;.json</i></a
                           >
-                          in the <i>conf_&lt;modelname&gt;</i> folder is parsed.
-                          It contains the configuration of an app created by the
-                          user (graphics, widgets, general settings, etc.). If
-                          the file does not yet exist, it is created empty.
+                          in the <i>conf_&lt;modelname&gt;</i> folder is
+                          parsed. It contains the configuration of an app
+                          created by the user (graphics, widgets, general
+                          settings, etc.). If the file does not yet exist, it
+                          is created empty.
                         </li>
                         <li>
                           In MIRO, several initialization steps are performed.

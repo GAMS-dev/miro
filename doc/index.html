@@ -66,7 +66,10 @@
             >
               <div class="row">
                 <div
-                  class="col-sm-12 col-md-6 col-lg-6 header-btn header-btn-left"
+                  class="
+                    col-sm-12 col-md-6 col-lg-6
+                    header-btn header-btn-left
+                  "
                 >
                   <a
                     class="btn btn-primary btn-cta"
@@ -93,7 +96,7 @@
                       -webkit-transition: unset;
                     "
                     href="./download.html"
-                    >Get GAMS MIRO 2.10.1</a
+                    >Get GAMS MIRO 2.10.3</a
                   >
                 </div>
               </div>
@@ -122,7 +125,8 @@
             <h3 class="block-title">Welcome!</h3>
             <p>
               GAMS MIRO is a deployment environment which allows you to easily
-              turn your <a href="https://www.gams.com/">GAMS</a> and
+              turn your
+              <a href="https://www.gams.com/">GAMS</a> and
               <a href="https://gamspy.readthedocs.io/en/latest/index.html"
                 >GAMSPy</a
               >
@@ -239,7 +243,10 @@
             <div class="item item-orange col-lg-4 col-6">
               <div class="item-inner">
                 <div class="icon-holder">
-                  <span aria-hidden="true" class="icon fas fa-handshake"></span>
+                  <span
+                    aria-hidden="true"
+                    class="icon fas fa-handshake"
+                  ></span>
                 </div>
                 <!--//icon-holder-->
                 <h3 class="title">Introduction</h3>
@@ -363,7 +370,10 @@
             <div class="item item-blue col-lg-4 col-6">
               <div class="item-inner">
                 <div class="icon-holder">
-                  <span aria-hidden="true" class="icon fas fa-file-code"></span>
+                  <span
+                    aria-hidden="true"
+                    class="icon fas fa-file-code"
+                  ></span>
                 </div>
                 <!--//icon-holder-->
                 <h3 class="title">GAMS Studio integration</h3>
@@ -385,7 +395,9 @@
                 </div>
                 <!--//icon-holder-->
                 <h3 class="title">Release notes</h3>
-                <p class="intro">Check out the latest features and bug fixes</p>
+                <p class="intro">
+                  Check out the latest features and bug fixes
+                </p>
                 <a class="link" href="release.html"><span></span></a>
               </div>
               <!--//item-inner-->
@@ -431,8 +443,8 @@
               <li>Highly customizable</li>
             </ul>
             <p>
-              We have developed this tool to extend the possibilities of working
-              with your GAMS models.
+              We have developed this tool to extend the possibilities of
+              working with your GAMS models.
             </p>
             <div class="callout-block callout-success intro">
               <div class="custom-icon-holder icon-holder" style="top: 15px">
@@ -482,8 +494,8 @@
             <h2 class="block-title" style="color: #616670">Fact sheets</h2>
             <div class="section-block">
               <p>
-                Lazy to read the documentation or just want a compact summary of
-                the most important features of GAMS MIRO?
+                Lazy to read the documentation or just want a compact summary
+                of the most important features of GAMS MIRO?
               </p>
               <p>Have a look at our fact sheets:</p>
               <br />
@@ -524,7 +536,10 @@
                   </a>
                 </div>
                 <div class="col-md-4">
-                  <a href="assets/images/cheat_sheets/miro_server.png" download>
+                  <a
+                    href="assets/images/cheat_sheets/miro_server.png"
+                    download
+                  >
                     <img
                       class="img-fluid"
                       style="
@@ -592,8 +607,8 @@
          rightDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs";
        };*/
       // thanks Paul Roub: https://stackoverflow.com/questions/43984623/stop-video-from-loading-in-background-on-mobile
-      window.addEventListener("load", function () {
-        var bgv = document.getElementById("headerVid");
+      window.addEventListener('load', function () {
+        var bgv = document.getElementById('headerVid');
 
         // what jQuery checks under the hood
         var visible = !!(
@@ -603,10 +618,10 @@
         );
 
         if (visible) {
-          var children = bgv.getElementsByTagName("source");
+          var children = bgv.getElementsByTagName('source');
 
           for (var i = 0; i < children.length; ++i) {
-            children[i].src = children[i].getAttribute("data-src");
+            children[i].src = children[i].getAttribute('data-src');
           }
         }
         bgv.load();
