@@ -1018,8 +1018,6 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             }
           }
 
-          chartJsObj <- chartJsObj %>% cjsLegend()
-
           if (identical(currentView$chartOptions$yLogScale, TRUE)) {
             if (chartType %in% c("horizontalbar", "horizontalstackedbar")) {
               chartJsObj$x$scales$x$type <- "logarithmic"
@@ -1063,6 +1061,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               position = "nearest"
             )
           }
+
+          chartJsObj <- chartJsObj %>% cjsLegend()
 
           multiChartRenderer <- character(0)
           if (length(currentView$chartOptions$multiChartOptions$multiChartRenderer)) {

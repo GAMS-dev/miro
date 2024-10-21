@@ -47,9 +47,9 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
   }
 
   combineData <- function(data, scenarioNames) {
-    non_empty_data <- Filter(function(df) nrow(df) > 0, data)
+    nonEmptyData <- Filter(function(df) nrow(df) > 0, data)
 
-    if (length(non_empty_data) == 0) {
+    if (length(nonEmptyData) == 0) {
       return(NULL)
     }
 
@@ -62,9 +62,9 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
       dataTmp <- lapply(data[-1], removeTableHeader)
     }
 
-    non_value_cols <- setdiff(colnames(dataTmp[[1]]), "value")
-    combinedData <- purrr::reduce(dataTmp, full_join, by = non_value_cols)
-    colnames(combinedData) <- c(non_value_cols, scenarioNames)
+    nonValueCols <- setdiff(colnames(dataTmp[[1]]), "value")
+    combinedData <- purrr::reduce(dataTmp, full_join, by = nonValueCols)
+    colnames(combinedData) <- c(nonValueCols, scenarioNames)
 
     return(combinedData)
   }
@@ -791,7 +791,8 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         select(where(~ !is.numeric(.))) %>%
         names()
 
-      if (identical(dataViewsConfig[[indicator]]$tableSummarySettings$enabled, TRUE)) {
+      fullSummaryEnabled <- identical(viewOptions[["tableSummarySettings"]][["enabled"]], TRUE)
+      if (fullSummaryEnabled || identical(dataViewsConfig[[indicator]]$tableSummarySettings$rowEnabled, TRUE)) {
         tablesummarySettings <- dataViewsConfig[[indicator]]$tableSummarySettings
         if (identical(tablesummarySettings$rowSummaryFunction, "sum")) {
           dataTmp <- mutate(
@@ -828,7 +829,9 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
             )]))
           )
         }
-
+      }
+      if (fullSummaryEnabled || identical(dataViewsConfig[[indicator]]$tableSummarySettings$colEnabled, TRUE)) {
+        tablesummarySettings <- dataViewsConfig[[indicator]]$tableSummarySettings
         colSummarySettings <- list(caption = lang$renderers$miroPivot$aggregationFunctions[[tablesummarySettings$colSummaryFunction]])
         roundPrecision <- if (length(dataViewsConfig[[indicator]]$decimals)) as.numeric(dataViewsConfig[[indicator]]$decimals) else 2L
         if (identical(tablesummarySettings$colSummaryFunction, "count")) {
@@ -1100,7 +1103,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
       if (identical(currentView$chartOptions$showYGrid, FALSE)) {
         chartJsObj$x$scales[[axisType]]$grid$display <- FALSE
       }
-      if (identical(currentView$chartOptions$drawDataPoints, FALSE) &&
+      if (identical(currentView$chartOptions$showDataMarkers, FALSE) &&
         !identical(chartType, "scatter")) {
         chartJsObj$x$options$normalized <- TRUE
         chartJsObj$x$options$animation <- FALSE
@@ -1141,10 +1144,6 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
           }
         }
 
-        if (identical(currentView$chartOptions$hideLegend, TRUE)) {
-          chartJsObj$x$options$plugins$legend$display <- FALSE
-        }
-
         if (originalLabel %in% currentView$chartOptions$multiChartSeries) {
           if (chartType %in% c("line", "area", "stackedarea", "timeseries")) {
             multiChartRenderer <- if (length(multiChartRenderer)) multiChartRenderer else "bar"
@@ -1164,8 +1163,8 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
             showLine = multiChartRenderer %in% c("line", "area", "stackedarea", "timeseries"),
             order = order,
             scaleID = scaleID,
-            pointHitRadius = if (identical(currentView$chartOptions$multiChartOptions$drawMultiChartDataPoints, TRUE)) 1L else 0,
-            pointRadius = if (identical(currentView$chartOptions$multiChartOptions$drawMultiChartDataPoints, TRUE)) 3L else 0,
+            pointHitRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 1L else 0,
+            pointRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 3L else 0,
             stack = if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "regularStack")) {
               "stack1"
             } else if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "individualStack")) {
@@ -1201,6 +1200,10 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
             stepped = identical(currentView$chartOptions$stepPlot, TRUE)
           )
         }
+      }
+
+      if (identical(currentView$chartOptions$hideLegend, TRUE)) {
+        chartJsObj$x$options$plugins$legend$display <- FALSE
       }
 
       if (chartType %in% c("stackedbar", "stackedarea")) {
