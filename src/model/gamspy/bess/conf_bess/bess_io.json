@@ -36,7 +36,7 @@
             }
         },
         "timewise_load_demand_and_cost_external_grid_data": {
-            "alias": "Timewise list for load demand and cost of the external grid.",
+            "alias": "Timeline for load demand and cost of the external grid.",
             "symtype": "parameter",
             "headers": {
                 "j": {
@@ -88,7 +88,7 @@
     },
     "outputSymbols": {
         "gen_power": {
-            "alias": "dipatch power from generator i at hour j",
+            "alias": "dispatch power from generator i at hour j",
             "symtype": "variable",
             "headers": {
                 "i": {
@@ -121,97 +121,21 @@
                 }
             }
         },
-        "gen_active": {
-            "alias": "states if generator i is active at hour j",
-            "symtype": "variable",
-            "headers": {
-                "i": {
-                    "type": "string",
-                    "alias": "generators"
-                },
-                "j": {
-                    "type": "string",
-                    "alias": "hours"
-                },
-                "level": {
-                    "type": "numeric",
-                    "alias": "level"
-                },
-                "marginal": {
-                    "type": "numeric",
-                    "alias": "marginal"
-                },
-                "lower": {
-                    "type": "numeric",
-                    "alias": "lower"
-                },
-                "upper": {
-                    "type": "numeric",
-                    "alias": "upper"
-                },
-                "scale": {
-                    "type": "numeric",
-                    "alias": "scale"
-                }
-            }
-        },
-        "battery_power": {
-            "alias": "power charged or discharged from the battery at hour j",
-            "symtype": "variable",
+        "report_output": {
+            "alias": "optimal combination of incoming power flows",
+            "symtype": "parameter",
             "headers": {
                 "j": {
                     "type": "string",
                     "alias": "hours"
                 },
-                "level": {
-                    "type": "numeric",
-                    "alias": "level"
-                },
-                "marginal": {
-                    "type": "numeric",
-                    "alias": "marginal"
-                },
-                "lower": {
-                    "type": "numeric",
-                    "alias": "lower"
-                },
-                "upper": {
-                    "type": "numeric",
-                    "alias": "upper"
-                },
-                "scale": {
-                    "type": "numeric",
-                    "alias": "scale"
-                }
-            }
-        },
-        "external_grid_power": {
-            "alias": "imported power at hour j",
-            "symtype": "variable",
-            "headers": {
-                "j": {
+                "power_output_header": {
                     "type": "string",
-                    "alias": "hours"
+                    "alias": "power_output_header"
                 },
-                "level": {
+                "value": {
                     "type": "numeric",
-                    "alias": "level"
-                },
-                "marginal": {
-                    "type": "numeric",
-                    "alias": "marginal"
-                },
-                "lower": {
-                    "type": "numeric",
-                    "alias": "lower"
-                },
-                "upper": {
-                    "type": "numeric",
-                    "alias": "upper"
-                },
-                "scale": {
-                    "type": "numeric",
-                    "alias": "scale"
+                    "alias": "value"
                 }
             }
         },

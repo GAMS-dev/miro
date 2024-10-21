@@ -1,6 +1,5 @@
 import pandas as pd
 import sys
-import matplotlib.pyplot as plt
 
 from gamspy import (
     Container,
@@ -13,7 +12,6 @@ from gamspy import (
     Sum,
     Variable,
     Ord,
-    Domain,
     Options,
 )
 
@@ -43,30 +41,30 @@ def main():
     # combine with cost external grid, to have one source of truth for the hours (Set j)
     timewise_load_demand_and_cost_external_grid_input = pd.DataFrame(
         [
-            ["hour0", 200, 0.09],
-            ["hour1", 180, 0.08],
-            ["hour2", 170, 0.08],
-            ["hour3", 160, 0.08],
-            ["hour4", 150, 0.08],
-            ["hour5", 150, 0.08],
-            ["hour6", 170, 0.09],
-            ["hour7", 250, 0.11],
-            ["hour8", 320, 0.13],
-            ["hour9", 300, 0.12],
-            ["hour10", 280, 0.11],
-            ["hour11", 260, 0.10],
-            ["hour12", 270, 0.10],
-            ["hour13", 280, 0.10],
-            ["hour14", 290, 0.11],
-            ["hour15", 300, 0.12],
-            ["hour16", 320, 0.13],
-            ["hour17", 350, 0.14],
-            ["hour18", 340, 0.13],
-            ["hour19", 330, 0.12],
-            ["hour20", 320, 0.11],
-            ["hour21", 280, 0.10],
-            ["hour22", 240, 0.09],
-            ["hour23", 220, 0.09],
+            ["hour000", 200, 0.09],
+            ["hour001", 180, 0.08],
+            ["hour002", 170, 0.08],
+            ["hour003", 160, 0.08],
+            ["hour004", 150, 0.08],
+            ["hour005", 150, 0.08],
+            ["hour006", 170, 0.09],
+            ["hour007", 250, 0.11],
+            ["hour008", 320, 0.13],
+            ["hour009", 300, 0.12],
+            ["hour010", 280, 0.11],
+            ["hour011", 260, 0.10],
+            ["hour012", 270, 0.10],
+            ["hour013", 280, 0.10],
+            ["hour014", 290, 0.11],
+            ["hour015", 300, 0.12],
+            ["hour016", 320, 0.13],
+            ["hour017", 350, 0.14],
+            ["hour018", 340, 0.13],
+            ["hour019", 330, 0.12],
+            ["hour020", 320, 0.11],
+            ["hour021", 280, 0.10],
+            ["hour022", 240, 0.09],
+            ["hour023", 220, 0.09],
         ],
         columns=["j", "load_demand", "cost_external_grid"],
     )
@@ -178,7 +176,7 @@ def main():
         ),
         is_miro_input=True,
         is_miro_table=True,
-        description="Timewise list for load demand and cost of the external grid.",
+        description="Timeline for load demand and cost of the external grid.",
     )
 
     load_demand = Parameter(
@@ -212,7 +210,7 @@ def main():
         name="gen_power",
         type="positive",
         domain=[i, j],
-        description="dipatch power from generator i at hour j",
+        description="dispatch power from generator i at hour j",
         is_miro_output=True,
     )
 
@@ -221,8 +219,7 @@ def main():
         name="gen_active",
         type="binary",
         domain=[i, j],
-        description="states if generator i is active at hour j",
-        is_miro_output=True,
+        description="is generator i active at hour j",
     )
 
     # Battery
@@ -231,7 +228,6 @@ def main():
         name="battery_power",
         domain=[j],
         description="power charged or discharged from the battery at hour j",
-        is_miro_output=True,
     )
 
     battery_delivery_rate = Variable(
@@ -254,8 +250,7 @@ def main():
         name="external_grid_power",
         type="positive",
         domain=[j],
-        description="imported power at hour j",
-        is_miro_output=True,
+        description="power imported from the external grid at hour j",
     )
 
     # Equation
@@ -393,115 +388,24 @@ def main():
         options=Options(equation_listing_limit=1, relative_optimality_gap=0),
     )
 
-    print(battery_delivery_rate.records)
-    print(battery_stoarge.records)
-    # plt.plot(battery_power.records["level"], "o-", label="bat")
-    # plt.plot(
-    #     gen_power.records[gen_power.records["i"] == "gen0"].reset_index()["level"],
-    #     "o-",
-    #     label="gen0",
-    # )
-    # plt.plot(
-    #     gen_power.records[gen_power.records["i"] == "gen1"].reset_index()["level"],
-    #     "o-",
-    #     label="gen1",
-    # )
-    # plt.plot(
-    #     gen_power.records[gen_power.records["i"] == "gen2"].reset_index()["level"],
-    #     "o-",
-    #     label="gen2",
-    # )
-    # plt.plot(external_grid_power.records["level"], "o-", label="external")
-    # plt.legend()
-    # plt.grid()
-    # plt.show()
+    power_output_header = Set(
+        m,
+        name="power_output_header",
+        records=["battery", "external_grid", "generators", "load_demand"],
+    )
 
-    # total = (
-    #     battery_power.records["level"]
-    #     + gen_power.records[gen_power.records["i"] == "gen0"].reset_index()["level"]
-    #     + gen_power.records[gen_power.records["i"] == "gen1"].reset_index()["level"]
-    #     + gen_power.records[gen_power.records["i"] == "gen2"].reset_index()["level"]
-    #     + external_grid_power.records["level"]
-    # )
+    power_output = Parameter(
+        m,
+        name="report_output",
+        domain=[j, power_output_header],
+        description="optimal combination of incoming power flows",
+        is_miro_output=True,
+    )
 
-    # plt.plot(
-    #     timewise_load_demand_and_cost_external_grid_input["load_demand"],
-    #     "o-",
-    #     label="demand",
-    # )
-    # plt.plot(total, "o-", label="total")
-    # plt.grid()
-    # plt.legend()
-    # plt.show()
-
-    # plt.plot(battery_power.records["level"].cumsum(), "o-")
-    # plt.show()
-
-    # fig, axs = plt.subplots(3, 1, figsize=(12, 18))  # Adjust figsize as needed
-
-    # # First subplot: Battery and Generator Power Levels
-    # axs[0].plot(battery_power.records["level"], "o-", label="Battery")
-    # for gen in ["gen0", "gen1", "gen2"]:
-    #     gen_level = gen_power.records[gen_power.records["i"] == gen].reset_index()[
-    #         "level"
-    #     ]
-    #     axs[0].plot(gen_level, "o-", label=gen)
-    # axs[0].plot(external_grid_power.records["level"], "o-", label="External Grid")
-    # axs[0].set_title("Power Levels")
-    # axs[0].set_xlabel("Time")
-    # axs[0].set_ylabel("Power Level")
-    # axs[0].legend()
-    # axs[0].grid(True)
-
-    # # Calculate Total Power
-    # total = (
-    #     battery_power.records["level"]
-    #     + gen_power.records[gen_power.records["i"] == "gen0"].reset_index()["level"]
-    #     + gen_power.records[gen_power.records["i"] == "gen1"].reset_index()["level"]
-    #     + gen_power.records[gen_power.records["i"] == "gen2"].reset_index()["level"]
-    #     + external_grid_power.records["level"]
-    # )
-
-    # # Second subplot: Load Demand and Total Power
-    # axs[1].plot(
-    #     timewise_load_demand_and_cost_external_grid_input["load_demand"],
-    #     "o-",
-    #     label="Load Demand",
-    # )
-    # axs[1].plot(total, "o-", label="Total Power")
-    # axs[1].set_title("Load Demand vs Total Power")
-    # axs[1].set_xlabel("Time")
-    # axs[1].set_ylabel("Power")
-    # axs[1].legend()
-    # axs[1].grid(True)
-
-    # # Third subplot: Cumulative Battery Power
-    # axs[2].plot(
-    #     battery_power.records["level"].cumsum(), "o-", label="Cumulative Battery Power"
-    # )
-    # axs[2].set_title("Cumulative Battery Power")
-    # axs[2].set_xlabel("Time")
-    # axs[2].set_ylabel("Cumulative Power")
-    # axs[2].legend()
-    # axs[2].grid(True)
-
-    # # Adjust layout for better spacing
-    # plt.tight_layout()
-
-    # # Display all subplots
-    # plt.show()
-
-
-# Sum(
-#         (i, j),
-#         gen_cost_per_unit[i] * gen_power[i, j]
-#         + gen_fixed_cost[i]
-#         + cost_external_grid[j] * external_grid_power[j],
-#     )
-#     + cost_bat_power * battery_delivery_rate
-#     + cost_bat_energy * battery_stoarge
-# )
-
+    power_output[j, "generators"] = Sum(i, gen_power.l[i, j])
+    power_output[j, "battery"] = battery_power.l[j]
+    power_output[j, "external_grid"] = external_grid_power.l[j]
+    power_output[j, "load_demand"] = load_demand[j]
 
 if __name__ == "__main__":
     main()
