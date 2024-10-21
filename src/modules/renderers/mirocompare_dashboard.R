@@ -791,7 +791,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         select(where(~ !is.numeric(.))) %>%
         names()
 
-      fullSummaryEnabled <- identical(viewOptions[["tableSummarySettings"]][["enabled"]], TRUE)
+      fullSummaryEnabled <- identical(dataViewsConfig[["tableSummarySettings"]][["enabled"]], TRUE)
       if (fullSummaryEnabled || identical(dataViewsConfig[[indicator]]$tableSummarySettings$rowEnabled, TRUE)) {
         tablesummarySettings <- dataViewsConfig[[indicator]]$tableSummarySettings
         if (identical(tablesummarySettings$rowSummaryFunction, "sum")) {

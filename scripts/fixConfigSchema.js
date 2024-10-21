@@ -140,7 +140,7 @@ configSchema.definitions.dashboardOptions.properties.dataViewsConfig.additionalP
   mergeObjects(
     configSchema.definitions.miroPivotOptions.properties,
     configSchema.definitions.dashboardOptions.properties.dataViewsConfig
-      .additionalProperties.oneOf[1].properties,
+      .additionalProperties.properties,
   );
 
 // length one string arrays should also accept strings
