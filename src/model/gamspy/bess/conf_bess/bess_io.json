@@ -88,7 +88,7 @@
     },
     "outputSymbols": {
         "gen_power": {
-            "alias": "dispatch power from generator i at hour j",
+            "alias": "Dispatched power from generator i at hour j",
             "symtype": "variable",
             "headers": {
                 "i": {
@@ -121,8 +121,68 @@
                 }
             }
         },
+        "battery_power": {
+            "alias": "power charged or discharged from the battery at hour j",
+            "symtype": "variable",
+            "headers": {
+                "j": {
+                    "type": "string",
+                    "alias": "hours"
+                },
+                "level": {
+                    "type": "numeric",
+                    "alias": "level"
+                },
+                "marginal": {
+                    "type": "numeric",
+                    "alias": "marginal"
+                },
+                "lower": {
+                    "type": "numeric",
+                    "alias": "lower"
+                },
+                "upper": {
+                    "type": "numeric",
+                    "alias": "upper"
+                },
+                "scale": {
+                    "type": "numeric",
+                    "alias": "scale"
+                }
+            }
+        },
+        "external_grid_power": {
+            "alias": "power imported from the external grid at hour j",
+            "symtype": "variable",
+            "headers": {
+                "j": {
+                    "type": "string",
+                    "alias": "hours"
+                },
+                "level": {
+                    "type": "numeric",
+                    "alias": "level"
+                },
+                "marginal": {
+                    "type": "numeric",
+                    "alias": "marginal"
+                },
+                "lower": {
+                    "type": "numeric",
+                    "alias": "lower"
+                },
+                "upper": {
+                    "type": "numeric",
+                    "alias": "upper"
+                },
+                "scale": {
+                    "type": "numeric",
+                    "alias": "scale"
+                }
+            }
+        },
         "report_output": {
-            "alias": "optimal combination of incoming power flows",
+            "alias": "Optimal combination of incoming power flows",
             "symtype": "parameter",
             "headers": {
                 "j": {
@@ -136,6 +196,47 @@
                 "value": {
                     "type": "numeric",
                     "alias": "value"
+                }
+            }
+        },
+        "_scalars_out": {
+            "alias": "Output Scalars",
+            "symnames": [
+                "total_cost_gen",
+                "total_cost_battery",
+                "total_cost_extern",
+                "total_cost",
+                "display_battery_delivery_rate",
+                "display_battery_stoarge"
+            ],
+            "symtext": [
+                "Total cost of the generators",
+                "Total cost of the BESS",
+                "Total cost for the imported power",
+                "Total cost to fulfill the load demand",
+                "Display the battery delivery rate in the dashboard",
+                "Display the battery storage in the dashboard"
+            ],
+            "symtypes": [
+                "parameter",
+                "parameter",
+                "parameter",
+                "parameter",
+                "parameter",
+                "parameter"
+            ],
+            "headers": {
+                "scalar": {
+                    "type": "string",
+                    "alias": "Scalar Name"
+                },
+                "description": {
+                    "type": "string",
+                    "alias": "Scalar Description"
+                },
+                "value": {
+                    "type": "string",
+                    "alias": "Scalar Value"
                 }
             }
         },

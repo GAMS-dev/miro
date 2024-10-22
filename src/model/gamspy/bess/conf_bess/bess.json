@@ -1,1 +1,468 @@
-{}
+{
+    "activateModules": {
+        "attachments": true,
+        "downloadTempFiles": false,
+        "hcube": false,
+        "loadLocal": true,
+        "logFile": true,
+        "lstFile": false
+    },
+    "aggregateWidgets": true,
+    "autoGenInputGraphs": true,
+    "customCss": false,
+    "dataRendering": {
+        "report_output": {
+            "additionalData": [
+                "gen_power",
+                "battery_power",
+                "external_grid_power"
+            ],
+            "options": {
+                "dataViews": {
+                    "battery_power": [
+                        {
+                            "BatteryTimeline": "Charge/Discharge of the BESS"
+                        }
+                    ],
+                    "external_grid_power": [
+                        {
+                            "ExternalTimeline": "Power taken from the external grid"
+                        }
+                    ],
+                    "gen_power": [
+                        {
+                            "GeneratorTimeline": "Generators Timeline"
+                        }
+                    ],
+                    "total_cost": [
+                        {
+                            "Balance": "Load demand fulfilment over time"
+                        }
+                    ]
+                },
+                "dataViewsConfig": {
+                    "Balance": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "multiChartOptions": {
+                                "multiChartRenderer": "line",
+                                "multiChartStepPlot": false,
+                                "showMultiChartDataMarkers": false,
+                                "stackMultiChartSeries": "no"
+                            },
+                            "multiChartSeries": "load_demand",
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "singleStack": false,
+                            "yLogScale": false,
+                            "yTitle": "power"
+                        },
+                        "cols": {
+                            "power_output_header": null
+                        },
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "pivotRenderer": "stackedbar",
+                        "rows": "j",
+                        "tableSummarySettings": {
+                            "colSummaryFunction": "sum",
+                            "enabled": false,
+                            "rowSummaryFunction": "sum"
+                        }
+                    },
+                    "BatteryTimeline": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "showDataMarkers": true,
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "stepPlot": false,
+                            "yLogScale": false,
+                            "yTitle": "power"
+                        },
+                        "data": "battery_power",
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "Hdr": "level"
+                        },
+                        "pivotRenderer": "line",
+                        "rows": "j",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        }
+                    },
+                    "ExternalTimeline": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "showDataMarkers": true,
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "stepPlot": false,
+                            "yLogScale": false,
+                            "yTitle": "power"
+                        },
+                        "data": "external_grid_power",
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "Hdr": "level"
+                        },
+                        "pivotRenderer": "line",
+                        "rows": "j",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        }
+                    },
+                    "GeneratorTimeline": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "singleStack": false,
+                            "yLogScale": false,
+                            "yTitle": "poer"
+                        },
+                        "cols": {
+                            "i": null
+                        },
+                        "data": "gen_power",
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "Hdr": "level"
+                        },
+                        "pivotRenderer": "stackedbar",
+                        "rows": "j",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        }
+                    }
+                },
+                "valueBoxes": {
+                    "color": [
+                        "#848991",
+                        "olive",
+                        "blue",
+                        "red",
+                        "blue",
+                        "blue"
+                    ],
+                    "decimals": [
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2
+                    ],
+                    "icon": [
+                        "chart-simple",
+                        "chart-simple",
+                        "chart-line",
+                        "chart-line",
+                        "bolt",
+                        "battery-full"
+                    ],
+                    "id": [
+                        "total_cost",
+                        "gen_power",
+                        "battery_power",
+                        "external_grid_power",
+                        "battery_delivery_rate",
+                        "battery_stoarge"
+                    ],
+                    "noColor": [
+                        true,
+                        true,
+                        true,
+                        true,
+                        true,
+                        true
+                    ],
+                    "postfix": [
+                        "$",
+                        "$",
+                        "$",
+                        "$",
+                        "kW",
+                        "kWh"
+                    ],
+                    "prefix": [
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        ""
+                    ],
+                    "redPositive": [
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false
+                    ],
+                    "title": [
+                        "Total Cost",
+                        "Generators",
+                        "BESS",
+                        "External Grid",
+                        "Power Capacity",
+                        "Energy Capacity"
+                    ],
+                    "valueScalar": [
+                        "total_cost",
+                        "total_cost_gen",
+                        "total_cost_battery",
+                        "total_cost_extern",
+                        "display_battery_delivery_rate",
+                        "display_battery_stoarge"
+                    ]
+                },
+                "valueBoxesTitle": ""
+            },
+            "outType": "dashboard"
+        },
+        "timewise_load_demand_and_cost_external_grid_data": {
+            "height": 700,
+            "options": {
+                "aggregationFunction": "sum",
+                "cols": {
+                    "Hdr": null
+                },
+                "emptyUEL": "-",
+                "enableHideEmptyCols": false,
+                "externalDefaultView": "Timeline",
+                "fixedColumns": true,
+                "hideEmptyCols": false,
+                "hidePivotControls": true,
+                "pivotRenderer": "line",
+                "rows": "j"
+            },
+            "outType": "miroPivot"
+        }
+    },
+    "datatable": {
+        "class": "display",
+        "filter": "bottom",
+        "options": {
+            "pageLength": 15
+        },
+        "rownames": false
+    },
+    "defaultRendererOutput": "miroPivot",
+    "defaultScenName": "default",
+    "defCompMode": "split",
+    "excelIncludeEmptySheets": true,
+    "excelIncludeMeta": true,
+    "handsontable": {
+        "colWidths": 100,
+        "contextMenu": {
+            "allowColEdit": true,
+            "allowRowEdit": true,
+            "enabled": true
+        },
+        "height": 700,
+        "readonly": false,
+        "stretchH": "all"
+    },
+    "hiddenOutputScalars": [
+        "total_cost_gen",
+        "total_cost_battery",
+        "total_cost_extern",
+        "total_cost",
+        "display_battery_delivery_rate",
+        "display_battery_stoarge"
+    ],
+    "hiddenOutputSymbols": [
+        "gen_power",
+        "battery_power",
+        "external_grid_power",
+        "_scalars_out",
+        "_scalarsve_out"
+    ],
+    "inputWidgets": {
+        "cost_bat_energy": {
+            "default": 0.25,
+            "label": "Cost for battery energy",
+            "max": 1,
+            "min": 0,
+            "noHcube": false,
+            "step": 0.05,
+            "ticks": false,
+            "widgetType": "slider"
+        },
+        "cost_bat_power": {
+            "default": 0.2,
+            "label": "Cost for battery power ",
+            "max": 1,
+            "min": 0,
+            "noHcube": false,
+            "step": 0.05,
+            "ticks": false,
+            "widgetType": "slider"
+        },
+        "generator_specifications": {
+            "colFormat": {
+                "cost_per_unit": {
+                    "format": "0,0.0000"
+                },
+                "fixed_cost": {
+                    "format": "0,0.0000"
+                }
+            },
+            "heatmap": false,
+            "hideIndexCol": true,
+            "readonly": false,
+            "tableType": "default",
+            "widgetType": "table"
+        },
+        "max_input_external_grid": {
+            "default": 15,
+            "label": "Max input from external grid",
+            "max": 30,
+            "min": 0,
+            "noHcube": false,
+            "step": 1,
+            "ticks": false,
+            "widgetType": "slider"
+        },
+        "timewise_load_demand_and_cost_external_grid_data": {
+            "heatmap": false,
+            "hideIndexCol": true,
+            "options": {
+                "fixedColumns": true
+            },
+            "readonly": false,
+            "tableType": "default",
+            "widgetType": "table"
+        }
+    },
+    "layoutSettings": {
+        "maxTabsExpandedInput": 5,
+        "maxTabsExpandedOutput": 5,
+        "maxTabsExpandedPivotComp": 5,
+        "maxTabsExpandedSplitComp": 5,
+        "maxTabsExpandedTabComp": 5
+    },
+    "overwriteAliases": {
+        "_scalars": {
+            "newAlias": "Scalars"
+        },
+        "_scalars_out": {
+            "newAlias": "Total cost"
+        },
+        "_scalarsve_out": {
+            "newAlias": "BESS specifications"
+        },
+        "battery_power": {
+            "newAlias": "power charged or discharged from the battery at hour j"
+        },
+        "cost_bat_energy": {
+            "newAlias": "cost_bat_energy"
+        },
+        "cost_bat_power": {
+            "newAlias": "cost_bat_power"
+        },
+        "display_battery_delivery_rate": {
+            "newAlias": "Display the battery delivery rate in the dashboard"
+        },
+        "display_battery_stoarge": {
+            "newAlias": "Display the battery storage in the dashboard"
+        },
+        "external_grid_power": {
+            "newAlias": "power imported from the external grid at hour j"
+        },
+        "gen_power": {
+            "newAlias": "Dispatched power from generator i at hour j"
+        },
+        "generator_specifications": {
+            "newAlias": "Specifications of each generator"
+        },
+        "max_input_external_grid": {
+            "newAlias": "maximal power that can be imported from the external grid every hour"
+        },
+        "report_output": {
+            "newAlias": "Optimal combination of incoming power flows"
+        },
+        "timewise_load_demand_and_cost_external_grid_data": {
+            "newAlias": "Timeline for load demand and cost of the external grid."
+        },
+        "total_cost": {
+            "newAlias": "Total cost to fulfill the load demand"
+        },
+        "total_cost_battery": {
+            "newAlias": "Total cost of the BESS"
+        },
+        "total_cost_extern": {
+            "newAlias": "Total cost for the imported power"
+        },
+        "total_cost_gen": {
+            "newAlias": "Total cost of the generators"
+        }
+    },
+    "overwriteHeaderAliases": {
+        "generator_specifications": {
+            "newHeaders": [
+                "Generator",
+                "Cost per unit in $",
+                "Fixed cost in $",
+                "Min power output in kW",
+                "Max power output in kW",
+                "Min uptime in h",
+                "Min downtime in h"
+            ]
+        },
+        "timewise_load_demand_and_cost_external_grid_data": {
+            "newHeaders": [
+                "Hour",
+                "Load demand at hour j in kW",
+                "Cost of the external grid at hour j in $"
+            ]
+        }
+    },
+    "overwriteSheetOrder": {
+        "input": [
+            "_widgets",
+            "generator_specifications",
+            "timewise_load_demand_and_cost_external_grid_data"
+        ],
+        "output": [
+            "report_output",
+            "_scalarsve_out",
+            "gen_power",
+            "_scalars_out",
+            "battery_power",
+            "external_grid_power"
+        ]
+    },
+    "pageTitle": "Battery Energy Storage Systems",
+    "pivotCompSettings": {
+        "fixedColumns": true,
+        "hidePivotControls": false
+    },
+    "readme": {
+        "enableMath": true,
+        "filename": "README.md",
+        "tabTitle": "Introduction"
+    },
+    "roundingDecimals": 2,
+    "storeLogFilesDuration": 7,
+    "theme": "browser",
+    "UILogo": "dummy_logo.png"
+}

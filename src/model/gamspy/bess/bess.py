@@ -210,7 +210,7 @@ def main():
         name="gen_power",
         type="positive",
         domain=[i, j],
-        description="dispatch power from generator i at hour j",
+        description="Dispatched power from generator i at hour j",
         is_miro_output=True,
     )
 
@@ -228,6 +228,7 @@ def main():
         name="battery_power",
         domain=[j],
         description="power charged or discharged from the battery at hour j",
+        is_miro_output=True,
     )
 
     battery_delivery_rate = Variable(
@@ -251,6 +252,7 @@ def main():
         type="positive",
         domain=[j],
         description="power imported from the external grid at hour j",
+        is_miro_output=True,
     )
 
     # Equation
@@ -394,18 +396,80 @@ def main():
         records=["battery", "external_grid", "generators", "load_demand"],
     )
 
-    power_output = Parameter(
+    report_output = Parameter(
         m,
         name="report_output",
         domain=[j, power_output_header],
-        description="optimal combination of incoming power flows",
+        description="Optimal combination of incoming power flows",
         is_miro_output=True,
     )
 
-    power_output[j, "generators"] = Sum(i, gen_power.l[i, j])
-    power_output[j, "battery"] = battery_power.l[j]
-    power_output[j, "external_grid"] = external_grid_power.l[j]
-    power_output[j, "load_demand"] = load_demand[j]
+    report_output[j, "generators"] = Sum(i, gen_power.l[i, j])
+    report_output[j, "battery"] = battery_power.l[j]
+    report_output[j, "external_grid"] = external_grid_power.l[j]
+    report_output[j, "load_demand"] = load_demand[j]
+
+    total_cost_gen = Parameter(
+        m,
+        "total_cost_gen",
+        is_miro_output=True,
+        description="Total cost of the generators",
+    )
+
+    total_cost_gen[...] = Sum(
+        j, Sum(i, gen_cost_per_unit[i] * gen_power.l[i, j] + gen_fixed_cost[i])
+    )
+
+    total_cost_battery = Parameter(
+        m,
+        "total_cost_battery",
+        is_miro_output=True,
+        description="Total cost of the BESS",
+    )
+
+    total_cost_battery[...] = (
+        cost_bat_power * battery_delivery_rate.l + cost_bat_energy * battery_stoarge.l
+    )
+
+    total_cost_extern = Parameter(
+        m,
+        "total_cost_extern",
+        is_miro_output=True,
+        description="Total cost for the imported power",
+    )
+
+    total_cost_extern[...] = Sum(
+        j,
+        cost_external_grid[j] * external_grid_power.l[j],
+    )
+
+    total_cost = Parameter(
+        m,
+        "total_cost",
+        is_miro_output=True,
+        description="Total cost to fulfill the load demand",
+    )
+
+    total_cost[...] = total_cost_gen + total_cost_battery + total_cost_extern
+
+    display_battery_delivery_rate = Parameter(
+        m,
+        name="display_battery_delivery_rate",
+        is_miro_output=True,
+        description="Display the battery delivery rate in the dashboard",
+    )
+
+    display_battery_delivery_rate[...] = battery_delivery_rate.l
+
+    display_battery_stoarge = Parameter(
+        m,
+        name="display_battery_stoarge",
+        is_miro_output=True,
+        description="Display the battery storage in the dashboard",
+    )
+
+    display_battery_stoarge[...] = battery_stoarge.l
+
 
 if __name__ == "__main__":
     main()
