@@ -4,7 +4,7 @@
         "downloadTempFiles": false,
         "hcube": false,
         "loadLocal": true,
-        "logFile": true,
+        "logFile": false,
         "lstFile": false
     },
     "aggregateWidgets": true,
@@ -360,6 +360,7 @@
         "maxTabsExpandedSplitComp": 5,
         "maxTabsExpandedTabComp": 5
     },
+    "miroLogFile": "miro.log",
     "overwriteAliases": {
         "_scalars": {
             "newAlias": "Scalars"

@@ -203,6 +203,44 @@ def main():
         description="maximal power that can be imported from the external grid every hour",
     )
 
+    no_negativ_load = load_demand.records[load_demand.records["value"] < 0]
+    no_negativ_cost = cost_external_grid.records[
+        cost_external_grid.records["value"] < 0
+    ]
+
+    with open("miro.log", "w") as f:
+        f.writelines(
+            [
+                "------------------------------------\n",
+                "        Validating data\n",
+                "------------------------------------\n",
+            ]
+        )
+        errors = False
+        if not no_negativ_load.empty:
+            f.writelines(
+                [
+                    "timewise_load_demand_and_cost_external_grid_data:: No negative load demand allowed!\n"
+                ]
+            )
+            for _, row in no_negativ_load.iterrows():
+                f.writelines([f'{row["j"]} has negative load demand.\n'])
+            errors = True
+
+        if not no_negativ_cost.empty:
+            f.writelines(
+                [
+                    "timewise_load_demand_and_cost_external_grid_data:: No negative cost allowed!\n"
+                ]
+            )
+            for _, row in no_negativ_cost.iterrows():
+                f.writelines([f'{row["j"]} has negative external grid cost.\n'])
+            errors = True
+
+        if errors:
+            raise Exception("Data errors detected")
+        f.writelines(["Data ok\n"])
+
     # Varaible
     # Generator
     gen_power = Variable(
