@@ -11,6 +11,10 @@
     "autoGenInputGraphs": true,
     "customCss": false,
     "dataRendering": {
+        "battery_power": {
+            "additionalData": "_scalarsve_out",
+            "outType": "mirorenderer_battery_power"
+        },
         "report_output": {
             "additionalData": [
                 "gen_power",
@@ -236,7 +240,7 @@
                 },
                 "valueBoxesTitle": ""
             },
-            "outType": "dashboard"
+            "outType": "mirorenderer_report_output"
         },
         "timewise_load_demand_and_cost_external_grid_data": {
             "height": 700,
@@ -291,7 +295,6 @@
     ],
     "hiddenOutputSymbols": [
         "gen_power",
-        "battery_power",
         "external_grid_power",
         "_scalars_out",
         "_scalarsve_out"
@@ -372,7 +375,7 @@
             "newAlias": "BESS specifications"
         },
         "battery_power": {
-            "newAlias": "power charged or discharged from the battery at hour j"
+            "newAlias": "Storage capacity of BESS"
         },
         "cost_bat_energy": {
             "newAlias": "cost_bat_energy"
@@ -390,7 +393,7 @@
             "newAlias": "power imported from the external grid at hour j"
         },
         "gen_power": {
-            "newAlias": "Dispatched power from generator i at hour j"
+            "newAlias": "Dashboard"
         },
         "generator_specifications": {
             "newAlias": "Specifications of each generator"
