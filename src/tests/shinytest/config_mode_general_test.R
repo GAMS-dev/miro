@@ -90,9 +90,39 @@ expect_identical(configRaw$scripts$hcube[[1]]$command, configNew$scripts$hcube[[
 expect_identical(configRaw$scripts$hcube[[1]]$args, configNew$scripts$hcube[[1]]$args)
 expect_identical(configRaw$scripts$hcube[[1]]$outputFile, configNew$scripts$hcube[[1]]$outputFile)
 
+# remove default scenario
+app$click(selector = "a[data-value='Scenario Data and Attachments']")
+expect_identical(app$get_values()$input[["default_scen_check"]], TRUE)
+app$set_inputs(default_scen_check = FALSE)
+
+# remove symbol links
 app$click(selector = "a[data-value='symbol_conf']")
 Sys.sleep(1)
+app$click(selector = "a[data-value='Hidden Symbols and Symbol Links']")
+app$run_js("$('#symbol_links1_wrapper button').click()")
 
+# remove hcube analysis script
+app$click(selector = "a[data-value='analysis_scripts']")
+Sys.sleep(1)
+app$run_js("$('#scripts_hcube1_wrapper button').click()")
+
+# remove output attachments
+app$click(selector = "a[data-value='new_gen']")
+Sys.sleep(1)
+app$run_js("$('#general_output_attach2_wrapper button').click()")
+app$run_js("$('#general_output_attach1_wrapper button').click()")
+Sys.sleep(1)
+
+configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
+  simplifyDataFrame = FALSE,
+  simplifyMatrix = FALSE
+))
+expect_identical(configNew$defaultScenName, NULL)
+expect_identical(configNew$symbolLinks, NULL)
+expect_identical(configNew$outputAttachments, NULL)
+
+app$click(selector = "a[data-value='symbol_conf']")
+Sys.sleep(1)
 app$click(selector = "a[data-value='Symbol and Column Names']")
 app$set_inputs("general_overwriteSymHeaders_price_1" = "2nd header")
 Sys.sleep(1L)
