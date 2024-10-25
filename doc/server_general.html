@@ -478,9 +478,18 @@
                       apps in development (started via GAMS Studio or the
                       command line). A form opens in which you must enter the
                       Engine URL (e.g. <kbd>https://engine.gams.com</kbd> if
-                      you are using Engine SaaS), an Engine namespace for which
-                      you have at least write and execute rights, as well as
-                      your login data.
+                      you are using Engine SaaS), an Engine
+                      <a
+                        href="https://www.gams.com/engine/administration.html#namespaces"
+                        >namespace</a
+                      >
+                      for which you have at least write and execute rights, as
+                      well as your login data. More about the user management
+                      of GAMS Engine can be found
+                      <a
+                        href="https://www.gams.com/engine/administration.html#user-management"
+                        >here</a
+                      >.
                     </p>
                     <div class="section-block">
                       <img
@@ -508,56 +517,6 @@
                       file
                       <a href="./deployment.html#model-assembly-file">here</a>.
                     </p>
-                    <p>
-                      The next time you launch a MIRO application, a login
-                      dialog appears. To connect to GAMS Engine, the following
-                      information is required:
-                    </p>
-                    <ul>
-                      <li>
-                        <b>Engine URL</b>: URL where GAMS Engine is hosted,
-                        e.g. <kbd>http(s)://mydomain.com/engine/api</kbd>.
-                      </li>
-                      <li>
-                        <b>Username &amp; password</b>: Your GAMS Engine
-                        credentials. More about the user management of GAMS
-                        Engine can be found
-                        <a
-                          href="https://www.gams.com/engine/administration.html#user-management"
-                          >here</a
-                        >.
-                      </li>
-                      <li>
-                        <b>Namespace</b>: The <i>namespace</i> to solve the
-                        model in. Engine uses these namespaces to organize GAMS
-                        models. Your user account needs at least
-                        <i>execute</i> permissions on the namespace to run a
-                        registered model, or write and execute permissions to
-                        run an unregistered model. Further information can be
-                        found
-                        <a
-                          href="https://www.gams.com/engine/administration.html#namespaces"
-                          >here</a
-                        >.
-                      </li>
-                      <li>
-                        <b>Is your model registered in the namespace</b>: If a
-                        model is registered in an Engine namespace, the model
-                        files are stored on Engine. This avoids having to send
-                        the same model files to Engine for each job you submit.
-                        Only the scenario data is communicated in this case.
-                        Read more
-                        <a
-                          href="https://www.gams.com/engine/administration.html#models"
-                          >here</a
-                        >.
-                      </li>
-                      <li>
-                        <b>Remember me</b>: Your credentials will be saved so
-                        that you will not have to log in again the next time
-                        you start the application.
-                      </li>
-                    </ul>
                     <p>
                       If a MIRO application runs with GAMS Engine backend, jobs
                       are solved
