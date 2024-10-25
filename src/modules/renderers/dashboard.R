@@ -347,6 +347,18 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         return(data)
       }
 
+      # change the column order. Will change the order of table columns/plotted series
+      applyCustomSeriesOrder <- function(data, noRowHeaders, customSeriesOrder) {
+        fixedCols <- colnames(data)[1:noRowHeaders]
+        valueCols <- colnames(data)[(noRowHeaders + 1):ncol(data)]
+        validLabels <- customSeriesOrder[customSeriesOrder %in% valueCols]
+        remainingCols <- setdiff(valueCols, validLabels)
+        orderedValueCols <- c(validLabels, remainingCols)
+        orderedData <- data %>%
+          select(all_of(fixedCols), all_of(orderedValueCols))
+        return(orderedData)
+      }
+
       dashboardChartData <- list()
       currentConfig <- c()
       for (view in names(dataViewsConfig)) {
@@ -718,6 +730,14 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             )
           }
 
+          # apply custom series order
+          if (length(dataViewsConfig[[indicator]]$chartOptions$customSeriesOrder)) {
+            dataTmp <- applyCustomSeriesOrder(
+              dataTmp,
+              noRowHeaders,
+              dataViewsConfig[[indicator]]$chartOptions$customSeriesOrder
+            )
+          }
           # heatmap
           if (input[[paste0(indicator, "ChartType")]] == "heatmap") {
             if (identical(dataViewsConfig[[indicator]]$chartOptions$heatmapType, 2L)) {
@@ -868,8 +888,6 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           rowHeaderLen <- attr(dashboardChartData[[indicator]], "noRowHeaders")
           noSeries <- length(dataTmp) - rowHeaderLen
 
-          currentSeriesLabels <- names(dataTmp)[seq(rowHeaderLen + 1L, noSeries + rowHeaderLen)]
-
           # apply custom labels order
           if (length(currentView$chartOptions$customLabelsOrder)) {
             dataTmp <- applyCustomLabelsOrder(
@@ -879,10 +897,21 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             )
           }
 
+          # apply custom series order
+          if (length(dataViewsConfig[[indicator]]$chartOptions$customSeriesOrder)) {
+            dataTmp <- applyCustomSeriesOrder(
+              dataTmp,
+              rowHeaderLen,
+              dataViewsConfig[[indicator]]$chartOptions$customSeriesOrder
+            )
+          }
+
           labels <- do.call(paste, c(dataTmp[seq_len(rowHeaderLen)], list(sep = ".")))
           if (!length(labels)) {
             labels <- "value"
           }
+
+          currentSeriesLabels <- names(dataTmp)[seq(rowHeaderLen + 1L, noSeries + rowHeaderLen)]
 
           if (length(currentView$chartOptions$customChartColors) &&
             length(names(currentView$chartOptions$customChartColors))) {

@@ -2902,6 +2902,32 @@ firstDayTraining(td)                   = td.pos = 1;
   }
 }
 </code></pre>
+                            For a more detailed example see
+                            <a href="./charts.html#custom-order">here</a>.
+                          </li>
+                          <li>
+                            <code class="language-json"
+                              >"customSeriesOrder"</code
+                            >: Allows an individual order in which selected
+                            series are plotted in a chart or in which order
+                            selected columns are displayed in a table/heatmap.
+                            Series/columns that are not mentioned retain the
+                            original sort order and are positioned after the
+                            explicitly listed series/columns. Example:
+                            <pre><code class="language-json">
+{
+  "macroperc": {
+      "macro1": {
+          [...],
+          "chartOptions": {
+             "customSeriesOrder": ["Primary", "Manufacturing", "Services"]
+          }
+      }
+  }
+}
+</code></pre>
+                            For a more detailed example see
+                            <a href="./charts.html#custom-order">here</a>.
                           </li>
                           <li>
                             <code class="language-json">"hideLegend"</code>: If
@@ -2967,7 +2993,7 @@ firstDayTraining(td)                   = td.pos = 1;
                         </ol>
                       </li>
                     </ol>
-                    <p>Example:</p>
+                    <p><b>Example 1:</b> General configuration</p>
                     <pre><code class="language-json">
 {
   "dataRendering": {
@@ -3020,6 +3046,113 @@ firstDayTraining(td)                   = td.pos = 1;
                         class="img-fluid"
                         src="assets/images/dashboard/data_view.png"
                         alt="Data view"
+                      />
+                    </div>
+                    <p id="custom-order">
+                      <b>Example 2:</b> Custom labels, custom labels order,
+                      custom series order
+                    </p>
+                    <p>Imagine the following chart:</p>
+                    <div class="section-block" style="text-align: left">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/dashboard/no_order.png"
+                        alt="Chart without ordered series and labels"
+                      />
+                    </div>
+                    <p>Now three settings are applied:</p>
+                    <ul>
+                      <li>
+                        <code class="language-json">customSeriesOrder</code>:
+                        The series order should be changed from
+                        <span class="code">Manufacturing</span>,
+                        <span class="code">Primary</span>,
+                        <span class="code">Services</span> to
+                        <span class="code">Primary</span>,
+                        <span class="code">Manufacturing</span>,
+                        <span class="code">Services</span>.
+                      </li>
+                      <li>
+                        <code class="language-json">customLabels</code>: Even
+                        though the labels in the model were already relatively
+                        well chosen, they should be slightly adapted here.
+                      </li>
+                      <li>
+                        <code class="language-json">customLabelsOrder</code>:
+                        The order of the labels is adjusted. Note that the
+                        labels that have already been adapted are used. Also
+                        note that labels of the
+                        <span class="code">Services</span> series are not
+                        listed at all. They are therefore placed at the very
+                        end of the order.
+                      </li>
+                    </ul>
+                    <pre><code class="language-json">
+{
+  "dataRendering": {
+    "macrolevel": {
+      "outType": "dashboard",
+      "additionalData": ["qxpc", ...],
+      "options": {
+        [...],
+        "dataViewsConfig": {
+          "production1": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "stackedbar",
+            "rows": "sector",
+            "filter": {
+                "sim_miro": "scenario"
+            },
+            "cols": {
+                "agrp": null
+            },
+            "chartOptions": {
+              "customSeriesOrder": [
+                 "Primary", "Manufacturing", "Services"
+              ],
+              "customLabels": {
+                 "a_Food": "Food",
+                 "a_Machinery": "Machinery",
+                 "a_Metal_mineral_products": "Metal mineral products",
+                 "a_Other_manufacturing": "Other manufacturing",
+                 "a_Petrol_chemicals": "Petrol chemicals",
+                 "a_Textiles": "Textiles",
+                 "a_Vehicles": "Vehicles",
+                 "a_Agriculture": "Agriculture",
+                 "a_Minerals": "Minerals",
+                 "a_Construction": "Construction",
+                 "a_Services": "Services",
+                 "a_Trade_transport_communications": "Trade transport communications",
+                 "a_Utilities": "Utilities"
+              },
+              "customLabelsOrder": [
+                 "Agriculture",
+                 "Minerals",
+                 "Food",
+                 "Machinery",
+                 "Metal mineral products",
+                 "Other manufacturing",
+                 "Petrol chemicals",
+                 "Textiles",
+                 "Vehicles"
+              ]
+            },
+            "data": "qxpc",
+            "userFilter": ["sector", "agrp"],
+            "decimals": 2
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+                    <p>The resulting chart looks like this:</p>
+                    <div class="section-block" style="text-align: left">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/dashboard/order.png"
+                        alt="Chart with ordered series and labels"
                       />
                     </div>
                     <b id="dashboard-custom-code"

@@ -787,6 +787,19 @@
                     },
                     "minLength": 1
                   },
+                  "customSeriesOrder": {
+                    "description": "Custom series order. Missing series will be placed at the end.",
+                    "type": [
+                      "array",
+                      "string"
+                    ],
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "minLength": 1
+                  },
                   "hideLegend": {
                     "description": "Hide legend in chart.",
                     "type": "boolean",
