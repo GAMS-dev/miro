@@ -501,6 +501,9 @@ renderMirorenderer_report_output  <- function(input, output, session, data, opti
   output$dataViews <- renderUI({
     sections <- lapply(names(options$dataViews), function(viewList) {
       view <- options$dataViews[[viewList]]
+      if (is.null(names(view))) {
+            view <- unlist(view, recursive = FALSE)
+          }
       idList <- as.list(names(view))
       titleList <- view
 
