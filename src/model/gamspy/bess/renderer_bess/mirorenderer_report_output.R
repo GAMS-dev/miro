@@ -1,11 +1,12 @@
 mirorenderer_report_outputOutput <- function(id, height = NULL, options = NULL, path = NULL) {
   ns <- NS(id)
   tagList(
-    plotly::plotlyOutput(ns("sankey")),
     sliderInput(ns("hour"), "Hour:",
       min = 0, max = 24,
       value = 0, step = 1
-    )
+    ),
+    checkboxInput(ns("autoUpdate"), "Auto-update slider", value = FALSE),
+    plotly::plotlyOutput(ns("sankey"), height = "100%")
   )
 }
 
@@ -15,43 +16,56 @@ renderMirorenderer_report_output <- function(input, output, session, data, optio
     min = 0, max = num_hours - 1, step = 1
   )
 
-  hour_to_dislay <- sprintf("hour%03d", input$hour)
-  sankey_source <- list()
-  sankey_target <- list()
-  sankey_value <- list()
-
-  battery_to_dislay <- filter(data, power_output_header == "battery") %>%
-    filter(j == hour_to_dislay)
-  gen_to_dislay <- filter(data, power_output_header == "generators") %>%
-    filter(j == hour_to_dislay)
-  extern_to_dislay <- filter(data, power_output_header == "external_grid") %>%
-    filter(j == hour_to_dislay)
-
-  if (dim(battery_to_dislay)[1] != 0) {
-    if (battery_to_dislay[["value"]] > 0) {
-      sankey_source <- c(sankey_source, 0)
-      sankey_target <- c(sankey_target, 3)
-      sankey_value <- c(sankey_value, battery_to_dislay[["value"]])
-    } else {
-      sankey_source <- c(sankey_source, 3)
-      sankey_target <- c(sankey_target, 0)
-      sankey_value <- c(sankey_value, -battery_to_dislay[["value"]])
+  autoUpdateTimer <- reactiveTimer(1000000, session) 
+  
+  observe({
+    # Trigger the timer to update when active
+    autoUpdateTimer()
+    
+    if (isTRUE(input$autoUpdate)) {
+      new_value <- min(input$hour + 1, 23) # Update one step, up to max value
+      updateSliderInput(session, "hour", value = new_value)
     }
-  }
+  })
 
-  if (dim(gen_to_dislay)[1] != 0) {
-    sankey_source <- c(sankey_source, 1)
-    sankey_target <- c(sankey_target, 3)
-    sankey_value <- c(sankey_value, gen_to_dislay[["value"]])
-  }
-
-  if (dim(extern_to_dislay)[1] != 0) {
-    sankey_source <- c(sankey_source, 2)
-    sankey_target <- c(sankey_target, 3)
-    sankey_value <- c(sankey_value, extern_to_dislay[["value"]])
-  }
 
   output$sankey <- plotly::renderPlotly({
+    hour_to_dislay <- sprintf("hour%03d", input$hour)
+    sankey_source <- list()
+    sankey_target <- list()
+    sankey_value <- list()
+
+    battery_to_dislay <- filter(data, power_output_header == "battery") %>%
+      filter(j == hour_to_dislay)
+    gen_to_dislay <- filter(data, power_output_header == "generators") %>%
+      filter(j == hour_to_dislay)
+    extern_to_dislay <- filter(data, power_output_header == "external_grid") %>%
+      filter(j == hour_to_dislay)
+
+    if (dim(battery_to_dislay)[1] != 0) {
+      if (battery_to_dislay[["value"]] > 0) {
+        sankey_source <- c(sankey_source, 0)
+        sankey_target <- c(sankey_target, 3)
+        sankey_value <- c(sankey_value, battery_to_dislay[["value"]])
+      } else {
+        sankey_source <- c(sankey_source, 3)
+        sankey_target <- c(sankey_target, 0)
+        sankey_value <- c(sankey_value, -battery_to_dislay[["value"]])
+      }
+    }
+
+    if (dim(gen_to_dislay)[1] != 0) {
+      sankey_source <- c(sankey_source, 1)
+      sankey_target <- c(sankey_target, 3)
+      sankey_value <- c(sankey_value, gen_to_dislay[["value"]])
+    }
+
+    if (dim(extern_to_dislay)[1] != 0) {
+      sankey_source <- c(sankey_source, 2)
+      sankey_target <- c(sankey_target, 3)
+      sankey_value <- c(sankey_value, extern_to_dislay[["value"]])
+    }
+
     plotly::plot_ly(
       type = "sankey",
       orientation = "h",
