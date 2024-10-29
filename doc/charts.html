@@ -2879,7 +2879,7 @@ firstDayTraining(td)                   = td.pos = 1;
     [...]
   }
 - renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
-+ renderMirorenderer_macrolevel <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
++ renderMirorenderer_macrolevel <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...) {
 -   moduleServer(
 -     id,
 -     function(input, output, session) {
@@ -2970,7 +2970,7 @@ firstDayTraining(td)                   = td.pos = 1;
                       >). Example:
                     </p>
                     <div class="code-block">
-                      <pre><code class="language-r">renderMirorenderer_macrolevel <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+                      <pre><code class="language-r">renderMirorenderer_macrolevel <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...) {
   [...]
 
   output[["macro2"]] <- renderUI({
