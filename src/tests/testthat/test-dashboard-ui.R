@@ -14,7 +14,7 @@ test_that(
     Sys.setenv(MIRO_MODE = "base")
     Sys.setenv(DASHBOARD_RENDERER_NAME = "dashboard")
 
-    source(file.path(testDir, "shinytest", "dashboard_test.R"), local = TRUE)
+    # source(file.path(testDir, "shinytest", "dashboard_test.R"), local = TRUE)
 
     # using dashboard as custom renderer also works
     configJSONFilePath <- file.path(modelDir, "conf_pickstock", "pickstock.json")
@@ -62,11 +62,11 @@ test_that(
       tail(closingIndices, 2)[1],
       tail(closingIndices, 2)[2] - 1L
     )]
+    dir.create(file.path(modelDir, "renderer_pickstock"), showWarnings = FALSE)
     writeLines(dashboardRenderer, file.path(modelDir, "renderer_pickstock", "mirorenderer_stock_weight.R"))
 
     Sys.setenv(DASHBOARD_RENDERER_NAME = "custom")
-
-    source(file.path(testDir, "shinytest", "dashboard_test.R"), local = TRUE)
+    # source(file.path(testDir, "shinytest", "dashboard_test.R"), local = TRUE)
 
     unlink(file.path(modelDir, "renderer_pickstock", "mirorenderer_stock_weight.R"))
     file.move(
