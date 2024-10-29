@@ -1,7 +1,7 @@
 {
   "name": "com.gams.miro",
   "productName": "GAMS MIRO",
-  "version": "2.10.3",
+  "version": "2.10.4",
   "description": "GAMS MIRO is an interactive web application for GAMS models. It is designed for people working with GAMS looking for an easy and automated way to deploy their models. Extensive visualization options support you to make decisions based on optimization.",
   "homepage": "https://gams.com/miro",
   "type": "module",
