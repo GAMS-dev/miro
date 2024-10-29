@@ -1,4 +1,4 @@
-mirorenderer_report_outputOutput  <- function(id, height = NULL, options = NULL, path = NULL, ...) {
+mirorenderer__scalarsve_outOutput  <- function(id, height = NULL, options = NULL, path = NULL, ...) {
   ns <- NS(id)
 
   tagList(
@@ -26,7 +26,7 @@ mirorenderer_report_outputOutput  <- function(id, height = NULL, options = NULL,
   )
 }
 
-renderMirorenderer_report_output  <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+renderMirorenderer__scalarsve_out  <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
   ns <- session$ns
 
   dataViewsConfig <- options$dataViewsConfig
@@ -995,5 +995,22 @@ renderMirorenderer_report_output  <- function(input, output, session, data, opti
         return(write_csv(dataTmp, file, na = ""))
       }
     )
+
+    # add custom renderer
+    battery_power <- data$battery_power$level
+    storage_level <- -cumsum(battery_power)
+
+    max_storage <- data[["_scalarsve_out"]] %>%
+        filter(scalar == "battery_stoarge") %>%
+        pull(level)
+
+    output[["BatteryStorage"]] <- renderUI({
+      tagList(
+        renderPlot({barplot(storage_level, col="lightblue", ylab="Energy Capacity in kWh", 
+                      names.arg=data$battery_power$j, las = 2, ylim=c(0,max_storage+10),
+                      main = "Storage level of the BESS")
+                    grid()})
+      )
+    })
   })
 }

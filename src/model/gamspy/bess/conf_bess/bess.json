@@ -11,12 +11,9 @@
     "autoGenInputGraphs": true,
     "customCss": false,
     "dataRendering": {
-        "battery_power": {
-            "additionalData": "_scalarsve_out",
-            "outType": "mirorenderer_battery_power"
-        },
-        "report_output": {
+        "_scalarsve_out": {
             "additionalData": [
+                "report_output",
                 "gen_power",
                 "battery_power",
                 "external_grid_power"
@@ -26,6 +23,9 @@
                     "battery_power": [
                         {
                             "BatteryTimeline": "Charge/Discharge of the BESS"
+                        },
+                        {
+                            "BatteryStorage": ""
                         }
                     ],
                     "external_grid_power": [
@@ -64,6 +64,7 @@
                         "cols": {
                             "power_output_header": null
                         },
+                        "data": "report_output",
                         "domainFilter": {
                             "default": null
                         },
@@ -75,6 +76,7 @@
                             "rowSummaryFunction": "sum"
                         }
                     },
+                    "BatteryStorage": "customCode",
                     "BatteryTimeline": {
                         "aggregationFunction": "sum",
                         "chartOptions": {
@@ -240,7 +242,12 @@
                 },
                 "valueBoxesTitle": ""
             },
-            "outType": "mirorenderer_report_output"
+            "outType": "mirorenderer__scalarsve_out"
+        },
+        "report_output": {
+            "label": "Update Slider Input Widget — updateSliderInput",
+            "outType": "mirorenderer_report_output",
+            "packages": "plotly"
         },
         "timewise_load_demand_and_cost_external_grid_data": {
             "height": 700,
@@ -295,9 +302,9 @@
     ],
     "hiddenOutputSymbols": [
         "gen_power",
+        "battery_power",
         "external_grid_power",
-        "_scalars_out",
-        "_scalarsve_out"
+        "_scalars_out"
     ],
     "inputWidgets": {
         "cost_bat_energy": {
@@ -372,7 +379,7 @@
             "newAlias": "Total cost"
         },
         "_scalarsve_out": {
-            "newAlias": "BESS specifications"
+            "newAlias": "Dashboard"
         },
         "battery_power": {
             "newAlias": "Storage capacity of BESS"
@@ -393,7 +400,7 @@
             "newAlias": "power imported from the external grid at hour j"
         },
         "gen_power": {
-            "newAlias": "Dashboard"
+            "newAlias": "Generator power"
         },
         "generator_specifications": {
             "newAlias": "Specifications of each generator"
@@ -447,9 +454,9 @@
             "timewise_load_demand_and_cost_external_grid_data"
         ],
         "output": [
-            "report_output",
             "_scalarsve_out",
             "gen_power",
+            "report_output",
             "_scalars_out",
             "battery_power",
             "external_grid_power"
