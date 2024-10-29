@@ -245,7 +245,7 @@
             "outType": "mirorenderer__scalarsve_out"
         },
         "report_output": {
-            "label": "Update Slider Input Widget — updateSliderInput",
+            "label": "Time wise energy flow",
             "outType": "mirorenderer_report_output",
             "packages": "plotly"
         },
