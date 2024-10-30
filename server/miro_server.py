@@ -147,6 +147,10 @@ class MiroServer(object):
             description='Downloads GAMS MIRO Server Docker images')
         parser.add_argument('registry', type=str,
                             help='Registry to download images from')
+        parser.add_argument('--image-tag', type=str, default='latest',
+                            help='The tag of the images')
+        parser.add_argument('--tag-as-released', action='store_true',
+                            help='Tag images as if they were released ("gams/" prefix)')
 
         args = parser.parse_args(sys.argv[2:])
 
@@ -155,7 +159,9 @@ class MiroServer(object):
                       ('miro-auth', 'miro-auth'),
                       ('miro-admin', 'miro-admin'),
                       ('miro-ui', 'miro-ui')]:
-            self.download_image(*image, image_server=args.registry)
+            self.download_image(*image, image_tag=args.image_tag,
+                                image_server=args.registry,
+                                tag_as_released=args.tag_as_released)
 
     def push(self):
         parser = argparse.ArgumentParser(
@@ -281,12 +287,17 @@ class MiroServer(object):
         with open(file_name, 'w') as f:
             f.writelines(content)
 
-    def download_image(self, image_name_local, image_name_hub, image_server):
+    def download_image(self, image_name_local, image_name_hub,
+                       image_tag, image_server, tag_as_released=False):
         '''Downloads specified GAMS MIRO Server image from specified server'''
         subprocess.check_call(
-            ['docker', 'pull', f'{image_server}/{image_name_hub}'])
+            ['docker', 'pull', f'{image_server}/{image_name_hub}:{image_tag}'])
+        if tag_as_released:
+            local_image_tag = f"gams/{image_name_local}"
+        else:
+            local_image_tag = image_name_local
         subprocess.check_call(
-            ['docker', 'tag', f'{image_server}/{image_name_hub}', image_name_local])
+            ['docker', 'tag', f'{image_server}/{image_name_hub}:{image_tag}', local_image_tag])
 
     def push_image(self, image_name_local, image_name_hub, unstable=False, custom_tag=None):
         GITLAB_REGISTRY_HOST = 'registry.gams.com/miro/miro'

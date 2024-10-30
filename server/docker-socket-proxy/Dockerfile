@@ -1,20 +1,25 @@
-FROM --platform=linux/amd64 haproxy:2.5.0-alpine3.15
+FROM --platform=linux/amd64 haproxy:2.6-alpine3.20
 
 USER root
 EXPOSE 2375
 ENV ALLOW_RESTARTS=0 \
+    ALLOW_STOP=0 \
+    ALLOW_START=0 \
     AUTH=0 \
     BUILD=0 \
     COMMIT=0 \
     CONFIGS=0 \
     CONTAINERS=0 \
+    DISABLE_IPV6=0 \
     CONTAINER_CREATE=0 \
     CONTAINERS_ADV=0 \
     DISTRIBUTION=0 \
     EVENTS=1 \
     EXEC=0 \
+    GRPC=0 \
     IMAGES=0 \
     INFO=0 \
+    LOG_LEVEL=info \
     NETWORKS=0 \
     NODES=0 \
     PING=1 \
@@ -23,22 +28,14 @@ ENV ALLOW_RESTARTS=0 \
     SECRETS=0 \
     SERVICES=0 \
     SESSION=0 \
+    SOCKET_PATH=/var/run/docker.sock \
     SWARM=0 \
     SYSTEM=0 \
     TASKS=0 \
     VERSION=1 \
     VOLUMES=0
-COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
+COPY docker-entrypoint.sh /usr/local/bin/
+COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg.template
 
 RUN apk update && \
     apk upgrade --available
-
-# Metadata
-ARG VCS_REF
-ARG BUILD_DATE
-LABEL org.label-schema.schema-version="1.0" \
-      org.label-schema.vendor=Tecnativa \
-      org.label-schema.license=Apache-2.0 \
-      org.label-schema.build-date="$BUILD_DATE" \
-      org.label-schema.vcs-ref="$VCS_REF" \
-      org.label-schema.vcs-url="https://github.com/Tecnativa/docker-socket-proxy"

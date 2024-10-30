@@ -181,14 +181,23 @@ observeEvent(input$general_meta, {
 observeEvent(input$general_empty, {
   rv$generalConfig$excelIncludeEmptySheets <<- input$general_empty
 })
-observeEvent(c(input$default_scen_check, input$general_default_scen_name), {
-  if (!nchar(input$general_default_scen_name) || identical(input$default_scen_check, FALSE)) {
-    configJSON$defaultScenName <<- NULL
-  }
-  if (nchar(input$general_default_scen_name) && identical(input$default_scen_check, TRUE)) {
+observeEvent(input$default_scen_check, {
+  if (identical(input$default_scen_check, TRUE) && nchar(input$general_default_scen_name)) {
     rv$generalConfig$defaultScenName <<- input$general_default_scen_name
   } else {
     rv$generalConfig$defaultScenName <<- NULL
+    configJSON$defaultScenName <<- NULL
+  }
+})
+observeEvent(input$general_default_scen_name, {
+  if (!identical(input$default_scen_check, TRUE)) {
+    return()
+  }
+  if (nchar(input$general_default_scen_name)) {
+    rv$generalConfig$defaultScenName <<- input$general_default_scen_name
+  } else {
+    rv$generalConfig$defaultScenName <<- NULL
+    configJSON$defaultScenName <<- NULL
   }
 })
 observeEvent(input$general_defaultRendererOutput, {

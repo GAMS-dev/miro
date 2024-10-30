@@ -1018,7 +1018,7 @@ font-size: 12px;
                       tags$div(
                         class = "option-wrapper", style = "margin-top:-10px;padding-left: 25px;",
                         textInput("general_default_scen_name", lang$adminMode$general$defaultScenName$label,
-                          value = if (length(configJSON$defaultScenName)) configJSON$defaultScenName else NULL
+                          value = if (length(configJSON$defaultScenName)) configJSON$defaultScenName else "default"
                         )
                       )
                     ),
