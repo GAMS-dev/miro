@@ -2428,7 +2428,18 @@ firstDayTraining(td)                   = td.pos = 1;
                         the value box should display a value, this needs to be
                         configured here. Valid <i>valueScalar</i> entries are
                         scalar output symbols of the model, which are used in
-                        MIRO. Names must be specified in lower case.
+                        MIRO. The level of
+                        <a href="./model.html#display-scalar-vareq"
+                          >scalar variables or equations</a
+                        >
+                        can also be displayed. To enable this, the joint symbol
+                        data <span class="code">_scalarsve_out</span> must be
+                        specified under
+                        <a href="./charts.html#dashboard-additionaldata"
+                          ><code class="language-json"
+                            >"additionalData"</code
+                          ></a
+                        >. Names must be specified in lower case.
                       </li>
                       <li>
                         <code class="language-json">"prefix"</code>: Any string

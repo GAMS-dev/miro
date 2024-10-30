@@ -87,12 +87,12 @@ validateDashboardConfig <- function(graphConfig) {
   }
 
   vbSymbols <- vb$valueScalar[!is.na(vb$valueScalar)]
-  noSymbol <- vbSymbols[!(vbSymbols %in% modelOut[[scalarsOutName]]$symnames)]
+  noSymbol <- vbSymbols[!(vbSymbols %in% c(modelOut[[scalarsOutName]]$symnames, modelOut[[scalarEquationsOutName]]$symnames))]
   if (length(noSymbol)) {
     errMsgTmp <- paste(
       errMsgTmp,
       sprintf(
-        "\nNo scalar symbol '%s' found for valueBox",
+        "\nNo scalar symbol '%s' found for valueBox. Please make sure it is part of the MIRO app.",
         paste(noSymbol, collapse = ", ")
       )
     )
