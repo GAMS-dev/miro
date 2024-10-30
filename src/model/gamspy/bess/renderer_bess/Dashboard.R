@@ -1004,6 +1004,7 @@ renderMirorenderer__scalarsve_out  <- function(input, output, session, data, opt
         filter(scalar == "battery_stoarge") %>%
         pull(level)
 
+    # corresponding to the dataView "BatteryStorage"
     output[["BatteryStorage"]] <- renderUI({
       tagList(
         renderPlot({barplot(storage_level, col="lightblue", ylab="Energy Capacity in kWh", 

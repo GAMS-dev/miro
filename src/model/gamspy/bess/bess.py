@@ -41,30 +41,30 @@ def main():
     # combine with cost external grid, to have one source of truth for the hours (Set j)
     timewise_load_demand_and_cost_external_grid_input = pd.DataFrame(
         [
-            ["hour000", 200, 0.09],
-            ["hour001", 180, 0.08],
-            ["hour002", 170, 0.08],
-            ["hour003", 160, 0.08],
-            ["hour004", 150, 0.08],
-            ["hour005", 150, 0.08],
-            ["hour006", 170, 0.09],
-            ["hour007", 250, 0.11],
-            ["hour008", 320, 0.13],
-            ["hour009", 300, 0.12],
-            ["hour010", 280, 0.11],
-            ["hour011", 260, 0.10],
-            ["hour012", 270, 0.10],
-            ["hour013", 280, 0.10],
-            ["hour014", 290, 0.11],
-            ["hour015", 300, 0.12],
-            ["hour016", 320, 0.13],
-            ["hour017", 350, 0.14],
-            ["hour018", 340, 0.13],
-            ["hour019", 330, 0.12],
-            ["hour020", 320, 0.11],
-            ["hour021", 280, 0.10],
-            ["hour022", 240, 0.09],
-            ["hour023", 220, 0.09],
+            ["hour00", 200, 0.09],
+            ["hour01", 180, 0.08],
+            ["hour02", 170, 0.08],
+            ["hour03", 160, 0.08],
+            ["hour04", 150, 0.08],
+            ["hour05", 150, 0.08],
+            ["hour06", 170, 0.09],
+            ["hour07", 250, 0.11],
+            ["hour08", 320, 0.13],
+            ["hour09", 300, 0.12],
+            ["hour10", 280, 0.11],
+            ["hour11", 260, 0.10],
+            ["hour12", 270, 0.10],
+            ["hour13", 280, 0.10],
+            ["hour14", 290, 0.11],
+            ["hour15", 300, 0.12],
+            ["hour16", 320, 0.13],
+            ["hour17", 350, 0.14],
+            ["hour18", 340, 0.13],
+            ["hour19", 330, 0.12],
+            ["hour20", 320, 0.11],
+            ["hour21", 280, 0.10],
+            ["hour22", 240, 0.09],
+            ["hour23", 220, 0.09],
         ],
         columns=["j", "load_demand", "cost_external_grid"],
     )
@@ -413,6 +413,7 @@ def main():
         + cost_bat_energy * battery_stoarge
     )
 
+    # Solve
     bess = Model(
         m,
         name="bess",
@@ -428,6 +429,9 @@ def main():
         options=Options(equation_listing_limit=1, relative_optimality_gap=0),
     )
 
+    # Extract the ouput data
+
+    # Power output
     power_output_header = Set(
         m,
         name="power_output_header",
@@ -447,6 +451,7 @@ def main():
     report_output[j, "external_grid"] = external_grid_power.l[j]
     report_output[j, "load_demand"] = load_demand[j]
 
+    # Costs
     total_cost_gen = Parameter(
         m,
         "total_cost_gen",
@@ -490,6 +495,7 @@ def main():
 
     total_cost[...] = total_cost_gen + total_cost_battery + total_cost_extern
 
+    # Since the dashboard can only show true scalars, i.e. scalar Parameters
     display_battery_delivery_rate = Parameter(
         m,
         name="display_battery_delivery_rate",
