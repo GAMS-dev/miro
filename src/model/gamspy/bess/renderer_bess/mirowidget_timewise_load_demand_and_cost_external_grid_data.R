@@ -1,5 +1,5 @@
-mirowidget_timewise_load_demand_and_cost_external_grid_dataOutput <- function(id, height = NULL, options = NULL, path = NULL){
-    ns <- NS(id)
+mirowidget_timewise_load_demand_and_cost_external_grid_dataOutput <- function(id, height = NULL, options = NULL, path = NULL) {
+  ns <- NS(id)
   fluidRow(
     column(
       width = 12,
@@ -12,13 +12,15 @@ mirowidget_timewise_load_demand_and_cost_external_grid_dataOutput <- function(id
   )
 }
 
-renderMirowidget_timewise_load_demand_and_cost_external_grid_data <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){
+renderMirowidget_timewise_load_demand_and_cost_external_grid_data <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
   init <- FALSE
-  print('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW')
   rv <- reactiveValues(
-    timewise_input_data = data()
+    timewise_input_data = NULL
   )
-  print(rv$timewise_input_data)
+
+  observe({
+    rv$timewise_input_data <- data()
+  })
 
   tableProxy <- DT::dataTableProxy("table")
 
@@ -29,33 +31,21 @@ renderMirowidget_timewise_load_demand_and_cost_external_grid_data <- function(in
   observe({
     input$table_cell_edit
     if (!init) {
-      return()
-    }
-    {
-      row <- input$table_cell_edit$row
-      clmn <- input$table_cell_edit$col + 1
-
-      if (input$table_cell_edit$value == "") {
-        resetTable()
-        return()
-      }
-
-      isolate({
-        print(row)
-        print(clmn)
-        print(rv$timewise_input_data[[row, clmn]])
-        rv$timewise_input_data[[row, clmn]] <- input$table_cell_edit$value
-      })
-    }
-  })
-  
-    observe({
-    input$timeline_click
-    if (!init) {
       init <<- TRUE
       return()
-    }})
+    }
+    row <- input$table_cell_edit$row
+    clmn <- input$table_cell_edit$col + 1
 
+    if (input$table_cell_edit$value == "") {
+      resetTable()
+      return()
+    }
+
+    isolate({
+      rv$timewise_input_data[row, clmn] <- input$table_cell_edit$value
+    })
+  })
 
   output$table <- DT::renderDT({
     DT::datatable(rv$timewise_input_data, editable = TRUE, rownames = FALSE, options = list(scrollX = TRUE)) %>%
@@ -94,8 +84,8 @@ renderMirowidget_timewise_load_demand_and_cost_external_grid_data <- function(in
       col = c("green", "blue"), lty = 1, lwd = 2, pch = 16
     )
   })
-  
-    return(reactive({
-      rv$timewise_input_data
-    }))
+
+  return(reactive({
+    rv$timewise_input_data
+  }))
 }

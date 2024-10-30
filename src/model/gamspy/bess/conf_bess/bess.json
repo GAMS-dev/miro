@@ -353,14 +353,14 @@
             "widgetType": "slider"
         },
         "timewise_load_demand_and_cost_external_grid_data": {
-            "widgetType": "custom",
-            "rendererName": "mirowidget_timewise_load_demand_and_cost_external_grid_data",
             "alias": "Timeline for load demand and cost of the external grid",
             "apiVersion": 2,
             "options": {
-              "isInput": true
-            }
-          }
+                "isInput": true
+            },
+            "rendererName": "mirowidget_timewise_load_demand_and_cost_external_grid_data",
+            "widgetType": "custom"
+        }
     },
     "layoutSettings": {
         "maxTabsExpandedInput": 5,
