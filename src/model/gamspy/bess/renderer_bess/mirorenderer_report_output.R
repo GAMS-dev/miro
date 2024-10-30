@@ -2,33 +2,19 @@ mirorenderer_report_outputOutput <- function(id, height = NULL, options = NULL, 
   ns <- NS(id)
   tagList(
     sliderInput(ns("hour"), "Hour:",
-      min = 0, max = 24,
-      value = 0, step = 1
+      min = 0, max = 23,
+      value = 0, step = 1,
+      animate = animationOptions(
+        interval = 1000, loop = FALSE,
+        playButton = actionButton("play", "Play", icon = icon("play"), width = "100px", style = "margin-top: 10px; color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+        pauseButton = actionButton("pause", "Pause", icon = icon("pause"), width = "100px", style = "margin-top: 10px; color: #fff; background-color: #337ab7; border-color: #2e6da4")
+      )
     ),
-    checkboxInput(ns("autoUpdate"), "Auto-update slider", value = FALSE),
     plotly::plotlyOutput(ns("sankey"), height = "100%")
   )
 }
 
 renderMirorenderer_report_output <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
-  num_hours <- nrow(filter(data, power_output_header == "load_demand"))
-  updateSliderInput(session, "hour",
-    min = 0, max = num_hours - 1, step = 1
-  )
-
-  autoUpdateTimer <- reactiveTimer(1000000, session) 
-  
-  observe({
-    # Trigger the timer to update when active
-    autoUpdateTimer()
-    
-    if (isTRUE(input$autoUpdate)) {
-      new_value <- min(input$hour + 1, 23) # Update one step, up to max value
-      updateSliderInput(session, "hour", value = new_value)
-    }
-  })
-
-
   output$sankey <- plotly::renderPlotly({
     hour_to_dislay <- sprintf("hour%03d", input$hour)
     sankey_source <- list()
