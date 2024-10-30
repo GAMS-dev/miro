@@ -257,17 +257,27 @@
           "decimals": [2, 2, 2]
         },
         "dataViews": {
-          "error_test": {
-            "dowVSindex": "dow VS index",
-            "abserror": "Absolute Error"
-          },
-          "error_train": {
-            "stockWeight": "Sock Weight",
-            "stockWeight2": "Sock Weight"
-          },
-          "error_ratio": {
-            "pricemerge": "All index prices including DJ"
-          }
+          "error_test": [
+            {
+              "dowVSindex": "dow VS index"
+            },
+            {
+              "abserror": "Absolute Error"
+            }
+          ],
+          "error_train": [
+            {
+              "stockWeight": "Sock Weight"
+            },
+            {
+              "stockWeight2": "Sock Weight"
+            }
+          ],
+          "error_ratio": [
+            {
+              "pricemerge": "All index prices including DJ"
+            }
+          ]
         },
         "dataViewsConfig": {
           "stockWeight": {
