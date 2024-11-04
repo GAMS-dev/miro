@@ -1,0 +1,47 @@
+MAKE GAMS/GAMSPY MODEL
+
+add is_miro_input/output/table
+domain forwarding -> header sets, since dataframe has to be melted
+
+RAPIT PROTOYPING
+
+input self explanatory 
+-> maybe timeline graph already with drawback can't edit and see graph
+-> custom widget
+
+output show some graphs 
+-> can already check load fulfillment
+-> and that everything stays in the given limits
+-> if not found an error (can be used before the model is finished!!!)
+
+CONFIG MODE
+
+Set Title, Logo, ReadMe
+make the views that seemed useful during rapit prototyping into the default
+for scalars add sliders
+Objectiv value (cost) as value box (scalar output Parameter)
+
+if multiple views exist can combine them in Dashboard
+think of KPI, make scalar Parameters for them
+-> only need to touch json files!!
+-> maybe gif of Daschboard?
+
+make a custom log direktly in the gamspy code
+-> especially good for data validation
+
+FINE TUNING WITH CUSTOM CODE
+
+custom widget for time input, directly update the graph
+
+small custom renderer for cumsum(battery_power) to get the storage at every time 
+-> add this to the dashboard
+
+custom renderer -> sankey diagram
+
+FURTHER PROSPECTS
+
+custom export -> to database or/and pdf
+custom inport -> time data from database (possible updates regularly)
+deploy -> Miroserver
+ 
+
