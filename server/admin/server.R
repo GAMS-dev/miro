@@ -212,18 +212,28 @@ server <- function(input, output, session) {
         newAppConfig <- list(
           id = appId, displayName = newAppTitle, description = newAppDesc,
           logoURL = logoURL,
-          containerVolumes = c(
-            sprintf("/%s:/home/miro/app/model/%s:ro", appId, appId),
-            sprintf("/data_%s:%s", appId, MIRO_CONTAINER_DATA_DIR)
-          ),
           containerEnv = list(
-            MIRO_MODEL_PATH = paste0("/home/miro/app/model/", appId, "/", modelName),
             MIRO_DATA_DIR = MIRO_CONTAINER_DATA_DIR,
             MIRO_VERSION_STRING = miroAppValidator$getMIROVersion(),
             MIRO_MODE = "base",
             MIRO_ENGINE_MODELNAME = appId
           )
         )
+        if (IN_KUBERNETES) {
+          newAppConfig$containerEnv$MIRO_MODEL_PATH <- paste0(
+            "/home/miro/mnt/model/",
+            appId, "/", modelName
+          )
+        } else {
+          newAppConfig$containerVolumes <- c(
+            sprintf("/%s:/home/miro/app/model/%s:ro", appId, appId),
+            sprintf("/data_%s:%s", appId, MIRO_CONTAINER_DATA_DIR)
+          )
+          newAppConfig$containerEnv$MIRO_MODEL_PATH <- paste0(
+            "/home/miro/app/model/",
+            appId, "/", modelName
+          )
+        }
 
         if (length(newGroups)) {
           newAppConfig[["accessGroups"]] <- as.list(newGroups)

@@ -837,6 +837,45 @@ test_job_miro_server:
       when: manual
     - if: $CI_MERGE_REQUEST_ID
 
+test_job_miro_server_k8s:
+  tags:
+    - linux
+    - puma
+  image: $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
+  stage: test
+  services:
+    - docker:27-dind
+    - selenium/standalone-chrome
+  variables:
+    MIRO_PROXY_URL: http://docker:8080
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_VERIFY: 1
+    DOCKER_TLS_CERTDIR: '/certs'
+    DOCKER_CERT_PATH: '/certs/client'
+    DOCKER_HOST: tcp://docker:2376
+    FF_NETWORK_PER_BUILD: 'true'
+  before_script:
+    - mkdir -p $HOME/.docker
+    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+    - mkdir kind-logs
+  script:
+    - ./scripts/test_miro_server_k8s.sh
+  artifacts:
+    when: always
+    paths:
+      - ./kind-logs
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: ./.ci/coverage_spawner.xml
+  rules:
+    - if: '$RUN_TESTS == null || $CI_PIPELINE_SOURCE != "push"'
+      when: never
+    - if: '$CI_COMMIT_REF_NAME != "master" && $CI_COMMIT_REF_NAME != "develop"'
+      when: manual
+      allow_failure: true
+    - when: on_success
+
 upload_cloudfront:
   tags:
     - linux

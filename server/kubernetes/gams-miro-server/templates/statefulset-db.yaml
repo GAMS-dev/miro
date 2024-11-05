@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sts-{{ .Release.Name }}-db
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-db
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-db
+    spec:
+      automountServiceAccountToken: false
+{{- include "common.images.renderPullSecrets" ( dict "images" (list .Values.db.image) "context" $) | indent 6}}
+      {{- if .Values.global.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.global.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.global.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.global.tolerations "context" $) | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: db
+        image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.db.image.registry "repository" .Values.db.image.repository "tag" (coalesce .Values.db.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
+        resources:
+{{ toYaml .Values.db.resources | indent 10 }}
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          value: {{ .Values.db.user }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-secrets
+              key: db_password
+        - name: POSTGRES_DB
+          value: {{ .Values.db.name }}
+        volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: db-data
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-db-pvc

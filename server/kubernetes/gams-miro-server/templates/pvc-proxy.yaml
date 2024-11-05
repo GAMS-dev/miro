@@ -1,0 +1,14 @@
+{{- if eq .Values.persistence.type "efs" }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-efs-pvc
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.persistence.efs.size }}
+  storageClassName: {{ .Values.persistence.efs.storageClass }}
+{{- end }}

@@ -1,0 +1,105 @@
+global:
+  # Global Docker image registry
+  imageRegistry: ''
+  # imagePullSecrets:
+  #   - registryKeySecretName
+  imagePullSecrets: []
+image:
+  # Global tag of the images. If not specified, AppVersion is used.
+  tag: ''
+
+proxy:
+  port: 8080
+  image:
+    registry: docker.io/gams
+    repository: miro-proxy
+    tag: ''
+  resources:
+    requests:
+      cpu: '100m'
+      memory: 250Mi
+    limits:
+      cpu: '1000m'
+      memory: 500Mi
+  config:
+    title: GAMS MIRO Server
+    language: en # en, de or cn
+    maxTotalInstances: -1 # -1 for unlimited
+    maxUploadSizeMB: 200
+    forceSignedApps: false
+    disableReadonlyMode: false
+    anonymousReadonlyMode: false
+    authentication: webservice # webservice or openid
+    openid:
+      authUrl: ''
+      tokenUrl: ''
+      jwksUrl: ''
+      logoutUrl: ''
+      clientId: ''
+      clientSecret: ''
+    engine:
+      apiUrl: ''
+      namespace: ''
+      anonymousUser: ''
+      anonymousPassword: ''
+
+miro:
+  image:
+    registry: docker.io/gams
+    repository: miro-ui
+    tag: ''
+
+admin:
+  image:
+    registry: docker.io/gams
+    repository: miro-admin
+    tag: ''
+
+auth:
+  image:
+    registry: docker.io/gams
+    repository: miro-auth
+    tag: ''
+  port: 1234
+  resources:
+    requests:
+      cpu: '100m'
+      memory: 250Mi
+    limits:
+      cpu: '400m'
+      memory: 500Mi
+
+db:
+  image:
+    registry: docker.io
+    repository: postgres:17-alpine
+    tag: 'latest'
+  user: 'GMSMASTER'
+  password: ''
+  name: 'gamsmiro'
+  volumeSize: 5Gi
+  resources:
+    requests:
+      cpu: '100m'
+      memory: 1024Mi
+    limits:
+      cpu: '400m'
+      memory: 3072Mi
+
+persistence:
+  type: 'local'
+  efs:
+    fileSystemId: 'fs-12345678' # The EFS File System ID
+    accessPoint: '' # Optional, for EFS Access Points
+    storageClass: 'efs-sc' # EFS storage class
+  local:
+    path: '/mnt/localstorage'
+
+securityContext:
+  enabled: true
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 2000
+
+service:
+  type: ClusterIP

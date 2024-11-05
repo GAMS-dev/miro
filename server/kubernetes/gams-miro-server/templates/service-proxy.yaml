@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-proxy
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ .Release.Name }}-proxy
+  ports:
+    - port: 8080
+      targetPort: {{ .Values.proxy.port }}

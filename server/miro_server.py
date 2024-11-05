@@ -204,6 +204,8 @@ class MiroServer(object):
 
         parser.add_argument('-f', '--force', help='Overwrite release if it exists',
                             action='store_true')
+        parser.add_argument('--k8s', help='Release k8s version (helm chart)',
+                            action='store_true')
 
         args = parser.parse_args(sys.argv[2:])
 
@@ -223,7 +225,10 @@ class MiroServer(object):
         if platform.system() == 'Windows':
             python_binary = 'python'
 
-        shutil.copytree('release_data', 'release')
+        if args.k8s:
+            shutil.copytree('kubernetes/gams-miro-server', 'release/gams-miro-server')
+        else:
+            shutil.copytree('release_data', 'release')
 
         shutil.copy('LICENSE', os.path.join('release', 'LICENSE'))
 

@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-auth
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-auth
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-auth
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: {{ .Values.securityContext.runAsUser }}
+        fsGroup: {{ .Values.securityContext.fsGroup }}
+{{- include "common.images.renderPullSecrets" ( dict "images" (list .Values.auth.image) "context" $) | indent 6}}
+      {{- if .Values.global.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.global.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.global.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.global.tolerations "context" $) | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: auth
+        image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.auth.image.registry "repository" .Values.auth.image.repository "tag" (coalesce .Values.auth.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
+        resources:
+{{ toYaml .Values.auth.resources | indent 10 }}
+        ports:
+        - containerPort: {{ .Values.auth.port }}
+        env:
+        - name: PORT
+          value: "{{ .Values.auth.port }}"
+        - name: ENGINE_URL
+          value: "{{ .Values.proxy.config.engine.url }}"
+        - name: ENGINE_NS
+          value: "{{ .Values.proxy.config.engine.ns }}"
+        - name: GMS_MIRO_DATABASE
+          value: "{{ .Values.db.name }}"
+        - name: GMS_MIRO_DATABASE_USER
+          value: "{{ .Values.db.user }}"
+        - name: GMS_MIRO_DATABASE_PWD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-secrets
+              key: db_password
+        volumeMounts:
+        - name: shared-data
+          mountPath: /home/miro/admin/mnt
+      volumes:
+      - name: shared-data
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-efs-pvc
+      - name: shared-models
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-efs-pvc

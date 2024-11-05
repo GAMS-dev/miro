@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-proxy-config
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  application.yml: |-
+    proxy:
+      title: {{ .Values.proxy.config.title }}
+      template-path: ./templates/2col
+      favicon-path: ./favicon.ico
+      model-dir: /home/miroproxy/mnt/model
+      data-dir: /home/miroproxy/mnt/data
+      miro-lang: {{ .Values.proxy.config.language }}
+      port: {{ .Values.proxy.port }}
+      heartbeat-rate: 10000
+      heartbeat-timeout: 120000
+      same-site-cookie: Lax
+      admin-groups: admins
+      container-backend: kubernetes
+      container-log-path: /logs/container-logs
+      max-upload-size: {{ .Values.proxy.config.maxUploadSizeMB }}
+      force-signed-apps: {{ .Values.proxy.config.forceSignedApps }}
+      disable-readonly-mode: {{ .Values.proxy.config.disableReadonlyMode }}
+      anonymous-readonly-mode: {{ .Values.proxy.config.anonymousReadonlyMode }}
+      authentication: {{ .Values.proxy.config.authentication }}
+      max-total-instances: {{ .Values.proxy.maxTotalInstances }}
+      openid:
+        auth-url: {{ .Values.proxy.config.openid.authUrl | quote }}
+        token-url: {{ .Values.proxy.config.openid.tokenUrl | quote }}
+        jwks-url: {{ .Values.proxy.config.openid.jwksUrl | quote }}
+        logout-url: {{ .Values.proxy.config.openid.logoutUrl | quote }}
+        client-id: {{ .Values.proxy.config.openid.clientId | quote }}
+        client-secret: {{ .Values.proxy.config.openid.clientSecret | quote }}
+      database:
+        host: {{ .Release.Name }}-db
+        port: 5432
+        name: {{ .Values.db.name | quote }}
+        username: {{ .Values.db.user | quote }}
+      engine:
+        host: {{ .Values.proxy.config.engine.apiUrl | quote }}
+        ns: {{ .Values.proxy.config.engine.namespace | quote }}
+        anonymous-user: {{ .Values.proxy.config.engine.anonymousUser | quote }}
+      docker:
+        container-network: ''
+        miro-image-name: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.miro.image.registry "repository" .Values.miro.image.repository "tag" (coalesce .Values.miro.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
+        admin-image-name: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.admin.image.registry "repository" .Values.admin.image.repository "tag" (coalesce .Values.admin.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
+      kubernetes:
+        internal-networking: true
+        {{- if .Values.global.imagePullSecrets }}
+        image-pull-secrets: |
+          {{- toYaml $.Values.global.imagePullSecrets | nindent 10 }}
+        {{- end }}
+        namespace: {{ .Release.Namespace | quote }}
+        global-pod-patches: |
+          - op: add
+            path: /spec/volumes
+            value:
+              {{- if eq .Values.persistence.type "local" }}
+                - name: shared-data
+                  hostPath:
+                    path: {{ .Values.persistence.local.path }}
+                    type: DirectoryOrCreate
+              {{- else if eq .Values.storage.type "efs" }}
+                - name: shared-data
+                  persistentVolumeClaim:
+                    claimName: {{ .Release.Name }}-efs-pvc
+              {{- end }}
+          - op: add
+            path: /spec/containers/0/volumeMounts
+            value:
+              - mountPath: /home/miro/mnt
+                name: shared-data
+                readOnly: true
+    logging:
+      file: /logs/miroproxy.log
+
+    spring:
+      application.name: {{ .Values.proxy.config.title }}
+
+    server:
+      frame-options: sameorigin
+      secure-cookies: false
+      forward-headers-strategy: native
+      servlet:
+        session.timeout: 21600
+        context-path: /

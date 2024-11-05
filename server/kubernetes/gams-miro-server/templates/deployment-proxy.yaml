@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-proxy
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-proxy
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-proxy
+    spec:
+      serviceAccountName: {{ .Release.Name }}-proxy-sa
+      securityContext:
+        runAsUser: {{ .Values.securityContext.runAsUser }}
+        fsGroup: {{ .Values.securityContext.fsGroup }}
+{{- include "common.images.renderPullSecrets" ( dict "images" (list .Values.proxy.image) "context" $) | indent 6}}
+      {{- if .Values.global.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.global.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.global.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.global.tolerations "context" $) | nindent 8 }}
+      {{- end }}
+      initContainers:
+      - name: init-create-directories
+        image: busybox:latest
+        command:
+          - sh
+          - "-c"
+          - |
+            mkdir -p /home/miroproxy/mnt/data
+            mkdir -p /home/miroproxy/mnt/models
+        volumeMounts:
+        - name: shared-data
+          mountPath: /home/miroproxy/mnt
+      containers:
+      - name: proxy
+        image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.proxy.image.registry "repository" .Values.proxy.image.repository "tag" (coalesce .Values.proxy.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
+        resources:
+{{ toYaml .Values.proxy.resources | indent 10 }}
+        ports:
+        - containerPort: {{ .Values.proxy.port }}
+        env:
+        - name: GMS_MIRO_DATABASE_PWD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-secrets
+              key: db_password
+        - name: GMS_MIRO_ENGINE_ANONYMOUS_PWD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-secrets
+              key: engine_anonymous_password
+        volumeMounts:
+        - name: shared-data
+          mountPath: /home/miroproxy/mnt
+      volumes:
+        {{- if eq .Values.persistence.type "local" }}
+        - name: shared-data
+          hostPath:
+            path: {{ .Values.persistence.local.path }}
+            type: DirectoryOrCreate
+        {{- else if eq .Values.storage.type "efs" }}
+        - name: shared-data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-efs-pvc
+        {{- end }}
