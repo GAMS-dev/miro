@@ -7,7 +7,7 @@ In this tutorial we will have a look at the many features MIRO offers to generat
 First you need to implement the model you want to make an application for, using either GAMS or GAMSPy, as mentioned above we will be using GAMSPy. For instructions on what code changes you need to make in GAMS, see the documentation [LINK](https://www.gams.com/miro/model.html#model-adjustments). 
 
 We will look at a "A Battery Energy Storage System (BESS) sizing problem".
-This model aims to optimize a city's hourly energy schedule by selecting the most cost-effective combination of energy sources, including the use of a BESS to store low-cost energy during off-peak hours and release it during high-demand periods. By evaluating the storage capacity and discharge rate of various BESS options, the model identifies the configuration that minimizes overall energy costs while reliably meeting demand. We recommend that you have a quick look at the mathematical description in the README.md first, so that we can use the variable names directly. 
+This model aims to optimize a city's hourly energy schedule by selecting the most cost-effective combination of energy sources, including the use of a BESS to store low-cost energy during off-peak hours and release it during high-demand periods. By evaluating the storage capacity and discharge rate of various BESS options, the model identifies the configuration that minimizes overall energy costs while reliably meeting demand. We recommend that you have a quick look at the mathematical description in the README.md first, since we will use the variable names directly. 
 
 **add the model code here so that people can follow along based on the model**
 
@@ -18,7 +18,7 @@ Let's start with the simpler inputs. As you can see, we have three scalar input 
 CODE SNIPPET
 
 
-For the generator specifications and the time schedule inputs we need to change a bit more. The model depends on two sets, one for the possible generators and one for the hours when the load demand should be met. Since these two sets are not fixed, but are to be part of the input, we first define the records with our default values. GAMS is domain driven, so for our multi-dimensional parameters we also need to specify all the necessary domains. This can be done either by using the Universal Set (https://gamspy.readthedocs.io/en/latest/user/basics/set.html#the-universal-set-as-set-identifier) or by directly specifying all necessary domains, which is generally the preferred method. For a MIRO application, however, the second option is the **only** possible way, since if we want to use this multidimensional parameter as a table in MIRO, it is necessary to already know which columns the table will have. Therefore we define additional sets for the corresponding headers. These header sets should also be used for any GAMS/GAMSPy model.
+For the generator specifications and the time schedule inputs we need to change a bit more. The model depends on two sets, one for the possible generators and one for the hours when the load demand should be met. Since these two sets are not fixed, but are to be part of the input, we first define the records with our default values. GAMS is domain driven, so for our multidimensional parameters we also need to specify all the necessary domains. This can be done either by using the Universal Set (https://gamspy.readthedocs.io/en/latest/user/basics/set.html#the-universal-set-as-set-identifier) or by directly specifying all necessary domains, which is generally the preferred method. For a MIRO application, however, the second option is the **only** possible way, since if we want to use this multidimensional parameter as a table in MIRO, it is necessary to already know which columns the table will have. Therefore we define additional sets for the corresponding headers. As mentioned above, these header sets are the recommended way to handle multidimensional parameters in any GAMS/GAMSPy model.
 
 Now for the additions to make these into MIRO inputs. First we need to set is_miro_input=True again. As we want them to be displayed as tables, we also set is_miro_table=True. Finally, the most important part, we need to set domain_forwarding=[True, False]. This means that we want the domain corresponding to our generator set to be forwarded so that the set elements are taken from the MIRO application. The headers are known and not part of the input, so we set the second element to False.
 
@@ -28,6 +28,8 @@ CODE SNIPPET
 We have two parameters dependent on a given hour, load_demand and cost_external_grid, so to have a single source of truth wrt. the hour set we combine them into one parameter. Now we just need to make the same changes as for the generator specifications. 
 
 In this example it is not necessary to do any further calculations based on the input values. But this could easily be done. An example of this can be seen in vrptw. Here we have longitude and latitude values as input, but our model needs the individual distances. So we simply define a new parameter that depends on our MIRO input. You can use any mathematical calculation allowed in Python for this!
+
+**maybe mention that this also goes in custom renderer**
 
 CODE SNIPPET
 
@@ -100,7 +102,7 @@ But we can do a lot more with the pivot tool. We might be interested to see whic
 Now we can go back and see that *gen0* is the cheapest generator, but it also has the smallest maximum power output, so it needs help to provide full load demand, and apparently, even though the fixed cost of *gen2* is almost double, the generator has to produce so much power that its cheaper unit cost outweighs this. So it checks out. We can also make sure that the minimum up and down times are met. Finally, we can check that each generator, if active, is always within its permitted limits. If we find that one of these constraints is not being met, we immediately know which constraint in the model code we need to take a second look at.
 
 
-Let us look at another example. Remember that in the model we combined all the power values with our given load demand into one parameter. By looking at this, we can see if the load demand is actually being met and which source contributed to it at each hour. If we were to use the Stacked Bar Chart again, we would not be able to easily compare the amount of load demand with the sum of the power sources. To do this, we change the type back to Stacked Bar Chart and then click the **plus icon to add a new view. Under the *Combo Chart* tab we can specify that we want the load demand to be displayed as a line chart and that it should not be included in the stack. You should end up with the following image:
+Let us look at another example. Remember that in the model we combined all the power values with our given load demand into one parameter. By looking at this, we can see if the load demand is actually being met and which source contributed to it at each hour. If we were to use the Stacked Bar Chart again, we would not be able to easily compare the amount of load demand with the sum of the power sources. To do this, we change the type again to Stacked Bar Chart and then click the **plus icon** to add a new view. Under the *Combo Chart* tab we can specify that we want the load demand to be displayed as a line chart and that it should not be included in the stack. You should end up with the following image:
 
 <div align="center"> <img src="rapit_prototyping/output_load_balance.png" alt="input section"/> </div>
 
@@ -110,7 +112,82 @@ Here we can immediately see that the load demand is always exactly met. The only
 You can do similar visualizations for the power from the battery and the external grid to check that their constraints are also being met. Hopefully you now have a better understanding of the powerful Pivot Tool and how to use it to check your implementation directly.
 
 ## Config Mode
-(No coding necessary)
+Now that we have a better understanding of our model and are fairly confident that it satisfies all given constraints and provides a reasonable solution, we can begin to configure our application.
+
+To do this, we will start our MIRO application in [config mode](https://www.gams.com/miro/customize.html).
+
+BASH SNIPPET
+
+You should land on this page:
+
+INSERT IMAGE
+
+The [config mode](https://www.gams.com/miro/customize.html) provides a lot of customization right out of the box, so we don't need to write any code directly for now. 
+
+### General Settings 
+
+Let's start with some general settings. We will give our application a title, add our own logo, add a README and enable loading the default scenario on startup. These are just a few of the possible options, if your company has a specific CSS style you could include it here as well. To see all possible options, see the [General settings](https://www.gams.com/miro/configuration_general.html) documentation.
+
+
+<div align="center"> <img src="config_mode/logo_read_me.png" alt="input section"/> </div>
+
+### Symbols
+
+Next, we will take a look at the [Symbols](https://www.gams.com/miro/configuration_symbols.html) section. Here we will first change our symbol aliases to make them sound more natural. Then, assuming that you are more likely to want to change the scalar values, we will change the order of the input. Finally, sometimes you need to define variables or parameters as output that you only need as additional data for some custom renderer (we will introduce custom renderers in the next section). If you have such output parameters, it makes sense to hide them so that they don't get their own tab on the output page.
+
+<div align="center"> <img src="config_mode/gen_input.png" alt="input section"/> </div>
+
+### Tables
+
+In the [Tables](https://www.gams.com/miro/configuration_tables.html) sections you can customize the general configuration of input and output tables. We could apply these customizations to our input table, but it's not necessary in this case.
+
+### Input Widgets
+
+We have several inputs and we will customize them in the [Input Widgets](https://www.gams.com/miro/widgets.html) section. Let's take a look at our scalar inputs first. For these we can choose between slider, drop down menu, checkbox or numeric input. We will now set our inputs to sliders. If you don't want to impose any restrictions on the value (minimum, maximum and increment), you should stay with the numeric input. Just decide which option is best based on the type of input.
+
+<div align="center"> <img src="config_mode/input.png" alt="input section"/> </div>
+
+For our multidimensional inputs we only have tables as an option directly in configuration mode. Here we can choose between three different types. We will stay with the default table for our two inputs. Since we don't have large datasets and, at least at the moment, don't plan to do a lot of editing here. If we know we are going to get huge datasets, it makes sense to switch to the *Big Data Table* since it is performance optimized. And if you know you will be doing a lot of editing in your table, you should choose the *Pivot Table*. For more details on table types, see the [documentation] (https://www.gams.com/miro/widgets.html#widget-table).
+
+If the three possible tables are not enough for your needs, you can add a custom widget, which we will do in the next section.
+
+### Graphs
+
+Now to the [Graphs](https://www.gams.com/miro/charts.html). This is where you can really play around with your visualization. For each multidimensional input or output symbol, you can define its default visualization. You can choose directly between the most common plot types or use the Pivot Table again, which we already used in the last section. You have probably already found some good views during rapid prototyping. Now you can define them as the default, so that everyone can start the application and see the chosen visualizations right away, and hopefully understand the results quickly.
+
+The best way to really get an overview here is to just pick different symbols and play around with them for a while. And of course, if you are looking for something specific, check out the [documentation](https://www.gams.com/miro/charts.html), here you will find an overview of all possible plot types and detailed descriptions for them. 
+
+Note that any changes you make will be added to \<model_name\>.json. In the documentation you will find the corresponding json script you would need to add, but don't worry, this is exactly what the config mode does when you save a graph!
+
+Finally, in the *Charting Type* you will also find the *Custom Renderer* option, which we will talk about in the next section.
+
+#### Dashboard
+
+You may have already noticed the Dashboard option in the Graphs section of the documentation. If you have now collected several views, perhaps even combined with a Key Performance Indicator (KPI), a dashboard might be a good idea.
+
+Adding a dashboard is not possible directly from the Config mode. However, you only need to look at the \<model_name\>.json. To add a dashboard, you can follow the explanation in the [documentation] (https://www.gams.com/miro/charts.html#dashboard). But we will also go over the main points here and show you the code snippets for our application.
+
+First, you need to decide which views should be associated with which KPIs, or if none, and with which nickname. 
+
+
+<div align="center"> <img src="config_mode/dashboard_total_cost.png" alt="input section"/> </div>
+
+
+
+### Scenario analysis
+Quite often you are not only interested in the optimal solution for a given input, but want to compare multiple scenarios.
+
+**add dashboard comparison here**
+
+
+### Database management
+
+Finally the config mode also allows you to backup, remove or restore a [database](https://www.gams.com/miro/configuration_database.html).
+
+
+
+Since all these configurations do not take much time, this could be your first draft for the management. Now they can get an idea of what the final product might look like, and you can go deeper and add any further customizations you need. How to do this is explained in the next section.
+
 
 Set Title, Logo, ReadMe
 make the views that seemed useful during rapid prototyping into the default
