@@ -21,8 +21,8 @@ RUN apk update && \
     apk upgrade --available && \
     apk --no-cache add openjdk17-jre
 
-RUN addgroup -g 1000 -S miro && \
-    adduser -u 1000 -S miro -G miro
+RUN addgroup -g 1001 -S miro && \
+    adduser -u 1001 -S miro -G miro
 
 WORKDIR /home/miroproxy/
 

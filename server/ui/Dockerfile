@@ -1,14 +1,14 @@
 ## largely based on rocker r-ubuntu image (GPL >= 2.0)
 
-FROM ubuntu:22.04 AS miro-base
+FROM ubuntu:24.04 AS miro-base
 
 ARG R_BASE_VERSION=4.2.0
 ## we need to set this environment variable so it can be used when extending the
 ## base image (e.g. r-base-dev=${R_BASE_VERSION}*)
 ENV R_BASE_VERSION=${R_BASE_VERSION}
 
-RUN groupadd -g 1000 miro && \
-    useradd -r -u 1000 -g miro miro
+RUN groupadd -g 1001 miro && \
+    useradd -r -u 1001 -g miro miro
 
 ENV APP /home/miro/app
 RUN mkdir -p $APP
