@@ -446,7 +446,7 @@ Finally, we end up with this dashboard:
 **make a gif**
 <div align="center"> <img src="config_mode/dashboard_total_cost.png" alt="input section" width="400"/> </div>
 
-
+It is also possible to add custom code to the model. However, since this requires a bit more effort and you need to know how to create a custom renderer in the first place, we will leave this for the next section.
 
 ### Scenario analysis
 Quite often you are not only interested in the optimal solution for a given input, but want to compare multiple scenarios.
@@ -464,13 +464,62 @@ Finally the config mode also allows you to backup, remove or restore a [database
 make a custom log directly in the GAMSPy code
 -> especially good for data validation
 
+**change it to directly print and not write in a new file**
+
 
 Since all these configurations do not take much time, this could be your first draft for the management. Now they can get an idea of what the final product might look like, and you can go deeper and add any further customizations you need. How to do this is explained in the next section.
 
 
-
-
 ## Fine Tuning with Custom Code
+
+As mentioned before, sometimes you want to customize your application even more. This is also supported by MIRO, but now we need to start using some R code. 
+
+### Custom renderer
+
+We will start with a very simple renderer that will show us how the storage level of the BESS is at each hour. So far we only know how much power is either charged or discharged at each hour. To get the storage level, we simply need to compute the cumulative sum of `battery_power`. In R this function is built in: `cumsum()`. 
+
+
+<details>
+  <summary>Click to see the code of the full renderer</summary>
+
+``` R
+mirorenderer_battery_powerOutput <- function(id, height = NULL, options = NULL, path = NULL) {
+    ns <- NS(id)
+    plotOutput(ns("cumsumPlot"))
+}
+
+renderMirorenderer_battery_power <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+    battery_power <- data$battery_power$level
+    storage_level <- -cumsum(battery_power)
+
+    max_storage <- data[["_scalarsve_out"]] %>%
+        filter(scalar == "battery_storage") %>%
+        pull(level)
+
+    output$cumsumPlot <- renderPlot({
+        barplot(storage_level,
+            col = "lightblue", ylab = "Energy Capacity in kWh",
+            names.arg = data$battery_power$j, las = 2, ylim = c(0, max_storage + 10),
+            main = "Storage level of the BESS"
+        )
+        grid()
+    })
+}
+```
+</details>
+
+Note that for simple renderers like this that just apply functions to the parameters, you could do the same calculation directly in Python. You would simply define a new parameter based on the same calculation as in the renderer and then have all the visualization options as before. We  just used it here to explain the general concept of a custom renderer. But you can choose whichever language you feel more comfortable in!
+
+Now that we have created our first small custom renderer, we can start working on some more complex renderers that use visualizations that are not supported in config mode, but are possible in R. 
+
+We are going to make a simply sankey diagram for our power flow. 
+
+
+### Custom Dashboard
+
+
+### Custom widget
+
 
 custom widget for time input, directly update the graph
 
@@ -478,6 +527,8 @@ small custom renderer for cumsum(battery_power) to get the storage at every time
 -> add this to the dashboard
 
 custom renderer -> sankey diagram
+
+If you need more inspiration on what you can do with the custom renderer, take a look at the [MIRO gallery](https://miro.gams.com/), e.g take a look at some applications with maps ([TSP](https://miro.gams.com/gallery/app_direct/tsp/) or [VRPTW](https://miro.gams.com/gallery/app_direct/vrptw/)).
 
 ## Further Possible Additions
 
