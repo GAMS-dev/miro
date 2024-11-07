@@ -1,3 +1,6 @@
+# Copyright GAMS Development Corp. All Rights Reserved.
+# SPDX-License-Identifier: GPL-3.0-only
+
 global:
   # Global Docker image registry
   imageRegistry: ''
@@ -9,7 +12,6 @@ image:
   tag: ''
 
 proxy:
-  port: 8080
   image:
     registry: docker.io/gams
     repository: miro-proxy
@@ -21,6 +23,10 @@ proxy:
     limits:
       cpu: '1000m'
       memory: 500Mi
+  service:
+    type: ClusterIP # ClusterIP or NodePort
+    # only relevant if type is NodePort. If not provided, a random port within the NodePort range is used.
+    nodePort: ''
   config:
     title: GAMS MIRO Server
     language: en # en, de or cn
@@ -43,6 +49,23 @@ proxy:
       anonymousUser: ''
       anonymousPassword: ''
 
+auth:
+  image:
+    registry: docker.io/gams
+    repository: miro-auth
+    tag: ''
+  resources:
+    requests:
+      cpu: '100m'
+      memory: 250Mi
+    limits:
+      cpu: '400m'
+      memory: 500Mi
+  service:
+    type: ClusterIP # ClusterIP or NodePort
+    # only relevant if type is NodePort. If not provided, a random port within the NodePort range is used.
+    nodePort: ''
+
 miro:
   image:
     registry: docker.io/gams
@@ -55,25 +78,11 @@ admin:
     repository: miro-admin
     tag: ''
 
-auth:
-  image:
-    registry: docker.io/gams
-    repository: miro-auth
-    tag: ''
-  port: 1234
-  resources:
-    requests:
-      cpu: '100m'
-      memory: 250Mi
-    limits:
-      cpu: '400m'
-      memory: 500Mi
-
 db:
   image:
     registry: docker.io
-    repository: postgres:17-alpine
-    tag: 'latest'
+    repository: postgres
+    tag: '17-alpine'
   user: 'GMSMASTER'
   password: ''
   name: 'gamsmiro'
@@ -98,8 +107,16 @@ persistence:
 securityContext:
   enabled: true
   runAsNonRoot: true
-  runAsUser: 1000
-  fsGroup: 2000
+  runAsUser: 1001
+  fsGroup: 1001
 
-service:
-  type: ClusterIP
+
+## @param commonLabels Labels to add to all deployed resources
+##
+commonLabels: {}
+
+ingress:
+  enabled: false
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hostname: example.com

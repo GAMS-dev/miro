@@ -1,7 +1,14 @@
+{{- /*
+Copyright GAMS Development Corp. All Rights Reserved.
+SPDX-License-Identifier: GPL-3.0-only
+*/}}
+
+{{- if eq .Values.persistence.type "efs" }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: {{ .Release.Name }}-efs-pv
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
 spec:
   capacity:
     storage: 5Gi
@@ -17,3 +24,4 @@ spec:
     volumeAttributes:
       accessPoint: "{{ .Values.persistence.accessPoint }}"   # EFS Access Point ID (optional)
     {{- end }}
+{{- end }}

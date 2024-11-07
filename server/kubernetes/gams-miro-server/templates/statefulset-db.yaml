@@ -1,8 +1,14 @@
+{{- /*
+Copyright GAMS Development Corp. All Rights Reserved.
+SPDX-License-Identifier: GPL-3.0-only
+*/}}
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: sts-{{ .Release.Name }}-db
   namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
 spec:
   replicas: 1
   selector:
@@ -14,7 +20,7 @@ spec:
         app: {{ .Release.Name }}-db
     spec:
       automountServiceAccountToken: false
-{{- include "common.images.renderPullSecrets" ( dict "images" (list .Values.db.image) "context" $) | indent 6}}
+{{- include "common.images.renderPullSecrets" ( dict "images" (list .Values.db.image) "context" $) | nindent 6}}
       {{- if .Values.global.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.global.nodeSelector "context" $) | nindent 8 }}
       {{- end }}
@@ -23,7 +29,7 @@ spec:
       {{- end }}
       containers:
       - name: db
-        image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.db.image.registry "repository" .Values.db.image.repository "tag" (coalesce .Values.db.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
+        image: "{{ .Values.db.image.registry }}/{{ .Values.db.image.repository }}:{{ .Values.db.image.tag }}"
         resources:
 {{ toYaml .Values.db.resources | indent 10 }}
         ports:

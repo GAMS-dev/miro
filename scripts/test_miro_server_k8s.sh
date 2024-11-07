@@ -45,21 +45,27 @@ pushd server > /dev/null
 
     for K8_VERSION in ${K8S_VERSIONS_TO_TEST//,/ }
       do
-          kind create cluster --image kindest/node:v$K8_VERSION --name $CI_PIPELINE_ID --wait 180s --config .ci/kind-config.yaml
+          rm -fr mnt
+          mkdir -m 0770 mnt
+          kind create cluster --image kindest/node:v$K8_VERSION --name $CI_PIPELINE_ID --wait 180s --config ../ci/kind-config.yaml
           sed -i -e "s/0.0.0.0/docker/g" $HOME/.kube/config
           kubectl create secret docker-registry gitlab --from-file=.dockerconfigjson=$HOME/.docker/config.json
-          pushd gams-miro-server > /dev/null
-            helm dep up
-          popd > /dev/null
           pushd miro_server > /dev/null
-            helm install engine gams-miro/ \
-                --set global.imagePullSecrets[0]=gitlab \
+            pushd gams-miro-server > /dev/null
+                helm dep up
+            popd > /dev/null
+            helm install miro-server gams-miro-server/ \
+                --set 'global.imagePullSecrets[0]=gitlab' \
                 --set global.imageRegistry=$CI_REGISTRY_IMAGE \
                 --set image.tag=unstable \
-                --set service.nodePort=30080 \
-                --set persistence.local.path=${PWD}/mnt \
+                --set proxy.service.type=NodePort \
+                --set proxy.service.nodePort=30080 \
+                --set auth.service.type=NodePort \
+                --set auth.service.nodePort=30081 \
+                --set db.password=mySuperStrongPassword \
+                --set persistence.local.path=/home/mnt \
                 --set proxy.config.engine.apiUrl=${ENGINE_URL} \
-                --set proxy.config.engine.namespace=${ENGINE_NS} \
+                --set proxy.config.engine.namespace=${ENGINE_NS}
           popd > /dev/null
           trap 'cleanup' ERR
           wait_for_url "http://docker:30080" 180

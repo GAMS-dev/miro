@@ -1,8 +1,14 @@
-apiVersion: apps/v1
+{{- /*
+Copyright GAMS Development Corp. All Rights Reserved.
+SPDX-License-Identifier: GPL-3.0-only
+*/}}
+
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-auth
   namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
 spec:
   selector:
     matchLabels:
@@ -16,27 +22,39 @@ spec:
       securityContext:
         runAsUser: {{ .Values.securityContext.runAsUser }}
         fsGroup: {{ .Values.securityContext.fsGroup }}
-{{- include "common.images.renderPullSecrets" ( dict "images" (list .Values.auth.image) "context" $) | indent 6}}
+{{- include "common.images.renderPullSecrets" ( dict "images" (list .Values.auth.image) "context" $) | nindent 6}}
       {{- if .Values.global.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.global.nodeSelector "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.global.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.global.tolerations "context" $) | nindent 8 }}
       {{- end }}
+      initContainers:
+      - name: init-create-directories
+        image: busybox:latest
+        command:
+          - sh
+          - "-c"
+          - |
+            mkdir -p /home/admin/mnt/data
+            mkdir -p /home/admin/mnt/models
+        volumeMounts:
+        - name: shared-data
+          mountPath: /home/admin/mnt
       containers:
       - name: auth
         image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.auth.image.registry "repository" .Values.auth.image.repository "tag" (coalesce .Values.auth.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
         resources:
 {{ toYaml .Values.auth.resources | indent 10 }}
         ports:
-        - containerPort: {{ .Values.auth.port }}
+        - containerPort: 8081
         env:
         - name: PORT
-          value: "{{ .Values.auth.port }}"
+          value: "8081"
         - name: ENGINE_URL
-          value: "{{ .Values.proxy.config.engine.url }}"
+          value: "{{ .Values.proxy.config.engine.apiUrl }}"
         - name: ENGINE_NS
-          value: "{{ .Values.proxy.config.engine.ns }}"
+          value: "{{ .Values.proxy.config.engine.namespace }}"
         - name: GMS_MIRO_DATABASE
           value: "{{ .Values.db.name }}"
         - name: GMS_MIRO_DATABASE_USER
@@ -50,9 +68,13 @@ spec:
         - name: shared-data
           mountPath: /home/miro/admin/mnt
       volumes:
-      - name: shared-data
-        persistentVolumeClaim:
-          claimName: {{ .Release.Name }}-efs-pvc
-      - name: shared-models
-        persistentVolumeClaim:
-          claimName: {{ .Release.Name }}-efs-pvc
+        {{- if eq .Values.persistence.type "local" }}
+        - name: shared-data
+          hostPath:
+            path: {{ .Values.persistence.local.path }}
+            type: DirectoryOrCreate
+        {{- else if eq .Values.persistence.type "efs" }}
+        - name: shared-data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-efs-pvc
+        {{- end }}

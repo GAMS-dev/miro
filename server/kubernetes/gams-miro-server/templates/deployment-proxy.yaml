@@ -1,8 +1,14 @@
-apiVersion: apps/v1
+{{- /*
+Copyright GAMS Development Corp. All Rights Reserved.
+SPDX-License-Identifier: GPL-3.0-only
+*/}}
+
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-proxy
   namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
 spec:
   selector:
     matchLabels:
@@ -16,7 +22,7 @@ spec:
       securityContext:
         runAsUser: {{ .Values.securityContext.runAsUser }}
         fsGroup: {{ .Values.securityContext.fsGroup }}
-{{- include "common.images.renderPullSecrets" ( dict "images" (list .Values.proxy.image) "context" $) | indent 6}}
+{{- include "common.images.renderPullSecrets" ( dict "images" (list .Values.proxy.image) "context" $) | nindent 6}}
       {{- if .Values.global.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.global.nodeSelector "context" $) | nindent 8 }}
       {{- end }}
@@ -41,7 +47,7 @@ spec:
         resources:
 {{ toYaml .Values.proxy.resources | indent 10 }}
         ports:
-        - containerPort: {{ .Values.proxy.port }}
+        - containerPort: 8080
         env:
         - name: GMS_MIRO_DATABASE_PWD
           valueFrom:
@@ -62,7 +68,7 @@ spec:
           hostPath:
             path: {{ .Values.persistence.local.path }}
             type: DirectoryOrCreate
-        {{- else if eq .Values.storage.type "efs" }}
+        {{- else if eq .Values.persistence.type "efs" }}
         - name: shared-data
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-efs-pvc

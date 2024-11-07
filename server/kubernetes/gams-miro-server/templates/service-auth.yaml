@@ -1,12 +1,23 @@
+{{- /*
+Copyright GAMS Development Corp. All Rights Reserved.
+SPDX-License-Identifier: GPL-3.0-only
+*/}}
+
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Release.Name }}-auth
   namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.auth.service.type }}
   selector:
     app: {{ .Release.Name }}-auth
   ports:
     - port: 8081
-      targetPort: {{ .Values.auth.port }}
+      targetPort: 8081
+      {{- if (and (or (eq .Values.auth.service.type "NodePort") (eq .Values.auth.service.type "LoadBalancer")) (not (empty .Values.auth.service.nodePort))) }}
+      nodePort: {{ .Values.auth.service.nodePort }}
+      {{- else if eq .Values.auth.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}

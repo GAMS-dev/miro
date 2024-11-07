@@ -1,5 +1,22 @@
+# Copyright GAMS Development Corp. All Rights Reserved.
+# SPDX-License-Identifier: GPL-3.0-only
+
 apiVersion: v2
 name: gams-miro-server
 description: A Helm chart for GAMS MIRO Server
 version: 0.1.0
+version: 23.1.26
 appVersion: "2.11.0"
+annotations:
+  licenses: GPL-3.0-only
+maintainers:
+- name: GAMS Development Corp.
+  url: https://gams.com
+sources:
+- https://github.com/GAMS-dev/miro/tree/master/server/kubernetes/gams-miro-server
+dependencies:
+- name: common
+  repository: oci://registry-1.docker.io/bitnamicharts
+  tags:
+  - bitnami-common
+  version: 2.x.x

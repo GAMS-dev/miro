@@ -1,18 +1,24 @@
+{{- /*
+Copyright GAMS Development Corp. All Rights Reserved.
+SPDX-License-Identifier: GPL-3.0-only
+*/}}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-proxy-config
   namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
 data:
   application.yml: |-
     proxy:
-      title: {{ .Values.proxy.config.title }}
+      title: {{ .Values.proxy.config.title | quote }}
       template-path: ./templates/2col
       favicon-path: ./favicon.ico
       model-dir: /home/miroproxy/mnt/model
       data-dir: /home/miroproxy/mnt/data
       miro-lang: {{ .Values.proxy.config.language }}
-      port: {{ .Values.proxy.port }}
+      port: port: 8080
       heartbeat-rate: 10000
       heartbeat-timeout: 120000
       same-site-cookie: Lax
@@ -24,7 +30,7 @@ data:
       disable-readonly-mode: {{ .Values.proxy.config.disableReadonlyMode }}
       anonymous-readonly-mode: {{ .Values.proxy.config.anonymousReadonlyMode }}
       authentication: {{ .Values.proxy.config.authentication }}
-      max-total-instances: {{ .Values.proxy.maxTotalInstances }}
+      max-total-instances: {{ .Values.proxy.config.maxTotalInstances }}
       openid:
         auth-url: {{ .Values.proxy.config.openid.authUrl | quote }}
         token-url: {{ .Values.proxy.config.openid.tokenUrl | quote }}
@@ -42,13 +48,13 @@ data:
         ns: {{ .Values.proxy.config.engine.namespace | quote }}
         anonymous-user: {{ .Values.proxy.config.engine.anonymousUser | quote }}
       docker:
-        container-network: ''
+        container-network: ""
         miro-image-name: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.miro.image.registry "repository" .Values.miro.image.repository "tag" (coalesce .Values.miro.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
         admin-image-name: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.admin.image.registry "repository" .Values.admin.image.repository "tag" (coalesce .Values.admin.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
       kubernetes:
         internal-networking: true
         {{- if .Values.global.imagePullSecrets }}
-        image-pull-secrets: |
+        image-pull-secrets:
           {{- toYaml $.Values.global.imagePullSecrets | nindent 10 }}
         {{- end }}
         namespace: {{ .Release.Namespace | quote }}
@@ -59,9 +65,9 @@ data:
               {{- if eq .Values.persistence.type "local" }}
                 - name: shared-data
                   hostPath:
-                    path: {{ .Values.persistence.local.path }}
+                    path: {{ .Values.persistence.local.path | quote }}
                     type: DirectoryOrCreate
-              {{- else if eq .Values.storage.type "efs" }}
+              {{- else if eq .Values.persistence.type "efs" }}
                 - name: shared-data
                   persistentVolumeClaim:
                     claimName: {{ .Release.Name }}-efs-pvc
@@ -76,7 +82,7 @@ data:
       file: /logs/miroproxy.log
 
     spring:
-      application.name: {{ .Values.proxy.config.title }}
+      application.name: {{ .Values.proxy.config.title | quote }}
 
     server:
       frame-options: sameorigin
