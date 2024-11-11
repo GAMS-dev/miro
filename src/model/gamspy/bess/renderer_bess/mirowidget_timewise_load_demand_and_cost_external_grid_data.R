@@ -49,7 +49,7 @@ renderMirowidget_timewise_load_demand_and_cost_external_grid_data <- function(in
       return()
     }
 
-    # else update the corresponding value in the reactiveValue 
+    # else, update the corresponding value in the reactiveValue 
     isolate({
       rv$timewise_input_data[row, clmn] <- input$table_cell_edit$value
     })

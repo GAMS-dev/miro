@@ -1,4 +1,4 @@
-mirorenderer__scalarsve_outOutput  <- function(id, height = NULL, options = NULL, path = NULL, ...) {
+mirorenderer__scalarsve_outOutput <- function(id, height = NULL, options = NULL, path = NULL, ...) {
   ns <- NS(id)
 
   tagList(
@@ -26,7 +26,7 @@ mirorenderer__scalarsve_outOutput  <- function(id, height = NULL, options = NULL
   )
 }
 
-renderMirorenderer__scalarsve_out  <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+renderMirorenderer__scalarsve_out <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
   ns <- session$ns
 
   dataViewsConfig <- options$dataViewsConfig
@@ -300,20 +300,20 @@ renderMirorenderer__scalarsve_out  <- function(input, output, session, data, opt
   # Boxes for  KPIs (custom infobox)
   infoBoxCustom <-
     function(id = NULL,
-              value = NULL,
-              prefix = "+",
-              postfix = "%",
-              noColor = FALSE,
-              invert = FALSE,
-              title = "",
-              subtitle = NULL,
-              icon = shiny::icon("bar-chart"),
-              color = "aqua",
-              width = 12,
-              href = NULL,
-              fill = FALSE,
-              customColor = NULL,
-              noView = FALSE) {
+             value = NULL,
+             prefix = "+",
+             postfix = "%",
+             noColor = FALSE,
+             invert = FALSE,
+             title = "",
+             subtitle = NULL,
+             icon = shiny::icon("bar-chart"),
+             color = "aqua",
+             width = 12,
+             href = NULL,
+             fill = FALSE,
+             customColor = NULL,
+             noView = FALSE) {
       shinydashboard:::validateColor(color)
       shinydashboard:::tagAssert(icon, type = "i")
 
@@ -502,8 +502,8 @@ renderMirorenderer__scalarsve_out  <- function(input, output, session, data, opt
     sections <- lapply(names(options$dataViews), function(viewList) {
       view <- options$dataViews[[viewList]]
       if (is.null(names(view))) {
-            view <- unlist(view, recursive = FALSE)
-          }
+        view <- unlist(view, recursive = FALSE)
+      }
       idList <- as.list(names(view))
       titleList <- view
 
@@ -1001,16 +1001,20 @@ renderMirorenderer__scalarsve_out  <- function(input, output, session, data, opt
     storage_level <- -cumsum(battery_power)
 
     max_storage <- data[["_scalarsve_out"]] %>%
-        filter(scalar == "battery_storage") %>%
-        pull(level)
+      filter(scalar == "battery_storage") %>%
+      pull(level)
 
     # corresponding to the dataView "BatteryStorage"
     output[["BatteryStorage"]] <- renderUI({
       tagList(
-        renderPlot({barplot(storage_level, col="lightblue", ylab="Energy Capacity in kWh", 
-                      names.arg=data$battery_power$j, las = 2, ylim=c(0,max_storage+10),
-                      main = "Storage level of the BESS")
-                    grid()})
+        renderPlot({
+          barplot(storage_level,
+            col = "lightblue", ylab = "Energy Capacity in kWh",
+            names.arg = data$battery_power$j, las = 2, ylim = c(0, max_storage + 10),
+            main = "Storage level of the BESS"
+          )
+          grid()
+        })
       )
     })
   })
