@@ -10,13 +10,15 @@ mirorenderer_report_outputOutput <- function(id, height = NULL, options = NULL, 
         pauseButton = actionButton("pause", "Pause", icon = icon("pause"), width = "100px", style = "margin-top: 10px; color: #fff; background-color: #337ab7; border-color: #2e6da4")
       )
     ),
-    # since plotly is a added package need to specify it directly
+    # since plotly is a custom package, it is not attached by MIRO to avoid name collisions
+    # Thus, we have to prefix functions exported by plotly via the "double colon operator":
+    # plotly::renderPlotly
     plotly::plotlyOutput(ns("sankey"), height = "100%")
   )
 }
 
 renderMirorenderer_report_output <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
-  # since renderPlotly (or any render) is also an observer we are already in an reactive context
+  # since renderPlotly (or any other render function) is also an observer we are already in an reactive context
   output$sankey <- plotly::renderPlotly({
     hour_to_display <- sprintf("hour%02d", input$hour)
 
