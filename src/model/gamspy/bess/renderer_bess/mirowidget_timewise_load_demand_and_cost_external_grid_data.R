@@ -43,7 +43,7 @@ renderMirowidget_timewise_load_demand_and_cost_external_grid_data <- function(in
     # need to add one since the first column is the index
     clmn <- input$table_cell_edit$col + 1
 
-    # if the new value would be empty restore the value from before
+    # if the new value is empty, restore the value from before
     if (input$table_cell_edit$value == "") {
       resetTable()
       return()
@@ -71,7 +71,7 @@ renderMirowidget_timewise_load_demand_and_cost_external_grid_data <- function(in
     # set the margin for the graph
     par(mar = c(5, 4, 4, 5))
 
-    # first plot the load demand
+    # first, plot the load demand
     plot(y1,
       type = "l", col = "green",
       ylab = "Load demand in W", lwd = 3, xlab = "", xaxt = "n", las = 2
