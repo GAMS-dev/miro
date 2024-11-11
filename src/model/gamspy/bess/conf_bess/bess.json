@@ -40,7 +40,7 @@
                     ],
                     "total_cost": [
                         {
-                            "Balance": "Load demand fulfilment over time"
+                            "Balance": "Load demand fulfillment over time"
                         }
                     ]
                 },
@@ -136,7 +136,7 @@
                             "showYGrid": true,
                             "singleStack": false,
                             "yLogScale": false,
-                            "yTitle": "poer"
+                            "yTitle": "power"
                         },
                         "cols": {
                             "i": null
@@ -189,7 +189,7 @@
                         "battery_power",
                         "external_grid_power",
                         "battery_delivery_rate",
-                        "battery_stoarge"
+                        "battery_storage"
                     ],
                     "noColor": [
                         true,
@@ -237,7 +237,7 @@
                         "total_cost_battery",
                         "total_cost_extern",
                         "display_battery_delivery_rate",
-                        "display_battery_stoarge"
+                        "display_battery_storage"
                     ]
                 },
                 "valueBoxesTitle": ""
@@ -298,7 +298,7 @@
         "total_cost_extern",
         "total_cost",
         "display_battery_delivery_rate",
-        "display_battery_stoarge"
+        "display_battery_storage"
     ],
     "hiddenOutputSymbols": [
         "gen_power",
@@ -392,7 +392,7 @@
         "display_battery_delivery_rate": {
             "newAlias": "Display the battery delivery rate in the dashboard"
         },
-        "display_battery_stoarge": {
+        "display_battery_storage": {
             "newAlias": "Display the battery storage in the dashboard"
         },
         "external_grid_power": {

@@ -8,7 +8,7 @@ battery_power <- data$battery_power$level
 storage_level <- -cumsum(battery_power)
 
 max_storage <- data[["_scalarsve_out"]] %>%
-    filter(scalar == "battery_stoarge") %>%
+    filter(scalar == "battery_storage") %>%
     pull(level)
 
 output$cumsumPlot <- renderPlot({

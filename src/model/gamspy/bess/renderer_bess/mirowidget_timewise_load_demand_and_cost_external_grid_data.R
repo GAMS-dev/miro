@@ -14,8 +14,8 @@ mirowidget_timewise_load_demand_and_cost_external_grid_dataOutput <- function(id
 
 renderMirowidget_timewise_load_demand_and_cost_external_grid_data <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
   # The whole code is run at the beginning, even though no actions are performed yet.
-  # init is used to only perfom action in observe() after this initial run.
-  # Therfore, it is set to TRUE in the last occuring observe()
+  # init is used to only perform action in observe() after this initial run.
+  # Therefore, it is set to TRUE in the last occurring observe()
   init <- FALSE
   rv <- reactiveValues(
     timewise_input_data = NULL
@@ -49,7 +49,7 @@ renderMirowidget_timewise_load_demand_and_cost_external_grid_data <- function(in
       return()
     }
 
-    # else update the corresponding value in the reaciveValue 
+    # else update the corresponding value in the reactiveValue 
     isolate({
       rv$timewise_input_data[row, clmn] <- input$table_cell_edit$value
     })

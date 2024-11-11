@@ -1001,7 +1001,7 @@ renderMirorenderer__scalarsve_out  <- function(input, output, session, data, opt
     storage_level <- -cumsum(battery_power)
 
     max_storage <- data[["_scalarsve_out"]] %>%
-        filter(scalar == "battery_stoarge") %>%
+        filter(scalar == "battery_storage") %>%
         pull(level)
 
     # corresponding to the dataView "BatteryStorage"

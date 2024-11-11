@@ -203,8 +203,8 @@ def main():
         description="maximal power that can be imported from the external grid every hour",
     )
 
-    no_negativ_load = load_demand.records[load_demand.records["value"] < 0]
-    no_negativ_cost = cost_external_grid.records[
+    no_negative_load = load_demand.records[load_demand.records["value"] < 0]
+    no_negative_cost = cost_external_grid.records[
         cost_external_grid.records["value"] < 0
     ]
 
@@ -217,23 +217,23 @@ def main():
             ]
         )
         errors = False
-        if not no_negativ_load.empty:
+        if not no_negative_load.empty:
             f.writelines(
                 [
                     "timewise_load_demand_and_cost_external_grid_data:: No negative load demand allowed!\n"
                 ]
             )
-            for _, row in no_negativ_load.iterrows():
+            for _, row in no_negative_load.iterrows():
                 f.writelines([f'{row["j"]} has negative load demand.\n'])
             errors = True
 
-        if not no_negativ_cost.empty:
+        if not no_negative_cost.empty:
             f.writelines(
                 [
                     "timewise_load_demand_and_cost_external_grid_data:: No negative cost allowed!\n"
                 ]
             )
-            for _, row in no_negativ_cost.iterrows():
+            for _, row in no_negative_cost.iterrows():
                 f.writelines([f'{row["j"]} has negative external grid cost.\n'])
             errors = True
 
@@ -241,7 +241,7 @@ def main():
             raise Exception("Data errors detected")
         f.writelines(["Data ok\n"])
 
-    # Varaible
+    # Variable
     # Generator
     gen_power = Variable(
         m,
@@ -276,9 +276,9 @@ def main():
         is_miro_output=True,
     )
 
-    battery_stoarge = Variable(
+    battery_storage = Variable(
         m,
-        name="battery_stoarge",
+        name="battery_storage",
         description="energy (storage) rate of the battery energy system",
         is_miro_output=True,
     )
@@ -305,14 +305,14 @@ def main():
         m,
         name="gen_above_min_power",
         domain=[i, j],
-        description="generators power should be above the minimal ouput",
+        description="generators power should be above the minimal output",
     )
 
     gen_below_max_power = Equation(
         m,
         name="gen_below_max_power",
         domain=[i, j],
-        description="generators power should be below the maximal ouput",
+        description="generators power should be below the maximal output",
     )
 
     gen_above_min_down_time = Equation(
@@ -347,7 +347,7 @@ def main():
         m,
         name="battery_above_min_storage",
         domain=[t],
-        description="battery storage above negative enegry rate (since negative power charges the battery)",
+        description="battery storage above negative energy rate (since negative power charges the battery)",
     )
 
     battery_below_max_storage = Equation(
@@ -361,7 +361,7 @@ def main():
         m,
         name="external_power_upper_limit",
         domain=[j],
-        description=" imput from the external grid is limited",
+        description=" input from the external grid is limited",
     )
 
     fulfill_load[j] = (
@@ -377,8 +377,8 @@ def main():
         gen_power[i, j] <= gen_max_power_output[i] * gen_active[i, j]
     )
 
-    # if j=0 -> j.lag(1) = 0 which dosen't brack the equation,
-    # since generator is of at start, resulting in negative right side, therfore the sum is always above
+    # if j=0 -> j.lag(1) = 0 which doesn't brake the equation,
+    # since generator is of at start, resulting in negative right side, therefore the sum is always above
     gen_above_min_down_time[i, j] = Sum(
         t.where[(Ord(t) >= Ord(j)) & (Ord(t) <= (Ord(j) + gen_min_down_time[i] - 1))],
         1 - gen_active[i, t],
@@ -395,7 +395,7 @@ def main():
 
     battery_below_max_delivery[j] = battery_power[j] <= battery_delivery_rate
 
-    battery_above_min_storage[t] = -battery_stoarge <= Sum(
+    battery_above_min_storage[t] = -battery_storage <= Sum(
         j.where[Ord(j) <= Ord(t)], battery_power[j]
     )
 
@@ -410,7 +410,7 @@ def main():
             + cost_external_grid[j] * external_grid_power[j],
         )
         + cost_bat_power * battery_delivery_rate
-        + cost_bat_energy * battery_stoarge
+        + cost_bat_energy * battery_storage
     )
 
     # Solve
@@ -429,7 +429,7 @@ def main():
         options=Options(equation_listing_limit=1, relative_optimality_gap=0),
     )
 
-    # Extract the ouput data
+    # Extract the output data
 
     # Power output
     power_output_header = Set(
@@ -471,7 +471,7 @@ def main():
     )
 
     total_cost_battery[...] = (
-        cost_bat_power * battery_delivery_rate.l + cost_bat_energy * battery_stoarge.l
+        cost_bat_power * battery_delivery_rate.l + cost_bat_energy * battery_storage.l
     )
 
     total_cost_extern = Parameter(
@@ -505,14 +505,14 @@ def main():
 
     display_battery_delivery_rate[...] = battery_delivery_rate.l
 
-    display_battery_stoarge = Parameter(
+    display_battery_storage = Parameter(
         m,
-        name="display_battery_stoarge",
+        name="display_battery_storage",
         is_miro_output=True,
         description="Display the battery storage in the dashboard",
     )
 
-    display_battery_stoarge[...] = battery_stoarge.l
+    display_battery_storage[...] = battery_storage.l
 
 
 if __name__ == "__main__":

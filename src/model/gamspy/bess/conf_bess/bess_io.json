@@ -207,7 +207,7 @@
                 "total_cost_extern",
                 "total_cost",
                 "display_battery_delivery_rate",
-                "display_battery_stoarge"
+                "display_battery_storage"
             ],
             "symtext": [
                 "Total cost of the generators",
@@ -244,7 +244,7 @@
             "alias": "Output Variable/Equation Scalars",
             "symnames": [
                 "battery_delivery_rate",
-                "battery_stoarge"
+                "battery_storage"
             ],
             "symtext": [
                 "power (delivery) rate of the battery energy system",

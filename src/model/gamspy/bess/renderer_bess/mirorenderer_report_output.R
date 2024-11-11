@@ -18,45 +18,45 @@ mirorenderer_report_outputOutput <- function(id, height = NULL, options = NULL, 
 renderMirorenderer_report_output <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
   # since renderPlotly (or any render) is also an observer we are already in an reactive context
   output$sankey <- plotly::renderPlotly({
-    hour_to_dislay <- sprintf("hour%02d", input$hour)
+    hour_to_display <- sprintf("hour%02d", input$hour)
 
     # start with empty lists for the sankey links
     sankey_source <- list()
     sankey_target <- list()
     sankey_value <- list()
 
-    # since the GAMS output is melted, first need to extract the differen power sources
-    battery_to_dislay <- filter(data, power_output_header == "battery") %>%
-      filter(j == hour_to_dislay)
-    gen_to_dislay <- filter(data, power_output_header == "generators") %>%
-      filter(j == hour_to_dislay)
-    extern_to_dislay <- filter(data, power_output_header == "external_grid") %>%
-      filter(j == hour_to_dislay)
+    # since the GAMS output is melted, first need to extract the different power sources
+    battery_to_display <- filter(data, power_output_header == "battery") %>%
+      filter(j == hour_to_display)
+    gen_to_display <- filter(data, power_output_header == "generators") %>%
+      filter(j == hour_to_display)
+    extern_to_display <- filter(data, power_output_header == "external_grid") %>%
+      filter(j == hour_to_display)
 
     # go over each source and check if they exist and if so add the corresponding link
-    if (dim(battery_to_dislay)[1] != 0) {
+    if (dim(battery_to_display)[1] != 0) {
       # for the battery need to check if is charged, or discharged
-      if (battery_to_dislay[["value"]] > 0) {
+      if (battery_to_display[["value"]] > 0) {
         sankey_source <- c(sankey_source, 0)
         sankey_target <- c(sankey_target, 3)
-        sankey_value <- c(sankey_value, battery_to_dislay[["value"]])
+        sankey_value <- c(sankey_value, battery_to_display[["value"]])
       } else {
         sankey_source <- c(sankey_source, 3)
         sankey_target <- c(sankey_target, 0)
-        sankey_value <- c(sankey_value, -battery_to_dislay[["value"]])
+        sankey_value <- c(sankey_value, -battery_to_display[["value"]])
       }
     }
 
-    if (dim(gen_to_dislay)[1] != 0) {
+    if (dim(gen_to_display)[1] != 0) {
       sankey_source <- c(sankey_source, 1)
       sankey_target <- c(sankey_target, 3)
-      sankey_value <- c(sankey_value, gen_to_dislay[["value"]])
+      sankey_value <- c(sankey_value, gen_to_display[["value"]])
     }
 
-    if (dim(extern_to_dislay)[1] != 0) {
+    if (dim(extern_to_display)[1] != 0) {
       sankey_source <- c(sankey_source, 2)
       sankey_target <- c(sankey_target, 3)
-      sankey_value <- c(sankey_value, extern_to_dislay[["value"]])
+      sankey_value <- c(sankey_value, extern_to_display[["value"]])
     }
 
     # finally generate the sankey diagram using plotly
