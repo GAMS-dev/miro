@@ -14,6 +14,7 @@ Sys.sleep(1)
 
 # switch data view
 expect_true(app$get_js(paste0("$('#tab_1_2-", rendererName, "-dowVSindexChart').is(':visible')")))
+expect_true(app$get_js(paste0("$('#tab_1_2-", rendererName, "-abserrorTable').is(':visible')")))
 expect_true(app$get_js(paste0("$('#tab_1_2-", rendererName, "-stockWeightChart').is(':hidden');")))
 app$click(selector = paste0("div[id='tab_1_2-", rendererName, "-error_train']"))
 Sys.sleep(1)
