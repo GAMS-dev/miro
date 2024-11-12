@@ -968,6 +968,11 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               }
             }
 
+            lineDash <- NULL
+            if (length(currentView$chartOptions$lineDash) && length(currentView$chartOptions$lineDash[[label]])) {
+              lineDash <- currentView$chartOptions$lineDash[[label]]
+            }
+
             if (originalLabel %in% currentView$chartOptions$multiChartSeries) {
               if (chartType %in% c("line", "area", "stackedarea", "timeseries")) {
                 multiChartRenderer <- if (length(multiChartRenderer)) multiChartRenderer else "bar"
@@ -981,14 +986,16 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 order <- 2
               }
 
-              chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
+              args <- list(
+                chartJsObj,
+                dataTmp[[rowHeaderLen + i]],
                 label = label,
                 type = multiChartRenderer,
                 showLine = multiChartRenderer %in% c("line", "area", "stackedarea", "timeseries"),
                 order = order,
                 scaleID = scaleID,
-                pointHitRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 1L else 0,
-                pointRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 3L else 0,
+                pointHitRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 1L else 0L,
+                pointRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 3L else 0L,
                 stack = if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "regularStack")) {
                   "stack1"
                 } else if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "individualStack")) {
@@ -998,23 +1005,24 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 },
                 stepped = identical(currentView$chartOptions$multiChartOptions$multiChartStepPlot, TRUE)
               )
-            } else {
-              if (identical(chartType, "stackedarea")) {
-                fillOpacity <- if (length(currentView$chartOptions$fillOpacity)) {
-                  currentView$chartOptions$fillOpacity
-                } else {
-                  1
-                }
-              } else if (identical(chartType, "area")) {
-                fillOpacity <- if (length(currentView$chartOptions$fillOpacity)) {
-                  currentView$chartOptions$fillOpacity
-                } else {
-                  0.15
-                }
-              } else {
-                fillOpacity <- 0.15
+
+              if (!is.null(lineDash)) {
+                args$borderDash <- lineDash
               }
-              chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
+
+              chartJsObj <- do.call(cjsSeries, args)
+            } else {
+              fillOpacity <- if (identical(chartType, "stackedarea")) {
+                if (length(currentView$chartOptions$fillOpacity)) currentView$chartOptions$fillOpacity else 1
+              } else if (identical(chartType, "area")) {
+                if (length(currentView$chartOptions$fillOpacity)) currentView$chartOptions$fillOpacity else 0.15
+              } else {
+                0.15
+              }
+
+              args <- list(
+                chartJsObj,
+                dataTmp[[rowHeaderLen + i]],
                 label = label,
                 fill = chartType %in% c("area", "stackedarea"),
                 fillOpacity = fillOpacity,
@@ -1023,6 +1031,12 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 stack = if (chartType %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "stack1" else NULL,
                 stepped = identical(currentView$chartOptions$stepPlot, TRUE)
               )
+
+              if (!is.null(lineDash)) {
+                args$borderDash <- lineDash
+              }
+
+              chartJsObj <- do.call(cjsSeries, args)
             }
           }
 
