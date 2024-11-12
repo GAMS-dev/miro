@@ -686,6 +686,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       hiddenEmptyCols <- NULL
 
       hideEmptyCols <- reactiveVal(identical(options$hideEmptyCols, TRUE))
+      singleDropdown <- reactiveVal(character(0))
       tableSummarySettings <- reactiveVal(list(
         rowEnabled = FALSE, rowSummaryFunction = "sum",
         colEnabled = FALSE, colSummaryFunction = "sum"
@@ -851,6 +852,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         if (isTRUE(options$enableHideEmptyCols)) {
           isolate(hideEmptyCols(identical(viewOptions[["hideEmptyCols"]], TRUE)))
+        }
+        if (length(viewOptions[["singleDropdown"]])) {
+          isolate(singleDropdown(viewOptions[["singleDropdown"]]))
+        } else {
+          isolate(singleDropdown(character(0)))
         }
         if (length(viewOptions[["tableSummarySettings"]])) {
           bothEnabled <- identical(viewOptions[["tableSummarySettings"]][["enabled"]], TRUE)
@@ -1505,6 +1511,20 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 tags$div(
                   class = "row",
                   tags$div(
+                    class = "col-sm-12",
+                    `data-ns-prefix` = ns(""),
+                    selectInput(ns("singleDropdown"),
+                      label = lang$renderers$miroPivot$singleDropdown,
+                      choices = setIndices,
+                      selected = singleDropdown(),
+                      multiple = TRUE,
+                      width = "100%"
+                    )
+                  )
+                ),
+                tags$div(
+                  class = "row",
+                  tags$div(
                     class = "col-sm-6",
                     checkboxInput_MIRO(ns("showTableSummaryCol"),
                       label = lang$renderers$miroPivot$cbShowTableSummaryCol,
@@ -1563,6 +1583,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         addNewView <- function(viewName, overwrite = FALSE) {
           isolate({
+            refreshRequired <- FALSE
             newViewConfig <- list(
               aggregationFunction = input$aggregationFunction,
               pivotRenderer = input$pivotRenderer,
@@ -1571,6 +1592,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             if (isTRUE(options$enableHideEmptyCols)) {
               newViewConfig$hideEmptyCols <- hideEmptyCols()
             }
+            newViewConfig$singleDropdown <- singleDropdown()
             newViewConfig$tableSummarySettings <- tableSummarySettings()
             for (indexEl in list(c("rows", "rowIndexList"))) {
               indexVal <- input[[indexEl[[2]]]]
@@ -1592,7 +1614,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 newViewConfig[[indexEl[[1]]]] <- filterElList
               }
             }
-            refreshRequired <- FALSE
             if (length(isolate(input$pivotRenderer)) &&
               isolate(input$pivotRenderer) %in% c(
                 "line", "scatter", "area", "stackedarea",
@@ -1769,8 +1790,22 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               input$colSummaryFunction %in% aggregationFunctions) {
               newTableSummarySettings[["colSummaryFunction"]] <- input$colSummaryFunction
             }
+            if (length(input$singleDropdown) > 0 &&
+              all(input$singleDropdown %in% setIndices)) {
+              newSingleDropdown <- input$singleDropdown
+            } else {
+              newSingleDropdown <- character(0)
+            }
+            if (!identical(singleDropdown(), newSingleDropdown)) {
+              refreshRequired <- TRUE
+            }
             tableSummarySettings(newTableSummarySettings)
             hideEmptyCols(identical(input$hideEmptyCols, TRUE))
+            singleDropdown(newSingleDropdown)
+            if (refreshRequired) {
+              newVal <- updateFilter() + 1L
+              updateFilter(newVal)
+            }
             removeModal(session)
           })
         })
@@ -1969,13 +2004,20 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           } else {
             choices <- as.character(filterElements[[filterIndex]])
           }
-          ddHash <- digest::digest(list(filterIndex, choices), algo = "sha1")
+          ddHash <- digest::digest(
+            list(
+              filterIndex,
+              choices,
+              multiple = !filterIndex %in% filteredData()$singleFilterIndices
+            ),
+            algo = "sha1"
+          )
           list(
             htmltools::doRenderTags(
               htmltools::tagAppendAttributes(
                 serverSelectInput(session, ns(paste0("filter_", filterIndex)), setIndexAliases[[filterIndex]],
                   choices = choices,
-                  selected = selectedFilterVal, multiple = TRUE,
+                  selected = selectedFilterVal, multiple = !filterIndex %in% filteredData()$singleFilterIndices,
                   options = list("plugins" = list("remove_button"))
                 ),
                 `data-hash` = ddHash
@@ -2177,7 +2219,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         return(list(
           data = dataTmp, filterElements = filterElements,
-          multiFilterIndices = multiFilterIndices
+          multiFilterIndices = multiFilterIndices,
+          singleFilterIndices = singleDropdown()
         ))
       })
 

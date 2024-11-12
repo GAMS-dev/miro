@@ -2531,6 +2531,10 @@
               "type": "string",
               "minLength": 1
             },
+            "singleDropdown": {
+              "type": "string",
+              "minLength": 1
+            },
             "cbShowTableSummaryRow": {
               "type": "string",
               "minLength": 1
@@ -2939,7 +2943,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 44
+          "minProperties": 45
         },
         "datatable": {
           "type": "object",
