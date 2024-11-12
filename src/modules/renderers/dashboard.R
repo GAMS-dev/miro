@@ -556,20 +556,37 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                         uiOutput(ns(paste0(id, "DownloadButtons")))
                       ),
                       if (length(userFilter) && !(length(userFilter) == 1 && userFilter %in% names(dataViewsConfig))) {
-                        filterInputs <- lapply(userFilter, function(filterName) {
+                        singleDropdownFilters <- if (!is.null(dataViewsConfig[[id]]$singleDropdown)) {
+                          dataViewsConfig[[id]]$singleDropdown
+                        } else {
+                          character(0)
+                        }
+
+                        filterInputs <- mapply(function(filterName, filterIndex) {
+                          userFilterChoices <- attr(dashboardChartData[[id]], paste0("userFilterData_", filterName))
+                          multiple <- if (filterName %in% singleDropdownFilters) {
+                            FALSE
+                          } else {
+                            TRUE
+                          }
+
+                          if (multiple) {
+                            userFilterChoices <- c("All" = "", userFilterChoices)
+                          }
+
                           tags$div(
                             class = "custom-dropdown-wide user-filter",
                             class = if (length(userFilter) %% 2 == 0) "even-inline" else if (length(userFilter) == 1) "one-inline" else "odd-inline",
                             selectizeInput(ns(paste0(id, "userFilter_", filterName)),
                               label = NULL,
-                              choices = c("All" = "", attr(dashboardChartData[[id]], paste0("userFilterData_", filterName))),
-                              multiple = TRUE, width = "100%",
+                              choices = userFilterChoices,
+                              multiple = multiple, width = "100%",
                               options = list(onInitialize = I(paste0("function(value) {
                                          document.querySelector('.selectize-input input[id^=\"", ns(paste0(id, "userFilter_", filterName)), "\"]').setAttribute('readonly', 'readonly');
                                        }")))
                             )
                           )
-                        })
+                        }, userFilter, seq_along(userFilter), SIMPLIFY = FALSE)
 
                         do.call(tagList, filterInputs)
                       }
