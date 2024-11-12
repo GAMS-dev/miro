@@ -259,9 +259,9 @@ MAYBE ADD IMAGE
 </details>
 
 
-Now that we have our value boxes, we will define which views we want to associate with them. In the `"dataViews"` option, we will first define which charts/tables we want in this view. We will only associate views with the first four value boxes. This is because the last two also display BESS information and we only have one view for them. This is done by simply not specifying a view with the id of the value box for which we don't want to add a view.
+Now that we have our value boxes, we will define which views we want to associate with them. In the `"dataViews"` option, we will first define which charts/tables we want in this view. We will only associate views with the first four value boxes. This is because the last two also display BESS information and we only have one view for that. This is done by simply not specifying a view with the id of the value box for which we don't want to add a view.
 
-We start each view with the id from the corresponding value field, then we assign a list of objects to it. Their keys are the individual id's of the different charts/tables we will define next in the `"dataViewsConfig"`, and as value we assign the title that will be displayed above the view in the dashboard. If you want to have more than one chart/table in a view, just add a second element to the object.
+We start each view with the `id` from the corresponding value field, then we assign a list of objects to it. Their keys are the individual id's of the different charts/tables we will define next in the `"dataViewsConfig"`, and as value we assign the title that will be displayed above the view in the dashboard. If you want to have more than one chart/table in a view, just add a second element to the object.
 
 
 ```json
@@ -274,7 +274,7 @@ We start each view with the id from the corresponding value field, then we assig
 ```
 **maybe add gen_specification table so that there also is an example for a table**
 
-The only thing left to do is to specify the actual charts/tables to be displayed. This is also explained in detail in the [documentation](https://www.gams.com/miro/charts.html#dashboard-dataviewsconfig). The easiest way to add charts is to first create the views with the pivot tool directly in the application. When you save the view, you can directly download the necessary json configurations. To do this, click on *Scenario* -> *Edit Metadata* in the top right corner of the application and switch to the *View* tab. Here you can select a view and download its json file. 
+The only thing left to do is to specify the actual charts/tables to be displayed. This is also explained in detail in the [documentation](https://www.gams.com/miro/charts.html#dashboard-dataviewsconfig). The easiest way to add charts is to first create the views with the pivot tool directly in the application. When you save the view, you can directly download the necessary json configurations. To do this, click on *Scenario* -> *Edit metadata* in the top right corner of the application and switch to the *View* tab. Here you can select a view and download its json file. 
 
 **add the results of this download**
 
@@ -322,7 +322,7 @@ Our `"Balance"` dataViewsConfig will then look like this:
 
 
 <details>
-  <summary>Click to see the code for all six boxes</summary>
+  <summary>Click to see the code for all four views</summary>
 
 ```json
 "dataViewsConfig": {
@@ -446,7 +446,7 @@ Finally, we end up with this dashboard:
 **make a gif**
 <div align="center"> <img src="config_mode/dashboard_total_cost.png" alt="input section" width="400"/> </div>
 
-It is also possible to add custom code to the model. However, since this requires a bit more effort and you need to know how to create a custom renderer in the first place, we will leave this for the next section.
+It is also possible to add custom code to the dashboard. However, since this requires a bit more effort and you need to know how to create a custom renderer in the first place, we will leave this for the next section.
 
 ### Scenario analysis
 Quite often you are not only interested in the optimal solution for a given input, but want to compare multiple scenarios.
@@ -476,7 +476,126 @@ As mentioned before, sometimes you want to customize your application even more.
 
 ### Custom renderer
 
-We will start with a very simple renderer that will show us how the storage level of the BESS is at each hour. So far we only know how much power is either charged or discharged at each hour. To get the storage level, we simply need to compute the cumulative sum of `battery_power`. In R this function is built in: `cumsum()`. 
+We will start with a very simple renderer that shows us what the storage level of the BESS is at any given hour. So far we only know how much power is either charged or discharged. To get the storage level, we simply need to compute the cumulative sum of `battery_power'. In R, this function is built in: `cumsum()`. 
+
+First, we need to understand what the general structure of a custom renderer is in MIRO. For this we will closely follow the [documentation](https://www.gams.com/miro/configuration_advanced.html#custom-renderers). Since MIRO is based on the R Shiny framework, it follows the same dual concept where we need to write two functions. One that defines the placeholder for your graphs, tables, etc. where they will be rendered, and the second that defines the rendering function itself. This means that in the second one we do all the necessary data manipulation, specification of behavior caused by user interaction, concrete data visualization etc. If this concept is new to you and you want more information visit the website for the R Shiny framework [https://shiny.posit.co/](https://shiny.posit.co/).
+
+This brings us to the template for each custom renderer:
+
+``` R
+# Placeholder function must be postfixed with "Output" 
+mirorenderer_<lowercaseSymbolName>Output <- function(id, height = NULL, options = NULL, path = NULL){
+  ns <- NS(id)
+}
+
+# The actual rendering must be prefixed with the keyword "render"
+renderMirorenderer_<lowercaseSymbolName> <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){
+
+}
+``` 
+
+If you are not using config mode, you must save these two functions in a file named `mirorenderer_\<lowercaseSymbolName\>.R`, which must be located in the `renderer_\<modelname\>` folder in your model directory. However, especially if you are new to R, we recommend that you use the config mode. It allows you to visualize the data directly with the correct datasets etc. passed to the functions. To do this, simply go to the *Graphs* section, select the GAMS symbol you want to render, and select *Custom renderer* for the *Charting type*.
+
+<div align="center"> <img src="render/empty_config_mode.png" alt="input section" width="400"/> </div>
+
+**Placeholder Function**
+
+Let's take a closer look at the placeholder function first. The most important part is the `id`. Every custom renderer in Shiny needs a unique identifier (ID) to avoid conflicts with other renderers or internal functions of MIRO. This `id` allows your custom input and output elements to work without accidentally overwriting or interfering with other elements. Shiny provides a convenient tool for ID management: the [`NS()`](https://shiny.posit.co/r/reference/shiny/0.13.1/ns) function. This function takes the `id` of your custom renderer and returns a new function that automatically prefixes any input or output IDs you specify (functions that return functions are often called closures in R). In this way, `NS()` ensures that all IDs remain unique.
+
+Here's how it works in practice:
+
+- Define the prefix function: First, call `NS()` with the renderer's ID to create a function that we will store in a variable, often called `ns`.
+- Use the prefix function on elements: Whenever you define a new input or output element, prefix its ID with `ns()`. This will give each element a unique prefixed ID.
+
+For example, instead of writing `plotOutput("cumsumPlot", ...)`, you would use `plotOutput(ns("cumsumPlot"), ...)` to ensure that the cumsumPlot is uniquely identified throughout the application.
+
+In our first simple renderer we only want to plot the storage, so we just need one output:
+
+``` R
+# Placeholder function
+mirorenderer_battery_powerOutput <- function(id, height = NULL, options = NULL, path = NULL) {
+    ns <- NS(id)
+    plotOutput(ns("cumsumPlot"))
+}
+```
+
+We will later also have a placeholder containing two elements, but you can have as many as you need. To get a better overview what is possible check the R shiny documentation, e.g. their section on [Arrange Elements](https://shiny.posit.co/r/layouts/arrange/).
+
+
+Beyond ID management, Shiny also allows you to define additional parameters for customization:
+
+- You can set the `height` attribute of your renderer output to control the display size.
+- Specify the `path` where the renderer files are located.
+- Add additional `options`.
+
+
+**The actual renderer**
+
+The placeholder alone doesn't give us much, so let's define the renderer. We have defined an output with the output function [`plotOutput()`](https://shiny.posit.co/r/reference/shiny/latest/plotoutput). Now we need something to render inside. For this, you will assign [`renderPlot()`](https://shiny.posit.co/r/reference/shiny/latest/renderplot) to an output object, inside your rendering function, which is responsible for generating the plot. Here's an overview:
+
+- Output functions: These functions determine how the data is displayed, such as `plotOutput()`.
+- Rendering functions: These are functions in Shiny that transform your data into visual elements, such as plots, tables, or maps. For example, `renderPlot()` is a reactive plot suitable for assignment to an output slot.
+
+Now we need a connection between our placeholder and the renderer. To do this, we look at the arguments the renderer gets
+
+- `input`: Accesses elements that generate data, such as sliders, text input,... (`input$hour`).
+- `output`: Controls elements that visualize data, such as plots, maps, or tables (`output$cumsumPlot`).
+- `session`: Contains user-specific information.
+- `data`: The data for the visualization is specified as an R [tibble](https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html). If you've specified multiple datasets in your MIRO application, the data will be a named list of tibbles. Each element in this list corresponds to a GAMS symbol (`data$battery_power`).
+
+For more information about the other options, see the [documentation](https://www.gams.com/miro/configuration_advanced.html#custom-renderers).
+
+We will now return to the config mode and start building our first renderer. Hopefully you have already added `plotOutput(ns("cumsumPlot"))` to the placeholder function. To get a general idea of what we are working with, let us first take a look at the `data` by simply calling `print(data)` inside the renderer. If we now press *Update*, we still won't see anything, because no rendering has been done yet, but if we look at the console, we will see:
+
+```
+# A tibble: 24 ├ù 6
+   j      level marginal lower upper scale
+   <chr>  <dbl>    <dbl> <dbl> <dbl> <dbl>
+ 1 hour00     0        0  -Inf   Inf     1
+ 2 hour01     0        0  -Inf   Inf     1
+ 3 hour02    -5        0  -Inf   Inf     1
+ 4 hour03   -30        0  -Inf   Inf     1
+ 5 hour04   -40        0  -Inf   Inf     1
+ 6 hour05   -40        0  -Inf   Inf     1
+ 7 hour06   -20        0  -Inf   Inf     1
+ 8 hour07    10        0  -Inf   Inf     1
+ 9 hour08    45        0  -Inf   Inf     1
+10 hour09    15        0  -Inf   Inf     1
+# Γä╣ 14 more rows
+```
+
+Since we have not specified any additional data sets so far, `data` directly contains the variable `battery_power`, which is obviously the GAMS symbol we put in the mirorender name. For our plot of the storage levels we now need the values from the `level` column, which we can access in R with `data$level`. More on subsetting tibbles can be found [here](https://tibble.tidyverse.org/reference/subsetting.html). Let's now finally make our first plot! First we need to calculate the data we want to plot, which we will store in `storage_level`. Note that we take the negative cumsum here, since the power levels are relative to the city, i.e. negative power charges the BESS and positive power discharges it. We will use the standard R [`barplot()`](https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/barplot) for visualization, but remember you can use any R function you want! Finally, we just need to pass this reactive plot to a render function and assign it to the appropriate output variable, which we only have one so far. The code you entered should look something like this:  
+
+``` R
+storage_level <- -cumsum(data$level)
+
+output$cumsumPlot <- renderPlot({
+        barplot(storage_level)
+    })
+```
+
+If you press *Update* again, you should get this:
+
+<div align="center"> <img src="render/cumsum_first_draft.png" alt="input section" width="400"/> </div>
+
+So far so good, lets make this plot prettier. Aside from adding a title, labels, etc., take a look at the y-axis. As you can see, it doesn't go all the way to the top. To change this, we can set it to the maximum value of our data. But what might be more interesting is to see the current storage value compared to the maximum possible. As you might remember this maximal storage level is also part our optimization. So no wee need to add additional data to our renderer. For this we switch to the *Advanced options* here we can select from all possible GAMS symbols which to add by clicking on the filed for *Additional datasets to communicate with the custom renderer*. Since we need a scalar variable here we will add `"_scalarsve_out"`. Switching back to the *Main* tab we now need to change how we access the data, since now it is no longer directly the tibble, but a named list of tibbles. Try to extract the value for `"battery_storage"` from `data`. Remember you can use `print()` and the functions [`filter()`](https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/filter) and [`pull()`](https://www.rdocumentation.org/packages/lplyr/versions/0.1.6/topics/pull) might be helpful.
+
+
+<details>
+  <summary>See how to extract battery_storage</summary>
+
+``` R
+max_storage <- data[["_scalarsve_out"]] %>%
+    filter(scalar == "battery_storage") %>%
+    pull(level)
+```
+</details>
+
+We will use the `"battery_storage"` for setting the `ylim` and for adding a horizontal line with [`abline()`](https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/abline). Adding some more layout settings leads us to:
+
+<div align="center"> <img src="render/cumsum_final_conifg_mode.png" alt="input section" width="400"/> </div>
+
+
 
 
 <details>
@@ -503,17 +622,164 @@ renderMirorenderer_battery_power <- function(input, output, session, data, optio
             main = "Storage level of the BESS"
         )
         grid()
+        abline(h = max_storage, col = "red", lwd = 2, lty = 2)
     })
 }
 ```
 </details>
 
+Congratulations you created your first renderer!
+
+Now just *Save* your renderer, this will directly create the file and folder mentioned above that you would have had to create if you were not using config mode. It will also add the necessary configuration to the json file. Again, if you are not using the config mode, you will need to add this manually, the template can be found in the [documentation](https://www.gams.com/miro/configuration_advanced.html#custom-renderers).
+
 Note that for simple renderers like this that just apply functions to the parameters, you could do the same calculation directly in Python. You would simply define a new parameter based on the same calculation as in the renderer and then have all the visualization options as before. We  just used it here to explain the general concept of a custom renderer. But you can choose whichever language you feel more comfortable in!
 
-Now that we have created our first small custom renderer, we can start working on some more complex renderers that use visualizations that are not supported in config mode, but are possible in R. 
+Now that we have created our first small custom renderer, we can start working on some more complex renderers that use visualizations that are not supported in the config mode, but are possible in R. 
 
-We are going to make a simply sankey diagram for our power flow. 
+#### A more complex renderer
 
+We are going to make a simple Sankey diagram for our power flow. It will show the current power flow at a given hour, to change the hour we will add a slider. This results in the following placeholder function:
+
+``` R
+mirorenderer_report_outputOutput <- function(id, height = NULL, options = NULL, path = NULL) {
+  ns <- NS(id)
+  tagList(
+    sliderInput(ns("hour"), "Hour:",
+      min = 0, max = 23,
+      value = 0, step = 1,
+    ),
+    plotly::plotlyOutput(ns("sankey"), height = "100%")
+  )
+}
+``` 
+
+Since we just want both elements on top of each other, we use a [`tagList()`](https://www.rdocumentation.org/packages/shiny/versions/0.9.1/topics/tagList). First we have our slider, which we give an id, again using the `ns()` function to prefix it. We give it some default `min` and `max` values, but since the number of hours could change, we will update the `max` value inside the renderer. Second, we have a plot for which we use [`plotlyOutput()`](https://www.rdocumentation.org/packages/plotly/versions/4.10.4/topics/plotly-shiny), since we will be using the *plotly* library to generate the Sankey plot. Note that *plotly* is not part of MIRO and needs to be added, this can be done in the same way as the additional data in the *Advanced options* menu. This also means that we need to specify the package name explicitly using the *double colon operator*. Again, if you are not using config mode, follow the [documentation](https://www.gams.com/miro/configuration_advanced.html#additional-r-packages).
+
+Now that we have some placeholders, we need to fill them. As mentioned above, we will be using *plotly* to generate our [Sankey](https://plotly.com/r/sankey-diagram/) plot. Let us begin to set up our Sankey diagram. First, we need to decide which nodes we need. We will add one for the BESS, the generators, the external network, and the city. You will need to remember the order so that you can assign the links correctly later.
+
+``` R
+node = list(
+        label = c("BESS", "Generators", "External Grid", "City"),
+        color = c("blue", "green", "red", "black"),
+        pad = 15,
+        thickness = 20,
+        line = list(
+          color = "black",
+          width = 0.5
+        )
+)
+``` 
+With the nodes defined we need to set the links. Each link has a source, a target and a value. The possible sources and targets are defined by our given nodes. We will define lists for all three and fill them based on our data.
+
+``` R
+link = list(
+    source = sankey_source,
+    target = sankey_target,
+    value =  sankey_value
+)
+``` 
+
+To be able to display the power value of the correct time point we need to get the hour from our slider, which we get from our `input` parameter. 
+
+``` R
+hour_to_display <- sprintf("hour%02d", input$hour)
+``` 
+
+Note that we use [`sprintf()`](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/sprintf) to get the same string we use to represent the hour in our GAMS symbols, so that we can filter the data for the correct hour.
+
+<details>
+  <summary>Click to see the code of the full renderer</summary>
+
+``` R
+mirorenderer_report_outputOutput <- function(id, height = NULL, options = NULL, path = NULL) {
+  ns <- NS(id)
+  tagList(
+    sliderInput(ns("hour"), "Hour:",
+      min = 0, max = 23,
+      value = 0, step = 1,
+      animate = animationOptions(
+        interval = 1000, loop = FALSE,
+        playButton = actionButton("play", "Play", icon = icon("play"), width = "100px", style = "margin-top: 10px; color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+        pauseButton = actionButton("pause", "Pause", icon = icon("pause"), width = "100px", style = "margin-top: 10px; color: #fff; background-color: #337ab7; border-color: #2e6da4")
+      )
+    ),
+    # since plotly is a custom package, it is not attached by MIRO to avoid name collisions
+    # Thus, we have to prefix functions exported by plotly via the "double colon operator":
+    # plotly::renderPlotly
+    plotly::plotlyOutput(ns("sankey"), height = "100%")
+  )
+}
+
+renderMirorenderer_report_output <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+  # since renderPlotly (or any other render function) is also an observer we are already in an reactive context
+  output$sankey <- plotly::renderPlotly({
+    hour_to_display <- sprintf("hour%02d", input$hour)
+
+    # start with empty lists for the sankey links
+    sankey_source <- list()
+    sankey_target <- list()
+    sankey_value <- list()
+
+    # since the GAMS output is melted, first need to extract the different power sources
+    battery_to_display <- filter(data, power_output_header == "battery") %>%
+      filter(j == hour_to_display)
+    gen_to_display <- filter(data, power_output_header == "generators") %>%
+      filter(j == hour_to_display)
+    extern_to_display <- filter(data, power_output_header == "external_grid") %>%
+      filter(j == hour_to_display)
+
+    # go over each source and check if they exist and if so add the corresponding link
+    if (dim(battery_to_display)[1] != 0) {
+      # for the battery need to check if is charged, or discharged
+      if (battery_to_display[["value"]] > 0) {
+        sankey_source <- c(sankey_source, 0)
+        sankey_target <- c(sankey_target, 3)
+        sankey_value <- c(sankey_value, battery_to_display[["value"]])
+      } else {
+        sankey_source <- c(sankey_source, 3)
+        sankey_target <- c(sankey_target, 0)
+        sankey_value <- c(sankey_value, -battery_to_display[["value"]])
+      }
+    }
+
+    if (dim(gen_to_display)[1] != 0) {
+      sankey_source <- c(sankey_source, 1)
+      sankey_target <- c(sankey_target, 3)
+      sankey_value <- c(sankey_value, gen_to_display[["value"]])
+    }
+
+    if (dim(extern_to_display)[1] != 0) {
+      sankey_source <- c(sankey_source, 2)
+      sankey_target <- c(sankey_target, 3)
+      sankey_value <- c(sankey_value, extern_to_display[["value"]])
+    }
+
+    # finally generate the sankey diagram using plotly
+    plotly::plot_ly(
+      type = "sankey",
+      orientation = "h",
+      node = list(
+        label = c("BESS", "Generators", "External Grid", "City"),
+        color = c("blue", "green", "red", "black"),
+        pad = 15,
+        thickness = 20,
+        line = list(
+          color = "black",
+          width = 0.5
+        )
+      ),
+      link = list(
+        source = sankey_source,
+        target = sankey_target,
+        value =  sankey_value
+      )
+    )
+  })
+}
+```
+</details>
+
+ADD GIF OF SANKEY
 
 ### Custom Dashboard
 
