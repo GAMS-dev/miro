@@ -721,13 +721,14 @@ genSpinner <- function(id = NULL, hidden = FALSE, absolute = TRUE, externalStyle
     div(class = "gen-spinner")
   )
 }
-checkboxInput_MIRO <- function(inputId, label, value = FALSE) {
+checkboxInput_MIRO <- function(inputId, label, value = FALSE, width = NULL) {
   inputTag <- tags$input(id = inputId, type = "checkbox")
   if (!is.null(value) && value) {
     inputTag$attribs$checked <- "checked"
   }
   tags$div(
     class = "shiny-input-container",
+    style = if(!is.null(width)) paste0("width: ", width),
     tags$label(class = "cb-label", "for" = inputId, label),
     tags$div(
       tags$label(

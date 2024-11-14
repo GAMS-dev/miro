@@ -295,6 +295,18 @@
               "type": "number",
               "minLength": 1
             },
+            "lineDash": {
+              "description": "Length and spacing of dashes in line charts.",
+              "type": [
+                "array",
+                "integer"
+              ],
+              "items": {
+                "type": [
+                  "integer"
+                ]
+              }
+            },
             "multiChartOptions": {
               "description": "Options for multiChartSeries",
               "type": "object",
@@ -792,6 +804,18 @@
                         "description": "Fill opacity for stacked and regular area charts.",
                         "type": "number",
                         "minLength": 1
+                      },
+                      "lineDash": {
+                        "description": "Length and spacing of dashes in line charts.",
+                        "type": [
+                          "array",
+                          "integer"
+                        ],
+                        "items": {
+                          "type": [
+                            "integer"
+                          ]
+                        }
                       },
                       "multiChartOptions": {
                         "description": "Options for multiChartSeries",

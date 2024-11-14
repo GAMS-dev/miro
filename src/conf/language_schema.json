@@ -2647,7 +2647,7 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "tabColors": {
+                "tabSeries": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -2779,6 +2779,14 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "cblineDash": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "lineDashPlaceholder": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "btCancel": {
                   "type": "string",
                   "minLength": 1
@@ -2796,7 +2804,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 41
+              "minProperties": 43
             },
             "dialogAddRow": {
               "type": "object",
