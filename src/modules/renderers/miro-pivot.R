@@ -1704,7 +1704,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               }
               if (isTRUE(input[["useCustomLineDash"]])) {
                 refreshRequired <- TRUE
-                newViewConfig$chartOptions[["lineDash"]] <- setNames(
+                dashPatterns <- setNames(
                   lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId) {
                     dashPatternIn <- gsub("\\s", "", input[[paste0("customLineDashPattern_", labelId)]])
                     values <- strsplit(dashPatternIn, ",")[[1]]
@@ -1719,6 +1719,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                     return(dashPattern)
                   }), miroPivotState$currentSeriesLabels
                 )
+
+                dashPatterns <- Filter(Negate(is.null), dashPatterns)
+                newViewConfig$chartOptions[["lineDash"]] <- dashPatterns
               }
               for (advancedOption in list(
                 list(

@@ -34,6 +34,12 @@
                     "stackMultiChartSeries": "no",
                     "multiChartStepPlot": true
                 },
+                "lineDash": {
+                    "New-york": [
+                        10,
+                        5
+                    ]
+                },
                 "y2axis": {
                     "series": "Topeka",
                     "title": "zzz",
