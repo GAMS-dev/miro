@@ -1355,8 +1355,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               dashLabel <- miroPivotState$currentSeriesLabels[labelId]
               if (length(names(viewOptions$chartOptions$lineDash))) {
                 if (dashLabel %in% names(viewOptions$chartOptions$lineDash) &&
-                    is.numeric(viewOptions$chartOptions$lineDash[[dashLabel]]) &&
-                    length(viewOptions$chartOptions$lineDash[[dashLabel]]) > 1L) {
+                  is.numeric(viewOptions$chartOptions$lineDash[[dashLabel]]) &&
+                  length(viewOptions$chartOptions$lineDash[[dashLabel]]) > 1L) {
                   dashPatternIn <- viewOptions$chartOptions$lineDash[[dashLabel]]
                   dashPattern <- paste(round(dashPatternIn), collapse = ", ")
                 } else {
@@ -1369,12 +1369,13 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 tags$div(
                   class = "col-sm-6",
                   textInput(ns(paste0("customLineDashPattern_", labelId)),
-                            dashLabel,
-                            value = dashPattern,
-                            placeholder = sprintf(
-                              lang$renderers$miroPivot$newView$lineDashPlaceholder,
-                              "10,5", "15, 3, 3, 3"
-                            ))
+                    dashLabel,
+                    value = dashPattern,
+                    placeholder = sprintf(
+                      lang$renderers$miroPivot$newView$lineDashPlaceholder,
+                      "10, 5", "15, 3, 3, 3"
+                    )
+                  )
                 )
               )
             })
@@ -1438,18 +1439,18 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                         tags$div(
                           class = "col-sm-12",
                           checkboxInput_MIRO(ns("useCustomLineDash"),
-                                             label = lang$renderers$miroPivot$newView$cblineDash,
-                                             value = length(viewOptions$chartOptions$lineDash) > 0L,
-                                             width = "100%"
+                            label = lang$renderers$miroPivot$newView$cblineDash,
+                            value = length(viewOptions$chartOptions$lineDash) > 0L,
+                            width = "100%"
                           )
                         )
                       ),
                       conditionalPanel("input.useCustomLineDash===true",
-                                       ns = ns,
-                                       tags$div(
-                                         class = "row miro-pivot-custom-colors-wrapper",
-                                         customLineDashUI
-                                       )
+                        ns = ns,
+                        tags$div(
+                          class = "row miro-pivot-custom-colors-wrapper",
+                          customLineDashUI
+                        )
                       )
                     ))
                   )
@@ -1709,7 +1710,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                     values <- strsplit(dashPatternIn, ",")[[1]]
                     if (all(suppressWarnings(!is.na(as.numeric(values))))) {
                       dashPattern <- as.numeric(round(as.numeric(values)))
-                      if(!length(dashPattern) > 1L) {
+                      if (!length(dashPattern) > 1L) {
                         dashPattern <- NULL
                       }
                     } else {
@@ -2679,12 +2680,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               scaleID <- "y2"
             }
           }
-          
+
           lineDash <- NULL
           if (length(currentView$chartOptions$lineDash) && length(currentView$chartOptions$lineDash[[label]])) {
             lineDash <- currentView$chartOptions$lineDash[[label]]
           }
-          
+
           if (label %in% currentView$chartOptions$multiChartSeries) {
             if (pivotRenderer %in% c("line", "area", "stackedarea", "timeseries")) {
               multiChartRenderer <- if (length(multiChartRenderer)) multiChartRenderer else "bar"
@@ -2697,7 +2698,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             } else {
               order <- 2
             }
-            
+
             args <- list(
               chartJsObj,
               dataTmp[[rowHeaderLen + i]],
@@ -2717,11 +2718,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               },
               stepped = identical(currentView$chartOptions$multiChartOptions$multiChartStepPlot, TRUE)
             )
-            
+
             if (!is.null(lineDash)) {
               args$borderDash <- lineDash
             }
-            
+
             chartJsObj <- do.call(cjsSeries, args)
           } else {
             if (identical(pivotRenderer, "stackedarea")) {
@@ -2739,7 +2740,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             } else {
               fillOpacity <- 0.15
             }
-            
+
             args <- list(
               chartJsObj,
               dataTmp[[rowHeaderLen + i]],
@@ -2751,11 +2752,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               stack = if (pivotRenderer %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "stack1" else NULL,
               stepped = identical(currentView$chartOptions$stepPlot, TRUE)
             )
-            
+
             if (!is.null(lineDash)) {
               args$borderDash <- lineDash
             }
-            
+
             chartJsObj <- do.call(cjsSeries, args)
           }
         }
