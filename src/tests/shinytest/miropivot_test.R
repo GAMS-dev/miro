@@ -37,7 +37,7 @@ expect_true(identical(configuration$data$datasets[[2]]$pointRadius, 3L))
 expect_true(identical(configuration$data$datasets[[2]]$type, "line"))
 expect_true(identical(configuration$data$datasets[[2]]$stepped, TRUE))
 expect_true(identical(configuration$data$datasets[[2]]$stack, "2"))
-expect_true(identical(configuration$data$datasets[[2]]$borderDash, c(10, 5)))
+expect_true(identical(configuration$data$datasets[[2]]$borderDash, list(10L, 5L)))
 expect_true(identical(configuration$type, "bar"))
 
 
