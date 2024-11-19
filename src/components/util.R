@@ -728,7 +728,7 @@ checkboxInput_MIRO <- function(inputId, label, value = FALSE, width = NULL) {
   }
   tags$div(
     class = "shiny-input-container",
-    style = if(!is.null(width)) paste0("width: ", width),
+    style = if (!is.null(width)) paste0("width: ", width),
     tags$label(class = "cb-label", "for" = inputId, label),
     tags$div(
       tags$label(

@@ -297,14 +297,15 @@
             },
             "lineDash": {
               "description": "Length and spacing of dashes in line charts.",
-              "type": [
-                "array",
-                "integer"
-              ],
-              "items": {
+              "type": "object",
+              "additionalProperties": {
                 "type": [
+                  "array",
                   "integer"
-                ]
+                ],
+                "items": {
+                  "type": "integer"
+                }
               }
             },
             "multiChartOptions": {
