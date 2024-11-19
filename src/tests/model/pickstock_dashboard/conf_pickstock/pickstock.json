@@ -253,7 +253,7 @@
           "postfix": ["", "", ""],
           "redPositive": [false, true, false],
           "noColor": [true, false, true],
-          "valueScalar": ["error_train", "error_test", "error_ratio"],
+          "valueScalar": ["obj", "error_test", "error_ratio"],
           "decimals": [2, 2, 2]
         },
         "dataViews": {
@@ -398,7 +398,7 @@
           }
         }
       },
-      "additionalData": ["dowvsindex", "abserror", "pricemerge"]
+      "additionalData": ["dowvsindex", "abserror", "pricemerge", "_scalarsve_out"]
     }
   },
   "storeLogFilesDuration": 7,
