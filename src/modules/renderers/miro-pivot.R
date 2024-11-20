@@ -1796,6 +1796,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             } else {
               newSingleDropdown <- character(0)
             }
+            refreshRequired <- FALSE
             if (!identical(singleDropdown(), newSingleDropdown)) {
               refreshRequired <- TRUE
             }
@@ -2017,7 +2018,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               htmltools::tagAppendAttributes(
                 serverSelectInput(session, ns(paste0("filter_", filterIndex)), setIndexAliases[[filterIndex]],
                   choices = choices,
-                  selected = selectedFilterVal, multiple = !filterIndex %in% filteredData()$singleFilterIndices,
+                  selected = if (!filterIndex %in% filteredData()$singleFilterIndices) {
+                    selectedFilterVal
+                  } else if (nchar(selectedFilterVal[1])) {
+                    selectedFilterVal[1]
+                  } else {
+                    filterElements[[filterIndex]][1]
+                  },
+                  multiple = !filterIndex %in% filteredData()$singleFilterIndices,
                   options = list("plugins" = list("remove_button"))
                 ),
                 `data-hash` = ddHash

@@ -34,4 +34,9 @@ do.call(app$set_inputs, setNames(
 Sys.sleep(0.5)
 expect_equal(getData(paste0("tab_1_3-", rendererName, "-stockWeightChart")), list(0.6))
 expect_equal(getData(paste0("tab_1_3-", rendererName, "-stockWeight2Chart")), list(0.6))
+
+app$click(selector = paste0("div[id='tab_1_3-", rendererName, "-error_ratio']"))
+Sys.sleep(1)
+expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemergeuserFilter_date')[0].multiple")), TRUE))
+expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemergeuserFilter_uni-selectized')[0].multiple")), FALSE))
 app$stop()
