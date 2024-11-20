@@ -581,6 +581,8 @@ If you press *Update* again, you should get this:
 So far so good, lets make this plot prettier. Aside from adding a title, labels, etc., take a look at the y-axis. As you can see, it doesn't go all the way to the top. To change this, we can set it to the maximum value of our data. But what might be more interesting is to see the current storage value compared to the maximum possible. As you might remember this maximal storage level is also part our optimization. So no wee need to add additional data to our renderer. For this we switch to the *Advanced options* here we can select from all possible GAMS symbols which to add by clicking on the filed for *Additional datasets to communicate with the custom renderer*. Since we need a scalar variable here we will add `"_scalarsve_out"`. Switching back to the *Main* tab we now need to change how we access the data, since now it is no longer directly the tibble, but a named list of tibbles. Try to extract the value for `"battery_storage"` from `data`. Remember you can use `print()` and the functions [`filter()`](https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/filter) and [`pull()`](https://www.rdocumentation.org/packages/lplyr/versions/0.1.6/topics/pull) might be helpful.
 
 
+**CHANGE THIS TO DIRECTLY GET THE SCALAR AND NOT AS ADDITIONAL DATASET**
+
 <details>
   <summary>See how to extract battery_storage</summary>
 
@@ -638,7 +640,7 @@ Now that we have created our first small custom renderer, we can start working o
 
 #### A more complex renderer
 
-We are going to make a simple Sankey diagram for our power flow. It will show the current power flow at a given hour, to change the hour we will add a slider. This results in the following placeholder function:
+We are going to make a simple Sankey diagram for our power flow. We will base this renderer on our `report_output` variable which contains the three power variables and the load demand. It will show the current power flow at a given hour, to change the hour we will add a slider. This results in the following placeholder function:
 
 ``` R
 mirorenderer_report_outputOutput <- function(id, height = NULL, options = NULL, path = NULL) {
@@ -655,7 +657,7 @@ mirorenderer_report_outputOutput <- function(id, height = NULL, options = NULL, 
 
 Since we just want both elements on top of each other, we use a [`tagList()`](https://www.rdocumentation.org/packages/shiny/versions/0.9.1/topics/tagList). First we have our slider, which we give an id, again using the `ns()` function to prefix it. We give it some default `min` and `max` values, but since the number of hours could change, we will update the `max` value inside the renderer. Second, we have a plot for which we use [`plotlyOutput()`](https://www.rdocumentation.org/packages/plotly/versions/4.10.4/topics/plotly-shiny), since we will be using the *plotly* library to generate the Sankey plot. Note that *plotly* is not part of MIRO and needs to be added, this can be done in the same way as the additional data in the *Advanced options* menu. This also means that we need to specify the package name explicitly using the *double colon operator*. Again, if you are not using config mode, follow the [documentation](https://www.gams.com/miro/configuration_advanced.html#additional-r-packages).
 
-Now that we have some placeholders, we need to fill them. As mentioned above, we will be using *plotly* to generate our [Sankey](https://plotly.com/r/sankey-diagram/) plot. Let us begin to set up our Sankey diagram. First, we need to decide which nodes we need. We will add one for the BESS, the generators, the external network, and the city. You will need to remember the order so that you can assign the links correctly later.
+Now that we have some placeholders, we need to fill them. As mentioned above, we will be using *plotly* to generate our [Sankey](https://plotly.com/r/sankey-diagram/) plot. Let us begin to set up our Sankey diagram. First, we need to decide which nodes we need. We will add one for the BESS, the generators, the external grid, and the city. You will need to remember the order so that you can assign the links correctly later.
 
 ``` R
 node = list(
@@ -686,6 +688,75 @@ hour_to_display <- sprintf("hour%02d", input$hour)
 ``` 
 
 Note that we use [`sprintf()`](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/sprintf) to get the same string we use to represent the hour in our GAMS symbols, so that we can filter the data for the correct hour.
+
+Here we have to be careful, `input` is a reactive variable, as it should automatically update the diagram when the slider is updated. This means we need to put it in a reactive context. For example, in R you can use [`observe()`](https://www.rdocumentation.org/packages/shiny/versions/1.9.1/topics/observe). However, since our rendering depends on only one input and only one output, we keep it simple and place all our calculations inside `renderPlotly()`. We can do this because rendering functions are also observers. If you want to learn more about R Shiny's reactive expressions, you can find a more detailed tutorial [here](https://shiny.posit.co/r/getstarted/shiny-basics/lesson6/).
+
+With that figured out, we need to extract the correct power values. So what do we do here? First we need to select the correct power type and then the current hour. With that we need to add it to the links if it is not zero. Here we have to be careful, as you know GAMS does not store zeros! So if the power value is zero, we will not find an entry for our given hour. To solve this, we first assume the value exists and extract it from the `data` and then check the dimension of the resulting tibble. With `filter()` we will extract the current values. Here you see how to do it for the `battery_power`:
+
+``` R
+battery_to_display <- filter(data, power_output_header == "battery") %>%
+  filter(j == hour_to_display)
+``` 
+Try to do the same for the other two power sources.
+
+<details>
+  <summary>Click to see the other two power sources</summary>
+
+``` R
+gen_to_display <- filter(data, power_output_header == "generators") %>%
+  filter(j == hour_to_display)
+extern_to_display <- filter(data, power_output_header == "external_grid") %>%
+  filter(j == hour_to_display)
+```
+</details>
+
+Now that we have our values, we need to add them to our link list. But remember to make sure that the value exists, and for the BESS we need to keep in mind that we can have positive and negative power flows, either from the city to the BESS or the other way around! Again, here is a way to add the BESS links:
+
+``` R
+# go over each source and check if they exist and if so add the corresponding link
+if (dim(battery_to_display)[1] != 0) {
+  # for the battery need to check if is charged, or discharged
+  if (battery_to_display[["value"]] > 0) {
+    sankey_source <- c(sankey_source, 0)
+    sankey_target <- c(sankey_target, 3)
+    sankey_value <- c(sankey_value, battery_to_display[["value"]])
+  } else {
+    sankey_source <- c(sankey_source, 3)
+    sankey_target <- c(sankey_target, 0)
+    sankey_value <- c(sankey_value, -battery_to_display[["value"]])
+  }
+}
+``` 
+
+<details>
+  <summary>Click to see the other two power sources</summary>
+
+``` R
+if (dim(gen_to_display)[1] != 0) {
+  sankey_source <- c(sankey_source, 1)
+  sankey_target <- c(sankey_target, 3)
+  sankey_value <- c(sankey_value, gen_to_display[["value"]])
+}
+
+if (dim(extern_to_display)[1] != 0) {
+  sankey_source <- c(sankey_source, 2)
+  sankey_target <- c(sankey_target, 3)
+  sankey_value <- c(sankey_value, extern_to_display[["value"]])
+}
+```
+</details>
+
+
+With all this, we have all the necessary components to render the Sankey diagram. We will add one more small feature. Sliders can be animated quite easily in R Shiny. All you need to do is add an animate option to the `sliderInput()` function:
+
+``` R
+animate = animationOptions(
+        interval = 1000, loop = FALSE,
+        playButton = actionButton("play", "Play", icon = icon("play"), width = "100px", style = "margin-top: 10px; color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+        pauseButton = actionButton("pause", "Pause", icon = icon("pause"), width = "100px", style = "margin-top: 10px; color: #fff; background-color: #337ab7; border-color: #2e6da4")
+      )
+``` 
+Now you can activate the slider to go through each step and directly see how the power supply changes.
 
 <details>
   <summary>Click to see the code of the full renderer</summary>
@@ -781,25 +852,489 @@ renderMirorenderer_report_output <- function(input, output, session, data, optio
 
 ADD GIF OF SANKEY
 
+Hopefully you now have a better idea of what is possible with custom renderers and how to easily use the config mode to implement them.
+
 ### Custom Dashboard
 
+Now that we know so much more about custom renderers, let us add one to our dashboard. Here we will add our little renderer for the memory layers of the BESS. We will follow the [documentation](https://www.gams.com/miro/charts.html#dashboard-custom-code) closely for this. To add custom code to the renderer, we will no longer just use json, but we will see the dashboard as the renderer. The dashboard renderer has been prepared to do this with minimal effort. 
+
+1. Download the [latest dashboard renderer file](https://github.com/GAMS-dev/miro/blob/master/src/modules/renderers/dashboard.R) from the MIRO repository on GitHub and put it with the other renderers in your *renderer_\<modelname\>* directory. 
+   
+2. In the dashboard.R file, make the following changes: 
+
+```diff
+- dashboardOutput <- function(id, height = NULL, options = NULL, path = NULL) {
++ mirorenderer__scalarsve_outOutput <- function(id, height = NULL, options = NULL, path = NULL) {
+    ns <- NS(id)
+    ...
+  }
+- renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
++ renderMirorenderer__scalarsve_out <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+-   moduleServer(
+-     id,
+-     function(input, output, session) {
+        ns <- session$ns
+        ...
+
+# These are the last three lines of code in the file
+- }
+-)
+}
+```
+  Remember that the dashboard is rendered for the symbol `_scalarsve_out'. As with the other renderers, be sure to replace it with the symbol name you want to render if you create a dashboard for a different symbol.
+
+3. In the `dataRendering` section of the \<modelname\>.json file change the `"outType"` of the symbol to render from `"dashboard"` to `"mirorenderer_<symbolname>"`
+  
+```diff
+  {
+   "dataRendering": {
+     "_scalarsve_out": {
+-      "outType": "dashboard",
++      "outType": "mirorenderer__scalarsve_out",
+       "additionalData": [...],
+       "options": {...}
+     }
+   }
+ }
+   
+```
+
+Now you can restart the application and have the same renderer as before, only now we can extend it with custom code!
+
+To add custom code, we first need to decide where to put it. Here we will add it as a second element to the `battery_power` view. Note that the given title will be ignored by the custom code, so we will leave it as an empty string.
+
+```json
+"dataViews": {
+  "battery_power": [
+    {"BatteryTimeline": "Charge/Discharge of the BESS"},
+    {"BatteryStorage": ""}
+  ],
+  ...
+}
+```
+
+In the corresponding `"dataViewsConfig"` we now assign an arbitrary string, e.g. `"BatteryStorage": "customCode"`, instead of a view as before:
+
+```json
+"dataViewsConfig": {
+  "BatteryStorage": "customCode",
+  ...
+}
+```
+
+Finally, we can implement the custom renderer. Recall that in our custom renderers, we consistently defined placeholders with unique IDs that were then assembled into the `output` variable. The view ID we just added (`"BatteryStorage"`) will also be  incorporated into this variable. Now we just add our already implemented renderer into the render function (`renderMirorenderer__scalarsve_out`). The only things we need to change is the output we assign the plot to : `output[["BatteryStorage"]] <- renderUI(...)`. And we no longer are in our renderer for the symbol `battery_power`, therefore `battery_power` now is additional data, which we access with: `data$battery_power`. To keep track we add the new output assignment at the end of the renderer, but as long as its inside the renderer the order doesn't matter.
+
+
+**CHANGE HOW TO GET THE SCALAR**
+
+```R
+renderMirorenderer__scalarsve_out <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+
+  ...
+
+  battery_power <- data$battery_power$level
+  storage_level <- -cumsum(battery_power)
+
+  max_storage <- data[["_scalarsve_out"]] %>%
+    filter(scalar == "battery_storage") %>%
+    pull(level)
+
+  # corresponding to the dataView "BatteryStorage"
+  output[["BatteryStorage"]] <- renderUI({
+    tagList(
+      renderPlot({
+        barplot(storage_level,
+          col = "lightblue", ylab = "Energy Capacity in kWh",
+          names.arg = data$battery_power$j, las = 2, ylim = c(0, max_storage + 10),
+          main = "Storage level of the BESS"
+        )
+        grid()
+      })
+    )
+  })
+}
+```
+
+In the same way, you can create a view that's entirely made up of custom code or include as many custom code elements as you'd like.
 
 ### Custom widget
 
+Let's take a closer look at another customizable element. The renderers we have created so far have all been for output symbols. As we saw with the time-dependent input, we can also define views and add custom renderers here. However, to add the data, we have to be in the tabular view and then switch to the graphical view. Wouldn't it be more convenient to change a value and see the graph change immediately? To do this, we need a custom widget that allows you to send data back to MIRO. Currently they are not supported by the config mode, but since they are very similar to custom renderers, we will start them like any other renderer and then make some small changes to turn them into an input widget.
 
-custom widget for time input, directly update the graph
+Here we will have two elements in our placeholder function: a graph and a table. For the table we will use [R Shinys DataTables](https://shiny.posit.co/r/articles/build/datatables/), since *DT* is an already included package we don't need to specify it, but for clarity we will add it anyway.
 
-small custom renderer for cumsum(battery_power) to get the storage at every time 
--> add this to the dashboard
 
-custom renderer -> sankey diagram
 
-If you need more inspiration on what you can do with the custom renderer, take a look at the [MIRO gallery](https://miro.gams.com/), e.g take a look at some applications with maps ([TSP](https://miro.gams.com/gallery/app_direct/tsp/) or [VRPTW](https://miro.gams.com/gallery/app_direct/vrptw/)).
+```R
+mirorenderer_timewise_load_demand_and_cost_external_grid_dataOutput <- function(id, height = NULL, options = NULL, path = NULL){
+  ns <- NS(id)
+  fluidRow(
+    column(width = 12, plotOutput(ns("timeline"))),
+    column( width = 12, DT::DTOutput(ns("table")))
+  )
+}
+```
 
-## Further Possible Additions
+Let us first fill our placeholders before we think about how to make them interactive. To do this, we need to assign a renderer to `output$table <- DT::renderDT()`. The most important setting here is `editable = TRUE`, the rest is just for visual refinement.
 
-custom export -> to database or/and pdf
-custom import -> time data from database (possible updates regularly)
-deploy -> Miroserver
- 
+``` R
+output$table <- DT::renderDT({
+  DT::datatable(data, editable = TRUE, rownames = FALSE, options = list(scrollX = TRUE)) %>%
+    DT::formatRound(c("cost_external_grid"), digits = 2L)
+})
+``` 
+
+For the plot we need to set `output$timeline <- renderPlot()`. Try this yourself, remember that the values are in different dimensions. Try adding the second plot with a different axis. Functions that might help are [`par()`](https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/par), to set graphical parameters (`par(new = TRUE) # overlay a new plot`) and [`axis()`](https://www.rdocumentation.org/packages/graphics/versions/3.5.2/topics/axis) to define the second axis.
+
+<details>
+  <summary>Click to see the code</summary>
+
+``` R
+renderMirorenderer_timewise_load_demand_and_cost_external_grid_data <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){
+  # return the render for the placeholder "table"
+  output$table <- DT::renderDT({
+    DT::datatable(data, editable = TRUE, rownames = FALSE, options = list(scrollX = TRUE)) %>%
+      DT::formatRound(c("cost_external_grid"), digits = 2L)
+  })
+
+  # return the render for the placeholder "timeline"
+  output$timeline <- renderPlot({
+    # first extract all the needed information
+    x <- data[["j"]]
+    y1 <- data[["load_demand"]]
+    y2 <- data[["cost_external_grid"]]
+
+    # set the margin for the graph
+    par(mar = c(5, 4, 4, 5))
+
+    # first, plot the load demand
+    plot(y1,
+      type = "l", col = "green",
+      ylab = "Load demand in W", lwd = 3, xlab = "", xaxt = "n", las = 2
+    )
+    points(y1, col = "green", pch = 16, cex = 1.5)
+    grid()
+
+    # add second plot on the same graph for the external cost
+    par(new = TRUE) # overlay a new plot
+    plot(y2,
+      type = "l", col = "blue",
+      axes = FALSE, xlab = "", ylab = "", lwd = 3
+    )
+    points(y2, col = "blue", pch = 16, cex = 1.5)
+
+    # add a new y-axis on the right for the second line
+    axis(side = 4, las = 2) 
+    mtext("External grid cost in $", side = 4, line = 3) 
+    grid()
+
+    # add the x values to the axis
+    axis(side = 1, at = 1:length(x), labels = x, las = 2)
+
+    legend("topleft",
+      legend = c("Load demand", "External grid cost"),
+      col = c("green", "blue"), lty = 1, lwd = 2, pch = 16
+    )
+  })
+}
+```
+</details>
+
+Now you should see something like this:
+
+<div align="center"> <img src="render/widget_first_version.png" alt="input section" width="400"/> </div>
+
+However, if we now edit any cell entry, nothing happens. We still need a link between the graph and the table. For this we need to work with [reactive expressions](https://shiny.posit.co/r/getstarted/shiny-basics/lesson6/). We need to add them for each interaction that should result in an update. If you are already familiar with reactive expressions, try implementing them yourself and skip the step-by-step guide.
+
+First, we define a variable `rv` for our [reactivValues](https://www.rdocumentation.org/packages/shiny/versions/1.9.1/topics/reactiveValues).
+
+```R
+rv <- reactiveValues(
+  timewise_input_data = NULL
+)
+```
+
+To initialize `rv` we [`observe()`](https://www.rdocumentation.org/packages/shiny/versions/1.9.1/topics/observe) `data` and if it changes we set our reactive value to the data.
+
+```R
+observe({
+  rv$timewise_input_data <- data
+})
+```
+
+To monitor edits to the table, we define a new `observe()` that will be triggered when `input$table_cell_edit` changes. We get the row and column index of the edited cell (`input$table_cell_edit$row` and `input$table_cell_edit$col`) and update the corresponding value in `rv$timewise_input_data`. The [`isolate()`](https://www.rdocumentation.org/packages/shiny/versions/1.9.1/topics/isolate) function ensures that changes to `rv` do not trigger this `observe()` function.
+
+```R
+# observe if the table is edited
+observe({
+  input$table_cell_edit
+
+  row <- input$table_cell_edit$row
+  # need to add one since the first column is the index
+  clmn <- input$table_cell_edit$col + 1
+
+  isolate({
+    rv$timewise_input_data[row, clmn] <- input$table_cell_edit$value
+  })
+})
+```
+If the new value of the entry would be empty (`""`), we want to reset the table. To do this, we set up a [`dataTableProxy`](https://www.rdocumentation.org/packages/DT/versions/0.33/topics/dataTableProxy) to efficiently update the table. Our `resetTable()` function is defined to dynamically replace the table data using the current state of `rv$timewise_input_data`. The function [`DT::replaceData()`](https://www.rdocumentation.org/packages/DT/versions/0.33/topics/replaceData) allows the table to be updated without resetting sorting, filtering, and pagination.
+
+```R
+tableProxy <- DT::dataTableProxy("table")
+
+resetTable <- function() {
+  DT::replaceData(tableProxy, isolate(rv$timewise_input_data), resetPaging = FALSE, rownames = FALSE)
+}
+```
+
+Now we just need to change the data for our plot to our reactive value (`data[["j"]]` -> `rv$timewise_input_data[["j"]]`) and we can see that changes also affect the graph!
+
+<details>
+  <summary>Click to see the full code of the current state</summary>
+
+```R
+renderMirowidget_timewise_load_demand_and_cost_external_grid_data <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+  # The whole code is run at the beginning, even though no actions are performed yet.
+  # init is used to only perform action in observe() after this initial run.
+  # Therefore, it is set to TRUE in the last occurring observe()
+  init <- FALSE
+  rv <- reactiveValues(
+    timewise_input_data = NULL
+  )
+
+  # set the initial data
+  observe({
+    rv$timewise_input_data <- data
+  })
+
+  tableProxy <- DT::dataTableProxy("table")
+
+  resetTable <- function() {
+    DT::replaceData(tableProxy, isolate(rv$timewise_input_data), resetPaging = FALSE, rownames = FALSE)
+  }
+
+  # observe if the table is edited
+  observe({
+    input$table_cell_edit
+    row <- input$table_cell_edit$row
+    # need to add one since the first column is the index
+    clmn <- input$table_cell_edit$col + 1
+
+    # if the new value is empty, restore the value from before
+    if (input$table_cell_edit$value == "") {
+      resetTable()
+      return()
+    }
+
+    # else, update the corresponding value in the reactiveValue 
+    isolate({
+      rv$timewise_input_data[row, clmn] <- input$table_cell_edit$value
+    })
+  })
+
+  # return the render for the placeholder "table"
+  output$table <- DT::renderDT({
+    DT::datatable(rv$timewise_input_data, editable = TRUE, rownames = FALSE, options = list(scrollX = TRUE)) %>%
+      DT::formatRound(c("cost_external_grid"), digits = 2L)
+  })
+
+  # return the render for the placeholder "timeline"
+  output$timeline <- renderPlot({
+    # first extract all the needed information
+    x <- rv$timewise_input_data[["j"]]
+    y1 <- rv$timewise_input_data[["load_demand"]]
+    y2 <- rv$timewise_input_data[["cost_external_grid"]]
+
+    # set the margin for the graph
+    par(mar = c(5, 4, 4, 5))
+
+    # first, plot the load demand
+    plot(y1,
+      type = "l", col = "green",
+      ylab = "Load demand in W", lwd = 3, xlab = "", xaxt = "n", las = 2
+    )
+    points(y1, col = "green", pch = 16, cex = 1.5)
+    grid()
+
+    # add second plot on the same graph for the external cost
+    par(new = TRUE) # overlay a new plot
+    plot(y2,
+      type = "l", col = "blue",
+      axes = FALSE, xlab = "", ylab = "", lwd = 3
+    )
+    points(y2, col = "blue", pch = 16, cex = 1.5)
+
+    # add a new y-axis on the right for the second line
+    axis(side = 4, las = 2) 
+    mtext("External grid cost in $", side = 4, line = 3) 
+    grid()
+
+    # add the x values to the axis
+    axis(side = 1, at = 1:length(x), labels = x, las = 2)
+
+    legend("topleft",
+      legend = c("Load demand", "External grid cost"),
+      col = c("green", "blue"), lty = 1, lwd = 2, pch = 16
+    )
+  })
+}
+```
+</details>
+
+
+#### From Custom Renderer To Custom Widget
+
+Now that our custom renderer is ready, we need to turn it into a [custom input widget](https://www.gams.com/miro/configuration_json_only.html#custom-input-widgets). To do this, save your renderer in config mode and go to the directory where it was saved. Here you first need to change the name of the file to "mirowidget_timewise_load_demand_and_cost_external_grid_data.R" Now we need to rename the functions:
+
+```diff
+- mirorenderer_timewise_load_demand_and_cost_external_grid_dataOutput <- function(id, height = NULL, options = NULL, path = NULL){
++ mirowidget_timewise_load_demand_and_cost_external_grid_dataOutput <- function(id, height = NULL, options = NULL, path = NULL) {
+  ...
+}
+
+- renderMirorenderer_timewise_load_demand_and_cost_external_grid_data <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){
++ renderMirowidget_timewise_load_demand_and_cost_external_grid_data <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+  ...
+}
+```
+
+Finally, we need to make some small changes to our code. The `data` argument is no longer a tibble, but a reactive expression. Therefore, we need to run the reactive expression (`data()`) to get the tibble with our input data. Whenever the data changes (for example, because the user uploaded a new CSV file), the reactive expression is updated, which in turn causes our table to be re-rendered with the new data.
+
+```diff
+# set the initial data
+observe({
+-  rv$timewise_input_data <- data
++ rv$timewise_input_data <- data()
+})
+```
+
+All code is executed when the application is started, even though no actions have been performed yet. The `init` is used to execute actions in observe() only after this initial execution. It ensures that the reactive logic is not executed until the application is fully initialized.
+
+```R
+  if (!init) {
+    init <<- TRUE
+    return()
+  }
+```
+
+Finally, we need to provide a reactive wrapper around `rv$timewise_input_data`. It ensures that the current state of the data is available as a reactive output, allowing us to pass the new data to the model. Otherwise *Solve model* would still use the old data!
+
+```R
+return(reactive({
+  rv$timewise_input_data
+}))
+```
+
+
+<details>
+  <summary>Click to see the full code</summary>
+
+```R
+renderMirowidget_timewise_load_demand_and_cost_external_grid_data <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+  # The whole code is run at the beginning, even though no actions are performed yet.
+  # init is used to only perform action in observe() after this initial run.
+  # Therefore, it is set to TRUE in the last occurring observe()
+  init <- FALSE
+  rv <- reactiveValues(
+    timewise_input_data = NULL
+  )
+
+  # set the initial data
+  observe({
+    rv$timewise_input_data <- data()
+  })
+
+  tableProxy <- DT::dataTableProxy("table")
+
+  resetTable <- function() {
+    DT::replaceData(tableProxy, isolate(rv$timewise_input_data), resetPaging = FALSE, rownames = FALSE)
+  }
+
+  # observe if the table is edited
+  observe({
+    input$table_cell_edit
+    if (!init) {
+      init <<- TRUE
+      return()
+    }
+    row <- input$table_cell_edit$row
+    # need to add one since the first column is the index
+    clmn <- input$table_cell_edit$col + 1
+
+    # if the new value is empty, restore the value from before
+    if (input$table_cell_edit$value == "") {
+      resetTable()
+      return()
+    }
+
+    # else, update the corresponding value in the reactiveValue 
+    isolate({
+      rv$timewise_input_data[row, clmn] <- input$table_cell_edit$value
+    })
+  })
+
+  # return the render for the placeholder "table"
+  output$table <- DT::renderDT({
+    DT::datatable(rv$timewise_input_data, editable = TRUE, rownames = FALSE, options = list(scrollX = TRUE)) %>%
+      DT::formatRound(c("cost_external_grid"), digits = 2L)
+  })
+
+  # return the render for the placeholder "timeline"
+  output$timeline <- renderPlot({
+    # first extract all the needed information
+    x <- rv$timewise_input_data[["j"]]
+    y1 <- rv$timewise_input_data[["load_demand"]]
+    y2 <- rv$timewise_input_data[["cost_external_grid"]]
+
+    # set the margin for the graph
+    par(mar = c(5, 4, 4, 5))
+
+    # first, plot the load demand
+    plot(y1,
+      type = "l", col = "green",
+      ylab = "Load demand in W", lwd = 3, xlab = "", xaxt = "n", las = 2
+    )
+    points(y1, col = "green", pch = 16, cex = 1.5)
+    grid()
+
+    # add second plot on the same graph for the external cost
+    par(new = TRUE) # overlay a new plot
+    plot(y2,
+      type = "l", col = "blue",
+      axes = FALSE, xlab = "", ylab = "", lwd = 3
+    )
+    points(y2, col = "blue", pch = 16, cex = 1.5)
+
+    # add a new y-axis on the right for the second line
+    axis(side = 4, las = 2) 
+    mtext("External grid cost in $", side = 4, line = 3) 
+    grid()
+
+    # add the x values to the axis
+    axis(side = 1, at = 1:length(x), labels = x, las = 2)
+
+    legend("topleft",
+      legend = c("Load demand", "External grid cost"),
+      col = c("green", "blue"), lty = 1, lwd = 2, pch = 16
+    )
+  })
+
+  # since this is an input, need to return the final data
+  return(reactive({
+    rv$timewise_input_data
+  }))
+}
+```
+</details>
+
+
+Congratulations, you have now created a custom input widget! Now that you are a renderer pro, try some different visualizations, maybe start with a different model. If you need more inspiration on what you can do with the custom renderer, take a look at the [MIRO gallery](https://miro.gams.com/), e.g. take a look at some applications with maps ([TSP](https://miro.gams.com/gallery/app_direct/tsp/) or [VRPTW](https://miro.gams.com/gallery/app_direct/vrptw/)).
+
+
+## Custom Import and Export
+
+## Deploy
+
+As a very last step, you will probably want to deploy your new shiny MIRO application. Covering deployment in detail would go beyond the scope of this tutorial, so we encourage you to read the documentation: [Deployment](https://www.gams.com/miro/deployment.html). And when you are add it also check out [GAMS MIRO Server](https://www.gams.com/miro/server.html) if you are interested in running MIRO in the cloud.
 
