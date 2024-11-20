@@ -14,7 +14,7 @@ test_that(
     Sys.setenv(MIRO_MODE = "base")
     Sys.setenv(DASHBOARD_RENDERER_NAME = "dashboard")
 
-    # source(file.path(testDir, "shinytest", "dashboard_test.R"), local = TRUE)
+    source(file.path(testDir, "shinytest", "dashboard_test.R"), local = TRUE)
 
     # using dashboard as custom renderer also works
     configJSONFilePath <- file.path(modelDir, "conf_pickstock", "pickstock.json")
