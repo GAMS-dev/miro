@@ -24,15 +24,15 @@ USER root
 
 ENV APP /app/app
 
-COPY --chown=1000:1000 --from=builder /root/.local /home/miro/.local
+COPY --chown=1001:1001 --from=builder /root/.local /home/miro/.local
 ENV PATH=/home/miro/.local/bin:$PATH
 
-COPY --chown=1000:1000 ./start.sh /start.sh
+COPY --chown=1001:1001 ./start.sh /start.sh
 RUN chmod +x /start.sh
 
-COPY --chown=1000:1000 ./gunicorn_conf.py /gunicorn_conf.py
+COPY --chown=1001:1001 ./gunicorn_conf.py /gunicorn_conf.py
 
-COPY --chown=1000:1000 ./app $APP
+COPY --chown=1001:1001 ./app $APP
 
 EXPOSE 1234
 

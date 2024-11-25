@@ -4,7 +4,7 @@ source("../app/tools/db_migration/modules/form_db_migration.R", local = TRUE)
 
 miroAppValidator <- MiroAppValidator$new()
 miroscenParser <- MiroscenParser$new()
-modelConfig <- ModelConfig$new(file.path("data", "specs.yaml"))
+modelConfig <- ModelConfig$new(file.path(MIRO_DATA_DIR, "specs.yaml"))
 engineClient <- EngineClient$new()
 db <- MiroDb$new(list(
   host = Sys.getenv("MIRO_DB_HOST", "localhost"),
