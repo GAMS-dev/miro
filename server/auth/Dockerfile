@@ -6,10 +6,11 @@ USER root
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-    python3-pip
+    python3-pip python3-venv
 
 COPY requirements.txt /requirements.txt
-RUN pip install --no-cache-dir --upgrade --user -r /requirements.txt
+RUN python3 -m venv /py-env \
+	&& /py-env/bin/pip install -U -r /requirements.txt
 
 
 FROM --platform=linux/amd64 base
@@ -24,8 +25,8 @@ USER root
 
 ENV APP /app/app
 
-COPY --chown=1001:1001 --from=builder /root/.local /home/miro/.local
-ENV PATH=/home/miro/.local/bin:$PATH
+COPY --chown=1001:1001 --from=builder /py-env /home/miro/py-env
+ENV PATH=/home/miro/py-env/bin:$PATH
 
 COPY --chown=1001:1001 ./start.sh /start.sh
 RUN chmod +x /start.sh
