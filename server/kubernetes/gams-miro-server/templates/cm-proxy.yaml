@@ -18,7 +18,7 @@ data:
       model-dir: /home/miroproxy/mnt/model
       data-dir: /home/miroproxy/mnt/data
       miro-lang: {{ .Values.proxy.config.language }}
-      port: port: 8080
+      port: 8080
       heartbeat-rate: 10000
       heartbeat-timeout: 120000
       same-site-cookie: Lax
