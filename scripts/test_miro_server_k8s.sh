@@ -38,6 +38,8 @@ if [[ -z "${K8S_VERSIONS_TO_TEST}" ]]; then
     exit 1
 fi
 
+IMAGE_TAG=$([[ "$CI_COMMIT_BRANCH" == "master" ]] && echo "latest" || { [[ "$CI_COMMIT_BRANCH" == "develop" || "$CI_COMMIT_BRANCH" == "rc" || "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]] && echo "unstable" || echo "feature"; })
+
 pushd server > /dev/null
 
     python3 miro_server.py release -f --k8s
@@ -57,7 +59,7 @@ pushd server > /dev/null
             helm install miro-server gams-miro-server/ \
                 --set 'global.imagePullSecrets[0]=gitlab' \
                 --set global.imageRegistry=$CI_REGISTRY_IMAGE \
-                --set image.tag=unstable \
+                --set image.tag=$IMAGE_TAG \
                 --set proxy.service.type=NodePort \
                 --set proxy.service.nodePort=30080 \
                 --set auth.service.type=NodePort \

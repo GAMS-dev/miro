@@ -25,8 +25,8 @@ USER root
 
 ENV APP /app/app
 
-COPY --chown=1001:1001 --from=builder /py-env /home/miro/py-env
-ENV PATH=/home/miro/py-env/bin:$PATH
+COPY --chown=1001:1001 --from=builder /py-env /py-env
+ENV PATH=/py-env/bin:$PATH
 
 COPY --chown=1001:1001 ./start.sh /start.sh
 RUN chmod +x /start.sh
