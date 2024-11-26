@@ -387,6 +387,18 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
     return(data)
   }
 
+  # change the column order. Will change the order of table columns/plotted series
+  applyCustomSeriesOrder <- function(data, noRowHeaders, customSeriesOrder) {
+    fixedCols <- colnames(data)[1:noRowHeaders]
+    valueCols <- colnames(data)[(noRowHeaders + 1):ncol(data)]
+    validLabels <- customSeriesOrder[customSeriesOrder %in% valueCols]
+    remainingCols <- setdiff(valueCols, validLabels)
+    orderedValueCols <- c(validLabels, remainingCols)
+    orderedData <- data %>%
+      select(all_of(fixedCols), all_of(orderedValueCols))
+    return(orderedData)
+  }
+
   dashboardChartData <- list()
   currentConfig <- c()
   for (view in names(dataViewsConfig)) {
@@ -658,6 +670,9 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
   output$dataViews <- renderUI({
     sections <- lapply(names(options$dataViews), function(viewList) {
       view <- options$dataViews[[viewList]]
+      if (is.null(names(view))) {
+        view <- unlist(view, recursive = FALSE)
+      }
       idList <- as.list(names(view))
       titleList <- view
 
@@ -775,6 +790,15 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         )
       }
 
+      # apply custom series order
+      if (length(dataViewsConfig[[indicator]]$chartOptions$customSeriesOrder)) {
+        dataTmp <- applyCustomSeriesOrder(
+          dataTmp,
+          noRowHeaders,
+          dataViewsConfig[[indicator]]$chartOptions$customSeriesOrder
+        )
+      }
+
       # heatmap
       if (input[[paste0(indicator, "ChartType")]] == "heatmap") {
         if (identical(dataViewsConfig[[indicator]]$chartOptions$heatmapType, 2L)) {
@@ -791,7 +815,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         select(where(~ !is.numeric(.))) %>%
         names()
 
-      fullSummaryEnabled <- identical(dataViewsConfig[["tableSummarySettings"]][["enabled"]], TRUE)
+      fullSummaryEnabled <- identical(dataViewsConfig[[indicator]]$tableSummarySettings[["enabled"]], TRUE)
       if (fullSummaryEnabled || identical(dataViewsConfig[[indicator]]$tableSummarySettings$rowEnabled, TRUE)) {
         tablesummarySettings <- dataViewsConfig[[indicator]]$tableSummarySettings
         if (identical(tablesummarySettings$rowSummaryFunction, "sum")) {
@@ -925,8 +949,6 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
       rowHeaderLen <- attr(dashboardChartData[[indicator]], "noRowHeaders")
       noSeries <- length(dataTmp) - rowHeaderLen
 
-      currentSeriesLabels <- names(dataTmp)[seq(rowHeaderLen + 1L, noSeries + rowHeaderLen)]
-
       # apply custom labels order
       if (length(currentView$chartOptions$customLabelsOrder)) {
         dataTmp <- applyCustomLabelsOrder(
@@ -936,10 +958,21 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         )
       }
 
+      # apply custom series order
+      if (length(dataViewsConfig[[indicator]]$chartOptions$customSeriesOrder)) {
+        dataTmp <- applyCustomSeriesOrder(
+          dataTmp,
+          rowHeaderLen,
+          dataViewsConfig[[indicator]]$chartOptions$customSeriesOrder
+        )
+      }
+
       labels <- do.call(paste, c(dataTmp[seq_len(rowHeaderLen)], list(sep = ".")))
       if (!length(labels)) {
         labels <- "value"
       }
+
+      currentSeriesLabels <- names(dataTmp)[seq(rowHeaderLen + 1L, noSeries + rowHeaderLen)]
 
       if (length(currentView$chartOptions$customChartColors) &&
         length(names(currentView$chartOptions$customChartColors))) {
