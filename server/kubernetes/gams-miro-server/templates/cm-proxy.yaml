@@ -90,4 +90,4 @@ data:
       forward-headers-strategy: native
       servlet:
         session.timeout: 21600
-        context-path: /
+        context-path: {{ .Values.global.rootPath | quote }}

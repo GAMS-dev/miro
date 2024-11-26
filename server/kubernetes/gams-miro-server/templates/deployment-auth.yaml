@@ -65,6 +65,8 @@ spec:
           value: "/home/miro/admin/mnt/models"
         - name: APP_CONFIG_FILE_PATH
           value: "/home/miro/admin/application.yml"
+        - name: SCRIPT_NAME
+          value: "{{ .Values.global.rootPath }}"
         - name: GMS_MIRO_DATABASE_PWD
           valueFrom:
             secretKeyRef:

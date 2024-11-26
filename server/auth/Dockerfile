@@ -31,8 +31,6 @@ ENV PATH=/py-env/bin:$PATH
 COPY --chown=1001:1001 ./start.sh /start.sh
 RUN chmod +x /start.sh
 
-COPY --chown=1001:1001 ./gunicorn_conf.py /gunicorn_conf.py
-
 COPY --chown=1001:1001 ./app $APP
 
 EXPOSE 1234
