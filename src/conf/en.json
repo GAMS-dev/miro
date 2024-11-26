@@ -649,7 +649,7 @@
       "btAddRow": "Add row",
       "btRemoveRows": "Remove rows",
       "cbHideEmptyCols": "Hide empty columns",
-      "singleDropdown": "Restrict each of the following dimensions to a single selection if a filter is available.",
+      "singleDropdown": "Dimension(s) to limit to a single-selection dropdown filter",
       "cbShowTableSummaryRow": "Show table summary (rows)",
       "cbShowTableSummaryCol": "Show table summary (columns)",
       "rowSummaryFunction": "Row summary function",

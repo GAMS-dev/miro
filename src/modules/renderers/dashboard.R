@@ -562,7 +562,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                           character(0)
                         }
 
-                        filterInputs <- mapply(function(filterName, filterIndex) {
+                        filterInputs <- lapply(userFilter, function(filterName) {
                           userFilterChoices <- attr(dashboardChartData[[id]], paste0("userFilterData_", filterName))
                           multiple <- if (filterName %in% singleDropdownFilters) {
                             FALSE
@@ -586,7 +586,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                                        }")))
                             )
                           )
-                        }, userFilter, seq_along(userFilter), SIMPLIFY = FALSE)
+                        })
 
                         do.call(tagList, filterInputs)
                       }

@@ -1796,17 +1796,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             } else {
               newSingleDropdown <- character(0)
             }
-            refreshRequired <- FALSE
             if (!identical(singleDropdown(), newSingleDropdown)) {
-              refreshRequired <- TRUE
+              singleDropdown(newSingleDropdown)
             }
             tableSummarySettings(newTableSummarySettings)
             hideEmptyCols(identical(input$hideEmptyCols, TRUE))
-            singleDropdown(newSingleDropdown)
-            if (refreshRequired) {
-              newVal <- updateFilter() + 1L
-              updateFilter(newVal)
-            }
             removeModal(session)
           })
         })

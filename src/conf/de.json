@@ -690,7 +690,7 @@
       "btAddRow": "Zeile hinzufügen",
       "btRemoveRows": "Zeilen entfernen",
       "cbHideEmptyCols": "Leere Spalten ausblenden",
-      "singleDropdown": "Nur eine Auswahl für die folgenden Dimensionen zulassen, falls ein Filter verfügbar ist.",
+      "singleDropdown": "Dimension(en), die auf einen Dropdown-Filter mit einfacher Auswahl beschränkt werden sollen",
       "cbShowTableSummaryRow": "Tabellenzusammenfassung anzeigen (Zeilen)",
       "cbShowTableSummaryCol": "Tabellenzusammenfassung anzeigen (Spalten)",
       "rowSummaryFunction": "Zusammenfassungsfunktion für Zeilen",
