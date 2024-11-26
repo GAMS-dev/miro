@@ -36,11 +36,11 @@ spec:
           - sh
           - "-c"
           - |
-            mkdir -p /home/admin/mnt/data
-            mkdir -p /home/admin/mnt/models
+            mkdir -p /home/miro/admin/mnt/data
+            mkdir -p /home/miro/admin/mnt/models
         volumeMounts:
         - name: shared-data
-          mountPath: /home/admin/mnt
+          mountPath: /home/miro/admin/mnt
       containers:
       - name: auth
         image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.auth.image.registry "repository" .Values.auth.image.repository "tag" (coalesce .Values.auth.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
@@ -59,6 +59,12 @@ spec:
           value: "{{ .Values.db.name }}"
         - name: GMS_MIRO_DATABASE_USER
           value: "{{ .Values.db.user }}"
+        - name: DATA_DIR
+          value: "/home/miro/admin/mnt/data"
+        - name: MODEL_DIR
+          value: "/home/miro/admin/mnt/models"
+        - name: APP_CONFIG_FILE_PATH
+          value: "/home/miro/admin/application.yml"
         - name: GMS_MIRO_DATABASE_PWD
           valueFrom:
             secretKeyRef:
@@ -67,7 +73,13 @@ spec:
         volumeMounts:
         - name: shared-data
           mountPath: /home/miro/admin/mnt
+        - name: config-volume
+          mountPath: /home/miro/admin/application.yml
+          subPath: application.yml
       volumes:
+        - name: config-volume
+          configMap:
+            name: {{ .Release.Name }}-proxy-config
         {{- if eq .Values.persistence.type "local" }}
         - name: shared-data
           hostPath:
