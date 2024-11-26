@@ -690,7 +690,7 @@
       "btAddRow": "添加行",
       "btRemoveRows": "删除行",
       "cbHideEmptyCols": "隐藏空列",
-      "singleDropdown": "如果有筛选器，请将以下每个维度限制为单一选择。",
+      "singleDropdown": "限制为单选下拉过滤器的维度",
       "cbShowTableSummaryRow": "显示表格摘要（行）",
       "cbShowTableSummaryCol": "显示表格摘要（列）",
       "rowSummaryFunction": "汇总行的函数",
