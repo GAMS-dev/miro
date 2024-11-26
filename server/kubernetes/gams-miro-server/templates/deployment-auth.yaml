@@ -66,7 +66,7 @@ spec:
         - name: APP_CONFIG_FILE_PATH
           value: "/home/miro/admin/application.yml"
         - name: SCRIPT_NAME
-          value: "{{ .Values.global.rootPath }}"
+          value: "{{ .Values.global.rootPath | trimSuffix "/" }}"
         - name: GMS_MIRO_DATABASE_PWD
           valueFrom:
             secretKeyRef:
