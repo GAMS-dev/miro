@@ -266,7 +266,7 @@ observeEvent(input$btImportLocal, {
       setColsToRead(colsToRead, symToFetch)
   } else {
     # check whether current input datasets are empty
-    if (input$cbSelectManuallyLoc && length(input$selInputDataLoc)) {
+    if (identical(input$cbSelectManuallyLoc, TRUE)) {
       idsToFetch <- match(tolower(input$selInputDataLoc), names(modelIn))
       # remove NAs
       idsToFetch <- idsToFetch[!is.na(idsToFetch)]
@@ -371,6 +371,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
 
   # initialize new imported sheets counter
   newInputCount <- 0L
+  newOutputCount <- 0L
   errMsg <- NULL
   scalarDataset <- NULL
 
@@ -510,7 +511,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
   }
 
   # find out which datasets to import
-  if (identical(input$cbSelectManuallyLoc, TRUE) && length(input$selInputDataLoc)) {
+  if (identical(input$cbSelectManuallyLoc, TRUE)) {
     datasetsToFetch <- datasetsToFetch[tolower(datasetsToFetch) %in%
       tolower(isolate(input$selInputDataLoc))]
   }
@@ -566,13 +567,15 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
     renderOutputData()
     if (scenData$getSandboxHasOutputData(scriptOutput)) {
       noOutputData <<- FALSE
+      newOutputCount <- scenData$getSandboxOutputWithDataCount()
     } else {
       noOutputData <<- TRUE
     }
   }
+  newDataCount <- newInputCount + newOutputCount
 
-  if (newInputCount) {
-    showNotification(sprintf(lang$nav$notificationNewInput$new, newInputCount))
+  if (newDataCount) {
+    showNotification(sprintf(lang$nav$notificationNewInput$new, newDataCount))
   } else {
     showNotification(lang$nav$notificationNewInput$noNew, type = "error")
   }
