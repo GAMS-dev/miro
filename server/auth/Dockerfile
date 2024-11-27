@@ -25,13 +25,13 @@ USER root
 
 ENV APP /app/app
 
-COPY --chown=1001:1001 --from=builder /py-env /py-env
+COPY --chown=1000:1001 --from=builder /py-env /py-env
 ENV PATH=/py-env/bin:$PATH
 
-COPY --chown=1001:1001 ./start.sh /start.sh
+COPY --chown=1000:1001 ./start.sh /start.sh
 RUN chmod +x /start.sh
 
-COPY --chown=1001:1001 ./app $APP
+COPY --chown=1000:1001 ./app $APP
 
 EXPOSE 1234
 
