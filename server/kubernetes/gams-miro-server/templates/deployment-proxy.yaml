@@ -19,6 +19,7 @@ spec:
         app: {{ .Release.Name }}-proxy
     spec:
       serviceAccountName: {{ .Release.Name }}-proxy-sa
+      automountServiceAccountToken: true
       securityContext:
         runAsUser: {{ .Values.securityContext.runAsUser }}
         fsGroup: {{ .Values.securityContext.fsGroup }}
