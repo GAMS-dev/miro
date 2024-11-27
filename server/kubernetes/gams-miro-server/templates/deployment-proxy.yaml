@@ -50,6 +50,8 @@ spec:
         ports:
         - containerPort: 8080
         env:
+        - name: GMS_MIRO_TARGET_IMG_DIR
+          value: "/home/miroproxy/mnt/data/img"
         - name: GMS_MIRO_DATABASE_PWD
           valueFrom:
             secretKeyRef:
