@@ -24,7 +24,6 @@ data:
       same-site-cookie: Lax
       admin-groups: admins
       container-backend: kubernetes
-      container-log-path: /logs/container-logs
       max-upload-size: {{ .Values.proxy.config.maxUploadSizeMB }}
       force-signed-apps: {{ .Values.proxy.config.forceSignedApps }}
       disable-readonly-mode: {{ .Values.proxy.config.disableReadonlyMode }}
@@ -78,8 +77,6 @@ data:
               - mountPath: /home/miro/mnt
                 name: shared-data
                 readOnly: true
-    logging:
-      file: /logs/miroproxy.log
 
     spring:
       application.name: {{ .Values.proxy.config.title | quote }}
