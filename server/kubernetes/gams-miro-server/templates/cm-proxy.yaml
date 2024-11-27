@@ -15,7 +15,7 @@ data:
       title: {{ .Values.proxy.config.title | quote }}
       template-path: ./templates/2col
       favicon-path: ./favicon.ico
-      model-dir: /home/miroproxy/mnt/model
+      model-dir: /home/miroproxy/mnt/models
       data-dir: /home/miroproxy/mnt/data
       miro-lang: {{ .Values.proxy.config.language }}
       port: 8080
@@ -31,7 +31,7 @@ data:
       authentication: {{ .Values.proxy.config.authentication }}
       max-total-instances: {{ .Values.proxy.config.maxTotalInstances }}
       webservice:
-        authentication-url: http://{{ .Release.Name }}-auth:1234/login
+        authentication-url: http://{{ .Release.Name }}-auth:8081/login
       openid:
         auth-url: {{ .Values.proxy.config.openid.authUrl | quote }}
         token-url: {{ .Values.proxy.config.openid.tokenUrl | quote }}
@@ -79,6 +79,25 @@ data:
               - mountPath: /home/miro/mnt
                 name: shared-data
                 readOnly: true
+        global-pod-patches-admin: |
+          - op: add
+            path: /spec/volumes
+            value:
+              {{- if eq .Values.persistence.type "local" }}
+                - name: shared-data
+                  hostPath:
+                    path: {{ .Values.persistence.local.path | quote }}
+                    type: DirectoryOrCreate
+              {{- else if eq .Values.persistence.type "efs" }}
+                - name: shared-data
+                  persistentVolumeClaim:
+                    claimName: {{ .Release.Name }}-efs-pvc
+              {{- end }}
+          - op: add
+            path: /spec/containers/0/volumeMounts
+            value:
+              - mountPath: /home/miro/admin/mnt
+                name: shared-data
 
     spring:
       application.name: {{ .Values.proxy.config.title | quote }}
