@@ -8,7 +8,7 @@ ARG R_BASE_VERSION=4.2.0
 ENV R_BASE_VERSION=${R_BASE_VERSION}
 
 RUN groupadd -g 1001 miro && \
-    useradd -r -u 1001 -g miro miro
+    useradd -u 1001 --no-log-init --gid 0 --groups 1000,1001 --create-home miro
 
 ENV APP /home/miro/app
 RUN mkdir -p $APP
