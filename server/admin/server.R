@@ -221,7 +221,7 @@ server <- function(input, output, session) {
         )
         if (IN_KUBERNETES) {
           newAppConfig$containerEnv$MIRO_MODEL_PATH <- paste0(
-            "/home/miro/mnt/model/",
+            "/home/miro/mnt/models/",
             appId, "/", modelName
           )
         } else {
@@ -260,8 +260,8 @@ server <- function(input, output, session) {
           }
         }
 
-        appDir <- file.path(getwd(), MIRO_MODEL_DIR, appId)
-        dataDir <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_", appId))
+        appDir <- file.path(MIRO_MODEL_DIR, appId)
+        dataDir <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
 
         miroProc$
           setDbCredentials(
@@ -498,7 +498,7 @@ server <- function(input, output, session) {
           dataToSend <- list(requestType = requestType)
         }
         if (is.null(appDir)) {
-          appDir <- file.path(getwd(), MIRO_MODEL_DIR, appId)
+          appDir <- file.path(MIRO_MODEL_DIR, appId)
         }
         for (i in seq_along(filePaths)) {
           miroProc$run(appId, appModelName,
@@ -583,13 +583,13 @@ server <- function(input, output, session) {
           ), call. = FALSE)
         }
 
-        appDir <- file.path(getwd(), MIRO_MODEL_DIR, appId)
-        appDirTmp <- file.path(getwd(), MIRO_MODEL_DIR, paste0("~$", appId))
-        appDirTmp2 <- file.path(getwd(), MIRO_MODEL_DIR, paste0("~$~$", appId))
+        appDir <- file.path(MIRO_MODEL_DIR, appId)
+        appDirTmp <- file.path(MIRO_MODEL_DIR, paste0("~$", appId))
+        appDirTmp2 <- file.path(MIRO_MODEL_DIR, paste0("~$~$", appId))
 
-        dataDir <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_", appId))
-        dataDirTmp <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_~$", appId))
-        dataDirTmp2 <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_~$~$", appId))
+        dataDir <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
+        dataDirTmp <- file.path(MIRO_DATA_DIR, paste0("data_~$", appId))
+        dataDirTmp2 <- file.path(MIRO_DATA_DIR, paste0("data_~$~$", appId))
 
         for (dirPath in c(appDirTmp, appDirTmp2, dataDirTmp, dataDirTmp2)) {
           if (!identical(unlink(dirPath, recursive = TRUE), 0L)) {

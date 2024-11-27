@@ -69,14 +69,13 @@ extractAppData <- function(miroAppPath, appId, modelId, miroProc) {
   unzip(miroAppPath, overwrite = FALSE, exdir = modelPath)
   if (ENFORCE_SIGNED_APPS) {
     pubKeyPaths <- character(0L)
-    workDirTmp <- getwd()
     if (dir.exists(file.path(MIRO_DATA_DIR, "known_keys"))) {
-      pubKeyPaths <- list.files(file.path(workDirTmp, MIRO_DATA_DIR, "known_keys"),
+      pubKeyPaths <- list.files(file.path(MIRO_DATA_DIR, "known_keys"),
         all.files = TRUE, full.names = TRUE, no.. = TRUE
       )
       pubKeyPaths <- pubKeyPaths[!vapply(pubKeyPaths, dir.exists, logical(1L), USE.NAMES = FALSE)]
     }
-    validateAppSignature(file.path(workDirTmp, modelPath), pubKeyPaths)
+    validateAppSignature(modelPath, pubKeyPaths)
   }
   dataDirSource <- file.path(modelPath, paste0("data_", modelId))
   if (dir.exists(dataDirSource)) {
