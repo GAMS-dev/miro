@@ -30,6 +30,8 @@ data:
       anonymous-readonly-mode: {{ .Values.proxy.config.anonymousReadonlyMode }}
       authentication: {{ .Values.proxy.config.authentication }}
       max-total-instances: {{ .Values.proxy.config.maxTotalInstances }}
+      webservice:
+        authentication-url: http://{{ .Release.Name }}-auth:1234/login
       openid:
         auth-url: {{ .Values.proxy.config.openid.authUrl | quote }}
         token-url: {{ .Values.proxy.config.openid.tokenUrl | quote }}
