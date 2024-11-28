@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app.config import logger, settings, settings_yml
-from app.routers import login, apps, scenarios, configuration
+from app.routers import login, apps, scenarios, configuration, health
 from app.utils.utils import use_route_names_as_operation_ids
 
 app = FastAPI()
@@ -23,6 +23,7 @@ public_api = FastAPI(
 )
 
 app.include_router(login.router)
+app.include_router(health.router)
 if settings_yml:
     public_api.include_router(configuration.router)
     public_api.include_router(apps.router)

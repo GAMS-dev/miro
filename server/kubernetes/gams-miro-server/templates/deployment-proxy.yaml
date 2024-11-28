@@ -50,6 +50,25 @@ spec:
 {{ toYaml .Values.proxy.resources | indent 10 }}
         ports:
         - containerPort: 8080
+        - containerPort: 9090
+        startupProbe:
+          httpGet:
+            path: /actuator/health
+            port: 9090
+          failureThreshold: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 9090
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 9090
+          initialDelaySeconds: 10
+          periodSeconds: 15
         env:
         - name: GMS_MIRO_TARGET_IMG_DIR
           value: "/home/miroproxy/mnt/data/img"
