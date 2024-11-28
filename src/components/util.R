@@ -1948,6 +1948,54 @@ colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE) {
     colorpicker
   ))
 }
+lineDashInput <- function(id, choices, label = NULL, selected = NULL, selectedValue = NULL) {
+  lineDash <- tags$div(
+    class = "shiny-input-container line-dash-picker",
+    fluidRow(
+      class = "line-dash-element",
+      column(
+        width = 6L,
+        tags$label(`for` = paste0(id, "select"), label, style = "font-weight:400;")
+      ),
+      column(
+        width = 6L,
+        class = "line-dash-dropdown",
+        selectizeInput(
+          inputId = paste0(id, "select"),
+          label = NULL,
+          choices = choices,
+          selected = selected,
+          width = "100%",
+          options = list(
+            onChange = I(paste0("
+            function(value) {
+              var textInput = $('#' + this.$input[0].id)
+                .closest('.line-dash-picker')
+                .find('.line-dash-textinput');
+              if (textInput.length > 0) {
+                if (value === 'custom') {
+                  textInput.val('", selectedValue, "').trigger('change');
+                } else {
+                  textInput.val(value).trigger('change');
+                }
+              }
+            }"))
+          )
+        )
+      ),
+      column(
+        width = 12L,
+        tags$input(
+          id = id, type = "text",
+          class = "form-control line-dash-textinput",
+          style = "margin-bottom:5px;",
+          value = if (selected == "custom") selectedValue else selected
+        )
+      )
+    )
+  )
+  return(lineDash)
+}
 getCombinationsSlider <- function(lowerVal, upperVal, stepSize = 1) {
   # BEGIN error checks
   stopifnot(is.numeric(lowerVal), length(lowerVal) == 1)

@@ -2580,12 +2580,14 @@ li.drop-index-item[data-col-hidden="true"] {
   height: 100%;
   max-height: 60vh;
 }
-// Color picker
+// Color picker, line dash picker
 .miro-pivot-custom-colors-wrapper {
   max-height: 300px;
   overflow-y: auto;
+  margin-bottom: 15px;
 }
-.miro-color-picker input {
+.miro-color-picker input,
+.line-dash-picker input {
   display: none;
 }
 .miro-color-picker span {
@@ -2602,7 +2604,11 @@ li.drop-index-item[data-col-hidden="true"] {
   overflow: hidden;
   vertical-align: text-top;
 }
-.color-picker-element {
+.line-dash-picker {
+  display: inline-block;
+}
+.color-picker-element,
+.line-dash-element {
   .responsiveDark({
     background: @pivot-presentation-bg;
   },
@@ -2611,6 +2617,21 @@ li.drop-index-item[data-col-hidden="true"] {
   });
   margin: 1px;
   padding: 5px 0 0 0;
+}
+.line-dash-dropdown {
+    padding-left: 5px;
+    min-height: 25px;
+}
+.line-dash-dropdown .selectize-input {
+  min-height: 21px;
+  padding: 1px 5px;
+}
+.line-dash-dropdown .selectize-control.single .selectize-input:after {
+  right: 10px;
+}
+.line-dash-dropdown .form-group,
+.line-dash-dropdown .selectize-control {
+  margin-bottom:0;
 }
 // fullscreen modal (used e.g. for analysis scripts)
 #batchLoadModal {

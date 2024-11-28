@@ -2779,7 +2779,43 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "cblineDash": {
+                "cbLineDash": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbManualLineDash": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbManualLineDashTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "solid": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dotted": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dashed": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "wideDashed": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dashDot": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dashDotDot": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "customPattern": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -2804,7 +2840,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 43
+              "minProperties": 52
             },
             "dialogAddRow": {
               "type": "object",

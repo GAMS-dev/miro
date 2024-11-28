@@ -1352,29 +1352,42 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               )
             })
             customLineDashUI <- lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId) {
+              validPatterns <- c("1, 1", "10, 10", "20, 5", "15, 3, 3, 3", "20, 3, 3, 3, 3, 3")
               dashLabel <- miroPivotState$currentSeriesLabels[labelId]
-              if (length(names(viewOptions$chartOptions$lineDash))) {
-                if (dashLabel %in% names(viewOptions$chartOptions$lineDash) &&
-                  is.numeric(viewOptions$chartOptions$lineDash[[dashLabel]]) &&
-                  length(viewOptions$chartOptions$lineDash[[dashLabel]]) > 1L) {
-                  dashPatternIn <- viewOptions$chartOptions$lineDash[[dashLabel]]
+              if (length(names(viewOptions$chartOptions$lineDash)) &&
+                dashLabel %in% names(viewOptions$chartOptions$lineDash)) {
+                dashPatternIn <- unlist(viewOptions$chartOptions$lineDash[[dashLabel]])
+
+                if (is.numeric(dashPatternIn) && length(dashPatternIn) > 1L) {
                   dashPattern <- paste(round(dashPatternIn), collapse = ", ")
+                  dashPatternLabel <- ifelse(dashPattern %in% validPatterns, dashPattern, "custom")
                 } else {
-                  dashPattern <- NULL
+                  dashPattern <- " "
+                  dashPatternLabel <- dashPattern
                 }
               } else {
-                dashPattern <- NULL
+                dashPattern <- " "
+                dashPatternLabel <- dashPattern
               }
               tagList(
                 tags$div(
                   class = "col-sm-6",
-                  textInput(ns(paste0("customLineDashPattern_", labelId)),
-                    dashLabel,
-                    value = dashPattern,
-                    placeholder = sprintf(
-                      lang$renderers$miroPivot$newView$lineDashPlaceholder,
-                      "10, 5", "15, 3, 3, 3"
-                    )
+                  lineDashInput(ns(paste0("lineDashPattern_", labelId)),
+                    setNames(
+                      c(" ", validPatterns, "custom"),
+                      c(
+                        lang$renderers$miroPivot$newView$solid,
+                        lang$renderers$miroPivot$newView$dotted,
+                        lang$renderers$miroPivot$newView$dashed,
+                        lang$renderers$miroPivot$newView$wideDashed,
+                        lang$renderers$miroPivot$newView$dashDot,
+                        lang$renderers$miroPivot$newView$dashDotDot,
+                        lang$renderers$miroPivot$newView$customPattern
+                      )
+                    ),
+                    selected = dashPatternLabel,
+                    selectedValue = dashPattern,
+                    label = dashLabel
                   )
                 )
               )
@@ -1434,21 +1447,43 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                           customChartColorsUI
                         )
                       ),
-                      tags$div(
-                        class = "row",
+                      if (pivotRenderer %in% c("line", "stackedarea", "area", "radar", "timeseries")) {
                         tags$div(
-                          class = "col-sm-12",
-                          checkboxInput_MIRO(ns("useCustomLineDash"),
-                            label = lang$renderers$miroPivot$newView$cblineDash,
-                            value = length(viewOptions$chartOptions$lineDash) > 0L,
-                            width = "100%"
+                          class = "row",
+                          tags$div(
+                            class = "col-sm-6",
+                            checkboxInput_MIRO(ns("useCustomLineDash"),
+                              label = lang$renderers$miroPivot$newView$cbLineDash,
+                              value = length(viewOptions$chartOptions$lineDash) > 0L,
+                              width = "100%"
+                            )
+                          ),
+                          tags$div(
+                            class = "col-sm-6",
+                            `data-display-if` = "input.useCustomLineDash===true",
+                            `data-ns-prefix` = ns(""),
+                            checkboxInput_MIRO("miroPivotCbCustomLineDashInputs",
+                              tags$span(
+                                lang$renderers$miroPivot$newView$cbManualLineDash,
+                                tags$span(
+                                  `data-tooltip` = lang$renderers$miroPivot$newView$cbManualLineDashTooltip,
+                                  class = "info-wrapper tooltip-mobile",
+                                  tags$span(
+                                    class = "fas fa-circle-info", class = "info-icon",
+                                    role = "presentation",
+                                    `aria-label` = "More information"
+                                  )
+                                )
+                              ),
+                              value = FALSE
+                            )
                           )
                         )
-                      ),
+                      },
                       conditionalPanel("input.useCustomLineDash===true",
                         ns = ns,
                         tags$div(
-                          class = "row miro-pivot-custom-colors-wrapper",
+                          class = "row miro-pivot-custom-linedash-wrapper",
                           customLineDashUI
                         )
                       )
@@ -1706,7 +1741,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 refreshRequired <- TRUE
                 dashPatterns <- setNames(
                   lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId) {
-                    dashPatternIn <- gsub("\\s", "", input[[paste0("customLineDashPattern_", labelId)]])
+                    dashPatternIn <- gsub("\\s", "", input[[paste0("lineDashPattern_", labelId)]])
                     values <- strsplit(dashPatternIn, ",")[[1]]
                     if (all(suppressWarnings(!is.na(as.numeric(values))))) {
                       dashPattern <- as.numeric(round(as.numeric(values)))
