@@ -308,6 +308,15 @@
                 }
               }
             },
+            "borderWidth": {
+              "description": "Border width of a series.",
+              "type": "object",
+              "additionalProperties": {
+                "type": [
+                  "integer"
+                ]
+              }
+            },
             "multiChartOptions": {
               "description": "Options for multiChartSeries",
               "type": "object",
@@ -817,6 +826,15 @@
                           "items": {
                             "type": "integer"
                           }
+                        }
+                      },
+                      "borderWidth": {
+                        "description": "Border width of a series.",
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": [
+                            "integer"
+                          ]
                         }
                       },
                       "multiChartOptions": {

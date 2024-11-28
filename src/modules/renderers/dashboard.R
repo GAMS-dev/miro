@@ -972,6 +972,10 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             if (length(currentView$chartOptions$lineDash) && length(currentView$chartOptions$lineDash[[label]])) {
               lineDash <- currentView$chartOptions$lineDash[[label]]
             }
+            borderWidth <- NULL
+            if (length(currentView$chartOptions$borderWidth) && length(currentView$chartOptions$borderWidth[[label]])) {
+              borderWidth <- currentView$chartOptions$borderWidth[[label]]
+            }
 
             if (originalLabel %in% currentView$chartOptions$multiChartSeries) {
               if (chartType %in% c("line", "area", "stackedarea", "timeseries")) {
@@ -1009,6 +1013,9 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               if (!is.null(lineDash)) {
                 args$borderDash <- lineDash
               }
+              if (!is.null(borderWidth)) {
+                args$borderWidth <- borderWidth
+              }
 
               chartJsObj <- do.call(cjsSeries, args)
             } else {
@@ -1034,6 +1041,9 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
               if (!is.null(lineDash)) {
                 args$borderDash <- lineDash
+              }
+              if (!is.null(borderWidth)) {
+                args$borderWidth <- borderWidth
               }
 
               chartJsObj <- do.call(cjsSeries, args)
