@@ -30,6 +30,9 @@ data:
       anonymous-readonly-mode: {{ .Values.proxy.config.anonymousReadonlyMode }}
       authentication: {{ .Values.proxy.config.authentication }}
       max-total-instances: {{ .Values.proxy.config.maxTotalInstances }}
+      {{- if .Values.proxy.config.metrics.enabled }}
+      usage-stats-url: micrometer
+      {{- end }}
       webservice:
         authentication-url: http://{{ .Release.Name }}-auth:8081/login
       openid:
@@ -109,3 +112,11 @@ data:
       servlet:
         session.timeout: 21600
         context-path: {{ .Values.global.rootPath | quote }}
+
+    {{- if .Values.proxy.config.metrics.enabled }}
+    management:
+      prometheus:
+        metrics:
+          export:
+            enabled: true
+    {{- end }}

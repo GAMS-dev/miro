@@ -8,6 +8,14 @@ global:
   # imagePullSecrets:
   #   - registryKeySecretName
   imagePullSecrets: []
+  # nodeSelector: Node labels for pod assignment
+  nodeSelector: {}
+  # tolerations: tolerations for pod assignment
+  tolerations: []
+  # nodeSelector: Node labels for pod assignment of stateful sets (database)
+  nodeSelectorSts: {}
+  # tolerationsSts: tolerations for pod assignment of stateful sets (database)
+  tolerationsSts: []
 image:
   # Global tag of the images. If not specified, AppVersion is used.
   tag: ''
@@ -49,6 +57,9 @@ proxy:
       namespace: ''
       anonymousUser: ''
       anonymousPassword: ''
+    metrics:
+      enabled: false
+      port: 9090
 
 auth:
   image:
@@ -120,4 +131,7 @@ ingress:
   enabled: false
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+  hostname: miroserver.local
+  tls: false
+  tlsSecretName: ''
   hostname: example.com

@@ -16,21 +16,29 @@ metadata:
     {{- end }}
 spec:
   rules:
-    - host: {{ .Values.ingress.hostname }}
+    - host: {{ tpl .Values.ingress.hostname $ | quote }}
       http:
         paths:
-          - path: /
+          - path: {{ .Values.global.rootPath }}
             pathType: Prefix
             backend:
               service:
                 name: {{ .Release.Name }}-auth
                 port:
                   number: 8081
-          - path: /api
+          - path: {{ .Values.global.rootPath | trimSuffix "/" }}/api
             pathType: Prefix
             backend:
               service:
                 name: {{ .Release.Name }}-proxy
                 port:
                   number: 8080
+  tls:
+    {{- if .Values.ingress.tls }}
+    - hosts:
+        - {{ tpl .Values.ingress.hostname $ | quote }}
+      {{- if .Values.ingress.tlsSecretName }}
+      secretName: {{ .Values.ingress.tlsSecretName }}
+      {{- end}}
+    {{- end }}
 {{- end }}

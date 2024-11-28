@@ -21,3 +21,7 @@ spec:
       {{- else if eq .Values.proxy.service.type "ClusterIP" }}
       nodePort: null
       {{- end }}
+    {{- if .Values.proxy.config.metrics.enabled }}
+    - port: {{ .Values.proxy.config.metrics.port | default 9090 }}
+      targetPort: 9090
+    {{- end}}

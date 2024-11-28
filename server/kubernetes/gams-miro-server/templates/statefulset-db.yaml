@@ -21,11 +21,11 @@ spec:
     spec:
       automountServiceAccountToken: false
 {{- include "common.images.renderPullSecrets" ( dict "images" (list .Values.db.image) "context" $) | nindent 6}}
-      {{- if .Values.global.nodeSelector }}
-      nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.global.nodeSelector "context" $) | nindent 8 }}
+      {{- if .Values.global.nodeSelectorSts }}
+      nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.global.nodeSelectorSts "context" $) | nindent 8 }}
       {{- end }}
-      {{- if .Values.global.tolerations }}
-      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.global.tolerations "context" $) | nindent 8 }}
+      {{- if .Values.global.tolerationsSts }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.global.tolerationsSts "context" $) | nindent 8 }}
       {{- end }}
       containers:
       - name: db
