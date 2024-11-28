@@ -1,9 +1,8 @@
 import requests
 from fastapi import Depends, HTTPException, status, Path
 from fastapi.security import HTTPBearer, HTTPBasic, HTTPBasicCredentials
-from fastapi.logger import logger
 
-from app.config import settings
+from app.config import logger, settings
 from app.utils.app_utils import app_is_invisible
 from app.utils.models import User, OidcLoginData
 

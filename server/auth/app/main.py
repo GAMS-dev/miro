@@ -1,7 +1,6 @@
 from fastapi import FastAPI
-from fastapi.logger import logger
 
-from app.config import settings_yml, settings
+from app.config import logger, settings_yml
 from app.routers import login, apps, scenarios, configuration
 from app.utils.utils import use_route_names_as_operation_ids
 
@@ -30,7 +29,7 @@ if settings_yml:
     public_api.include_router(scenarios.router)
     public_api.include_router(login.router)
     use_route_names_as_operation_ids(public_api)
-    app.mount(f"{settings.script_name}/api", public_api)
+    app.mount("/api", public_api)
 else:
     logger.warning(
         "MIRO Server REST API could not be enabled because an outdated docker-compose file was found. Please download the latest docker-compose file to activate the MIRO Server REST API.")

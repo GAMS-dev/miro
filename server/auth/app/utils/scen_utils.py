@@ -4,10 +4,9 @@ import os
 import aiofiles
 from fastapi import UploadFile
 from fastapi.exceptions import HTTPException
-from fastapi.logger import logger
 from starlette import status
 
-from app.config import settings
+from app.config import logger, settings
 from app.utils.miro_proc import run_miro_proc
 from app.utils.models import (ExportFileType, ScenarioConfig,
                               ScenarioPermissions, User)

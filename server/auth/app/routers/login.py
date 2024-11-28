@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
-from fastapi.logger import logger
 
-from app.config import settings
+from app.config import logger, settings
 from app.utils.models import AuthRequest, OidcAuthRequest, AuthResponse, OidcAuthResponse
 from app.dependencies import get_authenticated_user, get_bearer_token, login_user_oidc
 

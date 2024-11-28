@@ -2,18 +2,18 @@ import os
 import tempfile
 from typing import Annotated
 
-from app.config import settings
+from fastapi import (APIRouter, Depends, File, HTTPException, Path, UploadFile,
+                     status)
+from fastapi.param_functions import Form, Query
+from starlette.background import BackgroundTask
+from starlette.responses import FileResponse
+
+from app.config import logger, settings
 from app.dependencies import get_current_app_user
 from app.utils.models import (ExportFileType, ScenarioConfig,
                               ScenarioPermissions, User)
 from app.utils.scen_utils import (add_data, delete_data, download_data,
                                   get_scen_list)
-from fastapi import (APIRouter, Depends, File, HTTPException, Path, UploadFile,
-                     status)
-from fastapi.logger import logger
-from fastapi.param_functions import Form, Query
-from starlette.background import BackgroundTask
-from starlette.responses import FileResponse
 
 router = APIRouter(
     prefix="/scenarios/{app_id}",

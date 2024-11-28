@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 
@@ -56,3 +57,5 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+logger = logging.getLogger("uvicorn")
