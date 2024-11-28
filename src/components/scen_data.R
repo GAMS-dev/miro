@@ -66,17 +66,17 @@ ScenData <- R6Class("ScenData", public = list(
     private$refScenMap[[refId]] <- unique(c(private$refScenMap[[refId]], as.character(scenIds)))
     return(invisible(self))
   },
+  getSandboxOutputWithDataCount = function() {
+    return(sum(vapply(names(ioConfig$modelOut), function(dsName) {
+      as.integer(private$datasetHasData(dsName))
+    }, integer(1L), USE.NAMES = FALSE)))
+  },
   getSandboxHasOutputData = function(scriptOutput) {
     if (!is.null(scriptOutput) && scriptOutput$hasResults()) {
       return(TRUE)
     }
     for (dsName in names(ioConfig$modelOut)) {
-      if (identical(dsName, scalarsOutName)) {
-        if (identical(length(private$cachedData[["sb"]][["data"]][[dsName]]), 3L) &&
-          !all(is.na(private$cachedData[["sb"]][["data"]][[dsName]][[3]]))) {
-          return(TRUE)
-        }
-      } else if (nrow(private$cachedData[["sb"]][["data"]][[dsName]]) > 0L) {
+      if (private$datasetHasData(dsName)) {
         return(TRUE)
       }
     }
@@ -395,5 +395,16 @@ ScenData <- R6Class("ScenData", public = list(
       )
     }
     return(invisible(self))
+  },
+  datasetHasData = function(dsName) {
+    if (dsName %in% c(scalarsOutName, scalarEquationsOutName)) {
+      if (identical(length(private$cachedData[["sb"]][["data"]][[dsName]]), 3L) &&
+        !all(is.na(private$cachedData[["sb"]][["data"]][[dsName]][[3]]))) {
+        return(TRUE)
+      }
+    } else if (nrow(private$cachedData[["sb"]][["data"]][[dsName]]) > 0L) {
+      return(TRUE)
+    }
+    return(FALSE)
   }
 ))
