@@ -721,7 +721,7 @@
         "dashDot": "Dash-Dot",
         "dashDotDot": "Dash-Dot-Dot",
         "customPattern": "Custom Pattern",
-        "lineDashPlaceholder": "For example '%s' or '%s'",
+        "cbBorderWidth": "Set border width",
         "btCancel": "Cancel",
         "btSave": "Save",
         "btCancelOverwrite": "No",

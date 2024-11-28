@@ -762,7 +762,7 @@
         "dashDot": "虚点线",
         "dashDotDot": "虚点点线",
         "customPattern": "自定义虚线",
-        "lineDashPlaceholder": "例如 '%s' 或 '%s'",
+        "cbBorderWidth": "边框宽度",
         "btCancel": "取消",
         "btSave": "保存",
         "btCancelOverwrite": "不",

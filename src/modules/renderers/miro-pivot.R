@@ -1392,6 +1392,39 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 )
               )
             })
+            customBorderWidthUI <- lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId) {
+              label <- miroPivotState$currentSeriesLabels[labelId]
+              if (length(names(viewOptions$chartOptions$borderWidth)) &&
+                label %in% names(viewOptions$chartOptions$borderWidth)) {
+                borderWidthIn <- round(as.numeric(viewOptions$chartOptions$borderWidth[[label]]))
+
+                if (length(borderWidthIn)) {
+                  borderWidth <- borderWidthIn
+                } else {
+                  borderWidth <- ifelse(pivotRenderer %in% c(
+                    "bar", "stackedbar", "horizontalbar", "horizontalstackedbar"
+                  ),
+                  0L, 3L
+                  )
+                }
+              } else {
+                borderWidth <- ifelse(pivotRenderer %in% c(
+                  "bar", "stackedbar", "horizontalbar", "horizontalstackedbar"
+                ),
+                0L, 3L
+                )
+              }
+              tagList(
+                tags$div(
+                  class = "col-sm-6",
+                  numericInput(ns(paste0("borderWidth_", labelId)),
+                    label = label,
+                    value = borderWidth,
+                    min = 0L
+                  )
+                )
+              )
+            })
             additionalOptionsContent <- tags$div(
               id = ns("newViewOptionsWrapper"), style = "text-align:left;",
               tags$div(
@@ -1485,6 +1518,26 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                         tags$div(
                           class = "row miro-pivot-custom-linedash-wrapper",
                           customLineDashUI
+                        )
+                      ),
+                      if (!pivotRenderer %in% c("pie", "doughnut")) {
+                        tags$div(
+                          class = "row",
+                          tags$div(
+                            class = "col-sm-6",
+                            checkboxInput_MIRO(ns("useCustomBorderWidth"),
+                              label = lang$renderers$miroPivot$newView$cbBorderWidth,
+                              value = length(viewOptions$chartOptions$borderWidth) > 0L,
+                              width = "100%"
+                            )
+                          )
+                        )
+                      },
+                      conditionalPanel("input.useCustomBorderWidth===true",
+                        ns = ns,
+                        tags$div(
+                          class = "row miro-pivot-custom-borderwidth-wrapper",
+                          customBorderWidthUI
                         )
                       )
                     ))
@@ -1757,6 +1810,25 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
                 dashPatterns <- Filter(Negate(is.null), dashPatterns)
                 newViewConfig$chartOptions[["lineDash"]] <- dashPatterns
+              }
+              if (isTRUE(input[["useCustomBorderWidth"]])) {
+                refreshRequired <- TRUE
+                borderWidths <- setNames(
+                  lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId) {
+                    borderWidthIn <- as.numeric(input[[paste0("borderWidth_", labelId)]])
+                    if (suppressWarnings(!is.na(borderWidthIn)) &&
+                      !(isolate(input$pivotRenderer) %in% c("bar", "stackedbar", "horizontalbar", "horizontalstackedbar") && borderWidthIn == 0) &&
+                      !(isolate(input$pivotRenderer) %in% c("line", "scatter", "area", "stackedarea", "radar", "timeseries") && borderWidthIn == 3L)) {
+                      borderWidth <- as.numeric(round(borderWidthIn))
+                    } else {
+                      borderWidth <- NULL
+                    }
+                    return(borderWidth)
+                  }), miroPivotState$currentSeriesLabels
+                )
+
+                borderWidths <- Filter(Negate(is.null), borderWidths)
+                newViewConfig$chartOptions[["borderWidth"]] <- borderWidths
               }
               for (advancedOption in list(
                 list(
@@ -2723,6 +2795,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           if (length(currentView$chartOptions$lineDash) && length(currentView$chartOptions$lineDash[[label]])) {
             lineDash <- currentView$chartOptions$lineDash[[label]]
           }
+          borderWidth <- NULL
+          if (length(currentView$chartOptions$borderWidth) && length(currentView$chartOptions$borderWidth[[label]])) {
+            borderWidth <- currentView$chartOptions$borderWidth[[label]]
+          }
+
 
           if (label %in% currentView$chartOptions$multiChartSeries) {
             if (pivotRenderer %in% c("line", "area", "stackedarea", "timeseries")) {
@@ -2760,6 +2837,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             if (!is.null(lineDash)) {
               args$borderDash <- lineDash
             }
+            if (!is.null(borderWidth)) {
+              args$borderWidth <- borderWidth
+            }
 
             chartJsObj <- do.call(cjsSeries, args)
           } else {
@@ -2793,6 +2873,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
             if (!is.null(lineDash)) {
               args$borderDash <- lineDash
+            }
+            if (!is.null(borderWidth)) {
+              args$borderWidth <- borderWidth
             }
 
             chartJsObj <- do.call(cjsSeries, args)

@@ -2819,7 +2819,7 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "lineDashPlaceholder": {
+                "cbBorderWidth": {
                   "type": "string",
                   "minLength": 1
                 },

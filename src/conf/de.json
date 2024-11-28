@@ -762,7 +762,7 @@
         "dashDot": "Strich-Punkt",
         "dashDotDot": "Strich-Punkt-Punkt",
         "customPattern": "Benutzerdefiniertes Muster",
-        "lineDashPlaceholder": "z.B. '%s' oder '%s'",
+        "cbBorderWidth": "Rahmenbreite festlegen",
         "btCancel": "Abbrechen",
         "btSave": "Speichern",
         "btCancelOverwrite": "Nein",
