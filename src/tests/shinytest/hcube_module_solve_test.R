@@ -52,6 +52,15 @@ app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeo
 # create normal scenario first
 app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSolve']")
+Sys.sleep(0.5)
+app$wait_for_js("$('#modelStatus').is(':visible')", timeout = 10000L)
+app$click(selector = "#sidebarItemExpanded a[data-value='inputData']")
+Sys.sleep(0.5)
+app$click(selector = "#btSolve")
+app$wait_for_js('$(\'button[data-dismiss="modal"]:visible\').length > 0', timeout = 10000L)
+expect_identical(app$get_js("$('.modal-body').text().includes('is being submitted')"), TRUE)
+app$run_js('$(\'button[data-dismiss="modal"]:visible\').click();', timeout = 50)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
 timeout <- 600L
 repeat{
   if (isTRUE(app$get_js("$('#outputDataTitle').is(':visible');", timeout = 50L))) {

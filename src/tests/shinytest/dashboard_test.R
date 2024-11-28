@@ -16,6 +16,7 @@ expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_te
 expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_train')[0].innerText"), timeout = 50), "ERROR TRAIN\n951.17"))
 # switch data view
 expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-dowVSindexChart').is(':visible')")))
+expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-abserrorTable').is(':visible')")))
 expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-stockWeightChart').is(':hidden');")))
 app$click(selector = paste0("div[id='tab_1_3-", rendererName, "-error_train']"))
 Sys.sleep(1)

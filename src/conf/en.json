@@ -53,7 +53,7 @@
       "help":{
         "title": "Help",
         "doc": "Documentation",
-        "forum": "GAMS World Forum",
+        "forum": "GAMS Forum",
         "commandPalette": "Command palette",
         "about": "About"
       }

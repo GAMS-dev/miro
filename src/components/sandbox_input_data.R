@@ -1394,6 +1394,7 @@ SliderWidget <- R6::R6Class("SliderWidget",
               )
               hideEl(private$session, paste0("#no_data_dep_", private$id))
             }
+            newValues <- lapply(newValues, function(x) if (all(is.na(x))) NULL else x)
             private$currentConfig <- newValues
             updateSliderInput(private$session,
               private$config$htmlSelector,
@@ -1491,20 +1492,19 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
           if (length(newAliases)) {
             newChoices <- setNames(newChoices, newAliases)
           }
-          currentValue <- NULL
+          currentValue <- isolate(private$data())
           if (!private$isInitialized) {
             private$isInitialized <- TRUE
-            currentValue <- isolate(private$data())
             showEl(private$session, paste0("#", private$config$htmlSelector))
             hideEl(private$session, paste0("#no_data_dep_", private$id))
-            if (length(currentValue) && !all(currentValue %in% newChoices)) {
-              flog.info(
-                "Dropdown value(s): %s for symbol: %s not part of dependent choices. Will reset value.",
-                paste(currentValue, collapse = ", "), private$symName
-              )
-              private$ignoreUpdate <- 0L
-              currentValue <- newChoices[[1L]]
-            }
+          }
+          if (length(currentValue) && !all(currentValue %in% newChoices)) {
+            flog.info(
+              "Dropdown value(s): %s for symbol: %s not part of dependent choices. Will reset value.",
+              paste(currentValue, collapse = ", "), private$symName
+            )
+            private$ignoreUpdate <- 0L
+            currentValue <- newChoices[[1L]]
           }
           if (identical(config$activateModules$hcube, TRUE)) {
             private$currentChoices <- newChoices

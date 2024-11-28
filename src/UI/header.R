@@ -39,7 +39,7 @@ header <- dashboardHeader(
         lang$nav$header$help$doc
       )),
       tags$li(tags$a(
-        href = "https://forum.gamsworld.org/viewforum.php?f=14",
+        href = "https://forum.gams.com/c/gams-miro/12",
         target = "_blank",
         tags$div(
           class = "menu-icon-align",
