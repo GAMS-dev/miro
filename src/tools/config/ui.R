@@ -80,7 +80,7 @@ header_admin <- dashboardHeader(
         target = "_blank", lang$nav$header$help$doc
       )),
       tags$li(tags$a(
-        href = "https://forum.gamsworld.org/viewforum.php?f=14",
+        href = "https://forum.gams.com/c/gams-miro/12",
         target = "_blank", lang$nav$header$help$forum
       )),
       tags$li(HTML(paste0(

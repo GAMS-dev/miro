@@ -355,7 +355,7 @@
           },
           "abserror": {
             "aggregationFunction": "sum",
-            "pivotRenderer": "area",
+            "pivotRenderer": "table",
             "domainFilter": {
               "default": null
             },
