@@ -88,6 +88,9 @@ data:
           - op: add
             path: /spec/priorityClassName
             value: {{ .Release.Name }}-app-priority
+          - op: add
+            path: /metadata/annotations
+            value: { "cluster-autoscaler.kubernetes.io/safe-to-evict": "false" }
           {{- if .Values.global.nodeSelector }}
           - op: add
             path: /spec/nodeSelector
@@ -126,6 +129,9 @@ data:
           - op: add
             path: /spec/priorityClassName
             value: {{ .Release.Name }}-app-priority
+          - op: add
+            path: /metadata/annotations
+            value: { "cluster-autoscaler.kubernetes.io/safe-to-evict": "false" }
           {{- if .Values.global.nodeSelector }}
           - op: add
             path: /spec/nodeSelector

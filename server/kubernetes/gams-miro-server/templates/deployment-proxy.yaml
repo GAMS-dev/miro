@@ -17,6 +17,8 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}-proxy
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/cm-proxy.yaml") . | sha256sum }}
     spec:
       serviceAccountName: {{ .Release.Name }}-proxy-sa
       automountServiceAccountToken: true
