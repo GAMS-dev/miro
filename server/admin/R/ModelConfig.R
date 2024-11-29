@@ -166,7 +166,7 @@ ModelConfig <- R6::R6Class("ModelConfig",
       appConfig <- private$currentModelConfigs[[index]]
       if ("logoURL" %in% names(appConfig)) {
         logoB64 <- tryCatch(getLogoB64(file.path(
-          "data",
+          MIRO_DATA_DIR,
           "logos", appConfig[["logoURL"]]
         )), error = function(e) {
           flog.info("Problems reading app logo. Default logo will be used. Error: %s", conditionMessage(e))
