@@ -16,12 +16,12 @@ spec:
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: efs-sc
+  storageClassName: {{ .Values.persistence.efs.storageClass }}
   csi:
     driver: efs.csi.aws.com
-    volumeHandle: {{ .Values.persistence.efsFileSystemId }}  # EFS File System ID
-    {{- if .Values.persistence.accessPoint }}
-    volumeAttributes:
-      accessPoint: "{{ .Values.persistence.accessPoint }}"   # EFS Access Point ID (optional)
+    {{- if .Values.persistence.efs.accessPointId }}
+    volumeHandle: {{ .Values.persistence.efs.fileSystemId }}::{{ .Values.persistence.efs.accessPointId }}
+    {{- else}}
+    volumeHandle: {{ .Values.persistence.efs.fileSystemId }}
     {{- end }}
 {{- end }}

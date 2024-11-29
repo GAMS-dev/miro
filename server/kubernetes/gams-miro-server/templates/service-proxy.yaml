@@ -16,6 +16,7 @@ spec:
   ports:
     - port: 8080
       targetPort: 8080
+      name: application
       {{- if (and (or (eq .Values.proxy.service.type "NodePort") (eq .Values.proxy.service.type "LoadBalancer")) (not (empty .Values.proxy.service.nodePort))) }}
       nodePort: {{ .Values.proxy.service.nodePort }}
       {{- else if eq .Values.proxy.service.type "ClusterIP" }}
@@ -24,4 +25,5 @@ spec:
     {{- if .Values.proxy.config.metrics.enabled }}
     - port: {{ .Values.proxy.config.metrics.port | default 9090 }}
       targetPort: 9090
+      name: metrics
     {{- end}}

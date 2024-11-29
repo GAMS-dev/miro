@@ -33,12 +33,15 @@ spec:
                 name: {{ .Release.Name }}-proxy
                 port:
                   number: 8080
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ tpl .Values.ingress.className $ | quote }}
+  {{- end }}
+  {{- if .Values.ingress.tls }}
   tls:
-    {{- if .Values.ingress.tls }}
     - hosts:
         - {{ tpl .Values.ingress.hostname $ | quote }}
       {{- if .Values.ingress.tlsSecretName }}
       secretName: {{ .Values.ingress.tlsSecretName }}
       {{- end}}
-    {{- end }}
+  {{- end }}
 {{- end }}

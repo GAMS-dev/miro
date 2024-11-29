@@ -108,11 +108,11 @@ db:
       memory: 3072Mi
 
 persistence:
-  type: 'local'
+  type: 'local' # local or efs
   efs:
     fileSystemId: 'fs-12345678' # The EFS File System ID
-    accessPoint: '' # Optional, for EFS Access Points
-    storageClass: 'efs-sc' # EFS storage class
+    accessPointId: '' # Optional, for EFS Access Points
+    storageClass: 'efs-sc' # EFS storage class. NOTE: You need to manually install this storage class in the cluster!
   local:
     path: '/mnt/localstorage'
 
@@ -131,7 +131,6 @@ ingress:
   enabled: false
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
-  hostname: miroserver.local
   tls: false
   tlsSecretName: ''
   hostname: example.com
