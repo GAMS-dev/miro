@@ -38,7 +38,7 @@ spec:
         command:
           - sh
           - "-c"
-          - while true; do sleep 30; done;
+          - "trap 'echo Shutting down; exit 0' SIGTERM SIGINT; /bin/sleep infinity & wait"
         resources:
           limits:
             cpu: 1000m
