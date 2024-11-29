@@ -81,7 +81,25 @@ data:
             value:
               - mountPath: /home/miro/mnt
                 name: shared-data
-                readOnly: true
+          - op: add
+            path: /spec/containers/0/resources
+            value:
+              {{- include "common.tplvalues.render" (dict "value" .Values.miro.resources "context" $) | nindent 14 }}
+          - op: add
+            path: /spec/priorityClassName
+            value: {{ .Release.Name }}-app-priority
+          {{- if .Values.global.nodeSelector }}
+          - op: add
+            path: /spec/nodeSelector
+            value:
+              {{- include "common.tplvalues.render" (dict "value" .Values.global.nodeSelector "context" $) | nindent 14 }}
+          {{- end }}
+          {{- if .Values.global.tolerations }}
+          - op: add
+            path: /spec/tolerations
+            value:
+              {{- include "common.tplvalues.render" (dict "value" .Values.global.tolerations "context" $) | nindent 14 }}
+          {{- end }}
         global-pod-patches-admin: |
           - op: add
             path: /spec/volumes
@@ -101,6 +119,25 @@ data:
             value:
               - mountPath: /home/miro/admin/mnt
                 name: shared-data
+          - op: add
+            path: /spec/containers/0/resources
+            value:
+              {{- include "common.tplvalues.render" (dict "value" .Values.admin.resources "context" $) | nindent 14 }}
+          - op: add
+            path: /spec/priorityClassName
+            value: {{ .Release.Name }}-app-priority
+          {{- if .Values.global.nodeSelector }}
+          - op: add
+            path: /spec/nodeSelector
+            value:
+              {{- include "common.tplvalues.render" (dict "value" .Values.global.nodeSelector "context" $) | nindent 14 }}
+          {{- end }}
+          {{- if .Values.global.tolerations }}
+          - op: add
+            path: /spec/tolerations
+            value:
+              {{- include "common.tplvalues.render" (dict "value" .Values.global.tolerations "context" $) | nindent 14 }}
+          {{- end }}
 
     spring:
       application.name: {{ .Values.proxy.config.title | quote }}

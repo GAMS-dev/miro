@@ -30,7 +30,7 @@ proxy:
       cpu: '100m'
       memory: 250Mi
     limits:
-      cpu: '1000m'
+      cpu: '2000m'
       memory: 500Mi
   service:
     type: ClusterIP # ClusterIP or NodePort
@@ -83,12 +83,26 @@ miro:
     registry: docker.io/gams
     repository: miro-ui
     tag: ''
+  resources:
+    requests:
+      cpu: '500m'
+      memory: 2000Mi
+    limits:
+      cpu: '2000m'
+      memory: 2000Mi
 
 admin:
   image:
     registry: docker.io/gams
     repository: miro-admin
     tag: ''
+  resources:
+    requests:
+      cpu: '100m'
+      memory: 500Mi
+    limits:
+      cpu: '1000m'
+      memory: 2000Mi
 
 db:
   image:
@@ -117,7 +131,6 @@ persistence:
     path: '/mnt/localstorage'
 
 securityContext:
-  enabled: true
   runAsNonRoot: true
   runAsUser: 1001
   fsGroup: 1001

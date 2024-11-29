@@ -30,6 +30,7 @@ spec:
       {{- if .Values.global.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.global.tolerations "context" $) | nindent 8 }}
       {{- end }}
+      priorityClassName: {{ .Release.Name }}-system-priority
       initContainers:
       - name: init-create-directories
         image: busybox:latest

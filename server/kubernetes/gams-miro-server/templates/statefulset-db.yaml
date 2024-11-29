@@ -27,6 +27,7 @@ spec:
       {{- if .Values.global.tolerationsSts }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.global.tolerationsSts "context" $) | nindent 8 }}
       {{- end }}
+      priorityClassName: {{ .Release.Name }}-system-priority
       containers:
       - name: db
         image: "{{ .Values.db.image.registry }}/{{ .Values.db.image.repository }}:{{ .Values.db.image.tag }}"

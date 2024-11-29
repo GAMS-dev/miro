@@ -1,0 +1,15 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: {{ .Release.Name }}-system-priority
+value: 1000000
+globalDefault: false
+description: "This priority class is used for pods critical for the MIRO Server instance to function."
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: {{ .Release.Name }}-app-priority
+value: 500000
+globalDefault: false
+description: "This priority class is used for MIRO application containers."
