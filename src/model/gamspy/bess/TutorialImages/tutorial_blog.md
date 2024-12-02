@@ -2,36 +2,478 @@
 
 In this tutorial we will have a look at the many features MIRO offers to generate an application for your optimization problem. This can be done starting with either a GAMS or GAMSPy implementation of your model. In this tutorial we will start with a GAMSPy model, where we will first have to define the input and output of our application. Note that except for the first section where we go through the changes in the model, there is no difference for the MIRO configuration depending on whether you use GAMS or GAMSPy as the modelling language. Then we will look at the visualization options that you can use directly, based only on these input/output definitions. This can already be helpful when implementing the model, as you can quickly plot the output data and check that the results make sense. And if they do not add up, you have a good starting point for where to look for errors. Next we look at the configuration mode. Here you can add a lot of default configurations without having to touch any code. Since the configuration mode options are sometimes not enough, we will then look at adding some custom renderers and custom widgets. Finally, we will look at some more custom additions that you can add to your MIRO application.
 
+If you don't have MIRO, you need to [install it](https://www.gams.com/miro/download.html) first.
+
 ## Implement the Model
 
-First you need to implement the model you want to make an application for, using either GAMS or GAMSPy, as mentioned above we will be using GAMSPy. For instructions on what code changes you need to make in GAMS, see the documentation [LINK](https://www.gams.com/miro/model.html#model-adjustments). 
+First you need to implement the model you want to make an application for, using either GAMS or GAMSPy, as mentioned above we will be using GAMSPy. For instructions on what code changes you need to make in GAMS, see the [documentation](https://www.gams.com/miro/model.html#model-adjustments). 
 
-We will look at a "A Battery Energy Storage System (BESS) sizing problem".
+We will look at a "A Battery Energy Storage System (BESS) sizing problem". This model is based on an example from the company [NAG](https://nag.com/), which can be found on their GitHub: [BESS.ipynb](https://github.com/numericalalgorithmsgroup/NAGPythonExamples/blob/master/local_optimization/MILP/BESS_MILP.ipynb).
 This model aims to optimize a city's hourly energy schedule by selecting the most cost-effective combination of energy sources, including the use of a BESS to store low-cost energy during off-peak hours and release it during high-demand periods. By evaluating the storage capacity and discharge rate of various BESS options, the model identifies the configuration that minimizes overall energy costs while reliably meeting demand. We recommend that you have a quick look at the mathematical description in the README.md first, since we will use the variable names directly. 
 
-**add the model code here so that people can follow along based on the model**
+**Either give the Readme here or prob better link to the gallery**
+
+**NEED TO MAKE SURE LOWER/UPPERCASE FOR DESCRIPTIONS IS CONSISTENT**
+
+<details>
+  <summary>GAMSPy model code</summary>
+
+```python
+import pandas as pd
+import sys
+
+from gamspy import (
+    Container,
+    Alias,
+    Equation,
+    Model,
+    Parameter,
+    Sense,
+    Set,
+    Sum,
+    Variable,
+    Ord,
+    Options,
+)
+
+
+def main():
+    m = Container()
+
+    # Generator parameters
+    generator_specifications_input = pd.DataFrame(
+        [
+            ["gen0", 0.010694, 142.7348, 30, 70, 8, 6],
+            ["gen1", 0.018761, 168.9075, 50, 100, 8, 6],
+            ["gen2", 0.0076121, 313.9102, 30, 120, 8, 6],
+        ],
+        columns=[
+            "i",
+            "cost_per_unit",
+            "fixed_cost",
+            "min_power_output",
+            "max_power_output",
+            "min_up_time",
+            "min_down_time",
+        ],
+    )
+
+    # Load demand to be fulfilled by the energy management system
+    timewise_load_demand_and_cost_external_grid_input = pd.DataFrame(
+        [
+            ["hour00", 200, 0.09],
+            ["hour01", 180, 0.08],
+            ["hour02", 170, 0.08],
+            ["hour03", 160, 0.08],
+            ["hour04", 150, 0.08],
+            ["hour05", 150, 0.08],
+            ["hour06", 170, 0.09],
+            ["hour07", 250, 0.11],
+            ["hour08", 320, 0.13],
+            ["hour09", 300, 0.12],
+            ["hour10", 280, 0.11],
+            ["hour11", 260, 0.10],
+            ["hour12", 270, 0.10],
+            ["hour13", 280, 0.10],
+            ["hour14", 290, 0.11],
+            ["hour15", 300, 0.12],
+            ["hour16", 320, 0.13],
+            ["hour17", 350, 0.14],
+            ["hour18", 340, 0.13],
+            ["hour19", 330, 0.12],
+            ["hour20", 320, 0.11],
+            ["hour21", 280, 0.10],
+            ["hour22", 240, 0.09],
+            ["hour23", 220, 0.09],
+        ],
+        columns=["j", "load_demand", "cost_external_grid"],
+    )
+
+    # Set
+    i = Set(
+        m,
+        name="i",
+        records=generator_specifications_input["i"],
+        description="generators",
+    )
+    j = Set(
+        m,
+        name="j",
+        records=timewise_load_demand_and_cost_external_grid_input["j"],
+        description="hours",
+    )
+    t = Alias(m, name="t", alias_with=j)
+
+    # Data
+    # Generator parameters
+    gen_cost_per_unit = Parameter(
+        m,
+        name="gen_cost_per_unit",
+        domain=[i],
+        records=generator_specifications_input[["i", "cost_per_unit"]],
+        description="cost per unit of generator i",
+    )
+
+    gen_fixed_cost = Parameter(
+        m,
+        name="gen_fixed_cost",
+        domain=[i],
+        records=generator_specifications_input[["i", "fixed_cost"]],
+        description="fixed cost of generator i",
+    )
+
+    gen_min_power_output = Parameter(
+        m,
+        name="gen_min_power_output",
+        domain=[i],
+        records=generator_specifications_input[["i", "min_power_output"]],
+        description="minimal power output of generator i",
+    )
+
+    gen_max_power_output = Parameter(
+        m,
+        name="gen_max_power_output",
+        domain=[i],
+        records=generator_specifications_input[["i", "max_power_output"]],
+        description="maximal power output of generator i",
+    )
+
+    gen_min_up_time = Parameter(
+        m,
+        name="gen_min_up_time",
+        domain=[i],
+        records=generator_specifications_input[["i", "min_up_time"]],
+        description="minimal up time of generator i",
+    )
+
+    gen_min_down_time = Parameter(
+        m,
+        name="gen_min_down_time",
+        domain=[i],
+        records=generator_specifications_input[["i", "min_down_time"]],
+        description="minimal down time of generator i",
+    )
+
+    # Battery parameters
+    cost_bat_power = Parameter(m, "cost_bat_power", records=0.2)
+    cost_bat_energy = Parameter(m, "cost_bat_energy", records=0.25)
+
+    # Load demand and external grid
+    load_demand = Parameter(
+        m,
+        name="load_demand",
+        domain=[j],
+        records=timewise_load_demand_and_cost_external_grid_input[["j", "load_demand"]],
+        description="load demand at hour j",
+    )
+
+    cost_external_grid = Parameter(
+        m,
+        name="cost_external_grid",
+        domain=[j],
+        records=timewise_load_demand_and_cost_external_grid_input[
+            ["j", "cost_external_grid"]
+        ],
+        description="cost of the external grid at hour j",
+    )
+
+    max_input_external_grid = Parameter(
+        m,
+        name="max_input_external_grid",
+        records=15,
+        description="maximal power that can be imported from the external grid every hour",
+    )
+
+    # Variable
+    # Generator
+    gen_power = Variable(
+        m,
+        name="gen_power",
+        type="positive",
+        domain=[i, j],
+        description="Dispatched power from generator i at hour j",
+    )
+
+    gen_active = Variable(
+        m,
+        name="gen_active",
+        type="binary",
+        domain=[i, j],
+        description="is generator i active at hour j",
+    )
+
+    # Battery
+    battery_power = Variable(
+        m,
+        name="battery_power",
+        domain=[j],
+        description="power charged or discharged from the battery at hour j",
+    )
+
+    battery_delivery_rate = Variable(
+        m,
+        name="battery_delivery_rate",
+        description="power (delivery) rate of the battery energy system",
+    )
+
+    battery_storage = Variable(
+        m,
+        name="battery_storage",
+        description="energy (storage) rate of the battery energy system",
+    )
+
+    # External grid
+    external_grid_power = Variable(
+        m,
+        name="external_grid_power",
+        type="positive",
+        domain=[j],
+        description="power imported from the external grid at hour j",
+    )
+
+    # Equation
+    fulfill_load = Equation(
+        m,
+        name="fulfill_load",
+        domain=[j],
+        description="load balance needs to be met very hour j",
+    )
+
+    gen_above_min_power = Equation(
+        m,
+        name="gen_above_min_power",
+        domain=[i, j],
+        description="generators power should be above the minimal output",
+    )
+
+    gen_below_max_power = Equation(
+        m,
+        name="gen_below_max_power",
+        domain=[i, j],
+        description="generators power should be below the maximal output",
+    )
+
+    gen_above_min_down_time = Equation(
+        m,
+        name="gen_above_min_down_time",
+        domain=[i, j],
+        description="generators down time should be above the minimal down time",
+    )
+
+    gen_above_min_up_time = Equation(
+        m,
+        name="gen_above_min_up_time",
+        domain=[i, j],
+        description="generators up time should be above the minimal up time",
+    )
+
+    battery_above_min_delivery = Equation(
+        m,
+        name="battery_above_min_delivery",
+        domain=[j],
+        description="battery delivery rate (charge rate) above min power rate",
+    )
+
+    battery_below_max_delivery = Equation(
+        m,
+        name="battery_below_max_delivery",
+        domain=[j],
+        description="battery delivery rate below max power rate",
+    )
+
+    battery_above_min_storage = Equation(
+        m,
+        name="battery_above_min_storage",
+        domain=[t],
+        description="battery storage above negative energy rate (since negative power charges the battery)",
+    )
+
+    battery_below_max_storage = Equation(
+        m,
+        name="battery_below_max_storage",
+        domain=[t],
+        description="sum over battery delivery below zero (cant deliver energy that is not stored)",
+    )
+
+    external_power_upper_limit = Equation(
+        m,
+        name="external_power_upper_limit",
+        domain=[j],
+        description=" input from the external grid is limited",
+    )
+
+    fulfill_load[j] = (
+        Sum(i, gen_power[i, j]) + battery_power[j] + external_grid_power[j]
+        == load_demand[j]
+    )
+
+    gen_above_min_power[i, j] = (
+        gen_min_power_output[i] * gen_active[i, j] <= gen_power[i, j]
+    )
+
+    gen_below_max_power[i, j] = (
+        gen_power[i, j] <= gen_max_power_output[i] * gen_active[i, j]
+    )
+
+    # if j=0 -> j.lag(1) = 0 which doesn't brake the equation,
+    # since generator is of at start, resulting in negative right side, therefore the sum is always above
+    gen_above_min_down_time[i, j] = Sum(
+        t.where[(Ord(t) >= Ord(j)) & (Ord(t) <= (Ord(j) + gen_min_down_time[i] - 1))],
+        1 - gen_active[i, t],
+    ) >= gen_min_down_time[i] * (gen_active[i, j.lag(1)] - gen_active[i, j])
+
+    # and for up it correctly starts the check that if its turned on in the first step
+    # it has to stay on for the min up time
+    gen_above_min_up_time[i, j] = Sum(
+        t.where[(Ord(t) >= Ord(j)) & (Ord(t) <= (Ord(j) + gen_min_up_time[i] - 1))],
+        gen_active[i, t],
+    ) >= gen_min_up_time[i] * (gen_active[i, j] - gen_active[i, j.lag(1)])
+
+    battery_above_min_delivery[j] = -battery_delivery_rate <= battery_power[j]
+
+    battery_below_max_delivery[j] = battery_power[j] <= battery_delivery_rate
+
+    battery_above_min_storage[t] = -battery_storage <= Sum(
+        j.where[Ord(j) <= Ord(t)], battery_power[j]
+    )
+
+    battery_below_max_storage[t] = Sum(j.where[Ord(j) <= Ord(t)], battery_power[j]) <= 0
+
+    external_power_upper_limit[j] = external_grid_power[j] <= max_input_external_grid
+
+    obj = (
+        Sum(
+            j,
+            Sum(i, gen_cost_per_unit[i] * gen_power[i, j] + gen_fixed_cost[i])
+            + cost_external_grid[j] * external_grid_power[j],
+        )
+        + cost_bat_power * battery_delivery_rate
+        + cost_bat_energy * battery_storage
+    )
+
+    # Solve
+    bess = Model(
+        m,
+        name="bess",
+        equations=m.getEquations(),
+        problem="MIP",
+        sense=Sense.MIN,
+        objective=obj,
+    )
+
+    bess.solve(
+        solver="CPLEX",
+        output=sys.stdout,
+        options=Options(equation_listing_limit=1, relative_optimality_gap=0),
+    )
+
+
+if __name__ == "__main__":
+    main()
+
+```
+
+</details>
 
 ### Input
 
 Let's start with the simpler inputs. As you can see, we have three scalar input parameters. For these we simply need to add the `is_miro_input=True` option to their parameter definitions.
 
-CODE SNIPPET
+```python
+# Battery parameters
+cost_bat_power = Parameter(m, "cost_bat_power", records=0.2, is_miro_input=True)
+cost_bat_energy = Parameter(m, "cost_bat_energy", records=0.25, is_miro_input=True)
 
+# Load demand and external grid
+max_input_external_grid = Parameter(
+    m,
+    name="max_input_external_grid",
+    records=15,
+    is_miro_input=True,
+    description="maximal power that can be imported from the external grid every hour",
+)
 
-For the generator specifications and the time schedule inputs we need to change a bit more. The model depends on two sets, one for the possible generators and one for the hours when the load demand should be met. Since these two sets are not fixed, but are to be part of the input, we first define the records with our default values. GAMS is domain driven, so for our multidimensional parameters we also need to specify all the necessary domains. This can be done either by using the [Universal Set](https://gamspy.readthedocs.io/en/latest/user/basics/set.html#the-universal-set-as-set-identifier) or by directly specifying all necessary domains, which is generally the preferred method. For a MIRO application, however, the second option is the **only** possible way, since if we want to use this multidimensional parameter as a table in MIRO, it is necessary to already know which columns the table will have. Therefore we define additional sets for the corresponding headers. As mentioned above, these header sets are the recommended way to handle multidimensional parameters in any GAMS/GAMSPy model.
+```
 
-Now for the additions to make these into MIRO inputs. First we need to set `is_miro_input=True` again. As we want them to be displayed as tables, we also set `is_miro_table=True`. Finally, the most important part, we need to set `domain_forwarding=[True, False]`. This means that we want the domain corresponding to our generator set to be forwarded so that the set elements are taken from the MIRO application. The headers are known and not part of the input, so we set the second element to False.
+For the generator specifications and schedule inputs, we need to change a little more. The model depends on two sets, one for the possible generators and one for the hours when the load demand should be met. Since these two sets are not fixed, but should be part of the input, we will use [Domain Forwarding](https://gamspy.readthedocs.io/en/latest/user/basics/set.html#implicit-set-definition-via-domain-forwarding). This means that we implicitly define our set based on one parameter. However, since we have multiple parameters that depend on these sets, and we want to have a single source of truth, we need to combine them. So in our MIRO application we will end up with one table containing all the generator specifications and one for the schedule. To do this, we define additional sets for the corresponding headers:
 
-CODE SNIPPET
+```python
 
+generator_spec_header = Set(
+    m,
+    name="generator_spec_header",
+    records=[
+        "cost_per_unit",
+        "fixed_cost",
+        "min_power_output",
+        "max_power_output",
+        "min_up_time",
+        "min_down_time",
+    ],
+)
+```
 
-We have two parameters dependent on a given hour, `load_demand` and `cost_external_grid`, so to have a single source of truth wrt. the hour set we combine them into one parameter. Now we just need to make the same changes as for the generator specifications. 
+And a parameter that contains all the information:
 
-In this example it is not necessary to do any further calculations based on the input values. But this could easily be done. An example of this can be seen in vrptw. Here we have longitude and latitude values as input, but our model needs the individual distances. So we simply define a new parameter that depends on our MIRO input. You can use any mathematical calculation allowed in Python for this!
+```python
+generator_specifications = Parameter(
+    m,
+    name="generator_specifications",
+    domain=[i, generator_spec_header],
+    domain_forwarding=[True, False],
+    records=generator_specifications_input.melt(
+        id_vars="i", var_name="generator_spec_header"
+    ),
+    is_miro_input=True,
+    is_miro_table=True,
+    description="Specifications of each generator",
+)
+```
 
-**maybe mention that this also goes in custom renderer**
+Note that we set `is_miro_input=True` again. Since we want them to be displayed as tables, we also set `is_miro_table=True`. Finally, the most important part, we need to set `domain_forwarding=[True, False]`. This means that we want the domain corresponding to our generator set to be forwarded so that the set elements are taken from the MIRO application. The headers are known and not part of the input, so we set the second element to `False`. We will still use our data to initialize our specifications, since we have changed the format to only the columns `"i"` and `"generator_spec_header"`, we need to [`melt()`](https://pandas.pydata.org/docs/reference/api/pandas.melt.html) the input data to get the same format.
 
-CODE SNIPPET
+Finally, we no longer specify the `records' of the set `i` and any parameters dependent on `i` (e.g. `gen_cost_per_unit`). The set now gets the data through the domain forwarding. For the parameters, we need to assign the appropriate column.
+
+```diff
+i = Set(
+    m,
+    name="i",
+-    records=generator_specifications_input["i"],
+    description="generators",
+)
+
+gen_cost_per_unit = Parameter(
+      m,
+      name="gen_cost_per_unit",
+      domain=[i],
+-     records=generator_specifications_input[["i", "cost_per_unit"]],
+      description="cost per unit of generator i",
+  )
+
++ gen_cost_per_unit[i] = generator_specifications[i, "cost_per_unit"]
+
+```
+
+Do the same for the other parameters that depend on `i`. We also have two parameters that depend on the given hour, `load_demand` and `cost_external_grid`, so to have a single source of truth regarding the hour set we combine them into one parameter. Now we just need to make the same changes as for the generator specifications. 
+
+In this example it is not necessary to do any further calculations based on the input values. But this could easily be done. An example of this can be seen in [VRPTW](https://miro.gams.com/gallery/app_direct/vrptw/). Here we have longitude and latitude values as input, but our model needs the individual distances. So we simply define a new parameter that depends on our MIRO input. You can use any mathematical calculation allowed in Python for this!
+
+**IS THE EXAMPLE TO RANDOM? MAYBE JUST MENTION THAT YOU CAN DO IT WITHOUT EXAMPLE. OR HIDE THE CODE IF NOT CLICKED**
+
+```python
+earth_radius = 6371
+help_d[i, j] = sqr(
+    sin((customer_data[i, "lat"] - customer_data[j, "lat"]) * np.pi / (2 * 180))
+) + (
+    cos(customer_data[i, "lat"] * np.pi / 180)
+    * cos(customer_data[j, "lat"] * np.pi / 180)
+    * sqr(
+        sin((customer_data[i, "lng"] - customer_data[j, "lng"]) * np.pi / (2 * 180))
+    )
+)
+
+d[i, j] = 2 * earth_radius * atan2(sqrt(help_d[i, j]), sqrt(1 - help_d[i, j]))
+```
 
 Given the input, we move on to the output.
 
@@ -39,30 +481,575 @@ Given the input, we move on to the output.
 
 When implementing the model it is useful to set all variables to output with: `is_miro_output=True`. This way, after solving, you can quickly check what the calculated variable values are and possibly find any remaining errors in the model.
 
+```python
+gen_power = Variable(
+    m,
+    name="gen_power",
+    type="positive",
+    domain=[i, j],
+    description="Dispatched power from generator i at hour j",
+    is_miro_output=True,
+)
+```
+
 In general, you can make any variable or parameter an MIRO output. Sometimes it makes sense to define parameters as outputs depending on the variables. A simple example of this in our model would be to define individual parameters for the three cost factors we have. This way we can display these values directly in the MIRO application. 
 
-CODE SNIPPET
 ```python
-import os
-# asd
+total_cost_gen = Parameter(
+    m,
+    "total_cost_gen",
+    is_miro_output=True,
+    description="Total cost of the generators",
+)
+
+total_cost_gen[...] = Sum(
+    j, Sum(i, gen_cost_per_unit[i] * gen_power.l[i, j] + gen_fixed_cost[i])
+)
 ```
+
+Do the same for the other power sources and then combine them.
+
+<details>
+  <summary>Costs for the other power sources</summary>
+
+```python
+total_cost_battery = Parameter(
+    m,
+    "total_cost_battery",
+    is_miro_output=True,
+    description="Total cost of the BESS",
+)
+
+total_cost_battery[...] = (
+    cost_bat_power * battery_delivery_rate.l + cost_bat_energy * battery_storage.l
+)
+
+total_cost_extern = Parameter(
+    m,
+    "total_cost_extern",
+    is_miro_output=True,
+    description="Total cost for the imported power",
+)
+
+total_cost_extern[...] = Sum(
+    j,
+    cost_external_grid[j] * external_grid_power.l[j],
+)
+
+total_cost = Parameter(
+    m,
+    "total_cost",
+    is_miro_output=True,
+    description="Total cost to fulfill the load demand",
+)
+
+total_cost[...] = total_cost_gen + total_cost_battery + total_cost_extern
+```
+</details>
 
 In our example, we also want to combine the power variables with the load demand input into one output parameter. This will help us later to show directly that the sum of the powers equals the load demand.
 
-CODE SNIPPET
+```python
+# Power output
+power_output_header = Set(
+    m,
+    name="power_output_header",
+    records=["battery", "external_grid", "generators", "load_demand"],
+)
 
-**again add the full updated gamspy code**
+report_output = Parameter(
+    m,
+    name="report_output",
+    domain=[j, power_output_header],
+    description="Optimal combination of incoming power flows",
+    is_miro_output=True,
+)
+
+report_output[j, "generators"] = Sum(i, gen_power.l[i, j])
+report_output[j, "battery"] = battery_power.l[j]
+report_output[j, "external_grid"] = external_grid_power.l[j]
+report_output[j, "load_demand"] = load_demand[j]
+```
+
+<details>
+  <summary>Full updated GAMSPy model</summary>
+
+```python
+import pandas as pd
+import sys
+
+from gamspy import (
+    Container,
+    Alias,
+    Equation,
+    Model,
+    Parameter,
+    Sense,
+    Set,
+    Sum,
+    Variable,
+    Ord,
+    Options,
+)
+
+
+def main():
+    m = Container()
+
+    # Generator parameters
+    generator_specifications_input = pd.DataFrame(
+        [
+            ["gen0", 0.010694, 142.7348, 30, 70, 8, 6],
+            ["gen1", 0.018761, 168.9075, 50, 100, 8, 6],
+            ["gen2", 0.0076121, 313.9102, 30, 120, 8, 6],
+        ],
+        columns=[
+            "i",
+            "cost_per_unit",
+            "fixed_cost",
+            "min_power_output",
+            "max_power_output",
+            "min_up_time",
+            "min_down_time",
+        ],
+    )
+
+    # Load demand to be fulfilled by the energy management system
+    # combine with cost external grid, to have one source of truth for the hours (Set j)
+    timewise_load_demand_and_cost_external_grid_input = pd.DataFrame(
+        [
+            ["hour00", 200, 0.09],
+            ["hour01", 180, 0.08],
+            ["hour02", 170, 0.08],
+            ["hour03", 160, 0.08],
+            ["hour04", 150, 0.08],
+            ["hour05", 150, 0.08],
+            ["hour06", 170, 0.09],
+            ["hour07", 250, 0.11],
+            ["hour08", 320, 0.13],
+            ["hour09", 300, 0.12],
+            ["hour10", 280, 0.11],
+            ["hour11", 260, 0.10],
+            ["hour12", 270, 0.10],
+            ["hour13", 280, 0.10],
+            ["hour14", 290, 0.11],
+            ["hour15", 300, 0.12],
+            ["hour16", 320, 0.13],
+            ["hour17", 350, 0.14],
+            ["hour18", 340, 0.13],
+            ["hour19", 330, 0.12],
+            ["hour20", 320, 0.11],
+            ["hour21", 280, 0.10],
+            ["hour22", 240, 0.09],
+            ["hour23", 220, 0.09],
+        ],
+        columns=["j", "load_demand", "cost_external_grid"],
+    )
+
+    # Set
+    i = Set(
+        m,
+        name="i",
+        description="generators",
+    )
+    j = Set(
+        m,
+        name="j",
+        description="hours",
+    )
+    t = Alias(m, name="t", alias_with=j)
+
+    generator_spec_header = Set(
+        m,
+        name="generator_spec_header",
+        records=[
+            "cost_per_unit",
+            "fixed_cost",
+            "min_power_output",
+            "max_power_output",
+            "min_up_time",
+            "min_down_time",
+        ],
+    )
+
+    timewise_header = Set(
+        m, name="timewise_header", records=["load_demand", "cost_external_grid"]
+    )
+
+    # Data
+    # Generator parameters
+    generator_specifications = Parameter(
+        m,
+        name="generator_specifications",
+        domain=[i, generator_spec_header],
+        domain_forwarding=[True, False],
+        records=generator_specifications_input.melt(
+            id_vars="i", var_name="generator_spec_header"
+        ),
+        is_miro_input=True,
+        is_miro_table=True,
+        description="Specifications of each generator",
+    )
+
+    # To improve readability of the equations we extract the individual columns.
+    # Since we want a single source of truth we combine them for MIRO.
+    gen_cost_per_unit = Parameter(
+        m,
+        name="gen_cost_per_unit",
+        domain=[i],
+        description="cost per unit of generator i",
+    )
+
+    gen_fixed_cost = Parameter(
+        m, name="gen_fixed_cost", domain=[i], description="fixed cost of generator i"
+    )
+
+    gen_min_power_output = Parameter(
+        m,
+        name="gen_min_power_output",
+        domain=[i],
+        description="minimal power output of generator i",
+    )
+
+    gen_max_power_output = Parameter(
+        m,
+        name="gen_max_power_output",
+        domain=[i],
+        description="maximal power output of generator i",
+    )
+
+    gen_min_up_time = Parameter(
+        m,
+        name="gen_min_up_time",
+        domain=[i],
+        description="minimal up time of generator i",
+    )
+
+    gen_min_down_time = Parameter(
+        m,
+        name="gen_min_down_time",
+        domain=[i],
+        description="minimal down time of generator i",
+    )
+
+    gen_cost_per_unit[i] = generator_specifications[i, "cost_per_unit"]
+    gen_fixed_cost[i] = generator_specifications[i, "fixed_cost"]
+    gen_min_power_output[i] = generator_specifications[i, "min_power_output"]
+    gen_max_power_output[i] = generator_specifications[i, "max_power_output"]
+    gen_min_up_time[i] = generator_specifications[i, "min_up_time"]
+    gen_min_down_time[i] = generator_specifications[i, "min_down_time"]
+
+    # Battery parameters
+    cost_bat_power = Parameter(m, "cost_bat_power", records=0.2, is_miro_input=True)
+    cost_bat_energy = Parameter(m, "cost_bat_energy", records=0.25, is_miro_input=True)
+
+    # Load demand and external grid
+    timewise_load_demand_and_cost_external_grid_data = Parameter(
+        m,
+        name="timewise_load_demand_and_cost_external_grid_data",
+        domain=[j, timewise_header],
+        domain_forwarding=[True, False],
+        records=timewise_load_demand_and_cost_external_grid_input.melt(
+            id_vars="j", var_name="timewise_header"
+        ),
+        is_miro_input=True,
+        is_miro_table=True,
+        description="Timeline for load demand and cost of the external grid.",
+    )
+
+    load_demand = Parameter(
+        m, name="load_demand", domain=[j], description="load demand at hour j"
+    )
+
+    cost_external_grid = Parameter(
+        m,
+        name="cost_external_grid",
+        domain=[j],
+        description="cost of the external grid at hour j",
+    )
+
+    load_demand[j] = timewise_load_demand_and_cost_external_grid_data[j, "load_demand"]
+    cost_external_grid[j] = timewise_load_demand_and_cost_external_grid_data[
+        j, "cost_external_grid"
+    ]
+
+    max_input_external_grid = Parameter(
+        m,
+        name="max_input_external_grid",
+        records=15,
+        is_miro_input=True,
+        description="maximal power that can be imported from the external grid every hour",
+    )
+
+    # Variable
+    # Generator
+    gen_power = Variable(
+        m,
+        name="gen_power",
+        type="positive",
+        domain=[i, j],
+        description="Dispatched power from generator i at hour j",
+        is_miro_output=True,
+    )
+
+    gen_active = Variable(
+        m,
+        name="gen_active",
+        type="binary",
+        domain=[i, j],
+        description="is generator i active at hour j",
+    )
+
+    # Battery
+    battery_power = Variable(
+        m,
+        name="battery_power",
+        domain=[j],
+        description="power charged or discharged from the battery at hour j",
+        is_miro_output=True,
+    )
+
+    battery_delivery_rate = Variable(
+        m,
+        name="battery_delivery_rate",
+        description="power (delivery) rate of the battery energy system",
+        is_miro_output=True,
+    )
+
+    battery_storage = Variable(
+        m,
+        name="battery_storage",
+        description="energy (storage) rate of the battery energy system",
+        is_miro_output=True,
+    )
+
+    # External grid
+    external_grid_power = Variable(
+        m,
+        name="external_grid_power",
+        type="positive",
+        domain=[j],
+        description="power imported from the external grid at hour j",
+        is_miro_output=True,
+    )
+
+    # Equation
+    fulfill_load = Equation(
+        m,
+        name="fulfill_load",
+        domain=[j],
+        description="load balance needs to be met very hour j",
+    )
+
+    gen_above_min_power = Equation(
+        m,
+        name="gen_above_min_power",
+        domain=[i, j],
+        description="generators power should be above the minimal output",
+    )
+
+    gen_below_max_power = Equation(
+        m,
+        name="gen_below_max_power",
+        domain=[i, j],
+        description="generators power should be below the maximal output",
+    )
+
+    gen_above_min_down_time = Equation(
+        m,
+        name="gen_above_min_down_time",
+        domain=[i, j],
+        description="generators down time should be above the minimal down time",
+    )
+
+    gen_above_min_up_time = Equation(
+        m,
+        name="gen_above_min_up_time",
+        domain=[i, j],
+        description="generators up time should be above the minimal up time",
+    )
+
+    battery_above_min_delivery = Equation(
+        m,
+        name="battery_above_min_delivery",
+        domain=[j],
+        description="battery delivery rate (charge rate) above min power rate",
+    )
+
+    battery_below_max_delivery = Equation(
+        m,
+        name="battery_below_max_delivery",
+        domain=[j],
+        description="battery delivery rate below max power rate",
+    )
+
+    battery_above_min_storage = Equation(
+        m,
+        name="battery_above_min_storage",
+        domain=[t],
+        description="battery storage above negative energy rate (since negative power charges the battery)",
+    )
+
+    battery_below_max_storage = Equation(
+        m,
+        name="battery_below_max_storage",
+        domain=[t],
+        description="sum over battery delivery below zero (cant deliver energy that is not stored)",
+    )
+
+    external_power_upper_limit = Equation(
+        m,
+        name="external_power_upper_limit",
+        domain=[j],
+        description=" input from the external grid is limited",
+    )
+
+    fulfill_load[j] = (
+        Sum(i, gen_power[i, j]) + battery_power[j] + external_grid_power[j]
+        == load_demand[j]
+    )
+
+    gen_above_min_power[i, j] = (
+        gen_min_power_output[i] * gen_active[i, j] <= gen_power[i, j]
+    )
+
+    gen_below_max_power[i, j] = (
+        gen_power[i, j] <= gen_max_power_output[i] * gen_active[i, j]
+    )
+
+    # if j=0 -> j.lag(1) = 0 which doesn't brake the equation,
+    # since generator is of at start, resulting in negative right side, therefore the sum is always above
+    gen_above_min_down_time[i, j] = Sum(
+        t.where[(Ord(t) >= Ord(j)) & (Ord(t) <= (Ord(j) + gen_min_down_time[i] - 1))],
+        1 - gen_active[i, t],
+    ) >= gen_min_down_time[i] * (gen_active[i, j.lag(1)] - gen_active[i, j])
+
+    # and for up it correctly starts the check that if its turned on in the first step
+    # it has to stay on for the min up time
+    gen_above_min_up_time[i, j] = Sum(
+        t.where[(Ord(t) >= Ord(j)) & (Ord(t) <= (Ord(j) + gen_min_up_time[i] - 1))],
+        gen_active[i, t],
+    ) >= gen_min_up_time[i] * (gen_active[i, j] - gen_active[i, j.lag(1)])
+
+    battery_above_min_delivery[j] = -battery_delivery_rate <= battery_power[j]
+
+    battery_below_max_delivery[j] = battery_power[j] <= battery_delivery_rate
+
+    battery_above_min_storage[t] = -battery_storage <= Sum(
+        j.where[Ord(j) <= Ord(t)], battery_power[j]
+    )
+
+    battery_below_max_storage[t] = Sum(j.where[Ord(j) <= Ord(t)], battery_power[j]) <= 0
+
+    external_power_upper_limit[j] = external_grid_power[j] <= max_input_external_grid
+
+    obj = (
+        Sum(
+            j,
+            Sum(i, gen_cost_per_unit[i] * gen_power[i, j])  # + gen_fixed_cost[i])
+            + cost_external_grid[j] * external_grid_power[j],
+        )
+        + cost_bat_power * battery_delivery_rate
+        + cost_bat_energy * battery_storage
+    )
+
+    # Solve
+    bess = Model(
+        m,
+        name="bess",
+        equations=m.getEquations(),
+        problem="MIP",
+        sense=Sense.MIN,
+        objective=obj,
+    )
+
+    bess.solve(
+        solver="CPLEX",
+        output=sys.stdout,
+        options=Options(equation_listing_limit=1, relative_optimality_gap=0),
+    )
+
+    # Extract the output data
+
+    # Power output
+    power_output_header = Set(
+        m,
+        name="power_output_header",
+        records=["battery", "external_grid", "generators", "load_demand"],
+    )
+
+    report_output = Parameter(
+        m,
+        name="report_output",
+        domain=[j, power_output_header],
+        description="Optimal combination of incoming power flows",
+        is_miro_output=True,
+    )
+
+    report_output[j, "generators"] = Sum(i, gen_power.l[i, j])
+    report_output[j, "battery"] = battery_power.l[j]
+    report_output[j, "external_grid"] = external_grid_power.l[j]
+    report_output[j, "load_demand"] = load_demand[j]
+
+    # Costs
+    total_cost_gen = Parameter(
+        m,
+        "total_cost_gen",
+        is_miro_output=True,
+        description="Total cost of the generators",
+    )
+
+    total_cost_gen[...] = Sum(
+        j, Sum(i, gen_cost_per_unit[i] * gen_power.l[i, j] + gen_fixed_cost[i])
+    )
+
+    total_cost_battery = Parameter(
+        m,
+        "total_cost_battery",
+        is_miro_output=True,
+        description="Total cost of the BESS",
+    )
+
+    total_cost_battery[...] = (
+        cost_bat_power * battery_delivery_rate.l + cost_bat_energy * battery_storage.l
+    )
+
+    total_cost_extern = Parameter(
+        m,
+        "total_cost_extern",
+        is_miro_output=True,
+        description="Total cost for the imported power",
+    )
+
+    total_cost_extern[...] = Sum(
+        j,
+        cost_external_grid[j] * external_grid_power.l[j],
+    )
+
+    total_cost = Parameter(
+        m,
+        "total_cost",
+        is_miro_output=True,
+        description="Total cost to fulfill the load demand",
+    )
+
+    total_cost[...] = total_cost_gen + total_cost_battery + total_cost_extern
+
+if __name__ == "__main__":
+    main()
+
+```
+</details>
 
 Now you can launch MIRO and have your first version of a fully interactive modelling application!
 
-**maybe link to miro download at the beginning or here?**
-
-BASH SNIPPET
+```bash
+gamspy run miro --path <path_to_your_MIRO_installation> --model <path_to_your_model>
+```
 
 After starting MIRO, your application should look like this:
 
-change this image to one without data
-<div align="center"> <img src="rapit_prototyping/first_input.png" alt="input section" width="400"/> </div>
+<div align="center"> <img src="rapit_prototyping/first_start.png" alt="input section" width="400"/> </div>
 
 
 ## Rapid Prototyping
@@ -83,7 +1070,6 @@ Here we pivoted the headers and selected line graphs. As the values for load_dem
 
 You should end up with something like this:
 
-
 <div align="center"> <img src="rapit_prototyping/timeline_plot_input.png" alt="input section" width="400"/> </div>
 
 
@@ -91,9 +1077,10 @@ You should end up with something like this:
 
 When implementing the model, the output is definitely more interesting than the input, so lets see what we can do here. 
 
-For scalar output values, the visualization is very straightforward, simply displaying them in a table under a combined tap:
+Scalar output values are split into scalar parameters and scalar variables/equations:
 
 <div align="center"> <img src="rapit_prototyping/output_scalars.png" alt="input section" width="400" /> </div>
+<div align="center"> <img src="rapit_prototyping/output_scalars_ve.png" alt="input section" width="400" /> </div>
 
 But we can do a lot more with the pivot tool. We might be interested to see which generator provides how much of the total power at what time. To do this we simply go to our output variable which contains the power values of the generators. Here we simply pivot by generator and filter the level value. Then we just need to select the Stacked Bar Chart and we end up with this:
 
@@ -116,11 +1103,13 @@ Now that we have a better understanding of our model and are fairly confident th
 
 To do this, we will start our MIRO application in [config mode](https://www.gams.com/miro/customize.html).
 
-BASH SNIPPET
+```bash
+gamspy run miro --mode="config" --path <path_to_your_MIRO_installation> --model <path_to_your_model>
+```
 
 You should land on this page:
 
-INSERT IMAGE
+<div align="center"> <img src="config_mode/start_config_mode.png" alt="input section" width="400"/> </div>
 
 The [config mode](https://www.gams.com/miro/customize.html) provides a lot of customization right out of the box, so we don't need to write any code directly for now. 
 
@@ -130,6 +1119,7 @@ Let's start with some general settings. We will give our application a title, ad
 
 
 <div align="center"> <img src="config_mode/logo_read_me.png" alt="input section" width="400"/> </div>
+
 
 ### Symbols
 
@@ -149,7 +1139,7 @@ We have several inputs and we will customize them in the [Input Widgets](https:/
 
 <div align="center"> <img src="config_mode/input.png" alt="input section" width="400"/> </div>
 
-For our multidimensional inputs we only have tables as an option directly in configuration mode. Here we can choose between three different types. We will stay with the default table for our two inputs. Since we don't have large datasets and, at least at the moment, don't plan to do a lot of editing here. If we know we are going to get huge datasets, it makes sense to switch to the *Big Data Table* since it is performance optimized. And if you know you will be doing a lot of editing in your table, you should choose the *Pivot Table*. For more details on table types, see the [documentation] (https://www.gams.com/miro/widgets.html#widget-table).
+For our multidimensional inputs we only have tables as an option directly in configuration mode. Here we can choose between three different types. We will stay with the default table for our two inputs. Since we don't have large datasets and, at least at the moment, don't plan to do a lot of editing here. If we know we are going to get huge datasets, it makes sense to switch to the *Big Data Table* since it is performance optimized. And if you know you will be doing a lot of editing in your table, you should choose the *Pivot Table*. For more details on table types, see the [documentation](https://www.gams.com/miro/widgets.html#widget-table).
 
 If the three possible tables are not enough for your needs, you can add a custom widget, which we will do in the next section.
 
@@ -171,7 +1161,7 @@ Adding a dashboard is not possible directly from the config mode. However, you o
 
 First, you need to make a general plan of how you want the dashboard to look. By this we mean that you need to decide which "tiles" (value boxes) you want to have, and whether they have a corresponding Key Performance Indicator (KPI). Then you need to think about which views you want to associate with those value boxes. Most likely, you will select the views you have already created. 
 
-Now we need to find our `\<model_name\>.json` in the `renderer_ \<model_name\>` directory. Here we will look for the dataRendering section, or if it does not exist, we will define it. We need to choose an output symbol to be our main parameter, but don't worry too much about this choice as we can add any other parameters we need. We just can't have another renderer for this specific symbol if we choose to have more output tabs than just the dashboard.
+Now we need to find our `\<model_name\>.json` in the `conf_ \<model_name\>` directory. Here we will look for the `dataRendering` key, or if it does not exist, we will define it (if you followed the tutorial it will not be there). We need to choose an output symbol to be our main parameter, but don't worry too much about this choice as we can add any other parameters we need. We just can't have another renderer for this specific symbol if we choose to have more output tabs than just the dashboard.
 
 We will choose the symbol `"_scalarsve_out"`, which contains all output scalars of variables and/or equations, since we will probably not create an individual renderer for them. 
 
@@ -202,7 +1192,7 @@ The basic layout for our dashboard for the symbol `"_scalarsve_out"` looks like 
         }
       }
     }
-  }
+  },
 }
 ```
 
@@ -210,15 +1200,19 @@ We will create our own renderers in the next section, but note that if you alrea
 
 To keep the code snippets concise, we will only look at the options we changed and have the full json at the end.
 
-For now, we will skip the `"additionalData"` since we don't know exactly what data we will need. In the options we can first set a title for the value boxes.
+Normally you would not know all the datasets you need to add to `"additionalData"`. Here we will add `"report_output"`, `"gen_power"`, `"battery_power"` and `"external_grid_power"` since we already have an idea of which views we want to display. But of course you can add or remove symbols at any time.
+
+```json
+"additionalData": ["report_output", "gen_power", "battery_power", "external_grid_power"]
+```
+
+In the options we can first set a title for the value boxes.
 
 ```json
     "valueBoxesTitle": "Summary indicators",
 ```
 
-ADD IMAGE
-
-We will create six value boxes. However, we will only define the first two in detail.
+We will create six value boxes. However, we will only discuss the first two in detail.
 
 ```json
 "valueBoxes": {
@@ -253,7 +1247,7 @@ MAYBE ADD IMAGE
     "prefix": ["", "", "", "", "",  ""],
     "redPositive": [ false, false, false, false, false, false],
     "title": ["Total Cost", "Generators", "BESS", "External Grid", "Power Capacity", "Energy Capacity"],
-    "valueScalar": ["total_cost", "total_cost_gen", "total_cost_battery", "total_cost_extern", "display_battery_delivery_rate", "display_battery_storage"]
+    "valueScalar": ["total_cost", "total_cost_gen", "total_cost_battery", "total_cost_extern", "battery_delivery_rate", "battery_storage"]
 }
 ```
 </details>
@@ -274,49 +1268,47 @@ We start each view with the `id` from the corresponding value field, then we ass
 ```
 **maybe add gen_specification table so that there also is an example for a table**
 
-The only thing left to do is to specify the actual charts/tables to be displayed. This is also explained in detail in the [documentation](https://www.gams.com/miro/charts.html#dashboard-dataviewsconfig). The easiest way to add charts is to first create the views with the pivot tool directly in the application. When you save the view, you can directly download the necessary json configurations. To do this, click on *Scenario* -> *Edit metadata* in the top right corner of the application and switch to the *View* tab. Here you can select a view and download its json file. 
+The only thing left to do is to specify the actual charts/tables to be displayed. This is also explained in detail in the [documentation](https://www.gams.com/miro/charts.html#dashboard-dataviewsconfig). The easiest way to add charts is to first create the views with the pivot tool directly in the application. When you save the view, you can directly download the necessary json configurations. To do this, click on *Scenario* -> *Edit metadata* in the top right corner of the application and switch to the *View* tab. Here you can select a view and download its json file. Most of this can be copied directly. We just need to change the way we define which symbol the view is based on. It is no longer defined outside, but we will add `"data: "report_output"` to specify the symbol.
 
-**add the results of this download**
-
-Most of this you can directly copy. **figure out what exactly the changes were**
-
-Our `"Balance"` dataViewsConfig will then look like this:
-
-```json
-"dataViewsConfig": {
+```diff
+{
+-  "report_output": {
     "Balance": {
-        "aggregationFunction": "sum",
-        "chartOptions": {
-            "multiChartOptions": {
-                "multiChartRenderer": "line",
-                "multiChartStepPlot": false,
-                "showMultiChartDataMarkers": false,
-                "stackMultiChartSeries": "no"
-            },
-            "multiChartSeries": "load_demand",
-            "showXGrid": true,
-            "showYGrid": true,
-            "singleStack": false,
-            "yLogScale": false,
-            "yTitle": "power"
-        },
-        "cols": {
-            "power_output_header": null
-        },
-        "domainFilter": {
-            "default": null
-        },
-        "pivotRenderer": "stackedbar",
-        "rows": "j",
-        "tableSummarySettings": {
-            "colSummaryFunction": "sum",
-            "enabled": false,
-            "rowSummaryFunction": "sum"
-        }
+      "aggregationFunction": "sum",
+      "chartOptions": {
+          "multiChartOptions": {
+              "multiChartRenderer": "line",
+              "multiChartStepPlot": false,
+              "showMultiChartDataMarkers": false,
+              "stackMultiChartSeries": "no"
+          },
+          "multiChartSeries": "load_demand",
+          "showXGrid": true,
+          "showYGrid": true,
+          "singleStack": false,
+          "yLogScale": false,
+          "yTitle": "power"
+      },
+      "cols": {
+          "power_output_header": null
+      },
++     "data": "report_output",
+      "domainFilter": {
+          "default": null
+      },
+      "pivotRenderer": "stackedbar",
+      "rows": "j",
+      "tableSummarySettings": {
+          "colSummaryFunction": "sum",
+          "enabled": false,
+          "rowSummaryFunction": "sum"
+      }
     }
+- }
 }
 ```
 
+Now we just need to place this inside the `"dataViewsConfig"`.
 
 **add explanation for tables**
 
@@ -345,6 +1337,7 @@ Our `"Balance"` dataViewsConfig will then look like this:
         "cols": {
             "power_output_header": null
         },
+        "data": "report_output",
         "domainFilter": {
             "default": null
         },
@@ -441,10 +1434,24 @@ Our `"Balance"` dataViewsConfig will then look like this:
 </details>
 
 
+**ADD THE FULL JSON**
+
+<details>
+  <summary>Click to see the full json file</summary>
+
+```json
+
+```
+</details>
+
+**REMAKE THE GIF WITHOUT THE EXTRA TABS**
+
 Finally, we end up with this dashboard:
 
-**make a gif**
-<div align="center"> <img src="config_mode/dashboard_total_cost.png" alt="input section" width="400"/> </div>
+
+<div align="center"> <img src="config_mode/dashboard_animation.gif" alt="input section" width="800"/> </div>
+
+Note that now that we have all the outputs combined in the dashboard, it makes sense to hide the tabs for the individual output symbols and rename our dashboard. To make it less cluttered. Just a heads up, you should keep `"report_output"`, we will add a custom renderer for it in the next section.
 
 It is also possible to add custom code to the dashboard. However, since this requires a bit more effort and you need to know how to create a custom renderer in the first place, we will leave this for the next section.
 
@@ -476,7 +1483,7 @@ As mentioned before, sometimes you want to customize your application even more.
 
 ### Custom renderer
 
-We will start with a very simple renderer that shows us what the storage level of the BESS is at any given hour. So far we only know how much power is either charged or discharged. To get the storage level, we simply need to compute the cumulative sum of `battery_power'. In R, this function is built in: `cumsum()`. 
+We will start with a very simple renderer that shows us what the storage level of the BESS is at any given hour. So far we only know how much power is either charged or discharged. To get the storage level, we simply need to compute the cumulative sum of `battery_power`. In R, this function is built in: [`cumsum()`](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/cumsum). 
 
 First, we need to understand what the general structure of a custom renderer is in MIRO. For this we will closely follow the [documentation](https://www.gams.com/miro/configuration_advanced.html#custom-renderers). Since MIRO is based on the R Shiny framework, it follows the same dual concept where we need to write two functions. One that defines the placeholder for your graphs, tables, etc. where they will be rendered, and the second that defines the rendering function itself. This means that in the second one we do all the necessary data manipulation, specification of behavior caused by user interaction, concrete data visualization etc. If this concept is new to you and you want more information visit the website for the R Shiny framework [https://shiny.posit.co/](https://shiny.posit.co/).
 
@@ -494,7 +1501,7 @@ renderMirorenderer_<lowercaseSymbolName> <- function(input, output, session, dat
 }
 ``` 
 
-If you are not using config mode, you must save these two functions in a file named `mirorenderer_\<lowercaseSymbolName\>.R`, which must be located in the `renderer_\<modelname\>` folder in your model directory. However, especially if you are new to R, we recommend that you use the config mode. It allows you to visualize the data directly with the correct datasets etc. passed to the functions. To do this, simply go to the *Graphs* section, select the GAMS symbol you want to render, and select *Custom renderer* for the *Charting type*.
+If you are not using the config mode, you must save these two functions in a file named `mirorenderer_\<lowercaseSymbolName\>.R`, which must be located in the `renderer_\<modelname\>` folder in your model directory. However, especially if you are new to R, we recommend that you use the config mode. It allows you to visualize the data directly with the correct datasets etc. passed to the functions. To do this, simply go to the *Graphs* section, select the GAMS symbol you want to render, and select *Custom renderer* for the *Charting type*.
 
 <div align="center"> <img src="render/empty_config_mode.png" alt="input section" width="400"/> </div>
 
@@ -519,7 +1526,7 @@ mirorenderer_battery_powerOutput <- function(id, height = NULL, options = NULL, 
 }
 ```
 
-We will later also have a placeholder containing two elements, but you can have as many as you need. To get a better overview what is possible check the R shiny documentation, e.g. their section on [Arrange Elements](https://shiny.posit.co/r/layouts/arrange/).
+We will later also have a placeholder containing two elements, but you can have as many as you need. To get a better overview what is possible check the R Shiny documentation, e.g. their section on [Arrange Elements](https://shiny.posit.co/r/layouts/arrange/).
 
 
 Beyond ID management, Shiny also allows you to define additional parameters for customization:
@@ -578,10 +1585,8 @@ If you press *Update* again, you should get this:
 
 <div align="center"> <img src="render/cumsum_first_draft.png" alt="input section" width="400"/> </div>
 
-So far so good, lets make this plot prettier. Aside from adding a title, labels, etc., take a look at the y-axis. As you can see, it doesn't go all the way to the top. To change this, we can set it to the maximum value of our data. But what might be more interesting is to see the current storage value compared to the maximum possible. As you might remember this maximal storage level is also part our optimization. So no wee need to add additional data to our renderer. For this we switch to the *Advanced options* here we can select from all possible GAMS symbols which to add by clicking on the filed for *Additional datasets to communicate with the custom renderer*. Since we need a scalar variable here we will add `"_scalarsve_out"`. Switching back to the *Main* tab we now need to change how we access the data, since now it is no longer directly the tibble, but a named list of tibbles. Try to extract the value for `"battery_storage"` from `data`. Remember you can use `print()` and the functions [`filter()`](https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/filter) and [`pull()`](https://www.rdocumentation.org/packages/lplyr/versions/0.1.6/topics/pull) might be helpful.
+So far so good, let's make this graph prettier. Aside from adding a title, labels, etc., take a look at the y-axis. As you can see, it doesn't go all the way to the top. To change this, we can set it to the maximum value of our data. But what might be more interesting is to see the current storage value compared to the maximum possible. As you may remember, this maximum storage level is also part of our optimization. So now we need to add more data to our renderer. Here we can select from all possible GAMS symbols which ones we want to add by clicking on the file for *Additional datasets to communicate with the custom renderer*. Since we need a scalar variable here, we will add `"_scalarsve_out"`. Going back to the *Main* tab, we now need to change how we access the data, since it is no longer directly the tibble, but a named list of tibbles. Try extracting the value for `"battery_storage"` from `data`. Remember that you can use `print()` and the functions [`filter()`](https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/filter) and [`pull()`](https://www.rdocumentation.org/packages/lplyr/versions/0.1.6/topics/pull) can be helpful.
 
-
-**CHANGE THIS TO DIRECTLY GET THE SCALAR AND NOT AS ADDITIONAL DATASET**
 
 <details>
   <summary>See how to extract battery_storage</summary>
@@ -596,8 +1601,6 @@ max_storage <- data[["_scalarsve_out"]] %>%
 We will use the `"battery_storage"` for setting the `ylim` and for adding a horizontal line with [`abline()`](https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/abline). Adding some more layout settings leads us to:
 
 <div align="center"> <img src="render/cumsum_final_conifg_mode.png" alt="input section" width="400"/> </div>
-
-
 
 
 <details>
@@ -634,9 +1637,10 @@ Congratulations you created your first renderer!
 
 Now just *Save* your renderer, this will directly create the file and folder mentioned above that you would have had to create if you were not using config mode. It will also add the necessary configuration to the json file. Again, if you are not using the config mode, you will need to add this manually, the template can be found in the [documentation](https://www.gams.com/miro/configuration_advanced.html#custom-renderers).
 
-Note that for simple renderers like this that just apply functions to the parameters, you could do the same calculation directly in Python. You would simply define a new parameter based on the same calculation as in the renderer and then have all the visualization options as before. We  just used it here to explain the general concept of a custom renderer. But you can choose whichever language you feel more comfortable in!
+Note that for simple renderers like this that just apply functions to the parameters, you could do the same calculation directly in Python. You would simply define a new parameter based on the same calculation as in the renderer and then have all the visualization options as before. We  just used it here to explain the general concept of a custom renderer. But you wouldn't normally use a custom renderer for simple calculations like this!
 
-Now that we have created our first small custom renderer, we can start working on some more complex renderers that use visualizations that are not supported in the config mode, but are possible in R. 
+Now that we have created our first small custom renderer, we can start working on some more complex renderers that use visualizations that are not supported in the config mode, but are possible in R.
+
 
 #### A more complex renderer
 
@@ -850,13 +1854,14 @@ renderMirorenderer_report_output <- function(input, output, session, data, optio
 ```
 </details>
 
-ADD GIF OF SANKEY
+<div align="center"> <img src="config_mode/sankey_animation.gif" alt="input section" width="800"/> </div>
+
 
 Hopefully you now have a better idea of what is possible with custom renderers and how to easily use the config mode to implement them.
 
 ### Custom Dashboard
 
-Now that we know so much more about custom renderers, let us add one to our dashboard. Here we will add our little renderer for the memory layers of the BESS. We will follow the [documentation](https://www.gams.com/miro/charts.html#dashboard-custom-code) closely for this. To add custom code to the renderer, we will no longer just use json, but we will see the dashboard as the renderer. The dashboard renderer has been prepared to do this with minimal effort. 
+Now that we know so much more about custom renderers, let us add one to our dashboard. Here we will add our little renderer for the storage level of the BESS. We will follow the [documentation](https://www.gams.com/miro/charts.html#dashboard-custom-code) closely for this. To add custom code to the renderer, we will no longer just use json, but we will see the dashboard as a renderer. The dashboard renderer has been prepared to do this with minimal effort. 
 
 1. Download the [latest dashboard renderer file](https://github.com/GAMS-dev/miro/blob/master/src/modules/renderers/dashboard.R) from the MIRO repository on GitHub and put it with the other renderers in your *renderer_\<modelname\>* directory. 
    
@@ -881,9 +1886,9 @@ Now that we know so much more about custom renderers, let us add one to our dash
 -)
 }
 ```
-  Remember that the dashboard is rendered for the symbol `_scalarsve_out'. As with the other renderers, be sure to replace it with the symbol name you want to render if you create a dashboard for a different symbol.
+  Remember that the dashboard is rendered for the symbol `"_scalarsve_out"`. As with the other renderers, be sure to replace it with the symbol name you want to render if you create a dashboard for a different symbol.
 
-3. In the `dataRendering` section of the \<modelname\>.json file change the `"outType"` of the symbol to render from `"dashboard"` to `"mirorenderer_<symbolname>"`
+3. In the `dataRendering` section of the *\<modelname\>.json* file change the `"outType"` of the symbol to render from `"dashboard"` to `"mirorenderer_<symbolname>"`
   
 ```diff
   {
@@ -922,10 +1927,8 @@ In the corresponding `"dataViewsConfig"` we now assign an arbitrary string, e.g.
 }
 ```
 
-Finally, we can implement the custom renderer. Recall that in our custom renderers, we consistently defined placeholders with unique IDs that were then assembled into the `output` variable. The view ID we just added (`"BatteryStorage"`) will also be  incorporated into this variable. Now we just add our already implemented renderer into the render function (`renderMirorenderer__scalarsve_out`). The only things we need to change is the output we assign the plot to : `output[["BatteryStorage"]] <- renderUI(...)`. And we no longer are in our renderer for the symbol `battery_power`, therefore `battery_power` now is additional data, which we access with: `data$battery_power`. To keep track we add the new output assignment at the end of the renderer, but as long as its inside the renderer the order doesn't matter.
+Finally, we can implement the custom renderer. Recall that in our custom renderers, we always defined placeholders with unique IDs that were then assembled into the `output` variable. The view ID we just added (`"BatteryStorage"`) will also be added to the `output` variable. Now we just add our already implemented renderer to the render function (`renderMirorenderer__scalarsve_out`). The only thing we have to change is the output to which we assign the plot: `output[["BatteryStorage"]] <- renderUI(...)`. And remember that we are no longer in our renderer for the symbol `battery_power`, so `battery_power` is now additional data that we access with `data$battery_power`. However, since we have already added additional data to the renderer, the code does not change. Just remember that if the renderer you're adding didn't have additional data before, you'll have to change how you access the data! To keep track, we'll add the new output assignment at the end of the dashboard renderer, but as long as it's inside the renderer, the order doesn't matter.
 
-
-**CHANGE HOW TO GET THE SCALAR**
 
 ```R
 renderMirorenderer__scalarsve_out <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
@@ -962,7 +1965,6 @@ In the same way, you can create a view that's entirely made up of custom code or
 Let's take a closer look at another customizable element. The renderers we have created so far have all been for output symbols. As we saw with the time-dependent input, we can also define views and add custom renderers here. However, to add the data, we have to be in the tabular view and then switch to the graphical view. Wouldn't it be more convenient to change a value and see the graph change immediately? To do this, we need a custom widget that allows you to send data back to MIRO. Currently they are not supported by the config mode, but since they are very similar to custom renderers, we will start them like any other renderer and then make some small changes to turn them into an input widget.
 
 Here we will have two elements in our placeholder function: a graph and a table. For the table we will use [R Shinys DataTables](https://shiny.posit.co/r/articles/build/datatables/), since *DT* is an already included package we don't need to specify it, but for clarity we will add it anyway.
-
 
 
 ```R
@@ -1078,6 +2080,7 @@ observe({
   })
 })
 ```
+
 If the new value of the entry would be empty (`""`), we want to reset the table. To do this, we set up a [`dataTableProxy`](https://www.rdocumentation.org/packages/DT/versions/0.33/topics/dataTableProxy) to efficiently update the table. Our `resetTable()` function is defined to dynamically replace the table data using the current state of `rv$timewise_input_data`. The function [`DT::replaceData()`](https://www.rdocumentation.org/packages/DT/versions/0.33/topics/replaceData) allows the table to be updated without resetting sorting, filtering, and pagination.
 
 ```R
