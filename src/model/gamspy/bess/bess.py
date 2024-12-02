@@ -114,6 +114,8 @@ def main():
         description="Specifications of each generator",
     )
 
+    # To improve readability of the equations we extract the individual columns.
+    # Since we want a single source of truth we combine them for MIRO.
     gen_cost_per_unit = Parameter(
         m,
         name="gen_cost_per_unit",
@@ -162,7 +164,6 @@ def main():
 
     # Battery parameters
     cost_bat_power = Parameter(m, "cost_bat_power", records=0.2, is_miro_input=True)
-
     cost_bat_energy = Parameter(m, "cost_bat_energy", records=0.25, is_miro_input=True)
 
     # Load demand and external grid
