@@ -367,6 +367,26 @@ renderMirorenderer_optsched &#x3C;- function(input, output, session, data, optio
                       accessed via the argument
                       <kbd>options</kbd> - a (nested) list.
                     </p>
+                    <div
+                    class="callout-block callout-warning"
+                    id="cr-package-note"
+                  >
+                    <div class="icon-holder">
+                      <i class="fas fa-info-circle"></i>
+                    </div>
+                    <!--//icon-holder-->
+                    <div class="content">
+                      <b class="callout-title">Note:</b>
+                      <p>
+                        Scalar variables are not added to <kbd>outputScalarsFull</kbd>,
+                        since they have the attributes <kbd>"level"</kbd>, <kbd>"marginal"</kbd>,
+                        <kbd>"lower"</kbd>, <kbd>"upper"</kbd>, and <kbd>"scale"</kbd>.
+                        And are therefor not true scalars. To access them you need to include
+                        <kbd>"_scalarsve_out"</kbd> in your additional datasets.
+                      </p>
+                    </div>
+                    <!--//content-->
+                  </div>
                     <div class="callout-block callout-success">
                       <div class="icon-holder">
                         <i class="fas fa-thumbs-up"></i>
