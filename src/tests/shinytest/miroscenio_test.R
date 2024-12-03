@@ -7,16 +7,16 @@ app <- AppDriver$new("../../",
 app$set_inputs(inputTabset = "inputTabset_7")
 Sys.sleep(1)
 app$set_inputs(btImport = "click")
-Sys.sleep(0.5)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)
 scenariosInDb <- getSelectizeAliases(app, "#selLoadScen")
 expect_true(any(startsWith(scenariosInDb, "I am a scenario (")))
 app$set_inputs(btLoadScenConfirm = "click")
-Sys.sleep(1)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
 app$run_js("HTMLWidgets.getInstance(document.getElementById('in_1')).hot.setDataAtCell(0,0,'test');")
 app$set_inputs(btImport = "click")
-Sys.sleep(1)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)
 app$set_inputs(tb_importData = "tb_importData_local")
-Sys.sleep(0.5)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)
 app$upload_file(localInput = paste0("../data/transport.miroscen"))
 app$set_inputs(btImportLocal = "click")
 expect_true(app$get_js("$('#importDataClearSandbox').is(':visible');"))
@@ -27,7 +27,11 @@ expect_true(app$get_js("$('#btMergeInputData').is(':hidden');"))
 expect_true(app$get_js("$('#btOverwriteScenLocal').is(':visible');"))
 app$set_inputs(btOverwriteScenLocal = "click")
 app$set_inputs(inputTabset = "inputTabset_7")
-Sys.sleep(1)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
+expect_true(grepl("10 datasets imported",
+  app$get_js("$('.shiny-notification-content-text:visible').map(function(){return $(this).text();}).get().join(',')"),
+  fixed = TRUE
+))
 app$expect_values(
   input = paste0("slider_", c("7", "8"))
 )
@@ -62,23 +66,28 @@ expect_files_in_zip(app, "scenExportHandler", c(
   "attachments/bad1.miroscen"
 ))
 app$set_inputs(btImport = "click")
-Sys.sleep(0.5)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)
 app$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(0.5)
 app$set_inputs(btOverwriteScen = "click")
-Sys.sleep(1)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
 expect_equivalent(
   getHotData(app, "in_1"),
   tibble::tibble(i = "", value = "NA")
 )
 app$set_inputs(btImport = "click")
-Sys.sleep(1)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)
+app$set_inputs(tb_importData = "tb_importData_local")
 app$upload_file(localInput = paste0("../data/transport.miroscen"))
 app$set_inputs(cbSelectManuallyLoc = "click")
 app$set_inputs(selInputDataLoc = c("a", "d"))
 app$set_inputs(btImportLocal = "click")
 app$set_inputs(btReplaceInputData = "click")
-Sys.sleep(0.5)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
+expect_true(grepl("2 datasets imported",
+  app$get_js("$('.shiny-notification-content-text:visible').map(function(){return $(this).text();}).get().join(',')"),
+  fixed = TRUE
+))
 expect_equivalent(
   getHotData(app, "in_1"),
   tibble::tibble(i = c("Seattle", "San-Diego"), value = c(350L, 600L))
@@ -105,24 +114,38 @@ expect_identical(
   "I am a scenario (*)"
 )
 app$set_inputs(btImport = "click")
-Sys.sleep(1)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)
+app$set_inputs(tb_importData = "tb_importData_local")
 app$upload_file(localInput = paste0("../data/transport.miroscen"))
 app$set_inputs(btImport = "click")
 app$set_inputs(btOverwriteScenLocal = "click")
-Sys.sleep(1)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
 expect_identical(
   iconv(as.character(app$get_values()[["output"]][["inputDataTitle"]][["html"]])),
   "<i>&lt;Test Scenario&gt; (*)</i>"
 )
 expect_identical(app$get_js("$('#dirtyFlagIcon').is(':visible')===false;", timeout = 50L), TRUE)
 app$set_inputs(btImport = "click")
-Sys.sleep(1)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)
+app$set_inputs(tb_importData = "tb_importData_local")
 app$upload_file(localInput = paste0("../data/transport.miroscen"))
 app$set_inputs(cbSelectManuallyLoc = "click")
 app$set_inputs(selInputDataLoc = c("a", "d"))
 app$set_inputs(btImportLocal = "click")
 app$set_inputs(btReplaceInputData = "click")
-Sys.sleep(1)
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
 # when replacing data in scenario with output data, dirty flag should be visible
 expect_identical(app$get_js("$('#dirtyFlagIcon').is(':visible')===true;", timeout = 50L), TRUE)
+app$set_inputs(btImport = "click")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)
+app$set_inputs(tb_importData = "tb_importData_local")
+app$upload_file(localInput = paste0("../data/transport.miroscen"))
+app$set_inputs(cbSelectManuallyLoc = "click")
+app$set_inputs(btImportLocal = "click")
+app$set_inputs(btReplaceInputData = "click")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
+expect_true(grepl("No dataset was imported.",
+  app$get_js("$('.shiny-notification-content-text:visible').map(function(){return $(this).text();}).get().join(',')"),
+  fixed = TRUE
+))
 app$stop()

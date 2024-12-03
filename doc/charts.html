@@ -2647,7 +2647,7 @@ firstDayTraining(td)                   = td.pos = 1;
           "pivotRenderer": "bar",
           "domainFilter": { "default": null },
           "tableSummarySettings": {
-            "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum"
+            "rowEnabled": false, "rowSummaryFunction": "sum", "colEnabled": false, "colSummaryFunction": "sum"
           },
           "rows": "mac",
           "filter": { "sim_miro": "scenario" },
@@ -2806,7 +2806,7 @@ firstDayTraining(td)                   = td.pos = 1;
           "macro1": {
             "aggregationFunction": "sum",
             "pivotRenderer": "bar",
-            "tableSummarySettings": { "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "tableSummarySettings": { "rowEnabled": false, "rowSummaryFunction": "sum", "colEnabled": false, "colSummaryFunction": "sum" },
             "rows": "mac",
             "aggregations": { "sim_miro": null },
             "chartOptions": { "title": "Macroeconomic indicators (real, percentage change)" },
@@ -2817,7 +2817,7 @@ firstDayTraining(td)                   = td.pos = 1;
           "macro2": {
             "aggregationFunction": "sum",
             "pivotRenderer": "table",
-            "tableSummarySettings": { "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "tableSummarySettings": { "rowEnabled": false, "rowSummaryFunction": "sum", "colEnabled": false, "colSummaryFunction": "sum" },
             "rows": "mac",
             "aggregations": { "sim_miro": null },
             "data": "macroperc",
@@ -2837,7 +2837,9 @@ firstDayTraining(td)                   = td.pos = 1;
                         alt="Data view"
                       />
                     </div>
-                    <b id="dashboard-custom-code">Using custom code in the dashboard</b>
+                    <b id="dashboard-custom-code"
+                      >Using custom code in the dashboard</b
+                    >
                     <p>
                       Besides a chart configuration based on a pivot table view
                       in
@@ -2878,8 +2880,8 @@ firstDayTraining(td)                   = td.pos = 1;
     ns <- NS(id)
     ...
   }
-- renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL) {
-+ renderMirorenderer_macrolevel <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+- renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
++ renderMirorenderer_macrolevel <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...) {
 -   moduleServer(
 -     id,
 -     function(input, output, session) {
@@ -2970,8 +2972,8 @@ firstDayTraining(td)                   = td.pos = 1;
                       >). Example:
                     </p>
                     <div class="code-block">
-                      <pre><code class="language-r">renderMirorenderer_macrolevel <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
-  ...
+                      <pre><code class="language-r">renderMirorenderer_macrolevel <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...) {
+  [...]
 
   output[["macro2"]] <- renderUI({
     tagList(

@@ -218,6 +218,8 @@ build_linux_job:
         yarn docker-build-ci
         docker tag gamsmiro-ci $CI_REGISTRY_IMAGE/gamsmiro-ci:latest
         docker push $CI_REGISTRY_IMAGE/gamsmiro-ci:latest
+        docker tag gamsmiro-server-ci $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
+        docker push $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
       fi
   artifacts:
     paths:
@@ -820,11 +822,46 @@ test_job_gamspy:
   tags:
     - linux
   stage: test
-  image: python
+  image: python:3.13
   before_script:
     - pip install --force-reinstall git+https://github.com/GAMS-dev/gamspy.git@develop
   script:
     - ./scripts/test_gamspy_models.sh
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+      when: on_success
+    - if: $CI_MERGE_REQUEST_TITLE =~ /^Draft:/
+      when: manual
+    - if: $CI_MERGE_REQUEST_ID
+
+
+test_job_miro_server:
+  tags:
+    - linux
+    - puma
+  stage: test
+  image: $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
+  services:
+    - docker:27-dind
+    - selenium/standalone-chrome
+  variables:
+    MIRO_PROXY_URL: http://docker:8080
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_VERIFY: 1
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_CERT_PATH: "/certs/client"
+    DOCKER_HOST: tcp://docker:2376
+    FF_NETWORK_PER_BUILD: "true"
+  before_script:
+    # this is to be able to pull and push images
+    - mkdir -p $HOME/.docker
+    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+  script:
+    - ./scripts/test_miro_server.sh
+  artifacts:
+    when: always
+    paths:
+      - miro_server_all_logs.txt
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
       when: on_success

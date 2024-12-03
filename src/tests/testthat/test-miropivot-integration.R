@@ -7,9 +7,11 @@ library(futile.logger)
 library(chartjs)
 library(jsonlite)
 
+source("../../components/scenario_extensions.R")
 source("../../components/views.R")
 source("../../modules/renderers/miro-pivot.R")
 
+lang <<- list()
 
 testData <- tibble(
   a = rep.int(paste0("a", seq_len(5)), 2L), b = paste0("b", seq_len(10)),
@@ -382,7 +384,10 @@ test_that("MIRO pivot renderer views work", {
         aggregationFunction = "count",
         pivotRenderer = "bar",
         domainFilter = list(default = NULL),
-        tableSummarySettings = list(enabled = FALSE, rowSummaryFunction = "sum", colSummaryFunction = "sum"),
+        tableSummarySettings = list(
+          rowEnabled = FALSE, rowSummaryFunction = "sum",
+          colEnabled = FALSE, colSummaryFunction = "sum"
+        ),
         aggregations = list(
           b = NULL, c = "c2", d = NULL,
           e = NULL, f = NULL

@@ -1,1 +1,1 @@
-{"schedule2":{"agg view":{"aggregationFunction":"sum","pivotRenderer":"table","domainFilter":{"default":null},"tableSummarySettings":{"enabled":false,"rowSummaryFunction":"sum","colSummaryFunction":"sum"},"rows":"i","aggregations":{"Hdr":null},"cols":{"j":null}}}}
+{"schedule2":{"agg view":{"aggregationFunction":"sum","pivotRenderer":"table","domainFilter":{"default":null},"tableSummarySettings":{"rowEnabled":false,"rowSummaryFunction":"sum","colEnabled": false, "colSummaryFunction":"sum"},"rows":"i","aggregations":{"Hdr":null},"cols":{"j":null}}}}

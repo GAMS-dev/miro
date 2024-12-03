@@ -1933,6 +1933,24 @@ li.drop-index-item[data-col-hidden="true"] {
 .miro-pivot-btn-text {
   display: none;
 }
+.dt-title {
+  margin-top:30px;
+  font-weight: bold;
+  font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+  font-size: 14pt;
+  cursor: default;
+  .responsiveDark({
+    color: #666;
+  },
+  {
+    color: #fff;
+  });
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-left: auto;
+  margin-right: auto;
+}
 @media (max-width: 991px) {
   .custom-order {
     display: flex;
@@ -2316,6 +2334,9 @@ li.drop-index-item[data-col-hidden="true"] {
     z-index: 1;
   }
 }
+.view-menu {
+  word-break: normal;
+}
 .dropdown-item-wrapper {
   display: flex;
   position: relative;
@@ -2640,6 +2661,7 @@ li.drop-index-item[data-col-hidden="true"] {
   .tabs-ul-mobile .tabs-li-mobile:not(.maxTabsDropdown > .tabs-li-mobile),
   .tabs-ul-mobile-helper .tabs-li-mobile:not(.maxTabsDropdown > .tabs-li-mobile),
   .domain-filter > div > ul > li,
+  .view-menu > div > ul > li,
   .tabs-ul-mobile-helper #scenTabsetAdd,
   .tabs-ul-mobile .max-tabs-dropdown-label:not(.maxTabsDropdown > .tabs-li-mobile) ,
   #tpEditMeta > li  {

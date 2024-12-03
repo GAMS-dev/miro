@@ -101,6 +101,116 @@
                     <h3>Minor new features and improvements</h3>
                     <ul>
                       <li>Add GAMSPy example model: tsp.</li>
+                      <li>
+                        New <a href="./charts.html#pivot-view">view</a> options
+                        in
+                        <a href="./charts.html#pivot-chart">MIRO Pivot</a>
+                        and
+                        <a href="./charts.html#dashboard">dashboard renderer</a
+                        >:
+                        <ul>
+                          <li>Add support for a second x/y-axis.</li>
+                          <li>
+                            Add option to select the second chart type in a
+                            combo chart.
+                          </li>
+                          <li>
+                            It is now possible to configure the stacking
+                            behavior of data series in combo charts (as part of
+                            a stacked chart), enabling the creation of grouped
+                            stacked bar charts, stacked bar/line charts, and
+                            more.
+                          </li>
+                          <li>
+                            Add option to draw a line chart as stepped line
+                            chart.
+                          </li>
+                          <li>
+                            Add option to set a static minimum/maximum value
+                            for axes.
+                          </li>
+                          <li>
+                            Add option to show/hide data points in a chart.
+                          </li>
+                          <li>Add option to show/hide the grid in a chart.</li>
+                          <li>
+                            Add option to specify the fill opacify for stacked
+                            and regular area charts.
+                          </li>
+                          <li>
+                            Add option to stack positive and negative values
+                            together for stacked charts.
+                          </li>
+                          <li>
+                            Configuration Mode: When activating checkbox to
+                            load scenario on app startup, the scenario name is
+                            now "default" by default.
+                          </li>
+                        </ul>
+                      </li>
+                      <li>
+                        MIRO Pivot: The view dialog has been restructured.
+                      </li>
+                      <li>
+                        MIRO Pivot and dashboard renderer: Support separate
+                        activation/deactivation of row/column summary.
+                      </li>
+                      <li>
+                        MIRO Pivot: Support setting title for
+                        <kbd>table</kbd> and <kbd>heatmap</kbd> renderers.
+                      </li>
+                      <li>
+                        Improve error messages if the validation of the JSON
+                        configuration file fails.
+                      </li>
+                    </ul>
+                    <h3>Bug fixes</h3>
+                    <ul>
+                      <li>
+                        MIRO Pivot: Fix issue where removing title from chart
+                        did not work properly.
+                      </li>
+                      <li>
+                        Update Help menu link to point to the new
+                        <a
+                          href="https://forum.gams.com/c/gams-miro/12"
+                          target="_blank"
+                          >GAMS forum</a
+                        >.
+                      </li>
+                      <li>
+                        Fix issue where where clicking the "Solve" button could
+                        cause MIRO with GAMS Engine backend to crash in certain
+                        situations.
+                      </li>
+                      <li>
+                        Fixes issue where updating
+                        <a
+                          href="./configuration_advanced.html#widgets-dependencies"
+                          >dependent value(s) of slider</a
+                        >
+                        resulted in broken slider with only
+                        <kbd>NaN</kbd> choices.
+                      </li>
+                      <li>
+                        Fixes issue where updating
+                        <a
+                          href="./configuration_advanced.html#widgets-dependencies"
+                          >dependent choices of dropdown</a
+                        >
+                        resulted in selected value to be reset.
+                      </li>
+                      <li>
+                        Fix issue where imported output datasets were not
+                        counted in the total number of imported sheets
+                        displayed in the alert message during local file
+                        imports.
+                      </li>
+                      <li>
+                        Fix issue issue where choosing no datasets during
+                        manual dataset selection for local file imports
+                        incorrectly resulted in all datasets being imported.
+                      </li>
                     </ul>
                   </div>
                 </section>
@@ -112,6 +222,29 @@
                     (2024-07-17)
                   </div>
                   <div class="section-block">
+                    <h5 style="display: inline-block">GAMS MIRO 2.10.4</h5>
+                    <div style="display: inline-block; padding-left: 15px">
+                      (2024-10-29)
+                    </div>
+                    <ul>
+                      <li>
+                        Fix determining the delimiter of a CSV file did not
+                        work for quoted strings.
+                      </li>
+                      <li>
+                        Fix issue when using the dashboard as a custom renderer
+                        (to use custom code).
+                      </li>
+                      <li>
+                        MIRO Server: Fix issue that causes the Docker Socket
+                        Proxy to crash on certain Linux distributions and/or
+                        certain Docker versions.
+                      </li>
+                      <li>
+                        MIRO Server: Fix potential Denial of service (DoS)
+                        vulnerability in API server.
+                      </li>
+                    </ul>
                     <h5 style="display: inline-block">GAMS MIRO 2.10.3</h5>
                     <div style="display: inline-block; padding-left: 15px">
                       (2024-10-07)
@@ -3315,7 +3448,7 @@
                         The value and/or the element text of a singleton Set
                         can be used in the
                         <a
-                          href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset"
+                          href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset"
                           >eval.Set</a
                         >
                         option to evaluate the value/text at compile time and

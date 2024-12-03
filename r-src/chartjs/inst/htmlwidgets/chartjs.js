@@ -9,6 +9,7 @@ HTMLWidgets.widget({
       window.matchMedia('(prefers-color-scheme: dark)').matches
     ) {
       Chart.defaults.color = 'white';
+      Chart.defaults.borderColor = '#9c9c9c';
     } else {
       Chart.defaults.color = '#666';
     }

@@ -1135,7 +1135,7 @@ if (buildUI) {
           name = "color-scheme",
           content = if (identical(config$theme, "browser")) "dark light" else "normal"
         ),
-        tags$meta(name = "apple-mobile-web-app-capable", content = "yes"),
+        tags$meta(name = "mobile-web-app-capable", content = "yes"),
         tags$link(type = "text/css", rel = "stylesheet", href = if (identical(config$customColorTheme, TRUE)) {
           paste0("static_", modelName, "/custom_theme.css")
         } else {
