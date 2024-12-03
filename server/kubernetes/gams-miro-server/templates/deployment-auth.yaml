@@ -38,7 +38,9 @@ spec:
           - "-c"
           - |
             mkdir -p /home/miro/admin/mnt/data
+            chmod -R g+rwX /home/miro/admin/mnt/models
             mkdir -p /home/miro/admin/mnt/models
+            chmod -R g+rwX /home/miro/admin/mnt/models
         volumeMounts:
         - name: shared-data
           mountPath: /home/miro/admin/mnt

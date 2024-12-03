@@ -85,11 +85,11 @@ miro:
     tag: ''
   resources:
     requests:
-      cpu: '500m'
-      memory: 2000Mi
+      cpu: '450m'
+      memory: 1700Mi
     limits:
       cpu: '2000m'
-      memory: 2000Mi
+      memory: 1700Mi
 
 admin:
   image:
@@ -98,11 +98,11 @@ admin:
     tag: ''
   resources:
     requests:
-      cpu: '100m'
-      memory: 500Mi
+      cpu: '450m'
+      memory: 1700Mi
     limits:
-      cpu: '1000m'
-      memory: 2000Mi
+      cpu: '2000m'
+      memory: 1700Mi
 
 db:
   image:

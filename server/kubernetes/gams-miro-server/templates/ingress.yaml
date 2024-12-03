@@ -23,16 +23,16 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ .Release.Name }}-auth
+                name: {{ .Release.Name }}-proxy
                 port:
-                  number: 8081
+                  number: 8080
           - path: {{ .Values.global.rootPath | trimSuffix "/" }}/api
             pathType: Prefix
             backend:
               service:
-                name: {{ .Release.Name }}-proxy
+                name: {{ .Release.Name }}-auth
                 port:
-                  number: 8080
+                  number: 8081
   {{- if .Values.ingress.className }}
   ingressClassName: {{ tpl .Values.ingress.className $ | quote }}
   {{- end }}
