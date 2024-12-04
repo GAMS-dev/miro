@@ -1200,10 +1200,10 @@ We will create our own renderers in the next section, but note that if you alrea
 
 To keep the code snippets concise, we will only look at the options we changed and have the full json at the end.
 
-Normally you would not know all the datasets you need to add to `"additionalData"`. Here we will add `"report_output"`, `"gen_power"`, `"battery_power"` and `"external_grid_power"` since we already have an idea of which views we want to display. But of course you can add or remove symbols at any time.
+Normally you would not know all the datasets you need to add to `"additionalData"`. Here we will add `"report_output"`, `"gen_power"`, `"battery_power"` and `"external_grid_power"` since we already have an idea of which views we want to display. But of course you can add or remove symbols at any time. Further we will add the input symbol `"generator_specifications"` to easily check if the generator characteristic are fulfilled.
 
 ```json
-"additionalData": ["report_output", "gen_power", "battery_power", "external_grid_power"]
+"additionalData": ["report_output", "gen_power", "battery_power", "external_grid_power", "generator_specifications"]
 ```
 
 In the options we can first set a title for the value boxes.
@@ -1231,7 +1231,6 @@ We will create six value boxes. However, we will only discuss the first two in d
 
 Each value box needs a unique id, it will be the link to our corresponding data view. However, value boxes can also be used without a corresponding view. We will also specify scalar parameters as KPIs for our value boxes. If you don't have a matching KPI, but still want to have the view in the dashboard, just set it to `null`. We also need to define some style parameters, see the [value box](https://www.gams.com/miro/charts.html#dashboard-valueboxes) documentation for more information.
 
-MAYBE ADD IMAGE
 
 <details>
   <summary>Click to see the code for all six boxes</summary>
@@ -1262,13 +1261,12 @@ We start each view with the `id` from the corresponding value field, then we ass
 "dataViews": {
     "battery_power": [{"BatteryTimeline": "Charge/Discharge of the BESS"}],
     "external_grid_power": [{"ExternalTimeline": "Power taken from the external grid"}],
-    "gen_power": [{"GeneratorTimeline": "Generators Timeline"}],
+    "gen_power": [{"GeneratorTimeline": "Generators Timeline"}, {"GeneratorSpec": ""}],
     "total_cost": [{"Balance": "Load demand fulfillment over time"}]
 }
 ```
-**maybe add gen_specification table so that there also is an example for a table**
 
-The only thing left to do is to specify the actual charts/tables to be displayed. This is also explained in detail in the [documentation](https://www.gams.com/miro/charts.html#dashboard-dataviewsconfig). The easiest way to add charts is to first create the views with the pivot tool directly in the application. When you save the view, you can directly download the necessary json configurations. To do this, click on *Scenario* -> *Edit metadata* in the top right corner of the application and switch to the *View* tab. Here you can select a view and download its json file. Most of this can be copied directly. We just need to change the way we define which symbol the view is based on. It is no longer defined outside, but we will add `"data: "report_output"` to specify the symbol.
+The only thing left to do is to specify the actual charts/tables to be displayed. This is also explained in detail in the [documentation](https://www.gams.com/miro/charts.html#dashboard-dataviewsconfig). The easiest way to add charts/tables is to first create the views with the pivot tool directly in the application. When you save the view, you can directly download the necessary json configurations. To do this, click on *Scenario* -> *Edit metadata* in the top right corner of the application and switch to the *View* tab. Here you can select a view and download its json file. Most of this can be copied directly. We just need to change the way we define which symbol the view is based on. It is no longer defined outside, but we will add `"data: "report_output"` to specify the symbol.
 
 ```diff
 {
@@ -1309,8 +1307,6 @@ The only thing left to do is to specify the actual charts/tables to be displayed
 ```
 
 Now we just need to place this inside the `"dataViewsConfig"`.
-
-**add explanation for tables**
 
 
 <details>
@@ -1400,6 +1396,22 @@ Now we just need to place this inside the `"dataViewsConfig"`.
             "rowEnabled": false,
             "rowSummaryFunction": "sum"
         }
+    },
+    "GeneratorSpec": {
+      "aggregationFunction": "sum",
+      "pivotRenderer": "table",
+      "domainFilter": {
+          "default": null
+      },
+      "tableSummarySettings": {
+          "rowEnabled": false,
+          "rowSummaryFunction": "sum",
+          "colEnabled": false,
+          "colSummaryFunction": "sum"
+      },
+      "data": "generator_specifications",
+      "rows":"i",
+      "cols": {"Hdr": null}
     },
     "GeneratorTimeline": {
         "aggregationFunction": "sum",
@@ -2335,7 +2347,226 @@ renderMirowidget_timewise_load_demand_and_cost_external_grid_data <- function(in
 Congratulations, you have now created a custom input widget! Now that you are a renderer pro, try some different visualizations, maybe start with a different model. If you need more inspiration on what you can do with the custom renderer, take a look at the [MIRO gallery](https://miro.gams.com/), e.g. take a look at some applications with maps ([TSP](https://miro.gams.com/gallery/app_direct/tsp/) or [VRPTW](https://miro.gams.com/gallery/app_direct/vrptw/)).
 
 
-## Custom Import and Export
+## Custom Import and Export: Streamlining Your Data Workflow
+
+In any data-centric project, the ability to efficiently manage data movement is critical. While MIRO already provides a number of ways to [import](https://www.gams.com/miro/start.html#import-data) and [export](https://www.gams.com/miro/start.html#save-export-delete) data, such as GDX, Excel or CSV. Sometimes you have databases where you store your data and don't want to take the extra step of saving it to a CSV file first. Or it is quite common that you need to collect the data from multiple sources and get it into a format that MIRO can work with, especially making sure that the correct symbol names are used. That's where the custom import and export functions come in.
+
+Custom functions allow you to:
+
+- Work directly with databases and/or multiple file types.
+- Perform pre- or post-processing steps directly in MIRO.
+
+Here we will go over the basic concept to give you a good starting point for extending it to your needs. Again, we follow the [documentation](https://www.gams.com/miro/configuration_json_only.html#custom-import-export) closely. First, let's create a simple import function that gets the data for our generators. For ease of setup, we will just pretend to access a database and actually hardcode the data here. 
+
+For our custom importer, we need to create a new file in the *renderer_\<modelname\>* directory called *miroimport.R*. Here you can add several import functions, which should have the following signature:
+
+```R
+miroimport_<importerName> <- function(symNames, localFile = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
+
+}
+```
+Here we will only go over the parameters we will be using, for information on the others see the [documentation](https://www.gams.com/miro/configuration_json_only.html#custom-import-export). The `"symNames"` parameter is a character vector that specifies the names of the symbols for which data is to be retrieved. There is also an optional `"localFile"` parameter, which is a data frame containing one row for each uploaded file. What kind of data you can upload here is specified in *\<modelname\>.json*.
+
+We also need to add the importer to the *\<modelname\>.json*, to do this we simply add a new key `"customDataImport"`:
+
+```json
+"customDataImport": [
+  {
+    "label": "Gen specs import",
+    "functionName": "miroimport__<importerName>",
+    "symNames": ["generator_specifications"]
+  }
+]
+```
+
+Where we simply specify the `"label"` the importer will have when you select it under *Load data* in the MIRO application. The `"functionName"` which specifies which importer from *miroimport.R* is used. And `"symNames"` specifying which GAMS symbols the importer handles.
+
+If you want to allow the user to upload files, you need to add `"localFileInput"`, which could look like this
+
+```json
+"customDataImport": [
+  {
+    ...
+    "localFileInput": {
+      "label": "Please upload your JSON file here",
+      "multiple": false,
+      "accept": [".json", "application/json"]
+    }
+  }
+]
+```
+
+For more information on the available options, see the [Documentation](https://www.gams.com/miro/configuration_json_only.html#custom-import-export).
+
+Now we can start our MIRO application and use the importer, but since we haven't filled it with code yet, nothing happens. So we change that. The most important part, of course, is that we actually return some data. This is done by returning a named list where the names correspond to the given `"symbolNames"`. Here we will simply hardcode it to return the same data as before, just changing the names to see that it actually imported the new data. 
+
+```R
+miroimport_GenSpecs <- function(symbolNames, localFile = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
+    # Let's say this is your result
+    generator_specifications <- tibble(
+        i = c("gen3", "gen4", "gen5"),
+        cost_per_unit = c(0.010694, 0.018761, 0.0076121),
+        fixed_cost = c(142.7348, 168.9075, 313.9102),
+        min_power_output = c(30, 50, 30),
+        max_power_output = c(70, 100, 120),
+        min_up_time = c(8, 8, 8),
+        min_down_time = c(6, 6, 6)
+    )  
+
+    # Now all you need to do is save the import symbols to a named list.
+    import_data <- list("generator_specifications" = generator_specifications)
+
+    # And return the data to the MIRO application.
+    return(import_data)
+}
+```
+
+Now you can already test it and you will see that the names of the generators will change. However, this is not really different from before, nothing new and helpful here. But now that we have this framework set up, we can do a lot more with it. Depending on how your data looks here, you can fix the names to be compatible with the MIRO application, since `"symbolNames"` gives you the correct names. Also, assuming we have a MySQL database, we could access it here and then set the retrun value to our query result. The interesting thing here is how to handle credentials. MIRO allows you to specify environments, this is where we will store our credentials. For MIRO [Desktop](https://www.gams.com/miro/deployment.html#custom-environments) this is done by defining a json file and adding it to your environments. We will name th file *miro-env.json* and it could look something like this:
+
+```json
+{
+    "DB_USERNAME":"User1",
+    "DB_PASSWORD": "mySuperSecretPassword!"
+}
+```
+Now in MIRO Desktop go to *File* and then to *Preferences*, under *Environment* you can now upload the json file. Accessing your database and importing the generator specification from there could look like this:
+
+```R
+miroimport_GenSpecs <- function(symbolNames, localFile = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
+
+    # Where you get your data from depends on your data structures. 
+    # Let's say we have a MySQL database that contains our generator specifications.
+    # To gain access, we store our credentials in the environment.
+
+    # Establish connection
+    con <- dbConnect(
+        RMySQL::MySQL(),
+        dbname = "your_database_name",
+        host = "your_host_address",
+        port = 3306,
+        user = Sys.getenv("DB_USERNAME"),
+        password = Sys.getenv("DB_PASSWORD")
+    )
+
+    # Run a SQL query and fetch data into a data frame
+    query_result <- dbGetQuery(con, "SELECT * FROM generator_specifications")
+
+    # Now all you need to do is save the import symbols to a named list.
+    import_data <- list("generator_specifications" = query_result)
+
+    # And return the data to the MIRO application.
+    return(import_data)
+}
+```
+
+In the [documentation](https://www.gams.com/miro/configuration_json_only.html#custom-import-export) you can also find an example that handles uploaded files.
+
+Hopefully you now know how to write your own custom importer that handles all the data collection and preprocessing needed for your application.
+
+A custom exporter works similarly. You also need to add *miroexport.R* to the *renderer_\<modelname\>* directory first, which should have the following signature:
+
+```R
+miroexport_<exporterName> <- function(data, path = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
+
+}
+```
+
+Where `"data"` is again a named list of tibbles containing all input and output symbols of the model and `"path"` is the path to the (temporary) file provided to the user for download (optional). This depends on how you specified it in the json file. Where you need to add:
+
+
+```json
+{
+  "customDataExport": [
+    {
+      "label": "Custom report export",
+      "functionName": "miroexport_Markdown",
+      "localFileOutput": {
+        "filename": "report.md",
+        "contentType": "application/md"
+      }
+    }
+  ]
+}
+```
+
+Again, we need to link the `"functionName"`, and if we want to create an output file, we need to specify it in `"localFileOutput"`. Here we will return a markdown file. 
+
+Now we have to decide what to do with our export. You could save the results back to your database, even the input data, since it may have changed due to the interactive nature of the application. Or return some output file, here a markdown file. Try to collect the information about the total cost, the battery power and the battery energy and paste it into the markdown file in `"path"`. Also, try adding the table for the generator specifications. Functions that might be helpful are [`"writeLines()"`](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/writeLines), [`"paste()"`](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/paste), [`"filter()"`](https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/filter), [`"pull()"`](https://www.rdocumentation.org/packages/lplyr/versions/0.1.6/topics/pull), [`"apply()"`](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/apply) ...
+
+Your result could look something like this:
+
+Our final total cost is:  15135.48 $
+
+With a battery power (delivery) rate of  45 kW and a battery energy (storage) rate of  135 kWh.
+
+With the following generator specifications:
+
+i | cost_per_unit | fixed_cost | min_power_output | max_power_output | min_up_time | min_down_time
+--- | --- | --- | --- | --- | --- | ---
+gen0 | 0.0106940 | 142.7348 | 30 |  70 | 8 | 6
+gen1 | 0.0187610 | 168.9075 | 50 | 100 | 8 | 6
+gen2 | 0.0076121 | 313.9102 | 30 | 120 | 8 | 6
+
+
+<details>
+  <summary>Click to see the code for the custom exporter</summary>
+
+```R
+miroexport_Markdown <- function(data, path = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
+    # First, extract the values you want to display.
+    total_cost <- data[["_scalars_out"]] %>%
+        filter(scalar == "total_cost") %>%
+        pull(value) %>%
+        as.numeric() %>%
+        round(2)
+
+    battery_delivery_rate <- data[["_scalarsve_out"]] %>%
+        filter(scalar == "battery_delivery_rate") %>%
+        pull(level)
+
+    battery_storage <- data[["_scalarsve_out"]] %>%
+        filter(scalar == "battery_storage") %>%
+        pull(level)
+
+    output_string <- paste(
+        "Our final total cost is: ", total_cost,
+        "$\n\nWith a battery power (delivery) rate of ", battery_delivery_rate,
+        "kW and a battery energy (storage) rate of ", battery_storage, "kWh."
+    )
+
+    # Open a connection to the output file
+    file_conn <- file(path, "w")
+
+    # Then write them to the output file.
+    writeLines(output_string, file_conn)
+
+    writeLines("\n\n", file_conn)
+
+    # Let's add the generator specifications used
+    writeLines("With the following generator specifications:\n\n", file_conn)
+
+    # Extract the table
+    table <- data[["generator_specifications"]]
+
+    # Convert the table to a Markdown-style string
+    # Create the header
+    headers <- paste(names(table), collapse = " | ")
+    separator <- paste(rep("---", length(table)), collapse = " | ")
+    rows <- apply(table, 1, function(row) paste(row, collapse = " | "))
+    
+    # Write the table to the file
+    writeLines(paste(headers, separator, paste(rows, collapse = "\n"), sep = "\n"), file_conn)
+
+    # Close the file connection
+    close(file_conn)
+
+    # If you also want to save the data to a database,
+    # you can do that here as well, similar to the import function.
+}
+```
+</details>
+
+If you are accessing a database in the exporter, you can again get your credentials from the environment.
 
 ## Deploy
 
