@@ -2014,7 +2014,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                   choices = choices,
                   selected = if (!filterIndex %in% filteredData()$singleFilterIndices) {
                     selectedFilterVal
-                  } else if (nchar(selectedFilterVal[1])) {
+                  } else if (nchar(as.character(selectedFilterVal)[1])) {
                     selectedFilterVal[1]
                   } else {
                     filterElements[[filterIndex]][1]
