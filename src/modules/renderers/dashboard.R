@@ -265,32 +265,20 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           return(list(brks = brks, clrs = clrs))
         }
 
-        symbolPositiveData <- c()
-        symbolNegativeData <- c()
-        for (name in names(symbolData[-seq_len(as.numeric(noRowHeaders))])) {
-          symbolPositiveValuesCol <- symbolData[[name]][symbolData[[name]] >= 0]
-          symbolPositiveValuesCol <- symbolPositiveValuesCol[!is.na(symbolPositiveValuesCol)]
-          symbolPositiveData <- c(symbolPositiveData, symbolPositiveValuesCol) %>%
-            unique()
-          symbolNegativeValuesCol <- symbolData[[name]][symbolData[[name]] < 0]
-          symbolNegativeValuesCol <- symbolNegativeValuesCol[!is.na(symbolNegativeValuesCol)]
-          symbolNegativeData <- c(symbolNegativeData, symbolNegativeValuesCol) %>%
-            unique()
-        }
-        if (length(symbolNegativeData) && !any(is.na(symbolNegativeData))) {
-          symbolLowestNegative <- min(symbolNegativeData, na.rm = TRUE)
-        } else if (length(symbolPositiveData) && !any(is.na(symbolPositiveData))) {
-          symbolLowestNegative <- min(symbolPositiveData, na.rm = TRUE)
-        } else {
-          symbolLowestNegative <- 0
-        }
-        if (length(symbolPositiveData) && !any(is.na(symbolPositiveData))) {
-          symbolHighestPositive <- max(symbolPositiveData, na.rm = TRUE)
-        } else if (length(symbolNegativeData) && !any(is.na(symbolNegativeData))) {
-          symbolHighestPositive <- max(symbolNegativeData, na.rm = TRUE)
-        } else {
-          symbolHighestPositive <- 0
-        }
+        # Exclude row headers
+        relevantData <- symbolData[-seq_len(as.numeric(noRowHeaders))]
+
+        # Separate positive and negative values
+        positiveValues <- unlist(lapply(relevantData, function(col) col[col >= 0]), use.names = FALSE)
+        negativeValues <- unlist(lapply(relevantData, function(col) col[col < 0]), use.names = FALSE)
+
+        # Remove NA and get unique values
+        positiveValues <- unique(positiveValues[!is.na(positiveValues)])
+        negativeValues <- unique(negativeValues[!is.na(negativeValues)])
+
+        # Determine extremes
+        symbolLowestNegative <- if (length(negativeValues)) min(negativeValues) else if (length(positiveValues)) min(positiveValues) else 0
+        symbolHighestPositive <- if (length(positiveValues)) max(positiveValues) else if (length(negativeValues)) max(negativeValues) else 0
 
         symbolAbsMax <- max(abs(symbolLowestNegative), abs(symbolHighestPositive))
 
@@ -323,7 +311,6 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
       }
 
       applyCustomLabelsOrder <- function(data, noRowHeaders, customLabelsOrder) {
-        # TODO: find better column name solution
         mergedCols <- paste0("\U2024", "mergedCols")
         orderCol <- paste0(mergedCols, "\U2024")
         orderTmpCol <- paste0(orderCol, "\U2024")
@@ -333,9 +320,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         )
 
         data <- data %>%
-          mutate(!!mergedCols := apply(select(., 1:noRowHeaders), 1, function(row) paste(row, collapse = "\U2024")))
-
-        data <- data %>%
+          unite(!!mergedCols, 1:noRowHeaders, sep = "\U2024", remove = FALSE) %>%
           left_join(orderTibble, by = mergedCols) %>%
           mutate(!!orderCol := ifelse(is.na(!!sym(orderTmpCol)),
             max(!!sym(orderTmpCol), na.rm = TRUE) + row_number(),

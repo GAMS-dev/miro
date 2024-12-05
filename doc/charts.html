@@ -416,8 +416,7 @@
                       between several summary functions — such as sum, count,
                       mean, and more — for both rows and columns. These summary
                       functions allow you to quickly calculate key metrics
-                      across your data without needing to manually process it.
-                      In contrast to
+                      about your data. In contrast to
                       <a
                         href="./charts.html#pivot-view-settings"
                         class="scrollto"
@@ -2913,8 +2912,41 @@ firstDayTraining(td)                   = td.pos = 1;
   }
 }
 </code></pre>
-                            For a more detailed example see
-                            <a href="./charts.html#custom-order">here</a>.
+                            <p>
+                              For a more detailed example see
+                              <a href="./charts.html#custom-order">here</a>.
+                            </p>
+                            <p>
+                              Note: If a parameter spans multiple dimensions in
+                              the rows, the entries in
+                              <code class="language-json"
+                                >"customLabelsOrder"
+                              </code>
+                              must include the corresponding labels for each
+                              dimension, concatenated with a
+                              <code class="language-json">․</code> (Unicode
+                              Character U+2024) as a separator.
+                            </p>
+                            Example:
+                            <pre><code class="language-json">
+{
+  "customLabelsOrder":
+  [
+   "Services․Construction",
+   "Primary․Agriculture"
+  ]
+}
+</code></pre>
+                            <div
+                              class="section-block"
+                              style="text-align: left"
+                            >
+                              <img
+                                class="img-fluid"
+                                src="assets/images/dashboard/custom_labels_order_multiple.png"
+                                alt="custom labels order with multiple dimensions"
+                              />
+                            </div>
                           </li>
                           <li>
                             <code class="language-json"

@@ -32,7 +32,6 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
   removeTableHeader <- function(viewData) {
     numericColumnNames <- names(Filter(is.numeric, viewData))
-    # viewData[sapply(viewData, is.numeric)] %>% names()
 
     if (length(numericColumnNames) > 1) {
       viewData <- viewData %>%
@@ -58,19 +57,19 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
     # GAMS Tables need to be lengthened to only have one value column
     # Remove sandbox scenario
     dataTmp <- data[-1]
+    names(dataTmp) <- scenarioNames
+    combinedData <- bind_rows(dataTmp, .id = "_scenName")
+
+    dataTmp <- data[-1]
     if (length(numericColumnNames) > 1) {
-      dataTmp <- lapply(data[-1], removeTableHeader)
+      dataTmp <- lapply(dataTmp, removeTableHeader)
     }
 
-    nonValueCols <- setdiff(colnames(dataTmp[[1]]), "value")
-    combinedData <- purrr::reduce(dataTmp, full_join, by = nonValueCols)
-    colnames(combinedData) <- c(nonValueCols, scenarioNames)
 
     return(combinedData)
   }
 
-  scenarioNames <- lapply(data$getMetadata(), function(x) x$`_sname`) %>% unlist()
-  scenarioNames <- scenarioNames[-1]
+  scenarioNames <- bind_rows(data$getMetadata())[["_sname"]][-1]
 
   dataViewsConfig <- options$dataViewsConfig
 
@@ -305,32 +304,21 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
       return(list(brks = brks, clrs = clrs))
     }
 
-    symbolPositiveData <- c()
-    symbolNegativeData <- c()
-    for (name in names(symbolData[-seq_len(as.numeric(noRowHeaders))])) {
-      symbolPositiveValuesCol <- symbolData[[name]][symbolData[[name]] >= 0]
-      symbolPositiveValuesCol <- symbolPositiveValuesCol[!is.na(symbolPositiveValuesCol)]
-      symbolPositiveData <- c(symbolPositiveData, symbolPositiveValuesCol) %>%
-        unique()
-      symbolNegativeValuesCol <- symbolData[[name]][symbolData[[name]] < 0]
-      symbolNegativeValuesCol <- symbolNegativeValuesCol[!is.na(symbolNegativeValuesCol)]
-      symbolNegativeData <- c(symbolNegativeData, symbolNegativeValuesCol) %>%
-        unique()
-    }
-    if (length(symbolNegativeData) && !any(is.na(symbolNegativeData))) {
-      symbolLowestNegative <- min(symbolNegativeData, na.rm = TRUE)
-    } else if (length(symbolPositiveData) && !any(is.na(symbolPositiveData))) {
-      symbolLowestNegative <- min(symbolPositiveData, na.rm = TRUE)
-    } else {
-      symbolLowestNegative <- 0
-    }
-    if (length(symbolPositiveData) && !any(is.na(symbolPositiveData))) {
-      symbolHighestPositive <- max(symbolPositiveData, na.rm = TRUE)
-    } else if (length(symbolNegativeData) && !any(is.na(symbolNegativeData))) {
-      symbolHighestPositive <- max(symbolNegativeData, na.rm = TRUE)
-    } else {
-      symbolHighestPositive <- 0
-    }
+    # Exclude row headers
+    relevantData <- symbolData[-seq_len(as.numeric(noRowHeaders))]
+
+    # Separate positive and negative values
+    positiveValues <- unlist(lapply(relevantData, function(col) col[col >= 0]), use.names = FALSE)
+    negativeValues <- unlist(lapply(relevantData, function(col) col[col < 0]), use.names = FALSE)
+
+    # Remove NA and get unique values
+    positiveValues <- unique(positiveValues[!is.na(positiveValues)])
+    negativeValues <- unique(negativeValues[!is.na(negativeValues)])
+
+    # Determine extremes
+    symbolLowestNegative <- if (length(negativeValues)) min(negativeValues) else if (length(positiveValues)) min(positiveValues) else 0
+    symbolHighestPositive <- if (length(positiveValues)) max(positiveValues) else if (length(negativeValues)) max(negativeValues) else 0
+
 
     symbolAbsMax <- max(abs(symbolLowestNegative), abs(symbolHighestPositive))
 
@@ -363,7 +351,6 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
   }
 
   applyCustomLabelsOrder <- function(data, noRowHeaders, customLabelsOrder) {
-    # TODO: find better column name solution
     mergedCols <- paste0("\U2024", "mergedCols")
     orderCol <- paste0(mergedCols, "\U2024")
     orderTmpCol <- paste0(orderCol, "\U2024")
@@ -373,9 +360,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
     )
 
     data <- data %>%
-      mutate(!!mergedCols := apply(select(., 1:noRowHeaders), 1, function(row) paste(row, collapse = "\U2024")))
-
-    data <- data %>%
+      unite(!!mergedCols, 1:noRowHeaders, sep = "\U2024", remove = FALSE) %>%
       left_join(orderTibble, by = mergedCols) %>%
       mutate(!!orderCol := ifelse(is.na(!!sym(orderTmpCol)),
         max(!!sym(orderTmpCol), na.rm = TRUE) + row_number(),
@@ -419,15 +404,6 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
     currentConfig <- dataViewsConfig[[view]]
 
     viewData <- combineData(data$get(currentConfig$data), scenarioNames)
-
-    # Scenario columns need to be lengthened to only have one value column
-    viewData <- viewData %>%
-      pivot_longer(
-        cols = all_of(scenarioNames),
-        names_to = "_scenName",
-        values_to = "value"
-      )
-
     preparedData <- prepareData(currentConfig, viewData)
     dashboardChartData[[view]] <- preparedData
   }
@@ -609,11 +585,14 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         valueTmp <- NULL
       } else {
         valueTmp <- scalarData %>%
-          filter(scalar == tolower(options$valueBoxes$valueScalar[i]))
+          filter(
+            `_scenName` == input$scenarioSelect,
+            scalar == tolower(options$valueBoxes$valueScalar[i])
+          )
         if (!nrow(valueTmp)) {
           abortSafe(sprintf("No scalar symbol '%s' found for valueBox '%s'", options$valueBoxes$valueScalar[i], options$valueBoxes$id[i]))
         }
-        valueTmp <- as.numeric(valueTmp[[input$scenarioSelect]])
+        valueTmp <- as.numeric(valueTmp[[length(valueTmp)]][1])
 
         if (!is.na(options$valueBoxes$decimals[i])) {
           valueTmp <- round(valueTmp, digits = as.numeric(options$valueBoxes$decimals[i]))

@@ -129,7 +129,7 @@ validateDashboardConfig <- function(graphConfig, dashboardType) {
       next
     }
     if (identical(dashboardType, "compare")) {
-      if (!is.null(config$data) && config$data %in% names(modelOut)) {
+      if (!is.null(config$data) && config$data %in% c(names(modelIn), names(modelOut))) {
         symbol <- config$data
       } else {
         errMsgTmp <- paste(
@@ -158,13 +158,14 @@ validateDashboardConfig <- function(graphConfig, dashboardType) {
       symbol <- graphConfig$options[["_metadata_"]]$symname
     }
 
-    noNumericHeaders <- sum(vapply(modelOut[[symbol]]$header,
+    headers <- if (symbol %in% names(modelOut)) modelOut[[symbol]]$headers else modelIn[[symbol]]$headers
+    noNumericHeaders <- sum(vapply(headers,
       function(header) {
         identical(header$type, "numeric")
       }, logical(1L),
       USE.NAMES = FALSE
     ))
-    validHeaders <- names(modelOut[[symbol]]$headers)
+    validHeaders <- names(headers)
     if (noNumericHeaders > 1L) {
       validHeaders <- c(
         validHeaders[seq_len(length(validHeaders) - noNumericHeaders)],
