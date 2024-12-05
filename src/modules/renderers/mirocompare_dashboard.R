@@ -60,10 +60,10 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
     names(dataTmp) <- scenarioNames
     combinedData <- bind_rows(dataTmp, .id = "_scenName")
 
-    dataTmp <- data[-1]
     if (length(numericColumnNames) > 1) {
-      dataTmp <- lapply(dataTmp, removeTableHeader)
+      combinedData <- removeTableHeader(combinedData)
     }
+
 
 
     return(combinedData)
@@ -168,7 +168,6 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         names(dataTmp)[length(dataTmp)] <- valueColName
       }
     }
-
     if (length(rowIndexList)) {
       dataTmp <- dataTmp %>%
         select(!!!c(rowIndexList, colFilterIndexList, valueColName)) %>%

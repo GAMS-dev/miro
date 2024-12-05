@@ -79,7 +79,7 @@ test_that(
     )
 
     context("UI tests - dashboard comparison mode")
-    source(file.path(testDir, "shinytest", "comparison_mode_test.R"), local = TRUE)
+    source(file.path(testDir, "shinytest", "dashboard_comparison_mode_test.R"), local = TRUE)
     unlink(file.path(modelDataPath, "pickstock1.gdx"), force = TRUE)
     unlink(file.path(modelDataPath, "pickstock2.gdx"), force = TRUE)
 
