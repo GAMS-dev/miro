@@ -273,7 +273,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         currentConfig <- dataViewsConfig[[view]]
 
         # If no data symbol is provided, the renderer's base symbol is used.
-        if (is.list(data)) {
+        if (!is_tibble(data)) {
           if (!is.null(currentConfig$data)) {
             viewData <- data[[tolower(currentConfig$data)]]
           } else {
@@ -430,18 +430,24 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           if (is.null(options$valueBoxes$valueScalar[i]) || is.na(options$valueBoxes$valueScalar[i])) {
             valueTmp <- NULL
           } else {
-            if (is.null(outputScalarsFull)) {
-              abortSafe("No scalar symbols found for valueBoxes")
+            valueScalarName <- options$valueBoxes$valueScalar[i]
+            valueTmp <- NULL
+            if (!is.null(outputScalarsFull) &&
+              valueScalarName %in% outputScalarsFull$scalar) {
+              valueTmp <- outputScalarsFull %>%
+                filter(tolower(scalar) == tolower(valueScalarName)) %>%
+                pull(value) %>%
+                as.numeric()
+            } else if (!is_tibble(data) && "_scalarsve_out" %in% names(data) &&
+              valueScalarName %in% data[["_scalarsve_out"]]$scalar) {
+              valueTmp <- data[["_scalarsve_out"]] %>%
+                filter(tolower(scalar) == tolower(valueScalarName)) %>%
+                pull(level) %>%
+                as.numeric()
             }
-            valueTmp <- outputScalarsFull %>%
-              filter(scalar == tolower(options$valueBoxes$valueScalar[i]))
-
-            if (!nrow(valueTmp)) {
-              abortSafe(sprintf("No scalar symbol '%s' found for valueBox '%s'", options$valueBoxes$valueScalar[i], options$valueBoxes$id[i]))
+            if (length(valueTmp) == 0) {
+              abortSafe(sprintf("No scalar symbol '%s' found for valueBox '%s'", valueScalarName, options$valueBoxes$id[i]))
             }
-
-            valueTmp <- as.numeric(valueTmp$value)
-
             if (!is.na(options$valueBoxes$decimals[i])) {
               valueTmp <- round(valueTmp, digits = as.numeric(options$valueBoxes$decimals[i]))
             }
@@ -650,7 +656,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             select(where(~ !is.numeric(.))) %>%
             names()
 
-          fullSummaryEnabled <- identical(viewOptions[["tableSummarySettings"]][["enabled"]], TRUE)
+          fullSummaryEnabled <- identical(dataViewsConfig[[indicator]]$tableSummarySettings[["enabled"]], TRUE)
           if (fullSummaryEnabled || identical(dataViewsConfig[[indicator]]$tableSummarySettings$rowEnabled, TRUE)) {
             tablesummarySettings <- dataViewsConfig[[indicator]]$tableSummarySettings
             if (identical(tablesummarySettings$rowSummaryFunction, "sum")) {
