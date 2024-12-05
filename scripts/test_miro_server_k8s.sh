@@ -52,6 +52,7 @@ pushd server > /dev/null
           kind create cluster --image kindest/node:v$K8_VERSION --name $CI_PIPELINE_ID --wait 180s --config ../ci/kind-config.yaml
           sed -i -e "s/0.0.0.0/docker/g" $HOME/.kube/config
           kubectl create secret docker-registry gitlab --from-file=.dockerconfigjson=$HOME/.docker/config.json
+          API_SERVER_IP=$(kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}')
           pushd miro_server > /dev/null
             pushd gams-miro-server > /dev/null
                 helm dep up
@@ -59,6 +60,7 @@ pushd server > /dev/null
             helm install miro-server gams-miro-server/ \
                 --set 'global.imagePullSecrets[0]=gitlab' \
                 --set global.imageRegistry=$CI_REGISTRY_IMAGE \
+                --set global.networkPolicy.apiServerIp="$API_SERVER_IP"\
                 --set image.tag=$IMAGE_TAG \
                 --set proxy.service.type=NodePort \
                 --set proxy.service.nodePort=30080 \

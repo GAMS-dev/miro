@@ -849,7 +849,7 @@ test_job_miro_server_k8s:
     - docker:27-dind
     - selenium/standalone-chrome
   variables:
-    MIRO_PROXY_URL: http://docker:8080
+    MIRO_PROXY_URL: http://docker:30080
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_VERIFY: 1
     DOCKER_TLS_CERTDIR: '/certs'
