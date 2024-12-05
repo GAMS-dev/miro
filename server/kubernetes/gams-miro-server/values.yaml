@@ -16,6 +16,11 @@ global:
   nodeSelectorSts: {}
   # tolerationsSts: tolerations for pod assignment of stateful sets (database)
   tolerationsSts: []
+  networkPolicy:
+    enabled: true
+    # The IP adress of the Kubernetes API Server.
+    # kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}'
+    apiServerIp: ''
 image:
   # Global tag of the images. If not specified, AppVersion is used.
   tag: ''
@@ -127,6 +132,7 @@ persistence:
     fileSystemId: 'fs-12345678' # The EFS File System ID
     accessPointId: '' # Optional, for EFS Access Points
     storageClass: 'efs-sc' # EFS storage class. NOTE: You need to manually install this storage class in the cluster!
+    mountTargets: [] # relevant if global.networkPolicy.enables is "true"
   local:
     path: '/mnt/localstorage'
 
@@ -134,7 +140,6 @@ securityContext:
   runAsNonRoot: true
   runAsUser: 1001
   fsGroup: 1001
-
 
 ## @param commonLabels Labels to add to all deployed resources
 ##

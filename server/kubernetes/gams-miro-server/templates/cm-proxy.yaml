@@ -91,6 +91,9 @@ data:
           - op: add
             path: /metadata/annotations
             value: { "cluster-autoscaler.kubernetes.io/safe-to-evict": "false" }
+          - op: add
+            path: /metadata/labels
+            value: { "miro.gams.com/app-name": "{{ .Release.Name }}-ui" }
           {{- if .Values.global.nodeSelector }}
           - op: add
             path: /spec/nodeSelector
@@ -132,6 +135,9 @@ data:
           - op: add
             path: /metadata/annotations
             value: { "cluster-autoscaler.kubernetes.io/safe-to-evict": "false" }
+          - op: add
+            path: /metadata/labels
+            value: { "miro.gams.com/app-name": "{{ .Release.Name }}-admin" }
           {{- if .Values.global.nodeSelector }}
           - op: add
             path: /spec/nodeSelector

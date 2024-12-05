@@ -1,0 +1,38 @@
+{{- /*
+Copyright GAMS Development Corp. All Rights Reserved.
+SPDX-License-Identifier: GPL-3.0-only
+*/}}
+
+{{- if .Values.global.networkPolicy.enabled }}
+kind: NetworkPolicy
+apiVersion: {{ include "common.capabilities.networkPolicy.apiVersion" . }}
+metadata:
+  name: {{ .Release.Name }}-db-np
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Release.Name }}-db
+  policyTypes:
+    - Ingress
+    - Egress
+  egress: []
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          miro.gams.com/app-name: {{ .Release.Name }}-admin
+    - podSelector:
+        matchLabels:
+          miro.gams.com/app-name: {{ .Release.Name }}-ui
+    - podSelector:
+        matchLabels:
+          app: {{ .Release.Name }}-auth
+    ports:
+    - protocol: TCP
+      port: 5432
+{{- end }}

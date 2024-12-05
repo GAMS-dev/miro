@@ -1,0 +1,70 @@
+{{- /*
+Copyright GAMS Development Corp. All Rights Reserved.
+SPDX-License-Identifier: GPL-3.0-only
+*/}}
+
+{{- if .Values.global.networkPolicy.enabled }}
+kind: NetworkPolicy
+apiVersion: {{ include "common.capabilities.networkPolicy.apiVersion" . }}
+metadata:
+  name: {{ .Release.Name }}-miro-np
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  podSelector:
+    matchExpressions:
+      - key: miro.gams.com/app-name
+        operator: In
+        values:
+          - admin
+          - ui
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    # Allow dns resolution
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    # Allow outbound connections to PostgreSQL
+    - ports:
+        - port: 5432
+      to:
+        - podSelector:
+            matchLabels:
+              app: {{ .Release.Name }}-db
+    # Allow outbound connections to public networks (e.g. Engine)
+    - ports:
+        - protocol: TCP
+          port: 443
+      to:
+      - ipBlock:
+          cidr: 0.0.0.0/0
+          except:
+          - 10.0.0.0/8
+          - 172.16.0.0/12
+          - 192.168.0.0/16
+    {{- if eq .Values.persistence.type "efs" }}
+    # Allow outbound connections to efs
+    {{- range .Values.persistence.efs.mountTargets }}
+    - to:
+        - ipBlock:
+            cidr: {{ . }}
+      ports:
+        - protocol: TCP
+          port: 2049
+    {{- end }}
+    {{- end }}
+  ingress:
+    - ports:
+        - port: 3838
+      from:
+        - podSelector:
+            matchLabels:
+              app: {{ .Release.Name }}-proxy
+{{- end }}
