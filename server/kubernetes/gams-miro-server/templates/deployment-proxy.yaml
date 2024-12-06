@@ -40,10 +40,12 @@ spec:
           - sh
           - "-c"
           - |
-            mkdir -p /home/miroproxy/mnt/data
-            chmod -R g+rwX /home/miroproxy/mnt/data
-            mkdir -p /home/miroproxy/mnt/models
-            chmod -R g+rwX /home/miroproxy/mnt/models
+            if [ ! -d "/home/miroproxy/mnt/data" ]; then
+              mkdir -p /home/miroproxy/mnt/data && chmod -R g=u /home/miroproxy/mnt/data
+            fi
+            if [ ! -d "//home/miroproxy/mnt/models" ]; then
+              mkdir -p /home/miroproxy/mnt/models && chmod -R g=u /home/miroproxy/mnt/models
+            fi
             [ -f "/home/miroproxy/mnt/data/specs.yaml" ] || echo 'c3BlY3M6Ci0gYWNjZXNzR3JvdXBzOgogIC0gYWRtaW5zCiAgY29udGFpbmVyRW52OgogICAgTUlST19BUElfVkVSU0lPTjogJzEnCiAgZGVzY3JpcHRpb246IE1JUk8gU2VydmVyIEFkbWluIFBhbmVsCiAgZGlzcGxheU5hbWU6IEFkbWluCiAgaWQ6IGFkbWluCiAgbG9nb1VSTDogfgo=' | base64 -d > /home/miroproxy/mnt/data/specs.yaml
         volumeMounts:
         - name: shared-data

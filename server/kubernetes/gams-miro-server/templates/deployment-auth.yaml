@@ -37,10 +37,12 @@ spec:
           - sh
           - "-c"
           - |
-            mkdir -p /home/miro/admin/mnt/data
-            chmod -R g+rwX /home/miro/admin/mnt/models
-            mkdir -p /home/miro/admin/mnt/models
-            chmod -R g+rwX /home/miro/admin/mnt/models
+            if [ ! -d "/home/miro/admin/mnt/data" ]; then
+              mkdir -p /home/miro/admin/mnt/data && chmod -R g=u /home/miro/admin/mnt/data
+            fi
+            if [ ! -d "/home/miro/admin/mnt/models" ]; then
+              mkdir -p /home/miro/admin/mnt/models && chmod -R g=u /home/miro/admin/mnt/models
+            fi
         volumeMounts:
         - name: shared-data
           mountPath: /home/miro/admin/mnt
