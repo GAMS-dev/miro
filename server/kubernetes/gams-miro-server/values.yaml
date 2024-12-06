@@ -41,6 +41,21 @@ proxy:
     type: ClusterIP # ClusterIP or NodePort
     # only relevant if type is NodePort. If not provided, a random port within the NodePort range is used.
     nodePort: ''
+  networkPolicy:
+    # Add extra ingress rules to the NetworkPolicy
+    # (only relevent if global.networkPolicy.enabled is true)
+    # Example:
+    #   - ports:
+    #     - protocol: TCP
+    #       port: 9090
+    #   from:
+    #     - namespaceSelector:
+    #         matchLabels:
+    #           name: monitoring
+    #     - podSelector:
+    #         matchLabels:
+    #           app: prometheus
+    extraIngress: []
   config:
     title: GAMS MIRO Server
     language: en # en, de or cn
@@ -82,6 +97,21 @@ auth:
     type: ClusterIP # ClusterIP or NodePort
     # only relevant if type is NodePort. If not provided, a random port within the NodePort range is used.
     nodePort: ''
+  networkPolicy:
+    # Add extra ingress rules to the NetworkPolicy
+    # (only relevent if global.networkPolicy.enabled is true)
+    # Example:
+    #   - ports:
+    #     - protocol: TCP
+    #       port: 9090
+    #   from:
+    #     - namespaceSelector:
+    #         matchLabels:
+    #           name: monitoring
+    #     - podSelector:
+    #         matchLabels:
+    #           app: prometheus
+    extraIngress: []
 
 miro:
   image:
@@ -132,7 +162,7 @@ persistence:
     fileSystemId: 'fs-12345678' # The EFS File System ID
     accessPointId: '' # Optional, for EFS Access Points
     storageClass: 'efs-sc' # EFS storage class. NOTE: You need to manually install this storage class in the cluster!
-    mountTargets: [] # relevant if global.networkPolicy.enables is "true"
+    mountTargets: [] # relevant if global.networkPolicy.enabled is "true"
   local:
     path: '/mnt/localstorage'
 

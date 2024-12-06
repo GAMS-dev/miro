@@ -64,4 +64,7 @@ spec:
         - podSelector:
             matchLabels:
               app: {{ .Release.Name }}-proxy
+    {{- if .Values.auth.networkPolicy.extraIngress }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.auth.networkPolicy.extraIngress "context" $ ) | nindent 4 }}
+    {{- end }}
 {{- end }}

@@ -70,4 +70,7 @@ spec:
         {{- if .Values.proxy.config.metrics.enabled }}
         - port: 9090
         {{- end }}
+    {{- if .Values.proxy.networkPolicy.extraIngress }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.proxy.networkPolicy.extraIngress "context" $ ) | nindent 4 }}
+    {{- end }}
 {{- end }}
