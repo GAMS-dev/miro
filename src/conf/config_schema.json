@@ -200,6 +200,16 @@
           "type": "string",
           "minLength": 1
         },
+        "singleDropdown": {
+          "description": "Whether to show filter dimensions as single-choice drop down menus",
+          "type": [
+            "array",
+            "string"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
         "customChartColors": {
           "description": "Custom color palette. Every second color is the hover color of previous one.",
           "type": [
@@ -868,6 +878,16 @@
                           "series"
                         ]
                       }
+                    }
+                  },
+                  "singleDropdown": {
+                    "description": "Whether to show filter dimensions as single-choice drop down menus",
+                    "type": [
+                      "array",
+                      "string"
+                    ],
+                    "items": {
+                      "type": "string"
                     }
                   },
                   "data": {
