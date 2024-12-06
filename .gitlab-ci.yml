@@ -48,10 +48,23 @@ variables:
     value: 'no'
     description: 'Push MIRO Server images to registry.gams.com (tagged as unstable on develop and feature on feature branches) (yes/no)?'
 
-.assume_role: &assume_role
+.assume_role_s3: &assume_role_s3
   - >
     STS=($(aws sts assume-role-with-web-identity
     --role-arn ${AWS_S3_ROLE_ARN}
+    --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
+    --web-identity-token $ID_TOKEN
+    --duration-seconds 3600
+    --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
+    --output text))
+  - export AWS_ACCESS_KEY_ID="${STS[0]}"
+  - export AWS_SECRET_ACCESS_KEY="${STS[1]}"
+  - export AWS_SESSION_TOKEN="${STS[2]}"
+
+.assume_role_ecr: &assume_role_ecr
+  - >
+    STS=($(aws sts assume-role-with-web-identity
+    --role-arn ${ECR_ROLE_ARN}
     --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
     --web-identity-token $ID_TOKEN
     --duration-seconds 3600
@@ -187,17 +200,17 @@ build_linux_job:
       if [[ "$CI_COMMIT_BRANCH" == "master" ]]; then
         pushd server
             python3 miro_server.py build
-            python3 miro_server.py push --unstable --custom-tag latest
+            python3 miro_server.py push --unstable --custom-tag latest --registry "${CI_REGISTRY_IMAGE}"
         popd
       elif [[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]; then
         pushd server
             python3 miro_server.py build
-            python3 miro_server.py push --unstable --custom-tag unstable
+            python3 miro_server.py push --unstable --custom-tag unstable --registry "${CI_REGISTRY_IMAGE}"
         popd
       elif [[ "$PUSH_UNSTABLE_SERVER_IMAGES" != "no" ]]; then
         pushd server
             python3 miro_server.py build
-            python3 miro_server.py push --unstable --custom-tag feature
+            python3 miro_server.py push --unstable --custom-tag feature --registry "${CI_REGISTRY_IMAGE}"
         popd
       elif [[ "$BUILD_CI" != "no" ]]; then
         pushd server
@@ -883,9 +896,9 @@ upload_cloudfront:
   image: $CI_REGISTRY_IMAGE/builder-linux:latest
   id_tokens:
     ID_TOKEN:
-      aud: ${S3_OIDC_AUD}
+      aud: https://git.gams.com
   script:
-    - *assume_role
+    - *assume_role_s3
     - echo "MIRO_SHA_HASH_WIN=`sha256sum dist/*.exe |cut -d ' ' -f1`" > .hashes.txt
     - echo "MIRO_SHA_HASH_MAC_ARM=`sha256sum dist/arm/*.dmg |cut -d ' ' -f1`" >> .hashes.txt
     - echo "MIRO_SHA_HASH_MAC_X86=`sha256sum dist/*.dmg |cut -d ' ' -f1`" >> .hashes.txt
@@ -906,6 +919,9 @@ upload_dockerhub:
   services:
     - docker:20.10-dind
   image: $CI_REGISTRY_IMAGE/builder-linux:latest
+  id_tokens:
+    ID_TOKEN:
+      aud: https://git.gams.com
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_VERIFY: 1
@@ -915,11 +931,18 @@ upload_dockerhub:
   before_script:
     - echo "$DOCKERHUB_PASS" | docker login -u $DOCKERHUB_USER --password-stdin
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - aws configure set default.region us-east-1
+    - *assume_role_ecr
+    - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY_URL_US_EAST
   script:
     - echo -e "\e[0Ksection_start:`date +%s`:download_image_section[collapsed=true]\r\e[0KDownloading images section"
     - cd server && python3 miro_server.py download ${CI_REGISTRY_IMAGE} && cd ..
     - echo -e "\e[0Ksection_end:`date +%s`:download_image_section\r\e[0K"
-    - cd server && python3 miro_server.py push && cd ..
+    - >
+      pushd server
+        python3 miro_server.py push
+        python3 miro_server.py push --registry "${ECR_REGISTRY_URL_US_EAST}"
+      popd
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
