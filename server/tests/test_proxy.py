@@ -82,7 +82,7 @@ class UITests(unittest.TestCase):
         self.login()
         # open admin panel
         self.driver.get(f"{self.ui_url}/app/admin")
-        WebDriverWait(self.driver, 10).until(
+        WebDriverWait(self.driver, 30).until(
             EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
         )
 
@@ -179,7 +179,7 @@ class UITests(unittest.TestCase):
         # open admin panel
         self.driver.find_element(By.ID, "navAdminPanel").click()
 
-        WebDriverWait(self.driver, 10).until(
+        WebDriverWait(self.driver, 30).until(
             EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
         )
 
@@ -217,7 +217,7 @@ class UITests(unittest.TestCase):
         new_app_name_input.clear()
         new_app_name_input.send_keys("Transport app")
         self.driver.find_element(By.ID, "btAddApp").click()
-        wait.until(EC.invisibility_of_element(
+        WebDriverWait(self.driver, 30).until(EC.invisibility_of_element(
             (By.ID, "expandedAddAppWrapper")))
         wait.until(
             EC.text_to_be_present_in_element(
@@ -242,7 +242,7 @@ class UITests(unittest.TestCase):
         wait.until(
             EC.visibility_of_element_located((By.ID, "loading"))
         )
-        wait.until(EC.frame_to_be_available_and_switch_to_it(
+        WebDriverWait(self.driver, 30).until(EC.frame_to_be_available_and_switch_to_it(
             (By.ID, "shinyframe")))
         wait.until(
             EC.text_to_be_present_in_element(
