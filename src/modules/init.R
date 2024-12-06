@@ -129,7 +129,7 @@ validateDashboardConfig <- function(graphConfig, dashboardType) {
       next
     }
     if (identical(dashboardType, "compare")) {
-      if (!is.null(config$data) && config$data %in% c(names(modelIn), names(modelOut))) {
+      if (!is.null(config$data) && config$data %in% c(inputDsNames, names(modelOut))) {
         symbol <- config$data
       } else {
         errMsgTmp <- paste(
