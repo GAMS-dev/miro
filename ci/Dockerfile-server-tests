@@ -5,6 +5,7 @@ ARG HELM_VERSION=v3.16.3
 ARG KUBECTL_VERSION=v1.31.3
 
 RUN apk add --no-cache \
+    jq \
     curl \
     tar \
     bash \
