@@ -34,6 +34,17 @@ spec:
         - podSelector:
             matchLabels:
               app: {{ .Release.Name }}-auth
+    # Allow outbound connections to ui/admin containers
+    - ports:
+        - port: 3838
+      to:
+        - podSelector:
+            matchExpressions:
+              - key: miro.gams.com/app-name
+                operator: In
+                values:
+                  - "{{ .Release.Name }}-admin"
+                  - "{{ .Release.Name }}-ui"
     - ports:
       - protocol: TCP
         port: 443

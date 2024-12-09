@@ -19,8 +19,8 @@ spec:
       - key: miro.gams.com/app-name
         operator: In
         values:
-          - admin
-          - ui
+          - "{{ .Release.Name }}-admin"
+          - "{{ .Release.Name }}-ui"
   policyTypes:
     - Ingress
     - Egress
