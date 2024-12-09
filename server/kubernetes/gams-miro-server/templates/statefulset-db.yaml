@@ -8,7 +8,7 @@ kind: StatefulSet
 metadata:
   name: sts-{{ .Release.Name }}-db
   namespace: {{ .Release.Namespace | quote }}
-  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
 spec:
   replicas: 1
   selector:
@@ -20,6 +20,15 @@ spec:
         app: {{ .Release.Name }}-db
     spec:
       automountServiceAccountToken: false
+      {{- if .Values.global.securityContext.enabled }}
+      securityContext:
+        runAsUser: 70
+        runAsGroup: 70
+        fsGroup: 70
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      {{- end }}
 {{- include "common.images.renderPullSecrets" ( dict "images" (list .Values.db.image) "context" $) | nindent 6}}
       {{- if .Values.global.nodeSelectorSts }}
       nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.global.nodeSelectorSts "context" $) | nindent 8 }}
@@ -45,11 +54,29 @@ spec:
               key: db_password
         - name: POSTGRES_DB
           value: {{ .Values.db.name }}
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
         volumeMounts:
         - name: db-data
           mountPath: /var/lib/postgresql/data
           subPath: postgres
+        - name: db-runtime
+          mountPath: /var/run/postgresql
+        - name: db-tmp
+          mountPath: /tmp
+        {{- if .Values.global.securityContext.enabled }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+          privileged: false
+          readOnlyRootFilesystem: true
+        {{- end }}
       volumes:
+      - name: db-runtime
+        emptyDir: {}
+      - name: db-tmp
+        emptyDir: {}
       - name: db-data
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-db-pvc

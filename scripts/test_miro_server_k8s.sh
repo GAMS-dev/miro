@@ -41,6 +41,24 @@ fi
 IMAGE_TAG=$([[ "$CI_COMMIT_BRANCH" == "master" ]] && echo "latest" || { [[ "$CI_COMMIT_BRANCH" == "develop" || "$CI_COMMIT_BRANCH" == "rc" || "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]] && echo "unstable" || echo "feature"; })
 
 pushd server > /dev/null
+    cat > network-policy-default-deny-all.yaml <<EOF
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+EOF
+    cat <<EOF > audit-policy.yaml
+apiVersion: audit.k8s.io/v1
+kind: Policy
+rules:
+- level: Metadata
+EOF
 
     python3 miro_server.py release -f --k8s
     unzip miro_server.zip
@@ -52,6 +70,11 @@ pushd server > /dev/null
           kind create cluster --image kindest/node:v$K8_VERSION --name $CI_PIPELINE_ID --wait 180s --config ../ci/kind-config.yaml
           sed -i -e "s/0.0.0.0/docker/g" $HOME/.kube/config
           kubectl create secret docker-registry gitlab --from-file=.dockerconfigjson=$HOME/.docker/config.json
+          # apply default-deny-all network policy
+          kubectl apply -f network-policy-default-deny-all.yaml
+          # warn of violations of restricted pod security standard
+          kubectl label --overwrite ns default pod-security.kubernetes.io/warn=restricted \
+            pod-security.kubernetes.io/warn-version=latest
           API_SERVER_IP=$(kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}')
           pushd miro_server > /dev/null
             pushd gams-miro-server > /dev/null
@@ -77,6 +100,23 @@ pushd server > /dev/null
           kubectl get pods
 
           pytest tests/
+
+          PSP_VIOLATIONS=$(docker exec kind-control-plane cat /var/log/kubernetes/kube-apiserver-audit.log | jq '
+  select(.annotations["pod-security.kubernetes.io/audit-violations"] != null and
+    (.annotations["pod-security.kubernetes.io/audit-violations"] | contains("uses restricted volume type \"hostPath\"") | not)
+  ) |
+  {
+    timestamp: .stageTimestamp,
+    user: .user.username,
+    namespace: .objectRef.namespace,
+    pod: .objectRef.name,
+    violations: .annotations["pod-security.kubernetes.io/audit-violations"]
+  }
+')
+          if [[ "$(echo $PSP_VIOLATIONS | grep -c '^{' || true)" -gt 0 ]]; then
+            echo "Found pod security policy violations: $PSP_VIOLATIONS"
+            exit 1
+          fi
 
           cleanup
       done

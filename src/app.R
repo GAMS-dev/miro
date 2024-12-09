@@ -106,7 +106,7 @@ if (is.null(errMsg)) {
   miroDbDir <- NULL
 
   if (isShinyProxy) {
-    miroWorkspace <- file.path(getwd(), "ws")
+    miroWorkspace <- file.path(tmpFileDir, "ws")
   } else {
     # initialise MIRO workspace
     miroWorkspace <- Sys.getenv("MIRO_WS_PATH")

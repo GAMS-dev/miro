@@ -8,7 +8,7 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-auth
   namespace: {{ .Release.Namespace | quote }}
-  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
 spec:
   selector:
     matchLabels:
@@ -19,9 +19,15 @@ spec:
         app: {{ .Release.Name }}-auth
     spec:
       automountServiceAccountToken: false
+      {{- if .Values.global.securityContext.enabled }}
       securityContext:
-        runAsUser: {{ .Values.securityContext.runAsUser }}
-        fsGroup: {{ .Values.securityContext.fsGroup }}
+        runAsUser: 1001
+        runAsGroup: 0
+        fsGroup: 1001
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      {{- end }}
 {{- include "common.images.renderPullSecrets" ( dict "images" (list .Values.auth.image) "context" $) | nindent 6}}
       {{- if .Values.global.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.global.nodeSelector "context" $) | nindent 8 }}
@@ -43,6 +49,14 @@ spec:
             if [ ! -d "/home/miro/admin/mnt/models" ]; then
               mkdir -p /home/miro/admin/mnt/models && chmod -R g=u /home/miro/admin/mnt/models
             fi
+        {{- if .Values.global.securityContext.enabled }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+          privileged: false
+          readOnlyRootFilesystem: true
+        {{- end }}
         volumeMounts:
         - name: shared-data
           mountPath: /home/miro/admin/mnt
@@ -89,6 +103,14 @@ spec:
         - name: config-volume
           mountPath: /home/miro/admin/application.yml
           subPath: application.yml
+        {{- if .Values.global.securityContext.enabled }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+          privileged: false
+          readOnlyRootFilesystem: true
+        {{- end }}
       volumes:
         - name: config-volume
           configMap:

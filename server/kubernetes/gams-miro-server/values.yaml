@@ -21,6 +21,10 @@ global:
     # The IP adress of the Kubernetes API Server.
     # kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}'
     apiServerIp: ''
+  securityContext:
+    enabled: true
+  # Labels to add to all deployed resources
+  commonLabels: {}
 image:
   # Global tag of the images. If not specified, AppVersion is used.
   tag: ''
@@ -165,15 +169,6 @@ persistence:
     mountTargets: [] # relevant if global.networkPolicy.enabled is "true"
   local:
     path: '/mnt/localstorage'
-
-securityContext:
-  runAsNonRoot: true
-  runAsUser: 1001
-  fsGroup: 1001
-
-## @param commonLabels Labels to add to all deployed resources
-##
-commonLabels: {}
 
 ingress:
   enabled: false
