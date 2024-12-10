@@ -947,6 +947,15 @@ upload_dockerhub:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
 
+update_custom_saas_images:
+  stage: deploy
+  trigger:
+    project: miro/miro-saas
+  needs: [upload_dockerhub]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+
 update_doc_job_release:
   tags:
     - linux
