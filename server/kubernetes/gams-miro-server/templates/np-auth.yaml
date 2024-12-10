@@ -35,6 +35,7 @@ spec:
             matchLabels:
               app: {{ .Release.Name }}-db
     # Allow outbound connections to public networks (e.g. Engine)
+    {{- if .Values.auth.networkPolicy.allowEgressPublicNetworks }}
     - ports:
         - protocol: TCP
           port: 443
@@ -45,6 +46,7 @@ spec:
           - 10.0.0.0/8
           - 172.16.0.0/12
           - 192.168.0.0/16
+    {{- end}}
     {{- if eq .Values.persistence.type "efs" }}
     # Allow outbound connections to efs
     {{- range .Values.persistence.efs.mountTargets }}

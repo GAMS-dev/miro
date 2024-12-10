@@ -51,7 +51,7 @@ spec:
       to:
       - ipBlock:
           cidr: {{ .Values.global.networkPolicy.apiServerIp }}/32
-    {{- if eq .Values.proxy.config.authentication "openid" }}
+    {{- if and (eq .Values.proxy.config.authentication "openid") .Values.proxy.networkPolicy.allowEgressPublicNetworks }}
     # Allow outbound connections to public networks (e.g. OpenID Connect provider)
     - ports:
         - protocol: TCP

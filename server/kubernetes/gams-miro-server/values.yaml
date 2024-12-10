@@ -46,6 +46,7 @@ proxy:
     # only relevant if type is NodePort. If not provided, a random port within the NodePort range is used.
     nodePort: ''
   networkPolicy:
+    allowEgressPublicNetworks: true
     # Add extra ingress rules to the NetworkPolicy
     # (only relevent if global.networkPolicy.enabled is true)
     # Example:
@@ -102,6 +103,7 @@ auth:
     # only relevant if type is NodePort. If not provided, a random port within the NodePort range is used.
     nodePort: ''
   networkPolicy:
+    allowEgressPublicNetworks: true
     # Add extra ingress rules to the NetworkPolicy
     # (only relevent if global.networkPolicy.enabled is true)
     # Example:
@@ -129,6 +131,12 @@ miro:
     limits:
       cpu: '2000m'
       memory: 1700Mi
+  networkPolicy:
+    allowEgressPublicNetworks: true
+    # Add extra egress rules to the NetworkPolicy
+    # (only relevent if global.networkPolicy.enabled is true)
+    extraEgress: []
+
 
 admin:
   image:
