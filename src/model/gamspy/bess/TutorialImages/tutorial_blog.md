@@ -1064,9 +1064,9 @@ If the input parameters are correctly defined, you can now change the input and 
 
 Even at the input stage, it can sometimes be helpful to visualize the data to check for inconsistencies, e.g. that the load demand is never negative and should probably increase during the day and decrease at night, as should the cost of the external grid.
 
-To do this you need to toggle the view in the top right corner by clicking on the three lines **maybe add the icon**. Here you can filter, aggregate and pivot the data. It is also possible to directly use different chart types to visualize the data, this is done with [Pivot Table](https://www.gams.com/miro/charts.html#pivot-chart).
+To do this you need to toggle the view in the top right corner by clicking on <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/chart-bar.svg" width="15" height="15">. Here you can filter, aggregate and pivot the data. It is also possible to directly use different chart types to visualize the data, this is done with [Pivot Table](https://www.gams.com/miro/charts.html#pivot-chart).
 
-Here we pivoted the headers and selected line graphs. As the values for load_demand and cost_external_grid are not in the same dimension, the direct result is not very helpful as it appears that cost_external_grid is always zero. To make this clearer, we add a second y-axis. This is done by first setting the display type to *Line Chart* and then clicking on the **plus icon** to add a new view. Here you can go to the *Second Axis* tab and select which series to plot in relation to it. You can also add a title and label for the axis. When you are happy with the result, save the view and press the **table icon** to activate the [Presentation Mode](https://www.gams.com/miro/charts.html#presentation-mode).
+Here we pivoted the headers and selected line graphs. As the values for load_demand and cost_external_grid are not in the same dimension, the direct result is not very helpful as it appears that cost_external_grid is always zero. To make this clearer, we add a second y-axis. This is done by first setting the display type to *Line Chart* and then clicking on the <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/square-plus.svg" width="15" height="15"> to add a new view. Here you can go to the *Second Axis* tab and select which series to plot in relation to it. You can also add a title and label for the axis. When you are happy with the result, save the view and press the <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/table.svg" width="15" height="15"> to activate the [Presentation Mode](https://www.gams.com/miro/charts.html#presentation-mode).
 
 You should end up with something like this:
 
@@ -1089,7 +1089,7 @@ But we can do a lot more with the pivot tool. We might be interested to see whic
 Now we can go back and see that *gen0* is the cheapest generator, but it also has the smallest maximum power output, so it needs help to provide full load demand, and apparently, even though the fixed cost of *gen2* is almost double, the generator has to produce so much power that its cheaper unit cost outweighs this. So it checks out. We can also make sure that the minimum up and down times are met. Finally, we can check that each generator, if active, is always within its permitted limits. If we find that one of these constraints is not being met, we immediately know which constraint in the model code we need to take a second look at.
 
 
-Let us look at another example. Remember that in the model we combined all the power values with our given load demand into one parameter. By looking at this, we can see if the load demand is actually being met and which source contributed to it at each hour. If we were to use the Stacked Bar Chart again, we would not be able to easily compare the amount of load demand with the sum of the power sources. To do this, we change the type again to Stacked Bar Chart and then click the **plus icon** to add a new view. Under the *Combo Chart* tab we can specify that we want the load demand to be displayed as a line chart and that it should not be included in the stack. You should end up with the following image:
+Let us look at another example. Remember that in the model we combined all the power values with our given load demand into one parameter. By looking at this, we can see if the load demand is actually being met and which source contributed to it at each hour. If we were to use the Stacked Bar Chart again, we would not be able to easily compare the amount of load demand with the sum of the power sources. To do this, we change the type again to Stacked Bar Chart and then click the <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/square-plus.svg" width="15" height="15"> to add a new view. Under the *Combo Chart* tab we can specify that we want the load demand to be displayed as a line chart and that it should not be included in the stack. You should end up with the following image:
 
 <div align="center"> <img src="rapit_prototyping/output_load_balance.png" alt="input section" width="400" /> </div>
 
@@ -1123,8 +1123,6 @@ Let's start with some general settings. We will give our application a title, ad
 
 ### Symbols
 
-**add output value boxes**
-
 Next, we will take a look at the [Symbols](https://www.gams.com/miro/configuration_symbols.html) section. Here we will first change our symbol aliases to make them sound more natural. Then, assuming that you are more likely to want to change the scalar values, we will change the order of the input. Finally, sometimes you need to define variables or parameters as output that you only need as additional data for some custom renderer (we will introduce custom renderers in the next section). If you have such output parameters, it makes sense to hide them so that they don't get their own tab on the output page.
 
 <div align="center"> <img src="config_mode/gen_input.png" alt="input section" width="400"/> </div>
@@ -1147,7 +1145,11 @@ If the three possible tables are not enough for your needs, you can add a custom
 
 Now to the [Graphs](https://www.gams.com/miro/charts.html). This is where you can really play around with your visualization. For each multidimensional input or output symbol, you can define its default visualization. You can choose directly between the most common plot types or use the Pivot Table again, which we already used in the last section. You have probably already found some good views during rapid prototyping. Now you can define them as the default, so that everyone can start the application and see the chosen visualizations right away, and hopefully understand the results quickly.
 
-The best way to really get an overview here is to just pick different symbols and play around with them for a while. And of course, if you are looking for something specific, check out the [documentation](https://www.gams.com/miro/charts.html), here you will find an overview of all possible plot types and detailed descriptions for them. 
+The best way to really get an overview here is to just pick different symbols and play around with them for a while. Since we've already had a detailed look at the Pivot tool and some possible graphs, we won't go into too much detail here. We will just look at a small example by configuring value boxes for the output. First select a scenario, so far we only have the default. Then select the GAMS symbol *_scalars_out: Output Scalars* and the Charting Type *Valuebox for scalar values*. Here you can set the order of the value boxes, the color and the unit. Finally just *Save* the graph and start the base mode again and you have something like this:
+
+<div align="center"> <img src="config_mode/output_value_boxes.png" alt="input section" width="400"/> </div>
+
+Now try adding the views we introduced in the last section. If you are looking for something specific, check out the [documentation](https://www.gams.com/miro/charts.html), here you will find an overview of all possible plot types and detailed descriptions for them. 
 
 Note that any changes you make will be added to \<model_name\>.json. In the documentation you will find the corresponding json script you would need to add, but don't worry, this is exactly what the config mode does when you save a graph!
 
@@ -1456,7 +1458,7 @@ Now we just need to place this inside the `"dataViewsConfig"`.
 ```
 </details>
 
-**REMAKE THE GIF WITHOUT THE EXTRA TABS**
+**REMAKE THE GIF WITHOUT THE EXTRA TABS AND THE NEW TABLE**
 
 Finally, we end up with this dashboard:
 
