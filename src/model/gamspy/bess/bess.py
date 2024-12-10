@@ -13,6 +13,8 @@ from gamspy import (
     Variable,
     Ord,
     Options,
+    ModelStatus,
+    SolveStatus,
 )
 
 
@@ -429,6 +431,14 @@ def main():
         output=sys.stdout,
         options=Options(equation_listing_limit=1, relative_optimality_gap=0),
     )
+
+    if bess.solve_status not in [
+        SolveStatus.NormalCompletion,
+        SolveStatus.TerminatedBySolver,
+    ] or bess.status not in [ModelStatus.OptimalGlobal, ModelStatus.Integer]:
+        with open("miro.log", "a") as f:
+            f.writelines(["No solution exists for your input data.\n"])
+        raise Exception("Infeasible.")
 
     # Extract the output data
 
