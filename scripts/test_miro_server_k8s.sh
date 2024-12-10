@@ -88,7 +88,7 @@ EOF
             helm install miro-server gams-miro-server/ \
                 --set 'global.imagePullSecrets[0]=gitlab' \
                 --set global.imageRegistry=$CI_REGISTRY_IMAGE \
-                --set global.networkPolicy.apiServerIp="$API_SERVER_IP"\
+                --set global.networkPolicy.apiServerIp="$API_SERVER_IP" \
                 --set image.tag=$IMAGE_TAG \
                 --set proxy.service.type=NodePort \
                 --set proxy.service.nodePort=30080 \
@@ -107,7 +107,7 @@ EOF
 
           pytest tests/
 
-          PSP_VIOLATIONS=$(docker exec kind-control-plane cat /var/log/kubernetes/kube-apiserver-audit.log | jq '
+          PSP_VIOLATIONS=$(docker exec $CI_PIPELINE_ID-control-plane cat /var/log/kubernetes/kube-apiserver-audit.log | jq '
   select(.annotations["pod-security.kubernetes.io/audit-violations"] != null and
     (.annotations["pod-security.kubernetes.io/audit-violations"] | contains("uses restricted volume type \"hostPath\"") | not)
   ) |
