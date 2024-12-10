@@ -76,7 +76,13 @@ EOF
           sed -i -e "s/0.0.0.0/docker/g" $HOME/.kube/config
           kubectl create secret docker-registry gitlab --from-file=.dockerconfigjson=$HOME/.docker/config.json
           # apply default-deny-all network policy
-          kubectl apply -f network-policy-default-deny-all.yaml
+          if [ "${K8S_TEST_DISABLE_NP}" != "true" ]; then
+            ENABLE_NP=true
+            kubectl apply -f network-policy-default-deny-all.yaml
+          else
+            ENABLE_NP=false
+            echo "Disabling network policies because K8S_TEST_DISABLE_NP is set to 'true'."
+          fi
           # warn of violations of restricted pod security standard
           kubectl label --overwrite ns default pod-security.kubernetes.io/warn=restricted \
             pod-security.kubernetes.io/warn-version=latest
@@ -88,6 +94,7 @@ EOF
             helm install miro-server gams-miro-server/ \
                 --set 'global.imagePullSecrets[0]=gitlab' \
                 --set global.imageRegistry=$CI_REGISTRY_IMAGE \
+                --set global.networkPolicy.enabled="$ENABLE_NP" \
                 --set global.networkPolicy.apiServerIp="$API_SERVER_IP" \
                 --set image.tag=$IMAGE_TAG \
                 --set proxy.service.type=NodePort \
