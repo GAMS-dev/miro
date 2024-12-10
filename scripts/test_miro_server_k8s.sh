@@ -33,6 +33,11 @@ wait_for_url() {
     done
 }
 
+wait_for_pods_ready() {
+    timeout="$1s"
+    kubectl wait pod --all --for=condition=Ready --timeout=$timeout
+}
+
 if [[ -z "${K8S_VERSIONS_TO_TEST}" ]]; then
     echo "K8S_VERSIONS_TO_TEST environment variable not set. Please set it to list of Kubernetes versions to test (comma-separated)"
     exit 1
@@ -95,7 +100,8 @@ EOF
                 --set proxy.config.engine.namespace=${ENGINE_NS}
           popd > /dev/null
           trap 'cleanup' ERR
-          wait_for_url "http://docker:30080" 180
+          wait_for_pods_ready 180
+          wait_for_url "http://docker:30080" 60
 
           kubectl get pods
 
