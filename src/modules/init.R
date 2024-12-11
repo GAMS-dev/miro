@@ -120,6 +120,16 @@ validateDashboardConfig <- function(graphConfig, dashboardType) {
     )
   }
 
+  noMatchingChartId <- chartIds[!chartIds %in% names(dc)]
+  if (length(noMatchingChartId)) {
+    errMsgTmp <- paste(
+      errMsgTmp,
+      sprintf(
+        "\nThe following dataView id(s) do not match with any dataViewsConfig id: '%s'",
+        paste(noMatchingChartId, collapse = ", ")
+      )
+    )
+  }
 
   for (view in names(dc)) {
     config <- dc[[view]]

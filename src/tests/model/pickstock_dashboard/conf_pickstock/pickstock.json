@@ -11,7 +11,7 @@
       "widgetType": "slider",
       "alias": "maximum number of stocks to select",
       "min": 1,
-      "max": "card(price$symbol)",
+      "max": 30,
       "default": 3,
       "step": 1,
       "ticks": false,
@@ -22,7 +22,7 @@
       "min": 1,
       "default": 99,
       "step": 1,
-      "max": "card(price$date)",
+      "max": 200,
       "alias": "number of days for training",
       "widgetType": "slider"
     },
@@ -426,7 +426,6 @@
                       "pricemerge": "All index prices including DJ"
                   },
                   "error_test": {
-                      "abserror": "Absolute Error",
                       "dowVSindex": "dow VS index"
                   },
                   "error_train": {
@@ -435,6 +434,31 @@
                   }
               },
               "dataViewsConfig": {
+                "pricemerge": {
+                  "aggregationFunction": "sum",
+                  "pivotRenderer": "timeseries",
+                  "domainFilter": {
+                    "default": null
+                  },
+                  "tableSummarySettings": {
+                    "enabled": false,
+                    "rowSummaryFunction": "sum",
+                    "colSummaryFunction": "sum"
+                  },
+                  "rows": "date",
+                  "cols": {
+                    "uni": null,
+                    "_scenName": null
+                  },
+                  "chartOptions": {
+                    "title": "Price (stocks and DJ)",
+                    "xTitle": "Date",
+                    "yTitle": "Price"
+                  },
+                  "userFilter": ["uni", "date"],
+                  "data": "pricemerge",
+                  "decimals": 2
+                },
                 "stockWeight": {
                   "aggregationFunction": "sum",
                   "pivotRenderer": "bar",
