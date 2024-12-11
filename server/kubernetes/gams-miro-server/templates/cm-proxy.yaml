@@ -88,9 +88,12 @@ data:
           - op: add
             path: /spec/priorityClassName
             value: {{ .Release.Name }}-app-priority
+          {{- if .Values.miro.annotations }}
           - op: add
             path: /metadata/annotations
-            value: { "cluster-autoscaler.kubernetes.io/safe-to-evict": "false" }
+            value:
+              {{- include "common.tplvalues.render" (dict "value" .Values.miro.annotations "context" $) | nindent 14 }}
+          {{- end }}
           - op: add
             path: /metadata/labels
             value:
@@ -153,9 +156,12 @@ data:
           - op: add
             path: /spec/priorityClassName
             value: {{ .Release.Name }}-app-priority
+          {{- if .Values.admin.annotations }}
           - op: add
             path: /metadata/annotations
-            value: { "cluster-autoscaler.kubernetes.io/safe-to-evict": "false" }
+            value:
+              {{- include "common.tplvalues.render" (dict "value" .Values.admin.annotations "context" $) | nindent 14 }}
+          {{- end }}
           - op: add
             path: /metadata/labels
             value:

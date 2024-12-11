@@ -61,6 +61,7 @@ proxy:
     #         matchLabels:
     #           app: prometheus
     extraIngress: []
+  annotations: {}
   config:
     title: GAMS MIRO Server
     language: en # en, de or cn
@@ -118,6 +119,7 @@ auth:
     #         matchLabels:
     #           app: prometheus
     extraIngress: []
+  annotations: {}
 
 miro:
   image:
@@ -136,6 +138,7 @@ miro:
     # Add extra egress rules to the NetworkPolicy
     # (only relevent if global.networkPolicy.enabled is true)
     extraEgress: []
+  annotations: {}
 
 
 admin:
@@ -150,6 +153,7 @@ admin:
     limits:
       cpu: '2000m'
       memory: 1700Mi
+  annotations: {}
 
 db:
   image:
@@ -167,6 +171,7 @@ db:
     limits:
       cpu: '400m'
       memory: 3072Mi
+  annotations: {}
 
 persistence:
   type: 'local' # local or efs
