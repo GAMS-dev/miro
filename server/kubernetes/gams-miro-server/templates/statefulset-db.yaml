@@ -39,7 +39,7 @@ spec:
       priorityClassName: {{ .Release.Name }}-system-priority
       containers:
       - name: db
-        image: "{{ .Values.db.image.registry }}/{{ .Values.db.image.repository }}:{{ .Values.db.image.tag }}"
+        image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.db.image.registry "repository" .Values.db.image.repository "tag" (coalesce .Values.db.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
         resources:
 {{ toYaml .Values.db.resources | indent 10 }}
         ports:
