@@ -1227,7 +1227,7 @@ if (buildUI) {
   if (!debugMode) {
     cacheTestDir <- attr(rHandsontableOutput("test"), "html_dependencies")[[1]]$src$file
     if (!dir.exists(dirname(miroCacheFile))) {
-      dir.create(dirname(miroCacheFile), recursive = TRUE, mode = "0700")
+      dir.create(dirname(miroCacheFile), recursive = TRUE)
     }
     save(
       list = c("cacheTestDir", "miroBody"),
