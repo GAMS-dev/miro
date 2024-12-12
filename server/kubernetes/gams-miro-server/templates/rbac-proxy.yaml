@@ -11,6 +11,9 @@ metadata:
   name: {{ .Release.Name }}-proxy-sa
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.global.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
 ---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
@@ -18,6 +21,9 @@ metadata:
   name: {{ .Release.Name }}-proxy-role
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.global.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
 rules:
   - apiGroups: [ "" ]
     resources: [ "pods" ]
@@ -32,6 +38,9 @@ metadata:
   name: {{ .Release.Name }}-proxy-rb
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.global.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
 subjects:
   - kind: ServiceAccount
     name: {{ .Release.Name }}-proxy-sa

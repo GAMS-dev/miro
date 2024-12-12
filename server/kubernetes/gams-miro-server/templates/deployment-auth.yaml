@@ -9,8 +9,8 @@ metadata:
   name: {{ .Release.Name }}-auth
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
-  {{- if .Values.auth.annotations }}
-  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.auth.annotations "context" $) | nindent 4 }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.global.commonAnnotations "context" $) | nindent 4 }}
   {{- end }}
 spec:
   selector:
@@ -20,13 +20,16 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}-auth
+      {{- if .Values.auth.podAnnotations }}
+      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.auth.podAnnotations "context" $) | nindent 8 }}
+      {{- end }}
     spec:
       automountServiceAccountToken: false
       {{- if .Values.global.securityContext.enabled }}
       securityContext:
         runAsUser: 1001
         runAsGroup: 0
-        fsGroup: 1001
+        fsGroup: 0
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault

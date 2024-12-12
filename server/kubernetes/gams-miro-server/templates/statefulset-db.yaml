@@ -9,8 +9,8 @@ metadata:
   name: sts-{{ .Release.Name }}-db
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
-  {{- if .Values.db.annotations }}
-  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.db.annotations "context" $) | nindent 4 }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.global.commonAnnotations "context" $) | nindent 4 }}
   {{- end }}
 spec:
   replicas: 1
@@ -21,6 +21,9 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}-db
+      {{- if .Values.db.podAnnotations }}
+      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.db.podAnnotations "context" $) | nindent 8 }}
+      {{- end }}
     spec:
       automountServiceAccountToken: false
       {{- if .Values.global.securityContext.enabled }}

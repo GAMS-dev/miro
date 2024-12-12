@@ -9,6 +9,9 @@ metadata:
   name: {{ .Release.Name }}-proxy-config
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.global.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
 data:
   application.yml: |-
     proxy:
@@ -88,11 +91,11 @@ data:
           - op: add
             path: /spec/priorityClassName
             value: {{ .Release.Name }}-app-priority
-          {{- if .Values.miro.annotations }}
+          {{- if .Values.miro.podAnnotations }}
           - op: add
             path: /metadata/annotations
             value:
-              {{- include "common.tplvalues.render" (dict "value" .Values.miro.annotations "context" $) | nindent 14 }}
+              {{- include "common.tplvalues.render" (dict "value" .Values.miro.podAnnotations "context" $) | nindent 14 }}
           {{- end }}
           - op: add
             path: /metadata/labels
@@ -156,11 +159,11 @@ data:
           - op: add
             path: /spec/priorityClassName
             value: {{ .Release.Name }}-app-priority
-          {{- if .Values.admin.annotations }}
+          {{- if .Values.admin.podAnnotations }}
           - op: add
             path: /metadata/annotations
             value:
-              {{- include "common.tplvalues.render" (dict "value" .Values.admin.annotations "context" $) | nindent 14 }}
+              {{- include "common.tplvalues.render" (dict "value" .Values.admin.podAnnotations "context" $) | nindent 14 }}
           {{- end }}
           - op: add
             path: /metadata/labels

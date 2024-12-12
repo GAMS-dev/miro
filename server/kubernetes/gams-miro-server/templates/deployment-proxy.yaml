@@ -9,8 +9,8 @@ metadata:
   name: {{ .Release.Name }}-proxy
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
-  {{- if .Values.proxy.annotations }}
-  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.proxy.annotations "context" $) | nindent 4 }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.global.commonAnnotations "context" $) | nindent 4 }}
   {{- end }}
 spec:
   selector:
@@ -22,6 +22,9 @@ spec:
         app: {{ .Release.Name }}-proxy
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/cm-proxy.yaml") . | sha256sum }}
+        {{- if .Values.proxy.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.proxy.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
     spec:
       serviceAccountName: {{ .Release.Name }}-proxy-sa
       automountServiceAccountToken: true
@@ -29,7 +32,7 @@ spec:
       securityContext:
         runAsUser: 1001
         runAsGroup: 0
-        fsGroup: 1001
+        fsGroup: 0
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault

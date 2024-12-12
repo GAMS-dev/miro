@@ -25,6 +25,8 @@ global:
     enabled: true
   # Labels to add to all deployed resources
   commonLabels: {}
+  # Annotations to add to all deployed resources
+  commonAnnotations: {}
 image:
   # Global tag of the images. If not specified, AppVersion is used.
   tag: ''
@@ -61,7 +63,7 @@ proxy:
     #         matchLabels:
     #           app: prometheus
     extraIngress: []
-  annotations: {}
+  podAnnotations: {}
   config:
     title: GAMS MIRO Server
     language: en # en, de or cn
@@ -119,7 +121,7 @@ auth:
     #         matchLabels:
     #           app: prometheus
     extraIngress: []
-  annotations: {}
+  podAnnotations: {}
 
 miro:
   image:
@@ -138,7 +140,7 @@ miro:
     # Add extra egress rules to the NetworkPolicy
     # (only relevent if global.networkPolicy.enabled is true)
     extraEgress: []
-  annotations: {}
+  podAnnotations: {}
 
 
 admin:
@@ -153,7 +155,7 @@ admin:
     limits:
       cpu: '2000m'
       memory: 1700Mi
-  annotations: {}
+  podAnnotations: {}
 
 db:
   image:
@@ -171,7 +173,7 @@ db:
     limits:
       cpu: '400m'
       memory: 3072Mi
-  annotations: {}
+  podAnnotations: {}
 
 persistence:
   type: 'local' # local or efs
