@@ -1049,6 +1049,20 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             }
           }
 
+          chartJsObj <- chartJsObj %>% cjsLegend()
+
+          if (length(currentView$chartFontSize)) {
+            chartFontSize <- isolate(as.numeric(currentView$chartFontSize))
+            chartJsObj$x$options$plugins$tooltip$bodyFont$size <- chartFontSize
+            chartJsObj$x$options$plugins$tooltip$titleFont$size <- chartFontSize
+            chartJsObj$x$options$plugins$legend$labels$font$size <- chartFontSize
+
+            for (scale in names(chartJsObj$x$scales)) {
+              chartJsObj$x$scales[[scale]]$ticks$font$size <- chartFontSize
+              chartJsObj$x$scales[[scale]]$title$font$size <- chartFontSize
+            }
+          }
+
           if (chartType %in% c("stackedbar", "stackedarea")) {
             chartJsObj$x$options$plugins$tooltip$callbacks$afterBody <- htmlwidgets::JS("function(tooltipItem, chart) {
                                                                     const rawValues = this.dataPoints.map(point => point.formattedValue);
@@ -1082,7 +1096,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             )
           )
 
-          return(chartJsObj %>% cjsLegend())
+          return(chartJsObj)
         })
 
         # download buttons: png & csv
