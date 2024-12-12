@@ -2305,9 +2305,14 @@ refreshTableType <- function(refreshSameSymbol = FALSE) {
     }
     pivotOptions[["_input_"]] <- TRUE
     pivotOptions$readonly <- identical(rv$widgetConfig[["readonly"]], TRUE)
-    pivotOptions$enableHideEmptyCols <- rv$widgetConfig$options$enableHideEmptyCols
     pivotOptions$emptyUEL <- rv$widgetConfig$options$emptyUEL
-    pivotOptions$fixedColumns <- rv$widgetConfig$options$fixedColumns
+    pivotOptions$fixedColumns <- pivotOptions$fixedColumns
+    pivotOptions$tableSummarySettings <- pivotOptions$tableSummarySettings
+    pivotOptions$hideEmptyCols <- pivotOptions$hideEmptyCols
+    pivotOptions$chartFontSize <- pivotOptions$chartFontSize
+    pivotOptions$singleDropdown <- pivotOptions$singleDropdown
+    pivotOptions$hidePivotControls <- rv$widgetConfig$options$hidePivotControls
+    pivotOptions$externalDefaultView <- rv$widgetConfig$options$externalDefaultView
 
     metadata <- list(
       headers = modelIn[[currentWidgetSymbolName]]$headers,
@@ -2443,16 +2448,24 @@ observeEvent(c(input$table_pivotCols, input$table_readonly, input$table_heatmap)
     hideEl(session, "#pivotColsRestriction")
   }
 })
-observeEvent(input$inputpivot_enableHideEmptyCols, {
-  rv$widgetConfig$options$enableHideEmptyCols <- isTRUE(input$inputpivot_enableHideEmptyCols)
-  refreshTableType()
-})
 observeEvent(input$inputpivot_readonly, {
   rv$widgetConfig[["readonly"]] <- isTRUE(input$inputpivot_readonly)
   refreshTableType()
 })
-observeEvent(input$inputpivot_fixedColumns, {
-  rv$widgetConfig$options$fixedColumns <- isTRUE(input$inputpivot_fixedColumns)
+observeEvent(input$inputpivot_hidePivotControls, {
+  rv$widgetConfig$options$hidePivotControls <- isTRUE(input$inputpivot_hidePivotControls)
+})
+observe({
+  if (!isTRUE(input$inputpivot_useExternalDefaultView) || !length(input$inputpivot_externalDefaultView)) {
+    rv$widgetConfig$options$externalDefaultView <- NULL
+    return()
+  }
+  externalViewTmp <- trimws(input$inputpivot_externalDefaultView)
+  if (identical(externalViewTmp, "")) {
+    rv$widgetConfig$options$externalDefaultView <- NULL
+  } else {
+    rv$widgetConfig$options$externalDefaultView <- externalViewTmp
+  }
 })
 
 observeEvent(input$table_hideIndexCol, {
@@ -2905,11 +2918,36 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
         options = list(
           aggregationFunction = input[["preview_inputTable_pivot-miroPivot-aggregationFunction"]],
           pivotRenderer = input[["preview_inputTable_pivot-miroPivot-pivotRenderer"]],
-          enableHideEmptyCols = isTRUE(input$inputpivot_enableHideEmptyCols),
           hideEmptyCols = isTRUE(input[["preview_inputTable_pivot-miroPivot-hideEmptyCols"]]),
-          fixedColumns = isTRUE(input$inputpivot_fixedColumns)
+          fixedColumns = !isFALSE(input[["preview_inputTable_pivot-miroPivot-fixedColumns"]]),
+          tableSummarySettings = list(
+            rowEnabled = identical(input[["preview_inputTable_pivot-miroPivot-showTableSummaryRow"]], TRUE),
+            rowSummaryFunction = if (length(input[["preview_inputTable_pivot-miroPivot-rowSummaryFunction"]])) {
+              input[["preview_inputTable_pivot-miroPivot-rowSummaryFunction"]]
+            } else {
+              "sum"
+            },
+            colEnabled = identical(input[["preview_inputTable_pivot-miroPivot-showTableSummaryCol"]], TRUE),
+            colSummaryFunction = if (length(input[["preview_inputTable_pivot-miroPivot-colSummaryFunction"]])) {
+              input[["preview_inputTable_pivot-miroPivot-colSummaryFunction"]]
+            } else {
+              "sum"
+            }
+          ),
+          hidePivotControls = isTRUE(input$inputpivot_hidePivotControls)
         )
       )
+      if (length(input[["preview_inputTable_pivot-miroPivot-singleDropdown"]])) {
+        newConfig$options$singleDropdown <- input[["preview_inputTable_pivot-miroPivot-singleDropdown"]]
+      }
+      if (length(input[["preview_inputTable_pivot-miroPivot-chartFontSize"]]) &&
+        !is.na(input[["preview_inputTable_pivot-miroPivot-chartFontSize"]])) {
+        newConfig$options$chartFontSize <- input[["preview_inputTable_pivot-miroPivot-chartFontSize"]]
+      }
+      if (length(rv$widgetConfig$options$externalDefaultView)) {
+        newConfig$options$externalDefaultView <- rv$widgetConfig$options$externalDefaultView
+      }
+
       if (length(rv$widgetConfig$label)) {
         newConfig$label <- rv$widgetConfig$label
       }

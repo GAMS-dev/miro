@@ -1,8 +1,5 @@
 {
   "miroLogFile": "miro.log",
-  "pivotCompSettings":{
-    "enableHideEmptyCols": true
-  },
   "inputWidgets": {
     "f": {
       "widgetType": "slider",

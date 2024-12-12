@@ -2527,30 +2527,6 @@
               "type": "string",
               "minLength": 1
             },
-            "cbHideEmptyCols": {
-              "type": "string",
-              "minLength": 1
-            },
-            "singleDropdown": {
-              "type": "string",
-              "minLength": 1
-            },
-            "cbShowTableSummaryRow": {
-              "type": "string",
-              "minLength": 1
-            },
-            "cbShowTableSummaryCol": {
-              "type": "string",
-              "minLength": 1
-            },
-            "rowSummaryFunction": {
-              "type": "string",
-              "minLength": 1
-            },
-            "colSummaryFunction": {
-              "type": "string",
-              "minLength": 1
-            },
             "rows": {
               "type": "string",
               "minLength": 1
@@ -2802,6 +2778,57 @@
               },
               "minProperties": 41
             },
+            "settings": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "tabGeneral": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tabTable": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tabChart": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbHideEmptyCols": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "singleDropdown": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbShowTableSummaryRow": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbShowTableSummaryCol": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "rowSummaryFunction": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "colSummaryFunction": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "fixedColumns": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "chartFontSize": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 11
+            },
             "dialogAddRow": {
               "type": "object",
               "additionalProperties": false,
@@ -2943,7 +2970,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 45
+          "minProperties": 40
         },
         "datatable": {
           "type": "object",
@@ -4240,6 +4267,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "descriptionPivotcompare": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "headerRenderers": {
                   "type": "string",
                   "minLength": 1
@@ -4317,7 +4348,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 29
+              "minProperties": 30
             },
             "modalDialog": {
               "type": "object",
@@ -7414,6 +7445,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "emptyUELTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "hidePivotControlsSwitch": {
                   "type": "string",
                   "minLength": 1
@@ -7431,7 +7466,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 9
+              "minProperties": 10
             },
             "datatableOptions": {
               "type": "object",

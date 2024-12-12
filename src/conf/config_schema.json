@@ -180,11 +180,11 @@
           "minLength": 1
         },
         "enableHideEmptyCols": {
-          "description": "Enable button that allows to hide empty columns.",
+          "description": "Deprecated! This setting has no effect anymore. Show button that allows to hide empty columns.",
           "type": "boolean"
         },
         "hideEmptyCols": {
-          "description": "Default value for hide empty columns checkbox (only relevant if enableHideEmptyCols is TRUE).",
+          "description": "Default value for hide empty columns checkbox.",
           "type": "boolean"
         },
         "enablePersistentViews": {
@@ -209,6 +209,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "chartFontSize": {
+          "description": "Font size used for charts.",
+          "type": "integer"
         },
         "customChartColors": {
           "description": "Custom color palette. Every second color is the hover color of previous one.",
@@ -889,6 +893,10 @@
                     "items": {
                       "type": "string"
                     }
+                  },
+                  "chartFontSize": {
+                    "description": "Font size used for charts.",
+                    "type": "integer"
                   },
                   "data": {
                     "description": "Symbol name that the data should come from.",
@@ -2517,6 +2525,64 @@
           "description": "UEL that identifies a missing value (defaults to -, must not be empty string).",
           "type": "string",
           "minLength": 1
+        },
+        "chartFontSize": {
+          "description": "Font size used for charts.",
+          "type": "integer"
+        },
+        "customChartColors": {
+          "description": "Custom color palette. Every second color is the hover color of previous one.",
+          "type": [
+            "array",
+            "string"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "hideEmptyCols": {
+          "description": "Default value for hide empty columns checkbox.",
+          "type": "boolean"
+        },
+        "tableSummarySettings": {
+          "description": "Show summary function for rows and columns",
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "description": "Enable summary functions (both rows and columns)",
+              "type": "boolean"
+            },
+            "rowEnabled": {
+              "description": "Enable summary functions (rows)",
+              "type": "boolean"
+            },
+            "rowSummaryFunction": {
+              "description": "Row summary functions",
+              "type": "string",
+              "enum": [
+                "sum",
+                "count",
+                "mean"
+              ]
+            },
+            "colEnabled": {
+              "description": "Enable summary functions (columns)",
+              "type": "boolean"
+            },
+            "colSummaryFunction": {
+              "description": "Column summary functions",
+              "type": "string",
+              "enum": [
+                "sum",
+                "count",
+                "min",
+                "max",
+                "mean",
+                "median",
+                "sd"
+              ]
+            }
+          }
         },
         "symbolConfig": {
           "description": "Symbol-specific settings for the pivot view comparison mode",
