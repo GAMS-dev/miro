@@ -48,7 +48,9 @@
                     "Hdr": "quantities"
                 },
                 "pivotRenderer": "bar",
-                "rows": "i"
+                "rows": "i",
+                "hideEmptyCols": true,
+                "fixedColumns": true
             },
             "outType": "miroPivot"
         }

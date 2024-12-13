@@ -40,7 +40,8 @@
                     "showGrid": false,
                     "logScale": true
                 }
-            }
+            },
+            "chartFontSize": 22
         }
     }
 }
