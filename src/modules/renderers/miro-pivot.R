@@ -1601,17 +1601,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                     tags$div(
                       class = "col-sm-12",
                       checkboxInput_MIRO(ns("fixedColumns"),
-                        tags$div(
+                        tags$span(
                           lang$renderers$miroPivot$settings$fixedColumns,
-                          tags$a("",
-                            title = lang$adminMode$graphs$miroPivotOptions$fixedColumnsTooltip,
-                            href = "https://gams.com/miro/configuration_general.html#fixed-columns",
-                            class = "info-wrapper",
+                          tags$span(
+                            `data-tooltip` = lang$adminMode$graphs$miroPivotOptions$fixedColumnsTooltip,
+                            class = "info-wrapper tooltip-mobile",
                             tags$span(
                               class = "fas fa-circle-info", class = "info-icon",
                               role = "presentation",
                               `aria-label` = "More information"
-                            ), target = "_blank"
+                            )
                           )
                         ),
                         value = fixedColumns()
