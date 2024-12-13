@@ -825,6 +825,9 @@
         "prompt1": "你确定要删除",
         "prompt2": "这两列？这不能被撤消！"
       }
+    },
+    "dashboardComparison":{
+      "selectScen": "Select scenario"
     }
   },
   "errMsg":{

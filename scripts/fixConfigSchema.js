@@ -136,11 +136,11 @@ const configSchema = JSON.parse(fs.readFileSync(configSchemaPath, 'utf8'));
 
 // make sure dashboard's dataViewsConfig is superset of miroPivotOptions
 // to allow user's copy&pasting views from MIRO pivot to dashboard views
-configSchema.definitions.dashboardOptions.properties.dataViewsConfig.additionalProperties.oneOf[1].properties =
+configSchema.definitions.dashboardOptions.properties.dataViewsConfig.additionalProperties.properties =
   mergeObjects(
     configSchema.definitions.miroPivotOptions.properties,
     configSchema.definitions.dashboardOptions.properties.dataViewsConfig
-      .additionalProperties.oneOf[1].properties,
+      .additionalProperties.properties,
   );
 
 // length one string arrays should also accept strings

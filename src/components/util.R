@@ -569,7 +569,7 @@ addCssDim <- function(x, y) {
 }
 
 virtualActionButton <- function(...) {
-  o <- structure(sum(...), class = "shinyActionButtonValue")
+  o <- structure(sum(as.numeric(c(...))), class = "shinyActionButtonValue")
   invisible(o)
 }
 showErrorMsg <- function(title, errMsg) {

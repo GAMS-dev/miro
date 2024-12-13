@@ -825,6 +825,9 @@
         "prompt1": "Sind Sie sicher, dass Sie die Spalte(n):",
         "prompt2": "entfernen möchten? Dies kann nicht rückgängig gemacht werden!"
       }
+    },
+    "dashboardComparison":{
+      "selectScen": "Wähle Szenario"
     }
   },
   "errMsg":{

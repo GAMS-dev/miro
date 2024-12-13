@@ -58,8 +58,9 @@ Variable
     w(symbol)   'what part of the portfolio'
     slpos(date) 'positive slack'
     slneg(date) 'negative slack'
+$onExternalOutput
     obj         'objective';
-
+$offExternalOutput
 Positive variables w, slpos, slneg;
 Binary variable p;
 

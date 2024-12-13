@@ -98,8 +98,41 @@
                     (xxxx-xx-xx)
                   </div>
                   <div class="section-block">
+                    <h3>New features</h3>
+                    <ul>
+                      <li>
+                        Add new optional scenario comparison module
+                        <a
+                          href="./configuration_json_only.html#dashboard-compare"
+                          >dashboard Compare</a
+                        >. Like the
+                        <a href="./charts.html#dashboard"
+                          >dashboard renderer</a
+                        >
+                        the dashboard scenario comparison is an interactive
+                        tool that can display multiple charts and tables but
+                        for mutliple scenarios at once.
+                      </li>
+                    </ul>
                     <h3>Minor new features and improvements</h3>
                     <ul>
+                      <li>
+                        Dashboard renderer:
+                        <ul>
+                          <li>
+                            Add option to change the labels order in
+                            charts/tables.
+                          </li>
+                          <li>Add option to hide the legend in charts.</li>
+                          <li>
+                            Add option to show an alternative heatmap with
+                            different colors for positive and negative values.
+                          </li>
+                          <li>
+                            Show comma as thousands separator in value boxes.
+                          </li>
+                        </ul>
+                      </li>
                       <li>Add GAMSPy example model: tsp.</li>
                       <li>
                         New <a href="./charts.html#pivot-view">view</a> options
@@ -168,6 +201,13 @@
                         <kbd>table</kbd> and <kbd>heatmap</kbd> renderers.
                       </li>
                       <li>
+                        Dashboard: Support displaying the level of
+                        <a href="./model.html#display-scalar-vareq"
+                          >scalar variables or equations</a
+                        >
+                        in value boxes.
+                      </li>
+                      <li>
                         Improve error messages if the validation of the JSON
                         configuration file fails.
                       </li>
@@ -185,6 +225,39 @@
                           target="_blank"
                           >GAMS forum</a
                         >.
+                      </li>
+                      <li>
+                        Fix issue where where clicking the "Solve" button could
+                        cause MIRO with GAMS Engine backend to crash in certain
+                        situations.
+                      </li>
+                      <li>
+                        Fixes issue where updating
+                        <a
+                          href="./configuration_advanced.html#widgets-dependencies"
+                          >dependent value(s) of slider</a
+                        >
+                        resulted in broken slider with only
+                        <kbd>NaN</kbd> choices.
+                      </li>
+                      <li>
+                        Fixes issue where updating
+                        <a
+                          href="./configuration_advanced.html#widgets-dependencies"
+                          >dependent choices of dropdown</a
+                        >
+                        resulted in selected value to be reset.
+                      </li>
+                      <li>
+                        Fix issue where imported output datasets were not
+                        counted in the total number of imported sheets
+                        displayed in the alert message during local file
+                        imports.
+                      </li>
+                      <li>
+                        Fix issue issue where choosing no datasets during
+                        manual dataset selection for local file imports
+                        incorrectly resulted in all datasets being imported.
                       </li>
                     </ul>
                   </div>
