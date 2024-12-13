@@ -918,17 +918,331 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                   </div>
                 </section>
                 <!--//doc-section-->
+                <section id="dashboard-compare" class="doc-section">
+                  <h2 class="section-title">Dashboard scenario comparison</h2>
+                  <div class="section-block">
+                    <p>
+                      The Dashboard scenario comparison is a tool that displays
+                      the data of several selected scenarios in an interactive
+                      dashboard. To be able to use this scenario comparison
+                      mode, an application-specific configuration is required.
+                      All information about the dashboard and its configuration
+                      can be found in the section on the regular
+                      <a href="./charts.html#dashboard">dashboard renderer</a>.
+                    </p>
+                    <div class="section-block" style="text-align: left">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/dashboard/dashboard_compare.png"
+                        alt="Configured dashboard comparison"
+                      />
+                    </div>
+                    <p>
+                      If you have already configured a dashboard for an output
+                      symbol, the effort for a counterpart in the scenario
+                      comparison is very low. Almost the entire configuration
+                      can be adopted 1:1. The scenario comparison configuration
+                      only differs from the regular dashboard in a few respects
+                      (also see examples below):
+                    </p>
+                    <ul>
+                      <li>
+                        The configuration in the &lt;modelname&gt;.json file is
+                        not carried out under
+                        <span class="code">dataRendering</span>, but in a
+                        separate section
+                        <span class="code">compareModules</span>.
+                      </li>
+                      <li>
+                        Unlike a standard renderer, a scenario comparison
+                        module is not configured for an individual symbol, but
+                        is symbol-unspecific. Consequently, the scenario
+                        comparison modules always has access to all input and
+                        output symbol data. It is therefore not necessary to
+                        list all the desired symbols whose data is to be
+                        accessed in the dashboard under
+                        <span class="code">additionalData</span>.
+                      </li>
+                      <li>
+                        Instead of the <span class="code">"outType"</span> in
+                        the dashboard configuration, a
+                        <span class="code">"type": "dashboard"</span> is
+                        specified here.
+                      </li>
+                      <li>
+                        A <span class="code">"label"</span> is assigned which
+                        is displayed when you select the scenario comparison
+                        mode (next to split view, tab view, pivot view).
+                        <p></p>
+                        Example: dashboard and dashboard comparison
+                        configuration
+                      </li>
+                      <pre><code class="language-json">
+  {
+    "dataRendering": {
+      "&lt;lowercase_symbolname&gt;": {
+        "outType": "dashboard",
+        "additionalData": [],
+        "options": {
+          "valueBoxesTitle": "",
+          "valueBoxes": {
+              [...]
+          },
+          "dataViews": {
+              [...]
+          },
+          "dataViewsConfig": {
+              [...]
+          }
+        }
+      }
+    },
+    "compareModules": [
+    {
+      "type": "dashboard",
+      "label": "",
+      "options": {
+        "valueBoxesTitle": "",
+        "valueBoxes": {
+            [...]
+        },
+        "dataViews": {
+            [...]
+        },
+        "dataViewsConfig": {
+            [...]
+        }
+      }
+    }
+    ]
+  }
+</code></pre>
+                    </ul>
+                    <p>
+                      A few notes on the specifics of the
+                      <span class="code">"dataViewsConfig"</span>
+                      configuration:
+                    </p>
+                    <ul>
+                      <li>
+                        In principle, you can adopt the complete configuration
+                        of a standard dashboard and also use it in the scenario
+                        comparison. Note, however, that your data displayed in
+                        tables and charts now has one more dimension, namely
+                        the scenario dimension, in which the scenarios to be
+                        compared are identified by name. This additional
+                        <span class="code">"_scenName"</span> dimension must be
+                        added in the views under
+                        <span class="code">"dataViewsConfig"</span>. To not
+                        pre-select a scenario but show all selected ones leave
+                        the value at <span class="code">null</span>.
+                      </li>
+                      <li>
+                        The additional scenario dimension will also change the
+                        appearance of the charts. Some visualizations that were
+                        suitable for normal output no longer make sense for
+                        displaying multiple scenarios. In this case, the view
+                        configuration (distribution of the dimensions in
+                        rows/cols/aggregation, etc.) can be adjusted if
+                        necessary. The
+                        <a href="./start.html#compare-pivot"
+                          >pivot comparison mode</a
+                        >
+                        can help here to prepare the views.
+                      </li>
+                      <li>
+                        If the value boxes are to display numbers (<span
+                          class="code"
+                          >"valueScalar"</span
+                        >
+                        property), a drop down menu appears in the dashboard
+                        above the value boxes. Here you can select the scenario
+                        from which the values are to be displayed.
+                      </li>
+                      <li>
+                        As the dashboard is not configured for a specific
+                        symbol, the symbol data to be used for a chart/table
+                        must be specified in each view in
+                        <span class="code">"dataViewsConfig"</span> (<span
+                          class="code"
+                          >"data"</span
+                        >
+                        property).
+                      </li>
+                    </ul>
+                    <p>
+                      Based on the example from the regular dashboard, the
+                      configuration for the scenario comparison could look as
+                      follows:
+                    </p>
+                    <pre><code class="language-json">
+  {
+    "compareModules": [
+    {
+      "type": "dashboard",
+      "label": "Dashboard comparison",
+      "options": {
+        "valueBoxesTitle": "Summary indicators",
+        "valueBoxes": {
+          "id": ["summary",...],
+          [...]
+        },
+        "dataViews": {
+          "summary": [
+              {"macro1": "Macroeconomic indicators (real, percentage change)"},
+              {"macro2": ""}
+          ],
+          [...]
+        },
+        "dataViewsConfig": {
+          "macro1": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "tableSummarySettings": { "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "rows": "mac",
+            "cols": {"_scenName": null},
+            "aggregations": { "sim_miro": null },
+            "chartOptions": { "title": "Macroeconomic indicators (real, percentage change)" },
+            "data": "macroperc",
+            "userFilter": "mac",
+            "decimals": 2
+          },
+          "macro2": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "tableSummarySettings": { "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "rows": "mac",
+            "cols": {"_scenName": null},
+            "aggregations": { "sim_miro": null },
+            "data": "macroperc",
+            "userFilter": "macro1",
+            "decimals": 2
+          }
+        }
+      }
+    }
+    ]
+  }
+                      </code></pre>
+                    <div class="callout-block callout-success">
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Tip:</b>
+                        <p>
+                          You can have multiple dashboards for scenario
+                          comparison.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                  <b>Using custom code in the dashboard comparison</b>
+                  <p>
+                    As in the normal dashboard, one can also provide custom R
+                    code, which is rendered instead of the charts/tables
+                    configured in
+                    <code class="language-json">"dataViewsConfig"</code>. To do
+                    this, proceed as follows:
+                  </p>
+                  <ol>
+                    <li>
+                      Download the
+                      <a
+                        href="https://github.com/GAMS-dev/miro/blob/master/src/modules/renderers/mirocompare_dashboard.R"
+                        target="_blank"
+                        >latest dashboard scenario comparison renderer file</a
+                      >
+                      from the MIRO repository on GitHub and put it into your
+                      <span class="code">renderer_&lt;modelname&gt;</span>
+                      directory. If the folder does not already exist, you can
+                      create it manually.
+                    </li>
+                    <li>
+                      In the mirocompare_dashboard.R file, make the following
+                      changes:
+                      <pre><code class="diff-highlight language-diff">- dashboardCompareOutput <- function(id, height = NULL, options = NULL, path = NULL, ...) {
++ mirocompare_&lt;id&gt;Output <- function(id, height = NULL, options = NULL, path = NULL) {
+  [...]
+}
+- renderDashboardCompare <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
++ renderMirocompare_&lt;id&gt; <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
+  [...]
+}
+</code></pre>
+                      Replace the &lt;id&gt; above with any id that you want to
+                      use for your custom scenario comparison. You will need
+                      this id again in step 4.
+                    </li>
+                    <li>
+                      In the
+                      <span class="code">&lt;modelname&gt;.json</span> file add
+                      a section
+                      <code class="language-json">customCompareModules</code>
+                      and move the dashboard configuration from
+                      <code class="language-json">compareModules</code> into
+                      it. If you only have the one dashboard configuration in
+                      <code class="language-json">compareModules</code>, then
+                      you can simply rename
+                      <span class="code">compareModules</span> to
+                      <span class="code">customComparemodules</span>.
+                    </li>
+                    <li>
+                      Instead of the
+                      <code class="language-json">"type"</code> in the
+                      dashboard scenario comparison configuration, add an entry
+                      <code class="language-json">"id"</code> and give it the
+                      name you used in step 2. As before, the label is
+                      displayed when you select the scenario comparison mode
+                      (next to split view, tab view, pivot view).
+                      <p></p>
+                      Changes in the &lt;modelname&gt;.json file:
+                      <pre><code class="diff-highlight language-diff">{
+- "compareModules": [
++ "customCompareModules": [
+  {
+-   "type": "dashboard",
++   "id": "custom",
+    "label": "Dashboard compare",
+    "options": {
+      [...]
+    }
+  }
+  ]
+}
+                        </code></pre>
+                    </li>
+                    <li>
+                      That's it. You can now extend the dashboard scenario
+                      comparison renderer as a custom scenario comparison
+                      module. Since the procedure is identical to the regular
+                      dashboard render from now on, please refer to the second
+                      half of the
+                      <a href="./charts.html#dashboard-custom-code">
+                        corresponding section</a
+                      >.
+                    </li>
+                  </ol>
+                </section>
                 <section id="custom-compare-mode" class="doc-section">
                   <h2 class="section-title">Custom scenario comparison</h2>
                   <div class="section-block">
                     <p>
-                      GAMS MIRO natively supports three modes for scenario
-                      comparison: split view, tab view, and pivot view. But
-                      what if you are interested in different statistics or
-                      charts tailored to compare multiple scenarios? For this
-                      purpose, there are user-defined scenario comparison
-                      modules. The data can be loaded into the custom
-                      comparison modules via the
+                      GAMS MIRO natively supports three (+ one
+                      <a
+                        href="./configuration_json_only.html#dashboard-compare"
+                      >
+                        configurable</a
+                      >
+                      ) modes for scenario comparison: split view, tab view,
+                      and pivot view. But what if you are interested in
+                      different statistics or charts tailored to compare
+                      multiple scenarios? For this purpose, there are
+                      user-defined scenario comparison modules. The data can be
+                      loaded into the custom comparison modules via the
                       <a href="./start.html#scenario-loading">Batch Load</a>
                       module. The drop-down menu for selecting the comparison
                       mode in which the selected scenarios are to be loaded is
@@ -2206,6 +2520,9 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                   <a class="nav-link scrollto" href="#custom-input-widgets"
                     >Custom input widgets</a
                   >
+                  <a class="nav-link scrollto" href="#dashboard-compare"
+                    >Dashboard scenario comparison</a
+                  >
                   <a class="nav-link scrollto" href="#custom-compare-mode"
                     >Custom scenario comparison</a
                   >
@@ -2249,6 +2566,10 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
     <script
       type="text/javascript"
       src="assets/plugins/prism/min/prism-min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/prism/min/prism-diff-yaml.min.js"
     ></script>
     <script
       type="text/javascript"

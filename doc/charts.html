@@ -276,11 +276,55 @@
                         onclick="window.open(this.src, '_blank');"
                       />
                     </div>
-                    <p id="pivot-view">
-                      The MIRO pivot table renderer allows you to store "views"
-                      - the current representation of the data - to the
-                      database and load it together with the scenario data.
-                      Simply click the
+                    <h3 id="pivot-view" class="block-title">
+                      Pivot Table View
+                    </h3>
+                    <p>
+                      The MIRO pivot table renderer offers the ability to store
+                      "views," which represent the current configuration of
+                      your data. These views can be saved to the database and
+                      reloaded alongside the scenario data. One of the key
+                      advantages of using views is that they allow you to:
+                    </p>
+                    <ul>
+                      <li>
+                        Save multiple customized representations of your data.
+                      </li>
+                      <li>
+                        Eliminate the need for repetitive data slicing and
+                        filtering every time you return to the data.
+                      </li>
+                      <li>
+                        View the data from different perspectives, enabling a
+                        deeper analysis based on specific needs or approaches.
+                      </li>
+                      <li>
+                        Quickly access frequently used data filters or specific
+                        graph types, which is especially useful when generating
+                        result reports or reviewing data in a consistent
+                        format.
+                      </li>
+                      <li>
+                        Compare and contrast multiple scenarios in the
+                        <a href="./start.html#compare-pivot" class="scrollto"
+                          >pivot comparison mode</a
+                        >, making it easier to analyze different outcomes.
+                      </li>
+                    </ul>
+                    <p>
+                      When you save a scenario, all associated views are saved
+                      as well, ensuring that your configurations are preserved.
+                      To load a view, simply click the "Load view" button and
+                      select the desired view from the list.
+                    </p>
+                    <h3 id="pivot-view-settings" class="block-title">
+                      View Settings
+                    </h3>
+                    <p>
+                      Before configuring and saving a view, you need to first
+                      slice and dice the data — apply filters, set the desired
+                      data ranges, and choose the appropriate chart type. Once
+                      your data is prepared, click the
                       <img
                         class="img-fluid"
                         src="assets/images/configuration_mode/miropivot_addview_btn.png"
@@ -289,13 +333,44 @@
                         align="middle"
                         alt="Add view"
                       />
-                      button and assign a name to the view. In the dialog that
-                      opens, you can also give the view a title and, depending
-                      on the chart type, create axis labels, use logarithmic
-                      axes, and use mixed chart types. When you save the
-                      scenario, all your views are automatically stored as
-                      well. Load a view by first clicking on the "Load view"
-                      button and then selecting which view to load.
+                      button to open the "New View" settings dialog, where you
+                      can assign a name to the view. Depending on the selected
+                      chart type, further optional settings are available.
+                    </p>
+                    <ul>
+                      <li>
+                        <b>General</b>: General settings such as the title
+                        displayed above the chart/table and axis labels. For
+                        compatible charts, you can also set whether data
+                        markers should be displayed and whether a step plot
+                        should be used.
+                      </li>
+                      <li>
+                        <b>Axes</b>: Range limitations for axes, grid settings,
+                        axis scaling.
+                      </li>
+                      <li>
+                        <b>Combo chart</b>: Depending on the base chart type,
+                        you can add and configure additional bar/line/scatter
+                        series to the chart.
+                      </li>
+                      <li>
+                        <b>Second Axis</b>: Plot selected series on an
+                        additional axis, the settings of which you can make
+                        here.
+                      </li>
+                      <li>
+                        <b>Colors</b>: Specify custom colors for each series.
+                      </li>
+                    </ul>
+                    <p>
+                      When you save the scenario, all your views are
+                      automatically stored as well. Load a view by first
+                      clicking on the "Load view" button and then selecting
+                      which view to load. Note that as soon as the pivot table
+                      is changed, e.g. by changing a filter or moving a
+                      dimension, all view settings such as title, axis labels,
+                      etc. are reset.
                     </p>
                     <div class="section-block">
                       <img
@@ -323,6 +398,48 @@
                       </div>
                       <!--//content-->
                     </div>
+                    <h3 id="pivot-settings" class="block-title">
+                      Pivot Table Settings
+                    </h3>
+                    <p>
+                      A click on the settings
+                      <img
+                        class="img-fluid"
+                        src="assets/images/pivot-settings-btn.png"
+                        width="25"
+                        height="25"
+                        align="middle"
+                        alt="MIRO Pivot settings button"
+                      />
+                      button opens the "Settings" menu. For example, table
+                      summary settings can be configured here. You can choose
+                      between several summary functions — such as sum, count,
+                      mean, and more — for both rows and columns. These summary
+                      functions allow you to quickly calculate key metrics
+                      about your data. In contrast to
+                      <a
+                        href="./charts.html#pivot-view-settings"
+                        class="scrollto"
+                        >View settings</a
+                      >, anything configured in the pivot table settings menu
+                      is retained even if the pivot table is modified.
+                    </p>
+                    <div class="section-block">
+                      <figure>
+                        <img
+                          class="img-fluid"
+                          src="assets/images/pivot_table_summary.png"
+                          alt="Table summary"
+                          onclick="window.open(this.src, '_blank');"
+                        />
+                        <figcaption>
+                          Pivot tool with table summary enabled
+                        </figcaption>
+                      </figure>
+                    </div>
+                    <h3 id="presentation-mode" class="block-title">
+                      Presentation Mode
+                    </h3>
                     <p>
                       A click on the
                       <img
@@ -336,12 +453,16 @@
                       button toggles the
                       <a href="#presentation-mode">presentation mode</a>, which
                       allows the pivot tool to look like a normal graphic
-                      renderer without pivot controls. The combination of
+                      renderer without pivot controls. Only configured views
+                      and export buttons remain visible. The presentation mode
+                      can be very useful for users who do not want to play
+                      around with the data in the pivot tool, but only want to
+                      view predefined views/reports. The combination of
                       predefined views and the presentation mode, which can be
-                      set as the default display, offers extensive
-                      possibilities for data visualization and in-depth
-                      analyses. A slice, or "view" of data can be exported as a
-                      PNG or CSV file.
+                      set as the default display in the Configuration Mode,
+                      offers extensive possibilities for data visualization and
+                      in-depth analyses. A slice, or "view" of data can be
+                      exported as a PNG or CSV file.
                     </p>
                     <div class="section-block">
                       <figure>
@@ -356,23 +477,31 @@
                         </figcaption>
                       </figure>
                     </div>
-                    <h3 class="block-title">Configuration</h3>
+                    <h3 class="block-title">Default Configuration</h3>
                     <p>
                       You can specify the default view as well as the default
                       renderer (table/chart) of the pivot table renderer in the
                       Configuration Mode. Note that unlike other charting
                       tools, you configure most of the MIRO pivot table
                       directly in the preview on the right. Drag and drop the
-                      domains where you want them to be and click on "Save".
-                      The symbol is loaded in MIRO with the same view that you
-                      have set up in the Configuration Mode.
+                      domains where you want them to be, make further
+                      chart-type-specific
+                      <a
+                        href="./charts.html#pivot-view-settings"
+                        class="scrollto"
+                        >settings</a
+                      >
+                      (optional) and click on "Save". The symbol is loaded in
+                      MIRO with the same view that you have set up in the
+                      Configuration Mode.
                     </p>
                     <p>
                       Example: Model <i>Transport</i>, parameter
                       <i>shipment quantities in cases</i>
                     </p>
                     <p>
-                      For an example in GAMS, see the
+                      To see how the corresponding GAMS symbol is integrated in
+                      MIRO, see the
                       <a href="#map-chart" class="scrollto">map example</a>.
                     </p>
                     <div class="section-block" style="cursor: pointer">
@@ -487,8 +616,8 @@
                       of this parameter with the MIRO Pivot Table, you might
                       not want to see columns containing only <kbd>-</kbd>.
                       Therefore, the MIRO Pivot Table has the options to hide
-                      these <i> empty</i> columns. The button to hide/show
-                      empty columns is located in the settings
+                      these <i> empty</i> columns. If enabled, the button to
+                      hide/show empty columns is located in the settings
                       <img
                         class="img-fluid"
                         src="assets/images/pivot-settings-btn.png"
@@ -511,24 +640,6 @@
                         class="img-fluid"
                         src="assets/images/configuration_mode/miropivot_empty_col_hidden.png"
                         alt="MIRO Pivot Table with empty column hidden"
-                      />
-                    </div>
-                    <p id="presentation-mode">
-                      <b>Hide pivot controls (presentation mode):</b><br />
-                      This option activates the presentation mode by default.
-                      In this mode, all pivot controls are hidden so that the
-                      chart or table takes center stage. Only configured views
-                      and export buttons remain visible. The presentation mode
-                      can be very useful for users who do not want to play
-                      around with the data in the pivot tool, but only want to
-                      view predefined views/reports.
-                    </p>
-                    <div class="section-block" style="cursor: pointer">
-                      <img
-                        class="img-fluid"
-                        src="assets/images/configuration_mode/graphs_miropivot_presentation.png"
-                        alt="Presentation mode"
-                        onclick="window.open(this.src, '_blank');"
                       />
                     </div>
                     <p id="fixed-columns">
@@ -2192,7 +2303,10 @@ firstDayTraining(td)                   = td.pos = 1;
                     <p>
                       In contrast to other types of visualization, data from
                       several symbols can be displayed in the dashboard
-                      (similar to a custom renderer).
+                      (similar to a custom renderer). However, note that, as
+                      with a custom renderer, this is in fact a visualization
+                      for one symbol (i.e. one tab in your application) and is
+                      configured accordingly.
                     </p>
                     <div class="section-block" style="text-align: left">
                       <img
@@ -2769,6 +2883,135 @@ firstDayTraining(td)                   = td.pos = 1;
 </code></pre>
                           </li>
                           <li>
+                            <code class="language-json"
+                              >"customLabelsOrder"</code
+                            >: Labels named here are displayed in charts/tables
+                            in the order specified by the user. Labels that are
+                            not mentioned retain the original sort order and
+                            are positioned after the explicitly listed labels.
+                            If labels that have already been given a new name
+                            using
+                            <code class="language-json">"customLabels"</code>
+                            are to be sorted, the new name must be used in
+                            <code class="language-json"
+                              >"customLabelsOrder"</code
+                            >. Example:
+                            <pre><code class="language-json">
+{
+  "macroperc": {
+      "macro1": {
+          [...],
+          "chartOptions": {
+            "customLabels": {
+               "a_Agr": "Agriculture",
+               "a_Const": "Construction"
+             },
+             "customLabelsOrder": ["Construction", "Agriculture"]
+          }
+      }
+  }
+}
+</code></pre>
+                            <p>
+                              For a more detailed example see
+                              <a href="./charts.html#custom-order">here</a>.
+                            </p>
+                            <p>
+                              Note: If a parameter spans multiple dimensions in
+                              the rows, the entries in
+                              <code class="language-json"
+                                >"customLabelsOrder"
+                              </code>
+                              must include the corresponding labels for each
+                              dimension, concatenated with a
+                              <code class="language-json">․</code> (Unicode
+                              Character U+2024) as a separator.
+                            </p>
+                            Example:
+                            <pre><code class="language-json">
+{
+  "customLabelsOrder":
+  [
+   "Services․Construction",
+   "Primary․Agriculture"
+  ]
+}
+</code></pre>
+                            <div
+                              class="section-block"
+                              style="text-align: left"
+                            >
+                              <img
+                                class="img-fluid"
+                                src="assets/images/dashboard/custom_labels_order_multiple.png"
+                                alt="custom labels order with multiple dimensions"
+                              />
+                            </div>
+                          </li>
+                          <li>
+                            <code class="language-json"
+                              >"customSeriesOrder"</code
+                            >: Allows an individual order in which selected
+                            series are plotted in a chart or in which order
+                            selected columns are displayed in a table/heatmap.
+                            Series/columns that are not mentioned retain the
+                            original sort order and are positioned after the
+                            explicitly listed series/columns. Example:
+                            <pre><code class="language-json">
+{
+  "macroperc": {
+      "macro1": {
+          [...],
+          "chartOptions": {
+             "customSeriesOrder": ["Primary", "Manufacturing", "Services"]
+          }
+      }
+  }
+}
+</code></pre>
+                            For a more detailed example see
+                            <a href="./charts.html#custom-order">here</a>.
+                          </li>
+                          <li>
+                            <code class="language-json">"hideLegend"</code>: If
+                            set to <code class="language-json">true</code>, no
+                            legend is displayed in the corresponding chart.
+                            This can be useful, for example, to avoid
+                            <span class="code">value</span> legend entries for
+                            individual data series. Example:
+                            <pre><code class="language-json">
+{
+  "macroperc": {
+      "macro1": {
+          [...],
+          "chartOptions": {
+            "hideLegend": true
+          }
+      }
+  }
+}
+</code></pre>
+                          </li>
+                          <li>
+                            <code class="language-json">"heatmapType"</code>:
+                            If set to <code class="language-json">2</code>, an
+                            alternative heatmap renderer will be used that
+                            shows different colors for positive and negative
+                            values. Example:
+                            <pre><code class="language-json">
+{
+  "macroperc": {
+      "macro1": {
+          [...],
+          "chartOptions": {
+            "heatmapType": 2
+          }
+      }
+  }
+}
+</code></pre>
+                          </li>
+                          <li>
                             <code class="language-json">"decimals"</code>:
                             Number of decimal places to be displayed in a
                             chart/table.
@@ -2793,7 +3036,7 @@ firstDayTraining(td)                   = td.pos = 1;
                         </ol>
                       </li>
                     </ol>
-                    <p>Example:</p>
+                    <p><b>Example 1:</b> General configuration</p>
                     <pre><code class="language-json">
 {
   "dataRendering": {
@@ -2848,7 +3091,116 @@ firstDayTraining(td)                   = td.pos = 1;
                         alt="Data view"
                       />
                     </div>
-                    <b>Using custom code in the dashboard</b>
+                    <p id="custom-order">
+                      <b>Example 2:</b> Custom labels, custom labels order,
+                      custom series order
+                    </p>
+                    <p>Imagine the following chart:</p>
+                    <div class="section-block" style="text-align: left">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/dashboard/no_order.png"
+                        alt="Chart without ordered series and labels"
+                      />
+                    </div>
+                    <p>Now three settings are applied:</p>
+                    <ul>
+                      <li>
+                        <code class="language-json">customSeriesOrder</code>:
+                        The series order should be changed from
+                        <span class="code">Manufacturing</span>,
+                        <span class="code">Primary</span>,
+                        <span class="code">Services</span> to
+                        <span class="code">Primary</span>,
+                        <span class="code">Manufacturing</span>,
+                        <span class="code">Services</span>.
+                      </li>
+                      <li>
+                        <code class="language-json">customLabels</code>: Even
+                        though the labels in the model were already relatively
+                        well chosen, they should be slightly adapted here.
+                      </li>
+                      <li>
+                        <code class="language-json">customLabelsOrder</code>:
+                        The order of the labels is adjusted. Note that the
+                        labels that have already been adapted are used. Also
+                        note that labels of the
+                        <span class="code">Services</span> series are not
+                        listed at all. They are therefore placed at the very
+                        end of the order.
+                      </li>
+                    </ul>
+                    <pre><code class="language-json">
+{
+  "dataRendering": {
+    "macrolevel": {
+      "outType": "dashboard",
+      "additionalData": ["qxpc", ...],
+      "options": {
+        [...],
+        "dataViewsConfig": {
+          "production1": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "stackedbar",
+            "rows": "sector",
+            "filter": {
+                "sim_miro": "scenario"
+            },
+            "cols": {
+                "agrp": null
+            },
+            "chartOptions": {
+              "customSeriesOrder": [
+                 "Primary", "Manufacturing", "Services"
+              ],
+              "customLabels": {
+                 "a_Food": "Food",
+                 "a_Machinery": "Machinery",
+                 "a_Metal_mineral_products": "Metal mineral products",
+                 "a_Other_manufacturing": "Other manufacturing",
+                 "a_Petrol_chemicals": "Petrol chemicals",
+                 "a_Textiles": "Textiles",
+                 "a_Vehicles": "Vehicles",
+                 "a_Agriculture": "Agriculture",
+                 "a_Minerals": "Minerals",
+                 "a_Construction": "Construction",
+                 "a_Services": "Services",
+                 "a_Trade_transport_communications": "Trade transport communications",
+                 "a_Utilities": "Utilities"
+              },
+              "customLabelsOrder": [
+                 "Agriculture",
+                 "Minerals",
+                 "Food",
+                 "Machinery",
+                 "Metal mineral products",
+                 "Other manufacturing",
+                 "Petrol chemicals",
+                 "Textiles",
+                 "Vehicles"
+              ]
+            },
+            "data": "qxpc",
+            "userFilter": ["sector", "agrp"],
+            "decimals": 2
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+                    <p>The resulting chart looks like this:</p>
+                    <div class="section-block" style="text-align: left">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/dashboard/order.png"
+                        alt="Chart with ordered series and labels"
+                      />
+                    </div>
+                    <b id="dashboard-custom-code"
+                      >Using custom code in the dashboard</b
+                    >
                     <p>
                       Besides a chart configuration based on a pivot table view
                       in

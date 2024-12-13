@@ -3060,9 +3060,20 @@
             }
           },
           "minProperties": 3
+        },
+        "dashboardComparison": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "selectScen": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 1
         }
       },
-      "minProperties": 4
+      "minProperties": 5
     },
     "progressBar": {
       "description": "language specific objects of progressbars of the UI",

@@ -781,6 +781,9 @@
         "prompt1": "Are you sure you want to remove the column(s):",
         "prompt2": "? This cannot be undone!"
       }
+    },
+    "dashboardComparison":{
+      "selectScen": "Select scenario"
     }
   },
   "progressBar":{

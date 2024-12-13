@@ -548,366 +548,232 @@
           "description": "Configuraiton of the individual charts/tables.",
           "type": "object",
           "additionalProperties": {
-            "oneOf": [
-              {
-                "type": "string"
+            "type": [
+              "object",
+              "string"
+            ],
+            "properties": {
+              "rows": {
+                "description": "Columns in the symbol to prepopulate the rows of the pivot table.",
+                "type": [
+                  "array",
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "uniqueItems": true,
+                "minItems": 0,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "default": null
               },
-              {
+              "cols": {
+                "description": "Columns in the symbol to prepopulate the columns of the pivot table.",
                 "type": "object",
+                "additionalProperties": {
+                  "type": [
+                    "array",
+                    "string",
+                    "null"
+                  ],
+                  "uniqueItems": true
+                }
+              },
+              "aggregations": {
+                "description": "Columns in the symbol to prepopulate the aggregations of the pivot table.",
+                "type": "object",
+                "additionalProperties": {
+                  "type": [
+                    "array",
+                    "string",
+                    "null"
+                  ],
+                  "uniqueItems": true
+                }
+              },
+              "aggregationFunction": {
+                "description": "Function to use for aggregating data.",
+                "type": "string",
+                "enum": [
+                  "sum",
+                  "mean",
+                  "median",
+                  "min",
+                  "max",
+                  "count",
+                  "sd"
+                ]
+              },
+              "filter": {
+                "description": "Columns in the symbol to prepopulate the filter of the pivot table (key) and the element to be filtered by (value).",
+                "type": "object",
+                "additionalProperties": {
+                  "type": [
+                    "array",
+                    "string"
+                  ],
+                  "uniqueItems": true
+                }
+              },
+              "domainFilter": {
+                "description": "Domain filter that will be displayed as tabs and filter a domain by all elements except for the filter value - ignored in dashboard",
+                "type": "object",
+                "additionalProperties": false,
                 "properties": {
-                  "rows": {
-                    "description": "Columns in the symbol to prepopulate the rows of the pivot table.",
+                  "domains": {
+                    "description": "Domains that can be filtered.",
                     "type": [
                       "array",
+                      "string"
+                    ],
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "default": {
+                    "description": "Domain that is filtered on startup. If you want to show all data per default, set showAll to true and default to _none. (optional)",
+                    "type": [
                       "string",
                       "null"
-                    ],
-                    "minLength": 1,
-                    "uniqueItems": true,
-                    "minItems": 0,
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    },
-                    "default": null
+                    ]
                   },
-                  "cols": {
-                    "description": "Columns in the symbol to prepopulate the columns of the pivot table.",
-                    "type": "object",
-                    "additionalProperties": {
-                      "type": [
-                        "array",
-                        "string",
-                        "null"
-                      ],
-                      "uniqueItems": true
-                    }
+                  "filterVal": {
+                    "description": "String (UEL) to filter by (optional)",
+                    "type": "string"
                   },
-                  "aggregations": {
-                    "description": "Columns in the symbol to prepopulate the aggregations of the pivot table.",
-                    "type": "object",
-                    "additionalProperties": {
-                      "type": [
-                        "array",
-                        "string",
-                        "null"
-                      ],
-                      "uniqueItems": true
-                    }
+                  "showAll": {
+                    "description": "Add option to show unfiltered table (default: false).",
+                    "type": "boolean"
+                  }
+                }
+              },
+              "tableSummarySettings": {
+                "description": "Show summary function for rows and columns",
+                "type": "object",
+                "properties": {
+                  "enabled": {
+                    "description": "Enable summary functions (both rows and columns)",
+                    "type": "boolean"
                   },
-                  "aggregationFunction": {
-                    "description": "Function to use for aggregating data.",
+                  "rowEnabled": {
+                    "description": "Enable summary functions (rows)",
+                    "type": "boolean"
+                  },
+                  "rowSummaryFunction": {
+                    "description": "Row summary functions",
                     "type": "string",
                     "enum": [
                       "sum",
-                      "mean",
-                      "median",
-                      "min",
-                      "max",
                       "count",
-                      "sd"
+                      "mean"
                     ]
                   },
-                  "filter": {
-                    "description": "Columns in the symbol to prepopulate the filter of the pivot table (key) and the element to be filtered by (value).",
+                  "colEnabled": {
+                    "description": "Enable summary functions (columns)",
+                    "type": "boolean"
+                  },
+                  "colSummaryFunction": {
+                    "description": "Column summary functions",
+                    "type": "string",
+                    "enum": [
+                      "sum",
+                      "count",
+                      "min",
+                      "max",
+                      "mean",
+                      "median",
+                      "sd"
+                    ]
+                  }
+                }
+              },
+              "pivotRenderer": {
+                "description": "Sepcify the default renderer.",
+                "type": "string",
+                "enum": [
+                  "table",
+                  "heatmap",
+                  "pie",
+                  "doughnut",
+                  "bar",
+                  "horizontalbar",
+                  "stackedbar",
+                  "horizontalstackedbar",
+                  "line",
+                  "scatter",
+                  "area",
+                  "stackedarea",
+                  "radar",
+                  "timeseries"
+                ]
+              },
+              "chartOptions": {
+                "description": "Additional chart options",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "title": {
+                    "description": "Chart title - ignored in dashboard",
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "xTitle": {
+                    "description": "X-axis label",
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "yTitle": {
+                    "description": "Y-axis label",
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "yMin": {
+                    "description": "Lower bound for the Y-axis",
+                    "type": "number",
+                    "minLength": 1
+                  },
+                  "yMax": {
+                    "description": "Upper bound for the Y-axis",
+                    "type": "number",
+                    "minLength": 1
+                  },
+                  "showXGrid": {
+                    "description": "Draw grid on x-axis",
+                    "type": "boolean",
+                    "minLength": 1
+                  },
+                  "showYGrid": {
+                    "description": "Draw grid on y-axis",
+                    "type": "boolean",
+                    "minLength": 1
+                  },
+                  "yLogScale": {
+                    "description": "Use logarithmic scale on y-axis",
+                    "type": "boolean",
+                    "minLength": 1
+                  },
+                  "customChartColors": {
+                    "description": "Custom color for each UEL. Every second color is the hover color of previous one.",
                     "type": "object",
                     "additionalProperties": {
                       "type": [
                         "array",
                         "string"
                       ],
-                      "uniqueItems": true
-                    }
-                  },
-                  "domainFilter": {
-                    "description": "Domain filter that will be displayed as tabs and filter a domain by all elements except for the filter value - ignored in dashboard",
-                    "type": "object",
-                    "additionalProperties": false,
-                    "properties": {
-                      "domains": {
-                        "description": "Domains that can be filtered.",
-                        "type": [
-                          "array",
-                          "string"
-                        ],
-                        "minItems": 1,
-                        "uniqueItems": true,
-                        "items": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        }
-                      },
-                      "default": {
-                        "description": "Domain that is filtered on startup. If you want to show all data per default, set showAll to true and default to _none. (optional)",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "filterVal": {
-                        "description": "String (UEL) to filter by (optional)",
+                      "items": {
                         "type": "string"
-                      },
-                      "showAll": {
-                        "description": "Add option to show unfiltered table (default: false).",
-                        "type": "boolean"
                       }
                     }
                   },
-                  "tableSummarySettings": {
-                    "description": "Show summary function for rows and columns",
-                    "type": "object",
-                    "properties": {
-                      "enabled": {
-                        "description": "Enable summary functions (both rows and columns)",
-                        "type": "boolean"
-                      },
-                      "rowEnabled": {
-                        "description": "Enable summary functions (rows)",
-                        "type": "boolean"
-                      },
-                      "rowSummaryFunction": {
-                        "description": "Row summary functions",
-                        "type": "string",
-                        "enum": [
-                          "sum",
-                          "count",
-                          "mean"
-                        ]
-                      },
-                      "colEnabled": {
-                        "description": "Enable summary functions (columns)",
-                        "type": "boolean"
-                      },
-                      "colSummaryFunction": {
-                        "description": "Column summary functions",
-                        "type": "string",
-                        "enum": [
-                          "sum",
-                          "count",
-                          "min",
-                          "max",
-                          "mean",
-                          "median",
-                          "sd"
-                        ]
-                      }
-                    }
-                  },
-                  "pivotRenderer": {
-                    "description": "Sepcify the default renderer.",
-                    "type": "string",
-                    "enum": [
-                      "table",
-                      "heatmap",
-                      "pie",
-                      "doughnut",
-                      "bar",
-                      "horizontalbar",
-                      "stackedbar",
-                      "horizontalstackedbar",
-                      "line",
-                      "scatter",
-                      "area",
-                      "stackedarea",
-                      "radar",
-                      "timeseries"
-                    ]
-                  },
-                  "chartOptions": {
-                    "description": "Additional chart options",
-                    "type": "object",
-                    "additionalProperties": false,
-                    "properties": {
-                      "title": {
-                        "description": "Chart title - ignored in dashboard",
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "xTitle": {
-                        "description": "X-axis label",
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "yTitle": {
-                        "description": "Y-axis label",
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "yMin": {
-                        "description": "Lower bound for the Y-axis",
-                        "type": "number",
-                        "minLength": 1
-                      },
-                      "yMax": {
-                        "description": "Upper bound for the Y-axis",
-                        "type": "number",
-                        "minLength": 1
-                      },
-                      "showXGrid": {
-                        "description": "Draw grid on x-axis",
-                        "type": "boolean",
-                        "minLength": 1
-                      },
-                      "showYGrid": {
-                        "description": "Draw grid on y-axis",
-                        "type": "boolean",
-                        "minLength": 1
-                      },
-                      "yLogScale": {
-                        "description": "Use logarithmic scale on y-axis",
-                        "type": "boolean",
-                        "minLength": 1
-                      },
-                      "customChartColors": {
-                        "description": "Custom color for each UEL. Every second color is the hover color of previous one.",
-                        "type": "object",
-                        "additionalProperties": {
-                          "type": [
-                            "array",
-                            "string"
-                          ],
-                          "items": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      "multiChartSeries": {
-                        "description": "Mix charting types (e.g. bar and line chart) as part of a view",
-                        "type": [
-                          "string",
-                          "array"
-                        ],
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "customLabels": {
-                        "description": "Custom labels for UELs.",
-                        "additionalProperties": {
-                          "type": "string"
-                        }
-                      },
-                      "showDataMarkers": {
-                        "description": "Whether to draw data points on the chart",
-                        "type": "boolean"
-                      },
-                      "stepPlot": {
-                        "description": "Whether to draw a stepped line chart",
-                        "type": "boolean"
-                      },
-                      "singleStack": {
-                        "description": "Normally, positive and negative values are stacked separately. This setting allows stacking positive and negative values together",
-                        "type": "boolean"
-                      },
-                      "fillOpacity": {
-                        "description": "Fill opacity for stacked and regular area charts.",
-                        "type": "number",
-                        "minLength": 1
-                      },
-                      "multiChartOptions": {
-                        "description": "Options for multiChartSeries",
-                        "type": "object",
-                        "properties": {
-                          "multiChartRenderer": {
-                            "description": "Type of chart to use for multi-chart series",
-                            "type": "string",
-                            "enum": [
-                              "line",
-                              "bar",
-                              "scatter"
-                            ]
-                          },
-                          "stackMultiChartSeries": {
-                            "description": "Whether and how to stack data in multi-chart series",
-                            "type": "string",
-                            "enum": [
-                              "no",
-                              "regularStack",
-                              "individualStack"
-                            ]
-                          },
-                          "multiChartStepPlot": {
-                            "description": "Whether to draw a stepped line chart for multi-chart series",
-                            "type": "boolean"
-                          },
-                          "showMultiChartDataMarkers": {
-                            "description": "Whether to draw data points on multi-chart series",
-                            "type": "boolean"
-                          }
-                        }
-                      },
-                      "y2axis": {
-                        "description": "Options for an optional secondary axis",
-                        "type": "object",
-                        "properties": {
-                          "series": {
-                            "description": "Series to be plotted on the secondary axis",
-                            "type": [
-                              "array",
-                              "string"
-                            ],
-                            "items": {
-                              "type": "string",
-                              "minLength": 1
-                            }
-                          },
-                          "title": {
-                            "description": "Title for the second axis",
-                            "type": "string",
-                            "minLength": 1
-                          },
-                          "min": {
-                            "description": "Lower bound for the second axis",
-                            "type": "number",
-                            "minLength": 1
-                          },
-                          "max": {
-                            "description": "Upper bound for the second axis",
-                            "type": "number",
-                            "minLength": 1
-                          },
-                          "showGrid": {
-                            "description": "Whether to show grid lines for the secondary axis",
-                            "type": "boolean"
-                          },
-                          "logScale": {
-                            "description": "Use logarithmic scale on the secondary axis",
-                            "type": "boolean"
-                          }
-                        },
-                        "required": [
-                          "series"
-                        ]
-                      }
-                    }
-                  },
-                  "singleDropdown": {
-                    "description": "Whether to show filter dimensions as single-choice drop down menus",
-                    "type": [
-                      "array",
-                      "string"
-                    ],
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "chartFontSize": {
-                    "description": "Font size used for charts.",
-                    "type": "integer"
-                  },
-                  "data": {
-                    "description": "Symbol name that the data should come from.",
-                    "type": "string"
-                  },
-                  "decimals": {
-                    "description": "Number of decimal places to be displayed.",
-                    "type": "integer"
-                  },
-                  "userFilter": {
-                    "description": "Adds multi-dropdown menu(s) to a chart/table. Can also be a dataViewsConfig ID.",
+                  "multiChartSeries": {
+                    "description": "Mix charting types (e.g. bar and line chart) as part of a view",
                     "type": [
                       "string",
                       "array"
@@ -916,17 +782,185 @@
                       "type": "string"
                     }
                   },
-                  "colWidth": {
-                    "description": "Specifies the width of the chart. Must be between 1 and 12.",
-                    "type": "integer"
+                  "customLabels": {
+                    "description": "Custom labels for UELs.",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
                   },
-                  "height": {
-                    "description": "Specifies the height of a single chart. Must be any valid css unit, e.g. '40vh' or '450px'.",
-                    "type": "string"
+                  "customLabelsOrder": {
+                    "description": "Custom labels order. Missing labels will be placed at the end.",
+                    "type": [
+                      "array",
+                      "string"
+                    ],
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "minLength": 1
+                  },
+                  "customSeriesOrder": {
+                    "description": "Custom series order. Missing series will be placed at the end.",
+                    "type": [
+                      "array",
+                      "string"
+                    ],
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "minLength": 1
+                  },
+                  "hideLegend": {
+                    "description": "Hide legend in chart.",
+                    "type": "boolean",
+                    "minLength": 1
+                  },
+                  "heatmapType": {
+                    "description": "Type of Heatmap to display.",
+                    "enum": [
+                      1,
+                      2
+                    ]
+                  },
+                  "showDataMarkers": {
+                    "description": "Whether to draw data points on the chart",
+                    "type": "boolean"
+                  },
+                  "stepPlot": {
+                    "description": "Whether to draw a stepped line chart",
+                    "type": "boolean"
+                  },
+                  "singleStack": {
+                    "description": "Normally, positive and negative values are stacked separately. This setting allows stacking positive and negative values together",
+                    "type": "boolean"
+                  },
+                  "fillOpacity": {
+                    "description": "Fill opacity for stacked and regular area charts.",
+                    "type": "number",
+                    "minLength": 1
+                  },
+                  "multiChartOptions": {
+                    "description": "Options for multiChartSeries",
+                    "type": "object",
+                    "properties": {
+                      "multiChartRenderer": {
+                        "description": "Type of chart to use for multi-chart series",
+                        "type": "string",
+                        "enum": [
+                          "line",
+                          "bar",
+                          "scatter"
+                        ]
+                      },
+                      "stackMultiChartSeries": {
+                        "description": "Whether and how to stack data in multi-chart series",
+                        "type": "string",
+                        "enum": [
+                          "no",
+                          "regularStack",
+                          "individualStack"
+                        ]
+                      },
+                      "multiChartStepPlot": {
+                        "description": "Whether to draw a stepped line chart for multi-chart series",
+                        "type": "boolean"
+                      },
+                      "showMultiChartDataMarkers": {
+                        "description": "Whether to draw data points on multi-chart series",
+                        "type": "boolean"
+                      }
+                    }
+                  },
+                  "y2axis": {
+                    "description": "Options for an optional secondary axis",
+                    "type": "object",
+                    "properties": {
+                      "series": {
+                        "description": "Series to be plotted on the secondary axis",
+                        "type": [
+                          "array",
+                          "string"
+                        ],
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "title": {
+                        "description": "Title for the second axis",
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "min": {
+                        "description": "Lower bound for the second axis",
+                        "type": "number",
+                        "minLength": 1
+                      },
+                      "max": {
+                        "description": "Upper bound for the second axis",
+                        "type": "number",
+                        "minLength": 1
+                      },
+                      "showGrid": {
+                        "description": "Whether to show grid lines for the secondary axis",
+                        "type": "boolean"
+                      },
+                      "logScale": {
+                        "description": "Use logarithmic scale on the secondary axis",
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "series"
+                    ]
                   }
                 }
+              },
+              "singleDropdown": {
+                "description": "Whether to show filter dimensions as single-choice drop down menus",
+                "type": [
+                  "array",
+                  "string"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              },
+              "chartFontSize": {
+                "description": "Font size used for charts.",
+                "type": "integer"
+              },
+              "data": {
+                "description": "Symbol name that the data should come from.",
+                "type": "string"
+              },
+              "decimals": {
+                "description": "Number of decimal places to be displayed.",
+                "type": "integer"
+              },
+              "userFilter": {
+                "description": "Adds multi-dropdown menu(s) to a chart/table. Can also be a dataViewsConfig ID.",
+                "type": [
+                  "string",
+                  "array"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              },
+              "colWidth": {
+                "description": "Specifies the width of the chart. Must be between 1 and 12.",
+                "type": "integer"
+              },
+              "height": {
+                "description": "Specifies the height of a single chart. Must be any valid css unit, e.g. '40vh' or '450px'.",
+                "type": "string"
               }
-            ]
+            }
           }
         }
       },
@@ -4217,6 +4251,35 @@
           "description": "Enable rendering of mathematical notation wrapped either between $ (inline) or $$ (block style)",
           "type": "boolean"
         }
+      }
+    },
+    "compareModules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "scenario comparison modules",
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "description": "compare module type",
+            "type": "string",
+            "enum": [
+              "dashboard"
+            ]
+          },
+          "label": {
+            "description": "Label to identify this analysis module",
+            "type": "string",
+            "minLength": 1
+          },
+          "options": {
+            "$ref": "#/definitions/dashboardOptions"
+          }
+        },
+        "required": [
+          "type",
+          "label"
+        ]
       }
     },
     "customCompareModules": {
