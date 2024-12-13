@@ -1185,8 +1185,6 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             }
           }
 
-          chartJsObj <- chartJsObj %>% cjsLegend()
-
           if (length(currentView$chartFontSize)) {
             chartFontSize <- isolate(as.numeric(currentView$chartFontSize))
             chartJsObj$x$options$plugins$tooltip$bodyFont$size <- chartFontSize

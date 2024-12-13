@@ -694,14 +694,31 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
                     uiOutput(ns(paste0(id, "DownloadButtons")))
                   ),
                   if (length(userFilter) && !(length(userFilter) == 1 && userFilter %in% names(dataViewsConfig))) {
+                    singleDropdownFilters <- if (!is.null(dataViewsConfig[[id]]$singleDropdown)) {
+                      dataViewsConfig[[id]]$singleDropdown
+                    } else {
+                      character(0)
+                    }
+
                     filterInputs <- lapply(userFilter, function(filterName) {
+                      userFilterChoices <- attr(dashboardChartData[[id]], paste0("userFilterData_", filterName))
+                      multiple <- if (filterName %in% singleDropdownFilters) {
+                        FALSE
+                      } else {
+                        TRUE
+                      }
+
+                      if (multiple) {
+                        userFilterChoices <- c("All" = "", userFilterChoices)
+                      }
+
                       tags$div(
                         class = "custom-dropdown-wide user-filter",
                         class = if (length(userFilter) %% 2 == 0) "even-inline" else if (length(userFilter) == 1) "one-inline" else "odd-inline",
                         selectizeInput(ns(paste0(id, "userFilter_", filterName)),
                           label = NULL,
-                          choices = c("All" = "", attr(dashboardChartData[[id]], paste0("userFilterData_", filterName))),
-                          multiple = TRUE, width = "100%",
+                          choices = userFilterChoices,
+                          multiple = multiple, width = "100%",
                           options = list(onInitialize = I(paste0("function(value) {
                                          document.querySelector('.selectize-input input[id^=\"", ns(paste0(id, "userFilter_", filterName)), "\"]').setAttribute('readonly', 'readonly');
                                        }")))
@@ -1210,6 +1227,18 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
             stack = if (chartType %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "stack1" else NULL,
             stepped = identical(currentView$chartOptions$stepPlot, TRUE)
           )
+        }
+      }
+
+      if (length(currentView$chartFontSize)) {
+        chartFontSize <- isolate(as.numeric(currentView$chartFontSize))
+        chartJsObj$x$options$plugins$tooltip$bodyFont$size <- chartFontSize
+        chartJsObj$x$options$plugins$tooltip$titleFont$size <- chartFontSize
+        chartJsObj$x$options$plugins$legend$labels$font$size <- chartFontSize
+
+        for (scale in names(chartJsObj$x$scales)) {
+          chartJsObj$x$scales[[scale]]$ticks$font$size <- chartFontSize
+          chartJsObj$x$scales[[scale]]$title$font$size <- chartFontSize
         }
       }
 
