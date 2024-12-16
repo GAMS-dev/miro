@@ -79,7 +79,7 @@ repeat{
 }
 app$click(selector = "#sidebarItemExpanded a[data-value='gamsinter']")
 app$click(selector = "#logFileTabsset a[data-value='mirolog']")
-expect_identical(app$get_js("$('#logStatusContainer')[0].textContent.length == 0"), TRUE)
+expect_identical(app$get_js("$('#logStatusContainer')[0].textContent.trim().length == 0"), TRUE)
 app$click(selector = "#sidebarItemExpanded a[data-value='inputData']")
 app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSolve']")

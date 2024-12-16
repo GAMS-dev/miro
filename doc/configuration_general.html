@@ -598,6 +598,20 @@ putclose;
                     </div>
                   </div>
                   <div class="section-block">
+                    <div id="miro-syntax-stdout" class="section-block">
+                      <h3 class="block-title">
+                        Parse log file for MIRO log syntax
+                      </h3>
+                      <p>
+                        Determine whether the <i>log</i> file shall be parsed
+                        for
+                        <a href="#miro-log-syntax" class="scrollto"
+                          >MIRO log syntax</a
+                        >.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="section-block">
                     <div id="show-lst" class="section-block">
                       <h3 class="block-title">Listing File</h3>
                       <p>
@@ -653,21 +667,11 @@ put  / / 'Transportation Model Results' / / ;
 loop((i,j), put i.tl, @12, j.tl, @24, x.l(i,j):8:4 /);
 </code></pre>
                       <p>
-                        Now we want to integrate it into MIRO. In the
-                        Configuration Mode we specify the name of the report
-                        file in the general settings:
-                      </p>
-                      <div class="section-block">
-                        <img
-                          class="img-fluid"
-                          style="max-height: 125pt"
-                          src="assets/images/configuration_mode/transport_log_config.png"
-                          alt="Configure a custom log file in MIRO"
-                        />
-                      </div>
-                      <p>
-                        The next time the model is solved, this report is
-                        displayed in the GAMS interaction section in MIRO:
+                        To integrate this into MIRO, we open the Configuration
+                        Mode and specify the name of the report file in the
+                        general settings ("Log Files" tab). The next time the
+                        model is solved, the report will be displayed in the
+                        GAMS interaction section within MIRO:
                       </p>
                       <div class="section-block">
                         <img
@@ -685,30 +689,55 @@ loop((i,j), put i.tl, @12, j.tl, @24, x.l(i,j):8:4 /);
                         <div class="content">
                           <b class="callout-title">Note:</b>
                           <p>
-                            Be careful with logs that are not written with
-                            every GAMS run, but only if, for example, a data
-                            test in the model fails. MIRO does not know if a
-                            log belongs to the current or an earlier run. If a
-                            log file was specified, MIRO looks into the working
-                            directory and includes this file after each GAMS
-                            run.
+                            Ensure the custom log file is cleared with each
+                            GAMS run; otherwise, MIRO may display data from a
+                            previous run, as the working directory is reused.
                           </p>
                         </div>
                         <!--//content-->
                       </div>
                       <!--//callout-block-->
-                      <h4>Data validation</h4>
+                      <div class="callout-block callout-warning">
+                        <div class="icon-holder">
+                          <i class="fas fa-info-circle"></i>
+                        </div>
+                        <!--//icon-holder-->
+                        <div class="content">
+                          <b class="callout-title">Note:</b>
+                          <p>
+                            If the
+                            <a href="#miro-syntax-stdout" , class="scrollto"
+                              >Parse log for MIRO log syntax</a
+                            >
+                            option is enabled, only the standard log is parsed
+                            for
+                            <a href="#miro-log-syntax" class="scrollto"
+                              >MIRO log syntax</a
+                            >.
+                          </p>
+                        </div>
+                        <!--//content-->
+                      </div>
+                      <!--//callout-block-->
+                      <h4 id="miro-log-syntax">Data validation</h4>
                       <p>
-                        The MIRO log is particularly suitable for the
-                        validation of input data. Checking the consistency of
-                        input data and providing reports when inconsistencies
-                        are found is a critical factor in avoiding end-user
-                        frustration.
+                        Data validation is a critical component of any
+                        optimization model and plays a key role in ensuring the
+                        accuracy, reliability, and user acceptance of your
+                        application. The log files are particularly suitable
+                        for the validation of input data. Checking the
+                        consistency of input data and providing reports when
+                        inconsistencies are found is a critical factor in
+                        avoiding end-user frustration.
                       </p>
                       <p>
-                        If a certain syntax is followed in the MIRO log, data
-                        found to be invalid can be marked directly above the
-                        respective input data sheet in MIRO:
+                        If the MIRO log (or the standard log, when the
+                        <a href="#miro-syntax-stdout" , class="scrollto"
+                          >Parse log for MIRO log syntax</a
+                        >
+                        option is enabled) follows the specified syntax, any
+                        invalid data can be highlighted directly above the
+                        corresponding input data sheet in MIRO:
                       </p>
                       <div class="section-block" id="input-data-validation">
                         <img
@@ -762,8 +791,8 @@ putclose log;
                         >).
                       </p>
                       <p>
-                        The MIRO log file also displays further information
-                        about the incorrect data if defined accordingly:
+                        The log file also displays further information about
+                        the incorrect data if defined accordingly:
                       </p>
                       <div class="section-block">
                         <img
@@ -1025,6 +1054,11 @@ putclose log;
                   <nav class="doc-sub-menu nav flex-column">
                     <a class="nav-link scrollto save-space" href="#show-log"
                       >Log File</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#miro-syntax-stdout"
+                      >Parse log file for MIRO log syntax</a
                     >
                     <a class="nav-link scrollto save-space" href="#show-lst"
                       >Listing File</a

@@ -1214,6 +1214,17 @@ font-size: 12px;
                         config$activateModules$logFile
                       }
                     ),
+                    conditionalPanel(
+                      condition = "input.general_act_log == true",
+                      checkboxInput_SIMPLE("general_mirologParsingStdout",
+                        labelTooltip(
+                          lang$adminMode$general$mirologStdout,
+                          NULL,
+                          "https://gams.com/miro/configuration_general.html#miro-log-syntax"
+                        ),
+                        value = identical(config$parseLogForMiroLogSyntax, TRUE)
+                      )
+                    ),
                     checkboxInput_SIMPLE("general_act_lst",
                       lang$adminMode$general$actLst$label,
                       value = if (length(configJSON$activateModules$lstFile)) {
@@ -1224,6 +1235,13 @@ font-size: 12px;
                     ),
                     tags$div(
                       class = "option-wrapper info-position",
+                      conditionalPanel(
+                        condition = "input.general_act_log===true && input.general_mirologParsingStdout===true && input.general_mirologfile?.length > 0",
+                        tags$div(
+                          class = "err-msg",
+                          lang$adminMode$general$mirologfile$miroLogExclusiveError
+                        )
+                      ),
                       textInput("general_mirologfile",
                         labelTooltip(
                           lang$adminMode$general$mirologfile$label,

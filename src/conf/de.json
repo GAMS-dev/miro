@@ -1197,8 +1197,10 @@
       },
       "mirologfile":{
         "label": "Benutzerdefinierte Log-Datei einbinden?",
-        "tooltip": "Geben Sie den Namen der Log-Datei ein (mindestens 3 Zeichen). Ansonsten lassen Sie dieses Feld leer."
+        "tooltip": "Geben Sie den Namen der Log-Datei ein (mindestens 3 Zeichen). Ansonsten lassen Sie dieses Feld leer.",
+        "miroLogExclusiveError": "Es kann nur eine Protokolldatei auf die MIRO-Protokollsyntax hin geparst werden. Daher wird nur stdout geparst, das MIRO-Protokoll wird jedoch weiterhin angezeigt."
       },
+      "mirologStdout": "Soll die Standardprotokolldatei (stdout des Prozesses) auf die MIRO-Protokollsyntax hin geparst werden?",
       "readme":{
         "label": "README Datei",
         "readmeTooltip": "Eine README-Datei wird im Eingabebereich als individuelle Startseite angezeigt",

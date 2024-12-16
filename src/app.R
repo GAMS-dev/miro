@@ -1750,7 +1750,6 @@ if (!is.null(errMsg)) {
       isInSolveMode <- TRUE
       modelStatus <- NULL
       modelStatusObs <- NULL
-      miroLogAnnotations <- NULL
 
       dynamicUILoaded <- list(
         inputGraphs = vector("logical", length(modelIn)),
@@ -2104,6 +2103,7 @@ if (!is.null(errMsg)) {
         if (config$activateModules$logFile ||
           config$activateModules$miroLogFile) {
           emptyEl(session, "#logStatusContainer")
+          emptyEl(session, "#miroLogContainer")
         }
         rv$refreshLogs <- NULL
         emptyEl(session, "#modelStatus")
@@ -2353,6 +2353,15 @@ if (!is.null(errMsg)) {
         showEl(session, ".file-export")
         hideEl(session, ".remote-export")
       })
+      if (isTRUE(config$parseLogForMiroLogSyntax)) {
+        initializeMiroLogParser(session, "log", "logStatusContainer", tabSheetMap$input)
+      } else if (config$activateModules$miroLogFile) {
+        if (config$activateModules$logFile) {
+          initializeMiroLogParser(session, "mirolog", "miroLogContainer", tabSheetMap$input)
+        } else {
+          initializeMiroLogParser(session, "log", "logStatusContainer", tabSheetMap$input)
+        }
+      }
       hideEl(session, "#loading-screen")
     }
 
