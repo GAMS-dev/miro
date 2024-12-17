@@ -720,7 +720,7 @@
         "dashDot": "Dash-Dot",
         "dashDotDot": "Dash-Dot-Dot",
         "customPattern": "Custom Pattern",
-        "cbBorderWidth": "Set border width",
+        "cbBorderWidth": "Use custom border width",
         "btCancel": "Cancel",
         "btSave": "Save",
         "btCancelOverwrite": "No",
