@@ -1354,9 +1354,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             customLineDashUI <- lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId) {
               validPatterns <- c("1, 1", "10, 10", "20, 5", "15, 3, 3, 3", "20, 3, 3, 3, 3, 3")
               dashLabel <- miroPivotState$currentSeriesLabels[labelId]
-              if (length(names(viewOptions$chartOptions$lineDash)) &&
-                dashLabel %in% names(viewOptions$chartOptions$lineDash)) {
-                dashPatternIn <- unlist(viewOptions$chartOptions$lineDash[[dashLabel]])
+              if (length(names(viewOptions$chartOptions$customLineDashPatterns)) &&
+                dashLabel %in% names(viewOptions$chartOptions$customLineDashPatterns)) {
+                dashPatternIn <- unlist(viewOptions$chartOptions$customLineDashPatterns[[dashLabel]])
 
                 if (is.numeric(dashPatternIn) && length(dashPatternIn) > 1L) {
                   dashPattern <- paste(round(dashPatternIn), collapse = ", ")
@@ -1394,9 +1394,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             })
             customBorderWidthUI <- lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId) {
               label <- miroPivotState$currentSeriesLabels[labelId]
-              if (length(names(viewOptions$chartOptions$borderWidth)) &&
-                label %in% names(viewOptions$chartOptions$borderWidth)) {
-                borderWidthIn <- round(as.numeric(viewOptions$chartOptions$borderWidth[[label]]))
+              if (length(names(viewOptions$chartOptions$customBorderWidths)) &&
+                label %in% names(viewOptions$chartOptions$customBorderWidths)) {
+                borderWidthIn <- round(as.numeric(viewOptions$chartOptions$customBorderWidths[[label]]))
 
                 if (length(borderWidthIn)) {
                   borderWidth <- borderWidthIn
@@ -1487,28 +1487,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                             class = "col-sm-6",
                             checkboxInput_MIRO(ns("useCustomLineDash"),
                               label = lang$renderers$miroPivot$newView$cbLineDash,
-                              value = length(viewOptions$chartOptions$lineDash) > 0L,
+                              value = length(viewOptions$chartOptions$customLineDashPatterns) > 0L,
                               width = "100%"
-                            )
-                          ),
-                          tags$div(
-                            class = "col-sm-6",
-                            `data-display-if` = "input.useCustomLineDash===true",
-                            `data-ns-prefix` = ns(""),
-                            checkboxInput_MIRO("miroPivotCbCustomLineDashInputs",
-                              tags$span(
-                                lang$renderers$miroPivot$newView$cbManualLineDash,
-                                tags$span(
-                                  `data-tooltip` = lang$renderers$miroPivot$newView$cbManualLineDashTooltip,
-                                  class = "info-wrapper tooltip-mobile",
-                                  tags$span(
-                                    class = "fas fa-circle-info", class = "info-icon",
-                                    role = "presentation",
-                                    `aria-label` = "More information"
-                                  )
-                                )
-                              ),
-                              value = FALSE
                             )
                           )
                         )
@@ -1527,7 +1507,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                             class = "col-sm-6",
                             checkboxInput_MIRO(ns("useCustomBorderWidth"),
                               label = lang$renderers$miroPivot$newView$cbBorderWidth,
-                              value = length(viewOptions$chartOptions$borderWidth) > 0L,
+                              value = length(viewOptions$chartOptions$customBorderWidths) > 0L,
                               width = "100%"
                             )
                           )
@@ -1809,7 +1789,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 )
 
                 dashPatterns <- Filter(Negate(is.null), dashPatterns)
-                newViewConfig$chartOptions[["lineDash"]] <- dashPatterns
+                newViewConfig$chartOptions[["customLineDashPatterns"]] <- dashPatterns
               }
               if (isTRUE(input[["useCustomBorderWidth"]])) {
                 refreshRequired <- TRUE
@@ -1828,7 +1808,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 )
 
                 borderWidths <- Filter(Negate(is.null), borderWidths)
-                newViewConfig$chartOptions[["borderWidth"]] <- borderWidths
+                newViewConfig$chartOptions[["customBorderWidths"]] <- borderWidths
               }
               for (advancedOption in list(
                 list(
@@ -2792,12 +2772,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
 
           lineDash <- NULL
-          if (length(currentView$chartOptions$lineDash) && length(currentView$chartOptions$lineDash[[label]])) {
-            lineDash <- currentView$chartOptions$lineDash[[label]]
+          if (length(currentView$chartOptions$customLineDashPatterns) && length(currentView$chartOptions$customLineDashPatterns[[label]])) {
+            lineDash <- currentView$chartOptions$customLineDashPatterns[[label]]
           }
           borderWidth <- NULL
-          if (length(currentView$chartOptions$borderWidth) && length(currentView$chartOptions$borderWidth[[label]])) {
-            borderWidth <- currentView$chartOptions$borderWidth[[label]]
+          if (length(currentView$chartOptions$customBorderWidths) && length(currentView$chartOptions$customBorderWidths[[label]])) {
+            borderWidth <- currentView$chartOptions$customBorderWidths[[label]]
           }
 
 

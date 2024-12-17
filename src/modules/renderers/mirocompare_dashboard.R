@@ -1156,12 +1156,12 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         }
 
         lineDash <- NULL
-        if (length(currentView$chartOptions$lineDash) && length(currentView$chartOptions$lineDash[[label]])) {
-          lineDash <- currentView$chartOptions$lineDash[[label]]
+        if (length(currentView$chartOptions$customLineDashPatterns) && length(currentView$chartOptions$customLineDashPatterns[[label]])) {
+          lineDash <- currentView$chartOptions$customLineDashPatterns[[label]]
         }
         borderWidth <- NULL
-        if (length(currentView$chartOptions$borderWidth) && length(currentView$chartOptions$borderWidth[[label]])) {
-          borderWidth <- currentView$chartOptions$borderWidth[[label]]
+        if (length(currentView$chartOptions$customBorderWidths) && length(currentView$chartOptions$customBorderWidths[[label]])) {
+          borderWidth <- currentView$chartOptions$customBorderWidths[[label]]
         }
 
         if (originalLabel %in% currentView$chartOptions$multiChartSeries) {

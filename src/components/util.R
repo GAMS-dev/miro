@@ -1973,10 +1973,11 @@ lineDashInput <- function(id, choices, label = NULL, selected = NULL, selectedVa
                 .closest('.line-dash-picker')
                 .find('.line-dash-textinput');
               if (textInput.length > 0) {
-                if (value === 'custom') {
-                  textInput.val('", selectedValue, "').trigger('change');
-                } else {
+                if (value !== 'custom') {
                   textInput.val(value).trigger('change');
+                  textInput.parent().hide();
+                } else {
+                  textInput.parent().show();
                 }
               }
             }"))
@@ -1985,11 +1986,19 @@ lineDashInput <- function(id, choices, label = NULL, selected = NULL, selectedVa
       ),
       column(
         width = 12L,
-        tags$input(
-          id = id, type = "text",
-          class = "form-control line-dash-textinput",
-          style = "margin-bottom:5px;",
-          value = if (selected == "custom") selectedValue else selected
+        tags$div(
+          class = "input-group",
+          style = paste0("margin-bottom:5px;", if (selected != "custom") "display:none;"),
+          tags$input(
+            id = id, type = "text",
+            class = "form-control line-dash-textinput",
+            value = if (selected == "custom") selectedValue else selected
+          ),
+          tags$span(
+            class = "input-group-addon info-icon",
+            title = lang$renderers$miroPivot$newView$cbManualLineDashTooltip,
+            icon("info-circle")
+          )
         )
       )
     )

@@ -753,7 +753,6 @@
         "cbManualColors": "手动输入颜色？",
         "fillOpacity": "填充不透明度",
         "cbLineDash": "使用虚线",
-        "cbManualLineDash": "手动设置虚线样式",
         "cbManualLineDashTooltip": "定义线条和间隔长度的数组",
         "solid": "实线",
         "dotted": "点线",

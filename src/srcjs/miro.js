@@ -389,13 +389,6 @@ $(() => {
       $('.miro-pivot-custom-colors-wrapper .miro-color-picker input').hide();
     }
   });
-  $(document).on('click', '#miroPivotCbCustomLineDashInputs', function () {
-    if (this.checked) {
-      $('.miro-pivot-custom-linedash-wrapper .line-dash-picker input').show();
-    } else {
-      $('.miro-pivot-custom-linedash-wrapper .line-dash-picker input').hide();
-    }
-  });
   $(document).on('click', '.btn-switch-sidebar', function () {
     switchTab(this.dataset.target);
   });

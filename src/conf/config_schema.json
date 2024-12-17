@@ -295,7 +295,7 @@
               "type": "number",
               "minLength": 1
             },
-            "lineDash": {
+            "customLineDashPatterns": {
               "description": "Length and spacing of dashes in line charts.",
               "type": "object",
               "additionalProperties": {
@@ -308,7 +308,7 @@
                 }
               }
             },
-            "borderWidth": {
+            "customBorderWidths": {
               "description": "Border width of a series.",
               "type": "object",
               "additionalProperties": {
@@ -851,7 +851,7 @@
                     "type": "number",
                     "minLength": 1
                   },
-                  "lineDash": {
+                  "customLineDashPatterns": {
                     "description": "Length and spacing of dashes in line charts.",
                     "type": "object",
                     "additionalProperties": {
@@ -864,7 +864,7 @@
                       }
                     }
                   },
-                  "borderWidth": {
+                  "customBorderWidths": {
                     "description": "Border width of a series.",
                     "type": "object",
                     "additionalProperties": {

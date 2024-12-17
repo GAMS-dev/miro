@@ -2783,10 +2783,6 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "cbManualLineDash": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "cbManualLineDashTooltip": {
                   "type": "string",
                   "minLength": 1
@@ -2840,7 +2836,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 52
+              "minProperties": 51
             },
             "dialogAddRow": {
               "type": "object",

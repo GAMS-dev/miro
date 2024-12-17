@@ -753,7 +753,6 @@
         "cbManualColors": "Farben manuell eingeben",
         "fillOpacity": "Deckkraft der Füllung",
         "cbLineDash": "Benutzerdefinierte Linienstrichmuster verwenden",
-        "cbManualLineDash": "Linienstrichmuster manuell eingeben",
         "cbManualLineDashTooltip": "Reihe von Werten, die alternierende Linien- und Lückenlängen definieren",
         "solid": "Durchgezogen",
         "dotted": "Gepunktet",

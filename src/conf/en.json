@@ -712,7 +712,6 @@
         "cbManualColors": "Enter colors manually",
         "fillOpacity": "Fill opacity",
         "cbLineDash": "Use dashed lines",
-        "cbManualLineDash": "Manually set line dash pattern",
         "cbManualLineDashTooltip": "Array of values defining alternating line and gap lengths",
         "solid": "Solid",
         "dotted": "Dotted",
