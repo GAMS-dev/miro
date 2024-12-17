@@ -1351,25 +1351,27 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 )
               )
             })
-            customLineDashUI <- lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId) {
-              validPatterns <- c("1, 1", "10, 10", "20, 5", "15, 3, 3, 3", "20, 3, 3, 3, 3, 3")
-              dashLabel <- miroPivotState$currentSeriesLabels[labelId]
-              if (length(names(viewOptions$chartOptions$customLineDashPatterns)) &&
-                dashLabel %in% names(viewOptions$chartOptions$customLineDashPatterns)) {
-                dashPatternIn <- unlist(viewOptions$chartOptions$customLineDashPatterns[[dashLabel]])
+            customLineDashUI <- {
+              columns <- lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId) {
+                validPatterns <- c("1, 1", "10, 10", "20, 5", "15, 3, 3, 3", "20, 3, 3, 3, 3, 3")
+                dashLabel <- miroPivotState$currentSeriesLabels[labelId]
 
-                if (is.numeric(dashPatternIn) && length(dashPatternIn) > 1L) {
-                  dashPattern <- paste(round(dashPatternIn), collapse = ", ")
-                  dashPatternLabel <- ifelse(dashPattern %in% validPatterns, dashPattern, "custom")
+                if (length(names(viewOptions$chartOptions$customLineDashPatterns)) &&
+                  dashLabel %in% names(viewOptions$chartOptions$customLineDashPatterns)) {
+                  dashPatternIn <- unlist(viewOptions$chartOptions$customLineDashPatterns[[dashLabel]])
+
+                  if (is.numeric(dashPatternIn) && length(dashPatternIn) > 1L) {
+                    dashPattern <- paste(round(dashPatternIn), collapse = ", ")
+                    dashPatternLabel <- ifelse(dashPattern %in% validPatterns, dashPattern, "custom")
+                  } else {
+                    dashPattern <- " "
+                    dashPatternLabel <- dashPattern
+                  }
                 } else {
                   dashPattern <- " "
                   dashPatternLabel <- dashPattern
                 }
-              } else {
-                dashPattern <- " "
-                dashPatternLabel <- dashPattern
-              }
-              tagList(
+
                 tags$div(
                   class = "col-sm-6",
                   lineDashInput(ns(paste0("lineDashPattern_", labelId)),
@@ -1390,8 +1392,15 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                     label = dashLabel
                   )
                 )
+              })
+
+              tagList(
+                lapply(seq(1, length(columns), by = 2), function(i) {
+                  rowColumns <- columns[i:min(i + 1, length(columns))]
+                  tags$div(class = "row miro-pivot-custom-linedash-wrapper", rowColumns)
+                })
               )
-            })
+            }
             customBorderWidthUI <- lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId) {
               label <- miroPivotState$currentSeriesLabels[labelId]
               if (length(names(viewOptions$chartOptions$customBorderWidths)) &&
@@ -1495,10 +1504,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                       },
                       conditionalPanel("input.useCustomLineDash===true",
                         ns = ns,
-                        tags$div(
-                          class = "row miro-pivot-custom-linedash-wrapper",
-                          customLineDashUI
-                        )
+                        customLineDashUI
                       ),
                       if (!pivotRenderer %in% c("pie", "doughnut")) {
                         tags$div(
