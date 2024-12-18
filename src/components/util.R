@@ -1967,7 +1967,7 @@ lineDashInput <- function(id, choices, label = NULL, selected = NULL, selectedVa
           selected = selected,
           width = "100%",
           options = list(
-            onChange = I(paste0("
+            onChange = I("
             function(value) {
               var textInput = $('#' + this.$input[0].id)
                 .closest('.line-dash-picker')
@@ -1980,7 +1980,7 @@ lineDashInput <- function(id, choices, label = NULL, selected = NULL, selectedVa
                   textInput.parent().show();
                 }
               }
-            }"))
+            }")
           )
         )
       ),

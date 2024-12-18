@@ -38,6 +38,7 @@ expect_true(identical(configuration$data$datasets[[2]]$type, "line"))
 expect_true(identical(configuration$data$datasets[[2]]$stepped, TRUE))
 expect_true(identical(configuration$data$datasets[[2]]$stack, "2"))
 expect_true(identical(configuration$data$datasets[[2]]$borderDash, list(10L, 5L)))
+expect_true(identical(configuration$data$datasets[[2]]$borderWidth, 5L))
 expect_true(identical(configuration$type, "bar"))
 
 

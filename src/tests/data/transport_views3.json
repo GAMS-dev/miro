@@ -34,11 +34,14 @@
                     "stackMultiChartSeries": "no",
                     "multiChartStepPlot": true
                 },
-                "lineDash": {
+                "customLineDashPatterns": {
                     "New-york": [
                         10,
                         5
                     ]
+                },
+                "customBorderWidths": {
+                    "New-york": 5
                 },
                 "y2axis": {
                     "series": "Topeka",

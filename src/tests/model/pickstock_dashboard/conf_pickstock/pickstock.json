@@ -345,7 +345,7 @@
                 "dj": "Dow Jones",
                 "index fund": "Index Fund"
               },
-              "lineDash": {
+              "customLineDashPatterns": {
                 "Dow Jones": [10, 5],
                 "Index Fund": [1, 1]
               }

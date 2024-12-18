@@ -1397,7 +1397,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               tagList(
                 lapply(seq(1, length(columns), by = 2), function(i) {
                   rowColumns <- columns[i:min(i + 1, length(columns))]
-                  tags$div(class = "row miro-pivot-custom-linedash-wrapper", rowColumns)
+                  tags$div(class = "row", rowColumns)
                 })
               )
             }
@@ -1485,26 +1485,30 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                       conditionalPanel("input.useCustomChartColors===true",
                         ns = ns,
                         tags$div(
-                          class = "row miro-pivot-custom-colors-wrapper",
+                          class = "row miro-pivot-series-settings-wrapper",
                           customChartColorsUI
                         )
                       ),
-                      if (pivotRenderer %in% c("line", "stackedarea", "area", "radar", "timeseries")) {
+                      tags$div(
+                        `data-display-if` = "['line', 'stackedarea', 'area', 'radar', 'timeseries'].includes(input.pivotRenderer) ||
+                          input.addMultiChartSeries?.length>0 && input.miroPivotMultiChartRenderer==='line'",
+                        `data-ns-prefix` = ns(""),
+                        class = "row",
                         tags$div(
-                          class = "row",
-                          tags$div(
-                            class = "col-sm-6",
-                            checkboxInput_MIRO(ns("useCustomLineDash"),
-                              label = lang$renderers$miroPivot$newView$cbLineDash,
-                              value = length(viewOptions$chartOptions$customLineDashPatterns) > 0L,
-                              width = "100%"
-                            )
+                          class = "col-sm-6",
+                          checkboxInput_MIRO(ns("useCustomLineDash"),
+                            label = lang$renderers$miroPivot$newView$cbLineDash,
+                            value = length(viewOptions$chartOptions$customLineDashPatterns) > 0L,
+                            width = "100%"
                           )
                         )
-                      },
+                      ),
                       conditionalPanel("input.useCustomLineDash===true",
                         ns = ns,
-                        customLineDashUI
+                        tags$div(
+                          class = "row miro-pivot-series-settings-wrapper",
+                          customLineDashUI
+                        )
                       ),
                       if (!pivotRenderer %in% c("pie", "doughnut")) {
                         tags$div(
@@ -1522,7 +1526,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                       conditionalPanel("input.useCustomBorderWidth===true",
                         ns = ns,
                         tags$div(
-                          class = "row miro-pivot-custom-borderwidth-wrapper",
+                          class = "row miro-pivot-series-settings-wrapper",
                           customBorderWidthUI
                         )
                       )
