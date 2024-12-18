@@ -675,6 +675,7 @@
       "placeholder": "搜索..."
     },
     "miroPivot":{
+      "btDownload": "下载",
       "btDownloadCsv": "下载CSV",
       "btDownloadPng": "下载PNG",
       "btDownloadCsvShort": "CSV",

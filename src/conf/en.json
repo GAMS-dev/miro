@@ -634,6 +634,7 @@
         "placeholder": "Search..."
       },
      "miroPivot":{
+      "btDownload": "Download",
       "btDownloadCsv": "Download CSV",
       "btDownloadPng": "Download PNG",
       "btDownloadCsvShort": "CSV",

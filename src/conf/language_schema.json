@@ -2471,6 +2471,10 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "btDownload": {
+              "type": "string",
+              "minLength": 1
+            },
             "btDownloadCsv": {
               "type": "string",
               "minLength": 1
@@ -2979,7 +2983,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 44
+          "minProperties": 45
         },
         "datatable": {
           "type": "object",

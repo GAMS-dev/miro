@@ -675,6 +675,7 @@
       "placeholder": "Suchen..."
     },
     "miroPivot":{
+      "btDownload": "Herunterladen",
       "btDownloadCsv": "CSV herunterladen",
       "btDownloadPng": "PNG herunterladen",
       "btDownloadCsvShort": "CSV",
