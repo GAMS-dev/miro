@@ -27,6 +27,7 @@ data:
       same-site-cookie: Lax
       admin-groups: admins
       container-backend: kubernetes
+      container-wait-time: {{ .Values.proxy.config.containerWaitTimeSeconds }}000
       max-upload-size: {{ .Values.proxy.config.maxUploadSizeMB }}
       force-signed-apps: {{ .Values.proxy.config.forceSignedApps }}
       disable-readonly-mode: {{ .Values.proxy.config.disableReadonlyMode }}
