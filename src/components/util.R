@@ -1901,12 +1901,12 @@ colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE) {
       class = "shiny-input-container miro-color-picker",
       fluidRow(
         class = "color-picker-element",
-        column(
-          width = 10L,
+        tags$div(
+          class = "col-xs-10",
           tags$label(`for` = id, label, style = "font-weight:400;")
         ),
-        column(
-          width = 2L,
+        tags$div(
+          class = "col-xs-2",
           tags$span(
             class = "input-group-addon",
             style = "float: right;",
@@ -1920,8 +1920,8 @@ colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE) {
             ))
           )
         ),
-        column(
-          width = 12L,
+        tags$div(
+          class = "col-xs-12",
           tags$input(
             id = id, type = "text",
             class = "form-control",
@@ -1995,8 +1995,8 @@ lineDashInput <- function(id, choices, label = NULL, selected = NULL, selectedVa
             value = if (selected == "custom") selectedValue else selected
           ),
           tags$span(
-            class = "input-group-addon info-icon",
-            title = lang$renderers$miroPivot$newView$cbManualLineDashTooltip,
+            class = "input-group-addon tooltip-mobile",
+            `data-tooltip` = lang$renderers$miroPivot$newView$cbManualLineDashTooltip,
             icon("info-circle")
           )
         )

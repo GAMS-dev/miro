@@ -1560,7 +1560,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                       conditionalPanel("input.useCustomChartColors===true",
                         ns = ns,
                         tags$div(
-                          class = "row miro-pivot-series-settings-wrapper",
+                          class = "row miro-pivot-series-settings-wrapper miro-pivot-custom-colors-wrapper",
                           customChartColorsUI
                         )
                       ),
@@ -1582,7 +1582,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                         ns = ns,
                         tags$div(
                           class = "row miro-pivot-series-settings-wrapper",
-                          customLineDashUI
+                          tags$div(
+                            class = "col-xs-12",
+                            customLineDashUI
+                          )
                         )
                       ),
                       if (!pivotRenderer %in% c("pie", "doughnut")) {
