@@ -291,39 +291,70 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
           )
         } else {
           tags$div(
-            class = "presentation-hide",
-            tags$a(
-              `data-proxy-id` = ns("downloadCsv"),
-              class = "btn btn-default shiny-download-link btn-custom btn-proxy pivot-btn-custom",
-              style = if (isTRUE(options$hidePivotControls)) "display:none;",
-              href = "#/", tags$div(
-                tags$i(class = "fa fa-file-csv"),
+            class = "presentation-hide custom-order", style = if (isTRUE(options$hidePivotControls)) "display:none;",
+            actionButton(ns("showSettings"),
+              label = tags$div(
+                icon("gear"),
                 tags$div(
                   class = "miro-pivot-btn-text",
-                  lang$renderers$miroPivot$btDownloadCsv
+                  lang$renderers$miroPivot$btShowSettings
                 )
               ),
-              title = lang$renderers$miroPivot$btDownloadCsv
+              title = lang$renderers$miroPivot$btShowSettings,
+              class = "btn-custom pivot-btn-custom"
             ),
-            tags$a(
-              id = ns("downloadPng"),
-              class = "btn btn-default bt-export-canvas btn-custom pivot-btn-custom",
-              download = "chart.png",
-              href = "#",
-              `data-canvasid` = ns("pivotChart"),
-              tags$div(
-                tags$i(class = "fa fa-file-image"),
+            tags$div(
+              class = "btn-group pivot-btn-custom",
+              tags$button(
+                class = "btn btn-default btn-custom dropdown-toggle pivot-dropdown-button",
+                type = "button",
+                `data-toggle` = "dropdown",
+                `aria-haspopup` = "true",
+                `aria-expanded` = "false",
                 tags$div(
-                  class = "miro-pivot-btn-text",
-                  lang$renderers$miroPivot$btDownloadPng
+                  tags$i(class = "fa fa-download"),
+                  tags$div(
+                    class = "miro-pivot-btn-text",
+                    lang$renderers$miroPivot$btDownload
+                  )
                 )
               ),
-              title = lang$renderers$miroPivot$btDownloadPng,
-              style = "display:none;"
+              tags$ul(
+                class = "dropdown-menu",
+                tags$li(
+                  tags$a(
+                    `data-proxy-id` = ns("downloadCsv"),
+                    class = "shiny-download-link btn-proxy",
+                    href = "#/",
+                    tags$div(
+                      tags$i(class = "fa fa-file-csv"),
+                      tags$div(
+                        class = "miro-pivot-dropdown-btn-text",
+                        lang$renderers$miroPivot$btDownloadCsv
+                      )
+                    )
+                  )
+                ),
+                tags$li(
+                  tags$a(
+                    id = ns("downloadPng"),
+                    class = "bt-export-canvas",
+                    download = "chart.png",
+                    href = "#",
+                    `data-canvasid` = ns("pivotChart"),
+                    tags$div(
+                      tags$i(class = "fa fa-file-image"),
+                      tags$div(
+                        class = "miro-pivot-dropdown-btn-text",
+                        lang$renderers$miroPivot$btDownloadPng
+                      )
+                    )
+                  )
+                )
+              )
             ),
             tags$div(
               id = ns("hidePivotControls"), class = "btn btn-default btn-custom pivot-btn-custom activate-pivot-controls",
-              style = if (isTRUE(options$hidePivotControls)) "display:none;",
               tags$div(
                 icon("table"),
                 tags$div(
