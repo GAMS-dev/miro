@@ -651,16 +651,26 @@ $offExternalInput
 {
   "inputWidgets": {
     "price": {
-      "widgetType": "table",
-      "tableType": "pivot",
       "options": {
-        "aggregationFunction": "sum",
-        "pivotRenderer": "table",
-        "enableHideEmptyCols": false,
-        "hideEmptyCols": false,
-        "rows": ["date", "symbol"]
+          "aggregationFunction": "sum",
+          "cols": {
+              "symbol": null
+          },
+          "fixedColumns": true,
+          "hideEmptyCols": true,
+          "hidePivotControls": false,
+          "pivotRenderer": "table",
+          "rows": "date",
+          "tableSummarySettings": {
+              "colEnabled": true,
+              "colSummaryFunction": "max",
+              "rowEnabled": false,
+              "rowSummaryFunction": "sum"
+          }
       },
-      "label": "This table shows the price trend of the 30 DOW Jones stocks"
+      "readonly": false,
+      "tableType": "pivot",
+      "widgetType": "table"
     }
   }
 }

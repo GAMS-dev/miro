@@ -832,29 +832,29 @@ putclose log;
                         can be found
                         <a href="./start.html#scenario-comparison">here</a>).
                         Regardless of the selected option, you can always
-                        switch between split view, tab view and pivot view
-                        within the MIRO application.
+                        switch between split view, tab view, pivot view and any
+                        other configured compare modes within the MIRO
+                        application.
                       </p>
                     </div>
                   </div>
                   <div class="section-block">
-                    <div id="enable-hide-empty-columns" class="section-block">
+                    <div id="pivot-default-options" class="section-block">
                       <h3 class="block-title">
-                        Pivot Compare Mode: Hide Empty Columns
+                        Pivot Compare Mode: Default Options
                       </h3>
                       <p>
-                        If enabled, this option allows to hide empty table
-                        columns of the currently visible data in pivot compare
-                        mode. Read more about this option
-                        <a href="./charts.html#hide-empty-columns">here</a>.
+                        Because the pivot compare mode settings apply globally
+                        rather than to individual symbols, configuring the
+                        default settings differs slightly from
+                        <a href="./charts.html#pivot-default-configuration"
+                          >configuring settings for a specific symbol</a
+                        >. You can define the following global default
+                        settings:
                       </p>
-                    </div>
-                  </div>
-                  <div class="section-block">
-                    <div id="enable-presentation" class="section-block">
-                      <h3 class="block-title">
-                        Pivot Compare Mode: Presentation Mode
-                      </h3>
+                      <h5 id="enable-presentation">
+                        Show presentation mode by default
+                      </h5>
                       <p>
                         This option activates the
                         <a href="./charts.html#presentation-mode"
@@ -879,21 +879,14 @@ putclose log;
                         />
                         .
                       </p>
-                      <div class="section-block" style="cursor: pointer">
-                        <img
-                          class="img-fluid"
-                          src="assets/images/configuration_mode/graphs_miropivot_presentation.png"
-                          alt="Presentation mode"
-                          onclick="window.open(this.src, '_blank');"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div class="section-block">
-                    <div id="fixed-columns" class="section-block">
-                      <h3 class="block-title">
-                        Pivot Compare Mode: Fixed Columns
-                      </h3>
+                      <h5>Show table summary</h5>
+                      <p>
+                        You can choose between several summary functions — such
+                        as sum, count, mean, and more — for both rows and
+                        columns. These summary functions allow you to quickly
+                        calculate key metrics about your table data.
+                      </p>
+                      <h5>Fix table columns to the left</h5>
                       <p>
                         If this option is activated, the columns of the pivot
                         table are fixed to the left side of the table and
@@ -902,6 +895,25 @@ putclose log;
                         (e.g. with many columns), especially on small screens.
                         For this reason, this option is automatically disabled
                         for screens less than 768 pixels wide.
+                      </p>
+                      <h5>Hide empty columns</h5>
+                      <p>
+                        If enabled, this option allows to hide empty table
+                        columns of the currently visible data. Read more about
+                        this option
+                        <a href="./charts.html#hide-empty-columns">here</a>.
+                      </p>
+                      <h5>Font size to use in charts</h5>
+                      <p>
+                        Option to change the font size used in all charts of
+                        the pivot table.
+                      </p>
+                      <h5>UEL, which indicates a missing value</h5>
+                      <p>
+                        Data in a pivot table that indicates a missing value.
+                        This is needed when you want to
+                        <a href="#hide-empty-columns">hide empty columns</a> in
+                        the table.
                       </p>
                     </div>
                   </div>
@@ -1052,18 +1064,8 @@ putclose log;
                     >
                     <a
                       class="nav-link scrollto save-space"
-                      href="#enable-hide-empty-columns"
-                      >Pivot Compare Mode: Hide Empty Columns</a
-                    >
-                    <a
-                      class="nav-link scrollto save-space"
-                      href="#enable-presentation"
-                      >Pivot Compare Mode: Presentation Mode</a
-                    >
-                    <a
-                      class="nav-link scrollto save-space"
-                      href="#fixed-columns"
-                      >Pivot Compare Mode: Fixed Columns</a
+                      href="#pivot-default-options"
+                      >Pivot Compare Mode: Default Options</a
                     >
                   </nav>
                 </nav>
