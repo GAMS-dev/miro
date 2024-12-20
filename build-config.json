@@ -1,1 +1,7 @@
-{ "rVersion": "4.4.1", "opensslVersion": "3.1.6", "curlVersion": "8.8.0", "pqVersion": "16.3", "gamsVersion": "47.1.0" }
+{
+  "rVersion": "4.4.2",
+  "opensslVersion": "3.1.7",
+  "curlVersion": "8.11.1",
+  "pqVersion": "17.2",
+  "gamsVersion": "48.4.0"
+}
