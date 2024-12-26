@@ -574,7 +574,17 @@ server <- function(input, output, session) {
         modelId <- miroAppValidator$getModelId()
         modelName <- miroAppValidator$getModelName()
         appConfig$containerEnv[["MIRO_VERSION_STRING"]] <- miroAppValidator$getMIROVersion()
-        appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0("/home/miro/app/model/", appId, "/", modelName)
+        if (IN_KUBERNETES) {
+          appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0(
+            "/home/miro/mnt/models/",
+            appId, "/", modelName
+          )
+        } else {
+          appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0(
+            "/home/miro/app/model/",
+            appId, "/", modelName
+          )
+        }
 
         if (!identical(appId, newAppId)) {
           stop(sprintf(
