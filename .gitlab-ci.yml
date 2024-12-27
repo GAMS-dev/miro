@@ -870,8 +870,7 @@ test_job_miro_server_k8s:
     DOCKER_HOST: tcp://docker:2376
     FF_NETWORK_PER_BUILD: 'true'
   before_script:
-    - mkdir -p $HOME/.docker
-    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - mkdir kind-logs
   script:
     - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
