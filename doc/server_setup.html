@@ -1249,7 +1249,7 @@ server {
                       instance is running on the same machine as MIRO Server,
                       there are a few things to consider. The following example
                       shows the installation procedure to run MIRO and Engine
-                      on a freshly installed Ubuntu 20.04 server.
+                      on a freshly installed Ubuntu 24.04 server.
                     </p>
                     <h3 class="block-title">Planned configuration</h3>
                     <ul>
@@ -1278,12 +1278,6 @@ server {
                         <a
                           href="https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user"
                           >manage docker as a non-root user</a
-                        >.
-                      </li>
-                      <li>
-                        Install
-                        <a href="https://docs.docker.com/compose/install/"
-                          >Docker Compose</a
                         >.
                       </li>
                       <li>
@@ -1320,11 +1314,8 @@ server {
                         <kbd>gams_engine</kbd> directory.
                       </li>
                       <li>
-                        Run the script <kbd>./up.sh</kbd> with admin
-                        privileges, e.g.
-                        <kbd
-                          >sudo ./up.sh -a test1234 -m engine -p 8095 -w 4</kbd
-                        >.
+                        Run the script <kbd>./up.sh</kbd> e.g.
+                        <kbd>./up.sh -a test1234 -m engine -p 8095 -w 4</kbd>.
                       </li>
                       <ul>
                         <li>
@@ -1375,7 +1366,7 @@ server {
                         Get the IP of the docker0 network interface via:
                         <kbd
                           >sudo ip addr show docker0 |grep -Po 'inet
-                          \K[\d.]+’</kbd
+                          \K[\d.]+'</kbd
                         >.
                       </li>
                       <li>Run <kbd>./miro-server install</kbd>.</li>
