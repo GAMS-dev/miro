@@ -309,6 +309,28 @@
               "type": "number",
               "minLength": 1
             },
+            "customLineDashPatterns": {
+              "description": "Length and spacing of dashes in line charts.",
+              "type": "object",
+              "additionalProperties": {
+                "type": [
+                  "array",
+                  "integer"
+                ],
+                "items": {
+                  "type": "integer"
+                }
+              }
+            },
+            "customBorderWidths": {
+              "description": "Border width of a series.",
+              "type": "object",
+              "additionalProperties": {
+                "type": [
+                  "integer"
+                ]
+              }
+            },
             "multiChartOptions": {
               "description": "Options for multiChartSeries",
               "type": "object",
@@ -842,6 +864,28 @@
                     "description": "Fill opacity for stacked and regular area charts.",
                     "type": "number",
                     "minLength": 1
+                  },
+                  "customLineDashPatterns": {
+                    "description": "Length and spacing of dashes in line charts.",
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": [
+                        "array",
+                        "integer"
+                      ],
+                      "items": {
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "customBorderWidths": {
+                    "description": "Border width of a series.",
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": [
+                        "integer"
+                      ]
+                    }
                   },
                   "multiChartOptions": {
                     "description": "Options for multiChartSeries",

@@ -2471,6 +2471,10 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "btDownload": {
+              "type": "string",
+              "minLength": 1
+            },
             "btDownloadCsv": {
               "type": "string",
               "minLength": 1
@@ -2627,7 +2631,7 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "tabColors": {
+                "tabSeries": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -2759,6 +2763,46 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "cbLineDash": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbManualLineDashTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "solid": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dotted": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dashed": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "wideDashed": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dashDot": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dashDotDot": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "customPattern": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbBorderWidth": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "btCancel": {
                   "type": "string",
                   "minLength": 1
@@ -2776,7 +2820,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 41
+              "minProperties": 51
             },
             "settings": {
               "type": "object",
@@ -2970,7 +3014,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 40
+          "minProperties": 41
         },
         "datatable": {
           "type": "object",
