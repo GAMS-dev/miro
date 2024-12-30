@@ -68,6 +68,8 @@ EOF
     python3 miro_server.py release -f --k8s
     unzip miro_server.zip
 
+    export RUN_K8S_TESTS=true
+
     for K8_VERSION in ${K8S_VERSIONS_TO_TEST//,/ }
       do
           rm -fr mnt
@@ -90,8 +92,10 @@ EOF
           pushd miro_server > /dev/null
             pushd gams-miro-server > /dev/null
                 helm dep up
+                mkdir custom
+              cp "${PWD}/../../tests/data/gams_logo.png" custom
             popd > /dev/null
-            helm install miro-server gams-miro-server/ \
+            helm install test gams-miro-server/ \
                 --set 'global.imagePullSecrets[0]=gitlab' \
                 --set global.imageRegistry=$CI_REGISTRY_IMAGE \
                 --set global.networkPolicy.enabled="$ENABLE_NP" \
@@ -104,7 +108,12 @@ EOF
                 --set db.password=mySuperStrongPassword \
                 --set persistence.local.path=/home/mnt \
                 --set proxy.config.engine.apiUrl=${ENGINE_URL} \
-                --set proxy.config.engine.namespace=${ENGINE_NS}
+                --set proxy.config.engine.namespace=${ENGINE_NS} \
+                --set proxy.config.forceSignedApps.enabled=true \
+                --set proxy.config.logo.enabled=true \
+                --set proxy.config.logo.path="custom/gams_logo.png" \
+                --set proxy.config.security.secureCookies=false \
+                --set-file 'proxy.config.forceSignedApps.acceptedPublicKeysPEM[0]'="${PWD}/../tests/data/signing_key_pub.pem"
           popd > /dev/null
           trap 'cleanup' ERR
           wait_for_pods_ready 180

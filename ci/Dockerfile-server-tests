@@ -11,7 +11,10 @@ RUN apk add --no-cache \
     bash \
     python3 \
     py3-pip \
-    && pip install --no-cache-dir --break-system-packages pytest selenium \
+    && pip install --no-cache-dir --break-system-packages \
+        pytest \
+        selenium \
+        requests \
     && rm -rf /var/cache/apk/*
 
 # Install kind

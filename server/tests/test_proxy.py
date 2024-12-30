@@ -3,16 +3,19 @@ import time
 import unittest
 
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, ElementClickInterceptedException, StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+from .util import get_image_hash, drop_file
 
 # Load environment variables
 ENGINE_USER = os.getenv("ENGINE_USER")
 ENGINE_PASSWORD = os.getenv("ENGINE_PASSWORD")
 UI_URL = os.getenv('MIRO_PROXY_URL', 'http://docker:8080')
 IN_CI = os.getenv('CI', '') != ''
+RUN_K8S_TESTS = os.getenv('RUN_K8S_TESTS', '') != ''
 print(os.getcwd())
 if not ENGINE_USER or not ENGINE_PASSWORD:
     raise EnvironmentError(
@@ -146,6 +149,12 @@ class UITests(unittest.TestCase):
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "form-signin"))
         )
+        if RUN_K8S_TESTS:
+            logo_hash = "7420e77f2fbc70ac06e3f39fa3094860"  # pragma: allowlist secret
+        else:
+            logo_hash = "2421dc42ba681eb41eefe56ab044bb0a"  # pragma: allowlist secret
+        self.assertEqual(get_image_hash(self.driver, ".branding img"), logo_hash,
+                         "Custom logo not visible")
 
         # Step 2: Attempt to sign in with the wrong password
         username_field = self.driver.find_element(By.ID, "username")
@@ -174,6 +183,191 @@ class UITests(unittest.TestCase):
 
         self.login()
 
+    def test_add_app_unsigned(self):
+        # adding app without signature should not work if forceSignedApps is enabled
+        self.login()
+        # open admin panel
+        self.driver.find_element(By.ID, "navAdminPanel").click()
+
+        WebDriverWait(self.driver, 30).until(
+            EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
+        )
+
+        WebDriverWait(self.driver, 30).until(
+            EC.visibility_of_element_located((By.ID, "addAppBox"))
+        )
+
+        wait = WebDriverWait(self.driver, 10)
+        retry_count = 0
+        while True:
+            try:
+                wait.until(
+                    EC.element_to_be_clickable((By.ID, "addApp"))).click()
+                break
+            except (StaleElementReferenceException, ElementClickInterceptedException) as exc:
+                retry_count += 1
+                time.sleep(1)
+                self.assertLessEqual(
+                    retry_count, 10, f"Couldn't click addApp box after 10 tries: {exc}")
+        file_input = wait.until(
+            EC.presence_of_element_located((By.ID, "miroAppFile"))
+        )
+        wait.until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, "label[for='miroAppFile']"))
+        )
+
+        file_input.send_keys(os.path.join(
+            os.getcwd(), "tests", "data", "transport_unsigned.miroapp"))
+        wait.until(
+            EC.text_to_be_present_in_element_value(
+                (By.ID, "newAppName"), "Transport test app")
+        )
+        self.driver.find_element(By.ID, "btAddApp").click()
+        if RUN_K8S_TESTS:
+            wait.until(
+                EC.text_to_be_present_in_element(
+                    (By.CLASS_NAME, "bootbox-body"),
+                    "App is not signed!"
+                )
+            )
+        else:
+            WebDriverWait(self.driver, 30).until(EC.invisibility_of_element(
+                (By.ID, "expandedAddAppWrapper")))
+            wait.until(
+                EC.text_to_be_present_in_element(
+                    (By.ID, "staticAppTitle_1"), "Transport test app")
+            )
+        self.driver.switch_to.default_content()
+
+    def test_add_app_db_migrate(self):
+        # test that database migration works
+        self.login()
+        # open admin panel
+        self.driver.find_element(By.ID, "navAdminPanel").click()
+
+        WebDriverWait(self.driver, 30).until(
+            EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
+        )
+
+        WebDriverWait(self.driver, 30).until(
+            EC.visibility_of_element_located((By.ID, "addAppBox"))
+        )
+
+        wait = WebDriverWait(self.driver, 10)
+        retry_count = 0
+        while True:
+            try:
+                wait.until(
+                    EC.element_to_be_clickable((By.ID, "addApp"))).click()
+                break
+            except (StaleElementReferenceException, ElementClickInterceptedException) as exc:
+                retry_count += 1
+                time.sleep(1)
+                self.assertLessEqual(
+                    retry_count, 10, f"Couldn't click addApp box after 10 tries: {exc}")
+        file_input = wait.until(
+            EC.presence_of_element_located((By.ID, "miroAppFile"))
+        )
+        wait.until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, "label[for='miroAppFile']"))
+        )
+
+        file_input.send_keys(os.path.join(
+            os.getcwd(), "tests", "data", "transport.miroapp"))
+        wait.until(
+            EC.text_to_be_present_in_element_value(
+                (By.ID, "newAppName"), "Transport test app")
+        )
+        self.driver.find_element(By.ID, "btAddApp").click()
+        WebDriverWait(self.driver, 30).until(EC.invisibility_of_element(
+            (By.ID, "expandedAddAppWrapper")))
+        file_input = wait.until(
+            EC.presence_of_element_located(
+                (By.CLASS_NAME, "app-data-file-input")))
+        drop_file(self.driver, file_input, os.path.join(
+            os.getcwd(), "tests", "data", "transport_db_schema.miroapp"))
+        wait.until(
+            EC.text_to_be_present_in_element(
+                (By.CLASS_NAME, "bootbox-body"),
+                "overwrite"
+            )
+        )
+        accept_buttons = self.driver.find_elements(
+            By.CLASS_NAME, "bootbox-accept")
+        visible_accept_button = next(
+            btn for btn in accept_buttons if btn.is_displayed())
+        visible_accept_button.click()
+        WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located(
+            (By.ID, "migrationForm1-btConfirmMigration")))
+        self.driver.execute_script(
+            "$('#migrationForm1-dbMigrateTable_1_7')[0].selectize.addItem('cap');")
+        self.driver.find_element(
+            By.ID, "migrationForm1-btConfirmMigration").click()
+        time.sleep(2)
+        WebDriverWait(self.driver, 30).until(EC.invisibility_of_element(
+            (By.ID, "loadingScreenProgressWrapper")))
+        self.driver.switch_to.default_content()
+        wait.until(EC.element_to_be_clickable(
+            (By.CLASS_NAME, "navbar-brand"))).click()
+        wait.until(
+            EC.visibility_of_element_located((By.CLASS_NAME, "launch-app"))
+        )
+        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app")
+        visible_buttons = [btn for btn in all_buttons if btn.is_displayed()]
+        visible_buttons[0].click()
+        wait.until(
+            EC.visibility_of_element_located((By.ID, "loading"))
+        )
+        WebDriverWait(self.driver, 30).until(EC.frame_to_be_available_and_switch_to_it(
+            (By.ID, "shinyframe")))
+        wait.until(
+            EC.text_to_be_present_in_element(
+                (By.CLASS_NAME, "readme-wrapper"),
+                "A Transportation Problem with multiple version LP/MIP/MINLP"
+            )
+        )
+        retry_count = 0
+        while True:
+            try:
+                self.driver.find_element(
+                    By.CSS_SELECTOR, "a[data-value='outputData']").click()
+                wait.until(
+                    EC.element_to_be_clickable((By.ID, "outputTableView"))).click()
+                break
+            except (StaleElementReferenceException, ElementClickInterceptedException) as exc:
+                retry_count += 1
+                time.sleep(1)
+                self.assertLessEqual(
+                    retry_count, 10, f"Couldn't click addApp box after 10 tries: {exc}")
+        table_container = wait.until(
+            EC.presence_of_element_located((By.ID, "table_tab_1_1-datatable"))
+        )
+        rows = wait.until(
+            EC.presence_of_all_elements_located(
+                (By.CSS_SELECTOR, "#table_tab_1_1-datatable tbody tr"))
+        )
+        headers = table_container.find_elements(
+            By.CSS_SELECTOR, "#table_tab_1_1-datatable thead th")
+        capacity_index = None
+        for idx, header in enumerate(headers):
+            if header.text.lower().strip() == "capacity":
+                capacity_index = idx
+                break
+
+        self.assertIsNotNone(capacity_index, "Capacity column not found.")
+        capacity_values = []
+        for row in rows:
+            cells = row.find_elements(By.CSS_SELECTOR, "td")
+            if len(cells) > capacity_index:
+                capacity_values.append(
+                    int(float(cells[capacity_index].text.strip())))
+        self.assertEqual(capacity_values, [
+                         350, 350, 350, 600, 600, 600],
+                         "Migration of database did not work properly")
+        self.driver.switch_to.default_content()
+
     def test_add_app(self):
         self.login()
         # open admin panel
@@ -188,10 +382,17 @@ class UITests(unittest.TestCase):
         )
 
         wait = WebDriverWait(self.driver, 10)
-        time.sleep(1)
-
-        wait.until(
-            EC.element_to_be_clickable((By.ID, "addApp"))).click()
+        retry_count = 0
+        while True:
+            try:
+                wait.until(
+                    EC.element_to_be_clickable((By.ID, "addApp"))).click()
+                break
+            except (StaleElementReferenceException, ElementClickInterceptedException) as exc:
+                retry_count += 1
+                time.sleep(1)
+                self.assertLessEqual(
+                    retry_count, 10, f"Couldn't click addApp box after 10 tries: {exc}")
         file_input = wait.until(
             EC.presence_of_element_located((By.ID, "miroAppFile"))
         )
