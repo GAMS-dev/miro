@@ -7,7 +7,7 @@ SPDX-License-Identifier: GPL-3.0-only
 kind: NetworkPolicy
 apiVersion: {{ include "common.capabilities.networkPolicy.apiVersion" . }}
 metadata:
-  name: {{ .Release.Name }}-auth-np
+  name: {{ include "common.names.fullname" . }}-auth-np
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
   {{- if .Values.global.commonAnnotations }}
@@ -16,7 +16,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: {{ .Release.Name }}-auth
+      app: {{ include "common.names.fullname" . }}-auth
   policyTypes:
     - Ingress
     - Egress
@@ -33,7 +33,7 @@ spec:
       to:
         - podSelector:
             matchLabels:
-              app: {{ .Release.Name }}-db
+              app: {{ include "common.names.fullname" . }}-db
     # Allow outbound connections to public networks (e.g. Engine)
     {{- if .Values.auth.networkPolicy.allowEgressPublicNetworks }}
     - ports:
@@ -65,7 +65,7 @@ spec:
       from:
         - podSelector:
             matchLabels:
-              app: {{ .Release.Name }}-proxy
+              app: {{ include "common.names.fullname" . }}-proxy
     {{- if .Values.auth.networkPolicy.extraIngress }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.auth.networkPolicy.extraIngress "context" $ ) | nindent 4 }}
     {{- end }}

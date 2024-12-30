@@ -6,7 +6,7 @@ SPDX-License-Identifier: GPL-3.0-only
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-proxy
+  name: {{ include "common.names.fullname" . }}-proxy
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
   {{- if .Values.global.commonAnnotations }}
@@ -15,18 +15,18 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-proxy
+      app: {{ include "common.names.fullname" . }}-proxy
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-proxy
+        app: {{ include "common.names.fullname" . }}-proxy
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/cm-proxy.yaml") . | sha256sum }}
         {{- if .Values.proxy.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.proxy.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccountName: {{ .Release.Name }}-proxy-sa
+      serviceAccountName: {{ include "common.names.fullname" . }}-proxy-sa
       automountServiceAccountToken: true
       {{- if .Values.global.securityContext.enabled }}
       securityContext:
@@ -44,7 +44,7 @@ spec:
       {{- if .Values.global.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.global.tolerations "context" $) | nindent 8 }}
       {{- end }}
-      priorityClassName: {{ .Release.Name }}-system-priority
+      priorityClassName: {{ include "common.names.fullname" . }}-pc-sys
       initContainers:
       - name: init-create-directories
         image: busybox:latest
@@ -102,12 +102,12 @@ spec:
         - name: GMS_MIRO_DATABASE_PWD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-secrets
+              name: {{ include "common.names.fullname" . }}-secrets
               key: db_password
         - name: GMS_MIRO_ENGINE_ANONYMOUS_PWD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-secrets
+              name: {{ include "common.names.fullname" . }}-secrets
               key: engine_anonymous_password
         volumeMounts:
         - name: shared-data
@@ -115,6 +115,21 @@ spec:
         - name: config-volume
           mountPath: /home/miroproxy/application.yml
           subPath: application.yml
+        {{- if .Values.proxy.config.logo.enabled }}
+        - name: customize-volume
+          mountPath: /home/miroproxy/templates/2col/assets/img_default/logo.png
+          subPath: logo.png
+        {{- end }}
+        {{- if .Values.proxy.config.favicon.enabled }}
+        - name: customize-volume
+          mountPath: /home/miroproxy/templates/2col/assets/img_default/favicon.ico
+          subPath: favicon.ico
+        {{- end }}
+        {{- if .Values.proxy.config.customCSS.enabled }}
+        - name: customize-volume
+          mountPath: /home/miroproxy/templates/2col/assets/css/styles.css
+          subPath: custom.css
+        {{- end }}
         {{- if .Values.global.securityContext.enabled }}
         securityContext:
           allowPrivilegeEscalation: false
@@ -126,7 +141,7 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: {{ .Release.Name }}-proxy-config
+            name: {{ include "common.names.fullname" . }}-proxy-cm
         {{- if eq .Values.persistence.type "local" }}
         - name: shared-data
           hostPath:
@@ -135,5 +150,10 @@ spec:
         {{- else if eq .Values.persistence.type "efs" }}
         - name: shared-data
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-efs-pvc
+            claimName: {{ include "common.names.fullname" . }}-efs-pvc
+        {{- end }}
+        {{- if or .Values.proxy.config.logo.enabled .Values.proxy.config.favicon.enabled .Values.proxy.config.customCSS.enabled }}
+        - name: customize-volume
+          secret:
+            secretName: {{ include "common.names.fullname" . }}-logo-scm
         {{- end }}

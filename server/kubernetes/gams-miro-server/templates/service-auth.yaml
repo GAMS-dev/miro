@@ -6,7 +6,7 @@ SPDX-License-Identifier: GPL-3.0-only
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-auth
+  name: {{ include "common.names.fullname" . }}-auth
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
   {{- if .Values.global.commonAnnotations }}
@@ -15,7 +15,7 @@ metadata:
 spec:
   type: {{ .Values.auth.service.type }}
   selector:
-    app: {{ .Release.Name }}-auth
+    app: {{ include "common.names.fullname" . }}-auth
   ports:
     - port: 8081
       targetPort: 8081

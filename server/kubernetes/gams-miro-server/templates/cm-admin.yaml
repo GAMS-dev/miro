@@ -3,20 +3,18 @@ Copyright GAMS Development Corp. All Rights Reserved.
 SPDX-License-Identifier: GPL-3.0-only
 */}}
 
+{{- if and .Values.proxy.config.forceSignedApps.enabled .Values.proxy.config.forceSignedApps.acceptedPublicKeysPEM }}
 apiVersion: v1
-kind: Service
+kind: ConfigMap
 metadata:
-  name: {{ include "common.names.fullname" . }}-db
+  name: {{ include "common.names.fullname" . }}-pk-cm
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
   {{- if .Values.global.commonAnnotations }}
   annotations: {{- include "common.tplvalues.render" (dict "value" .Values.global.commonAnnotations "context" $) | nindent 4 }}
   {{- end }}
-spec:
-  clusterIP: None
-  selector:
-    app: {{ include "common.names.fullname" . }}-db
-  ports:
-    - protocol: TCP
-      port: 5432
-      targetPort: 5432
+data:
+{{- range $index, $key := .Values.proxy.config.forceSignedApps.acceptedPublicKeysPEM }}
+  key-{{$index}}.pem: {{ $key | quote }}
+{{- end }}
+{{- end }}

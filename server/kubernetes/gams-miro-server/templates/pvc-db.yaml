@@ -6,7 +6,7 @@ SPDX-License-Identifier: GPL-3.0-only
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Release.Name }}-db-pvc
+  name: {{ include "common.names.fullname" . }}-db-pvc
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
   {{- if .Values.global.commonAnnotations }}

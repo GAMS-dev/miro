@@ -7,7 +7,7 @@ SPDX-License-Identifier: GPL-3.0-only
 kind: NetworkPolicy
 apiVersion: {{ include "common.capabilities.networkPolicy.apiVersion" . }}
 metadata:
-  name: {{ .Release.Name }}-proxy-np
+  name: {{ include "common.names.fullname" . }}-proxy-np
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
   {{- if .Values.global.commonAnnotations }}
@@ -16,7 +16,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: {{ .Release.Name }}-proxy
+      app: {{ include "common.names.fullname" . }}-proxy
   policyTypes:
     - Ingress
     - Egress
@@ -33,7 +33,7 @@ spec:
       to:
         - podSelector:
             matchLabels:
-              app: {{ .Release.Name }}-auth
+              app: {{ include "common.names.fullname" . }}-auth
     # Allow outbound connections to ui/admin containers
     - ports:
         - port: 3838
@@ -43,8 +43,8 @@ spec:
               - key: miro.gams.com/app-name
                 operator: In
                 values:
-                  - "{{ .Release.Name }}-admin"
-                  - "{{ .Release.Name }}-ui"
+                  - "{{ include "common.names.fullname" . }}-admin"
+                  - "{{ include "common.names.fullname" . }}-ui"
     - ports:
       - protocol: TCP
         port: 443

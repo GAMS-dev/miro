@@ -67,13 +67,35 @@ proxy:
   config:
     title: GAMS MIRO Server
     language: en # en, de or cn
+    colorTheme: default
     maxTotalInstances: -1 # -1 for unlimited
     maxUploadSizeMB: 200
-    forceSignedApps: false
+    forceSignedApps:
+      enabled: false
+      acceptedPublicKeysPEM: []
+    logo:
+      enabled: false # whether to use custom logo (visibile on login page, only PNG supported)
+      path: '' # local path to logo file
+      base64: '' # alternatively, base64-encoded logo
+      # If both path and base64 are specified, base64 is used.
+    favicon:
+      enabled: false # whether to use custom favicon
+      path: '' # local path to favicon file (.ico)
+      base64: '' # alternatively, base64-encoded favicon
+      # If both path and base64 are specified, base64 is used.
+    customCSS:
+      enabled: false # whether to use custom CSS
+      path: '' # local path to CSS file
+      base64: '' # alternatively, base64-encoded CSS
+      # If both path and base64 are specified, base64 is used.
     disableReadonlyMode: false
     anonymousReadonlyMode: false
     containerWaitTimeSeconds: 300
-    authentication: webservice # webservice or openid
+    security:
+      sameSiteCookie: Lax # Lax or Strict. Change this only if you are aware of the consequences
+      xFrameOptionsHeader: sameorigin # sameorigin, disable or allow-from https://example.com
+      secureCookies: true
+    authentication: password # password, openid or none
     openid:
       authUrl: ''
       tokenUrl: ''
@@ -81,6 +103,7 @@ proxy:
       logoutUrl: ''
       clientId: ''
       clientSecret: ''
+      withPKCE: false
     engine:
       apiUrl: ''
       namespace: ''
@@ -142,7 +165,6 @@ miro:
     # (only relevent if global.networkPolicy.enabled is true)
     extraEgress: []
   podAnnotations: {}
-
 
 admin:
   image:

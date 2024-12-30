@@ -6,7 +6,7 @@ SPDX-License-Identifier: GPL-3.0-only
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-auth
+  name: {{ include "common.names.fullname" . }}-auth
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
   {{- if .Values.global.commonAnnotations }}
@@ -15,11 +15,11 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-auth
+      app: {{ include "common.names.fullname" . }}-auth
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-auth
+        app: {{ include "common.names.fullname" . }}-auth
       {{- if .Values.auth.podAnnotations }}
       annotations: {{- include "common.tplvalues.render" (dict "value" .Values.auth.podAnnotations "context" $) | nindent 8 }}
       {{- end }}
@@ -41,7 +41,7 @@ spec:
       {{- if .Values.global.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.global.tolerations "context" $) | nindent 8 }}
       {{- end }}
-      priorityClassName: {{ .Release.Name }}-system-priority
+      priorityClassName: {{ include "common.names.fullname" . }}-pc-sys
       initContainers:
       - name: init-create-directories
         image: busybox:latest
@@ -101,7 +101,7 @@ spec:
         - name: GMS_MIRO_DATABASE_PWD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-secrets
+              name: {{ include "common.names.fullname" . }}-secrets
               key: db_password
         volumeMounts:
         - name: shared-data
@@ -120,7 +120,7 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: {{ .Release.Name }}-proxy-config
+            name: {{ include "common.names.fullname" . }}-proxy-cm
         {{- if eq .Values.persistence.type "local" }}
         - name: shared-data
           hostPath:
@@ -129,5 +129,5 @@ spec:
         {{- else if eq .Values.persistence.type "efs" }}
         - name: shared-data
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-efs-pvc
+            claimName: {{ include "common.names.fullname" . }}-efs-pvc
         {{- end }}

@@ -7,7 +7,7 @@ SPDX-License-Identifier: GPL-3.0-only
 apiVersion: {{ include "common.capabilities.ingress.apiVersion" . }}
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-ingress
+  name: {{ include "common.names.fullname" . }}-ingress
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
   {{- if or .Values.ingress.annotations .Values.global.commonAnnotations }}
@@ -23,14 +23,14 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ .Release.Name }}-proxy
+                name: {{ include "common.names.fullname" . }}-proxy
                 port:
                   number: 8080
           - path: {{ .Values.global.rootPath | trimSuffix "/" }}/api
             pathType: Prefix
             backend:
               service:
-                name: {{ .Release.Name }}-auth
+                name: {{ include "common.names.fullname" . }}-auth
                 port:
                   number: 8081
   {{- if .Values.ingress.className }}

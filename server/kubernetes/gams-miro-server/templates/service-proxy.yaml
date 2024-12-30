@@ -6,7 +6,7 @@ SPDX-License-Identifier: GPL-3.0-only
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-proxy
+  name: {{ include "common.names.fullname" . }}-proxy
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
   {{- if .Values.global.commonAnnotations }}
@@ -15,7 +15,7 @@ metadata:
 spec:
   type: {{ .Values.proxy.service.type }}
   selector:
-    app: {{ .Release.Name }}-proxy
+    app: {{ include "common.names.fullname" . }}-proxy
   ports:
     - port: 8080
       targetPort: 8080

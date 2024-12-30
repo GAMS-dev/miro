@@ -6,7 +6,7 @@ SPDX-License-Identifier: GPL-3.0-only
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-proxy-config
+  name: {{ include "common.names.fullname" . }}-proxy-cm
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
   {{- if .Values.global.commonAnnotations }}
@@ -16,6 +16,7 @@ data:
   application.yml: |-
     proxy:
       title: {{ .Values.proxy.config.title | quote }}
+      theme: {{ .Values.proxy.config.colorTheme | quote }}
       template-path: ./templates/2col
       favicon-path: ./favicon.ico
       model-dir: /home/miroproxy/mnt/models
@@ -24,21 +25,21 @@ data:
       port: 8080
       heartbeat-rate: 10000
       heartbeat-timeout: 120000
-      same-site-cookie: Lax
+      same-site-cookie: {{ .Values.proxy.config.security.sameSiteCookie }}
       admin-groups: admins
       container-backend: kubernetes
       container-wait-time: {{ .Values.proxy.config.containerWaitTimeSeconds }}000
       max-upload-size: {{ .Values.proxy.config.maxUploadSizeMB }}
-      force-signed-apps: {{ .Values.proxy.config.forceSignedApps }}
+      force-signed-apps: {{ .Values.proxy.config.forceSignedApps.enabled }}
       disable-readonly-mode: {{ .Values.proxy.config.disableReadonlyMode }}
       anonymous-readonly-mode: {{ .Values.proxy.config.anonymousReadonlyMode }}
-      authentication: {{ .Values.proxy.config.authentication }}
+      authentication: {{ if eq .Values.proxy.config.authentication "password" }}webservice{{ else }}{{ .Values.proxy.config.authentication }}{{ end }}
       max-total-instances: {{ .Values.proxy.config.maxTotalInstances }}
       {{- if .Values.proxy.config.metrics.enabled }}
       usage-stats-url: micrometer
       {{- end }}
       webservice:
-        authentication-url: http://{{ .Release.Name }}-auth:8081/login
+        authentication-url: http://{{ include "common.names.fullname" . }}-auth:8081/login
       openid:
         auth-url: {{ .Values.proxy.config.openid.authUrl | quote }}
         token-url: {{ .Values.proxy.config.openid.tokenUrl | quote }}
@@ -46,8 +47,9 @@ data:
         logout-url: {{ .Values.proxy.config.openid.logoutUrl | quote }}
         client-id: {{ .Values.proxy.config.openid.clientId | quote }}
         client-secret: {{ .Values.proxy.config.openid.clientSecret | quote }}
+        with-pkce: {{ .Values.proxy.config.openid.withPKCE }}
       database:
-        host: {{ .Release.Name }}-db
+        host: {{ include "common.names.fullname" . }}-db
         port: 5432
         name: {{ .Values.db.name | quote }}
         username: {{ .Values.db.user | quote }}
@@ -78,7 +80,7 @@ data:
               {{- else if eq .Values.persistence.type "efs" }}
                 - name: shared-data
                   persistentVolumeClaim:
-                    claimName: {{ .Release.Name }}-efs-pvc
+                    claimName: {{ include "common.names.fullname" . }}-efs-pvc
               {{- end }}
           - op: add
             path: /spec/containers/0/volumeMounts
@@ -91,7 +93,7 @@ data:
               {{- include "common.tplvalues.render" (dict "value" .Values.miro.resources "context" $) | nindent 14 }}
           - op: add
             path: /spec/priorityClassName
-            value: {{ .Release.Name }}-app-priority
+            value: {{ include "common.names.fullname" . }}-pc-app
           {{- if .Values.miro.podAnnotations }}
           - op: add
             path: /metadata/annotations
@@ -102,7 +104,7 @@ data:
             path: /metadata/labels
             value:
               {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 14 }}
-              miro.gams.com/app-name: "{{ .Release.Name }}-ui"
+              miro.gams.com/app-name: "{{ include "common.names.fullname" . }}-ui"
           {{- if .Values.global.nodeSelector }}
           - op: add
             path: /spec/nodeSelector
@@ -146,20 +148,29 @@ data:
               {{- else if eq .Values.persistence.type "efs" }}
                 - name: shared-data
                   persistentVolumeClaim:
-                    claimName: {{ .Release.Name }}-efs-pvc
+                    claimName: {{ include "common.names.fullname" . }}-efs-pvc
               {{- end }}
+              {{- if and .Values.proxy.config.forceSignedApps.enabled .Values.proxy.config.forceSignedApps.acceptedPublicKeysPEM }}
+                - name: pk-data
+                  configMap:
+                    name: {{ include "common.names.fullname" . }}-pk-cm
+              {{- end}}
           - op: add
             path: /spec/containers/0/volumeMounts
             value:
               - mountPath: /home/miro/admin/mnt
                 name: shared-data
+            {{- if and .Values.proxy.config.forceSignedApps.enabled .Values.proxy.config.forceSignedApps.acceptedPublicKeysPEM }}
+              - mountPath: /home/miro/admin/data/known_keys
+                name: pk-data
+            {{- end}}
           - op: add
             path: /spec/containers/0/resources
             value:
               {{- include "common.tplvalues.render" (dict "value" .Values.admin.resources "context" $) | nindent 14 }}
           - op: add
             path: /spec/priorityClassName
-            value: {{ .Release.Name }}-app-priority
+            value: {{ include "common.names.fullname" . }}-pc-app
           {{- if .Values.admin.podAnnotations }}
           - op: add
             path: /metadata/annotations
@@ -170,7 +181,7 @@ data:
             path: /metadata/labels
             value:
               {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 14 }}
-              miro.gams.com/app-name: "{{ .Release.Name }}-admin"
+              miro.gams.com/app-name: "{{ include "common.names.fullname" . }}-admin"
           {{- if .Values.global.nodeSelector }}
           - op: add
             path: /spec/nodeSelector
@@ -207,8 +218,8 @@ data:
       application.name: {{ .Values.proxy.config.title | quote }}
 
     server:
-      frame-options: sameorigin
-      secure-cookies: false
+      frame-options: {{ .Values.proxy.config.security.xFrameOptionsHeader }}
+      secure-cookies: {{ .Values.proxy.config.security.secureCookies }}
       forward-headers-strategy: native
       servlet:
         session.timeout: 21600
@@ -221,3 +232,26 @@ data:
           export:
             enabled: true
     {{- end }}
+{{- if or .Values.proxy.config.logo.enabled .Values.proxy.config.favicon.enabled .Values.proxy.config.customCSS.enabled }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "common.names.fullname" . }}-logo-scm
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.global.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
+type: Opaque
+data:
+  {{- if .Values.proxy.config.logo.enabled }}
+  logo.png: {{ .Values.proxy.config.logo.base64 | default ( .Files.Get .Values.proxy.config.logo.path | b64enc ) }}
+  {{- end }}
+  {{- if .Values.proxy.config.favicon.enabled }}
+  favicon.ico: {{ .Values.proxy.config.favicon.base64 | default ( .Files.Get .Values.proxy.config.favicon.path | b64enc ) }}
+  {{- end }}
+  {{- if .Values.proxy.config.customCSS.enabled }}
+  custom.css: {{ .Values.proxy.config.customCSS.base64 | default ( .Files.Get .Values.proxy.config.customCSS.path | b64enc ) }}
+  {{- end }}
+{{- end }}

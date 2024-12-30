@@ -8,7 +8,7 @@ apiVersion: v1
 kind: ServiceAccount
 automountServiceAccountToken: false
 metadata:
-  name: {{ .Release.Name }}-proxy-sa
+  name: {{ include "common.names.fullname" . }}-proxy-sa
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
   {{- if .Values.global.commonAnnotations }}
@@ -18,7 +18,7 @@ metadata:
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name }}-proxy-role
+  name: {{ include "common.names.fullname" . }}-proxy-rl
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
   {{- if .Values.global.commonAnnotations }}
@@ -35,7 +35,7 @@ rules:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name }}-proxy-rb
+  name: {{ include "common.names.fullname" . }}-proxy-rb
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
   {{- if .Values.global.commonAnnotations }}
@@ -43,9 +43,9 @@ metadata:
   {{- end }}
 subjects:
   - kind: ServiceAccount
-    name: {{ .Release.Name }}-proxy-sa
+    name: {{ include "common.names.fullname" . }}-proxy-sa
     namespace: {{ .Release.Namespace | quote }}
 roleRef:
   kind: Role
-  name: {{ .Release.Name }}-proxy-role
+  name: {{ include "common.names.fullname" . }}-proxy-rl
   apiGroup: rbac.authorization.k8s.io
