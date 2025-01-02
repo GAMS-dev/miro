@@ -210,8 +210,8 @@ persistence:
 
 ingress:
   enabled: false
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+  annotations: {}
+  className: ''
   tls: false
   tlsSecretName: ''
   hostname: example.com
