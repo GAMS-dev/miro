@@ -769,13 +769,13 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if (length(options$singleDropdown)) options$singleDropdown else NULL
       )
       tableSummarySettings <- reactiveVal(list(
-        rowEnabled = !identical(options$tableSummarySettings$rowEnabled, FALSE),
+        rowEnabled = identical(options$tableSummarySettings$rowEnabled, TRUE),
         rowSummaryFunction = if (length(options$tableSummarySettings$rowSummaryFunction)) {
           options$tableSummarySettings$rowSummaryFunction
         } else {
           "sum"
         },
-        colEnabled = !identical(options$tableSummarySettings$colEnabled, FALSE),
+        colEnabled = identical(options$tableSummarySettings$colEnabled, TRUE),
         colSummaryFunction = if (length(options$tableSummarySettings$colSummaryFunction)) {
           options$tableSummarySettings$colSummaryFunction
         } else {
