@@ -725,7 +725,7 @@ if (is.null(errMsg) && debugMode) {
   rm(listOfCustomRenderers)
 }
 aboutDialogText <- paste0(
-  "<b>", MIROVersionString, "</b><br/><br/>",
+  "<div class=\"text-break\"><b>", MIROVersionString, "</b><br/><br/>",
   "Release Date: ", MIRORDate, "<br/>",
   "Copyright (c) 2024 GAMS Software GmbH &lt;support@gams.com&gt;<br/>",
   "Copyright (c) 2024 GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>",
@@ -740,7 +740,7 @@ aboutDialogText <- paste0(
   "along with this program. If not, see ",
   "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>. ",
   "For more information about third-party software included in MIRO, see ",
-  "<a href=\\'http://www.gams.com/miro/license.html\\' target=\\'_blank\\'>here</a>."
+  "<a href=\\'http://www.gams.com/miro/license.html\\' target=\\'_blank\\'>here</a>.</div>"
 )
 if (miroBuildOnly) {
   if (!is.null(errMsg)) {
