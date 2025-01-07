@@ -6,8 +6,8 @@ mirorenderer_report_outputOutput <- function(id, height = NULL, options = NULL, 
       value = 0, step = 1,
       animate = animationOptions(
         interval = 1000, loop = FALSE,
-        playButton = actionButton("play", "Play", icon = icon("play"), width = "100px", style = "margin-top: 10px; color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-        pauseButton = actionButton("pause", "Pause", icon = icon("pause"), width = "100px", style = "margin-top: 10px; color: #fff; background-color: #337ab7; border-color: #2e6da4")
+        playButton = actionButton("play", "Play", icon = icon("play"), style = "margin-top: 10px;"),
+        pauseButton = actionButton("pause", "Pause", icon = icon("pause"), style = "margin-top: 10px;")
       )
     ),
     # since plotly is a custom package, it is not attached by MIRO to avoid name collisions
