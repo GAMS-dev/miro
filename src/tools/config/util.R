@@ -323,7 +323,7 @@ getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE) {
             tags$input(
               id = paste0(prefix, "externalDefaultView"), class = "form-control must-not-be-empty",
               type = "text",
-              value = if (identical(currentConfig$externalDefaultView, TRUE)) {
+              value = if (length(currentConfig$externalDefaultView)) {
                 currentConfig$externalDefaultView
               } else {
                 ""
@@ -336,7 +336,7 @@ getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE) {
           tags$div(
             id = "miroPivotInfoMsg", class = "config-message shiny-input-container",
             style = "display:block;",
-            HTML(paste0(sprintf(lang$adminMode$graphs$miroPivotOptions$infoMsg, icon("cog"), icon("square-plus")), "."))
+            HTML(paste0(sprintf(htmltools::htmlEscape(lang$adminMode$graphs$miroPivotOptions$infoMsg), icon("cog"), icon("square-plus")), "."))
           )
         )
       )
