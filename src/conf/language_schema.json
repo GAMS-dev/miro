@@ -2471,6 +2471,10 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "btDownload": {
+              "type": "string",
+              "minLength": 1
+            },
             "btDownloadCsv": {
               "type": "string",
               "minLength": 1
@@ -2647,7 +2651,7 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "tabColors": {
+                "tabSeries": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -2779,6 +2783,46 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "cbLineDash": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbManualLineDashTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "solid": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dotted": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dashed": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "wideDashed": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dashDot": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dashDotDot": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "customPattern": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbBorderWidth": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "btCancel": {
                   "type": "string",
                   "minLength": 1
@@ -2796,7 +2840,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 41
+              "minProperties": 51
             },
             "dialogAddRow": {
               "type": "object",
@@ -2939,7 +2983,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 44
+          "minProperties": 45
         },
         "datatable": {
           "type": "object",
@@ -3029,9 +3073,20 @@
             }
           },
           "minProperties": 3
+        },
+        "dashboardComparison": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "selectScen": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 1
         }
       },
-      "minProperties": 4
+      "minProperties": 5
     },
     "progressBar": {
       "description": "language specific objects of progressbars of the UI",

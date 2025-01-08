@@ -1508,6 +1508,10 @@ li.drop-index-item[data-col-hidden="true"] {
   position:relative;
   top:-5px;
 }
+.info-wrapper[data-tooltip]{
+  display: inline-block;
+  line-height: 1;
+}
 .info-header{
   color:inherit;
   position:relative;
@@ -1926,6 +1930,12 @@ li.drop-index-item[data-col-hidden="true"] {
   });
   background-color: unset;
 }
+.pivot-dropdown-button {
+  width: 100%;
+}
+.miro-pivot-dropdown-btn-text {
+  display: inline-block;
+}
 .pivot-btn-custom {
   margin-bottom: 5px;
   width:38.25px;
@@ -1988,7 +1998,8 @@ li.drop-index-item[data-col-hidden="true"] {
   .presentation-show .pivot-btn-custom:nth-child(-n+2){
     margin-right: 1%;
   }
-  .miro-pivot-btn-text {
+  .miro-pivot-btn-text,
+  .miro-pivot-dropdown-btn-text  {
     display: inline-block;
     white-space: normal;
   }
@@ -2580,10 +2591,8 @@ li.drop-index-item[data-col-hidden="true"] {
   height: 100%;
   max-height: 60vh;
 }
-// Color picker
-.miro-pivot-custom-colors-wrapper {
-  max-height: 300px;
-  overflow-y: auto;
+.miro-pivot-series-settings-wrapper {
+  margin-bottom: 15px;
 }
 .miro-color-picker input {
   display: none;
@@ -2602,7 +2611,8 @@ li.drop-index-item[data-col-hidden="true"] {
   overflow: hidden;
   vertical-align: text-top;
 }
-.color-picker-element {
+.color-picker-element,
+.line-dash-element {
   .responsiveDark({
     background: @pivot-presentation-bg;
   },
@@ -2611,6 +2621,20 @@ li.drop-index-item[data-col-hidden="true"] {
   });
   margin: 1px;
   padding: 5px 0 0 0;
+}
+.line-dash-dropdown {
+    min-height: 25px;
+}
+.line-dash-dropdown .selectize-input {
+  min-height: 21px;
+  padding: 1px 5px;
+}
+.line-dash-dropdown .selectize-control.single .selectize-input:after {
+  right: 10px;
+}
+.line-dash-dropdown .form-group,
+.line-dash-dropdown .selectize-control {
+  margin-bottom:0;
 }
 // fullscreen modal (used e.g. for analysis scripts)
 #batchLoadModal {
@@ -2764,9 +2788,6 @@ li.drop-index-item[data-col-hidden="true"] {
 }
 [data-tooltip] {
   cursor: pointer;
-  display: inline-block;
-  line-height: 1;
-  position: relative;
   &::after {
     border-radius: .3rem;
     content: attr(data-tooltip);
@@ -2838,6 +2859,15 @@ li.drop-index-item[data-col-hidden="true"] {
     visibility: visible;
     opacity: 1;
   }
+}
+.input-group-addon[data-tooltip]::after {
+  right: unset;
+  white-space: normal;
+  word-wrap: break-word;
+}
+.input-group-addon.tooltip-mobile::after {
+  position: absolute;
+  transform: translateX(-50%);
 }
 .sidebar-menu .bt-highlight-3,
 .sidebar-menu .bt-highlight-2 {
