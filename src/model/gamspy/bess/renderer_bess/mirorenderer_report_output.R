@@ -78,8 +78,12 @@ renderMirorenderer_report_output <- function(input, output, session, data, optio
       link = list(
         source = sankey_source,
         target = sankey_target,
-        value =  sankey_value
+        value = sankey_value,
+        color = "#bdbdbd"
       )
+    ) %>% plotly::layout(
+      paper_bgcolor = "rgba(0,0,0,0)",
+      plot_bgcolor = "rgba(0,0,0,0)"
     )
   })
 }
