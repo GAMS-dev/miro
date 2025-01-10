@@ -2712,4 +2712,12 @@ if (endsWith(tolower(modelGmsName), ".py")) {
   # lst/trace file not supported with gamspy
   config$activateModules$lstFile <- FALSE
   config$saveTraceFile <- FALSE
+  if (!isTRUE(config$activateModules$miroLogFile) && !isFALSE(config$parseLogForMiroLogSyntax)) {
+    config$parseLogForMiroLogSyntax <- TRUE
+  }
+}
+if (isTRUE(config$activateModules$miroLogFile) && isTRUE(config$parseLogForMiroLogSyntax)) {
+  warningMsgTmp <- "Both 'miroLog' and 'parseLogForMiroLogSyntax' are activated. Only the stdout will be parsed for MIRO log syntax!"
+  warning(warningMsgTmp, call. = FALSE)
+  warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
 }

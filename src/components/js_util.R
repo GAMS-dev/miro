@@ -7,6 +7,19 @@ showLoadingScreen <- function(session, delay) {
 hideLoadingScreen <- function(session) {
   session$sendCustomMessage("gms-hideLoadingScreen", list())
 }
+initializeMiroLogParser <- function(session, logTabId, containerId, tabSheetMap) {
+  inputScalarsTmp <- NULL
+  if (scalarsFileName %in% names(ioConfig$modelIn)) {
+    inputScalarsTmp <- I(ioConfig$modelIn[[scalarsFileName]]$symnames)
+  }
+  session$sendCustomMessage("gms-initializeMiroLogParser", list(
+    logTabId = logTabId,
+    containerId = containerId,
+    tabSheetMap = I(tabSheetMap),
+    inputSymbolNames = I(names(ioConfig$modelIn)),
+    inputScalars = inputScalarsTmp
+  ))
+}
 showElReplaceTxt <- function(session, id, txt) {
   session$sendCustomMessage("gms-showElReplaceTxt", list(id = id, txt = htmltools::htmlEscape(txt)))
 }

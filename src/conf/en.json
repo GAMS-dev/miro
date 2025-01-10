@@ -1206,8 +1206,10 @@
       },
       "mirologfile":{
         "label": "Include custom log file?",
-        "tooltip": "Enter the name of the MIRO log file (minimum 3 characters). Otherwise, leave this field empty."
+        "tooltip": "Enter the name of the MIRO log file (minimum 3 characters). Otherwise, leave this field empty.",
+        "miroLogExclusiveError": "Only one log file can be parsed for MIRO log syntax. Therefore, only stdout will be parsed, but the MIRO log will still be displayed."
       },
+      "mirologStdout": "Should the standard log file (process stdout) be parsed for MIRO log syntax?",
       "readme":{
         "label": "README File",
         "readmeTooltip": "A README file is displayed in the input section as an individual start page",

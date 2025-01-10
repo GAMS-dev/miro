@@ -1205,8 +1205,10 @@
       },
       "mirologfile":{
         "label": "包括自定义日志文件？",
-        "tooltip": "输入MIRO日志文件的名称（最少3个字符）。如果没有MIRO日志文件，请将该字段留空。"
+        "tooltip": "输入MIRO日志文件的名称（最少3个字符）。如果没有MIRO日志文件，请将该字段留空。",
+        "miroLogExclusiveError": "只能解析一个日志文件以匹配MIRO日志语法。因此，仅解析标准输出(stdout)，但MIRO日志仍会显示。"
       },
+      "mirologStdout": "是否应解析标准日志文件（进程的标准输出）以匹配MIRO日志语法？",
       "readme":{
         "label": "README文件",
         "readmeTooltip": "README文件在输入中显示为单独的起始页",

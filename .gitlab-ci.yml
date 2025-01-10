@@ -10,7 +10,6 @@ include:
 image:
   name: $CI_REGISTRY_IMAGE/gamsmiro-ci:latest
 
-
 variables:
   BUILD_LINUX:
     value: 'yes'
@@ -49,19 +48,18 @@ variables:
     value: 'no'
     description: 'Push MIRO Server images to registry.gams.com (tagged as unstable on develop and feature on feature branches) (yes/no)?'
 
-
 .assume_role: &assume_role
-    - >
-      STS=($(aws sts assume-role-with-web-identity
-      --role-arn ${AWS_S3_ROLE_ARN}
-      --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
-      --web-identity-token $ID_TOKEN
-      --duration-seconds 3600
-      --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
-      --output text))
-    - export AWS_ACCESS_KEY_ID="${STS[0]}"
-    - export AWS_SECRET_ACCESS_KEY="${STS[1]}"
-    - export AWS_SESSION_TOKEN="${STS[2]}"
+  - >
+    STS=($(aws sts assume-role-with-web-identity
+    --role-arn ${AWS_S3_ROLE_ARN}
+    --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
+    --web-identity-token $ID_TOKEN
+    --duration-seconds 3600
+    --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
+    --output text))
+  - export AWS_ACCESS_KEY_ID="${STS[0]}"
+  - export AWS_SECRET_ACCESS_KEY="${STS[1]}"
+  - export AWS_SESSION_TOKEN="${STS[2]}"
 
 prepare_all:
   tags:
@@ -101,9 +99,7 @@ build_build_image_linux:
     - docker:20.10-dind
   stage: prepare
   before_script:
-    # this is to be able to pull and push images
-    - mkdir -p $HOME/.docker
-    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - apk update && apk add jq
   script:
     - cd ci/linux
@@ -118,15 +114,12 @@ build_build_image_linux:
           - ci/linux/Dockerfile
         compare_to: develop
 
-
 build_build_image_windows:
   tags:
     - windows-shell
   stage: prepare
   before_script:
-    # this is to be able to pull and push images
-    - New-Item -ItemType Directory -Force -Path %USERPROFILE%/.docker
-    - $env:DOCKER_AUTH_CONFIG > %USERPROFILE%/.docker/config.json
+    - $env:CI_REGISTRY_PASSWORD | docker login $env:CI_REGISTRY -u $env:CI_REGISTRY_USER --password-stdin
   script:
     - $buildConfig=Get-Content build-config.json | ConvertFrom-Json
     - $rVersion=$buildConfig.rVersion
@@ -145,15 +138,15 @@ build_build_image_windows:
 
 lint_job:
   tags:
-   - linux
+    - linux
   stage: test
   before_script:
     - mkdir -p $R_CACHE_ROOTPATH
     - git config --global --add safe.directory "$CI_PROJECT_DIR"
     - yarn install
   script:
-   - pre-commit run --all-files
-   - ./scripts/fix_copyright.sh
+    - pre-commit run --all-files
+    - ./scripts/fix_copyright.sh
   variables:
     PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
     R_CACHE_ROOTPATH: ${PRE_COMMIT_HOME}/R.cache
@@ -179,15 +172,13 @@ build_linux_job:
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_VERIFY: 1
-    DOCKER_TLS_CERTDIR: "/certs"
-    DOCKER_CERT_PATH: "/certs/client"
+    DOCKER_TLS_CERTDIR: '/certs'
+    DOCKER_CERT_PATH: '/certs/client'
     DOCKER_HOST: tcp://docker:2376
     GIT_SUBMODULE_STRATEGY: normal
     NODE_OPTIONS: --openssl-legacy-provider
   before_script:
-    # this is to be able to pull and push images
-    - mkdir -p $HOME/.docker
-    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - yarn install
   script:
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_LINUX" == "no" ]] && [[ "$BUILD_CI" == "no" ]] && [[ "$PUSH_UNSTABLE_SERVER_IMAGES" == "no" ]] && echo "Skipping Linux build" && exit 0'
@@ -247,10 +238,9 @@ build_linux_job:
     - when: on_success
   needs: [prepare_all]
 
-
 dependency_scanning_js:
   tags:
-   - linux
+    - linux
   stage: test
   script:
     - echo -n '{"launcher":' > npm-audit-report.json
@@ -258,15 +248,15 @@ dependency_scanning_js:
     - npm audit --omit=dev --json | tr -d '\n' >> npm-audit-report.json || true
     - echo -n ',"ui":' >> npm-audit-report.json
     - |
-        pushd src
-          npm audit --omit=dev --json | tr -d '\n' >> ../npm-audit-report.json || true
-        popd
+      pushd src
+        npm audit --omit=dev --json | tr -d '\n' >> ../npm-audit-report.json || true
+      popd
     - echo -n ',"server_admin":' >> npm-audit-report.json
     - |
-        pushd server/admin
-          npm i --package-lock-only --ignore-scripts
-          npm audit --omit=dev --json | tr -d '\n' >> ../../npm-audit-report.json || true
-        popd
+      pushd server/admin
+        npm i --package-lock-only --ignore-scripts
+        npm audit --omit=dev --json | tr -d '\n' >> ../../npm-audit-report.json || true
+      popd
     - echo -n '}' >> npm-audit-report.json
   artifacts:
     paths:
@@ -278,10 +268,9 @@ dependency_scanning_js:
       when: never
     - when: on_success
 
-
 dependency_scanning_r:
   tags:
-   - linux
+    - linux
   stage: test
   script:
     - Rscript scripts/checkVuln.R
@@ -294,7 +283,6 @@ dependency_scanning_r:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
       when: never
     - when: on_success
-
 
 dependency_scanning_python:
   tags:
@@ -313,14 +301,13 @@ dependency_scanning_python:
       when: never
     - when: on_success
 
-
 container_scanning:
   tags:
     - linux
   variables:
-    CS_DOCKERFILE_PATH: "server/ui/Dockerfile"
-    GIT_STRATEGY: "fetch"
-    CS_IGNORE_UNFIXED: "true"
+    CS_DOCKERFILE_PATH: 'server/ui/Dockerfile'
+    GIT_STRATEGY: 'fetch'
+    CS_IGNORE_UNFIXED: 'true'
   before_script:
     - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]) && IMAGE_TAG=unstable
     - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-ui:$IMAGE_TAG
@@ -336,13 +323,12 @@ container_scanning:
       when: never
     - when: on_success
 
-
 container_scanning_admin:
   extends: container_scanning
   variables:
-    CS_DOCKERFILE_PATH: "server/admin/Dockerfile"
-    GIT_STRATEGY: "fetch"
-    CS_IGNORE_UNFIXED: "true"
+    CS_DOCKERFILE_PATH: 'server/admin/Dockerfile'
+    GIT_STRATEGY: 'fetch'
+    CS_IGNORE_UNFIXED: 'true'
   before_script:
     - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]) && IMAGE_TAG=unstable
     - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-admin:$IMAGE_TAG
@@ -358,13 +344,12 @@ container_scanning_admin:
       when: never
     - when: on_success
 
-
 container_scanning_auth:
   extends: container_scanning
   variables:
-    CS_DOCKERFILE_PATH: "server/auth/Dockerfile"
-    GIT_STRATEGY: "fetch"
-    CS_IGNORE_UNFIXED: "true"
+    CS_DOCKERFILE_PATH: 'server/auth/Dockerfile'
+    GIT_STRATEGY: 'fetch'
+    CS_IGNORE_UNFIXED: 'true'
   before_script:
     - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]) && IMAGE_TAG=unstable
     - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-auth:$IMAGE_TAG
@@ -380,12 +365,11 @@ container_scanning_auth:
       when: never
     - when: on_success
 
-
 container_scanning_proxy:
   extends: container_scanning
   variables:
-    CS_DOCKERFILE_PATH: "server/proxy/Dockerfile"
-    GIT_STRATEGY: "fetch"
+    CS_DOCKERFILE_PATH: 'server/proxy/Dockerfile'
+    GIT_STRATEGY: 'fetch'
   before_script:
     - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]) && IMAGE_TAG=unstable
     - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-proxy:$IMAGE_TAG
@@ -401,12 +385,11 @@ container_scanning_proxy:
       when: never
     - when: on_success
 
-
 container_scanning_sproxy:
   extends: container_scanning
   variables:
-    CS_DOCKERFILE_PATH: "server/docker-socket-proxy/Dockerfile"
-    GIT_STRATEGY: "fetch"
+    CS_DOCKERFILE_PATH: 'server/docker-socket-proxy/Dockerfile'
+    GIT_STRATEGY: 'fetch'
   before_script:
     - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]) && IMAGE_TAG=unstable
     - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-sproxy:$IMAGE_TAG
@@ -422,11 +405,10 @@ container_scanning_sproxy:
       when: never
     - when: on_success
 
-
 container_scanning_db:
   extends: container_scanning
   variables:
-    CS_IMAGE: "postgres:16.1-alpine"
+    CS_IMAGE: 'postgres:16.1-alpine'
   after_script:
     - cp gl-container-scanning-report.json gl-container-scanning-report-db.json
   artifacts:
@@ -438,7 +420,6 @@ container_scanning_db:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
       when: never
     - when: on_success
-
 
 create_vulnerability_report:
   tags:
@@ -464,7 +445,6 @@ create_vulnerability_report:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
       when: never
     - when: on_success
-
 
 build_windows_job:
   tags:
@@ -511,7 +491,6 @@ build_windows_job:
     - when: on_success
   needs: [prepare_all]
 
-
 build_macos_job:
   tags:
     - macos
@@ -556,7 +535,6 @@ build_macos_job:
       when: never
     - when: on_success
   needs: [prepare_all]
-
 
 build_macos_arm_job:
   tags:
@@ -604,7 +582,6 @@ build_macos_arm_job:
     - when: on_success
   needs: [prepare_all]
 
-
 test_windows_job:
   tags:
     - windows
@@ -649,7 +626,6 @@ test_windows_job:
       when: never
     - when: on_success
   needs: [build_windows_job]
-
 
 test_macos_job:
   tags:
@@ -697,7 +673,6 @@ test_macos_job:
     - when: on_success
   needs: [build_macos_job]
 
-
 test_macos_arm_job:
   tags:
     - macos-arm64
@@ -744,7 +719,6 @@ test_macos_arm_job:
     - when: on_success
   needs: [build_macos_arm_job]
 
-
 test_job_api:
   tags:
     - linux
@@ -756,8 +730,8 @@ test_job_api:
       alias: postgres
   variables:
     DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: "/certs"
-    FF_NETWORK_PER_BUILD: "true"
+    DOCKER_TLS_CERTDIR: '/certs'
+    FF_NETWORK_PER_BUILD: 'true'
     GMS_MIRO_DATABASE_HOST: postgres
     GMS_MIRO_DATABASE: miroapitests
     GMS_MIRO_DATABASE_USER: mirotests
@@ -767,9 +741,7 @@ test_job_api:
     POSTGRES_PASSWORD: $GMS_MIRO_DATABASE_PWD
     POSTGRES_HOST_AUTH_METHOD: trust
   before_script:
-    # this is to be able to pull and push images
-    - mkdir -p $HOME/.docker
-    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
   script:
     - docker pull ${CI_REGISTRY_IMAGE}/miro-auth-test:unstable && docker tag ${CI_REGISTRY_IMAGE}/miro-auth-test:unstable miro-auth-test || exit 1
     - ./test/run-api-tests.sh
@@ -817,7 +789,6 @@ test_job:
       when: manual
     - if: $CI_MERGE_REQUEST_ID
 
-
 test_job_gamspy:
   tags:
     - linux
@@ -834,7 +805,6 @@ test_job_gamspy:
       when: manual
     - if: $CI_MERGE_REQUEST_ID
 
-
 test_job_miro_server:
   tags:
     - linux
@@ -848,14 +818,12 @@ test_job_miro_server:
     MIRO_PROXY_URL: http://docker:8080
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_VERIFY: 1
-    DOCKER_TLS_CERTDIR: "/certs"
-    DOCKER_CERT_PATH: "/certs/client"
+    DOCKER_TLS_CERTDIR: '/certs'
+    DOCKER_CERT_PATH: '/certs/client'
     DOCKER_HOST: tcp://docker:2376
-    FF_NETWORK_PER_BUILD: "true"
+    FF_NETWORK_PER_BUILD: 'true'
   before_script:
-    # this is to be able to pull and push images
-    - mkdir -p $HOME/.docker
-    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
   script:
     - ./scripts/test_miro_server.sh
   artifacts:
@@ -869,16 +837,14 @@ test_job_miro_server:
       when: manual
     - if: $CI_MERGE_REQUEST_ID
 
-
-
 upload_cloudfront:
   tags:
     - linux
   stage: deploy
   image: $CI_REGISTRY_IMAGE/builder-linux:latest
   id_tokens:
-      ID_TOKEN:
-        aud: ${S3_OIDC_AUD}
+    ID_TOKEN:
+      aud: ${S3_OIDC_AUD}
   script:
     - *assume_role
     - echo "MIRO_SHA_HASH_WIN=`sha256sum dist/*.exe |cut -d ' ' -f1`" > .hashes.txt
@@ -904,13 +870,12 @@ upload_dockerhub:
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_VERIFY: 1
-    DOCKER_TLS_CERTDIR: "/certs"
-    DOCKER_CERT_PATH: "/certs/client"
+    DOCKER_TLS_CERTDIR: '/certs'
+    DOCKER_CERT_PATH: '/certs/client'
     DOCKER_HOST: tcp://docker:2376
   before_script:
-    # this is to be able to pull and push images
-    - mkdir -p $HOME/.docker
-    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+    - echo "$DOCKERHUB_PASS" | docker login -u $DOCKERHUB_USER --password-stdin
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
   script:
     - echo -e "\e[0Ksection_start:`date +%s`:download_image_section[collapsed=true]\r\e[0KDownloading images section"
     - cd server && python3 miro_server.py download ${CI_REGISTRY_IMAGE} && cd ..
@@ -930,12 +895,11 @@ update_doc_job_release:
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_VERIFY: 1
-    DOCKER_TLS_CERTDIR: "/certs"
-    DOCKER_CERT_PATH: "/certs/client"
+    DOCKER_TLS_CERTDIR: '/certs'
+    DOCKER_CERT_PATH: '/certs/client'
     DOCKER_HOST: tcp://docker:2376
   before_script:
-    - mkdir -p $HOME/.docker
-    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - git config --global user.email "puma@noreply.gams.com"
     - git config --global user.name "Gitlab Runner (puma)"
     - mkdir -p ~/.ssh

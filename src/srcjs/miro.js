@@ -4,34 +4,54 @@ import 'core-js/stable';
 import AutoNumeric from 'autonumeric';
 
 import {
-  sleep, changeActiveButtons, switchTabInTabset, removeModal,
-  switchTab, isInputEl, rerenderDygraph, rerenderHot, showHideEl, scrollDown,
-  changeTheme, LoadingScreen, colorPickerBinding, getActualHeight,
+  sleep,
+  changeActiveButtons,
+  switchTabInTabset,
+  removeModal,
+  switchTab,
+  isInputEl,
+  rerenderDygraph,
+  rerenderHot,
+  showHideEl,
+  scrollDown,
+  changeTheme,
+  LoadingScreen,
+  colorPickerBinding,
+  getActualHeight,
 } from './util';
 
 import ShortcutManager from './shortcut_manager';
+import MiroLogParser from './miro_log_parser';
 
 import {
-  activateMiroPivotPresentation, deactivateMiroPivotPresentation,
+  activateMiroPivotPresentation,
+  deactivateMiroPivotPresentation,
   activateMiroPivotPresentationObservers,
 } from './miro_pivot';
 
 const loadingScreen = new LoadingScreen();
+const miroLogParser = new MiroLogParser();
 
 export function changeTab(object, idActive, idRefer) {
   const tabPane = object.closest('.tabbable');
   tabPane.find(`li:nth-of-type(${idActive})`).removeClass();
   tabPane.find(`li:nth-of-type(${idRefer})`).addClass('active');
-  tabPane.find(`.tab-content div:nth-child(${idActive})`).removeClass('active');
+  tabPane
+    .find(`.tab-content div:nth-child(${idActive})`)
+    .removeClass('active');
   tabPane.find(`.tab-content div:nth-child(${idRefer})`).addClass('active');
 }
 
 export function slideToggleEl(data) {
   if (data.toggleIconDiv !== undefined) {
     if ($(data.id).is(':visible')) {
-      $(data.toggleIconDiv).html('<i class="fa fa-plus" role="presentation" aria-label="More options"></i>');
+      $(data.toggleIconDiv).html(
+        '<i class="fa fa-plus" role="presentation" aria-label="More options"></i>',
+      );
     } else {
-      $(data.toggleIconDiv).html('<i class="fa fa-minus" role="presentation" aria-label="Less options"></i>');
+      $(data.toggleIconDiv).html(
+        '<i class="fa fa-minus" role="presentation" aria-label="Less options"></i>',
+      );
     }
   }
   let duration = 400;
@@ -86,7 +106,10 @@ export function showJobsDialog() {
 }
 
 export function validateSname(el, inputID = 'btCheckSnameLocalConfirm') {
-  if (/^[a-f0-9]{64}$/i.test($(el).val()) !== true && /^\s*$/.test($(el).val()) !== true) {
+  if (
+    /^[a-f0-9]{64}$/i.test($(el).val()) !== true
+    && /^\s*$/.test($(el).val()) !== true
+  ) {
     $(el).removeClass('invalidInput');
     if (inputID === 'internal') {
       return true;
@@ -109,14 +132,18 @@ export function sendSelectedRowsRequest(
   const data = [];
 
   $(`#${tableId} tr.selected`).each(function () {
-    data.push($(this).children('td')
-      .map((i, el) => {
-        const { val } = el.dataset;
-        if (val != null && val !== '') {
-          return atob(val);
-        }
-        return el.innerText;
-      }).get());
+    data.push(
+      $(this)
+        .children('td')
+        .map((i, el) => {
+          const { val } = el.dataset;
+          if (val != null && val !== '') {
+            return atob(val);
+          }
+          return el.innerText;
+        })
+        .get(),
+    );
   });
   if (noneSelectedErrorId && data.length === 0) {
     showHideEl(`#${noneSelectedErrorId}`, 4000);
@@ -139,17 +166,6 @@ export function selectNoRow(tableId) {
   $(`#${tableId} tbody tr`).removeClass('selected');
 }
 
-export async function jumpToLogMark(id) {
-  switchTab('gamsinter');
-  $('#logFileTabsset [data-value="mirolog"]').tab('show');
-  await sleep(200);
-  const el = $(`#mlogMark_${id}`);
-  if (el !== undefined) {
-    el[0].scrollIntoView();
-    el.fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
-  }
-}
-
 export function resetDropdownFilter(that) {
   const dropdown = $(that).parent().children('ul');
   const filter = dropdown.children('input')[0];
@@ -162,13 +178,15 @@ export function resetDropdownFilter(that) {
 
 export function filterMiroDropdown(that) {
   const filterTxt = that.value.toLowerCase();
-  $(that).siblings('li').each(function () {
-    if (this.children[0].textContent.toLowerCase().indexOf(filterTxt) > -1) {
-      this.style.display = '';
-    } else {
-      this.style.display = 'none';
-    }
-  });
+  $(that)
+    .siblings('li')
+    .each(function () {
+      if (this.children[0].textContent.toLowerCase().indexOf(filterTxt) > -1) {
+        this.style.display = '';
+      } else {
+        this.style.display = 'none';
+      }
+    });
 }
 
 export function modal(
@@ -185,11 +203,14 @@ export function modal(
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-body">
-         ${value == null ? `<label>${msg}</label>`
+         ${
+  value == null
+    ? `<label>${msg}</label>`
     : `<div class="form-group shiny-input-container">
             <label class="control-label" for="miroPromptInput">${msg}</label>
             <input id="miroPromptInput" type="text" class="form-control" value="${value}"/>
-          </div>`}
+          </div>`
+}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">${cancelButton}</button>
@@ -210,10 +231,12 @@ export function modal(
     });
   } else {
     $(document).on('click', '#miroModalConfirmButton', () => {
-      if (callback(
-        document.getElementById('miroPromptInput').value,
-        ...callbackArgs,
-      ) !== false) {
+      if (
+        callback(
+          document.getElementById('miroPromptInput').value,
+          ...callbackArgs,
+        ) !== false
+      ) {
         $('#shiny-modal').modal('hide');
       }
     });
@@ -223,11 +246,14 @@ export function modal(
 export function parseKatex(element) {
   renderMathInElement(element, {
     throwOnError: false,
-    delimiters: [{
-      left: '$$',
-      right: '$$',
-      display: true,
-    }, { left: '$', right: '$', display: false }],
+    delimiters: [
+      {
+        left: '$$',
+        right: '$$',
+        display: true,
+      },
+      { left: '$', right: '$', display: false },
+    ],
   });
 }
 
@@ -237,16 +263,35 @@ $(document).on('keyup', (event) => {
 });
 
 $(() => {
-  if (typeof window.matchMedia('(prefers-color-scheme: dark)').addEventListener !== 'undefined') {
+  if (
+    typeof window.matchMedia('(prefers-color-scheme: dark)')
+      .addEventListener !== 'undefined'
+  ) {
     // browser supports listening to matchMedia change
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-      changeTheme(e.matches);
-    });
+    window
+      .matchMedia('(prefers-color-scheme: dark)')
+      .addEventListener('change', (e) => {
+        changeTheme(e.matches);
+      });
   }
   $(document).on('click', '.toggle-label-height', function () {
     const $this = $(this);
-    $this.children('.fa').toggleClass('fa-circle-chevron-down fa-circle-chevron-up');
+    $this
+      .children('.fa')
+      .toggleClass('fa-circle-chevron-down fa-circle-chevron-up');
     $this.parent().prev().toggleClass('label-full label-collapsed', 500);
+  });
+  $(document).on('dblclick', '.miro-log-mark-link', async function () {
+    switchTab('gamsinter');
+    $(`#logFileTabsset [data-value="${miroLogParser.getLogTabId()}"]`).tab(
+      'show',
+    );
+    await sleep(200);
+    const el = $(`#mlogMark_${this.dataset.logMarkId}`);
+    if (el[0] !== undefined) {
+      el[0].scrollIntoView();
+      el.fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+    }
   });
   $('.label-wrapper').each(function () {
     const $this = $(this);
@@ -266,8 +311,12 @@ $(() => {
   $('.dropdown').on('show.bs.dropdown', (e) => {
     const ddButton = $(e.target);
     const dropdown = ddButton.children('.dropdown-menu').first();
-    if (dropdown.width() <= ddButton.width()
-      + ddButton.offset().left - ddButton.parent().offset().left) {
+    if (
+      dropdown.width()
+      <= ddButton.width()
+        + ddButton.offset().left
+        - ddButton.parent().offset().left
+    ) {
       dropdown.addClass('dropdown-menu-right');
     } else {
       dropdown.removeClass('dropdown-menu-right');
@@ -277,12 +326,21 @@ $(() => {
   $('.nav-tabs-dropdown a').on('shown.bs.tab', (e) => {
     const currTab = $(e.target);
     if (currTab.closest('.dropdown').find('.dropdown-toggle').length) {
-      currTab.closest('.dropdown').find('.dropdown-toggle').html(`${currTab.text()} <i class="fa fa-angle-double-right" role="presentation" aria-label="More tabs"></i>`);
+      currTab
+        .closest('.dropdown')
+        .find('.dropdown-toggle')
+        .html(
+          `${currTab.text()} <i class="fa fa-angle-double-right" role="presentation" aria-label="More tabs"></i>`,
+        );
       return;
     }
-    const prevTab = $(e.relatedTarget).closest('.dropdown').find('.dropdown-toggle');
+    const prevTab = $(e.relatedTarget)
+      .closest('.dropdown')
+      .find('.dropdown-toggle');
     if (prevTab.length) {
-      prevTab.html(` ${prevTab.data('defaultlabel')} <i class="fa fa-angle-double-right" role="presentation" aria-label="More tabs"></i>`);
+      prevTab.html(
+        ` ${prevTab.data('defaultlabel')} <i class="fa fa-angle-double-right" role="presentation" aria-label="More tabs"></i>`,
+      );
     }
   });
   // code snippet taken from SwishWez: https://stackoverflow.com/questions/21582558/disable-remove-on-backspace-or-remove-ibeam-entirely
@@ -306,9 +364,19 @@ $(() => {
   $(document).on('click', '.deactivate-pivot-controls', function () {
     deactivateMiroPivotPresentation(this.dataset.id);
   });
-  Shiny.addCustomMessageHandler('gms-activateMiroPivotPresentationObservers', (id) => {
-    activateMiroPivotPresentationObservers(id);
-  });
+  Shiny.addCustomMessageHandler(
+    'gms-activateMiroPivotPresentationObservers',
+    (id) => {
+      activateMiroPivotPresentationObservers(id);
+    },
+  );
+  Shiny.addCustomMessageHandler('gms-initializeMiroLogParser', (data) => miroLogParser.initialize(
+    data.logTabId,
+    data.containerId,
+    data.tabSheetMap,
+    data.inputSymbolNames,
+    data.inputScalars,
+  ));
   $(document).on('click', '.btn-proxy', function () {
     setTimeout(() => {
       $(`#${this.dataset.proxyId}`)[0].click();
@@ -316,30 +384,56 @@ $(() => {
   });
 
   $('.toggle-config-view-left').click(() => {
-    $('#config-right-graph')[0].setAttribute('style', '-webkit-transition: width 0.3s ease;-moz-transition: width 0.3s ease;-o-transition: width 0.3s ease;transition: width 0.3s ease;');
-    $('#config-left-graph')[0].setAttribute('style', '-webkit-transition: margin 0.3s ease;-moz-transition: margin 0.3s ease;-o-transition: margin 0.3s ease;transition: margin 0.3s ease;');
+    $('#config-right-graph')[0].setAttribute(
+      'style',
+      '-webkit-transition: width 0.3s ease;-moz-transition: width 0.3s ease;-o-transition: width 0.3s ease;transition: width 0.3s ease;',
+    );
+    $('#config-left-graph')[0].setAttribute(
+      'style',
+      '-webkit-transition: margin 0.3s ease;-moz-transition: margin 0.3s ease;-o-transition: margin 0.3s ease;transition: margin 0.3s ease;',
+    );
 
-    $('#config-right-graph').removeClass('collapse-config-right').toggleClass('col-sm-12 col-sm-6');
+    $('#config-right-graph')
+      .removeClass('collapse-config-right')
+      .toggleClass('col-sm-12 col-sm-6');
     $('#config-left-graph').toggleClass('collapse-config-left');
     if ($('#config-right-graph').hasClass('col-sm-12')) {
       $('#config-left-graph').removeClass('col-sm-12').addClass('col-sm-6');
-      $('#toggleFullscreenRight').find('i:last').removeClass('fa-compress').addClass('fa-expand');
+      $('#toggleFullscreenRight')
+        .find('i:last')
+        .removeClass('fa-compress')
+        .addClass('fa-expand');
     }
-    $('#toggleFullscreenLeft').find('i:first').toggleClass('fa-expand fa-compress');
+    $('#toggleFullscreenLeft')
+      .find('i:first')
+      .toggleClass('fa-expand fa-compress');
     $(window).trigger('resize');
     return false;
   });
   $('.toggle-config-view-right').click(() => {
-    $('#config-left-graph')[0].setAttribute('style', '-webkit-transition: width 0.3s ease;-moz-transition: width 0.3s ease;-o-transition: width 0.3s ease;transition: width 0.3s ease;');
-    $('#config-right-graph')[0].setAttribute('style', '-webkit-transition: margin 0.3s ease;-moz-transition: margin 0.3s ease;-o-transition: margin 0.3s ease;transition: margin 0.3s ease;');
+    $('#config-left-graph')[0].setAttribute(
+      'style',
+      '-webkit-transition: width 0.3s ease;-moz-transition: width 0.3s ease;-o-transition: width 0.3s ease;transition: width 0.3s ease;',
+    );
+    $('#config-right-graph')[0].setAttribute(
+      'style',
+      '-webkit-transition: margin 0.3s ease;-moz-transition: margin 0.3s ease;-o-transition: margin 0.3s ease;transition: margin 0.3s ease;',
+    );
 
-    $('#config-left-graph').removeClass('collapse-config-left').toggleClass('col-sm-12 col-sm-6');
+    $('#config-left-graph')
+      .removeClass('collapse-config-left')
+      .toggleClass('col-sm-12 col-sm-6');
     $('#config-right-graph').toggleClass('collapse-config-right');
     if ($('#config-left-graph').hasClass('col-sm-12')) {
       $('#config-right-graph').removeClass('col-sm-12').addClass('col-sm-6');
-      $('#toggleFullscreenLeft').find('i:first').removeClass('fa-compress').addClass('fa-expand');
+      $('#toggleFullscreenLeft')
+        .find('i:first')
+        .removeClass('fa-compress')
+        .addClass('fa-expand');
     }
-    $('#toggleFullscreenRight').find('i:last').toggleClass('fa-expand fa-compress');
+    $('#toggleFullscreenRight')
+      .find('i:last')
+      .toggleClass('fa-expand fa-compress');
     $(window).trigger('resize');
     return false;
   });
@@ -369,15 +463,19 @@ $(() => {
   $('#scenTabset').on('click', 'a[data-toggle="tab"]', () => {
     rerenderDygraph();
   });
-  $('a[data-value="advanced"],a[data-value="importData"],a[data-value="loadResults"]').on('click', () => {
+  $(
+    'a[data-value="advanced"],a[data-value="importData"],a[data-value="loadResults"]',
+  ).on('click', () => {
     changeActiveButtons('default');
   });
   $('#inputTabset li').on('click', () => {
     rerenderHot();
   });
-  $('#scenTabset').append('<li id="scenTabsetAdd"><a href="#" id="btLoadScen" data-value="scen_add" '
-    + 'onclick="Shiny.setInputValue(\'btLoadScen\', 1, {priority: \'event\'});">'
-    + '<i class="far fa-square-plus" style="font-size:13pt;" role="presentation" aria-label="Add scenario"></i></a></li>'); // show/hide buttons after (R triggered) tab switch.
+  $('#scenTabset').append(
+    '<li id="scenTabsetAdd"><a href="#" id="btLoadScen" data-value="scen_add" '
+      + "onclick=\"Shiny.setInputValue('btLoadScen', 1, {priority: 'event'});\">"
+      + '<i class="far fa-square-plus" style="font-size:13pt;" role="presentation" aria-label="Add scenario"></i></a></li>',
+  ); // show/hide buttons after (R triggered) tab switch.
 
   Shiny.addCustomMessageHandler('gms-switchTab', (el) => {
     switchTab(el);
@@ -392,48 +490,74 @@ $(() => {
   $(document).on('click', '.btn-switch-sidebar', function () {
     switchTab(this.dataset.target);
   });
-  $(document).on('click', '.bt-highlight-1, .bt-highlight-2, .bt-highlight-3', function () {
-    const btn = $(this);
-    if (btn.hasClass('dropdown-toggle') || btn.hasClass('bt-no-disable')) {
-      return;
-    }
-    btn.prop('disabled', true);
-    setTimeout(() => {
-      btn.prop('disabled', false);
-    }, 1500);
-  }); // hide pivot filter boxes when clicked outside of box
+  $(document).on(
+    'click',
+    '.bt-highlight-1, .bt-highlight-2, .bt-highlight-3',
+    function () {
+      const btn = $(this);
+      if (btn.hasClass('dropdown-toggle') || btn.hasClass('bt-no-disable')) {
+        return;
+      }
+      btn.prop('disabled', true);
+      setTimeout(() => {
+        btn.prop('disabled', false);
+      }, 1500);
+    },
+  ); // hide pivot filter boxes when clicked outside of box
   $(document).on('click', '.change-dd-button', function () {
     const params = this.dataset;
     if (params.isClickable !== 'false') {
       $(params.btnSelector).attr(
         'onclick',
-        `Shiny.setInputValue('${params.actionId}','${params.actionVal == null
-          ? 1 : params.actionVal}',{priority: 'event'});`,
+        `Shiny.setInputValue('${params.actionId}','${
+          params.actionVal == null ? 1 : params.actionVal
+        }',{priority: 'event'});`,
       );
     }
     $(params.btnSelector).text(params.btnText);
-    if (params.isClickable === 'false' || $(params.btnSelector).is(':enabled')) {
-      Shiny.setInputValue(params.actionId, params.actionVal == null ? 1 : params.actionVal, {
-        priority: 'event',
-      });
+    if (
+      params.isClickable === 'false'
+      || $(params.btnSelector).is(':enabled')
+    ) {
+      Shiny.setInputValue(
+        params.actionId,
+        params.actionVal == null ? 1 : params.actionVal,
+        {
+          priority: 'event',
+        },
+      );
     }
   });
   $(document).on('click', '.bt-export-canvas', function () {
-    const data = document.getElementById(this.dataset.canvasid).toDataURL('image/png');
+    const data = document
+      .getElementById(this.dataset.canvasid)
+      .toDataURL('image/png');
     this.href = data;
   });
   // miro dashboard value boxes click handler
-  $(document).on('click', '.miro-dashboard-valueboxes-wrapper .shiny-html-output', function () {
-    let namespaceId = this.id.split('-');
-    namespaceId = `${namespaceId[0]}-${namespaceId[1]}`;
-    Shiny.setInputValue(`${namespaceId}-showChart`, this.id, { priority: 'event' });
-  });
+  $(document).on(
+    'click',
+    '.miro-dashboard-valueboxes-wrapper .shiny-html-output',
+    function () {
+      let namespaceId = this.id.split('-');
+      namespaceId = `${namespaceId[0]}-${namespaceId[1]}`;
+      Shiny.setInputValue(`${namespaceId}-showChart`, this.id, {
+        priority: 'event',
+      });
+    },
+  );
   // miro dashboard comparison value boxes click handler
-  $(document).on('click', '.miro-dashboard-comparison-valueboxes-wrapper .shiny-html-output', function () {
-    let namespaceId = this.id.split('-');
-    namespaceId = `${namespaceId[0]}`;
-    Shiny.setInputValue(`${namespaceId}-showChart`, this.id, { priority: 'event' });
-  });
+  $(document).on(
+    'click',
+    '.miro-dashboard-comparison-valueboxes-wrapper .shiny-html-output',
+    function () {
+      let namespaceId = this.id.split('-');
+      namespaceId = `${namespaceId[0]}`;
+      Shiny.setInputValue(`${namespaceId}-showChart`, this.id, {
+        priority: 'event',
+      });
+    },
+  );
 
   $('.sidebar-toggle').click(() => {
     rerenderHot(400);
@@ -480,22 +604,21 @@ $(() => {
       scriptOutputContainer = scriptOutputContainer.children('.script-output');
     } else if (data.sid == null) {
       scriptOutputContainer = $(`#scriptOutput_${data.id} .script-output`);
-      Shiny.setInputValue(
-        'outputGenerated',
-        1,
-        {
-          priority: 'event',
-        },
-      );
+      Shiny.setInputValue('outputGenerated', 1, {
+        priority: 'event',
+      });
       $(`#scriptOutput_${data.id} .script-spinner`).hide();
     } else {
       scriptOutputContainer = $(`#scenScript_${data.sid}_${data.id}`);
     }
     const scriptOutputContainerIframe = scriptOutputContainer[0].contentWindow.document;
     scriptOutputContainerIframe.open();
-    scriptOutputContainerIframe.write(data.isError === true
-      ? `<div style='margin:5px;color:#F39619;font-weight:bold;\
-font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
+    scriptOutputContainerIframe.write(
+      data.isError === true
+        ? `<div style='margin:5px;color:#F39619;font-weight:bold;\
+font-size:15pt;text-align:center;'>${data.data}</div>`
+        : data.data,
+    );
     scriptOutputContainerIframe.close();
     scriptOutputContainer.show();
   });
@@ -507,7 +630,12 @@ font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
   });
   Shiny.addCustomMessageHandler('gms-setTextContent', (data) => {
     if (data.keepChildNodes === true) {
-      $(data.selector).contents().filter(function () { return this.nodeType === 3; }).first()
+      $(data.selector)
+        .contents()
+        .filter(function () {
+          return this.nodeType === 3;
+        })
+        .first()
         .replaceWith(new Text(data.content));
     } else {
       $(data.selector).text(data.content);
@@ -526,9 +654,11 @@ font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
     let counter = 1;
     let isLoading = false;
     $(data.id).on('scroll', () => {
-      if ($(data.id)[0].scrollHeight - $(data.id).scrollTop()
-        < $(data.id).outerHeight() + 200
-        && isLoading === false) {
+      if (
+        $(data.id)[0].scrollHeight - $(data.id).scrollTop()
+          < $(data.id).outerHeight() + 200
+        && isLoading === false
+      ) {
         isLoading = true;
         Shiny.setInputValue(
           'loadTextEntryChunk',
@@ -599,7 +729,7 @@ font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
       let crPosition = Infinity;
       let nlPosition = -1;
       let contentToAppend = '';
-      for (; ;) {
+      for (;;) {
         if (crPosition - 1 < 0) {
           crPosition = -1;
           content += contentToAppend;
@@ -610,7 +740,10 @@ font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
           content += contentToAppend;
           break;
         }
-        if (content[crPosition + 1] === '\n' || content[crPosition + 1] === '\r') {
+        if (
+          content[crPosition + 1] === '\n'
+          || content[crPosition + 1] === '\r'
+        ) {
           // \r\n should not cause line to be removed
           continue; // eslint-disable-line no-continue
         }
@@ -654,8 +787,10 @@ font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
   });
   Shiny.addCustomMessageHandler('gms-startUpdateJobProgress', (data) => {
     const interval = setInterval(() => {
-      if ($(data.id).attr('aria-valuenow') === '100'
-        || !$(data.id).is(':visible')) {
+      if (
+        $(data.id).attr('aria-valuenow') === '100'
+        || !$(data.id).is(':visible')
+      ) {
         clearInterval(interval);
       }
       Shiny.setInputValue('updateJobProgress', data.jID, {
@@ -667,19 +802,28 @@ font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
     if (!$(data.id).is(':visible')) {
       return;
     }
-    const percentCompleted = Math.round((parseInt(data.progress.noCompleted, 10)
-      / parseInt(data.progress.noTotal, 10)) * 100);
+    const percentCompleted = Math.round(
+      (parseInt(data.progress.noCompleted, 10)
+        / parseInt(data.progress.noTotal, 10))
+        * 100,
+    );
     $(data.id)
       .css('width', `${percentCompleted}%`)
       .attr('aria-valuenow', percentCompleted)
-      .text(`${data.progress.noCompleted}/${data.progress.noTotal}${data.progress.noFail == null ? '' : ` (${data.progress.noFail})`}`);
+      .text(
+        `${data.progress.noCompleted}/${data.progress.noTotal}${data.progress.noFail == null ? '' : ` (${data.progress.noFail})`}`,
+      );
   });
   Shiny.addCustomMessageHandler('gms-markJobDownloadComplete', (data) => {
-    if (data.triggerImport === true
-      && $(`#jobImportDlProgressWrapper_${data.id}`).is(':visible')) {
+    if (
+      data.triggerImport === true
+      && $(`#jobImportDlProgressWrapper_${data.id}`).is(':visible')
+    ) {
       Shiny.setInputValue('importJob', data.id, { priority: 'event' });
     }
-    $(`#jobImportDlProgressWrapper_${data.id}`).siblings('div:first').text(data.text);
+    $(`#jobImportDlProgressWrapper_${data.id}`)
+      .siblings('div:first')
+      .text(data.text);
     $(`#jobImportDlProgressWrapper_${data.id}`).hide();
     $(`#btDownloadJob_${data.id}`).hide();
     $(`#btImportJob_${data.id}`).show();
@@ -710,7 +854,9 @@ onchange="Shiny.setInputValue('execPermAttachment_${id[i]}',$(this).is(':checked
       </div>`;
       }
 
-      $(`<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_${id[i]}" type="button" onclick="Miro.removeAttachment(${id[i]})"><i class="fa fa-circle-xmark" role="presentation" aria-label="Remove attachment"></i></button><a href="#" onclick="Miro.downloadAttachment(${id[i]})"> ${name[i]}</a></div>${checkBoxHTML}</div>`).insertBefore('#endAttachList');
+      $(
+        `<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_${id[i]}" type="button" onclick="Miro.removeAttachment(${id[i]})"><i class="fa fa-circle-xmark" role="presentation" aria-label="Remove attachment"></i></button><a href="#" onclick="Miro.downloadAttachment(${id[i]})"> ${name[i]}</a></div>${checkBoxHTML}</div>`,
+      ).insertBefore('#endAttachList');
     }
   });
   Shiny.addCustomMessageHandler('gms-fitTitleInBox', (id) => {
@@ -763,10 +909,13 @@ onchange="Shiny.setInputValue('execPermAttachment_${id[i]}',$(this).is(':checked
         if (j === 0 && valCol != null) {
           td.dataset.val = btoa(data.data[valCol][i]);
         }
-        if (i > 0 && data.hierarchical === true
+        if (
+          i > 0
+          && data.hierarchical === true
           && Array.isArray(data.hierarchicalCols)
           && data.hierarchicalCols.includes(j)
-          && data.data[j][i] === data.data[j][i - 1]) {
+          && data.data[j][i] === data.data[j][i - 1]
+        ) {
           td.appendChild(document.createTextNode(''));
         } else {
           td.appendChild(document.createTextNode(data.data[j][i]));
@@ -778,15 +927,21 @@ onchange="Shiny.setInputValue('execPermAttachment_${id[i]}',$(this).is(':checked
   });
   Shiny.addCustomMessageHandler('gms-populateMiroPivotFilters', (data) => {
     const { ns } = data;
-    const idContainerMap = [{ id: 'filter', container: 'filterDropdowns' },
+    const idContainerMap = [
+      { id: 'filter', container: 'filterDropdowns' },
       { id: 'aggregations', container: 'aggregateDropdowns' },
-      { id: 'cols', container: 'colDropdowns' }];
+      { id: 'cols', container: 'colDropdowns' },
+    ];
     idContainerMap.forEach((filterEl) => {
       Shiny.unbindAll(document.getElementById(ns + filterEl.container));
     });
     idContainerMap.forEach((filterEl) => {
-      const dropdownContainer = document.getElementById(ns + filterEl.container);
-      const currContent = $(`#${ns + filterEl.container} .shiny-input-container`);
+      const dropdownContainer = document.getElementById(
+        ns + filterEl.container,
+      );
+      const currContent = $(
+        `#${ns + filterEl.container} .shiny-input-container`,
+      );
       const newContent = data[filterEl.id];
 
       if (currContent.length !== newContent.length) {
@@ -803,7 +958,10 @@ onchange="Shiny.setInputValue('execPermAttachment_${id[i]}',$(this).is(':checked
         return;
       }
       currContent.each((i, el) => {
-        if (newContent[i][2] !== true && newContent[i][1] === $(el).data('hash')) {
+        if (
+          newContent[i][2] !== true
+          && newContent[i][1] === $(el).data('hash')
+        ) {
           return true;
         }
         $(el).replaceWith(newContent[i][0]);
@@ -813,20 +971,27 @@ onchange="Shiny.setInputValue('execPermAttachment_${id[i]}',$(this).is(':checked
       Shiny.bindAll(dropdownContainer);
     });
   });
-  Shiny.addCustomMessageHandler('gms-showValidationErrors', (content) => {
-    const inSyms = Object.keys(content);
+  Shiny.addCustomMessageHandler('gms-parseLog', (e) => { // eslint-disable-line no-unused-vars
+    if (miroLogParser.isInitialized !== true) {
+      return;
+    }
+    miroLogParser.parseLogContainer();
     $('.input-validation-error').empty();
-    inSyms.forEach((key) => {
-      if (Array.isArray(content[key])) {
-        content[key].forEach((item) => {
-          $(`#valErr_${key}`).append(item);
-        });
-      } else {
-        $(`#valErr_${key}`).append(content[key]);
-      }
-    });
+    miroLogParser.showValidationErrors();
     $('.input-validation-error').show();
-    switchTab('input');
+    if (miroLogParser.firstValidationErrorTabId.length > 0) {
+      switchTab('input');
+      miroLogParser.firstValidationErrorTabId.forEach((tabId, index) => {
+        if (index === 0) {
+          switchTabInTabset('inputTabset', `inputTabset_${tabId}`);
+        } else {
+          switchTabInTabset(
+            `inputTabset${miroLogParser.firstValidationErrorTabId[0]}`,
+            `inputTabset${miroLogParser.firstValidationErrorTabId[0]}_${tabId}`,
+          );
+        }
+      });
+    }
   });
   const autoNumericBinding = new Shiny.InputBinding();
   $.extend(autoNumericBinding, {

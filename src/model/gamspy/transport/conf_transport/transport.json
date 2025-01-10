@@ -192,7 +192,6 @@
         "maxTabsExpandedSplitComp": 5,
         "maxTabsExpandedTabComp": 5
     },
-    "miroLogFile": "miro.log",
     "overwriteAliases": {
         "_scalars_out": {
             "newAlias": "Cost"

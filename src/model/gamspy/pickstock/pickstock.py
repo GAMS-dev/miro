@@ -46,18 +46,16 @@ def main():
     negative_prices = price.records[price.records['value'] < 0]
 
     # input validataion
-    with open('miro.log', 'w') as f:
-        f.writelines(['------------------------------------\n',
-                      '        Data validation\n',
-                      '------------------------------------\n'])
-        if len(negative_prices.index):
-            f.writelines(['price:: No negative prices allowed!'])
-            for index, row in negative_prices.iterrows():
-                f.writelines(
-                    [f' Symbol {row["symbol"]} has negative price at the date: {row["date"]}'])
-            raise Exception("Data errors detected")
-        else:
-            f.writelines(['OK'])
+    print('------------------------------------')
+    print('        Data validation')
+    print('------------------------------------\n')
+    if len(negative_prices.index):
+        print('price:: No negative prices allowed!')
+        for index, row in negative_prices.iterrows():
+            print(f' Symbol {row["symbol"]:<4} has negative price at the date: {row["date"]}')
+        raise Exception("Data errors detected")
+    else:
+        print('OK')
 
     td = Set(m, "td", domain=[date], description="training days")
     ntd = Set(m, "ntd", domain=[date], description="none-training days")

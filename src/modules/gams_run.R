@@ -450,35 +450,19 @@ if (config$activateModules$miroLogFile) {
     }, contentType = "text/plain"
   )
   renderMiroLogContent <- function() {
-    miroLogAnnotations <<- NULL
     miroLogContent <- ""
     miroLogPath <- file.path(workDir, config$miroLogFile)
     tryCatch(
       {
         if (file.exists(miroLogPath)[1]) {
-          inputScalarsTmp <- NULL
-          if (scalarsFileName %in% names(modelIn)) {
-            inputScalarsTmp <- modelIn[[scalarsFileName]]$symnames
-          }
-          miroLogContent <- parseMiroLog(
-            session, miroLogPath,
-            names(modelIn), inputScalarsTmp
-          )
-          miroLogAnnotations <<- miroLogContent$annotations
-          miroLogContent <- miroLogContent$content
+          miroLogContent <- read_file(miroLogPath)
         }
       },
       error = function(e) {
         flog.warn("MIRO log file could not be read. Error message: '%s'.", conditionMessage(e))
       }
     )
-    return(HTML(paste(miroLogContent, collapse = "\n")))
-  }
-  if (config$activateModules$logFile) {
-    output$miroLogContainer <- renderUI({
-      req(rv$refreshLogs)
-      return(renderMiroLogContent())
-    })
+    return(miroLogContent)
   }
 }
 
@@ -590,24 +574,7 @@ output$modelStatus <- renderUI({
       returnCodeText <- sprintf(lang$nav$gamsModelStatus$errorReturnCode, currModelStat)
     }
     statusText <- lang$nav$gamsModelStatus$error %+% returnCodeText
-    if (config$activateModules$miroLogFile && length(miroLogAnnotations)) {
-      session$sendCustomMessage("gms-showValidationErrors", miroLogAnnotations)
-      valIdHead <- match(names(miroLogAnnotations)[[1L]], names(modelIn))
-      if (length(valIdHead) && !is.na(valIdHead)) {
-        valTabId <- 0L
-        inputTabId <- tabSheetMap$input[[valIdHead]]
-        updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", inputTabId[1]))
-        if (length(inputTabId) > 1L) {
-          updateTabsetPanel(
-            session, paste0("inputTabset", inputTabId[1]),
-            paste0(
-              "inputTabset", inputTabId[1], "_",
-              inputTabId[2]
-            )
-          )
-        }
-      }
-    }
+    session$sendCustomMessage("gms-parseLog", list())
     flog.debug(
       "GAMS model was not solved successfully (model: '%s'). Model status: %s.",
       modelName, statusText

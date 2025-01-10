@@ -4700,9 +4700,17 @@
                 "tooltip": {
                   "type": "string",
                   "minLength": 1
+                },
+                "miroLogExclusiveError": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 2
+              "minProperties": 3
+            },
+            "mirologStdout": {
+              "type": "string",
+              "minLength": 1
             },
             "readme": {
               "type": "object",
@@ -5023,7 +5031,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 39
+          "minProperties": 40
         },
         "tables": {
           "type": "object",
