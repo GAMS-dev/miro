@@ -1,17 +1,18 @@
-mirorenderer__scalarsve_outOutput <- function(id, height = NULL, options = NULL, path = NULL, ...) {
+mirocompare_dashboardOutput <- function(id, height = NULL, options = NULL, path = NULL, ...) {
   ns <- NS(id)
 
   tagList(
     tags$div(
-      class = "dashboard-css",
+      class = "dashboard-css custom-compare",
       fluidRow(
         class = "outer-row",
         column(12,
           class = "custom-grid-right",
           fluidRow(
             class = "display-flex valueboxes",
+            uiOutput(ns("valueboxesTitle")),
             uiOutput(ns("valueboxes"),
-              class = "miro-dashboard-valueboxes-wrapper"
+              class = "miro-dashboard-comparison-valueboxes-wrapper"
             )
           )
         ),
@@ -26,8 +27,50 @@ mirorenderer__scalarsve_outOutput <- function(id, height = NULL, options = NULL,
   )
 }
 
-renderMirorenderer__scalarsve_out <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+renderMirocompare_dashboard <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
   ns <- session$ns
+
+  removeTableHeader <- function(viewData) {
+    numericColumnNames <- names(Filter(is.numeric, viewData))
+
+    if (length(numericColumnNames) > 1) {
+      viewData <- viewData %>%
+        pivot_longer(
+          cols = all_of(numericColumnNames),
+          names_to = "Hdr",
+          values_to = "value"
+        )
+    }
+
+    return(viewData)
+  }
+
+  combineData <- function(data, scenarioNames) {
+    nonEmptyData <- Filter(function(df) nrow(df) > 0, data)
+
+    if (length(nonEmptyData) == 0) {
+      return(NULL)
+    }
+
+    numericColumnNames <- names(Filter(is.numeric, data[[1]]))
+
+    # GAMS Tables need to be lengthened to only have one value column
+    # Remove sandbox scenario
+    dataTmp <- data[-1]
+    names(dataTmp) <- scenarioNames
+
+    combinedData <- bind_rows(dataTmp, .id = "_scenName")
+
+    if (length(numericColumnNames) > 1) {
+      combinedData <- removeTableHeader(combinedData)
+    }
+    return(combinedData)
+  }
+
+  scenarioNames <- data$getMetadata() %>%
+    purrr::map_chr(~ .x[["_sname"]]) %>%
+    `[`(-1)
+  # scenarioNames <- bind_rows(data$getMetadata())[["_sname"]][-1]
 
   dataViewsConfig <- options$dataViewsConfig
 
@@ -126,7 +169,6 @@ renderMirorenderer__scalarsve_out <- function(input, output, session, data, opti
         names(dataTmp)[length(dataTmp)] <- valueColName
       }
     }
-
     if (length(rowIndexList)) {
       dataTmp <- dataTmp %>%
         select(!!!c(rowIndexList, colFilterIndexList, valueColName)) %>%
@@ -277,6 +319,7 @@ renderMirorenderer__scalarsve_out <- function(input, output, session, data, opti
     symbolLowestNegative <- if (length(negativeValues)) min(negativeValues) else if (length(positiveValues)) min(positiveValues) else 0
     symbolHighestPositive <- if (length(positiveValues)) max(positiveValues) else if (length(negativeValues)) max(negativeValues) else 0
 
+
     symbolAbsMax <- max(abs(symbolLowestNegative), abs(symbolHighestPositive))
 
     # Generate quantiles for positive and negative values separately
@@ -360,30 +403,7 @@ renderMirorenderer__scalarsve_out <- function(input, output, session, data, opti
 
     currentConfig <- dataViewsConfig[[view]]
 
-    # If no data symbol is provided, the renderer's base symbol is used.
-    if (!is_tibble(data)) {
-      if (!is.null(currentConfig$data)) {
-        viewData <- data[[tolower(currentConfig$data)]]
-      } else {
-        viewData <- data[[options[["_metadata_"]]$symname]]
-      }
-    } else {
-      viewData <- data
-    }
-
-    # GAMS Tables need to be lengthened to only have one value column
-    # as this is how a view is stored
-    numericColumnNames <- names(viewData[vapply(viewData, is.numeric, logical(1L), USE.NAMES = FALSE)])
-
-    if (length(numericColumnNames) > 1) {
-      viewData <- viewData %>%
-        pivot_longer(
-          cols = all_of(numericColumnNames),
-          names_to = "Hdr",
-          values_to = "value"
-        )
-    }
-
+    viewData <- combineData(data$get(currentConfig$data), scenarioNames)
     preparedData <- prepareData(currentConfig, viewData)
     dashboardChartData[[view]] <- preparedData
   }
@@ -511,31 +531,69 @@ renderMirorenderer__scalarsve_out <- function(input, output, session, data, opti
       lang$renderers$miroPivot$renderer$timeseries
     )
   )
+
+  # Get scalar output data in case valueboxes should show a value
+  if (length(options$valueBoxes$valueScalar) && any(!is.na(options$valueBoxes$valueScalar))) {
+    if (!"_scalars_out" %in% data$getAllSymbols()) {
+      abortSafe("No scalar output symbols found for valueBoxes")
+    }
+    scalarData <- combineData(data$get("_scalars_out"), scenarioNames)
+  }
+
+  # Value boxes title and scenario select (if value boxes show values)
+  output$valueboxesTitle <- renderUI({
+    tagList(
+      if (length(options$valueBoxesTitle)) {
+        column(12,
+          class = "col-xs-12 col-sm-12 custom-highlight-block custom-padding",
+          tags$h4(options$valueBoxesTitle, class = "highlight-block")
+        )
+      },
+      if (any(!is.na(options$valueBoxes$valueScalar))) {
+        column(12,
+          class = "col-xs-12 col-sm-12 custom-highlight-block custom-padding",
+          tags$div(
+            tags$div(
+              class = "scenario-dropdown", style = "height: 30px;",
+              selectizeInput(
+                ns("scenarioSelect"),
+                label = NULL,
+                choices = setNames(
+                  c("_", scenarioNames),
+                  c(lang$renderers$dashboardComparison$selectScen, scenarioNames)
+                ),
+                options = list(onInitialize = I(paste0("function(value) {
+  document.querySelector('.selectize-input input[id^=\"", ns("scenarioSelect"), "\"]').setAttribute('readonly', 'readonly');
+}")))
+              ),
+            )
+          )
+        )
+      }
+    )
+  })
+
   # Valueboxes output
   output$valueboxes <- renderUI({
     box_columns <- lapply(1:length(options$valueBoxes$id), function(i) {
       # Note: Modify in case (optional) valueBox values should be calculated differently
-      if (is.null(options$valueBoxes$valueScalar[i]) || is.na(options$valueBoxes$valueScalar[i])) {
+      if (is.null(options$valueBoxes$valueScalar[i]) ||
+        is.na(options$valueBoxes$valueScalar[i]) ||
+        is.null(input$scenarioSelect) ||
+        !nzchar(input$scenarioSelect) ||
+        identical(input$scenarioSelect, "_")) {
         valueTmp <- NULL
       } else {
-        valueScalarName <- options$valueBoxes$valueScalar[i]
-        valueTmp <- NULL
-        if (!is.null(outputScalarsFull) &&
-          valueScalarName %in% outputScalarsFull$scalar) {
-          valueTmp <- outputScalarsFull %>%
-            filter(tolower(scalar) == tolower(valueScalarName)) %>%
-            pull(value) %>%
-            as.numeric()
-        } else if (!is_tibble(data) && "_scalarsve_out" %in% names(data) &&
-          valueScalarName %in% data[["_scalarsve_out"]]$scalar) {
-          valueTmp <- data[["_scalarsve_out"]] %>%
-            filter(tolower(scalar) == tolower(valueScalarName)) %>%
-            pull(level) %>%
-            as.numeric()
+        valueTmp <- scalarData %>%
+          filter(
+            `_scenName` == input$scenarioSelect,
+            scalar == tolower(options$valueBoxes$valueScalar[i])
+          )
+        if (!nrow(valueTmp)) {
+          abortSafe(sprintf("No scalar symbol '%s' found for valueBox '%s'", options$valueBoxes$valueScalar[i], options$valueBoxes$id[i]))
         }
-        if (length(valueTmp) == 0) {
-          abortSafe(sprintf("No scalar symbol '%s' found for valueBox '%s'", valueScalarName, options$valueBoxes$id[i]))
-        }
+        valueTmp <- as.numeric(valueTmp[[length(valueTmp)]][1])
+
         if (!is.na(options$valueBoxes$decimals[i])) {
           valueTmp <- round(valueTmp, digits = as.numeric(options$valueBoxes$decimals[i]))
         }
@@ -563,17 +621,7 @@ renderMirorenderer__scalarsve_out <- function(input, output, session, data, opti
         )
       )
     })
-    if (length(options$valueBoxesTitle)) {
-      tagList(
-        column(12,
-          class = "col-xs-12 col-sm-12 custom-highlight-block custom-padding",
-          tags$h4(options$valueBoxesTitle, class = "highlight-block")
-        ),
-        do.call(tagList, box_columns)
-      )
-    } else {
-      do.call(tagList, box_columns)
-    }
+    do.call(tagList, box_columns)
   })
 
   # Data View switch
@@ -746,6 +794,7 @@ renderMirorenderer__scalarsve_out <- function(input, output, session, data, opti
           dataViewsConfig[[indicator]]$chartOptions$customSeriesOrder
         )
       }
+
       # heatmap
       if (input[[paste0(indicator, "ChartType")]] == "heatmap") {
         if (identical(dataViewsConfig[[indicator]]$chartOptions$heatmapType, 2L)) {
@@ -1106,6 +1155,13 @@ renderMirorenderer__scalarsve_out <- function(input, output, session, data, opti
         multiChartRenderer <- currentView$chartOptions$multiChartOptions$multiChartRenderer
       }
 
+      groupElements <- NULL
+      # TODO in init: check whether groupDimension + _scenName exists
+      if (length(currentView$chartOptions$groupDimension)) {
+        dataRaw <- combineData(data$get(dataViewsConfig[[view]]$data), scenarioNames)
+        groupElements <- unique(dataRaw[[currentView$chartOptions$groupDimension]])
+      }
+
       for (i in seq_len(noSeries)) {
         label <- names(dataTmp)[rowHeaderLen + i]
         originalLabel <- label
@@ -1134,7 +1190,39 @@ renderMirorenderer__scalarsve_out <- function(input, output, session, data, opti
           borderWidth <- currentView$chartOptions$customBorderWidths[[label]]
         }
 
-        if (originalLabel %in% currentView$chartOptions$multiChartSeries) {
+        stack <- NULL
+        if (length(groupElements)) {
+          matches <- which(
+            sapply(groupElements, function(gEl) {
+              is_exact <- (gEl == originalLabel)
+              is_contained <- grepl(paste0("\u2024", gEl, "\u2024"), originalLabel)
+              is_starts <- grepl(paste0("^", gEl, "\u2024"), originalLabel)
+              is_ends <- grepl(paste0("\u2024", gEl, "$"), originalLabel)
+              (is_exact || is_contained || is_starts || is_ends)
+            })
+          )
+          if (length(matches) == 0) {
+            stack <- NULL
+          } else {
+            stack <- paste0("stack", matches[1])
+          }
+        } else {
+          stack <- if (chartType %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "stack1" else NULL
+        }
+
+        multiChartSeries <- FALSE
+        if (length(currentView$chartOptions$multiChartSeries)) {
+          series <- currentView$chartOptions$multiChartSeries
+          if (
+            originalLabel == series ||
+              grepl(paste0("\u2024", series, "\u2024"), originalLabel) ||
+              grepl(paste0("^", series, "\u2024"), originalLabel) ||
+              grepl(paste0("\u2024", series, "$"), originalLabel)
+          ) {
+            multiChartSeries <- TRUE
+          }
+        }
+        if (multiChartSeries) {
           if (chartType %in% c("line", "area", "stackedarea", "timeseries")) {
             multiChartRenderer <- if (length(multiChartRenderer)) multiChartRenderer else "bar"
           } else {
@@ -1158,7 +1246,7 @@ renderMirorenderer__scalarsve_out <- function(input, output, session, data, opti
             pointHitRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 1L else 0L,
             pointRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 3L else 0L,
             stack = if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "regularStack")) {
-              "stack1"
+              stack
             } else if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "individualStack")) {
               "stack0"
             } else {
@@ -1192,7 +1280,7 @@ renderMirorenderer__scalarsve_out <- function(input, output, session, data, opti
             fillOpacity = fillOpacity,
             order = 1,
             scaleID = scaleID,
-            stack = if (chartType %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "stack1" else NULL,
+            stack = stack,
             stepped = identical(currentView$chartOptions$stepPlot, TRUE)
           )
 
@@ -1301,27 +1389,5 @@ renderMirorenderer__scalarsve_out <- function(input, output, session, data, opti
         return(write_csv(dataTmp, file, na = ""))
       }
     )
-
-    # add custom renderer
-    battery_power <- data$battery_power$level
-    storage_level <- -cumsum(battery_power)
-
-    max_storage <- data[["_scalarsve_out"]] %>%
-      filter(scalar == "battery_storage") %>%
-      pull(level)
-
-    # corresponding to the dataView "BatteryStorage"
-    output[["BatteryStorage"]] <- renderUI({
-      tagList(
-        renderPlot({
-          barplot(storage_level,
-            col = "lightblue", ylab = "Energy Capacity in kWh",
-            names.arg = data$battery_power$j, las = 2, ylim = c(0, max_storage + 10),
-            main = "Storage level of the BESS"
-          )
-          grid()
-        })
-      )
-    })
   })
 }
