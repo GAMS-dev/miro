@@ -4,7 +4,7 @@
         "downloadTempFiles": false,
         "hcube": false,
         "loadLocal": true,
-        "logFile": false,
+        "logFile": true,
         "lstFile": false
     },
     "aggregateWidgets": true,
@@ -17,6 +17,14 @@
         "results": {
             "outType": "mirowidget_initial_state"
         }
+    },
+    "datatable": {
+        "class": "display",
+        "filter": "bottom",
+        "options": {
+            "pageLength": 15
+        },
+        "rownames": false
     },
     "defaultRendererOutput": "miroPivot",
     "defCompMode": "split",
@@ -60,7 +68,6 @@
         "maxTabsExpandedSplitComp": 5,
         "maxTabsExpandedTabComp": 5
     },
-    "miroLogFile": "miro.log",
     "overwriteAliases": {
         "force_unique_sol": {
             "newAlias": "force_unique_sol"
@@ -86,5 +93,6 @@
     "roundingDecimals": 2,
     "saveTraceFile": true,
     "storeLogFilesDuration": 7,
-    "theme": "browser"
+    "theme": "browser",
+    "parseLogForMiroLogSyntax": true
 }

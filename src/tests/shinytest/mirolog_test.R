@@ -3,6 +3,7 @@ app <- AppDriver$new("../../",
   load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
   timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
 )
+logContainerId <- Sys.getenv("MIRO_LOG_CONTAINER_ID", "miroLogContainer")
 app$set_inputs(btImport = "click")
 Sys.sleep(1)
 app$set_inputs(tb_importData = "tb_importData_local", wait_ = FALSE)
@@ -16,7 +17,12 @@ expect_error(app$wait_for_js("$('#valErr_price').text().includes('negative');", 
 app$run_js("$('#valErr_price li').click();")
 expect_true(app$get_js("$('#modelStatus').is(':visible')===false;"))
 app$run_js("$('#valErr_price li').dblclick();")
-expect_error(app$wait_for_js("$('#modelStatus').is(':visible')&&$('#miroLogContainer').is(':visible')&&$('#miroLogContainer').text().includes('Symbol IBM  has negative price at the date: 2016-01-04')&&$('#miroLogContainer').text().includes('Symbol GS   has negative price at the date: 2016-01-12');", timeout = 5000L), NA)
+expect_error(app$wait_for_js(paste0(
+  "$('#modelStatus').is(':visible')&&$('#",
+  logContainerId, "').is(':visible')&&$('#", logContainerId,
+  "').text().includes('Symbol IBM  has negative price at the date: 2016-01-04')&&$('#", logContainerId,
+  "').text().includes('Symbol GS   has negative price at the date: 2016-01-12');"
+), timeout = 5000L), NA)
 app$click(selector = 'a[data-value="inputData"]')
 Sys.sleep(0.5)
 app$click(selector = "#btRemove1")
@@ -26,10 +32,15 @@ Sys.sleep(1L)
 expect_error(app$wait_for_js("$('#valErr_price').is(':visible')===false;", timeout = 5000L), NA)
 app$click(selector = 'a[data-value="gamsinter"]')
 Sys.sleep(0.5)
-expect_error(app$wait_for_js("$('#modelStatus').text()===''&&$('#miroLogContainer').text()==='';", timeout = 5000L), NA)
-app$set_inputs(logFileTabsset = "log")
-Sys.sleep(0.5)
-expect_error(app$wait_for_js("$('#logStatusContainer').text()==='';", timeout = 5000L), NA)
+expect_error(app$wait_for_js(paste0(
+  "$('#modelStatus').text()===''&&$('#", logContainerId,
+  "').text()==='';"
+), timeout = 5000L), NA)
+if (identical(logContainerId, "miroLogContainer")) {
+  app$set_inputs(logFileTabsset = "log")
+  Sys.sleep(0.5)
+  expect_error(app$wait_for_js("$('#logStatusContainer').text()==='';", timeout = 5000L), NA)
+}
 app$set_inputs(logFileTabsset = "listfile")
 Sys.sleep(0.5)
 expect_error(app$wait_for_js("$('#listFileContainer').text()==='';", timeout = 5000L), NA)

@@ -2720,6 +2720,10 @@
       "type": "string",
       "minLength": 3
     },
+    "parseLogForMiroLogSyntax": {
+      "description": "Whether to parse stdout of process for MIRO log annotations. This is the default for GAMSPy models.",
+      "type": "boolean"
+    },
     "hiddenOutputSymbols": {
       "description": "Specify symbol names that will not be displayed in UI but can be used in graphs etc.",
       "type": [

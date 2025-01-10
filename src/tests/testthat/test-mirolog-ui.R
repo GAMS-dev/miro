@@ -58,6 +58,29 @@ test_that(
       file.path(miroModelDir, "conf_sudoku", "sudoku.json")
     )
 
-    Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "GMSMODELNAME"))
+    createTestDb()
+
+    additionalGamsClArgs <- character(0L)
+    if (!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")) {
+      additionalGamsClArgs <- paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"')
+    }
+    miroModelDir <- file.path(testDir, "..", "model", "gamspy", "pickstock")
+    Sys.setenv(MIRO_MODEL_PATH = file.path(miroModelDir, "pickstock.py"))
+    Sys.setenv(PYTHON_EXEC_PATH = Sys.which("python3")[[1]])
+    Sys.setenv(MIRO_LOG_CONTAINER_ID = "logStatusContainer")
+    extraClArgs <- c(additionalGamsClArgs, "MIP=CBC")
+    if (length(additionalGamsClArgs)) {
+      saveAdditionalGamsClArgs(miroModelDir, "pickstock", c(additionalGamsClArgs, extraClArgs))
+    }
+    source(file.path(testDir, "shinytest", "mirolog_test.R"), local = TRUE)
+
+    if (length(additionalGamsClArgs)) {
+      file.rename(
+        file.path(miroModelDir, "conf_pickstock", "pickstock_tmp.json"),
+        file.path(miroModelDir, "conf_pickstock", "pickstock.json")
+      )
+    }
+
+    Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "GMSMODELNAME", "PYTHON_EXEC_PATH", "MIRO_LOG_CONTAINER_ID"))
   })
 )

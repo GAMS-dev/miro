@@ -502,6 +502,9 @@ observeEvent(input$general_mirologfile, {
   }
   rv$generalConfig$miroLogFile <<- NULL
 })
+observeEvent(input$general_mirologParsingStdout, {
+  rv$generalConfig$parseLogForMiroLogSyntax <<- isTRUE(input$general_mirologParsingStdout)
+})
 observeEvent(input$add_general, {
   if (length(input$add_general) < 3L) {
     return()

@@ -777,7 +777,7 @@ if (buildUI) {
           value = "log",
           tags$pre(
             id = "logStatusContainer",
-            class = "shiny-text-output noplaceholder"
+            class = "noplaceholder"
           ),
           tags$div(
             class = "update-mobile",
@@ -791,9 +791,9 @@ if (buildUI) {
           logTabsetList$miroLog <- tabPanel(
             title = tags$div(class = "log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$miroLogFile),
             value = "mirolog",
-            tagAppendAttributes(
-              class = "shiny-text-output noplaceholder pre-style-div",
-              uiOutput("miroLogContainer")
+            tags$div(
+              id = "miroLogContainer",
+              class = "noplaceholder pre-style-div"
             )
           )
         }
@@ -803,7 +803,7 @@ if (buildUI) {
           value = "mirolog",
           tags$div(
             id = "logStatusContainer",
-            class = "shiny-text-output noplaceholder pre-style-div"
+            class = "noplaceholder pre-style-div"
           ),
           checkboxInput("logUpdate",
             label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate,

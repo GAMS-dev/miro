@@ -391,7 +391,6 @@
         "maxTabsExpandedSplitComp": 5,
         "maxTabsExpandedTabComp": 5
     },
-    "miroLogFile": "miro.log",
     "outputGroups": [
         {
             "members": [

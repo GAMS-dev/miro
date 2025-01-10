@@ -1105,52 +1105,6 @@ IdIdxMap <- R6Class("IdIdxMap", public = list(
 ), private = list(
   items = list()
 ))
-parseMiroLog <- function(session, logPath,
-                         inputSymbols, inputScalars = NULL) {
-  logContent <- htmltools::htmlEscape(read_lines(logPath))
-  if (!length(inputSymbols)) {
-    return(list(annotations = list(), content = logContent))
-  }
-  parsedLog <- list()
-  for (i in seq_along(logContent)) {
-    logLine <- logContent[i]
-    logLineSplitted <- stri_split_fixed(
-      str = logLine,
-      pattern = "::", n = 2
-    )[[1L]]
-    if (length(logLineSplitted) < 2L) {
-      next
-    }
-    symbolName <- tolower(trimws(logLineSplitted[[1L]]))
-    if (symbolName %in% inputSymbols) {
-      parsedLog[[symbolName]] <- c(
-        parsedLog[[symbolName]],
-        paste0(
-          '<li ondblclick="Miro.jumpToLogMark(', i, ')">',
-          paste(logLineSplitted[-1], collapse = ""),
-          "</li>"
-        )
-      )
-      logContent[i] <- paste0(
-        '<mark id="mlogMark_', i,
-        '" class="miro-log-mark">', logContent[i], "</mark>"
-      )
-      next
-    }
-    if (length(inputScalars) && symbolName %in% inputScalars) {
-      parsedLog[[scalarsFileName]] <- c(
-        parsedLog[[symbolName]],
-        paste(logLineSplitted[-1], collapse = "")
-      )
-      logContent[i] <- paste0(
-        '<mark id="mlogMark_', i,
-        '" class="miro-log-mark">', logContent[i], "</mark>"
-      )
-      next
-    }
-  }
-  return(list(content = logContent, annotations = parsedLog))
-}
 filterScalars <- function(scalars, scalarsOutList, type = c("input", "output")) {
   type <- match.arg(type)
 
