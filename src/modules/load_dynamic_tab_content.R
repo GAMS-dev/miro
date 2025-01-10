@@ -124,12 +124,14 @@ getPivotCompGraphConfig <- function(sheetName) {
       )
     )
   }
-  if (isTRUE(config$pivotCompSettings$enableHideEmptyCols)) {
-    graphConfig$options$enableHideEmptyCols <- TRUE
-    graphConfig$options$emptyUEL <- config$pivotCompSettings$emptyUEL
-  }
+  graphConfig$options$emptyUEL <- config$pivotCompSettings$emptyUEL
   graphConfig$options$hidePivotControls <- config$pivotCompSettings$hidePivotControls
   graphConfig$options$fixedColumns <- config$pivotCompSettings$fixedColumns
+  graphConfig$options$tableSummarySettings <- config$pivotCompSettings$tableSummarySettings
+  graphConfig$options$hideEmptyCols <- config$pivotCompSettings$hideEmptyCols
+  graphConfig$options$customChartColors <- config$pivotCompSettings$customChartColors
+  graphConfig$options$emptyUEL <- config$pivotCompSettings$emptyUEL
+  graphConfig$options$chartFontSize <- config$pivotCompSettings$chartFontSize
   return(graphConfig)
 }
 loadDynamicTabContentCustom <- function(session, compareModuleConfig, initEnv = FALSE) {

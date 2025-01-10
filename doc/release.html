@@ -141,13 +141,23 @@
                         </ul>
                       </li>
                       <li>
-                        New <a href="./charts.html#pivot-view">view</a> options
-                        in
+                        New options in
                         <a href="./charts.html#pivot-chart">MIRO Pivot</a>
                         and
                         <a href="./charts.html#dashboard">dashboard renderer</a
                         >:
                         <ul>
+                          <li>
+                            Support separate activation/deactivation of
+                            row/column summary.
+                          </li>
+                          <li>
+                            Add option to configure filter dimensions as
+                            single-choice drop down menus.
+                          </li>
+                          <li>
+                            Add option to specify the font size for charts.
+                          </li>
                           <li>Add support for a second x/y-axis.</li>
                           <li>
                             Add option to select the second chart type in a
@@ -181,27 +191,43 @@
                           </li>
                           <li>Add option to show/hide the grid in a chart.</li>
                           <li>
-                            Add option to specify the fill opacify for stacked
+                            Add option to specify the fill opacity for stacked
                             and regular area charts.
                           </li>
                           <li>
                             Add option to stack positive and negative values
                             together for stacked charts.
                           </li>
-                          <li>
-                            Configuration Mode: When activating checkbox to
-                            load scenario on app startup, the scenario name is
-                            now "default" by default.
-                          </li>
                         </ul>
                       </li>
                       <li>
                         MIRO Pivot:
                         <ul>
-                          <li>The view dialog has been restructured.</li>
                           <li>
-                            Support setting title for <kbd>table</kbd> and
-                            <kbd>heatmap</kbd> renderers.
+                            The
+                            <a href="./charts.html#pivot-view">view dialog</a>
+                            has been restructured.
+                          </li>
+                          <li>
+                            The
+                            <a href="./charts.html#pivot-settings"
+                              >settings dialog</a
+                            >
+                            has been restructured.
+                          </li>
+                          <li>
+                            Support setting title for
+                            <kbd>table</kbd> and <kbd>heatmap</kbd> renderers.
+                          </li>
+                          <li>
+                            Add option to activate/deactivate fixed table
+                            columns to the settings menu.
+                          </li>
+                          <li>
+                            The <kbd>enableHideEmptyCols</kbd> option has been
+                            deprecated. The functionality to show/hide empty
+                            table columns is now always accessible via the
+                            settings menu.
                           </li>
                           <li>
                             The CSV and PNG download buttons have been
@@ -210,14 +236,20 @@
                         </ul>
                       </li>
                       <li>
-                        MIRO Pivot and dashboard renderer: Support separate
-                        activation/deactivation of row/column summary.
+                        Pivot compare mode: Add support for setting default
+                        values for several configuration options that are also
+                        available in the regular Pivot tool.
                       </li>
-                      <li>Add GAMSPy example model: tsp.</li>
+                      <li>
+                        Configuration Mode: When activating checkbox to load
+                        scenario on app startup, the scenario name is now
+                        "default" by default.
+                      </li>
                       <li>
                         Improve error messages if the validation of the JSON
                         configuration file fails.
                       </li>
+                      <li>Add GAMSPy example model: tsp.</li>
                       <li>
                         Add option to
                         <a
@@ -233,6 +265,11 @@
                       <li>
                         MIRO Pivot: Fix issue where removing title from chart
                         did not work properly.
+                      </li>
+                      <li>
+                        Pivot compare mode: Fix issue where removing all
+                        dimensions from rows could cause a problem in certain
+                        situations.
                       </li>
                       <li>
                         Update Help menu link to point to the new

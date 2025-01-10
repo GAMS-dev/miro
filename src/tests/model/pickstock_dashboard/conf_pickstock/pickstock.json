@@ -397,6 +397,7 @@
               "yTitle": "Price"
             },
             "userFilter": ["uni", "date"],
+            "singleDropdown": "uni",
             "data": "pricemerge",
             "decimals": 2
           }

@@ -610,7 +610,7 @@ font-size: 12px;
                 ),
                 renderDataUI("preview_output_miropivot",
                   type = "miropivot",
-                  height = 400, customOptions = list(enableHideEmptyCols = TRUE)
+                  height = 400, customOptions = list()
                 )
               ),
               tags$div(
@@ -758,7 +758,6 @@ font-size: 12px;
                   type = "miropivot", height = 400,
                   showNoDataTxt = FALSE,
                   customOptions = list(
-                    enableHideEmptyCols = TRUE,
                     "_input_" = TRUE
                   )
                 ),
@@ -1325,6 +1324,7 @@ font-size: 12px;
                     tags$div(
                       class = "option-wrapper",
                       tags$h4(lang$adminMode$general$ui$headerPivotcompare, class = "option-category"),
+                      tags$div(lang$adminMode$general$ui$descriptionPivotcompare),
                       getMIROPivotOptions(configJSON$pivotCompSettings,
                         prefix = "pivotcomp_",
                         pivotComp = TRUE

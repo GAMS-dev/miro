@@ -618,7 +618,6 @@
       "options": {
         "aggregationFunction": "sum",
         "pivotRenderer": "line",
-        "enableHideEmptyCols": false,
         "hideEmptyCols": false,
         "hidePivotControls": false,
         "fixedColumns": true,
@@ -773,7 +772,6 @@
   "theme": "dark",
   "defCompMode": "tab",
   "pivotCompSettings": {
-    "enableHideEmptyCols": true,
     "emptyUEL": "&",
     "fixedColumns": true,
     "hidePivotControls": false
