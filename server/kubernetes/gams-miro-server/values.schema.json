@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "global": {
+      "type": "object",
+      "properties": {
+        "networkPolicy": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "apiServerIp": {
+              "type": "string"
+            }
+          },
+          "required": ["enabled"],
+          "dependencies": {
+            "enabled": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "enabled": {
+                      "const": false
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "enabled": {
+                      "const": true
+                    },
+                    "apiServerIp": {
+                      "minLength": 1
+                    }
+                  },
+                  "required": ["apiServerIp"]
+                }
+              ]
+            }
+          }
+        }
+      },
+      "required": ["networkPolicy"]
+    }
+  },
+  "required": ["global"]
+}
