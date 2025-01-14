@@ -5,17 +5,17 @@ apiVersion: v2
 name: gams-miro-server
 description: A Helm chart for GAMS MIRO Server
 version: 0.1.0
-appVersion: "2.11.0"
+appVersion: '2.10.9999'
 annotations:
   licenses: GPL-3.0-only
 maintainers:
-- name: GAMS Development Corp.
-  url: https://gams.com
+  - name: GAMS Development Corp.
+    url: https://gams.com
 sources:
-- https://github.com/GAMS-dev/miro/tree/master/server/kubernetes/gams-miro-server
+  - https://github.com/GAMS-dev/miro/tree/master/server/kubernetes/gams-miro-server
 dependencies:
-- name: common
-  repository: oci://registry-1.docker.io/bitnamicharts
-  tags:
-  - bitnami-common
-  version: 2.x.x
+  - name: common
+    repository: oci://registry-1.docker.io/bitnamicharts
+    tags:
+      - bitnami-common
+    version: 2.x.x
