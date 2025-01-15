@@ -498,10 +498,10 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
       }
 
       div(
-        class = "shiny-html-output",
         class = if (!is.null(width)) {
           paste0("col-sm-", width)
         },
+        `data-namespace` = ns(""),
         id = id,
         boxContent
       )

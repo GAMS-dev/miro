@@ -537,23 +537,16 @@ $(() => {
   // miro dashboard value boxes click handler
   $(document).on(
     'click',
-    '.miro-dashboard-valueboxes-wrapper .shiny-html-output',
+    '.custom-info-box',
     function () {
-      let namespaceId = this.id.split('-');
-      namespaceId = `${namespaceId[0]}-${namespaceId[1]}`;
-      Shiny.setInputValue(`${namespaceId}-showChart`, this.id, {
-        priority: 'event',
-      });
-    },
-  );
-  // miro dashboard comparison value boxes click handler
-  $(document).on(
-    'click',
-    '.miro-dashboard-comparison-valueboxes-wrapper .shiny-html-output',
-    function () {
-      let namespaceId = this.id.split('-');
-      namespaceId = `${namespaceId[0]}`;
-      Shiny.setInputValue(`${namespaceId}-showChart`, this.id, {
+      const parentDiv = $(this).parent();
+      let namespaceId = parentDiv[0].dataset.namespace;
+      if (namespaceId == null) {
+        // old dashboard renderers did not have namespace data attribute
+        namespaceId = parentDiv[0].id.split('-');
+        namespaceId = `${namespaceId[0]}-${namespaceId[1]}-`;
+      }
+      Shiny.setInputValue(`${namespaceId}showChart`, parentDiv.attr('id'), {
         priority: 'event',
       });
     },
