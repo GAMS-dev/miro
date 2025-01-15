@@ -1700,7 +1700,7 @@ serverSelectInput <- function(session, inputId, label, choices, selected = NULL,
     }, "
               }
             });
-          }"))), options)
+          }"))), if (is.null(options)) list() else options)
   )
 }
 isValidUEL <- function(uelToTest) {
