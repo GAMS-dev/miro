@@ -1,4 +1,4 @@
-const { ipcRenderer, shell } = require('electron');
+const { ipcRenderer, shell, webUtils } = require('electron');
 const path = require('path');
 const { pathToFileURL } = require('url');
 const util = require('util');
@@ -352,7 +352,7 @@ appsWrapper.on('drop', '.app-logo', function newLogoHandler(e) {
   $('.app-box').removeClass('drag-drop-area-dragover');
   $this.removeClass('index-dragover').removeClass('drag-drop-area-dragover');
   $this.children('.drag-drop-area-text').text(lang.appLogoPlaceholder);
-  const filePath = [...e.originalEvent.dataTransfer.files].map((el) => el.path);
+  const filePath = [...e.originalEvent.dataTransfer.files].map((el) => webUtils.getPathForFile(el));
   ipcRenderer.send('validate-logo', filePath, HTMLIDToUnicode(this.dataset.id));
 });
 appsWrapper.on('click', '.app-logo', function browseLogoHandler() {
@@ -404,7 +404,7 @@ appsWrapper.on('drop', '#addAppBox', (e) => {
   dragAddAppCounter = 0;
   $('#addAppBox').removeClass('index-dragover');
   $('#addApp').removeClass('btn-add-app-dragover');
-  const filePaths = [...e.originalEvent.dataTransfer.files].map((el) => el.path);
+  const filePaths = [...e.originalEvent.dataTransfer.files].map((el) => webUtils.getPathForFile(el));
   ipcRenderer.send('validate-app', filePaths);
 });
 appsWrapper.on('dragover', '.drag-drop-area', (e) => {
@@ -439,7 +439,7 @@ appsWrapper.on('drop', '#newAppFiles', (e) => {
   e.stopPropagation();
   dragAddAppCounter = 0;
   $('#newAppFiles').removeClass('index-dragover').text(lang.appFilesPlaceholder);
-  const filePaths = [...e.originalEvent.dataTransfer.files].map((el) => el.path);
+  const filePaths = [...e.originalEvent.dataTransfer.files].map((el) => webUtils.getPathForFile(el));
   ipcRenderer.send('validate-app', filePaths);
 });
 appsWrapper.on('click', '#newAppFiles', () => {
@@ -505,7 +505,7 @@ appsWrapper.on('drop', '.app-box', function appBoxDropHandler(e) {
     const spinnerId = `#appSpinner_${idToEncoded}`;
     $(spinnerId).show();
     const filesTmp = [...e.originalEvent.dataTransfer.files];
-    const filePaths = filesTmp.map((el) => el.path);
+    const filePaths = filesTmp.map((el) => webUtils.getPathForFile(el));
     const fileTypes = filesTmp.map((fileTmp) => fileTmp.name.split('.').pop().toLowerCase());
     if (fileTypes.length === 1 && fileTypes[0] === 'miroapp') {
       ipcRenderer.send('update-app', filePaths, idTo);
