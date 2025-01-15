@@ -1,5 +1,5 @@
 getLogoName <- function(appId, logoFile) {
-  return(paste0(appId, "_logo.", tools::file_ext(logoFile)))
+  return(paste0(appId, "_", stringi::stri_rand_strings(1L, 15L)[[1L]], "_logo.", tools::file_ext(logoFile)))
 }
 
 createAppDir <- function(appId) {
@@ -96,7 +96,7 @@ extractAppData <- function(miroAppPath, appId, modelId, miroProc) {
   }
 }
 
-addAppLogo <- function(appId, logoFile = NULL) {
+addAppLogo <- function(appId, logoFile = NULL, newLogoName = NULL) {
   logoDir <- file.path(MIRO_DATA_DIR, "logos")
   modelPath <- file.path(MIRO_MODEL_DIR, appId)
   if (length(logoFile)) {
@@ -105,7 +105,9 @@ addAppLogo <- function(appId, logoFile = NULL) {
     } else {
       logoPath <- file.path(modelPath, logoFile)
     }
-    newLogoName <- getLogoName(appId, logoFile)
+    if (is.null(newLogoName)) {
+      newLogoName <- getLogoName(appId, logoFile)
+    }
     if (!file.exists(logoPath)) {
       stop(sprintf("Logo: %s does not exist.", logoPath), call. = FALSE)
     }
@@ -127,9 +129,7 @@ addAppLogo <- function(appId, logoFile = NULL) {
   }
 }
 
-removeAppData <- function(appId, logoFilename) {
-  modelPath <- file.path(MIRO_MODEL_DIR, appId)
-  dataPath <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
+removeAppLogo <- function(appId, logoFilename) {
   if (!identical(logoFilename, "default_logo.png")) {
     logoPath <- file.path(MIRO_DATA_DIR, "logos", logoFilename)
     if (file.exists(logoPath)) {
@@ -141,6 +141,12 @@ removeAppData <- function(appId, logoFilename) {
       }
     }
   }
+}
+
+removeAppData <- function(appId, logoFilename) {
+  modelPath <- file.path(MIRO_MODEL_DIR, appId)
+  dataPath <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
+  removeAppLogo(appId, logoFilename)
   for (dirToRemove in c(modelPath, dataPath)) {
     if (dir.exists(dirToRemove)) {
       if (unlink(dirToRemove, recursive = TRUE, force = TRUE) == 1) {

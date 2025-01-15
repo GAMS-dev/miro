@@ -176,7 +176,7 @@ tryCatch(
       extractAppData(
         appPath, appId, modelId
       )
-      addAppLogo(appId, logoPath)
+      addAppLogo(appId, logoPath, logoURL)
     }
 
     procEnv <- as.list(Sys.getenv())

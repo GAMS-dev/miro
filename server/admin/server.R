@@ -207,7 +207,7 @@ server <- function(input, output, session) {
         extractAppData(
           input$miroAppFile$datapath, appId, modelId, miroProc
         )
-        addAppLogo(appId, logoPath)
+        addAppLogo(appId, logoPath, logoURL)
         modelName <- miroAppValidator$getModelName()
         newAppConfig <- list(
           id = appId, displayName = newAppTitle, description = newAppDesc,
@@ -395,8 +395,9 @@ server <- function(input, output, session) {
           if (!length(logoPath)) {
             stop("Logo file not found.", call. = FALSE)
           }
+          removeAppLogo(appId, modelConfig$getAppLogo(appIndex))
           newLogoName <- getLogoName(appId, logoPath)
-          addAppLogo(appId, logoPath)
+          addAppLogo(appId, logoPath, newLogoName)
         }
 
         newAppEnv <- NULL
