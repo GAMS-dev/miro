@@ -675,6 +675,7 @@
       "placeholder": "搜索..."
     },
     "miroPivot":{
+      "btDownload": "下载",
       "btDownloadCsv": "下载CSV",
       "btDownloadPng": "下载PNG",
       "btDownloadCsvShort": "CSV",
@@ -689,11 +690,6 @@
       "btEnableEdit": "激活编辑",
       "btAddRow": "添加行",
       "btRemoveRows": "删除行",
-      "cbHideEmptyCols": "隐藏空列",
-      "cbShowTableSummaryRow": "显示表格摘要（行）",
-      "cbShowTableSummaryCol": "显示表格摘要（列）",
-      "rowSummaryFunction": "汇总行的函数",
-      "colSummaryFunction": "汇总列的函数",
       "rows": "行数",
       "columns": "专栏",
       "aggregation": "汇总",
@@ -719,7 +715,7 @@
         "tabScales": "轴",
         "tabMultiChart": "组合图",
         "tabSecondAxis": "第二轴",
-        "tabColors": "颜色",
+        "tabSeries": "系列样式",
         "title": "新增检视",
         "label": "请为该视图选择一个名称。",
         "info": "请注意，水平图表的轴设置会交换。",
@@ -752,10 +748,33 @@
         "cbCustomColors": "使用自定义颜色？",
         "cbManualColors": "手动输入颜色？",
         "fillOpacity": "填充不透明度",
+        "cbLineDash": "使用虚线",
+        "cbManualLineDashTooltip": "定义线条和间隔长度的数组",
+        "solid": "实线",
+        "dotted": "点线",
+        "dashed": "虚线",
+        "wideDashed": "宽虚线",
+        "dashDot": "虚点线",
+        "dashDotDot": "虚点点线",
+        "customPattern": "自定义虚线",
+        "cbBorderWidth": "使用自定义边框宽度",
         "btCancel": "取消",
         "btSave": "保存",
         "btCancelOverwrite": "不",
         "btOverwrite": "是的"
+      },
+      "settings": {
+        "tabGeneral": "常规",
+        "tabTable": "表格",
+        "tabChart": "图表",
+        "cbHideEmptyCols": "隐藏空列",
+        "singleDropdown": "限制为单选下拉过滤器的维度",
+        "cbShowTableSummaryRow": "显示表格摘要（行）",
+        "cbShowTableSummaryCol": "显示表格摘要（列）",
+        "rowSummaryFunction": "汇总行的函数",
+        "colSummaryFunction": "汇总列的函数",
+        "fixedColumns": "将表格列固定在左侧",
+        "chartFontSize": "图表中使用的字体大小"
       },
       "dialogAddRow":{
         "title": "添加新行",
@@ -1092,6 +1111,7 @@
         "tabSymbolLinks": "隐藏的符号和符号链接",
         "headerGeneral": "标题和标志",
         "headerPivotcompare": "枢轴比较模式",
+        "descriptionPivotcompare": "这些设置是用户的默认值，但可以在会话期间随时更改。",
         "headerRenderers": "默认渲染器",
         "headerAppearance": "外观",
         "headerSymbolDisplay": "Symbol display",
@@ -1185,8 +1205,10 @@
       },
       "mirologfile":{
         "label": "包括自定义日志文件？",
-        "tooltip": "输入MIRO日志文件的名称（最少3个字符）。如果没有MIRO日志文件，请将该字段留空。"
+        "tooltip": "输入MIRO日志文件的名称（最少3个字符）。如果没有MIRO日志文件，请将该字段留空。",
+        "miroLogExclusiveError": "只能解析一个日志文件以匹配MIRO日志语法。因此，仅解析标准输出(stdout)，但MIRO日志仍会显示。"
       },
+      "mirologStdout": "是否应解析标准日志文件（进程的标准输出）以匹配MIRO日志语法？",
       "readme":{
         "label": "README文件",
         "readmeTooltip": "README文件在输入中显示为单独的起始页",
@@ -1855,11 +1877,12 @@
       "miroPivotOptions":{
         "externalDefaultViewSwitch": "使用外部默认视图",
         "externalDefaultViewName": "用作默认视图的名称",
-        "infoMsg": "请直接使用右侧的预览来配置默认视图。",
-        "hideEmptyColsSwitch": "激活开关以隐藏空列",
+        "infoMsg": "请直接使用右侧的预览来配置默认视图。这包括设置 (%s) 和视图选项 (%s)",
+        "hideEmptyColsSwitch": "默认激活开关以隐藏空列",
         "emptyUEL": "UEL，指示缺少值（不得为空字符串）",
+        "emptyUELTooltip": "隐藏空列的开关（位于数据透视表设置菜单中）允许隐藏表格中的空列。这在数据立方体中特别有用，因为单个视图可能包含空维度。",
         "hidePivotControlsSwitch": "默认显示演示模式",
-        "fixedColumnsSwitch": "启用固定列",
+        "fixedColumnsSwitch": "修复列",
         "fixedColumnsTooltip": "如果这个选项被激活，透视表的列就会被固定在表格的左边，并且在水平滚动时保持可见。",
         "infoMsgDummyData": "当前，预览使用伪数据。 这意味着过滤器将具有伪值。 如果要更改它们，则必须手动编辑JSON配置文件。"
       },

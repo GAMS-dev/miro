@@ -634,6 +634,7 @@
         "placeholder": "Search..."
       },
      "miroPivot":{
+      "btDownload": "Download",
       "btDownloadCsv": "Download CSV",
       "btDownloadPng": "Download PNG",
       "btDownloadCsvShort": "CSV",
@@ -648,11 +649,6 @@
       "btEnableEdit": "Enable editing",
       "btAddRow": "Add row",
       "btRemoveRows": "Remove rows",
-      "cbHideEmptyCols": "Hide empty columns",
-      "cbShowTableSummaryRow": "Show table summary (rows)",
-      "cbShowTableSummaryCol": "Show table summary (columns)",
-      "rowSummaryFunction": "Row summary function",
-      "colSummaryFunction": "Column summary function",
       "rows": "Rows",
       "columns": "Columns",
       "aggregation": "Aggregation",
@@ -678,7 +674,7 @@
         "tabScales": "Axes",
         "tabMultiChart": "Combo chart",
         "tabSecondAxis": "Second Axis",
-        "tabColors": "Colors",
+        "tabSeries": "Series Styling",
         "title": "New view",
         "label": "Please choose a name for the view.",
         "info": "Axis settings are reversed for horizontal charts.",
@@ -711,10 +707,33 @@
         "cbCustomColors": "Use custom colors",
         "cbManualColors": "Enter colors manually",
         "fillOpacity": "Fill opacity",
+        "cbLineDash": "Use dashed lines",
+        "cbManualLineDashTooltip": "Array of values defining alternating line and gap lengths",
+        "solid": "Solid",
+        "dotted": "Dotted",
+        "dashed": "Dashed",
+        "wideDashed": "Wide-Dashed",
+        "dashDot": "Dash-Dot",
+        "dashDotDot": "Dash-Dot-Dot",
+        "customPattern": "Custom Pattern",
+        "cbBorderWidth": "Use custom border width",
         "btCancel": "Cancel",
         "btSave": "Save",
         "btCancelOverwrite": "No",
         "btOverwrite": "Yes"
+      },
+      "settings": {
+        "tabGeneral": "General",
+        "tabTable": "Tables",
+        "tabChart": "Charts",
+        "cbHideEmptyCols": "Hide empty columns",
+        "singleDropdown": "Dimension(s) to limit to a single-selection dropdown filter",
+        "cbShowTableSummaryRow": "Show table summary (rows)",
+        "cbShowTableSummaryCol": "Show table summary (columns)",
+        "rowSummaryFunction": "Row summary function",
+        "colSummaryFunction": "Column summary function",
+        "fixedColumns": "Fix table columns to the left",
+        "chartFontSize": "Font size to use in charts"
       },
       "dialogAddRow":{
         "title": "Add new row",
@@ -1092,6 +1111,7 @@
         "tabSymbolLinks": "Hidden Symbols and Symbol Links",
         "headerGeneral": "Title and Logo",
         "headerPivotcompare": "Pivot comparison mode",
+        "descriptionPivotcompare": "These settings serve as default values for the user, but they can be adjusted at any time during a session.",
         "headerRenderers": "Default Renderers",
         "headerAppearance": "Appearance",
         "headerSymbolDisplay": "Hide symbols",
@@ -1186,8 +1206,10 @@
       },
       "mirologfile":{
         "label": "Include custom log file?",
-        "tooltip": "Enter the name of the MIRO log file (minimum 3 characters). Otherwise, leave this field empty."
+        "tooltip": "Enter the name of the MIRO log file (minimum 3 characters). Otherwise, leave this field empty.",
+        "miroLogExclusiveError": "Only one log file can be parsed for MIRO log syntax. Therefore, only stdout will be parsed, but the MIRO log will still be displayed."
       },
+      "mirologStdout": "Should the standard log file (process stdout) be parsed for MIRO log syntax?",
       "readme":{
         "label": "README File",
         "readmeTooltip": "A README file is displayed in the input section as an individual start page",
@@ -1857,11 +1879,12 @@
       "miroPivotOptions":{
         "externalDefaultViewSwitch": "Use external default view",
         "externalDefaultViewName": "Name of the view to use as default",
-        "infoMsg": "Please use directly the preview on the right side to configure the default view.",
-        "hideEmptyColsSwitch": "Enable switch to hide empty columns",
+        "infoMsg": "Please use directly the preview on the right side to configure the default view. This includes settings (%s) and view options (%s)",
+        "hideEmptyColsSwitch": "Enable switch to hide empty columns by default",
         "emptyUEL": "UEL, which indicates a missing value (must not be empty string)",
+        "emptyUELTooltip": "The switch to hide empty columns (located in the pivot table settings menu) allows to hide empty columns in a table. This is especially useful in a data cube where individual views can have empty dimensions.",
         "hidePivotControlsSwitch": "Show presentation mode by default",
-        "fixedColumnsSwitch": "Enable fixed columns",
+        "fixedColumnsSwitch": "Fix columns",
         "fixedColumnsTooltip": "If this option is activated, the columns of the pivot table are fixed to the left side of the table and remain visible when scrolling horizontally.",
         "infoMsgDummyData": "Currently the preview uses dummy data. This means that the filters will have dummy values. If you want to change these, you have to edit the JSON configuration file manually."
       },

@@ -721,13 +721,14 @@ genSpinner <- function(id = NULL, hidden = FALSE, absolute = TRUE, externalStyle
     div(class = "gen-spinner")
   )
 }
-checkboxInput_MIRO <- function(inputId, label, value = FALSE) {
+checkboxInput_MIRO <- function(inputId, label, value = FALSE, width = NULL) {
   inputTag <- tags$input(id = inputId, type = "checkbox")
   if (!is.null(value) && value) {
     inputTag$attribs$checked <- "checked"
   }
   tags$div(
     class = "shiny-input-container",
+    style = if (!is.null(width)) paste0("width: ", width),
     tags$label(class = "cb-label", "for" = inputId, label),
     tags$div(
       tags$label(
@@ -1104,52 +1105,6 @@ IdIdxMap <- R6Class("IdIdxMap", public = list(
 ), private = list(
   items = list()
 ))
-parseMiroLog <- function(session, logPath,
-                         inputSymbols, inputScalars = NULL) {
-  logContent <- htmltools::htmlEscape(read_lines(logPath))
-  if (!length(inputSymbols)) {
-    return(list(annotations = list(), content = logContent))
-  }
-  parsedLog <- list()
-  for (i in seq_along(logContent)) {
-    logLine <- logContent[i]
-    logLineSplitted <- stri_split_fixed(
-      str = logLine,
-      pattern = "::", n = 2
-    )[[1L]]
-    if (length(logLineSplitted) < 2L) {
-      next
-    }
-    symbolName <- tolower(trimws(logLineSplitted[[1L]]))
-    if (symbolName %in% inputSymbols) {
-      parsedLog[[symbolName]] <- c(
-        parsedLog[[symbolName]],
-        paste0(
-          '<li ondblclick="Miro.jumpToLogMark(', i, ')">',
-          paste(logLineSplitted[-1], collapse = ""),
-          "</li>"
-        )
-      )
-      logContent[i] <- paste0(
-        '<mark id="mlogMark_', i,
-        '" class="miro-log-mark">', logContent[i], "</mark>"
-      )
-      next
-    }
-    if (length(inputScalars) && symbolName %in% inputScalars) {
-      parsedLog[[scalarsFileName]] <- c(
-        parsedLog[[symbolName]],
-        paste(logLineSplitted[-1], collapse = "")
-      )
-      logContent[i] <- paste0(
-        '<mark id="mlogMark_', i,
-        '" class="miro-log-mark">', logContent[i], "</mark>"
-      )
-      next
-    }
-  }
-  return(list(content = logContent, annotations = parsedLog))
-}
 filterScalars <- function(scalars, scalarsOutList, type = c("input", "output")) {
   type <- match.arg(type)
 
@@ -1900,12 +1855,12 @@ colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE) {
       class = "shiny-input-container miro-color-picker",
       fluidRow(
         class = "color-picker-element",
-        column(
-          width = 10L,
+        tags$div(
+          class = "col-xs-10",
           tags$label(`for` = id, label, style = "font-weight:400;")
         ),
-        column(
-          width = 2L,
+        tags$div(
+          class = "col-xs-2",
           tags$span(
             class = "input-group-addon",
             style = "float: right;",
@@ -1919,8 +1874,8 @@ colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE) {
             ))
           )
         ),
-        column(
-          width = 12L,
+        tags$div(
+          class = "col-xs-12",
           tags$input(
             id = id, type = "text",
             class = "form-control",
@@ -1946,6 +1901,63 @@ colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE) {
     singleton(tags$head(tags$link(href = "bootstrap-colorpicker.min.css", rel = "stylesheet"))),
     colorpicker
   ))
+}
+lineDashInput <- function(id, choices, label = NULL, selected = NULL, selectedValue = NULL) {
+  lineDash <- tags$div(
+    class = "shiny-input-container line-dash-picker",
+    fluidRow(
+      class = "line-dash-element",
+      column(
+        width = 6L,
+        tags$label(`for` = paste0(id, "select"), label, style = "font-weight:400;")
+      ),
+      column(
+        width = 6L,
+        class = "line-dash-dropdown",
+        selectizeInput(
+          inputId = paste0(id, "select"),
+          label = NULL,
+          choices = choices,
+          selected = selected,
+          width = "100%",
+          options = list(
+            onChange = I("
+            function(value) {
+              var textInput = $('#' + this.$input[0].id)
+                .closest('.line-dash-picker')
+                .find('.line-dash-textinput');
+              if (textInput.length > 0) {
+                if (value !== 'custom') {
+                  textInput.val(value).trigger('change');
+                  textInput.parent().hide();
+                } else {
+                  textInput.parent().show();
+                }
+              }
+            }")
+          )
+        )
+      ),
+      column(
+        width = 12L,
+        tags$div(
+          class = "input-group",
+          style = paste0("margin-bottom:5px;", if (selected != "custom") "display:none;"),
+          tags$input(
+            id = id, type = "text",
+            class = "form-control line-dash-textinput",
+            value = if (selected == "custom") selectedValue else selected
+          ),
+          tags$span(
+            class = "input-group-addon tooltip-mobile",
+            `data-tooltip` = lang$renderers$miroPivot$newView$cbManualLineDashTooltip,
+            icon("info-circle")
+          )
+        )
+      )
+    )
+  )
+  return(lineDash)
 }
 getCombinationsSlider <- function(lowerVal, upperVal, stepSize = 1) {
   # BEGIN error checks

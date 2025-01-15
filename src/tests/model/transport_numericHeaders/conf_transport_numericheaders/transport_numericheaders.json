@@ -85,7 +85,6 @@
       "options": {
         "aggregationFunction": "sum",
         "pivotRenderer": "bar",
-        "enableHideEmptyCols": false,
         "hideEmptyCols": false,
         "hidePivotControls": false,
         "fixedColumns": true,

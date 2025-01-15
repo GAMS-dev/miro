@@ -6,7 +6,6 @@
       "options": {
         "aggregationFunction": "min",
         "pivotRenderer": "table",
-        "enableHideEmptyCols": false,
         "hideEmptyCols": false,
         "hidePivotControls": false,
         "emptyUEL": "-",

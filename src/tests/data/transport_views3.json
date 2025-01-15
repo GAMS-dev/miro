@@ -34,13 +34,23 @@
                     "stackMultiChartSeries": "no",
                     "multiChartStepPlot": true
                 },
+                "customLineDashPatterns": {
+                    "New-york": [
+                        10,
+                        5
+                    ]
+                },
+                "customBorderWidths": {
+                    "New-york": 5
+                },
                 "y2axis": {
                     "series": "Topeka",
                     "title": "zzz",
                     "showGrid": false,
                     "logScale": true
                 }
-            }
+            },
+            "chartFontSize": 22
         }
     }
 }

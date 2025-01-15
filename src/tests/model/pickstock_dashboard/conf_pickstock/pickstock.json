@@ -344,6 +344,10 @@
               "customLabels": {
                 "dj": "Dow Jones",
                 "index fund": "Index Fund"
+              },
+              "customLineDashPatterns": {
+                "Dow Jones": [10, 5],
+                "Index Fund": [1, 1]
               }
             },
             "data": "dowvsindex",
@@ -393,6 +397,7 @@
               "yTitle": "Price"
             },
             "userFilter": ["uni", "date"],
+            "singleDropdown": "uni",
             "data": "pricemerge",
             "decimals": 2
           }

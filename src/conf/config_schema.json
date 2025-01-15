@@ -180,11 +180,11 @@
           "minLength": 1
         },
         "enableHideEmptyCols": {
-          "description": "Enable button that allows to hide empty columns.",
+          "description": "Deprecated! This setting has no effect anymore. Show button that allows to hide empty columns.",
           "type": "boolean"
         },
         "hideEmptyCols": {
-          "description": "Default value for hide empty columns checkbox (only relevant if enableHideEmptyCols is TRUE).",
+          "description": "Default value for hide empty columns checkbox.",
           "type": "boolean"
         },
         "enablePersistentViews": {
@@ -199,6 +199,20 @@
           "description": "Name of an external view (either global or scenario specific) to be used as default view. If this view does not exist, the default configuration for this symbol is used.",
           "type": "string",
           "minLength": 1
+        },
+        "singleDropdown": {
+          "description": "Whether to show filter dimensions as single-choice drop down menus",
+          "type": [
+            "array",
+            "string"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "chartFontSize": {
+          "description": "Font size used for charts.",
+          "type": "integer"
         },
         "customChartColors": {
           "description": "Custom color palette. Every second color is the hover color of previous one.",
@@ -294,6 +308,28 @@
               "description": "Fill opacity for stacked and regular area charts.",
               "type": "number",
               "minLength": 1
+            },
+            "customLineDashPatterns": {
+              "description": "Length and spacing of dashes in line charts.",
+              "type": "object",
+              "additionalProperties": {
+                "type": [
+                  "array",
+                  "integer"
+                ],
+                "items": {
+                  "type": "integer"
+                }
+              }
+            },
+            "customBorderWidths": {
+              "description": "Border width of a series.",
+              "type": "object",
+              "additionalProperties": {
+                "type": [
+                  "integer"
+                ]
+              }
             },
             "multiChartOptions": {
               "description": "Options for multiChartSeries",
@@ -829,6 +865,28 @@
                     "type": "number",
                     "minLength": 1
                   },
+                  "customLineDashPatterns": {
+                    "description": "Length and spacing of dashes in line charts.",
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": [
+                        "array",
+                        "integer"
+                      ],
+                      "items": {
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "customBorderWidths": {
+                    "description": "Border width of a series.",
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": [
+                        "integer"
+                      ]
+                    }
+                  },
                   "multiChartOptions": {
                     "description": "Options for multiChartSeries",
                     "type": "object",
@@ -905,6 +963,20 @@
                     ]
                   }
                 }
+              },
+              "singleDropdown": {
+                "description": "Whether to show filter dimensions as single-choice drop down menus",
+                "type": [
+                  "array",
+                  "string"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              },
+              "chartFontSize": {
+                "description": "Font size used for charts.",
+                "type": "integer"
               },
               "data": {
                 "description": "Symbol name that the data should come from.",
@@ -2532,6 +2604,64 @@
           "type": "string",
           "minLength": 1
         },
+        "chartFontSize": {
+          "description": "Font size used for charts.",
+          "type": "integer"
+        },
+        "customChartColors": {
+          "description": "Custom color palette. Every second color is the hover color of previous one.",
+          "type": [
+            "array",
+            "string"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "hideEmptyCols": {
+          "description": "Default value for hide empty columns checkbox.",
+          "type": "boolean"
+        },
+        "tableSummarySettings": {
+          "description": "Show summary function for rows and columns",
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "description": "Enable summary functions (both rows and columns)",
+              "type": "boolean"
+            },
+            "rowEnabled": {
+              "description": "Enable summary functions (rows)",
+              "type": "boolean"
+            },
+            "rowSummaryFunction": {
+              "description": "Row summary functions",
+              "type": "string",
+              "enum": [
+                "sum",
+                "count",
+                "mean"
+              ]
+            },
+            "colEnabled": {
+              "description": "Enable summary functions (columns)",
+              "type": "boolean"
+            },
+            "colSummaryFunction": {
+              "description": "Column summary functions",
+              "type": "string",
+              "enum": [
+                "sum",
+                "count",
+                "min",
+                "max",
+                "mean",
+                "median",
+                "sd"
+              ]
+            }
+          }
+        },
         "symbolConfig": {
           "description": "Symbol-specific settings for the pivot view comparison mode",
           "type": "object",
@@ -2675,6 +2805,10 @@
       "description": "Enter the name of the MIRO log file.",
       "type": "string",
       "minLength": 3
+    },
+    "parseLogForMiroLogSyntax": {
+      "description": "Whether to parse stdout of process for MIRO log annotations. This is the default for GAMSPy models.",
+      "type": "boolean"
     },
     "hiddenOutputSymbols": {
       "description": "Specify symbol names that will not be displayed in UI but can be used in graphs etc.",

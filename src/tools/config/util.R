@@ -193,22 +193,104 @@ Validator <- R6Class("Validator", public = list(
 setInputValue <- function(session, id, value) {
   session$sendCustomMessage("gms-setInputValue", list(id = id, value = value))
 }
+aggregationFunctions <- setNames(
+  c("sum", "count", "mean", "median", "min", "max", "sd"),
+  c(
+    lang$renderers$miroPivot$aggregationFunctions$sum,
+    lang$renderers$miroPivot$aggregationFunctions$count,
+    lang$renderers$miroPivot$aggregationFunctions$mean,
+    lang$renderers$miroPivot$aggregationFunctions$median,
+    lang$renderers$miroPivot$aggregationFunctions$min,
+    lang$renderers$miroPivot$aggregationFunctions$max,
+    lang$renderers$miroPivot$aggregationFunctions$sd
+  )
+)
 getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE) {
   tagList(
     tags$div(
       class = "shiny-input-container",
-      checkboxInput_SIMPLE(paste0(prefix, "enableHideEmptyCols"),
-        lang$adminMode$graphs$miroPivotOptions$hideEmptyColsSwitch,
-        value = isTRUE(currentConfig$enableHideEmptyCols)
-      )
-    ),
-    conditionalPanel(
-      paste0("input.", prefix, "enableHideEmptyCols===true"),
+      checkboxInput_SIMPLE(paste0(prefix, "hidePivotControls"),
+        lang$adminMode$graphs$miroPivotOptions$hidePivotControlsSwitch,
+        value = isTRUE(currentConfig$hidePivotControls)
+      ),
+      if (pivotComp) {
+        tagList(
+          tags$div(
+            class = "row",
+            tags$div(
+              class = "col-sm-6",
+              checkboxInput_SIMPLE(paste0(prefix, "showTableSummaryCol"),
+                label = lang$renderers$miroPivot$settings$cbShowTableSummaryCol,
+                value = identical(currentConfig$tableSummarySettings$colEnabled, TRUE)
+              )
+            ),
+            conditionalPanel(
+              paste0("input.", prefix, "showTableSummaryCol===true"),
+              tags$div(
+                class = "col-sm-6",
+                selectInput(paste0(prefix, "colSummaryFunction"),
+                  label = lang$renderers$miroPivot$settings$colSummaryFunction,
+                  choices = aggregationFunctions,
+                  selected = currentConfig$tableSummarySettings$colSummaryFunction,
+                  width = "100%"
+                )
+              )
+            )
+          ),
+          tags$div(
+            class = "row",
+            tags$div(
+              class = "col-sm-6",
+              checkboxInput_SIMPLE(paste0(prefix, "showTableSummaryRow"),
+                label = lang$renderers$miroPivot$settings$cbShowTableSummaryRow,
+                value = identical(currentConfig$tableSummarySettings$rowEnabled, TRUE)
+              )
+            ),
+            conditionalPanel(
+              paste0("input.", prefix, "showTableSummaryRow===true"),
+              tags$div(
+                class = "col-sm-6",
+                selectInput(paste0(prefix, "rowSummaryFunction"),
+                  label = lang$renderers$miroPivot$settings$rowSummaryFunction,
+                  choices = aggregationFunctions[aggregationFunctions %in% c("sum", "count", "mean")],
+                  selected = currentConfig$tableSummarySettings$rowSummaryFunction,
+                  width = "100%"
+                )
+              )
+            )
+          ),
+          checkboxInput_SIMPLE(paste0(prefix, "fixedColumns"),
+            labelTooltip(
+              lang$adminMode$graphs$miroPivotOptions$fixedColumnsSwitch,
+              lang$adminMode$graphs$miroPivotOptions$fixedColumnsTooltip,
+              "https://gams.com/miro/configuration_general.html#fixed-columns"
+            ),
+            value = !isFALSE(currentConfig$fixedColumns)
+          ),
+          checkboxInput_SIMPLE(paste0(prefix, "hideEmptyCols"), lang$renderers$miroPivot$settings$cbHideEmptyCols,
+            value = isTRUE(currentConfig$hideEmptyCols)
+          ),
+          numericInput(paste0(prefix, "chartFontSize"), lang$renderers$miroPivot$settings$chartFontSize,
+            value = if (length(currentConfig$chartFontSize)) {
+              currentConfig$chartFontSize
+            } else {
+              NULL
+            },
+            min = 1,
+            max = 42,
+            step = 1
+          )
+        )
+      },
       tags$div(
         class = "form-group shiny-input-container",
         tags$label(
           class = "control-label", "for" = paste0(prefix, "emptyUEL"),
-          lang$adminMode$graphs$miroPivotOptions$emptyUEL
+          labelTooltip(
+            lang$adminMode$graphs$miroPivotOptions$emptyUEL,
+            lang$adminMode$graphs$miroPivotOptions$emptyUELTooltip,
+            "https://gams.com/miro/charts.html#hide-empty-columns"
+          )
         ),
         tags$input(
           id = paste0(prefix, "emptyUEL"), class = "form-control must-not-be-empty",
@@ -219,21 +301,6 @@ getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE) {
             "-"
           }
         )
-      )
-    ),
-    tags$div(
-      class = "shiny-input-container",
-      checkboxInput_SIMPLE(paste0(prefix, "hidePivotControls"),
-        lang$adminMode$graphs$miroPivotOptions$hidePivotControlsSwitch,
-        value = isTRUE(currentConfig$hidePivotControls)
-      ),
-      checkboxInput_SIMPLE(paste0(prefix, "fixedColumns"),
-        labelTooltip(
-          lang$adminMode$graphs$miroPivotOptions$fixedColumnsSwitch,
-          lang$adminMode$graphs$miroPivotOptions$fixedColumnsTooltip,
-          "https://gams.com/miro/configuration_general.html#fixed-columns"
-        ),
-        value = !isFALSE(currentConfig$fixedColumns)
       )
     ),
     if (!pivotComp) {
@@ -256,7 +323,11 @@ getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE) {
             tags$input(
               id = paste0(prefix, "externalDefaultView"), class = "form-control must-not-be-empty",
               type = "text",
-              value = currentConfig$externalDefaultView
+              value = if (length(currentConfig$externalDefaultView)) {
+                currentConfig$externalDefaultView
+              } else {
+                ""
+              }
             )
           )
         ),
@@ -265,7 +336,7 @@ getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE) {
           tags$div(
             id = "miroPivotInfoMsg", class = "config-message shiny-input-container",
             style = "display:block;",
-            lang$adminMode$graphs$miroPivotOptions$infoMsg
+            HTML(paste0(sprintf(htmltools::htmlEscape(lang$adminMode$graphs$miroPivotOptions$infoMsg), icon("cog"), icon("square-plus")), "."))
           )
         )
       )

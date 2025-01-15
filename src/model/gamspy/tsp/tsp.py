@@ -36,14 +36,9 @@ from gamspy.math import sin, cos, sqrt, atan, Round
 def main():
     m = Container()
 
-    with open("miro.log", "w", encoding="utf-8") as f:
-        f.writelines(
-            [
-                "------------------------------------\n",
-                "        Options selected\n",
-                "------------------------------------\n",
-            ]
-        )
+    print("""------------------------------------
+        Options selected
+------------------------------------""")
 
     loc_hdr = Set(
         m, "locHdr", records=["lat", "lng"], description="Location data header"
@@ -152,10 +147,8 @@ def main():
         / 1000
     )
 
-    with open("miro.log", "a", encoding="utf-8") as f:
-        f.writelines(["- The following cities were selected:\n"])
-        f.writelines("\n".join(ii.records["uni"].values.tolist()))
-        f.writelines(["\n"])
+    print("- The following cities were selected:")
+    print("\n".join(ii.records["uni"].values.tolist()))
 
     # for computational work with simple minded algorithm
     # we can restrict size of problem and define the model
@@ -201,33 +194,18 @@ def main():
         description="Limit numbers of cuts",
     )
 
-    with open("miro.log", "a", encoding="utf-8") as f:
-        f.writelines(
-            [f"- Maximum number of cities in tour          : {max_cities.toValue()}\n"]
-        )
-
-        if len(ii) > max_cities.toValue():
-            f.writelines(
-                [
-                    f"Attention: Maximum number of cities in tour is smaller than selected cities ({len(ii)})!\n",
-                    f'           Increase the value of "maxCities", if all selected cities should be visited.\n',
-                ]
-            )
-        f.writelines(
-            [
-                f"- Maximum number of subtour elimiantion cuts: {max_cuts.toValue()}\n",
-                "------------------------------------------------------\n",
-            ]
-        )
-        if len(ii) < 2:
-            f.writelines(["Need to have at least two cities to calculate a tour\n"])
-            raise Exception("Need to have at least two cities to calculate a tour")
-        if max_cities.toValue() < 2:
-            f.writelines(["MaxCities needs to be at least two to calculate a tour\n"])
-            raise Exception("MaxCities needs to be at least two to calculate a tour")
-        if max_cuts.toValue() < 1:
-            f.writelines(["max_cuts needs to be at least one to run the problem\n"])
-            raise Exception("max_cuts needs to be at least one to run the problem")
+    print(f"- Maximum number of cities in tour          : {max_cities.toValue()}")
+    if len(ii) > max_cities.toValue():
+        print(f"Attention: Maximum number of cities in tour is smaller than selected cities ({len(ii)})!")
+        print(f'           Increase the value of "maxCities", if all selected cities should be visited.')
+    print(f"- Maximum number of subtour elimiantion cuts: {max_cuts.toValue()}")
+    print("------------------------------------------------------")
+    if len(ii) < 2:
+        raise Exception("Need to have at least two cities to calculate a tour")
+    if max_cities.toValue() < 2:
+        raise Exception("MaxCities needs to be at least two to calculate a tour")
+    if max_cuts.toValue() < 1:
+        raise Exception("max_cuts needs to be at least one to run the problem")
 
     i[ii].where[Ord(ii) <= max_cities] = True
 
@@ -278,11 +256,7 @@ def main():
         if proceed == 1:
             dse.solve(options=solve_options, output=sys.stdout)
             if dse.status != ModelStatus.OptimalGlobal:
-                with open("miro.log", "a", encoding="utf-8") as f:
-                    f.writelines(
-                        ["Problems with MIP solver - No optimal solution found.\n"]
-                    )
-                raise Exception("Problems with MIP solver")
+                raise Exception("Problems with MIP solver - No optimal solution found.")
             x.l[i, j] = Round(x.l[i, j])
             proceed = 2
 
@@ -336,17 +310,10 @@ def main():
 
     total_cost[...] = z.l * 1000
 
-    with open("miro.log", "a", encoding="utf-8") as f:
-        if proceed == 0:
-            f.writelines(
-                [f"Optimal tour found - Tour length: {total_cost.toValue()} miles\n"]
-            )
-        else:
-            f.writelines(
-                [
-                    'Out of subtour cuts, increase value of "max_cuts" to find better solution.\n'
-                ]
-            )
+    if proceed == 0:
+        print(f"Optimal tour found - Tour length: {total_cost.toValue()} miles")
+    else:
+        print('Out of subtour cuts, increase value of "max_cuts" to find better solution.')
 
     for _, row in tour.records.iterrows():
         tour_details[row["ii"], row["jj"], "lngA"] = ii_loc_data[row["ii"], "lng"]

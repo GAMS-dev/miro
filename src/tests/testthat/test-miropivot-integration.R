@@ -48,7 +48,8 @@ test_that("MIRO pivot renderer handles filtering", {
         list(
           data = testDataFactor[c(1, 6), ],
           filterElements = list(a = factor(c("a1", "a2", "a3", "a4", "a5"))),
-          multiFilterIndices = NULL
+          multiFilterIndices = NULL,
+          singleFilterIndices = NULL
         )
       )
       session$setInputs(rowIndexList = letters[3:6], filterIndexList = c("a", "b"))
@@ -65,7 +66,8 @@ test_that("MIRO pivot renderer handles filtering", {
               )
             )
           ),
-          multiFilterIndices = NULL
+          multiFilterIndices = NULL,
+          singleFilterIndices = NULL
         )
       )
       session$setInputs(
@@ -85,7 +87,8 @@ test_that("MIRO pivot renderer handles filtering", {
               )
             )
           ),
-          multiFilterIndices = NULL
+          multiFilterIndices = NULL,
+          singleFilterIndices = NULL
         )
       )
       expect_equal(
@@ -384,6 +387,8 @@ test_that("MIRO pivot renderer views work", {
         aggregationFunction = "count",
         pivotRenderer = "bar",
         domainFilter = list(default = NULL),
+        hideEmptyCols = FALSE,
+        fixedColumns = TRUE,
         tableSummarySettings = list(
           rowEnabled = FALSE, rowSummaryFunction = "sum",
           colEnabled = FALSE, colSummaryFunction = "sum"

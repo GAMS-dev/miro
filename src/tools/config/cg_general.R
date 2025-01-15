@@ -306,28 +306,57 @@ observeEvent(input$general_args, ignoreNULL = FALSE, {
 observeEvent(input$general_scen, {
   rv$generalConfig$defCompMode <<- input$general_scen
 })
-observeEvent(
-  {
-    input$pivotcomp_emptyUEL
-    input$pivotcomp_enableHideEmptyCols
-  },
-  {
-    if (isTRUE(input$pivotcomp_enableHideEmptyCols)) {
-      rv$generalConfig$pivotCompSettings$enableHideEmptyCols <- TRUE
-      if (length(input$pivotcomp_emptyUEL) && !identical(input$pivotcomp_emptyUEL, "")) {
-        rv$generalConfig$pivotCompSettings$emptyUEL <- input$pivotcomp_emptyUEL
-      }
-    } else {
-      configJSON$pivotCompSettings$enableHideEmptyCols <<- NULL
-      configJSON$pivotCompSettings$emptyUEL <<- NULL
-      rv$generalConfig$pivotCompSettings$enableHideEmptyCols <<- NULL
-      rv$generalConfig$pivotCompSettings$emptyUEL <<- NULL
-    }
+observeEvent(input$pivotcomp_emptyUEL, {
+  emptyUEL <- input$pivotcomp_emptyUEL
+  if (!is.null(emptyUEL) && emptyUEL != "") {
+    rv$generalConfig$pivotCompSettings$emptyUEL <- emptyUEL
+  } else {
+    configJSON$pivotCompSettings$emptyUEL <<- NULL
+    rv$generalConfig$pivotCompSettings$emptyUEL <<- NULL
   }
-)
+})
 observeEvent(input$pivotcomp_hidePivotControls, {
   rv$generalConfig$pivotCompSettings$hidePivotControls <<- input$pivotcomp_hidePivotControls
 })
+observeEvent(input$pivotcomp_hideEmptyCols, {
+  rv$generalConfig$pivotCompSettings$hideEmptyCols <<- input$pivotcomp_hideEmptyCols
+})
+observeEvent(input$pivotcomp_chartFontSize,
+  {
+    if (length(input$pivotcomp_chartFontSize) && !is.na(input$pivotcomp_chartFontSize)) {
+      rv$generalConfig$pivotCompSettings$chartFontSize <<- input$pivotcomp_chartFontSize
+    } else {
+      configJSON$pivotCompSettings$chartFontSize <<- NULL
+      rv$generalConfig$pivotCompSettings$chartFontSize <<- NULL
+    }
+  },
+  ignoreNULL = FALSE
+)
+observeEvent(
+  {
+    input$pivotcomp_showTableSummaryRow
+    input$pivotcomp_rowSummaryFunction
+    input$pivotcomp_showTableSummaryCol
+    input$pivotcomp_colSummaryFunction
+  },
+  {
+    tableSummarySettings <- list(
+      rowEnabled = identical(input$pivotcomp_showTableSummaryRow, TRUE),
+      rowSummaryFunction = if (length(input$pivotcomp_rowSummaryFunction)) {
+        input$pivotcomp_rowSummaryFunction
+      } else {
+        "sum"
+      },
+      colEnabled = identical(input$pivotcomp_showTableSummaryCol, TRUE),
+      colSummaryFunction = if (length(input$pivotcomp_colSummaryFunction)) {
+        input$pivotcomp_colSummaryFunction
+      } else {
+        "sum"
+      }
+    )
+    rv$generalConfig$pivotCompSettings$tableSummarySettings <<- tableSummarySettings
+  }
+)
 observeEvent(input$pivotcomp_fixedColumns, {
   rv$generalConfig$pivotCompSettings$fixedColumns <<- input$pivotcomp_fixedColumns
 })
@@ -501,6 +530,9 @@ observeEvent(input$general_mirologfile, {
     return()
   }
   rv$generalConfig$miroLogFile <<- NULL
+})
+observeEvent(input$general_mirologParsingStdout, {
+  rv$generalConfig$parseLogForMiroLogSyntax <<- isTRUE(input$general_mirologParsingStdout)
 })
 observeEvent(input$add_general, {
   if (length(input$add_general) < 3L) {

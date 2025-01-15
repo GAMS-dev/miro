@@ -53,7 +53,7 @@ expect_identical(configRaw$storeLogFilesDuration, configNew$storeLogFilesDuratio
 
 # Scenario comparison
 expect_identical(configRaw$defCompMode, configNew$defCompMode)
-expect_identical(configRaw$pivotCompSettings, list(enableHideEmptyCols = TRUE, emptyUEL = "&", fixedColumns = TRUE))
+expect_identical(configRaw$pivotCompSettings, list(emptyUEL = "&", fixedColumns = TRUE))
 
 
 # Symbol configuration: Symbol and Column Names

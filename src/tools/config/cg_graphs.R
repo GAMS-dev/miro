@@ -2153,9 +2153,6 @@ observeEvent(input$chart_xdata, {
   }
   rv$graphConfig$graph$xdata <<- input$chart_xdata
 })
-observeEvent(input$miropivot_enableHideEmptyCols, {
-  rv$graphConfig$graph$options$enableHideEmptyCols <- isTRUE(input$miropivot_enableHideEmptyCols)
-})
 observeEvent(input$miropivot_emptyUEL, {
   if (identical(input$miropivot_emptyUEL, "")) {
     rv$graphConfig$graph$options$emptyUEL <- NULL
@@ -2176,18 +2173,7 @@ observe({
   }
 })
 observeEvent(input$miropivot_hidePivotControls, {
-  if (isTRUE(input$miropivot_hidePivotControls)) {
-    rv$graphConfig$graph$options$hidePivotControls <- TRUE
-  } else {
-    rv$graphConfig$graph$options$hidePivotControls <- NULL
-  }
-})
-observeEvent(input$miropivot_fixedColumns, {
-  if (isFALSE(input$miropivot_fixedColumns)) {
-    rv$graphConfig$graph$options$fixedColumns <- FALSE
-  } else {
-    rv$graphConfig$graph$options$fixedColumns <- NULL
-  }
+  rv$graphConfig$graph$options$hidePivotControls <- isTRUE(input$miropivot_hidePivotControls)
 })
 observeEvent(input$add_array_el, {
   chart_id <- input$add_array_el[1]
@@ -4886,10 +4872,14 @@ observe(
           )
           miropivotOptions <- currentGraphConfig$options
           miropivotOptions$emptyUEL <- rv$graphConfig$graph$options$emptyUEL
-          miropivotOptions$enableHideEmptyCols <- rv$graphConfig$graph$options$enableHideEmptyCols
-          miropivotOptions$hidepivotcontrols <- rv$graphConfig$graph$options$hidepivotcontrols
-          miropivotOptions$fixedColumns <- rv$graphConfig$graph$options$fixedColumns
+          miropivotOptions$hidePivotControls <- rv$graphConfig$graph$options$hidePivotControls
+          miropivotOptions$fixedColumns <- currentGraphConfig$options$fixedColumns
           miropivotOptions$externalDefaultView <- rv$graphConfig$graph$options$externalDefaultView
+          miropivotOptions$tableSummarySettings <- currentGraphConfig$options$tableSummarySettings
+          miropivotOptions$hideEmptyCols <- currentGraphConfig$options$hideEmptyCols
+          miropivotOptions$chartFontSize <- currentGraphConfig$options$chartFontSize
+          miropivotOptions$singleDropdown <- currentGraphConfig$options$singleDropdown
+
           if (!identical(input[["preview_output_miropivot-miroPivot-symbol_name"]], activeSymbol$name)) {
             return()
           }
@@ -5074,11 +5064,32 @@ observeEvent(rv$saveGraphConfirm, {
     configJSON$dataRendering[[activeSymbol$name]]$options <<- list(
       aggregationFunction = input[["preview_output_miropivot-miroPivot-aggregationFunction"]],
       pivotRenderer = input[["preview_output_miropivot-miroPivot-pivotRenderer"]],
-      enableHideEmptyCols = isTRUE(input$miropivot_enableHideEmptyCols),
       hideEmptyCols = isTRUE(input[["preview_output_miropivot-miroPivot-hideEmptyCols"]]),
-      hidePivotControls = isTRUE(input$miropivot_hidePivotControls),
-      fixedColumns = isTRUE(input$miropivot_fixedColumns)
+      fixedColumns = !isFALSE(input[["preview_output_miropivot-miroPivot-fixedColumns"]]),
+      tableSummarySettings = list(
+        rowEnabled = identical(input[["preview_output_miropivot-miroPivot-showTableSummaryRow"]], TRUE),
+        rowSummaryFunction = if (length(input[["preview_output_miropivot-miroPivot-rowSummaryFunction"]])) {
+          input[["preview_output_miropivot-miroPivot-rowSummaryFunction"]]
+        } else {
+          "sum"
+        },
+        colEnabled = identical(input[["preview_output_miropivot-miroPivot-showTableSummaryCol"]], TRUE),
+        colSummaryFunction = if (length(input[["preview_output_miropivot-miroPivot-colSummaryFunction"]])) {
+          input[["preview_output_miropivot-miroPivot-colSummaryFunction"]]
+        } else {
+          "sum"
+        }
+      ),
+      hidePivotControls = isTRUE(input$miropivot_hidePivotControls)
     )
+
+    if (length(input[["preview_output_miropivot-miroPivot-singleDropdown"]])) {
+      configJSON$dataRendering[[activeSymbol$name]]$options$singleDropdown <<- input[["preview_output_miropivot-miroPivot-singleDropdown"]]
+    }
+    if (length(input[["preview_output_miropivot-miroPivot-chartFontSize"]]) &&
+      !is.na(input[["preview_output_miropivot-miroPivot-chartFontSize"]])) {
+      configJSON$dataRendering[[activeSymbol$name]]$options$chartFontSize <<- input[["preview_output_miropivot-miroPivot-chartFontSize"]]
+    }
     if (length(rv$graphConfig$graph$options$emptyUEL)) {
       configJSON$dataRendering[[activeSymbol$name]]$options$emptyUEL <<- rv$graphConfig$graph$options$emptyUEL
     }

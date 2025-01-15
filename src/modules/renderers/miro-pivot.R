@@ -197,34 +197,6 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
                 title = lang$renderers$miroPivot$btNewView,
                 class = "btn-custom pivot-btn-custom"
               ),
-              tags$a(
-                `data-proxy-id` = ns("downloadCsv"),
-                class = "btn btn-default shiny-download-link btn-custom btn-proxy pivot-btn-custom",
-                href = "#/", tags$div(
-                  tags$i(class = "fa fa-file-csv"),
-                  tags$div(
-                    class = "miro-pivot-btn-text",
-                    lang$renderers$miroPivot$btDownloadCsv
-                  )
-                ),
-                title = lang$renderers$miroPivot$btDownloadCsv
-              ),
-              tags$a(
-                id = ns("downloadPng"),
-                class = "btn btn-default bt-export-canvas btn-custom pivot-btn-custom",
-                download = "chart.png",
-                href = "#",
-                `data-canvasid` = ns("pivotChart"),
-                tags$div(
-                  tags$i(class = "fa fa-file-image"),
-                  tags$div(
-                    class = "miro-pivot-btn-text",
-                    lang$renderers$miroPivot$btDownloadPng
-                  )
-                ),
-                title = lang$renderers$miroPivot$btDownloadPng,
-                style = "display:none;"
-              ),
               actionButton(ns("showSettings"),
                 label = tags$div(
                   icon("gear"),
@@ -235,6 +207,56 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
                 ),
                 title = lang$renderers$miroPivot$btShowSettings,
                 class = "btn-custom pivot-btn-custom"
+              ),
+              tags$div(
+                class = "btn-group pivot-btn-custom",
+                tags$button(
+                  class = "btn btn-default btn-custom dropdown-toggle pivot-dropdown-button",
+                  type = "button",
+                  `data-toggle` = "dropdown",
+                  `aria-haspopup` = "true",
+                  `aria-expanded` = "false",
+                  tags$div(
+                    tags$i(class = "fa fa-download"),
+                    tags$div(
+                      class = "miro-pivot-btn-text",
+                      lang$renderers$miroPivot$btDownload
+                    )
+                  )
+                ),
+                tags$ul(
+                  class = "dropdown-menu",
+                  tags$li(
+                    tags$a(
+                      `data-proxy-id` = ns("downloadCsv"),
+                      class = "shiny-download-link btn-proxy",
+                      href = "#/",
+                      tags$div(
+                        tags$i(class = "fa fa-file-csv"),
+                        tags$div(
+                          class = "miro-pivot-dropdown-btn-text",
+                          lang$renderers$miroPivot$btDownloadCsv
+                        )
+                      )
+                    )
+                  ),
+                  tags$li(
+                    tags$a(
+                      id = ns("downloadPng"),
+                      class = "bt-export-canvas",
+                      download = "chart.png",
+                      href = "#",
+                      `data-canvasid` = ns("pivotChart"),
+                      tags$div(
+                        tags$i(class = "fa fa-file-image"),
+                        tags$div(
+                          class = "miro-pivot-dropdown-btn-text",
+                          lang$renderers$miroPivot$btDownloadPng
+                        )
+                      )
+                    )
+                  )
+                )
               ),
               tags$div(
                 id = ns("hidePivotControls"), class = "btn btn-default btn-custom pivot-btn-custom activate-pivot-controls",
@@ -269,39 +291,70 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
           )
         } else {
           tags$div(
-            class = "presentation-hide",
-            tags$a(
-              `data-proxy-id` = ns("downloadCsv"),
-              class = "btn btn-default shiny-download-link btn-custom btn-proxy pivot-btn-custom",
-              style = if (isTRUE(options$hidePivotControls)) "display:none;",
-              href = "#/", tags$div(
-                tags$i(class = "fa fa-file-csv"),
+            class = "presentation-hide custom-order", style = if (isTRUE(options$hidePivotControls)) "display:none;",
+            actionButton(ns("showSettings"),
+              label = tags$div(
+                icon("gear"),
                 tags$div(
                   class = "miro-pivot-btn-text",
-                  lang$renderers$miroPivot$btDownloadCsv
+                  lang$renderers$miroPivot$btShowSettings
                 )
               ),
-              title = lang$renderers$miroPivot$btDownloadCsv
+              title = lang$renderers$miroPivot$btShowSettings,
+              class = "btn-custom pivot-btn-custom"
             ),
-            tags$a(
-              id = ns("downloadPng"),
-              class = "btn btn-default bt-export-canvas btn-custom pivot-btn-custom",
-              download = "chart.png",
-              href = "#",
-              `data-canvasid` = ns("pivotChart"),
-              tags$div(
-                tags$i(class = "fa fa-file-image"),
+            tags$div(
+              class = "btn-group pivot-btn-custom",
+              tags$button(
+                class = "btn btn-default btn-custom dropdown-toggle pivot-dropdown-button",
+                type = "button",
+                `data-toggle` = "dropdown",
+                `aria-haspopup` = "true",
+                `aria-expanded` = "false",
                 tags$div(
-                  class = "miro-pivot-btn-text",
-                  lang$renderers$miroPivot$btDownloadPng
+                  tags$i(class = "fa fa-download"),
+                  tags$div(
+                    class = "miro-pivot-btn-text",
+                    lang$renderers$miroPivot$btDownload
+                  )
                 )
               ),
-              title = lang$renderers$miroPivot$btDownloadPng,
-              style = "display:none;"
+              tags$ul(
+                class = "dropdown-menu",
+                tags$li(
+                  tags$a(
+                    `data-proxy-id` = ns("downloadCsv"),
+                    class = "shiny-download-link btn-proxy",
+                    href = "#/",
+                    tags$div(
+                      tags$i(class = "fa fa-file-csv"),
+                      tags$div(
+                        class = "miro-pivot-dropdown-btn-text",
+                        lang$renderers$miroPivot$btDownloadCsv
+                      )
+                    )
+                  )
+                ),
+                tags$li(
+                  tags$a(
+                    id = ns("downloadPng"),
+                    class = "bt-export-canvas",
+                    download = "chart.png",
+                    href = "#",
+                    `data-canvasid` = ns("pivotChart"),
+                    tags$div(
+                      tags$i(class = "fa fa-file-image"),
+                      tags$div(
+                        class = "miro-pivot-dropdown-btn-text",
+                        lang$renderers$miroPivot$btDownloadPng
+                      )
+                    )
+                  )
+                )
+              )
             ),
             tags$div(
               id = ns("hidePivotControls"), class = "btn btn-default btn-custom pivot-btn-custom activate-pivot-controls",
-              style = if (isTRUE(options$hidePivotControls)) "display:none;",
               tags$div(
                 icon("table"),
                 tags$div(
@@ -317,32 +370,54 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
       tags$div(
         class = "col-sm-12 col-md-10 presentation-show",
         style = if (!isTRUE(options$hidePivotControls)) "display:none;",
-        tags$a(
-          `data-proxy-id` = ns("downloadCsv"),
-          class = "btn btn-default shiny-download-link btn-custom btn-proxy pivot-btn-custom",
-          href = "#/", tags$div(
-            tags$i(class = "fa fa-file-csv"),
+        tags$div(
+          class = "btn-group pivot-btn-custom",
+          tags$button(
+            class = "btn btn-default btn-custom dropdown-toggle pivot-dropdown-button",
+            type = "button",
+            `data-toggle` = "dropdown",
+            `aria-haspopup` = "true",
+            `aria-expanded` = "false",
             tags$div(
-              class = "miro-pivot-btn-text",
-              lang$renderers$miroPivot$btDownloadCsvShort
+              tags$i(class = "fa fa-download"),
+              tags$div(
+                class = "miro-pivot-btn-text",
+                lang$renderers$miroPivot$btDownload
+              )
             )
           ),
-          title = lang$renderers$miroPivot$btDownloadCsv
-        ),
-        tags$a(
-          class = "btn btn-default bt-export-canvas btn-custom pivot-btn-custom",
-          style = "display:none;",
-          download = "chart.png",
-          href = "#",
-          `data-canvasid` = ns("pivotChart"),
-          tags$div(
-            tags$i(class = "fa fa-file-image"),
-            tags$div(
-              class = "miro-pivot-btn-text",
-              lang$renderers$miroPivot$btDownloadPngShort
+          tags$ul(
+            class = "dropdown-menu",
+            tags$li(
+              tags$a(
+                `data-proxy-id` = ns("downloadCsv"),
+                class = "shiny-download-link btn-proxy",
+                href = "#/",
+                tags$div(
+                  tags$i(class = "fa fa-file-csv"),
+                  tags$div(
+                    class = "miro-pivot-dropdown-btn-text",
+                    lang$renderers$miroPivot$btDownloadCsv
+                  )
+                )
+              )
+            ),
+            tags$li(
+              tags$a(
+                class = "bt-export-canvas",
+                download = "chart.png",
+                href = "#",
+                `data-canvasid` = ns("pivotChart"),
+                tags$div(
+                  tags$i(class = "fa fa-file-image"),
+                  tags$div(
+                    class = "miro-pivot-dropdown-btn-text",
+                    lang$renderers$miroPivot$btDownloadPng
+                  )
+                )
+              )
             )
-          ),
-          title = lang$renderers$miroPivot$btDownloadPng
+          )
         ),
         tags$div(
           id = ns("showPivotControls"),
@@ -460,7 +535,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
       ),
       tags$div(
         class = if (isTRUE(options[["_input_"]])) "has-edit-buttons",
-        class = "col-sm-12 pivot-chart-height",
+        class = "col-sm-12 pivot-chart-height hide-fixed-anchor",
         class = if (isTRUE(options$hidePivotControls)) "col-md-12" else "col-md-10",
         class = if (identical(options$fixedColumns, FALSE)) "dt-hide-fixed",
         style = if (isTRUE(options[["_input_"]]) && isTRUE(options$hidePivotControls)) {
@@ -686,9 +761,26 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       hiddenEmptyCols <- NULL
 
       hideEmptyCols <- reactiveVal(identical(options$hideEmptyCols, TRUE))
+      fixedColumns <- reactiveVal(!identical(options$fixedColumns, FALSE))
+      chartFontSize <- reactiveVal(
+        if (length(options$chartFontSize)) options$chartFontSize else NULL
+      )
+      singleDropdown <- reactiveVal(
+        if (length(options$singleDropdown)) options$singleDropdown else NULL
+      )
       tableSummarySettings <- reactiveVal(list(
-        rowEnabled = FALSE, rowSummaryFunction = "sum",
-        colEnabled = FALSE, colSummaryFunction = "sum"
+        rowEnabled = identical(options$tableSummarySettings$rowEnabled, TRUE),
+        rowSummaryFunction = if (length(options$tableSummarySettings$rowSummaryFunction)) {
+          options$tableSummarySettings$rowSummaryFunction
+        } else {
+          "sum"
+        },
+        colEnabled = identical(options$tableSummarySettings$colEnabled, TRUE),
+        colSummaryFunction = if (length(options$tableSummarySettings$colSummaryFunction)) {
+          options$tableSummarySettings$colSummaryFunction
+        } else {
+          "sum"
+        }
       ))
 
       if (isInput) {
@@ -849,8 +941,23 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         } else {
           updateSelectInput(session, "pivotRenderer", selected = "table")
         }
-        if (isTRUE(options$enableHideEmptyCols)) {
+        if (length(viewOptions[["hideEmptyCols"]])) {
           isolate(hideEmptyCols(identical(viewOptions[["hideEmptyCols"]], TRUE)))
+        }
+        if (length(viewOptions[["fixedColumns"]])) {
+          isolate(fixedColumns(identical(viewOptions[["fixedColumns"]], TRUE)))
+        }
+        if (length(viewOptions[["chartFontSize"]]) &&
+          !is.na(viewOptions[["chartFontSize"]])) {
+          isolate(chartFontSize(viewOptions[["chartFontSize"]]))
+        } else {
+          isolate(chartFontSize(NULL))
+        }
+        if (length(viewOptions[["singleDropdown"]]) &&
+          !is.na(viewOptions[["singleDropdown"]])) {
+          isolate(singleDropdown(viewOptions[["singleDropdown"]]))
+        } else {
+          isolate(singleDropdown(NULL))
         }
         if (length(viewOptions[["tableSummarySettings"]])) {
           bothEnabled <- identical(viewOptions[["tableSummarySettings"]][["enabled"]], TRUE)
@@ -1351,6 +1458,89 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 )
               )
             })
+            customLineDashUI <- {
+              columns <- lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId) {
+                validPatterns <- c("1, 1", "10, 10", "20, 5", "15, 3, 3, 3", "20, 3, 3, 3, 3, 3")
+                dashLabel <- miroPivotState$currentSeriesLabels[labelId]
+
+                if (length(names(viewOptions$chartOptions$customLineDashPatterns)) &&
+                  dashLabel %in% names(viewOptions$chartOptions$customLineDashPatterns)) {
+                  dashPatternIn <- unlist(viewOptions$chartOptions$customLineDashPatterns[[dashLabel]])
+
+                  if (is.numeric(dashPatternIn) && length(dashPatternIn) > 1L) {
+                    dashPattern <- paste(round(dashPatternIn), collapse = ", ")
+                    dashPatternLabel <- ifelse(dashPattern %in% validPatterns, dashPattern, "custom")
+                  } else {
+                    dashPattern <- " "
+                    dashPatternLabel <- dashPattern
+                  }
+                } else {
+                  dashPattern <- " "
+                  dashPatternLabel <- dashPattern
+                }
+
+                tags$div(
+                  class = "col-sm-6",
+                  lineDashInput(ns(paste0("lineDashPattern_", labelId)),
+                    setNames(
+                      c(" ", validPatterns, "custom"),
+                      c(
+                        lang$renderers$miroPivot$newView$solid,
+                        lang$renderers$miroPivot$newView$dotted,
+                        lang$renderers$miroPivot$newView$dashed,
+                        lang$renderers$miroPivot$newView$wideDashed,
+                        lang$renderers$miroPivot$newView$dashDot,
+                        lang$renderers$miroPivot$newView$dashDotDot,
+                        lang$renderers$miroPivot$newView$customPattern
+                      )
+                    ),
+                    selected = dashPatternLabel,
+                    selectedValue = dashPattern,
+                    label = dashLabel
+                  )
+                )
+              })
+
+              tagList(
+                lapply(seq(1, length(columns), by = 2), function(i) {
+                  rowColumns <- columns[i:min(i + 1, length(columns))]
+                  tags$div(class = "row", rowColumns)
+                })
+              )
+            }
+            customBorderWidthUI <- lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId) {
+              label <- miroPivotState$currentSeriesLabels[labelId]
+              if (length(names(viewOptions$chartOptions$customBorderWidths)) &&
+                label %in% names(viewOptions$chartOptions$customBorderWidths)) {
+                borderWidthIn <- round(as.numeric(viewOptions$chartOptions$customBorderWidths[[label]]))
+
+                if (length(borderWidthIn)) {
+                  borderWidth <- borderWidthIn
+                } else {
+                  borderWidth <- ifelse(pivotRenderer %in% c(
+                    "bar", "stackedbar", "horizontalbar", "horizontalstackedbar"
+                  ),
+                  0L, 3L
+                  )
+                }
+              } else {
+                borderWidth <- ifelse(pivotRenderer %in% c(
+                  "bar", "stackedbar", "horizontalbar", "horizontalstackedbar"
+                ),
+                0L, 3L
+                )
+              }
+              tagList(
+                tags$div(
+                  class = "col-sm-6",
+                  numericInput(ns(paste0("borderWidth_", labelId)),
+                    label = label,
+                    value = borderWidth,
+                    min = 0L
+                  )
+                )
+              )
+            })
             additionalOptionsContent <- tags$div(
               id = ns("newViewOptionsWrapper"), style = "text-align:left;",
               tags$div(
@@ -1361,7 +1551,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                     id = ns("newViewTabs"),
                     moreOptions,
                     list(tabPanel(
-                      lang$renderers$miroPivot$newView$tabColors,
+                      lang$renderers$miroPivot$newView$tabSeries,
                       tags$div(class = "small-space"),
                       tags$div(
                         class = "row",
@@ -1402,8 +1592,52 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                       conditionalPanel("input.useCustomChartColors===true",
                         ns = ns,
                         tags$div(
-                          class = "row miro-pivot-custom-colors-wrapper",
+                          class = "row miro-pivot-series-settings-wrapper miro-pivot-custom-colors-wrapper",
                           customChartColorsUI
+                        )
+                      ),
+                      tags$div(
+                        `data-display-if` = "['line', 'stackedarea', 'area', 'radar', 'timeseries'].includes(input.pivotRenderer) ||
+                          input.addMultiChartSeries?.length>0 && input.miroPivotMultiChartRenderer==='line'",
+                        `data-ns-prefix` = ns(""),
+                        class = "row",
+                        tags$div(
+                          class = "col-sm-6",
+                          checkboxInput_MIRO(ns("useCustomLineDash"),
+                            label = lang$renderers$miroPivot$newView$cbLineDash,
+                            value = length(viewOptions$chartOptions$customLineDashPatterns) > 0L,
+                            width = "100%"
+                          )
+                        )
+                      ),
+                      conditionalPanel("input.useCustomLineDash===true",
+                        ns = ns,
+                        tags$div(
+                          class = "row miro-pivot-series-settings-wrapper",
+                          tags$div(
+                            class = "col-xs-12",
+                            customLineDashUI
+                          )
+                        )
+                      ),
+                      if (!pivotRenderer %in% c("pie", "doughnut")) {
+                        tags$div(
+                          class = "row",
+                          tags$div(
+                            class = "col-sm-6",
+                            checkboxInput_MIRO(ns("useCustomBorderWidth"),
+                              label = lang$renderers$miroPivot$newView$cbBorderWidth,
+                              value = length(viewOptions$chartOptions$customBorderWidths) > 0L,
+                              width = "100%"
+                            )
+                          )
+                        )
+                      },
+                      conditionalPanel("input.useCustomBorderWidth===true",
+                        ns = ns,
+                        tags$div(
+                          class = "row miro-pivot-series-settings-wrapper",
+                          customBorderWidthUI
                         )
                       )
                     ))
@@ -1490,57 +1724,115 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
           isolate({
             showModal(modalDialog(
-              tagList(
-                if (isTRUE(options$enableHideEmptyCols)) {
+              tabsetPanel(
+                id = ns("settingsTabs"),
+                tabPanel(
+                  lang$renderers$miroPivot$settings$tabGeneral,
+                  tags$div(class = "small-space"),
                   tags$div(
                     class = "row",
                     tags$div(
                       class = "col-sm-12",
-                      checkboxInput_MIRO(ns("hideEmptyCols"), lang$renderers$miroPivot$cbHideEmptyCols,
+                      checkboxInput_MIRO(ns("hideEmptyCols"), lang$renderers$miroPivot$settings$cbHideEmptyCols,
                         value = hideEmptyCols()
                       )
                     )
-                  )
-                },
-                tags$div(
-                  class = "row",
-                  tags$div(
-                    class = "col-sm-6",
-                    checkboxInput_MIRO(ns("showTableSummaryCol"),
-                      label = lang$renderers$miroPivot$cbShowTableSummaryCol,
-                      value = tableSummarySettings()$colEnabled
-                    )
                   ),
                   tags$div(
-                    class = "col-sm-6",
-                    `data-display-if` = "input.showTableSummaryCol===true",
-                    `data-ns-prefix` = ns(""),
-                    selectInput(ns("colSummaryFunction"),
-                      label = lang$renderers$miroPivot$colSummaryFunction,
-                      choices = aggregationFunctions,
-                      selected = tableSummarySettings()$colSummaryFunction,
-                      width = "100%"
+                    class = "row",
+                    tags$div(
+                      class = "col-sm-12",
+                      `data-ns-prefix` = ns(""),
+                      selectInput(ns("singleDropdown"),
+                        label = lang$renderers$miroPivot$settings$singleDropdown,
+                        choices = setIndices,
+                        selected = singleDropdown(),
+                        multiple = TRUE,
+                        width = "100%"
+                      )
                     )
                   )
                 ),
-                tags$div(
-                  class = "row",
+                tabPanel(
+                  lang$renderers$miroPivot$settings$tabTable,
+                  tags$div(class = "small-space"),
                   tags$div(
-                    class = "col-sm-6",
-                    checkboxInput_MIRO(ns("showTableSummaryRow"),
-                      label = lang$renderers$miroPivot$cbShowTableSummaryRow,
-                      value = tableSummarySettings()$rowEnabled
+                    class = "row",
+                    tags$div(
+                      class = "col-sm-6",
+                      checkboxInput_MIRO(ns("showTableSummaryCol"),
+                        label = lang$renderers$miroPivot$settings$cbShowTableSummaryCol,
+                        value = tableSummarySettings()$colEnabled
+                      )
+                    ),
+                    tags$div(
+                      class = "col-sm-6",
+                      `data-display-if` = "input.showTableSummaryCol===true",
+                      `data-ns-prefix` = ns(""),
+                      selectInput(ns("colSummaryFunction"),
+                        label = lang$renderers$miroPivot$settings$colSummaryFunction,
+                        choices = aggregationFunctions,
+                        selected = tableSummarySettings()$colSummaryFunction,
+                        width = "100%"
+                      )
                     )
                   ),
                   tags$div(
-                    class = "col-sm-6",
-                    `data-display-if` = "input.showTableSummaryRow===true",
-                    `data-ns-prefix` = ns(""),
-                    selectInput(ns("rowSummaryFunction"),
-                      label = lang$renderers$miroPivot$rowSummaryFunction,
-                      choices = aggregationFunctions[aggregationFunctions %in% c("sum", "count", "mean")],
-                      selected = tableSummarySettings()$rowSummaryFunction,
-                      width = "100%"
+                    class = "row",
+                    tags$div(
+                      class = "col-sm-6",
+                      checkboxInput_MIRO(ns("showTableSummaryRow"),
+                        label = lang$renderers$miroPivot$settings$cbShowTableSummaryRow,
+                        value = tableSummarySettings()$rowEnabled
+                      )
+                    ),
+                    tags$div(
+                      class = "col-sm-6",
+                      `data-display-if` = "input.showTableSummaryRow===true",
+                      `data-ns-prefix` = ns(""),
+                      selectInput(ns("rowSummaryFunction"),
+                        label = lang$renderers$miroPivot$settings$rowSummaryFunction,
+                        choices = aggregationFunctions[aggregationFunctions %in% c("sum", "count", "mean")],
+                        selected = tableSummarySettings()$rowSummaryFunction,
+                        width = "100%"
+                      )
+                    )
+                  ),
+                  tags$div(
+                    class = "row",
+                    tags$div(
+                      class = "col-sm-12",
+                      checkboxInput_MIRO(ns("fixedColumns"),
+                        tags$span(
+                          lang$renderers$miroPivot$settings$fixedColumns,
+                          tags$span(
+                            `data-tooltip` = lang$adminMode$graphs$miroPivotOptions$fixedColumnsTooltip,
+                            class = "info-wrapper tooltip-mobile",
+                            tags$span(
+                              class = "fas fa-circle-info", class = "info-icon",
+                              role = "presentation",
+                              `aria-label` = "More information"
+                            )
+                          )
+                        ),
+                        value = fixedColumns()
+                      )
+                    )
+                  )
+                ),
+                tabPanel(
+                  lang$renderers$miroPivot$settings$tabChart,
+                  tags$div(class = "small-space"),
+                  tags$div(
+                    class = "row",
+                    tags$div(
+                      class = "col-sm-12",
+                      numericInput(ns("chartFontSize"), lang$renderers$miroPivot$settings$chartFontSize,
+                        value = chartFontSize(),
+                        min = 1,
+                        max = 42,
+                        step = 1
+                      )
                     )
                   )
                 )
@@ -1563,14 +1855,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         addNewView <- function(viewName, overwrite = FALSE) {
           isolate({
+            refreshRequired <- FALSE
             newViewConfig <- list(
               aggregationFunction = input$aggregationFunction,
               pivotRenderer = input$pivotRenderer,
               domainFilter = list(default = input$domainFilter)
             )
-            if (isTRUE(options$enableHideEmptyCols)) {
-              newViewConfig$hideEmptyCols <- hideEmptyCols()
-            }
+            newViewConfig$hideEmptyCols <- hideEmptyCols()
+            newViewConfig$fixedColumns <- fixedColumns()
+            newViewConfig$chartFontSize <- chartFontSize()
+            newViewConfig$singleDropdown <- singleDropdown()
             newViewConfig$tableSummarySettings <- tableSummarySettings()
             for (indexEl in list(c("rows", "rowIndexList"))) {
               indexVal <- input[[indexEl[[2]]]]
@@ -1592,7 +1886,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 newViewConfig[[indexEl[[1]]]] <- filterElList
               }
             }
-            refreshRequired <- FALSE
             if (length(isolate(input$pivotRenderer)) &&
               isolate(input$pivotRenderer) %in% c(
                 "line", "scatter", "area", "stackedarea",
@@ -1655,6 +1948,46 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                     return(c(seriesColor, hoverColor))
                   }), miroPivotState$currentSeriesLabels
                 )
+              }
+              if (isTRUE(input[["useCustomLineDash"]])) {
+                refreshRequired <- TRUE
+                dashPatterns <- setNames(
+                  lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId) {
+                    dashPatternIn <- gsub("\\s", "", input[[paste0("lineDashPattern_", labelId)]])
+                    values <- strsplit(dashPatternIn, ",")[[1]]
+                    if (all(suppressWarnings(!is.na(as.numeric(values))))) {
+                      dashPattern <- as.numeric(round(as.numeric(values)))
+                      if (!length(dashPattern) > 1L) {
+                        dashPattern <- NULL
+                      }
+                    } else {
+                      dashPattern <- NULL
+                    }
+                    return(dashPattern)
+                  }), miroPivotState$currentSeriesLabels
+                )
+
+                dashPatterns <- Filter(Negate(is.null), dashPatterns)
+                newViewConfig$chartOptions[["customLineDashPatterns"]] <- dashPatterns
+              }
+              if (isTRUE(input[["useCustomBorderWidth"]])) {
+                refreshRequired <- TRUE
+                borderWidths <- setNames(
+                  lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId) {
+                    borderWidthIn <- as.numeric(input[[paste0("borderWidth_", labelId)]])
+                    if (suppressWarnings(!is.na(borderWidthIn)) &&
+                      !(isolate(input$pivotRenderer) %in% c("bar", "stackedbar", "horizontalbar", "horizontalstackedbar") && borderWidthIn == 0) &&
+                      !(isolate(input$pivotRenderer) %in% c("line", "scatter", "area", "stackedarea", "radar", "timeseries") && borderWidthIn == 3L)) {
+                      borderWidth <- as.numeric(round(borderWidthIn))
+                    } else {
+                      borderWidth <- NULL
+                    }
+                    return(borderWidth)
+                  }), miroPivotState$currentSeriesLabels
+                )
+
+                borderWidths <- Filter(Negate(is.null), borderWidths)
+                newViewConfig$chartOptions[["customBorderWidths"]] <- borderWidths
               }
               for (advancedOption in list(
                 list(
@@ -1769,8 +2102,24 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               input$colSummaryFunction %in% aggregationFunctions) {
               newTableSummarySettings[["colSummaryFunction"]] <- input$colSummaryFunction
             }
+            if (length(input$singleDropdown) > 0 &&
+              all(input$singleDropdown %in% setIndices)) {
+              newSingleDropdown <- input$singleDropdown
+            } else {
+              newSingleDropdown <- NULL
+            }
+            if (!identical(singleDropdown(), newSingleDropdown)) {
+              singleDropdown(newSingleDropdown)
+            }
             tableSummarySettings(newTableSummarySettings)
             hideEmptyCols(identical(input$hideEmptyCols, TRUE))
+            fixedColumns(identical(input$fixedColumns, TRUE))
+            if (length(input$chartFontSize) > 0 && !is.na(input$chartFontSize)) {
+              newChartFontSize <- input$chartFontSize
+            } else {
+              newChartFontSize <- NULL
+            }
+            chartFontSize(newChartFontSize)
             removeModal(session)
           })
         })
@@ -1969,13 +2318,28 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           } else {
             choices <- as.character(filterElements[[filterIndex]])
           }
-          ddHash <- digest::digest(list(filterIndex, choices), algo = "sha1")
+          ddHash <- digest::digest(
+            list(
+              filterIndex,
+              choices,
+              multiple = !filterIndex %in% filteredData()$singleFilterIndices
+            ),
+            algo = "sha1"
+          )
           list(
             htmltools::doRenderTags(
               htmltools::tagAppendAttributes(
                 serverSelectInput(session, ns(paste0("filter_", filterIndex)), setIndexAliases[[filterIndex]],
                   choices = choices,
-                  selected = selectedFilterVal, multiple = TRUE,
+                  selected = if (!filterIndex %in% filteredData()$singleFilterIndices) {
+                    selectedFilterVal
+                  } else if (!is.null(selectedFilterVal) &&
+                    nchar(as.character(selectedFilterVal)[1])) {
+                    selectedFilterVal[1]
+                  } else {
+                    filterElements[[filterIndex]][1]
+                  },
+                  multiple = !filterIndex %in% filteredData()$singleFilterIndices,
                   options = list("plugins" = list("remove_button"))
                 ),
                 `data-hash` = ddHash
@@ -2177,7 +2541,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         return(list(
           data = dataTmp, filterElements = filterElements,
-          multiFilterIndices = multiFilterIndices
+          multiFilterIndices = multiFilterIndices,
+          singleFilterIndices = singleDropdown()
         ))
       })
 
@@ -2373,43 +2738,43 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if (noError) {
           hideEl(session, paste0("#", ns("errMsg")))
         }
-        if (isTRUE(options$enableHideEmptyCols) && hideEmptyCols()) {
-          hiddenEmptyColsTmp <- vapply(dataTmp[seq_len(rowHeaderLen)],
-            function(x) {
-              identical(
-                as.character(unique(x)),
-                if (length(options$emptyUEL)) {
-                  options$emptyUEL
-                } else {
-                  "-"
-                }
-              )
-            },
-            logical(1L),
-            USE.NAMES = FALSE
-          )
-          hiddenEmptyCols <<- which(hiddenEmptyColsTmp)
-          hiddenEmptyColsJs <- rep.int("false", rowHeaderLen)
-          hiddenEmptyColsJs[hiddenEmptyColsTmp] <- "true"
-          setAttributes(
-            session, paste0(
-              "#", ns("rowIndexList .drop-index-item:nth-child("),
-              seq_len(rowHeaderLen), ")"
-            ),
-            "data-col-hidden", hiddenEmptyColsJs
-          )
-          labels <- do.call(paste, c(
-            dataTmp[which(!hiddenEmptyColsTmp)],
-            list(sep = ".")
-          ))
+        if (hideEmptyCols()) {
+          if (rowHeaderLen > 0L) {
+            hiddenEmptyColsTmp <- vapply(dataTmp[seq_len(rowHeaderLen)],
+              function(x) {
+                identical(
+                  as.character(unique(x)),
+                  if (length(options$emptyUEL)) {
+                    options$emptyUEL
+                  } else {
+                    "-"
+                  }
+                )
+              },
+              logical(1L),
+              USE.NAMES = FALSE
+            )
+            hiddenEmptyCols <<- which(hiddenEmptyColsTmp)
+            hiddenEmptyColsJs <- rep.int("false", rowHeaderLen)
+            hiddenEmptyColsJs[hiddenEmptyColsTmp] <- "true"
+            setAttributes(
+              session, paste0(
+                "#", ns("rowIndexList .drop-index-item:nth-child("),
+                seq_len(rowHeaderLen), ")"
+              ),
+              "data-col-hidden", hiddenEmptyColsJs
+            )
+            labels <- do.call(paste, c(
+              dataTmp[which(!hiddenEmptyColsTmp)],
+              list(sep = ".")
+            ))
+          }
         } else {
           hiddenEmptyCols <<- NULL
-          if (isTRUE(options$enableHideEmptyCols)) {
-            setAttributes(
-              session, paste0("#", ns("rowIndexList .drop-index-item")),
-              "data-col-hidden", "false"
-            )
-          }
+          setAttributes(
+            session, paste0("#", ns("rowIndexList .drop-index-item")),
+            "data-col-hidden", "false"
+          )
           labels <- do.call(paste, c(dataTmp[seq_len(rowHeaderLen)], list(sep = ".")))
         }
         if (!length(labels)) {
@@ -2616,6 +2981,17 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               scaleID <- "y2"
             }
           }
+
+          lineDash <- NULL
+          if (length(currentView$chartOptions$customLineDashPatterns) && length(currentView$chartOptions$customLineDashPatterns[[label]])) {
+            lineDash <- currentView$chartOptions$customLineDashPatterns[[label]]
+          }
+          borderWidth <- NULL
+          if (length(currentView$chartOptions$customBorderWidths) && length(currentView$chartOptions$customBorderWidths[[label]])) {
+            borderWidth <- currentView$chartOptions$customBorderWidths[[label]]
+          }
+
+
           if (label %in% currentView$chartOptions$multiChartSeries) {
             if (pivotRenderer %in% c("line", "area", "stackedarea", "timeseries")) {
               multiChartRenderer <- if (length(multiChartRenderer)) multiChartRenderer else "bar"
@@ -2629,14 +3005,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               order <- 2
             }
 
-            chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
+            args <- list(
+              chartJsObj,
+              dataTmp[[rowHeaderLen + i]],
               label = label,
               type = multiChartRenderer,
               showLine = multiChartRenderer %in% c("line", "area", "stackedarea", "timeseries"),
               order = order,
               scaleID = scaleID,
-              pointHitRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 1L else 0,
-              pointRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 3L else 0,
+              pointHitRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 1L else 0L,
+              pointRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 3L else 0L,
               stack = if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "regularStack")) {
                 "stack1"
               } else if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "individualStack")) {
@@ -2646,6 +3024,15 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               },
               stepped = identical(currentView$chartOptions$multiChartOptions$multiChartStepPlot, TRUE)
             )
+
+            if (!is.null(lineDash)) {
+              args$borderDash <- lineDash
+            }
+            if (!is.null(borderWidth)) {
+              args$borderWidth <- borderWidth
+            }
+
+            chartJsObj <- do.call(cjsSeries, args)
           } else {
             if (identical(pivotRenderer, "stackedarea")) {
               fillOpacity <- if (length(currentView$chartOptions$fillOpacity)) {
@@ -2662,7 +3049,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             } else {
               fillOpacity <- 0.15
             }
-            chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
+
+            args <- list(
+              chartJsObj,
+              dataTmp[[rowHeaderLen + i]],
               label = label,
               fill = pivotRenderer %in% c("area", "stackedarea"),
               fillOpacity = fillOpacity,
@@ -2671,8 +3061,32 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               stack = if (pivotRenderer %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "stack1" else NULL,
               stepped = identical(currentView$chartOptions$stepPlot, TRUE)
             )
+
+            if (!is.null(lineDash)) {
+              args$borderDash <- lineDash
+            }
+            if (!is.null(borderWidth)) {
+              args$borderWidth <- borderWidth
+            }
+
+            chartJsObj <- do.call(cjsSeries, args)
           }
         }
+
+        chartJsObj <- chartJsObj %>% cjsLegend()
+
+        if (length(chartFontSize())) {
+          chartFontSize <- isolate(as.numeric(chartFontSize()))
+          chartJsObj$x$options$plugins$tooltip$bodyFont$size <- chartFontSize
+          chartJsObj$x$options$plugins$tooltip$titleFont$size <- chartFontSize
+          chartJsObj$x$options$plugins$legend$labels$font$size <- chartFontSize
+
+          for (scale in names(chartJsObj$x$scales)) {
+            chartJsObj$x$scales[[scale]]$ticks$font$size <- chartFontSize
+            chartJsObj$x$scales[[scale]]$title$font$size <- chartFontSize
+          }
+        }
+
         if (length(currentView$chartOptions)) {
           # reset chart options
           rendererEnv[[ns("chartOptions")]] <- currentView$chartOptions
@@ -2692,7 +3106,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         } else {
           currentView[["_didRender_"]] <<- 1L
         }
-        return(chartJsObj %>% cjsLegend())
+        return(chartJsObj)
       })
 
       # ===================================================
@@ -2763,7 +3177,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         hideEl(session, paste0("#", ns("loadPivotTable")))
 
         columnDefsTmp <- NULL
-        if (isTRUE(options$enableHideEmptyCols) && hideEmptyCols()) {
+        if (hideEmptyCols()) {
           if (noRowHeaders > 0L) {
             hiddenEmptyCols <<- which(vapply(dataTmp[seq_len(noRowHeaders)],
               function(x) {
@@ -2795,12 +3209,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
         } else {
           hiddenEmptyCols <<- NULL
-          if (isTRUE(options$enableHideEmptyCols)) {
-            setAttributes(
-              session, paste0("#", ns("rowIndexList .drop-index-item")),
-              "data-col-hidden", "false"
-            )
-          }
+          setAttributes(
+            session, paste0("#", ns("rowIndexList .drop-index-item")),
+            "data-col-hidden", "false"
+          )
+        }
+
+        if (fixedColumns()) {
+          removeClassEl(session, paste0("#", ns("container .hide-fixed-anchor")), "dt-hide-fixed")
+        } else {
+          addClassEl(session, paste0("#", ns("container .hide-fixed-anchor")), "dt-hide-fixed")
         }
 
         fixedColumnsConfig <- list(leftColumns = noRowHeaders)
