@@ -1076,7 +1076,7 @@ If our input parameters are correctly set up, we can modify them and then click 
 
 Even before solving, it can sometimes be useful to visualize the data to catch inconsistencies—such as negative load demand (which shouldn’t happen) or cost values that don’t align with expectations throughout the day. To view this data graphically, we can toggle the chart view in the top-right corner by clicking the <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/chart-bar.svg" width="15" height="15"> icon. Here, we can filter, aggregate, and pivot the data. We can also use different chart types directly through the [Pivot Table](https://www.gams.com/miro/charts.html#pivot-chart).
 
-In our example, we pivoted the headers and selected line graphs. Because the dimensions of `load_demand` and `cost_external_grid differ`, it initially looks as though `cost_external_grid` is zero, even though it isn’t. To clarify this, we add a second y-axis with a different scale:
+In our example, we pivoted the headers and selected line graphs. Because the dimensions of `load_demand` and `cost_external_grid` differ, it initially looks as though `cost_external_grid` is zero, even though it isn’t. To clarify this, we add a second y-axis with a different scale:
 
 1. Switch the display type to *Line Chart*.
 2. Click the <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/square-plus.svg" width="15" height="15"> icon to add a new view.
@@ -1098,6 +1098,8 @@ MIRO separates scalar outputs into scalar parameters and scalar variables/equati
 
 <div align="center"> <img src="rapit_prototyping/output_scalars.png" alt="input section" width="1000" /> </div>
 <div align="center"> <img src="rapit_prototyping/output_scalars_ve.png" alt="input section" width="1000" /> </div>
+
+As you can see, for scalar variables the scalar contains not only the value of the scalar (`level`), but also `marginal`, `lower`, `upper` and `scale`. And since scalar parameters don't have these attributes, they are treated separately.
 
 For multidimensional output variables, we can use the pivot default renderer again. For instance, suppose we want to see how much power each generator provides at each point in time. We can open the output variable containing the generators’ power values, pivot by generator, and filter by the *level* value. Next, we select the *Stacked Bar Chart* option, yielding this view:
 
@@ -1265,7 +1267,7 @@ In the options we can first add a title for the value boxes.
     "valueBoxesTitle": "Summary indicators",
 ```
 
-Let’s create six value boxes in total but discuss the first two in detail. Each value box needs:
+Let’s create six value boxes in total,  but we'll only discuss the first two in detail. Try adding the others for the ids: `"battery_power"`, `"external_grid_power"`, `"battery_delivery_rate"` and `"battery_storage"`. Each value box needs:
 
 - A unique id (to link it to a corresponding data view, if any).
 - An optional scalar parameter as KPI. If you don't have a matching KPI, but still want to have the view in the dashboard, just set it to `null`.
@@ -1310,7 +1312,7 @@ Let’s create six value boxes in total but discuss the first two in detail. Eac
 
 Next, under `"dataViews"`, we define which charts or tables belong to each value box. A data view is displayed when the corresponding value box is clicked on in the dashboard. Multiple charts and tables can be displayed. We only connect data views to the first four value boxes, leaving the last two without any dedicated view. This is done by simply not specifying a data view for those IDs.
 
-The key of a data view (e.g. `"battery_power"`) must match the id of a value box in `"valueBoxes"`. We start each data view with the `id` from the corresponding value field, then we assign a list of objects to it. Each object within the list has a key (e.g., `"BatteryTimeline"`) that references a chart or table we will define next in `"dataViewsConfig"`, and as value we assign the optional title that will be displayed above the view in the dashboard. If you want to have more than one chart/table in a view, just add a second element to the object.
+The key of a data view (e.g. `"battery_power"`) must match the id of a value box in `"valueBoxes"`. We start each data view with the `id` from the corresponding value box, then we assign a list of objects to it. Each object within the list has a key (e.g., `"BatteryTimeline"`) that references a chart or table we will define next in `"dataViewsConfig"`, and as value we assign the optional title that will be displayed above the view in the dashboard. If you want to have more than one chart/table in a view, just add a second element to the object.
 
 
 ```json
@@ -1353,7 +1355,7 @@ The only thing left to do is to specify the actual charts/tables to be displayed
 
 ```
 
-the complete configuraiton in `"dataViewsConfig"` looks like this:
+The complete configuration in `"dataViewsConfig"` looks like this:
 
 
 <details>
@@ -1608,7 +1610,9 @@ We will now return to the Configuration Mode and start building our first render
 # i 14 more rows
 ```
 
-Since we have not specified any additional data sets so far, `data` directly contains the variable `battery_power`, which is the GAMS symbol we put in the mirorender name. For our plot of the storage levels we now need the values from the `level` column, which we can access in R with `data$level`. More on subsetting tibbles can be found [here](https://tibble.tidyverse.org/reference/subsetting.html). Let's now finally make our first plot! First we need to calculate the data we want to plot, which we store in `storage_level`. The values in `battery_power` are from the city’s perspective; negative means charging the BESS, positive means discharging. We negate the cumulative sum to get the actual storage level. We use the standard R [`barplot()`](https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/barplot) for visualization, but any plotting library can be used. Finally, we just need to pass this reactive plot to a render function and assign it to the appropriate output variable. The code should look like this:
+Since we have not specified any additional data sets so far, `data` directly contains the variable `battery_power`, which is the GAMS symbol we put in the mirorender name. For our plot of the storage levels we now need the values from the `level` column, which we can access in R with `data$level`. More on subsetting tibbles can be found [here](https://tibble.tidyverse.org/reference/subsetting.html). 
+
+Let's now finally make our first plot! First we need to calculate the data we want to plot, which we store in `storage_level`. The values in `battery_power` are from the city’s perspective; negative means charging the BESS, positive means discharging. We negate the cumulative sum to get the actual storage level. We use the standard R [`barplot()`](https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/barplot) for visualization, but any plotting library can be used. Finally, we just need to pass this reactive plot to a render function and assign it to the appropriate output variable. The code should look like this:
 
 ``` R
 storage_level <- -cumsum(data$level)
@@ -1622,8 +1626,7 @@ If you press *Update* again, you should get this:
 
 <div align="center"> <img src="render/cumsum_first_draft.png" alt="input section" width="1000"/> </div>
 
-Now let's make this graph prettier. Aside from adding a title, labels, etc., take a look at the y-axis. As you can see, it doesn't go all the way to the top. To change this, we can set it to the maximum value of our data. But what might be more interesting is to see the current storage value compared to the maximum possible. As you may remember, this maximum storage level is also part of our optimization. So now we need to add data from other model symbols to our renderer. By clicking on *Additional datasets to communicate with the custom renderer* we see all symbols that we can include in the renderer. Since we need the data from the scalar variable `battery_storage`, we add `"_scalarsve_out"`. Going back to the *Main* tab, we now need to change how we access the data, since `data` is no longer a single tibble, but a named list of tibbles. In the example below we use [`filter()`](https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/filter) and [`pull()`](https://www.rdocumentation.org/packages/lplyr/versions/0.1.6/topics/pull) to extract the desired data.
-
+Now let's make this graph prettier. Aside from adding a title, labels, etc., take a look at the y-axis. As you can see, it doesn't go all the way to the top. To change this, we can set it to the maximum value of our data. But what might be more interesting is to see the current storage value compared to the maximum possible. As you may remember, this maximum storage level is also part of our optimization. So now we need to add data from other model symbols to our renderer. First go to *Advanced options* and then by clicking on *Additional datasets to communicate with the custom renderer* we will see all the symbols we can add to the renderer. Since we need the data from the scalar variable `battery_storage`, we add `"_scalarsve_out"`. Going back to the *Main* tab, we now need to change how we access the data, since `data` is no longer a single tibble, but a named list of tibbles. In the example below we use [`filter()`](https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/filter) and [`pull()`](https://www.rdocumentation.org/packages/lplyr/versions/0.1.6/topics/pull) to extract the desired data. Note that `%>%` is the pipe operator, which is used to pass the result of an expression or function as the input to the next function in a sequence, improving the readability and flow of your code.
 
 ``` R
 max_storage <- data[["_scalarsve_out"]] %>%
@@ -1670,7 +1673,7 @@ By clicking *Save*, the Configuration Mode generates the file structure and JSON
 
 Congratulations you created your first renderer!
 
-Note that if your data transformation is simple (e.g., a single cumulative sum), you could do this directly in Python by creating a new parameter, eliminating the need for a custom renderer. Here, we mainly use this example to introduce custom renderers in MIRO.
+Note that if your data transformation is simple (e.g., a single cumulative sum), you could (and should!) do this directly in Python by creating a new parameter, eliminating the need for a custom renderer. Here, we mainly use this example to introduce custom renderers in MIRO.
 
 Now that we have created our first small custom renderer, we can start working on some more complex renderers.
 
@@ -1763,6 +1766,8 @@ if (dim(battery_to_display)[1] != 0) {
   }
 }
 ```
+
+Add similar snippets for the remaining two power sources.
 
 <details>
   <summary>Click to see the other two power sources</summary>
@@ -2021,7 +2026,7 @@ output$table <- DT::renderDT({
 })
 ```
 
-Here, `editable = TRUE` is crucial—it allows users to modify the table entries. For the plot, we do something like this:
+Here, `editable = TRUE` is crucial—it allows users to modify the table entries. For the plot, we need something like this:
 
 ```R
 output$timeline <- renderPlot({
@@ -2029,7 +2034,7 @@ output$timeline <- renderPlot({
 })
 ```
 
-We have two variables in different dimensions (`load_demand` in W and `cost_external_grid` in $). To overlay two y-axes, we can use [`par()`](https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/par) and [`axis()`](https://www.rdocumentation.org/packages/graphics/versions/3.5.2/topics/axis).
+We have two variables in different dimensions (`load_demand` in W and `cost_external_grid` in $). We now want to display them in a single plot, see for yourself what the rest of the code should look like. You could use [`par()`](https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/par) and [`axis()`](https://www.rdocumentation.org/packages/graphics/versions/3.5.2/topics/axis) to overlay two y-axes.
 
 <details>
   <summary>Click to see the code</summary>
@@ -2134,7 +2139,7 @@ resetTable <- function() {
 }
 ```
 
-We now reference `rv$timewise_input_data` in the plot rather than `data`, causing the plot to update whenever a table cell changes.
+We now need to reference `rv$timewise_input_data` in the plot rather than `data`, causing the plot to update whenever a table cell changes.
 
 <details>
   <summary>Click to see the full code of the current state</summary>
@@ -2376,7 +2381,7 @@ renderMirowidget_timewise_load_demand_and_cost_external_grid_data <- function(in
 </details>
 
 
-Congratulations—our new custom widget combines a table and a plot, with both updating interactively. At this point, Solve model will use our updated table whenever we change values and re-run the model. Now that you’ve mastered the basics of custom renderers in MIRO, you can explore more creative implementations. If you need more inspiration on what you can do with the custom renderer, take a look at the [MIRO gallery](https://miro.gams.com/), e.g. take a look at some applications with maps ([TSP](https://miro.gams.com/gallery/app_direct/tsp/) or [VRPTW](https://miro.gams.com/gallery/app_direct/vrptw/)).
+Congratulations—our new custom widget combines a table and a plot, with both updating interactively. At this point, *Solve model* will use our updated table whenever we change values and re-run the model. Now that you’ve mastered the basics of custom renderers in MIRO, you can explore more creative implementations. If you need more inspiration on what you can do with the custom renderer, take a look at the [MIRO gallery](https://miro.gams.com/), e.g. take a look at some applications with maps ([TSP](https://miro.gams.com/gallery/app_direct/tsp/) or [VRPTW](https://miro.gams.com/gallery/app_direct/vrptw/)).
 
 ### Key Takeaways
 - **Unlimited Customization**: R-based renderers let you do anything from advanced plotting to building interactive features.
@@ -2390,12 +2395,12 @@ Congratulations—our new custom widget combines a table and a plot, with both u
 In any data-centric project, the ability to efficiently manage data movement is critical. While MIRO already provides a number of ways to [import](https://www.gams.com/miro/start.html#import-data) and [export](https://www.gams.com/miro/start.html#save-export-delete) data—such as GDX, Excel, or CSV—there are many situations where you need more flexible solutions. For instance:
 
 - You might store data in a database and prefer not to export it to CSV first.
-You may gather data from multiple sources and need to reformat it so MIRO recognizes the correct symbol names.
+- You may gather data from multiple sources and need to reformat it so MIRO recognizes the correct symbol names.
 
 Custom import and export functions handle these scenarios by allowing you to:
 
-Work directly with databases or other file types.
-Perform pre- or post-processing steps within MIRO.
+- Work directly with databases or other file types.
+- Perform pre- or post-processing steps within MIRO.
 
 Here, we will go over the basic concept to give you a good starting point for extending it to your needs. Again, we follow the [documentation](https://www.gams.com/miro/configuration_json_only.html#custom-import-export) closely. First, let's create a simple import function that gets the data for our generators. For ease of setup, we will just pretend to access a database and actually hardcode the data here.
 
@@ -2462,9 +2467,9 @@ miroimport_GenSpecs <- function(symbolNames, localFile = NULL, views = NULL, att
 }
 ```
 
-After saving, we can reload MIRO and select Gen specs import under Load data. The generator names will update accordingly, proving our custom code works. Although this example is hardcoded, the same framework can fetch data from any source, fix column names to fit MIRO’s symbols (stored in `"symbolNames"`), or perform more complicated transformations such as database queries.
+After saving, we can reload MIRO and select *Gen specs import* under *Load data*. The generator names will update accordingly, proving our custom code works. Although this example is hardcoded, the same framework can fetch data from any source, fix column names to fit MIRO’s symbols (stored in `"symbolNames"`), or perform more complicated transformations such as database queries.
 
-In a real scenario with database queries, you’ll likely store credentials in a secure environment. MIRO allows you to specify environments; this is where we store our credentials. For MIRO [Desktop](https://www.gams.com/miro/deployment.html#custom-environments), create a JSON file—e.g., miro-env.json—that looks like:
+In a real scenario with database queries, you’ll likely store credentials in a secure environment. MIRO allows you to specify environments; this is where we store our credentials. For MIRO [Desktop](https://www.gams.com/miro/deployment.html#custom-environments), create a JSON file—e.g., *miro-env.json*—that looks like:
 
 ```json
 {
@@ -2473,7 +2478,7 @@ In a real scenario with database queries, you’ll likely store credentials in a
 }
 ```
 
-Now in MIRO Desktop go to *File* and then to *Preferences*. Under *Environment* you can now upload the json file. You can access these credentials via Sys.getenv() inside your importer, for example:
+Now in MIRO Desktop go to *File* and then to *Preferences*. Under *Environment* you can now upload the json file. You can access these credentials via `Sys.getenv()` inside your importer, for example:
 
 ```R
 miroimport_GenSpecs <- function(symbolNames, localFile = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
