@@ -75,11 +75,16 @@ HTMLWidgets.widget({
     //    }
 
     // Create actual chart
-    instance.cjs = new Chart(ctx, {
-      type: x.type,
-      data: data,
-      options: chartOptions,
-    });
+    try {
+      instance.cjs = new Chart(ctx, {
+        type: x.type,
+        data: data,
+        options: chartOptions,
+      });
+    } catch (err) {
+      Chart.getChart(el.id).destroy();
+    }
+
     if (canvas.onclick == null) {
       var lastClicked = null;
       canvas.onclick = function () {
