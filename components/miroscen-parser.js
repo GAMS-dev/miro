@@ -64,6 +64,7 @@ function addMiroscen(
             appDir: path.join(paths.appDataPath, modelName),
           },
           modelName,
+          appsData.getAppConfigValue(modelName, 'gmsName'),
           miroVersion,
           appsData.getAppConfigValue(modelName, 'usetmpdir'),
           windowObj,

@@ -645,6 +645,7 @@ async function updateMIROApp(newAppParam, appIdToUpdate = null) {
     }
     appConf.miroversion = newApp.miroversion;
     appConf.usetmpdir = newApp.usetmpdir;
+    appConf.gmsName = newApp.gmsName;
     await addModelData(
       miroProcessManager,
       {
@@ -653,6 +654,7 @@ async function updateMIROApp(newAppParam, appIdToUpdate = null) {
         appDir: appDirTmp,
       },
       appConf.id,
+      appConf.gmsName,
       appConf.miroversion,
       appConf.usetmpdir,
       mainWindow,
@@ -1791,6 +1793,7 @@ ipcMain.on('add-app', async (e, newApp) => {
         appDir,
       },
       appConf.id,
+      appConf.gmsName,
       appConf.miroversion,
       appConf.usetmpdir,
       mainWindow,
@@ -1902,6 +1905,7 @@ ipcMain.on('update-app-data', async (_, filePaths, appId) => {
           appDir,
         },
         appId,
+        appConf.gmsName,
         appConf.miroversion,
         appConf.usetmpdir,
         mainWindow,
