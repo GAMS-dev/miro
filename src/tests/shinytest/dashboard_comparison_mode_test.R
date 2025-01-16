@@ -31,7 +31,7 @@ Sys.sleep(6L)
 
 expect_true(app$get_js("$('#cmpCustom___dashboard_1-dowVSindexChart').is(':visible')"))
 expect_true(app$get_js("$('#cmpCustom___dashboard_1-stockWeightChart').is(':hidden');"))
-app$click(selector = "div[id='cmpCustom___dashboard_1-error_train']")
+app$click(selector = "div[id='cmpCustom___dashboard_1-error_train'] .custom-info-box")
 Sys.sleep(1)
 expect_true(app$get_js("$('#cmpCustom___dashboard_1-dowVSindexChart').is(':hidden')"))
 expect_true(app$get_js("$('#cmpCustom___dashboard_1-stockWeightChart').is(':visible');"))
