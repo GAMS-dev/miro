@@ -14,7 +14,7 @@ IN_KUBERNETES <- Sys.getenv("KUBERNETES_SERVICE_HOST", "") != ""
 
 REQUIRED_API_VERSION <- 1
 MAX_LOGO_SIZE <- 1e6
-MIRO_VERSION <- "2.10.9999"
+MIRO_VERSION <- "2.11.0"
 MIRO_CONTAINER_DATA_DIR <- if (IN_KUBERNETES) "/home/miro/mnt/data" else "/home/miro/app/data"
 MIRO_MODEL_DIR <- file.path(getwd(), if (IN_KUBERNETES) "mnt" else "", "models")
 MIRO_DATA_DIR <- file.path(getwd(), if (IN_KUBERNETES) "mnt" else "", "data")
