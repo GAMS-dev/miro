@@ -69,7 +69,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
     return(combinedData)
   }
 
-  scenarioNames <- bind_rows(data$getMetadata())[["_sname"]][-1]
+  scenarioNames <- bind_rows(data$getMetadata()[-1])[["_sname"]]
 
   dataViewsConfig <- options$dataViewsConfig
 
