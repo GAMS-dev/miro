@@ -313,6 +313,20 @@
                         incorrectly resulted in all datasets being imported.
                       </li>
                       <li>
+                        Fix issue where adding GAMSPy apps to MIRO Desktop did
+                        not work in certain situations.
+                      </li>
+                      <li>
+                        Fix crash when opening dialog to download temporary
+                        files when number of temporary files was large (>500).
+                      </li>
+                      <li>
+                        Fix issue where rendering a Chart.js chart with an
+                        invalid configuration would break the canvas,
+                        preventing it from being reused for subsequent charts
+                        with valid configurations.
+                      </li>
+                      <li>
                         MIRO Server: Fix issue where app logos did not load
                         when <kbd>server.servlet.context-path</kbd> was set to
                         anything but <kbd>/</kbd>.
