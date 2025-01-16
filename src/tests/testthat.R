@@ -47,6 +47,7 @@ Sys.setenv(MIRO_LOG_PATH = logPathTests)
 Sys.setenv(MIRO_TEST_LOAD_TIMEOUT = "30000")
 Sys.setenv(MIRO_TEST_TIMEOUT = "10000")
 Sys.setenv(NOT_CRAN = "true")
+Sys.setenv(CHROMOTE_HEADLESS = "new")
 if (Sys.info()[["sysname"]] == "Darwin") {
   # need to set chromium path manually until https://github.com/rstudio/chromote/issues/91 is closed
   chromePath <- "/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
