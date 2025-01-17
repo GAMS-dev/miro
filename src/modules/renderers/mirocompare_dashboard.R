@@ -533,10 +533,24 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
   # Get scalar output data in case valueboxes should show a value
   if (length(options$valueBoxes$valueScalar) && any(!is.na(options$valueBoxes$valueScalar))) {
-    if (!"_scalars_out" %in% data$getAllSymbols()) {
-      abortSafe("No scalar output symbols found for valueBoxes")
+    scalarData <- NULL
+    scalarVeData <- NULL
+
+    if ("_scalars_out" %in% data$getAllSymbols()) {
+      scalarData <- combineData(data$get("_scalars_out"), scenarioNames) %>%
+        mutate(value = suppressWarnings(as.numeric(value)))
     }
-    scalarData <- combineData(data$get("_scalars_out"), scenarioNames)
+    if ("_scalarsve_out" %in% data$getAllSymbols()) {
+      scalarVeData <- combineData(data$get("_scalarsve_out"), scenarioNames) %>%
+        filter(Hdr == "level") %>%
+        select(-Hdr)
+    }
+
+    if (!is.null("scalarData") && !is.null("scalarVeData")) {
+      scalarData <- bind_rows(scalarData, scalarVeData)
+    } else if (!is.null("scalarVeData")) {
+      scalarData <- scalarVeData
+    }
   }
 
   # Value boxes title and scenario select (if value boxes show values)
