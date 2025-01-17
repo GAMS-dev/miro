@@ -362,10 +362,10 @@
                     <ul>
                       <li>
                         <b>General</b>: General settings such as the title
-                        displayed above the chart/table and axis labels. For
-                        compatible charts, you can also set whether data
-                        markers should be displayed and whether a step plot
-                        should be used.
+                        displayed above the chart/table and axis labels. The
+                        tab also contains chart-specific settings such as
+                        showing a line chart as a step plot or grouping stacks
+                        by a dimension for stacked bar charts.
                       </li>
                       <li>
                         <b>Axes</b>: Range limitations for axes, grid settings,
@@ -373,8 +373,8 @@
                       </li>
                       <li>
                         <b>Combo chart</b>: Depending on the base chart type,
-                        you can add and configure additional bar/line/scatter
-                        series to the chart.
+                        you can render selected series as a bar/line/scatter
+                        chart.
                       </li>
                       <li>
                         <b>Second Axis</b>: Plot selected series on an
@@ -387,6 +387,52 @@
                         dash patterns and border widths can be made here.
                       </li>
                     </ul>
+                    <div class="callout-block callout-success">
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Tip:</b>
+                        <p>
+                          In a chart, each series is defined by taking one
+                          entry from each dimension in the columns. The labels
+                          for these dimensions are concatenated using the "․"
+                          character (Unicode U+2024) as a separator. When you
+                          use features like combo charts or a secondary axis,
+                          you can select which series to show from a dropdown
+                          menu containing these concatenated labels.
+                        </p>
+                        <div class="section-block">
+                          <img
+                            class="img-fluid"
+                            src="assets/images/pivot_series_select.png"
+                            alt="MIRO Pivot Table with empty column visible"
+                          />
+                        </div>
+                        <p>
+                          Beyond these automatically generated series, you can
+                          also create custom patterns by adding entries to the
+                          dropdown. This makes it possible to apply specific
+                          settings to any series that matches a certain subset
+                          of the dimension labels. For example, if you define a
+                          pattern named
+                          <code class="language-gams">Topeka</code>, it will
+                          include all series whose labels contain "Topeka",
+                          such as
+                          <code class="language-gams">Seattle.Topeka</code> and
+                          <code class="language-gams">San-Diego.Topeka</code>.
+                        </p>
+                        <div class="section-block">
+                          <img
+                            class="img-fluid"
+                            src="assets/images/pivot_series_select2.png"
+                            alt="MIRO Pivot Table with empty column visible"
+                          />
+                        </div>
+                      </div>
+                      <!--//content-->
+                    </div>
                     <p>
                       When you save the scenario, all your views are
                       automatically stored as well. Load a view by first

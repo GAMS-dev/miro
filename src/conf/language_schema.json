@@ -2667,6 +2667,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "groupDimension": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "xGrid": {
                   "type": "string",
                   "minLength": 1
@@ -2803,6 +2807,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "selectizePlaceholder": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "btCancel": {
                   "type": "string",
                   "minLength": 1
@@ -2820,7 +2828,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 51
+              "minProperties": 53
             },
             "settings": {
               "type": "object",

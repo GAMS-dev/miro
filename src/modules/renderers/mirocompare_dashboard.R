@@ -1153,6 +1153,13 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
       if (length(currentView$chartOptions$multiChartOptions$multiChartRenderer)) {
         multiChartRenderer <- currentView$chartOptions$multiChartOptions$multiChartRenderer
       }
+
+      groupElements <- NULL
+      if (length(currentView$chartOptions$groupDimension)) {
+        dataRaw <- combineData(data$get(dataViewsConfig[[view]]$data), scenarioNames)
+        groupElements <- unique(dataRaw[[currentView$chartOptions$groupDimension]])
+      }
+
       for (i in seq_len(noSeries)) {
         label <- names(dataTmp)[rowHeaderLen + i]
         originalLabel <- label
@@ -1181,7 +1188,39 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
           borderWidth <- currentView$chartOptions$customBorderWidths[[label]]
         }
 
-        if (originalLabel %in% currentView$chartOptions$multiChartSeries) {
+        stack <- NULL
+        if (length(groupElements)) {
+          matches <- which(
+            sapply(groupElements, function(gEl) {
+              exact <- (gEl == originalLabel)
+              contained <- grepl(paste0("\u2024", gEl, "\u2024"), originalLabel)
+              starts <- grepl(paste0("^", gEl, "\u2024"), originalLabel)
+              ends <- grepl(paste0("\u2024", gEl, "$"), originalLabel)
+              (exact || contained || starts || ends)
+            })
+          )
+          if (length(matches) == 0) {
+            stack <- NULL
+          } else {
+            stack <- paste0("stack", matches[1])
+          }
+        } else {
+          stack <- if (chartType %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "stack1" else NULL
+        }
+
+        multiChartSeries <- FALSE
+        if (length(currentView$chartOptions$multiChartSeries)) {
+          series <- currentView$chartOptions$multiChartSeries
+          patterns <- c(
+            paste0("\u2024", series, "\u2024"),
+            paste0("^", series, "\u2024"),
+            paste0("\u2024", series, "$")
+          )
+          if (originalLabel %in% series || grepl(paste(patterns, collapse = "|"), originalLabel)) {
+            multiChartSeries <- TRUE
+          }
+        }
+        if (multiChartSeries) {
           if (chartType %in% c("line", "area", "stackedarea", "timeseries")) {
             multiChartRenderer <- if (length(multiChartRenderer)) multiChartRenderer else "bar"
           } else {
@@ -1205,7 +1244,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
             pointHitRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 1L else 0L,
             pointRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 3L else 0L,
             stack = if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "regularStack")) {
-              "stack1"
+              stack
             } else if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "individualStack")) {
               "stack0"
             } else {
@@ -1239,7 +1278,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
             fillOpacity = fillOpacity,
             order = 1,
             scaleID = scaleID,
-            stack = if (chartType %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "stack1" else NULL,
+            stack = stack,
             stepped = identical(currentView$chartOptions$stepPlot, TRUE)
           )
 

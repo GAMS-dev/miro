@@ -304,6 +304,10 @@
               "description": "Normally, positive and negative values are stacked separately. This setting allows stacking positive and negative values together",
               "type": "boolean"
             },
+            "groupDimension": {
+              "description": "Group datasets into multiple stacks based on a specific dimension",
+              "type": "boolean"
+            },
             "fillOpacity": {
               "description": "Fill opacity for stacked and regular area charts.",
               "type": "number",
@@ -858,6 +862,10 @@
                   },
                   "singleStack": {
                     "description": "Normally, positive and negative values are stacked separately. This setting allows stacking positive and negative values together",
+                    "type": "boolean"
+                  },
+                  "groupDimension": {
+                    "description": "Group datasets into multiple stacks based on a specific dimension",
                     "type": "boolean"
                   },
                   "fillOpacity": {

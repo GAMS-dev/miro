@@ -1197,12 +1197,28 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                           )
                         )
                       } else if (pivotRenderer %in% c("stackedarea", "horizontalstackedbar", "stackedbar")) {
-                        tags$div(
-                          class = "col-sm-6",
-                          checkboxInput_MIRO(ns("singleStack"),
-                            label = lang$renderers$miroPivot$newView$singleStack,
-                            value = identical(viewOptions$chartOptions$singleStack, TRUE)
-                          )
+                        tagList(
+                          tags$div(
+                            class = "col-sm-6",
+                            checkboxInput_MIRO(ns("singleStack"),
+                              label = lang$renderers$miroPivot$newView$singleStack,
+                              value = identical(viewOptions$chartOptions$singleStack, TRUE)
+                            )
+                          ),
+                          if (pivotRenderer %in% c("horizontalstackedbar", "stackedbar")) {
+                            tags$div(
+                              class = "col-sm-6",
+                              selectInput(ns("groupDimension"),
+                                label = lang$renderers$miroPivot$newView$groupDimension,
+                                choices = c("_", setIndices),
+                                selected = if (length(viewOptions$chartOptions$groupDimension)) {
+                                  viewOptions$chartOptions$groupDimension
+                                } else {
+                                  "_"
+                                },
+                              )
+                            )
+                          }
                         )
                       }
                     )
@@ -1264,12 +1280,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                       class = "row",
                       tags$div(
                         class = "col-sm-12",
-                        selectInput(ns("addMultiChartSeries"),
+                        selectizeInput(ns("addMultiChartSeries"),
                           width = "100%",
                           label = lang$renderers$miroPivot$newView$multiChartSeries,
-                          choices = miroPivotState$currentSeriesLabels,
-                          selected = viewOptions$chartOptions$multiChartSeries,
-                          multiple = TRUE
+                          choices = if (length(viewOptions$chartOptions$multiChartSeries)) c(viewOptions$chartOptions$multiChartSeries, miroPivotState$currentSeriesLabels) else miroPivotState$currentSeriesLabels,
+                          selected = if (length(viewOptions$chartOptions$multiChartSeries)) viewOptions$chartOptions$multiChartSeries else NULL,
+                          multiple = TRUE,
+                          options = list(
+                            "create" = TRUE,
+                            placeholder = lang$renderers$miroPivot$newView$selectizePlaceholder
+                          )
                         )
                       )
                     ),
@@ -1362,12 +1382,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                         class = "row",
                         tags$div(
                           class = "col-sm-6",
-                          selectInput(ns("y2axisSeries"),
+                          selectizeInput(ns("y2axisSeries"),
                             width = "100%",
                             label = lang$renderers$miroPivot$newView$y2axisSeries,
-                            choices = miroPivotState$currentSeriesLabels,
-                            selected = viewOptions$chartOptions$y2axis$series,
-                            multiple = TRUE
+                            choices = if (length(viewOptions$chartOptions$y2axis$series)) c(viewOptions$chartOptions$y2axis$series, miroPivotState$currentSeriesLabels) else miroPivotState$currentSeriesLabels,
+                            selected = if (length(viewOptions$chartOptions$y2axis$series)) viewOptions$chartOptions$y2axis$series else NULL,
+                            multiple = TRUE,
+                            options = list(
+                              "create" = TRUE,
+                              placeholder = lang$renderers$miroPivot$newView$selectizePlaceholder
+                            )
                           )
                         ),
                         tags$div(
@@ -1927,6 +1951,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               if (length(input[["fillOpacity"]])) {
                 refreshRequired <- TRUE
                 newViewConfig$chartOptions[["fillOpacity"]] <- if (is.na(input[["fillOpacity"]])) NULL else input[["fillOpacity"]]
+              }
+              if (length(input[["groupDimension"]])) {
+                refreshRequired <- TRUE
+                newViewConfig$chartOptions[["groupDimension"]] <- if (identical(input[["groupDimension"]], "_")) NULL else input[["groupDimension"]]
               }
               if (isTRUE(input[["useCustomChartColors"]])) {
                 refreshRequired <- TRUE
@@ -2971,14 +2999,28 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if (length(currentView$chartOptions$multiChartOptions$multiChartRenderer)) {
           multiChartRenderer <- currentView$chartOptions$multiChartOptions$multiChartRenderer
         }
+
+        groupElements <- NULL
+        if (length(currentView$chartOptions$groupDimension)) {
+          groupElements <- unique(data[[currentView$chartOptions$groupDimension]])
+        }
+
         for (i in seq_len(min(noSeries, 40L))) {
           label <- names(dataTmp)[rowHeaderLen + i]
           scaleID <- NULL
-          if (length(currentView$chartOptions$y2axis$series) && label %in% currentView$chartOptions$y2axis$series) {
-            if (pivotRenderer %in% c("horizontalbar", "horizontalstackedbar")) {
-              scaleID <- "x2"
-            } else {
-              scaleID <- "y2"
+          if (length(currentView$chartOptions$y2axis$series)) {
+            series <- currentView$chartOptions$y2axis$series
+            patterns <- c(
+              paste0("\u2024", series, "\u2024"),
+              paste0("^", series, "\u2024"),
+              paste0("\u2024", series, "$")
+            )
+            if (label %in% series || grepl(paste(patterns, collapse = "|"), label)) {
+              if (pivotRenderer %in% c("horizontalbar", "horizontalstackedbar")) {
+                scaleID <- "x2"
+              } else {
+                scaleID <- "y2"
+              }
             }
           }
 
@@ -2991,8 +3033,39 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             borderWidth <- currentView$chartOptions$customBorderWidths[[label]]
           }
 
+          stack <- NULL
+          if (length(groupElements) && pivotRenderer %in% c("stackedbar", "horizontalstackedbar")) {
+            matches <- which(
+              sapply(groupElements, function(gEl) {
+                exact <- (gEl == label)
+                contained <- grepl(paste0("\u2024", gEl, "\u2024"), label)
+                starts <- grepl(paste0("^", gEl, "\u2024"), label)
+                ends <- grepl(paste0("\u2024", gEl, "$"), label)
+                (exact || contained || starts || ends)
+              })
+            )
+            if (length(matches) == 0) {
+              stack <- NULL
+            } else {
+              stack <- paste0("stack", matches[1])
+            }
+          } else {
+            stack <- if (pivotRenderer %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "stack1" else NULL
+          }
 
-          if (label %in% currentView$chartOptions$multiChartSeries) {
+          multiChartSeries <- FALSE
+          if (length(currentView$chartOptions$multiChartSeries)) {
+            series <- currentView$chartOptions$multiChartSeries
+            patterns <- c(
+              paste0("\u2024", series, "\u2024"),
+              paste0("^", series, "\u2024"),
+              paste0("\u2024", series, "$")
+            )
+            if (label %in% series || grepl(paste(patterns, collapse = "|"), label)) {
+              multiChartSeries <- TRUE
+            }
+          }
+          if (multiChartSeries) {
             if (pivotRenderer %in% c("line", "area", "stackedarea", "timeseries")) {
               multiChartRenderer <- if (length(multiChartRenderer)) multiChartRenderer else "bar"
             } else {
@@ -3016,7 +3089,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               pointHitRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 1L else 0L,
               pointRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 3L else 0L,
               stack = if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "regularStack")) {
-                "stack1"
+                stack
               } else if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "individualStack")) {
                 "stack0"
               } else {
@@ -3058,7 +3131,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               fillOpacity = fillOpacity,
               order = 1,
               scaleID = scaleID,
-              stack = if (pivotRenderer %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "stack1" else NULL,
+              stack = stack,
               stepped = identical(currentView$chartOptions$stepPlot, TRUE)
             )
 

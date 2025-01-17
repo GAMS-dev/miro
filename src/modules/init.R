@@ -189,7 +189,7 @@ validateDashboardConfig <- function(graphConfig, dashboardType) {
     }
 
     allIndices <- c()
-    for (id in c("rows", "cols", "aggregations", "filter", "userFilter")) {
+    for (id in c("rows", "cols", "aggregations", "filter", "userFilter", "groupDimension")) {
       if (length(config[[id]])) {
         if (id %in% c("rows", "userFilter")) {
           if (identical(id, "userFilter") && length(config[[id]]) == 1 && config[[id]] %in% names(dc)) {
