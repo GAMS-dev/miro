@@ -602,9 +602,6 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
             `_scenName` == input$scenarioSelect,
             scalar == tolower(options$valueBoxes$valueScalar[i])
           )
-        if (!nrow(valueTmp)) {
-          abortSafe(sprintf("No scalar symbol '%s' found for valueBox '%s'", options$valueBoxes$valueScalar[i], options$valueBoxes$id[i]))
-        }
         valueTmp <- as.numeric(valueTmp[[length(valueTmp)]][1])
 
         if (!is.na(options$valueBoxes$decimals[i])) {

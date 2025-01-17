@@ -40,6 +40,7 @@ expect_true(app$get_js("$('#cmpCustom___dashboard_1-error_train .info-box-number
 selectSelectizeOption(app, "#cmpCustom___dashboard_1-scenarioSelect", "pickstock2")
 Sys.sleep(1)
 expect_true(app$get_js("$('#cmpCustom___dashboard_1-error_train .info-box-number').text()==='618.84'"))
+expect_true(app$get_js("$('#cmpCustom___dashboard_1-scalarve .info-box-number').text()==='0'"))
 Sys.sleep(0.5)
 
 
