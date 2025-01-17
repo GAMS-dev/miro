@@ -579,6 +579,68 @@ report_output[j, "external_grid"] = external_grid_power.l[j]
 report_output[j, "load_demand"] = load_demand[j]
 ```
 
+Finally, we will briefly look at data validation. It is vital for ensuring the accuracy and reliability of optimization models. Log files are key for checking input data consistency, and generating reports on inconsistencies helps prevent errors and user frustration. Here, we will focus on verifying that our input values are all non-negative. While finding effective validation checks can be challenging, clearly identifying the constraints or values causing infeasibility can significantly improve the user experience. In MIRO, you have the option to create a custom log file. However, since we are using GAMSPy, we can also directly write to stdout and log there. And if we here follow the specified [MIRO log syntax](https://www.gams.com/miro/configuration_general.html#miro-log-syntax), any invalid data can be highlighted directly above the corresponding input data sheet in MIRO.
+
+The syntax that must be used for MIRO to jump directly to the table with the incorrect data is as follows:
+
+```
+symbolname:: Error message
+```
+
+Try for yourself how a simple verification of the sign of the input values might look. Keep in mind that you should validate the data before attempting to solve the model. If the validation fails, specify which value caused the failure and raise an exception, as there's no need to solve the model in this case.
+
+
+
+<details>
+  <summary>A possible data validation</summary>
+
+```python
+no_negative_gen_spec = generator_specifications.records[generator_specifications.records["value"] < 0]
+no_negative_load = load_demand.records[load_demand.records["value"] < 0]
+no_negative_cost = cost_external_grid.records[
+    cost_external_grid.records["value"] < 0
+]
+
+print(
+    """------------------------------------\n       Validating data\n------------------------------------\n"""
+)
+errors = False
+
+if not no_negative_gen_spec.empty:
+    print(
+        "generator_specifications:: No negative values for the generator specifications allowed!\n"
+    )
+    for _, row in no_negative_gen_spec.iterrows():
+        print(f'{row["i"]} has a negative value.\n')
+    errors = True
+
+if not no_negative_load.empty:
+    print(
+        "timewise_load_demand_and_cost_external_grid_data:: No negative load demand allowed!\n"
+    )
+    for _, row in no_negative_load.iterrows():
+        print(f'{row["j"]} has negative load demand.\n')
+    errors = True
+
+if not no_negative_cost.empty:
+    print(
+        "timewise_load_demand_and_cost_external_grid_data:: No negative cost allowed!\n"
+    )
+    for _, row in no_negative_cost.iterrows():
+        print(f'{row["j"]} has negative external grid cost.\n')
+    errors = True
+
+if errors:
+    raise Exception("Data errors detected")
+print("Data ok\n")
+```
+</details>
+
+<div align="center"> <img src="config_mode/log.png" alt="input section" width="1000"/> </div>
+
+<div align="center"> <img src="config_mode/data_validation.png" alt="input section" width="1000"/> </div>
+
+
 <details>
   <summary>Full updated GAMSPy model</summary>
 
@@ -2655,10 +2717,3 @@ Feel free to clone or fork the repo, adapt it for your organization’s workflow
 
 **add dashboard comparison**
 
-
-**add custom log**
-[Custom Log](https://www.gams.com/miro/configuration_general.html#miro-log)
-make a custom log directly in the GAMSPy code
--> especially good for data validation
-
-**change it to directly print and not write in a new file**

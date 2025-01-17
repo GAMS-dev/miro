@@ -206,43 +206,44 @@ def main():
         description="maximal power that can be imported from the external grid every hour",
     )
 
+    no_negative_gen_spec = generator_specifications.records[generator_specifications.records["value"] < 0]
     no_negative_load = load_demand.records[load_demand.records["value"] < 0]
     no_negative_cost = cost_external_grid.records[
         cost_external_grid.records["value"] < 0
     ]
 
-    with open("miro.log", "w") as f:
-        f.writelines(
-            [
-                "------------------------------------\n",
-                "        Validating data\n",
-                "------------------------------------\n",
-            ]
+    print(
+        """------------------------------------\n       Validating data\n------------------------------------\n"""
+    )
+    errors = False
+
+    if not no_negative_gen_spec.empty:
+        print(
+            "generator_specifications:: No negative values for the generator specifications allowed!\n"
         )
-        errors = False
-        if not no_negative_load.empty:
-            f.writelines(
-                [
-                    "timewise_load_demand_and_cost_external_grid_data:: No negative load demand allowed!\n"
-                ]
-            )
-            for _, row in no_negative_load.iterrows():
-                f.writelines([f'{row["j"]} has negative load demand.\n'])
-            errors = True
+        for _, row in no_negative_gen_spec.iterrows():
+            print(f'{row["i"]} has a negative value.\n')
+        errors = True
+    
+    if not no_negative_load.empty:
+        print(
+            "timewise_load_demand_and_cost_external_grid_data:: No negative load demand allowed!\n"
+        )
+        for _, row in no_negative_load.iterrows():
+            print(f'{row["j"]} has negative load demand.\n')
+        errors = True
 
-        if not no_negative_cost.empty:
-            f.writelines(
-                [
-                    "timewise_load_demand_and_cost_external_grid_data:: No negative cost allowed!\n"
-                ]
-            )
-            for _, row in no_negative_cost.iterrows():
-                f.writelines([f'{row["j"]} has negative external grid cost.\n'])
-            errors = True
+    if not no_negative_cost.empty:
+        print(
+            "timewise_load_demand_and_cost_external_grid_data:: No negative cost allowed!\n"
+        )
+        for _, row in no_negative_cost.iterrows():
+            print(f'{row["j"]} has negative external grid cost.\n')
+        errors = True
 
-        if errors:
-            raise Exception("Data errors detected")
-        f.writelines(["Data ok\n"])
+    if errors:
+        raise Exception("Data errors detected")
+    print("Data ok\n")
 
     # Variable
     # Generator
@@ -436,8 +437,7 @@ def main():
         SolveStatus.NormalCompletion,
         SolveStatus.TerminatedBySolver,
     ] or bess.status not in [ModelStatus.OptimalGlobal, ModelStatus.Integer]:
-        with open("miro.log", "a") as f:
-            f.writelines(["No solution exists for your input data.\n"])
+        print("No solution exists for your input data.\n")
         raise Exception("Infeasible.")
 
     # Extract the output data

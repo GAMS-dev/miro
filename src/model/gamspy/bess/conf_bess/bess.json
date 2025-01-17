@@ -4,7 +4,7 @@
         "downloadTempFiles": false,
         "hcube": false,
         "loadLocal": true,
-        "logFile": false,
+        "logFile": true,
         "lstFile": false
     },
     "aggregateWidgets": true,
@@ -142,16 +142,18 @@
                             "default": null
                         },
                         "pivotRenderer": "table",
-                        "rows": ["i", "Hdr"],
+                        "rows": [
+                            "i",
+                            "Hdr"
+                        ],
+                        "singleDropdownFilters": "Hdr",
                         "tableSummarySettings": {
                             "colEnabled": false,
                             "colSummaryFunction": "sum",
                             "rowEnabled": false,
                             "rowSummaryFunction": "sum"
                         },
-                        "userFilter": "Hdr",
-                        "singleDropdownFilters": "Hdr"
-
+                        "userFilter": "Hdr"
                     },
                     "GeneratorTimeline": {
                         "aggregationFunction": "sum",
@@ -669,7 +671,6 @@
         "maxTabsExpandedSplitComp": 5,
         "maxTabsExpandedTabComp": 5
     },
-    "miroLogFile": "miro.log",
     "overwriteAliases": {
         "_scalars": {
             "newAlias": "Scalars"
@@ -762,10 +763,18 @@
         ]
     },
     "pageTitle": "Battery Energy Storage Systems",
-    "parseLogForMiroLogSyntax": false,
+    "parseLogForMiroLogSyntax": true,
     "pivotCompSettings": {
+        "emptyUEL": "-",
         "fixedColumns": true,
-        "hidePivotControls": false
+        "hideEmptyCols": false,
+        "hidePivotControls": false,
+        "tableSummarySettings": {
+            "colEnabled": false,
+            "colSummaryFunction": "sum",
+            "rowEnabled": false,
+            "rowSummaryFunction": "sum"
+        }
     },
     "readme": {
         "enableMath": true,
