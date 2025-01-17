@@ -2739,6 +2739,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           hideEl(session, paste0("#", ns("errMsg")))
         }
         if (hideEmptyCols()) {
+          labels <- character(0)
           if (rowHeaderLen > 0L) {
             hiddenEmptyColsTmp <- vapply(dataTmp[seq_len(rowHeaderLen)],
               function(x) {
