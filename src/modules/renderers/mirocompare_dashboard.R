@@ -544,9 +544,9 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         filter(Hdr == "level") %>%
         select(-Hdr)
       if (is.null(scalarData)) {
-         scalarData <- scalarVeData
+        scalarData <- scalarVeData
       } else {
-         scalarData <- bind_rows(scalarData, scalarVeData)
+        scalarData <- bind_rows(scalarData, scalarVeData)
       }
     }
 
