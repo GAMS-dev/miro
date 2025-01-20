@@ -4,9 +4,13 @@ HTMLWidgets.widget({
   type: 'output',
 
   initialize: function (el, width, height) {
+    const colorScheme =
+      document.getElementById('uiConfig')?.dataset?.colorScheme;
     if (
-      window.matchMedia &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches
+      (colorScheme === 'browser' &&
+        window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches) ||
+      colorScheme === 'dark'
     ) {
       Chart.defaults.color = 'white';
       Chart.defaults.borderColor = '#9c9c9c';

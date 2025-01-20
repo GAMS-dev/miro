@@ -263,17 +263,25 @@ $(document).on('keyup', (event) => {
 });
 
 $(() => {
-  if (
-    typeof window.matchMedia('(prefers-color-scheme: dark)')
-      .addEventListener !== 'undefined'
-  ) {
-    // browser supports listening to matchMedia change
-    window
-      .matchMedia('(prefers-color-scheme: dark)')
-      .addEventListener('change', (e) => {
-        changeTheme(e.matches);
-      });
+  const colorScheme = document.getElementById('uiConfig')?.dataset?.colorScheme;
+  if (colorScheme === 'browser') {
+    if (
+      typeof window.matchMedia('(prefers-color-scheme: dark)')
+        .addEventListener !== 'undefined'
+    ) {
+      // browser supports listening to matchMedia change
+      window
+        .matchMedia('(prefers-color-scheme: dark)')
+        .addEventListener('change', (e) => {
+          changeTheme(e.matches);
+        });
+    }
+  } else if (colorScheme === 'dark') {
+    changeTheme(true);
+  } else {
+    changeTheme(false);
   }
+
   $(document).on('click', '.toggle-label-height', function () {
     const $this = $(this);
     $this
