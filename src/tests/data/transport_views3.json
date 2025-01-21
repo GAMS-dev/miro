@@ -51,6 +51,42 @@
                 }
             },
             "chartFontSize": 22
+        },
+        "def": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "stackedbar",
+            "domainFilter": {
+                "default": null
+            },
+            "hideEmptyCols": false,
+            "fixedColumns": true,
+            "tableSummarySettings": {
+                "rowEnabled": false,
+                "rowSummaryFunction": "sum",
+                "colEnabled": false,
+                "colSummaryFunction": "sum"
+            },
+            "filter": {
+                "Hdr": "quantities"
+            },
+            "cols": {
+                "j": null,
+                "i": null
+            },
+            "chartOptions": {
+                "groupDimension": "i",
+                "yLogScale": false,
+                "showXGrid": true,
+                "showYGrid": true,
+                "singleStack": false,
+                "multiChartSeries": "Topeka",
+                "multiChartOptions": {
+                    "showMultiChartDataMarkers": false,
+                    "multiChartRenderer": "bar",
+                    "stackMultiChartSeries": "individualStack",
+                    "multiChartStepPlot": false
+                }
+            }
         }
     }
 }
