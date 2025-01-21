@@ -1,5 +1,5 @@
 # version number
-MIROVersion <- "2.11.0"
+MIROVersion <- "2.11.9999"
 APIVersion <- "1"
 MIRORDate <- "Jan 21 2025"
 
