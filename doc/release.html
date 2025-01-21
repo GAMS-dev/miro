@@ -343,6 +343,20 @@
                         (<i>light</i> or <i>dark</i>) did not work properly for
                         some components (e.g. dashboard).
                       </li>
+                      <li>
+                        <a href="./charts.html#dashboard-custom-code"
+                          >Dashboard with custom code</a
+                        >: Due to a package update, the appearance of the value
+                        boxes in the dashboard has changed. To avoid this
+                        change, synchronize your custom dashboard code with the
+                        <a
+                          href="https://github.com/GAMS-dev/miro/blob/master/src/modules/renderers/dashboard.R"
+                          target="_blank"
+                          >official version</a
+                        >
+                        or delete the following line in your code:
+                        <kbd>class = "shiny-html-output",</kbd>.
+                      </li>
                     </ul>
                   </div>
                 </section>
