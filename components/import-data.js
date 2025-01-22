@@ -43,7 +43,7 @@ async function addModelData(
         MIRO_POPULATE_DB: 'true',
         LAUNCHINBROWSER: 'false',
         MIRO_REMOTE_EXEC: 'false',
-        MIRO_MODEL_PATH: path.join(paths.appDir, modelGmsName),
+        MIRO_MODEL_PATH: path.join(paths.appDir, modelGmsName ?? `${modelName}.gms`),
         MIRO_DATA_DIR: dataDir || '',
       },
       stdOut: 'pipe',

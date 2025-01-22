@@ -52,7 +52,7 @@ dockerImageAuth <- gsub(
 writeLines(dockerImageAuth, "./server/auth/Dockerfile")
 helmChartYaml <- readLines("./server/kubernetes/gams-miro-server/Chart.yaml", warn = FALSE)
 helmChartYaml <- gsub(
-  'appVersion:[[:space:]]*"[^"]+"',
-  paste0('appVersion: "', MIROVersion, '"'), helmChartYaml
+  "appVersion:[[:space:]]*'[^']+'",
+  paste0("appVersion: '", MIROVersion, "'"), helmChartYaml
 )
 writeLines(helmChartYaml, "./server/kubernetes/gams-miro-server/Chart.yaml")

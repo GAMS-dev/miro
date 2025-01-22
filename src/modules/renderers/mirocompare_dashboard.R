@@ -533,10 +533,26 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
   # Get scalar output data in case valueboxes should show a value
   if (length(options$valueBoxes$valueScalar) && any(!is.na(options$valueBoxes$valueScalar))) {
-    if (!"_scalars_out" %in% data$getAllSymbols()) {
+    scalarData <- NULL
+
+    if ("_scalars_out" %in% data$getAllSymbols()) {
+      scalarData <- combineData(data$get("_scalars_out"), scenarioNames) %>%
+        mutate(value = suppressWarnings(as.numeric(value)))
+    }
+    if ("_scalarsve_out" %in% data$getAllSymbols()) {
+      scalarVeData <- combineData(data$get("_scalarsve_out"), scenarioNames) %>%
+        filter(Hdr == "level") %>%
+        select(-Hdr)
+      if (is.null(scalarData)) {
+        scalarData <- scalarVeData
+      } else {
+        scalarData <- bind_rows(scalarData, scalarVeData)
+      }
+    }
+
+    if (is.null(scalarData)) {
       abortSafe("No scalar output symbols found for valueBoxes")
     }
-    scalarData <- combineData(data$get("_scalars_out"), scenarioNames)
   }
 
   # Value boxes title and scenario select (if value boxes show values)
@@ -588,9 +604,6 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
             `_scenName` == input$scenarioSelect,
             scalar == tolower(options$valueBoxes$valueScalar[i])
           )
-        if (!nrow(valueTmp)) {
-          abortSafe(sprintf("No scalar symbol '%s' found for valueBox '%s'", options$valueBoxes$valueScalar[i], options$valueBoxes$id[i]))
-        }
         valueTmp <- as.numeric(valueTmp[[length(valueTmp)]][1])
 
         if (!is.na(options$valueBoxes$decimals[i])) {

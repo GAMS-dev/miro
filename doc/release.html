@@ -95,7 +95,7 @@
                     GAMS MIRO 2.11
                   </h2>
                   <div style="display: inline-block; padding-left: 15px">
-                    (xxxx-xx-xx)
+                    (2025-01-21)
                   </div>
                   <div class="section-block">
                     <h3>New features</h3>
@@ -111,7 +111,7 @@
                         >
                         the dashboard scenario comparison is an interactive
                         tool that can display multiple charts and tables but
-                        for mutliple scenarios at once.
+                        for multiple scenarios at once.
                       </li>
                     </ul>
                     <h3>Minor new features and improvements</h3>
@@ -280,8 +280,8 @@
                         >.
                       </li>
                       <li>
-                        Fix issue where where clicking the "Solve" button could
-                        cause MIRO with GAMS Engine backend to crash in certain
+                        Fix issue where clicking the "Solve" button could cause
+                        MIRO with GAMS Engine backend to crash in certain
                         situations.
                       </li>
                       <li>
@@ -308,9 +308,9 @@
                         imports.
                       </li>
                       <li>
-                        Fix issue issue where choosing no datasets during
-                        manual dataset selection for local file imports
-                        incorrectly resulted in all datasets being imported.
+                        Fix issue where choosing no datasets during manual
+                        dataset selection for local file imports incorrectly
+                        resulted in all datasets being imported.
                       </li>
                       <li>
                         Fix issue where adding GAMSPy apps to MIRO Desktop did
@@ -330,6 +330,32 @@
                         MIRO Server: Fix issue where app logos did not load
                         when <kbd>server.servlet.context-path</kbd> was set to
                         anything but <kbd>/</kbd>.
+                      </li>
+                      <li>
+                        MIRO Pivot: Fix issue where incorrect labels were
+                        displayed in a chart in certain situations.
+                      </li>
+                      <li>
+                        Using a fixed
+                        <a href="configuration_general.html#dark-mode"
+                          >color mode</a
+                        >
+                        (<i>light</i> or <i>dark</i>) did not work properly for
+                        some components (e.g. dashboard).
+                      </li>
+                      <li>
+                        <a href="./charts.html#dashboard-custom-code"
+                          >Dashboard with custom code</a
+                        >: Due to a package update, the appearance of the value
+                        boxes in the dashboard has changed. To avoid this
+                        change, synchronize your custom dashboard code with the
+                        <a
+                          href="https://github.com/GAMS-dev/miro/blob/master/src/modules/renderers/dashboard.R"
+                          target="_blank"
+                          >official version</a
+                        >
+                        or delete the following line in your code:
+                        <kbd>class = "shiny-html-output",</kbd>.
                       </li>
                     </ul>
                   </div>

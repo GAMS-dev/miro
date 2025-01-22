@@ -545,9 +545,11 @@
                   "color": [
                       "#848991",
                       "#ffb327",
+                      "#29B675",
                       "#29B675"
                   ],
                   "decimals": [
+                      2,
                       2,
                       2,
                       2
@@ -555,19 +557,23 @@
                   "icon": [
                       "smog",
                       "plug-circle-bolt",
+                      "truck",
                       "truck"
                   ],
                   "id": [
                       "error_test",
                       "error_train",
-                      "error_ratio"
+                      "error_ratio",
+                      "scalarve"
                   ],
                   "noColor": [
                       true,
                       false,
+                      true,
                       true
                   ],
                   "postfix": [
+                      "",
                       "",
                       "",
                       ""
@@ -575,22 +581,26 @@
                   "prefix": [
                       "",
                       "",
+                      "",
                       ""
                   ],
                   "redPositive": [
                       false,
                       true,
+                      false,
                       false
                   ],
                   "title": [
                       "error test",
                       "error train",
-                      "error ratio"
+                      "error ratio",
+                      "obj"
                   ],
                   "valueScalar": [
                       "error_train",
                       "error_test",
-                      "error_ratio"
+                      "error_ratio",
+                      "obj"
                   ]
               },
               "valueBoxesTitle": "Summary indicators"

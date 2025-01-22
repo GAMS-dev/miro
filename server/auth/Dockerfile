@@ -16,7 +16,7 @@ RUN python3 -m venv /py-env \
 FROM --platform=linux/amd64 base
 
 LABEL com.gamsmiroauth.vendor="GAMS Development Corp."\
-    com.gamsmiroauth.version="2.10.9999"\
+    com.gamsmiroauth.version="2.11.9999"\
     com.gamsmiroauth.license="GPL-3.0"\
     com.gamsmiroauth.description="GAMS MIRO Docker image for auth container"\
     maintainer="fproske@gams.com"
