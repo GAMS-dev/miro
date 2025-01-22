@@ -720,6 +720,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
       SERIES_DEFAULT_COLOR <- "#666"
 
+      matchSeriesLabel <- function(key, label, exact = FALSE) {
+        if (exact) {
+          exact <- (key == label)
+        }
+        contained <- grepl(paste0("\u2024", key, "\u2024"), label)
+        starts <- grepl(paste0("^", key, "\u2024"), label)
+        ends <- grepl(paste0("\u2024", key, "$"), label)
+        exact || contained || starts || ends
+      }
+
       numericCols <- vapply(data, class, character(1L), USE.NAMES = FALSE) %in% c("numeric", "integer")
       if (sum(numericCols) > 1L) {
         # data is already pivoted
@@ -1464,14 +1474,23 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             }
             customChartColorsUI <- lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId) {
               colorLabel <- miroPivotState$currentSeriesLabels[labelId]
-              if (length(names(viewOptions$chartOptions$customChartColors))) {
-                if (colorLabel %in% names(viewOptions$chartOptions$customChartColors)) {
-                  colorVal <- viewOptions$chartOptions$customChartColors[[colorLabel]][1]
-                } else {
-                  colorVal <- SERIES_DEFAULT_COLOR
-                }
-              } else {
+              colorNames <- names(viewOptions$chartOptions$customChartColors)
+
+              if (!length(colorNames)) {
                 colorVal <- customChartColors[(labelId - 1L) * 2L + 1L]
+              } else {
+                exactIdx <- which(colorNames == colorLabel)
+                if (length(exactIdx) == 1) {
+                  colorVal <- viewOptions$chartOptions$customChartColors[[exactIdx]][1]
+                } else {
+                  patternMatches <- which(sapply(colorNames, matchSeriesLabel, label = colorLabel))
+                  if (length(patternMatches) > 0) {
+                    chosenIdx <- patternMatches[length(patternMatches)]
+                    colorVal <- viewOptions$chartOptions$customChartColors[[chosenIdx]][1]
+                  } else {
+                    colorVal <- customChartColors[(labelId - 1L) * 2L + 1L]
+                  }
+                }
               }
               tags$div(
                 class = "col-sm-6",
@@ -1487,20 +1506,38 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 validPatterns <- c("1, 1", "10, 10", "20, 5", "15, 3, 3, 3", "20, 3, 3, 3, 3, 3")
                 dashLabel <- miroPivotState$currentSeriesLabels[labelId]
 
-                if (length(names(viewOptions$chartOptions$customLineDashPatterns)) &&
-                  dashLabel %in% names(viewOptions$chartOptions$customLineDashPatterns)) {
-                  dashPatternIn <- unlist(viewOptions$chartOptions$customLineDashPatterns[[dashLabel]])
+                dashPattern <- " "
+                dashPatternLabel <- dashPattern
 
-                  if (is.numeric(dashPatternIn) && length(dashPatternIn) > 1L) {
-                    dashPattern <- paste(round(dashPatternIn), collapse = ", ")
-                    dashPatternLabel <- ifelse(dashPattern %in% validPatterns, dashPattern, "custom")
+                if (length(names(viewOptions$chartOptions$customLineDashPatterns))) {
+                  lineDashNames <- names(viewOptions$chartOptions$customLineDashPatterns)
+
+                  exactIdx <- which(lineDashNames == dashLabel)
+                  if (length(exactIdx) == 1) {
+                    dashPatternIn <- unlist(viewOptions$chartOptions$customLineDashPatterns[[dashLabel]])
                   } else {
-                    dashPattern <- " "
-                    dashPatternLabel <- dashPattern
+                    patternMatches <- which(sapply(lineDashNames, matchSeriesLabel, label = dashLabel))
+                    if (length(patternMatches) > 0) {
+                      chosenIdx <- patternMatches[length(patternMatches)]
+                      dashPatternIn <- unlist(viewOptions$chartOptions$customLineDashPatterns[[chosenIdx]])
+                    } else {
+                      dashPatternIn <- NA
+                    }
                   }
-                } else {
-                  dashPattern <- " "
-                  dashPatternLabel <- dashPattern
+
+                  if (!any(is.na(dashPatternIn)) && is.numeric(dashPatternIn) && length(dashPatternIn) > 0) {
+                    dashString <- paste(round(dashPatternIn), collapse = ", ")
+                    if (dashString %in% validPatterns) {
+                      dashPattern <- dashString
+                      dashPatternLabel <- dashPattern
+                    } else if (length(dashPatternIn) > 1L) {
+                      dashPattern <- dashString
+                      dashPatternLabel <- "custom"
+                    } else {
+                      dashPattern <- " "
+                      dashPatternLabel <- dashPattern
+                    }
+                  }
                 }
 
                 tags$div(
@@ -1533,32 +1570,44 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               )
             }
             customBorderWidthUI <- lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId) {
-              label <- miroPivotState$currentSeriesLabels[labelId]
-              if (length(names(viewOptions$chartOptions$customBorderWidths)) &&
-                label %in% names(viewOptions$chartOptions$customBorderWidths)) {
-                borderWidthIn <- round(as.numeric(viewOptions$chartOptions$customBorderWidths[[label]]))
+              seriesLabel <- miroPivotState$currentSeriesLabels[labelId]
 
-                if (length(borderWidthIn)) {
-                  borderWidth <- borderWidthIn
+              defaultBW <- ifelse(
+                pivotRenderer %in% c("bar", "stackedbar", "horizontalbar", "horizontalstackedbar"),
+                0L,
+                3L
+              )
+              borderWidth <- defaultBW
+
+              if (length(names(viewOptions$chartOptions$customBorderWidths))) {
+                borderWidthNames <- names(viewOptions$chartOptions$customBorderWidths)
+
+                exactIdx <- which(borderWidthNames == seriesLabel)
+                if (length(exactIdx) == 1) {
+                  bwCandidate <- viewOptions$chartOptions$customBorderWidths[[exactIdx]]
+                  bwCandidate <- round(as.numeric(bwCandidate))
+                  if (length(bwCandidate) && !is.na(bwCandidate)) {
+                    borderWidth <- bwCandidate
+                  }
                 } else {
-                  borderWidth <- ifelse(pivotRenderer %in% c(
-                    "bar", "stackedbar", "horizontalbar", "horizontalstackedbar"
-                  ),
-                  0L, 3L
-                  )
+                  patternMatches <- which(sapply(borderWidthNames, matchSeriesLabel, label = seriesLabel))
+                  if (length(patternMatches) > 0) {
+                    chosenIdx <- patternMatches[length(patternMatches)]
+                    bwCandidate <- viewOptions$chartOptions$customBorderWidths[[chosenIdx]]
+                    bwCandidate <- round(as.numeric(bwCandidate))
+                    if (length(bwCandidate) && !is.na(bwCandidate)) {
+                      borderWidth <- bwCandidate
+                    }
+                  }
                 }
-              } else {
-                borderWidth <- ifelse(pivotRenderer %in% c(
-                  "bar", "stackedbar", "horizontalbar", "horizontalstackedbar"
-                ),
-                0L, 3L
-                )
               }
+
               tagList(
                 tags$div(
                   class = "col-sm-6",
-                  numericInput(ns(paste0("borderWidth_", labelId)),
-                    label = label,
+                  numericInput(
+                    ns(paste0("borderWidth_", labelId)),
+                    label = seriesLabel,
                     value = borderWidth,
                     min = 0L
                   )
@@ -2817,19 +2866,59 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           miroPivotState$triggerEditViewDialog <<- FALSE
           showAddViewDialog(pivotRenderer, viewOptions = currentView)
         }
+
+        colorPairs <- function(colorVec) {
+          n <- length(colorVec)
+          if (n %% 2 != 0) {
+            stop("customChartColors must have an even number of elements.")
+          }
+          numPairs <- n / 2
+          out <- vector("list", numPairs)
+          for (i in seq_len(numPairs)) {
+            out[[i]] <- colorVec[c(2 * i - 1, 2 * i)]
+          }
+          out
+        }
+
+        defaultPairs <- colorPairs(customChartColors)
+        allLabels <- miroPivotState$currentSeriesLabels
+        numSeries <- length(allLabels)
+
+        colorList <- vector("list", numSeries)
+        numDefaultPairs <- length(defaultPairs)
+
+        for (i in seq_len(numSeries)) {
+          if (i <= numDefaultPairs) {
+            colorList[[i]] <- defaultPairs[[i]]
+          } else {
+            recycleIndex <- (i - 1) %% numDefaultPairs + 1
+            colorList[[i]] <- defaultPairs[[recycleIndex]]
+            # or: colorList[[i]] <- c(SERIES_DEFAULT_COLOR, SERIES_DEFAULT_COLOR)
+          }
+        }
+
         if (length(currentView$chartOptions$customChartColors) &&
           length(names(currentView$chartOptions$customChartColors))) {
-          # custom chart colors specified
-          chartColorIdx <- match(
-            miroPivotState$currentSeriesLabels,
-            names(currentView$chartOptions$customChartColors)
-          )
-          chartColorsToUse <- currentView$chartOptions$customChartColors[chartColorIdx]
-          chartColorsToUse[is.na(chartColorIdx)] <- list(c(SERIES_DEFAULT_COLOR, SERIES_DEFAULT_COLOR))
-          chartColorsToUse <- unlist(chartColorsToUse, use.names = FALSE)
-        } else {
-          chartColorsToUse <- customChartColors
+          colorNames <- names(currentView$chartOptions$customChartColors)
+
+          for (i in seq_along(allLabels)) {
+            label <- allLabels[i]
+
+            exactIdx <- which(colorNames == label)
+            if (length(exactIdx) == 1) {
+              colorList[[i]] <- currentView$chartOptions$customChartColors[[exactIdx]]
+              next
+            }
+            patternMatches <- which(sapply(colorNames, matchSeriesLabel, label = label))
+            if (length(patternMatches) > 0) {
+              chosenIdx <- patternMatches[length(patternMatches)]
+              colorList[[i]] <- currentView$chartOptions$customChartColors[[chosenIdx]]
+            }
+          }
         }
+
+        chartColorsToUse <- unlist(colorList, use.names = FALSE)
+
         if (pivotRenderer %in% c(
           "line", "scatter", "area", "stackedarea",
           "timeseries"
@@ -3011,12 +3100,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           scaleID <- NULL
           if (length(currentView$chartOptions$y2axis$series)) {
             series <- currentView$chartOptions$y2axis$series
-            patterns <- c(
-              paste0("\u2024", series, "\u2024"),
-              paste0("^", series, "\u2024"),
-              paste0("\u2024", series, "$")
-            )
-            if (label %in% series || grepl(paste(patterns, collapse = "|"), label)) {
+            if (any(sapply(series, matchSeriesLabel, label = label, exact = TRUE))) {
               if (pivotRenderer %in% c("horizontalbar", "horizontalstackedbar")) {
                 scaleID <- "x2"
               } else {
@@ -3026,29 +3110,55 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
 
           lineDash <- NULL
-          if (length(currentView$chartOptions$customLineDashPatterns) && length(currentView$chartOptions$customLineDashPatterns[[label]])) {
-            lineDash <- currentView$chartOptions$customLineDashPatterns[[label]]
+          if (length(currentView$chartOptions$customLineDashPatterns) &&
+            length(names(currentView$chartOptions$customLineDashPatterns))) {
+            lineDashNames <- names(currentView$chartOptions$customLineDashPatterns)
+            exactIdx <- which(lineDashNames == label)
+            if (length(exactIdx) == 1) {
+              lineDash <- currentView$chartOptions$customLineDashPatterns[[exactIdx]]
+            } else {
+              patternMatches <- which(sapply(lineDashNames, matchSeriesLabel, label = label))
+              if (length(patternMatches) > 0) {
+                chosenIdx <- patternMatches[length(patternMatches)]
+                lineDash <- currentView$chartOptions$customLineDashPatterns[[chosenIdx]]
+              } else {
+                lineDash <- NULL
+              }
+            }
           }
           borderWidth <- NULL
-          if (length(currentView$chartOptions$customBorderWidths) && length(currentView$chartOptions$customBorderWidths[[label]])) {
-            borderWidth <- currentView$chartOptions$customBorderWidths[[label]]
+
+          if (length(currentView$chartOptions$customBorderWidths) &&
+            length(names(currentView$chartOptions$customBorderWidths)) > 0) {
+            borderWidthNames <- names(currentView$chartOptions$customBorderWidths)
+
+            exactIdx <- which(borderWidthNames == label)
+            if (length(exactIdx) == 1) {
+              borderWidthCandidate <- currentView$chartOptions$customBorderWidths[[exactIdx]]
+              borderWidthCandidate <- round(as.numeric(borderWidthCandidate))
+              if (!is.na(borderWidthCandidate)) {
+                borderWidth <- borderWidthCandidate
+              }
+            } else {
+              patternMatches <- which(sapply(borderWidthNames, matchSeriesLabel, label = label))
+              if (length(patternMatches) > 0) {
+                chosenIdx <- patternMatches[length(patternMatches)]
+                borderWidthCandidate <- currentView$chartOptions$customBorderWidths[[chosenIdx]]
+                borderWidthCandidate <- round(as.numeric(borderWidthCandidate))
+                if (!is.na(borderWidthCandidate)) {
+                  borderWidth <- borderWidthCandidate
+                }
+              }
+            }
           }
 
           stack <- NULL
           if (length(groupElements) && pivotRenderer %in% c("stackedbar", "horizontalstackedbar")) {
-            matches <- which(
-              sapply(groupElements, function(gEl) {
-                exact <- (gEl == label)
-                contained <- grepl(paste0("\u2024", gEl, "\u2024"), label)
-                starts <- grepl(paste0("^", gEl, "\u2024"), label)
-                ends <- grepl(paste0("\u2024", gEl, "$"), label)
-                (exact || contained || starts || ends)
-              })
-            )
-            if (length(matches) == 0) {
+            patternMatches <- which(sapply(groupElements, matchSeriesLabel, label = label, exact = TRUE))
+            if (length(patternMatches) == 0) {
               stack <- NULL
             } else {
-              stack <- paste0("stack", matches[1])
+              stack <- paste0("stack", patternMatches[1])
             }
           } else {
             stack <- if (pivotRenderer %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "stack1" else NULL
@@ -3057,12 +3167,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           multiChartSeries <- FALSE
           if (length(currentView$chartOptions$multiChartSeries)) {
             series <- currentView$chartOptions$multiChartSeries
-            patterns <- c(
-              paste0("\u2024", series, "\u2024"),
-              paste0("^", series, "\u2024"),
-              paste0("\u2024", series, "$")
-            )
-            if (label %in% series || grepl(paste(patterns, collapse = "|"), label)) {
+            if (any(sapply(series, matchSeriesLabel, label = label, exact = TRUE))) {
               multiChartSeries <- TRUE
             }
           }
