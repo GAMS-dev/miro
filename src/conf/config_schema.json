@@ -816,16 +816,32 @@
                   },
                   "customLabelsOrder": {
                     "description": "Custom labels order. Missing labels will be placed at the end.",
-                    "type": [
-                      "array",
-                      "string"
-                    ],
-                    "uniqueItems": true,
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    },
-                    "minLength": 1
+                    "anyOf": [
+                      {
+                        "type": [
+                          "array",
+                          "string"
+                        ],
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "minLength": 1
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": [
+                            "array",
+                            "string"
+                          ],
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    ]
                   },
                   "customSeriesOrder": {
                     "description": "Custom series order. Missing series will be placed at the end.",
