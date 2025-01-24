@@ -66,6 +66,15 @@ createBootstrapDropdownChoices <- function(el, eventId, editEventId = NULL, dele
     }
   )
 }
+matchSeriesLabel <- function(key, label, exact = FALSE) {
+  if (exact) {
+    exact <- (key == label)
+  }
+  contained <- grepl(paste0("\u2024", key, "\u2024"), label)
+  starts <- grepl(paste0("^", key, "\u2024"), label)
+  ends <- grepl(paste0("\u2024", key, "$"), label)
+  exact || contained || starts || ends
+}
 
 miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
   ns <- NS(id)
@@ -719,16 +728,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       resetFilters <- isTRUE(options$resetOnInit)
 
       SERIES_DEFAULT_COLOR <- "#666"
-
-      matchSeriesLabel <- function(key, label, exact = FALSE) {
-        if (exact) {
-          exact <- (key == label)
-        }
-        contained <- grepl(paste0("\u2024", key, "\u2024"), label)
-        starts <- grepl(paste0("^", key, "\u2024"), label)
-        ends <- grepl(paste0("\u2024", key, "$"), label)
-        exact || contained || starts || ends
-      }
 
       numericCols <- vapply(data, class, character(1L), USE.NAMES = FALSE) %in% c("numeric", "integer")
       if (sum(numericCols) > 1L) {
@@ -3126,8 +3125,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               }
             }
           }
-          borderWidth <- NULL
 
+          borderWidth <- NULL
           if (length(currentView$chartOptions$customBorderWidths) &&
             length(names(currentView$chartOptions$customBorderWidths)) > 0) {
             borderWidthNames <- names(currentView$chartOptions$customBorderWidths)
