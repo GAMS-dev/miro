@@ -786,6 +786,10 @@ test_job:
   script:
     - mchecklic
     - mtestall
+    - |
+      max_mem_kb=$(cat "profile.txt" | grep "Maximum resident set size" | awk '{print $6}')
+      max_mem_mb=$((max_mem_kb / 1024))
+      echo "Maximum memory usage: $max_mem_mb MB"
   interruptible: true
   artifacts:
     when: always
