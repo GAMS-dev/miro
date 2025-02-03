@@ -24,9 +24,9 @@ def main():
     # Generator parameters
     generator_specifications_input = pd.DataFrame(
         [
-            ["gen0", 0.010694, 142.7348, 30, 70, 8, 6],
-            ["gen1", 0.018761, 168.9075, 50, 100, 8, 6],
-            ["gen2", 0.0076121, 313.9102, 30, 120, 8, 6],
+            ["gen0", 1.1, 220, 50, 100, 4, 2],
+            ["gen1", 1.3, 290, 80, 190, 4, 2],
+            ["gen2", 0.9, 200, 10, 70, 4, 2],
         ],
         columns=[
             "i",
@@ -43,30 +43,30 @@ def main():
     # combine with cost external grid, to have one source of truth for the hours (Set j)
     timewise_load_demand_and_cost_external_grid_input = pd.DataFrame(
         [
-            ["hour00", 200, 0.09],
-            ["hour01", 180, 0.08],
-            ["hour02", 170, 0.08],
-            ["hour03", 160, 0.08],
-            ["hour04", 150, 0.08],
-            ["hour05", 150, 0.08],
-            ["hour06", 170, 0.09],
-            ["hour07", 250, 0.11],
-            ["hour08", 320, 0.13],
-            ["hour09", 300, 0.12],
-            ["hour10", 280, 0.11],
-            ["hour11", 260, 0.10],
-            ["hour12", 270, 0.10],
-            ["hour13", 280, 0.10],
-            ["hour14", 290, 0.11],
-            ["hour15", 300, 0.12],
-            ["hour16", 320, 0.13],
-            ["hour17", 350, 0.14],
-            ["hour18", 340, 0.13],
-            ["hour19", 330, 0.12],
-            ["hour20", 320, 0.11],
-            ["hour21", 280, 0.10],
-            ["hour22", 240, 0.09],
-            ["hour23", 220, 0.09],
+            ["hour00", 200, 1.5],
+            ["hour01", 180, 1.0],
+            ["hour02", 170, 1.0],
+            ["hour03", 160, 1.0],
+            ["hour04", 150, 1.0],
+            ["hour05", 170, 1.0],
+            ["hour06", 190, 1.2],
+            ["hour07", 210, 1.8],
+            ["hour08", 290, 2.1],
+            ["hour09", 360, 1.9],
+            ["hour10", 370, 1.8],
+            ["hour11", 350, 1.6],
+            ["hour12", 310, 1.6],
+            ["hour13", 340, 1.6],
+            ["hour14", 390, 1.8],
+            ["hour15", 400, 1.9],
+            ["hour16", 420, 2.1],
+            ["hour17", 500, 3.0],
+            ["hour18", 440, 2.1],
+            ["hour19", 430, 1.9],
+            ["hour20", 420, 1.8],
+            ["hour21", 380, 1.6],
+            ["hour22", 340, 1.2],
+            ["hour23", 320, 1.2],
         ],
         columns=["j", "load_demand", "cost_external_grid"],
     )
@@ -165,8 +165,8 @@ def main():
     gen_min_down_time[i] = generator_specifications[i, "min_down_time"]
 
     # Battery parameters
-    cost_bat_power = Parameter(m, "cost_bat_power", records=0.2, is_miro_input=True)
-    cost_bat_energy = Parameter(m, "cost_bat_energy", records=0.25, is_miro_input=True)
+    cost_bat_power = Parameter(m, "cost_bat_power", records=1, is_miro_input=True)
+    cost_bat_energy = Parameter(m, "cost_bat_energy", records=2, is_miro_input=True)
 
     # Load demand and external grid
     timewise_load_demand_and_cost_external_grid_data = Parameter(
@@ -201,12 +201,14 @@ def main():
     max_input_external_grid = Parameter(
         m,
         name="max_input_external_grid",
-        records=15,
+        records=10,
         is_miro_input=True,
         description="maximal power that can be imported from the external grid every hour",
     )
 
-    no_negative_gen_spec = generator_specifications.records[generator_specifications.records["value"] < 0]
+    no_negative_gen_spec = generator_specifications.records[
+        generator_specifications.records["value"] < 0
+    ]
     no_negative_load = load_demand.records[load_demand.records["value"] < 0]
     no_negative_cost = cost_external_grid.records[
         cost_external_grid.records["value"] < 0
@@ -224,7 +226,7 @@ def main():
         for _, row in no_negative_gen_spec.iterrows():
             print(f'{row["i"]} has a negative value.\n')
         errors = True
-    
+
     if not no_negative_load.empty:
         print(
             "timewise_load_demand_and_cost_external_grid_data:: No negative load demand allowed!\n"
@@ -410,7 +412,7 @@ def main():
     obj = (
         Sum(
             j,
-            Sum(i, gen_cost_per_unit[i] * gen_power[i, j])  # + gen_fixed_cost[i])
+            Sum(i, gen_cost_per_unit[i] * gen_power[i, j] + gen_fixed_cost[i])
             + cost_external_grid[j] * external_grid_power[j],
         )
         + cost_bat_power * battery_delivery_rate
@@ -505,25 +507,6 @@ def main():
     )
 
     total_cost[...] = total_cost_gen + total_cost_battery + total_cost_extern
-
-    # Since the dashboard can only show true scalars, i.e. scalar Parameters
-    display_battery_delivery_rate = Parameter(
-        m,
-        name="display_battery_delivery_rate",
-        is_miro_output=True,
-        description="Display the battery delivery rate in the dashboard",
-    )
-
-    display_battery_delivery_rate[...] = battery_delivery_rate.l
-
-    display_battery_storage = Parameter(
-        m,
-        name="display_battery_storage",
-        is_miro_output=True,
-        description="Display the battery storage in the dashboard",
-    )
-
-    display_battery_storage[...] = battery_storage.l
 
 
 if __name__ == "__main__":
