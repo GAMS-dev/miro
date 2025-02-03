@@ -506,7 +506,7 @@ if __name__ == &quot;__main__&quot;:
                   <h3 class="block-title">Model Input</h3>
                   <p>Let’s start by defining some basic inputs. You can see that we begin
                     with three scalar parameters, each of which has the additional
-                    <span class="code">is_miro_input=True</span> option in the definition:
+                    <code class="language-python">is_miro_input=True</code> option in the definition:
                   </p>
                   <pre><code class="language-python"># Battery parameters
 cost_bat_power = Parameter(m, &quot;cost_bat_power&quot;, records=1, is_miro_input=True)
@@ -560,24 +560,24 @@ generator_spec_header = Set(
     is_miro_table=True,
     description=&quot;specifications of each generator&quot;,
 )</code></pre>
-                  <p>Notice that <span class="code">is_miro_input=True</span> makes the parameter an
-                    input to the MIRO application, while <span class="code">is_miro_table=True</span>
+                  <p>Notice that <code class="language-python">is_miro_input=True</code> makes the parameter an
+                    input to the MIRO application, while <code class="language-python">is_miro_table=True</code>
                     displays the data in <a href="https://www.gams.com/miro/model.html#display-tables"
                       target="_blank">table
                       format</a>. The key detail is
-                    <span class="code">domain_forwarding=[True, False]</span>, which ensures that set
+                    <code class="language-python">domain_forwarding=[True, False]</code>, which ensures that set
                     elements for generators come from the MIRO application (the header names
-                    remain fixed, hence <span class="code">False</span>). We still use our initial data
+                    remain fixed, hence <code class="language-python">False</code>). We still use our initial data
                     to populate these specifications, but we transform it using <a
-                      href="https://pandas.pydata.org/docs/reference/api/pandas.melt.html" target="_blank"><span
-                        class="code">melt()</span></a>
-                    so that it matches the new format of only two columns: <span class="code">"i"</span>
-                    and <span class="code">"generator_spec_header"</span>.
+                      href="https://pandas.pydata.org/docs/reference/api/pandas.melt.html" target="_blank"><code
+                        class="language-python">melt()</code></a>
+                    so that it matches the new format of only two columns: <code class="language-python">"i"</code>
+                    and <code class="language-python">"generator_spec_header"</code>.
                   </p>
-                  <p>Since we are now forwarding the domain of set <span class="code">i</span> through
+                  <p>Since we are now forwarding the domain of set <code class="language-python">i</code> through
                     this table, we no longer specify its records. The same goes for any
-                    parameters that rely on <span class="code">i</span> (e.g.,
-                    <span class="code">gen_cost_per_unit</span>). Instead, we assign them by referencing
+                    parameters that rely on <code class="language-python">i</code> (e.g.,
+                    <code class="language-python">gen_cost_per_unit</code>). Instead, we assign them by referencing
                     the new combined parameter:
                   </p>
                   <pre><code class="language-diff">i = Set(
@@ -598,8 +598,9 @@ gen_cost_per_unit = Parameter(
 + gen_cost_per_unit[i] = generator_specifications[i, &quot;cost_per_unit&quot;]
                   </code></pre>
                   <p>We apply the same pattern to other parameters that depend on
-                    <span class="code">i</span>. Likewise, for hour-dependent parameters (like
-                    <span class="code">load_demand</span> and <span class="code">cost_external_grid</span>), we create
+                    <code class="language-python">i</code>. Likewise, for hour-dependent parameters (like
+                    <code class="language-python">load_demand</code> and <code
+                      class="language-python">cost_external_grid</code>), we create
                     a single source of truth for the hour set by combining them into one
                     parameter and making the same modifications.
                   </p>
@@ -609,7 +610,7 @@ gen_cost_per_unit = Parameter(
                 <div id="model-output" class="section-block">
                   <h3 class="block-title">Model Output</h3>
                   <p>When implementing the model, it can be helpful to flag variables as
-                    outputs by adding <span class="code">is_miro_output=True</span>. After solving, we
+                    outputs by adding <code class="language-python">is_miro_output=True</code>. After solving, we
                     can then view the calculated variable values right away, making it
                     easier to spot any remaining model errors.</p>
                   <pre><code class="language-python">gen_power = Variable(
@@ -1313,7 +1314,8 @@ if __name__ == &quot;__main__&quot;:
               <h3 class="block-title">Key Takeaways</h3>
               <ul>
                 <li><strong>Interactive Inputs and Outputs</strong>: Marking parameters
-                  as <span class="code">is_miro_input</span> or <span class="code">is_miro_output</span> enables
+                  as <code class="language-python">is_miro_input</code> or <code
+                    class="language-python">is_miro_output</code> enables
                   dynamic fields for data input and real-time feedback, enhancing
                   flexibility and debugging.</li>
                 <li><strong>Rapid Prototyping</strong>: Define output parameters based
@@ -1354,9 +1356,9 @@ if __name__ == &quot;__main__&quot;:
                   Table</a>.
               </p>
               <p>In our example, we pivoted the headers and selected line graphs.
-                Because the dimensions of <span class="code">load_demand</span> and
-                <span class="code">cost_external_grid</span> differ, it initially looks as though
-                <span class="code">cost_external_grid</span> is zero, even though it isn’t. To
+                Because the dimensions of <code class="language-python">load_demand</code> and
+                <code class="language-python">cost_external_grid</code> differ, it initially looks as though
+                <code class="language-python">cost_external_grid</code> is zero, even though it isn’t. To
                 clarify this, we add a second y-axis with a different scale:
               </p>
               <ol type="1">
@@ -1402,8 +1404,10 @@ if __name__ == &quot;__main__&quot;:
                   alt="Output Scalars for variables and equations" />
               </div>
               <p>As you can see, for scalar variables it contains not only the value
-                of the scalar (<span class="code">level</span>), but also <span class="code">marginal</span>,
-                <span class="code">lower</span>, <span class="code">upper</span> and <span class="code">scale</span>.
+                of the scalar (<code class="language-python">level</code>), but also <code
+                  class="language-python">marginal</code>,
+                <code class="language-python">lower</code>, <code class="language-python">upper</code> and <code
+                  class="language-python">scale</code>.
                 And since
                 scalar parameters don’t have these attributes, they are treated
                 separately.
@@ -1602,7 +1606,7 @@ if __name__ == &quot;__main__&quot;:
                       href="https://www.gams.com/miro/charts.html" target="_blank">documentation</a>, which
                     provides an extensive guide to all available plot types.</p>
                   <p>Each change we make in the Configuration Mode is automatically saved
-                    to <em>&lt;model_name&gt;.json</em>. In the documentation you will find
+                    to <span class="code">&lt;model_name&gt;.json</span>. In the documentation you will find
                     the corresponding json snippets you would need to add, but don’t worry,
                     this is exactly what the Configuration Mode does when you save a
                     graph!</p>
@@ -1656,7 +1660,7 @@ if __name__ == &quot;__main__&quot;:
                     overview of our application output.
                   </p>
                   <p>Creating a dashboard is not directly possible from Configuration
-                    Mode. Instead, we need to edit our <em>&lt;model_name&gt;.json</em>
+                    Mode. Instead, we need to edit our <span class="code">&lt;model_name&gt;.json</span>
                     file. To add a dashboard, we will follow the explanation in the <a
                       href="https://www.gams.com/miro/charts.html#dashboard" target="_blank">documentation</a>.
                     Here we will only discuss the parts we use, for more information check
@@ -1667,20 +1671,20 @@ if __name__ == &quot;__main__&quot;:
                     whether they serve as KPIs. 2. <em>Associated Views</em>: Which views
                     will be linked to each value box. Most likely, we can reuse the views we
                     created earlier.</p>
-                  <p>We find our <em>&lt;model_name&gt;.json</em> file in the <em>conf_
-                      &lt;model_name&gt;</em> directory. Here, we look for the
-                    <span class="code">dataRendering</span> key—or define it if it doesn’t exist (it
+                  <p>We find our <span class="code">&lt;model_name&gt;.json</span> file in the <span class="code">conf_
+                      &lt;model_name&gt;</span> directory. Here, we look for the
+                    <code class="language-json">dataRendering</code> key—or define it if it doesn’t exist (it
                     won’t, if you followed this tutorial). We need to pick an output symbol
                     to serve as our main parameter, but the choice isn’t critical—we can add
                     other symbols later as needed. We just can’t have another renderer for
                     this specific symbol if we choose to have more output tabs than just the
                     dashboard.
                   </p>
-                  <p>For this example, we’ll choose <span class="code">"_scalarsve_out"</span>. This
+                  <p>For this example, we’ll choose <code class="language-json">"_scalarsve_out"</code>. This
                     symbol contains all scalar output values of variables and equations.
                     Because we probably won’t create an individual renderer for them, it’s a
                     convenient symbol choice for our dashboard.</p>
-                  <p>Getting more specific, in <em>bess.json</em> we now need to configure
+                  <p>Getting more specific, in <span class="code">bess.json</span> we now need to configure
                     three things:</p>
                   <ol type="1">
                     <li>The value boxes and whether they should display a scalar value
@@ -1690,7 +1694,7 @@ if __name__ == &quot;__main__&quot;:
                     <li>The individual charts/tables.</li>
                   </ol>
                   <p>Here’s the basic layout of our dashboard configuration for the symbol
-                    <span class="code">"_scalarsve_out"</span>:
+                    <code class="language-json">"_scalarsve_out"</code>:
                   </p>
                   <pre><code class="language-json">{
   &quot;dataRendering&quot;: {
@@ -1713,7 +1717,7 @@ if __name__ == &quot;__main__&quot;:
   },
 }</code></pre>
                   <p>If we already had other renderers, they would appear under
-                    <span class="code">dataRendering</span> as well, we’ll add ours in the next
+                    <code class="language-json">dataRendering</code> as well, we’ll add ours in the next
                     section.
                   </p>
                   <p>To keep the code snippets concise, we will only look at the options
@@ -1723,14 +1727,15 @@ if __name__ == &quot;__main__&quot;:
                 <div id="adding-additional-data" class="section-block">
                   <h3 class="block-title">Adding Additional Data</h3>
                   <p>Usually, we don’t immediately know every dataset we need. In this
-                    tutorial, however, we already plan to use <span class="code">"report_output"</span>,
-                    <span class="code">"gen_power"</span>, <span class="code">"battery_power"</span> and
-                    <span class="code">"external_grid_power"</span> since we already have an idea of
+                    tutorial, however, we already plan to use <code class="language-json">"report_output"</code>,
+                    <code class="language-json">"gen_power"</code>, <code class="language-json">"battery_power"</code>
+                    and
+                    <code class="language-json">"external_grid_power"</code> since we already have an idea of
                     which views we want to display. But of course you can add or remove
                     symbols at any time. Further we will add the input symbol
-                    <span class="code">"generator_specifications"</span> to easily check if the generator
+                    <code class="language-json">"generator_specifications"</code> to easily check if the generator
                     characteristic are fulfilled. All needed symbols are added to
-                    <span class="code">"additionalData"</span>:
+                    <code class="language-json">"additionalData"</code>:
                   </p>
                   <pre><code class="language-json">&quot;additionalData&quot;: [&quot;report_output&quot;, &quot;gen_power&quot;, &quot;battery_power&quot;, &quot;external_grid_power&quot;, &quot;generator_specifications&quot;]
 
@@ -1743,15 +1748,17 @@ if __name__ == &quot;__main__&quot;:
                   <pre><code class="language-json">&quot;valueBoxesTitle&quot;: &quot;Summary indicators&quot;,</code></pre>
                   <p>Let’s create six value boxes in total, but we’ll only discuss the
                     first two in detail. Try adding the others for the ids:
-                    <span class="code">"battery_power"</span>, <span class="code">"external_grid_power"</span>,
-                    <span class="code">"battery_delivery_rate"</span> and <span class="code">"battery_storage"</span>.
+                    <code class="language-python">"battery_power"</code>, <code
+                      class="language-python">"external_grid_power"</code>,
+                    <code class="language-python">"battery_delivery_rate"</code> and <code
+                      class="language-python">"battery_storage"</code>.
                     Each value box needs:
                   </p>
                   <ul>
                     <li>A unique id (to link it to a corresponding data view, if any).</li>
                     <li>An optional scalar parameter as KPI. If you don’t have a matching
                       KPI, but still want to have the view in the dashboard, just set it to
-                      <span class="code">null</span>.
+                      <code class="language-json">null</code>.
                     </li>
                     <li>Style parameters (see the <a href="https://www.gams.com/miro/charts.html#dashboard-valueboxes"
                         target="_blank">value
@@ -1790,22 +1797,22 @@ if __name__ == &quot;__main__&quot;:
                 <!--//section-block-->
                 <div id="data-views" class="section-block">
                   <h3 class="block-title">Data Views</h3>
-                  <p>Next, under <span class="code">"dataViews"</span>, we define which charts or
+                  <p>Next, under <code class="language-json">"dataViews"</code>, we define which charts or
                     tables belong to each value box. A data view is displayed when the
                     corresponding value box is clicked on in the dashboard. Multiple charts
                     and tables can be displayed. We only connect data views to the first
                     four value boxes, leaving the last two without any dedicated view. This
                     is done by simply not specifying a data view for those id’s.</p>
-                  <p>The key of a data view (e.g. <span class="code">"battery_power"</span>) must match
-                    the id of a value box in <span class="code">"valueBoxes"</span>. We start each data
-                    view with the <span class="code">id</span> from the corresponding value box, then we
+                  <p>The key of a data view (e.g. <code class="language-json">"battery_power"</code>) must match
+                    the id of a value box in <code class="language-json">"valueBoxes"</code>. We start each data
+                    view with the <code class="language-json">id</code> from the corresponding value box, then we
                     assign a list of objects to it. Each object within the list has a key
-                    (e.g., <span class="code">"BatteryTimeline"</span>) that references a chart or table
-                    we will define next in <span class="code">"dataViewsConfig"</span>, and as value we
+                    (e.g., <code class="language-json">"BatteryTimeline"</code>) that references a chart or table
+                    we will define next in <code class="language-json">"dataViewsConfig"</code>, and as value we
                     assign the optional title that will be displayed above the view in the
                     dashboard. If you want to have more than one chart/table in a view, just
                     add a second element to the object, as is done for
-                    <span class="code">"gen_power"</span>.
+                    <code class="language-json">"gen_power"</code>.
                   </p>
                   <pre><code class="language-json">&quot;dataViews&quot;: {
     &quot;battery_power&quot;: [
@@ -1835,11 +1842,11 @@ if __name__ == &quot;__main__&quot;:
                     JSON configuration for the views (via <em>Scenario</em> (top right
                     corner of the application) -&gt; <em>Edit metadata</em> -&gt;
                     <em>View</em>). 4. Copy the JSON configuration to the
-                    <span class="code">"dataViewsConfig"</span> section. Most of the configuration can be
+                    <code class="language-json">"dataViewsConfig"</code> section. Most of the configuration can be
                     copied directly. We just need to change the way we define which symbol
                     the view is based on. It is no longer defined outside, but we will add
-                    <span class="code">"data: "report_output"</span> to specify the symbol, otherwise
-                    MIRO will base the view on <span class="code">"_scalarsve_out"</span> since that is
+                    <code class="language-json">"data: "report_output"</code> to specify the symbol, otherwise
+                    MIRO will base the view on <code class="language-json">"_scalarsve_out"</code> since that is
                     the variable the renderer is based on.
                   </p>
                   <pre><code class="language-diff">{
@@ -1852,7 +1859,7 @@ if __name__ == &quot;__main__&quot;:
 -  }
 }
 </code></pre>
-                  <p>The complete configuration in <span class="code">"dataViewsConfig"</span> looks
+                  <p>The complete configuration in <code class="language-json">"dataViewsConfig"</code> looks
                     like this:</p>
                   <details>
                     <summary>
@@ -2004,7 +2011,7 @@ if __name__ == &quot;__main__&quot;:
                   <p>Now that we’ve combined multiple outputs into a single dashboard, it
                     makes sense to hide the tabs for the individual output symbols and
                     rename the dashboard tab for clarity (in the config mode). Just a heads
-                    up, you should keep <span class="code">"report_output"</span>, we will add a custom
+                    up, you should keep <code class="language-python">"report_output"</code>, we will add a custom
                     renderer for it in the next part.</p>
                   <p>It is also possible to add custom code to the dashboard. However,
                     since this requires a bit more effort and you need to know how to create
@@ -2045,10 +2052,10 @@ if __name__ == &quot;__main__&quot;:
                   <ol type="1">
                     <li>
                       <p>We just configured the dashboard in the
-                        <span class="code">dataRendering</span> section of the
-                        <em>&lt;model_name&gt;.json</em> file. For scenario comparison, the
+                        <code class="language-json">dataRendering</code> section of the
+                        <span class="code">&lt;model_name&gt;.json</span> file. For scenario comparison, the
                         configuration should be placed in a separate section called
-                        <span class="code">compareModules</span>.
+                        <code class="language-json">compareModules</code>.
                       </p>
                     </li>
                     <li>
@@ -2056,22 +2063,22 @@ if __name__ == &quot;__main__&quot;:
                         symbol, a scenario comparison is symbol-unspecific. This means that the
                         scenario comparison has access to all input and output symbol data by
                         default. As a result, you don’t need to manually list each symbol under
-                        <span class="code">additionalData</span>.
+                        <code class="language-json">additionalData</code>.
                       </p>
                       <ol type="1">
                         <li>Therefore, the symbol data to be used for a chart/table must be
-                          specified in each view in <span class="code">"dataViewsConfig"</span>
-                          (<span class="code">"data"</span> property). However, if you have followed the
+                          specified in each view in <code class="language-json">"dataViewsConfig"</code>
+                          (<code class="language-json">"data"</code> property). However, if you have followed the
                           tutorial, this is already done for all views, since we specified our
-                          dashboard on the symbol <span class="code">"_scalarsve_out"</span>!</li>
+                          dashboard on the symbol <code class="language-json">"_scalarsve_out"</code>!</li>
                       </ol>
                     </li>
                     <li>
-                      <p>Instead of the <span class="code">"outType"</span> in the dashboard
-                        configuration, here we have a <span class="code">"type": "dashboard"</span>.</p>
+                      <p>Instead of the <code class="language-json">"outType"</code> in the dashboard
+                        configuration, here we have a <code class="language-json">"type": "dashboard"</code>.</p>
                     </li>
                     <li>
-                      <p>We also need to assign a <span class="code">label</span> that will be
+                      <p>We also need to assign a <code class="language-json">label</code> that will be
                         displayed when the scenario comparison mode is selected. This label
                         appears next to the options <em>Split view</em>, <em>Tab view</em> and
                         <em>Pivot view</em>.
@@ -2116,16 +2123,16 @@ if __name__ == &quot;__main__&quot;:
     }
   ]
 }</code></pre>
-                  <p>While we can copy <span class="code">"valueBoxes"</span> and
-                    <span class="code">"dataViews"</span> directly, we need to take a closer look at
-                    <span class="code">"dataViewsConfig"</span>! As mentioned above, we need to specify
-                    what <span class="code">"data"</span> the view is based on. Also, your data displayed
+                  <p>While we can copy <code class="language-json">"valueBoxes"</code> and
+                    <code class="language-json">"dataViews"</code> directly, we need to take a closer look at
+                    <code class="language-json">"dataViewsConfig"</code>! As mentioned above, we need to specify
+                    what <code class="language-json">"data"</code> the view is based on. Also, your data displayed
                     in tables and graphs now has an additional dimension, the scenario
                     dimension, where the scenarios to be compared are identified by name.
-                    This additional <span class="code">"_scenName"</span> dimension must be added in the
-                    views under <span class="code">"dataViewsConfig"</span>. If you do not want to
+                    This additional <code class="language-json">"_scenName"</code> dimension must be added in the
+                    views under <code class="language-json">"dataViewsConfig"</code>. If you do not want to
                     pre-select a scenario, but want to show all selected scenarios, leave
-                    the value at <span class="code">null</span>.
+                    the value at <code class="language-json">null</code>.
                   </p>
                   <pre><code class="language-json">&quot;dataViewsConfig&quot;: {
   &quot;SomeView&quot; : {
@@ -2183,11 +2190,11 @@ if __name__ == &quot;__main__&quot;:
               <h3 class="block-title">Custom Renderer</h3>
               <p>We will start by creating a simple renderer that shows the BESS
                 storage level at each hour. Up to this point, we only see how much power
-                is charged or discharged (<span class="code">battery_power</span>). The storage level
+                is charged or discharged (<code class="language-r">battery_power</code>). The storage level
                 itself can be computed by taking the cumulative sum of
-                <span class="code">battery_power</span>. In R, this is easily done with <a
-                  href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/cumsum" target="_blank"><span
-                    class="code">cumsum()</span></a>.
+                <code class="language-r">battery_power</code>. In R, this is easily done with <a
+                  href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/cumsum" target="_blank"><code
+                    class="language-r">cumsum()</code></a>.
               </p>
               <p>Note that if your data transformation is a simple function (e.g., a
                 single cumulative sum), you could (and should!) do it directly in Python
@@ -2210,7 +2217,7 @@ if __name__ == &quot;__main__&quot;:
               <p>For more background on Shiny, see <a href="https://shiny.posit.co/" target="_blank">R
                   Shiny’s official website</a>.</p>
               <p>A typical MIRO custom renderer follows this template (using
-                <span class="code">battery_power</span> as an example):
+                <code class="language-r">battery_power</code> as an example):
               </p>
               <pre><code class="language-r"># Placeholder function must end with &quot;Output&quot;
 mirorenderer_&lt;lowercaseSymbolName&gt;Output &lt;- function(id, height = NULL, options = NULL, path = NULL){
@@ -2223,8 +2230,8 @@ renderMirorenderer_&lt;lowercaseSymbolName&gt; &lt;- function(input, output, ses
 }</code></pre>
               <p>If you are not using the Configuration Mode, you must save these
                 functions in a file named
-                <em>mirorenderer_&lt;lowercaseSymbolName&gt;.R</em> inside the
-                <em>renderer_&lt;model_name&gt;</em> directory. However, if you are
+                <span class="code">mirorenderer_&lt;lowercaseSymbolName&gt;.R</span> inside the
+                <span class="code">renderer_&lt;model_name&gt;</span> directory. However, if you are
                 using the Configuration Mode, you can add the custom renderer directly
                 under the <em>Graphs</em> by setting its <em>charting type</em> to
                 <em>Custom renderer</em>. The Configuration Mode will automatically
@@ -2242,17 +2249,16 @@ renderMirorenderer_&lt;lowercaseSymbolName&gt; &lt;- function(input, output, ses
               <h4 class="block-title">Placeholder Function</h4>
               <p>The placeholder function creates the UI elements Shiny will render.
                 Shiny requires each element to have a unique ID, managed via the <a
-                  href="https://shiny.posit.co/r/reference/shiny/0.13.1/ns" target="_blank"><span
-                    class="code">NS()</span></a>
+                  href="https://shiny.posit.co/r/reference/shiny/0.13.1/ns" target="_blank"><code class="language-r">NS()</code></a>
                 function, which appends a prefix to avoid naming conflicts.</p>
               <p>Here’s how it works in practice:</p>
               <ul>
-                <li>Define the prefix function: First, call <span class="code">NS()</span> with the
+                <li>Define the prefix function: First, call <code class="language-r">NS()</code> with the
                   renderer’s ID to create a function that we will store in a variable
-                  <span class="code">ns</span>.
+                  <code class="language-r">ns</code>.
                 </li>
                 <li>Use the prefix function on elements: Whenever you define a new input
-                  or output element, prefix its ID with <span class="code">ns()</span>. This will give
+                  or output element, prefix its ID with <code class="language-r">ns()</code>. This will give
                   each element a unique prefixed ID.</li>
               </ul>
               <p>In our first example, we only want to draw a single plot of the BESS
@@ -2263,9 +2269,9 @@ mirorenderer_battery_powerOutput &lt;- function(id, height = NULL, options = NUL
     plotOutput(ns(&quot;cumsumPlot&quot;))
 }</code></pre>
               <p>Note that instead of writing
-                <span class="code">plotOutput("cumsumPlot", ...)</span>, we use
-                <span class="code">plotOutput(ns("cumsumPlot"), ...)</span> to ensure that the
-                <span class="code">cumsumPlot</span> is uniquely identified throughout the
+                <code class="language-r">plotOutput("cumsumPlot", ...)</code>, we use
+                <code class="language-r">plotOutput(ns("cumsumPlot"), ...)</code> to ensure that the
+                <code class="language-r">cumsumPlot</code> is uniquely identified throughout the
                 application.
               </p>
               <p>We only have one plot here, but you can create as many UI elements as
@@ -2280,45 +2286,44 @@ mirorenderer_battery_powerOutput &lt;- function(id, height = NULL, options = NUL
               <p>Next, we implement the actual renderer, which handles data
                 manipulation and visualization. We have defined an output with the
                 output function <a href="https://shiny.posit.co/r/reference/shiny/latest/plotoutput"
-                  target="_blank"><span class="code">plotOutput()</span></a>.
+                  target="_blank"><code class="language-r">plotOutput()</code></a>.
                 Now we need something to render inside. For this, we assign <a
-                  href="https://shiny.posit.co/r/reference/shiny/latest/renderplot" target="_blank"><span
-                    class="code">renderPlot()</span></a>
+                  href="https://shiny.posit.co/r/reference/shiny/latest/renderplot" target="_blank"><code class="language-r">renderPlot()</code></a>
                 to an output object inside the rendering function, which is responsible
                 for generating the plot. Here’s an overview:</p>
               <ul>
                 <li>Output functions: These functions determine how the data is
-                  displayed, such as <span class="code">plotOutput()</span>.</li>
+                  displayed, such as <code class="language-r">plotOutput()</code>.</li>
                 <li>Rendering functions: These are functions in Shiny that transform
                   your data into visual elements, such as plots, tables, or maps. For
-                  example, <span class="code">renderPlot()</span> is a reactive plot suitable for
+                  example, <code class="language-r">renderPlot()</code> is a reactive plot suitable for
                   assignment to an output slot.</li>
               </ul>
               <p>Now we need a connection between our placeholder and the renderer. To
                 do this, we look at the arguments the rendering function gets</p>
               <ul>
-                <li><span class="code">input</span>: Access to Shiny inputs, i.e. elements that
+                <li><code class="language-r">input</code>: Access to Shiny inputs, i.e. elements that
                   generate data, such as sliders, text input,…
-                  (<span class="code">input$hour</span>).</li>
-                <li><span class="code">output</span>: Controls elements that visualize data, such as
-                  plots, maps, or tables (<span class="code">output$cumsumPlot</span>).</li>
-                <li><span class="code">session</span>: Contains user-specific information.</li>
-                <li><span class="code">data</span>: The data for the visualization is specified as an
+                  (<code class="language-r">input$hour</code>).</li>
+                <li><code class="language-r">output</code>: Controls elements that visualize data, such as
+                  plots, maps, or tables (<code class="language-r">output$cumsumPlot</code>).</li>
+                <li><code class="language-r">session</code>: Contains user-specific information.</li>
+                <li><code class="language-r">data</code>: The data for the visualization is specified as an
                   R <a href="https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html"
                     target="_blank">tibble</a>.
                   If you’ve specified multiple datasets in your MIRO application, the data
                   will be a named list of tibbles. Each element in this list corresponds
-                  to a GAMS symbol (<span class="code">data$battery_power</span>).</li>
+                  to a GAMS symbol (<code class="language-r">data$battery_power</code>).</li>
               </ul>
               <p>For more information about the other options, see the <a
                   href="https://www.gams.com/miro/configuration_advanced.html#custom-renderers"
                   target="_blank">documentation</a>.</p>
               <p>We will now return to the Configuration Mode and start building our
                 first renderer. Hopefully you have already added
-                <span class="code">plotOutput(ns("cumsumPlot"))</span> to the placeholder function.
+                <code class="language-r">plotOutput(ns("cumsumPlot"))</code> to the placeholder function.
                 To get a general idea of what we are working with, let us first take a
-                look at the <span class="code">data</span> by simply printing it
-                (<span class="code">print(data)</span>) inside the renderer. If we now press
+                look at the <code class="language-r">data</code> by simply printing it
+                (<code class="language-r">print(data)</code>) inside the renderer. If we now press
                 <em>Update</em>, we still won’t see anything, because no rendering has
                 been done yet, but if we look at the console, we will see:
               </p>
@@ -2337,20 +2342,20 @@ mirorenderer_battery_powerOutput &lt;- function(id, height = NULL, options = NUL
 10 hour09     0        0  -Inf   Inf     1
 # i 14 more rows</code></pre>
               <p>Since we have not specified any additional data sets so far,
-                <span class="code">data</span> directly contains the variable
-                <span class="code">battery_power</span>, which is the GAMS symbol we put in the
+                <code class="language-r">data</code> directly contains the variable
+                <code class="language-r">battery_power</code>, which is the GAMS symbol we put in the
                 mirorender name. For our plot of the storage levels we now need the
-                values from the <span class="code">level</span> column, which we can access in R with
-                <span class="code">data$level</span>. More on subsetting tibbles can be found <a
+                values from the <code class="language-r">level</code> column, which we can access in R with
+                <code class="language-r">data$level</code>. More on subsetting tibbles can be found <a
                   href="https://tibble.tidyverse.org/reference/subsetting.html" target="_blank">here</a>.
               </p>
               <p>Let’s now finally make our first plot! First we need to calculate the
-                data we want to plot, which we store in <span class="code">storage_level</span>. The
-                values in <span class="code">battery_power</span> are from the city’s perspective;
+                data we want to plot, which we store in <code class="language-r">storage_level</code>. The
+                values in <code class="language-r">battery_power</code> are from the city’s perspective;
                 negative means charging the BESS, positive means discharging. We negate
                 the cumulative sum to get the actual storage level. We use the standard
                 R <a href="https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/barplot"
-                  target="_blank"><span class="code">barplot()</span></a>
+                  target="_blank"><code class="language-r">barplot()</code></a>
                 for visualization, but any plotting library can be used. Finally, we
                 just need to pass this reactive plot to a render function and assign it
                 to the appropriate output variable. The code should look like this:</p>
@@ -2374,15 +2379,15 @@ output$cumsumPlot &lt;- renderPlot({
                 First go to <em>Advanced options</em> and then by clicking on
                 <em>Additional datasets to communicate with the custom renderer</em> we
                 will see all the symbols we can add to the renderer. Since we need the
-                data from the scalar variable <span class="code">battery_storage</span>, we add
-                <span class="code">"_scalarsve_out"</span>. Going back to the <em>Main</em> tab, we
-                now need to change how we access the data, since <span class="code">data</span> is no
+                data from the scalar variable <code class="language-r">battery_storage</code>, we add
+                <code class="language-r">"_scalarsve_out"</code>. Going back to the <em>Main</em> tab, we
+                now need to change how we access the data, since <code class="language-r">data</code> is no
                 longer a single tibble, but a named list of tibbles. In the example
                 below we use <a href="https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/filter"
-                  target="_blank"><span class="code">filter()</span></a>
+                  target="_blank"><code class="language-r">filter()</code></a>
                 and <a href="https://www.rdocumentation.org/packages/lplyr/versions/0.1.6/topics/pull"
-                  target="_blank"><span class="code">pull()</span></a>
-                to extract the desired data. Note that <span class="code">%&gt;%</span> is the pipe
+                  target="_blank"><code class="language-r">pull()</code></a>
+                to extract the desired data. Note that <code class="language-r">%&gt;%</code> is the pipe
                 operator, which is used to pass the result of an expression or function
                 as the input to the next function in a sequence, improving the
                 readability and flow of your code.
@@ -2390,10 +2395,10 @@ output$cumsumPlot &lt;- renderPlot({
               <pre><code class="language-r">max_storage &lt;- data[[&quot;_scalarsve_out&quot;]] %&gt;%
   filter(scalar == &quot;battery_storage&quot;) %&gt;%
   pull(level)</code></pre>
-              <p>We will use the <span class="code">"battery_storage"</span> for adding a
+              <p>We will use the <code class="language-r">"battery_storage"</code> for adding a
                 horizontal line with <a
                   href="https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/abline"
-                  target="_blank"><span class="code">abline()</span></a>.
+                  target="_blank"><code class="language-r">abline()</code></a>.
                 Adding some more layout settings leads us to:</p>
               <div class="section-block">
                 <img class="img-fluid" style="max-width: 100%"
@@ -2442,7 +2447,7 @@ renderMirorenderer_battery_power &lt;- function(input, output, session, data, op
             <div id="a-more-complex-renderer" class="section-block">
               <h4 class="block-title">A more complex renderer</h4>
               <p>We are going to make a simple Sankey diagram for our power flow. We
-                will base this renderer on our <span class="code">report_output</span> variable which
+                will base this renderer on our <code class="language-r">report_output</code> variable which
                 contains the three power variables and the load demand. It will show the
                 current power flow at a given hour. To change the hour we will add a
                 slider. This results in the following placeholder function:</p>
@@ -2458,22 +2463,21 @@ renderMirorenderer_battery_power &lt;- function(input, output, session, data, op
 }</code></pre>
               <p>Since we just want both elements on top of each other, we use a <a
                   href="https://www.rdocumentation.org/packages/shiny/versions/0.9.1/topics/tagList"
-                  target="_blank"><span class="code">tagList()</span></a>.
+                  target="_blank"><code class="language-r">tagList()</code></a>.
                 First we have our slider, which we give an id, again using the
-                <span class="code">ns()</span> function to prefix it. We set <span class="code">min</span>,
-                <span class="code">max</span>, initial <span class="code">value</span> and <span
-                  class="code">step</span>size.
-                Second, we have a plot for which we use <a
-                  href="https://www.rdocumentation.org/packages/plotly/versions/4.10.4/topics/plotly-shiny"
-                  target="_blank"><span class="code">plotlyOutput()</span></a>,
-                since we will be using the <em>plotly</em> library to generate the
-                Sankey plot. Because plotly is not part of MIRO’s core, we must add the
-                package to our environment. This can be done in the same way as the
-                additional data in the <em>Advanced options</em> menu. This also means
-                that we need to specify the package name explicitly using the <em>double
-                  colon operator</em>. Again, if you are not using the Configuration Mode,
-                follow the <a href="https://www.gams.com/miro/configuration_advanced.html#additional-r-packages"
-                  target="_blank">documentation</a>.
+                <code class="language-r">ns()</code> function to prefix it. We set <code class="language-r">min</code>,
+                <code class="language-r">max</code>, initial <code class="language-r">value</code> and <code class="language-r">step</code>size.
+                  Second, we have a plot for which we use <a
+                    href="https://www.rdocumentation.org/packages/plotly/versions/4.10.4/topics/plotly-shiny"
+                    target="_blank"><code class="language-r">plotlyOutput()</code></a>,
+                  since we will be using the <em>plotly</em> library to generate the
+                  Sankey plot. Because plotly is not part of MIRO’s core, we must add the
+                  package to our environment. This can be done in the same way as the
+                  additional data in the <em>Advanced options</em> menu. This also means
+                  that we need to specify the package name explicitly using the <em>double
+                    colon operator</em>. Again, if you are not using the Configuration Mode,
+                  follow the <a href="https://www.gams.com/miro/configuration_advanced.html#additional-r-packages"
+                    target="_blank">documentation</a>.
               </p>
               <p>Now that we have some placeholders, we need to fill them. Let us
                 begin to set up our Sankey diagram. First, we need to decide which nodes
@@ -2501,22 +2505,22 @@ renderMirorenderer_battery_power &lt;- function(input, output, session, data, op
 )</code></pre>
               <p>To be able to display the power value of the correct time point we
                 need to get the hour from our slider, which we get from our
-                <span class="code">input</span> parameter.
+                <code class="language-r">input</code> parameter.
               </p>
               <pre><code class="language-r">hour_to_display &lt;- sprintf(&quot;hour%02d&quot;, input$hour)</code></pre>
               <p>Note that we use <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/sprintf"
-                  target="_blank"><span class="code">sprintf()</span></a>
+                  target="_blank"><code class="language-r">sprintf()</code></a>
                 to get the same string we use to represent the hour in our GAMS symbols,
                 so that we can filter the data for the correct hour.</p>
-              <p>Here we need to be careful: <span class="code">input</span> is a reactive
+              <p>Here we need to be careful: <code class="language-r">input</code> is a reactive
                 variable, it automatically updates the diagram when the slider is
                 updated. This means we need to put it in a reactive context. For
                 example, in R you can use <a
                   href="https://www.rdocumentation.org/packages/shiny/versions/1.9.1/topics/observe"
-                  target="_blank"><span class="code">observe()</span></a>.
+                  target="_blank"><code class="language-r">observe()</code></a>.
                 However, since our rendering depends on only one input and only one
                 output, we keep it simple and place all our calculations inside
-                <span class="code">renderPlotly()</span>. We can do this because rendering functions
+                <code class="language-r">renderPlotly()</code>. We can do this because rendering functions
                 are also observers. If you want to learn more about R Shiny’s reactive
                 expressions, you can find a more detailed tutorial <a
                   href="https://shiny.posit.co/r/getstarted/shiny-basics/lesson6/" target="_blank">here</a>.
@@ -2525,7 +2529,7 @@ renderMirorenderer_battery_power &lt;- function(input, output, session, data, op
                 First we need to select the correct power type, then the current hour
                 and add it to the links if it is not zero. Because GAMS doesn’t store
                 zeros, we need to check if a row exists for each hour-power combination.
-                Here you see how to do it for the <span class="code">battery_power</span>:</p>
+                Here you see how to do it for the <code class="language-r">battery_power</code>:</p>
               <pre><code class="language-r">battery_to_display &lt;- filter(data, power_output_header == &quot;battery&quot;) %&gt;%
   filter(j == hour_to_display)</code></pre>
               <details>
@@ -2539,8 +2543,8 @@ extern_to_display &lt;- filter(data, power_output_header == &quot;external_grid&
               </details>
               <p>Now that we have our values, we need to add them to our link list.
                 But remember to make sure that the value exists (here using <a
-                  href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/dim" target="_blank"><span
-                    class="code">dim()</span></a>),
+                  href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/dim" target="_blank"><code
+                    class="language-r">dim()</code></a>),
                 and for the BESS we need to keep in mind that we can have positive and
                 negative power flows, either from the city to the BESS or the other way
                 around! Here is a way to add the BESS links:</p>
@@ -2577,7 +2581,7 @@ if (dim(extern_to_display)[1] != 0) {
               <p>With this, we have all the necessary components to render the Sankey
                 diagram. We add one more small feature. Sliders can be animated quite
                 easily in R Shiny. All you need to do is add an animate option to the
-                <span class="code">sliderInput()</span> function:
+                <code class="language-r">sliderInput()</code> function:
               </p>
               <pre><code class="language-r">animate = animationOptions(
   interval = 1000, loop = FALSE,
@@ -2704,7 +2708,7 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
                       target="_blank">latest
                       dashboard renderer file</a> from the GAMS MIRO repository on GitHub and
                     put it with the other renderers in your
-                    <em>renderer_&lt;model_name&gt;</em> directory.
+                    <span class="code">renderer_&lt;model_name&gt;</span> directory.
                   </p>
                 </li>
                 <li>
@@ -2729,15 +2733,15 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
 -)
 }</code></pre>
               <p>Remember that the dashboard is rendered for the symbol
-                <span class="code">"_scalarsve_out"</span>. As with the other renderers, be sure to
+                <code class="language-json">"_scalarsve_out"</code>. As with the other renderers, be sure to
                 replace it with the symbol name you want to render if you create a
                 dashboard for a different symbol.
               </p>
               <ol start="3" type="1">
-                <li>In the <span class="code">dataRendering</span> section of the
-                  <em>&lt;model_name&gt;.json</em> file change the <span class="code">"outType"</span>
-                  of the symbol to render from <span class="code">"dashboard"</span> to
-                  <span class="code">"mirorenderer_&lt;symbolname&gt;"</span>
+                <li>In the <code class="language-json">dataRendering</code> section of the
+                  <span class="code">&lt;model_name&gt;.json</span> file change the <code class="language-json">"outType"</code>
+                  of the symbol to render from <code class="language-json">"dashboard"</code> to
+                  <code class="language-json">"mirorenderer_&lt;symbolname&gt;"</code>
                 </li>
               </ol>
               <pre><code class="language-diff">  {
@@ -2754,7 +2758,7 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
               <p>Now you can restart the application and have the same renderer as
                 before, only now we can extend it with custom code!</p>
               <p>To add custom code, we first need to decide where to put it. Here we
-                will add it as a second element to the <span class="code">battery_power</span> view.
+                will add it as a second element to the <code class="language-json">battery_power</code> view.
                 Note that the given title will be ignored by the custom code, so we will
                 leave it empty.</p>
               <pre><code class="language-json">&quot;dataViews&quot;: {
@@ -2764,9 +2768,9 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
   ],
   ...
 }</code></pre>
-              <p>In the corresponding <span class="code">"dataViewsConfig"</span> section we now
+              <p>In the corresponding <code class="language-json">"dataViewsConfig"</code> section we now
                 assign an arbitrary string,
-                e.g. <span class="code">"BatteryStorage": "customCode"</span>, instead of a view
+                e.g. <code class="language-json">"BatteryStorage": "customCode"</code>, instead of a view
                 configuration as before:</p>
               <pre><code class="language-r">&quot;dataViewsConfig&quot;: {
   &quot;BatteryStorage&quot;: &quot;customCode&quot;,
@@ -2774,16 +2778,16 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
 }</code></pre>
               <p>Finally, we can add the custom code. Recall that in our custom
                 renderers, we always defined placeholders with unique IDs that were then
-                assembled into the <span class="code">output</span> variable. The view ID we just
-                added (<span class="code">"BatteryStorage"</span>) will also be added to the
-                <span class="code">output</span> variable. Now we just add our already implemented
+                assembled into the <code class="language-json">output</code> variable. The view ID we just
+                added (<code class="language-json">"BatteryStorage"</code>) will also be added to the
+                <code class="language-r">output</code> variable. Now we just add our already implemented
                 renderer to the render function
-                (<span class="code">renderMirorenderer__scalarsve_out</span>). The only thing we have
+                (<code class="language-r">renderMirorenderer__scalarsve_out</code>). The only thing we have
                 to change is the output to which we assign the plot:
-                <span class="code">output[["BatteryStorage"]] &lt;- renderUI(...)</span>. And
+                <code class="language-r">output[["BatteryStorage"]] &lt;- renderUI(...)</code>. And
                 remember that we are no longer in our renderer for the symbol
-                <span class="code">battery_power</span>, so <span class="code">battery_power</span> is now
-                additional data that we access with <span class="code">data$battery_power</span>.
+                <code class="language-r">battery_power</code>, so <code class="language-r">battery_power</code> is now
+                additional data that we access with <code class="language-r">data$battery_power</code>.
                 However, since we have already added additional data to the renderer
                 before, the code does not change. Just keep in mind that if the renderer
                 you’re adding didn’t have additional data before, you’ll have to change
@@ -2856,11 +2860,11 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
                 and a data table. For the table we will use R Shinys <a
                   href="https://shiny.posit.co/r/articles/build/datatables/" target="_blank">DataTables</a>.
                 To do this, you must first add <a href="https://www.rdocumentation.org/packages/DT/versions/0.16"
-                  target="_blank"><span class="code">DT</span></a>
+                  target="_blank"><code class="language-r">DT</code></a>
                 to the additional packages and prefix the corresponding functions in the
                 code. To define the output we use <a
                   href="https://www.rdocumentation.org/packages/DT/versions/0.33/topics/dataTableOutput"
-                  target="_blank"><span class="code">DT:DTOutput()</span></a>:
+                  target="_blank"><code class="language-r">DT:DTOutput()</code></a>:
               </p>
               <pre><code class="language-r">mirorenderer_timewise_load_demand_and_cost_external_grid_dataOutput &lt;- function(id, height = NULL, options = NULL, path = NULL){
   ns &lt;- NS(id)
@@ -2872,30 +2876,30 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
               <p>Before we make it interactive, let’s fill in our placeholders. For
                 the table, we assign it with <a
                   href="https://www.rdocumentation.org/packages/DT/versions/0.28/topics/dataTableOutput"
-                  target="_blank"><span class="code">DT:renderDT()</span></a>,
+                  target="_blank"><code class="language-r">DT:renderDT()</code></a>,
                 where we define the <a href="https://www.rdocumentation.org/packages/DT/versions/0.16/topics/datatable"
-                  target="_blank"><span class="code">DT:datatable()</span></a>
+                  target="_blank"><code class="language-r">DT:datatable()</code></a>
                 and we will round our cost values with <a
-                  href="https://search.r-project.org/CRAN/refmans/DT/html/formatCurrency.html" target="_blank"><span
-                    class="code">DT:formatRound()</span></a>:
+                  href="https://search.r-project.org/CRAN/refmans/DT/html/formatCurrency.html" target="_blank"><code class="language-r">DT:formatRound()</code></a>:
               </p>
               <pre><code class="language-r">output$table &lt;- DT::renderDT({
   DT::datatable(data, editable = TRUE, rownames = FALSE, options = list(scrollX = TRUE)) %&gt;%
     DT::formatRound(c(&quot;cost_external_grid&quot;), digits = 2L)
 })</code></pre>
-              <p>Here, <span class="code">editable = TRUE</span> is crucial—it allows users to
+              <p>Here, <code class="language-r">editable = TRUE</code> is crucial—it allows users to
                 modify the table entries. For the plot, we need something like this:</p>
               <pre><code class="language-r">output$timeline &lt;- renderPlot({
   ...
 })</code></pre>
               <p>We have two variables in different dimensions
-                (<span class="code">load_demand</span> in W and <span class="code">cost_external_grid</span> in
+                (<code class="language-r">load_demand</code> in W and <code class="language-r">cost_external_grid</code>
+                in
                 $). We now want to display them in a single plot, see for yourself what
                 the rest of the code should look like. You could use <a
-                  href="https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/par" target="_blank"><span
-                    class="code">par()</span></a>
-                and <a href="https://www.rdocumentation.org/packages/graphics/versions/3.5.2/topics/axis" target="_blank"><span
-                    class="code">axis()</span></a>
+                  href="https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/par"
+                  target="_blank"><code class="language-r">par()</code></a>
+                and <a href="https://www.rdocumentation.org/packages/graphics/versions/3.5.2/topics/axis"
+                  target="_blank"><code class="language-r">axis()</code></a>
                 to overlay two y-axes.</p>
               <details>
                 <summary>
@@ -2956,33 +2960,35 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
                   alt="Result of pivot tool for Balance" />
               </div>
               <p>At this point, any changes we make in the table do not reflect in the
-                plot. To fix this, we need <a href="https://shiny.posit.co/r/getstarted/shiny-basics/lesson6/" target="_blank">reactive
+                plot. To fix this, we need <a href="https://shiny.posit.co/r/getstarted/shiny-basics/lesson6/"
+                  target="_blank">reactive
                   expressions</a>. We need to add them for each interaction that should
                 result in an update.</p>
-              <p>First, we define a variable <span class="code">rv</span> for our <a
-                  href="https://www.rdocumentation.org/packages/shiny/versions/1.9.1/topics/reactiveValues" target="_blank">reactiveValues</a>.
+              <p>First, we define a variable <code class="language-r">rv</code> for our <a
+                  href="https://www.rdocumentation.org/packages/shiny/versions/1.9.1/topics/reactiveValues"
+                  target="_blank">reactiveValues</a>.
               </p>
               <pre><code class="language-r">rv &lt;- reactiveValues(
   timewise_input_data = NULL
 )</code></pre>
-              <p>To set <span class="code">rv$timewise_input_data</span> we <a
-                  href="https://www.rdocumentation.org/packages/shiny/versions/1.9.1/topics/observe" target="_blank"><span
-                    class="code">observe()</span></a>
-                the initial <span class="code">data</span>. If it changes we set our reactive value
+              <p>To set <code class="language-r">rv$timewise_input_data</code> we <a
+                  href="https://www.rdocumentation.org/packages/shiny/versions/1.9.1/topics/observe"
+                  target="_blank"><code class="language-r">observe()</code></a>
+                the initial <code class="language-r">data</code>. If it changes we set our reactive value
                 to the data.</p>
               <pre><code class="language-r">observe({
   rv$timewise_input_data &lt;- data
 })</code></pre>
-              <p>To monitor edits to the table, we define a new <span class="code">observe()</span>
-                that will be triggered when <span class="code">input$table_cell_edit</span> changes.
+              <p>To monitor edits to the table, we define a new <code class="language-r">observe()</code>
+                that will be triggered when <code class="language-r">input$table_cell_edit</code> changes.
                 We get the row and column index of the edited cell
-                (<span class="code">input$table_cell_edit$row</span> and
-                <span class="code">input$table_cell_edit$col</span>) and update the corresponding
-                value in <span class="code">rv$timewise_input_data</span>. The <a
-                  href="https://www.rdocumentation.org/packages/shiny/versions/1.9.1/topics/isolate" target="_blank"><span
-                    class="code">isolate()</span></a>
-                function ensures that changes to <span class="code">rv</span> do not trigger this
-                <span class="code">observe()</span> function.
+                (<code class="language-r">input$table_cell_edit$row</code> and
+                <code class="language-r">input$table_cell_edit$col</code>) and update the corresponding
+                value in <code class="language-r">rv$timewise_input_data</code>. The <a
+                  href="https://www.rdocumentation.org/packages/shiny/versions/1.9.1/topics/isolate"
+                  target="_blank"><code class="language-r">isolate()</code></a>
+                function ensures that changes to <code class="language-r">rv</code> do not trigger this
+                <code class="language-r">observe()</code> function.
               </p>
               <pre><code class="language-r"># observe if the table is edited
 observe({
@@ -2996,24 +3002,24 @@ observe({
     rv$timewise_input_data[row, clmn] &lt;- input$table_cell_edit$value
   })
 })</code></pre>
-              <p>If the new value of the entry would be empty (<span class="code">""</span>), we
+              <p>If the new value of the entry would be empty (<code class="language-r">""</code>), we
                 want to reset the table. To do this, we set up a <a
-                  href="https://www.rdocumentation.org/packages/DT/versions/0.33/topics/dataTableProxy" target="_blank"><span
-                    class="code">dataTableProxy()</span></a>
-                to efficiently update the table. Our <span class="code">resetTable()</span> function
+                  href="https://www.rdocumentation.org/packages/DT/versions/0.33/topics/dataTableProxy"
+                  target="_blank"><code class="language-r">dataTableProxy()</code></a>
+                to efficiently update the table. Our <code class="language-r">resetTable()</code> function
                 is defined to dynamically replace the table data using the current state
-                of <span class="code">rv$timewise_input_data</span>. The function <a
-                  href="https://www.rdocumentation.org/packages/DT/versions/0.33/topics/replaceData" target="_blank"><span
-                    class="code">DT::replaceData()</span></a>
+                of <code class="language-r">rv$timewise_input_data</code>. The function <a
+                  href="https://www.rdocumentation.org/packages/DT/versions/0.33/topics/replaceData"
+                  target="_blank"><code class="language-r">DT::replaceData()</code></a>
                 allows the table to be updated without resetting sorting, filtering, and
-                pagination. We need to <span class="code">isolate()</span> the data again so that the
-                function is not called if <span class="code">rv</span> changes!</p>
+                pagination. We need to <code class="language-r">isolate()</code> the data again so that the
+                function is not called if <code class="language-r">rv</code> changes!</p>
               <pre><code class="language-r">tableProxy &lt;- DT::dataTableProxy(&quot;table&quot;)
 resetTable &lt;- function() {
   DT::replaceData(tableProxy, isolate(rv$timewise_input_data), resetPaging = FALSE, rownames = FALSE)
 }</code></pre>
-              <p>Finally, we now need to reference <span class="code">rv$timewise_input_data</span>
-                instead of <span class="code">data</span> in the plot renderer, so that the plot is
+              <p>Finally, we now need to reference <code class="language-r">rv$timewise_input_data</code>
+                instead of <code class="language-r">data</code> in the plot renderer, so that the plot is
                 updated whenever a table cell changes.</p>
               <details>
                 <summary>
@@ -3108,7 +3114,8 @@ resetTable &lt;- function() {
               <p>After these changes, we have a reactive table-plot combination, but
                 it still behaves like an output renderer. We need to take a few final
                 steps to turn this into a <a
-                  href="https://www.gams.com/miro/configuration_json_only.html#custom-input-widgets" target="_blank">custom
+                  href="https://www.gams.com/miro/configuration_json_only.html#custom-input-widgets"
+                  target="_blank">custom
                   input widget</a> so that the new data can be used to solve!</p>
             </div>
             <!--//section-block-->
@@ -3129,10 +3136,10 @@ resetTable &lt;- function() {
 + renderMirowidget_timewise_load_demand_and_cost_external_grid_data &lt;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
   ...
 }</code></pre>
-              <p>We need to make some small changes to our code. The <span class="code">data</span>
+              <p>We need to make some small changes to our code. The <code class="language-r">data</code>
                 parameter is no longer a tibble, but a <a
                   href="https://shiny.posit.co/r/getstarted/shiny-basics/lesson6/" target="_blank">reactive
-                  expression</a> (<span class="code">data()</span>). Therefore, we need to call it to
+                  expression</a> (<code class="language-r">data()</code>). Therefore, we need to call it to
                 retrieve the current tibble with our input data. Whenever the data
                 changes (for example, because the user uploaded a new CSV file), the
                 reactive expression is triggered, which in turn causes our table to be
@@ -3143,22 +3150,24 @@ resetTable &lt;- function() {
 + rv$timewise_input_data &lt;- data()
  })</code></pre>
               <p>All code is executed when the application is started, even though no
-                actions have been performed yet. The <span class="code">init</span> is used to
-                execute actions in <span class="code">observe()</span> only after this initial
+                actions have been performed yet. The <code class="language-r">init</code> is used to
+                execute actions in <code class="language-r">observe()</code> only after this initial
                 execution. It ensures that the reactive logic is not executed until the
                 application is fully initialized and all data is loaded. Since we only
-                have one <span class="code">observe()</span> we set it to <span class="code">True</span> here, if
-                we had more we would set <span class="code">init</span> to <span class="code">True</span> in the
-                last <span class="code">observe()</span> block.</p>
+                have one <code class="language-r">observe()</code> we set it to <code class="language-r">True</code>
+                here, if
+                we had more we would set <code class="language-r">init</code> to <code class="language-r">True</code> in
+                the
+                last <code class="language-r">observe()</code> block.</p>
               <pre><code class="language-r">if (!init) {
   init &lt;&lt;- TRUE
   return()
 }</code></pre>
               <p>Finally, we need to return the input data to be passed to GAMS(Py).
                 For this, we provide a <a
-                  href="https://www.rdocumentation.org/packages/shiny/versions/1.10.0/topics/reactive" target="_blank"><span
-                    class="code">reactive()</span></a>
-                wrapper around <span class="code">rv$timewise_input_data</span>. It ensures that the
+                  href="https://www.rdocumentation.org/packages/shiny/versions/1.10.0/topics/reactive"
+                  target="_blank"><code class="language-r">reactive()</code></a>
+                wrapper around <code class="language-r">rv$timewise_input_data</code>. It ensures that the
                 current state of the data is available as a reactive output, allowing us
                 to pass the new data to the model. Otherwise <em>Solve model</em> would
                 still use the old data!</p>
@@ -3271,8 +3280,9 @@ resetTable &lt;- function() {
                 you can explore more creative implementations. If you need more
                 inspiration on what you can do with the custom renderer, take a look at
                 the <a href="https://miro.gams.com/" target="_blank">MIRO gallery</a>, e.g. take a look
-                at some applications with maps (<a href="https://miro.gams.com/gallery/app_direct/tsp/" target="_blank">TSP</a> or <a
-                  href="https://miro.gams.com/gallery/app_direct/vrptw/" target="_blank">VRPTW</a>).</p>
+                at some applications with maps (<a href="https://miro.gams.com/gallery/app_direct/tsp/"
+                  target="_blank">TSP</a> or <a href="https://miro.gams.com/gallery/app_direct/vrptw/"
+                  target="_blank">VRPTW</a>).</p>
             </div>
             <!--//section-block-->
             <div id="key-takeaways-5" class="section-block">
@@ -3318,13 +3328,14 @@ resetTable &lt;- function() {
               </ul>
               <p>Here, we will go over the basic concept to give you a good starting
                 point for extending it to your needs. Again, we follow the <a
-                  href="https://www.gams.com/miro/configuration_json_only.html#custom-import-export" target="_blank">documentation</a>
+                  href="https://www.gams.com/miro/configuration_json_only.html#custom-import-export"
+                  target="_blank">documentation</a>
                 closely. First, let’s create a simple import function that gets the data
                 for our generators. For ease of setup, we will just pretend to access a
                 database and actually hardcode the data here.</p>
               <p>For our custom importer, we need to create a new file in the
-                <em>renderer_&lt;model_name&gt;</em> directory called
-                <em>miroimport.R</em>. Here you can add several import functions, which
+                <span class="code">renderer_&lt;model_name&gt;</span> directory called
+                <span class="code">miroimport.R</span>. Here you can add several import functions, which
                 should have the following signature:
               </p>
               <pre><code class="language-r">miroimport_&lt;importerName&gt; &lt;- function(symNames, localFile = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
@@ -3332,17 +3343,18 @@ resetTable &lt;- function() {
 }</code></pre>
               <p>Here we will only go over the parameters we will be using, for
                 information on the others see the <a
-                  href="https://www.gams.com/miro/configuration_json_only.html#custom-import-export" target="_blank">documentation</a>.
-                The <span class="code">"symNames"</span> parameter is a character vector that
+                  href="https://www.gams.com/miro/configuration_json_only.html#custom-import-export"
+                  target="_blank">documentation</a>.
+                The <code class="language-r">"symNames"</code> parameter is a character vector that
                 specifies the names of the symbols for which data is to be retrieved.
-                There is also an optional <span class="code">"localFile"</span> parameter, which is a
+                There is also an optional <code class="language-r">"localFile"</code> parameter, which is a
                 data frame containing one row for each uploaded file. What kind of data
                 you can upload here is specified in
-                <em>&lt;model_name&gt;.json</em>.
+                <span class="code">&lt;model_name&gt;.json</span>.
               </p>
               <p>We also need to add the importer to the
-                <em>&lt;model_name&gt;.json</em>, to do this we simply add a new key
-                <span class="code">"customDataImport"</span>:
+                <span class="code">&lt;model_name&gt;.json</span>, to do this we simply add a new key
+                <code class="language-r">"customDataImport"</code>:
               </p>
               <pre><code class="language-json">&quot;customDataImport&quot;: [
   {
@@ -3351,15 +3363,15 @@ resetTable &lt;- function() {
     &quot;symNames&quot;: [&quot;generator_specifications&quot;]
   }
 ]</code></pre>
-              <p>Where we simply specify the <span class="code">"label"</span> the importer will
+              <p>Where we simply specify the <code class="language-r">"label"</code> the importer will
                 have when you select it under <em>Load data</em> in the MIRO
-                application. <span class="code">"functionName"</span> specifies the name of our
+                application. <code class="language-r">"functionName"</code> specifies the name of our
                 custom import function in <em>miroimport.R</em>. And
-                <span class="code">"symNames"</span> specifying which GAMS symbols the importer
+                <code class="language-r">"symNames"</code> specifying which GAMS symbols the importer
                 handles.
               </p>
               <p>If you want to allow the user to upload files, you need to add
-                <span class="code">"localFileInput"</span>, which could look like this
+                <code class="language-r">"localFileInput"</code>, which could look like this
               </p>
               <pre><code class="language-json">&quot;customDataImport&quot;: [
   {
@@ -3372,13 +3384,14 @@ resetTable &lt;- function() {
   }
 ]</code></pre>
               <p>For more information on the available options, see the <a
-                  href="https://www.gams.com/miro/configuration_json_only.html#custom-import-export target="_blank"">documentation</a>.
+                  href="https://www.gams.com/miro/configuration_json_only.html#custom-import-export"
+                  target="_blank">documentation</a>.
               </p>
               <p>Now we can start our MIRO application and use the importer, but since
                 we haven’t filled it with code yet, nothing happens. So let’s define
-                <span class="code">miroimport_GenSpecs()</span> to return a tibble with new generator
+                <code class="language-r">miroimport_GenSpecs()</code> to return a tibble with new generator
                 specifications. This is done by returning a named list where the names
-                correspond to the given <span class="code">"symbolNames"</span>. Here we will simply
+                correspond to the given <code class="language-r">"symbolNames"</code>. Here we will simply
                 hardcode it to return the same data as before, just changing the names
                 to see that it actually imported the new data.
               </p>
@@ -3404,7 +3417,7 @@ resetTable &lt;- function() {
                 under <em>Load data</em>. The generator names will update accordingly,
                 proving our custom code works. Although this example is hardcoded, the
                 same framework can fetch data from any source, fix column names to fit
-                MIRO’s symbols (stored in <span class="code">"symbolNames"</span>), or perform more
+                MIRO’s symbols (stored in <code class="language-r">"symbolNames"</code>), or perform more
                 complicated transformations such as database queries.</p>
               <p>In a real scenario with database queries, you’ll likely store
                 credentials in a secure environment. MIRO allows you to specify
@@ -3418,7 +3431,7 @@ resetTable &lt;- function() {
               <p>Now in MIRO Desktop go to <em>File</em> and then to
                 <em>Preferences</em>. Under <em>Environment</em> you can now upload the
                 json file. You can access these credentials via
-                <span class="code">Sys.getenv()</span> inside your importer, for example:
+                <code class="language-r">Sys.getenv()</code> inside your importer, for example:
               </p>
               <pre><code class="language-r">miroimport_GenSpecs &lt;- function(symbolNames, localFile = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
 
@@ -3445,8 +3458,8 @@ resetTable &lt;- function() {
     # And return the data to the MIRO application.
     return(import_data)
 }</code></pre>
-              <p>In the <a
-                  href="https://www.gams.com/miro/configuration_json_only.html#custom-import-export" target="_blank">documentation</a>
+              <p>In the <a href="https://www.gams.com/miro/configuration_json_only.html#custom-import-export"
+                  target="_blank">documentation</a>
                 you can find an example that also handles file uploads.</p>
               <p>By now, you should be well-equipped to write your own custom importer
                 that handles all the data collection and preprocessing your application
@@ -3456,14 +3469,14 @@ resetTable &lt;- function() {
             <div id="custom-exporter" class="section-block">
               <h3 class="block-title">Custom Exporter</h3>
               <p>A custom exporter works similarly. We need to add a
-                <em>miroexport.R</em> to the <em>renderer_&lt;model_name&gt;</em>
+                <span class="code">miroexport.R</span> to the <span class="code">renderer_&lt;model_name&gt;</span>
                 directory first, which should have the following signature:
               </p>
               <pre><code class="language-r">miroexport_&lt;exporterName&gt; &lt;- function(data, path = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
 
 }</code></pre>
-              <p>Where <span class="code">"data"</span> is again a named list of tibbles containing
-                all input and output symbols of the model and <span class="code">"path"</span> is the
+              <p>Where <code class="language-r">"data"</code> is again a named list of tibbles containing
+                all input and output symbols of the model and <code class="language-r">"path"</code> is the
                 path to the (temporary) file provided to the user for download
                 (optional). This depends on how you specified it in the json file:</p>
               <pre><code class="language-json">{
@@ -3478,12 +3491,12 @@ resetTable &lt;- function() {
     }
   ]
 }</code></pre>
-              <p>Again, we need to link the <span class="code">"functionName"</span>, and if we
+              <p>Again, we need to link the <code class="language-json">"functionName"</code>, and if we
                 want to create an output file, we need to specify it in
-                <span class="code">"localFileOutput"</span>. Here, we’ve chosen to generate a
+                <code class="language-json">"localFileOutput"</code>. Here, we’ve chosen to generate a
                 markdown file.
               </p>
-              <p>Inside <span class="code">miroexport_Markdown()</span>, we do whatever tasks we
+              <p>Inside <code class="language-json">miroexport_Markdown()</code>, we do whatever tasks we
                 want, such as:</p>
               <ul>
                 <li>Writing data back to a database (even the input data, since it may
@@ -3494,16 +3507,16 @@ resetTable &lt;- function() {
               </ul>
               <p>Below is an example that writes a small Markdown report. Helpful
                 functions in this case are <a
-                  href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/writeLines" target="_blank"><span
-                    class="code">"writeLines()"</span></a>,
-                <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/paste" target="_blank"><span
-                    class="code">"paste()"</span></a>,
-                <a href="https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/filter" target="_blank"><span
-                    class="code">"filter()"</span></a>,
-                <a href="https://www.rdocumentation.org/packages/lplyr/versions/0.1.6/topics/pull" target="_blank"><span
-                    class="code">"pull()"</span></a>,
-                <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/apply" target="_blank"><span
-                    class="code">"apply()"</span></a>
+                  href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/writeLines"
+                  target="_blank"><code class="language-r">"writeLines()"</code></a>,
+                <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/paste" target="_blank"><code
+                    class="language-r">"paste()"</code></a>,
+                <a href="https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/filter"
+                  target="_blank"><code class="language-r">"filter()"</code></a>,
+                <a href="https://www.rdocumentation.org/packages/lplyr/versions/0.1.6/topics/pull" target="_blank"><code
+                    class="language-r">"pull()"</code></a>,
+                <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/apply" target="_blank"><code
+                    class="language-r">"apply()"</code></a>
                 …
               </p>
               <p>Your result could look something like this:</p>
@@ -3646,7 +3659,8 @@ resetTable &lt;- function() {
                 MIRO application. Covering deployment in detail would go beyond the
                 scope of this tutorial, so we encourage you to read the documentation:
                 <a href="https://www.gams.com/miro/deployment.html" target="_blank">Deployment</a>. And
-                when you are add it also check out <a href="https://www.gams.com/miro/server.html" target="_blank">GAMS MIRO
+                when you are add it also check out <a href="https://www.gams.com/miro/server.html" target="_blank">GAMS
+                  MIRO
                   Server</a> if you
                 are interested in running MIRO in the cloud.
               </p>
@@ -3681,8 +3695,8 @@ resetTable &lt;- function() {
             <div id="reference-repository" class="section-block">
               <h2 class="block-title">Reference Repository</h2>
               <p>If you’d like to see a fully operational version of this tutorial in
-                action, head over to our <a
-                  href="https://github.com/GAMS-dev/miro/tree/master/src/model/gamspy/bess" target="_blank">Repository</a>.
+                action, head over to our <a href="https://github.com/GAMS-dev/miro/tree/master/src/model/gamspy/bess"
+                  target="_blank">Repository</a>.
                 It contains:</p>
               <ul>
                 <li>A self-contained folder with the GAMSPy model setup</li>
