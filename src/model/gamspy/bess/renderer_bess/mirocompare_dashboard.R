@@ -499,11 +499,11 @@ renderMirocompare_dashboard <- function(input, output, session, data, options = 
       }
 
       div(
-        class = "shiny-html-output",
         class = if (!is.null(width)) {
           paste0("col-sm-", width)
         },
         id = id,
+        `data-namespace` = ns(""),
         boxContent
       )
     }
@@ -1389,5 +1389,26 @@ renderMirocompare_dashboard <- function(input, output, session, data, options = 
         return(write_csv(dataTmp, file, na = ""))
       }
     )
+        # add custom renderer
+    battery_power <- data$battery_power$level
+    storage_level <- -cumsum(battery_power)
+
+    max_storage <- data[["_scalarsve_out"]] %>%
+      filter(scalar == "battery_storage") %>%
+      pull(level)
+
+    # corresponding to the dataView "BatteryStorage"
+    output[["BatteryStorage"]] <- renderUI({
+      tagList(
+        renderPlot({
+          barplot(storage_level,
+            col = "lightblue", ylab = "Energy Capacity in kWh",
+            names.arg = data$battery_power$j, las = 2, ylim = c(0, max_storage + 10),
+            main = "Storage level of the BESS"
+          )
+          grid()
+        })
+      )
+    })
   })
 }

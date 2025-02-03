@@ -8,22 +8,53 @@ Once we’ve covered basic visualization, we’ll move on to the Configuration M
 
 If you want to work through this tutorial step by step, you need to [install GAMS MIRO](https://www.gams.com/miro/download.html) first.
 
-## Table of Contents
+## Table of Contents  
+- [From GAMSPy Model to GAMS MIRO App](#from-gamspy-model-to-gams-miro-app)
+  - [Table of Contents](#table-of-contents)
+  - [Implement the Model](#implement-the-model)
+    - [Model Input](#model-input)
+      - [Key Takeaways](#key-takeaways)
+    - [Model Output](#model-output)
+      - [Key Takeaways](#key-takeaways-1)
+  - [Basic Application](#basic-application)
+    - [Input](#input)
+    - [Output](#output)
+    - [Key Takeaways](#key-takeaways-2)
+  - [Configuration Mode](#configuration-mode)
+    - [General Settings](#general-settings)
+    - [Symbols](#symbols)
+    - [Tables](#tables)
+    - [Input Widgets](#input-widgets)
+    - [Graphs](#graphs)
+    - [Scenario analysis](#scenario-analysis)
+    - [Database management](#database-management)
+    - [Key Takeaways](#key-takeaways-3)
+  - [Dashboard Renderer](#dashboard-renderer)
+    - [Introduction](#introduction)
+    - [Adding Additional Data](#adding-additional-data)
+    - [Value Boxes](#value-boxes)
+    - [Data Views](#data-views)
+    - [Configuring Charts and Tables](#configuring-charts-and-tables)
+    - [Dashboard Comparison](#dashboard-comparison)
+  - [Fine Tuning with Custom Code](#fine-tuning-with-custom-code)
+    - [Custom renderer](#custom-renderer)
+      - [Renderer Structure](#renderer-structure)
+      - [Placeholder Function](#placeholder-function)
+      - [Rendering Function](#rendering-function)
+      - [A more complex renderer](#a-more-complex-renderer)
+    - [Custom Dashboard](#custom-dashboard)
+      - [Dashboard Comparison with Custom Code](#dashboard-comparison-with-custom-code)
+    - [Custom widget](#custom-widget)
+      - [From Custom Renderer To Custom Widget](#from-custom-renderer-to-custom-widget)
+    - [Key Takeaways](#key-takeaways-4)
+  - [Custom Import and Export: Streamlining Your Data Workflow](#custom-import-and-export-streamlining-your-data-workflow)
+    - [Custom Importer](#custom-importer)
+    - [Custom Exporter](#custom-exporter)
+    - [Key Takeaways](#key-takeaways-5)
+  - [Deployment](#deployment)
+  - [Conclusion](#conclusion)
+  - [Reference Repository](#reference-repository)
 
-1. [Implement the Model](#implement-the-model)
-2. [Basic Application](#basic-application)
-3. [Configuration Mode](#configuration-mode)
-4. [Dashboard Renderer](#dashboard-renderer)
-5. [Fine Tuning with Custom Code](#fine-tuning-with-custom-code)
-    1. [Custom Renderer](#custom-renderer)
-    2. [Custom Dashboard](#custom-dashboard)
-    3. [Custom Widget](#custom-widget)
-6. [Custom Import and Export: Streamlining Your Data Workflow](#custom-import-and-export-streamlining-your-data-workflow)
-    1. [Custom Importer](#custom-importer)
-    2. [Custom Exporter](#custom-exporter)
-7. [Deployment](#deployment)
-8. [Conclusion](#conclusion)
-9. [Reference Repository](#reference-repository)
 
 ## Implement the Model
 
@@ -1248,7 +1279,7 @@ Each change we make in Configuration Mode is automatically saved to \<model_name
 Finally, in the *Charting Type* drop down menu you will also find the *Custom Renderer* option, which we will talk about [later](#fine-tuning-with-custom-code).
 
 ### Scenario analysis
-MIRO has several build-in scenario [comparison modes](https://www.gams.com/miro/start.html#scenario-comparison) that allow to compare the input and/or output data of different model runs. In addition to these built-in (and other customizable) modes, MIRO also allows you to call up your own external analysis scripts for one or multiple scenarios.
+MIRO has several build-in scenario [comparison modes](https://www.gams.com/miro/start.html#scenario-comparison) that allow to compare the input and/or output data of different model runs. In addition to these built-in (and other customizable) modes, MIRO also allows you to call up your own external analysis scripts for one or multiple scenarios. In the next section, we will introduce a dashboard for our output, which allows for direct comparison ([dashboard compare](https://www.gams.com/miro/configuration_json_only.html#dashboard-compare)). The process for setting this up will be explained after the dashboard is introduced.
 
 
 ### Database management
@@ -1577,6 +1608,90 @@ Finally, we end up with this dashboard:
 Now that we’ve combined multiple outputs into a single dashboard, it makes sense to hide the tabs for the individual output symbols and rename the dashboard tab for clarity. Just a heads up, you should keep `"report_output"`, we will add a custom renderer for it in the next section.
 
 It is also possible to add custom code to the dashboard. However, since this requires a bit more effort and you need to know how to create a custom renderer in the first place, we will leave this for the [next section](#fine-tuning-with-custom-code).
+
+### Dashboard Comparison
+
+As mentioned above, we will now take a quick look at how to compare your dashboard for different scenarios. If you just want to [Compare Scenarios](https://www.gams.com/miro/start.html#scenario-comparison), the quickest way is under the *Compare scenarios* tab. Here you can select previously saved scenarios or the current sandbox. This allows you to analyze them side by side. As an example, we will compare our default setting with a scenario where we set the cost of BESS to zero:
+
+<div align="center"> <img src="config_mode/compare_dashboards.png" alt="input section" width="1000"/> </div>
+
+In addition to the *Split view*, you can also select the *Pivot view* and *Tab view*. The *Pivot view* combines all scenarios into one table, on which you can then use the pivot tool, which we already used a lot. In the *Tab view* you can select as many scenarios as you want, but you cannot see them side by side.
+
+If these three options aren't enough, you can add your own [comparisons] (https://www.gams.com/miro/configuration_json_only.html#custom-compare-mode). Here we will add a custom comparison mode to our [Dashboard](https://www.gams.com/miro/configuration_json_only.html#dashboard-compare). 
+
+The configuration can be largely adopted, we just need to make some small adjustments:
+
+1. We just configured the dashboard in the `dataRendering` section of the `<modelname\>.json` file. For scenario comparison, the configuration should be placed in a separate section called `compareModules`.
+
+2. While a regular dashboard configuration applies to a single symbol, a scenario comparison is symbol-unspecific. This means that the scenario comparison has access to all input and output symbol data by default. As a result, you don't need to manually list each symbol under `additionalData`.
+   1. Therefore, the symbol data to be used for a chart/table must be specified in each view in `"dataViewsConfig"` (`"data"` property). However, if you have followed the tutorial, this is already done for all views, since we specified our dashboard on the symbol `"_scalarsve_out"`!
+
+3. Instead of the `"outType"` in the dashboard configuration, a `"type "dashboard"` here. 
+
+4. We also need to assign a `label` that will be displayed when the scenario comparison mode is selected. This label appears next to options such as *Split view*, *Tab view* and *Pivot view*. 
+
+```diff
+{
+    "dataRendering": {
+      "<lowercase_symbolname>": {
+-       "outType": "dashboard",
+-       "additionalData": [],
+        "options": {
+          "valueBoxesTitle": "",
+          "valueBoxes": {
+              ...
+          },
+          "dataViews": {
+              ...
+          },
+          "dataViewsConfig": {
+              ...
+          }
+        }
+      }
+    },
+    "compareModules": [
+    {
++     "type": "dashboard",
++     "label": "",
+      "options": {
+        "valueBoxesTitle": "",
+        "valueBoxes": {
+            ...
+        },
+        "dataViews": {
+            ...
+        },
+        "dataViewsConfig": {
+            ...
+        }
+      }
+    }
+    ]
+  }
+```
+
+While we can copy `"valueBoxes"` and `"dataViews"` directly, we need to take a closer look at `"dataViewsConfig"`! As mentioned above, we need to specify what `"data"` the view is based on. Also, your data displayed in tables and graphs now has an additional dimension, the scenario dimension, where the scenarios to be compared are identified by name. This additional `"_scenName"` dimension must be added in the views under `"dataViewsConfig"`. If you do not want to pre-select a scenario, but want to show all selected scenarios, leave the value at `null`.
+
+```json
+"dataViewsConfig": {
+            "SomeView" :{
+              ...
+              "cols": {
+                "_scenName": null
+              },
+              ...
+            }
+        }
+```
+
+The additional scenario dimension also changes the appearance of the graphs. Some visualizations that were suitable for normal output may no longer be suitable for displaying multiple scenarios. In such cases, the view configuration (distribution of dimensions in rows/cols/aggregation, etc.) can be adjusted as needed. The *Pivot view* comparison mode can help prepare the views, just as we prepared the views for the dashboard.
+
+**STACKED BAR CHARTS ARENT DISPLAYED NICELY YET**
+
+By default the value boxes are empty, to change this a drop down menu appears in the dashboard above the value boxes. Here you can select the scenario from which the values should be displayed. 
+
+**ADD IMAGE**
 
 ## Fine Tuning with Custom Code
 
@@ -2058,6 +2173,12 @@ renderMirorenderer__scalarsve_out <- function(input, output, session, data, opti
 ```
 
 In the same way, you can create a view that's entirely made up of custom code or include as many custom code elements as you like.
+
+#### Dashboard Comparison with Custom Code
+
+
+
+[custom dashboard compare](https://www.gams.com/miro/configuration_json_only.html#custom-dashboard-compare)
 
 ### Custom widget
 Let’s take a closer look at another aspect of MIRO customization—creating a custom widget. Until now, our custom renderers have been for data visualization only. But for input symbols, we can also use custom code that allows you to produce input data that is sent to your model. This means that the input data for your GAMS(Py) model can be generated by interactively modifying a chart, table or other type of renderer.
@@ -2620,11 +2741,11 @@ With a battery power (delivery) rate of  45 kW and a battery energy (storage) ra
 
 With the following generator specifications:
 
-i | cost_per_unit | fixed_cost | min_power_output | max_power_output | min_up_time | min_down_time
---- | --- | --- | --- | --- | --- | ---
-gen0 | 0.0106940 | 142.7348 | 30 |  70 | 8 | 6
-gen1 | 0.0187610 | 168.9075 | 50 | 100 | 8 | 6
-gen2 | 0.0076121 | 313.9102 | 30 | 120 | 8 | 6
+| i    | cost_per_unit | fixed_cost | min_power_output | max_power_output | min_up_time | min_down_time |
+| ---- | ------------- | ---------- | ---------------- | ---------------- | ----------- | ------------- |
+| gen0 | 0.0106940     | 142.7348   | 30               | 70               | 8           | 6             |
+| gen1 | 0.0187610     | 168.9075   | 50               | 100              | 8           | 6             |
+| gen2 | 0.0076121     | 313.9102   | 30               | 120              | 8           | 6             |
 
 
 <details>
@@ -2714,6 +2835,4 @@ If you’d like to see a fully operational version of this tutorial in action, h
 
 Feel free to clone or fork the repo, adapt it for your organization’s workflows, and submit improvements via pull requests!
 
-
-**add dashboard comparison**
-
+**CHANGE PHRASING FOR DT ALSO ADD TO ADDITIONAL PACKAGES**

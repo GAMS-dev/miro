@@ -479,7 +479,6 @@ renderMirorenderer__scalarsve_out <- function(input, output, session, data, opti
       }
 
       div(
-        class = "shiny-html-output",
         class = if (!is.null(width)) {
           paste0("col-sm-", width)
         },
