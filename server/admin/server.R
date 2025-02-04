@@ -100,6 +100,7 @@ server <- function(input, output, session) {
         session$sendCustomMessage(
           "onNewAppValidated",
           list(
+            appId = miroAppValidator$getAppId(),
             appTitle = htmltools::htmlEscape(miroAppValidator$getAppTitle()),
             appDesc = htmltools::htmlEscape(miroAppValidator$getAppDesc()),
             logoB64 = miroAppValidator$getLogoB64(),
