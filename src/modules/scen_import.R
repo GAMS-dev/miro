@@ -318,6 +318,7 @@ observeEvent(input$btOverwriteScenLocal, {
 
 observeEvent(virtualActionButton(rv$btOverwriteInput), {
   if (identical(input$tb_importData, "tb_importData_external")) {
+    clearOutputData <- !identical(input$cbSelectManuallyExt, TRUE)
     # import via custom function
     externalSource <- input$selExternalSource
     if (!length(externalSource) ||
@@ -333,8 +334,10 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
     if (length(externalInputConfig[[externalSource]]$functionName)) {
       if (length(externalInputConfig[[externalSource]]$symNamesToFetch)) {
         datasetsToFetch <- externalInputConfig[[externalSource]]$symNamesToFetch
+        clearOutputData <- FALSE
       } else if (length(externalInputConfig[[externalSource]]$symNames)) {
         datasetsToFetch <- externalInputConfig[[externalSource]]$symNames
+        clearOutputData <- FALSE
       } else {
         datasetsToFetch <- c(inputDsNames, names(modelOut))
       }
@@ -364,6 +367,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
       flog.error("Try to load local data even though the loadLocal module is disabled! This is most likely because the user is trying to tamper with the app!")
       return()
     }
+    clearOutputData <- !identical(input$cbSelectManuallyLoc, TRUE)
     loadModeFileName <- basename(input$localInput$datapath)
     loadModeWorkDir <- dirname(input$localInput$datapath)
     fileType <- tolower(tools::file_ext(loadModeFileName))
@@ -461,6 +465,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
     loadModeWorkDir <- csvFiles$tmpDir
   } else if (fileType %in% csvio$getValidExtensions()) {
     loadMode <- "scsv"
+    clearOutputData <- FALSE
     datasetsToFetch <- csvio$getRSymName()
     if (!identical(input$selInputDataLocCSV, datasetsToFetch)) {
       flog.error("selInputDataLocCSV has invalid format. This looks like an attempt to tamper with the app!")
@@ -528,7 +533,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
 
   loadErrors <- character(0L)
   source("./modules/input_load.R", local = TRUE)
-  if (!identical(fileType, "miroscen") || identical(input$cbSelectManuallyLoc, TRUE)) {
+  if (!clearOutputData) {
     markUnsaved(markDirty = TRUE)
   }
   if (!is.null(errMsg)) {
@@ -537,7 +542,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
   errMsg <- NULL
   # save input data
   scenData$loadSandbox(scenInputData, names(scenInputData), activeScen$getMetadataDf())
-  if (!identical(loadMode, "scsv") && !identical(input$cbSelectManuallyLoc, TRUE)) {
+  if (clearOutputData) {
     prog$set(detail = lang$progressBar$importScen$renderOutput, value = 0.8)
     tryCatch(
       {
