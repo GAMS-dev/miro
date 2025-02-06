@@ -1423,14 +1423,12 @@ if __name__ == &quot;__main__&quot;:
                   src="assets/images/step_by_step_tutorial/output_generators_stacked_bar.png"
                   alt="Result of pivot tool for Generators" />
               </div>
-              <p>From this, we see that <em>gen0</em> is the cheapest generator but
-                has the smallest maximum power output, so it needs help to fulfill the
-                load demand. Even though <em>gen2</em> has nearly double the fixed cost,
-                it ends up producing so much power that its lower unit cost makes it
-                worthwhile. We also see that the minimum up- and down-time constraints
-                are satisfied and that each active generator stays within its output
-                limits. If any of these constraints were violated, we would know exactly
-                which part of the model to revisit.</p>
+              <p>We can see that <em>gen1</em> is the most expensive generator. It is used a bit at the beginning, then
+                it is turned off after its minimum up time of four hours. And after another four hours it is turned on
+                again, which also fulfills the minimum down time. As you can see, <em>gen0</em> is the cheapest in both
+                unit and fixed costs, so it is always at full power. All in all, we see that the minimum uptime and
+                downtime constraints are met, and that each active generator stays within its power limits. If any of
+                these constraints were violated, we would know exactly which part of the model to revisit.</p>
               <p>Let’s look at another example. Recall that we combined all power
                 values with the given load demand into a single parameter so we could
                 verify if the load demand is indeed met and how each source contributes
@@ -2249,7 +2247,8 @@ renderMirorenderer_&lt;lowercaseSymbolName&gt; &lt;- function(input, output, ses
               <h4 class="block-title">Placeholder Function</h4>
               <p>The placeholder function creates the UI elements Shiny will render.
                 Shiny requires each element to have a unique ID, managed via the <a
-                  href="https://shiny.posit.co/r/reference/shiny/0.13.1/ns" target="_blank"><code class="language-r">NS()</code></a>
+                  href="https://shiny.posit.co/r/reference/shiny/0.13.1/ns" target="_blank"><code
+                    class="language-r">NS()</code></a>
                 function, which appends a prefix to avoid naming conflicts.</p>
               <p>Here’s how it works in practice:</p>
               <ul>
@@ -2288,7 +2287,8 @@ mirorenderer_battery_powerOutput &lt;- function(id, height = NULL, options = NUL
                 output function <a href="https://shiny.posit.co/r/reference/shiny/latest/plotoutput"
                   target="_blank"><code class="language-r">plotOutput()</code></a>.
                 Now we need something to render inside. For this, we assign <a
-                  href="https://shiny.posit.co/r/reference/shiny/latest/renderplot" target="_blank"><code class="language-r">renderPlot()</code></a>
+                  href="https://shiny.posit.co/r/reference/shiny/latest/renderplot" target="_blank"><code
+                    class="language-r">renderPlot()</code></a>
                 to an output object inside the rendering function, which is responsible
                 for generating the plot. Here’s an overview:</p>
               <ul>
@@ -2466,18 +2466,19 @@ renderMirorenderer_battery_power &lt;- function(input, output, session, data, op
                   target="_blank"><code class="language-r">tagList()</code></a>.
                 First we have our slider, which we give an id, again using the
                 <code class="language-r">ns()</code> function to prefix it. We set <code class="language-r">min</code>,
-                <code class="language-r">max</code>, initial <code class="language-r">value</code> and <code class="language-r">step</code>size.
-                  Second, we have a plot for which we use <a
-                    href="https://www.rdocumentation.org/packages/plotly/versions/4.10.4/topics/plotly-shiny"
-                    target="_blank"><code class="language-r">plotlyOutput()</code></a>,
-                  since we will be using the <em>plotly</em> library to generate the
-                  Sankey plot. Because plotly is not part of MIRO’s core, we must add the
-                  package to our environment. This can be done in the same way as the
-                  additional data in the <em>Advanced options</em> menu. This also means
-                  that we need to specify the package name explicitly using the <em>double
-                    colon operator</em>. Again, if you are not using the Configuration Mode,
-                  follow the <a href="https://www.gams.com/miro/configuration_advanced.html#additional-r-packages"
-                    target="_blank">documentation</a>.
+                <code class="language-r">max</code>, initial <code class="language-r">value</code> and <code
+                  class="language-r">step</code>size.
+                Second, we have a plot for which we use <a
+                  href="https://www.rdocumentation.org/packages/plotly/versions/4.10.4/topics/plotly-shiny"
+                  target="_blank"><code class="language-r">plotlyOutput()</code></a>,
+                since we will be using the <em>plotly</em> library to generate the
+                Sankey plot. Because plotly is not part of MIRO’s core, we must add the
+                package to our environment. This can be done in the same way as the
+                additional data in the <em>Advanced options</em> menu. This also means
+                that we need to specify the package name explicitly using the <em>double
+                  colon operator</em>. Again, if you are not using the Configuration Mode,
+                follow the <a href="https://www.gams.com/miro/configuration_advanced.html#additional-r-packages"
+                  target="_blank">documentation</a>.
               </p>
               <p>Now that we have some placeholders, we need to fill them. Let us
                 begin to set up our Sankey diagram. First, we need to decide which nodes
@@ -2739,7 +2740,8 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
               </p>
               <ol start="3" type="1">
                 <li>In the <code class="language-json">dataRendering</code> section of the
-                  <span class="code">&lt;model_name&gt;.json</span> file change the <code class="language-json">"outType"</code>
+                  <span class="code">&lt;model_name&gt;.json</span> file change the <code
+                    class="language-json">"outType"</code>
                   of the symbol to render from <code class="language-json">"dashboard"</code> to
                   <code class="language-json">"mirorenderer_&lt;symbolname&gt;"</code>
                 </li>
@@ -2880,7 +2882,8 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
                 where we define the <a href="https://www.rdocumentation.org/packages/DT/versions/0.16/topics/datatable"
                   target="_blank"><code class="language-r">DT:datatable()</code></a>
                 and we will round our cost values with <a
-                  href="https://search.r-project.org/CRAN/refmans/DT/html/formatCurrency.html" target="_blank"><code class="language-r">DT:formatRound()</code></a>:
+                  href="https://search.r-project.org/CRAN/refmans/DT/html/formatCurrency.html" target="_blank"><code
+                    class="language-r">DT:formatRound()</code></a>:
               </p>
               <pre><code class="language-r">output$table &lt;- DT::renderDT({
   DT::datatable(data, editable = TRUE, rownames = FALSE, options = list(scrollX = TRUE)) %&gt;%
