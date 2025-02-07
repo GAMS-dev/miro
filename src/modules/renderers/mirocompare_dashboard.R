@@ -350,24 +350,45 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
   }
 
   applyCustomLabelsOrder <- function(data, noRowHeaders, customLabelsOrder) {
-    mergedCols <- paste0("\U2024", "mergedCols")
-    orderCol <- paste0(mergedCols, "\U2024")
-    orderTmpCol <- paste0(orderCol, "\U2024")
-    orderTibble <- tibble(
-      !!mergedCols := customLabelsOrder,
-      !!orderTmpCol := seq_along(customLabelsOrder)
-    )
+    if (!is.list(customLabelsOrder)) {
+      mergedCols <- paste0("\U2024", "mergedCols")
+      orderCol <- paste0(mergedCols, "\U2024")
+      orderTmpCol <- paste0(orderCol, "\U2024")
+      orderTibble <- tibble(
+        !!mergedCols := customLabelsOrder,
+        !!orderTmpCol := seq_along(customLabelsOrder)
+      )
 
-    data <- data %>%
-      unite(!!mergedCols, 1:noRowHeaders, sep = "\U2024", remove = FALSE) %>%
-      left_join(orderTibble, by = mergedCols) %>%
-      mutate(!!orderCol := ifelse(is.na(!!sym(orderTmpCol)),
-        max(!!sym(orderTmpCol), na.rm = TRUE) + row_number(),
-        !!sym(orderTmpCol)
-      )) %>%
-      arrange(!!sym(orderCol)) %>%
-      select(-all_of(c(mergedCols, orderTmpCol, orderCol)))
+      data <- data %>%
+        unite(!!mergedCols, 1:noRowHeaders, sep = "\U2024", remove = FALSE) %>%
+        left_join(orderTibble, by = mergedCols) %>%
+        mutate(!!orderCol := ifelse(is.na(!!sym(orderTmpCol)),
+          max(!!sym(orderTmpCol), na.rm = TRUE) + row_number(),
+          !!sym(orderTmpCol)
+        )) %>%
+        arrange(!!sym(orderCol)) %>%
+        select(-all_of(c(mergedCols, orderTmpCol, orderCol)))
+    } else {
+      for (col in names(customLabelsOrder)) {
+        if (col %in% names(data)) {
+          orderedValues <- customLabelsOrder[[col]]
+          allValues <- unique(data[[col]])
+          leftoverValues <- allValues[!allValues %in% orderedValues]
+          finalLevels <- c(orderedValues, leftoverValues)
 
+          tmpCol <- paste0(".tmp_sort_", col)
+          data[[tmpCol]] <- factor(data[[col]], levels = finalLevels, ordered = TRUE)
+        }
+      }
+
+      tmpCols <- paste0(".tmp_sort_", names(customLabelsOrder))
+
+      data <- data %>%
+        arrange(across(all_of(tmpCols)))
+
+      data <- data %>%
+        select(-all_of(tmpCols))
+    }
     return(data)
   }
 
@@ -375,16 +396,75 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
   applyCustomSeriesOrder <- function(data, noRowHeaders, customSeriesOrder) {
     fixedCols <- colnames(data)[1:noRowHeaders]
     valueCols <- colnames(data)[(noRowHeaders + 1):ncol(data)]
-    validLabels <- customSeriesOrder[customSeriesOrder %in% valueCols]
-    remainingCols <- setdiff(valueCols, validLabels)
-    orderedValueCols <- c(validLabels, remainingCols)
+
+    matchedCols <- character(0)
+    for (desired in customSeriesOrder) {
+      patternMatches <- sapply(valueCols, function(colName) {
+        matchLabel(key = desired, label = colName, exact = TRUE)
+      })
+
+      matchedNow <- valueCols[patternMatches]
+      matchedCols <- c(matchedCols, matchedNow)
+      valueCols <- setdiff(valueCols, matchedNow)
+    }
+
+    orderedValueCols <- c(matchedCols, valueCols)
+
     orderedData <- data %>%
       select(all_of(fixedCols), all_of(orderedValueCols))
+
     return(orderedData)
+  }
+
+  matchLabel <- function(key, label, exact = FALSE) {
+    if (exact) {
+      exact <- (key == label)
+    }
+    contained <- grepl(paste0("\u2024", key, "\u2024"), label)
+    starts <- grepl(paste0("^", key, "\u2024"), label)
+    ends <- grepl(paste0("\u2024", key, "$"), label)
+    exact || contained || starts || ends
+  }
+
+  defaultColorPair <- function(i, globalPalette) {
+    pairIndex <- 2 * i
+    if (pairIndex - 1 <= length(globalPalette)) {
+      return(globalPalette[(pairIndex - 1):pairIndex])
+    } else {
+      # (A) Recycle:
+      recycleI <- ((i - 1) %% (length(globalPalette) / 2)) + 1
+      return(globalPalette[(2 * recycleI - 1):(2 * recycleI)])
+      # (B) Or fallback to a single default (e.g. gray):
+      # return(c("#666","#666"))
+    }
+  }
+
+  transformLabels <- function(originalLabels, customLabels) {
+    transformedLabels <- c()
+    if (length(customLabels)) {
+      for (label in originalLabels) {
+        transformedLabel <- label
+        if (label %in% names(customLabels)) {
+          transformedLabel <- customLabels[[label]]
+        } else {
+          labelsTmp <- strsplit(label, "\u2024")[[1]]
+          labelMatch <- which(labelsTmp %in% names(customLabels))
+          if (length(labelMatch)) {
+            labelsTmp[labelMatch] <- unlist(customLabels[labelsTmp[labelMatch]])
+          }
+          transformedLabel <- paste(labelsTmp, collapse = "\u2024")
+        }
+        transformedLabels <- c(transformedLabels, transformedLabel)
+      }
+    } else {
+      transformedLabels <- originalLabels
+    }
+    return(transformedLabels)
   }
 
   dashboardChartData <- list()
   currentConfig <- c()
+  rawData <- list()
   for (view in names(dataViewsConfig)) {
     if (!is.list(dataViewsConfig[[view]])) {
       # custom user output
@@ -403,6 +483,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
     currentConfig <- dataViewsConfig[[view]]
 
     viewData <- combineData(data$get(currentConfig$data), scenarioNames)
+    rawData[[view]] <- viewData
     preparedData <- prepareData(currentConfig, viewData)
     dashboardChartData[[view]] <- preparedData
   }
@@ -984,33 +1065,34 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
       if (length(currentView$chartOptions$customChartColors) &&
         length(names(currentView$chartOptions$customChartColors))) {
-        # custom chart colors specified
+        colorLabelsNew <- transformLabels(
+          originalLabels = names(currentView$chartOptions$customChartColors),
+          customLabels = currentView$chartOptions$customLabels
+        )
 
-        colorLabels <- names(currentView$chartOptions$customChartColors)
-        colorLabelsNew <- colorLabels
-        if (length(currentView$chartOptions$customLabels)) {
-          colorLabelsNew <- c()
-          for (colorLabel in colorLabels) {
-            label <- colorLabel
-            if (colorLabel %in% names(currentView$chartOptions$customLabels)) {
-              label <- currentView$chartOptions$customLabels[[colorLabel]]
-            } else {
-              labelsTmp <- strsplit(colorLabel, "\U2024")[[1]]
-              labelMatch <- which(labelsTmp %in% names(currentView$chartOptions$customLabels))
-              labelsTmp[labelMatch] <- unlist(currentView$chartOptions$customLabels[labelsTmp[labelMatch]])
-              label <- paste(labelsTmp, collapse = "\U2024")
+        numSeries <- length(currentSeriesLabels)
+        colorList <- vector("list", numSeries)
+        for (i in seq_len(numSeries)) {
+          colorList[[i]] <- defaultColorPair(i, customColors)
+        }
+
+        for (i in seq_along(currentSeriesLabels)) {
+          seriesLab <- currentSeriesLabels[i]
+
+          exactIdx <- which(colorLabelsNew == seriesLab)
+          if (length(exactIdx) == 1) {
+            colorList[[i]] <- currentView$chartOptions$customChartColors[[exactIdx]]
+          } else {
+            patternMatches <- which(sapply(colorLabelsNew, matchLabel, label = seriesLab))
+
+            if (length(patternMatches) > 0) {
+              chosenIdx <- patternMatches[length(patternMatches)]
+              colorList[[i]] <- currentView$chartOptions$customChartColors[[chosenIdx]]
             }
-            colorLabelsNew <- c(colorLabelsNew, label)
           }
         }
 
-        chartColorIdx <- match(
-          currentSeriesLabels,
-          colorLabelsNew
-        )
-        chartColorsToUse <- currentView$chartOptions$customChartColors[chartColorIdx]
-        chartColorsToUse[is.na(chartColorIdx)] <- list(c("#666", "#666"))
-        chartColorsToUse <- unlist(chartColorsToUse, use.names = FALSE)
+        chartColorsToUse <- unlist(colorList, use.names = FALSE)
       } else {
         chartColorsToUse <- customColors
       }
@@ -1166,11 +1248,10 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
       if (length(currentView$chartOptions$multiChartOptions$multiChartRenderer)) {
         multiChartRenderer <- currentView$chartOptions$multiChartOptions$multiChartRenderer
       }
-
       groupElements <- NULL
-      if (length(currentView$chartOptions$groupDimension)) {
-        dataRaw <- combineData(data$get(dataViewsConfig[[view]]$data), scenarioNames)
-        groupElements <- unique(dataRaw[[currentView$chartOptions$groupDimension]])
+      if (length(currentView$chartOptions$groupDimension) &&
+        chartType %in% c("horizontalbar", "horizontalstackedbar")) {
+        groupElements <- unique(rawData[[indicator]][[currentView$chartOptions$groupDimension]])
       }
 
       for (i in seq_len(noSeries)) {
@@ -1193,29 +1274,62 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         }
 
         lineDash <- NULL
-        if (length(currentView$chartOptions$customLineDashPatterns) && length(currentView$chartOptions$customLineDashPatterns[[label]])) {
-          lineDash <- currentView$chartOptions$customLineDashPatterns[[label]]
+        if (length(currentView$chartOptions$customLineDashPatterns) &&
+          length(names(currentView$chartOptions$customLineDashPatterns))) {
+          transformedLineDashNames <- transformLabels(
+            originalLabels = names(currentView$chartOptions$customLineDashPatterns),
+            customLabels = currentView$chartOptions$customLabels
+          )
+
+          exactIdx <- which(transformedLineDashNames == label)
+          if (length(exactIdx) == 1) {
+            lineDash <- currentView$chartOptions$customLineDashPatterns[[exactIdx]]
+          } else {
+            patternMatches <- which(sapply(transformedLineDashNames, matchLabel, label = label))
+            if (length(patternMatches) > 0) {
+              chosenIdx <- patternMatches[length(patternMatches)]
+              lineDash <- currentView$chartOptions$customLineDashPatterns[[chosenIdx]]
+            } else {
+              lineDash <- NULL
+            }
+          }
         }
+
         borderWidth <- NULL
-        if (length(currentView$chartOptions$customBorderWidths) && length(currentView$chartOptions$customBorderWidths[[label]])) {
-          borderWidth <- currentView$chartOptions$customBorderWidths[[label]]
+        if (length(currentView$chartOptions$customBorderWidths) &&
+          length(names(currentView$chartOptions$customBorderWidths)) > 0) {
+          transformedBorderWidthNames <- transformLabels(
+            originalLabels = names(currentView$chartOptions$customBorderWidths),
+            customLabels = currentView$chartOptions$customLabels
+          )
+
+          exactIdx <- which(transformedBorderWidthNames == label)
+          if (length(exactIdx) == 1) {
+            borderWidthCandidate <- currentView$chartOptions$customBorderWidths[[exactIdx]]
+            borderWidthCandidate <- round(as.numeric(borderWidthCandidate))
+            if (!is.na(borderWidthCandidate)) {
+              borderWidth <- borderWidthCandidate
+            }
+          } else {
+            patternMatches <- which(sapply(transformedBorderWidthNames, matchLabel, label = label))
+            if (length(patternMatches) > 0) {
+              chosenIdx <- patternMatches[length(patternMatches)]
+              borderWidthCandidate <- currentView$chartOptions$customBorderWidths[[chosenIdx]]
+              borderWidthCandidate <- round(as.numeric(borderWidthCandidate))
+              if (!is.na(borderWidthCandidate)) {
+                borderWidth <- borderWidthCandidate
+              }
+            }
+          }
         }
 
         stack <- NULL
-        if (length(groupElements)) {
-          matches <- which(
-            sapply(groupElements, function(gEl) {
-              exact <- (gEl == originalLabel)
-              contained <- grepl(paste0("\u2024", gEl, "\u2024"), originalLabel)
-              starts <- grepl(paste0("^", gEl, "\u2024"), originalLabel)
-              ends <- grepl(paste0("\u2024", gEl, "$"), originalLabel)
-              (exact || contained || starts || ends)
-            })
-          )
-          if (length(matches) == 0) {
+        if (length(groupElements) && chartType %in% c("stackedbar", "horizontalstackedbar")) {
+          patternMatches <- which(sapply(groupElements, matchLabel, label = label, exact = TRUE))
+          if (length(patternMatches) == 0) {
             stack <- NULL
           } else {
-            stack <- paste0("stack", matches[1])
+            stack <- paste0("stack", patternMatches[1])
           }
         } else {
           stack <- if (chartType %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "stack1" else NULL
@@ -1224,12 +1338,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         multiChartSeries <- FALSE
         if (length(currentView$chartOptions$multiChartSeries)) {
           series <- currentView$chartOptions$multiChartSeries
-          patterns <- c(
-            paste0("\u2024", series, "\u2024"),
-            paste0("^", series, "\u2024"),
-            paste0("\u2024", series, "$")
-          )
-          if (originalLabel %in% series || grepl(paste(patterns, collapse = "|"), originalLabel)) {
+          if (any(sapply(series, matchLabel, label = label, exact = TRUE))) {
             multiChartSeries <- TRUE
           }
         }
