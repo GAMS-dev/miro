@@ -306,7 +306,8 @@
             },
             "groupDimension": {
               "description": "Group datasets into multiple stacks based on a specific dimension",
-              "type": "boolean"
+              "type": "string",
+              "minLength": 1
             },
             "fillOpacity": {
               "description": "Fill opacity for stacked and regular area charts.",
@@ -882,7 +883,8 @@
                   },
                   "groupDimension": {
                     "description": "Group datasets into multiple stacks based on a specific dimension",
-                    "type": "boolean"
+                    "type": "string",
+                    "minLength": 1
                   },
                   "fillOpacity": {
                     "description": "Fill opacity for stacked and regular area charts.",
