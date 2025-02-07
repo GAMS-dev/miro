@@ -387,7 +387,10 @@
                         dash patterns and border widths can be made here.
                       </li>
                     </ul>
-                    <div class="callout-block callout-success">
+                    <div
+                      class="callout-block callout-success"
+                      id="series-patterns"
+                    >
                       <div class="icon-holder">
                         <i class="fas fa-thumbs-up"></i>
                       </div>
@@ -3040,7 +3043,7 @@ firstDayTraining(td)                   = td.pos = 1;
 }
 </code></pre>
                           </li>
-                          <li>
+                          <li id="dashboard-custom-labels-order">
                             <code class="language-json"
                               >"customLabelsOrder"</code
                             >: Labels named here are displayed in charts/tables
@@ -3050,10 +3053,11 @@ firstDayTraining(td)                   = td.pos = 1;
                             If labels that have already been given a new name
                             using
                             <code class="language-json">"customLabels"</code>
-                            are to be sorted, the new name must be used in
+                            are to be sorted, the new name can be used in
                             <code class="language-json"
                               >"customLabelsOrder"</code
-                            >. Example:
+                            >
+                            as well as the original label. Example:
                             <pre><code class="language-json">
 {
   "macroperc": {
@@ -3080,31 +3084,74 @@ firstDayTraining(td)                   = td.pos = 1;
                               <code class="language-json"
                                 >"customLabelsOrder"
                               </code>
-                              must include the corresponding labels for each
-                              dimension, concatenated with a
-                              <code class="language-json">․</code> (Unicode
-                              Character U+2024) as a separator.
+                              can either:
                             </p>
-                            Example:
-                            <pre><code class="language-json">
-{
-  "customLabelsOrder":
-  [
-   "Services․Construction",
-   "Primary․Agriculture"
-  ]
-}
+                            <ul>
+                              <li>
+                                <p>
+                                  include the corresponding labels for each
+                                  dimension, concatenated with a
+                                  <code class="language-json">․</code> (Unicode
+                                  Character U+2024) as a separator. Labels are
+                                  provided as an array. Example:
+                                </p>
+                                <pre><code class="language-json">
+  {
+    "customLabelsOrder":
+    [
+     "Services․Construction",
+     "Primary․Agriculture"
+    ]
+  }
 </code></pre>
-                            <div
-                              class="section-block"
-                              style="text-align: left"
-                            >
-                              <img
-                                class="img-fluid"
-                                src="assets/images/dashboard/custom_labels_order_multiple.png"
-                                alt="custom labels order with multiple dimensions"
-                              />
-                            </div>
+                                <div
+                                  class="section-block"
+                                  style="text-align: left"
+                                >
+                                  <img
+                                    class="img-fluid"
+                                    src="assets/images/dashboard/custom_labels_order_multiple.png"
+                                    alt="custom labels order with multiple dimensions"
+                                  />
+                                </div>
+                              </li>
+                              <li>
+                                <p>
+                                  be specified on a per-dimension basis using
+                                  an object. Each dimension's name becomes a
+                                  key, and the value is an array indicating the
+                                  desired order of labels for that dimension.
+                                  For example:
+                                </p>
+                                <pre><code class="language-json">
+  {
+    "customLabelsOrder":
+    {
+      "agrp":
+      [
+        "Primary", "Manufacturing", "Services"
+      ]
+    }
+  }
+</code></pre>
+                                <p>
+                                  Here,
+                                  <code class="language-json">agrp</code> is
+                                  the dimension name, and the array lists the
+                                  labels in the order they should appear.
+                                </p>
+                                <div
+                                  class="section-block"
+                                  style="text-align: left"
+                                >
+                                  <img
+                                    class="img-fluid"
+                                    src="assets/images/dashboard/custom_labels_order.png"
+                                    alt="custom labels order with single dimensions"
+                                  />
+                                </div>
+                              </li>
+                            </ul>
                           </li>
                           <li>
                             <code class="language-json"
@@ -3281,11 +3328,11 @@ firstDayTraining(td)                   = td.pos = 1;
                       <li>
                         <code class="language-json">customLabelsOrder</code>:
                         The order of the labels is adjusted. Note that the
-                        labels that have already been adapted are used. Also
-                        note that labels of the
-                        <span class="code">Services</span> series are not
-                        listed at all. They are therefore placed at the very
-                        end of the order.
+                        labels that have already been adapted are used, but the
+                        original labels could be used as well. Also note that
+                        labels of the <span class="code">Services</span> series
+                        are not listed at all. They are therefore placed at the
+                        very end of the order.
                       </li>
                     </ul>
                     <pre><code class="language-json">
