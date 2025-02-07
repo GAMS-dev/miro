@@ -1,5 +1,5 @@
-/* PrismJS 1.29.0
-https://prismjs.com/download.html#themes=prism&languages=diff&plugins=diff-highlight */
+/* PrismJS 1.23.0
+https://prismjs.com/download.html#themes=prism&languages=diff+yaml&plugins=diff-highlight */
 /**
  * prism.js default theme for JavaScript, CSS and HTML
  * Based on dabblet (http://dabblet.com)
@@ -159,4 +159,11 @@ pre>code.diff-highlight .token.inserted:not(.prefix) {
 	background-color: rgba(0, 255, 128, .1);
 	color: inherit;
 	display: block;
+}
+
+.page-wrapper .language-yaml .key {
+	border: unset;
+	display: unset;
+	text-align: unset;
+	width: unset;
 }
