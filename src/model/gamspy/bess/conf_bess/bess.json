@@ -18,9 +18,6 @@
                     "battery_power": [
                         {
                             "BatteryTimeline": "Charge/Discharge of the BESS"
-                        },
-                        {
-                            "BatteryStorage": ""
                         }
                     ],
                     "external_grid_power": [
@@ -46,6 +43,24 @@
                     "Balance": {
                         "aggregationFunction": "sum",
                         "chartOptions": {
+                            "customChartColors": {
+                                "battery": [
+                                    "#a6cee3",
+                                    "#558FA8"
+                                ],
+                                "external_grid": [
+                                    "#b2df8a",
+                                    "#699C26"
+                                ],
+                                "generators": [
+                                    "#fb9a99",
+                                    "#D64A47"
+                                ],
+                                "load_demand": [
+                                    "#fdbf6f",
+                                    "#B77E06"
+                                ]
+                            },
                             "groupDimension": "_scenName",
                             "multiChartOptions": {
                                 "multiChartRenderer": "line",
@@ -77,7 +92,6 @@
                         },
                         "userFilter": "_scenName"
                     },
-                    "BatteryStorage": "customCode",
                     "BatteryTimeline": {
                         "aggregationFunction": "sum",
                         "chartOptions": {
@@ -162,6 +176,32 @@
                     "GeneratorTimeline": {
                         "aggregationFunction": "sum",
                         "chartOptions": {
+                            "customChartColors": {
+                                "bess_for_free․gen0": [
+                                    "#a6cee3",
+                                    "#558FA8"
+                                ],
+                                "bess_for_free․gen1": [
+                                    "#b2df8a",
+                                    "#699C26"
+                                ],
+                                "bess_for_free․gen2": [
+                                    "#fb9a99",
+                                    "#D64A47"
+                                ],
+                                "default․gen0": [
+                                    "#a6cee3",
+                                    "#558FA8"
+                                ],
+                                "default․gen1": [
+                                    "#b2df8a",
+                                    "#699C26"
+                                ],
+                                "default․gen2": [
+                                    "#fb9a99",
+                                    "#D64A47"
+                                ]
+                            },
                             "groupDimension": "_scenName",
                             "showXGrid": true,
                             "showYGrid": true,
@@ -602,15 +642,13 @@
         "total_cost_gen",
         "total_cost_battery",
         "total_cost_extern",
-        "total_cost",
-        "display_battery_delivery_rate",
-        "display_battery_storage"
+        "total_cost"
     ],
     "hiddenOutputSymbols": [
-        "gen_power",
         "battery_power",
         "external_grid_power",
-        "_scalars_out"
+        "_scalars_out",
+        "report_output"
     ],
     "inputWidgets": {
         "cost_bat_energy": {
