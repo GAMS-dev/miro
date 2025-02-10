@@ -49,7 +49,7 @@ renderMirowidget_timewise_load_demand_and_cost_external_grid_data <- function(in
       return()
     }
 
-    # else, update the corresponding value in the reactiveValue 
+    # else, update the corresponding value in the reactiveValue
     isolate({
       rv$timewise_input_data[row, clmn] <- input$table_cell_edit$value
     })
@@ -88,8 +88,8 @@ renderMirowidget_timewise_load_demand_and_cost_external_grid_data <- function(in
     points(y2, col = "blue", pch = 16, cex = 1.5)
 
     # add a new y-axis on the right for the second line
-    axis(side = 4, las = 2) 
-    mtext("External grid cost in $", side = 4, line = 3) 
+    axis(side = 4, las = 2)
+    mtext("External grid cost in $", side = 4, line = 3)
     grid()
 
     # add the x values to the axis

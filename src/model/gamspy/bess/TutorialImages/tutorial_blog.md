@@ -8,7 +8,7 @@ Once we’ve covered basic visualization, we’ll move on to the Configuration M
 
 If you want to work through this tutorial step by step, you need to [install GAMS MIRO](https://www.gams.com/miro/download.html) first.
 
-## Table of Contents  
+## Table of Contents
 - [From GAMSPy Model to GAMS MIRO App](#from-gamspy-model-to-gams-miro-app)
   - [Table of Contents](#table-of-contents)
   - [Implement the Model](#implement-the-model)
@@ -1617,7 +1617,7 @@ As mentioned above, we will now take a quick look at how to compare your dashboa
 
 In addition to the *Split view*, you can also select the *Pivot view* and *Tab view*. The *Pivot view* combines all scenarios into one table, on which you can then use the pivot tool, which we already used a lot. In the *Tab view* you can select as many scenarios as you want, but you cannot see them side by side.
 
-If these three options aren't enough, you can add your own [comparisons] (https://www.gams.com/miro/configuration_json_only.html#custom-compare-mode). Here we will add a custom comparison mode to our [Dashboard](https://www.gams.com/miro/configuration_json_only.html#dashboard-compare). 
+If these three options aren't enough, you can add your own [comparisons] (https://www.gams.com/miro/configuration_json_only.html#custom-compare-mode). Here we will add a custom comparison mode to our [Dashboard](https://www.gams.com/miro/configuration_json_only.html#dashboard-compare).
 
 The configuration can be largely adopted, we just need to make some small adjustments:
 
@@ -1626,9 +1626,9 @@ The configuration can be largely adopted, we just need to make some small adjust
 2. While a regular dashboard configuration applies to a single symbol, a scenario comparison is symbol-unspecific. This means that the scenario comparison has access to all input and output symbol data by default. As a result, you don't need to manually list each symbol under `additionalData`.
    1. Therefore, the symbol data to be used for a chart/table must be specified in each view in `"dataViewsConfig"` (`"data"` property). However, if you have followed the tutorial, this is already done for all views, since we specified our dashboard on the symbol `"_scalarsve_out"`!
 
-3. Instead of the `"outType"` in the dashboard configuration, a `"type "dashboard"` here. 
+3. Instead of the `"outType"` in the dashboard configuration, a `"type "dashboard"` here.
 
-4. We also need to assign a `label` that will be displayed when the scenario comparison mode is selected. This label appears next to options such as *Split view*, *Tab view* and *Pivot view*. 
+4. We also need to assign a `label` that will be displayed when the scenario comparison mode is selected. This label appears next to options such as *Split view*, *Tab view* and *Pivot view*.
 
 ```diff
 {
@@ -1689,7 +1689,7 @@ The additional scenario dimension also changes the appearance of the graphs. Som
 
 **STACKED BAR CHARTS ARENT DISPLAYED NICELY YET**
 
-By default the value boxes are empty, to change this a drop down menu appears in the dashboard above the value boxes. Here you can select the scenario from which the values should be displayed. 
+By default the value boxes are empty, to change this a drop down menu appears in the dashboard above the value boxes. Here you can select the scenario from which the values should be displayed.
 
 **ADD IMAGE**
 
@@ -1787,7 +1787,7 @@ We will now return to the Configuration Mode and start building our first render
 # i 14 more rows
 ```
 
-Since we have not specified any additional data sets so far, `data` directly contains the variable `battery_power`, which is the GAMS symbol we put in the mirorender name. For our plot of the storage levels we now need the values from the `level` column, which we can access in R with `data$level`. More on subsetting tibbles can be found [here](https://tibble.tidyverse.org/reference/subsetting.html). 
+Since we have not specified any additional data sets so far, `data` directly contains the variable `battery_power`, which is the GAMS symbol we put in the mirorender name. For our plot of the storage levels we now need the values from the `level` column, which we can access in R with `data$level`. More on subsetting tibbles can be found [here](https://tibble.tidyverse.org/reference/subsetting.html).
 
 Let's now finally make our first plot! First we need to calculate the data we want to plot, which we store in `storage_level`. The values in `battery_power` are from the city’s perspective; negative means charging the BESS, positive means discharging. We negate the cumulative sum to get the actual storage level. We use the standard R [`barplot()`](https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/barplot) for visualization, but any plotting library can be used. Finally, we just need to pass this reactive plot to a render function and assign it to the appropriate output variable. The code should look like this:
 
