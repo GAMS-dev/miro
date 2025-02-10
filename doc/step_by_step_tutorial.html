@@ -3602,7 +3602,8 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
                       </li>
                       <li>
                         <p>
-                          In the dashboard.R file, make the following changes:
+                          In the <span class="code">dashboard.R</span> file,
+                          make the following changes:
                         </p>
                       </li>
                     </ol>
@@ -4172,7 +4173,9 @@ resetTable &lt;- function() {
                       in the Configuration Mode and go to the directory where
                       it was saved. Here we first need to change the name of
                       the file to
-                      “mirowidget_timewise_load_demand_and_cost_external_grid_data.R”
+                      <span class="code"
+                        >mirowidget_timewise_load_demand_and_cost_external_grid_data.R</span
+                      >
                       Now we need to rename the functions:
                     </p>
                     <pre><code class="language-diff">- mirorenderer_timewise_load_demand_and_cost_external_grid_dataOutput &lt;- function(id, height = NULL, options = NULL, path = NULL){
@@ -4225,7 +4228,7 @@ resetTable &lt;- function() {
   return()
 }</code></pre>
                     <p>
-                      Finally, we need to return the input data to be passed to
+                      Now, we need to return the input data to be passed to
                       GAMS(Py). For this, we provide a
                       <a
                         href="https://www.rdocumentation.org/packages/shiny/versions/1.10.0/topics/reactive"
@@ -4340,6 +4343,28 @@ resetTable &lt;- function() {
 }</code></pre>
                     </details>
                     <p>
+                      Finally, we need to remove the renderer in
+                      <span class="code">&lt;model_name&gt;.json</span> and
+                      instead add
+                      <code class="language-json"
+                        >"timewise_load_demand_and_cost_external_grid_data"</code
+                      >
+                      to the <code class="language-json">"inputWidgets"</code>:
+                    </p>
+                    <pre><code class="language-json">"inputWidgets": {
+  ...
+
+  "timewise_load_demand_and_cost_external_grid_data": {
+    "alias": "Timeline for load demand and cost of the external grid",
+    "apiVersion": 2,
+    "options": {
+        "isInput": true
+    },
+    "rendererName": "mirowidget_timewise_load_demand_and_cost_external_grid_data",
+    "widgetType": "custom"
+  }
+}</code></pre>
+                    <p>
                       Congratulations—our new custom widget combines a table
                       and a plot, with both updating interactively. At this
                       point, <em>Solve model</em> will use our updated table
@@ -4392,10 +4417,6 @@ resetTable &lt;- function() {
                     <h2 class="block-title">
                       Custom Import and Export: Streamlining Your Data Workflow
                     </h2>
-                  </div>
-                  <!--//section-block-->
-                  <div id="custom-importer" class="section-block">
-                    <h3 class="block-title">Custom Importer</h3>
                     <p>
                       In any data-centric project, the ability to efficiently
                       manage data movement is critical. While MIRO already
@@ -4437,6 +4458,10 @@ resetTable &lt;- function() {
                         Perform pre- or post-processing steps within MIRO.
                       </li>
                     </ul>
+                  </div>
+                  <!--//section-block-->
+                  <div id="custom-importer" class="section-block">
+                    <h3 class="block-title">Custom Importer</h3>
                     <p>
                       Here, we will go over the basic concept to give you a
                       good starting point for extending it to your needs.
@@ -4500,7 +4525,7 @@ resetTable &lt;- function() {
                       MIRO application.
                       <code class="language-r">"functionName"</code> specifies
                       the name of our custom import function in
-                      <em>miroimport.R</em>. And
+                      <span class="code">miroimport.R</span>. And
                       <code class="language-r">"symNames"</code> specifying
                       which GAMS symbols the importer handles.
                     </p>

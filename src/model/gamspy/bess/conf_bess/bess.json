@@ -594,24 +594,6 @@
             "label": "Time wise energy flow",
             "outType": "mirorenderer_report_output",
             "packages": "plotly"
-        },
-        "timewise_load_demand_and_cost_external_grid_data": {
-            "height": 700,
-            "options": {
-                "aggregationFunction": "sum",
-                "cols": {
-                    "Hdr": null
-                },
-                "emptyUEL": "-",
-                "enableHideEmptyCols": false,
-                "externalDefaultView": "Timeline",
-                "fixedColumns": true,
-                "hideEmptyCols": false,
-                "hidePivotControls": true,
-                "pivotRenderer": "line",
-                "rows": "j"
-            },
-            "outType": "miroPivot"
         }
     },
     "datatable": {
