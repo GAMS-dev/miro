@@ -308,8 +308,8 @@
                         "total_cost_gen",
                         "total_cost_battery",
                         "total_cost_extern",
-                        "display_battery_delivery_rate",
-                        "display_battery_storage"
+                        "battery_delivery_rate",
+                        "battery_storage"
                     ]
                 },
                 "valueBoxesTitle": ""
@@ -582,8 +582,8 @@
                         "total_cost_gen",
                         "total_cost_battery",
                         "total_cost_extern",
-                        "display_battery_delivery_rate",
-                        "display_battery_storage"
+                        "battery_delivery_rate",
+                        "battery_storage"
                     ]
                 },
                 "valueBoxesTitle": ""
@@ -630,7 +630,7 @@
         "battery_power",
         "external_grid_power",
         "_scalars_out",
-        "report_output"
+        "gen_power"
     ],
     "inputWidgets": {
         "cost_bat_energy": {
@@ -708,12 +708,6 @@
         },
         "cost_bat_power": {
             "newAlias": "cost_bat_power"
-        },
-        "display_battery_delivery_rate": {
-            "newAlias": "Display the battery delivery rate in the dashboard"
-        },
-        "display_battery_storage": {
-            "newAlias": "Display the battery storage in the dashboard"
         },
         "external_grid_power": {
             "newAlias": "power imported from the external grid at hour j"

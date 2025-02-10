@@ -205,21 +205,15 @@
                 "total_cost_gen",
                 "total_cost_battery",
                 "total_cost_extern",
-                "total_cost",
-                "display_battery_delivery_rate",
-                "display_battery_storage"
+                "total_cost"
             ],
             "symtext": [
                 "Total cost of the generators",
                 "Total cost of the BESS",
                 "Total cost for the imported power",
-                "Total cost to fulfill the load demand",
-                "Display the battery delivery rate in the dashboard",
-                "Display the battery storage in the dashboard"
+                "Total cost to fulfill the load demand"
             ],
             "symtypes": [
-                "parameter",
-                "parameter",
                 "parameter",
                 "parameter",
                 "parameter",
