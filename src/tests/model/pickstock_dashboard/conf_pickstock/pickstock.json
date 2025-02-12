@@ -267,10 +267,13 @@
           ],
           "error_train": [
             {
-              "stockWeight": "Sock Weight"
+              "stockWeight": "Stock Weight"
             },
             {
-              "stockWeight2": "Sock Weight"
+              "stockWeight2": "Stock Weight"
+            },
+            {
+              "dowVSindex0": "Stock Weight"
             }
           ],
           "error_ratio": [
@@ -321,6 +324,31 @@
             "data": "stock_weight",
             "decimals": 2,
             "userFilter": "stockWeight"
+          },
+          "dowVSindex0": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": true,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "count"
+            },
+            "aggregations": {
+                "date": null
+            },
+            "cols": {
+              "Hdr": null
+            },
+            "chartOptions": {
+              "title": "Dow Jones vs Index Fund",
+              "xTitle": "Date",
+              "yTitle": "Value"
+            },
+            "data": "dowvsindex",
+            "decimals": 2
           },
           "dowVSindex": {
             "aggregationFunction": "sum",

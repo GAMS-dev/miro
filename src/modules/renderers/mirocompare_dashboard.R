@@ -131,9 +131,8 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
     rowIndexList <- config$rows
     aggregationFunction <- config$aggregationFunction
-    setIndices <- names(dataTmp)[-length(dataTmp)]
     if (is.null(rowIndexList)) {
-      rowIndexList <- setIndices
+      rowIndexList <- character(0)
     }
     rowIndexList <- c(
       rowIndexList,
