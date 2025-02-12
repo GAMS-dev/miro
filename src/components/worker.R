@@ -1479,10 +1479,10 @@ Worker <- R6Class("Worker", public = list(
     if (identical(statusCode, 308L) || identical(statusCode, 410L)) {
       # job finished, get full log
       ret <- private$getRemoteStatus(private$process)
-      gamsRetCode <- content(ret)$gams_return_code
+      gamsRetCode <- content(ret)$process_status
 
       if (is.null(gamsRetCode)) {
-        flog.error("Engine returned 308/410 return code but gams_return_code was NULL.")
+        flog.error("Engine returned %d return code but process_status was NULL.", statusCode)
         private$status <- -500L
       } else {
         private$status <- gamsRetCode
@@ -1932,77 +1932,6 @@ Worker <- R6Class("Worker", public = list(
     )
 
     return(ret)
-  },
-  testConnection = function() {
-    if (!startsWith(private$metadata$url, "https://") &&
-      !startsWith(private$metadata$url, "http://localhost")) {
-      return(FALSE)
-    }
-    if (tryCatch(
-      {
-        if (endsWith(private$metadata$url, "/api")) {
-          ret <- GET(paste0(private$metadata$url, "/version"), timeout(10L))
-          if (!"gams_version" %in% names(content(ret,
-            type = "application/json",
-            encoding = "utf-8"
-          ))) {
-            stop("Not a GAMS Engine server", call. = FALSE)
-          }
-        } else {
-          ret <- GET(paste0(private$metadata$url, "/api/version"), timeout(10L))
-          if ("gams_version" %in% names(content(ret,
-            type = "application/json",
-            encoding = "utf-8"
-          ))) {
-            private$metadata$url <- paste0(private$metadata$url, "/api")
-          } else {
-            ret <- GET(paste0(private$metadata$url, "/version"), timeout(10L))
-            if (!"gams_version" %in% names(content(ret,
-              type = "application/json",
-              encoding = "utf-8"
-            ))) {
-              stop("Not a GAMS Engine server", call. = FALSE)
-            }
-          }
-        }
-        private$apiInfo <- content(ret,
-          type = "application/json",
-          encoding = "utf-8"
-        )
-        private$apiInfo$apiVersionInt <- suppressWarnings(
-          as.integer(gsub(".", "", private$apiInfo$version, fixed = TRUE))
-        )[1]
-        ret <- ret$url
-        FALSE
-      },
-      error = function(e) {
-        flog.debug(
-          "Could not connect to provided URL. Error message: '%s'.",
-          conditionMessage(e)
-        )
-        stop(404L, call. = FALSE)
-      }
-    )) {
-      return(FALSE)
-    }
-
-    if (startsWith(ret, "https://") ||
-      identical(ret, "http://localhost") ||
-      startsWith(ret, "http://localhost:") ||
-      startsWith(ret, "http://localhost/")) {
-      return(TRUE)
-    }
-    return(FALSE)
-  },
-  checkAuthenticationStatus = function() {
-    return(status_code(HEAD(
-      paste0(private$metadata$url, "/jobs"),
-      add_headers(
-        Authorization = private$authHeader,
-        Timestamp = as.character(Sys.time(), usetz = TRUE)
-      ),
-      timeout(10L)
-    )))
   },
   resolveRemoteURL = function(url) {
     url <- trimws(url, "right", whitespace = "/")
