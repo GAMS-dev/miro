@@ -986,10 +986,7 @@
       "title": "MIRO忙",
       "desc": "MIRO正在工作区中提取模型文件。 请等待，然后重试。"
     },
-    "gamsTerm":{
-      "title":"终止gams.exe时出错",
-      "desc":"终止GAMS时出现错误。"
-    },
+    "gamsTerm": "终止 GAMS 时发生了一些错误（例如，进程已完成）。",
     "readLog":{
       "title":"读取日志文件时出错",
       "desc":"读取GAMS日志文件时出现错误。"

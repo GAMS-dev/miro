@@ -834,7 +834,7 @@ observeEvent(input$btInterrupt, {
     },
     error = function(e) {
       flog.error("Problems interrupting the GAMS process. Error message: %s.", conditionMessage(e))
-      showErrorMsg(lang$errMsg$gamsTerm$title, lang$errMsg$gamsTerm$desc)
+      showNotification(lang$errMsg$gamsTerm, type = "error", duration = 10L)
       return(TRUE)
     }
   )) {

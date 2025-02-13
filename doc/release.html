@@ -104,6 +104,16 @@
                     </div>
                     <ul>
                       <li>
+                        Fix issue where the output data was cleared when using
+                        a custom importer with a subset of input/output symbols
+                        (using the <kbd>symNames</kbd> property).
+                      </li>
+                      <li>
+                        Fix issue issue where the scalars dataframe was
+                        validated when using a custom importer, despite no
+                        scalars being intended for import.
+                      </li>
+                      <li>
                         Fix issue where MIRO used excessive memory/cpu when
                         submitting jobs to GAMS Engine.
                       </li>
@@ -115,6 +125,19 @@
                         Fix issue where the dashboard renderer threw an error
                         in some situations if the data view configuration did
                         not specify a row dimension.
+                      </li>
+                      <li>
+                        Fix issue where an incorrect internal error message was
+                        displayed when submitting a job to GAMS Engine under
+                        specific conditions.
+                      </li>
+                      <li>
+                        If an error occurs while interrupting the GAMS process,
+                        the error message is now less intrusive.
+                      </li>
+                      <li>
+                        Fix issue where the modified dataset count was off by
+                        one in certain situations during local data import.
                       </li>
                       <li>
                         Fix issue where value boxes in the dashboard renderer
