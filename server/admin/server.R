@@ -100,6 +100,7 @@ server <- function(input, output, session) {
         session$sendCustomMessage(
           "onNewAppValidated",
           list(
+            appId = miroAppValidator$getAppId(),
             appTitle = htmltools::htmlEscape(miroAppValidator$getAppTitle()),
             appDesc = htmltools::htmlEscape(miroAppValidator$getAppDesc()),
             logoB64 = miroAppValidator$getLogoB64(),
@@ -812,6 +813,9 @@ server <- function(input, output, session) {
     if (loginRequired(session, isLoggedIn)) {
       return()
     }
+    flog.debug(
+      "Button to close migration form clicked."
+    )
     try(
       {
         migrationObs$destroy()
@@ -819,6 +823,12 @@ server <- function(input, output, session) {
       },
       silent = TRUE
     )
+    migrationInfo <- miroProc$getMigrationInfo()
+    session$sendCustomMessage("onError", list(
+      requestType = "updateApp",
+      progressSelector = migrationInfo$additionalDataOnError$progressSelector,
+      spinnerSelector = migrationInfo$additionalDataOnError$spinnerSelector
+    ))
     removeModal()
   })
 }

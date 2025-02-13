@@ -19,7 +19,9 @@ const envSchema = {
 const validateEnvSchema = ajv.compile(envSchema);
 
 function unicodeToHTMLID(str) {
-  const idTmp = window.btoa(encodeURIComponent(str)).replace(/\+/g, '-')
+  const idTmp = window
+    .btoa(encodeURIComponent(str))
+    .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=/g, '');
   return `a${idTmp}`;
@@ -75,7 +77,14 @@ const addAppWrapperHTML = `<div id="addAppBox" class="add-app-box app-box-fixed-
                             <a class="btn-add-app" id="addApp"><i class="fas fa-circle-plus"></i></a>
                           </div>`;
 
-const supportedDataFileTypes = ['gdx', 'miroscen', 'xlsx', 'xlsm', 'xls', 'zip'];
+const supportedDataFileTypes = [
+  'gdx',
+  'miroscen',
+  'xlsx',
+  'xlsm',
+  'xls',
+  'zip',
+];
 
 function validateAppEnv(envContentRaw) {
   if (envContentRaw.trim() === '') {
@@ -96,7 +105,8 @@ function validateAppEnv(envContentRaw) {
   } catch (err) {
     bootbox.alert({
       title: 'Problems parsing app environment',
-      message: 'The app environment could not be parsed.\nPlease make sure that you have entered valid JSON syntax.',
+      message:
+        'The app environment could not be parsed.\nPlease make sure that you have entered valid JSON syntax.',
       centerVertical: true,
     });
     return false;
@@ -106,7 +116,11 @@ function validateAppEnv(envContentRaw) {
 function sendAddRequest() {
   const newAppTitle = document.getElementById('newAppName').value;
   if (!newAppTitle || newAppTitle.trim() === '') {
-    bootbox.alert({ title: 'Missing App title', message: 'Please enter an app title.', centerVertical: true });
+    bootbox.alert({
+      title: 'Missing App title',
+      message: 'Please enter an app title.',
+      centerVertical: true,
+    });
     return;
   }
   const appEnv = document.getElementById('newAppEnv').value;
@@ -115,22 +129,30 @@ function sendAddRequest() {
   }
   $('#addAppSpinner').show();
   $('#btAddApp').attr('disabled', true);
-  Shiny.setInputValue('addApp', {
-    title: newAppTitle,
-    desc: document.getElementById('newAppDesc').value,
-    env: appEnv,
-    groups: $('#newAppGroups').val(),
-    overwrite: overwriteAppData['~$_newApp'] === true,
-  }, {
-    priority: 'event',
-  });
+  Shiny.setInputValue(
+    'addApp',
+    {
+      title: newAppTitle,
+      desc: document.getElementById('newAppDesc').value,
+      env: appEnv,
+      groups: $('#newAppGroups').val(),
+      overwrite: overwriteAppData['~$_newApp'] === true,
+    },
+    {
+      priority: 'event',
+    },
+  );
   overwriteAppData['~$_newApp'] = null;
 }
 
 function sendUpdateRequest(index) {
   const newAppTitle = $(`#appTitle_${index}`).val().trim();
   if (!newAppTitle || newAppTitle.trim() === '') {
-    bootbox.alert({ title: 'Missing App title', message: 'Please enter an app title.', centerVertical: true });
+    bootbox.alert({
+      title: 'Missing App title',
+      message: 'Please enter an app title.',
+      centerVertical: true,
+    });
     return;
   }
   let newAppDesc = $(`#appDesc_${index}`).val().trim();
@@ -142,38 +164,50 @@ function sendUpdateRequest(index) {
     return;
   }
   $loadingScreen.fadeIn(200);
-  Shiny.setInputValue('updateAppMeta', {
-    index,
-    title: newAppTitle,
-    desc: newAppDesc,
-    env: appEnv,
-    newLogo: currentAppLogo !== null,
-    groups: $(`#appGroups_${index}`).val(),
-  }, {
-    priority: 'event',
-  });
+  Shiny.setInputValue(
+    'updateAppMeta',
+    {
+      index,
+      title: newAppTitle,
+      desc: newAppDesc,
+      env: appEnv,
+      newLogo: currentAppLogo !== null,
+      groups: $(`#appGroups_${index}`).val(),
+    },
+    {
+      priority: 'event',
+    },
+  );
 }
 
 function sendUpdateAppOrderRequest(idFrom, idTo, idFromRaw, idToRaw) {
   $loadingScreen.fadeIn(200);
-  Shiny.setInputValue('updateAppOrder', {
-    idFrom,
-    idTo,
-    idFromRaw,
-    idToRaw,
-  }, {
-    priority: 'event',
-  });
+  Shiny.setInputValue(
+    'updateAppOrder',
+    {
+      idFrom,
+      idTo,
+      idFromRaw,
+      idToRaw,
+    },
+    {
+      priority: 'event',
+    },
+  );
 }
 
 function sendRemoveRequest(index, removeData) {
   $loadingScreen.fadeIn(200);
-  Shiny.setInputValue('deleteApp', {
-    index,
-    removeData,
-  }, {
-    priority: 'event',
-  });
+  Shiny.setInputValue(
+    'deleteApp',
+    {
+      index,
+      removeData,
+    },
+    {
+      priority: 'event',
+    },
+  );
 }
 
 function exitOverlayMode() {
@@ -203,16 +237,27 @@ function refreshConfigList() {
     const appIdSafe = escapeHtml(id);
     const idEncoded = unicodeToHTMLID(id);
     const index = indexRaw + 1;
-    let groupOptions = configData.groups != null ? configData.groups.reduce((optionsHTML, groupName) => (`${optionsHTML}<option value="${groupName}" selected>${groupName.toLowerCase()}</option>`), '') : '';
+    let groupOptions = configData.groups != null
+      ? configData.groups.reduce(
+        (optionsHTML, groupName) => `${optionsHTML}<option value="${groupName}" selected>${groupName.toLowerCase()}</option>`,
+        '',
+      )
+      : '';
     if (currentGroupList.length > 0) {
       let nonSelectedGroups = currentGroupList;
       if (configData.groups != null) {
-        nonSelectedGroups = currentGroupList
-          .filter((groupName) => !configData.groups.includes(groupName));
+        nonSelectedGroups = currentGroupList.filter(
+          (groupName) => !configData.groups.includes(groupName),
+        );
       }
-      groupOptions += nonSelectedGroups.reduce((optionsHTML, groupName) => (`${optionsHTML}<option value="${groupName}">${groupName.toLowerCase()}</option>`), '');
+      groupOptions += nonSelectedGroups.reduce(
+        (optionsHTML, groupName) => `${optionsHTML}<option value="${groupName}">${groupName.toLowerCase()}</option>`,
+        '',
+      );
     }
-    const dirtyMarker = isDirty === true ? '<span class="dirty-app-button app-corner-button" title="The app is not registered on GAMS Engine. You will not be able to solve your model. Update app to fix this issue."><i class="fas fa-bolt"></i></span>' : '';
+    const dirtyMarker = isDirty === true
+      ? '<span class="dirty-app-button app-corner-button" title="The app is not registered on GAMS Engine. You will not be able to solve your model. Update app to fix this issue."><i class="fas fa-bolt"></i></span>'
+      : '';
     return `${html}<div class="col-xxl-3 col-lg-4 col-sm-6 col-12 miro-app-item" data-id="${idEncoded}">
         <div id="appBox_${idEncoded}" class="app-box app-box-draggable launch-app-box app-box-fixed-height" data-id="${idEncoded}" data-index="${index}" draggable="true">
           <div id="appSpinner_${idEncoded}" class="app-spinner">
@@ -264,7 +309,9 @@ function refreshConfigList() {
     </div>`;
   }, '');
   Shiny.unbindAll(document.getElementById('appsWrapper'));
-  $appsWrapper.html(`${appsList}<div id="addAppWrapper" class="col-xxl-3 col-lg-4 col-sm-6 col-12">${addAppWrapperHTML}</div>`);
+  $appsWrapper.html(
+    `${appsList}<div id="addAppWrapper" class="col-xxl-3 col-lg-4 col-sm-6 col-12">${addAppWrapperHTML}</div>`,
+  );
   registerSelectizeInputs();
   exitOverlayMode();
   Shiny.bindAll(document.getElementById('appsWrapper'));
@@ -275,7 +322,10 @@ function expandAddAppForm() {
   if ($('#expandedAddAppWrapper').is(':visible')) {
     return;
   }
-  const groupOptions = currentGroupList.reduce((optionsHTML, groupName) => (`${optionsHTML}<option value="${groupName}">${groupName.toLowerCase()}</option>`), '');
+  const groupOptions = currentGroupList.reduce(
+    (optionsHTML, groupName) => `${optionsHTML}<option value="${groupName}">${groupName.toLowerCase()}</option>`,
+    '',
+  );
 
   $('#addAppWrapper').css('z-index', 11);
   $overlay.data('current', $('#addAppWrapper')).fadeIn(300);
@@ -416,7 +466,10 @@ $appsWrapper.on('dragstart', '.app-box-draggable', (e) => {
   if (!reorderAppsMode) {
     return;
   }
-  e.originalEvent.dataTransfer.setData('text/plain', e.originalEvent.target.id);
+  e.originalEvent.dataTransfer.setData(
+    'text/plain',
+    e.originalEvent.target.id,
+  );
   e.originalEvent.target.style.opacity = 0.5;
 });
 $appsWrapper.on('dragenter', '.app-box-draggable', function (e) {
@@ -442,11 +495,16 @@ $appsWrapper.on('dragend', '.app-box-draggable', (e) => {
   e.stopPropagation();
   reorderAppsMode = false;
   e.originalEvent.dataTransfer.clearData();
-  $('.app-box-draggable').removeClass('drag-drop-area-dragover').css('opacity', '');
+  $('.app-box-draggable')
+    .removeClass('drag-drop-area-dragover')
+    .css('opacity', '');
 });
 
 function sendUpdateAppShinyEvent(appId, fileTypes) {
-  if (overwriteAppData[appId] == null || uploadAppDataFinished[appId] == null) {
+  if (
+    overwriteAppData[appId] == null
+    || uploadAppDataFinished[appId] == null
+  ) {
     return;
   }
   const appIDEncoded = unicodeToHTMLID(appId);
@@ -460,57 +518,71 @@ function sendUpdateAppShinyEvent(appId, fileTypes) {
   $(spinnerId).show();
   $(`#appFiles_${appIDEncoded}_progress`).css('visibility', '');
   if (fileTypes.length === 1 && fileTypes[0] === 'miroapp') {
-    Shiny.setInputValue('updateAppRequest', {
-      id: appId,
-      overwrite: overwriteData,
-      progressSelector: progressId,
-      spinnerSelector: spinnerId,
-      fileInputId,
-    }, {
-      priority: 'event',
-    });
+    Shiny.setInputValue(
+      'updateAppRequest',
+      {
+        id: appId,
+        overwrite: overwriteData,
+        progressSelector: progressId,
+        spinnerSelector: spinnerId,
+        fileInputId,
+      },
+      {
+        priority: 'event',
+      },
+    );
     return;
   }
-  const invalidFileTypes = fileTypes
-    .filter((fileType) => !supportedDataFileTypes.includes(fileType));
+  const invalidFileTypes = fileTypes.filter(
+    (fileType) => !supportedDataFileTypes.includes(fileType),
+  );
   if (invalidFileTypes.length === 0) {
-    Shiny.setInputValue('updateAppDataRequest', {
-      id: appId,
-      overwrite: overwriteData,
-      progressSelector: progressId,
-      spinnerSelector: spinnerId,
-      fileInputId,
-    }, {
-      priority: 'event',
-    });
+    Shiny.setInputValue(
+      'updateAppDataRequest',
+      {
+        id: appId,
+        overwrite: overwriteData,
+        progressSelector: progressId,
+        spinnerSelector: spinnerId,
+        fileInputId,
+      },
+      {
+        priority: 'event',
+      },
+    );
     return;
   }
   $(spinnerId).hide();
 }
-
-const showOverwriteDialog = (appId, sendUpdateEvent = true, fileTypes = []) => bootbox.confirm({
-  message: 'Do you want to overwrite existing scenario data?',
-  buttons: {
-    cancel: {
-      label: 'No, keep existing data',
-    },
-    confirm: {
-      label: 'Yes, overwrite',
-    },
-  },
+const showOverwriteDialog = (
+  appId,
+  sendUpdateEvent = true,
+  fileTypes = [],
+  newAppId = appId,
+) => bootbox.prompt({
+  title: 'Overwrite data',
+  message: `Do you want to overwrite existing scenario data? Please type <b>${escapeHtml(newAppId)}</b> to confirm or choose 'Cancel' to keep the existing data.`,
   centerVertical: true,
   onEscape: false,
-  callback: (overwriteConfirmed) => {
-    overwriteAppData[appId] = overwriteConfirmed;
+  callback: (result) => {
+    if (result != null && result !== newAppId) {
+      return false;
+    }
+    overwriteAppData[appId] = result != null;
     if (sendUpdateEvent) {
       sendUpdateAppShinyEvent(appId, fileTypes);
     }
+    return true;
   },
 });
 
 $(document).on('shiny:inputchanged', (event) => {
   const eventName = event.name;
-  if (eventName.startsWith('appFiles_') && event.value != null && event.value.length > 0) {
+  if (
+    eventName.startsWith('appFiles_')
+    && event.value != null
+    && event.value.length > 0
+  ) {
     const appId = HTMLIDToUnicode(eventName.substring(9));
     const fileTypes = event.value.map((fileTmp) => fileTmp.name.split('.').pop().toLowerCase());
     uploadAppDataFinished[appId] = true;
@@ -528,7 +600,9 @@ $appsWrapper.on('drop', '.app-box-draggable', function (e) {
   }
   reorderAppsMode = false;
   dragAddAppCounter = 0;
-  $('.app-box-draggable').removeClass('drag-drop-area-dragover').css('opacity', '');
+  $('.app-box-draggable')
+    .removeClass('drag-drop-area-dragover')
+    .css('opacity', '');
 
   const idToRaw = $(this).attr('id');
   const idTo = HTMLIDToUnicode(idToRaw.slice(7));
@@ -548,8 +622,9 @@ $appsWrapper.on('drop', '.app-box-draggable', function (e) {
       $(`#appFiles_${unicodeToHTMLID(idTo)}_progress`).css('visibility', '');
       return;
     }
-    const invalidFileTypes = fileTypes
-      .filter((fileType) => !supportedDataFileTypes.includes(fileType));
+    const invalidFileTypes = fileTypes.filter(
+      (fileType) => !supportedDataFileTypes.includes(fileType),
+    );
     if (invalidFileTypes.length === 0) {
       showOverwriteDialog(idTo, true, fileTypes);
       return;
@@ -576,10 +651,12 @@ $appsWrapper.on('click', '.app-box', function (e) {
   const $this = $(this);
   $this.children('.app-data-file-input').hide();
   const $target = $(e.target);
-  if ($overlay.is(':visible')
+  if (
+    $overlay.is(':visible')
     || $target.hasClass('cancel-btn')
     || $target.hasClass('delete-app-button')
-    || $target.parents('.delete-app-button').length) {
+    || $target.parents('.delete-app-button').length
+  ) {
     return;
   }
   const appIDEncoded = this.dataset.id;
@@ -588,12 +665,14 @@ $appsWrapper.on('click', '.app-box', function (e) {
   if (appIndex) {
     $(`#appBox_${appIDEncoded}`).removeClass('app-box-fixed-height');
     $(`#appLogo_${appIDEncoded}`)
-      .html(`<label for="updateMiroAppLogo" style="width:100%;height:100%;">
+      .html(
+        `<label for="updateMiroAppLogo" style="width:100%;height:100%;">
                   <div class="drag-drop-area-text not-empty">
                   ${appLogoPlaceholder}
                   </div>
                 </label>
-                <input class="input-btn input-app-logo" style="margin-top:1rem;" type="file" name="updateMiroAppLogo" id="updateMiroAppLogo" data-restore="">`)
+                <input class="input-btn input-app-logo" style="margin-top:1rem;" type="file" name="updateMiroAppLogo" id="updateMiroAppLogo" data-restore="">`,
+      )
       .addClass('drag-drop-area input-group')
       .after(`<div id="updateMiroAppLogo_progress" class="progress active shiny-file-input-progress">
                   <div class="progress-bar"></div>
@@ -619,7 +698,8 @@ $appsWrapper.on('click', '.btn-save-changes', function () {
   if (!appIndex || !appID) {
     bootbox.alert({
       title: 'Unexpected error',
-      message: 'Ooops. Something went wrong. Please contact GAMS if this error persists!',
+      message:
+        'Ooops. Something went wrong. Please contact GAMS if this error persists!',
       centerVertical: true,
     });
     return;
@@ -631,7 +711,8 @@ $appsWrapper.on('click', '.delete-app-button', function () {
   const appIndex = this.dataset.index;
   const appId = HTMLIDToUnicode(this.dataset.id);
   bootbox.confirm({
-    message: 'Are you sure you want to remove this app? This cannot be undone.',
+    message:
+      'Are you sure you want to remove this app? This cannot be undone.',
     centerVertical: true,
     onEscape: false,
     callback: (removeAppConfirmed) => {
@@ -682,26 +763,35 @@ $('body').on('click', '#btLogin', () => {
   $('#loginFormWrapper').hide();
   $('#loginError').hide();
   $('#loginLoadingIndicator').show();
-  Shiny.setInputValue('loginRequest', {
-    user: document.getElementById('loginUser').value,
-    password: document.getElementById('loginPassword').value,
-  }, {
-    priority: 'event',
-  });
+  Shiny.setInputValue(
+    'loginRequest',
+    {
+      user: document.getElementById('loginUser').value,
+      password: document.getElementById('loginPassword').value,
+    },
+    {
+      priority: 'event',
+    },
+  );
 });
 
 $(() => {
   registerSelectizeInputs();
   if ($('.select-app-groups').length > 0) {
     currentGroupList = [];
-    $('.select-app-groups').first().children('option').each(function () {
-      currentGroupList.push($(this).val());
-    });
+    $('.select-app-groups')
+      .first()
+      .children('option')
+      .each(function () {
+        currentGroupList.push($(this).val());
+      });
   }
   $(document).on('keyup', (event) => {
     if (event.key === 'Enter' && !event.ctrlKey) {
-      if ($('#shiny-modal').find('.selectize-input.input-active').length > 0
-        || $('#shiny-modal').find('*[data-dismiss="modal"]').is(':focus')) {
+      if (
+        $('#shiny-modal').find('.selectize-input.input-active').length > 0
+        || $('#shiny-modal').find('*[data-dismiss="modal"]').is(':focus')
+      ) {
         return;
       }
       $('.bt-gms-confirm:visible:enabled').trigger('click');
@@ -736,11 +826,13 @@ $(() => {
       });
     }
   });
-  Shiny.addCustomMessageHandler('onLoginRequired', (e) => { // eslint-disable-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars
+  Shiny.addCustomMessageHandler('onLoginRequired', (e) => {
     $loadingScreen.fadeOut(200);
     openLoginForm();
   });
-  Shiny.addCustomMessageHandler('onLoginSuccessful', (e) => { // eslint-disable-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars
+  Shiny.addCustomMessageHandler('onLoginSuccessful', (e) => {
     $('#loginModal').modal('hide');
   });
   Shiny.addCustomMessageHandler('onSuccess', (data) => {
@@ -756,7 +848,9 @@ $(() => {
       return;
     } else if (data.requestType === 'migrateDb') {
       $('#loadingScreenProgressWrapper').hide();
-      $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');
+      $('#loadingScreenProgress')
+        .css('width', '0%')
+        .attr('aria-valuenow', '0');
       return;
     }
     if (Array.isArray(data.configList)) {
@@ -772,7 +866,8 @@ $(() => {
       });
     }
   });
-  Shiny.addCustomMessageHandler('onHideAddAppProgress', (e) => { // eslint-disable-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars
+  Shiny.addCustomMessageHandler('onHideAddAppProgress', (e) => {
     $('#addAppSpinner').hide();
     $('#addAppProgress').css('width', '0%').attr('aria-valuenow', '0');
     $('#btAddApp').attr('disabled', false);
@@ -793,7 +888,9 @@ $(() => {
         $('#loadingScreenProgressWrapper').hide();
       }
     } else {
-      $(selector).css('width', `${data.progress}%`).attr('aria-valuenow', data.progress);
+      $(selector)
+        .css('width', `${data.progress}%`)
+        .attr('aria-valuenow', data.progress);
     }
   });
   Shiny.addCustomMessageHandler('onAddAppLogo', (data) => {
@@ -804,10 +901,7 @@ $(() => {
     if (currentAppId === -1) {
       // new App
       $('#btAddApp').attr('disabled', false);
-      $('#newAppLogo').css(
-        'background-image',
-        `url("${data.logoB64}")`,
-      );
+      $('#newAppLogo').css('background-image', `url("${data.logoB64}")`);
       return;
     }
     $('.btn-save-changes').attr('disabled', false);
@@ -831,16 +925,13 @@ $(() => {
     if (data.dataExists !== true) {
       overwriteAppData['~$_newApp'] = true;
     } else {
-      showOverwriteDialog('~$_newApp', false);
+      showOverwriteDialog('~$_newApp', false, [], data.appId);
     }
     $('#newAppFiles').hide();
     $('#miroAppFile_progress').hide();
     $('#newAppLogo').show();
     $('#miroAppLogo_progress').show();
-    $('#newAppLogo').css(
-      'background-image',
-      `url("${data.logoB64}")`,
-    );
+    $('#newAppLogo').css('background-image', `url("${data.logoB64}")`);
     $('#btAddApp').attr('disabled', false);
   });
   Shiny.addCustomMessageHandler('onError', (e) => {
@@ -860,7 +951,9 @@ $(() => {
       $(e.progressSelector).css('width', '0%').attr('aria-valuenow', '0');
     } else if (e.requestType === 'migrateDb') {
       $('#loadingScreenProgressWrapper').hide();
-      $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');
+      $('#loadingScreenProgress')
+        .css('width', '0%')
+        .attr('aria-valuenow', '0');
       $('#migrationFormErrors').show();
       return;
     } else if (e.requestType === 'updateLogoAddApp') {
