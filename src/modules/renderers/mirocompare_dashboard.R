@@ -479,7 +479,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
                 }
                 paste0(prefix, format(value, big.mark = ","), postfix)
               } else {
-                format(value)
+                "NA"
               }
             )
           },

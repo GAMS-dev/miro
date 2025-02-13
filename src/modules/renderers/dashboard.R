@@ -463,7 +463,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                     }
                     paste0(prefix, format(value, big.mark = ","), postfix)
                   } else {
-                    format(value)
+                    "NA"
                   }
                 )
               },
