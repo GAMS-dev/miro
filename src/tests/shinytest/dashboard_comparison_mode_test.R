@@ -23,17 +23,17 @@ Sys.sleep(0.5)
 
 app$set_inputs(btNewBlock = "click")
 Sys.sleep(0.5)
-app$set_inputs(newLine_2 = "_sys_metadata_._sname")
+app$set_inputs(newLine_3 = "_sys_metadata_._sname")
 Sys.sleep(0.5)
-app$set_inputs(val_2_1 = "default")
+app$set_inputs(val_3_1 = "default")
 Sys.sleep(0.5)
 app$set_inputs(btSendQuery = "click")
 app$set_inputs(batchLoadAll = "click")
 
 expect_error(app$get_js("$('#btBatchCompare+.dropdown-toggle').click()"), NA)
 Sys.sleep(1L)
-expect_true(app$get_js("$('#btBatchCompare~.dropdown-menu a:eq(2)').text()==='Dashboard comparison view'"))
-expect_error(app$get_js("$('#btBatchCompare~.dropdown-menu a:eq(2)').click();"), NA)
+expect_true(app$get_js("$('#btBatchCompare~.dropdown-menu a:eq(1)').text()==='Dashboard comparison view'"))
+expect_error(app$get_js("$('#btBatchCompare~.dropdown-menu a:eq(1)').click();"), NA)
 Sys.sleep(6L)
 
 expect_true(app$get_js("$('#cmpCustom___dashboard_1-dowVSindexChart').is(':visible')"))
@@ -46,8 +46,9 @@ expect_true(app$get_js("$('#cmpCustom___dashboard_1-stockWeightChart').is(':visi
 expect_true(app$get_js("$('#cmpCustom___dashboard_1-error_train .info-box-number').text()===''"))
 selectSelectizeOption(app, "#cmpCustom___dashboard_1-scenarioSelect", "pickstock2")
 Sys.sleep(1)
+
 expect_true(app$get_js("$('#cmpCustom___dashboard_1-error_train .info-box-number').text()==='$618.84$'"))
-expect_true(app$get_js("$('#cmpCustom___dashboard_1-scalarve .info-box-number').text()==='0'"))
+expect_true(app$get_js("$('#cmpCustom___dashboard_1-error_test .info-box-number').text()==='0'"))
 Sys.sleep(0.5)
 
 selectSelectizeOption(app, "#cmpCustom___dashboard_1-scenarioSelect", "default")
