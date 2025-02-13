@@ -79,9 +79,9 @@
 		},
 		"_scalars_out":	{
 			"alias":	"Output Scalars",
-			"symnames":	["error_train", "error_test", "error_ratio", "firstdaytraining", "lastdaytraining"],
-			"symtext":	["Absolute error in entire training phase", "Absolute error in entire testing phase", "Ratio between error test and error train", "first date of training period", "last date of training period"],
-			"symtypes":	["parameter", "parameter", "parameter", "set", "set"],
+			"symnames":	["error_train", "error_test", "error_ratio", "testnegative", "testpositive", "firstdaytraining", "lastdaytraining"],
+			"symtext":	["Absolute error in entire training phase", "Absolute error in entire testing phase", "Ratio between error test and error train", "testnegative", "testpositive", "first date of training period", "last date of training period"],
+			"symtypes":	["parameter", "parameter", "parameter", "parameter", "parameter", "set", "set"],
 			"headers":	{
 				"scalar":	{
 					"type":	"string",

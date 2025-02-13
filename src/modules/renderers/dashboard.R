@@ -457,16 +457,13 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                   } else {
                     "color:#dd4b39!important"
                   },
-                  if (!is.na(suppressWarnings(as.numeric(value))) &&
-                    as.numeric(value) > 0) {
-                    paste0(prefix, value, postfix)
-                  } else if (!is.na(suppressWarnings(as.numeric(value))) &&
-                    as.numeric(value) == 0) {
-                    paste0("0", postfix)
-                  } else if (!is.na(suppressWarnings(as.numeric(value)))) {
-                    paste0(value, postfix)
+                  if (!is.na(suppressWarnings(as.numeric(value)))) {
+                    if (as.numeric(value) < 0 && identical(prefix, "+")) {
+                      prefix <- ""
+                    }
+                    paste0(prefix, format(value, big.mark = ","), postfix)
                   } else {
-                    value
+                    format(value)
                   }
                 )
               },
@@ -541,9 +538,6 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             if (!is.na(options$valueBoxes$decimals[i])) {
               valueTmp <- round(valueTmp, digits = as.numeric(options$valueBoxes$decimals[i]))
             }
-
-            valueTmp <- valueTmp %>%
-              format(big.mark = ",")
           }
 
           valBoxName <- options$valueBoxes$id[i]
