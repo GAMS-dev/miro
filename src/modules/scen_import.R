@@ -533,9 +533,9 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
 
   loadErrors <- character(0L)
   source("./modules/input_load.R", local = TRUE)
-  if (!clearOutputData) {
-    markUnsaved(markDirty = TRUE)
-  }
+
+  markUnsaved(markDirty = !clearOutputData)
+
   if (!is.null(errMsg)) {
     return(NULL)
   }
