@@ -44,7 +44,7 @@ function escapeHtml(unsafe) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/'/g, '&quot;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
 
@@ -239,7 +239,7 @@ function refreshConfigList() {
     const index = indexRaw + 1;
     let groupOptions = configData.groups != null
       ? configData.groups.reduce(
-        (optionsHTML, groupName) => `${optionsHTML}<option value="${groupName}" selected>${groupName.toLowerCase()}</option>`,
+        (optionsHTML, groupName) => `${optionsHTML}<option value="${escapeHtml(groupName)}" selected>${escapeHtml(groupName.toLowerCase())}</option>`,
         '',
       )
       : '';
@@ -251,7 +251,7 @@ function refreshConfigList() {
         );
       }
       groupOptions += nonSelectedGroups.reduce(
-        (optionsHTML, groupName) => `${optionsHTML}<option value="${groupName}">${groupName.toLowerCase()}</option>`,
+        (optionsHTML, groupName) => `${optionsHTML}<option value="${escapeHtml(groupName)}">${escapeHtml(groupName.toLowerCase())}</option>`,
         '',
       );
     }
@@ -323,7 +323,7 @@ function expandAddAppForm() {
     return;
   }
   const groupOptions = currentGroupList.reduce(
-    (optionsHTML, groupName) => `${optionsHTML}<option value="${groupName}">${groupName.toLowerCase()}</option>`,
+    (optionsHTML, groupName) => `${optionsHTML}<option value="${escapeHtml(groupName)}">${escapeHtml(groupName.toLowerCase())}</option>`,
     '',
   );
 
