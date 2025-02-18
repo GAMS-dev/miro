@@ -322,6 +322,18 @@ class UITests(unittest.TestCase):
             btn for btn in accept_buttons if btn.is_displayed()
         )
         visible_accept_button.click()
+        bootbox_input = wait.until(
+            EC.visibility_of_element_located((By.CLASS_NAME, "bootbox-input-text"))
+        )
+        bootbox_input.send_keys("asd")
+        visible_accept_button.click()
+        self.assertTrue(
+            self.driver.find_element(By.CLASS_NAME, "bootbox-body").is_displayed(),
+            "Bootbox body disappeared unexpectedly after entering 'asd' when overwriting app data.",
+        )
+        bootbox_input.clear()
+        bootbox_input.send_keys("test_app1")
+        visible_accept_button.click()
         WebDriverWait(self.driver, 30).until(
             EC.visibility_of_element_located(
                 (By.ID, "migrationForm1-btConfirmMigration")
@@ -355,15 +367,20 @@ class UITests(unittest.TestCase):
             btn for btn in accept_buttons if btn.is_displayed()
         )
         visible_accept_button.click()
+        bootbox_input = wait.until(
+            EC.visibility_of_element_located((By.CLASS_NAME, "bootbox-input-text"))
+        )
+        bootbox_input.send_keys("test_app1")
+        visible_accept_button.click()
         WebDriverWait(self.driver, 30).until(
             EC.visibility_of_element_located(
-                (By.ID, "migrationForm1-btConfirmMigration")
+                (By.ID, "migrationForm2-btConfirmMigration")
             )
         )
         self.driver.execute_script(
-            "$('#migrationForm1-dbMigrateTable_1_7')[0].selectize.addItem('cap');"
+            "$('#migrationForm2-dbMigrateTable_1_7')[0].selectize.addItem('cap');"
         )
-        self.driver.find_element(By.ID, "migrationForm1-btConfirmMigration").click()
+        self.driver.find_element(By.ID, "migrationForm2-btConfirmMigration").click()
         time.sleep(2)
         WebDriverWait(self.driver, 30).until(
             EC.invisibility_of_element((By.ID, "loadingScreenProgressWrapper"))
