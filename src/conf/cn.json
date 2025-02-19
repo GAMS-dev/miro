@@ -1165,7 +1165,7 @@
         "label": "默认场景的名称"
       },
       "args":{
-        "label": "指定调用GAMS的额外命令行参数"
+        "label": "指定调用 GAMS/Python 的额外命令行参数"
       },
       "groups":{
         "input": "将输入GAMS符号分组",
