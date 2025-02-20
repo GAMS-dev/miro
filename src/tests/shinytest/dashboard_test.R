@@ -13,7 +13,12 @@ app$click(selector = "a[data-value='outputData']")
 Sys.sleep(1)
 
 expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_test')[0].innerText"), timeout = 50), "ERROR TEST\n79.61"))
-expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_train')[0].innerText"), timeout = 50), "ERROR TRAIN\n951.17"))
+expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_test .info-box-number').css('color')"), timeout = 50), "rgb(61, 153, 112)"))
+expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_train')[0].innerText"), timeout = 50), "ERROR TRAIN\n$951.17$"))
+expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_train .info-box-number').css('color')"), timeout = 50), "rgb(221, 75, 57)"))
+expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testnegative')[0].innerText"), timeout = 50), "TESTNEGATIVE\n-1,001$"))
+expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testnegative .info-box-number').css('color')"), timeout = 50), "rgb(51, 51, 51)"))
+expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testpositive')[0].innerText"), timeout = 50), "TESTPOSITIVE\n+1,001$"))
 # switch data view
 expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-dowVSindexChart').is(':visible')")))
 expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-abserrorTable').is(':visible')")))
@@ -22,6 +27,7 @@ app$click(selector = paste0("div[id='tab_1_3-", rendererName, "-error_train'] .c
 Sys.sleep(1)
 expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-dowVSindexChart').is(':hidden')")))
 expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-stockWeightChart').is(':visible');")))
+expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-dowVSindex0Chart').is(':visible');")))
 
 # userFilter
 expect_equal(getData(paste0("tab_1_3-", rendererName, "-stockWeightChart")), list(c(0.60, 0.51)))

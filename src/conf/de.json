@@ -986,10 +986,7 @@
       "title": "MIRO beschäftigt",
       "desc": "MIRO ist beschäftigt, die Modelldateien in Ihrem Arbeitsbereich zu extrahieren. Bitte warten Sie und versuchen Sie es dann erneut."
     },
-    "gamsTerm":{
-      "title":"Fehler beim Beenden von gams.exe",
-      "desc":"Bei dem Beenden von GAMS ist ein Fehler aufgetreten."
-    },
+    "gamsTerm": "Beim Beenden von GAMS ist ein Fehler aufgetreten (z.B. der Prozess ist bereits beendet).",
     "readLog":{
       "title":"Fehler beim Lesen der log-Datei",
       "desc":"Beim Lesen der GAMS log-Datei ist ein Fehler aufgetreten."

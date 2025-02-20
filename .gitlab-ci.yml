@@ -34,7 +34,10 @@ variables:
     description: 'Force release even if tests fail (yes/no)?'
   SKIP_TESTS:
     value: 'no'
-    description: 'Skip tests on Windows/macOS (yes/no)?'
+    description: 'Skip tests on branch pipelines (yes/no)?'
+  RUN_TESTS_MASTER:
+    value: 'no'
+    description: 'Run tests on master branch (default is no as tests already ran on rc branch) (yes/no)?'
   MIRO_MAX_TEST_FAILURES:
     value: '1'
     description: 'Maximum number of tests allowed to fail before the job fails'
@@ -604,6 +607,7 @@ test_windows_job:
     - yarn install
   script:
     - 'if ("$env:SKIP_TESTS" -eq "yes") { "Skipping tests"; Exit }'
+    - 'if ("$env:CI_COMMIT_BRANCH" -eq "master" -and "$env:RUN_TESTS_MASTER" -eq "no") { "Skipping tests on master"; Exit }'
     - 'if ("$env:CI_COMMIT_BRANCH" -ne "master" -and "$env:BUILD_WINDOWS" -eq "no") { "Skipping Windows build"; Exit }'
     - yarn test gams_sys_dir=$env:GAMS_SYS_DIR
   dependencies: []
@@ -650,6 +654,7 @@ test_macos_job:
     - yarn install
   script:
     - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [[ "$RUN_TESTS_MASTER" == "no" ]] && echo "Skipping tests on master" && exit 0'
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS" == "no" ]] && echo "Skipping macOS build" && exit 0'
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS}
   dependencies: []
@@ -696,6 +701,7 @@ test_macos_arm_job:
     - yarn install
   script:
     - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [[ "$RUN_TESTS_MASTER" == "no" ]] && echo "Skipping tests on master" && exit 0'
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS_ARM" == "no" ]] && echo "Skipping macOS ARM build" && exit 0'
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS_ARM}
   dependencies: []
@@ -786,6 +792,10 @@ test_job:
   script:
     - mchecklic
     - mtestall
+    - |
+      max_mem_kb=$(cat "profile.txt" | grep "Maximum resident set size" | awk '{print $6}')
+      max_mem_mb=$((max_mem_kb / 1024))
+      echo "Maximum memory usage: $max_mem_mb MB"
   interruptible: true
   artifacts:
     when: always
@@ -838,6 +848,8 @@ test_job_miro_server:
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
   script:
+    - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [[ "$RUN_TESTS_MASTER" == "no" ]] && echo "Skipping tests on master" && exit 0'
     - ./scripts/test_miro_server.sh
   dependencies: []
   artifacts:
@@ -874,6 +886,7 @@ test_job_miro_server_k8s:
     - mkdir kind-logs
   script:
     - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [[ "$RUN_TESTS_MASTER" == "no" ]] && echo "Skipping tests on master" && exit 0'
     - ./scripts/test_miro_server_k8s.sh
   dependencies: []
   artifacts:

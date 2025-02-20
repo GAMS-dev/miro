@@ -98,6 +98,71 @@
                     (2025-01-21)
                   </div>
                   <div class="section-block">
+                    <h5 style="display: inline-block">GAMS MIRO 2.11.1</h5>
+                    <div style="display: inline-block; padding-left: 15px">
+                      (2025-02-19)
+                    </div>
+                    <ul>
+                      <li>
+                        Fix issue where the output data was cleared when using
+                        a custom importer with a subset of input/output symbols
+                        (using the <kbd>symNames</kbd> property).
+                      </li>
+                      <li>
+                        Fix issue where the scalars dataframe was validated
+                        when using a custom importer, despite no scalars being
+                        intended for import.
+                      </li>
+                      <li>
+                        Fix issue where MIRO used excessive memory/cpu when
+                        submitting jobs to GAMS Engine.
+                      </li>
+                      <li>
+                        Fix issue where reading parameters from GDX with
+                        invalid domain information resulted in empty tables.
+                      </li>
+                      <li>
+                        Fix issue where the dashboard renderer threw an error
+                        in some situations if the data view configuration did
+                        not specify a row dimension.
+                      </li>
+                      <li>
+                        Fix issue where an incorrect internal error message was
+                        displayed when submitting a job to GAMS Engine under
+                        specific conditions.
+                      </li>
+                      <li>
+                        If an error occurs while interrupting the GAMS process,
+                        the error message is now less intrusive.
+                      </li>
+                      <li>
+                        Fix issue where the modified dataset count was off by
+                        one in certain situations during local data import.
+                      </li>
+                      <li>
+                        MIRO Server: Fix issue where the loading indicator was
+                        not hidden after canceling app data migration.
+                      </li>
+                      <li>
+                        MIRO Server: To prevent accidental overwriting of
+                        existing app data, administrators must now enter the
+                        app ID before the button to overwrite data can be
+                        clicked.
+                      </li>
+                      <li>
+                        Fix issue where value boxes in the dashboard renderer
+                        did not show pre-/postfixes in some situations.
+                      </li>
+                      <li>
+                        Add missing <kbd>attachments</kbd> argument to the
+                        custom renderer function when using the custom renderer
+                        editor in Configuration Mode.
+                      </li>
+                      <li>
+                        MIRO Server: Fix potential XSS vulnerabilities in admin
+                        panel.
+                      </li>
+                    </ul>
                     <h3>New features</h3>
                     <ul>
                       <li>
