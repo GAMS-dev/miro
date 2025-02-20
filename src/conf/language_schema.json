@@ -3855,19 +3855,8 @@
           "minProperties": 2
         },
         "gamsTerm": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "title": {
-              "type": "string",
-              "minLength": 1
-            },
-            "desc": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "minProperties": 2
+          "type": "string",
+          "minLength": 1
         },
         "readLog": {
           "type": "object",

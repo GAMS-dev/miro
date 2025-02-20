@@ -38,11 +38,11 @@ proxy:
     tag: ''
   resources:
     requests:
-      cpu: '100m'
-      memory: 250Mi
+      cpu: '200m'
+      memory: 500Mi
     limits:
       cpu: '2000m'
-      memory: 500Mi
+      memory: 750Mi
   service:
     type: ClusterIP # ClusterIP or NodePort
     # only relevant if type is NodePort. If not provided, a random port within the NodePort range is used.

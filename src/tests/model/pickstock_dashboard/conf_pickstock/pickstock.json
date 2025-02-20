@@ -30,7 +30,13 @@
       "alias": "MIP-Solver",
       "widgetType": "dropdown",
       "label": "Solver to use",
-      "choices": ["CBC", "CPLEX", "MOSEK", "SCIP", "XPRESS"],
+      "choices": [
+        "CBC",
+        "CPLEX",
+        "MOSEK",
+        "SCIP",
+        "XPRESS"
+      ],
       "selected": "CPLEX"
     }
   },
@@ -245,16 +251,76 @@
       "options": {
         "valueBoxesTitle": "Summary indicators",
         "valueBoxes": {
-          "id": ["error_test", "error_train", "error_ratio"],
-          "color": ["#848991", "#ffb327", "#29B675"],
-          "icon": ["smog", "plug-circle-bolt", "truck"],
-          "title": ["error test", "error train", "error ratio"],
-          "prefix": ["", "", ""],
-          "postfix": ["", "", ""],
-          "redPositive": [false, true, false],
-          "noColor": [true, false, true],
-          "valueScalar": ["obj", "error_test", "error_ratio"],
-          "decimals": [2, 2, 2]
+          "id": [
+            "error_test",
+            "error_train",
+            "error_ratio",
+            "testnegative",
+            "testpositive"
+          ],
+          "color": [
+            "#848991",
+            "#ffb327",
+            "#29B675",
+            "#29B675",
+            "#29B675"
+          ],
+          "icon": [
+            "smog",
+            "plug-circle-bolt",
+            "truck",
+            "truck",
+            "truck"
+          ],
+          "title": [
+            "error test",
+            "error train",
+            "error ratio",
+            "testnegative",
+            "testpositive"
+          ],
+          "prefix": [
+            "",
+            "$",
+            "+",
+            "+",
+            "+"
+          ],
+          "postfix": [
+            "",
+            "$",
+            "$",
+            "$",
+            "$"
+          ],
+          "redPositive": [
+            false,
+            true,
+            false,
+            false,
+            false
+          ],
+          "noColor": [
+            false,
+            false,
+            false,
+            true,
+            false
+          ],
+          "valueScalar": [
+            "obj",
+            "error_test",
+            "error_ratio",
+            "testnegative",
+            "testpositive"
+          ],
+          "decimals": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
         },
         "dataViews": {
           "error_test": [
@@ -267,10 +333,13 @@
           ],
           "error_train": [
             {
-              "stockWeight": "Sock Weight"
+              "stockWeight": "Stock Weight"
             },
             {
-              "stockWeight2": "Sock Weight"
+              "stockWeight2": "Stock Weight"
+            },
+            {
+              "dowVSindex0": "Stock Weight"
             }
           ],
           "error_ratio": [
@@ -322,6 +391,31 @@
             "decimals": 2,
             "userFilter": "stockWeight"
           },
+          "dowVSindex0": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": true,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "count"
+            },
+            "aggregations": {
+              "date": null
+            },
+            "cols": {
+              "Hdr": null
+            },
+            "chartOptions": {
+              "title": "Dow Jones vs Index Fund",
+              "xTitle": "Date",
+              "yTitle": "Value"
+            },
+            "data": "dowvsindex",
+            "decimals": 2
+          },
           "dowVSindex": {
             "aggregationFunction": "sum",
             "pivotRenderer": "timeseries",
@@ -346,8 +440,14 @@
                 "index fund": "Index Fund"
               },
               "customLineDashPatterns": {
-                "Dow Jones": [10, 5],
-                "Index Fund": [1, 1]
+                "Dow Jones": [
+                  10,
+                  5
+                ],
+                "Index Fund": [
+                  1,
+                  1
+                ]
               }
             },
             "data": "dowvsindex",
@@ -396,14 +496,22 @@
               "xTitle": "Date",
               "yTitle": "Price"
             },
-            "userFilter": ["uni", "date"],
+            "userFilter": [
+              "uni",
+              "date"
+            ],
             "singleDropdown": "uni",
             "data": "pricemerge",
             "decimals": 2
           }
         }
       },
-      "additionalData": ["dowvsindex", "abserror", "pricemerge", "_scalarsve_out"]
+      "additionalData": [
+        "dowvsindex",
+        "abserror",
+        "pricemerge",
+        "_scalarsve_out"
+      ]
     }
   },
   "storeLogFilesDuration": 7,
@@ -423,190 +531,203 @@
   "saveTraceFile": true,
   "autoGenInputGraphs": true,
   "compareModules": [
-      {
-          "label": "Dashboard comparison view",
-          "options": {
-              "dataViews": {
-                  "error_ratio": {
-                      "pricemerge": "All index prices including DJ"
-                  },
-                  "error_test": {
-                      "dowVSindex": "dow VS index"
-                  },
-                  "error_train": {
-                      "stockWeight": "Sock Weight",
-                      "stockWeight2": "Sock Weight"
-                  }
-              },
-              "dataViewsConfig": {
-                "pricemerge": {
-                  "aggregationFunction": "sum",
-                  "pivotRenderer": "timeseries",
-                  "domainFilter": {
-                    "default": null
-                  },
-                  "tableSummarySettings": {
-                    "enabled": false,
-                    "rowSummaryFunction": "sum",
-                    "colSummaryFunction": "sum"
-                  },
-                  "rows": "date",
-                  "cols": {
-                    "uni": null,
-                    "_scenName": null
-                  },
-                  "chartOptions": {
-                    "title": "Price (stocks and DJ)",
-                    "xTitle": "Date",
-                    "yTitle": "Price"
-                  },
-                  "userFilter": ["uni", "date"],
-                  "data": "pricemerge",
-                  "decimals": 2
-                },
-                "stockWeight": {
-                  "aggregationFunction": "sum",
-                  "pivotRenderer": "bar",
-                  "domainFilter": {
-                    "default": null
-                  },
-                  "tableSummarySettings": {
-                    "enabled": false,
-                    "rowSummaryFunction": "sum",
-                    "colSummaryFunction": "sum"
-                  },
-                  "rows": "symbol",
-                  "cols": {
-                    "_scenName": null
-                  },
-                  "chartOptions": {
-                    "title": "Weight",
-                    "xTitle": "Stock",
-                    "yTitle": "Weight"
-                  },
-                  "data": "stock_weight",
-                  "decimals": 2,
-                  "userFilter": "symbol"
-                },
-                "stockWeight2": {
-                  "aggregationFunction": "sum",
-                  "pivotRenderer": "bar",
-                  "domainFilter": {
-                    "default": null
-                  },
-                  "tableSummarySettings": {
-                    "enabled": true,
-                    "rowSummaryFunction": "sum",
-                    "colSummaryFunction": "sum"
-                  },
-                  "rows": "symbol",
-                  "cols": {
-                    "_scenName": null
-                  },
-                  "chartOptions": {
-                    "title": "Weight",
-                    "xTitle": "Stock",
-                    "yTitle": "Weight"
-                  },
-                  "data": "stock_weight",
-                  "decimals": 2,
-                  "userFilter": "stockWeight"
-                },
-                "dowVSindex": {
-                  "aggregationFunction": "sum",
-                  "pivotRenderer": "timeseries",
-                  "domainFilter": {
-                    "default": null
-                  },
-                  "tableSummarySettings": {
-                    "enabled": true,
-                    "rowSummaryFunction": "sum",
-                    "colSummaryFunction": "count"
-                  },
-                  "rows": "date",
-                  "cols": {
-                    "Hdr": null,
-                    "_scenName": null
-                  },
-                  "chartOptions": {
-                    "title": "Dow Jones vs Index Fund",
-                    "xTitle": "Date",
-                    "yTitle": "Value",
-                    "customLabels": {
-                      "dj": "Dow Jones",
-                      "index fund": "Index Fund"
-                    }
-                  },
-                  "data": "dowvsindex",
-                  "decimals": 2
-                }
-              },
-              "valueBoxes": {
-                  "color": [
-                      "#848991",
-                      "#ffb327",
-                      "#29B675",
-                      "#29B675"
-                  ],
-                  "decimals": [
-                      2,
-                      2,
-                      2,
-                      2
-                  ],
-                  "icon": [
-                      "smog",
-                      "plug-circle-bolt",
-                      "truck",
-                      "truck"
-                  ],
-                  "id": [
-                      "error_test",
-                      "error_train",
-                      "error_ratio",
-                      "scalarve"
-                  ],
-                  "noColor": [
-                      true,
-                      false,
-                      true,
-                      true
-                  ],
-                  "postfix": [
-                      "",
-                      "",
-                      "",
-                      ""
-                  ],
-                  "prefix": [
-                      "",
-                      "",
-                      "",
-                      ""
-                  ],
-                  "redPositive": [
-                      false,
-                      true,
-                      false,
-                      false
-                  ],
-                  "title": [
-                      "error test",
-                      "error train",
-                      "error ratio",
-                      "obj"
-                  ],
-                  "valueScalar": [
-                      "error_train",
-                      "error_test",
-                      "error_ratio",
-                      "obj"
-                  ]
-              },
-              "valueBoxesTitle": "Summary indicators"
+    {
+      "label": "Dashboard comparison view",
+      "options": {
+        "dataViews": {
+          "error_ratio": {
+            "pricemerge": "All index prices including DJ"
           },
-          "type": "dashboard"
-      }
+          "error_test": {
+            "dowVSindex": "dow VS index"
+          },
+          "error_train": {
+            "stockWeight": "Sock Weight",
+            "stockWeight2": "Sock Weight"
+          }
+        },
+        "dataViewsConfig": {
+          "pricemerge": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "timeseries",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": false,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "sum"
+            },
+            "rows": "date",
+            "cols": {
+              "uni": null,
+              "_scenName": null
+            },
+            "chartOptions": {
+              "title": "Price (stocks and DJ)",
+              "xTitle": "Date",
+              "yTitle": "Price"
+            },
+            "userFilter": [
+              "uni",
+              "date"
+            ],
+            "data": "pricemerge",
+            "decimals": 2
+          },
+          "stockWeight": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": false,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "sum"
+            },
+            "rows": "symbol",
+            "cols": {
+              "_scenName": null
+            },
+            "chartOptions": {
+              "title": "Weight",
+              "xTitle": "Stock",
+              "yTitle": "Weight"
+            },
+            "data": "stock_weight",
+            "decimals": 2,
+            "userFilter": "symbol"
+          },
+          "stockWeight2": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": true,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "sum"
+            },
+            "rows": "symbol",
+            "cols": {
+              "_scenName": null
+            },
+            "chartOptions": {
+              "title": "Weight",
+              "xTitle": "Stock",
+              "yTitle": "Weight"
+            },
+            "data": "stock_weight",
+            "decimals": 2,
+            "userFilter": "stockWeight"
+          },
+          "dowVSindex": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "timeseries",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": true,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "count"
+            },
+            "rows": "date",
+            "cols": {
+              "Hdr": null,
+              "_scenName": null
+            },
+            "chartOptions": {
+              "title": "Dow Jones vs Index Fund",
+              "xTitle": "Date",
+              "yTitle": "Value",
+              "customLabels": {
+                "dj": "Dow Jones",
+                "index fund": "Index Fund"
+              }
+            },
+            "data": "dowvsindex",
+            "decimals": 2
+          }
+        },
+        "valueBoxes": {
+          "id": [
+            "error_test",
+            "error_train",
+            "error_ratio",
+            "testnegative",
+            "testpositive"
+          ],
+          "color": [
+            "#848991",
+            "#ffb327",
+            "#29B675",
+            "#29B675",
+            "#29B675"
+          ],
+          "icon": [
+            "smog",
+            "plug-circle-bolt",
+            "truck",
+            "truck",
+            "truck"
+          ],
+          "title": [
+            "error test",
+            "error train",
+            "error ratio",
+            "testnegative",
+            "testpositive"
+          ],
+          "prefix": [
+            "",
+            "$",
+            "+",
+            "+",
+            "+"
+          ],
+          "postfix": [
+            "",
+            "$",
+            "$",
+            "$",
+            "$"
+          ],
+          "redPositive": [
+            false,
+            true,
+            false,
+            false,
+            false
+          ],
+          "noColor": [
+            false,
+            false,
+            false,
+            true,
+            false
+          ],
+          "valueScalar": [
+            "obj",
+            "error_test",
+            "error_ratio",
+            "testnegative",
+            "testpositive"
+          ],
+          "decimals": [
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        "valueBoxesTitle": "Summary indicators"
+      },
+      "type": "dashboard"
+    }
   ],
   "theme": "browser",
   "defCompMode": "split",
@@ -625,10 +746,22 @@
     }
   ],
   "overwriteSheetOrder": {
-    "input": ["price", "_widgets"],
-    "output": ["stock_weight", "_scalars_out", "dowvsindex", "abserror", "pricemerge"]
+    "input": [
+      "price",
+      "_widgets"
+    ],
+    "output": [
+      "stock_weight",
+      "_scalars_out",
+      "dowvsindex",
+      "abserror",
+      "pricemerge"
+    ]
   },
-  "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
+  "hiddenOutputScalars": [
+    "firstdaytraining",
+    "lastdaytraining"
+  ],
   "readme": {
     "tabTitle": "Readme",
     "filename": "Readme.md",
@@ -692,7 +825,10 @@
   "outputGroups": [
     {
       "name": "Dow Jones vs. Index Fund 🙀",
-      "members": ["dowvsindex", "abserror"]
+      "members": [
+        "dowvsindex",
+        "abserror"
+      ]
     }
   ],
   "handsontable": {
