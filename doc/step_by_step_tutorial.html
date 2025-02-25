@@ -1758,9 +1758,7 @@ if __name__ == &quot;__main__&quot;:
                         >Configuration Mode</a
                       >.
                     </p>
-                    <pre><code class="language-bash">gamspy run miro --mode=&quot;config&quot; --path &lt;path_to_your_MIRO_installation&gt; --model &lt;path_to_your_model&gt;
-                  </code>
-              </pre>
+                    <pre><code class="language-bash">gamspy run miro --mode=&quot;config&quot; --path &lt;path_to_your_MIRO_installation&gt; --model &lt;path_to_your_model&gt;</code></pre>
                     <p>You should see the following:</p>
                     <div class="section-block">
                       <img
@@ -2900,7 +2898,7 @@ if __name__ == &quot;__main__&quot;:
                         (using <code class="language-r">battery_power</code> as
                         an example):
                       </p>
-                      <pre><code class="language-r"># Placeholder function must end with &quot;Output&quot;
+                      <pre><code class="language-R"># Placeholder function must end with &quot;Output&quot;
 mirorenderer_&lt;lowercaseSymbolName&gt;Output &lt;- function(id, height = NULL, options = NULL, path = NULL){
   ns &lt;- NS(id)
 }
@@ -2970,7 +2968,7 @@ renderMirorenderer_&lt;lowercaseSymbolName&gt; &lt;- function(input, output, ses
                         plot of the BESS storage level. Hence, we define one UI
                         element:
                       </p>
-                      <pre><code class="language-r"># Placeholder function
+                      <pre><code class="language-R"># Placeholder function
 mirorenderer_battery_powerOutput &lt;- function(id, height = NULL, options = NULL, path = NULL) {
     ns &lt;- NS(id)
     plotOutput(ns(&quot;cumsumPlot&quot;))
@@ -3150,7 +3148,7 @@ mirorenderer_battery_powerOutput &lt;- function(id, height = NULL, options = NUL
                         to a render function and assign it to the appropriate
                         output variable. The code should look like this:
                       </p>
-                      <pre><code class="language-r">storage_level &lt;- -cumsum(data$level)
+                      <pre><code class="language-R">storage_level &lt;- -cumsum(data$level)
 output$cumsumPlot &lt;- renderPlot({
     barplot(storage_level)
 })</code></pre>
@@ -3208,7 +3206,7 @@ output$cumsumPlot &lt;- renderPlot({
                         function in a sequence, improving the readability and
                         flow of your code.
                       </p>
-                      <pre><code class="language-r">max_storage &lt;- data[[&quot;_scalarsve_out&quot;]] %&gt;%
+                      <pre><code class="language-R">max_storage &lt;- data[[&quot;_scalarsve_out&quot;]] %&gt;%
   filter(scalar == &quot;battery_storage&quot;) %&gt;%
   pull(level)</code></pre>
                       <p>
@@ -3233,7 +3231,7 @@ output$cumsumPlot &lt;- renderPlot({
                         <summary>
                           Click to see the full code of the renderer
                         </summary>
-                        <pre><code class="language-r">mirorenderer_battery_powerOutput &lt;- function(id, height = NULL, options = NULL, path = NULL) {
+                        <pre><code class="language-R">mirorenderer_battery_powerOutput &lt;- function(id, height = NULL, options = NULL, path = NULL) {
     ns &lt;- NS(id)
     plotOutput(ns(&quot;cumsumPlot&quot;))
 }
@@ -3288,7 +3286,7 @@ renderMirorenderer_battery_power &lt;- function(input, output, session, data, op
                         hour. To change the hour we will add a slider. This
                         results in the following placeholder function:
                       </p>
-                      <pre><code class="language-r">mirorenderer_report_outputOutput &lt;- function(id, height = NULL, options = NULL, path = NULL) {
+                      <pre><code class="language-R">mirorenderer_report_outputOutput &lt;- function(id, height = NULL, options = NULL, path = NULL) {
   ns &lt;- NS(id)
   tagList(
     sliderInput(ns(&quot;hour&quot;), &quot;Hour:&quot;,
@@ -3340,7 +3338,7 @@ renderMirorenderer_battery_power &lt;- function(input, output, session, data, op
                         the city. You need to remember the order so that you
                         can assign the links correctly later.
                       </p>
-                      <pre><code class="language-r">node = list(
+                      <pre><code class="language-R">node = list(
   label = c(&quot;BESS&quot;, &quot;Generators&quot;, &quot;External Grid&quot;, &quot;City&quot;),
   color = c(&quot;blue&quot;, &quot;green&quot;, &quot;red&quot;, &quot;black&quot;),
   pad = 15,
@@ -3368,7 +3366,7 @@ renderMirorenderer_battery_power &lt;- function(input, output, session, data, op
                         which we get from our
                         <code class="language-r">input</code> parameter.
                       </p>
-                      <pre><code class="language-r">hour_to_display &lt;- sprintf(&quot;hour%02d&quot;, input$hour)</code></pre>
+                      <pre><code class="language-R">hour_to_display &lt;- sprintf(&quot;hour%02d&quot;, input$hour)</code></pre>
                       <p>
                         Note that we use
                         <a
@@ -3412,13 +3410,13 @@ renderMirorenderer_battery_power &lt;- function(input, output, session, data, op
                         combination. Here you see how to do it for the
                         <code class="language-r">battery_power</code>:
                       </p>
-                      <pre><code class="language-r">battery_to_display &lt;- filter(data, power_output_header == &quot;battery&quot;) %&gt;%
+                      <pre><code class="language-R">battery_to_display &lt;- filter(data, power_output_header == &quot;battery&quot;) %&gt;%
   filter(j == hour_to_display)</code></pre>
                       <details>
                         <summary>
                           Click to see the other two power sources
                         </summary>
-                        <pre><code class="language-r">gen_to_display &lt;- filter(data, power_output_header == &quot;generators&quot;) %&gt;%
+                        <pre><code class="language-R">gen_to_display &lt;- filter(data, power_output_header == &quot;generators&quot;) %&gt;%
   filter(j == hour_to_display)
 extern_to_display &lt;- filter(data, power_output_header == &quot;external_grid&quot;) %&gt;%
   filter(j == hour_to_display)</code></pre>
@@ -3436,7 +3434,7 @@ extern_to_display &lt;- filter(data, power_output_header == &quot;external_grid&
                         the city to the BESS or the other way around! Here is a
                         way to add the BESS links:
                       </p>
-                      <pre><code class="language-r"># go over each source and check if they exist and if so add the corresponding link
+                      <pre><code class="language-R"># go over each source and check if they exist and if so add the corresponding link
 if (dim(battery_to_display)[1] != 0) {
   # for the battery need to check if is charged, or discharged
   if (battery_to_display[[&quot;value&quot;]] &gt; 0) {
@@ -3457,7 +3455,7 @@ if (dim(battery_to_display)[1] != 0) {
                         <summary>
                           Click to see the other two power sources
                         </summary>
-                        <pre><code class="language-r">if (dim(gen_to_display)[1] != 0) {
+                        <pre><code class="language-R">if (dim(gen_to_display)[1] != 0) {
   sankey_source &lt;- c(sankey_source, 1)
   sankey_target &lt;- c(sankey_target, 3)
   sankey_value &lt;- c(sankey_value, gen_to_display[[&quot;value&quot;]])
@@ -3477,7 +3475,7 @@ if (dim(extern_to_display)[1] != 0) {
                         the
                         <code class="language-r">sliderInput()</code> function:
                       </p>
-                      <pre><code class="language-r">animate = animationOptions(
+                      <pre><code class="language-R">animate = animationOptions(
   interval = 1000, loop = FALSE,
   playButton = actionButton(&quot;play&quot;, &quot;Play&quot;, icon = icon(&quot;play&quot;), style = &quot;margin-top: 10px;&quot;),
   pauseButton = actionButton(&quot;pause&quot;, &quot;Pause&quot;, icon = icon(&quot;pause&quot;), style = &quot;margin-top: 10px;&quot;)
@@ -3491,7 +3489,7 @@ if (dim(extern_to_display)[1] != 0) {
                         <summary>
                           Click to see the code of the full renderer
                         </summary>
-                        <pre><code class="language-r">mirorenderer_report_outputOutput &lt;- function(id, height = NULL, options = NULL, path = NULL) {
+                        <pre><code class="language-R">mirorenderer_report_outputOutput &lt;- function(id, height = NULL, options = NULL, path = NULL) {
   ns &lt;- NS(id)
   tagList(
     sliderInput(ns(&quot;hour&quot;), &quot;Hour:&quot;,
@@ -3711,7 +3709,7 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
                           >"BatteryStorage": "customCode"</code
                         >, instead of a view configuration as before:
                       </p>
-                      <pre><code class="language-r">&quot;dataViewsConfig&quot;: {
+                      <pre><code class="language-R">&quot;dataViewsConfig&quot;: {
   &quot;BatteryStorage&quot;: &quot;customCode&quot;,
   ...
 }</code></pre>
@@ -3746,7 +3744,7 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
                         but as long as it’s inside the renderer, the order
                         doesn’t matter.
                       </p>
-                      <pre><code class="language-r">renderMirorenderer__scalarsve_out &lt;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+                      <pre><code class="language-R">renderMirorenderer__scalarsve_out &lt;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
 
   ...
 
@@ -3858,7 +3856,7 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
                           ><code class="language-r">DT:DTOutput()</code></a
                         >:
                       </p>
-                      <pre><code class="language-r">mirorenderer_timewise_load_demand_and_cost_external_grid_dataOutput &lt;- function(id, height = NULL, options = NULL, path = NULL){
+                      <pre><code class="language-R">mirorenderer_timewise_load_demand_and_cost_external_grid_dataOutput &lt;- function(id, height = NULL, options = NULL, path = NULL){
   ns &lt;- NS(id)
   fluidRow(
     column(width = 12, plotOutput(ns(&quot;timeline&quot;))),
@@ -3885,7 +3883,7 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
                           ><code class="language-r">DT:formatRound()</code></a
                         >:
                       </p>
-                      <pre><code class="language-r">output$table &lt;- DT::renderDT({
+                      <pre><code class="language-R">output$table &lt;- DT::renderDT({
   DT::datatable(data, editable = TRUE, rownames = FALSE, options = list(scrollX = TRUE)) %&gt;%
     DT::formatRound(c(&quot;cost_external_grid&quot;), digits = 2L)
 })</code></pre>
@@ -3895,7 +3893,7 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
                         crucial—it allows users to modify the table entries.
                         For the plot, we need something like this:
                       </p>
-                      <pre><code class="language-r">output$timeline &lt;- renderPlot({
+                      <pre><code class="language-R">output$timeline &lt;- renderPlot({
   ...
 })</code></pre>
                       <p>
@@ -3921,7 +3919,7 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
                       </p>
                       <details>
                         <summary>Click to see the code</summary>
-                        <pre><code class="language-r">renderMirorenderer_timewise_load_demand_and_cost_external_grid_data &lt;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){
+                        <pre><code class="language-R">renderMirorenderer_timewise_load_demand_and_cost_external_grid_data &lt;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){
   # return the render for the placeholder &quot;table&quot;
   output$table &lt;- DT::renderDT({
     DT::datatable(data, editable = TRUE, rownames = FALSE, options = list(scrollX = TRUE)) %&gt;%
@@ -3997,7 +3995,7 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
                           >reactiveValues</a
                         >.
                       </p>
-                      <pre><code class="language-r">rv &lt;- reactiveValues(
+                      <pre><code class="language-R">rv &lt;- reactiveValues(
   timewise_input_data = NULL
 )</code></pre>
                       <p>
@@ -4012,7 +4010,7 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
                         the initial <code class="language-r">data</code>. If it
                         changes we set our reactive value to the data.
                       </p>
-                      <pre><code class="language-r">observe({
+                      <pre><code class="language-R">observe({
   rv$timewise_input_data &lt;- data
 })</code></pre>
                       <p>
@@ -4039,7 +4037,7 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
                         <code class="language-r">rv</code> do not trigger this
                         <code class="language-r">observe()</code> function.
                       </p>
-                      <pre><code class="language-r"># observe if the table is edited
+                      <pre><code class="language-R"># observe if the table is edited
 observe({
   input$table_cell_edit
 
@@ -4078,7 +4076,7 @@ observe({
                         again so that the function is not called if
                         <code class="language-r">rv</code> changes!
                       </p>
-                      <pre><code class="language-r">tableProxy &lt;- DT::dataTableProxy(&quot;table&quot;)
+                      <pre><code class="language-R">tableProxy &lt;- DT::dataTableProxy(&quot;table&quot;)
 resetTable &lt;- function() {
   DT::replaceData(tableProxy, isolate(rv$timewise_input_data), resetPaging = FALSE, rownames = FALSE)
 }</code></pre>
@@ -4093,7 +4091,7 @@ resetTable &lt;- function() {
                         <summary>
                           Click to see the full code of the current state
                         </summary>
-                        <pre><code class="language-r">renderMirowidget_timewise_load_demand_and_cost_external_grid_data &lt;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+                        <pre><code class="language-R">renderMirowidget_timewise_load_demand_and_cost_external_grid_data &lt;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
   # The whole code is run at the beginning, even though no actions are performed yet.
   # init is used to only perform action in observe() after this initial run.
   # Therefore, it is set to TRUE in the last occurring observe()
@@ -4256,7 +4254,7 @@ resetTable &lt;- function() {
                         <code class="language-r">True</code> in the last
                         <code class="language-r">observe()</code> block.
                       </p>
-                      <pre><code class="language-r">if (!init) {
+                      <pre><code class="language-R">if (!init) {
   init &lt;&lt;- TRUE
   return()
 }</code></pre>
@@ -4275,12 +4273,12 @@ resetTable &lt;- function() {
                         new data to the model. Otherwise
                         <em>Solve model</em> would still use the old data!
                       </p>
-                      <pre><code class="language-r">return(reactive({
+                      <pre><code class="language-R">return(reactive({
   rv$timewise_input_data
 }))</code></pre>
                       <details>
                         <summary>Click to see the full code</summary>
-                        <pre><code class="language-r">renderMirowidget_timewise_load_demand_and_cost_external_grid_data &lt;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+                        <pre><code class="language-R">renderMirowidget_timewise_load_demand_and_cost_external_grid_data &lt;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
   # The whole code is run at the beginning, even though no actions are performed yet.
   # init is used to only perform action in observe() after this initial run.
   # Therefore, it is set to TRUE in the last occurring observe()
@@ -4524,7 +4522,7 @@ resetTable &lt;- function() {
                         add several import functions, which should have the
                         following signature:
                       </p>
-                      <pre><code class="language-r">miroimport_&lt;importerName&gt; &lt;- function(symNames, localFile = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
+                      <pre><code class="language-R">miroimport_&lt;importerName&gt; &lt;- function(symNames, localFile = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
 
 }</code></pre>
                       <p>
@@ -4606,7 +4604,7 @@ resetTable &lt;- function() {
                         before, just changing the names to see that it actually
                         imported the new data.
                       </p>
-                      <pre><code class="language-r">miroimport_GenSpecs &lt;- function(symbolNames, localFile = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
+                      <pre><code class="language-R">miroimport_GenSpecs &lt;- function(symbolNames, localFile = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
   # Let&#39;s say this is your result
   generator_specifications &lt;- tibble(
       i = c(&quot;gen3&quot;, &quot;gen4&quot;, &quot;gen5&quot;),
@@ -4659,7 +4657,7 @@ resetTable &lt;- function() {
                         <code class="language-r">Sys.getenv()</code> inside
                         your importer, for example:
                       </p>
-                      <pre><code class="language-r">miroimport_GenSpecs &lt;- function(symbolNames, localFile = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
+                      <pre><code class="language-R">miroimport_GenSpecs &lt;- function(symbolNames, localFile = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
 
     # Where you get your data from depends on your data structures.
     # Let&#39;s say we have a MySQL database that contains our generator specifications.
@@ -4709,7 +4707,7 @@ resetTable &lt;- function() {
                         directory first, which should have the following
                         signature:
                       </p>
-                      <pre><code class="language-r">miroexport_&lt;exporterName&gt; &lt;- function(data, path = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
+                      <pre><code class="language-R">miroexport_&lt;exporterName&gt; &lt;- function(data, path = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
 
 }</code></pre>
                       <p>
@@ -4852,7 +4850,7 @@ resetTable &lt;- function() {
                         <summary>
                           Click to see the code for the custom exporter
                         </summary>
-                        <pre><code class="language-r">miroexport_Markdown &lt;- function(data, path = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
+                        <pre><code class="language-R">miroexport_Markdown &lt;- function(data, path = NULL, views = NULL, attachments = NULL, metadata = NULL, customRendererDir = NULL, ...) {
     # First, extract the values you want to display.
     total_cost &lt;- data[[&quot;_scalars_out&quot;]] %&gt;%
         filter(scalar == &quot;total_cost&quot;) %&gt;%
