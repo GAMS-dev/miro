@@ -66,6 +66,7 @@ pushd src/model/gamspy > /dev/null
     cp -R cpack miro_lib_gamspy
     cp -R sudoku miro_lib_gamspy
     cp -R vehicle_routing_tw miro_lib_gamspy
+    cp -R bess miro_lib_gamspy
     cp -R tsp miro_lib_gamspy
     $ZIP_TOOL -r GAMS-MIRO-Demo-Apps-GAMSPy.zip miro_lib_gamspy -x "*.DS_Store"
 popd > /dev/null
