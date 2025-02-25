@@ -850,20 +850,23 @@ report_output[j, &quot;load_demand&quot;] = load_demand[j]</code></pre>
                       optimization models. Log files are key to checking the
                       consistency of input data, and generating reports on
                       inconsistencies helps prevent errors and user
-                      frustration. Here we will only verifying that our input
+                      frustration. Here we will only verify that our input
                       values are all non-negative. While finding effective
                       validation checks can be challenging, clearly identifying
                       the constraints or values causing infeasibility can
-                      significantly improve the user experience. In MIRO, you
-                      have the option to create a custom log file. However,
-                      since we are using GAMSPy, we can also directly write to
-                      stdout and log there. And if we here follow the specified
+                      significantly improve the user experience.
+                    </p>
+                    <p>
+                      In MIRO, you have the option to create a custom log file.
+                      However, since we are using GAMSPy, we can also directly
+                      write to stdout for logging. If we follow the specified
                       <a
                         href="https://www.gams.com/miro/configuration_general.html#miro-log-syntax"
                         target="_blank"
                         >MIRO log syntax</a
-                      >, any invalid data can be highlighted directly above the
-                      corresponding input data sheet in MIRO.
+                      >
+                      here, any invalid data will be highlighted directly above
+                      the corresponding input data sheet in MIRO.
                     </p>
                     <p>
                       The syntax that must be used for MIRO to jump directly to
@@ -1862,7 +1865,7 @@ if __name__ == &quot;__main__&quot;:
                         >Input Widgets</a
                       >
                       section. Let’s take a look at our scalar inputs first. We
-                      can choose between sliders, drop-down menus, checkboxes,
+                      can choose between sliders, drop down menus, checkboxes,
                       or numeric inputs. Here, we’ll set them to sliders. If we
                       don’t want to impose any restrictions on the value
                       (minimum, maximum and increment), we would stay with
@@ -1957,7 +1960,7 @@ if __name__ == &quot;__main__&quot;:
                       automatically saved to
                       <span class="code">&lt;model_name&gt;.json</span>. In the
                       documentation you will find the corresponding json
-                      snippets you would need to add, but don’t worry, this is
+                      snippets you would need to add, but don't worry, this is
                       exactly what the Configuration Mode does when you save a
                       graph!
                     </p>
@@ -1978,17 +1981,17 @@ if __name__ == &quot;__main__&quot;:
                         >scenario comparison modes</a
                       >
                       that allow to compare the input and/or output data of
-                      different model runs. In addition to these built-in (and
-                      other customizable) modes, MIRO also allows you to call
-                      up your own external analysis scripts for one or multiple
-                      scenarios. In the next section, we will introduce a
-                      dashboard for our output, which allows for direct
-                      comparison (<a
+                      different model runs. While most compare modes are
+                      available out of the box, you can enable a dashboard for
+                      scenario data comparison with some some app-specific
+                      configuration. We will introduce the
+                      <a
                         href="https://www.gams.com/miro/configuration_json_only.html#dashboard-compare"
                         target="_blank"
                         >dashboard compare</a
-                      >). The process for setting this up will be explained
-                      after the dashboard is
+                      >
+                      in the next section. The process for setting this up will
+                      be explained after the regular dashboard renderer is
                       <a href="#dashboard-comparison">introduced</a>.
                     </p>
                   </div>
@@ -2472,7 +2475,7 @@ if __name__ == &quot;__main__&quot;:
                       />
                     </div>
                     <p>
-                      Now that we’ve combined multiple outputs into a single
+                      Now that we've combined multiple outputs into a single
                       dashboard, it makes sense to hide the tabs for the
                       individual output symbols and rename the dashboard tab
                       for clarity (in the config mode). Just a heads up, you
@@ -2489,21 +2492,22 @@ if __name__ == &quot;__main__&quot;:
                   </div>
                   <!--//section-block-->
                   <div id="dashboard-comparison" class="section-block">
-                    <h3 class="block-title">Dashboard Comparisons</h3>
+                    <h3 class="block-title">Dashboard Comparison</h3>
                     <p>
-                      As mentioned above, we will now take a quick look at how
-                      to compare your dashboard for different scenarios. If you
-                      just want to
+                      As mentioned before, MIRO provides three built-in
                       <a
                         href="https://www.gams.com/miro/start.html#scenario-comparison"
                         target="_blank"
-                        >compare scenarios</a
-                      >, the quickest way is under the
-                      <em>Compare scenarios</em> tab. Here you can select
-                      previously saved scenarios or the current sandbox. This
-                      allows you to analyze them side by side. As an example,
-                      we will compare our default setting with a scenario where
-                      we set the cost of BESS to zero:
+                        >scenario comparison</a
+                      >
+                      modes, accessible under the
+                      <em>Compare scenarios</em> tab. The
+                      <em>Split view</em> comparison mode displays two
+                      scenarios side by side, showing all configured renderers
+                      for both input and output symbols—this includes the
+                      previously created dashboard. As an example, we will
+                      compare our default setting with a scenario where we set
+                      the cost of BESS to zero:
                     </p>
                     <div class="section-block">
                       <img
@@ -2514,31 +2518,33 @@ if __name__ == &quot;__main__&quot;:
                       />
                     </div>
                     <p>
-                      In addition to the <em>Split view</em>, you can also
-                      select the <em>Pivot view</em> and <em>Tab view</em>. The
-                      <em>Pivot view</em> combines all scenarios into one
-                      table, on which you can then use the pivot tool, which we
-                      already used a lot. In the <em>Tab view</em> you can
-                      select as many scenarios as you want, but you cannot see
-                      them side by side.
+                      If you need to compare more than two scenarios, you can
+                      use the <em>Tab view</em> comparison mode, which
+                      organizes any number of scenarios (and their renderers)
+                      into separate tabs. Finally, the
+                      <em>Pivot view</em> comparison mode merges all scenario
+                      data into one pivot table for each symbol. It is the same
+                      pivot tool with its many possibilities that we have
+                      already used so much.
                     </p>
                     <p>
-                      If these three options aren’t enough, you can add your
-                      own
+                      In addition to these ready-to-use comparison modes and
                       <a
                         href="https://www.gams.com/miro/configuration_json_only.html#custom-compare-mode"
                         target="_blank"
-                        >comparisons</a
-                      >. Here we will add a custom comparison mode to our
+                        >custom compare modules</a
+                      >, there is another one,
                       <a
                         href="https://www.gams.com/miro/configuration_json_only.html#dashboard-compare"
                         target="_blank"
-                        >Dashboard</a
-                      >.
+                        >dashboard comparison mode</a
+                      >, which must be configured specifically for the app
+                      before it can be used. We will do this in the following.
                     </p>
                     <p>
-                      The configuration can be largely adopted, we just need to
-                      make some small adjustments:
+                      The configuration of our regular dashboard renderer can
+                      be largely adopted, we just need to make some small
+                      adjustments:
                     </p>
                     <ol type="1">
                       <li>
@@ -2561,22 +2567,13 @@ if __name__ == &quot;__main__&quot;:
                           data by default. As a result, you don’t need to
                           manually list each symbol under
                           <code class="language-json">additionalData</code>.
+                          This also means that the symbol data to be used for a
+                          chart/table must be specified in each view in
+                          <code class="language-json">"dataViewsConfig"</code>
+                          (<code class="language-json">"data"</code>
+                          property). However, if you have followed the
+                          tutorial, this was already done for all views.
                         </p>
-                        <ol>
-                          <li>
-                            Therefore, the symbol data to be used for a
-                            chart/table must be specified in each view in
-                            <code class="language-json"
-                              >"dataViewsConfig"</code
-                            >
-                            (<code class="language-json">"data"</code>
-                            property). However, if you have followed the
-                            tutorial, this is already done for all views, since
-                            we specified our dashboard on the symbol
-                            <code class="language-json">"_scalarsve_out"</code
-                            >, while all views dependent on other symbols!
-                          </li>
-                        </ol>
                       </li>
                       <li>
                         <p>
@@ -2651,8 +2648,10 @@ if __name__ == &quot;__main__&quot;:
                       <code class="language-json">"_scenName"</code> dimension
                       must be added in the views under
                       <code class="language-json">"dataViewsConfig"</code>. If
-                      you do not want to pre-select a scenario, but want to
-                      show all selected scenarios, leave the value at
+                      you put that dimension into the
+                      <code class="language-json">"cols"</code> section and
+                      don't not want to pre-select a scenario (but show all
+                      selected scenarios instead), leave the value at
                       <code class="language-json">null</code>.
                     </p>
                     <pre><code class="language-json">&quot;dataViewsConfig&quot;: {
@@ -2674,8 +2673,8 @@ if __name__ == &quot;__main__&quot;:
                       The <em>Pivot view</em> comparison mode can help prepare
                       the views, just as we prepared the views for the
                       dashboard. In the dashboard, we used stacked bar charts.
-                      If you start *Compare scenarios* in the *Pivot view* for
-                      the
+                      If you start <em>Compare scenarios</em> in the
+                      <em>Pivot view</em> for the
                       <code class="language-python">"report_output"</code>
                       symbol, it will look like this:
                     </p>
@@ -2689,31 +2688,43 @@ if __name__ == &quot;__main__&quot;:
                     </div>
                     <p>
                       As you can see, the values for both scenarios are stacked
-                      on top of each other, so it’s no longer easy to see if
-                      the load is fulfilled. Additionally, comparing the
-                      scenarios becomes difficult. To fix this, we need to add
-                      <code class="language-json"
-                        >"groupDimension": "_scenName"</code
-                      >
-                      to the
-                      <code class="language-json">"chartOptions"</code> of our
-                      view to group the stacked bars by scenario. We can also
-                      adjust the coloring so that the value for, e.g.,
-                      <code class="language-python">"generators"</code>, is the
-                      same across all scenarios. Click the
+                      on top of each other, so it's no longer easy to see if
+                      the load is fulfilled. Comparing the scenarios becomes
+                      difficult. To fix this, click the
                       <img
                         src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/square-plus.svg"
                         width="15"
                         height="15"
                       />
-                      icon to add a new view. Under the Series Styling tab, you
-                      can specify custom colors. Here, you can either manually
-                      assign the same color to symbols or specify it by
-                      dimension (<a
+                      icon to add a new view (or the <em>edit</em> button to
+                      edit an existing one). In the view settings dialog that
+                      opens, find "Group stacks by dimension" and add the
+                      scenario dimension. This will group the stacked bars by
+                      scenario.
+                    </p>
+                    <p>
+                      We can also adjust the coloring so that the value for,
+                      e.g.,
+                      <code class="language-python">"generators"</code>, is the
+                      same across all scenarios. The "Series Styling" tab in
+                      the view menu allows to assign custom colors to
+                      individual series. So you could assign the same color to
+                      each series containing
+                      <code class="language-python">"generators"</code>. Keep
+                      in mind that this approach is not generic as the scenario
+                      name is part of the dimensions. A generic,
+                      scenario-independent approach is to define a color
+                      pattern for all series that contain
+                      <code class="language-python">"generators"</code>. This
+                      can be done in the JSON file itself (read more about this
+                      <a
                         href="https://www.gams.com/miro/charts.html#series-patterns"
                         target="_blank"
-                        >documentation</a
-                      >). The <code class="language-json">"Balance"</code> view
+                        >here</a
+                      >).
+                    </p>
+                    <p>
+                      The <code class="language-json">"Balance"</code> view
                       could look like this:
                     </p>
                     <pre><code class="language-json">"Balance": {
@@ -2769,12 +2780,13 @@ if __name__ == &quot;__main__&quot;:
   "userFilter": "_scenName"
 }</code></pre>
                     <p>
-                      By default the value boxes are empty, to change this a
-                      drop down menu appears in the appears in the dashboard
-                      above the value boxes. Here you can select the scenario
-                      from which to display the values. Now you can see
-                      directly how the cost of the BESS affects the use of the
-                      generators, etc.
+                      The scenario comparison dashboard is ready! It now
+                      displays the data of all selected scenarios in the
+                      dashboard we are familiar with. The value boxes are empty
+                      by default. You can use a drop down menu above them to
+                      select a scenario from which the corresponding values are
+                      displayed. Now you can see directly how the costs of the
+                      BESS affect the use of the generators etc.
                     </p>
                     <div class="section-block">
                       <img
@@ -3867,15 +3879,15 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
   ...
 })</code></pre>
                     <p>
-                      We have two variables in different dimensions (<code
+                      We have two variables measured in different units (<code
                         class="language-r"
                         >load_demand</code
                       >
                       in W and
-                      <code class="language-r">cost_external_grid</code> in $).
-                      We now want to display them in a single plot, see for
-                      yourself what the rest of the code should look like. You
-                      could use
+                      <code class="language-r">cost_external_grid</code> in $),
+                      and we want to display them on the same plot. Take a look
+                      at the remaining code to see how it might be structured.
+                      One approach is to use
                       <a
                         href="https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/par"
                         target="_blank"
@@ -4368,11 +4380,13 @@ resetTable &lt;- function() {
                       Congratulations—our new custom widget combines a table
                       and a plot, with both updating interactively. At this
                       point, <em>Solve model</em> will use our updated table
-                      whenever we change values and re-run the model. Now that
-                      you’ve mastered the basics of custom renderers in MIRO,
-                      you can explore more creative implementations. If you
-                      need more inspiration on what you can do with the custom
-                      renderer, take a look at the
+                      whenever we change values and re-run the model.
+                    </p>
+                    <p>
+                      Now that you’ve mastered the basics of custom renderers
+                      in MIRO, you can explore more creative implementations.
+                      If you need more inspiration on what you can do with the
+                      custom renderer, take a look at the
                       <a href="https://miro.gams.com/" target="_blank"
                         >MIRO gallery</a
                       >, e.g. take a look at some applications with maps (<a
