@@ -986,10 +986,7 @@
       "title": "MIRO busy",
       "desc": "MIRO is still busy extracting the model files in your workspace. Please wait and try again."
     },
-    "gamsTerm":{
-      "title":"Error terminating gams.exe",
-      "desc":"Some error occurred terminating GAMS."
-    },
+    "gamsTerm": "Some error occurred terminating GAMS (e.g. process is already finished).",
     "readLog":{
       "title":"Error reading log file",
       "desc":"Some error occurred reading the GAMS log file."

@@ -1,0 +1,217 @@
+# Copyright GAMS Development Corp. All Rights Reserved.
+# SPDX-License-Identifier: GPL-3.0-only
+
+global:
+  rootPath: '/'
+  # Global Docker image registry
+  imageRegistry: ''
+  # imagePullSecrets:
+  #   - registryKeySecretName
+  imagePullSecrets: []
+  # nodeSelector: Node labels for pod assignment
+  nodeSelector: {}
+  # tolerations: tolerations for pod assignment
+  tolerations: []
+  # nodeSelector: Node labels for pod assignment of stateful sets (database)
+  nodeSelectorSts: {}
+  # tolerationsSts: tolerations for pod assignment of stateful sets (database)
+  tolerationsSts: []
+  networkPolicy:
+    enabled: true
+    # The IP adress of the Kubernetes API Server.
+    # kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}'
+    apiServerIp: ''
+  securityContext:
+    enabled: true
+  # Labels to add to all deployed resources
+  commonLabels: {}
+  # Annotations to add to all deployed resources
+  commonAnnotations: {}
+image:
+  # Global tag of the images. If not specified, AppVersion is used.
+  tag: ''
+
+proxy:
+  image:
+    registry: docker.io/gams
+    repository: miro-proxy
+    tag: ''
+  resources:
+    requests:
+      cpu: '200m'
+      memory: 500Mi
+    limits:
+      cpu: '2000m'
+      memory: 750Mi
+  service:
+    type: ClusterIP # ClusterIP or NodePort
+    # only relevant if type is NodePort. If not provided, a random port within the NodePort range is used.
+    nodePort: ''
+  networkPolicy:
+    allowEgressPublicNetworks: true
+    # Add extra ingress rules to the NetworkPolicy
+    # (only relevent if global.networkPolicy.enabled is true)
+    # Example:
+    #   - ports:
+    #     - protocol: TCP
+    #       port: 9090
+    #   from:
+    #     - namespaceSelector:
+    #         matchLabels:
+    #           name: monitoring
+    #     - podSelector:
+    #         matchLabels:
+    #           app: prometheus
+    extraIngress: []
+  podAnnotations: {}
+  config:
+    title: GAMS MIRO Server
+    language: en # en, de or cn
+    colorTheme: default
+    maxTotalInstances: -1 # -1 for unlimited
+    maxUploadSizeMB: 200
+    forceSignedApps:
+      enabled: false
+      acceptedPublicKeysPEM: []
+    logo:
+      enabled: false # whether to use custom logo (visibile on login page, only PNG supported)
+      path: '' # local path to logo file
+      base64: '' # alternatively, base64-encoded logo
+      # If both path and base64 are specified, base64 is used.
+    favicon:
+      enabled: false # whether to use custom favicon
+      path: '' # local path to favicon file (.ico)
+      base64: '' # alternatively, base64-encoded favicon
+      # If both path and base64 are specified, base64 is used.
+    customCSS:
+      enabled: false # whether to use custom CSS
+      path: '' # local path to CSS file
+      base64: '' # alternatively, base64-encoded CSS
+      # If both path and base64 are specified, base64 is used.
+    disableReadonlyMode: false
+    anonymousReadonlyMode: false
+    containerWaitTimeSeconds: 300
+    security:
+      sameSiteCookie: Lax # Lax or Strict. Change this only if you are aware of the consequences
+      xFrameOptionsHeader: sameorigin # sameorigin, disable or allow-from https://example.com
+      secureCookies: true
+    authentication: password # password, openid or none
+    openid:
+      authUrl: ''
+      tokenUrl: ''
+      jwksUrl: ''
+      logoutUrl: ''
+      clientId: ''
+      clientSecret: ''
+      withPKCE: false
+    engine:
+      apiUrl: ''
+      namespace: ''
+      anonymousUser: ''
+      anonymousPassword: ''
+    metrics:
+      enabled: false
+      port: 9090
+
+auth:
+  image:
+    registry: docker.io/gams
+    repository: miro-auth
+    tag: ''
+  resources:
+    requests:
+      cpu: '100m'
+      memory: 250Mi
+    limits:
+      cpu: '400m'
+      memory: 500Mi
+  service:
+    type: ClusterIP # ClusterIP or NodePort
+    # only relevant if type is NodePort. If not provided, a random port within the NodePort range is used.
+    nodePort: ''
+  networkPolicy:
+    allowEgressPublicNetworks: true
+    # Add extra ingress rules to the NetworkPolicy
+    # (only relevent if global.networkPolicy.enabled is true)
+    # Example:
+    #   - ports:
+    #     - protocol: TCP
+    #       port: 9090
+    #   from:
+    #     - namespaceSelector:
+    #         matchLabels:
+    #           name: monitoring
+    #     - podSelector:
+    #         matchLabels:
+    #           app: prometheus
+    extraIngress: []
+  podAnnotations: {}
+
+miro:
+  image:
+    registry: docker.io/gams
+    repository: miro-ui
+    tag: ''
+  resources:
+    requests:
+      cpu: '450m'
+      memory: 1700Mi
+    limits:
+      cpu: '2000m'
+      memory: 1700Mi
+  networkPolicy:
+    allowEgressPublicNetworks: true
+    # Add extra egress rules to the NetworkPolicy
+    # (only relevent if global.networkPolicy.enabled is true)
+    extraEgress: []
+  podAnnotations: {}
+
+admin:
+  image:
+    registry: docker.io/gams
+    repository: miro-admin
+    tag: ''
+  resources:
+    requests:
+      cpu: '450m'
+      memory: 1700Mi
+    limits:
+      cpu: '2000m'
+      memory: 1700Mi
+  podAnnotations: {}
+
+db:
+  image:
+    registry: docker.io
+    repository: postgres
+    tag: '17-alpine'
+  user: 'GMSMASTER'
+  password: ''
+  name: 'gamsmiro'
+  volumeSize: 5Gi
+  resources:
+    requests:
+      cpu: '100m'
+      memory: 1024Mi
+    limits:
+      cpu: '400m'
+      memory: 3072Mi
+  podAnnotations: {}
+
+persistence:
+  type: 'local' # local or efs
+  efs:
+    fileSystemId: 'fs-12345678' # The EFS File System ID
+    accessPointId: '' # Optional, for EFS Access Points
+    storageClass: 'efs-sc' # EFS storage class. NOTE: You need to manually install this storage class in the cluster!
+    mountTargets: [] # relevant if global.networkPolicy.enabled is "true"
+  local:
+    path: '/mnt/localstorage'
+
+ingress:
+  enabled: false
+  annotations: {}
+  className: ''
+  tls: false
+  tlsSecretName: ''
+  hostname: example.com

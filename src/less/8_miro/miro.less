@@ -769,18 +769,18 @@ animation: none !important;
 .hc-widget-group-title {
   margin-bottom: 10px;
   background: none;
-  background-color: #ecf1f4;
+  .responsiveDark({
+    background-color: #ecf1f4;
+  },
+  {
+    background-color: #292d32;
+  });
 }
 @media only screen and (max-width: 991px){
   .hc-widget-group-title {
     margin-left: -15px;
     margin-right: -15px;
   }
-}
-@media (prefers-color-scheme: dark) {
-    .hc-widget-group-title {
-        background-color: #292d32;
-    }
 }
 /* material checkboxes */
 .cb-label{
@@ -3026,17 +3026,17 @@ li.drop-index-item[data-col-hidden="true"] {
     min-height: 25px;
 }
 .dashboard-css .custom-info-box {
-  background-color: #ecf0f5;
-  box-shadow: rgba(60, 64, 67, .3) 0 1px 1px 0, rgba(60, 64, 67, .15) 0 4px 8px 1px;
-  border: 1px solid #d5d9d9;
-}
-@media (prefers-color-scheme:dark){
-  .dashboard-css .custom-info-box {
+  .responsiveDark({
+    background-color: #ecf0f5;
+    box-shadow: rgba(60, 64, 67, .3) 0 1px 1px 0, rgba(60, 64, 67, .15) 0 4px 8px 1px;
+    border: 1px solid #d5d9d9;
+  },
+  {
     background-color: #292d33;
     box-shadow: 0 1px 1px #1d2121;
     box-shadow: rgba(29, 33, 33, 0.3) 0 2px 1px 0, rgba(29, 33, 33, 0.3) 0 4px 8px 1px;
     border: 1px solid #121314;
-  }
+  });
 }
 .dashboard-css .box-styles {
     flex-grow: 1;
@@ -3259,10 +3259,12 @@ li.drop-index-item[data-col-hidden="true"] {
     min-width: 280px;
     /*height:300px; */
 }
-@media (prefers-color-scheme:dark){
-  .dashboard-css .nav-pills>li>a {
-    color: #eee;
-  }
+.dashboard-css .nav-pills>li>a {
+  .responsiveDark({
+  },
+  {
+      color: #eee;
+  });
 }
 .dashboard-css .dashboard-btn {
   float: right;

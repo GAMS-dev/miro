@@ -1,0 +1,51 @@
+{{- /*
+Copyright GAMS Development Corp. All Rights Reserved.
+SPDX-License-Identifier: GPL-3.0-only
+*/}}
+
+---
+apiVersion: v1
+kind: ServiceAccount
+automountServiceAccountToken: false
+metadata:
+  name: {{ include "common.names.fullname" . }}-proxy-sa
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.global.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "common.names.fullname" . }}-proxy-rl
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.global.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
+rules:
+  - apiGroups: [ "" ]
+    resources: [ "pods" ]
+    verbs: [ "get", "list", "watch", "create", "update", "patch", "delete" ]
+  - apiGroups: [ "" ]
+    resources: [ "events" ]
+    verbs: [ "get", "list", "watch", "create", "update", "patch", "delete" ]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "common.names.fullname" . }}-proxy-rb
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.global.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "common.names.fullname" . }}-proxy-sa
+    namespace: {{ .Release.Namespace | quote }}
+roleRef:
+  kind: Role
+  name: {{ include "common.names.fullname" . }}-proxy-rl
+  apiGroup: rbac.authorization.k8s.io

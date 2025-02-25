@@ -34,7 +34,10 @@ variables:
     description: 'Force release even if tests fail (yes/no)?'
   SKIP_TESTS:
     value: 'no'
-    description: 'Skip tests on Windows/macOS (yes/no)?'
+    description: 'Skip tests on branch pipelines (yes/no)?'
+  RUN_TESTS_MASTER:
+    value: 'no'
+    description: 'Run tests on master branch (default is no as tests already ran on rc branch) (yes/no)?'
   MIRO_MAX_TEST_FAILURES:
     value: '1'
     description: 'Maximum number of tests allowed to fail before the job fails'
@@ -48,10 +51,23 @@ variables:
     value: 'no'
     description: 'Push MIRO Server images to registry.gams.com (tagged as unstable on develop and feature on feature branches) (yes/no)?'
 
-.assume_role: &assume_role
+.assume_role_s3: &assume_role_s3
   - >
     STS=($(aws sts assume-role-with-web-identity
     --role-arn ${AWS_S3_ROLE_ARN}
+    --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
+    --web-identity-token $ID_TOKEN
+    --duration-seconds 3600
+    --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
+    --output text))
+  - export AWS_ACCESS_KEY_ID="${STS[0]}"
+  - export AWS_SECRET_ACCESS_KEY="${STS[1]}"
+  - export AWS_SESSION_TOKEN="${STS[2]}"
+
+.assume_role_ecr: &assume_role_ecr
+  - >
+    STS=($(aws sts assume-role-with-web-identity
+    --role-arn ${ECR_ROLE_ARN}
     --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
     --web-identity-token $ID_TOKEN
     --duration-seconds 3600
@@ -187,17 +203,17 @@ build_linux_job:
       if [[ "$CI_COMMIT_BRANCH" == "master" ]]; then
         pushd server
             python3 miro_server.py build
-            python3 miro_server.py push --unstable --custom-tag latest
+            python3 miro_server.py push --unstable --custom-tag latest --registry "${CI_REGISTRY_IMAGE}"
         popd
       elif [[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]; then
         pushd server
             python3 miro_server.py build
-            python3 miro_server.py push --unstable --custom-tag unstable
+            python3 miro_server.py push --unstable --custom-tag unstable --registry "${CI_REGISTRY_IMAGE}"
         popd
       elif [[ "$PUSH_UNSTABLE_SERVER_IMAGES" != "no" ]]; then
         pushd server
             python3 miro_server.py build
-            python3 miro_server.py push --unstable --custom-tag feature
+            python3 miro_server.py push --unstable --custom-tag feature --registry "${CI_REGISTRY_IMAGE}"
         popd
       elif [[ "$BUILD_CI" != "no" ]]; then
         pushd server
@@ -591,6 +607,7 @@ test_windows_job:
     - yarn install
   script:
     - 'if ("$env:SKIP_TESTS" -eq "yes") { "Skipping tests"; Exit }'
+    - 'if ("$env:CI_COMMIT_BRANCH" -eq "master" -and "$env:RUN_TESTS_MASTER" -eq "no") { "Skipping tests on master"; Exit }'
     - 'if ("$env:CI_COMMIT_BRANCH" -ne "master" -and "$env:BUILD_WINDOWS" -eq "no") { "Skipping Windows build"; Exit }'
     - yarn test gams_sys_dir=$env:GAMS_SYS_DIR
   dependencies: []
@@ -637,6 +654,7 @@ test_macos_job:
     - yarn install
   script:
     - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [[ "$RUN_TESTS_MASTER" == "no" ]] && echo "Skipping tests on master" && exit 0'
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS" == "no" ]] && echo "Skipping macOS build" && exit 0'
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS}
   dependencies: []
@@ -683,6 +701,7 @@ test_macos_arm_job:
     - yarn install
   script:
     - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [[ "$RUN_TESTS_MASTER" == "no" ]] && echo "Skipping tests on master" && exit 0'
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS_ARM" == "no" ]] && echo "Skipping macOS ARM build" && exit 0'
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS_ARM}
   dependencies: []
@@ -773,6 +792,10 @@ test_job:
   script:
     - mchecklic
     - mtestall
+    - |
+      max_mem_kb=$(cat "profile.txt" | grep "Maximum resident set size" | awk '{print $6}')
+      max_mem_mb=$((max_mem_kb / 1024))
+      echo "Maximum memory usage: $max_mem_mb MB"
   interruptible: true
   artifacts:
     when: always
@@ -825,17 +848,58 @@ test_job_miro_server:
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
   script:
+    - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [[ "$RUN_TESTS_MASTER" == "no" ]] && echo "Skipping tests on master" && exit 0'
     - ./scripts/test_miro_server.sh
+  dependencies: []
   artifacts:
     when: always
     paths:
       - miro_server_all_logs.txt
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
-      when: on_success
-    - if: $CI_MERGE_REQUEST_TITLE =~ /^Draft:/
-      when: manual
-    - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+  needs: [build_linux_job]
+
+test_job_miro_server_k8s:
+  tags:
+    - linux
+    - puma
+  image: $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
+  stage: test
+  services:
+    - docker:27-dind
+    - selenium/standalone-chrome
+  variables:
+    MIRO_PROXY_URL: http://docker:30080
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_VERIFY: 1
+    DOCKER_TLS_CERTDIR: '/certs'
+    DOCKER_CERT_PATH: '/certs/client'
+    DOCKER_HOST: tcp://docker:2376
+    FF_NETWORK_PER_BUILD: 'true'
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - mkdir kind-logs
+  script:
+    - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [[ "$RUN_TESTS_MASTER" == "no" ]] && echo "Skipping tests on master" && exit 0'
+    - ./scripts/test_miro_server_k8s.sh
+  dependencies: []
+  artifacts:
+    when: always
+    paths:
+      - ./kind-logs
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+  needs: [build_linux_job]
 
 upload_cloudfront:
   tags:
@@ -844,9 +908,9 @@ upload_cloudfront:
   image: $CI_REGISTRY_IMAGE/builder-linux:latest
   id_tokens:
     ID_TOKEN:
-      aud: ${S3_OIDC_AUD}
+      aud: https://git.gams.com
   script:
-    - *assume_role
+    - *assume_role_s3
     - echo "MIRO_SHA_HASH_WIN=`sha256sum dist/*.exe |cut -d ' ' -f1`" > .hashes.txt
     - echo "MIRO_SHA_HASH_MAC_ARM=`sha256sum dist/arm/*.dmg |cut -d ' ' -f1`" >> .hashes.txt
     - echo "MIRO_SHA_HASH_MAC_X86=`sha256sum dist/*.dmg |cut -d ' ' -f1`" >> .hashes.txt
@@ -867,6 +931,9 @@ upload_dockerhub:
   services:
     - docker:20.10-dind
   image: $CI_REGISTRY_IMAGE/builder-linux:latest
+  id_tokens:
+    ID_TOKEN:
+      aud: https://git.gams.com
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_VERIFY: 1
@@ -876,11 +943,27 @@ upload_dockerhub:
   before_script:
     - echo "$DOCKERHUB_PASS" | docker login -u $DOCKERHUB_USER --password-stdin
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - aws configure set default.region us-east-1
+    - *assume_role_ecr
+    - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY_URL_US_EAST
   script:
     - echo -e "\e[0Ksection_start:`date +%s`:download_image_section[collapsed=true]\r\e[0KDownloading images section"
     - cd server && python3 miro_server.py download ${CI_REGISTRY_IMAGE} && cd ..
     - echo -e "\e[0Ksection_end:`date +%s`:download_image_section\r\e[0K"
-    - cd server && python3 miro_server.py push && cd ..
+    - >
+      pushd server
+        python3 miro_server.py push
+        python3 miro_server.py push --registry "${ECR_REGISTRY_URL_US_EAST}"
+      popd
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+
+update_custom_saas_images:
+  stage: deploy
+  trigger:
+    project: miro/miro-saas
+  needs: [upload_dockerhub]
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success

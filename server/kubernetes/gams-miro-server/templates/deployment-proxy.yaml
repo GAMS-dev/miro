@@ -1,0 +1,159 @@
+{{- /*
+Copyright GAMS Development Corp. All Rights Reserved.
+SPDX-License-Identifier: GPL-3.0-only
+*/}}
+
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ include "common.names.fullname" . }}-proxy
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.global.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "common.names.fullname" . }}-proxy
+  template:
+    metadata:
+      labels:
+        app: {{ include "common.names.fullname" . }}-proxy
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/cm-proxy.yaml") . | sha256sum }}
+        {{- if .Values.proxy.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.proxy.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ include "common.names.fullname" . }}-proxy-sa
+      automountServiceAccountToken: true
+      {{- if .Values.global.securityContext.enabled }}
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 0
+        fsGroup: 0
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      {{- end }}
+{{- include "common.images.renderPullSecrets" ( dict "images" (list .Values.proxy.image) "context" $) | nindent 6}}
+      {{- if .Values.global.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.global.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.global.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.global.tolerations "context" $) | nindent 8 }}
+      {{- end }}
+      priorityClassName: {{ include "common.names.fullname" . }}-pc-sys
+      initContainers:
+      - name: init-create-directories
+        image: busybox:latest
+        command:
+          - sh
+          - "-c"
+          - |
+            if [ ! -d "/home/miroproxy/mnt/data" ]; then
+              mkdir -p /home/miroproxy/mnt/data && chmod -R g=u /home/miroproxy/mnt/data
+            fi
+            if [ ! -d "/home/miroproxy/mnt/models" ]; then
+              mkdir -p /home/miroproxy/mnt/models && chmod -R g=u /home/miroproxy/mnt/models
+            fi
+            [ -f "/home/miroproxy/mnt/data/specs.yaml" ] || echo 'c3BlY3M6Ci0gYWNjZXNzR3JvdXBzOgogIC0gYWRtaW5zCiAgY29udGFpbmVyRW52OgogICAgTUlST19BUElfVkVSU0lPTjogJzEnCiAgZGVzY3JpcHRpb246IE1JUk8gU2VydmVyIEFkbWluIFBhbmVsCiAgZGlzcGxheU5hbWU6IEFkbWluCiAgaWQ6IGFkbWluCiAgbG9nb1VSTDogfgo=' | base64 -d > /home/miroproxy/mnt/data/specs.yaml
+        {{- if .Values.global.securityContext.enabled }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+          privileged: false
+          readOnlyRootFilesystem: true
+        {{- end }}
+        volumeMounts:
+        - name: shared-data
+          mountPath: /home/miroproxy/mnt
+      containers:
+      - name: proxy
+        image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.proxy.image.registry "repository" .Values.proxy.image.repository "tag" (coalesce .Values.proxy.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
+        resources:
+{{ toYaml .Values.proxy.resources | indent 10 }}
+        ports:
+        - containerPort: 8080
+        - containerPort: 9090
+        startupProbe:
+          httpGet:
+            path: /actuator/health
+            port: 9090
+          failureThreshold: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 9090
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 9090
+          initialDelaySeconds: 10
+          periodSeconds: 15
+        env:
+        - name: GMS_MIRO_TARGET_IMG_DIR
+          value: "/home/miroproxy/mnt/data/img"
+        - name: GMS_MIRO_DATABASE_PWD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "common.names.fullname" . }}-secrets
+              key: db_password
+        - name: GMS_MIRO_ENGINE_ANONYMOUS_PWD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "common.names.fullname" . }}-secrets
+              key: engine_anonymous_password
+        volumeMounts:
+        - name: shared-data
+          mountPath: /home/miroproxy/mnt
+        - name: config-volume
+          mountPath: /home/miroproxy/application.yml
+          subPath: application.yml
+        {{- if .Values.proxy.config.logo.enabled }}
+        - name: customize-volume
+          mountPath: /home/miroproxy/templates/2col/assets/img_default/logo.png
+          subPath: logo.png
+        {{- end }}
+        {{- if .Values.proxy.config.favicon.enabled }}
+        - name: customize-volume
+          mountPath: /home/miroproxy/templates/2col/assets/img_default/favicon.ico
+          subPath: favicon.ico
+        {{- end }}
+        {{- if .Values.proxy.config.customCSS.enabled }}
+        - name: customize-volume
+          mountPath: /home/miroproxy/templates/2col/assets/css/styles.css
+          subPath: custom.css
+        {{- end }}
+        {{- if .Values.global.securityContext.enabled }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+          privileged: false
+          readOnlyRootFilesystem: false
+        {{- end }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "common.names.fullname" . }}-proxy-cm
+        {{- if eq .Values.persistence.type "local" }}
+        - name: shared-data
+          hostPath:
+            path: {{ .Values.persistence.local.path }}
+            type: DirectoryOrCreate
+        {{- else if eq .Values.persistence.type "efs" }}
+        - name: shared-data
+          persistentVolumeClaim:
+            claimName: {{ include "common.names.fullname" . }}-efs-pvc
+        {{- end }}
+        {{- if or .Values.proxy.config.logo.enabled .Values.proxy.config.favicon.enabled .Values.proxy.config.customCSS.enabled }}
+        - name: customize-volume
+          secret:
+            secretName: {{ include "common.names.fullname" . }}-logo-scm
+        {{- end }}

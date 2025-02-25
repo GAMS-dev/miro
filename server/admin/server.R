@@ -4,7 +4,7 @@ source("../app/tools/db_migration/modules/form_db_migration.R", local = TRUE)
 
 miroAppValidator <- MiroAppValidator$new()
 miroscenParser <- MiroscenParser$new()
-modelConfig <- ModelConfig$new(file.path("data", "specs.yaml"))
+modelConfig <- ModelConfig$new(file.path(MIRO_DATA_DIR, "specs.yaml"))
 engineClient <- EngineClient$new()
 db <- MiroDb$new(list(
   host = Sys.getenv("MIRO_DB_HOST", "localhost"),
@@ -100,6 +100,7 @@ server <- function(input, output, session) {
         session$sendCustomMessage(
           "onNewAppValidated",
           list(
+            appId = miroAppValidator$getAppId(),
             appTitle = htmltools::htmlEscape(miroAppValidator$getAppTitle()),
             appDesc = htmltools::htmlEscape(miroAppValidator$getAppDesc()),
             logoB64 = miroAppValidator$getLogoB64(),
@@ -207,23 +208,33 @@ server <- function(input, output, session) {
         extractAppData(
           input$miroAppFile$datapath, appId, modelId, miroProc
         )
-        addAppLogo(appId, logoPath)
+        addAppLogo(appId, logoPath, logoURL)
         modelName <- miroAppValidator$getModelName()
         newAppConfig <- list(
           id = appId, displayName = newAppTitle, description = newAppDesc,
           logoURL = logoURL,
-          containerVolumes = c(
-            sprintf("/%s:/home/miro/app/model/%s:ro", appId, appId),
-            sprintf("/data_%s:%s", appId, MIRO_CONTAINER_DATA_DIR)
-          ),
           containerEnv = list(
-            MIRO_MODEL_PATH = paste0("/home/miro/app/model/", appId, "/", modelName),
             MIRO_DATA_DIR = MIRO_CONTAINER_DATA_DIR,
             MIRO_VERSION_STRING = miroAppValidator$getMIROVersion(),
             MIRO_MODE = "base",
             MIRO_ENGINE_MODELNAME = appId
           )
         )
+        if (IN_KUBERNETES) {
+          newAppConfig$containerEnv$MIRO_MODEL_PATH <- paste0(
+            "/home/miro/mnt/models/",
+            appId, "/", modelName
+          )
+        } else {
+          newAppConfig$containerVolumes <- c(
+            sprintf("/%s:/home/miro/app/model/%s:ro", appId, appId),
+            sprintf("/data_%s:%s", appId, MIRO_CONTAINER_DATA_DIR)
+          )
+          newAppConfig$containerEnv$MIRO_MODEL_PATH <- paste0(
+            "/home/miro/app/model/",
+            appId, "/", modelName
+          )
+        }
 
         if (length(newGroups)) {
           newAppConfig[["accessGroups"]] <- as.list(newGroups)
@@ -250,8 +261,8 @@ server <- function(input, output, session) {
           }
         }
 
-        appDir <- file.path(getwd(), MIRO_MODEL_DIR, appId)
-        dataDir <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_", appId))
+        appDir <- file.path(MIRO_MODEL_DIR, appId)
+        dataDir <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
 
         miroProc$
           setDbCredentials(
@@ -385,8 +396,9 @@ server <- function(input, output, session) {
           if (!length(logoPath)) {
             stop("Logo file not found.", call. = FALSE)
           }
+          removeAppLogo(appId, modelConfig$getAppLogo(appIndex))
           newLogoName <- getLogoName(appId, logoPath)
-          addAppLogo(appId, logoPath)
+          addAppLogo(appId, logoPath, newLogoName)
         }
 
         newAppEnv <- NULL
@@ -488,7 +500,7 @@ server <- function(input, output, session) {
           dataToSend <- list(requestType = requestType)
         }
         if (is.null(appDir)) {
-          appDir <- file.path(getwd(), MIRO_MODEL_DIR, appId)
+          appDir <- file.path(MIRO_MODEL_DIR, appId)
         }
         for (i in seq_along(filePaths)) {
           miroProc$run(appId, appModelName,
@@ -564,7 +576,17 @@ server <- function(input, output, session) {
         modelId <- miroAppValidator$getModelId()
         modelName <- miroAppValidator$getModelName()
         appConfig$containerEnv[["MIRO_VERSION_STRING"]] <- miroAppValidator$getMIROVersion()
-        appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0("/home/miro/app/model/", appId, "/", modelName)
+        if (IN_KUBERNETES) {
+          appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0(
+            "/home/miro/mnt/models/",
+            appId, "/", modelName
+          )
+        } else {
+          appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0(
+            "/home/miro/app/model/",
+            appId, "/", modelName
+          )
+        }
 
         if (!identical(appId, newAppId)) {
           stop(sprintf(
@@ -573,13 +595,13 @@ server <- function(input, output, session) {
           ), call. = FALSE)
         }
 
-        appDir <- file.path(getwd(), MIRO_MODEL_DIR, appId)
-        appDirTmp <- file.path(getwd(), MIRO_MODEL_DIR, paste0("~$", appId))
-        appDirTmp2 <- file.path(getwd(), MIRO_MODEL_DIR, paste0("~$~$", appId))
+        appDir <- file.path(MIRO_MODEL_DIR, appId)
+        appDirTmp <- file.path(MIRO_MODEL_DIR, paste0("~$", appId))
+        appDirTmp2 <- file.path(MIRO_MODEL_DIR, paste0("~$~$", appId))
 
-        dataDir <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_", appId))
-        dataDirTmp <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_~$", appId))
-        dataDirTmp2 <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_~$~$", appId))
+        dataDir <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
+        dataDirTmp <- file.path(MIRO_DATA_DIR, paste0("data_~$", appId))
+        dataDirTmp2 <- file.path(MIRO_DATA_DIR, paste0("data_~$~$", appId))
 
         for (dirPath in c(appDirTmp, appDirTmp2, dataDirTmp, dataDirTmp2)) {
           if (!identical(unlink(dirPath, recursive = TRUE), 0L)) {
@@ -791,6 +813,9 @@ server <- function(input, output, session) {
     if (loginRequired(session, isLoggedIn)) {
       return()
     }
+    flog.debug(
+      "Button to close migration form clicked."
+    )
     try(
       {
         migrationObs$destroy()
@@ -798,6 +823,12 @@ server <- function(input, output, session) {
       },
       silent = TRUE
     )
+    migrationInfo <- miroProc$getMigrationInfo()
+    session$sendCustomMessage("onError", list(
+      requestType = "updateApp",
+      progressSelector = migrationInfo$additionalDataOnError$progressSelector,
+      spinnerSelector = migrationInfo$additionalDataOnError$spinnerSelector
+    ))
     removeModal()
   })
 }

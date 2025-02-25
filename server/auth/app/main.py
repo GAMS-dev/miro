@@ -1,17 +1,8 @@
-import logging
-import sys
-
 from fastapi import FastAPI
-from fastapi.logger import logger
 
-from app.config import settings_yml, settings
-from app.routers import login, apps, scenarios, configuration
+from app.config import logger, settings, settings_yml
+from app.routers import login, apps, scenarios, configuration, health
 from app.utils.utils import use_route_names_as_operation_ids
-
-# Configure the root log level and ensure all logs are sent to Gunicorn's error log.
-gunicorn_error_logger = logging.getLogger("gunicorn.error")
-logging.root.handlers.extend(gunicorn_error_logger.handlers)
-logging.root.setLevel(gunicorn_error_logger.level)
 
 app = FastAPI()
 
@@ -32,6 +23,7 @@ public_api = FastAPI(
 )
 
 app.include_router(login.router)
+app.include_router(health.router)
 if settings_yml:
     public_api.include_router(configuration.router)
     public_api.include_router(apps.router)

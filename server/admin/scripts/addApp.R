@@ -78,13 +78,13 @@ tryCatch(
     }
     modelName <- miroAppValidator$getModelName()
     modelId <- miroAppValidator$getModelId()
-    appDir <- file.path(getwd(), MIRO_MODEL_DIR, appId)
-    appDirTmp <- file.path(getwd(), MIRO_MODEL_DIR, paste0("~$", appId))
-    appDirTmp2 <- file.path(getwd(), MIRO_MODEL_DIR, paste0("~$~$", appId))
+    appDir <- file.path(MIRO_MODEL_DIR, appId)
+    appDirTmp <- file.path(MIRO_MODEL_DIR, paste0("~$", appId))
+    appDirTmp2 <- file.path(MIRO_MODEL_DIR, paste0("~$~$", appId))
 
-    dataDir <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_", appId))
-    dataDirTmp <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_~$", appId))
-    dataDirTmp2 <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_~$~$", appId))
+    dataDir <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
+    dataDirTmp <- file.path(MIRO_DATA_DIR, paste0("data_~$", appId))
+    dataDirTmp2 <- file.path(MIRO_DATA_DIR, paste0("data_~$~$", appId))
 
     if (updateApp) {
       for (dirPath in c(appDirTmp, appDirTmp2, dataDirTmp, dataDirTmp2)) {
@@ -135,12 +135,7 @@ tryCatch(
       newAppConfig <- list(
         id = appId, displayName = miroAppValidator$getAppTitle(), description = miroAppValidator$getAppDesc(),
         logoURL = logoURL,
-        containerVolumes = c(
-          sprintf("/%s:/home/miro/app/model/%s:ro", appId, appId),
-          sprintf("/data_%s:%s", appId, MIRO_CONTAINER_DATA_DIR)
-        ),
         containerEnv = list(
-          MIRO_MODEL_PATH = paste0("/home/miro/app/model/", appId, "/", modelName),
           MIRO_DATA_DIR = MIRO_CONTAINER_DATA_DIR,
           MIRO_VERSION_STRING = miroAppValidator$getMIROVersion(),
           MIRO_MODE = "base",
@@ -150,6 +145,21 @@ tryCatch(
           MIRO_DB_SCHEMA = appDbCredentials$user
         )
       )
+      if (IN_KUBERNETES) {
+        newAppConfig$containerEnv$MIRO_MODEL_PATH <- paste0(
+          "/home/miro/mnt/models/",
+          appId, "/", modelName
+        )
+      } else {
+        newAppConfig$containerVolumes <- c(
+          sprintf("/%s:/home/miro/app/model/%s:ro", appId, appId),
+          sprintf("/data_%s:%s", appId, MIRO_CONTAINER_DATA_DIR)
+        )
+        newAppConfig$containerEnv$MIRO_MODEL_PATH <- paste0(
+          "/home/miro/app/model/",
+          appId, "/", modelName
+        )
+      }
       for (key in c("displayName", "description")) {
         if (length(metadata[[key]])) {
           valueTrimmed <- trimws(metadata[[key]])
@@ -166,7 +176,7 @@ tryCatch(
       extractAppData(
         appPath, appId, modelId
       )
-      addAppLogo(appId, logoPath)
+      addAppLogo(appId, logoPath, logoURL)
     }
 
     procEnv <- as.list(Sys.getenv())

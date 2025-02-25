@@ -1,0 +1,30 @@
+{{- /*
+Copyright GAMS Development Corp. All Rights Reserved.
+SPDX-License-Identifier: GPL-3.0-only
+*/}}
+
+{{- if eq .Values.persistence.type "efs" }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "common.names.fullname" . }}-efs-pv
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.global.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .Values.persistence.efs.storageClass }}
+  csi:
+    driver: efs.csi.aws.com
+    {{- if .Values.persistence.efs.accessPointId }}
+    volumeHandle: {{ .Values.persistence.efs.fileSystemId }}::{{ .Values.persistence.efs.accessPointId }}
+    {{- else}}
+    volumeHandle: {{ .Values.persistence.efs.fileSystemId }}
+    {{- end }}
+{{- end }}

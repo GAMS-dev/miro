@@ -315,16 +315,38 @@
                       When you save a scenario, all associated views are saved
                       as well, ensuring that your configurations are preserved.
                       To load a view, simply click the "Load view" button and
-                      select the desired view from the list.
+                      select the desired view from the list. A slice, or "view"
+                      of data can be exported as a PNG or CSV file.
                     </p>
-                    <h3 id="pivot-view-settings" class="block-title">
-                      View Settings
-                    </h3>
+                    <div
+                      class="section-block"
+                      style="text-align: left; padding-top: 0pt"
+                    >
+                      <img
+                        class="img-fluid gifplayer"
+                        style="
+                          max-height: 300pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                        "
+                        src="assets/images/pivot_views.gif"
+                        alt="Import view"
+                      />
+                    </div>
+                    <p>
+                      Views can either be bound to a scenario like attachments
+                      (<i>local view</i>) or registered app-wide (<i
+                        >global view</i
+                      >). Further general information on views can be found
+                      <a href="./start.html#metadata-views">here</a>.
+                    </p>
+                    <h3 id="pivot-views" class="block-title">View Settings</h3>
                     <p>
                       Before configuring and saving a view, you need to first
                       slice and dice the data — apply filters, set the desired
                       data ranges, and choose the appropriate chart type. Once
-                      your data is prepared, click the
+                      your data is prepared, click the "New View" button (
                       <img
                         class="img-fluid"
                         src="assets/images/configuration_mode/miropivot_addview_btn.png"
@@ -333,9 +355,9 @@
                         align="middle"
                         alt="Add view"
                       />
-                      button to open the "New View" settings dialog, where you
-                      can assign a name to the view. Depending on the selected
-                      chart type, further optional settings are available.
+                      ). In the opening dialog, you can assign a name to the
+                      view. Depending on the selected chart type, further
+                      optional settings are available.
                     </p>
                     <ul>
                       <li>
@@ -360,7 +382,9 @@
                         here.
                       </li>
                       <li>
-                        <b>Colors</b>: Specify custom colors for each series.
+                        <b>Series Styling</b>: Depending on the chart type,
+                        series-specific settings such as custom colours, line
+                        dash patterns and border widths can be made here.
                       </li>
                     </ul>
                     <p>
@@ -402,7 +426,7 @@
                       Pivot Table Settings
                     </h3>
                     <p>
-                      A click on the settings
+                      A click on the settings (
                       <img
                         class="img-fluid"
                         src="assets/images/pivot-settings-btn.png"
@@ -411,31 +435,84 @@
                         align="middle"
                         alt="MIRO Pivot settings button"
                       />
-                      button opens the "Settings" menu. For example, table
-                      summary settings can be configured here. You can choose
-                      between several summary functions — such as sum, count,
-                      mean, and more — for both rows and columns. These summary
-                      functions allow you to quickly calculate key metrics
-                      about your data. In contrast to
-                      <a
-                        href="./charts.html#pivot-view-settings"
-                        class="scrollto"
-                        >View settings</a
-                      >, anything configured in the pivot table settings menu
-                      is retained even if the pivot table is modified.
+                      ) button opens the "Settings" menu. The menu is divided
+                      into the sections "General", "Tables" and "Charts".
+                      Available settings are:
                     </p>
-                    <div class="section-block">
-                      <figure>
-                        <img
-                          class="img-fluid"
-                          src="assets/images/pivot_table_summary.png"
-                          alt="Table summary"
-                          onclick="window.open(this.src, '_blank');"
-                        />
-                        <figcaption>
-                          Pivot tool with table summary enabled
-                        </figcaption>
-                      </figure>
+                    <ul>
+                      <li>
+                        <b>General</b><br />
+                        <b>Hide empty columns</b>: If enabled, this option
+                        allows you to hide empty table columns of the currently
+                        visible data. Read more about this option
+                        <a href="#hide-empty-columns" class="scrollto">here</a
+                        >.<br />
+                        <b
+                          >Dimension(s) to limit to a single-selection dropdown
+                          filter</b
+                        >: The data of each dimension of a pivot table -
+                        whether in the rows, columns or in the aggregation -
+                        can be filtered. By default, this filter is a
+                        multi-choice dropdown menu. This option allows to
+                        configure filter dimensions as single-choice dropdown
+                        menus.
+                      </li>
+                      <li>
+                        <b>Tables</b><br />
+                        <b>Table summary</b>: You can choose between several
+                        summary functions — such as sum, count, mean, and more
+                        — for both rows and columns. These summary functions
+                        allow you to quickly calculate key metrics about your
+                        table data.<br />
+                        <b id="fixed-columns">Fix table columns to the left</b
+                        >: If this option is activated, the columns of the
+                        pivot table are fixed to the left side of the table and
+                        remain visible when scrolling horizontally. Note that
+                        this can cause display problems for very wide tables
+                        (e.g. with many columns), especially on small screens.
+                        For this reason, this option is automatically disabled
+                        for screens less than 768 pixels wide.
+                      </li>
+                      <li>
+                        <b>Charts</b><br />
+                        <b>Font size to use in charts</b>: Option to change the
+                        font size used in all charts of the pivot table.
+                      </li>
+                    </ul>
+                    <div class="callout-block callout-success">
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Tip:</b>
+                        <p>
+                          As with the
+                          <a href="./charts.html#pivot-view" class="scrollto"
+                            >view settings</a
+                          >, the pivot table settings are saved as part of a
+                          view and are automatically applied when a
+                          corresponding view is selected. However, in contrast
+                          to view settings, anything configured in the pivot
+                          table settings menu is retained if the pivot table is
+                          modified manually. For example, this ensures that
+                          configured single-choice dropdowns or specific table
+                          summary functions remain intact, even while
+                          interacting with the pivot table. The state only
+                          changes if the settings are manually adjusted through
+                          the settings menu (
+                          <img
+                            class="img-fluid"
+                            src="assets/images/pivot-settings-btn.png"
+                            width="25"
+                            height="25"
+                            align="middle"
+                            alt="MIRO Pivot settings button"
+                          />
+                          ) or if a different view is selected.
+                        </p>
+                      </div>
+                      <!--//content-->
                     </div>
                     <h3 id="presentation-mode" class="block-title">
                       Presentation Mode
@@ -450,19 +527,17 @@
                         align="middle"
                         alt="Export Show/hide pivot controls"
                       />
-                      button toggles the
-                      <a href="#presentation-mode">presentation mode</a>, which
-                      allows the pivot tool to look like a normal graphic
-                      renderer without pivot controls. Only configured views
-                      and export buttons remain visible. The presentation mode
-                      can be very useful for users who do not want to play
-                      around with the data in the pivot tool, but only want to
-                      view predefined views/reports. The combination of
-                      predefined views and the presentation mode, which can be
-                      set as the default display in the Configuration Mode,
-                      offers extensive possibilities for data visualization and
-                      in-depth analyses. A slice, or "view" of data can be
-                      exported as a PNG or CSV file.
+                      button toggles the presentation mode, which allows the
+                      pivot tool to look like a normal graphic renderer without
+                      pivot controls. Only configured views and export buttons
+                      remain visible. The presentation mode can be very useful
+                      for users who do not want to play around with the data in
+                      the pivot tool, but only want to view predefined
+                      views/reports. The combination of predefined views and
+                      the presentation mode, which can be set as the default
+                      display in the Configuration Mode, offers extensive
+                      possibilities for data visualization and in-depth
+                      analyses.
                     </p>
                     <div class="section-block">
                       <figure>
@@ -477,19 +552,29 @@
                         </figcaption>
                       </figure>
                     </div>
-                    <h3 class="block-title">Default Configuration</h3>
+                    <h3 class="block-title" id="pivot-default-configuration">
+                      Default Configuration
+                    </h3>
                     <p>
-                      You can specify the default view as well as the default
-                      renderer (table/chart) of the pivot table renderer in the
-                      Configuration Mode. Note that unlike other charting
-                      tools, you configure most of the MIRO pivot table
-                      directly in the preview on the right. Drag and drop the
-                      domains where you want them to be, make further
-                      chart-type-specific
-                      <a
-                        href="./charts.html#pivot-view-settings"
-                        class="scrollto"
-                        >settings</a
+                      You can specify the default view (chart type, settings,
+                      etc.) of the pivot table in the Configuration Mode. There
+                      are a few
+                      <a href="#configuration-options"
+                        >configuration options</a
+                      >
+                      available but unlike other charting tools, you configure
+                      most of the MIRO pivot table directly in the preview on
+                      the right. For the most comfortable handling, it is
+                      advisable to use the preview page across the entire width
+                      of the screen by clicking on the switch panel (pie chart
+                      symbol) at the top right. Drag and drop the domains where
+                      you want them to be, make further
+                      <a href="./charts.html#pivot-settings" class="scrollto"
+                        >general-</a
+                      >
+                      or
+                      <a href="./charts.html#pivot-view" class="scrollto"
+                        >chart-type-specific settings</a
                       >
                       (optional) and click on "Save". The symbol is loaded in
                       MIRO with the same view that you have set up in the
@@ -499,11 +584,6 @@
                       Example: Model <i>Transport</i>, parameter
                       <i>shipment quantities in cases</i>
                     </p>
-                    <p>
-                      To see how the corresponding GAMS symbol is integrated in
-                      MIRO, see the
-                      <a href="#map-chart" class="scrollto">map example</a>.
-                    </p>
                     <div class="section-block" style="cursor: pointer">
                       <img
                         class="img-fluid"
@@ -512,6 +592,40 @@
                         onclick="window.open(this.src, '_blank');"
                       />
                     </div>
+                    <h5 class="block-title" id="configuration-options">
+                      Configuration Options
+                    </h5>
+                    <p id="presentation-mode-default">
+                      <b>Show presentation mode by default:</b><br />
+                      If this option is enabled, the
+                      <a href="#presentation-mode">presentation mode</a> will
+                      be shown per default. The pivot controls can be displayed
+                      at any time by clicking on the
+                      <img
+                        class="img-fluid"
+                        src="assets/images/configuration_mode/miropivot_presentationmode_btn.png"
+                        width="25"
+                        height="25"
+                        align="middle"
+                        alt="Export Show/hide pivot controls"
+                      />
+                      button.
+                    </p>
+                    <p id="missing-value-uel">
+                      <b>UEL, which indicates a missing value:</b><br />
+                      Data in a pivot table that indicates a missing value.
+                      This is needed when you want to
+                      <a href="#hide-empty-columns">hide empty columns</a> in
+                      the table.
+                    </p>
+                    <p id="external-default-view">
+                      <b>Use external default view:</b><br />
+                      If this option is enabled, a scenario-specific or global
+                      <a href="./start.html#metadata-views">view</a> is used as
+                      the default view for this symbol. If the specified view
+                      does not exist, the default configuration for this symbol
+                      is used.
+                    </p>
                   </div>
                   <!--//section-block-->
                   <div class="section-block">
@@ -520,33 +634,41 @@
 {
   "dataRendering": {
     "schedule": {
-      "outType": "miroPivot",
       "height": 700,
       "options": {
-        "aggregationFunction": "sum",
-        "pivotRenderer": "stackedbar",
-        "enableHideEmptyCols": false,
-        "hidePivotControls": true,
-        "rows": "i",
-        "filter": {
-          "Hdr": "quantities"
-        },
-        "cols": {
-          "j": null
-        }
-      }
+          "aggregationFunction": "sum",
+          "cols": {
+              "j": null
+          },
+          "emptyUEL": "-",
+          "filter": {
+              "Hdr": "quantities"
+          },
+          "fixedColumns": true,
+          "hideEmptyCols": false,
+          "hidePivotControls": true,
+          "pivotRenderer": "stackedbar",
+          "rows": "i",
+          "tableSummarySettings": {
+              "colEnabled": true,
+              "colSummaryFunction": "sum",
+              "rowEnabled": true,
+              "rowSummaryFunction": "sum"
+          }
+      },
+      "outType": "miroPivot"
     }
   }
 }
-                                    </code></pre>
+              </code></pre>
                   </div>
                   <!--//section-block-->
                   <div class="section-block" id="hide-empty-columns">
                     <p>
                       <b>Hide empty columns:</b><br />
-                      In addition to the configuration of the default view,
-                      there is also the possibility to activate a switch that
-                      allows to hide <i>empty</i> columns. This is especially
+                      The switch to hide empty columns in the
+                      <a href="#pivot-settings">settings menu</a> allows to
+                      hide <i>empty</i> columns in a table. This is especially
                       useful if you use the MIRO Pivot Table for a
                       <i>data cube</i>. A <i>data cube</i> is a collection of
                       GAMS parameters that are combined to form a large cube.
@@ -642,24 +764,6 @@
                         alt="MIRO Pivot Table with empty column hidden"
                       />
                     </div>
-                    <p id="fixed-columns">
-                      <b>Enable fixed columns:</b><br />
-                      If this option is activated, the columns of the pivot
-                      table are fixed to the left side of the table and remain
-                      visible when scrolling horizontally. Note that this can
-                      cause display problems for very wide tables (e.g. with
-                      many columns), especially on small screens. For this
-                      reason, this option is automatically disabled for screens
-                      less than 768 pixels wide.
-                    </p>
-                    <p id="external-default-view">
-                      <b>Use external default view:</b><br />
-                      If this option is enabled, a scenario-specific or global
-                      <a href="./start.html#metadata-views">view</a> is used as
-                      the default view for this symbol. If the specified view
-                      does not exist, the default configuration for this symbol
-                      is used.
-                    </p>
                   </div>
                   <!--//section-block-->
                 </section>

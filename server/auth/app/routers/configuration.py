@@ -1,7 +1,6 @@
 from fastapi import APIRouter, status
-from fastapi.logger import logger
 
-from app.config import settings
+from app.config import logger, settings
 from app.utils.models import ConfigurationResponse
 
 router = APIRouter(

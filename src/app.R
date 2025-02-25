@@ -1,7 +1,7 @@
 # version number
-MIROVersion <- "2.10.9999"
+MIROVersion <- "2.11.9999"
 APIVersion <- "1"
-MIRORDate <- "Oct 29 2024"
+MIRORDate <- "Feb 19 2025"
 
 MIROVersionString <<- paste0("GAMS MIRO v.", MIROVersion)
 
@@ -91,6 +91,8 @@ if (is.null(errMsg)) {
   })
   # set maximum upload size
   options(shiny.maxRequestSize = as.integer(Sys.getenv("MIRO_MAX_UPLOAD_SIZE", "5000")) * 1024^2)
+  # disable check for global size in futures
+  options(future.globals.maxSize = Inf)
   # get model path and name
   modelPath <<- getModelPath(modelPath, "MIRO_MODEL_PATH")
   modelNameRaw <<- modelPath[[4]]
@@ -106,7 +108,7 @@ if (is.null(errMsg)) {
   miroDbDir <- NULL
 
   if (isShinyProxy) {
-    miroWorkspace <- file.path(getwd(), "ws")
+    miroWorkspace <- file.path(tmpFileDir, "ws")
   } else {
     # initialise MIRO workspace
     miroWorkspace <- Sys.getenv("MIRO_WS_PATH")

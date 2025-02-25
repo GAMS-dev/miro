@@ -1,0 +1,47 @@
+{{- /*
+Copyright GAMS Development Corp. All Rights Reserved.
+SPDX-License-Identifier: GPL-3.0-only
+*/}}
+
+{{- if .Values.ingress.enabled }}
+apiVersion: {{ include "common.capabilities.ingress.apiVersion" . }}
+kind: Ingress
+metadata:
+  name: {{ include "common.names.fullname" . }}-ingress
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+  {{- if or .Values.ingress.annotations .Values.global.commonAnnotations }}
+  {{- $annotations := include "common.tplvalues.merge" ( dict "values" ( list .Values.ingress.annotations .Values.global.commonAnnotations ) "context" . ) }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+    - host: {{ tpl .Values.ingress.hostname $ | quote }}
+      http:
+        paths:
+          - path: {{ .Values.global.rootPath }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "common.names.fullname" . }}-proxy
+                port:
+                  number: 8080
+          - path: {{ .Values.global.rootPath | trimSuffix "/" }}/api
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "common.names.fullname" . }}-auth
+                port:
+                  number: 8081
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ tpl .Values.ingress.className $ | quote }}
+  {{- end }}
+  {{- if .Values.ingress.tls }}
+  tls:
+    - hosts:
+        - {{ tpl .Values.ingress.hostname $ | quote }}
+      {{- if .Values.ingress.tlsSecretName }}
+      secretName: {{ .Values.ingress.tlsSecretName }}
+      {{- end}}
+  {{- end }}
+{{- end }}

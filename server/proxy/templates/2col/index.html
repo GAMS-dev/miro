@@ -72,7 +72,7 @@
               <div>
                 <div style="height: 200px">
                   <div
-                    th:style="'background:url('+${resourcePrefix}+@{/assets/logos/{name}(name=${app.logoURL})}+');background-size:cover;'"
+                    th:style="'background:url(\'' + @{${resourcePrefix} + '/assets/logos/' + ${app.logoURL}} + '\');background-size:cover;'"
                     class="app-logo"
                   ></div>
                 </div>

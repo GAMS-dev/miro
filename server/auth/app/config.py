@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 
@@ -5,18 +6,21 @@ import yaml
 from pydantic import Field, ConfigDict
 from pydantic_settings import BaseSettings
 
-data_dir_tmp = os.environ.get('DATA_DIR')
-if not data_dir_tmp:
-    data_dir_tmp = '/home/miro/admin/data'
+app_config_file_path = os.environ.get('APP_CONFIG_FILE_PATH')
+if not app_config_file_path:
+    data_dir_tmp = os.environ.get('DATA_DIR')
+    if not data_dir_tmp:
+        data_dir_tmp = '/home/miro/admin/data'
+    app_config_file_path = os.path.join(data_dir_tmp, "application.yml")
 
 settings_yml = {}
 try:
-    with open(os.path.join(data_dir_tmp, "application.yml"), "r", encoding="utf-8") as f:
+    with open(app_config_file_path, "r", encoding="utf-8") as f:
         settings_yml = yaml.load(f, Loader=yaml.CSafeLoader)["proxy"]
 except FileNotFoundError:
     pass
 
-with open("/home/miro/admin/global.R", "r") as f:
+with open("/home/miro/admin/global.R", "r", encoding="utf-8") as f:
     MIRO_SERVER_VERSION = re.search(
         r'MIRO_VERSION\s*<-\s*"(\d+\.\d+\.\d+)"\s*', f.read()).group(1)
 
@@ -53,3 +57,5 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+logger = logging.getLogger("uvicorn")

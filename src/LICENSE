@@ -914,7 +914,7 @@ Section 8 -- Interpretation.
           jQuery Foundation, Splunk Inc, Jon Rohan, James M. Greeneand, Företagsplatsen,
           Kent Russell and Jonathan Owen
         - natural.js (DataTables plugin), Copyright (c) Jim Palmer (based on chunking idea from Dave Koelle), Mike Grier (mgrier.com), Clint Priest, Kyle Adams, guillermo
-        - plotly, Copyright (c) 2017 Plotly, Inc.
+        - plotly, Copyright (c) 2017-2024 Plotly Technologies Inc.
         - rappdirs, Copyright (c) 2001, 2014-2016 Hadley Wickham; RStudio; ActiveState Software Inc
         - fs, Copyright (c) 2020 fs authors
         - sass, Copyright (c) 2019 Joe Cheng [aut], Timothy Mastny [aut], Richard Iannone ORCID iD [aut], Barret Schloerke ORCID iD [aut], Carson Sievert ORCID iD [aut, cre], Christophe Dervieux  ORCID iD [ctb], RStudio [cph, fnd], Sass Open Source Foundation [ctb, cph] (LibSass library), Greter Marcel [ctb, cph] (LibSass library), Mifsud Michael [ctb, cph] (LibSass library), Hampton Catlin [ctb, cph] (LibSass library), Natalie Weizenbaum [ctb, cph] (LibSass library), Chris Eppstein [ctb, cph] (LibSass library), Adams Joseph [ctb, cph] (json.cpp), Trifunovic Nemanja [ctb, cph] (utf8.h)
@@ -923,7 +923,7 @@ Section 8 -- Interpretation.
         - jquerylib, Copyright (c) 2020 Carson Sievert ORCID iD [aut, cre], Joe Cheng [aut], RStudio [cph], jQuery Foundation [cph] (jQuery library and jQuery UI library), jQuery contributors [ctb, cph] (jQuery library; authors listed in inst/lib/jquery-AUTHORS.txt)
         - libsass, Copyright (c) 2012-2016 by the Sass Open Source Foundation
         - shinyAce, Copyright (c) 2016 Vincent Nijs [aut, cre], Forest Fang [aut], Trestle Technology, LLC [aut], Jeff Allen [aut], Institut de Radioprotection et de Surete Nucleaire [cph], Ajax.org B.V. [ctb, cph] (Ace)
-        - V8 (R package), Copyright (c) 2017 Jeroen Ooms
+        - V8 (R package), Copyright (c) 2017 Jeroen Ooms, Jan Marvin Garbuszus [ctb]
         - jsonlite, Copyright (c) 2020 Jeroen Ooms
         - dygraphs, Copyright (c) 2015-2016 Dan Vanderkam; RStudio, Inc.
         - xfun, Copyright (c) 2018-2022 Yihui Xie ORCID iD [aut, cre, cph], Wush Wu [ctb], Daijiang Li [ctb], Xianying Tan [ctb], Salim Brüggemann ORCID iD [ctb], Christophe Dervieux [ctb]
@@ -1334,7 +1334,7 @@ Library.
             Matthieu Stigler [ctb], Robert Castelo [ctb], Seth Falcon [ctb],
             Stefan Edwards [ctb], Sven Garbade [ctb], Uwe Ligges [ctb]
         - digest [expanded from: GPL (≥ 2)], Copyright (c)
-            Dirk Eddelbuettel with contributions by Antoine Lucas, Jarek Tuszynski, Henrik Bengtsson, Simon Urbanek, Mario Frasca, Bryan Lewis, Murray Stokely, Hannes Muehleisen, Duncan Murdoch, Jim Hester, Wush Wu, Qiang Kou, Thierry Onkelinx, Michel Lang, Viliam Simko, Kurt Hornik, Radford Neal, Kendon Bell, Matthew de Queljoe, Ion Suruceanu, Bill Denney, Dirk Schumacher, and Winston Chang.
+            Dirk Eddelbuettel ORCID iD [aut, cre], Antoine Lucas [ctb], Jarek Tuszynski [ctb], Henrik Bengtsson ORCID iD [ctb], Simon Urbanek ORCID iD [ctb], Mario Frasca [ctb], Bryan Lewis [ctb], Murray Stokely [ctb], Hannes Muehleisen [ctb], Duncan Murdoch [ctb], Jim Hester [ctb], Wush Wu ORCID iD [ctb], Qiang Kou ORCID iD [ctb], Thierry Onkelinx ORCID iD [ctb], Michel Lang ORCID iD [ctb], Viliam Simko [ctb], Kurt Hornik ORCID iD [ctb], Radford Neal ORCID iD [ctb], Kendon Bell ORCID iD [ctb], Matthew de Queljoe [ctb], Dmitry Selivanov [ctb], Ion Suruceanu [ctb], Bill Denney [ctb], Dirk Schumacher [ctb], András Svraka [ctb], Sergey Fedorov [ctb], Will Landau ORCID iD [ctb], Floris Vanderhaeghe  ORCID iD [ctb], Kevin Tappe [ctb], Harris McGehee [ctb], Tim Mastny [ctb], Aaron Peikert ORCID iD [ctb], Mark van der Loo ORCID iD [ctb], Chris Muir ORCID iD [ctb], Moritz Beller ORCID iD [ctb], Sebastian Campbell [ctb], Winston Chang ORCID iD [ctb], Dean Attali ORCID iD [ctb], Michael Chirico ORCID iD [ctb], Kevin Ushey [ctb]
         - htmltools [expanded from: GPL (≥ 2)], Copyright (c) RStudio, Inc.
         - later [expanded from: GPL (≥ 2)], Copyright (c)
             Joe Cheng [aut, cre], RStudio [cph],

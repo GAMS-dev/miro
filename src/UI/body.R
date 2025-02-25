@@ -1194,6 +1194,7 @@ if (buildUI) {
           )
         }
       ),
+      tags$div(id = "uiConfig", `data-color-scheme` = config$theme),
       HTML(paste0(
         '<!-- Creates modal dialog for confirm messages -->
 <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -1227,7 +1228,7 @@ if (buildUI) {
   if (!debugMode) {
     cacheTestDir <- attr(rHandsontableOutput("test"), "html_dependencies")[[1]]$src$file
     if (!dir.exists(dirname(miroCacheFile))) {
-      dir.create(dirname(miroCacheFile), recursive = TRUE, mode = "0700")
+      dir.create(dirname(miroCacheFile), recursive = TRUE)
     }
     save(
       list = c("cacheTestDir", "miroBody"),

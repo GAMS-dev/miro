@@ -2,8 +2,8 @@ from typing import Annotated
 from fastapi.param_functions import Query
 
 from fastapi import APIRouter, Depends, HTTPException, Path, File, Form, UploadFile, status
-from fastapi.logger import logger
 
+from app.config import logger
 from app.utils.app_utils import AppConfig, app_is_invisible, get_apps_raw
 from app.dependencies import User, get_current_admin_user, get_current_user
 from app.utils.app_utils import add_or_update_app, delete_app_internal

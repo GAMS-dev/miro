@@ -2,12 +2,10 @@ import os
 import subprocess
 from typing import Dict
 
-from fastapi.logger import logger
 from fastapi import HTTPException, status
 
-
 from app.utils.models import User
-from app.config import settings
+from app.config import logger, settings
 
 
 def get_miro_proc_env(user_info: User) -> Dict[str, str]:

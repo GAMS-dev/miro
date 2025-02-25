@@ -69,7 +69,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
     return(combinedData)
   }
 
-  scenarioNames <- bind_rows(data$getMetadata())[["_sname"]][-1]
+  scenarioNames <- bind_rows(data$getMetadata()[-1])[["_sname"]]
 
   dataViewsConfig <- options$dataViewsConfig
 
@@ -131,9 +131,8 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
     rowIndexList <- config$rows
     aggregationFunction <- config$aggregationFunction
-    setIndices <- names(dataTmp)[-length(dataTmp)]
     if (is.null(rowIndexList)) {
-      rowIndexList <- setIndices
+      rowIndexList <- character(0)
     }
     rowIndexList <- c(
       rowIndexList,
@@ -474,16 +473,13 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
               } else {
                 "color:#dd4b39!important"
               },
-              if (!is.na(suppressWarnings(as.numeric(value))) &&
-                as.numeric(value) > 0) {
-                paste0(prefix, value, postfix)
-              } else if (!is.na(suppressWarnings(as.numeric(value))) &&
-                as.numeric(value) == 0) {
-                paste0("0", postfix)
-              } else if (!is.na(suppressWarnings(as.numeric(value)))) {
-                paste0(value, postfix)
+              if (!is.na(suppressWarnings(as.numeric(value)))) {
+                if (as.numeric(value) < 0 && identical(prefix, "+")) {
+                  prefix <- ""
+                }
+                paste0(prefix, format(value, big.mark = ","), postfix)
               } else {
-                value
+                "NA"
               }
             )
           },
@@ -498,10 +494,10 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
       }
 
       div(
-        class = "shiny-html-output",
         class = if (!is.null(width)) {
           paste0("col-sm-", width)
         },
+        `data-namespace` = ns(""),
         id = id,
         boxContent
       )
@@ -533,10 +529,26 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
   # Get scalar output data in case valueboxes should show a value
   if (length(options$valueBoxes$valueScalar) && any(!is.na(options$valueBoxes$valueScalar))) {
-    if (!"_scalars_out" %in% data$getAllSymbols()) {
+    scalarData <- NULL
+
+    if ("_scalars_out" %in% data$getAllSymbols()) {
+      scalarData <- combineData(data$get("_scalars_out"), scenarioNames) %>%
+        mutate(value = suppressWarnings(as.numeric(value)))
+    }
+    if ("_scalarsve_out" %in% data$getAllSymbols()) {
+      scalarVeData <- combineData(data$get("_scalarsve_out"), scenarioNames) %>%
+        filter(Hdr == "level") %>%
+        select(-Hdr)
+      if (is.null(scalarData)) {
+        scalarData <- scalarVeData
+      } else {
+        scalarData <- bind_rows(scalarData, scalarVeData)
+      }
+    }
+
+    if (is.null(scalarData)) {
       abortSafe("No scalar output symbols found for valueBoxes")
     }
-    scalarData <- combineData(data$get("_scalars_out"), scenarioNames)
   }
 
   # Value boxes title and scenario select (if value boxes show values)
@@ -588,17 +600,11 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
             `_scenName` == input$scenarioSelect,
             scalar == tolower(options$valueBoxes$valueScalar[i])
           )
-        if (!nrow(valueTmp)) {
-          abortSafe(sprintf("No scalar symbol '%s' found for valueBox '%s'", options$valueBoxes$valueScalar[i], options$valueBoxes$id[i]))
-        }
         valueTmp <- as.numeric(valueTmp[[length(valueTmp)]][1])
 
         if (!is.na(options$valueBoxes$decimals[i])) {
           valueTmp <- round(valueTmp, digits = as.numeric(options$valueBoxes$decimals[i]))
         }
-
-        valueTmp <- valueTmp %>%
-          format(big.mark = ",")
       }
 
       valBoxName <- options$valueBoxes$id[i]

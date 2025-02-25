@@ -5159,7 +5159,7 @@ observeEvent(rv$saveGraphConfirm, {
               isolate(input$customOutputFunction),
               "\n}\n\n",
               customRendererFunctionName(),
-              " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){\n",
+              " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...){\n",
               input$customRenderFunction,
               "\n}\n"
             )),

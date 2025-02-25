@@ -407,7 +407,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
         ts = FALSE,
         field = "all"
       ),
-      squeeze = FALSE, useDomInfo = TRUE
+      squeeze = FALSE, useDomInfo = FALSE
     )
     symDim <- sym$dim
     if (identical(symDim, 0L)) {
@@ -421,14 +421,14 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
         name = symName, compress = FALSE,
         ts = FALSE, field = "all"
       ),
-      squeeze = FALSE, useDomInfo = TRUE
+      squeeze = FALSE, useDomInfo = FALSE
       )
     }
     return(sym$val[, 2L])
   },
   rgdxParam = function(symName, names = NULL) {
     sym <- gdxrrwMIRO::rgdx(private$rgdxName, list(name = symName, compress = FALSE, ts = FALSE),
-      squeeze = FALSE, useDomInfo = TRUE
+      squeeze = FALSE, useDomInfo = FALSE
     )
     symDim <- sym$dim
     if (identical(symDim, 0L)) {
@@ -534,7 +534,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       compress = FALSE,
       ts = FALSE, te = TRUE
     ),
-    squeeze = FALSE, useDomInfo = TRUE
+    squeeze = FALSE, useDomInfo = FALSE
     )
     symDim <- sym$dim
     if (length(names)) {

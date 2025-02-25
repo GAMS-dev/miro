@@ -36,7 +36,7 @@ ARG NODE_MAJOR=20
 USER root
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libxml2-dev wget curl gpg-agent
+    libxml2-dev wget curl gpg-agent time
 
 RUN wget https://d37drm4t2jghv5.cloudfront.net/distributions/${GAMS_MAJOR}.${GAMS_MINOR}.${GAMS_MAINT}/linux/linux_x64_64_sfx.exe && \
     chmod a+x linux_x64_64_sfx.exe && \
@@ -53,7 +53,8 @@ RUN apt-get update && apt-get install -y nodejs
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update && apt-get install -y yarn python3-pip python3-venv git
-RUN pip3 install pre-commit pip-audit pandas gamspy
+RUN pip3 install --no-cache-dir --break-system-packages\
+    pre-commit pip-audit pandas gamspy
 
 # install openssh and rsync for deploying documentation
 RUN apt-get update && apt-get install -y openssh-client rsync
