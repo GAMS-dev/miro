@@ -1,6 +1,6 @@
 # A Battery Energy Storage System (BESS) sizing problem
 
-This model is based on an example from [NAG](https://nag.com/), which can be found on their GitHub repository: [BESS.ipynb](https://github.com/numericalalgorithmsgroup/NAGPythonExamples/blob/master/local_optimization/MILP/BESS_MILP.ipynb).
+This model is based on an example from [NAG](https://nag.com/), which can be found on their GitHub repository: [BESS.ipynb](https://github.com/numericalalgorithmsgroup/NAGPythonExamples/blob/master/local_optimization/MILP/BESS_MILP.ipynb). If you are interested in building your own MIRO application, there is a step-by-step tutorial for this application [here](https://www.gams.com/miro/step_by_step_tutorial.html).
 
 ## Model
 
