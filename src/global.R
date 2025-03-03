@@ -46,6 +46,16 @@ maxNumberScenarios <- 50
 maxNoScenToShow <- 2e2
 # local user ID (single user)
 uid <- Sys.info()[["user"]]
+# default scenario permissions
+DEFAULT_SCEN_PERM <- lapply(
+  list(read = "READ", write = "WRITE", execute = "EXECUTE"),
+  function(permType) {
+    return(strsplit(Sys.getenv(paste0(
+      "MIRO_DEFAULT_SCEN_PERM_",
+      permType
+    ), ""), ",", fixed = TRUE)[[1L]])
+  }
+)
 # define the default format for input sheets
 defInType <- "miroPivot"
 # default height of pivot table

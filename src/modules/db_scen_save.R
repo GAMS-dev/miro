@@ -1,5 +1,66 @@
 # save scenario to database
 
+genAccessPermInputs <- function(containerSelector) {
+  showEl(session, paste0(containerSelector, " .access-perm-spinner"))
+  on.exit(hideEl(session, paste0(containerSelector, " .access-perm-spinner")))
+  if (tryCatch(
+    {
+      if (isShinyProxy) {
+        accessGroups <- worker$getRemoteAccessGroups()
+        db$setRemoteUsers(accessGroups)
+      } else {
+        accessGroups <- db$getUserAccessGroups()
+      }
+      FALSE
+    },
+    error = function(e) {
+      flog.warn(
+        "Problems fetching user access groups. Error message: %s",
+        conditionMessage(e)
+      )
+      insertUI(containerSelector,
+        ui = tags$div(
+          class = "err-msg",
+          lang$errMsg$unknownError
+        )
+      )
+      return(TRUE)
+    }
+  )) {
+    return(FALSE)
+  }
+  metaTmp <- activeScen$getMetadataDf(noPermFields = FALSE)
+  writePerm <- csv2Vector(metaTmp[["_accessw"]][[1]])
+  readPerm <- csv2Vector(metaTmp[["_accessr"]][[1]])
+  execPerm <- csv2Vector(metaTmp[["_accessx"]][[1]])
+  insertUI(containerSelector,
+    ui = tagList(
+      tags$div(
+        class = "input-form-mobile",
+        accessPermInput("editMetaReadPerm", lang$nav$excelExport$metadataSheet$readPerm,
+          sort(unique(c(readPerm, accessGroups))),
+          selected = readPerm, width = "100%"
+        )
+      ),
+      tags$div(
+        class = "input-form-mobile",
+        accessPermInput("editMetaWritePerm", lang$nav$excelExport$metadataSheet$writePerm,
+          sort(unique(c(writePerm, accessGroups))),
+          selected = writePerm, width = "100%"
+        )
+      ),
+      tags$div(
+        class = "input-form-mobile",
+        accessPermInput("editMetaExecPerm", lang$nav$excelExport$metadataSheet$execPerm,
+          sort(unique(c(execPerm, accessGroups))),
+          selected = execPerm, width = "100%"
+        )
+      )
+    )
+  )
+  return(TRUE)
+}
+
 # Save As button clicked
 observeEvent(input$btSaveAs, {
   saveAsFlag <<- TRUE
@@ -55,9 +116,9 @@ observeEvent(virtualActionButton(rv$btSaveAs), {
   saveAsFlag <<- TRUE
   showNewScenDialog(activeScen$getScenName(),
     scenTags = activeScen$getStags(),
-    discardPermDefault = !identical(activeScen$getScenUid(), uid),
     allScenTags = db$getAllScenTags()
   )
+  genAccessPermInputs("#contentAccessPerm")
 })
 
 observeEvent(input$btNewName, {
@@ -181,7 +242,11 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
           if (length(activeScen$getSid())) {
             duplicatedMetadata <- activeScen$getMetadataInfo(
               input$newScenDiscardAttach,
-              input$newScenDiscardPerm
+              list(
+                read = input$editMetaReadPerm,
+                write = input$editMetaWritePerm,
+                execute = input$editMetaExecPerm
+              )
             )
             activeScen <<- NULL
             gc()
@@ -192,7 +257,12 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
               }
             }
           } else {
-            activeScen$updateMetadata(newName = input$scenName, newTags = scenTags)
+            activeScen$updateMetadata(
+              newName = input$scenName, newTags = scenTags,
+              newReadPerm = input$editMetaReadPerm,
+              newWritePerm = input$editMetaWritePerm,
+              newExecPerm = input$editMetaExecPerm
+            )
             if (isTRUE(input$newScenDiscardAttach)) {
               if (length(currentScenHash)) {
                 attachmentListTmp <- attachments$getMetadata()
@@ -201,9 +271,6 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
                 }
               }
               attachments$removeAll()
-            }
-            if (isTRUE(input$newScenDiscardPerm)) {
-              activeScen$resetAccessPerm()
             }
           }
         }
@@ -305,64 +372,9 @@ observeEvent(input$tpEditMeta, {
   }
   flog.trace("Access permissions tab in metadata dialog selected")
   removeUI("#contentAccessPerm .form-group", multiple = TRUE)
-  showEl(session, "#contentAccessPermSpinner")
-  on.exit(hideEl(session, "#contentAccessPermSpinner"))
-  editMetaRemoteAccessPermLoaded <<- TRUE
-  if (tryCatch(
-    {
-      if (isShinyProxy) {
-        accessGroups <- worker$getRemoteAccessGroups()
-        db$setRemoteUsers(accessGroups)
-      } else {
-        accessGroups <- db$getUserAccessGroups()
-      }
-      FALSE
-    },
-    error = function(e) {
-      flog.warn(
-        "Problems fetching user access groups. Error message: %s",
-        conditionMessage(e)
-      )
-      insertUI("#contentAccessPerm",
-        ui = tags$div(
-          class = "err-msg",
-          lang$errMsg$unknownError
-        )
-      )
-      return(TRUE)
-    }
-  )) {
-    return()
+  if (genAccessPermInputs("#contentAccessPerm")) {
+    editMetaRemoteAccessPermLoaded <<- TRUE
   }
-  metaTmp <- activeScen$getMetadataDf(noPermFields = FALSE)
-  writePerm <- csv2Vector(metaTmp[["_accessw"]][[1]])
-  readPerm <- csv2Vector(metaTmp[["_accessr"]][[1]])
-  execPerm <- csv2Vector(metaTmp[["_accessx"]][[1]])
-  insertUI("#contentAccessPerm",
-    ui = tagList(
-      tags$div(
-        class = "input-form-mobile",
-        accessPermInput("editMetaReadPerm", lang$nav$excelExport$metadataSheet$readPerm,
-          sort(unique(c(readPerm, accessGroups))),
-          selected = readPerm, width = "100%"
-        )
-      ),
-      tags$div(
-        class = "input-form-mobile",
-        accessPermInput("editMetaWritePerm", lang$nav$excelExport$metadataSheet$writePerm,
-          sort(unique(c(writePerm, accessGroups))),
-          selected = writePerm, width = "100%"
-        )
-      ),
-      tags$div(
-        class = "input-form-mobile",
-        accessPermInput("editMetaExecPerm", lang$nav$excelExport$metadataSheet$execPerm,
-          sort(unique(c(execPerm, accessGroups))),
-          selected = execPerm, width = "100%"
-        )
-      )
-    )
-  )
 })
 
 observeEvent(input$btUpdateMeta, {

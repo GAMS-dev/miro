@@ -28,7 +28,11 @@ saveNewDefault <- function(newName = NULL, discardPerm = FALSE) {
   Sys.sleep(0.5)
   app$set_inputs(scenName = newName)
   if (isTRUE(discardPerm)) {
-    app$set_inputs(newScenDiscardPerm = "click")
+    app$set_inputs(
+      editMetaReadPerm = user,
+      editMetaWritePerm = user,
+      editMetaExecPerm = user
+    )
   }
   Sys.sleep(0.5)
   app$click(selector = "#shiny-modal #dialogSaveInit  .bt-gms-confirm")
@@ -59,7 +63,11 @@ Sys.sleep(1)
 # save as same name and discard permissions
 app$set_inputs(btSaveAs = "click")
 Sys.sleep(0.5)
-app$set_inputs(newScenDiscardPerm = "click")
+app$set_inputs(
+  editMetaReadPerm = user,
+  editMetaWritePerm = user,
+  editMetaExecPerm = user
+)
 Sys.sleep(0.5)
 app$click(selector = "#shiny-modal #dialogSaveInit .bt-gms-confirm")
 Sys.sleep(0.5)
