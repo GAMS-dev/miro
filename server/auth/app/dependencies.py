@@ -63,7 +63,7 @@ def _send_id_token_request(id_token: str, expires_in: int = 3600,
 
 def get_bearer_token(username: str, password: str, expires_in: int = 3600) -> str:
     response = _send_token_request(
-        username, password, expires_in, scopes=["JOBS", "HYPERCUBE", "NAMESPACES", "USAGE"])
+        username, password, expires_in, scopes=["JOBS", "HYPERCUBE", "NAMESPACES", "USAGE", "USERS"])
     if response.status_code == 400:
         logger.info("Received bad request when trying to request bearer token. Most likely old Engine version that does not have 'scope' parameter. Trying without scopes.")
         response = _send_token_request(username, password, expires_in)
