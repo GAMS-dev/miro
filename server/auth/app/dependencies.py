@@ -134,8 +134,10 @@ def get_username_bearer(bearer_token: str) -> str:
     try:
         auth_header = "Bearer " + bearer_token
         response = requests.get(
-            f"{settings.engine_url}/users/",
-            headers={"Authorization": auth_header}, timeout=settings.request_timeout)
+            f"{settings.engine_url}/users/?everyone=false",
+            headers={"Authorization": auth_header},
+            timeout=settings.request_timeout,
+        )
     except requests.exceptions.ConnectionError as exc:
         logger.info(
             "ConnectionError when requesting username of bearer token from GAMS Engine.")
@@ -159,7 +161,7 @@ def get_username_bearer(bearer_token: str) -> str:
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    if len(response.json()) < 1 or response.json()[0]["deleted"]:
+    if len(response.json()) != 1 or response.json()[0]["deleted"]:
         logger.info(
             "Could not get user info when requesting user data from GAMS Engine")
         raise HTTPException(
