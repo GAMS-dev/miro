@@ -32,7 +32,7 @@ tryCatch(
 
 appConfig <- modelConfig$getAppConfigFull(appId)
 modelName <- basename(
-  appConfig$containerEnv[["MIRO_MODEL_PATH"]]
+  modelConfig$getEnvValue(appConfig$containerEnv[["MIRO_MODEL_PATH"]])
 )
 appDbCredentials <- modelConfig$getAppDbConf(appId)
 
@@ -41,7 +41,7 @@ procEnv[["MIRO_DB_USERNAME"]] <- appDbCredentials$user
 procEnv[["MIRO_DB_PASSWORD"]] <- appDbCredentials$password
 procEnv[["MIRO_DB_SCHEMA"]] <- appDbCredentials$user
 procEnv[["MIRO_POPULATE_DB"]] <- "true"
-procEnv[["MIRO_VERSION_STRING"]] <- appConfig$containerEnv[["MIRO_VERSION_STRING"]]
+procEnv[["MIRO_VERSION_STRING"]] <- modelConfig$getEnvValue(appConfig$containerEnv[["MIRO_VERSION_STRING"]])
 procEnv[["MIRO_MODEL_PATH"]] <- file.path(MIRO_MODEL_DIR, appId, modelName)
 procEnv[["MIRO_DATA_DIR"]] <- dataPath
 procEnv[["MIRO_OVERWRITE_SCEN_IMPORT"]] <- if (!identical(overwriteScen, TRUE)) "ask" else "true"

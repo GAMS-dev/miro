@@ -819,26 +819,7 @@ if (miroBuildOnly) {
       # assemble MIROAPP
       miroAppPath <- file.path(currentModelDir, paste0(modelNameRaw, ".miroapp"))
       appInfoPath <- file.path(paste0("static_", modelName), "app_info.json")
-      appIdToValidate <- tryCatch(suppressWarnings(
-        read_json(file.path(currentModelDir, appInfoPath),
-          simplifyDataFrame = FALSE,
-          simplifyMatrix = FALSE
-        )
-      )$appId, error = function(e) {
-        return(modelName)
-      })
-      if (length(appIdToValidate) != 1L || !is.character(appIdToValidate)) {
-        appIdToValidate <- modelName
-      }
-      if (!grepl("^[a-z0-9][a-z0-9-_]{0,59}$", appIdToValidate, perl = TRUE)) {
-        stop(
-          sprintf(
-            "The App ID ('%s') may only contain ASCII lowercase letters, digits, '-' and '_', must not start with '-' or '_' and may not be longer than 60 characters!\nProvide a valid app ID by specifying it in the `%s` JSON file with the key: `appId` (e.g. `{\"appId\": \"my_model123\"}`).",
-            appIdToValidate, appInfoPath
-          ),
-          call. = FALSE
-        )
-      }
+      jsonValidator$validate(appInfoPath, file.path("conf", "app_info_schema.json"))
       flog.info("Generating miroapp file...")
       zipMiro(
         miroAppPath,

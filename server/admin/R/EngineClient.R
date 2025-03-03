@@ -10,6 +10,12 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
     )[1]
     return(invisible(self))
   },
+  getUserGroups = function() {
+    if (is.null(private$engineUserGroups)) {
+      private$fetchGroupLabels()
+    }
+    return(private$engineUserGroups)
+  },
   setAuthHeader = function(authHeader) {
     private$authHeader <- authHeader
     return(invisible(self))
@@ -222,7 +228,7 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
   }
 ), private = list(
   apiInfo = NULL,
-  labelsEngine = NULL,
+  engineUserGroups = NULL,
   authHeader = NULL,
   appIdsNotOnEngine = character(0L),
   appIdsNotOnMIRO = character(0L),
@@ -261,22 +267,33 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
       USE.NAMES = FALSE
     )
     # allow only lowercase group labels
-    labelsEngineTmp <- labelsEngineTmp[labelsEngineTmp == tolower(labelsEngineTmp)]
-    private$labelsEngine <- labelsEngineTmp
+    invalidGroupLabels <- labelsEngineTmp != tolower(labelsEngineTmp)
+    if (any(invalidGroupLabels)) {
+      flog.warn(
+        "Some groups were ignore as they contain uppercase letters (currently not supported): %s.",
+        paste(labelsEngineTmp[invalidGroupLabels], collapse = ", ")
+      )
+    }
+    private$engineUserGroups <- list(
+      groups = I(unique(c("users", "admins", labelsEngineTmp[!invalidGroupLabels]))),
+      users = I(unique(unlist(lapply(groupLabelsEngine, function(group) {
+        return(vapply(group$members, "[[",
+          character(1L), "username",
+          USE.NAMES = FALSE
+        ))
+      }), use.names = FALSE)))
+    )
     return(invisible(self))
   },
   getGroupLabelsEngine = function(groupLabels) {
-    if (is.null(private$labelsEngine)) {
-      private$fetchGroupLabels()
-    }
-    labelIdx <- match(tolower(groupLabels), tolower(private$labelsEngine))
+    labelIdx <- match(tolower(groupLabels), self$getUserGroups()$groups)
     if (any(is.na(labelIdx))) {
       stop(sprintf(
         "Invalid group(s): '%s'. This error occurs when you have been removed from these groups.",
         paste(groupLabels[is.na(labelIdx)], collapse = ",")
       ), call. = FALSE)
     }
-    groupLabelsTmp <- private$labelsEngine[labelIdx]
+    groupLabelsTmp <- self$getUserGroups()$groups[labelIdx]
     return(setNames(as.list(groupLabelsTmp), rep.int("user_groups", length(groupLabelsTmp))))
   }
 ))

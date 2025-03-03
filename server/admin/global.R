@@ -25,6 +25,15 @@ ENFORCE_SIGNED_APPS <- identical(Sys.getenv("MIRO_ENFORCE_SIGNED_APPS"), "true")
 
 DEFAULT_LOGO_B64 <- character(0L)
 
+MAX_ENV_VARS <- 50L
+
+RESTRICTED_ENV_KEYS <- c(
+  "MIRO_MODEL_PATH", "MIRO_DATA_DIR", "MIRO_MODE",
+  "MIRO_VERSION_STRING", "MIRO_DB_USERNAME",
+  "MIRO_DB_PASSWORD", "MIRO_DB_SCHEMA",
+  "MIRO_ENGINE_MODELNAME"
+)
+
 flog.appender("appender.console")
 flog.threshold("TRACE")
 

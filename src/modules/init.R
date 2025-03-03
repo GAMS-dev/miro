@@ -318,7 +318,7 @@ if (is.null(errMsg)) {
   lapply(seq_along(jsonSchemaMap), function(i) {
     if (tryCatch(
       {
-        valid <- jsonValidator$validate(
+        validatedData <- jsonValidator$validate(
           jsonSchemaMap[[i]][1],
           jsonSchemaMap[[i]][2],
           returnRawData = identical(names(jsonSchemaMap)[[i]], "io_config")
@@ -339,31 +339,20 @@ if (is.null(errMsg)) {
       return()
     }
 
-    if (is.null(valid$errors)) {
-      if (identical(names(jsonSchemaMap)[[i]], "config")) {
-        config <<- valid$data
-      } else if (identical(names(jsonSchemaMap)[[i]], "io_config")) {
-        config <<- c(config, valid$data)
-        if (is.null(config$modelTitle)) {
-          # we have to use jsonlite::readJSON instead of JSON.parse for parsing
-          # the data contract due to an issue with headers being reordered if they
-          # use integer values (e.g. "1", "2" etc.). Thus, AJV won't insert the
-          # defaults from the schema (only one luckily for the io_schema) into the data
-          # object. We have to do it manually.
-          config$modelTitle <- "Unnamed model"
-        }
-      } else if (identical(names(jsonSchemaMap)[[i]], "views")) {
-        config$globalViews <<- valid$data
+    if (identical(names(jsonSchemaMap)[[i]], "config")) {
+      config <<- validatedData
+    } else if (identical(names(jsonSchemaMap)[[i]], "io_config")) {
+      config <<- c(config, validatedData)
+      if (is.null(config$modelTitle)) {
+        # we have to use jsonlite::readJSON instead of JSON.parse for parsing
+        # the data contract due to an issue with headers being reordered if they
+        # use integer values (e.g. "1", "2" etc.). Thus, AJV won't insert the
+        # defaults from the schema (only one luckily for the io_schema) into the data
+        # object. We have to do it manually.
+        config$modelTitle <- "Unnamed model"
       }
-    } else {
-      errMsg <<- paste(errMsg,
-        paste0(
-          "Some error occurred parsing JSON file: '",
-          basename(jsonFilesWithSchema[i]),
-          "'. Error message: ", valid$errors
-        ),
-        sep = "\n"
-      )
+    } else if (identical(names(jsonSchemaMap)[[i]], "views")) {
+      config$globalViews <<- validatedData
     }
   })
 }

@@ -46,6 +46,8 @@ initCallback <- function(session, appIds) {
     )
   }
 
+  session$sendCustomMessage("onInitUserGroups", engineClient$getUserGroups())
+
   if (length(errors)) {
     session$sendCustomMessage("onInitErrors", errors)
   }
@@ -104,6 +106,7 @@ server <- function(input, output, session) {
             appTitle = htmltools::htmlEscape(miroAppValidator$getAppTitle()),
             appDesc = htmltools::htmlEscape(miroAppValidator$getAppDesc()),
             logoB64 = miroAppValidator$getLogoB64(),
+            appEnv = miroAppValidator$getAppEnv(),
             dataExists = db$schemaExists(miroAppValidator$getAppId())
           )
         )
@@ -178,7 +181,7 @@ server <- function(input, output, session) {
         currentConfigList <- modelConfig$getConfigList()
         newAppTitle <- trimws(input$addApp$title)
         newAppDesc <- trimws(input$addApp$desc)
-        newAppEnv <- trimws(input$addApp$env)
+        newAppEnv <- miroAppValidator$validateAppEnv(input$addApp$env)
         newGroups <- csv2Vector(input$addApp$groups)
         overwriteData <- identical(input$addApp$overwrite, TRUE)
         flog.info("Overwrite data: %s", overwriteData)
@@ -245,20 +248,15 @@ server <- function(input, output, session) {
         newAppConfig[["containerEnv"]][["MIRO_DB_PASSWORD"]] <- appDbCredentials$password
         newAppConfig[["containerEnv"]][["MIRO_DB_SCHEMA"]] <- appDbCredentials$user
 
-        if (identical(length(newAppEnv), 1L) && !identical(newAppEnv, "")) {
-          if (!jsonlite::validate(newAppEnv)) {
-            stop("Argument 'txt' is not a valid JSON string.")
+        for (envName in names(newAppEnv)) {
+          if (envName %in% names(newAppConfig[["containerEnv"]])) {
+            flog.warn(
+              "Environment variable name: %s is restricted and cannot be used. It will be ignored",
+              envName
+            )
+            next
           }
-          newAppEnv <- jsonlite::fromJSON(newAppEnv)
-          for (envName in names(newAppEnv)) {
-            if (envName %in% names(newAppConfig[["containerEnv"]])) {
-              flog.warn("Invalid environment variable name: %s in custom environment file. It was ignored.", envName)
-            } else if (length(newAppEnv[[envName]]) != 1L) {
-              flog.error("Invalid environment variable value for variable: %s. Probably an attempt to tamper with the app!", envName)
-            } else {
-              newAppConfig[["containerEnv"]][[envName]] <- as.character(newAppEnv[[envName]])
-            }
-          }
+          newAppConfig[["containerEnv"]][[envName]] <- newAppEnv[[envName]]
         }
 
         appDir <- file.path(MIRO_MODEL_DIR, appId)
@@ -400,21 +398,7 @@ server <- function(input, output, session) {
           newLogoName <- getLogoName(appId, logoPath)
           addAppLogo(appId, logoPath, newLogoName)
         }
-
-        newAppEnv <- NULL
-        if (identical(length(input$updateAppMeta$env), 1L) && !identical(trimws(input$updateAppMeta$env), "")) {
-          if (!jsonlite::validate(input$updateAppMeta$env)) {
-            stop("Argument 'txt' is not a valid JSON string.")
-          }
-          newAppEnv <- jsonlite::fromJSON(input$updateAppMeta$env)
-          for (envName in names(newAppEnv)) {
-            if (length(newAppEnv[[envName]]) != 1L) {
-              stop("Invalid environment variable value for variable: %s.", envName)
-            } else {
-              newAppEnv[[envName]] <- as.character(newAppEnv[[envName]])
-            }
-          }
-        }
+        newAppEnv <- miroAppValidator$validateAppEnv(input$updateAppMeta$env)
         newGroups <- csv2Vector(input$updateAppMeta$groups)
         engineClient$updateModel(appId, userGroups = newGroups)
         modelConfig$update(appIndex, list(
@@ -484,7 +468,7 @@ server <- function(input, output, session) {
           appConfig <- modelConfig$getAppConfigFull(appId)
         }
         appModelName <- tools::file_path_sans_ext(basename(
-          appConfig$containerEnv[["MIRO_MODEL_PATH"]]
+          modelConfig$getEnvValue(appConfig$containerEnv[["MIRO_MODEL_PATH"]])
         ))
         appDbCredentials <- modelConfig$getAppDbConf(appId)
         miroProc$
@@ -504,7 +488,7 @@ server <- function(input, output, session) {
         }
         for (i in seq_along(filePaths)) {
           miroProc$run(appId, appModelName,
-            appConfig$containerEnv[["MIRO_VERSION_STRING"]],
+            modelConfig$getEnvValue(appConfig$containerEnv[["MIRO_VERSION_STRING"]]),
             appDir, filePaths[[i]],
             progressSelector = progressSelector,
             requestType = requestType, overwriteScen = overwriteExisting,

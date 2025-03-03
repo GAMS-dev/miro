@@ -2,21 +2,6 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import bootbox from 'bootbox';
-import Ajv from 'ajv';
-
-const ajv = new Ajv({ allErrors: true });
-
-const envSchema = {
-  type: 'object',
-  propertyNames: {
-    pattern: '^[A-Z_][A-Z0-9_]*$',
-  },
-  additionalProperties: {
-    type: 'string',
-  },
-};
-
-const validateEnvSchema = ajv.compile(envSchema);
 
 function unicodeToHTMLID(str) {
   const idTmp = window
@@ -54,11 +39,12 @@ const $appsWrapper = $('#appsWrapper');
 const appFilesPlaceholder = 'Drop your MIRO app here.';
 const appNamePlaceholder = 'App title';
 const appDescPlaceholder = 'Short model description (optional)';
-const appEnvPlaceholder = 'App environment (JSON, optional)';
 const appGroupsPlaceholder = 'Access groups (optional)';
 const appLogoPlaceholder = 'Different app logo? Drop your MIRO app logo here.';
 const overwriteAppData = {};
 const uploadAppDataFinished = {};
+const appEnvironment = {};
+let scenPermAccessGroups = [];
 let reorderAppsMode = false;
 let currentConfigList = null;
 let currentGroupList = [];
@@ -86,33 +72,6 @@ const supportedDataFileTypes = [
   'zip',
 ];
 
-function validateAppEnv(envContentRaw) {
-  if (envContentRaw.trim() === '') {
-    return true;
-  }
-  try {
-    const envContent = JSON.parse(envContentRaw);
-    const valid = validateEnvSchema(envContent);
-    if (!valid) {
-      bootbox.alert({
-        title: 'Problems validating app environment',
-        message: `The app environment could not be validated.\nValidation errors: ${escapeHtml(ajv.errorsText(validateEnvSchema.errors))}.`,
-        centerVertical: true,
-      });
-      return false;
-    }
-    return true;
-  } catch (err) {
-    bootbox.alert({
-      title: 'Problems parsing app environment',
-      message:
-        'The app environment could not be parsed.\nPlease make sure that you have entered valid JSON syntax.',
-      centerVertical: true,
-    });
-    return false;
-  }
-}
-
 function sendAddRequest() {
   const newAppTitle = document.getElementById('newAppName').value;
   if (!newAppTitle || newAppTitle.trim() === '') {
@@ -123,10 +82,7 @@ function sendAddRequest() {
     });
     return;
   }
-  const appEnv = document.getElementById('newAppEnv').value;
-  if (validateAppEnv(appEnv) !== true) {
-    return;
-  }
+  const appEnv = appEnvironment['~$_newApp'];
   $('#addAppSpinner').show();
   $('#btAddApp').attr('disabled', true);
   Shiny.setInputValue(
@@ -159,10 +115,7 @@ function sendUpdateRequest(index) {
   if (!newAppDesc || newAppDesc === appDescPlaceholder) {
     newAppDesc = '';
   }
-  const appEnv = document.getElementById(`appEnv_${index}`).value.trim();
-  if (validateAppEnv(appEnv) !== true) {
-    return;
-  }
+  const appEnv = appEnvironment[$(`#appEnv_${index}`).data('id')];
   $loadingScreen.fadeIn(200);
   Shiny.setInputValue(
     'updateAppMeta',
@@ -220,9 +173,293 @@ function exitOverlayMode() {
   }
 }
 
-function registerSelectizeInputs() {
-  $('select').selectize({
-    persist: false,
+// eslint-disable-next-line no-eval
+const indirectEval = eval;
+
+function registerSelectizeInputs(selector = '') {
+  let selectizeSelector = 'select';
+  if (selector !== '') {
+    selectizeSelector = `${selector} select`;
+  }
+  const $el = $(selectizeSelector);
+  $el.each(function () {
+    const config = $el
+      .parent()
+      .find(`script[data-for="${escapeHtml(this.id)}"]`);
+    let options = {
+      persist: false,
+    };
+    if (config.length > 0) {
+      options = $.extend(
+        {
+          labelField: 'label',
+          valueField: 'value',
+          searchField: ['label'],
+        },
+        JSON.parse(config.html()),
+      );
+      if (config.data('eval') instanceof Array) {
+        $.each(config.data('eval'), (i, x) => {
+          options[x] = indirectEval(`(${options[x]})`);
+        });
+      }
+    }
+    $(this).selectize(options);
+  });
+}
+
+function openAdvancedSettingsDialog() {
+  const appEnvBtn = $(this);
+  const appKey = appEnvBtn.data('id') ?? '~$_newApp';
+  const initialData = appEnvironment[appKey] ?? {};
+  const data = { ...initialData };
+  const maxEnvVars = 47;
+
+  const createRow = (
+    envName = '',
+    description = '',
+    value = '',
+    isEditable = true,
+    isFirst = false,
+  ) => {
+    const rowId = `row-${Date.now()}`;
+    return `
+              <tr id="${rowId}">
+                  <td><input type="text" class="form-control env-name" value="${escapeHtml(envName)}" placeholder="Environment Name" ${isEditable ? '>' : `style="display:none">${escapeHtml(envName)}`}</td>
+                  <td><textarea type="text" class="form-control env-description" placeholder="Description" rows="1">${escapeHtml(description)}</textarea></td>
+                  <td>
+                      <div class="input-group">
+                          <input type="password" class="form-control env-value" value="${escapeHtml(value)}" placeholder="Value">
+                          <div class="input-group-text">
+                            <i class="fas fa-eye toggle-visibility"></i>
+                          </div>
+                      </div>
+                  </td>
+                  <td>
+                      ${!isEditable || !isFirst ? '<button class="btn btn-danger remove-row" type="button"><i class="fas fa-trash"></i></button>' : ''}
+                  </td>
+              </tr>`;
+  };
+
+  const getCurrentAccessPerm = (accessPerm) => {
+    if (accessPerm?.value == null || accessPerm.value === '') {
+      return [];
+    }
+    return accessPerm.value.split(',');
+  };
+
+  const getAccessPermSelectorHtml = (
+    id,
+    choices,
+    selected,
+  ) => `<div class="access-perm-selector-container">
+        <select id="${id}" multiple="multiple" placeholder="Owner of the Scenario"><option value=""></option></select>
+          <script type="application/json"
+            data-for="${id}"
+            data-eval="[&quot;sortField&quot;,&quot;items&quot;,&quot;render&quot;]">
+            {"valueField":"value","labelField":"value","searchField":"value",
+              "options":${JSON.stringify(
+    choices.groups
+      .map((groupName) => ({
+        isGroup: true,
+        value: `#${groupName}`,
+      }))
+      .sort((i1, i2) => i1.value.localeCompare(i2.value))
+      .concat(
+        choices.users
+          .map((userName) => ({
+            isGroup: false,
+            value: userName,
+          }))
+          .sort((i1, i2) => i1.value.localeCompare(i2.value)),
+      ),
+  )},
+            "items":${JSON.stringify(JSON.stringify(selected))},
+            "sortField":"function(i1,i2) {return i1.value.localeCompare(i2.value);}",
+            "render":"{option: function(d,e){return '<div>'+(d.isGroup?'<i class=\\"fas fa-users\\"><\\/i> '+e(d.value.substring(1)):'<i class=\\"fas fa-user\\"><\\/i> '+e(d.value))+'<\\/div>';},item:function(d,e){return '<div>'+(d.isGroup?'<i class=\\"fas fa-users\\"><\\/i> '+e(d.value.substring(1)):'<i class=\\"fas fa-user\\"><\\/i> '+e(d.value))+'<\\/div>';}}",
+            "plugins":["selectize-plugin-a11y"]}
+          </script>
+        </div>`;
+
+  const dialogContent = `
+          <div style="white-space:normal">
+            <ul class="nav nav-tabs" id="confTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="conf-environment-tab" data-toggle="tab" data-target="#conf-environment" type="button" role="tab" aria-controls="conf-environment" aria-selected="true">Environment</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="conf-permissions-tab" data-toggle="tab" data-target="#conf-permissions" type="button" role="tab" aria-controls="conf-permissions" aria-selected="false">Scenario Permissions</button>
+              </li>
+            </ul>
+            <div class="tab-content pt-3" id="confTabContent">
+              <div id="form-error" class="text-danger mb-2"></div>
+              <div class="tab-pane fade show active" id="conf-environment" role="tabpanel" aria-labelledby="conf-environment-tab">
+                <table class="table table-bordered">
+                  <thead>
+                      <tr>
+                          <th>Name</th>
+                          <th>Description</th>
+                          <th>Value</th>
+                          <th>Actions</th>
+                      </tr>
+                  </thead>
+                  <tbody id="env-rows">
+                      ${Object.keys(data)
+    .filter(
+      (envName) => !['READ', 'WRITE', 'EXECUTE']
+        .map(
+          (permType) => `MIRO_DEFAULT_SCEN_PERM_${permType}`,
+        )
+        .includes(envName),
+    )
+    .map((envName) => createRow(
+      escapeHtml(envName),
+      escapeHtml(data[envName].description ?? ''),
+      escapeHtml(data[envName].value),
+      false,
+    ))
+    .join('')}
+                      ${createRow('', '', '', true, true)}
+                  </tbody>
+                </table>
+              </div>
+              <div class="tab-pane fade" id="conf-permissions" role="tabpanel" aria-labelledby="conf-permissions-tab">
+                <table class="table table-bordered">
+                  <thead>
+                      <tr>
+                          <th>Type</th>
+                          <th>Value</th>
+                      </tr>
+                  </thead>
+                  <tbody id="env-rows-perm">
+                    ${['Read', 'Write', 'Execute'].reduce(
+    (
+      permSelectorHTML,
+      permType,
+    ) => `${permSelectorHTML}<tr id="scenPerm${permType}">
+                          <td>Default ${permType} Permissions <i class="fas fa-info-circle" rel="tooltip" title="Default ${permType.toLowerCase()} permissions when saving scenario to database. Scenario owner is always added to this list."></i></td>
+                          <td>
+                            ${getAccessPermSelectorHtml(
+    `scenPerm${permType}Selector`,
+    scenPermAccessGroups,
+    getCurrentAccessPerm(
+      data[
+        `MIRO_DEFAULT_SCEN_PERM_${permType.toUpperCase()}`
+      ],
+    ),
+  )}
+                          </td>
+                        </tr>`,
+    '',
+  )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>`;
+
+  bootbox.dialog({
+    title: 'Advanced Settings',
+    message: dialogContent,
+    size: 'large',
+    buttons: {
+      cancel: {
+        label: 'Cancel',
+        className: 'btn-secondary cancel-btn',
+      },
+      save: {
+        label: 'Save',
+        className: 'btn-secondary confirm-btn',
+        callback: () => {
+          let errorMessage = '';
+          let isValid = true;
+          const updatedData = {};
+          const seenEnvNames = new Set();
+
+          ['Read', 'Write', 'Execute'].forEach((permType) => {
+            const envValue = $(`#scenPerm${permType}Selector`).val().join(',');
+            if (envValue === '') {
+              return;
+            }
+            const envName = `MIRO_DEFAULT_SCEN_PERM_${permType.toUpperCase()}`;
+            seenEnvNames.add(envName);
+            updatedData[envName] = {
+              description: `Default ${permType} Permissions`,
+              value: envValue,
+            };
+          });
+
+          $('#env-rows tr').each(function () {
+            const envName = $(this).find('.env-name').val().trim();
+            const description = $(this).find('.env-description').val().trim();
+            const value = $(this).find('.env-value').val().trim();
+
+            if (envName) {
+              if (!/^[A-Z_][A-Z0-9_]*$/.test(envName)) {
+                $('#conf-environment-tab').tab('show');
+                $(this).find('.env-name').addClass('is-invalid');
+                errorMessage = 'Environment variable names must match the pattern ^[A-Z_][A-Z0-9_]*$.';
+                isValid = false;
+              } else if (seenEnvNames.has(envName)) {
+                $('#conf-environment-tab').tab('show');
+                $(this).find('.env-name').addClass('is-invalid');
+                isValid = false;
+              } else {
+                $(this).find('.env-name').removeClass('is-invalid');
+                seenEnvNames.add(envName);
+                updatedData[envName] = { description, value };
+              }
+            } else if (
+              (!$(this).find('.env-name').val()
+                && $(this).find('.env-description').val())
+              || $(this).find('.env-value').val()
+            ) {
+              $('#conf-environment-tab').tab('show');
+              $(this).find('.env-name').addClass('is-invalid');
+              isValid = false;
+            }
+          });
+
+          if (!isValid) {
+            $('#form-error').text(errorMessage);
+            return false;
+          }
+
+          $('#form-error').text('');
+          appEnvironment[appKey] = updatedData;
+          return true;
+        },
+      },
+    },
+  });
+  registerSelectizeInputs('#conf-permissions');
+
+  $('#conf-permissions [rel=tooltip]').tooltip({ placement: 'right' });
+
+  const tableBody = $('#env-rows');
+
+  tableBody.on('click', '.toggle-visibility', function () {
+    const input = $(this).closest('.input-group').find('.env-value');
+    const icon = $(this);
+    if (input.attr('type') === 'password') {
+      input.attr('type', 'text');
+      icon.removeClass('fa-eye').addClass('fa-eye-slash');
+    } else {
+      input.attr('type', 'password');
+      icon.removeClass('fa-eye-slash').addClass('fa-eye');
+    }
+  });
+  tableBody.on('click', '.remove-row', function () {
+    $(this).closest('tr').remove();
+  });
+  tableBody.on('input', '.env-name, .env-description, .env-value', () => {
+    const lastRow = tableBody.find('tr:last');
+    const isLastRowFilled = lastRow.find('.env-name').val()
+      || lastRow.find('.env-description').val()
+      || lastRow.find('.env-value').val();
+    if (isLastRowFilled && tableBody.find('tr').length < maxEnvVars + 1) {
+      tableBody.append(createRow('', '', '', true, false));
+    }
   });
 }
 
@@ -232,11 +469,11 @@ function refreshConfigList() {
   const appsList = currentConfigList.reduce((html, configData, indexRaw) => {
     const appNameSafe = escapeHtml(configData.alias);
     const descSafe = escapeHtml(configData.desc);
-    const appEnvSafe = escapeHtml(configData.appEnv);
     const { id, isDirty } = configData;
     const appIdSafe = escapeHtml(id);
     const idEncoded = unicodeToHTMLID(id);
     const index = indexRaw + 1;
+    appEnvironment[idEncoded] = configData.appEnv;
     let groupOptions = configData.groups != null
       ? configData.groups.reduce(
         (optionsHTML, groupName) => `${optionsHTML}<option value="${escapeHtml(groupName)}" selected>${escapeHtml(groupName.toLowerCase())}</option>`,
@@ -292,7 +529,7 @@ function refreshConfigList() {
                 <select id="appGroups_${index}" multiple>${groupOptions}</select>
                 <div style="height:1rem"></div>
               </div>
-              <textarea id="appEnv_${index}" rows="1" name="appEnv" class="editable" style="width:100%;display:none;" placeholder="${appEnvPlaceholder}">${appEnvSafe}</textarea>
+              <button id="appEnv_${index}" data-id="${idEncoded}" class="btn btn-secondary open-config-btn" style="display:none;" type="button">Advanced Settings</button>
               <div class="app-id-field" title="${appIdSafe}">
                 <small>ID: <i>${appIdSafe}</i></small>
               </div>
@@ -367,7 +604,7 @@ function expandAddAppForm() {
                           <label for="newAppGroups">${appGroupsPlaceholder}</label>
                           <select id="newAppGroups" style="margin-bottom: 1rem;width: 100%;" multiple>${groupOptions}</select>
                         </div>
-                        <textarea id="newAppEnv" rows="1" name="appEnv" class="editable" style="width:100%;" placeholder="${appEnvPlaceholder}"></textarea>
+                        <button id="newAppEnv" class="btn btn-secondary open-config-btn" type="button">Advanced Settings</button>
                         <div style="height:1rem"></div>
                         </div>
                         <div style = "text-align:right;">
@@ -559,6 +796,7 @@ const showOverwriteDialog = (
   sendUpdateEvent = true,
   fileTypes = [],
   newAppId = appId,
+  showAdvancedSettingsDialog = false,
 ) => bootbox.prompt({
   title: 'Overwrite data',
   message: `Do you want to overwrite existing scenario data? Please type <b>${escapeHtml(newAppId)}</b> to confirm or choose 'Cancel' to keep the existing data.`,
@@ -571,6 +809,9 @@ const showOverwriteDialog = (
     overwriteAppData[appId] = result != null;
     if (sendUpdateEvent) {
       sendUpdateAppShinyEvent(appId, fileTypes);
+    }
+    if (showAdvancedSettingsDialog) {
+      openAdvancedSettingsDialog();
     }
     return true;
   },
@@ -749,15 +990,14 @@ $appsWrapper.on('change', '#newAppName', () => {
     document.getElementById('btAddApp').disabled = true;
   }
 });
-$appsWrapper.on('click', '#btAddApp', () => {
-  sendAddRequest();
-});
+$appsWrapper.on('click', '#btAddApp', sendAddRequest);
+$appsWrapper.on('click', '.open-config-btn', openAdvancedSettingsDialog);
 // Login form
 function openLoginForm() {
   $('#loginFormWrapper').show();
   $('#loginLoadingIndicator').hide();
   $('#loginError').hide();
-  $('#loginModal').modal().focus();
+  $('#loginModal').modal().trigger('focus');
 }
 $('body').on('click', '#btLogin', () => {
   $('#loginFormWrapper').hide();
@@ -807,6 +1047,9 @@ $(() => {
     }
     $overlay.hide();
     refreshConfigList();
+  });
+  Shiny.addCustomMessageHandler('onInitUserGroups', (data) => {
+    scenPermAccessGroups = data;
   });
   Shiny.addCustomMessageHandler('onInitErrors', (data) => {
     let errorMessage = '';
@@ -922,10 +1165,20 @@ $(() => {
         document.getElementById('newAppDesc').value = data.appDesc;
       }
     }
+    appEnvironment['~$_newApp'] = data.appEnv ?? {};
     if (data.dataExists !== true) {
       overwriteAppData['~$_newApp'] = true;
+      if (Object.keys(appEnvironment['~$_newApp']).length > 0) {
+        openAdvancedSettingsDialog();
+      }
     } else {
-      showOverwriteDialog('~$_newApp', false, [], data.appId);
+      showOverwriteDialog(
+        '~$_newApp',
+        false,
+        [],
+        data.appId,
+        Object.keys(data.eppEnv).length > 0,
+      );
     }
     $('#newAppFiles').hide();
     $('#miroAppFile_progress').hide();
