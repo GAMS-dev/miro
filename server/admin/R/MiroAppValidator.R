@@ -1,7 +1,8 @@
 source(file.path(MIRO_APP_PATH, "components", "json.R"), local = TRUE)
 
 MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
-  initialize = function() {
+  initialize = function(engineClient) {
+    private$engineClient <- engineClient
     private$jsonValidator <- JSONValidator$new(miroRootDir = MIRO_APP_PATH)
     return(invisible(self))
   },
@@ -162,10 +163,26 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
             nchar(envConfig[[configKey]]) <= 1000L)) {
             stop(
               sprintf(
-                "Invalid app environment. '%s' key must be character and no longer than 1000 characters.",
-                configKey
+                "Invalid app environment. '%s' key (variable: '%s') must be character and no longer than 1000 characters.",
+                configKey, envName
               ),
               call. = FALSE
+            )
+          }
+          if (envName %in% paste0(
+            "MIRO_DEFAULT_SCEN_PERM_",
+            c("READ", "WRITE", "EXECUTE")
+          )) {
+            tryCatch(private$validateUserAccessGroups(envConfig[["value"]]),
+              error = function(err) {
+                stop(
+                  sprintf(
+                    "Invalid app environment. '%s' key is invalid: %s.",
+                    envName, conditionMessage(err)
+                  ),
+                  call. = FALSE
+                )
+              }
             )
           }
         } else {
@@ -185,6 +202,7 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     return(TRUE)
   }
 ), private = list(
+  engineClient = NULL,
   appId = NULL,
   appEnv = NULL,
   modelName = NULL,
@@ -271,5 +289,19 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
       stop("Invalid model name found in MIRO metadata file!", call. = FALSE)
     }
     return(modelNameRaw)
+  },
+  validateUserAccessGroups = function(accessGroupString) {
+    userGroups <- private$engineClient$getUserGroups()
+    for (accessGroup in strsplit(accessGroupString, ",", fixed = TRUE)[[1L]]) {
+      if (startsWith(accessGroup, "#")) {
+        if (!substring(accessGroup, 2L) %in% userGroups$groups) {
+          stop(sprintf("Invalid user group specified: '%s'.", substring(accessGroup, 2L)), call. = FALSE)
+        }
+        return()
+      }
+      if (!accessGroup %in% userGroups$users) {
+        stop(sprintf("Invalid user specified: '%s'.", accessGroup), call. = FALSE)
+      }
+    }
   }
 ))

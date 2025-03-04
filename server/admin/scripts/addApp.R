@@ -17,20 +17,6 @@ if (is.na(ADD_DATA_TIMEOUT)) {
   ADD_DATA_TIMEOUT <- 3600L
 }
 
-miroAppValidator <- MiroAppValidator$new()
-
-tryCatch(
-  {
-    miroAppValidator$validate(appPath)
-  },
-  error = function(e) {
-    write(sprintf(
-      "merr:::400:::Invalid app bundle uploaded. Error message: %s",
-      conditionMessage(e)
-    ), stderr())
-    quit("no", 1L, FALSE)
-  }
-)
 tryCatch(
   {
     db <- MiroDb$new(list(
@@ -52,6 +38,22 @@ tryCatch(
     quit("no", 1L, FALSE)
   }
 )
+
+miroAppValidator <- MiroAppValidator$new(engineClient)
+
+tryCatch(
+  {
+    miroAppValidator$validate(appPath)
+  },
+  error = function(e) {
+    write(sprintf(
+      "merr:::400:::Invalid app bundle uploaded. Error message: %s",
+      conditionMessage(e)
+    ), stderr())
+    quit("no", 1L, FALSE)
+  }
+)
+
 tryRemoveAppSchema <- function(appId) {
   tryCatch(
     db$removeAppSchema(appId),

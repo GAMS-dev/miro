@@ -2,10 +2,10 @@ options(shiny.maxRequestSize = as.integer(Sys.getenv("MIRO_MAX_UPLOAD_SIZE", "50
 
 source("../app/tools/db_migration/modules/form_db_migration.R", local = TRUE)
 
-miroAppValidator <- MiroAppValidator$new()
 miroscenParser <- MiroscenParser$new()
 modelConfig <- ModelConfig$new(file.path(MIRO_DATA_DIR, "specs.yaml"))
 engineClient <- EngineClient$new()
+miroAppValidator <- MiroAppValidator$new(engineClient)
 db <- MiroDb$new(list(
   host = Sys.getenv("MIRO_DB_HOST", "localhost"),
   port = as.integer(Sys.getenv("MIRO_DB_PORT", "5432")),

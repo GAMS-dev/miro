@@ -26,6 +26,7 @@
       },
       "additionalProperties": {
         "type": "object",
+        "maxProperties": 50,
         "description": "Environment variables that need to be set when adding app to library (e.g. used in custom importers/exporters/renderers etc.). This is currently only enforced by MIRO Server.",
         "additionalProperties": false,
         "properties": {
