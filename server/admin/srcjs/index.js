@@ -1219,6 +1219,7 @@ $(() => {
         title: 'Error',
         message: escapeHtml(e.message),
         centerVertical: true,
+        className: 'alert-dialog',
       });
     }
   });

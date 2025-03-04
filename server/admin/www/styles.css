@@ -550,6 +550,11 @@ a:hover {
 .access-perm-selector-container {
   width: 300px;
 }
+.alert-dialog .bootbox-body {
+  max-height: 400px;
+  max-height: 60vh;
+  overflow: auto;
+}
 .editable .fileInput{
   cursor: pointer;
   border: 1px solid #fff;
