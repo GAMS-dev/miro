@@ -819,7 +819,17 @@ if (miroBuildOnly) {
       # assemble MIROAPP
       miroAppPath <- file.path(currentModelDir, paste0(modelNameRaw, ".miroapp"))
       appInfoPath <- file.path(currentModelDir, paste0("static_", modelName), "app_info.json")
-      jsonValidator$validate(appInfoPath, file.path("conf", "app_info_schema.json"))
+      if (identical(file.access(appInfoPath, mode = 4L)[[1]], 0L)) {
+        jsonValidator$validate(appInfoPath, file.path("conf", "app_info_schema.json"))
+      } else if (!grepl("^[a-z0-9][a-z0-9-_]{0,59}$", modelName, perl = TRUE)) {
+        stop(
+          sprintf(
+            "The main GMS file ('%s') contains an invalid app ID. App IDs must meet the following criteria: contain only ASCII lowercase letters, digits, '-', or '_'; cannot start with '-' or '_'; and cannot exceed 60 characters in length.\nTo provide a valid app ID, specify it in the `%s` JSON file using the `appId` key, for example: {\"appId\": \"my_model123\"}.",
+            appIdToValidate, appInfoPath
+          ),
+          call. = FALSE
+        )
+      }
       flog.info("Generating miroapp file...")
       zipMiro(
         miroAppPath,
