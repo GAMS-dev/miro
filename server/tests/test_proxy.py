@@ -644,3 +644,92 @@ class UITests(unittest.TestCase):
         )
 
         self.driver.switch_to.default_content()
+
+    def test_app_environment(self):
+        """Test that environment dialog opens with pre-defined environment variables in app_info.json"""
+        self.login()
+        # open admin panel
+        self.driver.find_element(By.ID, "navAdminPanel").click()
+
+        WebDriverWait(self.driver, 30).until(
+            EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
+        )
+
+        WebDriverWait(self.driver, 30).until(
+            EC.visibility_of_element_located((By.ID, "addAppBox"))
+        )
+
+        wait = WebDriverWait(self.driver, 10)
+        retry_count = 0
+        while True:
+            try:
+                wait.until(EC.element_to_be_clickable((By.ID, "addApp"))).click()
+                break
+            except (
+                StaleElementReferenceException,
+                ElementClickInterceptedException,
+            ) as exc:
+                retry_count += 1
+                time.sleep(1)
+                self.assertLessEqual(
+                    retry_count, 10, f"Couldn't click addApp box after 10 tries: {exc}"
+                )
+        file_input = wait.until(EC.presence_of_element_located((By.ID, "miroAppFile")))
+        wait.until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, "label[for='miroAppFile']")
+            )
+        )
+
+        file_input.send_keys(
+            os.path.join(os.getcwd(), "tests", "data", "transport_environment.miroapp")
+        )
+        wait.until(
+            EC.text_to_be_present_in_element_value(
+                (By.ID, "newAppName"), "Transport test app"
+            )
+        )
+        wait.until(
+            EC.text_to_be_present_in_element(
+                (By.CLASS_NAME, "bootbox-body"), "Scenario Permissions"
+            )
+        )
+        self.assertTrue(
+            EC.text_to_be_present_in_element(
+                (By.CLASS_NAME, "env-rows"),
+                "MIRO_IMPORTER_API_KEY",
+            )
+        )
+        remove_row_buttons = self.driver.find_elements(By.CLASS_NAME, "remove-row")
+        self.assertTrue(
+            len(remove_row_buttons) == 1,
+            "Should have remove-row buttons when opening dialog with pre-defined environment variables.",
+        )
+        env_name_inputs = self.driver.find_elements(By.CLASS_NAME, "env-name")
+        self.assertEqual(
+            len(
+                [
+                    x
+                    for x in env_name_inputs
+                    if (
+                        not x.is_displayed()
+                        and x.get_attribute("value") == "MIRO_IMPORTER_API_KEY"
+                    )
+                ]
+            ),
+            1,
+        )
+        self.assertEqual(
+            self.driver.find_element(By.CLASS_NAME, "env-description").get_attribute(
+                "value"
+            ),
+            "API key for custom importer",
+        )
+        self.assertEqual(
+            self.driver.find_element(By.CLASS_NAME, "env-value").get_attribute("value"),
+            "super_secret_api_key",
+        )
+        self.assertTrue(
+            len(self.driver.find_elements(By.CLASS_NAME, "env-name")) == 2,
+            "Should have two environment rows (one pre-filled, one empty).",
+        )
