@@ -2510,13 +2510,13 @@ firstDayTraining(td)                   = td.pos = 1;
       "options": {
         "valueBoxesTitle": "",
         "valueBoxes": {
-            [...]
+            ...
         },
         "dataViews": {
-            [...]
+            ...
         },
         "dataViewsConfig": {
-            [...]
+            ...
         }
       }
     }
@@ -2560,13 +2560,13 @@ firstDayTraining(td)                   = td.pos = 1;
       "options": {
         "valueBoxesTitle": "",
         "valueBoxes": {
-            [...]
+            ...
         },
         "dataViews": {
-            [...]
+            ...
         },
         "dataViewsConfig": {
-            [...]
+            ...
         }
       }
     }
@@ -2612,13 +2612,13 @@ firstDayTraining(td)                   = td.pos = 1;
       "options": {
         "valueBoxesTitle": "Summary indicators",
         "valueBoxes": {
-            [...]
+            ...
         },
         "dataViews": {
-            [...]
+            ...
         },
         "dataViewsConfig": {
-            [...]
+            ...
         }
       }
     }
@@ -2769,10 +2769,10 @@ firstDayTraining(td)                   = td.pos = 1;
           "decimals": [2,2,2,2]
         },
         "dataViews": {
-            [...]
+            ...
         },
         "dataViewsConfig": {
-            [...]
+            ...
         }
       }
     }
@@ -2824,7 +2824,7 @@ firstDayTraining(td)                   = td.pos = 1;
         "valueBoxesTitle": "Summary indicators",
         "valueBoxes": {
           "id": ["summary","gdp","absorption","production"],
-          [...]
+          ...
         },
         "dataViews": {
           "summary": [
@@ -2839,7 +2839,7 @@ firstDayTraining(td)                   = td.pos = 1;
           "production": [...]
         },
         "dataViewsConfig": {
-            [...]
+            ...
         }
       }
     }
@@ -2991,12 +2991,12 @@ firstDayTraining(td)                   = td.pos = 1;
                             <pre><code class="language-json">{
   "macroperc": {
       "macro1": {
-          [...],
+          ...,
           "data": "macroperc",
           "userFilter": "mac"
       },
       "macro2": {
-        [...],
+        ...,
         "data": "macroperc",
         "userFilter": "macro1"
     }
@@ -3031,7 +3031,7 @@ firstDayTraining(td)                   = td.pos = 1;
 {
   "macroperc": {
       "macro1": {
-          [...],
+          ...,
           "chartOptions": {
             "customLabels": {
                "a_Agr": "Agriculture",
@@ -3252,14 +3252,14 @@ firstDayTraining(td)                   = td.pos = 1;
         "valueBoxesTitle": "Summary indicators",
         "valueBoxes": {
           "id": ["summary","gdp","absorption","production"],
-          [...]
+          ...
         },
         "dataViews": {
           "summary": [
               {"macro1": "Macroeconomic indicators (real, percentage change)"},
               {"macro2": ""}
           ],
-          [...]
+          ...
         },
         "dataViewsConfig": {
           "macro1": {
@@ -3444,7 +3444,7 @@ firstDayTraining(td)                   = td.pos = 1;
                         <pre><code class="diff-highlight language-diff">- dashboardOutput <- function(id, height = NULL, options = NULL, path = NULL) {
 + mirorenderer_macrolevelOutput <- function(id, height = NULL, options = NULL, path = NULL) {
     ns <- NS(id)
-    [...]
+    ...
   }
 - renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
 + renderMirorenderer_macrolevel <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...) {
@@ -3452,7 +3452,7 @@ firstDayTraining(td)                   = td.pos = 1;
 -     id,
 -     function(input, output, session) {
         ns <- session$ns
-        [...]
+        ...
 
 # These are the last three lines of code in the file
 - }
@@ -3508,7 +3508,7 @@ firstDayTraining(td)                   = td.pos = 1;
                     </p>
                     <pre><code class="language-json">
 {
-  [...]
+  ...
   "dataViews": {
     "summary": [
         {"macro1": "Macroeconomic indicators (real, percentage change)"},
@@ -3557,7 +3557,7 @@ firstDayTraining(td)                   = td.pos = 1;
                         of just part of it:
                       </p>
                       <pre><code class="language-json">{
-  [...]
+  ...
   "dataViews": {
     "summary": [
         {"macro2": ""}

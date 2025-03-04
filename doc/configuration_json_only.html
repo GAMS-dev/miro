@@ -986,13 +986,13 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
         "options": {
           "valueBoxesTitle": "",
           "valueBoxes": {
-              [...]
+              ...
           },
           "dataViews": {
-              [...]
+              ...
           },
           "dataViewsConfig": {
-              [...]
+              ...
           }
         }
       }
@@ -1004,13 +1004,13 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
       "options": {
         "valueBoxesTitle": "",
         "valueBoxes": {
-            [...]
+            ...
         },
         "dataViews": {
-            [...]
+            ...
         },
         "dataViewsConfig": {
-            [...]
+            ...
         }
       }
     }
@@ -1140,7 +1140,9 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                     </div>
                     <!--//callout-block-->
                   </div>
-                  <b>Using custom code in the dashboard comparison</b>
+                  <b id="custom-dashboard-compare"
+                    >Using custom code in the dashboard comparison</b
+                  >
                   <p>
                     As in the normal dashboard, one can also provide custom R
                     code, which is rendered instead of the charts/tables
@@ -1188,7 +1190,7 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                       <code class="language-json">compareModules</code>, then
                       you can simply rename
                       <span class="code">compareModules</span> to
-                      <span class="code">customComparemodules</span>.
+                      <span class="code">customCompareModules</span>.
                     </li>
                     <li>
                       Instead of the
