@@ -21,13 +21,13 @@
       "pattern": "^[a-z0-9][a-z0-9-_]{0,59}$"
     },
     "environment": {
+      "propertyNames": {
+        "pattern": "^[A-Z_][A-Z0-9_]*$"
+      },
       "additionalProperties": {
         "type": "object",
         "description": "Environment variables that need to be set when adding app to library (e.g. used in custom importers/exporters/renderers etc.). This is currently only enforced by MIRO Server.",
         "additionalProperties": false,
-        "propertyNames": {
-          "pattern": "^[A-Z_][A-Z0-9_]*$"
-        },
         "properties": {
           "description": {
             "description": "Description of the environment variable that helps the administrator adding the app to set the proper value.",

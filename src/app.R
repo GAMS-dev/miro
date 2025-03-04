@@ -818,7 +818,7 @@ if (miroBuildOnly) {
       )
       # assemble MIROAPP
       miroAppPath <- file.path(currentModelDir, paste0(modelNameRaw, ".miroapp"))
-      appInfoPath <- file.path(paste0("static_", modelName), "app_info.json")
+      appInfoPath <- file.path(currentModelDir, paste0("static_", modelName), "app_info.json")
       jsonValidator$validate(appInfoPath, file.path("conf", "app_info_schema.json"))
       flog.info("Generating miroapp file...")
       zipMiro(
