@@ -323,6 +323,69 @@ inc/inc2.inc
                     <!--//callout-block-->
                   </div>
                   <!--//section-block-->
+                  <div id="app-environment" class="section-block">
+                    <h3>
+                      App Environment
+                      <small
+                        ><span class="badge badge-pill badge-secondary"
+                          >MIRO Server only</span
+                        ></small
+                      >
+                    </h3>
+                    <p>
+                      When writing custom code, such as
+                      <a
+                        href="configuration_json_only.html#custom-import-export"
+                        >custom data connectors</a
+                      >
+                      or
+                      <a href="./configuration_advanced.html#custom-renderers"
+                        >custom renderers</a
+                      >, you may need to use secrets like API keys.
+                      Additionally, you may want to give administrators the
+                      ability to customize certain parts of your app when they
+                      add it to the gallery. In both cases, environment
+                      variables can be very useful.
+                    </p>
+                    <p>
+                      To help administrators set these variables correctly, you
+                      can document them in the
+                      <span class="code">app_info.json</span> file. To do this,
+                      you can add a new <kbd>"environment"</kbd> section:
+                    </p>
+                    <pre><code class="language-json">{
+    "title": "Advanced app",
+    "description": "This is a more advanced app",
+    "appId": "advanced_app123",
+    "environment": {
+      "MIRO_IMPORTER_API_KEY": {
+        "description": "API key for custom importer"
+      },
+      "MIRO_RENDERER_SHOW_ADVANCED": {
+        "description": "Show advanced options in renderer (yes/No)",
+        "value": "no"
+      }
+    }
+}</code></pre>
+                    <p>
+                      As you can see, we have documented two environment
+                      variables required by our app:
+                      <kbd>MIRO_IMPORTER_API_KEY</kbd> and
+                      <kbd>MIRO_RENDERER_SHOW_ADVANCED</kbd>. For each
+                      variable, we can provide a description as well as a
+                      default value, which the administrator can modify when
+                      adding the app.
+                    </p>
+                    <p>
+                      These variables can then be accessed in your R code as
+                      follows:
+                      <span class="code"
+                        >Sys.getenv("MIRO_IMPORTER_API_KEY", NULL)</span
+                      >
+                      (second argument is the default value if variable is
+                      unset).
+                    </p>
+                  </div>
                   <div id="web-app-manifest" class="section-block">
                     <h3>Make your App Mobile Friendly</h3>
                     <p>
@@ -1280,6 +1343,9 @@ inc/inc2.inc
                       >Default Title and Description</a
                     >
                     <a class="nav-link scrollto" href="#app-id">App ID</a>
+                    <a class="nav-link scrollto" href="#app-environment"
+                      >App Environment</a
+                    >
                     <a class="nav-link scrollto" href="#web-app-manifest"
                       >Make your App Mobile Friendly</a
                     >
