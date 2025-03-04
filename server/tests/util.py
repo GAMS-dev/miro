@@ -19,6 +19,22 @@ def get_image_hash(driver, css_selector):
     return hashlib.md5(image_content).hexdigest()
 
 
+def select_selectize_options(driver, target_element, options):
+    """Selects options in selectize dropdown menu"""
+    js_code = """
+    var target = arguments[0];
+    target.selectize.setValue(arguments[1]);
+    """
+    driver.execute_script(js_code, target_element, options)
+
+
+def get_selectize_options(driver, target_element):
+    """Selects options in selectize dropdown menu"""
+    return driver.execute_script(
+        "return arguments[0].selectize.getValue();", target_element
+    )
+
+
 def drop_file(driver, target_element, file_path):
     """
     Simulates dropping a file onto a target element with an 'on-drop' handler.
@@ -51,5 +67,4 @@ def drop_file(driver, target_element, file_path):
     });
     target.dispatchEvent(dropEvent);
     """
-    driver.execute_script(js_code, target_element,
-                          data_url, file_path.split("/")[-1])
+    driver.execute_script(js_code, target_element, data_url, file_path.split("/")[-1])

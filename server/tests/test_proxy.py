@@ -12,7 +12,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from .util import get_image_hash, drop_file
+from .util import (
+    drop_file,
+    get_image_hash,
+    get_selectize_options,
+    select_selectize_options,
+)
 
 # Load environment variables
 ENGINE_USER = os.getenv("ENGINE_USER")
@@ -499,9 +504,70 @@ class UITests(unittest.TestCase):
             new_app_desc.get_attribute("value").strip() == "Transport app for UI tests",
             "newAppDesc value does not match the expected value.",
         )
-        new_app_env = self.driver.find_element(By.ID, "newAppEnv")
-        new_app_env.clear()
-        new_app_env.send_keys('{"MIRO_LANG":"de"}')
+        self.driver.find_element(By.ID, "newAppEnv").click()
+        wait.until(
+            EC.text_to_be_present_in_element(
+                (By.CLASS_NAME, "bootbox-body"), "Scenario Permissions"
+            )
+        )
+        remove_row_buttons = self.driver.find_elements(By.CLASS_NAME, "remove-row")
+        self.assertTrue(
+            len(remove_row_buttons) == 0,
+            "Should not have remove-row buttons when no variables are defined.",
+        )
+        new_app_env_input = self.driver.find_elements(By.CLASS_NAME, "env-name")
+        self.assertTrue(
+            len(new_app_env_input) == 1,
+            "More than one 'env-name' fields found.",
+        )
+        new_app_env_input[0].send_keys("9not_valid")
+        time.sleep(0.5)
+        new_app_desc_input = self.driver.find_elements(By.CLASS_NAME, "env-description")
+        self.assertTrue(
+            len(new_app_desc_input) == 2,
+            "After entering new environment name, no new row was added.",
+        )
+        remove_row_buttons = self.driver.find_elements(By.CLASS_NAME, "remove-row")
+        self.assertTrue(
+            len(remove_row_buttons) == 1,
+            "Should have remove-row button after entering environment variable name.",
+        )
+        new_app_desc_input[0].send_keys("test description")
+        new_app_val_input = self.driver.find_element(By.CLASS_NAME, "env-value")
+        new_app_val_input.send_keys("de")
+        self.driver.find_element(By.CSS_SELECTOR, ".modal-footer .confirm-btn").click()
+        wait.until(
+            EC.text_to_be_present_in_element(
+                (By.ID, "form-error"), "must match the pattern"
+            )
+        )
+        new_app_env_input[0].clear()
+        new_app_env_input[0].send_keys("MIRO_LANG")
+        self.driver.find_element(By.ID, "conf-permissions-tab").click()
+        wait.until(
+            EC.visibility_of_element_located(
+                (By.CLASS_NAME, "access-perm-selector-container")
+            )
+        )
+        select_selectize_options(
+            self.driver,
+            self.driver.find_element(By.ID, "scenPermReadSelector"),
+            "#users",
+        )
+        select_selectize_options(
+            self.driver,
+            self.driver.find_element(By.ID, "scenPermWriteSelector"),
+            "#admins",
+        )
+        select_selectize_options(
+            self.driver,
+            self.driver.find_element(By.ID, "scenPermExecuteSelector"),
+            ["#users", "#admins"],
+        )
+        self.driver.find_element(By.CSS_SELECTOR, ".modal-footer .confirm-btn").click()
+
+        wait.until(EC.invisibility_of_element((By.CLASS_NAME, "bootbox-body")))
+
         new_app_name_input = self.driver.find_element(By.ID, "newAppName")
         new_app_name_input.clear()
         new_app_name_input.send_keys("Transport app")
@@ -547,4 +613,34 @@ class UITests(unittest.TestCase):
             self.driver.find_element(By.ID, "btSolve").text.strip() == "Modell lösen",
             "Solve button has correct text in German (MIRO_LANG applied correctly)",
         )
+        self.driver.find_element(By.CLASS_NAME, "btRemove").click()
+        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "bt-gms-confirm")))
+        self.driver.find_element(By.CLASS_NAME, "bt-gms-confirm").click()
+        wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, "modal-body")))
+        [
+            x
+            for x in self.driver.find_elements(By.CLASS_NAME, "dropdown-toggle")
+            if x.is_displayed() and x.text.strip() == "Szenario"
+        ][0].click()
+        self.driver.find_element(By.ID, "btSave").click()
+        wait.until(EC.visibility_of_element_located((By.ID, "editMetaReadPerm-label")))
+        self.assertCountEqual(
+            get_selectize_options(
+                self.driver, self.driver.find_element(By.ID, "editMetaReadPerm")
+            ),
+            ["#users", ENGINE_USER],
+        )
+        self.assertCountEqual(
+            get_selectize_options(
+                self.driver, self.driver.find_element(By.ID, "editMetaWritePerm")
+            ),
+            ["#admins", ENGINE_USER],
+        )
+        self.assertCountEqual(
+            get_selectize_options(
+                self.driver, self.driver.find_element(By.ID, "editMetaExecPerm")
+            ),
+            ["#admins", "#users", ENGINE_USER],
+        )
+
         self.driver.switch_to.default_content()
