@@ -613,7 +613,24 @@ class UITests(unittest.TestCase):
             self.driver.find_element(By.ID, "btSolve").text.strip() == "Modell lösen",
             "Solve button has correct text in German (MIRO_LANG applied correctly)",
         )
-        self.driver.find_element(By.CLASS_NAME, "btRemove").click()
+        retry_count = 0
+        while True:
+            try:
+                wait.until(
+                    EC.element_to_be_clickable((By.CLASS_NAME, "btRemove"))
+                ).click()
+                break
+            except (
+                StaleElementReferenceException,
+                ElementClickInterceptedException,
+            ) as exc:
+                retry_count += 1
+                time.sleep(1)
+                self.assertLessEqual(
+                    retry_count,
+                    10,
+                    f"Couldn't click btRemove box after 10 tries: {exc}",
+                )
         wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "bt-gms-confirm")))
         self.driver.find_element(By.CLASS_NAME, "bt-gms-confirm").click()
         wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, "modal-body")))
