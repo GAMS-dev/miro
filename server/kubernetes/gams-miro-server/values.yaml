@@ -75,17 +75,17 @@ proxy:
       acceptedPublicKeysPEM: []
     logo:
       enabled: false # whether to use custom logo (visibile on login page, only PNG supported)
-      path: '' # local path to logo file
+      path: '' # local path to logo file; it is best practice to place it in a directory named "resources"
       base64: '' # alternatively, base64-encoded logo
       # If both path and base64 are specified, base64 is used.
     favicon:
       enabled: false # whether to use custom favicon
-      path: '' # local path to favicon file (.ico)
+      path: '' # local path to favicon file (.ico); it is best practice to place it in a directory named "resources"
       base64: '' # alternatively, base64-encoded favicon
       # If both path and base64 are specified, base64 is used.
     customCSS:
       enabled: false # whether to use custom CSS
-      path: '' # local path to CSS file
+      path: '' # local path to CSS file; it is best practice to place it in a directory named "resources"
       base64: '' # alternatively, base64-encoded CSS
       # If both path and base64 are specified, base64 is used.
     disableReadonlyMode: false
