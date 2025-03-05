@@ -848,25 +848,36 @@ server:
                           you put the custom CSS (e.g.
                           <kbd>miro_server/data/css/styles.css</kbd>). Now
                           specify this style sheet in the
-                          <i>docker-compose.yml</i> file under 'volumes':
+                          <i>docker-compose.yml</i> file under 'proxy.volumes':
                         </p>
 
-                        <pre><code class="diff-highlight language-diff">     ports:
-       - 8080:8080
-     volumes:
-+      - ./data/css/styles.css:/home/miroproxy/templates/2col/assets/css/styles.css
-       - ./data:/home/miroproxy/data
+                        <pre><code class="diff-highlight language-diff">  proxy:
+    image: gams/miro-proxy:latest
+    ports:
+      - 8080:8080
+    volumes:
++     - ./data/css/styles.css:/home/miroproxy/templates/2col/assets/css/themes/&lt;theme&gt;.css
+      - ./data:/home/miroproxy/data
 </code></pre>
                         <p>
                           The path before the colon
-                          (<kbd>./data/css/styles.css</kbd>) points to the
-                          custom CSS file. The second path must not be changed.
+                          (<kbd>./data/css/styles.css</kbd>) points to your
+                          custom CSS file. The second path points to the file
+                          inside the container that will be overwritten. Note:
+                          <kbd>&lt;theme&gt;</kbd> refers to the selected
+                          <a href="#global-colortheme" class="scrollto"
+                            >color theme</a
+                          >. For the <i>default</i> theme, the path should be:
+                          <span class="code"
+                            >-
+                            ./data/css/styles.css:/home/miroproxy/templates/2col/assets/css/themes/default.css</span
+                          >.
                         </p>
                         <p>
                           The default stylesheet used by MIRO Server can be
                           found
                           <a
-                            href="https://github.com/GAMS-dev/miro/blob/master/server/proxy/templates/2col/assets/css/styles.css"
+                            href="https://github.com/GAMS-dev/miro/blob/master/server/proxy/templates/2col/assets/css/themes/default.css"
                             target="_blank"
                             >here</a
                           >.
