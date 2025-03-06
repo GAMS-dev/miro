@@ -28,7 +28,7 @@ tryCatch(
     ))
     engineClient <- EngineClient$new()
     engineClient$setAuthHeader(Sys.getenv("MIRO_ENGINE_AUTH_HEADER"))
-    modelConfig <- ModelConfig$new(file.path(MIRO_DATA_DIR, "specs.yaml"))
+    modelConfig <- ModelConfig$new(SPECS_YAML_PATH)
   },
   error = function(e) {
     write(sprintf(
@@ -80,27 +80,21 @@ tryCatch(
     }
     modelName <- miroAppValidator$getModelName()
     modelId <- miroAppValidator$getModelId()
-    appDir <- file.path(MIRO_MODEL_DIR, appId)
-    appDirTmp <- file.path(MIRO_MODEL_DIR, paste0("~$", appId))
-    appDirTmp2 <- file.path(MIRO_MODEL_DIR, paste0("~$~$", appId))
 
-    dataDir <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
-    dataDirTmp <- file.path(MIRO_DATA_DIR, paste0("data_~$", appId))
-    dataDirTmp2 <- file.path(MIRO_DATA_DIR, paste0("data_~$~$", appId))
+    appDirTmp <- getModelPath(paste0("~$", appId))
+    dataDirTmp <- getDataPath(paste0("~$", appId))
 
     if (updateApp) {
-      for (dirPath in c(appDirTmp, appDirTmp2, dataDirTmp, dataDirTmp2)) {
-        if (!identical(unlink(dirPath, recursive = TRUE), 0L)) {
-          stop(sprintf("Could not remove directory: %s. Please try again or contact your system administrator.", dirPath),
-            call. = FALSE
-          )
-        }
-      }
+      removeTempDirs(appId)
       appConfig <- modelConfig$getAppConfigFull(appId)
       appDbCredentials <- modelConfig$getAppDbConf(appId)
 
       appConfig$containerEnv[["MIRO_VERSION_STRING"]] <- miroAppValidator$getMIROVersion()
-      appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0("/home/miro/app/model/", appId, "/", modelName)
+      if (IN_KUBERNETES) {
+        appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0("/home/miro/model/", modelName)
+      } else {
+        appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0("/home/miro/app/model/", appId, "/", modelName)
+      }
       for (key in c("displayName", "description", "accessGroups")) {
         if (length(metadata[[key]])) {
           valueTrimmed <- trimws(metadata[[key]])
@@ -138,7 +132,6 @@ tryCatch(
         id = appId, displayName = miroAppValidator$getAppTitle(), description = miroAppValidator$getAppDesc(),
         logoURL = logoURL,
         containerEnv = list(
-          MIRO_DATA_DIR = MIRO_CONTAINER_DATA_DIR,
           MIRO_VERSION_STRING = miroAppValidator$getMIROVersion(),
           MIRO_MODE = "base",
           MIRO_ENGINE_MODELNAME = appId,
@@ -149,18 +142,20 @@ tryCatch(
       )
       if (IN_KUBERNETES) {
         newAppConfig$containerEnv$MIRO_MODEL_PATH <- paste0(
-          "/home/miro/mnt/models/",
-          appId, "/", modelName
+          "/home/miro/mnt/model/", modelName
         )
+        newAppConfig$containerEnv$MIRO_DATA_DIR <- "/home/miro/data"
+        newAppConfig$containerEnv$MIRO_CACHE_DIR <- "/home/miro/cache"
       } else {
         newAppConfig$containerVolumes <- c(
           sprintf("/%s:/home/miro/app/model/%s:ro", appId, appId),
-          sprintf("/data_%s:%s", appId, MIRO_CONTAINER_DATA_DIR)
+          sprintf("/data_%s:/home/miro/app/data", appId)
         )
         newAppConfig$containerEnv$MIRO_MODEL_PATH <- paste0(
           "/home/miro/app/model/",
           appId, "/", modelName
         )
+        newAppConfig$containerEnv$MIRO_DATA_DIR <- "/home/miro/app/data"
       }
       for (key in c("displayName", "description")) {
         if (length(metadata[[key]])) {
@@ -200,42 +195,13 @@ tryCatch(
     runMiroProcAPI(appId, procEnv, MIRO_APP_PATH, ADD_DATA_TIMEOUT, cleanupFn = cleanup)
 
     if (updateApp) {
-      if (!file.rename(appDir, appDirTmp2)) {
-        stop(sprintf(
-          "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
-          appDir, appDirTmp2
-        ), call. = FALSE)
-      }
-      if (!file.rename(appDirTmp, appDir)) {
-        stop(sprintf(
-          "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
-          appDirTmp, appDir
-        ), call. = FALSE)
-      }
-      if (file.exists(dataDir) && !file.rename(dataDir, dataDirTmp2)) {
-        stop(sprintf(
-          "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
-          dataDir, dataDirTmp2
-        ), call. = FALSE)
-      }
-      if (file.exists(dataDirTmp) && !file.rename(dataDirTmp, dataDir)) {
-        stop(sprintf(
-          "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
-          dataDirTmp, dataDir
-        ), call. = FALSE)
-      }
+      moveFilesFromTemp(appId)
       modelConfig$update(modelConfig$getAppIndex(appId), list(
         containerEnv = appConfig$containerEnv,
         displayName = appConfig$displayName,
         description = appConfig$description,
         accessGroups = appConfig$accessGroups
       ), allowUpdateRestrictedEnv = TRUE)
-      if (!identical(unlink(appDirTmp2, recursive = TRUE), 0L)) {
-        flog.warn("Could not remove directory: %s", appDirTmp2)
-      }
-      if (!identical(unlink(dataDirTmp2, recursive = TRUE), 0L)) {
-        flog.warn("Could not remove directory: %s", dataDirTmp2)
-      }
     }
   },
   error = function(e) {

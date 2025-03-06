@@ -19,7 +19,7 @@ if (is.na(ADD_DATA_TIMEOUT)) {
 
 tryCatch(
   {
-    modelConfig <- ModelConfig$new(file.path(MIRO_DATA_DIR, "specs.yaml"))
+    modelConfig <- ModelConfig$new(SPECS_YAML_PATH)
   },
   error = function(e) {
     write(sprintf(
@@ -42,7 +42,7 @@ procEnv[["MIRO_DB_PASSWORD"]] <- appDbCredentials$password
 procEnv[["MIRO_DB_SCHEMA"]] <- appDbCredentials$user
 procEnv[["MIRO_POPULATE_DB"]] <- "true"
 procEnv[["MIRO_VERSION_STRING"]] <- modelConfig$getEnvValue(appConfig$containerEnv[["MIRO_VERSION_STRING"]])
-procEnv[["MIRO_MODEL_PATH"]] <- file.path(MIRO_MODEL_DIR, appId, modelName)
+procEnv[["MIRO_MODEL_PATH"]] <- file.path(getModelPath(appId), modelName)
 procEnv[["MIRO_DATA_DIR"]] <- dataPath
 procEnv[["MIRO_OVERWRITE_SCEN_IMPORT"]] <- if (!identical(overwriteScen, TRUE)) "ask" else "true"
 migrationConfigPath <- tempfile(fileext = ".json")

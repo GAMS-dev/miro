@@ -3,7 +3,7 @@ options(shiny.maxRequestSize = as.integer(Sys.getenv("MIRO_MAX_UPLOAD_SIZE", "50
 source("../app/tools/db_migration/modules/form_db_migration.R", local = TRUE)
 
 miroscenParser <- MiroscenParser$new()
-modelConfig <- ModelConfig$new(file.path(MIRO_DATA_DIR, "specs.yaml"))
+modelConfig <- ModelConfig$new(SPECS_YAML_PATH)
 engineClient <- EngineClient$new()
 miroAppValidator <- MiroAppValidator$new(engineClient)
 db <- MiroDb$new(list(
@@ -224,19 +224,19 @@ server <- function(input, output, session) {
           )
         )
         if (IN_KUBERNETES) {
-          newAppConfig$containerEnv$MIRO_MODEL_PATH <- paste0(
-            "/home/miro/mnt/models/",
-            appId, "/", modelName
-          )
+          newAppConfig$containerEnv$MIRO_MODEL_PATH <- paste0("/home/miro/model/", modelName)
+          newAppConfig$containerEnv$MIRO_DATA_DIR <- "/home/miro/data"
+          newAppConfig$containerEnv$MIRO_CACHE_DIR <- "/home/miro/cache"
         } else {
           newAppConfig$containerVolumes <- c(
             sprintf("/%s:/home/miro/app/model/%s:ro", appId, appId),
-            sprintf("/data_%s:%s", appId, MIRO_CONTAINER_DATA_DIR)
+            sprintf("/data_%s:/home/miro/app/data", appId)
           )
           newAppConfig$containerEnv$MIRO_MODEL_PATH <- paste0(
             "/home/miro/app/model/",
             appId, "/", modelName
           )
+          newAppConfig$containerEnv$MIRO_DATA_DIR <- "/home/miro/app/data"
         }
 
         if (length(newGroups)) {
@@ -259,8 +259,9 @@ server <- function(input, output, session) {
           newAppConfig[["containerEnv"]][[envName]] <- newAppEnv[[envName]]
         }
 
-        appDir <- file.path(MIRO_MODEL_DIR, appId)
-        dataDir <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
+        appDir <- getModelPath(appId)
+        dataDir <- getDataPath(appId)
+
 
         miroProc$
           setDbCredentials(
@@ -316,7 +317,9 @@ server <- function(input, output, session) {
       },
       error = function(e) {
         if (!is.null(appId)) {
-          unlink(file.path(MIRO_MODEL_DIR, appId), recursive = TRUE, force = TRUE)
+          unlink(if (IN_KUBERNETES) dirname(getModelPath(appId)) else getModelPath(appId),
+            recursive = TRUE, force = TRUE
+          )
         }
         errMsg <- sprintf(
           "Invalid MIRO app. Error message: %s",
@@ -484,7 +487,7 @@ server <- function(input, output, session) {
           dataToSend <- list(requestType = requestType)
         }
         if (is.null(appDir)) {
-          appDir <- file.path(MIRO_MODEL_DIR, appId)
+          appDir <- getModelPath(appId)
         }
         for (i in seq_along(filePaths)) {
           miroProc$run(appId, appModelName,
@@ -561,10 +564,7 @@ server <- function(input, output, session) {
         modelName <- miroAppValidator$getModelName()
         appConfig$containerEnv[["MIRO_VERSION_STRING"]] <- miroAppValidator$getMIROVersion()
         if (IN_KUBERNETES) {
-          appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0(
-            "/home/miro/mnt/models/",
-            appId, "/", modelName
-          )
+          appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0("/home/miro/model/", modelName)
         } else {
           appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0(
             "/home/miro/app/model/",
@@ -579,25 +579,17 @@ server <- function(input, output, session) {
           ), call. = FALSE)
         }
 
-        appDir <- file.path(MIRO_MODEL_DIR, appId)
-        appDirTmp <- file.path(MIRO_MODEL_DIR, paste0("~$", appId))
-        appDirTmp2 <- file.path(MIRO_MODEL_DIR, paste0("~$~$", appId))
+        appDirTmp <- getModelPath(paste0("~$", appId))
+        dataDirTmp <- getDataPath(paste0("~$", appId))
 
-        dataDir <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
-        dataDirTmp <- file.path(MIRO_DATA_DIR, paste0("data_~$", appId))
-        dataDirTmp2 <- file.path(MIRO_DATA_DIR, paste0("data_~$~$", appId))
-
-        for (dirPath in c(appDirTmp, appDirTmp2, dataDirTmp, dataDirTmp2)) {
-          if (!identical(unlink(dirPath, recursive = TRUE), 0L)) {
-            stop(sprintf("Could not remove directory: %s. Please try again or contact your system administrator.", dirPath),
-              call. = FALSE
-            )
-          }
-        }
+        removeTempDirs(appId)
 
         extractAppData(filePath, paste0("~$", appId), modelId, miroProc)
 
-        engineClient$updateModel(appId, userGroups = FALSE, modelDataPath = file.path(appDirTmp, paste0(modelId, ".zip")))
+        engineClient$updateModel(appId,
+          userGroups = FALSE,
+          modelDataPath = file.path(appDirTmp, paste0(modelId, ".zip"))
+        )
 
         addDataFiles(appId, dataDirTmp, progressSelector,
           "updateApp",
@@ -608,39 +600,10 @@ server <- function(input, output, session) {
           appConfig = appConfig, customCallback = function() {
             tryCatch(
               {
-                if (!file.rename(appDir, appDirTmp2)) {
-                  stop(sprintf(
-                    "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
-                    appDir, appDirTmp2
-                  ), call. = FALSE)
-                }
-                if (!file.rename(appDirTmp, appDir)) {
-                  stop(sprintf(
-                    "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
-                    appDirTmp, appDir
-                  ), call. = FALSE)
-                }
-                if (file.exists(dataDir) && !file.rename(dataDir, dataDirTmp2)) {
-                  stop(sprintf(
-                    "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
-                    dataDir, dataDirTmp2
-                  ), call. = FALSE)
-                }
-                if (file.exists(dataDirTmp) && !file.rename(dataDirTmp, dataDir)) {
-                  stop(sprintf(
-                    "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
-                    dataDirTmp, dataDir
-                  ), call. = FALSE)
-                }
+                moveFilesFromTemp(appId)
                 modelConfig$update(modelConfig$getAppIndex(appId), list(
-                  containerEnv = appConfig$containerEnv
+                  containerEnv = appConfig$containerEnv, extraData = list(appVersion = appVersion)
                 ), allowUpdateRestrictedEnv = TRUE)
-                if (!identical(unlink(appDirTmp2, recursive = TRUE), 0L)) {
-                  flog.warn("Could not remove directory: %s", appDirTmp2)
-                }
-                if (!identical(unlink(dataDirTmp2, recursive = TRUE), 0L)) {
-                  flog.warn("Could not remove directory: %s", dataDirTmp2)
-                }
                 session$sendCustomMessage(
                   "onSuccess",
                   list(

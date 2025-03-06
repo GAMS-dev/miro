@@ -15,9 +15,17 @@ IN_KUBERNETES <- Sys.getenv("KUBERNETES_SERVICE_HOST", "") != ""
 REQUIRED_API_VERSION <- 1
 MAX_LOGO_SIZE <- 1e6
 MIRO_VERSION <- "2.11.9999"
-MIRO_CONTAINER_DATA_DIR <- if (IN_KUBERNETES) "/home/miro/mnt/data" else "/home/miro/app/data"
-MIRO_MODEL_DIR <- file.path(getwd(), if (IN_KUBERNETES) "mnt" else "", "models")
-MIRO_DATA_DIR <- file.path(getwd(), if (IN_KUBERNETES) "mnt" else "", "data")
+
+if (IN_KUBERNETES) {
+  SHARED_FS_MNT_DIR <- file.path(getwd(), "mnt")
+  SPECS_YAML_PATH <- file.path(SHARED_FS_MNT_DIR, "specs.yaml")
+  LOGO_DIR <- file.path(SHARED_FS_MNT_DIR, "logos")
+} else {
+  MIRO_MODEL_DIR <- file.path(getwd(), "models")
+  MIRO_DATA_DIR <- file.path(getwd(), "data")
+  SPECS_YAML_PATH <- file.path(MIRO_DATA_DIR, "specs.yaml")
+  LOGO_DIR <- file.path(MIRO_DATA_DIR, "logos")
+}
 
 MIRO_APP_PATH <- "/home/miro/app"
 
@@ -31,7 +39,7 @@ RESTRICTED_ENV_KEYS <- c(
   "MIRO_MODEL_PATH", "MIRO_DATA_DIR", "MIRO_MODE",
   "MIRO_VERSION_STRING", "MIRO_DB_USERNAME",
   "MIRO_DB_PASSWORD", "MIRO_DB_SCHEMA",
-  "MIRO_ENGINE_MODELNAME"
+  "MIRO_ENGINE_MODELNAME", "MIRO_CACHE_DIR"
 )
 
 flog.appender("appender.console")

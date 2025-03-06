@@ -1,10 +1,97 @@
+getModelPath <- function(appId) {
+  if (IN_KUBERNETES) {
+    if (startsWith(appId, "~$")) {
+      return(file.path(tempdir(check = TRUE), appId, "model"))
+    }
+    return(file.path(SHARED_FS_MNT_DIR, "data", appId, "model"))
+  }
+  return(file.path(MIRO_MODEL_DIR, appId))
+}
+
+getDataPath <- function(appId) {
+  if (IN_KUBERNETES) {
+    if (startsWith(appId, "~$")) {
+      return(file.path(tempdir(check = TRUE), appId, "data"))
+    }
+    return(file.path(SHARED_FS_MNT_DIR, "data", appId, "data"))
+  }
+  return(file.path(MIRO_DATA_DIR, paste0("data_", appId)))
+}
+
+removeTempDirs <- function(appId, warnOnly = FALSE) {
+  if (IN_KUBERNETES) {
+    tempDirs <- c(
+      dirname(getModelPath(paste0("~$", appId))),
+      dirname(getModelPath(paste0("~$~$", appId)))
+    )
+  } else {
+    tempDirs <- c(
+      getModelPath(paste0("~$", appId)), getModelPath(paste0("~$~$", appId)),
+      getDataPath(paste0("~$", appId)), getDataPath(paste0("~$~$", appId))
+    )
+  }
+  for (dirPath in tempDirs) {
+    if (!identical(unlink(dirPath, recursive = TRUE), 0L)) {
+      errorMessage <- sprintf(
+        "Could not remove temporary directory: %s. Please try again or contact your system administrator.",
+        dirPath
+      )
+      if (warnOnly) {
+        flog.warn(dirPath)
+        next
+      }
+      stop(errorMessage, call. = FALSE)
+    }
+  }
+}
+
+moveFilesFromTemp <- function(appId) {
+  if (IN_KUBERNETES) {
+    listOfDirsToMove <- list(c(
+      dirname(getModelPath(appId)),
+      dirname(getModelPath(paste0("~$~$", appId)))
+    ), c(
+      dirname(getModelPath(paste0("~$", appId))),
+      dirname(getModelPath(appId))
+    ))
+  } else {
+    listOfDirsToMove <- list(c(
+      getModelPath(appId),
+      getModelPath(paste0("~$~$", appId))
+    ), c(
+      getModelPath(paste0("~$", appId)),
+      getModelPath(appId)
+    ), c(
+      getDataPath(appId),
+      getDataPath(paste0("~$~$", appId)),
+      TRUE
+    ), c(
+      getDataPath(paste0("~$", appId)),
+      getDataPath(appId),
+      TRUE
+    ))
+  }
+  for (dirsToMove in listOfDirsToMove) {
+    if (!is.na(dirsToMove[3]) && !file.exists(dirsToMove[[1]])) {
+      # data directories don't have to exist
+      next
+    }
+    if (!file.rename(dirsToMove[[1]], dirsToMove[[2]])) {
+      stop(sprintf(
+        "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
+        dirsToMove[[1]], dirsToMove[[2]]
+      ), call. = FALSE)
+    }
+  }
+}
+
 getLogoName <- function(appId, logoFile) {
   return(paste0(appId, "_", stringi::stri_rand_strings(1L, 15L)[[1L]], "_logo.", tools::file_ext(logoFile)))
 }
 
 createAppDir <- function(appId) {
-  modelPath <- file.path(MIRO_MODEL_DIR, appId)
-  failedDirCreate <- !dir.create(modelPath)
+  modelPath <- getModelPath(appId)
+  failedDirCreate <- !dir.create(modelPath, recursive = TRUE)
   if (exists("last.warning") && endsWith(names(last.warning)[1], "already exists")) {
     flog.info(
       "App with id: %s is found on the file system but not in specs.yaml. This is either because another process is currently adding an app with this id or because it was not properly cleaned up. In the latter case, please remove the directory: '%s' manually.",
@@ -57,8 +144,8 @@ validateAppSignature <- function(appPath, pubKeyPaths = character(0L)) {
 }
 
 extractAppData <- function(miroAppPath, appId, modelId, miroProc) {
-  modelPath <- file.path(MIRO_MODEL_DIR, appId)
-  dataPath <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
+  modelPath <- getModelPath(appId)
+  dataPath <- getDataPath(appId)
 
   if (dir.exists(dataPath)) {
     flog.info("Data files for the app: %s already exist. They will be removed.", appId)
@@ -79,7 +166,12 @@ extractAppData <- function(miroAppPath, appId, modelId, miroProc) {
   }
   dataDirSource <- file.path(modelPath, paste0("data_", modelId))
   if (dir.exists(dataDirSource)) {
-    dir.create(dataPath)
+    if (!dir.create(dataPath)) {
+      flog.warn(
+        "Failed to create data path for app: '%s'",
+        dataPath, appId
+      )
+    }
     dataFiles <- list.files(dataDirSource)
     dataFilesCopied <- file.copy(file.path(dataDirSource, dataFiles), dataPath,
       overwrite = TRUE
@@ -97,8 +189,8 @@ extractAppData <- function(miroAppPath, appId, modelId, miroProc) {
 }
 
 addAppLogo <- function(appId, logoFile = NULL, newLogoName = NULL) {
-  logoDir <- file.path(MIRO_DATA_DIR, "logos")
-  modelPath <- file.path(MIRO_MODEL_DIR, appId)
+  logoDir <- LOGO_DIR
+  modelPath <- getModelPath(appId)
   if (length(logoFile)) {
     if (startsWith(logoFile, "/")) {
       logoPath <- logoFile
@@ -131,7 +223,7 @@ addAppLogo <- function(appId, logoFile = NULL, newLogoName = NULL) {
 
 removeAppLogo <- function(appId, logoFilename) {
   if (!identical(logoFilename, "default_logo.png")) {
-    logoPath <- file.path(MIRO_DATA_DIR, "logos", logoFilename)
+    logoPath <- file.path(LOGO_DIR, logoFilename)
     if (file.exists(logoPath)) {
       if (unlink(logoPath) == 1) {
         flog.warn(
@@ -144,10 +236,13 @@ removeAppLogo <- function(appId, logoFilename) {
 }
 
 removeAppData <- function(appId, logoFilename) {
-  modelPath <- file.path(MIRO_MODEL_DIR, appId)
-  dataPath <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
+  if (IN_KUBERNETES) {
+    dirsToRemove <- getModelPath(appId)
+  } else {
+    dirsToRemove <- c(getModelPath(appId), getDataPath(appId))
+  }
   removeAppLogo(appId, logoFilename)
-  for (dirToRemove in c(modelPath, dataPath)) {
+  for (dirToRemove in dirsToRemove) {
     if (dir.exists(dirToRemove)) {
       if (unlink(dirToRemove, recursive = TRUE, force = TRUE) == 1) {
         flog.warn(

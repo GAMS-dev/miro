@@ -21,7 +21,7 @@ tryCatch(
     ))
     engineClient <- EngineClient$new()
     engineClient$setAuthHeader(Sys.getenv("MIRO_ENGINE_AUTH_HEADER"))
-    modelConfig <- ModelConfig$new(file.path(MIRO_DATA_DIR, "specs.yaml"))
+    modelConfig <- ModelConfig$new(SPECS_YAML_PATH)
   },
   error = function(e) {
     write(sprintf(

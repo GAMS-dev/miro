@@ -101,7 +101,7 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
       # model already exists, so first deregister it
       self$deregisterModel(appId)
     }
-    modelDataPath <- file.path(MIRO_MODEL_DIR, appId, paste0(modelId, ".zip"))
+    modelDataPath <- file.path(getModelPath(appId), paste0(modelId, ".zip"))
     requestData <- list(
       data = upload_file(modelDataPath,
         type = "application/zip"

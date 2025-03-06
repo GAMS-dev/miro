@@ -91,6 +91,7 @@ proxy:
     disableReadonlyMode: false
     anonymousReadonlyMode: false
     containerWaitTimeSeconds: 300
+    containerPullPolicy: IfNotPresent # For UI/Admin images: IfNotPresent, Always or Never
     security:
       sameSiteCookie: Lax # Lax or Strict. Change this only if you are aware of the consequences
       xFrameOptionsHeader: sameorigin # sameorigin, disable or allow-from https://example.com
