@@ -104,6 +104,8 @@ spec:
               name: {{ include "common.names.fullname" . }}-secrets
               key: db_password
         volumeMounts:
+        - name: tmp-volume
+          mountPath: /tmp
         - name: shared-data
           mountPath: /home/miro/admin/mnt
         - name: config-volume
@@ -118,6 +120,8 @@ spec:
           readOnlyRootFilesystem: true
         {{- end }}
       volumes:
+        - name: tmp-volume
+          emptyDir: {}
         - name: config-volume
           configMap:
             name: {{ include "common.names.fullname" . }}-proxy-cm
