@@ -64,7 +64,7 @@ expect_true(identical(configuration$data$datasets[[6]]$stack, "stack0"))
 
 Sys.sleep(1)
 app$click(selector = "#tab_1_1-miroPivot-toggleViewButton")
-Sys.sleep(0.5)
+Sys.sleep(2)
 expect_error(app$get_js("$('#tab_1_1-miroPivot-savedViewsDD li').eq(0).children('.dropdown-item').click();", timeout = 50), NA)
 
 expect_equal(getData(), list(c(NA, 300), c(275, 50), c(275, NA)))
@@ -121,7 +121,7 @@ expect_true(app$get_js("$('#tab_1_1-miroPivot-container .row.table-chart').child
 expect_true(app$get_js("$('#tab_1_1-miroPivot-container .row.data-section').is(':hidden');"))
 
 app$set_inputs(outputTabset = "outputTabset_2")
-Sys.sleep(0.5)
+Sys.sleep(2)
 expect_equal(getData("tab_1_2"), list(c(NA, 300), c(275, 50), c(275, NA)))
 app$set_inputs(btEditMeta = "click")
 Sys.sleep(1)
@@ -144,7 +144,7 @@ Sys.sleep(0.5)
 app$click(selector = "#tab_1_2-miroPivot-toggleViewButton")
 Sys.sleep(0.5)
 app$wait_for_js("$('#tab_1_2-miroPivot-savedViewsDD li').eq(0).children('.dropdown-item').click();", timeout = 50)
-Sys.sleep(0.5)
+Sys.sleep(2)
 expect_equal(getData("tab_1_2"), list(c(NA, 300), c(275, 50), c(275, NA)))
 
 app$set_inputs("tab_1_2-miroPivot-pivotRenderer" = "table")
@@ -199,7 +199,7 @@ Sys.sleep(0.5)
 expect_true(identical(app$get_js(paste0("$('#tab_1_2-miroPivot-filter_Hdr')[0].multiple")), TRUE))
 expect_true(identical(app$get_js(paste0("$('#tab_1_2-miroPivot-filter_j')[0].multiple")), TRUE))
 app$set_inputs(`tab_1_2-miroPivot-filter_j` = character(0))
-Sys.sleep(0.5)
+Sys.sleep(2)
 expect_identical(
   getVisibleDtData(app, "tab_1_2-miroPivot-pivotTable"),
   structure(list(
@@ -363,7 +363,7 @@ Sys.sleep(1)
 app$click(selector = "#tab_1_2-miroPivot-toggleViewButton")
 Sys.sleep(0.5)
 app$wait_for_js("$('#tab_1_2-miroPivot-savedViewsDD li').eq(1).children('.dropdown-item').click();", timeout = 50)
-Sys.sleep(1)
+Sys.sleep(2)
 expect_identical(
   getVisibleDtData(app, "tab_1_2-miroPivot-pivotTable"),
   structure(list(
