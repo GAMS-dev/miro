@@ -217,10 +217,13 @@ server <- function(input, output, session) {
           id = appId, displayName = newAppTitle, description = newAppDesc,
           logoURL = logoURL,
           containerEnv = list(
-            MIRO_DATA_DIR = MIRO_CONTAINER_DATA_DIR,
             MIRO_VERSION_STRING = miroAppValidator$getMIROVersion(),
             MIRO_MODE = "base",
             MIRO_ENGINE_MODELNAME = appId
+          ),
+          extraData = list(
+            appVersion = miroAppValidator$getAppVersion(),
+            appAuthors = miroAppValidator$getAppAuthors()
           )
         )
         if (IN_KUBERNETES) {
@@ -562,6 +565,8 @@ server <- function(input, output, session) {
 
         modelId <- miroAppValidator$getModelId()
         modelName <- miroAppValidator$getModelName()
+        appVersion <- miroAppValidator$getAppVersion()
+        appAuthors <- miroAppValidator$getAppAuthors()
         appConfig$containerEnv[["MIRO_VERSION_STRING"]] <- miroAppValidator$getMIROVersion()
         if (IN_KUBERNETES) {
           appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0("/home/miro/model/", modelName)
@@ -602,7 +607,8 @@ server <- function(input, output, session) {
               {
                 moveFilesFromTemp(appId)
                 modelConfig$update(modelConfig$getAppIndex(appId), list(
-                  containerEnv = appConfig$containerEnv, extraData = list(appVersion = appVersion)
+                  containerEnv = appConfig$containerEnv,
+                  extraData = list(appVersion = appVersion, appAuthors = appAuthors)
                 ), allowUpdateRestrictedEnv = TRUE)
                 session$sendCustomMessage(
                   "onSuccess",

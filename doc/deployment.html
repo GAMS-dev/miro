@@ -259,6 +259,28 @@ inc/inc2.inc
     "description": "This is my first MIRO app"
 }</code></pre>
                   </div>
+                  <div id="app-metadata" class="section-block">
+                    <h3>App Metadata</h3>
+                    <p>
+                      In addition to the title and description, you can also
+                      specify the app's version and authors. Both fields can
+                      contain any string up to 100 characters in length (the
+                      <i>"authors"</i> field is an array of strings).
+                    </p>
+                    <p>
+                      The version information is displayed in the top right
+                      corner of your application tile in the library, while the
+                      authors are shown in the bottom right corner. In MIRO
+                      Server, this information is only visible in the admin
+                      panel. Example:
+                    </p>
+                    <pre><code class="language-json">{
+    "title": "Example app",
+    "description": "This is my first MIRO app",
+    "version": "1.0.0",
+    "authors": ["GAMS Development Corp."]
+}</code></pre>
+                  </div>
                   <!--//section-block-->
                   <div id="app-id" class="section-block">
                     <h3>App ID</h3>
@@ -1341,6 +1363,9 @@ inc/inc2.inc
                       class="nav-link scrollto"
                       href="#default-title-description"
                       >Default Title and Description</a
+                    >
+                    <a class="nav-link scrollto" href="#app-metadata"
+                      >App Metadata</a
                     >
                     <a class="nav-link scrollto" href="#app-id">App ID</a>
                     <a class="nav-link scrollto" href="#app-environment"

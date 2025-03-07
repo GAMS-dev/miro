@@ -750,3 +750,40 @@ class UITests(unittest.TestCase):
             len(self.driver.find_elements(By.CLASS_NAME, "env-name")) == 2,
             "Should have two environment rows (one pre-filled, one empty).",
         )
+        time.sleep(0.5)
+        self.driver.find_element(By.CSS_SELECTOR, ".modal-footer .confirm-btn").click()
+
+        wait.until(EC.invisibility_of_element((By.CLASS_NAME, "bootbox-body")))
+
+        self.driver.find_element(By.ID, "btAddApp").click()
+        WebDriverWait(self.driver, 30).until(
+            EC.invisibility_of_element((By.ID, "expandedAddAppWrapper"))
+        )
+        wait.until(
+            EC.text_to_be_present_in_element(
+                (By.ID, "staticAppTitle_1"), "Transport app"
+            )
+        )
+        self.assertTrue(
+            len(
+                [
+                    x
+                    for x in self.driver.find_elements(By.CLASS_NAME, "app-version-field")
+                    if x.text.strip() == "1.0.0"
+                ]
+            )
+            == 1,
+            "app version not found.",
+        )
+        self.assertTrue(
+            len(
+                [
+                    x
+                    for x in self.driver.find_elements(By.CLASS_NAME, "app-authors-field")
+                    if x.text.strip() == "by GAMS Development Corp."
+                ]
+            )
+            == 1,
+            "app authors not found.",
+        )
+        time.sleep(10)

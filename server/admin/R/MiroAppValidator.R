@@ -36,6 +36,12 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
   getAppEnv = function() {
     return(private$appEnv)
   },
+  getAppVersion = function() {
+    return(private$appVersion)
+  },
+  getAppAuthors = function() {
+    return(private$appAuthors)
+  },
   setLogoFile = function(logoPath) {
     if (!length(logoPath) || !file.exists(logoPath)) {
       stop("App logo does not exist.", call. = FALSE)
@@ -131,6 +137,8 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     appInfo <- private$readAppInfo(miroAppFile, filesInBundle)
     private$appTitle <- appInfo$title
     private$appDesc <- paste(appInfo$description, collapse = "\n")
+    private$appVersion <- appInfo$version
+    private$appAuthors <- appInfo$authors
 
     private$appEnv <- self$validateAppEnv(appInfo$environment)
     appIdTmp <- appInfo$appId
@@ -208,6 +216,8 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
   modelName = NULL,
   appTitle = NULL,
   appDesc = NULL,
+  appVersion = NULL,
+  appAuthors = NULL,
   apiVersion = NULL,
   miroVersion = NULL,
   logoB64 = NULL,

@@ -533,6 +533,12 @@ function refreshConfigList() {
               <div class="app-id-field" title="${appIdSafe}">
                 <small>ID: <i>${appIdSafe}</i></small>
               </div>
+              ${(configData.version != null && configData.version !== '') ? `<div class="app-id-field app-version-field" title="${escapeHtml(configData.version)}">
+                  <small><i>${escapeHtml(configData.version)}</i></small>
+                </div>` : ''}
+              ${(configData.authors != null && configData.authors.length > 0) ? `<div class="app-id-field app-authors-field" title="${escapeHtml(configData.authors.join(', '))}">
+                  <small><i>by ${escapeHtml(configData.authors.join(', '))}</i></small>
+                </div>` : ''}
             </div>
           </div>
         </div>

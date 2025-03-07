@@ -276,9 +276,17 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
             return;
           }
           if (content.file === 'app_info.json') {
-            newAppConf.title = content.data.title;
-            newAppConf.description = content.data.description;
-            newAppConf.id = content.data.appId;
+            [
+              ['title', 'title'],
+              ['description', 'description'],
+              ['id', 'appId'],
+              ['version', 'version'],
+              ['authors', 'authors'],
+            ].forEach((configKey) => {
+              if (content.data[configKey] != null) {
+                newAppConf[configKey] = content.data[configKey];
+              }
+            });
           }
         });
         const validateAppId = (appIdToValidate) => {

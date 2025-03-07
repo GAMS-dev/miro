@@ -81,6 +81,9 @@ tryCatch(
     modelName <- miroAppValidator$getModelName()
     modelId <- miroAppValidator$getModelId()
 
+    appVersion <- miroAppValidator$getAppVersion()
+    appAuthors <- miroAppValidator$getAppAuthors()
+
     appDirTmp <- getModelPath(paste0("~$", appId))
     dataDirTmp <- getDataPath(paste0("~$", appId))
 
@@ -138,6 +141,10 @@ tryCatch(
           MIRO_DB_USERNAME = appDbCredentials$user,
           MIRO_DB_PASSWORD = appDbCredentials$password,
           MIRO_DB_SCHEMA = appDbCredentials$user
+        ),
+        extraData = list(
+          appVersion = appVersion,
+          appAuthors = appAuthors
         )
       )
       if (IN_KUBERNETES) {
@@ -200,7 +207,8 @@ tryCatch(
         containerEnv = appConfig$containerEnv,
         displayName = appConfig$displayName,
         description = appConfig$description,
-        accessGroups = appConfig$accessGroups
+        accessGroups = appConfig$accessGroups,
+        extraData = list(appVersion = appVersion, appAuthors = appAuthors)
       ), allowUpdateRestrictedEnv = TRUE)
     }
   },

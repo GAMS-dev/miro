@@ -20,6 +20,22 @@
       "type": "string",
       "pattern": "^[a-z0-9][a-z0-9-_]{0,59}$"
     },
+    "version": {
+      "description": "Application version",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "authors": {
+      "description": "List of authors of this application",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      }
+    },
     "environment": {
       "propertyNames": {
         "pattern": "^[A-Z_][A-Z0-9_]*$"

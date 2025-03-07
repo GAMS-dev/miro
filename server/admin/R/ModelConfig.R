@@ -139,6 +139,8 @@ ModelConfig <- R6::R6Class("ModelConfig",
         private$currentModelConfigs[[appIndex]][["accessGroups"]] <- as.list(accessGroupsNoAccess)
       }
 
+      private$currentModelConfigs[[appIndex]][["extraData"]] <- newConfig[["extraData"]]
+
       private$writeConfig()
 
       return(invisible(self))
@@ -208,6 +210,8 @@ ModelConfig <- R6::R6Class("ModelConfig",
         desc = appConfig[["description"]], logob64 = logoB64,
         appEnv = appEnv,
         groups = I(accessGroups),
+        version = appConfig[["extraData"]][["appVersion"]],
+        authors = I(appConfig[["extraData"]][["appAuthors"]]),
         isDirty = appConfig[["id"]] %in% private$appsNotOnEngine
       ))
     }

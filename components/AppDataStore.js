@@ -29,6 +29,17 @@ const schema = {
           type: 'string',
           minLength: 1,
         },
+        version: {
+          type: 'string',
+          minLength: 1,
+        },
+        authors: {
+          type: 'array',
+          items: {
+            type: 'string',
+            minLength: 1,
+          }
+        },
         apiversion: {
           type: 'integer',
           minimum: 1,

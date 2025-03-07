@@ -335,6 +335,19 @@ a:hover {
   overflow: hidden;
   white-space: nowrap;
 }
+.app-version-field {
+  right: 0;
+  position: absolute;
+  top: 0;
+  margin: 15px;
+  z-index: 2;
+}
+.app-authors-field {
+  right: 0;
+  position: absolute;
+  bottom: 0;
+  margin: 15px;
+}
 .app-title {
   max-height: 35px;
 }
