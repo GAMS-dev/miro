@@ -11,9 +11,13 @@ from app.utils.models import AppConfig, User
 from app.utils.miro_proc import run_miro_proc
 
 
-def get_apps_raw(user_groups: list[str] = None, all_apps: bool = False) -> list[AppConfig]:
+def get_apps_raw(
+    user_groups: list[str] = None, all_apps: bool = False
+) -> list[AppConfig]:
     apps = []
-    with open(os.path.join(settings.data_dir, "specs.yaml"), "r", encoding="utf-8") as f_apps:
+    with open(
+        os.path.join(settings.data_dir, "specs.yaml"), "r", encoding="utf-8"
+    ) as f_apps:
         apps = yaml.load(f_apps, Loader=yaml.CSafeLoader)["specs"]
     if all_apps:
         return apps
@@ -34,10 +38,12 @@ def get_apps_raw(user_groups: list[str] = None, all_apps: bool = False) -> list[
         if not app["access_groups"]:
             visible_apps.append(app)
             continue
-        access_groups_lowercase = [access_group.lower()
-                                   for access_group in app["access_groups"]]
-        app["access_groups"] = list(set(
-            access_groups_lowercase) & set(user_groups_lowercase))
+        access_groups_lowercase = [
+            access_group.lower() for access_group in app["access_groups"]
+        ]
+        app["access_groups"] = list(
+            set(access_groups_lowercase) & set(user_groups_lowercase)
+        )
         if len(app["access_groups"]):
             visible_apps.append(app)
 
@@ -45,37 +51,48 @@ def get_apps_raw(user_groups: list[str] = None, all_apps: bool = False) -> list[
 
 
 def app_is_invisible(user_groups: list[str], app_id: str) -> bool:
-    return not os.path.isdir(os.path.join(settings.model_dir, app_id)) or \
-        app_id not in [app["id"] for app in get_apps_raw(
-            user_groups=user_groups)]
+    return not os.path.isdir(
+        os.path.join(settings.model_dir, app_id)
+    ) or app_id not in [app["id"] for app in get_apps_raw(user_groups=user_groups)]
 
 
-async def add_or_update_app(user_info: User, app_config: AppConfig,
-                            data: UploadFile, overwrite_data: bool = False, update=False) -> None:
+async def add_or_update_app(
+    user_info: User,
+    app_config: AppConfig,
+    data: UploadFile,
+    overwrite_data: bool = False,
+    update=False,
+) -> None:
     _, file_extension = os.path.splitext(data.filename)
     file_extension = file_extension.lower()
     if file_extension != ".miroapp":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid file extension: {file_extension}. Please upload a valid miroapp file."
+            detail=f"Invalid file extension: {file_extension}. Please upload a valid miroapp file.",
         )
-    async with aiofiles.tempfile.NamedTemporaryFile("wb", suffix=".miroapp") as out_file:
+    async with aiofiles.tempfile.NamedTemporaryFile(
+        "wb", suffix=".miroapp"
+    ) as out_file:
         while content := await data.read(1024):
             await out_file.write(content)
         await out_file.flush()
 
-        proc_input = json.dumps({
-            "id": app_config.id,
-            "displayName": app_config.display_name,
-            "description": app_config.description,
-            "accessGroups": app_config.access_groups,
-            "appPath": out_file.name,
-            "overwriteData": overwrite_data,
-            "update": update}).encode()
+        proc_input = json.dumps(
+            {
+                "id": app_config.id,
+                "displayName": app_config.display_name,
+                "description": app_config.description,
+                "accessGroups": app_config.access_groups,
+                "appPath": out_file.name,
+                "overwriteData": overwrite_data,
+                "update": update,
+            }
+        ).encode()
         run_miro_proc(user_info, "addApp.R", proc_input=proc_input)
 
 
-async def delete_app_internal(user_info: User, app_id: str, delete_data: bool = False) -> None:
-    proc_input = json.dumps({"id": app_id,
-                             "deleteData": delete_data}).encode()
+async def delete_app_internal(
+    user_info: User, app_id: str, delete_data: bool = False
+) -> None:
+    proc_input = json.dumps({"id": app_id, "deleteData": delete_data}).encode()
     run_miro_proc(user_info, "deleteApp.R", proc_input=proc_input)
