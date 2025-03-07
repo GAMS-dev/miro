@@ -1,6 +1,6 @@
 # save scenario to database
 
-genAccessPermInputs <- function(containerSelector) {
+genAccessPermInputs <- function(containerSelector, resetPerm = FALSE) {
   showEl(session, paste0(containerSelector, " .access-perm-spinner"))
   on.exit(hideEl(session, paste0(containerSelector, " .access-perm-spinner")))
   if (tryCatch(
@@ -29,10 +29,16 @@ genAccessPermInputs <- function(containerSelector) {
   )) {
     return(FALSE)
   }
-  metaTmp <- activeScen$getMetadataDf(noPermFields = FALSE)
-  writePerm <- csv2Vector(metaTmp[["_accessw"]][[1]])
-  readPerm <- csv2Vector(metaTmp[["_accessr"]][[1]])
-  execPerm <- csv2Vector(metaTmp[["_accessx"]][[1]])
+  if (resetPerm) {
+    readPerm <- c(uid, DEFAULT_SCEN_PERM$read)
+    writePerm <- c(uid, DEFAULT_SCEN_PERM$write)
+    execPerm <- c(uid, DEFAULT_SCEN_PERM$execute)
+  } else {
+    metaTmp <- activeScen$getMetadataDf(noPermFields = FALSE)
+    readPerm <- csv2Vector(metaTmp[["_accessr"]][[1]])
+    writePerm <- csv2Vector(metaTmp[["_accessw"]][[1]])
+    execPerm <- csv2Vector(metaTmp[["_accessx"]][[1]])
+  }
   insertUI(containerSelector,
     ui = tagList(
       tags$div(
@@ -118,7 +124,9 @@ observeEvent(virtualActionButton(rv$btSaveAs), {
     scenTags = activeScen$getStags(),
     allScenTags = db$getAllScenTags()
   )
-  genAccessPermInputs("#contentAccessPerm")
+  genAccessPermInputs("#contentAccessPerm",
+    resetPerm = !identical(activeScen$getScenUid(), uid)
+  )
 })
 
 observeEvent(input$btNewName, {
