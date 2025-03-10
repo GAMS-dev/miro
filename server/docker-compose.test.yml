@@ -31,7 +31,7 @@ services:
       GMS_MIRO_DATABASE_USER: GMSMASTER
       GMS_MIRO_DATABASE_PWD:  ${GMS_MIRO_DATABASE_PWD}
       SESSION_TIMEOUT: 43200
-    restart: always
+    restart: no
     volumes:
       - ../src:/home/miro/app
       - ./admin:/home/miro/admin

@@ -16,4 +16,10 @@ tryCatch(
 )
 
 write("merr:::200:::", stderr())
-write(jsonlite::toJSON(modelConfig$getConfigList(), dataframe = "rows"), stderr())
+write(jsonlite::toJSON(
+  lapply(modelConfig$getConfigList(), function(appConfig) {
+    appConfig$logob64 <- NULL
+    return(appConfig)
+  }),
+  dataframe = "rows", auto_unbox = TRUE, null = "null"
+), stderr())

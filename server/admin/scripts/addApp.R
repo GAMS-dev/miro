@@ -85,12 +85,11 @@ tryCatch(
     appVersion <- miroAppValidator$getAppVersion()
     appAuthors <- miroAppValidator$getAppAuthors()
 
-    appDirTmp <- getModelPath(paste0("~$", appId))
-    dataDirTmp <- getDataPath(paste0("~$", appId))
-
     newAppEnv <- miroAppValidator$validateAppEnv(appEnv)
 
     if (updateApp) {
+      appDirTmp <- getModelPath(paste0("~$", appId))
+      dataDirTmp <- getDataPath(paste0("~$", appId))
       removeTempDirs(appId)
       appConfig <- modelConfig$getAppConfigFull(appId)
       appDbCredentials <- modelConfig$getAppDbConf(appId)
@@ -117,6 +116,8 @@ tryCatch(
       extractAppData(appPath, paste0("~$", appId), modelId)
       engineClient$updateModel(appId, userGroups = FALSE, modelDataPath = file.path(appDirTmp, paste0(modelId, ".zip")))
     } else {
+      appDir <- getModelPath(appId)
+      dataDir <- getDataPath(appId)
       tryCatch(
         {
           createAppDir(appId)

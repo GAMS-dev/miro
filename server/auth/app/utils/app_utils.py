@@ -5,12 +5,12 @@ import aiofiles
 import yaml
 from fastapi import UploadFile
 from fastapi.exceptions import HTTPException
-from pydantic import ValidationError
+from pydantic import TypeAdapter, ValidationError
 from starlette import status
 
 from app.config import logger, settings
 from app.utils.miro_proc import run_miro_proc
-from app.utils.models import AppConfigInput, AppConfigOutput, User
+from app.utils.models import AppConfigInput, AppConfigOutput, AppEnvironment, User
 
 
 def get_apps_internal(user_info: User) -> list[AppConfigOutput]:
@@ -24,10 +24,12 @@ def get_apps_internal(user_info: User) -> list[AppConfigOutput]:
         )
     json_start_pos += len("merr:::200:::")
     try:
-        return AppConfigOutput.model_validate_json(stderr[json_start_pos:])
+        return TypeAdapter(list[AppConfigOutput]).validate_json(stderr[json_start_pos:])
     except ValidationError as exc:
         logger.warning(
-            "Invalid JSON received from R process: %s", stderr[json_start_pos:3000]
+            "Invalid JSON received from R process: %s. Exception: %s",
+            stderr[json_start_pos:3000],
+            exc.errors(),
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -100,7 +102,9 @@ async def add_or_update_app(
                 "description": app_config.description,
                 "accessGroups": app_config.access_groups,
                 "appPath": out_file.name,
-                "environment": app_config.environment,
+                "environment": TypeAdapter(AppEnvironment).dump_python(
+                    app_config.environment
+                ),
                 "overwriteData": overwrite_data,
                 "update": update,
             }

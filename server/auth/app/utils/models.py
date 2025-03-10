@@ -2,7 +2,7 @@ import datetime
 from enum import Enum
 from typing import Annotated, TypeVar, Generic
 
-from pydantic import BaseModel, Field, StringConstraints, TypeAdapter
+from pydantic import field_validator, BaseModel, Field, StringConstraints
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -54,7 +54,7 @@ class ConfigurationResponse(BaseModel):
 
 class AppEnvironmentItem(BaseModel):
     value: Annotated[str, StringConstraints(max_length=1000)]
-    description: Annotated[str, StringConstraints(max_length=1000)] | None = None
+    description: Annotated[str, StringConstraints(max_length=1000)] = ""
 
 
 AppEnvironment = dict[
@@ -69,7 +69,6 @@ class AppConfigInput(BaseModel):
     description: str | None
     environment: AppEnvironment = {}
     access_groups: list[str] = []
-    overwrite_data: bool = Field(False, description="test")
 
 
 class AppConfigOutput(BaseModel):
@@ -80,6 +79,18 @@ class AppConfigOutput(BaseModel):
     environment: AppEnvironment = Field({}, validation_alias="appEnv")
     version: str | None = None
     authors: list[str] | None = None
+
+    @field_validator("environment", mode="before")
+    @classmethod
+    def convert_empty_list(cls, value: AppEnvironment | list) -> AppEnvironment:
+        if value == []:
+            return {}
+        return value
+
+    @field_validator("access_groups", mode="before")
+    @classmethod
+    def convert_to_lowercase(cls, value: list[str]) -> list[str]:
+        return [x.lower() for x in value]
 
 
 class ScenarioConfig(BaseModel):

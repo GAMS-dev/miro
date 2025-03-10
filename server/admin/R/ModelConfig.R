@@ -101,45 +101,45 @@ ModelConfig <- R6::R6Class("ModelConfig",
         appIndex > length(private$currentModelConfigs)) {
         stop("Invalid app index.", call. = FALSE)
       }
-      if (!is.null(newConfig[["displayName"]])) {
-        if (nchar(trimws(newConfig[["displayName"]])) < 1) {
-          stop("App title must contain at least 1 non-whitespace character.",
-            call. = FALSE
-          )
-        }
-        private$currentModelConfigs[[appIndex]][["displayName"]] <- newConfig[["displayName"]]
-      }
-      newConfig[["containerEnv"]] <- private$fixContainerEnv(newConfig[["containerEnv"]])
-      for (envKey in c(
-        names(newConfig[["containerEnv"]]),
-        names(private$currentModelConfigs[[appIndex]][["containerEnv"]])
-      )) {
-        if (!allowUpdateRestrictedEnv && envKey %in% RESTRICTED_ENV_KEYS) {
-          if (envKey %in% names(newConfig[["containerEnv"]])) {
-            flog.warn("Invalid environment variable name: %s in custom environment file. It was ignored.", envKey)
+      if ("containerEnv" %in% names(newConfig)) {
+        newConfig[["containerEnv"]] <- private$fixContainerEnv(newConfig[["containerEnv"]])
+        for (envKey in c(
+          names(newConfig[["containerEnv"]]),
+          names(private$currentModelConfigs[[appIndex]][["containerEnv"]])
+        )) {
+          if (!allowUpdateRestrictedEnv && envKey %in% RESTRICTED_ENV_KEYS) {
+            if (envKey %in% names(newConfig[["containerEnv"]])) {
+              flog.warn("Invalid environment variable name: %s in custom environment file. It was ignored.", envKey)
+            }
+            next
           }
-          next
+          if (envKey %in% names(newConfig[["containerEnv"]])) {
+            private$currentModelConfigs[[appIndex]][["containerEnv"]][[envKey]] <- newConfig[["containerEnv"]][[envKey]]
+            next
+          }
+          private$currentModelConfigs[[appIndex]][["containerEnv"]][[envKey]] <- NULL
         }
-        if (envKey %in% names(newConfig[["containerEnv"]])) {
-          private$currentModelConfigs[[appIndex]][["containerEnv"]][[envKey]] <- newConfig[["containerEnv"]][[envKey]]
-          next
-        }
-        private$currentModelConfigs[[appIndex]][["containerEnv"]][[envKey]] <- NULL
       }
-      for (configId in c("description", "logoURL")) {
-        if (!is.null(newConfig[[configId]])) {
+      for (configId in c("displayName", "description", "logoURL", "accessGroups", "extraData")) {
+        if (configId %in% names(newConfig)) {
+          if (identical(configId, "displayName")) {
+            if (nchar(trimws(newConfig[["displayName"]])) < 1) {
+              stop("App title must contain at least 1 non-whitespace character.",
+                call. = FALSE
+              )
+            }
+          } else if (identical(configId, "accessGroups")) {
+            currentAccessGroups <- private$currentModelConfigs[[appIndex]][["accessGroups"]]
+            accessGroupsNoAccess <- currentAccessGroups[!toupper(currentAccessGroups) %in% private$accessGroups]
+            if (length(newConfig[["accessGroups"]]) > 0) {
+              newConfig[["accessGroups"]] <- as.list(unique(c(toupper(newConfig[["accessGroups"]]), accessGroupsNoAccess)))
+            } else {
+              newConfig[["accessGroups"]] <- as.list(accessGroupsNoAccess)
+            }
+          }
           private$currentModelConfigs[[appIndex]][[configId]] <- newConfig[[configId]]
         }
       }
-      currentAccessGroups <- private$currentModelConfigs[[appIndex]][["accessGroups"]]
-      accessGroupsNoAccess <- currentAccessGroups[!toupper(currentAccessGroups) %in% private$accessGroups]
-      if (length(newConfig[["accessGroups"]]) > 0) {
-        private$currentModelConfigs[[appIndex]][["accessGroups"]] <- as.list(unique(c(toupper(newConfig[["accessGroups"]]), accessGroupsNoAccess)))
-      } else {
-        private$currentModelConfigs[[appIndex]][["accessGroups"]] <- as.list(accessGroupsNoAccess)
-      }
-
-      private$currentModelConfigs[[appIndex]][["extraData"]] <- newConfig[["extraData"]]
 
       private$writeConfig()
 
@@ -204,6 +204,11 @@ ModelConfig <- R6::R6Class("ModelConfig",
           appEnv[[envKey]] <- appConfig[["containerEnv"]][[envKey]]
         }
       }
+      if (is.null(appConfig[["extraData"]][["appAuthors"]])) {
+        appAuthors <- character()
+      } else {
+        appAuthors <- appConfig[["extraData"]][["appAuthors"]]
+      }
 
       return(list(
         id = appConfig[["id"]], alias = appConfig[["displayName"]],
@@ -211,7 +216,7 @@ ModelConfig <- R6::R6Class("ModelConfig",
         appEnv = appEnv,
         groups = I(accessGroups),
         version = appConfig[["extraData"]][["appVersion"]],
-        authors = I(appConfig[["extraData"]][["appAuthors"]]),
+        authors = I(appAuthors),
         isDirty = appConfig[["id"]] %in% private$appsNotOnEngine
       ))
     }

@@ -75,8 +75,8 @@ class TestApps:
         assert response.json() == []
         assert response.headers["x-total"] == "0"
         assert response.headers["x-total-pages"] == "0"
-        assert response.headers["x-next-page"] == "0"
-        assert response.headers["x-prev-page"] == "0"
+        assert response.headers["x-next-page"] == ""
+        assert response.headers["x-prev-page"] == ""
         validMiroAppPath = "tests/data/transport.miroapp"
         response = client.post(
             "/api/apps/",
@@ -169,6 +169,9 @@ class TestApps:
                 "display_name": "transport",
                 "description": "",
                 "access_groups": [],
+                "environment": {},
+                "version": None,
+                "authors": [],
             }
         ]
         response = client.post(
@@ -192,18 +195,22 @@ class TestApps:
                 "id": "transport",
                 "display_name": "transport",
                 "description": "",
-                "environment": {},
                 "access_groups": [],
+                "environment": {},
+                "version": None,
+                "authors": [],
             },
             {
                 "id": "transport_test",
                 "display_name": "My custom transport",
                 "description": "This is my custom transport app",
-                "environment": {
-                    "ENV_NAME1": {"description": "bla", "value": "test123"},
-                    "ENV_NAME2": {"description": "", "value": "bumbum"},
-                },
                 "access_groups": ["mygroup"],
+                "environment": {
+                    "ENV_NAME1": {"value": "test123", "description": "bla"},
+                    "ENV_NAME2": {"value": "bumbum", "description": ""},
+                },
+                "version": None,
+                "authors": [],
             },
         ]
         assert len(get_scen_metadata("transport_test")) == 1
@@ -229,18 +236,22 @@ class TestApps:
                 "id": "transport",
                 "display_name": "transport",
                 "description": "",
-                "environment": {},
                 "access_groups": [],
+                "environment": {},
+                "version": None,
+                "authors": [],
             },
             {
                 "id": "transport_test",
                 "display_name": "My custom transport",
                 "description": "This is my custom transport app",
-                "environment": {
-                    "ENV_NAME1": {"description": "bla", "value": "test123"},
-                    "ENV_NAME2": {"description": "", "value": "bumbum"},
-                },
                 "access_groups": ["mygroup"],
+                "environment": {
+                    "ENV_NAME1": {"value": "test123", "description": "bla"},
+                    "ENV_NAME2": {"value": "bumbum", "description": ""},
+                },
+                "version": None,
+                "authors": [],
             },
         ]
         assert len(get_scen_metadata("transport_test")) == 1
@@ -256,6 +267,12 @@ class TestApps:
                 "display_name": "My custom transport",
                 "description": "This is my custom transport app",
                 "access_groups": ["mygroup"],
+                "environment": {
+                    "ENV_NAME1": {"value": "test123", "description": "bla"},
+                    "ENV_NAME2": {"value": "bumbum", "description": ""},
+                },
+                "version": None,
+                "authors": [],
             },
         ]
         assert response.headers["x-total"] == "2"
@@ -263,7 +280,7 @@ class TestApps:
         assert 'rel="first"' in response.headers["link"]
         assert 'rel="last"' in response.headers["link"]
         assert 'rel="next"' not in response.headers["link"]
-        assert '/api/apps/?page=1&per_page=1"' in response.headers["link"]
+        assert "/api/apps/?page=1&per_page=1" in response.headers["link"]
 
         response = client.delete(
             "/api/apps/transport_test", auth=settings["VALID_AUTH_TUPLE"]
@@ -291,8 +308,10 @@ class TestApps:
                 "id": "transport",
                 "display_name": "transport",
                 "description": "",
-                "environment": {},
                 "access_groups": [],
+                "environment": {},
+                "version": None,
+                "authors": [],
             }
         ]
         assert len(get_scen_metadata("transport")) == 1
@@ -315,8 +334,10 @@ class TestApps:
                 "id": "transport",
                 "display_name": "transport",
                 "description": "",
-                "environment": {},
                 "access_groups": [],
+                "environment": {},
+                "version": None,
+                "authors": [],
             }
         ]
         response = client.delete(
@@ -359,8 +380,10 @@ class TestApps:
                 "id": "transport",
                 "display_name": "transport",
                 "description": "",
-                "environment": {},
                 "access_groups": [],
+                "environment": {},
+                "version": None,
+                "authors": [],
             }
         ]
         scen_data = get_scen_metadata("transport")
@@ -401,8 +424,10 @@ class TestApps:
                 "id": "transport",
                 "display_name": "My custom transport",
                 "description": "This is my custom transport app",
-                "environment": {},
                 "access_groups": ["mygroup"],
+                "environment": {},
+                "version": None,
+                "authors": [],
             }
         ]
         scen_data = get_scen_metadata("transport")
@@ -430,8 +455,10 @@ class TestApps:
                 "id": "transport",
                 "display_name": "Test123",
                 "description": "This is my custom transport app",
-                "environment": {},
                 "access_groups": [],
+                "environment": {},
+                "version": None,
+                "authors": [],
             }
         ]
 
@@ -455,7 +482,9 @@ class TestApps:
                 "id": "transport",
                 "display_name": "Test123",
                 "description": "This is my custom transport app",
-                "environment": {},
                 "access_groups": [],
+                "environment": {},
+                "version": None,
+                "authors": [],
             }
         ]
