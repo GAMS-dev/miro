@@ -51,8 +51,7 @@ class Settings(BaseSettings):
         "xls",
         "zip",
     ]
-    model_dir: str = "/home/miro/admin/models"
-    data_dir: str = "/home/miro/admin/data"
+    specs_yaml_path: str = "/home/miro/admin/data/specs.yaml"
     admin_app_dir: str = "/home/miro/admin"
     gms_miro_database_host: str = "miroserver-db"
     gms_miro_database_port: int = 5432

@@ -1,26 +1,22 @@
-import os
 import json
-from fastapi import UploadFile
-from fastapi.exceptions import HTTPException
-from starlette import status
+import os
+
 import aiofiles
 import yaml
+from fastapi import UploadFile
+from fastapi.exceptions import HTTPException
+from pydantic import ValidationError
+from starlette import status
 
-from app.config import settings
-from app.utils.models import AppConfig, User
+from app.config import logger, settings
 from app.utils.miro_proc import run_miro_proc
+from app.utils.models import AppConfig, User
 
 
-def get_apps_raw(
-    user_groups: list[str] = None, all_apps: bool = False
-) -> list[AppConfig]:
+def get_apps_raw(user_groups: list[str] = None) -> list[AppConfig]:
     apps = []
-    with open(
-        os.path.join(settings.data_dir, "specs.yaml"), "r", encoding="utf-8"
-    ) as f_apps:
+    with open(settings.specs_yaml_path, "r", encoding="utf-8") as f_apps:
         apps = yaml.load(f_apps, Loader=yaml.CSafeLoader)["specs"]
-    if all_apps:
-        return apps
 
     user_groups_lowercase = [user_group.lower() for user_group in user_groups]
     visible_apps = []
@@ -51,9 +47,7 @@ def get_apps_raw(
 
 
 def app_is_invisible(user_groups: list[str], app_id: str) -> bool:
-    return not os.path.isdir(
-        os.path.join(settings.model_dir, app_id)
-    ) or app_id not in [app["id"] for app in get_apps_raw(user_groups=user_groups)]
+    return app_id not in [app["id"] for app in get_apps_raw(user_groups=user_groups)]
 
 
 async def add_or_update_app(

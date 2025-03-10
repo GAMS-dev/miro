@@ -94,10 +94,8 @@ spec:
           value: "{{ .Values.db.name }}"
         - name: GMS_MIRO_DATABASE_USER
           value: "{{ .Values.db.user }}"
-        - name: DATA_DIR
-          value: "/home/miro/admin/mnt/data"
-        - name: MODEL_DIR
-          value: "/home/miro/admin/mnt/models"
+        - name: SPECS_YAML_PATH
+          value: "/home/miro/admin/mnt/specs.yaml"
         - name: APP_CONFIG_FILE_PATH
           value: "/home/miro/admin/application.yml"
         - name: SCRIPT_NAME
