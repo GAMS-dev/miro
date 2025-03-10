@@ -4,11 +4,19 @@ import os
 import aiofiles
 from fastapi import UploadFile
 from fastapi.exceptions import HTTPException
+from pydantic import ValidationError
 from starlette import status
 
 from app.config import logger, settings
+from app.dependencies import Paginator
 from app.utils.miro_proc import run_miro_proc
-from app.utils.models import ExportFileType, ScenarioConfig, ScenarioPermissions, User
+from app.utils.models import (
+    ExportFileType,
+    ScenarioConfig,
+    ScenarioPermissions,
+    User,
+    PaginatedResponse,
+)
 
 
 async def add_data(
@@ -125,8 +133,17 @@ async def download_data(
     run_miro_proc(user_info, "manageScenarios.R", proc_input=proc_input)
 
 
-async def get_scen_list(user_info: User, app_id: str) -> list[ScenarioConfig]:
-    proc_input = json.dumps({"mode": "getList", "appId": app_id}).encode()
+async def get_scen_list(
+    user_info: User, app_id: str, paginator: Paginator
+) -> list[ScenarioConfig]:
+    proc_input = json.dumps(
+        {
+            "mode": "getList",
+            "appId": app_id,
+            "page": paginator.page,
+            "per_page": paginator.per_page,
+        }
+    ).encode()
     stderr = run_miro_proc(user_info, "manageScenarios.R", proc_input=proc_input)
     json_start_pos = stderr.find("merr:::200:::")
     if json_start_pos == -1:
@@ -137,8 +154,10 @@ async def get_scen_list(user_info: User, app_id: str) -> list[ScenarioConfig]:
         )
     json_start_pos += len("merr:::200:::")
     try:
-        return json.loads(stderr[json_start_pos:])
-    except json.decoder.JSONDecodeError as exc:
+        scen_list = PaginatedResponse[ScenarioConfig].model_validate_json(
+            stderr[json_start_pos:]
+        )
+    except ValidationError as exc:
         logger.warning(
             "Invalid JSON received from R process: %s", stderr[json_start_pos:3000]
         )
@@ -146,3 +165,5 @@ async def get_scen_list(user_info: User, app_id: str) -> list[ScenarioConfig]:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal Server Error",
         ) from exc
+    paginator.add_pagination_headers(scen_list.total_count)
+    return scen_list.items

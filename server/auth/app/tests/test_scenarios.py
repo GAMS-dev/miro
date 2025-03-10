@@ -184,6 +184,7 @@ class TestScenarios:
         scen_metadata = response.json()
         print(scen_metadata)
         assert response.status_code == 200
+        assert response.headers["x-total-count"] == len(scen_metadata)
         scen_found = False
         for scenario in scen_metadata:
             if (
@@ -304,6 +305,8 @@ class TestScenarios:
         )
         scen_metadata = response.json()
         assert len(scen_metadata) == 2
+        assert response.headers["x-page"] == "1"
+        assert response.headers["x-per-page"] == "20"
         assert scen_metadata[1]["name"] == "My test"
         assert scen_metadata[0]["name"] == "default"
         assert scen_metadata[1]["tags"] == ["tag1", "tag2"]
@@ -344,6 +347,37 @@ class TestScenarios:
         }
 
         assert response.status_code == 200
+
+        response = client.get(
+            "/api/scenarios/transport/?page=1&per_page=1",
+            auth=settings["VALID_AUTH_TUPLE"],
+        )
+        scen_metadata = response.json()
+        assert len(scen_metadata) == 1
+        assert response.headers["x-total-pages"] == "2"
+        assert response.headers["x-total"] == "2"
+        assert response.headers["x-page"] == "1"
+        assert response.headers["x-next-page"] == "2"
+        assert response.headers["x-prev-page"] == ""
+        assert scen_metadata[0]["name"] == "default"
+        assert scen_metadata[0]["tags"] == []
+        assert scen_metadata[0]["owner"] == settings["VALID_AUTH_TUPLE"][0]
+
+        response = client.get(
+            "/api/scenarios/transport/?page=2&per_page=1",
+            auth=settings["VALID_AUTH_TUPLE"],
+        )
+        scen_metadata = response.json()
+        assert len(scen_metadata) == 1
+        assert response.headers["x-total-pages"] == "2"
+        assert response.headers["x-total"] == "2"
+        assert response.headers["x-page"] == "2"
+        assert response.headers["x-per-page"] == "1"
+        assert response.headers["x-next-page"] == ""
+        assert response.headers["x-prev-page"] == "1"
+        assert scen_metadata[0]["name"] == "My test"
+        assert scen_metadata[0]["tags"] == ["tag1", "tag2"]
+        assert scen_metadata[0]["owner"] == "mirotests_auth_1"
 
     def test_download_scenario(self, cleanup):
         register_transport(client, ["mygroup"])

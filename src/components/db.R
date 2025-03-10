@@ -697,7 +697,8 @@ Db <- R6Class("Db",
     },
     importDataset = function(tableName, ..., colNames = NULL, count = FALSE, limit = 1e7,
                              innerSepAND = TRUE, distinct = FALSE, subsetSids = NULL,
-                             orderBy = character(0L), orderAsc = TRUE, isAdmin = FALSE) {
+                             orderBy = character(0L), orderAsc = TRUE, isAdmin = FALSE,
+                             offset = 0L) {
       # Import the data corresponding to the table name provided from the database by
       # considering scenario IDs specified.
       #
@@ -719,6 +720,7 @@ Db <- R6Class("Db",
       #   orderAsc:         boolean that specifies whether to order in ascending (TRUE)
       #                     or descending (FALSE) order
       #   isAdmin:          boolean that specifies whether user accessing data is admin (can read all data)
+      #   offset:           number of rows to skip before beginning to return rows (optional)
       #
       # Returns:
       #   tibble: dataset (cleaned of metadata columns) with data coming from the table selected.
@@ -740,6 +742,7 @@ Db <- R6Class("Db",
       stopifnot(is.character(orderBy))
       stopifnot(is.logical(orderAsc), length(orderAsc) == 1)
       stopifnot(is.logical(isAdmin), length(isAdmin) == 1)
+      stopifnot(is.numeric(offset), length(offset) == 1)
       if (innerSepAND) {
         innerSep <- " AND "
         outerSep <- " OR "
@@ -830,9 +833,9 @@ Db <- R6Class("Db",
               DBI::dbQuoteIdentifier(private$conn, tableNameDb),
               innerJoin,
               if (length(subsetRows)) " WHERE ", subsetRows, orderByQuery,
-              " LIMIT ?lim ;"
+              " LIMIT ?lim OFFSET ?offset;"
             ))
-            query <- DBI::sqlInterpolate(private$conn, sql, lim = limit)
+            query <- DBI::sqlInterpolate(private$conn, sql, lim = limit, offset = offset)
             dataset <- as_tibble(DBI::dbGetQuery(private$conn, query))
             dataset[["_v"]] <- NULL
             flog.debug("Db: Data was imported from table: '%s' (Db.importDataset).", tableNameDb)
@@ -1050,12 +1053,15 @@ Db <- R6Class("Db",
       self$runQuery(dbSchema$getCreateTableQuery("_jobMeta"))
       return(invisible(self))
     },
-    fetchScenList = function(scode = SCODEMAP[["scen"]], gt = FALSE) {
+    fetchScenList = function(scode = SCODEMAP[["scen"]], gt = FALSE, limit = 1e7, offset = 0L, count = FALSE) {
       # returns list of scenarios that the current user has access to
       #
       # Args:
       #   scode:           Fetch only scenarios with either of these scenario codes
       #   gt:              boolean that specifies whether to fetch equal status codes or greater/equal
+      #   limit:           maximum items to return
+      #   offset:          query offset
+      #   count:           whether to only return count of number of rows
       #
       # Returns:
       #   tibble: tibble with all scenarios user has access to read as well
@@ -1069,7 +1075,9 @@ Db <- R6Class("Db",
             "_scode",
             scode, ">="
           ),
-          innerSepAND = FALSE
+          innerSepAND = FALSE,
+          limit = limit, offset = offset,
+          count = count
         ))
       }
       return(self$importDataset("_scenMeta",
@@ -1077,7 +1085,9 @@ Db <- R6Class("Db",
           "_scode",
           scode
         ),
-        innerSepAND = FALSE
+        innerSepAND = FALSE,
+        limit = limit, offset = offset,
+        count = count
       ))
     },
     getAllScenTags = function() {

@@ -1,6 +1,12 @@
+import math
+
+from typing import Annotated, TypeVar
+from urllib.parse import urlencode, urlparse, parse_qs
+
 import requests
-from fastapi import Depends, HTTPException, status, Path
+from fastapi import Depends, HTTPException, Query, Request, Response, status, Path
 from fastapi.security import HTTPBearer, HTTPBasic, HTTPBasicCredentials
+from pydantic import BaseModel
 
 from app.config import logger, settings
 from app.utils.app_utils import app_is_invisible
@@ -490,3 +496,98 @@ async def get_current_admin_user(
         is_admin=is_admin,
         groups=get_user_groups(auth_header, is_admin),
     )
+
+
+T = TypeVar("T", bound=BaseModel)
+
+
+class Paginator:
+    def __init__(
+        self,
+        request: Request,
+        response: Response,
+        page: Annotated[
+            int,
+            Query(
+                ge=1,
+                le=1e7,
+                description="Pagination: The page number to return (offset)",
+            ),
+        ] = 1,
+        per_page: Annotated[
+            int,
+            Query(
+                ge=1,
+                le=100,
+                description="Pagination: Number of items to return per page",
+            ),
+        ] = 20,
+    ):
+        self.request = request
+        self.response = response
+        self.page = page
+        self.per_page = per_page
+
+    def _construct_link(self, page: int, per_page: int) -> str:
+        """
+        Construct a paginated link with all request query parameters.
+        """
+        url = urlparse(str(self.request.url))
+        query_params = parse_qs(url.query)
+
+        query_params["page"] = [str(page)]
+        query_params["per_page"] = [str(per_page)]
+
+        query_string = urlencode(query_params, doseq=True)
+        return f"{url.path}?{query_string}"
+
+    def add_pagination_headers(self, total_count: int) -> None:
+        """
+        Add pagination headers to response object.
+
+        :param total_count: Total number of items available (optional).
+        :param slice_items: Whether list of items should be sliced (optional).
+        """
+        # Construct M3C `Link` Header
+        links = []
+
+        last_page = math.ceil(total_count / self.per_page)
+        prev_page = ""
+        next_page = ""
+
+        links.append(f'<{self._construct_link(1, self.per_page)}>; rel="first"')
+        links.append(f'<{self._construct_link(last_page, self.per_page)}>; rel="last"')
+
+        if self.page > 1 and self.page - 1 < last_page:
+            prev_page = self.page - 1
+            links.append(
+                f'<{self._construct_link(prev_page, self.per_page)}>; rel="prev"'
+            )
+
+        if self.page < last_page:
+            next_page = self.page + 1
+            links.append(
+                f'<{self._construct_link(next_page, self.per_page)}>; rel="next"'
+            )
+
+        self.response.headers["link"] = ", ".join(links)
+
+        self.response.headers["x-total"] = str(total_count)
+        self.response.headers["x-total-pages"] = str(last_page)
+        self.response.headers["x-page"] = str(self.page)
+        self.response.headers["x-per-page"] = str(self.per_page)
+        self.response.headers["x-prev-page"] = str(prev_page)
+        self.response.headers["x-next-page"] = str(next_page)
+
+    def paginate(self, items: list[T]) -> list[T]:
+        """
+        Paginate a list of items and add pagination headers.
+
+        :param items: List of Pydantic models (items).
+        :return: Sliced list of items.
+        """
+        skip = (self.page - 1) * self.per_page
+
+        self.add_pagination_headers(len(items))
+
+        return items[skip : skip + self.per_page]

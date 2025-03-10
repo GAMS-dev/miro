@@ -1255,8 +1255,21 @@ if (!is.null(errMsg)) {
   if (isShinyProxy && miroStoreDataOnly) {
     if (identical(Sys.getenv("MIRO_API_GET_SCEN_LIST"), "true")) {
       source("./tools/api/util.R")
+      page <- as.integer(Sys.getenv("MIRO_API_PAGE", "1"))
+      perPage <- as.integer(Sys.getenv("MIRO_API_PER_PAGE", "20"))
+      totalCount <- db$fetchScenList(
+        scode = SCODEMAP[["scen"]],
+        count = TRUE
+      )[["count"]]
+      if (is.null(totalCount)) {
+        totalCount <- 0L
+      }
       write("merr:::200:::", stderr())
-      write(scenMetaTibbleToJSON(db$fetchScenList(scode = SCODEMAP[["scen"]])), stderr())
+      write(scenMetaTibbleToJSON(db$fetchScenList(
+        scode = SCODEMAP[["scen"]],
+        limit = perPage,
+        offset = perPage * (page - 1L),
+      ), as.integer(totalCount)), stderr())
       if (interactive()) {
         stop()
       }

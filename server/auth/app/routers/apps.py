@@ -13,8 +13,13 @@ from fastapi import (
 )
 
 from app.config import logger
-from app.utils.app_utils import AppConfig, app_is_invisible, get_apps_raw
-from app.dependencies import User, get_current_admin_user, get_current_user
+from app.utils.app_utils import (
+    AppConfigOutput,
+    AppConfigInput,
+    app_is_invisible,
+    get_apps_internal,
+)
+from app.dependencies import User, get_current_admin_user, get_current_user, Paginator
 from app.utils.app_utils import add_or_update_app, delete_app_internal
 
 router = APIRouter(
@@ -47,8 +52,13 @@ metadata = {
 }
 
 
-@router.get("/", summary=metadata["summary"]["get"], response_model=list[AppConfig])
-async def get_apps(admin_user: Annotated[User, Depends(get_current_user)]):
+@router.get(
+    "/", summary=metadata["summary"]["get"], response_model=list[AppConfigOutput]
+)
+async def get_apps(
+    admin_user: Annotated[User, Depends(get_current_user)],
+    paginator: Annotated[Paginator, Depends()],
+):
     """
     Get all apps registered for one of your user groups and their metadata.
 
@@ -57,10 +67,13 @@ async def get_apps(admin_user: Annotated[User, Depends(get_current_user)]):
     - **id**: The unique identifier of the app
     - **display_name**: The name of the app as it appears in the library
     - **description**: The description of the app as it appears in the library
+    - **version**: The app's version info (if specified)
+    - **authors**: The app's authors (if specified)
+    - **environment**: The app's environment (if specified)
     - **access_groups**: The user groups that can see this app. If no user groups are assigned (empty array), anyone with access to the MIRO Server instance can see the app. Displays only subset of user groups of which the logged in user is a member.
     """
     logger.info("%s requested list of apps", admin_user.name)
-    return get_apps_raw(user_groups=admin_user.groups)
+    return paginator.paginate(get_apps_internal(admin_user))
 
 
 @router.put(
@@ -127,7 +140,7 @@ async def update_app(
             detail="An app with this ID does not exist",
         )
 
-    app_config = AppConfig(
+    app_config = AppConfigInput(
         id=app_id,
         display_name=display_name,
         description=description,
@@ -212,7 +225,7 @@ async def add_app(
             detail=f"Invalid user group(s): {','.join(invalid_user_groups)}",
         )
 
-    app_config = AppConfig(
+    app_config = AppConfigInput(
         id=app_id,
         display_name=display_name,
         description=description,

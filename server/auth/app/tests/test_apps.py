@@ -73,6 +73,10 @@ class TestApps:
     def test_post_app(self, cleanup):
         response = client.get("/api/apps/", auth=settings["VALID_AUTH_TUPLE"])
         assert response.json() == []
+        assert response.headers["x-total"] == "0"
+        assert response.headers["x-total-pages"] == "0"
+        assert response.headers["x-next-page"] == "0"
+        assert response.headers["x-prev-page"] == "0"
         validMiroAppPath = "tests/data/transport.miroapp"
         response = client.post(
             "/api/apps/",
@@ -229,6 +233,26 @@ class TestApps:
             },
         ]
         assert len(get_scen_metadata("transport_test")) == 1
+        assert response.headers["x-total"] == "2"
+        assert response.headers["x-per-page"] == "20"
+        assert response.headers["x-total-pages"] == "1"
+        response = client.get(
+            "/api/apps/?page=2&per_page=1", auth=settings["VALID_AUTH_TUPLE"]
+        )
+        assert response.json() == [
+            {
+                "id": "transport_test",
+                "display_name": "My custom transport",
+                "description": "This is my custom transport app",
+                "access_groups": ["mygroup"],
+            },
+        ]
+        assert response.headers["x-total"] == "2"
+        assert 'rel="prev"' in response.headers["link"]
+        assert 'rel="first"' in response.headers["link"]
+        assert 'rel="last"' in response.headers["link"]
+        assert 'rel="next"' not in response.headers["link"]
+        assert '/api/apps/?page=1&per_page=1"' in response.headers["link"]
 
         response = client.delete(
             "/api/apps/transport_test", auth=settings["VALID_AUTH_TUPLE"]

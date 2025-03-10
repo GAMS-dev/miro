@@ -2,13 +2,21 @@ import os
 import tempfile
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, HTTPException, Path, UploadFile, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    HTTPException,
+    Path,
+    UploadFile,
+    status,
+)
 from fastapi.param_functions import Form, Query
 from starlette.background import BackgroundTask
 from starlette.responses import FileResponse
 
 from app.config import logger, settings
-from app.dependencies import get_current_app_user
+from app.dependencies import get_current_app_user, Paginator
 from app.utils.models import ExportFileType, ScenarioConfig, ScenarioPermissions, User
 from app.utils.scen_utils import add_data, delete_data, download_data, get_scen_list
 
@@ -53,9 +61,10 @@ async def get_scenario_list(
         str, Path(description=metadata["description"]["app_id"], max_length=60)
     ],
     user: Annotated[User, Depends(get_current_app_user)],
+    paginator: Annotated[Paginator, Depends()],
 ):
     """
-    Get all scenarios for this app that are visible to you.
+    Get scenarios for this app that are visible to you.
 
     A scenario object contains the following fields:
 
@@ -69,7 +78,7 @@ async def get_scenario_list(
     """
     logger.info("%s requested list of scenarios of app: %s", user.name, app_id)
     try:
-        scen_list = await get_scen_list(user, app_id)
+        scen_list = await get_scen_list(user, app_id, paginator)
         logger.info(
             "%s Scenario list of app: %s successfully returned.", user.name, app_id
         )

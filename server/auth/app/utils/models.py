@@ -1,7 +1,15 @@
 import datetime
 from enum import Enum
+from typing import TypeVar, Generic
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+T = TypeVar("T", bound=BaseModel)
+
+
+class PaginatedResponse(BaseModel, Generic[T]):
+    items: list[T]
+    total_count: int
 
 
 class User(BaseModel):
@@ -44,11 +52,21 @@ class ConfigurationResponse(BaseModel):
     authentication_mode: str
 
 
-class AppConfig(BaseModel):
-    id: str | None
+class AppConfigInput(BaseModel):
+    app_id: str | None
     display_name: str | None
     description: str | None
     access_groups: list[str]
+
+
+class AppConfigOutput(BaseModel):
+    id: str
+    display_name: str | None = Field(validation_alias="alias")
+    description: str | None = Field(validation_alias="desc")
+    access_groups: list[str] = Field(validation_alias="groups")
+    environment: str | None = Field(validation_alias="appEnv")
+    version: str | None = None
+    authors: list[str] | None = None
 
 
 class ScenarioConfig(BaseModel):

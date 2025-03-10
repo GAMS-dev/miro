@@ -10,10 +10,32 @@ from starlette import status
 
 from app.config import logger, settings
 from app.utils.miro_proc import run_miro_proc
-from app.utils.models import AppConfig, User
+from app.utils.models import AppConfigInput, AppConfigOutput, User
 
 
-def get_apps_raw(user_groups: list[str] = None) -> list[AppConfig]:
+def get_apps_internal(user_info: User) -> list[AppConfigOutput]:
+    stderr = run_miro_proc(user_info, "listApps.R")
+    json_start_pos = stderr.find("merr:::200:::")
+    if json_start_pos == -1:
+        logger.warning("Invalid stderr received from R process: %s", stderr[:3000])
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal Server Error",
+        )
+    json_start_pos += len("merr:::200:::")
+    try:
+        return AppConfigOutput.model_validate_json(stderr[json_start_pos:])
+    except ValidationError as exc:
+        logger.warning(
+            "Invalid JSON received from R process: %s", stderr[json_start_pos:3000]
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal Server Error",
+        ) from exc
+
+
+def get_apps_raw(user_groups: list[str] = None) -> list[AppConfigOutput]:
     apps = []
     with open(settings.specs_yaml_path, "r", encoding="utf-8") as f_apps:
         apps = yaml.load(f_apps, Loader=yaml.CSafeLoader)["specs"]
@@ -52,7 +74,7 @@ def app_is_invisible(user_groups: list[str], app_id: str) -> bool:
 
 async def add_or_update_app(
     user_info: User,
-    app_config: AppConfig,
+    app_config: AppConfigInput,
     data: UploadFile,
     overwrite_data: bool = False,
     update=False,

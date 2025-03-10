@@ -63,6 +63,8 @@ if (identical(metadata[["mode"]], "download")) {
   stdin <- tmpFile
 } else if (identical(metadata[["mode"]], "getList")) {
   procEnv[["MIRO_API_GET_SCEN_LIST"]] <- "true"
+  procEnv[["MIRO_API_PAGE"]] <- metadata[["page"]]
+  procEnv[["MIRO_API_PER_PAGE"]] <- metadata[["perPage"]]
   forwardStderr <- TRUE
 } else {
   tmpFile <- tempfile()
