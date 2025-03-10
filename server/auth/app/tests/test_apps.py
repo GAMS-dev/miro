@@ -178,6 +178,7 @@ class TestApps:
                 "app_id": "transport_test",
                 "display_name": "My custom transport",
                 "description": "This is my custom transport app",
+                "environment": '{"ENV_NAME1":{"description":"bla","value":"test123"},"ENV_NAME2":{"value":"bumbum"}}',
                 "access_groups": ["mygroup"],
                 "overwrite_data": True,
             },
@@ -191,12 +192,17 @@ class TestApps:
                 "id": "transport",
                 "display_name": "transport",
                 "description": "",
+                "environment": {},
                 "access_groups": [],
             },
             {
                 "id": "transport_test",
                 "display_name": "My custom transport",
                 "description": "This is my custom transport app",
+                "environment": {
+                    "ENV_NAME1": {"description": "bla", "value": "test123"},
+                    "ENV_NAME2": {"description": "", "value": "bumbum"},
+                },
                 "access_groups": ["mygroup"],
             },
         ]
@@ -223,12 +229,17 @@ class TestApps:
                 "id": "transport",
                 "display_name": "transport",
                 "description": "",
+                "environment": {},
                 "access_groups": [],
             },
             {
                 "id": "transport_test",
                 "display_name": "My custom transport",
                 "description": "This is my custom transport app",
+                "environment": {
+                    "ENV_NAME1": {"description": "bla", "value": "test123"},
+                    "ENV_NAME2": {"description": "", "value": "bumbum"},
+                },
                 "access_groups": ["mygroup"],
             },
         ]
@@ -280,6 +291,7 @@ class TestApps:
                 "id": "transport",
                 "display_name": "transport",
                 "description": "",
+                "environment": {},
                 "access_groups": [],
             }
         ]
@@ -303,6 +315,7 @@ class TestApps:
                 "id": "transport",
                 "display_name": "transport",
                 "description": "",
+                "environment": {},
                 "access_groups": [],
             }
         ]
@@ -346,6 +359,7 @@ class TestApps:
                 "id": "transport",
                 "display_name": "transport",
                 "description": "",
+                "environment": {},
                 "access_groups": [],
             }
         ]
@@ -387,6 +401,7 @@ class TestApps:
                 "id": "transport",
                 "display_name": "My custom transport",
                 "description": "This is my custom transport app",
+                "environment": {},
                 "access_groups": ["mygroup"],
             }
         ]
@@ -415,6 +430,7 @@ class TestApps:
                 "id": "transport",
                 "display_name": "Test123",
                 "description": "This is my custom transport app",
+                "environment": {},
                 "access_groups": [],
             }
         ]
@@ -439,6 +455,7 @@ class TestApps:
                 "id": "transport",
                 "display_name": "Test123",
                 "description": "This is my custom transport app",
+                "environment": {},
                 "access_groups": [],
             }
         ]

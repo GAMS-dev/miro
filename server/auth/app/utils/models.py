@@ -1,8 +1,8 @@
 import datetime
 from enum import Enum
-from typing import TypeVar, Generic
+from typing import Annotated, TypeVar, Generic
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StringConstraints, TypeAdapter
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -52,11 +52,24 @@ class ConfigurationResponse(BaseModel):
     authentication_mode: str
 
 
+class AppEnvironmentItem(BaseModel):
+    value: Annotated[str, StringConstraints(max_length=1000)]
+    description: Annotated[str, StringConstraints(max_length=1000)] | None = None
+
+
+AppEnvironment = dict[
+    Annotated[str, StringConstraints(pattern="^[A-Z_][A-Z0-9_]*$")],
+    AppEnvironmentItem,
+]
+
+
 class AppConfigInput(BaseModel):
-    app_id: str | None
+    id: str | None
     display_name: str | None
     description: str | None
-    access_groups: list[str]
+    environment: AppEnvironment = {}
+    access_groups: list[str] = []
+    overwrite_data: bool = Field(False, description="test")
 
 
 class AppConfigOutput(BaseModel):
@@ -64,7 +77,7 @@ class AppConfigOutput(BaseModel):
     display_name: str | None = Field(validation_alias="alias")
     description: str | None = Field(validation_alias="desc")
     access_groups: list[str] = Field(validation_alias="groups")
-    environment: str | None = Field(validation_alias="appEnv")
+    environment: AppEnvironment = Field({}, validation_alias="appEnv")
     version: str | None = None
     authors: list[str] | None = None
 

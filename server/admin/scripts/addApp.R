@@ -9,6 +9,7 @@ updateApp <- identical(metadata[["update"]], TRUE)
 
 overwriteScen <- identical(metadata[["overwriteData"]], TRUE)
 appPath <- metadata[["appPath"]]
+appEnv <- metadata[["environment"]]
 
 dontcare <- lapply(c("global.R", list.files("./R", full.names = TRUE)), source)
 
@@ -86,6 +87,8 @@ tryCatch(
 
     appDirTmp <- getModelPath(paste0("~$", appId))
     dataDirTmp <- getDataPath(paste0("~$", appId))
+
+    newAppEnv <- miroAppValidator$validateAppEnv(appEnv)
 
     if (updateApp) {
       removeTempDirs(appId)
@@ -176,6 +179,16 @@ tryCatch(
       if (length(appUserGroups)) {
         newAppConfig[["accessGroups"]] <- as.list(appUserGroups)
       }
+      for (envName in names(newAppEnv)) {
+        if (envName %in% names(newAppConfig[["containerEnv"]])) {
+          flog.warn(
+            "Environment variable name: %s is restricted and cannot be used. It will be ignored",
+            envName
+          )
+          next
+        }
+        newAppConfig[["containerEnv"]][[envName]] <- newAppEnv[[envName]]
+      }
 
       extractAppData(
         appPath, appId, modelId
@@ -210,6 +223,10 @@ tryCatch(
         accessGroups = appConfig$accessGroups,
         extraData = list(appVersion = appVersion, appAuthors = appAuthors)
       ), allowUpdateRestrictedEnv = TRUE)
+      modelConfig$update(
+        modelConfig$getAppIndex(appId),
+        list(containerEnv = newAppEnv)
+      )
     }
   },
   error = function(e) {

@@ -1,6 +1,6 @@
 from typing import Annotated
-from fastapi.param_functions import Query
 
+from fastapi.param_functions import Query
 from fastapi import (
     APIRouter,
     Depends,
@@ -11,6 +11,7 @@ from fastapi import (
     UploadFile,
     status,
 )
+from pydantic import TypeAdapter, ValidationError
 
 from app.config import logger
 from app.utils.app_utils import (
@@ -19,6 +20,7 @@ from app.utils.app_utils import (
     app_is_invisible,
     get_apps_internal,
 )
+from app.utils.models import AppEnvironment
 from app.dependencies import User, get_current_admin_user, get_current_user, Paginator
 from app.utils.app_utils import add_or_update_app, delete_app_internal
 
@@ -45,6 +47,7 @@ metadata = {
         "app_id": "The ID of this app. If no ID is specified, the default ID (filename of the main `.gms` file in lower case) is used. This ID must be unique among all apps registered on this instance of MIRO Server.",
         "display_name": "The name of the app as it appears in the library.",
         "description": "The description of the app as it appears in the library.",
+        "environment": 'JSON string with app environment configuration. Example: `{"MIRO_IMPORTER_API_KEY":{"description":"Secret API key","value":"my_super_secret_key"}}`',
         "access_groups": "User groups that can access this app. If no groups are specified, it is visible to everyone who has access to your MIRO Server instance.",
         "overwrite_data": "Whether to overwrite existing scenario data (from a previous installation of an app with the same ID).",
         "app_data": "A valid MIROAPP file deployed for a multi-user environment.",
@@ -94,12 +97,16 @@ async def update_app(
         str, Path(description="The ID of the app to update.", max_length=60)
     ],
     display_name: Annotated[
-        str | None,
+        str,
         Form(description=metadata["description"]["display_name"], max_length=40),
     ] = None,
     description: Annotated[
-        str | None,
+        str,
         Form(description=metadata["description"]["description"], max_length=200),
+    ] = None,
+    environment: Annotated[
+        str,
+        Form(description=metadata["description"]["environment"]),
     ] = None,
     access_groups: Annotated[
         list[str], Form(description=metadata["description"]["access_groups"])
@@ -140,11 +147,25 @@ async def update_app(
             detail="An app with this ID does not exist",
         )
 
+    try:
+        app_environment = (
+            TypeAdapter(AppEnvironment).validate_json(environment)
+            if environment is not None
+            else {}
+        )
+    except ValidationError as exc:
+        logger.warning("Invalid AppEnvironment: %s", str(exc))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=exc.errors(),
+        ) from exc
+
     app_config = AppConfigInput(
         id=app_id,
         display_name=display_name,
         description=description,
         access_groups=nonempty_access_groups,
+        environment=app_environment,
     )
     try:
         await add_or_update_app(
@@ -186,15 +207,19 @@ async def add_app(
     ],
     admin_user: Annotated[User, Depends(get_current_admin_user)],
     app_id: Annotated[
-        str | None, Form(description=metadata["description"]["app_id"], max_length=60)
+        str, Form(description=metadata["description"]["app_id"], max_length=60)
     ] = None,
     display_name: Annotated[
-        str | None,
+        str,
         Form(description=metadata["description"]["display_name"], max_length=40),
     ] = None,
     description: Annotated[
-        str | None,
+        str,
         Form(description=metadata["description"]["description"], max_length=200),
+    ] = None,
+    environment: Annotated[
+        str,
+        Form(description=metadata["description"]["environment"]),
     ] = None,
     access_groups: Annotated[
         list[str], Form(description=metadata["description"]["access_groups"])
@@ -225,11 +250,25 @@ async def add_app(
             detail=f"Invalid user group(s): {','.join(invalid_user_groups)}",
         )
 
+    try:
+        app_environment = (
+            TypeAdapter(AppEnvironment).validate_json(environment)
+            if environment is not None
+            else {}
+        )
+    except ValidationError as exc:
+        logger.warning("Invalid AppEnvironment: %s", str(exc))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=exc.errors(),
+        ) from exc
+
     app_config = AppConfigInput(
         id=app_id,
         display_name=display_name,
         description=description,
         access_groups=nonempty_access_groups,
+        environment=app_environment,
     )
     try:
         await add_or_update_app(

@@ -100,6 +100,7 @@ async def add_or_update_app(
                 "description": app_config.description,
                 "accessGroups": app_config.access_groups,
                 "appPath": out_file.name,
+                "environment": app_config.environment,
                 "overwriteData": overwrite_data,
                 "update": update,
             }
