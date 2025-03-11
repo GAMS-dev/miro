@@ -174,6 +174,43 @@ class TestApps:
                 "authors": [],
             }
         ]
+        # test some bad environment configurations
+        response = client.post(
+            "/api/apps/",
+            files={"app_data": open(validMiroAppPath, "rb")},
+            data={
+                "app_id": "transport_test",
+                "display_name": "My custom transport",
+                "description": "This is my custom transport app",
+                "environment": '{"ENV_NAMe1":{"description":"bla","value":"test123"},"ENV_NAME2":{"value":"bumbum"}}',
+                "access_groups": ["mygroup"],
+                "overwrite_data": True,
+            },
+            auth=settings["VALID_AUTH_TUPLE"],
+        )
+        print(response.json())
+        assert response.status_code == 422
+        assert "ENV_NAMe1" == response.json()["detail"][0]["loc"][0]
+        assert "string_pattern_mismatch" == response.json()["detail"][0]["type"]
+        response = client.post(
+            "/api/apps/",
+            files={"app_data": open(validMiroAppPath, "rb")},
+            data={
+                "app_id": "transport_test",
+                "display_name": "My custom transport",
+                "description": "This is my custom transport app",
+                "environment": '{"ENV_NAME1":{"description":"bla","value":"test123"},"ENV_NAME2":{}}',
+                "access_groups": ["mygroup"],
+                "overwrite_data": True,
+            },
+            auth=settings["VALID_AUTH_TUPLE"],
+        )
+        print(response.json())
+        assert response.status_code == 422
+        assert "ENV_NAME2" == response.json()["detail"][0]["loc"][0]
+        assert "value" == response.json()["detail"][0]["loc"][1]
+        assert "missing" == response.json()["detail"][0]["type"]
+
         response = client.post(
             "/api/apps/",
             files={"app_data": open(validMiroAppPath, "rb")},
@@ -442,6 +479,7 @@ class TestApps:
             data={
                 "display_name": "Test123",
                 "description": "This is my custom transport app",
+                "environment": '{"LALA": {"description": "huhu", "value": "haihai"}}',
                 "overwrite_data": True,
             },
             auth=settings["VALID_AUTH_TUPLE"],
@@ -456,7 +494,7 @@ class TestApps:
                 "display_name": "Test123",
                 "description": "This is my custom transport app",
                 "access_groups": [],
-                "environment": {},
+                "environment": {"LALA": {"description": "huhu", "value": "haihai"}},
                 "version": None,
                 "authors": [],
             }
@@ -483,7 +521,7 @@ class TestApps:
                 "display_name": "Test123",
                 "description": "This is my custom transport app",
                 "access_groups": [],
-                "environment": {},
+                "environment": {"LALA": {"value": "haihai", "description": "huhu"}},
                 "version": None,
                 "authors": [],
             }
