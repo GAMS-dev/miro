@@ -18,6 +18,7 @@ services:
     build:
       context: ./auth/
       dockerfile: Dockerfile.test
+    command: pytest -vv tests/
     ports:
       - 8081:1234
     environment:
@@ -37,7 +38,7 @@ services:
       - ./admin:/home/miro/admin
       - ./data:/home/miro/admin/data
       - ./models:/home/miro/admin/models
-      - ./auth/app:/app
+      - ./auth/app:/app/app
     networks:
       - gamsmiro-network
   dockerproxy:

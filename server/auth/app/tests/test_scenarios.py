@@ -184,7 +184,7 @@ class TestScenarios:
         scen_metadata = response.json()
         print(scen_metadata)
         assert response.status_code == 200
-        assert response.headers["x-total-count"] == len(scen_metadata)
+        assert response.headers["x-total"] == str(len(scen_metadata))
         scen_found = False
         for scenario in scen_metadata:
             if (

@@ -116,6 +116,18 @@ class TestApps:
         assert response.status_code == 400
         assert "not deployed for multi-user environment" in response.json()["detail"]
 
+        # not signed
+        if "KUBERNETES_SERVICE_HOST" in os.environ:
+            response = client.post(
+                "/api/apps/",
+                files={"app_data": open("tests/data/bad3.miroapp", "rb")},
+                data={"overwrite_data": True},
+                auth=settings["VALID_AUTH_TUPLE"],
+            )
+            print(response.json())
+            assert response.status_code == 400
+            assert "not deployed for multi-user environment" in response.json()["detail"]
+
         response = client.post(
             "/api/apps/",
             files={"app_data": open(validMiroAppPath, "rb")},
@@ -166,12 +178,12 @@ class TestApps:
         assert response.json() == [
             {
                 "id": "transport",
-                "display_name": "transport",
-                "description": "",
+                "display_name": "Transport test app",
+                "description": "Transport app for UI tests",
                 "access_groups": [],
                 "environment": {},
-                "version": None,
-                "authors": [],
+                "version": '1.0.0',
+                "authors": ['GAMS Development Corp.'],
             }
         ]
         # test some bad environment configurations
@@ -230,12 +242,12 @@ class TestApps:
         assert response.json() == [
             {
                 "id": "transport",
-                "display_name": "transport",
-                "description": "",
+                "display_name": "Transport test app",
+                "description": "Transport app for UI tests",
                 "access_groups": [],
                 "environment": {},
-                "version": None,
-                "authors": [],
+                "version": '1.0.0',
+                "authors": ['GAMS Development Corp.'],
             },
             {
                 "id": "transport_test",
@@ -246,8 +258,8 @@ class TestApps:
                     "ENV_NAME1": {"value": "test123", "description": "bla"},
                     "ENV_NAME2": {"value": "bumbum", "description": ""},
                 },
-                "version": None,
-                "authors": [],
+                "version": '1.0.0',
+                "authors": ['GAMS Development Corp.'],
             },
         ]
         assert len(get_scen_metadata("transport_test")) == 1
@@ -271,12 +283,12 @@ class TestApps:
         assert response.json() == [
             {
                 "id": "transport",
-                "display_name": "transport",
-                "description": "",
+                "display_name": "Transport test app",
+                "description": "Transport app for UI tests",
                 "access_groups": [],
                 "environment": {},
-                "version": None,
-                "authors": [],
+                "version": '1.0.0',
+                "authors": ['GAMS Development Corp.'],
             },
             {
                 "id": "transport_test",
@@ -287,8 +299,8 @@ class TestApps:
                     "ENV_NAME1": {"value": "test123", "description": "bla"},
                     "ENV_NAME2": {"value": "bumbum", "description": ""},
                 },
-                "version": None,
-                "authors": [],
+                "version": '1.0.0',
+                "authors": ['GAMS Development Corp.'],
             },
         ]
         assert len(get_scen_metadata("transport_test")) == 1
@@ -308,8 +320,8 @@ class TestApps:
                     "ENV_NAME1": {"value": "test123", "description": "bla"},
                     "ENV_NAME2": {"value": "bumbum", "description": ""},
                 },
-                "version": None,
-                "authors": [],
+                "version": '1.0.0',
+                "authors": ['GAMS Development Corp.'],
             },
         ]
         assert response.headers["x-total"] == "2"
@@ -343,12 +355,12 @@ class TestApps:
         assert response.json() == [
             {
                 "id": "transport",
-                "display_name": "transport",
-                "description": "",
+                "display_name": "Transport test app",
+                "description": "Transport app for UI tests",
                 "access_groups": [],
                 "environment": {},
-                "version": None,
-                "authors": [],
+                "version": '1.0.0',
+                "authors": ['GAMS Development Corp.'],
             }
         ]
         assert len(get_scen_metadata("transport")) == 1
@@ -369,12 +381,12 @@ class TestApps:
         assert response.json() == [
             {
                 "id": "transport",
-                "display_name": "transport",
-                "description": "",
+                "display_name": "Transport test app",
+                "description": "Transport app for UI tests",
                 "access_groups": [],
                 "environment": {},
-                "version": None,
-                "authors": [],
+                "version": '1.0.0',
+                "authors": ['GAMS Development Corp.'],
             }
         ]
         response = client.delete(
@@ -415,12 +427,12 @@ class TestApps:
         assert response.json() == [
             {
                 "id": "transport",
-                "display_name": "transport",
-                "description": "",
+                "display_name": "Transport test app",
+                "description": "Transport app for UI tests",
                 "access_groups": [],
                 "environment": {},
-                "version": None,
-                "authors": [],
+                "version": '1.0.0',
+                "authors": ['GAMS Development Corp.'],
             }
         ]
         scen_data = get_scen_metadata("transport")
@@ -463,8 +475,8 @@ class TestApps:
                 "description": "This is my custom transport app",
                 "access_groups": ["mygroup"],
                 "environment": {},
-                "version": None,
-                "authors": [],
+                "version": '1.0.0',
+                "authors": ['GAMS Development Corp.'],
             }
         ]
         scen_data = get_scen_metadata("transport")
@@ -495,8 +507,8 @@ class TestApps:
                 "description": "This is my custom transport app",
                 "access_groups": [],
                 "environment": {"LALA": {"description": "huhu", "value": "haihai"}},
-                "version": None,
-                "authors": [],
+                "version": '1.0.0',
+                "authors": ['GAMS Development Corp.'],
             }
         ]
 
@@ -522,7 +534,7 @@ class TestApps:
                 "description": "This is my custom transport app",
                 "access_groups": [],
                 "environment": {"LALA": {"value": "haihai", "description": "huhu"}},
-                "version": None,
-                "authors": [],
+                "version": '1.0.0',
+                "authors": ['GAMS Development Corp.'],
             }
         ]

@@ -55,21 +55,12 @@ tryCatch(
   }
 )
 
-tryRemoveAppSchema <- function(appId) {
-  tryCatch(
-    db$removeAppSchema(appId),
-    error = function(e) {
-      print(sprintf("Problems removing app schema. Error message: %s", conditionMessage(e)))
-    }
-  )
-}
 appDir <- NULL
 cleanup <- function() {
   if (!updateApp) {
     if (!is.null(appDir)) {
       unlink(appDir, recursive = TRUE, force = TRUE)
     }
-    tryRemoveAppSchema(appId)
   }
 }
 tryCatch(

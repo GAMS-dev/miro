@@ -11,6 +11,14 @@ class PaginatedResponse(BaseModel, Generic[T]):
     items: list[T]
     total_count: int
 
+    @field_validator("total_count", mode="before")
+    @classmethod
+    def _convert_list_to_int(cls, value: int | list[int]) -> int:
+        # since in R everything is a vector, toJSON method will convert int to array
+        if isinstance(value, list):
+            return value[0]
+        return value
+
 
 class User(BaseModel):
     name: str
@@ -82,14 +90,14 @@ class AppConfigOutput(BaseModel):
 
     @field_validator("environment", mode="before")
     @classmethod
-    def convert_empty_list(cls, value: AppEnvironment | list) -> AppEnvironment:
+    def _convert_empty_list(cls, value: AppEnvironment | list) -> AppEnvironment:
         if value == []:
             return {}
         return value
 
     @field_validator("access_groups", mode="before")
     @classmethod
-    def convert_to_lowercase(cls, value: list[str]) -> list[str]:
+    def _convert_to_lowercase(cls, value: list[str]) -> list[str]:
         return [x.lower() for x in value]
 
 

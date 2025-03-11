@@ -141,7 +141,7 @@ async def get_scen_list(
             "mode": "getList",
             "appId": app_id,
             "page": paginator.page,
-            "per_page": paginator.per_page,
+            "perPage": paginator.per_page,
         }
     ).encode()
     stderr = run_miro_proc(user_info, "manageScenarios.R", proc_input=proc_input)
@@ -159,7 +159,9 @@ async def get_scen_list(
         )
     except ValidationError as exc:
         logger.warning(
-            "Invalid JSON received from R process: %s", stderr[json_start_pos:3000]
+            "Invalid JSON received from R process: %s. Exception: %s",
+            stderr[json_start_pos:3000],
+            exc.errors(),
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
