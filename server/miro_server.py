@@ -45,14 +45,14 @@ DOCKERHUB_IMAGE_CONFIG = {
 class MiroServer(object):
     def __init__(self):
         parser = argparse.ArgumentParser(prog='miro_server.py',
-                                         usage='miro_server [-h] {build,up,down,scan,download,push,update_readmes,release,dump_schema} [<args>]',
+                                         usage='miro_server [-h] {build,up,down,scan,download,push,update_readmes,release,dump_schema,fix_coverage_paths} [<args>]',
                                          description='GAMS MIRO Server build script')
 
         # Add the arguments
         parser.add_argument('command',
                             type=str,
                             help='Subcommand to run',
-                            choices=['build', 'up', 'down', 'scan', 'download', 'push', 'update_readmes', 'release', 'dump_schema'])
+                            choices=['build', 'up', 'down', 'scan', 'download', 'push', 'update_readmes', 'release', 'dump_schema', 'fix_coverage_paths'])
 
         args = parser.parse_args(sys.argv[1:2])
 
@@ -388,6 +388,25 @@ class MiroServer(object):
             parsed = json.loads(dump_result.stdout.decode())
             json.dump(parsed, oai_schema, indent=4)
             oai_schema.write('\n')
+
+    def fix_coverage_paths(self):
+        parser = argparse.ArgumentParser(
+            description='Make absolute paths in cobertura XML code coverage report relative')
+
+        parser.add_argument('path', help='Filepath to coverage report file')
+        parser.add_argument('-b', '--base-dir', help='Base directory of scanned component in repository',
+                            default='')
+
+        args = parser.parse_args(sys.argv[2:])
+        with open(args.path, 'r', encoding='utf-8') as f:
+            content = f.readlines()
+
+        for idx, line in enumerate(content):
+            if 'filename="' in line:
+                content[idx] = content[idx].replace('filename="', f'filename="{args.base_dir}')
+
+        with open(args.path, 'w', encoding='utf-8') as f:
+            f.writelines(content)
 
 
 if __name__ == '__main__':

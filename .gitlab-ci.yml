@@ -845,6 +845,8 @@ test_job_miro_server:
     DOCKER_CERT_PATH: '/certs/client'
     DOCKER_HOST: tcp://docker:2376
     FF_NETWORK_PER_BUILD: 'true'
+    PYTEST_JUNIT: 'report.xml'
+    PYTEST_COV: 'coverage.xml'
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
   script:
@@ -856,6 +858,12 @@ test_job_miro_server:
     when: always
     paths:
       - miro_server_all_logs.txt
+    reports:
+      junit: $PYTEST_JUNIT
+      coverage_report:
+        coverage_format: cobertura
+        path: $PYTEST_COV
+    expire_in: 1 week
   rules:
     - if: $CI_COMMIT_TAG
       when: never

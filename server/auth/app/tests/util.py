@@ -9,7 +9,7 @@ settings = {
     "ENGINE_USER": os.environ["ENGINE_USER"],
     "ENGINE_PASSWORD": os.environ["ENGINE_PASSWORD"],
     "VALID_AUTH_TUPLE": (os.environ["ENGINE_USER"], os.environ["ENGINE_PASSWORD"]),
-    "SPECS_FILE_PATH": "/home/miro/admin/data/specs.yaml",
+    "SPECS_FILE_PATH": os.getenv("SPECS_YAML_PATH", "/home/miro/admin/data/specs.yaml"),
 }
 
 
