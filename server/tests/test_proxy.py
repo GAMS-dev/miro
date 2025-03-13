@@ -7,6 +7,7 @@ from selenium.common.exceptions import (
     NoSuchElementException,
     ElementClickInterceptedException,
     StaleElementReferenceException,
+    TimeoutException
 )
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -419,6 +420,7 @@ class UITests(unittest.TestCase):
             except (
                 StaleElementReferenceException,
                 ElementClickInterceptedException,
+                TimeoutException
             ) as exc:
                 retry_count += 1
                 time.sleep(1)
@@ -761,14 +763,16 @@ class UITests(unittest.TestCase):
         )
         wait.until(
             EC.text_to_be_present_in_element(
-                (By.ID, "staticAppTitle_1"), "Transport app"
+                (By.ID, "staticAppTitle_1"), "Transport test app"
             )
         )
         self.assertTrue(
             len(
                 [
                     x
-                    for x in self.driver.find_elements(By.CLASS_NAME, "app-version-field")
+                    for x in self.driver.find_elements(
+                        By.CLASS_NAME, "app-version-field"
+                    )
                     if x.text.strip() == "1.0.0"
                 ]
             )
@@ -779,7 +783,9 @@ class UITests(unittest.TestCase):
             len(
                 [
                     x
-                    for x in self.driver.find_elements(By.CLASS_NAME, "app-authors-field")
+                    for x in self.driver.find_elements(
+                        By.CLASS_NAME, "app-authors-field"
+                    )
                     if x.text.strip() == "by GAMS Development Corp."
                 ]
             )

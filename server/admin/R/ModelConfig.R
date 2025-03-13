@@ -120,7 +120,7 @@ ModelConfig <- R6::R6Class("ModelConfig",
           private$currentModelConfigs[[appIndex]][["containerEnv"]][[envKey]] <- NULL
         }
       }
-      for (configId in c("displayName", "description", "logoURL", "accessGroups", "extraData")) {
+      for (configId in c("displayName", "description", "logoURL", "accessGroups", "extraData", "faviconPath")) {
         if (configId %in% names(newConfig)) {
           if (identical(configId, "displayName")) {
             if (nchar(trimws(newConfig[["displayName"]])) < 1) {

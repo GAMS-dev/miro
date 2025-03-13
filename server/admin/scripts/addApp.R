@@ -186,6 +186,7 @@ tryCatch(
         appPath, appId, modelId
       )
       addAppLogo(appId, logoPath, logoURL)
+      newAppConfig[["faviconPath"]] <- addAppFavicon(appId, modelId)
     }
 
     procEnv <- as.list(Sys.getenv())
@@ -213,6 +214,7 @@ tryCatch(
         displayName = appConfig$displayName,
         description = appConfig$description,
         accessGroups = appConfig$accessGroups,
+        faviconPath = addAppFavicon(appId, modelId),
         extraData = list(appVersion = appVersion, appAuthors = appAuthors)
       ), allowUpdateRestrictedEnv = TRUE)
       modelConfig$update(

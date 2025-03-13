@@ -1166,8 +1166,14 @@ if (buildUI) {
         tags$link(href = paste0(staticDir, "ipadpro1_splash.png"), media = "(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)", rel = "apple-touch-startup-image"),
         tags$link(href = paste0(staticDir, "ipadpro3_splash.png"), media = "(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)", rel = "apple-touch-startup-image"),
         tags$link(href = paste0(staticDir, "ipadpro2_splash.png"), media = "(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)", rel = "apple-touch-startup-image"),
-        tags$link(rel = "icon", type = "image/png", sizes = "32x32", href = "favicon-32x32.png"),
-        tags$link(rel = "icon", type = "image/png", sizes = "16x16", href = "favicon-16x16.png"),
+        if (staticDirExists && file.exists(file.path(currentModelDir, paste0("static_", modelName), "favicon.ico"))) {
+          tags$link(rel = "icon", type = "image/png", href = paste0("static_", modelName, "/favicon.ico"))
+        } else {
+          tagList(
+            tags$link(rel = "icon", type = "image/png", sizes = "32x32", href = "favicon-32x32.png"),
+            tags$link(rel = "icon", type = "image/png", sizes = "16x16", href = "favicon-16x16.png")
+          )
+        },
         tags$meta(name = "msapplication-TileColor", content = "#ff9900"),
         # styles that depend on data from config JSON file
         # Logo ratio should be 4,6 (width/height)

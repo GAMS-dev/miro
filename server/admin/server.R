@@ -212,10 +212,12 @@ server <- function(input, output, session) {
           input$miroAppFile$datapath, appId, modelId, miroProc
         )
         addAppLogo(appId, logoPath, logoURL)
+        faviconPath <- addAppFavicon(appId, modelId)
         modelName <- miroAppValidator$getModelName()
         newAppConfig <- list(
           id = appId, displayName = newAppTitle, description = newAppDesc,
           logoURL = logoURL,
+          faviconPath = faviconPath,
           containerEnv = list(
             MIRO_VERSION_STRING = miroAppValidator$getMIROVersion(),
             MIRO_MODE = "base",
@@ -608,6 +610,7 @@ server <- function(input, output, session) {
                 moveFilesFromTemp(appId)
                 modelConfig$update(modelConfig$getAppIndex(appId), list(
                   containerEnv = appConfig$containerEnv,
+                  faviconPath = addAppFavicon(appId, modelId),
                   extraData = list(appVersion = appVersion, appAuthors = appAuthors)
                 ), allowUpdateRestrictedEnv = TRUE)
                 session$sendCustomMessage(

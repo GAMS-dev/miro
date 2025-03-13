@@ -18,7 +18,9 @@ data:
       title: {{ .Values.proxy.config.title | quote }}
       theme: {{ .Values.proxy.config.colorTheme | quote }}
       template-path: ./templates/2col
-      favicon-path: ./favicon.ico
+      logo-path: ./templates/2col/assets/imgk8s/logo.png
+      favicon-path: ./templates/2col/assets/imgk8s/favicon.ico
+      specs-path: ./mnt/specs.yaml
       model-dir: /home/miroproxy/mnt/models
       data-dir: /home/miroproxy/mnt/data
       miro-lang: {{ .Values.proxy.config.language }}

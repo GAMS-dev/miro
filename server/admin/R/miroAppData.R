@@ -189,7 +189,6 @@ extractAppData <- function(miroAppPath, appId, modelId, miroProc) {
 }
 
 addAppLogo <- function(appId, logoFile = NULL, newLogoName = NULL) {
-  logoDir <- LOGO_DIR
   modelPath <- getModelPath(appId)
   if (length(logoFile)) {
     if (startsWith(logoFile, "/")) {
@@ -211,14 +210,34 @@ addAppLogo <- function(appId, logoFile = NULL, newLogoName = NULL) {
     }
     file.copy2(
       logoPath,
-      file.path(logoDir, newLogoName)
+      file.path(LOGO_DIR, newLogoName)
     )
-  } else if (!file.exists(file.path(logoDir, "default_logo.png"))) {
+  } else if (!file.exists(file.path(LOGO_DIR, "default_logo.png"))) {
     file.copy2(
       file.path("www", "default_logo.png"),
-      file.path(logoDir, "default_logo.png")
+      file.path(LOGO_DIR, "default_logo.png")
     )
   }
+}
+
+addAppFavicon <- function(appId, modelId) {
+  appFaviconPath <- file.path(getModelPath(appId), paste0("static_", modelId), "favicon.ico")
+  if (!file.exists(appFaviconPath)) {
+    return(NULL)
+  }
+  if (file.size(appFaviconPath) > MAX_FAVICON_SIZE) {
+    stop(sprintf(
+      "Favicon exceeds maximum size of %s bytes.",
+      as.character(MAX_FAVICON_SIZE)
+    ), call. = FALSE)
+  }
+  faviconFileName <- getLogoName(appId, appFaviconPath)
+  newFaviconPath <- file.path(LOGO_DIR, faviconFileName)
+  file.copy2(
+    appFaviconPath,
+    newFaviconPath
+  )
+  return(file.path(LOGO_DIR_SP_CONTAINER, faviconFileName))
 }
 
 removeAppLogo <- function(appId, logoFilename) {
