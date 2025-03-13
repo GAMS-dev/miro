@@ -274,14 +274,19 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
         paste(labelsEngineTmp[invalidGroupLabels], collapse = ", ")
       )
     }
+    groupMembers <- unique(unlist(lapply(groupLabelsEngine, function(group) {
+      return(vapply(group$members, "[[",
+        character(1L), "username",
+        USE.NAMES = FALSE
+      ))
+    }), use.names = FALSE))
+    if (is.null(groupMembers)) {
+      # can't set I() on NULL
+      groupMembers <- character()
+    }
     private$engineUserGroups <- list(
       groups = I(unique(c("users", "admins", labelsEngineTmp[!invalidGroupLabels]))),
-      users = I(unique(unlist(lapply(groupLabelsEngine, function(group) {
-        return(vapply(group$members, "[[",
-          character(1L), "username",
-          USE.NAMES = FALSE
-        ))
-      }), use.names = FALSE)))
+      users = I(groupMembers)
     )
     return(invisible(self))
   },
