@@ -18,7 +18,7 @@ data:
       title: {{ .Values.proxy.config.title | quote }}
       theme: {{ .Values.proxy.config.colorTheme | quote }}
       template-path: ./templates/2col
-      logo-path: ./templates/2col/assets/imgk8s/logo.png
+      logo-path: /assets/imgk8s/logo.png
       favicon-path: ./templates/2col/assets/imgk8s/favicon.ico
       specs-path: ./mnt/specs.yaml
       model-dir: /home/miroproxy/mnt/models
