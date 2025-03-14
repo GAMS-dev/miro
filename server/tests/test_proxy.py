@@ -667,6 +667,12 @@ class UITests(unittest.TestCase):
     def test_app_environment(self):
         """Test that environment dialog opens with pre-defined environment variables in app_info.json"""
         self.login()
+        self.assertEqual(
+            get_image_hash(self.driver, '//link[contains(@rel, "icon")]',
+                           attribute="href", xpath=True),
+            "05b572547194e2dd1700ded2fb5afa89", # pragma: allowlist secret
+            "Favicon not correct",
+        )
         # open admin panel
         self.driver.find_element(By.ID, "navAdminPanel").click()
 
@@ -792,4 +798,27 @@ class UITests(unittest.TestCase):
             == 1,
             "app authors not found.",
         )
-        time.sleep(10)
+        self.driver.switch_to.default_content()
+        wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "navbar-brand"))).click()
+        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "launch-app")))
+        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app")
+        visible_buttons = [btn for btn in all_buttons if btn.is_displayed()]
+        visible_buttons[0].click()
+        wait.until(EC.visibility_of_element_located((By.ID, "loading")))
+        self.assertEqual(
+            get_image_hash(self.driver, '//link[contains(@rel, "icon") and not(contains(@rel, "apple-touch"))]',
+                           attribute="href", xpath=True,
+                           cookies={cookie['name']: cookie['value'] for cookie in self.driver.get_cookies()}),
+            "19c0456e4ab146f8e47b5a409cc2541c", # pragma: allowlist secret
+            "Favicon not correct for app",
+        )
+        self.driver.get(f"{self.ui_url}/app_direct/test_app1")
+        wait.until(EC.visibility_of_element_located((By.ID, "loading-screen")))
+        self.assertEqual(
+            get_image_hash(self.driver, '//link[contains(@rel, "icon") and not(contains(@rel, "apple-touch"))]',
+                           attribute="href", xpath=True,
+                           cookies={cookie['name']: cookie['value'] for cookie in self.driver.get_cookies()}),
+            "19c0456e4ab146f8e47b5a409cc2541c", # pragma: allowlist secret
+            "Favicon not correct for app_direct",
+        )
+        self.driver.get(self.ui_url)

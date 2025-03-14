@@ -5,16 +5,23 @@ import requests
 from selenium.webdriver.common.by import By
 
 
-def get_image_hash(driver, css_selector):
-    image_element = driver.find_element(By.CSS_SELECTOR, css_selector)
+def get_image_hash(driver, css_selector, attribute="src", xpath=False, cookies=None):
+    image_element = driver.find_element(By.XPATH if xpath else By.CSS_SELECTOR, css_selector)
 
-    image_url = image_element.get_attribute("src")
+    image_url = image_element.get_attribute(attribute)
+    print(image_url)
     if not image_url:
         raise ValueError("Image URL not found.")
 
-    response = requests.get(image_url)
+    session = requests.Session()
+    if cookies:
+        session.cookies.update(cookies)
+    response = session.get(image_url, timeout=20)
     response.raise_for_status()
     image_content = response.content
+
+    with open("/Users/fproske/Downloads/test.ico", "wb") as f:
+        f.write(image_content)
 
     return hashlib.md5(image_content).hexdigest()
 
