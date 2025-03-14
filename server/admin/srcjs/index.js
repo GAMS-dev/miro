@@ -1183,7 +1183,7 @@ $(() => {
         false,
         [],
         data.appId,
-        Object.keys(data.eppEnv).length > 0,
+        Object.keys(data.eppEnv ?? {}).length > 0,
       );
     }
     $('#newAppFiles').hide();
