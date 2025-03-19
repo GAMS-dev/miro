@@ -1,8 +1,5 @@
 getModelPath <- function(appId) {
   if (IN_KUBERNETES) {
-    if (startsWith(appId, "~$")) {
-      return(file.path(tempdir(check = TRUE), appId, "model"))
-    }
     return(file.path(SHARED_FS_MNT_DIR, "data", appId, "model"))
   }
   return(file.path(MIRO_MODEL_DIR, appId))
@@ -10,9 +7,6 @@ getModelPath <- function(appId) {
 
 getDataPath <- function(appId) {
   if (IN_KUBERNETES) {
-    if (startsWith(appId, "~$")) {
-      return(file.path(tempdir(check = TRUE), appId, "data"))
-    }
     return(file.path(SHARED_FS_MNT_DIR, "data", appId, "data"))
   }
   return(file.path(MIRO_DATA_DIR, paste0("data_", appId)))
@@ -240,7 +234,7 @@ addAppFavicon <- function(appId, modelId) {
   return(file.path(LOGO_DIR_SP_CONTAINER, faviconFileName))
 }
 
-removeAppLogo <- function(appId, logoFilename) {
+removeAppLogo <- function(appId, logoFilename, faviconFilename = NULL) {
   if (!identical(logoFilename, "default_logo.png")) {
     logoPath <- file.path(LOGO_DIR, logoFilename)
     if (file.exists(logoPath)) {
@@ -252,15 +246,23 @@ removeAppLogo <- function(appId, logoFilename) {
       }
     }
   }
+  if (!is.null(faviconFilename) && file.exists(faviconFilename)) {
+    if (unlink(faviconFilename) == 1) {
+      flog.warn(
+        "Removing favicon: %s for app: %s failed.",
+        faviconFilename, appId
+      )
+    }
+  }
 }
 
-removeAppData <- function(appId, logoFilename) {
+removeAppData <- function(appId, logoFilename, faviconFilename = NULL) {
   if (IN_KUBERNETES) {
     dirsToRemove <- getModelPath(appId)
   } else {
     dirsToRemove <- c(getModelPath(appId), getDataPath(appId))
   }
-  removeAppLogo(appId, logoFilename)
+  removeAppLogo(appId, logoFilename, faviconFilename)
   for (dirToRemove in dirsToRemove) {
     if (dir.exists(dirToRemove)) {
       if (unlink(dirToRemove, recursive = TRUE, force = TRUE) == 1) {

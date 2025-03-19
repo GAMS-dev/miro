@@ -304,7 +304,7 @@ server <- function(input, output, session) {
                 flog.info(errMsg)
                 tryCatch(
                   {
-                    removeAppData(appId, logoURL)
+                    removeAppData(appId, logoURL, faviconPath)
                     flog.info("Files for MIRO app: %s removed successfully (cleaning up after error during app registration).", appId)
                   },
                   error = function(ei) {
@@ -356,7 +356,10 @@ server <- function(input, output, session) {
           flog.info("Data for MIRO app: %s removed successfully.", appId)
         }
 
-        removeAppData(appId, modelConfig$getAppLogo(appIndex))
+        removeAppData(
+          appId, modelConfig$getAppLogo(appIndex),
+          modelConfig$getAppFavicon(appIndex)
+        )
 
         modelConfig$remove(appIndex)
 
@@ -402,7 +405,10 @@ server <- function(input, output, session) {
           if (!length(logoPath)) {
             stop("Logo file not found.", call. = FALSE)
           }
-          removeAppLogo(appId, modelConfig$getAppLogo(appIndex))
+          removeAppLogo(
+            appId, modelConfig$getAppLogo(appIndex),
+            modelConfig$getAppFavicon(appIndex)
+          )
           newLogoName <- getLogoName(appId, logoPath)
           addAppLogo(appId, logoPath, newLogoName)
         }

@@ -345,12 +345,10 @@ class UITests(unittest.TestCase):
                 (By.ID, "migrationForm1-btConfirmMigration")
             )
         )
-        closeMigrationFormButton = wait.until(
-            EC.presence_of_element_located((By.ID, "btCloseMigForm"))
-        )
-        closeMigrationFormButton.click()
+        time.sleep(2)
+        self.driver.find_element(By.ID, "btCloseMigForm").click()
         WebDriverWait(self.driver, 10).until(
-            EC.invisibility_of_element_located((By.CLASS_NAME, "modal-dialog"))
+            EC.invisibility_of_element_located((By.ID, "btCloseMigForm"))
         )
         WebDriverWait(self.driver, 2).until(
             EC.invisibility_of_element_located((By.CLASS_NAME, "app-spinner"))
@@ -425,7 +423,7 @@ class UITests(unittest.TestCase):
                 retry_count += 1
                 time.sleep(1)
                 self.assertLessEqual(
-                    retry_count, 10, f"Couldn't click addApp box after 10 tries: {exc}"
+                    retry_count, 10, f"Couldn't switch to output data section after 10 tries: {exc}"
                 )
         table_container = wait.until(
             EC.presence_of_element_located((By.ID, "table_tab_1_1-datatable"))

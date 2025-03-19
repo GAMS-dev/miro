@@ -68,6 +68,9 @@ ModelConfig <- R6::R6Class("ModelConfig",
     getAppLogo = function(appIndex) {
       return(private$currentModelConfigs[[appIndex]]$logoURL)
     },
+    getAppFavicon = function(appIndex) {
+      return(private$currentModelConfigs[[appIndex]]$faviconPath)
+    },
     getEnvValue = function(envConfig) {
       if (length(envConfig) == 1L && is.character(envConfig)) {
         return(envConfig)

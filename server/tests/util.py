@@ -20,9 +20,6 @@ def get_image_hash(driver, css_selector, attribute="src", xpath=False, cookies=N
     response.raise_for_status()
     image_content = response.content
 
-    with open("/Users/fproske/Downloads/test.ico", "wb") as f:
-        f.write(image_content)
-
     return hashlib.md5(image_content).hexdigest()
 
 

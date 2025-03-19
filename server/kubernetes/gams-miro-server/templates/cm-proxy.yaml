@@ -92,16 +92,10 @@ data:
                 name: shared-data
                 subPath: "data/#{proxySpec.id}/model"
                 readOnly: true
-          - op: add
-            path: /spec/containers/0/volumeMounts
-            value:
               - mountPath: /home/miro/data
                 name: shared-data
                 subPath: "data/#{proxySpec.id}/data"
                 readOnly: true
-          - op: add
-            path: /spec/containers/0/volumeMounts
-            value:
               - mountPath: /home/miro/cache
                 name: shared-data
                 subPath: "data/#{proxySpec.id}/cache"

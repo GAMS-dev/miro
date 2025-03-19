@@ -40,7 +40,10 @@ tryCatch(
       flog.info("Data for MIRO app: %s removed successfully.", appId)
     }
 
-    removeAppData(appId, modelConfig$getAppLogo(appIndex))
+    removeAppData(
+      appId, modelConfig$getAppLogo(appIndex),
+      modelConfig$getAppFavicon(appIndex)
+    )
     modelConfig$remove(appIndex)
 
     engineClient$deregisterModel(appId)
