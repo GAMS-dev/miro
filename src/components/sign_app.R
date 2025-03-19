@@ -108,6 +108,7 @@ verifyAppSignature <- function(appDir, pubKeyPaths, printFingerprint = TRUE) {
     return(FALSE)
   }
   validPubKey <- NULL
+  errMsg <- ""
   for (pubKeyPath in pubKeyPaths) {
     signatureValid <- tryCatch(
       {
@@ -117,6 +118,7 @@ verifyAppSignature <- function(appDir, pubKeyPaths, printFingerprint = TRUE) {
         TRUE
       },
       error = function(e) {
+        errMsg <<- paste0(errMsg, "\n", conditionMessage(e))
         return(FALSE)
       }
     )
@@ -126,6 +128,7 @@ verifyAppSignature <- function(appDir, pubKeyPaths, printFingerprint = TRUE) {
     }
   }
   if (!length(validPubKey)) {
+    write(paste0(errMsg, "\n\n"), stderr())
     return(FALSE)
   }
   if (printFingerprint) {
