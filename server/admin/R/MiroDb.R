@@ -210,5 +210,6 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
         }
       }
     )
+    return(newRolePrefix)
   }
 ))
