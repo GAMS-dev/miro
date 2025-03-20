@@ -104,6 +104,11 @@ spec:
         volumeMounts:
         - name: shared-data
           mountPath: /home/miroproxy/mnt
+          readOnly: true
+        - name: shared-data
+          mountPath: /home/miroproxy/templates/2col/assets/logos
+          subPath: logos
+          readOnly: true
         - name: config-volume
           mountPath: /home/miroproxy/application.yml
           subPath: application.yml
