@@ -237,20 +237,19 @@ addAppFavicon <- function(appId, modelId) {
 removeAppLogo <- function(appId, logoFilename, faviconFilename = NULL) {
   if (!identical(logoFilename, "default_logo.png")) {
     logoPath <- file.path(LOGO_DIR, logoFilename)
-    if (file.exists(logoPath)) {
-      if (unlink(logoPath) == 1) {
-        flog.warn(
-          "Removing logo: %s for app: %s failed.",
-          logoPath, appId
-        )
-      }
+    if (file.exists(logoPath) && unlink(logoPath) == 1) {
+      flog.warn(
+        "Removing logo: %s for app: %s failed.",
+        logoPath, appId
+      )
     }
   }
-  if (!is.null(faviconFilename) && file.exists(faviconFilename)) {
-    if (unlink(faviconFilename) == 1) {
+  if (!is.null(faviconFilename)) {
+    faviconPath <- file.path(LOGO_DIR, basename(faviconFilename))
+    if (file.exists(faviconPath) && unlink(faviconPath) == 1) {
       flog.warn(
         "Removing favicon: %s for app: %s failed.",
-        faviconFilename, appId
+        faviconPath, appId
       )
     }
   }
