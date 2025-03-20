@@ -112,6 +112,8 @@ spec:
         - name: config-volume
           mountPath: /home/miroproxy/application.yml
           subPath: application.yml
+        - name: tmp-volume
+          mountPath: /tmp
         {{- if .Values.proxy.config.logo.enabled }}
         - name: customize-volume
           mountPath: /home/miroproxy/templates/2col/assets/imgk8s/logo.png
@@ -133,12 +135,14 @@ spec:
           capabilities:
             drop: ["ALL"]
           privileged: false
-          readOnlyRootFilesystem: false
+          readOnlyRootFilesystem: true
         {{- end }}
       volumes:
         - name: config-volume
           configMap:
             name: {{ include "common.names.fullname" . }}-proxy-cm
+        - name: tmp-volume
+          emptyDir: {}
         {{- if eq .Values.persistence.type "local" }}
         - name: shared-data
           hostPath:

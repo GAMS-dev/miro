@@ -59,13 +59,8 @@ spec:
     {{- end }}
     {{- end }}
   ingress:
-    # Allow inbound connections from proxy container
     - ports:
         - port: 8081
-      from:
-        - podSelector:
-            matchLabels:
-              app: {{ include "common.names.fullname" . }}-proxy
     {{- if .Values.auth.networkPolicy.extraIngress }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.auth.networkPolicy.extraIngress "context" $ ) | nindent 4 }}
     {{- end }}
