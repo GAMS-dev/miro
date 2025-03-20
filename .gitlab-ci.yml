@@ -180,7 +180,6 @@ lint_job:
 build_linux_job:
   tags:
     - linux
-    - puma
   stage: build
   services:
     - docker:20.10-dind
@@ -831,7 +830,6 @@ test_job_gamspy:
 test_job_miro_server:
   tags:
     - linux
-    - puma
   stage: test
   image: $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
   services:
@@ -875,7 +873,6 @@ test_job_miro_server:
 test_job_miro_server_k8s:
   tags:
     - linux
-    - puma
   image: $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
   stage: test
   services:
