@@ -58,6 +58,8 @@ spec:
         env:
         - name: PORT
           value: "8081"
+        - name: PYTHONPYCACHEPREFIX
+          value: "/tmp/pycache"
         - name: ENGINE_URL
           value: "{{ .Values.proxy.config.engine.apiUrl }}"
         - name: ENGINE_NS
