@@ -34,12 +34,12 @@ def get_db_cursor():
 def lock_scenario(app_id: str, scen_name: str, owner: str, lock_user: str) -> None:
     conn, cur = get_db_cursor()
     cur.execute(
-        f'SELECT * FROM "M_{app_id.upper()}"."_sys_metadata_" WHERE "_sname"=\'{scen_name}\' AND "_uid"=\'{owner}\''
+        f'SELECT * FROM "{get_db_prefix(cur)}{app_id.upper()}"."_sys_metadata_" WHERE "_sname"=\'{scen_name}\' AND "_uid"=\'{owner}\''
     )
     scen_data = cur.fetchall()
     cur.execute(
         f"""
-    INSERT INTO "M_{app_id.upper()}"."_sys_scenlocks_" VALUES (%s, %s, %s);
+    INSERT INTO "{get_db_prefix(cur)}{app_id.upper()}"."_sys_scenlocks_" VALUES (%s, %s, %s);
 """,
         (str(lock_user), int(scen_data[0][0]), datetime.today()),
     )
@@ -48,11 +48,18 @@ def lock_scenario(app_id: str, scen_name: str, owner: str, lock_user: str) -> No
     conn.close()
 
 
+def get_db_prefix(cur):
+    if "KUBERNETES_SERVICE_HOST" not in os.environ:
+        return "M_"
+    cur.execute("SELECT value FROM public.sys_config")
+    return [x[0] for x in cur.fetchall()][0]
+
+
 def get_scen_metadata(app_id: str):
     conn, cur = get_db_cursor()
     cur.execute("SELECT schema_name FROM information_schema.schemata")
     db_schemas = [schema[0] for schema in cur.fetchall()]
-    schema_name = "M_" + app_id.upper()
+    schema_name = get_db_prefix(cur) + app_id.upper()
     if schema_name not in db_schemas:
         cur.close()
         conn.close()

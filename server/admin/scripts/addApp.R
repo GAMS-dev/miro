@@ -58,9 +58,17 @@ tryCatch(
 appDir <- NULL
 cleanup <- function() {
   if (!updateApp) {
-    if (!is.null(appDir)) {
-      unlink(appDir, recursive = TRUE, force = TRUE)
-    }
+    logoURLTmp <- NULL
+    faviconPathTmp <- NULL
+    try({
+      appIndex <- modelConfig$getAppIndex(appId)
+      logoURLTmp <- modelConfig$getAppLogo(appIndex)
+      faviconPathTmp <- modelConfig$getAppFavicon(appIndex)
+    })
+    removeAppData(
+      appId, logoURLTmp,
+      faviconPathTmp
+    )
   }
 }
 tryCatch(
@@ -222,6 +230,14 @@ tryCatch(
         list(containerEnv = newAppEnv)
       )
     }
+  },
+  error_sig_verify = function(e) {
+    cleanup()
+    write(sprintf(
+      "merr:::400:::App signature validation failed. Error message: %s",
+      conditionMessage(e)
+    ), stderr())
+    quit("no", 1L, FALSE)
   },
   error = function(e) {
     cleanup()

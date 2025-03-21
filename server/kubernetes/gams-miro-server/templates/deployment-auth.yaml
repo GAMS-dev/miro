@@ -91,6 +91,10 @@ spec:
         - name: config-volume
           mountPath: /home/miro/admin/application.yml
           subPath: application.yml
+        {{- if and .Values.proxy.config.forceSignedApps.enabled .Values.proxy.config.forceSignedApps.acceptedPublicKeysPEM }}
+        - name: pk-data
+          mountPath: /home/miro/admin/data/known_keys
+        {{- end}}
         {{- if .Values.global.securityContext.enabled }}
         securityContext:
           allowPrivilegeEscalation: false
@@ -105,6 +109,11 @@ spec:
         - name: config-volume
           configMap:
             name: {{ include "common.names.fullname" . }}-proxy-cm
+        {{- if and .Values.proxy.config.forceSignedApps.enabled .Values.proxy.config.forceSignedApps.acceptedPublicKeysPEM }}
+        - name: pk-data
+          configMap:
+            name: {{ include "common.names.fullname" . }}-pk-cm
+        {{- end}}
         {{- if eq .Values.persistence.type "local" }}
         - name: shared-data
           hostPath:

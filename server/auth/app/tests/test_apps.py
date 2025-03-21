@@ -5,7 +5,13 @@ import requests
 from fastapi.testclient import TestClient
 
 from ..main import app
-from .util import settings, get_db_cursor, get_scen_metadata, reset_app_config_file
+from .util import (
+    settings,
+    get_db_cursor,
+    get_db_prefix,
+    get_scen_metadata,
+    reset_app_config_file,
+)
 from ..utils.app_utils import get_apps_raw
 
 client = TestClient(app)
@@ -22,19 +28,27 @@ def cleanup():
     yield
     conn, cur = get_db_cursor()
     for app_id in ["transport", "transport_test"]:
-        cur.execute(f'DROP SCHEMA IF EXISTS "M_{app_id.upper()}" CASCADE')
+        cur.execute(
+            f'DROP SCHEMA IF EXISTS "{get_db_prefix(cur)}{app_id.upper()}" CASCADE'
+        )
         requests.delete(
             f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/models/{app_id}",
             auth=settings["VALID_AUTH_TUPLE"],
         )
-        try:
-            shutil.rmtree(f"/home/miro/admin/models/{app_id}")
-        except FileNotFoundError:
-            pass
-        try:
-            shutil.rmtree(f"/home/miro/admin/data/data_{app_id}")
-        except FileNotFoundError:
-            pass
+        if "KUBERNETES_SERVICE_HOST" in os.environ:
+            try:
+                shutil.rmtree(f"/home/miro/admin/mnt/data/{app_id}")
+            except FileNotFoundError:
+                pass
+        else:
+            try:
+                shutil.rmtree(f"/home/miro/admin/models/{app_id}")
+            except FileNotFoundError:
+                pass
+            try:
+                shutil.rmtree(f"/home/miro/admin/data/data_{app_id}")
+            except FileNotFoundError:
+                pass
     conn.commit()
     cur.close()
     conn.close()
@@ -126,7 +140,7 @@ class TestApps:
             )
             print(response.json())
             assert response.status_code == 400
-            assert "not deployed for multi-user environment" in response.json()["detail"]
+            assert "App is not signed" in response.json()["detail"]
 
         response = client.post(
             "/api/apps/",
@@ -182,8 +196,8 @@ class TestApps:
                 "description": "Transport app for UI tests",
                 "access_groups": [],
                 "environment": {},
-                "version": '1.0.0',
-                "authors": ['GAMS Development Corp.'],
+                "version": "1.0.0",
+                "authors": ["GAMS Development Corp."],
             }
         ]
         # test some bad environment configurations
@@ -246,8 +260,8 @@ class TestApps:
                 "description": "Transport app for UI tests",
                 "access_groups": [],
                 "environment": {},
-                "version": '1.0.0',
-                "authors": ['GAMS Development Corp.'],
+                "version": "1.0.0",
+                "authors": ["GAMS Development Corp."],
             },
             {
                 "id": "transport_test",
@@ -258,8 +272,8 @@ class TestApps:
                     "ENV_NAME1": {"value": "test123", "description": "bla"},
                     "ENV_NAME2": {"value": "bumbum", "description": ""},
                 },
-                "version": '1.0.0',
-                "authors": ['GAMS Development Corp.'],
+                "version": "1.0.0",
+                "authors": ["GAMS Development Corp."],
             },
         ]
         assert len(get_scen_metadata("transport_test")) == 1
@@ -287,8 +301,8 @@ class TestApps:
                 "description": "Transport app for UI tests",
                 "access_groups": [],
                 "environment": {},
-                "version": '1.0.0',
-                "authors": ['GAMS Development Corp.'],
+                "version": "1.0.0",
+                "authors": ["GAMS Development Corp."],
             },
             {
                 "id": "transport_test",
@@ -299,8 +313,8 @@ class TestApps:
                     "ENV_NAME1": {"value": "test123", "description": "bla"},
                     "ENV_NAME2": {"value": "bumbum", "description": ""},
                 },
-                "version": '1.0.0',
-                "authors": ['GAMS Development Corp.'],
+                "version": "1.0.0",
+                "authors": ["GAMS Development Corp."],
             },
         ]
         assert len(get_scen_metadata("transport_test")) == 1
@@ -320,8 +334,8 @@ class TestApps:
                     "ENV_NAME1": {"value": "test123", "description": "bla"},
                     "ENV_NAME2": {"value": "bumbum", "description": ""},
                 },
-                "version": '1.0.0',
-                "authors": ['GAMS Development Corp.'],
+                "version": "1.0.0",
+                "authors": ["GAMS Development Corp."],
             },
         ]
         assert response.headers["x-total"] == "2"
@@ -359,8 +373,8 @@ class TestApps:
                 "description": "Transport app for UI tests",
                 "access_groups": [],
                 "environment": {},
-                "version": '1.0.0',
-                "authors": ['GAMS Development Corp.'],
+                "version": "1.0.0",
+                "authors": ["GAMS Development Corp."],
             }
         ]
         assert len(get_scen_metadata("transport")) == 1
@@ -385,8 +399,8 @@ class TestApps:
                 "description": "Transport app for UI tests",
                 "access_groups": [],
                 "environment": {},
-                "version": '1.0.0',
-                "authors": ['GAMS Development Corp.'],
+                "version": "1.0.0",
+                "authors": ["GAMS Development Corp."],
             }
         ]
         response = client.delete(
@@ -431,8 +445,8 @@ class TestApps:
                 "description": "Transport app for UI tests",
                 "access_groups": [],
                 "environment": {},
-                "version": '1.0.0',
-                "authors": ['GAMS Development Corp.'],
+                "version": "1.0.0",
+                "authors": ["GAMS Development Corp."],
             }
         ]
         scen_data = get_scen_metadata("transport")
@@ -475,8 +489,8 @@ class TestApps:
                 "description": "This is my custom transport app",
                 "access_groups": ["mygroup"],
                 "environment": {},
-                "version": '1.0.0',
-                "authors": ['GAMS Development Corp.'],
+                "version": "1.0.0",
+                "authors": ["GAMS Development Corp."],
             }
         ]
         scen_data = get_scen_metadata("transport")
@@ -507,8 +521,8 @@ class TestApps:
                 "description": "This is my custom transport app",
                 "access_groups": [],
                 "environment": {"LALA": {"description": "huhu", "value": "haihai"}},
-                "version": '1.0.0',
-                "authors": ['GAMS Development Corp.'],
+                "version": "1.0.0",
+                "authors": ["GAMS Development Corp."],
             }
         ]
 
@@ -534,7 +548,7 @@ class TestApps:
                 "description": "This is my custom transport app",
                 "access_groups": [],
                 "environment": {"LALA": {"value": "haihai", "description": "huhu"}},
-                "version": '1.0.0',
-                "authors": ['GAMS Development Corp.'],
+                "version": "1.0.0",
+                "authors": ["GAMS Development Corp."],
             }
         ]

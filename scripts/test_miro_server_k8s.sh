@@ -141,11 +141,12 @@ EOF
           fi
 
           kubectl patch deployment test-gams-miro-server-auth --type='strategic' -p \
-                  "{\"spec\": {\"template\": {\"spec\": {\"containers\": [{\"name\": \"auth\", \"image\": \"$CI_REGISTRY_IMAGE/miro-auth-test:$IMAGE_TAG\", \"livenessProbe\": null, \"env\": [{\"name\": \"ENGINE_USER\", \"value\": \"$ENGINE_USER\"}, {\"name\": \"ENGINE_PASSWORD\", \"value\": \"$ENGINE_PASSWORD\"}]}]}}}}"
-
-          POD_NAME=$(kubectl get pods -l app=test-gams-miro-server-auth -o jsonpath='{.items[0].metadata.name}')
-          kubectl exec $POD_NAME -- env COVERAGE_FILE=/tmp/.coverage pytest tests/ \
-            --junitxml=/tmp/$PYTEST_JUNIT --cov=/app --cov-report=xml:/tmp/$PYTEST_COV --cov-exclude="tests/*"
+                  "{\"spec\": {\"template\": {\"spec\": {\"containers\": [{\"name\": \"auth\", \"image\": \"$CI_REGISTRY_IMAGE/miro-auth-test:unstable\", \"livenessProbe\": null, \"env\": [{\"name\": \"ENGINE_USER\", \"value\": \"$ENGINE_USER\"}, {\"name\": \"ENGINE_PASSWORD\", \"value\": \"$ENGINE_PASSWORD\"}]}]}}}}"
+          wait_for_pods_ready 60
+          sleep 2
+          POD_NAME=$(kubectl get pods -l app=test-gams-miro-server-auth --field-selector=status.phase=Running -o jsonpath='{.items[0].metadata.name}')
+          kubectl exec $POD_NAME -- env COVERAGE_FILE=/tmp/.coverage pytest tests/ -o cache_dir=/tmp/.pytest_cache \
+            --junitxml=/tmp/$PYTEST_JUNIT --cov=/app --cov-report=xml:/tmp/$PYTEST_COV
 
           kubectl cp $POD_NAME:/tmp/$PYTEST_COV $PYTEST_COV
           kubectl cp $POD_NAME:/tmp/$PYTEST_JUNIT $PYTEST_JUNIT

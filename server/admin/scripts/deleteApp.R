@@ -6,7 +6,6 @@ close(stdin)
 appId <- metadata[["id"]]
 
 deleteData <- identical(metadata[["deleteData"]], TRUE)
-appPath <- metadata[["appPath"]]
 
 dontcare <- lapply(c("global.R", list.files("./R", full.names = TRUE)), source)
 

@@ -89,7 +89,7 @@ createAppDir <- function(appId) {
   if (exists("last.warning") && endsWith(names(last.warning)[1], "already exists")) {
     flog.info(
       "App with id: %s is found on the file system but not in specs.yaml. This is either because another process is currently adding an app with this id or because it was not properly cleaned up. In the latter case, please remove the directory: '%s' manually.",
-      appId, paste0("./models/", appId)
+      appId, modelPath
     )
     stop_custom("error_model_dir_exists", "An app with this id already exists", call. = FALSE)
   }
@@ -97,7 +97,7 @@ createAppDir <- function(appId) {
     if (dir.exists(modelPath)) {
       flog.info(
         "App with id: %s is found on the file system but not in specs.yaml. This is either because another process is currently adding an app with this id or because it was not properly cleaned up. In the latter case, please remove the directory: '%s' manually.",
-        appId, paste0("./models/", appId)
+        appId, modelPath
       )
       stop_custom("error_model_dir_exists", "An app with this id already exists", call. = FALSE)
     }
@@ -132,9 +132,9 @@ validateAppSignature <- function(appPath, pubKeyPaths = character(0L)) {
     stop("Unexpected error while verifying the signature of the app! Check the logs for more information.", call. = FALSE)
   }
   if (identical(procResult$status, 3L)) {
-    stop("App is not signed!", call. = FALSE)
+    stop_custom("error_sig_verify", "App is not signed!", call. = FALSE)
   }
-  stop("App signature invalid!", call. = FALSE)
+  stop_custom("error_sig_verify", "App signature invalid!", call. = FALSE)
 }
 
 extractAppData <- function(miroAppPath, appId, modelId, miroProc) {
@@ -255,13 +255,15 @@ removeAppLogo <- function(appId, logoFilename, faviconFilename = NULL) {
   }
 }
 
-removeAppData <- function(appId, logoFilename, faviconFilename = NULL) {
+removeAppData <- function(appId, logoFilename = NULL, faviconFilename = NULL) {
   if (IN_KUBERNETES) {
     dirsToRemove <- getModelPath(appId)
   } else {
     dirsToRemove <- c(getModelPath(appId), getDataPath(appId))
   }
-  removeAppLogo(appId, logoFilename, faviconFilename)
+  if (!is.null(logoFilename)) {
+    removeAppLogo(appId, logoFilename, faviconFilename)
+  }
   for (dirToRemove in dirsToRemove) {
     if (dir.exists(dirToRemove)) {
       if (unlink(dirToRemove, recursive = TRUE, force = TRUE) == 1) {

@@ -10,6 +10,7 @@ from ..config import settings as app_settings
 from .util import (
     settings,
     get_db_cursor,
+    get_db_prefix,
     register_transport,
     invite_user,
     delete_user,
@@ -31,19 +32,27 @@ def cleanup():
     yield
     conn, cur = get_db_cursor()
     for app_id in ["transport", "transport_test"]:
-        cur.execute(f'DROP SCHEMA IF EXISTS "M_{app_id.upper()}" CASCADE')
+        cur.execute(
+            f'DROP SCHEMA IF EXISTS "{get_db_prefix(cur)}{app_id.upper()}" CASCADE'
+        )
         requests.delete(
             f"{settings['ENGINE_URL']}/namespaces/{settings['ENGINE_NS']}/models/{app_id}",
             auth=settings["VALID_AUTH_TUPLE"],
         )
-        try:
-            shutil.rmtree(f"/home/miro/admin/models/{app_id}")
-        except FileNotFoundError:
-            pass
-        try:
-            shutil.rmtree(f"/home/miro/admin/data/data_{app_id}")
-        except FileNotFoundError:
-            pass
+        if "KUBERNETES_SERVICE_HOST" in os.environ:
+            try:
+                shutil.rmtree(f"/home/miro/admin/mnt/data/{app_id}")
+            except FileNotFoundError:
+                pass
+        else:
+            try:
+                shutil.rmtree(f"/home/miro/admin/models/{app_id}")
+            except FileNotFoundError:
+                pass
+            try:
+                shutil.rmtree(f"/home/miro/admin/data/data_{app_id}")
+            except FileNotFoundError:
+                pass
     conn.commit()
     cur.close()
     conn.close()
