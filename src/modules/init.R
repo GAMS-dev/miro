@@ -2157,6 +2157,9 @@ if (is.null(errMsg)) {
     config[["symbolLinks"]] <- NULL
   }
   if (length(config$scripts)) {
+    warningMsgTmp <- "Custom scenario analysis scripts have been deprecated as of MIRO version 2.12. Please use custom renderers, custom input widgets and custom comparison modules instead. If you rely on this feature and don't want us to remove it in the future, please contact support@gams.com!"
+    warning(warningMsgTmp, call. = FALSE)
+    warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
     if (any(duplicated(vapply(config$scripts$base, "[[", character(1L), "id", USE.NAMES = FALSE)))) {
       errMsg <- paste(errMsg, "Some of your analysis scripts share the same id. Please make sure the ID is unique.")
     }

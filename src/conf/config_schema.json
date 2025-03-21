@@ -4407,7 +4407,7 @@
     },
     "scripts": {
       "type": "object",
-      "description": "Specify external scripts that will be executed and the results displayed in MIRO",
+      "description": "DEPRECATED! Please no longer use!",
       "additionalProperties": false,
       "properties": {
         "base": {

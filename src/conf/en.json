@@ -1097,7 +1097,6 @@
       "table": "Tables",
       "widgets": "Input widgets",
       "graphs": "Graphs",
-      "analysis": "Scenario analysis",
       "database": "Database management",
       "restartRequired": "Note: For these changes to take effect, you must restart the Configuration Mode!"
     },
@@ -1109,7 +1108,6 @@
         "tabLogs": "Log Files",
         "tabComparison": "Scenario Comparison",
         "tabData": "Scenario Data and Attachments",
-        "tabScripts": "Analysis scripts",
         "tabSymbolLinks": "Hidden Symbols and Symbol Links",
         "headerGeneral": "Title and Logo",
         "headerPivotcompare": "Pivot comparison mode",
@@ -1125,13 +1123,9 @@
         "tabNameOrder": "Symbol Order and Groups",
         "headerSymbolNaming": "Symbol and Column Names",
         "headerSymbolGrouping": "Ordering",
-        "headerBaseScripts": "Individual Scenarios",
         "headerOutputAttach": "Output Attachments",
         "headerExport": "Export",
         "headerImport": "Import",
-        "baseScriptsTooltip": "Run custom analysis scripts which will be displayed in the output section",
-        "headerHcubeScripts": "Batch Analysis",
-        "hcubeScriptsTooltip": "Run custom analysis scripts for multiple scenarios at once",
         "tooltipDocs": "Open documentation"
       },
       "modalDialog":{
@@ -1180,10 +1174,6 @@
       },
       "symlinks":{
         "label": "Add symbol link (results that can be used as input data)"
-      },
-      "scripts":{
-        "base": "Specify custom analysis scripts for individual scenarios",
-        "hcube": "Specify custom analysis scripts for analyzing batches of scenarios"
       },
       "outputAttach": {
         "label": "Add new attachment"

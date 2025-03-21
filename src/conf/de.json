@@ -1097,7 +1097,6 @@
       "table": "Tabellen",
       "widgets": "Eingabewidgets",
       "graphs": "Graphen",
-      "analysis": "Szenarioanalysen",
       "database": "Datenbankverwaltung",
       "restartRequired": "Hinweis: Damit diese Änderungen wirksam werden, müssen Sie den Konfigurationsmodus neu starten!"
     },
@@ -1109,7 +1108,6 @@
         "tabLogs": "Log-Dateien",
         "tabComparison": "Szenariovergleich",
         "tabData": "Szenariodaten und Anhänge",
-        "tabScripts": "Analyseskripte",
         "tabSymbolLinks": "Versteckte Symbole und Symbolverknüpfungen",
         "headerGeneral": "Titel und Logo",
         "headerPivotcompare": "Pivot-Szenariovergleichsmodus",
@@ -1125,13 +1123,9 @@
         "tabNameOrder": "Reihenfolge und Gruppen",
         "headerSymbolNaming": "Symbol- und Spaltennamen",
         "headerSymbolGrouping": "Reihenfolge",
-        "headerBaseScripts": "Einzelne Szenarien",
         "headerOutputAttach": "Ergebnis-Anhänge",
         "headerExport": "Export",
         "headerImport": "Import",
-        "baseScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte aus, die im Ausgabeabschnitt angezeigt werden",
-        "headerHcubeScripts": "Batch-Analyse",
-        "hcubeScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte für mehrere Szenarien auf einmal aus",
         "tooltipDocs": "Dokumentation öffnen"
       },
       "modalDialog":{
@@ -1180,10 +1174,6 @@
       },
       "symlinks":{
         "label": "Symbolverknüpfung hinzufügen (Ergebnisse, die als Eingabedaten verwendet werden können)"
-      },
-      "scripts":{
-        "base": "Spezifizieren Sie individuelle Analyseskripte für einzelne Szenarien.",
-        "hcube": "Spezifizieren Sie individuelle Analyseskripte für die Batch-Analyse."
       },
       "outputAttach": {
         "label": "Neue Anlage hinzufügen"

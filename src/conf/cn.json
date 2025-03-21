@@ -1097,7 +1097,6 @@
       "table": "图表设置",
       "widgets": "配置小部件",
       "graphs": "配置图表",
-      "analysis": "情景分析",
       "database": "管理数据库",
       "restartRequired": "注意：为了使这些更改生效，您必须重新启动配置模式！"
     },
@@ -1109,7 +1108,6 @@
         "tabLogs": "日志文件",
         "tabComparison": "情景比较",
         "tabData": "情景数据和附件",
-        "tabScripts": "分析脚本",
         "tabSymbolLinks": "隐藏的符号和符号链接",
         "headerGeneral": "标题和标志",
         "headerPivotcompare": "枢轴比较模式",
@@ -1125,13 +1123,9 @@
         "tabNameOrder": "顺序和组别",
         "headerSymbolNaming": "符号和列名",
         "headerSymbolGrouping": "组合",
-        "headerBaseScripts": "基本模式",
         "headerOutputAttach": "附件",
         "headerExport": "文件导出",
         "headerImport": "进口",
-        "baseScriptsTooltip": "运行自定义分析脚本，该脚本将显示在输出中",
-        "headerHcubeScripts": "批次分析",
-        "hcubeScriptsTooltip": "一次运行多个方案的自定义分析脚本",
         "tooltipDocs": "打开文档"
       },
       "modalDialog":{
@@ -1179,10 +1173,6 @@
       },
       "symlinks":{
         "label": "指定符号链接（即可以用作输入数据的结果）"
-      },
-      "scripts":{
-        "base": "指定基本模式的自定义分析脚本",
-        "hcube": "指定自定义分析脚本以分析批次的方案"
       },
       "outputAttach": {
         "label": "添加新的附件"

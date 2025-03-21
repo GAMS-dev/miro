@@ -4267,10 +4267,6 @@
               "type": "string",
               "minLength": 1
             },
-            "analysis": {
-              "type": "string",
-              "minLength": 1
-            },
             "database": {
               "type": "string",
               "minLength": 1
@@ -4280,7 +4276,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 9
+          "minProperties": 8
         },
         "general": {
           "type": "object",
@@ -4311,10 +4307,6 @@
                   "minLength": 1
                 },
                 "tabData": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "tabScripts": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -4378,10 +4370,6 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "headerBaseScripts": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "headerOutputAttach": {
                   "type": "string",
                   "minLength": 1
@@ -4394,24 +4382,12 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "baseScriptsTooltip": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "headerHcubeScripts": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "hcubeScriptsTooltip": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "tooltipDocs": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 30
+              "minProperties": 25
             },
             "modalDialog": {
               "type": "object",
@@ -4603,21 +4579,6 @@
                 }
               },
               "minProperties": 1
-            },
-            "scripts": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "base": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "hcube": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "minProperties": 2
             },
             "outputAttach": {
               "type": "object",
@@ -5039,7 +5000,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 40
+          "minProperties": 39
         },
         "tables": {
           "type": "object",

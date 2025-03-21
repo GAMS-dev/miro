@@ -102,7 +102,6 @@ sidebar_admin <- dashboardSidebar(
     menuItem(lang$adminMode$uiR$table, tabName = "tables_gen", icon = icon("table")),
     menuItem(lang$adminMode$uiR$widgets, tabName = "new_widget", icon = icon("sliders")),
     menuItem(lang$adminMode$uiR$graphs, tabName = "new_graph", icon = icon("chart-bar")),
-    menuItem(lang$adminMode$uiR$analysis, tabName = "analysis_scripts", icon = icon("magnifying-glass")),
     menuItem(lang$adminMode$uiR$database, tabName = "db_management", icon = icon("database"))
   )
 )
@@ -1773,72 +1772,6 @@ font-size: 12px;
                 uiOutput("tableLabelWrapper"),
                 DTOutput("outputTable_preview"),
                 DTOutput("dt_preview")
-              )
-            )
-          )
-        )
-      ),
-      tabItem(
-        tabName = "analysis_scripts",
-        fluidRow(
-          box(
-            title = lang$adminMode$general$ui$tabScripts, status = "primary", solidHeader = TRUE, width = 12,
-            tags$div(
-              class = "col-sm-6", style = "padding-top: 20px;",
-              tags$div(
-                class = "main-tab",
-                tags$h2(
-                  lang$adminMode$general$ui$headerBaseScripts,
-                  tags$a("",
-                    title = paste0(
-                      lang$adminMode$general$ui$baseScriptsTooltip, " - ",
-                      tolower(lang$adminMode$general$ui$tooltipDocs)
-                    ),
-                    class = "info-header",
-                    href = "https://gams.com/miro/configuration_analysis.html",
-                    tags$span(
-                      class = "fas fa-circle-info", class = "info-icon",
-                      role = "presentation",
-                      `aria-label` = "More information"
-                    ), target = "_blank"
-                  )
-                ),
-                tags$div(
-                  createArray(NULL, "scripts_base",
-                    lang$adminMode$general$scripts$base,
-                    autoCreate = FALSE
-                  )
-                ),
-                tags$div(class = "space")
-              )
-            ),
-            tags$div(
-              class = "col-sm-6", style = "padding-top: 20px;",
-              tags$div(
-                class = "main-tab",
-                tags$h2(
-                  lang$adminMode$general$ui$headerHcubeScripts,
-                  tags$a("",
-                    title = paste0(
-                      lang$adminMode$general$ui$hcubeScriptsTooltip, " - ",
-                      tolower(lang$adminMode$general$ui$tooltipDocs)
-                    ),
-                    class = "info-header",
-                    href = "https://gams.com/miro/start.html#analysis-scripts",
-                    tags$span(
-                      class = "fas fa-circle-info", class = "info-icon",
-                      role = "presentation",
-                      `aria-label` = "More information"
-                    ), target = "_blank"
-                  )
-                ),
-                tags$div(
-                  createArray(NULL, "scripts_hcube",
-                    lang$adminMode$general$scripts$hcube,
-                    autoCreate = FALSE
-                  )
-                ),
-                tags$div(class = "space")
               )
             )
           )

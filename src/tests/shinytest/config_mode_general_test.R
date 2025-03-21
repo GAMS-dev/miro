@@ -101,11 +101,6 @@ Sys.sleep(1)
 app$click(selector = "a[data-value='Hidden Symbols and Symbol Links']")
 app$run_js("$('#symbol_links1_wrapper button').click()")
 
-# remove hcube analysis script
-app$click(selector = "a[data-value='analysis_scripts']")
-Sys.sleep(1)
-app$run_js("$('#scripts_hcube1_wrapper button').click()")
-
 # remove output attachments
 app$click(selector = "a[data-value='new_gen']")
 Sys.sleep(1)
