@@ -512,7 +512,6 @@ build_macos_job:
     - macos
   stage: build
   variables:
-    OPENSSL_PKG_CONFIG_PATH: ${OPENSSL_PKG_CONFIG_PATH_MACOS}
     GIT_SUBMODULE_STRATEGY: normal
   before_script:
     - yarn install
@@ -557,7 +556,6 @@ build_macos_arm_job:
     - macos-arm64
   stage: build
   variables:
-    OPENSSL_PKG_CONFIG_PATH: ${OPENSSL_PKG_CONFIG_PATH_MACOS}
     GIT_SUBMODULE_STRATEGY: normal
   before_script:
     - yarn install

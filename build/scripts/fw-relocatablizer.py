@@ -179,6 +179,15 @@ def deps_contain_prefix(info_item, prefix):
     return matching_dep_items or matching_install_name
 
 
+def check_deps(filepath, info_item, prefix):
+    """Error out if deps point to libraries outside system directories or prefix dir"""
+    try:
+        invalid_dep = next(dep_item for dep_item in info_item.get("dependencies", []) if not (dep_item.startswith("/usr/lib/") or dep_item.startswith("/System/Library/") or dep_item.startswith(prefix)))
+        raise ValueError(f"Found dependency in: {filepath} that points to library that is not a system library: {invalid_dep}")
+    except StopIteration:
+        return
+
+
 def base_install_name(full_framework_path):
     """Generates a base install name for the framework"""
     dylib_name = os.path.join(full_framework_path, "R")
@@ -210,10 +219,12 @@ def analyze(some_dir):
             ext = os.path.splitext(filepath)[1]
             if ext == ".so":
                 info = make_info(filepath)
+                check_deps(filepath, info, prefix)
                 if deps_contain_prefix(info, prefix):
                     data["so_files"].append(info)
             elif ext == ".dylib":
                 info = make_info(filepath)
+                check_deps(filepath, info, prefix)
                 if deps_contain_prefix(info, prefix):
                     data["dylibs"].append(info)
             else:
@@ -225,10 +236,12 @@ def analyze(some_dir):
 
                 if "Mach-O 64-bit executable" in output:
                     info = make_info(filepath)
+                    check_deps(filepath, info, prefix)
                     if deps_contain_prefix(info, prefix):
                         data["executables"].append(info)
                 if "Mach-O 64-bit dynamically linked shared library" in output:
                     info = make_info(filepath)
+                    check_deps(filepath, info, prefix)
                     if deps_contain_prefix(info, prefix):
                         data["dylibs"].append(info)
     sys.stdout.write("\n")

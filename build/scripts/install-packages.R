@@ -121,6 +121,79 @@ packageIsInstalled <- function(package) {
   return(package[1] %in% installedPackages)
 }
 
+installStaticOpenSSL <- function(destDir) {
+  openSSLVersion <- jsonlite::fromJSON("build-config.json")[["opensslVersion"]]
+  tarDestFile <- file.path(tempdir(), "openssl.tar.gz")
+  finalDestDir <- file.path(destDir, paste0("openssl-", openSSLVersion))
+  Sys.setenv(OPENSSL_PKG_CONFIG_PATH = file.path(
+    finalDestDir,
+    "lib", "pkgconfig"
+  ))
+  if (dir.exists(finalDestDir)) {
+    if (identical(Sys.getenv("BUILD_OPENSSL_FORCE_OVERWRITE"), "TRUE")) {
+      if (unlink(finalDestDir, recursive = TRUE, force = TRUE) != 0) {
+        stop(sprintf(
+          "Something went wrong removing directory: %s.",
+          finalDestDir
+        ))
+      }
+    } else {
+      print(sprintf("Skipping build of openssl as directory: %s already exists", finalDestDir))
+      return()
+    }
+  } else if (!dir.create(finalDestDir, recursive = TRUE)) {
+    stop(sprintf(
+      "Something went wrong creating static openssl directory: %s.",
+      finalDestDir
+    ))
+  }
+  download.file(
+    paste0("https://www.openssl.org/source/openssl-", openSSLVersion, ".tar.gz"),
+    tarDestFile
+  )
+  proc <- processx::run("tar", c("-xvzf", basename(tarDestFile)),
+    wd = dirname(tarDestFile),
+    error_on_status = FALSE
+  )
+  if (proc$status != 0L) {
+    stop(sprintf(
+      "Something went wrong extracting: %s.\n\nStdout: %s\n\nStderr: %s",
+      tarDestFile, proc$stdout, proc$stderr
+    ))
+  }
+  proc <- processx::run("./config", c("no-shared", paste0("--prefix=", finalDestDir), paste0("--openssldir=", finalDestDir)),
+    wd = file.path(dirname(tarDestFile), paste0("openssl-", openSSLVersion)),
+    error_on_status = FALSE
+  )
+  if (proc$status != 0L) {
+    stop(sprintf(
+      "Something went configuring openssl.\n\nStdout: %s\n\nStderr: %s",
+      proc$stdout, proc$stderr
+    ))
+  }
+  proc <- processx::run("make",
+    wd = file.path(dirname(tarDestFile), paste0("openssl-", openSSLVersion)),
+    error_on_status = FALSE
+  )
+  if (proc$status != 0L) {
+    stop(sprintf(
+      "Something went building openssl.\n\nStdout: %s\n\nStderr: %s",
+      proc$stdout, proc$stderr
+    ))
+  }
+  proc <- processx::run("make", c("install"),
+    wd = file.path(dirname(tarDestFile), paste0("openssl-", openSSLVersion)),
+    error_on_status = FALSE
+  )
+  if (proc$status != 0L) {
+    stop(sprintf(
+      "Something went moving openssl to: %s. \n\nStdout: %s\n\nStderr: %s",
+      finalDestDir, proc$stdout, proc$stderr
+    ))
+  }
+  print(sprintf("Installed static openssl in directory: %s", finalDestDir))
+}
+
 dontDisplayMe <- lapply(c("pkgbuild", "remotes"), library, character.only = TRUE)
 
 if (isLinux && !dir.exists(RlibPathSrc) &&
@@ -257,10 +330,35 @@ for (package in packageVersionMap) {
       }
       next
     }
+    CIMacOpenSSLBuild <- CIBuild && isMac && identical(package, "openssl")
+    if (CIMacOpenSSLBuild) {
+      installStaticOpenSSL(file.path(getwd(), RlibPathDevel, "openssl-static"))
+    }
     install.packages(packagePath,
       lib = if (CIBuild && !isLinux) RlibPathTmp else RLibPath, repos = NULL,
       type = "source", dependencies = FALSE, INSTALL_opts = "--no-multiarch"
     )
+    if (CIMacOpenSSLBuild) {
+      rOpenSSLBinary <- file.path(RlibPathTmp, "openssl", "libs", "openssl.so")
+      proc <- processx::run("otool", c(
+        "-L",
+        rOpenSSLBinary
+      ),
+      error_on_status = FALSE
+      )
+      if (proc$status != 0L) {
+        stop(sprintf(
+          "Something went wrong checking dependencies of: %s.\n\nStdout: %s\n\nStderr: %s",
+          rOpenSSLBinary, proc$stdout, proc$stderr
+        ))
+      }
+      if (grepl("libssl", proc$stdout, fixed = TRUE)) {
+        stop(sprintf(
+          "R OpenSSL binary: %s is still depent on openSSL shared library (something went wrong with static compilation).\n\nStdout: %s\n\nStderr: %s",
+          rOpenSSLBinary, proc$stdout, proc$stderr
+        ))
+      }
+    }
   } else {
     installPackage(package)
     if (CIBuild) {
@@ -272,6 +370,9 @@ if (CIBuild && !isLinux) {
   # install packages to lib path devel and copy over
   print("Copying files from lib path devel to final destination")
   for (installedPackageTmp in c(installedPackagesTmp, customPackages)) {
+    if (identical(installedPackageTmp, "openssl-static")) {
+      next
+    }
     if (any(!file.copy(file.path(RlibPathTmp, installedPackageTmp),
       RLibPath,
       overwrite = TRUE, recursive = TRUE
