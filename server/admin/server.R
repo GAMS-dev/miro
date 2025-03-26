@@ -399,7 +399,14 @@ server <- function(input, output, session) {
         appId <- modelConfig$getAppId(appIndex)
         modelId <- tolower(modelConfig$getModelName(appIndex))
 
-        newLogoName <- NULL
+        newAppEnv <- miroAppValidator$validateAppEnv(input$updateAppMeta$env)
+        newGroups <- csv2Vector(input$updateAppMeta$groups)
+        newModelConfig <- list(
+          displayName = input$updateAppMeta$title,
+          containerEnv = newAppEnv,
+          description = input$updateAppMeta$desc,
+          accessGroups = newGroups
+        )
         if (isTRUE(input$updateAppMeta$newLogo)) {
           logoPath <- input$updateMiroAppLogo$datapath
           if (!length(logoPath)) {
@@ -411,17 +418,10 @@ server <- function(input, output, session) {
           )
           newLogoName <- getLogoName(appId, logoPath)
           addAppLogo(appId, logoPath, newLogoName)
+          newModelConfig[["logoURL"]] <- newLogoName
         }
-        newAppEnv <- miroAppValidator$validateAppEnv(input$updateAppMeta$env)
-        newGroups <- csv2Vector(input$updateAppMeta$groups)
         engineClient$updateModel(appId, userGroups = newGroups)
-        modelConfig$update(appIndex, list(
-          displayName = input$updateAppMeta$title,
-          logoURL = newLogoName,
-          containerEnv = newAppEnv,
-          description = input$updateAppMeta$desc,
-          accessGroups = newGroups
-        ))
+        modelConfig$update(appIndex, newModelConfig)
 
         flog.info("MIRO app: %s updated successfully.", appId)
         session$sendCustomMessage(
