@@ -69,6 +69,7 @@ proxy:
     language: en # en, de or cn
     colorTheme: default
     maxTotalInstances: -1 # -1 for unlimited
+    proxyMaxLifetimeMinutes: -1 # -1 for unlimited
     maxUploadSizeMB: 200
     forceSignedApps:
       enabled: false
@@ -88,6 +89,14 @@ proxy:
       path: '' # local path to CSS file; it is best practice to place it in a directory named "resources"
       base64: '' # alternatively, base64-encoded CSS
       # If both path and base64 are specified, base64 is used.
+    containerLogBackend:
+      type: none # Container log backed. Currently supported none (disabled) or s3
+      s3:
+        bucketName: '' # Name of the s3 bucket
+        bucketDir: '/' # Path to directory where log files are to be stored
+        region: '' # AWS region e.g. us-east-1
+        accessKeyId: '' # AWS access key ID
+        secretAccessKey: '' # AWS secret access key
     disableReadonlyMode: false
     anonymousReadonlyMode: false
     containerWaitTimeSeconds: 300

@@ -31,6 +31,7 @@ data:
       admin-groups: admins
       container-backend: kubernetes
       container-wait-time: {{ .Values.proxy.config.containerWaitTimeSeconds }}000
+      default-proxy-max-lifetime: {{ .Values.proxy.config.proxyMaxLifetimeMinutes | default -1 }}
       max-upload-size: {{ .Values.proxy.config.maxUploadSizeMB }}
       force-signed-apps: {{ .Values.proxy.config.forceSignedApps.enabled }}
       disable-readonly-mode: {{ .Values.proxy.config.disableReadonlyMode }}
@@ -39,6 +40,11 @@ data:
       max-total-instances: {{ .Values.proxy.config.maxTotalInstances }}
       {{- if .Values.proxy.config.metrics.enabled }}
       usage-stats-url: micrometer
+      {{- end }}
+      {{- if eq .Values.proxy.config.containerLogBackend.type "s3" }}
+      container-log-path: s3://{{ .Values.proxy.config.containerLogBackend.bucketName }}{{ .Values.proxy.config.containerLogBackend.bucketDir }}
+      container-log-s3-access-key: {{ .Values.proxy.config.containerLogBackend.accessKeyId | quote }}
+      container-log-s3-region: {{ .Values.proxy.config.containerLogBackend.region | quote }}
       {{- end }}
       webservice:
         authentication-url: http://{{ include "common.names.fullname" . }}-auth:8081/login

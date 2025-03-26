@@ -101,6 +101,11 @@ spec:
             secretKeyRef:
               name: {{ include "common.names.fullname" . }}-secrets
               key: engine_anonymous_password
+        - name: GMS_MIRO_CONTAINER_LOG_S3_ACCESS_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "common.names.fullname" . }}-secrets
+              key: container_log_s3_access_secret
         volumeMounts:
         - name: shared-data
           mountPath: /home/miroproxy/mnt
