@@ -706,9 +706,6 @@ $appsWrapper.on('drop', '#newAppFiles', function (e) {
 
 $appsWrapper.on('dragstart', '.app-box-draggable', (e) => {
   reorderAppsMode = true;
-  if (!reorderAppsMode) {
-    return;
-  }
   e.originalEvent.dataTransfer.setData(
     'text/plain',
     e.originalEvent.target.id,
@@ -716,16 +713,25 @@ $appsWrapper.on('dragstart', '.app-box-draggable', (e) => {
   e.originalEvent.target.style.opacity = 0.5;
 });
 $appsWrapper.on('dragenter', '.app-box-draggable', function (e) {
+  if (!reorderAppsMode) {
+    return;
+  }
   e.preventDefault();
   e.stopPropagation();
   dragAddAppCounter += 1;
   $(this).addClass('drag-drop-area-dragover');
 });
 $appsWrapper.on('dragover', '.app-box-draggable', (e) => {
+  if (!reorderAppsMode) {
+    return;
+  }
   e.preventDefault();
   e.stopPropagation();
 });
 $appsWrapper.on('dragleave', '.app-box-draggable', function (e) {
+  if (!reorderAppsMode) {
+    return;
+  }
   e.preventDefault();
   e.stopPropagation();
   dragAddAppCounter -= 1;
@@ -734,6 +740,9 @@ $appsWrapper.on('dragleave', '.app-box-draggable', function (e) {
   }
 });
 $appsWrapper.on('dragend', '.app-box-draggable', (e) => {
+  if (!reorderAppsMode) {
+    return;
+  }
   e.preventDefault();
   e.stopPropagation();
   reorderAppsMode = false;
