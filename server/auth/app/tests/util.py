@@ -51,8 +51,11 @@ def lock_scenario(app_id: str, scen_name: str, owner: str, lock_user: str) -> No
 def get_db_prefix(cur):
     if "KUBERNETES_SERVICE_HOST" not in os.environ:
         return "M_"
-    cur.execute("SELECT value FROM public.sys_config")
-    return [x[0] for x in cur.fetchall()][0]
+    try:
+        cur.execute("SELECT value FROM public.sys_config")
+        return [x[0] for x in cur.fetchall()][0]
+    except psycopg2.errors.UndefinedTable:
+        return "M_"
 
 
 def get_scen_metadata(app_id: str):
