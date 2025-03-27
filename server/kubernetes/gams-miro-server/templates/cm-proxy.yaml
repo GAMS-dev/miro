@@ -42,9 +42,9 @@ data:
       usage-stats-url: micrometer
       {{- end }}
       {{- if eq .Values.proxy.config.containerLogBackend.type "s3" }}
-      container-log-path: s3://{{ .Values.proxy.config.containerLogBackend.bucketName }}{{ .Values.proxy.config.containerLogBackend.bucketDir }}
-      container-log-s3-access-key: {{ .Values.proxy.config.containerLogBackend.accessKeyId | quote }}
-      container-log-s3-region: {{ .Values.proxy.config.containerLogBackend.region | quote }}
+      container-log-path: s3://{{ .Values.proxy.config.containerLogBackend.s3.bucketName }}{{ .Values.proxy.config.containerLogBackend.s3.bucketDir }}
+      container-log-s3-access-key: {{ .Values.proxy.config.containerLogBackend.s3.accessKeyId | quote }}
+      container-log-s3-region: {{ .Values.proxy.config.containerLogBackend.s3.region | quote }}
       {{- end }}
       webservice:
         authentication-url: http://{{ include "common.names.fullname" . }}-auth:8081/login
