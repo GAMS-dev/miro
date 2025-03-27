@@ -7,7 +7,7 @@ from selenium.common.exceptions import (
     NoSuchElementException,
     ElementClickInterceptedException,
     StaleElementReferenceException,
-    TimeoutException
+    TimeoutException,
 )
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -16,6 +16,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from .util import (
     drop_file,
     get_image_hash,
+    get_image_hash_background_style_b64,
     get_selectize_options,
     select_selectize_options,
 )
@@ -418,12 +419,14 @@ class UITests(unittest.TestCase):
             except (
                 StaleElementReferenceException,
                 ElementClickInterceptedException,
-                TimeoutException
+                TimeoutException,
             ) as exc:
                 retry_count += 1
                 time.sleep(1)
                 self.assertLessEqual(
-                    retry_count, 10, f"Couldn't switch to output data section after 10 tries: {exc}"
+                    retry_count,
+                    10,
+                    f"Couldn't switch to output data section after 10 tries: {exc}",
                 )
         table_container = wait.until(
             EC.presence_of_element_located((By.ID, "table_tab_1_1-datatable"))
@@ -662,13 +665,168 @@ class UITests(unittest.TestCase):
 
         self.driver.switch_to.default_content()
 
+    def test_update_app_meta(self):
+        # test that updating metadata works
+        self.login()
+        # open admin panel
+        self.driver.find_element(By.ID, "navAdminPanel").click()
+
+        WebDriverWait(self.driver, 30).until(
+            EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
+        )
+
+        WebDriverWait(self.driver, 30).until(
+            EC.visibility_of_element_located((By.ID, "addAppBox"))
+        )
+
+        wait = WebDriverWait(self.driver, 10)
+        retry_count = 0
+        while True:
+            try:
+                wait.until(EC.element_to_be_clickable((By.ID, "addApp"))).click()
+                break
+            except (
+                StaleElementReferenceException,
+                ElementClickInterceptedException,
+            ) as exc:
+                retry_count += 1
+                time.sleep(1)
+                self.assertLessEqual(
+                    retry_count, 10, f"Couldn't click addApp box after 10 tries: {exc}"
+                )
+        file_input = wait.until(EC.presence_of_element_located((By.ID, "miroAppFile")))
+        wait.until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, "label[for='miroAppFile']")
+            )
+        )
+        file_input.send_keys(
+            os.path.join(os.getcwd(), "tests", "data", "transport.miroapp")
+        )
+        wait.until(
+            EC.text_to_be_present_in_element_value(
+                (By.ID, "newAppName"), "Transport test app"
+            )
+        )
+        self.driver.find_element(By.ID, "btAddApp").click()
+        WebDriverWait(self.driver, 30).until(
+            EC.invisibility_of_element((By.ID, "expandedAddAppWrapper"))
+        )
+        self.driver.find_element(By.CLASS_NAME, "input-group").click()
+        WebDriverWait(self.driver, 30).until(
+            EC.visibility_of_element_located((By.CLASS_NAME, "btn-save-changes"))
+        )
+        title_input = wait.until(EC.presence_of_element_located((By.ID, "appTitle_1")))
+        title_input.clear()
+        title_input.send_keys("bla123")
+        WebDriverWait(self.driver, 30).until(
+            EC.element_to_be_clickable((By.CLASS_NAME, "btn-save-changes"))
+        ).click()
+        wait.until(
+            EC.text_to_be_present_in_element((By.ID, "staticAppTitle_1"), "bla123")
+        )
+        static_app_desc = self.driver.find_element(By.ID, "staticAppDesc_1")
+        self.assertTrue(
+            static_app_desc.text.strip() == "Transport app for UI tests",
+            "description text does not match the expected value.",
+        )
+        self.assertEqual(
+            get_image_hash_background_style_b64(self.driver, ".app-logo"),
+            "c1f874ff6b82b6566e7ac3491ca766b1",  # pragma: allowlist secret
+            "Default logo not displayed",
+        )
+        self.driver.find_element(By.CLASS_NAME, "input-group").click()
+        WebDriverWait(self.driver, 30).until(
+            EC.visibility_of_element_located((By.CLASS_NAME, "btn-save-changes"))
+        )
+        logo_input = wait.until(
+            EC.presence_of_element_located((By.ID, "updateMiroAppLogo"))
+        )
+        logo_input.send_keys(
+            os.path.join(os.getcwd(), "tests", "data", "gams_logo.png")
+        )
+        wait.until(
+            EC.text_to_be_present_in_element(
+                (By.ID, "updateMiroAppLogo_progress"), "Upload complete"
+            )
+        )
+        self.assertEqual(
+            get_image_hash_background_style_b64(self.driver, ".app-logo"),
+            "7420e77f2fbc70ac06e3f39fa3094860",  # pragma: allowlist secret
+            "Updating logo did not work properly",
+        )
+        WebDriverWait(self.driver, 30).until(
+            EC.element_to_be_clickable((By.CLASS_NAME, "btn-save-changes"))
+        ).click()
+        wait.until(
+            EC.text_to_be_present_in_element((By.ID, "staticAppTitle_1"), "bla123")
+        )
+        static_app_desc = self.driver.find_element(By.ID, "staticAppDesc_1")
+        self.assertTrue(
+            static_app_desc.text.strip() == "Transport app for UI tests",
+            "description text does not match the expected value.",
+        )
+        self.assertEqual(
+            get_image_hash_background_style_b64(self.driver, ".app-logo"),
+            "7420e77f2fbc70ac06e3f39fa3094860",  # pragma: allowlist secret
+            "Updating logo did not work properly",
+        )
+        self.driver.switch_to.default_content()
+        wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "navbar-brand"))).click()
+        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "launch-app")))
+
+        def get_url_from_style(style: str) -> str:
+            start_index = style.find("url(") + len("url(")
+            end_index = style.find(")", start_index)
+            return self.ui_url + style[start_index:end_index].strip("\"'")
+
+        self.assertEqual(
+            get_image_hash(
+                self.driver,
+                ".app-logo",
+                attribute="style",
+                cookies={
+                    cookie["name"]: cookie["value"]
+                    for cookie in self.driver.get_cookies()
+                },
+                transformer_fn=get_url_from_style,
+            ),
+            "7420e77f2fbc70ac06e3f39fa3094860",  # pragma: allowlist secret
+            "Updated logo not displayed correctly in gallery",
+        )
+        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app")
+        visible_buttons = [btn for btn in all_buttons if btn.is_displayed()]
+        self.assertTrue(
+            len(visible_buttons) == 1,
+            "More than one visible 'launch-app' button found.",
+        )
+        self.assertTrue(
+            visible_buttons[0].get_attribute("href").endswith("/app/test_app1"),
+            "The href of the launch-app link is not '/app/test_app1'.",
+        )
+        visible_buttons[0].click()
+        wait.until(EC.visibility_of_element_located((By.ID, "loading")))
+        WebDriverWait(self.driver, 30).until(
+            EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
+        )
+        wait.until(
+            EC.text_to_be_present_in_element(
+                (By.CLASS_NAME, "readme-wrapper"),
+                "A Transportation Problem with multiple version LP/MIP/MINLP",
+            )
+        )
+
     def test_app_environment(self):
         """Test that environment dialog opens with pre-defined environment variables in app_info.json"""
         self.login()
         self.assertEqual(
-            get_image_hash(self.driver, '//link[contains(@rel, "icon")]',
-                           attribute="href", xpath=True),
-            "05b572547194e2dd1700ded2fb5afa89", # pragma: allowlist secret
+            get_image_hash(
+                self.driver,
+                '//link[contains(@rel, "icon")]',
+                attribute="href",
+                xpath=True,
+            ),
+            "05b572547194e2dd1700ded2fb5afa89",  # pragma: allowlist secret
             "Favicon not correct",
         )
         # open admin panel
@@ -804,19 +962,33 @@ class UITests(unittest.TestCase):
         visible_buttons[0].click()
         wait.until(EC.visibility_of_element_located((By.ID, "loading")))
         self.assertEqual(
-            get_image_hash(self.driver, '//link[contains(@rel, "icon") and not(contains(@rel, "apple-touch"))]',
-                           attribute="href", xpath=True,
-                           cookies={cookie['name']: cookie['value'] for cookie in self.driver.get_cookies()}),
-            "19c0456e4ab146f8e47b5a409cc2541c", # pragma: allowlist secret
+            get_image_hash(
+                self.driver,
+                '//link[contains(@rel, "icon") and not(contains(@rel, "apple-touch"))]',
+                attribute="href",
+                xpath=True,
+                cookies={
+                    cookie["name"]: cookie["value"]
+                    for cookie in self.driver.get_cookies()
+                },
+            ),
+            "19c0456e4ab146f8e47b5a409cc2541c",  # pragma: allowlist secret
             "Favicon not correct for app",
         )
         self.driver.get(f"{self.ui_url}/app_direct/test_app1")
         wait.until(EC.visibility_of_element_located((By.ID, "loading-screen")))
         self.assertEqual(
-            get_image_hash(self.driver, '//link[contains(@rel, "icon") and not(contains(@rel, "apple-touch"))]',
-                           attribute="href", xpath=True,
-                           cookies={cookie['name']: cookie['value'] for cookie in self.driver.get_cookies()}),
-            "19c0456e4ab146f8e47b5a409cc2541c", # pragma: allowlist secret
+            get_image_hash(
+                self.driver,
+                '//link[contains(@rel, "icon") and not(contains(@rel, "apple-touch"))]',
+                attribute="href",
+                xpath=True,
+                cookies={
+                    cookie["name"]: cookie["value"]
+                    for cookie in self.driver.get_cookies()
+                },
+            ),
+            "19c0456e4ab146f8e47b5a409cc2541c",  # pragma: allowlist secret
             "Favicon not correct for app_direct",
         )
         self.driver.get(self.ui_url)

@@ -5,13 +5,24 @@ import requests
 from selenium.webdriver.common.by import By
 
 
-def get_image_hash(driver, css_selector, attribute="src", xpath=False, cookies=None):
-    image_element = driver.find_element(By.XPATH if xpath else By.CSS_SELECTOR, css_selector)
+def get_image_hash(
+    driver,
+    css_selector,
+    attribute="src",
+    xpath=False,
+    cookies=None,
+    transformer_fn: callable = None,
+):
+    image_element = driver.find_element(
+        By.XPATH if xpath else By.CSS_SELECTOR, css_selector
+    )
 
     image_url = image_element.get_attribute(attribute)
-    print(image_url)
     if not image_url:
         raise ValueError("Image URL not found.")
+
+    if transformer_fn:
+        image_url = transformer_fn(image_url)
 
     session = requests.Session()
     if cookies:
@@ -21,6 +32,30 @@ def get_image_hash(driver, css_selector, attribute="src", xpath=False, cookies=N
     image_content = response.content
 
     return hashlib.md5(image_content).hexdigest()
+
+
+def get_image_hash_background_style_b64(driver, css_selector, xpath=False):
+    """
+    Retrieves the base64 encoded background-image from an element's style,
+    decodes it, and returns the MD5 hash of the decoded PNG data.
+
+    Args:
+        driver: Selenium WebDriver instance.
+        css_selector: The CSS selector of the element.
+        xpath: whether selector is XPath
+
+    Returns:
+        The MD5 hash (hex digest) of the base64 decoded PNG data.
+    """
+    element = driver.find_element(By.XPATH if xpath else By.CSS_SELECTOR, css_selector)
+    style: str = element.get_attribute("style")
+
+    start_index = style.find("base64,") + len("base64,")
+    end_index = style.find(")", start_index)
+    base64_data = style[start_index:end_index]
+
+    decoded_data = base64.b64decode(base64_data)
+    return hashlib.md5(decoded_data).hexdigest()
 
 
 def select_selectize_options(driver, target_element, options):
