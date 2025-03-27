@@ -758,6 +758,8 @@ test_job_api:
     POSTGRES_USER: $GMS_MIRO_DATABASE_USER
     POSTGRES_PASSWORD: $GMS_MIRO_DATABASE_PWD
     POSTGRES_HOST_AUTH_METHOD: trust
+    PYTEST_JUNIT: 'report.xml'
+    PYTEST_COV: 'coverage.xml'
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
   script:
@@ -769,6 +771,14 @@ test_job_api:
     - if: $CI_MERGE_REQUEST_TITLE =~ /^Draft:/
       when: manual
     - if: $CI_MERGE_REQUEST_ID
+  artifacts:
+    when: always
+    expire_in: 1 week
+    reports:
+      junit: $PYTEST_JUNIT
+      coverage_report:
+        coverage_format: cobertura
+        path: $PYTEST_COV
 
 test_job:
   tags:
@@ -843,8 +853,6 @@ test_job_miro_server:
     DOCKER_CERT_PATH: '/certs/client'
     DOCKER_HOST: tcp://docker:2376
     FF_NETWORK_PER_BUILD: 'true'
-    PYTEST_JUNIT: 'report.xml'
-    PYTEST_COV: 'coverage.xml'
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
   script:
@@ -856,11 +864,6 @@ test_job_miro_server:
     when: always
     paths:
       - miro_server_all_logs.txt
-    reports:
-      junit: $PYTEST_JUNIT
-      coverage_report:
-        coverage_format: cobertura
-        path: $PYTEST_COV
     expire_in: 1 week
   rules:
     - if: $CI_COMMIT_TAG
@@ -886,6 +889,8 @@ test_job_miro_server_k8s:
     DOCKER_CERT_PATH: '/certs/client'
     DOCKER_HOST: tcp://docker:2376
     FF_NETWORK_PER_BUILD: 'true'
+    PYTEST_JUNIT: 'report.xml'
+    PYTEST_COV: 'coverage.xml'
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - mkdir kind-logs
@@ -896,8 +901,14 @@ test_job_miro_server_k8s:
   dependencies: []
   artifacts:
     when: always
+    expire_in: 1 week
     paths:
       - ./kind-logs
+    reports:
+      junit: $PYTEST_JUNIT
+      coverage_report:
+        coverage_format: cobertura
+        path: $PYTEST_COV
   rules:
     - if: $CI_COMMIT_TAG
       when: never
