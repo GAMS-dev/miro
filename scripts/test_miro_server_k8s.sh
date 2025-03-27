@@ -108,7 +108,7 @@ EOF
                 --set db.password=mySuperStrongPassword \
                 --set persistence.local.path=/home/mnt \
                 --set proxy.config.engine.apiUrl=${ENGINE_URL} \
-                --set proxy.config.engine.namespace=${ENGINE_NS} \
+                --set proxy.config.engine.namespace=${ENGINE_NS_2} \
                 --set proxy.config.forceSignedApps.enabled=true \
                 --set proxy.config.logo.enabled=true \
                 --set proxy.config.logo.path="custom/gams_logo.png" \
