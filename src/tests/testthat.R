@@ -64,6 +64,19 @@ if (Sys.info()[["sysname"]] == "Darwin") {
   Sys.setenv(CHROMOTE_CHROME = chromePath)
 }
 
+if (!is.na(Sys.getenv("MIRO_TEST_GAMS_LICENSE_KEY", NA_character_))) {
+  gamsLicFullPath <- file.path(getwd(), "gamslice.txt")
+  processx::run("gamspy", c(
+    "install",
+    "license", Sys.getenv("MIRO_TEST_GAMS_LICENSE_KEY")
+  ))
+  processx::run(
+    file.path(Sys.getenv("GAMS_SYS_DIR"), "gamsgetkey"),
+    c(Sys.getenv("MIRO_TEST_GAMS_LICENSE_KEY"), "-o", gamsLicFullPath)
+  )
+  Sys.setenv(MIRO_TEST_GAMS_LICE = gamsLicFullPath)
+}
+
 reporter <- MultiReporter$new(list(
   ProgressReporter$new(max_failures = as.integer(Sys.getenv("MIRO_MAX_TEST_FAILURES", "1"))),
   JunitReporter$new(file = file.path(getwd(), "test-out.xml"))
