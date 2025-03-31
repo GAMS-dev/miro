@@ -48,7 +48,7 @@ expect_deploy_works <- function(useTemp = TRUE, buildArchive = TRUE, miroMode = 
     writeLines(c("Hello", "World"), file.path(testModelPath, paste0(modelToTest, "_files.txt")))
   }
   if (identical(manipulate, "wrongAppInfo")) {
-    dir.create(file.path(testModelPath, paste0("static_", modelToTest)))
+    suppressWarnings(dir.create(file.path(testModelPath, paste0("static_", modelToTest))))
     writeLines('{"title": true}', file.path(testModelPath, paste0("static_", modelToTest), "app_info.json"))
   }
 
