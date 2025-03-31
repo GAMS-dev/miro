@@ -64,12 +64,21 @@ if (Sys.info()[["sysname"]] == "Darwin") {
   Sys.setenv(CHROMOTE_CHROME = chromePath)
 }
 
+if (is.na(Sys.getenv("GAMSPY_INTERPRETER_PATH", NA_character_))) {
+  runGAMSPyTests <- FALSE
+} else {
+  runGAMSPyTests <- TRUE
+  Sys.setenv(PYTHON_EXEC_PATH = Sys.getenv("GAMSPY_INTERPRETER_PATH"))
+}
+
 if (!is.na(Sys.getenv("MIRO_TEST_GAMS_LICENSE_KEY", NA_character_))) {
   gamsLicFullPath <- file.path(getwd(), "gamslice.txt")
-  processx::run("gamspy", c(
-    "install",
-    "license", Sys.getenv("MIRO_TEST_GAMS_LICENSE_KEY")
-  ))
+  if (runGAMSPyTests) {
+    processx::run("gamspy", c(
+      "install",
+      "license", Sys.getenv("MIRO_TEST_GAMS_LICENSE_KEY")
+    ))
+  }
   processx::run(
     file.path(Sys.getenv("GAMS_SYS_DIR"), "gamsgetkey"),
     c(Sys.getenv("MIRO_TEST_GAMS_LICENSE_KEY"), "-o", gamsLicFullPath)

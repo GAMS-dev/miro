@@ -58,6 +58,11 @@ test_that(
       file.path(miroModelDir, "conf_sudoku", "sudoku.json")
     )
 
+    skip_if(
+      is.na(Sys.getenv("PYTHON_EXEC_PATH", NA_character_)),
+      "Skipping GAMSPy test as no Python interpreter was set"
+    )
+
     createTestDb()
 
     additionalGamsClArgs <- character(0L)
@@ -66,7 +71,6 @@ test_that(
     }
     miroModelDir <- file.path(testDir, "..", "model", "gamspy", "pickstock")
     Sys.setenv(MIRO_MODEL_PATH = file.path(miroModelDir, "pickstock.py"))
-    Sys.setenv(PYTHON_EXEC_PATH = Sys.which("python3")[[1]])
     Sys.setenv(MIRO_LOG_CONTAINER_ID = "logStatusContainer")
     extraClArgs <- c(additionalGamsClArgs, "MIP=CBC")
     if (length(additionalGamsClArgs)) {
@@ -81,6 +85,6 @@ test_that(
       )
     }
 
-    Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "GMSMODELNAME", "PYTHON_EXEC_PATH", "MIRO_LOG_CONTAINER_ID"))
+    Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "GMSMODELNAME", "MIRO_LOG_CONTAINER_ID"))
   })
 )
