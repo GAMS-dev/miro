@@ -142,7 +142,9 @@ Sys.sleep(0.5)
 expect_error(app2$click(selector = "#btSaveReadonly"), NA)
 Sys.sleep(0.5)
 # discard permissions true per default for not owned scenarios
-expect_true(app2$get_js("$('#newScenDiscardPerm').get(0).checked"))
+expect_identical(app2$get_value(input = "editMetaReadPerm"), user2)
+expect_identical(app2$get_value(input = "editMetaWritePerm"), user2)
+expect_identical(app2$get_value(input = "editMetaExecPerm"), user2)
 app2$click(selector = "#shiny-modal #dialogSaveInit .bt-gms-confirm")
 Sys.sleep(1)
 
@@ -269,7 +271,9 @@ expect_error(app2$click(selector = "#btSaveReadonly"), NA)
 Sys.sleep(0.5)
 # discard permissions for new user2 scenario
 # discard permissions true per default for not owned scenarios
-expect_true(app2$get_js("$('#newScenDiscardPerm').get(0).checked"))
+expect_identical(app2$get_value(input = "editMetaReadPerm"), user2)
+expect_identical(app2$get_value(input = "editMetaWritePerm"), user2)
+expect_identical(app2$get_value(input = "editMetaExecPerm"), user2)
 app2$click(selector = "#shiny-modal #dialogSaveInit .bt-gms-confirm")
 Sys.sleep(1)
 # btSaveConfirm should not be visible since scenario is newly created for user2
