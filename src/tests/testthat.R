@@ -79,10 +79,11 @@ if (!is.na(Sys.getenv("MIRO_TEST_GAMS_LICENSE_KEY", NA_character_))) {
       "license", Sys.getenv("MIRO_TEST_GAMS_LICENSE_KEY")
     ))
   }
-  processx::run(
+  proc <- processx::run(
     file.path(Sys.getenv("GAMS_SYS_DIR"), "gamsgetkey"),
-    c(Sys.getenv("MIRO_TEST_GAMS_LICENSE_KEY"), "-o", gamsLicFullPath)
+    Sys.getenv("MIRO_TEST_GAMS_LICENSE_KEY")
   )
+  writeLines(proc$stdout, gamsLicFullPath)
   Sys.setenv(MIRO_TEST_GAMS_LICE = gamsLicFullPath)
 }
 
