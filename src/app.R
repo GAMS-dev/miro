@@ -824,7 +824,7 @@ if (miroBuildOnly) {
       } else if (!grepl("^[a-z0-9][a-z0-9-_]{0,59}$", modelName, perl = TRUE)) {
         stop(
           sprintf(
-            "The main GMS file ('%s') contains an invalid app ID. App IDs must meet the following criteria: contain only ASCII lowercase letters, digits, '-', or '_'; cannot start with '-' or '_'; and cannot exceed 60 characters in length.\nTo provide a valid app ID, specify it in the `%s` JSON file using the `appId` key, for example: {\"appId\": \"my_model123\"}.",
+            "The main model file ('%s') contains an invalid app ID. App IDs must meet the following criteria: contain only ASCII lowercase letters, digits, '-', or '_'; cannot start with '-' or '_'; and cannot exceed 60 characters in length.\nTo provide a valid app ID, specify it in the `%s` JSON file using the `appId` key, for example: {\"appId\": \"my_model123\"}.",
             appIdToValidate, appInfoPath
           ),
           call. = FALSE

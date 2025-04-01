@@ -31,7 +31,7 @@ removeTempDirs <- function(appId, warnOnly = FALSE) {
         dirPath
       )
       if (warnOnly) {
-        flog.warn(dirPath)
+        flog.warn(errorMessage)
         next
       }
       stop(errorMessage, call. = FALSE)

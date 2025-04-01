@@ -270,7 +270,7 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
     invalidGroupLabels <- labelsEngineTmp != tolower(labelsEngineTmp)
     if (any(invalidGroupLabels)) {
       flog.warn(
-        "Some groups were ignore as they contain uppercase letters (currently not supported): %s.",
+        "Some groups were ignored as they contain uppercase letters (currently not supported): %s.",
         paste(labelsEngineTmp[invalidGroupLabels], collapse = ", ")
       )
     }

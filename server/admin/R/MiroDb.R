@@ -152,7 +152,7 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
         if (update) {
           private$runQuery(
             sprintf(
-              "UPDATE sys_config SET value = %s, verified = FALSE WHERE key='role_prefix;",
+              "UPDATE sys_config SET value = %s, verified = FALSE WHERE key='role_prefix';",
               dbQuoteString(private$conn, newRolePrefix)
             )
           )
