@@ -71,13 +71,13 @@ genAccessPermInputs <- function(containerSelector, resetPerm = FALSE) {
 observeEvent(input$btSaveAs, {
   saveAsFlag <<- TRUE
   flog.debug("%s: Save As button clicked.", uid)
-  rv$btRemoveOutputData <<- isolate(rv$btRemoveOutputData + 1)
+  rv$btRemoveOutputData <<- rv$btRemoveOutputData + 1L
 })
 # Save button clicked
 observeEvent(input$btSave, {
   saveAsFlag <<- FALSE
   flog.debug("%s: Save button clicked.", uid)
-  rv$btRemoveOutputData <<- isolate(rv$btRemoveOutputData + 1)
+  rv$btRemoveOutputData <<- rv$btRemoveOutputData + 1L
 })
 
 observeEvent(virtualActionButton(rv$btRemoveOutputData), {
@@ -86,10 +86,10 @@ observeEvent(virtualActionButton(rv$btRemoveOutputData), {
     showRemoveExistingOutputDataDialog()
   } else {
     if (saveAsFlag || is.null(activeScen) || !length(activeScen$getSid())) {
-      rv$btSaveAs <<- isolate(rv$btSaveAs + 1)
+      rv$btSaveAs <<- rv$btSaveAs + 1L
     } else {
       # overwrite current scenario data
-      rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1L)
+      rv$btSaveConfirm <<- rv$btSaveConfirm + 1L
     }
   }
 })
@@ -97,36 +97,39 @@ observeEvent(input$btRemoveOutput, {
   flog.debug("%s: User confirmed that output data for scenario will be removed.", uid)
   saveOutput <<- FALSE
   if (saveAsFlag || is.null(activeScen) || !length(activeScen$getSid())) {
-    rv$btSaveAs <<- isolate(rv$btSaveAs + 1L)
+    rv$btSaveAs <<- rv$btSaveAs + 1L
   } else {
     # overwrite current scenario data
-    rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1L)
+    rv$btSaveConfirm <<- rv$btSaveConfirm + 1L
   }
 })
 observeEvent(input$btSaveOutput, {
   flog.debug("%s: User confirmed that output data for scenario will be saved regardless of possible corruption", uid)
   saveOutput <<- TRUE
   if (saveAsFlag || is.null(activeScen) || !length(activeScen$getSid())) {
-    rv$btSaveAs <<- isolate(rv$btSaveAs + 1L)
+    rv$btSaveAs <<- rv$btSaveAs + 1L
   } else {
     # overwrite current scenario data
-    rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1L)
+    rv$btSaveConfirm <<- rv$btSaveConfirm + 1L
   }
 })
 observeEvent(
   input$btSaveReadonly,
-  rv$btSaveAs <<- isolate(rv$btSaveAs + 1L)
+  rv$btSaveAs <<- rv$btSaveAs + 1L
 )
 # enter scenario name
 observeEvent(virtualActionButton(rv$btSaveAs), {
   saveAsFlag <<- TRUE
   showNewScenDialog(activeScen$getScenName(),
     scenTags = activeScen$getStags(),
-    allScenTags = db$getAllScenTags()
+    allScenTags = db$getAllScenTags(),
+    showPermissionSelectors = isShinyProxy
   )
-  genAccessPermInputs("#contentAccessPerm",
-    resetPerm = !identical(activeScen$getScenUid(), uid)
-  )
+  if (isShinyProxy) {
+    genAccessPermInputs("#contentAccessPerm",
+      resetPerm = !identical(activeScen$getScenUid(), uid)
+    )
+  }
 })
 
 observeEvent(input$btNewName, {
@@ -368,22 +371,25 @@ observeEvent(input$btEditMeta, {
     ugroups = csv2Vector(db$getUserAccessGroups()),
     isLocked = length(activeScen) != 0L && length(activeScen$getLockUid()) > 0L,
     selectedTab = input$btEditMeta,
-    allScenTags = db$getAllScenTags()
+    allScenTags = db$getAllScenTags(),
+    showPermissionSelectors = isShinyProxy
   )
 })
 
-observeEvent(input$tpEditMeta, {
-  if (!identical(input$tpEditMeta, "accessPerm") ||
-    identical(length(activeScen), 0L) ||
-    length(activeScen$getLockUid()) > 0L) {
-    return()
-  }
-  flog.trace("Access permissions tab in metadata dialog selected")
-  removeUI("#contentAccessPerm .form-group", multiple = TRUE)
-  if (genAccessPermInputs("#contentAccessPerm")) {
-    editMetaRemoteAccessPermLoaded <<- TRUE
-  }
-})
+if (isShinyProxy) {
+  observeEvent(input$tpEditMeta, {
+    if (!identical(input$tpEditMeta, "accessPerm") ||
+      identical(length(activeScen), 0L) ||
+      length(activeScen$getLockUid()) > 0L) {
+      return()
+    }
+    flog.trace("Access permissions tab in metadata dialog selected")
+    removeUI("#contentAccessPerm .form-group", multiple = TRUE)
+    if (genAccessPermInputs("#contentAccessPerm")) {
+      editMetaRemoteAccessPermLoaded <<- TRUE
+    }
+  })
+}
 
 observeEvent(input$btUpdateMeta, {
   flog.debug("Button to update metadata clicked.")

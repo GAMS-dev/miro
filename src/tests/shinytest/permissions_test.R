@@ -1,23 +1,23 @@
 # launch user1
-Sys.setenv(MIRO_USERNAME = "testuser1")
-Sys.setenv(MIRO_USERGROUPS = "users")
 app <- AppDriver$new("../../",
   name = "permissions_test", variant = NULL,
   load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
   timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
 )
-
-user1 <- Sys.getenv("MIRO_USERNAME")
+user1 <- Sys.getenv("SHINYPROXY_USERNAME")
+user2 <- Sys.getenv("SHINYPROXY_USERNAME2")
+accessTokenUser1 <- Sys.getenv("SHINYPROXY_WEBSERVICE_ACCESS_TOKEN")
+accessTokenUser2 <- Sys.getenv("SHINYPROXY_WEBSERVICE_ACCESS_TOKEN2")
+Sys.setenv(SHINYPROXY_USERNAME = user2)
+Sys.setenv(SHINYPROXY_WEBSERVICE_ACCESS_TOKEN = accessTokenUser2)
+Sys.setenv(MIRO_DATA_DIR = Sys.getenv("MIRO_DATA_DIR2"))
 # launch user2
-Sys.setenv(MIRO_USERNAME = "testuser2")
 app2 <- AppDriver$new("../../",
   variant = NULL,
   load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
   timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
 )
 
-user2 <- Sys.getenv("MIRO_USERNAME")
-Sys.unsetenv("MIRO_USERNAME")
 
 # scenarios visible for user2
 # 1_ default user1
@@ -40,6 +40,7 @@ app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeo
 Sys.sleep(0.1)
 app$click(selector = "a[data-value='accessPerm']")
 Sys.sleep(0.5)
+app$wait_for_js("$('.access-perm-spinner').is(':visible')===false", timeout = 5000L)
 app$set_inputs(editMetaExecPerm = user1)
 Sys.sleep(0.5)
 app$set_inputs(btUpdateMeta = "click")
@@ -58,6 +59,7 @@ app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeo
 Sys.sleep(0.1)
 app$click(selector = "a[data-value='accessPerm']")
 Sys.sleep(1)
+app$wait_for_js("$('.access-perm-spinner').is(':visible')===false", timeout = 5000L)
 app$set_inputs(editMetaReadPerm = user1)
 app$set_inputs(btUpdateMeta = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
@@ -76,6 +78,7 @@ app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeo
 Sys.sleep(0.1)
 app$click(selector = "a[data-value='accessPerm']")
 Sys.sleep(1)
+app$wait_for_js("$('.access-perm-spinner').is(':visible')===false", timeout = 5000L)
 app$set_inputs(editMetaReadPerm = c(getSelectizeOptions(app, "#editMetaReadPerm"), "#users"))
 app$set_inputs(editMetaWritePerm = c(getSelectizeOptions(app, "#editMetaWritePerm"), "#users"))
 app$set_inputs(editMetaExecPerm = c(getSelectizeOptions(app, "#editMetaExecPerm"), "#users"))
@@ -141,6 +144,7 @@ app2$set_inputs(btSaveOutput = "click")
 Sys.sleep(0.5)
 expect_error(app2$click(selector = "#btSaveReadonly"), NA)
 Sys.sleep(0.5)
+app2$wait_for_js("$('.access-perm-spinner').is(':visible')===false", timeout = 5000L)
 # discard permissions true per default for not owned scenarios
 expect_identical(app2$get_value(input = "editMetaReadPerm"), user2)
 expect_identical(app2$get_value(input = "editMetaWritePerm"), user2)
@@ -165,6 +169,7 @@ app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeo
 Sys.sleep(0.1)
 app$click(selector = "a[data-value='accessPerm']")
 Sys.sleep(1)
+app$wait_for_js("$('.access-perm-spinner').is(':visible')===false", timeout = 5000L)
 app$set_inputs(editMetaReadPerm = user1, editMetaExecPerm = user1)
 app$set_inputs(btUpdateMeta = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
@@ -172,7 +177,9 @@ Sys.sleep(0.1)
 app$set_inputs(btSave = "click")
 Sys.sleep(1)
 app$stop()
-Sys.setenv(MIRO_USERNAME = "testuser1")
+Sys.setenv(SHINYPROXY_USERNAME = user1)
+Sys.setenv(SHINYPROXY_WEBSERVICE_ACCESS_TOKEN = accessTokenUser1)
+Sys.setenv(MIRO_DATA_DIR = Sys.getenv("MIRO_DATA_DIR3"))
 app <- AppDriver$new("../../",
   variant = NULL,
   load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
@@ -184,6 +191,8 @@ app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeo
 Sys.sleep(0.1)
 app$click(selector = "a[data-value='accessPerm']")
 Sys.sleep(1)
+app$wait_for_js("$('.access-perm-spinner').is(':visible')===false", timeout = 5000L)
+Sys.sleep(0.5)
 expect_identical(length(app$get_values()$input[["editMetaReadPerm"]]), 2L)
 expect_identical(length(app$get_values()$input[["editMetaWritePerm"]]), 1L)
 expect_identical(length(app$get_values()$input[["editMetaExecPerm"]]), 2L)
@@ -206,6 +215,7 @@ app2$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", time
 Sys.sleep(0.1)
 expect_error(app2$click(selector = "a[data-value='accessPerm']"), NA)
 Sys.sleep(1)
+app2$wait_for_js("$('.access-perm-spinner').is(':visible')===false", timeout = 5000L)
 expect_length(getSelectizeOptions(app2, "#editMetaWritePerm"), 2L)
 # expect user2 not be allowed to remove user1 (owner) from permissions
 app2$set_inputs(editMetaReadPerm = "#users")
@@ -262,12 +272,15 @@ app2$set_inputs(btUpdateMeta = "click")
 # is able to solve
 app2$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
 Sys.sleep(0.1)
-app2$set_inputs(btSolve = "click")
-expect_error(app2$wait_for_js("$('#outputTableView').is(':visible')", timeout = 15000L), NA)
+app2$click(selector = ".btSolve .dropdown-toggle")
+app2$click(selector = ".change-dd-button[data-action-id='btSolve']")
+expect_error(app2$wait_for_js("$('#outputTableView').is(':visible')", timeout = 30000L), NA)
 Sys.sleep(0.5)
 app2$set_inputs(btSave = "click")
 Sys.sleep(0.5)
 expect_error(app2$click(selector = "#btSaveReadonly"), NA)
+Sys.sleep(2L)
+app2$wait_for_js("$('.access-perm-spinner').is(':visible')===false", timeout = 5000L)
 Sys.sleep(0.5)
 # discard permissions for new user2 scenario
 # discard permissions true per default for not owned scenarios
@@ -283,6 +296,7 @@ app2$set_inputs(btEditMeta = "click")
 Sys.sleep(0.5)
 expect_error(app2$click(selector = "a[data-value='accessPerm']"), NA)
 Sys.sleep(1)
+app2$wait_for_js("$('.access-perm-spinner').is(':visible')===false", timeout = 5000L)
 expect_identical(length(app2$get_values()$input[["editMetaReadPerm"]]), 1L)
 expect_identical(length(app2$get_values()$input[["editMetaWritePerm"]]), 1L)
 expect_identical(length(app2$get_values()$input[["editMetaExecPerm"]]), 1L)
@@ -304,7 +318,8 @@ app2$set_inputs(selLoadScen = paste0("4_", user1))
 app2$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(1)
 # not able to solve
-app2$set_inputs(btSolve = "click")
+app2$click(selector = ".btSolve .dropdown-toggle")
+app2$click(selector = ".change-dd-button[data-action-id='btSolve']")
 Sys.sleep(2)
 expect_error(app2$click(selector = "#shiny-modal button"), NA)
 Sys.sleep(0.5)

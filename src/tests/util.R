@@ -337,6 +337,17 @@ saveAdditionalGamsClArgs <- function(miroModelDir, modelToTest, additionalGamsCl
   jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
   return(invisible())
 }
+copyDirRecursive <- function(from, to) {
+  dir.create(to, recursive = TRUE, showWarnings = FALSE)
+  files <- list.files(from, recursive = TRUE, full.names = TRUE)
+  relative_paths <- list.files(from, recursive = TRUE)
+
+  for (i in seq_along(files)) {
+    target_path <- file.path(to, relative_paths[i])
+    dir.create(dirname(target_path), recursive = TRUE, showWarnings = FALSE)
+    file.copy(files[i], target_path, overwrite = TRUE)
+  }
+}
 PerformanceReporter <- R6::R6Class("PerformanceReporter", public = list(
   initialize = function() {
     private$url <- Sys.getenv("MIRO_REPORTER_URL", unset = NA)
@@ -470,4 +481,28 @@ removeUser <- function(apiURL, inviterUser, inviterPass, username) {
     httr::authenticate(inviterUser, inviterPass)
   )
   stopifnot(identical(httr::status_code(resp), 200L))
+}
+removeModel <- function(apiURL, namespace, inviterUser, inviterPass, modelName) {
+  resp <- httr::DELETE(
+    paste0(
+      apiURL, "/namespaces/", URLencode(namespace, reserved = TRUE),
+      "/models/", modelName
+    ), httr::timeout(10L),
+    httr::authenticate(inviterUser, inviterPass)
+  )
+  stopifnot(identical(httr::status_code(resp), 200L))
+}
+registerModel <- function(apiURL, namespace, inviterUser, inviterPass, modelName, modelFilesZip) {
+  resp <- httr::POST(
+    paste0(
+      apiURL, "/namespaces/", URLencode(namespace, reserved = TRUE),
+      "/models/", modelName
+    ), httr::timeout(10L),
+    encode = "multipart",
+    body = list(data = httr::upload_file(modelFilesZip,
+      type = "application/zip"
+    )),
+    httr::authenticate(inviterUser, inviterPass)
+  )
+  stopifnot(identical(httr::status_code(resp), 201L))
 }
