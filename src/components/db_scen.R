@@ -446,11 +446,6 @@ Scenario <- R6Class("Scenario",
       #   R6 object: reference to itself,
       #   throws exception in case of error
 
-      stopifnot(
-        is.character(newReadPerm),
-        is.character(newWritePerm),
-        is.character(newExecPerm)
-      )
       if (private$isReadonly() && sum(
         length(newReadPerm),
         length(newWritePerm),
