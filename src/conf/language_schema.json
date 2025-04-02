@@ -682,9 +682,20 @@
             "noNew": {
               "type": "string",
               "minLength": 1
+            },
+            "importerNames": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "database": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 1
             }
           },
-          "minProperties": 2
+          "minProperties": 3
         },
         "notificationOutputAttachmentAdded": {
           "type": "object",
@@ -3196,9 +3207,13 @@
             "exportDs": {
               "type": "string",
               "minLength": 1
+            },
+            "success": {
+              "type": "string",
+              "minLength": 1
             }
           },
-          "minProperties": 2
+          "minProperties": 3
         },
         "loadScenDb": {
           "type": "object",

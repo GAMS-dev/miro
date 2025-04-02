@@ -112,7 +112,7 @@ Sys.sleep(0.5)
 app$set_inputs(btReplaceInputData = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
 expect_equivalent(getHotData(app, "in_1"), tibble(i = c("Seattle", "Boston"), value = c(123L, 456L)))
-expect_true(grepl("2 datasets imported",
+expect_true(grepl("2 datasets imported from: JSON import",
   app$get_js("$('.shiny-notification-content-text:visible').map(function(){return $(this).text();}).get().join(',')"),
   fixed = TRUE
 ))
@@ -151,7 +151,7 @@ app$set_inputs(btImportExternal = "click")
 Sys.sleep(0.5)
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
 expect_equivalent(getHotData(app, "in_1"), tibble(i = c("Seattle", "Boston"), value = c(123L, 456L)))
-expect_true(grepl("1 datasets imported",
+expect_true(grepl("1 datasets imported from: JSON import",
   app$get_js("$('.shiny-notification-content-text:visible').map(function(){return $(this).text();}).get().join(',')"),
   fixed = TRUE
 ))

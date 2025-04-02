@@ -172,8 +172,11 @@
       "errorReturnCode": "Prozess wurde mit Status: %d beendet"
     },
     "notificationNewInput":{
-      "new":"%s Datensätze importiert.",
-      "noNew":"Keine neuen Datensätze importiert."
+      "new":"%s Datensätze importiert aus: %s.",
+      "noNew":"Keine neuen Datensätze importiert aus: %s.",
+      "importerNames": {
+        "database": "Datenbank"
+      }
     },
     "notificationOutputAttachmentAdded": {
       "desc": "Neue Ausgabeanhänge hinzugefügt: %s."
@@ -320,7 +323,7 @@
       "descLocal":"Wählen Sie eine Datei mit Daten aus",
       "newScenName": "Wählen Sie einen Namen für das neue Szenario",
       "scenNameExistsErr": "Der von Ihnen gewählte Szenarioname existiert bereits.",
-      "descClearSandbox": "Es sind bereits Daten in die Sandbox geladen. Möchten Sie diese Daten ersetzen?",
+      "descClearSandbox": "Es sind bereits Daten in die Sandbox geladen. Nicht gespeicherte Daten/Ergebnisse gehen verloren. Möchten Sie diese Daten ersetzen?",
       "descOverwriteInput":"Für das/die von Ihnen ausgewählte(n) Symbol(e) sind bereits Daten geladen. Möchten Sie die neuen Daten mit den vorhandenen Daten zusammenführen oder die vorhandenen Daten ersetzen?",
       "cbSelectManually":"Datensätze manuell auswählen",
       "overwriteWarning":"Bereits importierte Datensätze werden überschrieben!",
@@ -646,7 +649,8 @@
     },
     "exportScen":{
       "title": "Szenario wird exportiert",
-      "exportDs": "Datensatz %s von %s wird exportiert"
+      "exportDs": "Datensatz %s von %s wird exportiert",
+      "success": "Szenario erfolgreich exportiert nach: %s."
     },
     "loadScenDb":{
       "title":"Laden von Szenariodaten aus der Datenbank",

@@ -53,6 +53,10 @@ expect_true(app$get_js("$('#scenRemoteExportHandler').is(':hidden')&&$('#scenExp
 tempJSONFile <- tempfile()
 readr::write_file(get_file_content(app, "scenExportHandler"), tempJSONFile)
 expect_identical(jsonlite::read_json(tempJSONFile)$isValid, list(TRUE))
+expect_true(grepl("Scenario successfully exported to: JSON export.",
+  app$get_js("$('.shiny-notification-content-text:visible').map(function(){return $(this).text();}).get().join(',')"),
+  fixed = TRUE
+))
 Sys.sleep(1)
 app$click(selector = "#btRemove1")
 Sys.sleep(0.5)

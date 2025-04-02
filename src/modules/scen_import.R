@@ -419,12 +419,15 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
     }
     loadModeFileName <- "data.gdx"
     loadMode <- "gdx"
+    importerName <- "MIROSCEN"
     datasetsToFetch <- names(modelIn)
   } else if (identical(fileType, "gdx")) {
     loadMode <- "gdx"
+    importerName <- "GDX"
     datasetsToFetch <- names(modelIn)
   } else if (identical(fileType, "zip")) {
     loadMode <- "csv"
+    importerName <- "CSV"
     csvFiles <- tryCatch(
       getValidCsvFromZip(
         input$localInput$datapath,
@@ -465,6 +468,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
     loadModeWorkDir <- csvFiles$tmpDir
   } else if (fileType %in% csvio$getValidExtensions()) {
     loadMode <- "scsv"
+    importerName <- "CSV"
     clearOutputData <- FALSE
     datasetsToFetch <- csvio$getRSymName()
     if (!identical(input$selInputDataLocCSV, datasetsToFetch)) {
@@ -474,9 +478,11 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
     }
   } else if (fileType %in% xlsio$getValidExtensions()) {
     loadMode <- "xls"
+    importerName <- "Excel"
     datasetsToFetch <- xlsio$getSymbolNames()
   } else if (identical(fileType, "_ext_")) {
     loadMode <- "custom"
+    importerName <- customDataIO$getLabel()
   } else {
     removeModal()
     showErrorMsg(
@@ -580,9 +586,9 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
   newDataCount <- newInputCount + newOutputCount
 
   if (newDataCount) {
-    showNotification(sprintf(lang$nav$notificationNewInput$new, newDataCount))
+    showNotification(sprintf(lang$nav$notificationNewInput$new, newDataCount, importerName))
   } else {
-    showNotification(lang$nav$notificationNewInput$noNew, type = "error")
+    showNotification(sprintf(lang$nav$notificationNewInput$noNew, importerName), type = "error")
   }
   if (length(loadErrors)) {
     showErrorMsg(lang$errMsg$dataError$title, paste(loadErrors, collapse = "\n"))
@@ -676,9 +682,15 @@ loadDatasetsIntoSandbox <- function() {
   }
   scenData$loadSandbox(scenInputData, names(scenInputData), activeScen$getMetadataDf())
   if (newInputCount) {
-    showNotification(sprintf(lang$nav$notificationNewInput$new, newInputCount))
+    showNotification(sprintf(
+      lang$nav$notificationNewInput$new, newInputCount,
+      lang$nav$notificationNewInput$importerNames$database
+    ))
   } else {
-    showNotification(lang$nav$notificationNewInput$noNew, type = "error")
+    showNotification(sprintf(
+      lang$nav$notificationNewInput$noNew,
+      lang$nav$notificationNewInput$importerNames$database
+    ), type = "error")
   }
 }
 if (length(externalInputConfig)) {

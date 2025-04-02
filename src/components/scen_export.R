@@ -15,6 +15,10 @@ exportScenario <- function(file, data, exportFileTypeId, refId, tabsetId, attach
         if (interactiveMode && !suppressRemoveModal) {
           removeModal()
         }
+        showNotification(sprintf(
+          lang$progressBar$exportScen$success,
+          "GDX"
+        ))
       },
       error_duplicate_records = function(e) {
         flog.info("Duplicate records found when writing GDX file: %s", conditionMessage(e))
@@ -51,6 +55,10 @@ exportScenario <- function(file, data, exportFileTypeId, refId, tabsetId, attach
         if (interactiveMode && !suppressRemoveModal) {
           removeModal()
         }
+        showNotification(sprintf(
+          lang$progressBar$exportScen$success,
+          "MIROSCEN"
+        ))
       },
       error_duplicate_records = function(e) {
         flog.info(
@@ -81,9 +89,6 @@ exportScenario <- function(file, data, exportFileTypeId, refId, tabsetId, attach
     ))
   }
   if (identical(exportFileTypeId, "csv")) {
-    if (interactiveMode && !suppressRemoveModal) {
-      removeModal()
-    }
     if (length(data) == 0L) {
       return(readr::write_csv(tibble(), file))
     } else if (length(data) == 1L) {
@@ -118,9 +123,17 @@ exportScenario <- function(file, data, exportFileTypeId, refId, tabsetId, attach
       }
       readr::write_csv(data[[dsName]], file.path(tmpDir, paste0(dsName, ".csv")))
     }
-    return(suppressWarnings(zip::zipr(file, list.files(tmpDir, full.names = TRUE),
+    suppressWarnings(zip::zipr(file, list.files(tmpDir, full.names = TRUE),
       recurse = FALSE, include_directories = FALSE
-    )))
+    ))
+    if (interactiveMode && !suppressRemoveModal) {
+      removeModal()
+    }
+    showNotification(sprintf(
+      lang$progressBar$exportScen$success,
+      "CSV"
+    ))
+    return()
   }
   if (is.integer(exportFileTypeId)) {
     # custom export function
@@ -131,6 +144,10 @@ exportScenario <- function(file, data, exportFileTypeId, refId, tabsetId, attach
         if (interactiveMode && !suppressRemoveModal) {
           removeModal()
         }
+        showNotification(sprintf(
+          lang$progressBar$exportScen$success,
+          customDataIO$getLabel()
+        ))
       },
       error_custom = function(e) {
         flog.debug(
@@ -171,6 +188,10 @@ exportScenario <- function(file, data, exportFileTypeId, refId, tabsetId, attach
       if (interactiveMode && !suppressRemoveModal) {
         removeModal()
       }
+      showNotification(sprintf(
+        lang$progressBar$exportScen$success,
+        "Excel"
+      ))
     },
     error = function(e) {
       if (grepl("row or column index out of rang", conditionMessage(e), fixed = TRUE)) {

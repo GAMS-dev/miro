@@ -172,8 +172,11 @@
       "errorReturnCode": "Process terminated with status: %d"
     },
     "notificationNewInput":{
-      "new":"%s datasets imported.",
-      "noNew":"No dataset was imported."
+      "new":"%s datasets imported from: %s.",
+      "noNew":"No dataset was imported from: %s.",
+      "importerNames": {
+        "database": "Database"
+      }
     },
     "notificationOutputAttachmentAdded": {
       "desc": "Added new output attachments: %s."
@@ -320,7 +323,7 @@
       "descLocal":"Choose file with data to load",
       "newScenName": "Choose a name for the new scenario",
       "scenNameExistsErr": "The scenario name you chose does already exist.",
-      "descClearSandbox": "There is already data loaded in the sandbox. Do you want to clear this data?",
+      "descClearSandbox": "There is already data loaded in the sandbox. Unsaved data/results will be lost. Do you want to clear this data?",
       "descOverwriteInput":"Data is already loaded for the symbol(s) you selected. Do you want to merge the new data with the existing data or replace the existing data?",
       "cbSelectManually":"Manually choose datasets",
       "overwriteWarning":"Already imported datasets might be lost if you did not save them!",
@@ -816,7 +819,8 @@
     },
     "exportScen":{
       "title": "Exporting scenario",
-      "exportDs": "Exporting dataset %s of %s"
+      "exportDs": "Exporting dataset %s of %s",
+      "success": "Scenario successfully exported to: %s."
     },
     "loadScenDb":{
       "title":"Loading scenario data from database",
