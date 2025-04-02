@@ -43,7 +43,7 @@ Sys.sleep(1)
 app$set_inputs(btEditMeta = "click")
 Sys.sleep(0.5)
 # should not see accessPerm tab if not in MIRO server
-expect_true(app$get_js("$('a[data-value='accessPerm']').length===0;"))
+expect_true(app$get_js("$(\"a[data-value='accessPerm']\").length===0;"))
 user <- Sys.info()[["user"]]
 app$set_inputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
