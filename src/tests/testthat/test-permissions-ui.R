@@ -1,6 +1,6 @@
 test_that(
   "Scenario permissions work",
-  {
+  try_again(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
     skip_if(
       identical(Sys.getenv("ENGINE_URL"), ""),
       "Skipping permissions tests as ENGINE_URL was not set."
@@ -92,7 +92,11 @@ test_that(
       "SHINYPROXY_USERGROUPS",
       "SHINYPROXY_WEBSERVICE_ACCESS_TOKEN",
       "SHINYPROXY_WEBSERVICE_ACCESS_TOKEN2",
-      "MIRO_ENGINE_NAMESPACE"
+      "MIRO_ENGINE_NAMESPACE",
+      "MIRO_VERSION_STRING",
+      "MIRO_DATA_DIR",
+      "MIRO_DATA_DIR2",
+      "MIRO_DATA_DIR3"
     ))
-  }
+  })
 )
