@@ -53,7 +53,7 @@ getPivotCompGraphConfig <- function(sheetName) {
       options = c(
         graphOptionsTmp,
         list(
-          resetOnInit = isFALSE(isInRefreshMode),
+          resetOnInit = isFALSE(isInRefreshMode$get(paste0("_pivotCmp_", sheetName))),
           "_metadata_" = list(
             symname = sheetName,
             headers = c(
@@ -74,7 +74,7 @@ getPivotCompGraphConfig <- function(sheetName) {
       options = c(
         graphOptionsTmp,
         list(
-          resetOnInit = isFALSE(isInRefreshMode),
+          resetOnInit = isFALSE(isInRefreshMode$get(paste0("_pivotCmp_", sheetName))),
           "_metadata_" = list(
             symname = sheetName,
             headers = c(
@@ -108,7 +108,7 @@ getPivotCompGraphConfig <- function(sheetName) {
       options = c(
         graphOptionsTmp,
         list(
-          resetOnInit = isFALSE(isInRefreshMode),
+          resetOnInit = isFALSE(isInRefreshMode$get(paste0("_pivotCmp_", sheetName))),
           "_metadata_" = list(
             symname = sheetName,
             headers = c(
@@ -198,7 +198,8 @@ loadDynamicTabContentCustom <- function(session, compareModuleConfig, initEnv = 
           options = compareModuleConfig[["options"]],
           path = customRendererDir,
           rendererEnv = rendererEnv[[refId]],
-          views = views
+          views = views,
+          resetOninit = isFALSE(isInRefreshMode$get(refId))
         )
         dynamicUILoaded$dynamicTabsets[[refId]][["content"]] <<- TRUE
         if (any(unlist(scenData$getById("dirty", refId = refId, drop = TRUE), use.names = FALSE))) {

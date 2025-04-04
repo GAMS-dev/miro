@@ -582,7 +582,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     )
     return(showErrorMsg(lang$errMsg$maxScen$title, lang$errMsg$maxScen$desc))
   }
-  if (isInMultiCompMode && isInRefreshMode) {
+  if (isInMultiCompMode && isInRefreshMode$get()) {
     on.exit(hideEl(session, "#loading-screen"), add = TRUE)
   }
   if (isInSolveMode) {
@@ -862,11 +862,11 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     }
     return(tryCatch(
       {
+        isInRefreshMode$set(TRUE)
         loadDynamicTabContent(session, 0L, symToFetch, initEnv = TRUE)
         hideEl(session, "#pivotCompBtWrapper")
         showEl(session, "#pivotCompScenWrapper")
         switchTab(session, "scenComp")
-        isInRefreshMode <<- TRUE
         enableEl(session, "#btClosePivotComp")
         removeModal()
         flog.debug(
@@ -883,11 +883,11 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     moduleIdx <- config[["customCompareModules"]][[currentCompMode]][["idx"]]
     return(tryCatch(
       {
+        isInRefreshMode$set(TRUE)
         noError <- loadDynamicTabContentCustom(session, config[["customCompareModules"]][[currentCompMode]], initEnv = TRUE)
         hideEl(session, paste0("#cmpCustomNoScenWrapper_", moduleIdx))
         showEl(session, paste0("#customCompScenWrapper_", moduleIdx))
         switchTab(session, "scenComp")
-        isInRefreshMode <<- TRUE
         enableEl(session, paste0("#btRefreshCustomCmp_", moduleIdx))
         if (noError) {
           removeModal()

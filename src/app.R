@@ -1748,7 +1748,7 @@ if (!is.null(errMsg)) {
         enableEl(session, "#btCompareScen")
       }
       isInCompareMode <- FALSE
-      isInRefreshMode <- FALSE
+      isInRefreshMode <- LazyFlagRegistry$new()
       isInSolveMode <- TRUE
       modelStatus <- NULL
       modelStatusObs <- NULL
@@ -2214,7 +2214,7 @@ if (!is.null(errMsg)) {
             dynamicUILoaded$dynamicTabsets[[refId]][["content"]][] <<- FALSE
           }
         }
-        isInRefreshMode <<- FALSE
+        isInRefreshMode$set(FALSE)
         scenData$clear(refId)
       })
       lapply(seq(0L, maxNumberScenarios + 3L), function(i) {
