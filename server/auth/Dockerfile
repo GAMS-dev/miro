@@ -1,6 +1,6 @@
-FROM --platform=linux/amd64 miro-admin as base
+FROM --platform=linux/amd64 miro-admin AS base
 
-FROM --platform=linux/amd64 base as builder
+FROM --platform=linux/amd64 base AS builder
 
 USER root
 

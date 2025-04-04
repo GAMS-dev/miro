@@ -726,6 +726,10 @@ Worker <- R6Class("Worker", public = list(
       chunkNo = chunkNo, getSize = getSize
     ))
   },
+  setAppAccessGroups = function(appAccessGroups) {
+    private$appAccessGroups <- appAccessGroups
+    return(self)
+  },
   getRemoteAccessGroups = function() {
     stopifnot(private$remote)
     groupsTmp <- private$validateAPIResponse(GET(
@@ -743,6 +747,13 @@ Worker <- R6Class("Worker", public = list(
     groupsTmp <- unlist(lapply(groupsTmp, function(accessGroup) {
       if (!identical(accessGroup$label, tolower(accessGroup$label))) {
         flog.warn("Remote access group: %s ignored as it contains uppercase letters. Currently, MIRO does not support group labels that include uppercase letters.", accessGroup$label)
+        return(NULL)
+      }
+      if (!accessGroup$label %in% private$appAccessGroups) {
+        flog.debug(
+          "Remote access group: %s ignored as it is not part of the app's access groups.",
+          accessGroup$label
+        )
         return(NULL)
       }
       return(c(
@@ -920,6 +931,7 @@ Worker <- R6Class("Worker", public = list(
   resultFileSize = list(),
   fRemoteRes = NULL,
   jobList = NULL,
+  appAccessGroups = character(),
   runLocal = function() {
     stopifnot(!is.null(private$inputData))
     private$status <- NULL

@@ -68,9 +68,16 @@ def select_selectize_options(driver, target_element, options):
 
 
 def get_selectize_options(driver, target_element):
-    """Selects options in selectize dropdown menu"""
+    """Returns selected options in selectize dropdown menu"""
     return driver.execute_script(
         "return arguments[0].selectize.getValue();", target_element
+    )
+
+
+def get_selectize_available_options(driver, target_element):
+    """Returns available options in selectize dropdown menu"""
+    return driver.execute_script(
+        "return Object.keys(arguments[0].selectize.options);", target_element
     )
 
 

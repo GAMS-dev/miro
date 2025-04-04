@@ -1941,6 +1941,9 @@ if (!is.null(errMsg)) {
       if (length(credConfig)) {
         do.call(worker$setCredentials, credConfig)
       }
+      if (isShinyProxy) {
+        worker$setAppAccessGroups(csv2Vector(tolower(Sys.getenv("SHINYPROXY_ACCESSGROUPS", ""))))
+      }
       rendererEnv <- new.env(parent = emptyenv())
 
       # scenario metadata of scenario saved in database

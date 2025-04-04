@@ -1,7 +1,10 @@
 import os
+import random
+import string
 import time
 import unittest
 
+import requests
 from selenium import webdriver
 from selenium.common.exceptions import (
     NoSuchElementException,
@@ -17,21 +20,51 @@ from .util import (
     drop_file,
     get_image_hash,
     get_image_hash_background_style_b64,
+    get_selectize_available_options,
     get_selectize_options,
     select_selectize_options,
 )
 
 # Load environment variables
+ENGINE_URL = os.getenv("ENGINE_URL")
+ENGINE_NS = os.getenv("ENGINE_NS")
 ENGINE_USER = os.getenv("ENGINE_USER")
 ENGINE_PASSWORD = os.getenv("ENGINE_PASSWORD")
 UI_URL = os.getenv("MIRO_PROXY_URL", "http://docker:8080")
 IN_CI = os.getenv("CI", "") != ""
 RUN_K8S_TESTS = os.getenv("RUN_K8S_TESTS", "") != ""
+TEST_ID = "".join(random.choices(string.ascii_lowercase, k=5))
 print(os.getcwd())
-if not ENGINE_USER or not ENGINE_PASSWORD:
+if not ENGINE_USER or not ENGINE_PASSWORD or not ENGINE_NS or not ENGINE_URL:
     raise EnvironmentError(
-        "Please set the ENGINE_USER and ENGINE_PASSWORD environment variables."
+        "Please set the ENGINE_URL and ENGINE_NS and ENGINE_USER and ENGINE_PASSWORD environment variables."
     )
+
+
+def add_groups(user_groups):
+    for user_group in user_groups:
+        response = requests.post(
+            f"{ENGINE_URL}/namespaces/{ENGINE_NS}/user-groups",
+            data={"label": user_group},
+            timeout=20,
+            auth=(ENGINE_USER, ENGINE_PASSWORD),
+        )
+        response.raise_for_status()
+
+
+def remove_groups():
+    for user_group in requests.get(
+        f"{ENGINE_URL}/namespaces/{ENGINE_NS}/user-groups",
+        timeout=20,
+        auth=(ENGINE_USER, ENGINE_PASSWORD),
+    ).json():
+        response = requests.delete(
+            f"{ENGINE_URL}/namespaces/{ENGINE_NS}/user-groups",
+            params={"label": user_group["label"]},
+            timeout=20,
+            auth=(ENGINE_USER, ENGINE_PASSWORD),
+        )
+        response.raise_for_status()
 
 
 class UITests(unittest.TestCase):
@@ -155,6 +188,7 @@ class UITests(unittest.TestCase):
     def tearDown(self):
         self.remove_apps()
         self.logout()
+        remove_groups()
         self.driver.quit()
 
     def test_login(self):
@@ -459,6 +493,7 @@ class UITests(unittest.TestCase):
         self.driver.switch_to.default_content()
 
     def test_add_app(self):
+        add_groups([f"{x}{TEST_ID}" for x in ["test", "test2"]])
         self.login()
         # open admin panel
         self.driver.find_element(By.ID, "navAdminPanel").click()
@@ -574,6 +609,17 @@ class UITests(unittest.TestCase):
         new_app_name_input = self.driver.find_element(By.ID, "newAppName")
         new_app_name_input.clear()
         new_app_name_input.send_keys("Transport app")
+        self.assertCountEqual(
+            get_selectize_available_options(
+                self.driver, self.driver.find_element(By.ID, "newAppGroups")
+            ),
+            [f"test{TEST_ID}".upper(), f"test2{TEST_ID}".upper()],
+        )
+        select_selectize_options(
+            self.driver,
+            self.driver.find_element(By.ID, "newAppGroups"),
+            f"test2{TEST_ID}".upper(),
+        )
         self.driver.find_element(By.ID, "btAddApp").click()
         WebDriverWait(self.driver, 30).until(
             EC.invisibility_of_element((By.ID, "expandedAddAppWrapper"))
@@ -649,6 +695,12 @@ class UITests(unittest.TestCase):
                 self.driver, self.driver.find_element(By.ID, "editMetaReadPerm")
             ),
             ["#users", ENGINE_USER],
+        )
+        self.assertCountEqual(
+            get_selectize_available_options(
+                self.driver, self.driver.find_element(By.ID, "editMetaReadPerm")
+            ),
+            ["#users", "#admins", f"#test2{TEST_ID}", ENGINE_USER],
         )
         self.assertCountEqual(
             get_selectize_options(
