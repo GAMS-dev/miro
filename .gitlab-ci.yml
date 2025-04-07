@@ -759,6 +759,8 @@ test_job_api:
     POSTGRES_USER: $GMS_MIRO_DATABASE_USER
     POSTGRES_PASSWORD: $GMS_MIRO_DATABASE_PWD
     POSTGRES_HOST_AUTH_METHOD: trust
+    PYTEST_JUNIT: 'report.xml'
+    PYTEST_COV: 'coverage.xml'
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
   script:
@@ -770,6 +772,14 @@ test_job_api:
     - if: $CI_MERGE_REQUEST_TITLE =~ /^Draft:/
       when: manual
     - if: $CI_MERGE_REQUEST_ID
+  artifacts:
+    when: always
+    expire_in: 1 week
+    reports:
+      junit: $PYTEST_JUNIT
+      coverage_report:
+        coverage_format: cobertura
+        path: $PYTEST_COV
 
 test_job:
   tags:
