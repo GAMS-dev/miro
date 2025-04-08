@@ -1292,8 +1292,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                         selectizeInput(ns("addMultiChartSeries"),
                           width = "100%",
                           label = lang$renderers$miroPivot$newView$multiChartSeries,
-                          choices = if (length(viewOptions$chartOptions$multiChartSeries)) c(viewOptions$chartOptions$multiChartSeries, miroPivotState$currentSeriesLabels) else miroPivotState$currentSeriesLabels,
-                          selected = if (length(viewOptions$chartOptions$multiChartSeries)) viewOptions$chartOptions$multiChartSeries else NULL,
+                          choices = c(viewOptions$chartOptions$multiChartSeries, miroPivotState$currentSeriesLabels),
+                          selected = viewOptions$chartOptions$multiChartSeries,
                           multiple = TRUE,
                           options = list(
                             "create" = TRUE,
@@ -1394,8 +1394,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                           selectizeInput(ns("y2axisSeries"),
                             width = "100%",
                             label = lang$renderers$miroPivot$newView$y2axisSeries,
-                            choices = if (length(viewOptions$chartOptions$y2axis$series)) c(viewOptions$chartOptions$y2axis$series, miroPivotState$currentSeriesLabels) else miroPivotState$currentSeriesLabels,
-                            selected = if (length(viewOptions$chartOptions$y2axis$series)) viewOptions$chartOptions$y2axis$series else NULL,
+                            choices = c(viewOptions$chartOptions$y2axis$series, miroPivotState$currentSeriesLabels),
+                            selected = viewOptions$chartOptions$y2axis$series,
                             multiple = TRUE,
                             options = list(
                               "create" = TRUE,
@@ -1478,11 +1478,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               if (!length(colorNames)) {
                 colorVal <- customChartColors[(labelId - 1L) * 2L + 1L]
               } else {
-                exactIdx <- which(colorNames == colorLabel)
-                if (length(exactIdx) == 1) {
-                  colorVal <- viewOptions$chartOptions$customChartColors[[exactIdx]][1]
+                if (colorLabel %in% colorNames) {
+                  colorVal <- viewOptions$chartOptions$customChartColors[[colorLabel]]
                 } else {
-                  patternMatches <- which(sapply(colorNames, matchSeriesLabel, label = colorLabel))
+                  patternMatches <- which(vapply(colorNames, matchSeriesLabel, logical(1L), label = colorLabel, USE.NAMES = FALSE))
                   if (length(patternMatches) > 0) {
                     chosenIdx <- patternMatches[length(patternMatches)]
                     colorVal <- viewOptions$chartOptions$customChartColors[[chosenIdx]][1]
@@ -1511,11 +1510,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 if (length(names(viewOptions$chartOptions$customLineDashPatterns))) {
                   lineDashNames <- names(viewOptions$chartOptions$customLineDashPatterns)
 
-                  exactIdx <- which(lineDashNames == dashLabel)
-                  if (length(exactIdx) == 1) {
+                  if (dashLabel %in% lineDashNames) {
                     dashPatternIn <- unlist(viewOptions$chartOptions$customLineDashPatterns[[dashLabel]])
                   } else {
-                    patternMatches <- which(sapply(lineDashNames, matchSeriesLabel, label = dashLabel))
+                    patternMatches <- which(vapply(lineDashNames, matchSeriesLabel, logical(1L), label = dashLabel, USE.NAMES = FALSE))
                     if (length(patternMatches) > 0) {
                       chosenIdx <- patternMatches[length(patternMatches)]
                       dashPatternIn <- unlist(viewOptions$chartOptions$customLineDashPatterns[[chosenIdx]])
@@ -1581,15 +1579,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               if (length(names(viewOptions$chartOptions$customBorderWidths))) {
                 borderWidthNames <- names(viewOptions$chartOptions$customBorderWidths)
 
-                exactIdx <- which(borderWidthNames == seriesLabel)
-                if (length(exactIdx) == 1) {
-                  bwCandidate <- viewOptions$chartOptions$customBorderWidths[[exactIdx]]
+                if (seriesLabel %in% borderWidthNames) {
+                  bwCandidate <- viewOptions$chartOptions$customBorderWidths[[seriesLabel]]
                   bwCandidate <- round(as.numeric(bwCandidate))
                   if (length(bwCandidate) && !is.na(bwCandidate)) {
                     borderWidth <- bwCandidate
                   }
                 } else {
-                  patternMatches <- which(sapply(borderWidthNames, matchSeriesLabel, label = seriesLabel))
+                  patternMatches <- which(vapply(borderWidthNames, matchSeriesLabel, logical(1L), label = seriesLabel, USE.NAMES = FALSE))
                   if (length(patternMatches) > 0) {
                     chosenIdx <- patternMatches[length(patternMatches)]
                     bwCandidate <- viewOptions$chartOptions$customBorderWidths[[chosenIdx]]
@@ -2903,12 +2900,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           for (i in seq_along(allLabels)) {
             label <- allLabels[i]
 
-            exactIdx <- which(colorNames == label)
-            if (length(exactIdx) == 1) {
-              colorList[[i]] <- currentView$chartOptions$customChartColors[[exactIdx]]
+            if (label %in% colorNames) {
+              colorList[[i]] <- currentView$chartOptions$customChartColors[[label]]
               next
             }
-            patternMatches <- which(sapply(colorNames, matchSeriesLabel, label = label))
+            patternMatches <- which(vapply(colorNames, matchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
             if (length(patternMatches) > 0) {
               chosenIdx <- patternMatches[length(patternMatches)]
               colorList[[i]] <- currentView$chartOptions$customChartColors[[chosenIdx]]
@@ -3099,7 +3095,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           scaleID <- NULL
           if (length(currentView$chartOptions$y2axis$series)) {
             series <- currentView$chartOptions$y2axis$series
-            if (any(sapply(series, matchSeriesLabel, label = label, exact = TRUE))) {
+            if (any(vapply(series, matchSeriesLabel, logical(1L), label = label, exact = TRUE, USE.NAMES = FALSE))) {
               if (pivotRenderer %in% c("horizontalbar", "horizontalstackedbar")) {
                 scaleID <- "x2"
               } else {
@@ -3112,11 +3108,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           if (length(currentView$chartOptions$customLineDashPatterns) &&
             length(names(currentView$chartOptions$customLineDashPatterns))) {
             lineDashNames <- names(currentView$chartOptions$customLineDashPatterns)
-            exactIdx <- which(lineDashNames == label)
-            if (length(exactIdx) == 1) {
-              lineDash <- currentView$chartOptions$customLineDashPatterns[[exactIdx]]
+
+            if (label %in% lineDashNames) {
+              lineDash <- currentView$chartOptions$customLineDashPatterns[[label]]
             } else {
-              patternMatches <- which(sapply(lineDashNames, matchSeriesLabel, label = label))
+              patternMatches <- which(vapply(lineDashNames, matchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
               if (length(patternMatches) > 0) {
                 chosenIdx <- patternMatches[length(patternMatches)]
                 lineDash <- currentView$chartOptions$customLineDashPatterns[[chosenIdx]]
@@ -3131,15 +3127,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             length(names(currentView$chartOptions$customBorderWidths)) > 0) {
             borderWidthNames <- names(currentView$chartOptions$customBorderWidths)
 
-            exactIdx <- which(borderWidthNames == label)
-            if (length(exactIdx) == 1) {
-              borderWidthCandidate <- currentView$chartOptions$customBorderWidths[[exactIdx]]
+            if (label %in% borderWidthNames) {
+              borderWidthCandidate <- currentView$chartOptions$customBorderWidths[[label]]
               borderWidthCandidate <- round(as.numeric(borderWidthCandidate))
               if (!is.na(borderWidthCandidate)) {
                 borderWidth <- borderWidthCandidate
               }
             } else {
-              patternMatches <- which(sapply(borderWidthNames, matchSeriesLabel, label = label))
+              patternMatches <- which(vapply(borderWidthNames, matchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
               if (length(patternMatches) > 0) {
                 chosenIdx <- patternMatches[length(patternMatches)]
                 borderWidthCandidate <- currentView$chartOptions$customBorderWidths[[chosenIdx]]
@@ -3153,7 +3148,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
           stack <- NULL
           if (length(groupElements) && pivotRenderer %in% c("stackedbar", "horizontalstackedbar")) {
-            patternMatches <- which(sapply(groupElements, matchSeriesLabel, label = label, exact = TRUE))
+            patternMatches <- which(vapply(groupElements, matchSeriesLabel, logical(1L), label = label, exact = TRUE, USE.NAMES = FALSE))
             if (length(patternMatches) == 0) {
               stack <- NULL
             } else {
@@ -3166,7 +3161,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           multiChartSeries <- FALSE
           if (length(currentView$chartOptions$multiChartSeries)) {
             series <- currentView$chartOptions$multiChartSeries
-            if (any(sapply(series, matchSeriesLabel, label = label, exact = TRUE))) {
+            if (any(vapply(series, matchSeriesLabel, logical(1L), label = label, exact = TRUE, USE.NAMES = FALSE))) {
               multiChartSeries <- TRUE
             }
           }

@@ -1076,7 +1076,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
           if (length(exactIdx) == 1) {
             colorList[[i]] <- currentView$chartOptions$customChartColors[[exactIdx]]
           } else {
-            patternMatches <- which(sapply(colorLabelsNew, matchLabel, label = seriesLab))
+            patternMatches <- which(vapply(colorLabelsNew, matchSeriesLabel, logical(1L), label = seriesLab, USE.NAMES = FALSE))
 
             if (length(patternMatches) > 0) {
               chosenIdx <- patternMatches[length(patternMatches)]
@@ -1278,7 +1278,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
           if (length(exactIdx) == 1) {
             lineDash <- currentView$chartOptions$customLineDashPatterns[[exactIdx]]
           } else {
-            patternMatches <- which(sapply(transformedLineDashNames, matchLabel, label = label))
+            patternMatches <- which(vapply(transformedLineDashNames, matchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
             if (length(patternMatches) > 0) {
               chosenIdx <- patternMatches[length(patternMatches)]
               lineDash <- currentView$chartOptions$customLineDashPatterns[[chosenIdx]]
@@ -1304,7 +1304,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
               borderWidth <- borderWidthCandidate
             }
           } else {
-            patternMatches <- which(sapply(transformedBorderWidthNames, matchLabel, label = label))
+            patternMatches <- which(vapply(transformedBorderWidthNames, matchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
             if (length(patternMatches) > 0) {
               chosenIdx <- patternMatches[length(patternMatches)]
               borderWidthCandidate <- currentView$chartOptions$customBorderWidths[[chosenIdx]]
@@ -1318,7 +1318,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
         stack <- NULL
         if (length(groupElements) && chartType %in% c("stackedbar", "horizontalstackedbar")) {
-          patternMatches <- which(sapply(groupElements, matchLabel, label = label, exact = TRUE))
+          patternMatches <- which(vapply(groupElements, matchSeriesLabel, logical(1L), label = label, exact = TRUE, USE.NAMES = FALSE))
           if (length(patternMatches) == 0) {
             stack <- NULL
           } else {
@@ -1331,7 +1331,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         multiChartSeries <- FALSE
         if (length(currentView$chartOptions$multiChartSeries)) {
           series <- currentView$chartOptions$multiChartSeries
-          if (any(sapply(series, matchLabel, label = label, exact = TRUE))) {
+          if (any(vapply(series, matchSeriesLabel, logical(1L), label = label, exact = TRUE, USE.NAMES = FALSE))) {
             multiChartSeries <- TRUE
           }
         }
