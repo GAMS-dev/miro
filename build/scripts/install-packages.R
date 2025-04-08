@@ -147,10 +147,16 @@ installStaticOpenSSL <- function(destDir) {
       finalDestDir
     ))
   }
-  download.file(
-    paste0("https://www.openssl.org/source/openssl-", openSSLVersion, ".tar.gz"),
+  openSSLSourceURL <- paste0("https://www.openssl.org/source/openssl-", openSSLVersion, ".tar.gz")
+  if (download.file(
+    openSSLSourceURL,
     tarDestFile
-  )
+  ) != 0) {
+    stop(sprintf(
+      "Something went downloading: %s.",
+      openSSLSourceURL
+    ))
+  }
   proc <- processx::run("tar", c("-xvzf", basename(tarDestFile)),
     wd = dirname(tarDestFile),
     error_on_status = FALSE
