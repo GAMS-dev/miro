@@ -3095,8 +3095,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
 
           lineDash <- NULL
-          if (length(currentView$chartOptions$customLineDashPatterns) &&
-            length(names(currentView$chartOptions$customLineDashPatterns))) {
+          if (length(names(currentView$chartOptions$customLineDashPatterns))) {
             lineDashNames <- names(currentView$chartOptions$customLineDashPatterns)
 
             if (label %in% lineDashNames) {
