@@ -3112,8 +3112,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
 
           borderWidth <- NULL
-          if (length(currentView$chartOptions$customBorderWidths) &&
-            length(names(currentView$chartOptions$customBorderWidths)) > 0) {
+          if (length(names(currentView$chartOptions$customBorderWidths))) {
             borderWidthNames <- names(currentView$chartOptions$customBorderWidths)
 
             if (label %in% borderWidthNames) {
