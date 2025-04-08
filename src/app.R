@@ -49,7 +49,7 @@ errMsg <- installAndRequirePackages(requiredPackages, installedPackages, RLibPat
 installedPackages <<- installed.packages()[, "Package"]
 # vector of required files
 filesToInclude <- c(
-  "./global.R", "./components/util.R", "./components/gdxio.R",
+  "./global.R", "./components/util.R", "./components/pivot_util.R", "./components/gdxio.R",
   "./components/json.R", "./components/scenario_extensions.R", "./components/views.R",
   "./components/attachments.R", "./components/miroscenio.R",
   "./components/load_scen_data.R", "./components/localfileio.R",
