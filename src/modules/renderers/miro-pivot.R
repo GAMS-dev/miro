@@ -66,16 +66,6 @@ createBootstrapDropdownChoices <- function(el, eventId, editEventId = NULL, dele
     }
   )
 }
-matchSeriesLabel <- function(key, label, exact = FALSE) {
-  if (exact) {
-    exact <- (key == label)
-  }
-  contained <- grepl(paste0("\u2024", key, "\u2024"), label)
-  starts <- grepl(paste0("^", key, "\u2024"), label)
-  ends <- grepl(paste0("\u2024", key, "$"), label)
-  exact || contained || starts || ends
-}
-
 miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
   ns <- NS(id)
 
