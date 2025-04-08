@@ -52,13 +52,7 @@ spec:
           - sh
           - "-c"
           - |
-            if [ ! -d "/home/miroproxy/mnt/data" ]; then
-              mkdir -p /home/miroproxy/mnt/data && chmod -R g=u /home/miroproxy/mnt/data
-            fi
-            if [ ! -d "/home/miroproxy/mnt/models" ]; then
-              mkdir -p /home/miroproxy/mnt/models && chmod -R g=u /home/miroproxy/mnt/models
-            fi
-            [ -f "/home/miroproxy/mnt/data/specs.yaml" ] || echo 'c3BlY3M6Ci0gYWNjZXNzR3JvdXBzOgogIC0gYWRtaW5zCiAgY29udGFpbmVyRW52OgogICAgTUlST19BUElfVkVSU0lPTjogJzEnCiAgZGVzY3JpcHRpb246IE1JUk8gU2VydmVyIEFkbWluIFBhbmVsCiAgZGlzcGxheU5hbWU6IEFkbWluCiAgaWQ6IGFkbWluCiAgbG9nb1VSTDogfgo=' | base64 -d > /home/miroproxy/mnt/data/specs.yaml
+            [ -f "/home/miroproxy/mnt/specs.yaml" ] || echo 'c3BlY3M6Ci0gYWNjZXNzR3JvdXBzOgogIC0gYWRtaW5zCiAgY29udGFpbmVyRW52OgogICAgTUlST19BUElfVkVSU0lPTjogJzEnCiAgZGVzY3JpcHRpb246IE1JUk8gU2VydmVyIEFkbWluIFBhbmVsCiAgZGlzcGxheU5hbWU6IEFkbWluCiAgaWQ6IGFkbWluCiAgbG9nb1VSTDogfgo=' | base64 -d > /home/miroproxy/mnt/specs.yaml
         {{- if .Values.global.securityContext.enabled }}
         securityContext:
           allowPrivilegeEscalation: false
@@ -97,8 +91,6 @@ spec:
           initialDelaySeconds: 10
           periodSeconds: 15
         env:
-        - name: GMS_MIRO_TARGET_IMG_DIR
-          value: "/home/miroproxy/mnt/data/img"
         - name: GMS_MIRO_DATABASE_PWD
           valueFrom:
             secretKeyRef:
@@ -109,25 +101,37 @@ spec:
             secretKeyRef:
               name: {{ include "common.names.fullname" . }}-secrets
               key: engine_anonymous_password
+        - name: GMS_MIRO_CONTAINER_LOG_S3_ACCESS_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "common.names.fullname" . }}-secrets
+              key: container_log_s3_access_secret
         volumeMounts:
         - name: shared-data
           mountPath: /home/miroproxy/mnt
+          readOnly: true
+        - name: shared-data
+          mountPath: /home/miroproxy/templates/2col/assets/logos
+          subPath: logos
+          readOnly: true
         - name: config-volume
           mountPath: /home/miroproxy/application.yml
           subPath: application.yml
+        - name: tmp-volume
+          mountPath: /tmp
         {{- if .Values.proxy.config.logo.enabled }}
         - name: customize-volume
-          mountPath: /home/miroproxy/templates/2col/assets/img_default/logo.png
+          mountPath: /home/miroproxy/templates/2col/assets/imgk8s/logo.png
           subPath: logo.png
         {{- end }}
         {{- if .Values.proxy.config.favicon.enabled }}
         - name: customize-volume
-          mountPath: /home/miroproxy/templates/2col/assets/img_default/favicon.ico
+          mountPath: /home/miroproxy/templates/2col/assets/imgk8s/favicon.ico
           subPath: favicon.ico
         {{- end }}
         {{- if .Values.proxy.config.customCSS.enabled }}
         - name: customize-volume
-          mountPath: /home/miroproxy/templates/2col/assets/css/styles.css
+          mountPath: /home/miroproxy/templates/2col/assets/css/themes/{{ .Values.proxy.config.colorTheme }}.css
           subPath: custom.css
         {{- end }}
         {{- if .Values.global.securityContext.enabled }}
@@ -136,12 +140,14 @@ spec:
           capabilities:
             drop: ["ALL"]
           privileged: false
-          readOnlyRootFilesystem: false
+          readOnlyRootFilesystem: true
         {{- end }}
       volumes:
         - name: config-volume
           configMap:
             name: {{ include "common.names.fullname" . }}-proxy-cm
+        - name: tmp-volume
+          emptyDir: {}
         {{- if eq .Values.persistence.type "local" }}
         - name: shared-data
           hostPath:

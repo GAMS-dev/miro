@@ -1,14 +1,95 @@
+getModelPath <- function(appId) {
+  if (IN_KUBERNETES) {
+    return(file.path(SHARED_FS_MNT_DIR, "data", appId, "model"))
+  }
+  return(file.path(MIRO_MODEL_DIR, appId))
+}
+
+getDataPath <- function(appId) {
+  if (IN_KUBERNETES) {
+    return(file.path(SHARED_FS_MNT_DIR, "data", appId, "data"))
+  }
+  return(file.path(MIRO_DATA_DIR, paste0("data_", appId)))
+}
+
+removeTempDirs <- function(appId, warnOnly = FALSE) {
+  if (IN_KUBERNETES) {
+    tempDirs <- c(
+      dirname(getModelPath(paste0("~$", appId))),
+      dirname(getModelPath(paste0("~$~$", appId)))
+    )
+  } else {
+    tempDirs <- c(
+      getModelPath(paste0("~$", appId)), getModelPath(paste0("~$~$", appId)),
+      getDataPath(paste0("~$", appId)), getDataPath(paste0("~$~$", appId))
+    )
+  }
+  for (dirPath in tempDirs) {
+    if (!identical(unlink(dirPath, recursive = TRUE), 0L)) {
+      errorMessage <- sprintf(
+        "Could not remove temporary directory: %s. Please try again or contact your system administrator.",
+        dirPath
+      )
+      if (warnOnly) {
+        flog.warn(errorMessage)
+        next
+      }
+      stop(errorMessage, call. = FALSE)
+    }
+  }
+}
+
+moveFilesFromTemp <- function(appId) {
+  if (IN_KUBERNETES) {
+    listOfDirsToMove <- list(c(
+      dirname(getModelPath(appId)),
+      dirname(getModelPath(paste0("~$~$", appId)))
+    ), c(
+      dirname(getModelPath(paste0("~$", appId))),
+      dirname(getModelPath(appId))
+    ))
+  } else {
+    listOfDirsToMove <- list(c(
+      getModelPath(appId),
+      getModelPath(paste0("~$~$", appId))
+    ), c(
+      getModelPath(paste0("~$", appId)),
+      getModelPath(appId)
+    ), c(
+      getDataPath(appId),
+      getDataPath(paste0("~$~$", appId)),
+      TRUE
+    ), c(
+      getDataPath(paste0("~$", appId)),
+      getDataPath(appId),
+      TRUE
+    ))
+  }
+  for (dirsToMove in listOfDirsToMove) {
+    if (!is.na(dirsToMove[3]) && !file.exists(dirsToMove[[1]])) {
+      # data directories don't have to exist
+      next
+    }
+    if (!file.rename(dirsToMove[[1]], dirsToMove[[2]])) {
+      stop(sprintf(
+        "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
+        dirsToMove[[1]], dirsToMove[[2]]
+      ), call. = FALSE)
+    }
+  }
+}
+
 getLogoName <- function(appId, logoFile) {
   return(paste0(appId, "_", stringi::stri_rand_strings(1L, 15L)[[1L]], "_logo.", tools::file_ext(logoFile)))
 }
 
 createAppDir <- function(appId) {
-  modelPath <- file.path(MIRO_MODEL_DIR, appId)
-  failedDirCreate <- !dir.create(modelPath)
+  modelPath <- getModelPath(appId)
+  failedDirCreate <- !dir.create(modelPath, recursive = TRUE)
   if (exists("last.warning") && endsWith(names(last.warning)[1], "already exists")) {
     flog.info(
       "App with id: %s is found on the file system but not in specs.yaml. This is either because another process is currently adding an app with this id or because it was not properly cleaned up. In the latter case, please remove the directory: '%s' manually.",
-      appId, paste0("./models/", appId)
+      appId, modelPath
     )
     stop_custom("error_model_dir_exists", "An app with this id already exists", call. = FALSE)
   }
@@ -16,7 +97,7 @@ createAppDir <- function(appId) {
     if (dir.exists(modelPath)) {
       flog.info(
         "App with id: %s is found on the file system but not in specs.yaml. This is either because another process is currently adding an app with this id or because it was not properly cleaned up. In the latter case, please remove the directory: '%s' manually.",
-        appId, paste0("./models/", appId)
+        appId, modelPath
       )
       stop_custom("error_model_dir_exists", "An app with this id already exists", call. = FALSE)
     }
@@ -51,14 +132,14 @@ validateAppSignature <- function(appPath, pubKeyPaths = character(0L)) {
     stop("Unexpected error while verifying the signature of the app! Check the logs for more information.", call. = FALSE)
   }
   if (identical(procResult$status, 3L)) {
-    stop("App is not signed!", call. = FALSE)
+    stop_custom("error_sig_verify", "App is not signed!", call. = FALSE)
   }
-  stop("App signature invalid!", call. = FALSE)
+  stop_custom("error_sig_verify", "App signature invalid!", call. = FALSE)
 }
 
 extractAppData <- function(miroAppPath, appId, modelId, miroProc) {
-  modelPath <- file.path(MIRO_MODEL_DIR, appId)
-  dataPath <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
+  modelPath <- getModelPath(appId)
+  dataPath <- getDataPath(appId)
 
   if (dir.exists(dataPath)) {
     flog.info("Data files for the app: %s already exist. They will be removed.", appId)
@@ -79,7 +160,12 @@ extractAppData <- function(miroAppPath, appId, modelId, miroProc) {
   }
   dataDirSource <- file.path(modelPath, paste0("data_", modelId))
   if (dir.exists(dataDirSource)) {
-    dir.create(dataPath)
+    if (!dir.create(dataPath)) {
+      flog.warn(
+        "Failed to create data path for app: '%s'",
+        dataPath, appId
+      )
+    }
     dataFiles <- list.files(dataDirSource)
     dataFilesCopied <- file.copy(file.path(dataDirSource, dataFiles), dataPath,
       overwrite = TRUE
@@ -97,8 +183,7 @@ extractAppData <- function(miroAppPath, appId, modelId, miroProc) {
 }
 
 addAppLogo <- function(appId, logoFile = NULL, newLogoName = NULL) {
-  logoDir <- file.path(MIRO_DATA_DIR, "logos")
-  modelPath <- file.path(MIRO_MODEL_DIR, appId)
+  modelPath <- getModelPath(appId)
   if (length(logoFile)) {
     if (startsWith(logoFile, "/")) {
       logoPath <- logoFile
@@ -119,35 +204,67 @@ addAppLogo <- function(appId, logoFile = NULL, newLogoName = NULL) {
     }
     file.copy2(
       logoPath,
-      file.path(logoDir, newLogoName)
+      file.path(LOGO_DIR, newLogoName)
     )
-  } else if (!file.exists(file.path(logoDir, "default_logo.png"))) {
+  } else if (!file.exists(file.path(LOGO_DIR, "default_logo.png"))) {
     file.copy2(
       file.path("www", "default_logo.png"),
-      file.path(logoDir, "default_logo.png")
+      file.path(LOGO_DIR, "default_logo.png")
     )
   }
 }
 
-removeAppLogo <- function(appId, logoFilename) {
+addAppFavicon <- function(appId, modelId) {
+  appFaviconPath <- file.path(getModelPath(appId), paste0("static_", modelId), "favicon.ico")
+  if (!file.exists(appFaviconPath)) {
+    return(NULL)
+  }
+  if (file.size(appFaviconPath) > MAX_FAVICON_SIZE) {
+    stop(sprintf(
+      "Favicon exceeds maximum size of %s bytes.",
+      as.character(MAX_FAVICON_SIZE)
+    ), call. = FALSE)
+  }
+  faviconFileName <- getLogoName(appId, appFaviconPath)
+  newFaviconPath <- file.path(LOGO_DIR, faviconFileName)
+  file.copy2(
+    appFaviconPath,
+    newFaviconPath
+  )
+  return(file.path(LOGO_DIR_SP_CONTAINER, faviconFileName))
+}
+
+removeAppLogo <- function(appId, logoFilename, faviconFilename = NULL) {
   if (!identical(logoFilename, "default_logo.png")) {
-    logoPath <- file.path(MIRO_DATA_DIR, "logos", logoFilename)
-    if (file.exists(logoPath)) {
-      if (unlink(logoPath) == 1) {
-        flog.warn(
-          "Removing logo: %s for app: %s failed.",
-          logoPath, appId
-        )
-      }
+    logoPath <- file.path(LOGO_DIR, logoFilename)
+    if (file.exists(logoPath) && unlink(logoPath) == 1) {
+      flog.warn(
+        "Removing logo: %s for app: %s failed.",
+        logoPath, appId
+      )
+    }
+  }
+  if (!is.null(faviconFilename)) {
+    faviconPath <- file.path(LOGO_DIR, basename(faviconFilename))
+    if (file.exists(faviconPath) && unlink(faviconPath) == 1) {
+      flog.warn(
+        "Removing favicon: %s for app: %s failed.",
+        faviconPath, appId
+      )
     }
   }
 }
 
-removeAppData <- function(appId, logoFilename) {
-  modelPath <- file.path(MIRO_MODEL_DIR, appId)
-  dataPath <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
-  removeAppLogo(appId, logoFilename)
-  for (dirToRemove in c(modelPath, dataPath)) {
+removeAppData <- function(appId, logoFilename = NULL, faviconFilename = NULL) {
+  if (IN_KUBERNETES) {
+    dirsToRemove <- getModelPath(appId)
+  } else {
+    dirsToRemove <- c(getModelPath(appId), getDataPath(appId))
+  }
+  if (!is.null(logoFilename)) {
+    removeAppLogo(appId, logoFilename, faviconFilename)
+  }
+  for (dirToRemove in dirsToRemove) {
     if (dir.exists(dirToRemove)) {
       if (unlink(dirToRemove, recursive = TRUE, force = TRUE) == 1) {
         flog.warn(

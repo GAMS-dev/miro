@@ -786,10 +786,6 @@
               "type": "string",
               "minLength": 1
             },
-            "discardPerm": {
-              "type": "string",
-              "minLength": 1
-            },
             "tags": {
               "type": "string",
               "minLength": 1
@@ -823,7 +819,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 13
+          "minProperties": 12
         },
         "dialogEditMeta": {
           "type": "object",

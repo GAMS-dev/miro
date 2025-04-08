@@ -41,7 +41,11 @@
       media="screen"
       th:href="@{/assets/css/bootstrap.min.css}"
     />
-    <link id="theme-style" rel="stylesheet" th:href="@{${themeCss}}" />
+    <link
+      id="theme-style"
+      rel="stylesheet"
+      th:href="@{${resourcePrefix} + ${themeCss}}"
+    />
   </head>
 
   <body>
@@ -53,7 +57,7 @@
             <h1 class="logo">
               <img
                 class="img-fluid"
-                th:src="@{/assets/img/logo.png}"
+                th:src="@{${resourcePrefix} + ${logoPath}}"
                 alt="Logo"
               />
             </h1>

@@ -201,7 +201,6 @@
       "desc":"Please enter a name for the scenario:",
       "discardAttach": "Discard attachments?",
       "discardViews": "Discard views?",
-      "discardPerm": "Discard permissions?",
       "tags":"Add tag(s) to your scenario (optional):",
       "newScenName":"New Scenario",
       "badName":"Please choose a valid name for the new scenario.",

@@ -69,28 +69,38 @@ proxy:
     language: en # en, de or cn
     colorTheme: default
     maxTotalInstances: -1 # -1 for unlimited
+    proxyMaxLifetimeMinutes: -1 # -1 for unlimited
     maxUploadSizeMB: 200
     forceSignedApps:
       enabled: false
       acceptedPublicKeysPEM: []
     logo:
       enabled: false # whether to use custom logo (visibile on login page, only PNG supported)
-      path: '' # local path to logo file
+      path: '' # local path to logo file; it is best practice to place it in a directory named "resources"
       base64: '' # alternatively, base64-encoded logo
       # If both path and base64 are specified, base64 is used.
     favicon:
       enabled: false # whether to use custom favicon
-      path: '' # local path to favicon file (.ico)
+      path: '' # local path to favicon file (.ico); it is best practice to place it in a directory named "resources"
       base64: '' # alternatively, base64-encoded favicon
       # If both path and base64 are specified, base64 is used.
     customCSS:
       enabled: false # whether to use custom CSS
-      path: '' # local path to CSS file
+      path: '' # local path to CSS file; it is best practice to place it in a directory named "resources"
       base64: '' # alternatively, base64-encoded CSS
       # If both path and base64 are specified, base64 is used.
+    containerLogBackend:
+      type: none # Container log backed. Currently supported none (disabled) or s3
+      s3:
+        bucketName: '' # Name of the s3 bucket
+        bucketDir: '/' # Path to directory where log files are to be stored
+        region: '' # AWS region e.g. us-east-1
+        accessKeyId: '' # AWS access key ID
+        secretAccessKey: '' # AWS secret access key
     disableReadonlyMode: false
     anonymousReadonlyMode: false
     containerWaitTimeSeconds: 300
+    containerPullPolicy: IfNotPresent # For UI/Admin images: IfNotPresent, Always or Never
     security:
       sameSiteCookie: Lax # Lax or Strict. Change this only if you are aware of the consequences
       xFrameOptionsHeader: sameorigin # sameorigin, disable or allow-from https://example.com
@@ -120,11 +130,11 @@ auth:
     tag: ''
   resources:
     requests:
-      cpu: '100m'
-      memory: 250Mi
-    limits:
-      cpu: '400m'
+      cpu: '200m'
       memory: 500Mi
+    limits:
+      cpu: '2000m'
+      memory: 750Mi
   service:
     type: ClusterIP # ClusterIP or NodePort
     # only relevant if type is NodePort. If not provided, a random port within the NodePort range is used.

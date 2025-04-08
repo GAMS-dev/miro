@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "app_info.json file schema",
+  "description": "MIRO app info file schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "title": {
+      "description": "Default application title (can be changed when adding app to library)",
+      "type": "string",
+      "maxLength": 100
+    },
+    "description": {
+      "description": "Default application description (can be changed when adding app to library)",
+      "type": "string",
+      "maxLength": 1000
+    },
+    "appId": {
+      "description": "Application identifier (used e.g. to construct URL under which app can be reached in MIRO Server). If not specified, the lowercase name of the main application file (without extension) is used.",
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-_]{0,59}$"
+    },
+    "version": {
+      "description": "Application version",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "authors": {
+      "description": "List of authors of this application",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      }
+    },
+    "environment": {
+      "propertyNames": {
+        "pattern": "^[A-Z_][A-Z0-9_]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "maxProperties": 50,
+        "description": "Environment variables that need to be set when adding app to library (e.g. used in custom importers/exporters/renderers etc.). This is currently only enforced by MIRO Server.",
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "description": "Description of the environment variable that helps the administrator adding the app to set the proper value.",
+            "type": "string",
+            "maxLength": 1000
+          },
+          "value": {
+            "description": "Default value for the environment variable.",
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      }
+    }
+  }
+}

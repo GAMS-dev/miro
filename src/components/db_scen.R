@@ -57,17 +57,17 @@ Scenario <- R6Class("Scenario",
       if (length(readPerm)) {
         stopifnot(is.character(readPerm), length(readPerm) >= 1)
       } else {
-        readPerm <- private$uid
+        readPerm <- private$getDefaultPerm("read")
       }
       if (length(writePerm)) {
         stopifnot(is.character(writePerm), length(writePerm) >= 1)
       } else {
-        writePerm <- private$uid
+        writePerm <- private$getDefaultPerm("write")
       }
       if (length(execPerm)) {
         stopifnot(is.character(execPerm), length(execPerm) >= 1)
       } else {
-        execPerm <- private$uid
+        execPerm <- private$getDefaultPerm("execute")
       }
 
       private$slocktimeLimit <- db$getSlocktimeLimit()
@@ -204,6 +204,17 @@ Scenario <- R6Class("Scenario",
           writePerm = private$writePerm,
           execPerm = private$execPerm
         )
+        if (is.list(discardPerm)) {
+          if (!is.null(discardPerm$read)) {
+            permissionConfig$readPerm <- discardPerm$read
+          }
+          if (!is.null(discardPerm$write)) {
+            permissionConfig$writePerm <- discardPerm$write
+          }
+          if (!is.null(discardPerm$execute)) {
+            permissionConfig$execPerm <- discardPerm$execute
+          }
+        }
       }
       return(list(
         attach = attachmentConfig,
@@ -264,9 +275,9 @@ Scenario <- R6Class("Scenario",
           call. = FALSE
         )
       }
-      private$readPerm <- vector2Csv(private$uid)
-      private$writePerm <- vector2Csv(private$uid)
-      private$execPerm <- vector2Csv(private$uid)
+      private$readPerm <- vector2Csv(private$getDefaultPerm("read"))
+      private$writePerm <- vector2Csv(private$getDefaultPerm("write"))
+      private$execPerm <- vector2Csv(private$getDefaultPerm("execute"))
       return(invisible(self))
     },
     save = function(datasets, msgProgress = NULL) {
@@ -435,11 +446,6 @@ Scenario <- R6Class("Scenario",
       #   R6 object: reference to itself,
       #   throws exception in case of error
 
-      stopifnot(
-        is.character(newReadPerm),
-        is.character(newWritePerm),
-        is.character(newExecPerm)
-      )
       if (private$isReadonly() && sum(
         length(newReadPerm),
         length(newWritePerm),
@@ -1107,6 +1113,10 @@ Scenario <- R6Class("Scenario",
         scenId
       )
       return(invisible(self))
+    },
+    getDefaultPerm = function(permId) {
+      stopifnot(permId %in% c("read", "write", "execute"))
+      return(unique(c(private$uid, DEFAULT_SCEN_PERM[[permId]])))
     }
   )
 )

@@ -6,7 +6,6 @@ close(stdin)
 appId <- metadata[["id"]]
 
 deleteData <- identical(metadata[["deleteData"]], TRUE)
-appPath <- metadata[["appPath"]]
 
 dontcare <- lapply(c("global.R", list.files("./R", full.names = TRUE)), source)
 
@@ -21,7 +20,7 @@ tryCatch(
     ))
     engineClient <- EngineClient$new()
     engineClient$setAuthHeader(Sys.getenv("MIRO_ENGINE_AUTH_HEADER"))
-    modelConfig <- ModelConfig$new(file.path(MIRO_DATA_DIR, "specs.yaml"))
+    modelConfig <- ModelConfig$new(SPECS_YAML_PATH)
   },
   error = function(e) {
     write(sprintf(
@@ -40,7 +39,10 @@ tryCatch(
       flog.info("Data for MIRO app: %s removed successfully.", appId)
     }
 
-    removeAppData(appId, modelConfig$getAppLogo(appIndex))
+    removeAppData(
+      appId, modelConfig$getAppLogo(appIndex),
+      modelConfig$getAppFavicon(appIndex)
+    )
     modelConfig$remove(appIndex)
 
     engineClient$deregisterModel(appId)

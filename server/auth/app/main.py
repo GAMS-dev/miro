@@ -19,7 +19,7 @@ public_api = FastAPI(
         "name": "GPL-3",
         "url": "https://www.gnu.org/licenses/gpl-3.0.de.html",
     },
-    redoc_url=None
+    redoc_url=None,
 )
 
 app.include_router(login.router)
@@ -33,4 +33,5 @@ if settings_yml:
     app.mount(f"{settings.script_name}/api", public_api)
 else:
     logger.warning(
-        "MIRO Server REST API could not be enabled because an outdated docker-compose file was found. Please download the latest docker-compose file to activate the MIRO Server REST API.")
+        "MIRO Server REST API could not be enabled because an outdated docker-compose file was found. Please download the latest docker-compose file to activate the MIRO Server REST API."
+    )

@@ -201,7 +201,6 @@
       "desc":"Bitte wählen Sie einen Namen für das Szenario:",
       "discardAttach": "Anhänge verwerfen?",
       "discardViews": "Views verwerfen?",
-      "discardPerm": "Berechtigungen verwerfen?",
       "tags":"Füge dem Szenario Tag(s) hinzu (optional):",
       "badName":"Bitte wählen Sie eine gültige Bezeichnung für das neue Szenario.",
       "newScenName":"Neues Szenario",

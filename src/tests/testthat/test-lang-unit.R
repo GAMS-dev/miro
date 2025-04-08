@@ -11,13 +11,10 @@ for (langToTest in langsToTest) {
     expect_true(file.exists(file.path(miroRootDir, "conf", paste0(langToTest, ".json"))))
     expect_error(
       {
-        valid <- jsonValidator$validate(
+        jsonValidator$validate(
           file.path(miroRootDir, "conf", paste0(langToTest, ".json")),
           file.path(miroRootDir, "conf", "language_schema.json")
         )
-        if (!is.null(valid$errors)) {
-          stop(valid$errors, call. = FALSE)
-        }
       },
       NA
     )

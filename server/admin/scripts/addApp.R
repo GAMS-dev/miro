@@ -9,6 +9,7 @@ updateApp <- identical(metadata[["update"]], TRUE)
 
 overwriteScen <- identical(metadata[["overwriteData"]], TRUE)
 appPath <- metadata[["appPath"]]
+appEnv <- metadata[["environment"]]
 
 dontcare <- lapply(c("global.R", list.files("./R", full.names = TRUE)), source)
 
@@ -17,7 +18,29 @@ if (is.na(ADD_DATA_TIMEOUT)) {
   ADD_DATA_TIMEOUT <- 3600L
 }
 
-miroAppValidator <- MiroAppValidator$new()
+tryCatch(
+  {
+    db <- MiroDb$new(list(
+      host = Sys.getenv("MIRO_DB_HOST", "localhost"),
+      port = as.integer(Sys.getenv("MIRO_DB_PORT", "5432")),
+      name = Sys.getenv("MIRO_DB_NAME"),
+      username = Sys.getenv("MIRO_DB_USERNAME"),
+      password = Sys.getenv("MIRO_DB_PASSWORD")
+    ))
+    engineClient <- EngineClient$new()
+    engineClient$setAuthHeader(Sys.getenv("MIRO_ENGINE_AUTH_HEADER"))
+    modelConfig <- ModelConfig$new(SPECS_YAML_PATH)
+  },
+  error = function(e) {
+    write(sprintf(
+      "merr:::500:::Problems initializing required components. Error message: %s",
+      conditionMessage(e)
+    ), stderr())
+    quit("no", 1L, FALSE)
+  }
+)
+
+miroAppValidator <- MiroAppValidator$new(engineClient)
 
 tryCatch(
   {
@@ -31,42 +54,21 @@ tryCatch(
     quit("no", 1L, FALSE)
   }
 )
-tryCatch(
-  {
-    db <- MiroDb$new(list(
-      host = Sys.getenv("MIRO_DB_HOST", "localhost"),
-      port = as.integer(Sys.getenv("MIRO_DB_PORT", "5432")),
-      name = Sys.getenv("MIRO_DB_NAME"),
-      username = Sys.getenv("MIRO_DB_USERNAME"),
-      password = Sys.getenv("MIRO_DB_PASSWORD")
-    ))
-    engineClient <- EngineClient$new()
-    engineClient$setAuthHeader(Sys.getenv("MIRO_ENGINE_AUTH_HEADER"))
-    modelConfig <- ModelConfig$new(file.path(MIRO_DATA_DIR, "specs.yaml"))
-  },
-  error = function(e) {
-    write(sprintf(
-      "merr:::500:::Problems initializing required components. Error message: %s",
-      conditionMessage(e)
-    ), stderr())
-    quit("no", 1L, FALSE)
-  }
-)
-tryRemoveAppSchema <- function(appId) {
-  tryCatch(
-    db$removeAppSchema(appId),
-    error = function(e) {
-      print(sprintf("Problems removing app schema. Error message: %s", conditionMessage(e)))
-    }
-  )
-}
+
 appDir <- NULL
 cleanup <- function() {
   if (!updateApp) {
-    if (!is.null(appDir)) {
-      unlink(appDir, recursive = TRUE, force = TRUE)
-    }
-    tryRemoveAppSchema(appId)
+    logoURLTmp <- NULL
+    faviconPathTmp <- NULL
+    try({
+      appIndex <- modelConfig$getAppIndex(appId)
+      logoURLTmp <- modelConfig$getAppLogo(appIndex)
+      faviconPathTmp <- modelConfig$getAppFavicon(appIndex)
+    })
+    removeAppData(
+      appId, logoURLTmp,
+      faviconPathTmp
+    )
   }
 }
 tryCatch(
@@ -78,27 +80,25 @@ tryCatch(
     }
     modelName <- miroAppValidator$getModelName()
     modelId <- miroAppValidator$getModelId()
-    appDir <- file.path(MIRO_MODEL_DIR, appId)
-    appDirTmp <- file.path(MIRO_MODEL_DIR, paste0("~$", appId))
-    appDirTmp2 <- file.path(MIRO_MODEL_DIR, paste0("~$~$", appId))
 
-    dataDir <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
-    dataDirTmp <- file.path(MIRO_DATA_DIR, paste0("data_~$", appId))
-    dataDirTmp2 <- file.path(MIRO_DATA_DIR, paste0("data_~$~$", appId))
+    appVersion <- miroAppValidator$getAppVersion()
+    appAuthors <- miroAppValidator$getAppAuthors()
+
+    newAppEnv <- miroAppValidator$validateAppEnv(appEnv)
 
     if (updateApp) {
-      for (dirPath in c(appDirTmp, appDirTmp2, dataDirTmp, dataDirTmp2)) {
-        if (!identical(unlink(dirPath, recursive = TRUE), 0L)) {
-          stop(sprintf("Could not remove directory: %s. Please try again or contact your system administrator.", dirPath),
-            call. = FALSE
-          )
-        }
-      }
+      appDirTmp <- getModelPath(paste0("~$", appId))
+      dataDirTmp <- getDataPath(paste0("~$", appId))
+      removeTempDirs(appId)
       appConfig <- modelConfig$getAppConfigFull(appId)
       appDbCredentials <- modelConfig$getAppDbConf(appId)
 
       appConfig$containerEnv[["MIRO_VERSION_STRING"]] <- miroAppValidator$getMIROVersion()
-      appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0("/home/miro/app/model/", appId, "/", modelName)
+      if (IN_KUBERNETES) {
+        appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0("/home/miro/model/", modelName)
+      } else {
+        appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0("/home/miro/app/model/", appId, "/", modelName)
+      }
       for (key in c("displayName", "description", "accessGroups")) {
         if (length(metadata[[key]])) {
           valueTrimmed <- trimws(metadata[[key]])
@@ -115,6 +115,8 @@ tryCatch(
       extractAppData(appPath, paste0("~$", appId), modelId)
       engineClient$updateModel(appId, userGroups = FALSE, modelDataPath = file.path(appDirTmp, paste0(modelId, ".zip")))
     } else {
+      appDir <- getModelPath(appId)
+      dataDir <- getDataPath(appId)
       tryCatch(
         {
           createAppDir(appId)
@@ -136,29 +138,34 @@ tryCatch(
         id = appId, displayName = miroAppValidator$getAppTitle(), description = miroAppValidator$getAppDesc(),
         logoURL = logoURL,
         containerEnv = list(
-          MIRO_DATA_DIR = MIRO_CONTAINER_DATA_DIR,
           MIRO_VERSION_STRING = miroAppValidator$getMIROVersion(),
           MIRO_MODE = "base",
           MIRO_ENGINE_MODELNAME = appId,
           MIRO_DB_USERNAME = appDbCredentials$user,
           MIRO_DB_PASSWORD = appDbCredentials$password,
           MIRO_DB_SCHEMA = appDbCredentials$user
+        ),
+        extraData = list(
+          appVersion = appVersion,
+          appAuthors = appAuthors
         )
       )
       if (IN_KUBERNETES) {
         newAppConfig$containerEnv$MIRO_MODEL_PATH <- paste0(
-          "/home/miro/mnt/models/",
-          appId, "/", modelName
+          "/home/miro/mnt/model/", modelName
         )
+        newAppConfig$containerEnv$MIRO_DATA_DIR <- "/home/miro/data"
+        newAppConfig$containerEnv$MIRO_CACHE_DIR <- "/home/miro/cache"
       } else {
         newAppConfig$containerVolumes <- c(
           sprintf("/%s:/home/miro/app/model/%s:ro", appId, appId),
-          sprintf("/data_%s:%s", appId, MIRO_CONTAINER_DATA_DIR)
+          sprintf("/data_%s:/home/miro/app/data", appId)
         )
         newAppConfig$containerEnv$MIRO_MODEL_PATH <- paste0(
           "/home/miro/app/model/",
           appId, "/", modelName
         )
+        newAppConfig$containerEnv$MIRO_DATA_DIR <- "/home/miro/app/data"
       }
       for (key in c("displayName", "description")) {
         if (length(metadata[[key]])) {
@@ -172,11 +179,22 @@ tryCatch(
       if (length(appUserGroups)) {
         newAppConfig[["accessGroups"]] <- as.list(appUserGroups)
       }
+      for (envName in names(newAppEnv)) {
+        if (envName %in% names(newAppConfig[["containerEnv"]])) {
+          flog.warn(
+            "Environment variable name: %s is restricted and cannot be used. It will be ignored",
+            envName
+          )
+          next
+        }
+        newAppConfig[["containerEnv"]][[envName]] <- newAppEnv[[envName]]
+      }
 
       extractAppData(
         appPath, appId, modelId
       )
       addAppLogo(appId, logoPath, logoURL)
+      newAppConfig[["faviconPath"]] <- addAppFavicon(appId, modelId)
     }
 
     procEnv <- as.list(Sys.getenv())
@@ -198,43 +216,28 @@ tryCatch(
     runMiroProcAPI(appId, procEnv, MIRO_APP_PATH, ADD_DATA_TIMEOUT, cleanupFn = cleanup)
 
     if (updateApp) {
-      if (!file.rename(appDir, appDirTmp2)) {
-        stop(sprintf(
-          "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
-          appDir, appDirTmp2
-        ), call. = FALSE)
-      }
-      if (!file.rename(appDirTmp, appDir)) {
-        stop(sprintf(
-          "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
-          appDirTmp, appDir
-        ), call. = FALSE)
-      }
-      if (file.exists(dataDir) && !file.rename(dataDir, dataDirTmp2)) {
-        stop(sprintf(
-          "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
-          dataDir, dataDirTmp2
-        ), call. = FALSE)
-      }
-      if (file.exists(dataDirTmp) && !file.rename(dataDirTmp, dataDir)) {
-        stop(sprintf(
-          "Could not rename directory: %s to: %s. Please try again or contact your system administrator.",
-          dataDirTmp, dataDir
-        ), call. = FALSE)
-      }
+      moveFilesFromTemp(appId)
       modelConfig$update(modelConfig$getAppIndex(appId), list(
         containerEnv = appConfig$containerEnv,
         displayName = appConfig$displayName,
         description = appConfig$description,
-        accessGroups = appConfig$accessGroups
+        accessGroups = appConfig$accessGroups,
+        faviconPath = addAppFavicon(appId, modelId),
+        extraData = list(appVersion = appVersion, appAuthors = appAuthors)
       ), allowUpdateRestrictedEnv = TRUE)
-      if (!identical(unlink(appDirTmp2, recursive = TRUE), 0L)) {
-        flog.warn("Could not remove directory: %s", appDirTmp2)
-      }
-      if (!identical(unlink(dataDirTmp2, recursive = TRUE), 0L)) {
-        flog.warn("Could not remove directory: %s", dataDirTmp2)
-      }
+      modelConfig$update(
+        modelConfig$getAppIndex(appId),
+        list(containerEnv = newAppEnv)
+      )
     }
+  },
+  error_sig_verify = function(e) {
+    cleanup()
+    write(sprintf(
+      "merr:::400:::App signature validation failed. Error message: %s",
+      conditionMessage(e)
+    ), stderr())
+    quit("no", 1L, FALSE)
   },
   error = function(e) {
     cleanup()

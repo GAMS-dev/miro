@@ -322,22 +322,37 @@
                         >.
                       </li>
                       <li>
-                        App environment (JSON, optional):<br />
+                        Advanced Settings (optional):<br />
                         <a id="app-environment" class="anchor"></a>
                         <p>
-                          Here you can define a customized environment to be
-                          used by the MIRO app in JSON syntax. This can be
-                          useful/mandatory, for example, if you want to run
-                          custom analysis scripts that require external
-                          software not in the PATH or to store credentials to
-                          be used by remote data exchange modules. A detailed
-                          description including an example can be found in the
-                          <a href="./deployment.html#custom-environments"
-                            >MIRO Desktop documentation</a
-                          >. The only difference to the local version is that
-                          with MIRO Server you can specify a separate
-                          environment for each app, while with MIRO Desktop
-                          this applies globally to all apps.
+                          Clicking this button opens a dialog where you can
+                          configure advanced options, such as environment
+                          variables or default scenario permissions.
+                          Environment variables are especially useful if your
+                          app includes custom R code, such as
+                          <a
+                            href="configuration_json_only.html#custom-import-export"
+                            >custom data connectors</a
+                          >
+                          or
+                          <a
+                            href="./configuration_advanced.html#custom-renderers"
+                            >custom renderers</a
+                          >, that require secrets like API keys to connect to
+                          external systems.
+                        </p>
+                        <p>
+                          Default scenario permissions specify which users and
+                          groups are pre-filled when a new scenario is saved.
+                          Users can review and modify these permissions before
+                          finalizing the save.
+                        </p>
+                        <p>
+                          The scenario owner is always included automatically,
+                          in addition to any users or groups specified here. If
+                          no default users or groups are set (the fields are
+                          left empty), only the scenario owner will have read,
+                          write, and execute permissions.
                         </p>
                         <p>
                           <b>Language</b>: While the
@@ -350,8 +365,7 @@
                           one MIRO Server instance. The environment variable
                           <kbd>MIRO_LANG</kbd> specifies the language.
                           Available languages currently are English ('en'),
-                          Chinese ('cn') and German ('de'). Example:
-                          <kbd>{"MIRO_LANG":"de"}</kbd>.
+                          Chinese ('cn') and German ('de').
                         </p>
                         <div class="section-block">
                           <img
@@ -376,8 +390,7 @@
                             >global color theme</a
                           >
                           of an individual app. Available themes are listed
-                          below. Example:
-                          <kbd>{"MIRO_THEME":"darkblue"}</kbd>.
+                          below.
                         </p>
                         <ul>
                           <li>Default theme (value: "default")</li>

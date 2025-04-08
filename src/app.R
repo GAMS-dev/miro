@@ -818,22 +818,13 @@ if (miroBuildOnly) {
       )
       # assemble MIROAPP
       miroAppPath <- file.path(currentModelDir, paste0(modelNameRaw, ".miroapp"))
-      appInfoPath <- file.path(paste0("static_", modelName), "app_info.json")
-      appIdToValidate <- tryCatch(suppressWarnings(
-        read_json(file.path(currentModelDir, appInfoPath),
-          simplifyDataFrame = FALSE,
-          simplifyMatrix = FALSE
-        )
-      )$appId, error = function(e) {
-        return(modelName)
-      })
-      if (length(appIdToValidate) != 1L || !is.character(appIdToValidate)) {
-        appIdToValidate <- modelName
-      }
-      if (!grepl("^[a-z0-9][a-z0-9-_]{0,59}$", appIdToValidate, perl = TRUE)) {
+      appInfoPath <- file.path(currentModelDir, paste0("static_", modelName), "app_info.json")
+      if (identical(file.access(appInfoPath, mode = 4L)[[1]], 0L)) {
+        jsonValidator$validate(appInfoPath, file.path("conf", "app_info_schema.json"))
+      } else if (!grepl("^[a-z0-9][a-z0-9-_]{0,59}$", modelName, perl = TRUE)) {
         stop(
           sprintf(
-            "The App ID ('%s') may only contain ASCII lowercase letters, digits, '-' and '_', must not start with '-' or '_' and may not be longer than 60 characters!\nProvide a valid app ID by specifying it in the `%s` JSON file with the key: `appId` (e.g. `{\"appId\": \"my_model123\"}`).",
+            "The main model file ('%s') contains an invalid app ID. App IDs must meet the following criteria: contain only ASCII lowercase letters, digits, '-', or '_'; cannot start with '-' or '_'; and cannot exceed 60 characters in length.\nTo provide a valid app ID, specify it in the `%s` JSON file using the `appId` key, for example: {\"appId\": \"my_model123\"}.",
             appIdToValidate, appInfoPath
           ),
           call. = FALSE
@@ -1264,8 +1255,21 @@ if (!is.null(errMsg)) {
   if (isShinyProxy && miroStoreDataOnly) {
     if (identical(Sys.getenv("MIRO_API_GET_SCEN_LIST"), "true")) {
       source("./tools/api/util.R")
+      page <- as.integer(Sys.getenv("MIRO_API_PAGE", "1"))
+      perPage <- as.integer(Sys.getenv("MIRO_API_PER_PAGE", "20"))
+      totalCount <- db$fetchScenList(
+        scode = SCODEMAP[["scen"]],
+        count = TRUE
+      )[["count"]]
+      if (is.null(totalCount)) {
+        totalCount <- 0L
+      }
       write("merr:::200:::", stderr())
-      write(scenMetaTibbleToJSON(db$fetchScenList(scode = SCODEMAP[["scen"]])), stderr())
+      write(scenMetaTibbleToJSON(db$fetchScenList(
+        scode = SCODEMAP[["scen"]],
+        limit = perPage,
+        offset = perPage * (page - 1L),
+      ), as.integer(totalCount)), stderr())
       if (interactive()) {
         stop()
       }

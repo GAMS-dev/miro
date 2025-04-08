@@ -28,7 +28,7 @@ ModelConfig <- R6::R6Class("ModelConfig",
       }
       return(list(
         private$currentModelConfigs[[modelIndex]][["id"]],
-        private$currentModelConfigs[[model_index]][["containerEnv"]][["MIRO_MODEL_PATH"]]
+        private$currentModelConfigs[[model_index]][["containerEnv"]][["MIRO_MODEL_PATH"]][["value"]]
       ))
     },
     setAppsNotOnEngine = function(appIds) {
@@ -57,15 +57,31 @@ ModelConfig <- R6::R6Class("ModelConfig",
       stop("App id not found (error 1789236).", call. = FALSE)
     },
     getModelName = function(appIndex) {
-      return(tools::file_path_sans_ext(basename(private$currentModelConfigs[[appIndex]][["containerEnv"]][["MIRO_MODEL_PATH"]])))
+      return(
+        tools::file_path_sans_ext(
+          basename(
+            private$currentModelConfigs[[appIndex]][["containerEnv"]][["MIRO_MODEL_PATH"]][["value"]]
+          )
+        )
+      )
     },
     getAppLogo = function(appIndex) {
       return(private$currentModelConfigs[[appIndex]]$logoURL)
+    },
+    getAppFavicon = function(appIndex) {
+      return(private$currentModelConfigs[[appIndex]]$faviconPath)
+    },
+    getEnvValue = function(envConfig) {
+      if (length(envConfig) == 1L && is.character(envConfig)) {
+        return(envConfig)
+      }
+      return(envConfig[["value"]])
     },
     add = function(newConfig) {
       if ("accessGroups" %in% names(newConfig)) {
         newConfig[["accessGroups"]] <- as.list(toupper(newConfig[["accessGroups"]]))
       }
+      newConfig[["containerEnv"]] <- private$fixContainerEnv(newConfig[["containerEnv"]])
       private$currentModelConfigs <- c(private$currentModelConfigs, list(newConfig))
 
       private$writeConfig()
@@ -88,41 +104,44 @@ ModelConfig <- R6::R6Class("ModelConfig",
         appIndex > length(private$currentModelConfigs)) {
         stop("Invalid app index.", call. = FALSE)
       }
-      if (!is.null(newConfig[["displayName"]])) {
-        if (nchar(trimws(newConfig[["displayName"]])) < 1) {
-          stop("App title must contain at least 1 non-whitespace character.",
-            call. = FALSE
-          )
-        }
-        private$currentModelConfigs[[appIndex]][["displayName"]] <- newConfig[["displayName"]]
-      }
-      for (envKey in c(
-        names(newConfig[["containerEnv"]]),
-        names(private$currentModelConfigs[[appIndex]][["containerEnv"]])
-      )) {
-        if (!allowUpdateRestrictedEnv && envKey %in% private$restrictedEnvKeys) {
-          if (envKey %in% names(newConfig[["containerEnv"]])) {
-            flog.warn("Invalid environment variable name: %s in custom environment file. It was ignored.", envKey)
+      if ("containerEnv" %in% names(newConfig)) {
+        newConfig[["containerEnv"]] <- private$fixContainerEnv(newConfig[["containerEnv"]])
+        for (envKey in c(
+          names(newConfig[["containerEnv"]]),
+          names(private$currentModelConfigs[[appIndex]][["containerEnv"]])
+        )) {
+          if (!allowUpdateRestrictedEnv && envKey %in% RESTRICTED_ENV_KEYS) {
+            if (envKey %in% names(newConfig[["containerEnv"]])) {
+              flog.warn("Invalid environment variable name: %s in custom environment file. It was ignored.", envKey)
+            }
+            next
           }
-          next
+          if (envKey %in% names(newConfig[["containerEnv"]])) {
+            private$currentModelConfigs[[appIndex]][["containerEnv"]][[envKey]] <- newConfig[["containerEnv"]][[envKey]]
+            next
+          }
+          private$currentModelConfigs[[appIndex]][["containerEnv"]][[envKey]] <- NULL
         }
-        if (envKey %in% names(newConfig[["containerEnv"]])) {
-          private$currentModelConfigs[[appIndex]][["containerEnv"]][[envKey]] <- newConfig[["containerEnv"]][[envKey]]
-          next
-        }
-        private$currentModelConfigs[[appIndex]][["containerEnv"]][[envKey]] <- NULL
       }
-      for (configId in c("description", "logoURL")) {
-        if (!is.null(newConfig[[configId]])) {
+      for (configId in c("displayName", "description", "logoURL", "accessGroups", "extraData", "faviconPath")) {
+        if (configId %in% names(newConfig)) {
+          if (identical(configId, "displayName")) {
+            if (nchar(trimws(newConfig[["displayName"]])) < 1) {
+              stop("App title must contain at least 1 non-whitespace character.",
+                call. = FALSE
+              )
+            }
+          } else if (identical(configId, "accessGroups")) {
+            currentAccessGroups <- private$currentModelConfigs[[appIndex]][["accessGroups"]]
+            accessGroupsNoAccess <- currentAccessGroups[!toupper(currentAccessGroups) %in% private$accessGroups]
+            if (length(newConfig[["accessGroups"]]) > 0) {
+              newConfig[["accessGroups"]] <- as.list(unique(c(toupper(newConfig[["accessGroups"]]), accessGroupsNoAccess)))
+            } else {
+              newConfig[["accessGroups"]] <- as.list(accessGroupsNoAccess)
+            }
+          }
           private$currentModelConfigs[[appIndex]][[configId]] <- newConfig[[configId]]
         }
-      }
-      currentAccessGroups <- private$currentModelConfigs[[appIndex]][["accessGroups"]]
-      accessGroupsNoAccess <- currentAccessGroups[!toupper(currentAccessGroups) %in% private$accessGroups]
-      if (length(newConfig[["accessGroups"]]) > 0) {
-        private$currentModelConfigs[[appIndex]][["accessGroups"]] <- as.list(unique(c(toupper(newConfig[["accessGroups"]]), accessGroupsNoAccess)))
-      } else {
-        private$currentModelConfigs[[appIndex]][["accessGroups"]] <- as.list(accessGroupsNoAccess)
       }
 
       private$writeConfig()
@@ -158,16 +177,15 @@ ModelConfig <- R6::R6Class("ModelConfig",
     getAppDbConf = function(id) {
       configFull <- self$getAppConfigFull(id)
       return(list(
-        user = configFull[["containerEnv"]][["MIRO_DB_USERNAME"]],
-        password = configFull[["containerEnv"]][["MIRO_DB_PASSWORD"]]
+        user = configFull[["containerEnv"]][["MIRO_DB_USERNAME"]][["value"]],
+        password = configFull[["containerEnv"]][["MIRO_DB_PASSWORD"]][["value"]]
       ))
     },
     getAppConfig = function(index) {
       appConfig <- private$currentModelConfigs[[index]]
       if ("logoURL" %in% names(appConfig)) {
         logoB64 <- tryCatch(getLogoB64(file.path(
-          MIRO_DATA_DIR,
-          "logos", appConfig[["logoURL"]]
+          LOGO_DIR, appConfig[["logoURL"]]
         )), error = function(e) {
           flog.info("Problems reading app logo. Default logo will be used. Error: %s", conditionMessage(e))
           return(DEFAULT_LOGO_B64)
@@ -185,19 +203,23 @@ ModelConfig <- R6::R6Class("ModelConfig",
 
       appEnv <- list()
       for (envKey in names(appConfig[["containerEnv"]])) {
-        if (!envKey %in% private$restrictedEnvKeys) {
+        if (!envKey %in% RESTRICTED_ENV_KEYS) {
           appEnv[[envKey]] <- appConfig[["containerEnv"]][[envKey]]
         }
       }
-      if (length(appEnv)) {
-        appEnv <- as.character(jsonlite::toJSON(appEnv, auto_unbox = TRUE))
+      if (is.null(appConfig[["extraData"]][["appAuthors"]])) {
+        appAuthors <- character()
+      } else {
+        appAuthors <- appConfig[["extraData"]][["appAuthors"]]
       }
 
       return(list(
         id = appConfig[["id"]], alias = appConfig[["displayName"]],
         desc = appConfig[["description"]], logob64 = logoB64,
-        appEnv = if (length(appEnv)) appEnv else "",
+        appEnv = appEnv,
         groups = I(accessGroups),
+        version = appConfig[["extraData"]][["appVersion"]],
+        authors = I(appAuthors),
         isDirty = appConfig[["id"]] %in% private$appsNotOnEngine
       ))
     }
@@ -208,11 +230,17 @@ ModelConfig <- R6::R6Class("ModelConfig",
     currentModelConfigs = NULL,
     modelConfigsNoAccess = NULL,
     appsNotOnEngine = NULL,
-    restrictedEnvKeys = c(
-      "MIRO_MODEL_PATH", "MIRO_DATA_DIR", "MIRO_MODE",
-      "MIRO_VERSION_STRING", "MIRO_DB_USERNAME", "MIRO_DB_PASSWORD", "MIRO_DB_SCHEMA",
-      "MIRO_ENGINE_MODELNAME"
-    ),
+    fixContainerEnv = function(containerEnvRaw) {
+      if (is.null(containerEnvRaw)) {
+        return(list())
+      }
+      return(lapply(containerEnvRaw, function(envConfig) {
+        if (length(envConfig) == 1L && is.character(envConfig)) {
+          return(list(value = envConfig, description = ""))
+        }
+        return(envConfig)
+      }))
+    },
     appIsVisible = function(appConfig) {
       return(!identical(appConfig[["id"]], "admin") &&
         (!length(appConfig[["accessGroups"]]) || any(appConfig[["accessGroups"]] %in% private$accessGroups)))
@@ -238,6 +266,14 @@ ModelConfig <- R6::R6Class("ModelConfig",
         }
       )
       return(lapply(configTmp[["specs"]], function(appConfig) {
+        containerEnvNames <- names(appConfig[["containerEnv"]])
+        appConfig[["containerEnv"]] <- lapply(containerEnvNames, function(envName) {
+          return(list(
+            value = appConfig[["containerEnv"]][[envName]],
+            description = appConfig[["extraData"]][["containerEnvSettings"]][[envName]][["description"]]
+          ))
+        })
+        names(appConfig[["containerEnv"]]) <- containerEnvNames
         appConfig[["accessGroups"]] <- as.list(appConfig[["accessGroups"]])
         return(appConfig)
       }))
@@ -256,6 +292,16 @@ ModelConfig <- R6::R6Class("ModelConfig",
           call. = FALSE
         )
       }
+      appSpecsTmp$specs <- lapply(appSpecsTmp$specs, function(appConfig) {
+        if (is.null(appConfig[["extraData"]])) {
+          appConfig[["extraData"]] <- list()
+        }
+        appConfig[["extraData"]][["containerEnvSettings"]] <- lapply(appConfig[["containerEnv"]], function(envConfig) {
+          return(list(description = envConfig[["description"]]))
+        })
+        appConfig[["containerEnv"]] <- lapply(appConfig[["containerEnv"]], "[[", "value")
+        return(appConfig)
+      })
       yaml::write_yaml(
         appSpecsTmp,
         private$configPath

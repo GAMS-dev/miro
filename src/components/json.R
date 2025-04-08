@@ -57,7 +57,6 @@ JSONValidator <- R6Class(
       )
       valid <- private$ct$get("valid")
       if (identical(valid, TRUE)) {
-        errors <- NULL
         if (returnRawData) {
           data <- jsonlite::fromJSON(dataTmp,
             simplifyDataFrame = FALSE,
@@ -70,10 +69,9 @@ JSONValidator <- R6Class(
           )
         }
       } else {
-        errors <- private$ct$get("window.betterAjvErrors(schema,data,validate.errors,{json:dataRaw})")
-        data <- NULL
+        stop(private$ct$get("window.betterAjvErrors(schema,data,validate.errors,{json:dataRaw})"), call. = FALSE)
       }
-      return(list(errors = errors, data = data))
+      return(data)
     }
   ),
   private = list(

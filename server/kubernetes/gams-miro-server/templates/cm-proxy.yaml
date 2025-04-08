@@ -18,7 +18,9 @@ data:
       title: {{ .Values.proxy.config.title | quote }}
       theme: {{ .Values.proxy.config.colorTheme | quote }}
       template-path: ./templates/2col
-      favicon-path: ./favicon.ico
+      logo-path: /assets/imgk8s/logo.png
+      favicon-path: ./templates/2col/assets/imgk8s/favicon.ico
+      specs-path: ./mnt/specs.yaml
       model-dir: /home/miroproxy/mnt/models
       data-dir: /home/miroproxy/mnt/data
       miro-lang: {{ .Values.proxy.config.language }}
@@ -29,6 +31,7 @@ data:
       admin-groups: admins
       container-backend: kubernetes
       container-wait-time: {{ .Values.proxy.config.containerWaitTimeSeconds }}000
+      default-proxy-max-lifetime: {{ .Values.proxy.config.proxyMaxLifetimeMinutes | default -1 }}
       max-upload-size: {{ .Values.proxy.config.maxUploadSizeMB }}
       force-signed-apps: {{ .Values.proxy.config.forceSignedApps.enabled }}
       disable-readonly-mode: {{ .Values.proxy.config.disableReadonlyMode }}
@@ -37,6 +40,11 @@ data:
       max-total-instances: {{ .Values.proxy.config.maxTotalInstances }}
       {{- if .Values.proxy.config.metrics.enabled }}
       usage-stats-url: micrometer
+      {{- end }}
+      {{- if eq .Values.proxy.config.containerLogBackend.type "s3" }}
+      container-log-path: s3://{{ .Values.proxy.config.containerLogBackend.s3.bucketName }}{{ .Values.proxy.config.containerLogBackend.s3.bucketDir }}
+      container-log-s3-access-key: {{ .Values.proxy.config.containerLogBackend.s3.accessKeyId | quote }}
+      container-log-s3-region: {{ .Values.proxy.config.containerLogBackend.s3.region | quote }}
       {{- end }}
       webservice:
         authentication-url: http://{{ include "common.names.fullname" . }}-auth:8081/login
@@ -67,8 +75,9 @@ data:
         image-pull-secrets:
           {{- toYaml $.Values.global.imagePullSecrets | nindent 10 }}
         {{- end }}
+        image-pull-policy: {{ .Values.proxy.config.containerPullPolicy | default "IfNotPresent" | quote }}
         namespace: {{ .Release.Namespace | quote }}
-        global-pod-patches: |
+        global-pod-patches-ui: |
           - op: add
             path: /spec/volumes
             value:
@@ -85,8 +94,17 @@ data:
           - op: add
             path: /spec/containers/0/volumeMounts
             value:
-              - mountPath: /home/miro/mnt
+              - mountPath: /home/miro/model
                 name: shared-data
+                subPath: "data/#{proxySpec.id}/model"
+                readOnly: true
+              - mountPath: /home/miro/data
+                name: shared-data
+                subPath: "data/#{proxySpec.id}/data"
+                readOnly: true
+              - mountPath: /home/miro/cache
+                name: shared-data
+                subPath: "data/#{proxySpec.id}/cache"
           - op: add
             path: /spec/containers/0/resources
             value:

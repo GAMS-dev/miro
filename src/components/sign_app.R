@@ -90,24 +90,39 @@ verifyAppSignature <- function(appDir, pubKeyPaths, printFingerprint = TRUE) {
   fileWithHashes <- file.path(appDir, ".miro_hashes")
   fileWithSig <- file.path(appDir, ".miro_sig")
   if (!file.exists(fileWithHashes) || !file.exists(fileWithSig)) {
+    write(sprintf(
+      "Signature (%s) and/or hashes file (%s) not found.",
+      fileWithSig, fileWithHashes
+    ), stderr())
     return(FALSE)
   }
   filesInApp <- list.files(appDir, all.files = TRUE, recursive = TRUE, no.. = TRUE)
   filesInApp <- filesInApp[!filesInApp %in% c(".miro_hashes", ".miro_sig", ".miro_pubkey")]
   fileHashesShould <- readLines(fileWithHashes, encoding = "UTF-8")
-  if (!identical(length(fileHashesShould), length(filesInApp))) {
-    return(FALSE)
-  }
   getFileId <- function(rootDir, fileName) {
     paste0(fileName, "\\/\\", digest::digest(file = file.path(rootDir, fileName), algo = "sha256"))
   }
   fileHashesActual <- vapply(filesInApp, function(fileInApp) {
     return(getFileId(appDir, fileInApp))
   }, character(1L), USE.NAMES = FALSE)
-  if (!all(fileHashesActual %in% fileHashesShould)) {
+  additionalFileHashes <- !fileHashesActual %in% fileHashesShould
+  if (any(additionalFileHashes)) {
+    write(sprintf(
+      "Additional file hashes in app: %s.",
+      fileHashesActual[additionalFileHashes]
+    ), stderr())
+    return(FALSE)
+  }
+  missingFileHashes <- !fileHashesShould %in% fileHashesActual
+  if (any(missingFileHashes)) {
+    write(sprintf(
+      "Missing file hashes in app: %s.",
+      fileHashesShould[missingFileHashes]
+    ), stderr())
     return(FALSE)
   }
   validPubKey <- NULL
+  errMsg <- ""
   for (pubKeyPath in pubKeyPaths) {
     signatureValid <- tryCatch(
       {
@@ -117,6 +132,11 @@ verifyAppSignature <- function(appDir, pubKeyPaths, printFingerprint = TRUE) {
         TRUE
       },
       error = function(e) {
+        errMsg <<- paste0(errMsg, "\n", sprintf(
+          "Failed to verify signature for file: %s using public key: %s (signature file: %s). Error message: %s",
+          fileWithHashes, pubKeyPath, fileWithSig,
+          conditionMessage(e)
+        ))
         return(FALSE)
       }
     )
@@ -126,6 +146,7 @@ verifyAppSignature <- function(appDir, pubKeyPaths, printFingerprint = TRUE) {
     }
   }
   if (!length(validPubKey)) {
+    write(paste0(errMsg, "\n\n"), stderr())
     return(FALSE)
   }
   if (printFingerprint) {

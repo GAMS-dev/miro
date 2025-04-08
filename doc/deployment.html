@@ -242,6 +242,23 @@ inc/inc2.inc
                     </p>
                   </div>
                   <!--//section-block-->
+                  <div id="favicon" class="section-block">
+                    <h3>Favicon</h3>
+                    <p>
+                      A favicon, short for "favorites icon", is a small,
+                      typically 16x16 pixel icon associated with a website or
+                      web application, displayed in the browser's address bar,
+                      tab, and bookmarks. To customize the favicon for your
+                      application, particularly when running on MIRO Server or
+                      accessing it via a browser in MIRO Desktop, simply place
+                      a file named <span class="code">favicon.ico</span> in the
+                      <span class="code">static_&lt;modelname&gt;</span>
+                      directory. Please ensure that the
+                      <span class="code">favicon.ico</span> file does not
+                      exceed 100KB in size. This will override the default
+                      favicon, providing a unique visual identity for your app.
+                    </p>
+                  </div>
                   <div id="default-title-description" class="section-block">
                     <h3>Default Title and Description</h3>
                     <p>
@@ -257,6 +274,28 @@ inc/inc2.inc
                     <pre><code class="language-json">{
     "title": "Example app",
     "description": "This is my first MIRO app"
+}</code></pre>
+                  </div>
+                  <div id="app-metadata" class="section-block">
+                    <h3>App Metadata</h3>
+                    <p>
+                      In addition to the title and description, you can also
+                      specify the app's version and authors. Both fields can
+                      contain any string up to 100 characters in length (the
+                      <i>"authors"</i> field is an array of strings).
+                    </p>
+                    <p>
+                      The version information is displayed in the top right
+                      corner of your application tile in the library, while the
+                      authors are shown in the bottom right corner. In MIRO
+                      Server, this information is only visible in the admin
+                      panel. Example:
+                    </p>
+                    <pre><code class="language-json">{
+    "title": "Example app",
+    "description": "This is my first MIRO app",
+    "version": "1.0.0",
+    "authors": ["GAMS Development Corp."]
 }</code></pre>
                   </div>
                   <!--//section-block-->
@@ -323,6 +362,69 @@ inc/inc2.inc
                     <!--//callout-block-->
                   </div>
                   <!--//section-block-->
+                  <div id="app-environment" class="section-block">
+                    <h3>
+                      App Environment
+                      <small
+                        ><span class="badge badge-pill badge-secondary"
+                          >MIRO Server only</span
+                        ></small
+                      >
+                    </h3>
+                    <p>
+                      When writing custom code, such as
+                      <a
+                        href="configuration_json_only.html#custom-import-export"
+                        >custom data connectors</a
+                      >
+                      or
+                      <a href="./configuration_advanced.html#custom-renderers"
+                        >custom renderers</a
+                      >, you may need to use secrets like API keys.
+                      Additionally, you may want to give administrators the
+                      ability to customize certain parts of your app when they
+                      add it to the library. In both cases, environment
+                      variables can be very useful.
+                    </p>
+                    <p>
+                      To help administrators set these variables correctly, you
+                      can document them in the
+                      <span class="code">app_info.json</span> file. To do this,
+                      you can add a new <kbd>"environment"</kbd> section:
+                    </p>
+                    <pre><code class="language-json">{
+    "title": "Advanced app",
+    "description": "This is a more advanced app",
+    "appId": "advanced_app123",
+    "environment": {
+      "MIRO_IMPORTER_API_KEY": {
+        "description": "API key for custom importer"
+      },
+      "MIRO_RENDERER_SHOW_ADVANCED": {
+        "description": "Show advanced options in renderer (yes/No)",
+        "value": "no"
+      }
+    }
+}</code></pre>
+                    <p>
+                      As you can see, we have documented two environment
+                      variables required by our app:
+                      <kbd>MIRO_IMPORTER_API_KEY</kbd> and
+                      <kbd>MIRO_RENDERER_SHOW_ADVANCED</kbd>. For each
+                      variable, we can provide a description as well as a
+                      default value, which the administrator can modify when
+                      adding the app.
+                    </p>
+                    <p>
+                      These variables can then be accessed in your R code as
+                      follows:
+                      <span class="code"
+                        >Sys.getenv("MIRO_IMPORTER_API_KEY", NULL)</span
+                      >
+                      (second argument is the default value if variable is
+                      unset).
+                    </p>
+                  </div>
                   <div id="web-app-manifest" class="section-block">
                     <h3>Make your App Mobile Friendly</h3>
                     <p>
@@ -1155,165 +1257,6 @@ inc/inc2.inc
                   <!--//section-block-->
                 </section>
                 <!--//doc-section-->
-                <section id="deployment-collaboration" class="doc-section">
-                  <h2 class="section-title">Collaboration</h2>
-                  <div class="section-block" id="collaboration-apps">
-                    <h3>Share MIRO apps</h3>
-                    <p>
-                      This section covers the options you have when you want to
-                      share MIRO apps and/or scenarios between multiple users.
-                    </p>
-                    <p>
-                      First, you need to specify a location in your file system
-                      where your MIRO apps are stored. To change the directory
-                      where MIRO apps are stored, go to
-                      <i>Preferences</i> &rarr; <i>Paths</i> and change the
-                      "MIRO app path" to a directory where all collaborating
-                      users have at least read access. Users that are allowed
-                      to add/edit/remove apps need write access as well. Note
-                      that this only handles the location of where the MIRO
-                      apps are stored and loaded from, not the location of the
-                      MIRO database that the apps use. If you want your users
-                      to share the same database (in order to collaborate), you
-                      can specify its location by clicking on
-                      <i>Edit</i> (<span class="key">Ctrl</span> +
-                      <span class="key">E</span> or
-                      <span class="key">⌘</span> +
-                      <span class="key">E</span> on macOS).
-                    </p>
-                    <div class="section-block" style="text-align: center">
-                      <img
-                        class="img-fluid"
-                        style="max-height: 350pt"
-                        src="assets/images/deployment/edit-database-location.png"
-                        alt="Edit database location"
-                      />
-                    </div>
-                    <div class="callout-block callout-warning">
-                      <div class="icon-holder">
-                        <i class="fas fa-info-circle"></i>
-                      </div>
-                      <!--//icon-holder-->
-                      <div class="content">
-                        <b class="callout-title">Note:</b>
-                        <p>
-                          Collaborators need both read and write permissions at
-                          the database location to load and save scenarios!
-                        </p>
-                      </div>
-                      <!--//content-->
-                    </div>
-                    <!--//callout-block-->
-                  </div>
-                  <!--//section-block-->
-                  <div class="section-block" id="collaboration-settings">
-                    <h3>Share settings</h3>
-                    <p>
-                      In addition to sharing MIRO apps, you may want to share
-                      settings such as "Paths" to the GAMS/R installation or
-                      even "General" settings such as the log file verbosity.
-                      To do so, you have to create a file:
-                      <span class="code">settings.json</span> at the location
-                      of the shared MIRO app path.
-                    </p>
-                    <p>
-                      Let's look at an example: You created a shared directory
-                      <span class="code">&lt;sharedFolder&gt;</span> where you
-                      have read and write access and all the other
-                      collaborators only have read permissions. You select this
-                      directory in your MIRO settings (<i>Preferences</i>
-                      &rarr; <i>Paths</i> &rarr; <i>MIRO app path</i>) and
-                      install your MIRO applications here. In addition, you
-                      want to set some default settings. Therefore, you create
-                      a file
-                      <span class="code"
-                        >&lt;sharedFolder&gt;\settings.json</span
-                      >:
-                    </p>
-                    <pre><code class="language-json">{
-    "gamspath": "C:\\GAMS\\win64\\30.2",
-    "launchExternal": false,
-    "logLifeTime": -1,
-    "important": ["logLifeTime", "gamspath"]
-}</code></pre>
-                    <p>
-                      Users that set their MIRO app path to
-                      <span class="code">&lt;sharedFolder&gt;</span> will now
-                      also load these settings in addition to the apps
-                      installed here (in this example the GAMS path is set to
-                      <span class="code">C:\GAMS\win64\30.2</span>, the MIRO
-                      app is not launched in the default browser but inside a
-                      native MIRO window and the logs are never removed).
-                    </p>
-                    <p>
-                      The "important" key is special: settings listed here
-                      ("logLifeTime" and "gamspath") will be fixed, meaning the
-                      user can not overwrite these. This is useful if you don't
-                      want your users to change certain options.
-                    </p>
-                    <p>
-                      The schema for the
-                      <span class="code">settings.json</span> file is as
-                      follows:
-                    </p>
-                    <pre><code class="language-json">{
-  configpath: {
-    type: 'string',
-    minLength: 2
-  },
-  gamspath: {
-    type: 'string',
-    minLength: 2
-  },
-  pythonpath: {
-    type: 'string',
-    minLength: 2
-  },
-  rpath: {
-   type: 'string',
-   minLength: 2
-  },
-  logpath: {
-    type: 'string',
-    minLength: 2
-  },
-  launchExternal: {
-    type: 'boolean'
-  },
-  logLifeTime: {
-    type: 'integer',
-    minimum: -1
-  },
-  language: {
-    type: 'string',
-    enum: ['en', 'de', 'cn']
-  },
-  logLevel: {
-    type: 'string',
-    enum: ['TRACE', 'DEBUG', 'INFO',
-    'WARN', 'ERROR', 'FATAL']
-  },
-  important: {
-    type: 'array',
-    items:{
-      type: 'string',
-      enum: [
-        'gamspath',
-        'pythonpath',
-        'rpath',
-        'logpath',
-        'launchExternal',
-        'logLifeTime',
-        'language',
-        'logLevel'
-     ]
-    }
-  }
-}</code></pre>
-                  </div>
-                  <!--//section-block-->
-                </section>
-                <!--//doc-section-->
                 <section id="db-migration" class="doc-section">
                   <h2 class="section-title">Database migration</h2>
                   <div class="section-block">
@@ -1433,12 +1376,19 @@ inc/inc2.inc
                     <a class="nav-link scrollto" href="#default-logo"
                       >Default Logo</a
                     >
+                    <a class="nav-link scrollto" href="#favicon">Favicon</a>
                     <a
                       class="nav-link scrollto"
                       href="#default-title-description"
                       >Default Title and Description</a
                     >
+                    <a class="nav-link scrollto" href="#app-metadata"
+                      >App Metadata</a
+                    >
                     <a class="nav-link scrollto" href="#app-id">App ID</a>
+                    <a class="nav-link scrollto" href="#app-environment"
+                      >App Environment</a
+                    >
                     <a class="nav-link scrollto" href="#web-app-manifest"
                       >Make your App Mobile Friendly</a
                     >
@@ -1456,17 +1406,6 @@ inc/inc2.inc
                   <a class="nav-link scrollto" href="#sbs-customize-app"
                     >Customize your Installed MIRO Apps</a
                   >
-                  <a class="nav-link scrollto" href="#deployment-collaboration"
-                    >Collaboration</a
-                  >
-                  <nav class="doc-sub-menu nav flex-column">
-                    <a class="nav-link scrollto" href="#collaboration-apps"
-                      >Share MIRO apps</a
-                    >
-                    <a class="nav-link scrollto" href="#collaboration-settings"
-                      >Share settings</a
-                    >
-                  </nav>
                   <!--//nav-->
                   <a class="nav-link scrollto" href="#db-migration"
                     >Database migration</a

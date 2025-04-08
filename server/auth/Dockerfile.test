@@ -3,8 +3,11 @@ FROM --platform=linux/amd64 miro-auth
 RUN python -m pip install --no-cache-dir \
     pytest \
     httpx \
-    psycopg2-binary
+    psycopg2-binary \
+    pytest-cov
 
 USER miro
 
-CMD ["pytest"]
+WORKDIR /app/app
+
+CMD ["sleep", "infinity"]

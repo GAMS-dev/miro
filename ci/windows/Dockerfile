@@ -2,22 +2,22 @@ FROM mcr.microsoft.com/windows/server:ltsc2022
 
 SHELL ["powershell", "-executionpolicy", "bypass", "-command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'; $verbosePreference='Continue'; Set-PSDebug -Trace 0;"]
 
-ARG NODE_VERSION=20.14.0
+ARG NODE_VERSION=22.14.0
 ENV NODE_VERSION=${NODE_VERSION}
 
-ARG GPG_VERSION=4.3.1
+ARG GPG_VERSION=4.4.0
 ENV GPG_VERSION=${GPG_VERSION}
 
-ARG YARN_VERSION=1.22.19
+ARG YARN_VERSION=1.22.22
 ENV YARN_VERSION=${YARN_VERSION}
 
-ARG R_VERSION=4.4.0
+ARG R_VERSION=4.4.3
 ENV R_VERSION=${R_VERSION}
 
 ARG INNOEXTRACT_VERSION=1.9
 ENV INNOEXTRACT_VERSION=${INNOEXTRACT_VERSION}
 
-ARG GAMS_VERSION=42.4.0
+ARG GAMS_VERSION=49.3.0
 ENV GAMS_VERSION=${GAMS_VERSION}
 
 RUN Invoke-WebRequest $('https://files.gpg4win.org/gpg4win-{0}.exe' -f $env:GPG_VERSION) -OutFile 'gpg4win.exe' -UseBasicParsing ; \
@@ -46,16 +46,14 @@ RUN @( \
     Rename-Item -Path $('C:\node-v{0}-win-x64' -f $env:NODE_VERSION) -NewName 'C:\nodejs'
 
 RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 ; \
-    Invoke-WebRequest $('https://yarnpkg.com/downloads/{0}/yarn-{0}.msi' -f $env:YARN_VERSION) -OutFile yarn.msi -UseBasicParsing ; \
-    $sig = Get-AuthenticodeSignature -filepath yarn.msi ; \
-    if ($sig.Status -ne 'Valid') { Write-Error 'Authenticode signature is not valid' } ; \
+    Invoke-WebRequest $('https://classic.yarnpkg.com/downloads/{0}/yarn-{0}.msi' -f $env:YARN_VERSION) -OutFile yarn.msi -UseBasicParsing ; \
     Start-Process msiexec.exe -ArgumentList '/i', 'yarn.msi', '/quiet', '/norestart' -NoNewWindow -Wait
 
 RUN New-Item $($env:APPDATA + '\npm') -Type Directory ; \
     $env:PATH = 'C:\nodejs;{0}\npm;C:\yarn\bin;{1}' -f $env:APPDATA, $env:PATH ; \
     Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment\' -Name Path -Value $env:PATH
 
-RUN Invoke-WebRequest "https://cran.r-project.org/bin/windows/Rtools/rtools44/files/rtools44-6104-6039.exe" -OutFile "Rtools.exe" -UseBasicParsing ; \
+RUN Invoke-WebRequest "https://cran.r-project.org/bin/windows/Rtools/rtools45/files/rtools45-6536-6492.exe" -OutFile "Rtools.exe" -UseBasicParsing ; \
     Start-Process Rtools.exe -ArgumentList '/TYPE=full', '/VERYSILENT', -NoNewWindow -Wait
 
 RUN Invoke-WebRequest $('https://constexpr.org/innoextract/files/innoextract-{0}-windows.zip' -f $env:INNOEXTRACT_VERSION) -OutFile innoextract.zip -UseBasicParsing ; \

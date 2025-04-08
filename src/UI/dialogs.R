@@ -36,8 +36,8 @@ showLoginDialog <- function(cred, forwardOnSuccess = NULL) {
 }
 
 showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm",
-                              scenTags = character(0L), discardPermDefault = FALSE,
-                              allScenTags = character()) {
+                              scenTags = character(0L), allScenTags = character(),
+                              showPermissionSelectors = TRUE) {
   showModal(modalDialog(
     title = lang$nav$dialogNewScen$title,
     tags$div(
@@ -61,6 +61,16 @@ showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm",
           width = "100%"
         )
       ),
+      if (showPermissionSelectors) {
+        tags$div(
+          class = "input-form-mobile",
+          id = "contentAccessPerm",
+          genSpinner(
+            absolute = FALSE,
+            extraClasses = "gen-spinner-black access-perm-spinner"
+          )
+        )
+      },
       fluidRow(
         class = "keep-meta-wrapper",
         tags$div(
@@ -75,14 +85,6 @@ showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm",
           checkboxInput_MIRO(
             "newScenDiscardViews",
             lang$nav$dialogNewScen$discardViews
-          )
-        ),
-        tags$div(
-          class = "col-sm-4 col-xs-6 keep-meta-item",
-          checkboxInput_MIRO(
-            "newScenDiscardPerm",
-            lang$nav$dialogNewScen$discardPerm,
-            isTRUE(discardPermDefault)
           )
         )
       )
@@ -686,7 +688,8 @@ showEditMetaDialog <- function(metadata,
                                attachAllowExec = FALSE,
                                isLocked = FALSE,
                                selectedTab = NULL,
-                               allScenTags = character(0L)) {
+                               allScenTags = character(0L),
+                               showPermissionSelectors = TRUE) {
   supportedTabs <- "general"
   scenTags <- csv2Vector(metadata[["_stag"]][[1]])
 
@@ -723,7 +726,7 @@ showEditMetaDialog <- function(metadata,
     )
   )
   writePerm <- csv2Vector(metadata[["_accessw"]][[1]])
-  if (!isLocked && length(ugroups) && any(ugroups %in% writePerm)) {
+  if (!isLocked && showPermissionSelectors && length(ugroups) && any(ugroups %in% writePerm)) {
     supportedTabs <- c("general", "accessPerm")
     contentAccessPerm <- tabPanel(lang$nav$dialogEditMeta$categoryAccessPerm,
       value = "accessPerm",
@@ -743,9 +746,8 @@ showEditMetaDialog <- function(metadata,
       tags$div(
         id = "contentAccessPerm",
         genSpinner(
-          id = "contentAccessPermSpinner",
           absolute = FALSE,
-          extraClasses = "gen-spinner-black"
+          extraClasses = "gen-spinner-black access-perm-spinner"
         )
       )
     )

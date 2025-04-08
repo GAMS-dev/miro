@@ -180,7 +180,6 @@ lint_job:
 build_linux_job:
   tags:
     - linux
-    - puma
   stage: build
   services:
     - docker:20.10-dind
@@ -759,6 +758,8 @@ test_job_api:
     POSTGRES_USER: $GMS_MIRO_DATABASE_USER
     POSTGRES_PASSWORD: $GMS_MIRO_DATABASE_PWD
     POSTGRES_HOST_AUTH_METHOD: trust
+    PYTEST_JUNIT: 'report.xml'
+    PYTEST_COV: 'coverage.xml'
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
   script:
@@ -770,6 +771,14 @@ test_job_api:
     - if: $CI_MERGE_REQUEST_TITLE =~ /^Draft:/
       when: manual
     - if: $CI_MERGE_REQUEST_ID
+  artifacts:
+    when: always
+    expire_in: 1 week
+    reports:
+      junit: $PYTEST_JUNIT
+      coverage_report:
+        coverage_format: cobertura
+        path: $PYTEST_COV
 
 test_job:
   tags:
@@ -787,6 +796,7 @@ test_job:
     POSTGRES_USER: $MIRO_DB_USERNAME
     POSTGRES_PASSWORD: $MIRO_DB_PASSWORD
     POSTGRES_HOST_AUTH_METHOD: trust
+    GAMSPY_INTERPRETER_PATH: /usr/bin/python3
   before_script:
     - source /etc/profile.d/ci.sh
   script:
@@ -831,7 +841,6 @@ test_job_gamspy:
 test_job_miro_server:
   tags:
     - linux
-    - puma
   stage: test
   image: $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
   services:
@@ -856,6 +865,7 @@ test_job_miro_server:
     when: always
     paths:
       - miro_server_all_logs.txt
+    expire_in: 1 week
   rules:
     - if: $CI_COMMIT_TAG
       when: never
@@ -867,7 +877,6 @@ test_job_miro_server:
 test_job_miro_server_k8s:
   tags:
     - linux
-    - puma
   image: $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
   stage: test
   services:
@@ -881,6 +890,8 @@ test_job_miro_server_k8s:
     DOCKER_CERT_PATH: '/certs/client'
     DOCKER_HOST: tcp://docker:2376
     FF_NETWORK_PER_BUILD: 'true'
+    PYTEST_JUNIT: 'report.xml'
+    PYTEST_COV: 'coverage.xml'
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - mkdir kind-logs
@@ -891,8 +902,14 @@ test_job_miro_server_k8s:
   dependencies: []
   artifacts:
     when: always
+    expire_in: 1 week
     paths:
       - ./kind-logs
+    reports:
+      junit: $PYTEST_JUNIT
+      coverage_report:
+        coverage_format: cobertura
+        path: $PYTEST_COV
   rules:
     - if: $CI_COMMIT_TAG
       when: never

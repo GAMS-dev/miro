@@ -630,6 +630,12 @@ data-id="${unicodeToHTMLID(app.id)}" class="app-logo">
                          <div class="app-id-field" style="display:none;" title="${escapeHtml(app.id)}">
                           <small>ID: <i>${escapeHtml(app.id)}</i></small>
                          </div>
+                         ${(app.version != null && app.version !== '') ? `<div class="app-id-field app-version-field" style="display:none;" title="${escapeHtml(app.version)}">
+                          <small><i>${escapeHtml(app.version)}</i></small>
+                         </div>`: ''}
+                         ${(app.authors != null && app.authors > 0) ? `<div class="app-id-field app-authors-field" style="display:none;" title="${escapeHtml(app.authors.join(', '))}">
+                          <small><i>by ${escapeHtml(app.authors.join(', '))}</i></small>
+                        </div>`: ''}
                      </div>
                      <div class="dropdown mb-3 btn-launch-wrapper">
                       <button class="btn btn-outline-secondary btn-launch launch-app"
