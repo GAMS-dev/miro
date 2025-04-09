@@ -1,9 +1,11 @@
 matchSeriesLabel <- function(key, label, exact = FALSE) {
-  if (exact) {
-    return(key == label)
+  if (exact && key == label) {
+    return(TRUE)
   }
-  return(grepl(paste0("\u2024", key, "\u2024"), label, fixed = TRUE) ||
-    startsWith(label, paste0(key, "\u2024")) || endsWith(label, paste0("\u2024", key)))
+  return(
+    grepl(paste0("\u2024", key, "\u2024"), label, fixed = TRUE) ||
+      startsWith(label, paste0(key, "\u2024")) ||
+      endsWith(label, paste0("\u2024", key)))
 }
 matchLabel <- function(key, label, exact = FALSE) {
   if (exact) {
