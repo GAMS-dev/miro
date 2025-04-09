@@ -727,7 +727,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
             patternMatches <- which(vapply(colorLabelsNew, matchSeriesLabel, logical(1L), label = seriesLab, USE.NAMES = FALSE))
 
             if (length(patternMatches) > 0) {
-              chosenIdx <- patternMatches[length(patternMatches)]
+              chosenIdx <- patternMatches[1]
               colorList[[i]] <- currentView$chartOptions$customChartColors[[chosenIdx]]
             }
           }
@@ -928,7 +928,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
           } else {
             patternMatches <- which(vapply(transformedLineDashNames, matchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
             if (length(patternMatches) > 0) {
-              chosenIdx <- patternMatches[length(patternMatches)]
+              chosenIdx <- patternMatches[1]
               lineDash <- currentView$chartOptions$customLineDashPatterns[[chosenIdx]]
             } else {
               lineDash <- NULL
@@ -954,7 +954,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
           } else {
             patternMatches <- which(vapply(transformedBorderWidthNames, matchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
             if (length(patternMatches) > 0) {
-              chosenIdx <- patternMatches[length(patternMatches)]
+              chosenIdx <- patternMatches[1]
               borderWidthCandidate <- currentView$chartOptions$customBorderWidths[[chosenIdx]]
               borderWidthCandidate <- round(as.numeric(borderWidthCandidate))
               if (!is.na(borderWidthCandidate)) {

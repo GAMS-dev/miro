@@ -1473,7 +1473,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 } else {
                   patternMatches <- which(vapply(colorNames, matchSeriesLabel, logical(1L), label = colorLabel, USE.NAMES = FALSE))
                   if (length(patternMatches) > 0) {
-                    chosenIdx <- patternMatches[length(patternMatches)]
+                    chosenIdx <- patternMatches[1]
                     colorVal <- viewOptions$chartOptions$customChartColors[[chosenIdx]][1]
                   } else {
                     colorVal <- customChartColors[(labelId - 1L) * 2L + 1L]
@@ -1505,7 +1505,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                   } else {
                     patternMatches <- which(vapply(lineDashNames, matchSeriesLabel, logical(1L), label = dashLabel, USE.NAMES = FALSE))
                     if (length(patternMatches) > 0) {
-                      chosenIdx <- patternMatches[length(patternMatches)]
+                      chosenIdx <- patternMatches[1]
                       dashPatternIn <- unlist(viewOptions$chartOptions$customLineDashPatterns[[chosenIdx]])
                     } else {
                       dashPatternIn <- NA
@@ -1578,7 +1578,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 } else {
                   patternMatches <- which(vapply(borderWidthNames, matchSeriesLabel, logical(1L), label = seriesLabel, USE.NAMES = FALSE))
                   if (length(patternMatches) > 0) {
-                    chosenIdx <- patternMatches[length(patternMatches)]
+                    chosenIdx <- patternMatches[1]
                     bwCandidate <- viewOptions$chartOptions$customBorderWidths[[chosenIdx]]
                     bwCandidate <- round(as.numeric(bwCandidate))
                     if (length(bwCandidate) && !is.na(bwCandidate)) {
@@ -2896,7 +2896,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             }
             patternMatches <- which(vapply(colorNames, matchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
             if (length(patternMatches) > 0) {
-              chosenIdx <- patternMatches[length(patternMatches)]
+              chosenIdx <- patternMatches[1]
               colorList[[i]] <- currentView$chartOptions$customChartColors[[chosenIdx]]
             }
           }
@@ -3103,7 +3103,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             } else {
               patternMatches <- which(vapply(lineDashNames, matchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
               if (length(patternMatches) > 0) {
-                chosenIdx <- patternMatches[length(patternMatches)]
+                chosenIdx <- patternMatches[1]
                 lineDash <- currentView$chartOptions$customLineDashPatterns[[chosenIdx]]
               } else {
                 lineDash <- NULL
@@ -3124,7 +3124,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             } else {
               patternMatches <- which(vapply(borderWidthNames, matchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
               if (length(patternMatches) > 0) {
-                chosenIdx <- patternMatches[length(patternMatches)]
+                chosenIdx <- patternMatches[1]
                 borderWidthCandidate <- currentView$chartOptions$customBorderWidths[[chosenIdx]]
                 borderWidthCandidate <- round(as.numeric(borderWidthCandidate))
                 if (!is.na(borderWidthCandidate)) {
