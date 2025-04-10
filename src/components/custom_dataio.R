@@ -62,7 +62,12 @@ CustomDataIO <- R6Class("CustomDataIO", inherit = LocalFileIO, public = list(
         return(self$fixScalarDf(tibble(
           scalar = private$config$scalarSymNames,
           description = "",
-          value = as.character(private$remoteData[private$config$scalarSymNames])
+          value = vapply(private$remoteData[private$config$scalarSymNames], function(scalarVal) {
+            if (is.null(scalarVal)) {
+              return(NA_character_)
+            }
+            return(as.character(scalarVal))
+          }, character(1L), USE.NAMES = FALSE)
         ), dsName, ignoreInvalidScalars = TRUE))
       }
       return(private$remoteData[[dsName]])
