@@ -24,6 +24,7 @@ app$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(1)
 expect_identical(app$get_value(input = "tab_0_1-miroPivot-colIndexList"), character())
 app$click(selector = "#tab_0_1-miroPivot-toggleViewButton")
+expect_identical(app$get_js("$('#tab_0_1-miroPivot-toggleViewButton').text().trim()"), "Load view")
 Sys.sleep(1)
 expect_identical(app$get_js("$('#tab_0_1-miroPivot-savedViewsDD li').length"), 2L)
 app$run_js("$('#tab_0_1-miroPivot-savedViewsDD .view-dropdown-item').eq(1).click()")
@@ -37,16 +38,16 @@ app$click(selector = "#tab_0_1-miroPivot-toggleViewButton")
 Sys.sleep(1)
 expect_identical(app$get_js("$('#tab_0_2-miroPivot-savedViewsDD li').length"), 2L)
 app$run_js("$('#tab_0_2-miroPivot-savedViewsDD .view-dropdown-item').eq(1).click()")
-
+expect_identical(app$get_js("$('#tab_0_2-miroPivot-toggleViewButton').text().trim()"), "Load view")
 expect_identical(app$get_value(input = "tab_0_2-miroPivot-colIndexList"), "_scenName")
 
 app$run_js("$('#btClosePivotComp').click()")
 Sys.sleep(1)
-
+expect_identical(app$get_js("$('#tab_0_2-miroPivot-toggleViewButton').text().trim()"), "test2", label = "Before refresh, tab 2")
 expect_identical(app$get_value(input = "tab_0_2-miroPivot-colIndexList"), "_scenName")
 
 app$set_inputs(contentScen_0 = "contentScen_0_1")
-
+expect_identical(app$get_js("$('#tab_0_1-miroPivot-toggleViewButton').text().trim()"), "test", label = "Before refresh, tab 1")
 expect_identical(app$get_value(input = "tab_0_1-miroPivot-colIndexList"), "_scenName")
 
 # load new scenarios to pivot comp mode => should not reset views
@@ -59,8 +60,10 @@ app$run_js("$('#btBatchCompare+.dropdown-toggle').click()")
 Sys.sleep(0.5)
 app$run_js("$('#btBatchCompare~.dropdown-menu a:eq(0)').click();")
 Sys.sleep(4L)
+expect_identical(app$get_js("$('#tab_0_1-miroPivot-toggleViewButton').text().trim()"), "test", label = "After refresh, tab 1")
 expect_identical(app$get_value(input = "tab_0_1-miroPivot-colIndexList"), "_scenName", label = "After refresh, tab 1")
 app$set_inputs(contentScen_0 = "contentScen_0_2")
+expect_identical(app$get_js("$('#tab_0_2-miroPivot-toggleViewButton').text().trim()"), "test2", label = "After refresh, tab 2")
 expect_identical(app$get_value(input = "tab_0_2-miroPivot-colIndexList"), "_scenName", label = "After refresh, tab 2")
 
 # closing pivot comp mode and opening scenarios again => should reset views
@@ -72,8 +75,10 @@ app$set_inputs(selLoadScen = savedScen[1])
 Sys.sleep(0.2)
 app$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(1)
+expect_identical(app$get_js("$('#tab_0_1-miroPivot-toggleViewButton').text().trim()"), "Load view", label = "After close, tab 1")
 expect_identical(app$get_value(input = "tab_0_1-miroPivot-colIndexList"), character(), label = "After close, tab 1")
 app$set_inputs(contentScen_0 = "contentScen_0_2")
+expect_identical(app$get_js("$('#tab_0_2-miroPivot-toggleViewButton').text().trim()"), "Load view", label = "After close, tab 2")
 expect_identical(app$get_value(input = "tab_0_2-miroPivot-colIndexList"), character(), label = "After close, tab 2")
 
 app$stop()

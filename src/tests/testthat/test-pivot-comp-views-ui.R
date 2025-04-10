@@ -25,7 +25,7 @@ test_that(
         pivotRenderer = "bar"
       )
     ), `_pivotcomp__scalars_out` = list(
-      test = list(
+      test2 = list(
         cols = list(`_scenName` = NULL),
         pivotRenderer = "bar"
       )

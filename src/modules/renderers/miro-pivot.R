@@ -1009,6 +1009,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             viewOptions$name,
             keepChildNodes = TRUE
           )
+        } else {
+          setTextContent(session, paste0("#", ns("toggleViewButton")),
+            lang$renderers$miroPivot$btLoadView,
+            keepChildNodes = TRUE
+          )
         }
         if (!interfaceInitialized) {
           return()
