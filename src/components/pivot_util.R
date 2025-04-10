@@ -258,8 +258,9 @@ applyCustomLabelsOrder <- function(data, noRowHeaders, customLabelsOrder) {
       !!orderTmpCol := seq_along(customLabelsOrder)
     )
 
+    colsToUnite <- names(data)[1:noRowHeaders]
     data <- data %>%
-      unite(!!mergedCols, 1:noRowHeaders, sep = "\U2024", remove = FALSE) %>%
+      unite(!!mergedCols, all_of(colsToUnite), sep = "\U2024", remove = FALSE) %>%
       left_join(orderTibble, by = mergedCols) %>%
       mutate(!!orderCol := ifelse(is.na(!!sym(orderTmpCol)),
         suppressWarnings(max(!!sym(orderTmpCol), na.rm = TRUE)) + row_number(),
@@ -328,20 +329,17 @@ defaultColorPair <- function(i, globalPalette) {
 transformLabels <- function(originalLabels, customLabels) {
   transformedLabels <- c()
   if (length(customLabels)) {
-    for (label in originalLabels) {
-      transformedLabel <- label
+    transformedLabels <- vapply(originalLabels, function(label) {
       if (label %in% names(customLabels)) {
-        transformedLabel <- customLabels[[label]]
-      } else {
-        labelsTmp <- strsplit(label, "\u2024")[[1]]
-        labelMatch <- which(labelsTmp %in% names(customLabels))
-        if (length(labelMatch)) {
-          labelsTmp[labelMatch] <- unlist(customLabels[labelsTmp[labelMatch]])
-        }
-        transformedLabel <- paste(labelsTmp, collapse = "\u2024")
+        return(customLabels[[label]])
       }
-      transformedLabels <- c(transformedLabels, transformedLabel)
-    }
+      labelsTmp <- strsplit(label, "\u2024")[[1]]
+      labelMatch <- which(labelsTmp %in% names(customLabels))
+      if (length(labelMatch)) {
+        labelsTmp[labelMatch] <- unlist(customLabels[labelsTmp[labelMatch]])
+      }
+      return(paste(labelsTmp, collapse = "\u2024"))
+    }, character(1L), USE.NAMES = FALSE)
   } else {
     transformedLabels <- originalLabels
   }
