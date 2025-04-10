@@ -650,7 +650,7 @@
 	"exportScen":{
       "title": "正在导出场景",
       "exportDs": "正在导出数据集，%s中的%s已完成",
-      "success": "场景成功导出至：%s。"
+      "success": "场景数据已成功导出至：%s。"
     },
     "loadScenDb":{
       "title":"从数据库加载场景数据",

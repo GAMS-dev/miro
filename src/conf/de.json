@@ -650,7 +650,7 @@
     "exportScen":{
       "title": "Szenario wird exportiert",
       "exportDs": "Datensatz %s von %s wird exportiert",
-      "success": "Szenario erfolgreich exportiert nach: %s."
+      "success": "Szenariodaten erfolgreich exportiert nach: %s."
     },
     "loadScenDb":{
       "title":"Laden von Szenariodaten aus der Datenbank",

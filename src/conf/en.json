@@ -820,7 +820,7 @@
     "exportScen":{
       "title": "Exporting scenario",
       "exportDs": "Exporting dataset %s of %s",
-      "success": "Scenario successfully exported to: %s."
+      "success": "Scenario data successfully exported to: %s."
     },
     "loadScenDb":{
       "title":"Loading scenario data from database",
