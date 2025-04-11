@@ -57,8 +57,12 @@ data:
         client-secret: {{ .Values.proxy.config.openid.clientSecret | quote }}
         with-pkce: {{ .Values.proxy.config.openid.withPKCE }}
       database:
+        {{- if .Values.db.externalHost }}
+        host: {{ .Values.db.externalHost | quote }}
+        {{- else }}
         host: {{ include "common.names.fullname" . }}-db
-        port: 5432
+        {{- end }}
+        port: {{ .Values.db.port | default 5432 }}
         name: {{ .Values.db.name | quote }}
         username: {{ .Values.db.user | quote }}
       engine:

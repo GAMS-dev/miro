@@ -3,6 +3,7 @@ Copyright GAMS Development Corp. All Rights Reserved.
 SPDX-License-Identifier: GPL-3.0-only
 */}}
 
+{{- if not .Values.db.externalHost }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -86,3 +87,4 @@ spec:
       - name: db-data
         persistentVolumeClaim:
           claimName: {{ include "common.names.fullname" . }}-db-pvc
+{{- end }}

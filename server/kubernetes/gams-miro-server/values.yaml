@@ -155,6 +155,7 @@ auth:
     #         matchLabels:
     #           app: prometheus
     extraIngress: []
+    extraEgress: []
   podAnnotations: {}
 
 miro:
@@ -195,6 +196,8 @@ db:
     registry: docker.io
     repository: postgres
     tag: '17-alpine'
+  externalHost: '' # if not specified, a statefulset will be created
+  port: 5432
   user: 'GMSMASTER'
   password: ''
   name: 'gamsmiro'

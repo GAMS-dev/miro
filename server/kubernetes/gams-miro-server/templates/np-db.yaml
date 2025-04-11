@@ -3,7 +3,7 @@ Copyright GAMS Development Corp. All Rights Reserved.
 SPDX-License-Identifier: GPL-3.0-only
 */}}
 
-{{- if .Values.global.networkPolicy.enabled }}
+{{- if and .Values.global.networkPolicy.enabled (not .Values.db.externalHost) }}
 kind: NetworkPolicy
 apiVersion: {{ include "common.capabilities.networkPolicy.apiVersion" . }}
 metadata:

@@ -32,12 +32,14 @@ spec:
         - port: 53
           protocol: TCP
     # Allow outbound connections to PostgreSQL
+    {{- if not .Values.db.externalHost }}
     - ports:
         - port: 5432
       to:
         - podSelector:
             matchLabels:
               app: {{ include "common.names.fullname" . }}-db
+    {{- end }}
     # Allow outbound connections to public networks (e.g. Engine)
     {{- if .Values.miro.networkPolicy.allowEgressPublicNetworks }}
     - ports:
