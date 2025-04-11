@@ -14,20 +14,20 @@ header <- dashboardHeader(
       if (!config$activateModules$readonlyMode) tags$li(actionLink("btSaveAs", HTML(paste0('<div class="menu-icon-align"></div> ', lang$nav$header$scenario$saveAs)))),
       tags$li(tags$a(
         href = "#", class = "action-button",
-        onclick = "Shiny.setInputValue(\'btExportScen\', 1, {priority: \'event\'})",
+        onclick = "Shiny.setInputValue('btExportScen', 1, {priority: 'event'})",
         tags$div(
-          class = "menu-icon-align", tags$i(class = "fa fa-file-export"),
-          lang$nav$header$scenario$export
-        )
+          class = "menu-icon-align", tags$i(class = "fa fa-file-export")
+        ),
+        lang$nav$header$scenario$export
       )),
       if (!config$activateModules$readonlyMode) {
-        tags$li(actionLink(
-          "btDelete",
+        tags$li(tags$a(
+          href = "#", class = "action-button",
+          id = "btDelete",
           tags$div(
-            class = "menu-icon-align",
-            tags$i(class = "fa fa-trash"),
-            lang$nav$header$scenario$delete
-          )
+            class = "menu-icon-align", tags$i(class = "fa fa-trash")
+          ),
+          lang$nav$header$scenario$delete
         ))
       }
     )
