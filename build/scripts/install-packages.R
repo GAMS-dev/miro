@@ -307,6 +307,10 @@ if (CIBuild) {
   }
 }
 
+if (isWindows) {
+  pkgbuild::check_build_tools(debug = TRUE)
+}
+
 for (package in packageVersionMap) {
   if (packageIsInstalled(package)) {
     print(sprintf("Skipping '%s' as it is already installed.", package[1]))
