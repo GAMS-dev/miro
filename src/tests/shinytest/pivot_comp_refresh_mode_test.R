@@ -1,5 +1,5 @@
 app <- AppDriver$new("../../",
-  name = "pivot_comp_views_test", variant = NULL,
+  name = "pivot_comp_refresh_mode_test", variant = NULL,
   load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
   timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
 )
@@ -36,10 +36,12 @@ app$set_inputs(contentScen_0 = "contentScen_0_2")
 Sys.sleep(1)
 app$click(selector = "#tab_0_1-miroPivot-toggleViewButton")
 Sys.sleep(1)
+expect_identical(app$get_js("$('#tab_0_2-miroPivot-toggleViewButton').text().trim()"), "Load view")
 expect_identical(app$get_js("$('#tab_0_2-miroPivot-savedViewsDD li').length"), 2L)
 app$run_js("$('#tab_0_2-miroPivot-savedViewsDD .view-dropdown-item').eq(1).click()")
-expect_identical(app$get_js("$('#tab_0_2-miroPivot-toggleViewButton').text().trim()"), "Load view")
 expect_identical(app$get_value(input = "tab_0_2-miroPivot-colIndexList"), "_scenName")
+expect_identical(app$get_js("$('#tab_0_2-miroPivot-toggleViewButton').text().trim()"), "test2")
+Sys.sleep(1)
 
 app$run_js("$('#btClosePivotComp').click()")
 Sys.sleep(1)
