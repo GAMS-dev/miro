@@ -1145,7 +1145,17 @@ attachmenets$add(session, filePaths, fileNames = NULL, overwrite = FALSE, execPe
                       method
                       <code class="language-r"
                         >attachments$isReadonly(session)</code
-                      >.
+                      >. Attachments must not exceed the maximum size of
+                      <kbd>50 MB</kbd>. If an attachment is added that exceeds
+                      this size, an error of the
+                      <span class="code">error_max_size</span> class is raised.
+                      In addition, a maximum of <kbd>20</kbd> attachments can
+                      be added per scenario. If this limit is exceeded, an
+                      error of class <span class="code">error_max_no</span> is
+                      thrown. If a scenario with a name that already exists is
+                      added, an error of the
+                      <span class="code">error_duplicate_files</span> class is
+                      raised.
                     </p>
                     <h6 class="api-header">Example</h6>
                     <p>
