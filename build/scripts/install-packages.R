@@ -48,6 +48,12 @@ if (CIBuild) {
   customPackages <- packageVersionMap[vapply(packageVersionMap, function(package) {
     return(length(package) == 1L)
   }, logical(1), USE.NAMES = FALSE)]
+  if (isMac) {
+    # Required e.g. to find gettext for data.table
+    Sys.setenv(
+      CPATH = paste0("/opt/homebrew/include:", Sys.getenv("CPATH"))
+    )
+  }
 }
 for (libPath in c(RLibPath, RlibPathDevel, RlibPathTmp)) {
   if (!dir.exists(libPath) &&
@@ -57,6 +63,19 @@ for (libPath in c(RLibPath, RlibPathDevel, RlibPathTmp)) {
 }
 if (isLinux) {
   writeLines("", file.path(RLibPath, "INSTALLING"))
+}
+if (isMac &&
+  !identical(
+    paste0(R.version["major"][[1]], ".", strsplit(R.version["minor"][[1]], ".", fixed = TRUE)[[1]][1]),
+    paste(strsplit(Rversion, ".", fixed = TRUE)[[1]][1:2], collapse = ".")
+  )) {
+  stop(
+    sprintf(
+      "R version used for building (%s) must be identical to R version in deployment bundle (%s)",
+      paste0(R.version["major"][[1]], ".", strsplit(R.version["minor"][[1]], ".", fixed = TRUE)[[1]][1]),
+      paste(strsplit(Rversion, ".", fixed = TRUE)[[1]][1:2], collapse = ".")
+    )
+  )
 }
 requiredPackages <- c(
   "withr", "pkgbuild", "remotes", "jsonlite", "V8",
