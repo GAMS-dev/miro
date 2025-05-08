@@ -1136,6 +1136,28 @@
         "label": "Language",
         "choices": ["English", "German", "Chinese"]
       },
+      "themeColors":{
+        "light": "Light mode",
+        "dark": "Dark mode",
+        "primary": "Primary color",
+        "secondary": "Secondary color",
+        "sidebar": "Sidebar color",
+        "alert": "Alert color",
+        "mainBg": "Main background color",
+        "console": "Console text color",
+        "primaryDark": "Primary color",
+        "secondaryDark": "Secondary color",
+        "sidebarDark": "Sidebar color",
+        "alertDark": "Alert color",
+        "mainBgDark": "Main background color",
+        "consoleDark": "Console text color",
+        "widgetBgDark": "Widgets background color",
+        "primaryTooltip": "Main brand color. It is used most frequently across the application to highlight primary actions and guide user focus.",
+        "secondaryTooltip": "The secondary color is used to accent the interface, differentiate content, indicate less prominent actions, and serves as the color of the main buttons in the application.",
+        "alertTooltip": "The alert color is applied to buttons that trigger actions like remove, clear, or delete, emphasizing caution and drawing attention to potentially irreversible changes.",
+        "consoleTooltip": "Used for displaying output in log and listing files within the GAMS interaction section.",
+        "widgetBgDarkTooltip": "The widget color is used for interactive UI elements such as dropdowns, tables, sliders, and other controls."
+      },
       "theme":{
         "label": "Color mode",
         "choices": ["Use system/browser settings", "Light mode", "Dark mode"]

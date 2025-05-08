@@ -1849,7 +1849,7 @@ accessPermInput <- function(inputId, label, choices, selected = NULL, width = NU
     width = width
   )
 }
-colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE) {
+colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE, colorPreview = FALSE) {
   if (colorBox) {
     colorpicker <- tags$div(
       class = "shiny-input-container miro-color-picker",
@@ -1881,6 +1881,29 @@ colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE) {
             class = "form-control",
             style = "margin-bottom:5px;",
             value = value
+          )
+        )
+      )
+    )
+  } else if (colorPreview) {
+    colorpicker <- tags$div(
+      class = "form-group",
+      tags$label(`for` = id, label, class = "control-label"),
+      tags$div(
+        class = "input-group",
+        style = "width: 100%;",
+        tags$input(
+          id    = id,
+          type  = "text",
+          class = "form-control miro-color-picker",
+          value = value
+        ),
+        tags$span(
+          id = paste0(id, "_swatch"),
+          class = "input-group-addon",
+          style = sprintf(
+            "background:%s;width:28px;height:28px;border:1px solid #ccc;padding:0;",
+            value
           )
         )
       )

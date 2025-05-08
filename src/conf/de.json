@@ -1136,6 +1136,28 @@
         "label": "Sprache",
         "choices": ["Englisch", "Deutsch", "Chinesisch"]
       },
+      "themeColors": {
+        "light": "Heller Modus",
+        "dark": "Dunkler Modus",
+        "primary": "Primärfarbe",
+        "secondary": "Sekundärfarbe",
+        "sidebar": "Seitenleistenfarbe",
+        "alert": "Farbe der Entfernen-Schaltfläche",
+        "mainBg": "Hintergrundfarbe Hauptbereich",
+        "console": "Hintergrundfarbe für Log und Code",
+        "primaryDark": "Primärfarbe",
+        "secondaryDark": "Sekundärfarbe",
+        "sidebarDark": "Seitenleistenfarbe",
+        "alertDark": "Farbe der Entfernen-Schaltfläche",
+        "mainBgDark": "Hintergrundfarbe Hauptbereich",
+        "consoleDark": "Hintergrundfarbe für Log und Code",
+        "widgetBgDark": "Hintergrundfarbe Widgets",
+        "primaryTooltip": "Hauptmarkenfarbe. Sie wird am häufigsten in der Anwendung verwendet, um primäre Aktionen hervorzuheben und die Benutzeraufmerksamkeit zu lenken.",
+        "secondaryTooltip": "Die Sekundärfarbe wird verwendet, um die Benutzeroberfläche zu akzentuieren, Inhalte zu unterscheiden, weniger prominente Aktionen anzuzeigen und dient als Farbe der Hauptschaltflächen in der Anwendung.",
+        "alertTooltip": "Die Warnfarbe wird für Schaltflächen verwendet, die Aktionen wie Entfernen, Löschen oder Zurücksetzen auslösen, um Vorsicht zu signalisieren und auf potenziell irreversible Änderungen hinzuweisen.",
+        "consoleTooltip": "Wird zur Anzeige von Ausgaben in Log- und Listing-Dateien innerhalb des GAMS-Interaktionsbereichs verwendet.",
+        "widgetBgDarkTooltip": "Die Widget-Farbe wird für interaktive UI-Elemente wie Dropdowns, Tabellen, Schieberegler und andere Steuerelemente verwendet."
+      },
       "theme":{
         "label": "Farbmodus",
         "choices": ["System/Browser Einstellungen", "Heller Modus", "Dunkler Modus"]

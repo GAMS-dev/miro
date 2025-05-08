@@ -1115,6 +1115,16 @@ if (buildUI) {
   }
   miroBody <- dashboardBody({
     tagList(
+      if (!is.null(config$themeColors) && length(config$themeColors)) {
+        cssLines <- sprintf(
+          "--%s:%s;",
+          gsub("_", "-", names(config$themeColors), fixed = TRUE),
+          unname(config$themeColors)
+        )
+        htmltools::tags$style(
+          HTML(paste0(":root{", paste(cssLines, collapse = ""), "}"))
+        )
+      },
       tags$head(
         if (isTRUE(config$readme$enableMath)) {
           tagList(

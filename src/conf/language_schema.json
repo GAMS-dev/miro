@@ -4425,6 +4425,89 @@
               },
               "minProperties": 2
             },
+            "themeColors": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "light": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "primary": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "secondary": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sidebar": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "alert": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "console": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "primaryDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "secondaryDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sidebarDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "alertDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "mainBgDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "consoleDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "widgetBgDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "primaryTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "secondaryTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "alertTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "consoleTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "widgetBgDarkTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 19
+            },
             "theme": {
               "type": "object",
               "additionalProperties": false,
@@ -5000,7 +5083,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 39
+          "minProperties": 40
         },
         "tables": {
           "type": "object",

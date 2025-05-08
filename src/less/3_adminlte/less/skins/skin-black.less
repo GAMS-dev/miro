@@ -70,7 +70,10 @@
          background-color: @navbar-main;
       },
       {
-         .logo-variant(@sidebar-dark-bg; #333);
+         background-color:@sidebar-dark-bg;
+         color:#333;
+         border-bottom:0 solid transparent;
+         &:hover{background-color:@darken-v73ofn52;}
          background-color: @navbar-main-dark;
       });
       @media (max-width: @screen-header-collapse) {

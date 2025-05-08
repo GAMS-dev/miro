@@ -114,10 +114,18 @@ mark,
 }
 .text-primary {
   .responsiveDark({
-     .text-emphasis-variant(@brand-primary);
+      color: @darken-cd55fe88;
+      a&:hover,
+      a&:focus {
+        color: @darken-618fc861;
+      }
   },
   {
-     .text-emphasis-variant(@brand-primary-dark);
+     color: @darken-411e4a78;
+     a&:hover,
+     a&:focus {
+       color: @darken-618fc862;
+     }
   });
 }
 .text-success {
@@ -138,15 +146,26 @@ mark,
 // safely shift things around (per SemVer rules).
 .bg-primary {
   // Given the contrast here, this is the only class to have its color inverted
-  // automatically.
   color: #fff;
+
   .responsiveDark({
-    .bg-variant(@brand-primary);
+    background-color: @brand-primary;
+
+    a&:hover,
+    a&:focus {
+      background-color: @darken-618fc861;
+    }
   },
   {
-     .bg-variant(@brand-primary-dark);
+    background-color: @brand-primary-dark;
+
+    a&:hover,
+    a&:focus {
+      background-color: @darken-618fc862;
+    }
   });
 }
+
 .bg-success {
   .bg-variant(@state-success-bg);
 }

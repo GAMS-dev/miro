@@ -714,4 +714,11 @@ $(document).ready(() => {
     );
   }, 300));
   Shiny.inputBindings.register(colorPickerBinding);
+  Shiny.addCustomMessageHandler('update-css', (vars) => {
+    const root = document.documentElement;
+
+    Object.entries(vars).forEach(([name, value]) => {
+      root.style.setProperty(name, value);
+    });
+  });
 });

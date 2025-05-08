@@ -2462,6 +2462,14 @@
       "description": "Name of the page (displayed in browser tab)",
       "type": "string"
     },
+    "themeColors": {
+      "description": "Custom theme colors used for MIRO",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "additionalProperties": false
+      }
+    },
     "theme": {
       "description": "Theme / mode (light, dark or browser mode) used for MIRO",
       "type": "string",

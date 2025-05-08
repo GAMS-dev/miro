@@ -59,7 +59,7 @@ labelTooltip <- function(label = NULL, tooltip = NULL, href = NULL) {
       tags$span(
         label,
         tags$span(
-          `data-tooltip` = tooltip,
+          title = tooltip,
           class = "info-wrapper tooltip-mobile",
           tags$span(
             class = "fas fa-circle-info", class = "info-icon",

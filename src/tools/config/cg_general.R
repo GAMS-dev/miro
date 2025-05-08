@@ -90,6 +90,53 @@ observeEvent(input$general_pageTitle, {
     rv$generalConfig$pageTitle <<- input$general_pageTitle
   }
 })
+
+customBaseColors <- reactive({
+  list(
+    primary_color           = resolveColor(input$primary_color, basecolors$primary_color),
+    secondary_color         = resolveColor(input$secondary_color, basecolors$secondary_color),
+    sidebar_color           = resolveColor(input$sidebar_color, basecolors$sidebar_color),
+    alert_color             = resolveColor(input$alert_color, basecolors$alert_color),
+    main_bg                 = "#ffffff",
+    console_text_color      = resolveColor(input$console_text_color, basecolors$console_text_color),
+    primary_color_dark      = resolveColor(input$primary_color_dark, basecolors$primary_color_dark),
+    secondary_color_dark    = resolveColor(input$secondary_color_dark, basecolors$secondary_color_dark),
+    sidebar_color_dark      = resolveColor(input$sidebar_color_dark, basecolors$sidebar_color_dark),
+    alert_color_dark        = resolveColor(input$alert_color_dark, basecolors$alert_color_dark),
+    main_bg_dark            = resolveColor(input$main_bg_dark, basecolors$main_bg_dark),
+    console_text_color_dark = resolveColor(input$console_text_color_dark, basecolors$console_text_color_dark),
+    widget_bg_dark          = resolveColor(input$widget_bg_dark, basecolors$widget_bg_dark),
+    text_color              = "#eeeeee",
+    text_color_dark         = "#eeeeee"
+  )
+})
+
+palette <- reactive(derive_palette(customBaseColors()))
+
+isDefaultPalette <- reactive({
+  cb <- customBaseColors()
+  def <- basecolors[names(cb)]
+  all(mapply(identical, cb, def))
+})
+
+observeEvent(palette(), {
+  if (isDefaultPalette()) {
+    rv$generalConfig$themeColors <<- NULL
+    configJSON$themeColors <<- NULL
+    return()
+  }
+  paletteTmp <- palette()
+  paletteTmp <- paletteTmp[!startsWith(names(paletteTmp), "boolean")]
+  rv$generalConfig$themeColors <- paletteTmp
+
+  vars <- palette()
+  msg <- setNames(
+    lapply(vars, serialise),
+    vapply(names(vars), css_name, "")
+  )
+  session$sendCustomMessage("update-css", msg)
+})
+
 observeEvent(input$general_theme, {
   rv$generalConfig$theme <<- input$general_theme
 })

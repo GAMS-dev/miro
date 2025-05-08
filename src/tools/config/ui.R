@@ -115,6 +115,16 @@ body_admin <- dashboardBody({
     ))
   }
   tagList(
+    if (!is.null(config$themeColors) && length(config$themeColors)) {
+      cssLines <- sprintf(
+        "--%s:%s;",
+        gsub("_", "-", names(config$themeColors), fixed = TRUE),
+        unname(config$themeColors)
+      )
+      htmltools::tags$style(
+        HTML(paste0(":root{", paste(cssLines, collapse = ""), "}"))
+      )
+    },
     tags$head(
       tags$meta(
         name = "color-scheme",
@@ -814,6 +824,196 @@ font-size: 12px;
                       tags$div(class = "space"),
                       tags$div(class = "space"),
                       tags$h2(lang$adminMode$general$ui$headerAppearance, class = "option-category"),
+                      tags$h4(lang$adminMode$general$themeColors$light),
+                      fluidRow(
+                        tags$div(
+                          class = "col-sm-6 themeColors-colorpicker",
+                          colorPickerInput(
+                            "primary_color",
+                            labelTooltip(
+                              lang$adminMode$general$themeColors$primary,
+                              lang$adminMode$general$themeColors$primaryTooltip
+                            ),
+                            value = if (length(configJSON$themeColors$primary_color)) {
+                              configJSON$themeColors$primary_color
+                            } else {
+                              "#3c8dbc"
+                            },
+                            colorPreview = TRUE
+                          )
+                        ),
+                        tags$div(
+                          class = "col-sm-6",
+                          colorPickerInput(
+                            "secondary_color",
+                            labelTooltip(
+                              lang$adminMode$general$themeColors$secondary,
+                              lang$adminMode$general$themeColors$secondaryTooltip
+                            ),
+                            value = if (length(configJSON$themeColors$secondary_color)) {
+                              configJSON$themeColors$secondary_color
+                            } else {
+                              "#f39619"
+                            },
+                            colorPreview = TRUE
+                          )
+                        ),
+                        tags$div(
+                          class = "col-sm-6",
+                          colorPickerInput(
+                            "sidebar_color",
+                            lang$adminMode$general$themeColors$sidebar,
+                            value = if (length(configJSON$themeColors$sidebar_color)) {
+                              configJSON$themeColors$sidebar_color
+                            } else {
+                              "#1d2121"
+                            },
+                            colorPreview = TRUE
+                          )
+                        ),
+                        tags$div(
+                          class = "col-sm-6",
+                          colorPickerInput(
+                            "alert_color",
+                            labelTooltip(
+                              lang$adminMode$general$themeColors$alert,
+                              lang$adminMode$general$themeColors$alertTooltip
+                            ),
+                            value = if (length(configJSON$themeColors$alert_color)) {
+                              configJSON$themeColors$alert_color
+                            } else {
+                              "#d11a2a"
+                            },
+                            colorPreview = TRUE
+                          )
+                        ),
+                        tags$div(
+                          class = "col-sm-6",
+                          colorPickerInput(
+                            "console_text_color",
+                            labelTooltip(
+                              lang$adminMode$general$themeColors$console,
+                              lang$adminMode$general$themeColors$consoleTooltip
+                            ),
+                            value = if (length(configJSON$themeColors$console_text_color)) {
+                              configJSON$themeColors$console_text_color
+                            } else {
+                              "#333333"
+                            },
+                            colorPreview = TRUE
+                          )
+                        )
+                      ),
+                      tags$h4(lang$adminMode$general$themeColors$dark),
+                      fluidRow(
+                        tags$div(
+                          class = "col-sm-6",
+                          colorPickerInput(
+                            "primary_color_dark",
+                            labelTooltip(
+                              lang$adminMode$general$themeColors$primaryDark,
+                              lang$adminMode$general$themeColors$primaryTooltip
+                            ),
+                            value = if (length(configJSON$themeColors$primary_color_dark)) {
+                              configJSON$themeColors$primary_color_dark
+                            } else {
+                              "#00adb5"
+                            },
+                            colorPreview = TRUE
+                          )
+                        ),
+                        tags$div(
+                          class = "col-sm-6",
+                          colorPickerInput(
+                            "secondary_color_dark",
+                            labelTooltip(
+                              lang$adminMode$general$themeColors$secondaryDark,
+                              lang$adminMode$general$themeColors$secondaryTooltip
+                            ),
+                            value = if (length(configJSON$themeColors$secondary_color_dark)) {
+                              configJSON$themeColors$secondary_color_dark
+                            } else {
+                              "#f39619"
+                            },
+                            colorPreview = TRUE
+                          )
+                        ),
+                        tags$div(
+                          class = "col-sm-6",
+                          colorPickerInput(
+                            "sidebar_color_dark",
+                            lang$adminMode$general$themeColors$sidebarDark,
+                            value = if (length(configJSON$themeColors$sidebar_color_dark)) {
+                              configJSON$themeColors$sidebar_color_dark
+                            } else {
+                              "#1d1f20"
+                            },
+                            colorPreview = TRUE
+                          )
+                        ),
+                        tags$div(
+                          class = "col-sm-6",
+                          colorPickerInput(
+                            "alert_color_dark",
+                            labelTooltip(
+                              lang$adminMode$general$themeColors$alertDark,
+                              lang$adminMode$general$themeColors$alertTooltip
+                            ),
+                            value = if (length(configJSON$themeColors$alert_color_dark)) {
+                              configJSON$themeColors$alert_color_dark
+                            } else {
+                              "#d11a2a"
+                            },
+                            colorPreview = TRUE
+                          )
+                        ),
+                        tags$div(
+                          class = "col-sm-6",
+                          colorPickerInput(
+                            "main_bg_dark",
+                            lang$adminMode$general$themeColors$mainBgDark,
+                            value = if (length(configJSON$themeColors$main_bg_dark)) {
+                              configJSON$themeColors$main_bg_dark
+                            } else {
+                              "#393e46"
+                            },
+                            colorPreview = TRUE
+                          )
+                        ),
+                        tags$div(
+                          class = "col-sm-6",
+                          colorPickerInput(
+                            "console_text_color_dark",
+                            labelTooltip(
+                              lang$adminMode$general$themeColors$consoleDark,
+                              lang$adminMode$general$themeColors$consoleTooltip
+                            ),
+                            value = if (length(configJSON$themeColors$console_text_color_dark)) {
+                              configJSON$themeColors$console_text_color_dark
+                            } else {
+                              "#3c8dbc"
+                            },
+                            colorPreview = TRUE
+                          )
+                        ),
+                        tags$div(
+                          class = "col-sm-6",
+                          colorPickerInput(
+                            "widget_bg_dark",
+                            labelTooltip(
+                              lang$adminMode$general$themeColors$widgetBgDark,
+                              lang$adminMode$general$themeColors$widgetBgTooltip
+                            ),
+                            value = if (length(configJSON$themeColors$widget_bg_dark)) {
+                              configJSON$themeColors$widget_bg_dark
+                            } else {
+                              "#848991"
+                            },
+                            colorPreview = TRUE
+                          )
+                        )
+                      ),
+                      tags$div(class = "space"),
                       tags$div(
                         class = "option-wrapper",
                         selectInput("general_theme", labelTooltip(
