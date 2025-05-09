@@ -785,7 +785,7 @@ if (buildUI) {
           ),
           tags$div(
             class = "update-mobile",
-            checkboxInput("logUpdate",
+            checkboxInput_SIMPLE("logUpdate",
               label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate,
               value = TRUE
             )
@@ -809,7 +809,7 @@ if (buildUI) {
             id = "logStatusContainer",
             class = "noplaceholder pre-style-div"
           ),
-          checkboxInput("logUpdate",
+          checkboxInput_SIMPLE("logUpdate",
             label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate,
             value = TRUE
           )
