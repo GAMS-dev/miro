@@ -14,24 +14,16 @@
     }
 }
 
-/* global variables */
-@primary-color: #56799C;
-@gams-color: @primary-color;
-@gams-color-dark: @primary-color;
-@main-bg-dark: #2b2b2b;
-@login-header-bg: #2d3033;
-@login-header-bg-dark: #2d3033;
-@body-bg: #ecf0f4;
-@body-bg-dark: if(boolean(hue(@main-bg-dark) = 0 and saturation(@main-bg-dark) = 0), hsl(hue(@main-bg-dark), 0%, 12%), hsl(hue(@main-bg-dark), 10%, 18%));//#292d32;
+:root {
+    --primary-color: #56799C;
+    --body-bg: #ecf0f4;
+    --main-bg: #fff;
+    --login-header-bg: #2d3033;
+    --primary-color-dark: #56799C;
+    --main-bg-dark: #2b2b2b;
+    --login-header-bg-dark: #2d3033;
+    --body-bg-dark: #1f1f1f;
+}
 
-/* No need to change */
-@main-bg: #fff;
-@gams-color-focus: darken(@gams-color, 15%, relative);
-@gams-color-focus-dark: darken(@gams-color-dark, 15%, relative);
-@gams-color-fade: fade(@gams-color, 40%);
-@gams-color-fade-dark: fade(@gams-color-dark, 40%);
-@main-bg-lighten-dark: lighten(@main-bg-dark, 9%, relative);
-@btn-text: #eee;
-@btn-text-dark: #fff;
-
+@import "../../global_variables.less";
 @import "../../styles.less";
