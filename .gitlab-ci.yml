@@ -1,3 +1,58 @@
+spec:
+  inputs:
+    build-linux:
+      default: true
+      description: 'Build Linux (ignored on master)?'
+      type: boolean
+    build-windows:
+      default: true
+      description: 'Build Windows (ignored on master)?'
+      type: boolean
+    build-macos-amd64:
+      default: true
+      description: 'Build macOS AMD64 (ignored on master)?'
+      type: boolean
+    build-macos-arm:
+      default: true
+      description: 'Build macOS ARM (ignored on master)?'
+      type: boolean
+    build-ci:
+      default: false
+      description: 'Build CI image?'
+      type: boolean
+    build-server-images:
+      default: false
+      description: 'Build MIRO Server images and push to registry.gams.com (tagged as unstable on develop and feature on feature branches) (always built on master)?'
+      type: boolean
+    force-build-linux-builder:
+      default: false
+      description: 'Build Linux build image even when Dockerfile did not change?'
+      type: boolean
+    force-build-windows-builder:
+      default: false
+      description: 'Build Windows build image even when Dockerfile did not change?'
+      type: boolean
+    force-release:
+      default: false
+      description: 'Force release even if tests fail?'
+      type: boolean
+    skip-tests:
+      default: false
+      description: 'Skip tests on branch pipelines?'
+      type: boolean
+    run-tests-master:
+      default: false
+      description: 'Run tests on master branch (default is no as tests already ran on rc branch)?'
+      type: boolean
+    skip-notarization:
+      default: false
+      description: 'Skip notarization of macOS installer?'
+      type: boolean
+    max-test-failures:
+      default: 1
+      description: 'Maximum number of tests allowed to fail before the job fails'
+      type: number
+---
 stages:
   - prepare
   - build
@@ -9,47 +64,6 @@ include:
 
 image:
   name: $CI_REGISTRY_IMAGE/gamsmiro-ci:latest
-
-variables:
-  BUILD_LINUX:
-    value: 'yes'
-    description: 'Build Linux (ignored on master) (yes/no)?'
-  BUILD_WINDOWS:
-    value: 'yes'
-    description: 'Build Windows (ignored on master) (yes/no)?'
-  BUILD_MACOS:
-    value: 'yes'
-    description: 'Build macOS (ignored on master) (yes/no)?'
-  BUILD_MACOS_ARM:
-    value: 'yes'
-    description: 'Build macOS ARM (ignored on master) (yes/no)?'
-  FORCE_BUILD_LINUX_BUILDER:
-    value: 'no'
-    description: 'Build Linux build image even when Dockerfile did not change (yes/no)?'
-  FORCE_BUILD_WINDOWS_BUILDER:
-    value: 'no'
-    description: 'Build Windows build image even when Dockerfile did not change (yes/no)?'
-  FORCE_RELEASE:
-    value: 'no'
-    description: 'Force release even if tests fail (yes/no)?'
-  SKIP_TESTS:
-    value: 'no'
-    description: 'Skip tests on branch pipelines (yes/no)?'
-  RUN_TESTS_MASTER:
-    value: 'no'
-    description: 'Run tests on master branch (default is no as tests already ran on rc branch) (yes/no)?'
-  MIRO_MAX_TEST_FAILURES:
-    value: '1'
-    description: 'Maximum number of tests allowed to fail before the job fails'
-  SKIP_NOTARIZATION:
-    value: 'no'
-    description: 'Skip notarization of macOS installer (yes/no)?'
-  BUILD_CI:
-    value: 'no'
-    description: 'Build CI image (yes/no)?'
-  PUSH_UNSTABLE_SERVER_IMAGES:
-    value: 'no'
-    description: 'Push MIRO Server images to registry.gams.com (tagged as unstable on develop and feature on feature branches) (yes/no)?'
 
 .assume_role_s3: &assume_role_s3
   - >
@@ -122,7 +136,7 @@ build_build_image_linux:
     - docker build -t $CI_REGISTRY_IMAGE/builder-linux:latest --build-arg R_BASE_VERSION=`jq -r ".rVersion" ../../build-config.json` --build-arg OPENSSL_VERSION=`jq -r ".opensslVersion" ../../build-config.json` .
     - docker push $CI_REGISTRY_IMAGE/builder-linux:latest
   rules:
-    - if: $FORCE_BUILD_LINUX_BUILDER == "yes"
+    - if: '"$[[ inputs.force-build-linux-builder ]]" == "true"'
     - if: '$CI_PIPELINE_SOURCE != "push"'
       when: never
     - changes:
@@ -144,7 +158,7 @@ build_build_image_windows:
     - docker build -t $env:CI_REGISTRY_IMAGE/builder-windows:latest --build-arg R_VERSION=$rVersion --build-arg GAMS_VERSION=$gamsVersion .
     - docker push $env:CI_REGISTRY_IMAGE/builder-windows:latest
   rules:
-    - if: $FORCE_BUILD_WINDOWS_BUILDER == "yes"
+    - if: '"$[[ inputs.force-build-windows-builder ]]" == "true"'
     - if: '$CI_PIPELINE_SOURCE != "push"'
       when: never
     - changes:
@@ -197,7 +211,7 @@ build_linux_job:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - yarn install
   script:
-    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_LINUX" == "no" ]] && [[ "$BUILD_CI" == "no" ]] && [[ "$PUSH_UNSTABLE_SERVER_IMAGES" == "no" ]] && echo "Skipping Linux build" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-linux ]]" = false ] && [ "$[[ inputs.build-ci ]]" = false ] && [ "$[[ inputs.build-server-images ]]" = false ] && echo "Skipping Linux build" && exit 0'
     - yarn dist
     - >
       if [[ "$CI_COMMIT_BRANCH" == "master" ]]; then
@@ -210,18 +224,18 @@ build_linux_job:
             python3 miro_server.py build
             python3 miro_server.py push --unstable --custom-tag unstable --registry "${CI_REGISTRY_IMAGE}"
         popd
-      elif [[ "$PUSH_UNSTABLE_SERVER_IMAGES" != "no" ]]; then
+      elif $[[ inputs.build-server-images ]]; then
         pushd server
             python3 miro_server.py build
             python3 miro_server.py push --unstable --custom-tag feature --registry "${CI_REGISTRY_IMAGE}"
         popd
-      elif [[ "$BUILD_CI" != "no" ]]; then
+      elif $[[ inputs.build-ci ]]; then
         pushd server
           python3 miro_server.py build --module ui
         popd
       fi
     - >
-      if [[ "$BUILD_CI" != "no" ]]; then
+      if $[[ inputs.build-ci ]]; then
         yarn docker-build-ci
         docker tag gamsmiro-ci $CI_REGISTRY_IMAGE/gamsmiro-ci:latest
         docker push $CI_REGISTRY_IMAGE/gamsmiro-ci:latest
@@ -474,7 +488,7 @@ build_windows_job:
     - yarn install
     - '[IO.File]::WriteAllBytes([io.path]::Combine((Get-Location).path, $env:CSC_LINK), [Convert]::FromBase64String($env:WIN_CERT_FILE_B64))'
   script:
-    - 'if ("$env:CI_COMMIT_BRANCH" -ne "master" -and "$env:BUILD_WINDOWS" -eq "no") { "Skipping Windows build"; Exit }'
+    - 'if ("$env:CI_COMMIT_BRANCH" -ne "master" -and "$[[ inputs.build-windows ]]" -ceq "false") { "Skipping Windows build"; Exit }'
     - yarn dist
   artifacts:
     paths:
@@ -513,10 +527,11 @@ build_macos_job:
   stage: build
   variables:
     GIT_SUBMODULE_STRATEGY: normal
+    SKIP_NOTARIZATION: '$[[ inputs.skip-notarization ]]'
   before_script:
     - yarn install
   script:
-    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS" == "no" ]] && echo "Skipping macOS build" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-macos-amd64 ]]" = false ] && echo "Skipping macOS build" && exit 0'
     - export PATH="/usr/bin:${PATH}"
     - yarn dist
   artifacts:
@@ -557,10 +572,11 @@ build_macos_arm_job:
   stage: build
   variables:
     GIT_SUBMODULE_STRATEGY: normal
+    SKIP_NOTARIZATION: '$[[ inputs.skip-notarization ]]'
   before_script:
     - yarn install
   script:
-    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS_ARM" == "no" ]] && echo "Skipping macOS ARM build" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-macos-arm ]]" = false ] && echo "Skipping macOS ARM build" && exit 0'
     - export PATH="/usr/bin:${PATH}"
     - yarn dist
     - mkdir dist/arm && mv dist/*.dmg dist/arm
@@ -601,14 +617,23 @@ test_windows_job:
     - windows
   stage: test
   image: $CI_REGISTRY_IMAGE/builder-windows:latest
+  variables:
+    MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
   before_script:
     - yarn install
+    - $env:FORCE_RELEASE = if ("$[[ inputs.force-release ]]" -ceq "true") { "yes" } else { "no" }
   script:
-    - 'if ("$env:SKIP_TESTS" -eq "yes") { "Skipping tests"; Exit }'
-    - 'if ("$env:CI_COMMIT_BRANCH" -eq "master" -and "$env:RUN_TESTS_MASTER" -eq "no") { "Skipping tests on master"; Exit }'
-    - 'if ("$env:CI_COMMIT_BRANCH" -ne "master" -and "$env:BUILD_WINDOWS" -eq "no") { "Skipping Windows build"; Exit }'
+    - 'if ("$[[ inputs.skip-tests ]]" -ceq "true") { "Skipping tests"; Exit }'
+    - 'if ("$env:CI_COMMIT_BRANCH" -eq "master" -and "$[[ inputs.run-tests-master ]]" -ceq "false") { "Skipping tests on master"; Exit }'
+    - 'if ("$env:CI_COMMIT_BRANCH" -ne "master" -and "$[[ inputs.build-windows ]]" -ceq "false") { "Skipping Windows build"; Exit }'
+    - cd dist
+    - $installer = Get-ChildItem *.exe | Select-Object -First 1
+    - 'echo "Using installer: $installer"'
+    - $installer /S
+    - cd ..
+    - yarn playwright test
     - yarn test gams_sys_dir=$env:GAMS_SYS_DIR
-  dependencies: []
+  dependencies: [build_windows_job]
   cache:
     - key:
         files:
@@ -648,14 +673,22 @@ test_macos_job:
   stage: test
   variables:
     LANG: en_US.UTF-8
+    MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
   before_script:
     - yarn install
+    - export FORCE_RELEASE=$([ "$[[ inputs.force-release ]]" = true ] && echo "yes" || echo "no")
   script:
-    - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
-    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [[ "$RUN_TESTS_MASTER" == "no" ]] && echo "Skipping tests on master" && exit 0'
-    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS" == "no" ]] && echo "Skipping macOS build" && exit 0'
+    - '[ "$[[ inputs.skip-tests ]]" = true ] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [ "$[[ inputs.run-tests-master ]]" = false ] && echo "Skipping tests on master" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-macos-amd64 ]]" = false ] && echo "Skipping macOS build" && exit 0'
+    - mkdir -p tmp/mnt
+    - hdiutil attach dist/arm/*.dmg -mountpoint tmp/mnt -nobrowse -quiet
+    - export MIRO_EXEC_PATH="${PWD}/tmp/mnt/GAMS MIRO.app/Contents/MacOS/GAMS MIRO
+    - yarn playwright test
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS}
-  dependencies: []
+  after_script:
+    - hdiutil detach tmp/mnt
+  dependencies: [build_macos_job]
   cache:
     - key:
         files:
@@ -695,14 +728,22 @@ test_macos_arm_job:
   stage: test
   variables:
     LANG: en_US.UTF-8
+    MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
   before_script:
     - yarn install
+    - export FORCE_RELEASE=$([ "$[[ inputs.force-release ]]" = true ] && echo "yes" || echo "no")
   script:
-    - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
-    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [[ "$RUN_TESTS_MASTER" == "no" ]] && echo "Skipping tests on master" && exit 0'
-    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS_ARM" == "no" ]] && echo "Skipping macOS ARM build" && exit 0'
+    - '[ "$[[ inputs.skip-tests ]]" = true ] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [ "$[[ inputs.run-tests-master ]]" = false ] && echo "Skipping tests on master" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-macos-arm ]]" = false ] && echo "Skipping macOS ARM build" && exit 0'
+    - mkdir -p tmp/mnt
+    - hdiutil attach dist/arm/*.dmg -mountpoint tmp/mnt -nobrowse -quiet
+    - export MIRO_EXEC_PATH="${PWD}/tmp/mnt/GAMS MIRO.app/Contents/MacOS/GAMS MIRO
+    - yarn playwright test
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS_ARM}
-  dependencies: []
+  after_script:
+    - hdiutil detach tmp/mnt
+  dependencies: [build_macos_arm_job]
   cache:
     - key:
         files:
@@ -795,7 +836,9 @@ test_job:
     POSTGRES_USER: $MIRO_DB_USERNAME
     POSTGRES_PASSWORD: $MIRO_DB_PASSWORD
     POSTGRES_HOST_AUTH_METHOD: trust
+    MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
   before_script:
+    - export FORCE_RELEASE=$([ "$[[ inputs.force-release ]]" = true ] && echo "yes" || echo "no")
     - source /etc/profile.d/ci.sh
   script:
     - mchecklic
@@ -856,8 +899,8 @@ test_job_miro_server:
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
   script:
-    - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
-    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [[ "$RUN_TESTS_MASTER" == "no" ]] && echo "Skipping tests on master" && exit 0'
+    - '[ "$[[ inputs.skip-tests ]]" = true ] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [ "$[[ inputs.run-tests-master ]]" = false ] && echo "Skipping tests on master" && exit 0'
     - ./scripts/test_miro_server.sh
   dependencies: []
   artifacts:
@@ -893,8 +936,8 @@ test_job_miro_server_k8s:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - mkdir kind-logs
   script:
-    - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
-    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [[ "$RUN_TESTS_MASTER" == "no" ]] && echo "Skipping tests on master" && exit 0'
+    - '[ "$[[ inputs.skip-tests ]]" = true ] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [ "$[[ inputs.run-tests-master ]]" = false ] && echo "Skipping tests on master" && exit 0'
     - ./scripts/test_miro_server_k8s.sh
   dependencies: []
   artifacts:

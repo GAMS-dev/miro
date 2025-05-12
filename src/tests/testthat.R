@@ -64,13 +64,17 @@ if (Sys.info()[["sysname"]] == "Darwin") {
   Sys.setenv(CHROMOTE_CHROME = chromePath)
 }
 
+maxTestFailures <- as.integer(Sys.getenv("MIRO_MAX_TEST_FAILURES", "1"))
+
 reporter <- MultiReporter$new(list(
-  ProgressReporter$new(max_failures = as.integer(Sys.getenv("MIRO_MAX_TEST_FAILURES", "1"))),
+  ProgressReporter$new(max_failures = maxTestFailures),
   JunitReporter$new(file = file.path(getwd(), "test-out.xml"))
 ))
 
 stopOnFailure <- identical(commandArgs(trailingOnly = TRUE), "--stop") || !identical(Sys.getenv("FORCE_RELEASE"), "yes")
 testDir <- file.path(getwd(), "tests")
+
+print(sprintf("Maximum test failures: %i, stop on failure: %s", maxTestFailures, stopOnFailure))
 
 # test_file("tests/testthat/test-hcube-module-ui.R", reporter = reporter, stop_on_failure = stopOnFailure)
 test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure)
