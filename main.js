@@ -1003,7 +1003,7 @@ function openCheckUpdateWindow() {
   });
 }
 function quitLauncher() {
-  if (process.platform !== 'darwin') {
+  if (process.platform !== 'darwin' || process.env.E2E === 'true') {
     app.quit();
   }
 }

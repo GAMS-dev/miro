@@ -629,8 +629,9 @@ test_windows_job:
     - cd dist
     - $installer = Get-ChildItem *.exe | Select-Object -First 1
     - 'echo "Using installer: $installer"'
-    - $installer /S
+    - Start-Process -FilePath $installer -ArgumentList '/S' -Wait
     - cd ..
+    - $env:MIRO_EXEC_PATH="C:\Users\ContainerAdministrator\AppData\Local\Programs\GAMS MIRO\GAMS MIRO.exe"
     - yarn playwright test
     - yarn test gams_sys_dir=$env:GAMS_SYS_DIR
   dependencies: [build_windows_job]
@@ -682,12 +683,13 @@ test_macos_job:
     - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [ "$[[ inputs.run-tests-master ]]" = false ] && echo "Skipping tests on master" && exit 0'
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-macos-amd64 ]]" = false ] && echo "Skipping macOS build" && exit 0'
     - mkdir -p tmp/mnt
-    - hdiutil attach dist/arm/*.dmg -mountpoint tmp/mnt -nobrowse -quiet
-    - export MIRO_EXEC_PATH="${PWD}/tmp/mnt/GAMS MIRO.app/Contents/MacOS/GAMS MIRO
+    - hdiutil attach dist/*.dmg -mountpoint tmp/mnt -nobrowse -quiet
+    - export MIRO_EXEC_PATH="${PWD}/tmp/mnt/GAMS MIRO.app/Contents/MacOS/GAMS MIRO"
     - yarn playwright test
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS}
   after_script:
-    - hdiutil detach tmp/mnt
+    - hdiutil detach -force tmp/mnt
+    - rm -rf $HOME/.miro
   dependencies: [build_macos_job]
   cache:
     - key:
@@ -738,11 +740,12 @@ test_macos_arm_job:
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-macos-arm ]]" = false ] && echo "Skipping macOS ARM build" && exit 0'
     - mkdir -p tmp/mnt
     - hdiutil attach dist/arm/*.dmg -mountpoint tmp/mnt -nobrowse -quiet
-    - export MIRO_EXEC_PATH="${PWD}/tmp/mnt/GAMS MIRO.app/Contents/MacOS/GAMS MIRO
+    - export MIRO_EXEC_PATH="${PWD}/tmp/mnt/GAMS MIRO.app/Contents/MacOS/GAMS MIRO"
     - yarn playwright test
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS_ARM}
   after_script:
-    - hdiutil detach tmp/mnt
+    - hdiutil detach -force tmp/mnt
+    - rm -rf $HOME/.miro
   dependencies: [build_macos_arm_job]
   cache:
     - key:

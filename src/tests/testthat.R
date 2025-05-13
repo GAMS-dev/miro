@@ -76,7 +76,7 @@ testDir <- file.path(getwd(), "tests")
 
 print(sprintf("Maximum test failures: %i, stop on failure: %s", maxTestFailures, stopOnFailure))
 
-# test_file("tests/testthat/test-hcube-module-ui.R", reporter = reporter, stop_on_failure = stopOnFailure)
-test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure)
+# test_file("tests/testthat/test-hcube-module-ui.R", reporter = reporter, stop_on_failure = stopOnFailure, stop_on_warning = stopOnFailure)
+test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure, stop_on_warning = stopOnFailure)
 
 Sys.unsetenv(c("MIRO_LOG_PATH", "MIRO_TEST_TIMEOUT", "MIRO_TEST_LOAD_TIMEOUT"))
