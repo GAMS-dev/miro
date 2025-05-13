@@ -839,7 +839,8 @@ font-size: 12px;
                             } else {
                               "#3c8dbc"
                             },
-                            colorPreview = TRUE
+                            colorPreview = TRUE,
+                            disableAlphaChannel = TRUE
                           )
                         ),
                         tags$div(
@@ -855,7 +856,8 @@ font-size: 12px;
                             } else {
                               "#f39619"
                             },
-                            colorPreview = TRUE
+                            colorPreview = TRUE,
+                            disableAlphaChannel = TRUE
                           )
                         ),
                         tags$div(
@@ -868,7 +870,8 @@ font-size: 12px;
                             } else {
                               "#1d2121"
                             },
-                            colorPreview = TRUE
+                            colorPreview = TRUE,
+                            disableAlphaChannel = TRUE
                           )
                         ),
                         tags$div(
@@ -884,7 +887,8 @@ font-size: 12px;
                             } else {
                               "#d11a2a"
                             },
-                            colorPreview = TRUE
+                            colorPreview = TRUE,
+                            disableAlphaChannel = TRUE
                           )
                         ),
                         tags$div(
@@ -900,7 +904,8 @@ font-size: 12px;
                             } else {
                               "#333333"
                             },
-                            colorPreview = TRUE
+                            colorPreview = TRUE,
+                            disableAlphaChannel = TRUE
                           )
                         )
                       ),
@@ -919,7 +924,8 @@ font-size: 12px;
                             } else {
                               "#00adb5"
                             },
-                            colorPreview = TRUE
+                            colorPreview = TRUE,
+                            disableAlphaChannel = TRUE
                           )
                         ),
                         tags$div(
@@ -935,7 +941,8 @@ font-size: 12px;
                             } else {
                               "#f39619"
                             },
-                            colorPreview = TRUE
+                            colorPreview = TRUE,
+                            disableAlphaChannel = TRUE
                           )
                         ),
                         tags$div(
@@ -948,7 +955,8 @@ font-size: 12px;
                             } else {
                               "#1d1f20"
                             },
-                            colorPreview = TRUE
+                            colorPreview = TRUE,
+                            disableAlphaChannel = TRUE
                           )
                         ),
                         tags$div(
@@ -964,7 +972,8 @@ font-size: 12px;
                             } else {
                               "#d11a2a"
                             },
-                            colorPreview = TRUE
+                            colorPreview = TRUE,
+                            disableAlphaChannel = TRUE
                           )
                         ),
                         tags$div(
@@ -977,7 +986,8 @@ font-size: 12px;
                             } else {
                               "#393e46"
                             },
-                            colorPreview = TRUE
+                            colorPreview = TRUE,
+                            disableAlphaChannel = TRUE
                           )
                         ),
                         tags$div(
@@ -993,7 +1003,8 @@ font-size: 12px;
                             } else {
                               "#3c8dbc"
                             },
-                            colorPreview = TRUE
+                            colorPreview = TRUE,
+                            disableAlphaChannel = TRUE
                           )
                         ),
                         tags$div(
@@ -1009,7 +1020,8 @@ font-size: 12px;
                             } else {
                               "#848991"
                             },
-                            colorPreview = TRUE
+                            colorPreview = TRUE,
+                            disableAlphaChannel = TRUE
                           )
                         )
                       ),

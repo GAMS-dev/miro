@@ -1849,10 +1849,12 @@ accessPermInput <- function(inputId, label, choices, selected = NULL, width = NU
     width = width
   )
 }
-colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE, colorPreview = FALSE) {
+colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE, colorPreview = FALSE, disableAlphaChannel = FALSE) {
+  colorFormat <- if (disableAlphaChannel) "hex" else "false"
   if (colorBox) {
     colorpicker <- tags$div(
       class = "shiny-input-container miro-color-picker",
+      `data-format` = colorFormat,
       fluidRow(
         class = "color-picker-element",
         tags$div(
@@ -1893,9 +1895,10 @@ colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE, c
         class = "input-group",
         style = "width: 100%;",
         tags$input(
-          id    = id,
-          type  = "text",
+          id = id,
+          type = "text",
           class = "form-control miro-color-picker",
+          `data-format` = colorFormat,
           value = value
         ),
         tags$span(
@@ -1915,6 +1918,7 @@ colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE, c
       tags$input(
         id = id, type = "text",
         class = "form-control miro-color-picker",
+        `data-format` = colorFormat,
         value = value
       )
     )
