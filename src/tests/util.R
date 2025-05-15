@@ -375,7 +375,7 @@ PerformanceReporter <- R6::R6Class("PerformanceReporter", public = list(
           body = dataToPublish,
           httr::authenticate(private$user, private$pass),
           encode = "json",
-          httr::timeout(3L)
+          httr::timeout(10L)
         )
         if (httr::status_code(req) != 200L) {
           stop(sprintf("Bad status code: %s", httr::status_code(req)), call. = FALSE)

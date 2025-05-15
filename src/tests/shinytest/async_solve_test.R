@@ -12,7 +12,7 @@ getLatestJobToken <- function() {
     httr::GET(
       paste0(Sys.getenv("ENGINE_URL"), "/jobs/"),
       httr::add_headers(Authorization = authHeader),
-      httr::timeout(2L)
+      httr::timeout(10L)
     ),
     type = "application/json",
     encoding = "utf-8"
@@ -23,7 +23,7 @@ getJobStatus <- function(token) {
     httr::GET(
       paste0(Sys.getenv("ENGINE_URL"), "/jobs/", token),
       httr::add_headers(Authorization = authHeader),
-      httr::timeout(2L)
+      httr::timeout(10L)
     ),
     type = "application/json",
     encoding = "utf-8"
@@ -311,7 +311,7 @@ app$set_inputs(btLoadScenConfirm = "click")
 currentVolumeQuotaUsed <- httr::content(httr::GET(
   paste0(Sys.getenv("ENGINE_URL"), paste0("/usage/quota?username=", Sys.getenv("MIRO_REMOTE_EXEC_USERNAME"))),
   httr::authenticate(Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")),
-  httr::timeout(2L)
+  httr::timeout(10L)
 ))[[1L]][["volume_used"]]
 expect_identical(httr::status_code(httr::PUT(
   paste0(Sys.getenv("ENGINE_URL"), "/usage/quota"),
@@ -320,7 +320,7 @@ expect_identical(httr::status_code(httr::PUT(
     volume_quota = currentVolumeQuotaUsed + 5L
   ),
   httr::authenticate(Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")),
-  httr::timeout(2L)
+  httr::timeout(10L)
 )), 200L)
 Sys.sleep(1)
 app$click(selector = ".btSolve .dropdown-toggle")
@@ -340,7 +340,7 @@ expect_identical(httr::status_code(httr::PUT(
     volume_quota = 0
   ),
   httr::authenticate(Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")),
-  httr::timeout(2L)
+  httr::timeout(10L)
 )), 200L)
 
 app$click(selector = "#sidebarItemExpanded a[data-value='inputData']")

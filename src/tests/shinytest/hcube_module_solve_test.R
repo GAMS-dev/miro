@@ -338,7 +338,7 @@ app$wait_for_js("$('#btSubmitHcJobConfirm').is(':enabled');", timeout = 5000L)
 currentVolumeQuotaUsed <- httr::content(httr::GET(
   paste0(Sys.getenv("ENGINE_URL"), paste0("/usage/quota?username=", Sys.getenv("MIRO_REMOTE_EXEC_USERNAME"))),
   httr::authenticate(Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")),
-  httr::timeout(2L)
+  httr::timeout(10L)
 ))[[1L]][["volume_used"]]
 expect_identical(httr::status_code(httr::PUT(
   paste0(Sys.getenv("ENGINE_URL"), "/usage/quota"),
@@ -347,7 +347,7 @@ expect_identical(httr::status_code(httr::PUT(
     volume_quota = currentVolumeQuotaUsed + 1L
   ),
   httr::authenticate(Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")),
-  httr::timeout(2L)
+  httr::timeout(10L)
 )), 200L)
 Sys.sleep(0.5)
 app$click(selector = "#btSubmitHcJobConfirm")
@@ -362,7 +362,7 @@ expect_identical(httr::status_code(httr::PUT(
     volume_quota = 0
   ),
   httr::authenticate(Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")),
-  httr::timeout(2L)
+  httr::timeout(10L)
 )), 200L)
 app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSubmitHcJob']")
