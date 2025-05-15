@@ -115,25 +115,27 @@ body_admin <- dashboardBody({
     ))
   }
   tagList(
-    if (!is.null(config$themeColors) && length(config$themeColors)) {
-      cssLines <- sprintf(
-        "--%s:%s;",
-        gsub("_", "-", names(config$themeColors), fixed = TRUE),
-        unname(config$themeColors)
-      )
-      htmltools::tags$style(
-        HTML(paste0(":root{", paste(cssLines, collapse = ""), "}"))
-      )
-    },
     tags$head(
       tags$meta(
         name = "color-scheme",
         content = if (identical(config$theme, "browser")) "dark light" else "normal"
       ),
+      if (!is.null(config$themeColors) && length(config$themeColors)) {
+        cssLines <- sprintf(
+          "--%s:%s;",
+          gsub("_", "-", names(config$themeColors), fixed = TRUE),
+          unname(config$themeColors)
+        )
+        htmltools::tags$style(
+          HTML(paste0(":root{", paste(cssLines, collapse = ""), "}"))
+        )
+      } else {
+        tags$link(type = "text/css", rel = "stylesheet", href = paste0("colors_", miroColorTheme, ".css"))
+      },
       tags$link(type = "text/css", rel = "stylesheet", href = if (identical(config$customColorTheme, TRUE)) {
         paste0("static_", modelName, "/custom_theme.css")
       } else {
-        paste0(miroColorTheme, "_", config$theme, ".css")
+        paste0("default_", config$theme, ".css")
       }),
       tags$script(`defer src` = "showdown.min.js", type = "application/javascript"),
       tags$script(`defer src` = "mathjax-extension.js", type = "application/javascript"),

@@ -160,9 +160,3 @@
     --text-color-dark: #eeeeee;
     --widget-bg-dark: #69737c;
 }
-
-@import "../variables/global_variables.less";
-
-/* do not change */
-@text-color:        #eee;
-@text-color-dark:   #eee;

@@ -160,9 +160,3 @@
     --text-color-dark: #eeeeee;
     --widget-bg-dark: #848991;
 }
-
-@import "../variables/global_variables.less";
-
-//need to be fix hex values
-@text-color: #eeeeee;
-@text-color-dark: #eeeeee;

@@ -1115,16 +1115,6 @@ if (buildUI) {
   }
   miroBody <- dashboardBody({
     tagList(
-      if (!is.null(config$themeColors) && length(config$themeColors)) {
-        cssLines <- sprintf(
-          "--%s:%s;",
-          gsub("_", "-", names(config$themeColors), fixed = TRUE),
-          unname(config$themeColors)
-        )
-        htmltools::tags$style(
-          HTML(paste0(":root{", paste(cssLines, collapse = ""), "}"))
-        )
-      },
       tags$head(
         if (isTRUE(config$readme$enableMath)) {
           tagList(
@@ -1150,10 +1140,22 @@ if (buildUI) {
           content = if (identical(config$theme, "browser")) "dark light" else "normal"
         ),
         tags$meta(name = "mobile-web-app-capable", content = "yes"),
+        if (!is.null(config$themeColors) && length(config$themeColors)) {
+          cssLines <- sprintf(
+            "--%s:%s;",
+            gsub("_", "-", names(config$themeColors), fixed = TRUE),
+            unname(config$themeColors)
+          )
+          htmltools::tags$style(
+            HTML(paste0(":root{", paste(cssLines, collapse = ""), "}"))
+          )
+        } else {
+          tags$link(type = "text/css", rel = "stylesheet", href = paste0("colors_", miroColorTheme, ".css"))
+        },
         tags$link(type = "text/css", rel = "stylesheet", href = if (identical(config$customColorTheme, TRUE)) {
           paste0("static_", modelName, "/custom_theme.css")
         } else {
-          paste0(miroColorTheme, "_", config$theme, ".css")
+          paste0("default_", config$theme, ".css")
         }),
         tags$script(src = "miro.js", type = "application/javascript"),
         if (staticDirExists && file.exists(file.path(currentModelDir, paste0("static_", modelName), "manifest.json"))) {
