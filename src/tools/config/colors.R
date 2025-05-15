@@ -81,7 +81,31 @@ resolveColor <- function(val, default) {
   if (length(val) && nzchar(val)) val else default
 }
 
-basecolors <- list(
+getThemeColors <- function(cssPath) {
+  if (!file.exists(cssPath)) {
+    return(NULL)
+  }
+  cssLines <- readLines(cssPath, warn = FALSE)
+  regexPattern <- '^\\s*--([[:alnum:]_-]+)\\s*:\\s*"?([#0-9A-Fa-f]{3,8})"?\\s*;?\\s*$'
+
+  matchResults <- regexec(regexPattern, cssLines)
+  parts <- regmatches(cssLines, matchResults)
+  validParts <- parts[vapply(parts, length, integer(1)) == 3]
+
+  if (length(validParts) == 0) {
+    return(NULL)
+  }
+
+  varNames <- vapply(validParts, `[`, FUN.VALUE = "", 2)
+  varValues <- vapply(validParts, `[`, FUN.VALUE = "", 3)
+
+  varNames <- gsub("-", "_", varNames)
+
+  as.list(setNames(varValues, varNames))
+}
+
+
+baseColors <- list(
   primary_color           = "#3c8dbc",
   secondary_color         = "#f39619",
   sidebar_color           = "#1d2121",
@@ -99,7 +123,23 @@ basecolors <- list(
   text_color_dark         = "#eeeeee"
 )
 
-derive_palette <- function(b = basecolors) {
+customColors <- file.path(miroWorkspace, "themecolors.config")
+themeCss <- if (file.exists(customColors)) {
+  customColors
+} else {
+  globalTheme <- normalizePath(file.path(getwd(), "www", paste0("colors_", miroColorTheme, ".css")))
+  if (file.exists(globalTheme)) globalTheme else NULL
+}
+
+if (!is.null(themeCss)) {
+  parsedColors <- getThemeColors(themeCss)
+  commonKeys <- intersect(names(parsedColors), names(baseColors))
+  if (length(commonKeys) > 0) {
+    baseColors[commonKeys] <- parsedColors[commonKeys]
+  }
+}
+
+derive_palette <- function(b = baseColors) {
   v <- list()
   # main colors
   primary_color <- b$primary_color
@@ -453,8 +493,6 @@ derive_palette <- function(b = basecolors) {
 }
 css_name <- function(id) {
   out <- id
-  out <- sub("^--var\\(", "", out)
-  out <- sub("\\)$", "", out)
   out <- gsub("_", "-", out)
   if (startsWith(out, "--")) out else paste0("--", out)
 }

@@ -91,21 +91,258 @@ observeEvent(input$general_pageTitle, {
   }
 })
 
+output$themeColorsUI <- renderUI({
+  tagList(
+    tags$h4(lang$adminMode$colors$themeColors$light),
+    fluidRow(
+      tags$div(
+        class = "col-sm-6 themeColors-colorpicker",
+        colorPickerInput(
+          "primary_color",
+          labelTooltip(
+            lang$adminMode$colors$themeColors$primary,
+            lang$adminMode$colors$themeColors$primaryTooltip
+          ),
+          value = if (length(configJSON$themeColors$primary_color)) {
+            configJSON$themeColors$primary_color
+          } else {
+            baseColors$primary_color
+          },
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      ),
+      tags$div(
+        class = "col-sm-6",
+        colorPickerInput(
+          "secondary_color",
+          labelTooltip(
+            lang$adminMode$colors$themeColors$secondary,
+            lang$adminMode$colors$themeColors$secondaryTooltip
+          ),
+          value = if (length(configJSON$themeColors$secondary_color)) {
+            configJSON$themeColors$secondary_color
+          } else {
+            baseColors$secondary_color
+          },
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      ),
+      tags$div(
+        class = "col-sm-6",
+        colorPickerInput(
+          "sidebar_color",
+          lang$adminMode$colors$themeColors$sidebar,
+          value = if (length(configJSON$themeColors$sidebar_color)) {
+            configJSON$themeColors$sidebar_color
+          } else {
+            baseColors$sidebar_color
+          },
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      ),
+      tags$div(
+        class = "col-sm-6",
+        colorPickerInput(
+          "alert_color",
+          labelTooltip(
+            lang$adminMode$colors$themeColors$alert,
+            lang$adminMode$colors$themeColors$alertTooltip
+          ),
+          value = if (length(configJSON$themeColors$alert_color)) {
+            configJSON$themeColors$alert_color
+          } else {
+            baseColors$alert_color
+          },
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      ),
+      tags$div(
+        class = "col-sm-6",
+        colorPickerInput(
+          "console_text_color",
+          labelTooltip(
+            lang$adminMode$colors$themeColors$console,
+            lang$adminMode$colors$themeColors$consoleTooltip
+          ),
+          value = if (length(configJSON$themeColors$console_text_color)) {
+            configJSON$themeColors$console_text_color
+          } else {
+            baseColors$console_text_color
+          },
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      )
+    ),
+    tags$h4(lang$adminMode$colors$themeColors$dark),
+    fluidRow(
+      tags$div(
+        class = "col-sm-6",
+        colorPickerInput(
+          "primary_color_dark",
+          labelTooltip(
+            lang$adminMode$colors$themeColors$primaryDark,
+            lang$adminMode$colors$themeColors$primaryTooltip
+          ),
+          value = if (length(configJSON$themeColors$primary_color_dark)) {
+            configJSON$themeColors$primary_color_dark
+          } else {
+            baseColors$primary_color_dark
+          },
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      ),
+      tags$div(
+        class = "col-sm-6",
+        colorPickerInput(
+          "secondary_color_dark",
+          labelTooltip(
+            lang$adminMode$colors$themeColors$secondaryDark,
+            lang$adminMode$colors$themeColors$secondaryTooltip
+          ),
+          value = if (length(configJSON$themeColors$secondary_color_dark)) {
+            configJSON$themeColors$secondary_color_dark
+          } else {
+            baseColors$secondary_color_dark
+          },
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      ),
+      tags$div(
+        class = "col-sm-6",
+        colorPickerInput(
+          "sidebar_color_dark",
+          lang$adminMode$colors$themeColors$sidebarDark,
+          value = if (length(configJSON$themeColors$sidebar_color_dark)) {
+            configJSON$themeColors$sidebar_color_dark
+          } else {
+            baseColors$sidebar_color_dark
+          },
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      ),
+      tags$div(
+        class = "col-sm-6",
+        colorPickerInput(
+          "alert_color_dark",
+          labelTooltip(
+            lang$adminMode$colors$themeColors$alertDark,
+            lang$adminMode$colors$themeColors$alertTooltip
+          ),
+          value = if (length(configJSON$themeColors$alert_color_dark)) {
+            configJSON$themeColors$alert_color_dark
+          } else {
+            baseColors$alert_color_dark
+          },
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      ),
+      tags$div(
+        class = "col-sm-6",
+        colorPickerInput(
+          "main_bg_dark",
+          lang$adminMode$colors$themeColors$mainBgDark,
+          value = if (length(configJSON$themeColors$main_bg_dark)) {
+            configJSON$themeColors$main_bg_dark
+          } else {
+            baseColors$main_bg_dark
+          },
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      ),
+      tags$div(
+        class = "col-sm-6",
+        colorPickerInput(
+          "console_text_color_dark",
+          labelTooltip(
+            lang$adminMode$colors$themeColors$consoleDark,
+            lang$adminMode$colors$themeColors$consoleTooltip
+          ),
+          value = if (length(configJSON$themeColors$console_text_color_dark)) {
+            configJSON$themeColors$console_text_color_dark
+          } else {
+            baseColors$console_text_color_dark
+          },
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      ),
+      tags$div(
+        class = "col-sm-6",
+        colorPickerInput(
+          "widget_bg_dark",
+          labelTooltip(
+            lang$adminMode$colors$themeColors$widgetBgDark,
+            lang$adminMode$colors$themeColors$widgetBgDarkTooltip
+          ),
+          value = if (length(configJSON$themeColors$widget_bg_dark)) {
+            configJSON$themeColors$widget_bg_dark
+          } else {
+            baseColors$widget_bg_dark
+          },
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      )
+    ),
+    tags$h4(lang$adminMode$colors$themeButtons$buttonsTitle),
+    tags$div(
+      class = "theme-btn-row",
+      actionButton("saveLocal", lang$adminMode$colors$themeButtons$saveLocal, icon("floppy-disk"), class = "bt-highlight-1 theme-btn"),
+      actionButton("saveGlobal", lang$adminMode$colors$themeButtons$saveGlobal, icon("floppy-disk"), class = "bt-highlight-1 theme-btn"),
+      actionButton("removeColors", lang$adminMode$colors$themeButtons$removeColors, icon("trash-can"), class = "bt-remove theme-btn")
+    ),
+    tags$div(
+      class = "theme-btn-row",
+      actionButton("downloadTheme", lang$adminMode$colors$themeButtons$downloadTheme, icon("download"), class = "theme-btn")
+    ),
+    tags$div(class = "space"),
+    tags$ul(
+      tags$li(
+        tags$b(paste0(lang$adminMode$colors$themeButtons$saveLocal, ": ")),
+        lang$adminMode$colors$themeButtons$saveLocalDesc
+      ),
+      tags$li(
+        tags$b(paste0(lang$adminMode$colors$themeButtons$saveGlobal, ": ")),
+        lang$adminMode$colors$themeButtons$saveGlobalDesc
+      ),
+      tags$li(
+        tags$b(paste0(lang$adminMode$colors$themeButtons$downloadTheme, ": ")),
+        lang$adminMode$colors$themeButtons$downloadThemeDesc
+      ),
+      tags$li(
+        tags$b(paste0(lang$adminMode$colors$themeButtons$removeColors, ": ")),
+        lang$adminMode$colors$themeButtons$removeColorsDesc
+      )
+    ),
+    tags$div(class = "space")
+  )
+})
+
 customBaseColors <- reactive({
   list(
-    primary_color           = resolveColor(input$primary_color, basecolors$primary_color),
-    secondary_color         = resolveColor(input$secondary_color, basecolors$secondary_color),
-    sidebar_color           = resolveColor(input$sidebar_color, basecolors$sidebar_color),
-    alert_color             = resolveColor(input$alert_color, basecolors$alert_color),
+    primary_color           = resolveColor(input$primary_color, baseColors$primary_color),
+    secondary_color         = resolveColor(input$secondary_color, baseColors$secondary_color),
+    sidebar_color           = resolveColor(input$sidebar_color, baseColors$sidebar_color),
+    alert_color             = resolveColor(input$alert_color, baseColors$alert_color),
     main_bg                 = "#ffffff",
-    console_text_color      = resolveColor(input$console_text_color, basecolors$console_text_color),
-    primary_color_dark      = resolveColor(input$primary_color_dark, basecolors$primary_color_dark),
-    secondary_color_dark    = resolveColor(input$secondary_color_dark, basecolors$secondary_color_dark),
-    sidebar_color_dark      = resolveColor(input$sidebar_color_dark, basecolors$sidebar_color_dark),
-    alert_color_dark        = resolveColor(input$alert_color_dark, basecolors$alert_color_dark),
-    main_bg_dark            = resolveColor(input$main_bg_dark, basecolors$main_bg_dark),
-    console_text_color_dark = resolveColor(input$console_text_color_dark, basecolors$console_text_color_dark),
-    widget_bg_dark          = resolveColor(input$widget_bg_dark, basecolors$widget_bg_dark),
+    console_text_color      = resolveColor(input$console_text_color, baseColors$console_text_color),
+    primary_color_dark      = resolveColor(input$primary_color_dark, baseColors$primary_color_dark),
+    secondary_color_dark    = resolveColor(input$secondary_color_dark, baseColors$secondary_color_dark),
+    sidebar_color_dark      = resolveColor(input$sidebar_color_dark, baseColors$sidebar_color_dark),
+    alert_color_dark        = resolveColor(input$alert_color_dark, baseColors$alert_color_dark),
+    main_bg_dark            = resolveColor(input$main_bg_dark, baseColors$main_bg_dark),
+    console_text_color_dark = resolveColor(input$console_text_color_dark, baseColors$console_text_color_dark),
+    widget_bg_dark          = resolveColor(input$widget_bg_dark, baseColors$widget_bg_dark),
     text_color              = "#eeeeee",
     text_color_dark         = "#eeeeee"
   )
@@ -115,27 +352,116 @@ palette <- reactive(derive_palette(customBaseColors()))
 
 isDefaultPalette <- reactive({
   cb <- customBaseColors()
-  def <- basecolors[names(cb)]
+  def <- baseColors[names(cb)]
   all(mapply(identical, cb, def))
 })
 
-observeEvent(palette(), {
-  if (isDefaultPalette()) {
-    rv$generalConfig$themeColors <<- NULL
-    configJSON$themeColors <<- NULL
-    return()
-  }
-  paletteTmp <- palette()
-  paletteTmp <- paletteTmp[!startsWith(names(paletteTmp), "boolean")]
-  rv$generalConfig$themeColors <- paletteTmp
+observeEvent(palette(),
+  {
+    vars <- palette()
+    msg <- setNames(
+      lapply(vars, serialise),
+      vapply(names(vars), css_name, "")
+    )
+    session$sendCustomMessage("update-css", msg)
+  },
+  ignoreInit = TRUE
+)
 
+trigger <- reactiveVal(0)
+observeEvent(input$removeColors, {
+  if (length(configJSON$themeColors)) {
+    showModal(modalDialog(
+      title = lang$adminMode$colors$themeButtons$removeColorsTitle,
+      lang$adminMode$colors$themeButtons$removeColorsText,
+      footer = tagList(
+        modalButton(lang$adminMode$colors$themeButtons$removeColorsCancel),
+        actionButton("removeColorsConfirm", lang$adminMode$colors$themeButtons$removeColorsConfirm, class = "bt-remove")
+      ),
+      fade = TRUE, easyClose = TRUE
+    ))
+  } else {
+    showNotification(lang$adminMode$colors$themeButtons$removeColorsNote2, type = "message")
+  }
+})
+observeEvent(input$removeColorsConfirm, {
+  rv$generalConfig$themeColors <<- NULL
+  configJSON$themeColors <<- NULL
+  trigger(trigger() + 1)
+  removeModal()
+  showNotification(lang$adminMode$colors$themeButtons$removeColorsNote1, type = "message")
+})
+observeEvent(input$saveLocal, {
+  rv$generalConfig$themeColors <- palette()
+  showNotification(lang$adminMode$colors$themeButtons$saveLocalNote, type = "message")
+})
+observeEvent(input$saveGlobal, {
   vars <- palette()
   msg <- setNames(
     lapply(vars, serialise),
     vapply(names(vars), css_name, "")
   )
-  session$sendCustomMessage("update-css", msg)
+  properties <- paste0(names(msg), ':"', msg, '"', collapse = ";\n  ")
+  css <- paste0(":root{\n  ", properties, ";\n}")
+  outFile <- file.path(miroWorkspace, "themecolors.css")
+
+  if (file.exists(outFile)) {
+    showModal(modalDialog(
+      title = lang$adminMode$colors$themeButtons$saveGlobalModalTitle,
+      sprintf(
+        lang$adminMode$colors$themeButtons$saveGlobalModalText,
+        basename(outFile)
+      ),
+      footer = tagList(
+        modalButton(lang$adminMode$colors$themeButtons$saveGlobalModalCancel),
+        actionButton("overwriteGlobal", lang$adminMode$colors$themeButtons$saveGlobalModalOverwrite, class = "bt-highlight-1")
+      ),
+      fade = TRUE, easyClose = TRUE
+    ))
+
+    observeEvent(input$overwriteGlobal, {
+      writeLines(css, con = outFile)
+      removeModal()
+      showNotification(paste0(lang$adminMode$colors$themeButtons$saveGlobalModalNote1, " ", lang$adminMode$colors$themeButtons$saveGlobalModalNoteDesc), duration = 8, type = "message")
+    })
+  } else {
+    writeLines(css, con = outFile)
+    showNotification(paste0(lang$adminMode$colors$themeButtons$saveGlobalModalNote2, " ", lang$adminMode$colors$themeButtons$saveGlobalModalNoteDesc), duration = 8, type = "message")
+  }
 })
+
+observeEvent(input$downloadTheme, {
+  outFile <- "themecolors.css"
+
+  showModal(modalDialog(
+    title = lang$adminMode$colors$themeButtons$downloadThemeModalTitle,
+    sprintf(
+      lang$adminMode$colors$themeButtons$downloadThemeModalText,
+      outFile
+    ),
+    footer = tagList(
+      modalButton(lang$adminMode$colors$themeButtons$downloadThemeModalCancel),
+      downloadButton("downloadThemeConfirm", lang$adminMode$colors$themeButtons$downloadThemeModalDownload, class = "bt-highlight-1")
+    ),
+    fade = TRUE, easyClose = TRUE
+  ))
+})
+output$downloadThemeConfirm <- downloadHandler(
+  filename = function() {
+    "themecolors.css"
+  },
+  content = function(file) {
+    vars <- palette()
+    msg <- setNames(
+      lapply(vars, serialise),
+      vapply(names(vars), css_name, "")
+    )
+    properties <- paste0(names(msg), ':"', msg, '"', collapse = ";\n  ")
+    css <- paste0(":root{\n  ", properties, ";\n}")
+    writeLines(css, con = file)
+  },
+  contentType = "text/css"
+)
 
 observeEvent(input$general_theme, {
   rv$generalConfig$theme <<- input$general_theme
@@ -1082,7 +1408,7 @@ observeEvent(input$btMdSave, {
 #  =======================================
 #          SAVE JSON (automatically)
 #  =======================================
-observeEvent(rv$generalConfig, {
+observeEvent(list(rv$generalConfig, trigger()), {
   req(length(rv$generalConfig))
   configJSON$inputGroups <<- NULL
   configJSON$outputGroups <<- NULL
@@ -1102,3 +1428,5 @@ observeEvent(rv$generalConfig, {
   configJSON$outputAttachments <<- rv$generalConfig$outputAttachments
   jsonConfig$write(configJSON)
 })
+
+outputOptions(output, "themeColorsUI", suspendWhenHidden = FALSE)

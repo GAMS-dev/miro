@@ -102,6 +102,7 @@ sidebar_admin <- dashboardSidebar(
     menuItem(lang$adminMode$uiR$table, tabName = "tables_gen", icon = icon("table")),
     menuItem(lang$adminMode$uiR$widgets, tabName = "new_widget", icon = icon("sliders")),
     menuItem(lang$adminMode$uiR$graphs, tabName = "new_graph", icon = icon("chart-bar")),
+    menuItem(lang$adminMode$uiR$colors, tabName = "colors", icon = icon("palette")),
     menuItem(lang$adminMode$uiR$database, tabName = "db_management", icon = icon("database"))
   )
 )
@@ -827,207 +828,6 @@ font-size: 12px;
                       tags$div(class = "space"),
                       tags$h2(lang$adminMode$general$ui$headerAppearance, class = "option-category"),
                       tags$h4(lang$adminMode$general$themeColors$light),
-                      fluidRow(
-                        tags$div(
-                          class = "col-sm-6 themeColors-colorpicker",
-                          colorPickerInput(
-                            "primary_color",
-                            labelTooltip(
-                              lang$adminMode$general$themeColors$primary,
-                              lang$adminMode$general$themeColors$primaryTooltip
-                            ),
-                            value = if (length(configJSON$themeColors$primary_color)) {
-                              configJSON$themeColors$primary_color
-                            } else {
-                              "#3c8dbc"
-                            },
-                            colorPreview = TRUE,
-                            disableAlphaChannel = TRUE
-                          )
-                        ),
-                        tags$div(
-                          class = "col-sm-6",
-                          colorPickerInput(
-                            "secondary_color",
-                            labelTooltip(
-                              lang$adminMode$general$themeColors$secondary,
-                              lang$adminMode$general$themeColors$secondaryTooltip
-                            ),
-                            value = if (length(configJSON$themeColors$secondary_color)) {
-                              configJSON$themeColors$secondary_color
-                            } else {
-                              "#f39619"
-                            },
-                            colorPreview = TRUE,
-                            disableAlphaChannel = TRUE
-                          )
-                        ),
-                        tags$div(
-                          class = "col-sm-6",
-                          colorPickerInput(
-                            "sidebar_color",
-                            lang$adminMode$general$themeColors$sidebar,
-                            value = if (length(configJSON$themeColors$sidebar_color)) {
-                              configJSON$themeColors$sidebar_color
-                            } else {
-                              "#1d2121"
-                            },
-                            colorPreview = TRUE,
-                            disableAlphaChannel = TRUE
-                          )
-                        ),
-                        tags$div(
-                          class = "col-sm-6",
-                          colorPickerInput(
-                            "alert_color",
-                            labelTooltip(
-                              lang$adminMode$general$themeColors$alert,
-                              lang$adminMode$general$themeColors$alertTooltip
-                            ),
-                            value = if (length(configJSON$themeColors$alert_color)) {
-                              configJSON$themeColors$alert_color
-                            } else {
-                              "#d11a2a"
-                            },
-                            colorPreview = TRUE,
-                            disableAlphaChannel = TRUE
-                          )
-                        ),
-                        tags$div(
-                          class = "col-sm-6",
-                          colorPickerInput(
-                            "console_text_color",
-                            labelTooltip(
-                              lang$adminMode$general$themeColors$console,
-                              lang$adminMode$general$themeColors$consoleTooltip
-                            ),
-                            value = if (length(configJSON$themeColors$console_text_color)) {
-                              configJSON$themeColors$console_text_color
-                            } else {
-                              "#333333"
-                            },
-                            colorPreview = TRUE,
-                            disableAlphaChannel = TRUE
-                          )
-                        )
-                      ),
-                      tags$h4(lang$adminMode$general$themeColors$dark),
-                      fluidRow(
-                        tags$div(
-                          class = "col-sm-6",
-                          colorPickerInput(
-                            "primary_color_dark",
-                            labelTooltip(
-                              lang$adminMode$general$themeColors$primaryDark,
-                              lang$adminMode$general$themeColors$primaryTooltip
-                            ),
-                            value = if (length(configJSON$themeColors$primary_color_dark)) {
-                              configJSON$themeColors$primary_color_dark
-                            } else {
-                              "#00adb5"
-                            },
-                            colorPreview = TRUE,
-                            disableAlphaChannel = TRUE
-                          )
-                        ),
-                        tags$div(
-                          class = "col-sm-6",
-                          colorPickerInput(
-                            "secondary_color_dark",
-                            labelTooltip(
-                              lang$adminMode$general$themeColors$secondaryDark,
-                              lang$adminMode$general$themeColors$secondaryTooltip
-                            ),
-                            value = if (length(configJSON$themeColors$secondary_color_dark)) {
-                              configJSON$themeColors$secondary_color_dark
-                            } else {
-                              "#f39619"
-                            },
-                            colorPreview = TRUE,
-                            disableAlphaChannel = TRUE
-                          )
-                        ),
-                        tags$div(
-                          class = "col-sm-6",
-                          colorPickerInput(
-                            "sidebar_color_dark",
-                            lang$adminMode$general$themeColors$sidebarDark,
-                            value = if (length(configJSON$themeColors$sidebar_color_dark)) {
-                              configJSON$themeColors$sidebar_color_dark
-                            } else {
-                              "#1d1f20"
-                            },
-                            colorPreview = TRUE,
-                            disableAlphaChannel = TRUE
-                          )
-                        ),
-                        tags$div(
-                          class = "col-sm-6",
-                          colorPickerInput(
-                            "alert_color_dark",
-                            labelTooltip(
-                              lang$adminMode$general$themeColors$alertDark,
-                              lang$adminMode$general$themeColors$alertTooltip
-                            ),
-                            value = if (length(configJSON$themeColors$alert_color_dark)) {
-                              configJSON$themeColors$alert_color_dark
-                            } else {
-                              "#d11a2a"
-                            },
-                            colorPreview = TRUE,
-                            disableAlphaChannel = TRUE
-                          )
-                        ),
-                        tags$div(
-                          class = "col-sm-6",
-                          colorPickerInput(
-                            "main_bg_dark",
-                            lang$adminMode$general$themeColors$mainBgDark,
-                            value = if (length(configJSON$themeColors$main_bg_dark)) {
-                              configJSON$themeColors$main_bg_dark
-                            } else {
-                              "#393e46"
-                            },
-                            colorPreview = TRUE,
-                            disableAlphaChannel = TRUE
-                          )
-                        ),
-                        tags$div(
-                          class = "col-sm-6",
-                          colorPickerInput(
-                            "console_text_color_dark",
-                            labelTooltip(
-                              lang$adminMode$general$themeColors$consoleDark,
-                              lang$adminMode$general$themeColors$consoleTooltip
-                            ),
-                            value = if (length(configJSON$themeColors$console_text_color_dark)) {
-                              configJSON$themeColors$console_text_color_dark
-                            } else {
-                              "#3c8dbc"
-                            },
-                            colorPreview = TRUE,
-                            disableAlphaChannel = TRUE
-                          )
-                        ),
-                        tags$div(
-                          class = "col-sm-6",
-                          colorPickerInput(
-                            "widget_bg_dark",
-                            labelTooltip(
-                              lang$adminMode$general$themeColors$widgetBgDark,
-                              lang$adminMode$general$themeColors$widgetBgTooltip
-                            ),
-                            value = if (length(configJSON$themeColors$widget_bg_dark)) {
-                              configJSON$themeColors$widget_bg_dark
-                            } else {
-                              "#848991"
-                            },
-                            colorPreview = TRUE,
-                            disableAlphaChannel = TRUE
-                          )
-                        )
-                      ),
-                      tags$div(class = "space"),
                       tags$div(
                         class = "option-wrapper",
                         selectInput("general_theme", labelTooltip(
@@ -1986,6 +1786,25 @@ font-size: 12px;
                 uiOutput("tableLabelWrapper"),
                 DTOutput("outputTable_preview"),
                 DTOutput("dt_preview")
+              )
+            )
+          )
+        )
+      ),
+      tabItem(
+        tabName = "colors",
+        fluidRow(
+          box(
+            title = lang$adminMode$colors$title, status = "primary", solidHeader = TRUE, width = 12,
+            tags$div(class = "space"),
+            tags$div(
+              class = "col-sm-6", style = "padding-top: 20px;",
+              tags$div(
+                class = "main-tab",
+                tags$div(
+                  tags$h2(lang$adminMode$colors$themeColors$title, class = "option-category"),
+                  uiOutput("themeColorsUI")
+                )
               )
             )
           )

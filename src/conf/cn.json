@@ -1097,6 +1097,7 @@
       "table": "图表设置",
       "widgets": "配置小部件",
       "graphs": "配置图表",
+      "colors": "颜色",
       "database": "管理数据库",
       "restartRequired": "注意：为了使这些更改生效，您必须重新启动配置模式！"
     },
@@ -1135,28 +1136,6 @@
       "language":{
         "label": "语言",
         "choices": ["英语", "德语", "中文"]
-      },
-      "themeColors": {
-        "light": "浅色模式",
-        "dark": "深色模式",
-        "primary": "主色",
-        "secondary": "辅助色",
-        "sidebar": "侧边栏颜色",
-        "alert": "删除按钮颜色",
-        "mainBg": "主区域背景色",
-        "console": "日志和代码背景色",
-        "primaryDark": "主色",
-        "secondaryDark": "辅助色",
-        "sidebarDark": "侧边栏颜色",
-        "alertDark": "删除按钮颜色",
-        "mainBgDark": "主区域背景色",
-        "consoleDark": "日志和代码背景色",
-        "widgetBgDark": "小部件背景色",
-        "primaryTooltip": "主要品牌色。它在应用中使用最频繁，用于突出主要操作并引导用户注意力。",
-        "secondaryTooltip": "次要颜色用于强化界面、区分内容、标示次要操作，同时也是应用中主要按钮的颜色。",
-        "alertTooltip": "警示颜色用于执行移除、清除或删除等操作的按钮，用以提示风险并提醒用户注意不可逆的更改。",
-        "consoleTooltip": "用于在 GAMS 交互区域显示日志和列表文件中的输出。",
-        "widgetBgDarkTooltip": "控件颜色用于交互式 UI 元素，如下拉菜单、表格、滑块等控件。"
       },
       "theme":{
         "label": "颜色模式",
@@ -2166,6 +2145,61 @@
           "timevisCustom": "要添加的日期或者时间",
           "placeholder": "例如 2016-08-21"
         }
+      }
+    },
+    "colors":{
+      "title": "颜色",
+      "themeColors": {
+        "title": "自定义主题颜色",
+        "light": "浅色模式",
+        "dark": "深色模式",
+        "primary": "主色",
+        "secondary": "辅助色",
+        "sidebar": "侧边栏颜色",
+        "alert": "删除按钮颜色",
+        "mainBg": "主区域背景色",
+        "console": "日志和代码背景色",
+        "primaryDark": "主色",
+        "secondaryDark": "辅助色",
+        "sidebarDark": "侧边栏颜色",
+        "alertDark": "删除按钮颜色",
+        "mainBgDark": "主区域背景色",
+        "consoleDark": "日志和代码背景色",
+        "widgetBgDark": "小部件背景色",
+        "primaryTooltip": "主要品牌色。它在应用中使用最频繁，用于突出主要操作并引导用户注意力。",
+        "secondaryTooltip": "次要颜色用于强化界面、区分内容、标示次要操作，同时也是应用中主要按钮的颜色。",
+        "alertTooltip": "警示颜色用于执行移除、清除或删除等操作的按钮，用以提示风险并提醒用户注意不可逆的更改。",
+        "consoleTooltip": "用于在 GAMS 交互区域显示日志和列表文件中的输出。",
+        "widgetBgDarkTooltip": "控件颜色用于交互式 UI 元素，如下拉菜单、表格、滑块等控件。"
+      },
+      "themeButtons": {
+        "buttonsTitle": "保存主题颜色",
+        "saveLocal": "仅为此应用保存",
+        "saveGlobal": "为所有应用保存",
+        "downloadTheme": "下载到 MIRO 服务器",
+        "saveLocalDesc": "应用特定的主题嵌入在应用中，并覆盖所有其他主题设置。应用导出后，颜色将无法更改。",
+        "saveGlobalDesc": "全局主题集中存储，适用于设备上的所有应用。在 MIRO 桌面偏好设置中选择。",
+        "downloadThemeDesc": "下载主题颜色以供 MIRO 服务器使用。",
+        "removeColorsDesc": "删除任何现有的应用特定主题配置（如果存在）。",
+        "saveLocalNote": "主题已保存。",
+        "saveGlobalModalTitle": "文件已存在",
+        "saveGlobalModalText": "名为 '%s' 的文件已存在。",
+        "saveGlobalModalCancel": "取消",
+        "saveGlobalModalOverwrite": "覆盖",
+        "saveGlobalModalNote1": "文件已覆盖！",
+        "saveGlobalModalNote2": "主题已导出！",
+        "saveGlobalModalNoteDesc": "您现在可以在 MIRO 桌面偏好设置中选择“自定义”配色主题。",
+        "downloadThemeModalTitle": "下载主题",
+        "downloadThemeModalText": "下载文件 '%s' 后，待定。",
+        "downloadThemeModalCancel": "取消",
+        "downloadThemeModalDownload": "下载",
+        "removeColors": "删除此应用的主题颜色",
+        "removeColorsTitle": "删除主题颜色",
+        "removeColorsText": "这将从您的配置文件中移除所有 “themeColors”。",
+        "removeColorsCancel": "取消",
+        "removeColorsConfirm": "删除",
+        "removeColorsNote1": "应用特定的主题颜色已被移除。",
+        "removeColorsNote2": "未找到应用特定的主题颜色。"
       }
     }
   }

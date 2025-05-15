@@ -4425,89 +4425,6 @@
               },
               "minProperties": 2
             },
-            "themeColors": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "light": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "dark": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "primary": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "secondary": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "sidebar": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "alert": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "console": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "primaryDark": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "secondaryDark": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "sidebarDark": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "alertDark": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "mainBgDark": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "consoleDark": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "widgetBgDark": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "primaryTooltip": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "secondaryTooltip": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "alertTooltip": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "consoleTooltip": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "widgetBgDarkTooltip": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "minProperties": 19
-            },
             "theme": {
               "type": "object",
               "additionalProperties": false,
@@ -5083,7 +5000,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 40
+          "minProperties": 39
         },
         "tables": {
           "type": "object",
@@ -8756,9 +8673,226 @@
             }
           },
           "minProperties": 25
+        },
+        "colors": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "themeColors": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "light": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "primary": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "secondary": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sidebar": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "alert": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "mainBg": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "console": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "primaryDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "secondaryDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sidebarDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "alertDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "mainBgDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "consoleDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "widgetBgDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "primaryTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "secondaryTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "alertTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "consoleTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "widgetBgDarkTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 21
+            },
+            "themeButtons": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "buttonsTitle": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveLocal": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveGlobal": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "downloadTheme": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveLocalDesc": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveGlobalDesc": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "downloadThemeDesc": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "removeColorsDesc": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveLocalNote": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveGlobalModalTitle": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveGlobalModalText": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveGlobalModalCancel": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveGlobalModalOverwrite": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveGlobalModalNote1": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveGlobalModalNote2": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveGlobalModalNoteDesc": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "downloadThemeModalTitle": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "downloadThemeModalText": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "downloadThemeModalCancel": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "downloadThemeModalDownload": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "removeColors": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "removeColorsTitle": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "removeColorsText": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "removeColorsCancel": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "removeColorsConfirm": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "removeColorsNote1": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "removeColorsNote2": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 27
+            }
+          },
+          "minProperties": 3
         }
       },
-      "minProperties": 7
+      "minProperties": 8
     }
   },
   "minProperties": 6

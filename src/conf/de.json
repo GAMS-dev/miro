@@ -1097,6 +1097,7 @@
       "table": "Tabellen",
       "widgets": "Eingabewidgets",
       "graphs": "Graphen",
+      "colors": "Farben",
       "database": "Datenbankverwaltung",
       "restartRequired": "Hinweis: Damit diese Änderungen wirksam werden, müssen Sie den Konfigurationsmodus neu starten!"
     },
@@ -1135,28 +1136,6 @@
       "language":{
         "label": "Sprache",
         "choices": ["Englisch", "Deutsch", "Chinesisch"]
-      },
-      "themeColors": {
-        "light": "Heller Modus",
-        "dark": "Dunkler Modus",
-        "primary": "Primärfarbe",
-        "secondary": "Sekundärfarbe",
-        "sidebar": "Seitenleistenfarbe",
-        "alert": "Farbe der Entfernen-Schaltfläche",
-        "mainBg": "Hintergrundfarbe Hauptbereich",
-        "console": "Hintergrundfarbe für Log und Code",
-        "primaryDark": "Primärfarbe",
-        "secondaryDark": "Sekundärfarbe",
-        "sidebarDark": "Seitenleistenfarbe",
-        "alertDark": "Farbe der Entfernen-Schaltfläche",
-        "mainBgDark": "Hintergrundfarbe Hauptbereich",
-        "consoleDark": "Hintergrundfarbe für Log und Code",
-        "widgetBgDark": "Hintergrundfarbe Widgets",
-        "primaryTooltip": "Hauptmarkenfarbe. Sie wird am häufigsten in der Anwendung verwendet, um primäre Aktionen hervorzuheben und die Benutzeraufmerksamkeit zu lenken.",
-        "secondaryTooltip": "Die Sekundärfarbe wird verwendet, um die Benutzeroberfläche zu akzentuieren, Inhalte zu unterscheiden, weniger prominente Aktionen anzuzeigen und dient als Farbe der Hauptschaltflächen in der Anwendung.",
-        "alertTooltip": "Die Warnfarbe wird für Schaltflächen verwendet, die Aktionen wie Entfernen, Löschen oder Zurücksetzen auslösen, um Vorsicht zu signalisieren und auf potenziell irreversible Änderungen hinzuweisen.",
-        "consoleTooltip": "Wird zur Anzeige von Ausgaben in Log- und Listing-Dateien innerhalb des GAMS-Interaktionsbereichs verwendet.",
-        "widgetBgDarkTooltip": "Die Widget-Farbe wird für interaktive UI-Elemente wie Dropdowns, Tabellen, Schieberegler und andere Steuerelemente verwendet."
       },
       "theme":{
         "label": "Farbmodus",
@@ -2167,6 +2146,61 @@
           "timevisCustom": "Datum/Uhrzeit, das hinzugefügt werden soll",
           "placeholder": "z.B. 2016-08-21"
         }
+      }
+    },
+    "colors":{
+      "title": "Farben",
+      "themeColors": {
+        "title": "Benutzerdefiniertes Farbschema",
+        "light": "Heller Modus",
+        "dark": "Dunkler Modus",
+        "primary": "Primärfarbe",
+        "secondary": "Sekundärfarbe",
+        "sidebar": "Seitenleistenfarbe",
+        "alert": "Farbe der Entfernen-Schaltfläche",
+        "mainBg": "Hintergrundfarbe Hauptbereich",
+        "console": "Hintergrundfarbe für Log und Code",
+        "primaryDark": "Primärfarbe",
+        "secondaryDark": "Sekundärfarbe",
+        "sidebarDark": "Seitenleistenfarbe",
+        "alertDark": "Farbe der Entfernen-Schaltfläche",
+        "mainBgDark": "Hintergrundfarbe Hauptbereich",
+        "consoleDark": "Hintergrundfarbe für Log und Code",
+        "widgetBgDark": "Hintergrundfarbe Widgets",
+        "primaryTooltip": "Hauptmarkenfarbe. Sie wird am häufigsten in der Anwendung verwendet, um primäre Aktionen hervorzuheben und die Benutzeraufmerksamkeit zu lenken.",
+        "secondaryTooltip": "Die Sekundärfarbe wird verwendet, um die Benutzeroberfläche zu akzentuieren, Inhalte zu unterscheiden, weniger prominente Aktionen anzuzeigen und dient als Farbe der Hauptschaltflächen in der Anwendung.",
+        "alertTooltip": "Die Warnfarbe wird für Schaltflächen verwendet, die Aktionen wie Entfernen, Löschen oder Zurücksetzen auslösen, um Vorsicht zu signalisieren und auf potenziell irreversible Änderungen hinzuweisen.",
+        "consoleTooltip": "Wird zur Anzeige von Ausgaben in Log- und Listing-Dateien innerhalb des GAMS-Interaktionsbereichs verwendet.",
+        "widgetBgDarkTooltip": "Die Widget-Farbe wird für interaktive UI-Elemente wie Dropdowns, Tabellen, Schieberegler und andere Steuerelemente verwendet."
+      },
+      "themeButtons": {
+        "buttonsTitle": "Farbschema speichern",
+        "saveLocal": "Für diese App speichern",
+        "saveGlobal": "Für alle Apps speichern",
+        "downloadTheme": "Für MIRO Server herunterladen",
+        "saveLocalDesc": "Ein app-spezifisches Farbschema ist in der App eingebettet und überschreibt alle anderen Farbschema-Einstellungen. Sobald die App exportiert ist, können die Farben nicht mehr geändert werden.",
+        "saveGlobalDesc": "Ein globales Farbschema wird zentral gespeichert und gilt für alle auf dem Gerät vorhandenen Apps. Es wird in den MIRO-Desktop Einstellungen ausgewählt.",
+        "downloadThemeDesc": "Lädt das Farbschema zur Verwendung in MIRO Server herunter.",
+        "removeColorsDesc": "Löscht, falls vorhanden, das bestehende app-spezifische Farbschema.",
+        "saveLocalNote": "Farbschema gespeichert.",
+        "saveGlobalModalTitle": "Datei existiert",
+        "saveGlobalModalText": "Eine Datei namens '%s' existiert bereits.",
+        "saveGlobalModalCancel": "Abbrechen",
+        "saveGlobalModalOverwrite": "Überschreiben",
+        "saveGlobalModalNote1": "Datei überschrieben!",
+        "saveGlobalModalNote2": "Farbschema exportiert!",
+        "saveGlobalModalNoteDesc": "Sie können nun in den MIRO-Desktop Einstellungen das Farbschema 'Benutzerdefiniert' auswählen.",
+        "downloadThemeModalTitle": "Farbschema herunterladen",
+        "downloadThemeModalText": "Nach dem Herunterladen der Datei '%s' TBD.",
+        "downloadThemeModalCancel": "Abbrechen",
+        "downloadThemeModalDownload": "Herunterladen",
+        "removeColors": "Für diese App löschen",
+        "removeColorsTitle": "Farbschema löschen",
+        "removeColorsText": "Dies entfernt alle 'themeColors' aus Ihrer Konfigurationsdatei.",
+        "removeColorsCancel": "Abbrechen",
+        "removeColorsConfirm": "Löschen",
+        "removeColorsNote1": "Farbschema wurde entfernt.",
+        "removeColorsNote2": "Kein Farbschema gefunden."
       }
     }
   }

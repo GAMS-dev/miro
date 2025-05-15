@@ -1097,6 +1097,7 @@
       "table": "Tables",
       "widgets": "Input widgets",
       "graphs": "Graphs",
+      "colors": "Colors",
       "database": "Database management",
       "restartRequired": "Note: For these changes to take effect, you must restart the Configuration Mode!"
     },
@@ -1135,28 +1136,6 @@
       "language":{
         "label": "Language",
         "choices": ["English", "German", "Chinese"]
-      },
-      "themeColors":{
-        "light": "Light mode",
-        "dark": "Dark mode",
-        "primary": "Primary color",
-        "secondary": "Secondary color",
-        "sidebar": "Sidebar color",
-        "alert": "Alert color",
-        "mainBg": "Main background color",
-        "console": "Console text color",
-        "primaryDark": "Primary color",
-        "secondaryDark": "Secondary color",
-        "sidebarDark": "Sidebar color",
-        "alertDark": "Alert color",
-        "mainBgDark": "Main background color",
-        "consoleDark": "Console text color",
-        "widgetBgDark": "Widgets background color",
-        "primaryTooltip": "Main brand color. It is used most frequently across the application to highlight primary actions and guide user focus.",
-        "secondaryTooltip": "The secondary color is used to accent the interface, differentiate content, indicate less prominent actions, and serves as the color of the main buttons in the application.",
-        "alertTooltip": "The alert color is applied to buttons that trigger actions like remove, clear, or delete, emphasizing caution and drawing attention to potentially irreversible changes.",
-        "consoleTooltip": "Used for displaying output in log and listing files within the GAMS interaction section.",
-        "widgetBgDarkTooltip": "The widget color is used for interactive UI elements such as dropdowns, tables, sliders, and other controls."
       },
       "theme":{
         "label": "Color mode",
@@ -2168,6 +2147,61 @@
           "timevisCustom": "The date/time to add",
           "placeholder": "e.g. 2016-08-21"
         }
+      }
+    },
+    "colors":{
+      "title": "Colors",
+      "themeColors":{
+        "title": "Custom theme colors",
+        "light": "Light mode",
+        "dark": "Dark mode",
+        "primary": "Primary color",
+        "secondary": "Secondary color",
+        "sidebar": "Sidebar color",
+        "alert": "Alert color",
+        "mainBg": "Main background color",
+        "console": "Console text color",
+        "primaryDark": "Primary color",
+        "secondaryDark": "Secondary color",
+        "sidebarDark": "Sidebar color",
+        "alertDark": "Alert color",
+        "mainBgDark": "Main background color",
+        "consoleDark": "Console text color",
+        "widgetBgDark": "Widgets background color",
+        "primaryTooltip": "Main brand color. It is used most frequently across the application to highlight primary actions and guide user focus.",
+        "secondaryTooltip": "The secondary color is used to accent the interface, differentiate content, indicate less prominent actions, and serves as the color of the main buttons in the application.",
+        "alertTooltip": "The alert color is applied to buttons that trigger actions like remove, clear, or delete, emphasizing caution and drawing attention to potentially irreversible changes.",
+        "consoleTooltip": "Used for displaying output in log and listing files within the GAMS interaction section.",
+        "widgetBgDarkTooltip": "The widget color is used for interactive UI elements such as dropdowns, tables, sliders, and other controls."
+      },
+      "themeButtons": {
+        "buttonsTitle": "Save theme colors",
+        "saveLocal": "Save for this app",
+        "saveGlobal": "Save for all apps",
+        "downloadTheme": "Download for MIRO Server",
+        "saveLocalDesc": "An app-specific theme is embedded in the app and overrides all other theme settings. Once the app is exported, its colors can't be changed.",
+        "saveGlobalDesc": "A global theme is centrally stored and applies to all apps present on the device. It is selected in the MIRO Desktop Preferences.",
+        "downloadThemeDesc": "Downloads the theme colors for use in MIRO Server.",
+        "removeColorsDesc": "Deletes any existing app-specific theme configuration, if present.",
+        "saveLocalNote": "Theme saved.",
+        "saveGlobalModalTitle": "File exists",
+        "saveGlobalModalText": "A file called '%s' already exists.",
+        "saveGlobalModalCancel": "Cancel",
+        "saveGlobalModalOverwrite": "Overwrite",
+        "saveGlobalModalNote1": "File overwritten!",
+        "saveGlobalModalNote2": "Theme exported!",
+        "saveGlobalModalNoteDesc": "You can now select the color theme 'Custom' in the MIRO Desktop preferences.",
+        "downloadThemeModalTitle": "Download theme",
+        "downloadThemeModalText": "After downloading the file '%s', tbd.",
+        "downloadThemeModalCancel": "Cancel",
+        "downloadThemeModalDownload": "Download",
+        "removeColors": "Delete for this app",
+        "removeColorsTitle": "Delete theme colors",
+        "removeColorsText": "This will remove all 'themeColors' from your configuration file.",
+        "removeColorsCancel": "Cancel",
+        "removeColorsConfirm": "Delete",
+        "removeColorsNote1": "Theme colors have been removed.",
+        "removeColorsNote2": "No theme colors found."
       }
     }
   }
