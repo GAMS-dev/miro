@@ -1165,7 +1165,7 @@
         "label": "Name des Standardszenarios"
       },
       "args":{
-        "label": "Zusätzliche Kommandozeilenparameter an, mit denen GAMS aufgerufen werden soll"
+        "label": "Gib zusätzliche Kommandozeilenparameter an, mit denen GAMS/Python aufgerufen werden soll"
       },
       "groups":{
         "input": "Eingabesymbole in Gruppen einteilen",

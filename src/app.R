@@ -1,7 +1,7 @@
 # version number
 MIROVersion <- "2.11.9999"
 APIVersion <- "1"
-MIRORDate <- "Feb 19 2025"
+MIRORDate <- "May 22 2025"
 
 MIROVersionString <<- paste0("GAMS MIRO v.", MIROVersion)
 
@@ -1752,7 +1752,7 @@ if (!is.null(errMsg)) {
         enableEl(session, "#btCompareScen")
       }
       isInCompareMode <- FALSE
-      isInRefreshMode <- FALSE
+      isInRefreshMode <- LazyFlagRegistry$new()
       isInSolveMode <- TRUE
       modelStatus <- NULL
       modelStatusObs <- NULL
@@ -2221,7 +2221,7 @@ if (!is.null(errMsg)) {
             dynamicUILoaded$dynamicTabsets[[refId]][["content"]][] <<- FALSE
           }
         }
-        isInRefreshMode <<- FALSE
+        isInRefreshMode$set(FALSE)
         scenData$clear(refId)
       })
       lapply(seq(0L, maxNumberScenarios + 3L), function(i) {

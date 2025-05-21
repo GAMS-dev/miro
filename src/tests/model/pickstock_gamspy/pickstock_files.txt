@@ -1,0 +1,2 @@
+pickstock.py
+dowjones2016.csv

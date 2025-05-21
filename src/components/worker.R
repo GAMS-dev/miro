@@ -941,6 +941,9 @@ Worker <- R6Class("Worker", public = list(
       procArgs <- private$metadata$modelGmsName
       procWd <- private$workDir
       stderrHandler <- if (private$metadata$hiddenLogFile) NULL else "2>&1"
+      if (length(private$metadata$extraClArgs)) {
+        procArgs <- c(procArgs, private$metadata$extraClArgs)
+      }
     } else {
       gamsArgs <- c(
         if (length(private$metadata$extraClArgs)) private$metadata$extraClArgs,

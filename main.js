@@ -1011,7 +1011,7 @@ function openCheckUpdateWindow() {
   });
 }
 function quitLauncher() {
-  if (process.platform !== 'darwin') {
+  if (process.platform !== 'darwin' || process.env.E2E === 'true') {
     app.quit();
   }
 }
@@ -1131,14 +1131,16 @@ function createMainWindow(showRunningApps = false, focus = true, onSuccess = nul
     appLoaded = true;
     if (process.platform === 'win32'
       && process.argv.length >= 2 && !DEVELOPMENT_MODE) {
-      const associatedFile = process.argv[1];
-      if (associatedFile.toLowerCase().endsWith('.miroscen')) {
-        log.debug(`MIRO launcher opened by double clicking MIRO scenario file at path: ${associatedFile}.`);
-        await addMiroscenFile(associatedFile);
-        return;
+      const associatedFile = process.argv.slice(process.defaultApp ? 2 : 1).filter((el) => !el.startsWith('-'))[0];
+      if (associatedFile != null) {
+        if (associatedFile.toLowerCase().endsWith('.miroscen')) {
+          log.debug(`MIRO launcher opened by double clicking MIRO scenario file at path: ${associatedFile}.`);
+          await addMiroscenFile(associatedFile);
+          return;
+        }
+        log.debug(`MIRO launcher opened by double clicking MIRO app at path: ${associatedFile}.`);
+        await addOrUpdateMIROApp(associatedFile);
       }
-      log.debug(`MIRO launcher opened by double clicking MIRO app at path: ${associatedFile}.`);
-      await addOrUpdateMIROApp(associatedFile);
     } else if (fileToOpen) {
       const associatedFile = fileToOpen;
       if (associatedFile.toLowerCase().endsWith('.miroscen')) {
@@ -2208,7 +2210,7 @@ app.on('ready', async () => {
     const remoteConfig = await configData.get('remoteConfig');
     if (remoteConfig.jwt != null) {
       log.info('Checking if Engine JWT is expired');
-      if (false) { // eslint-disable no-constant-condition
+      if (false) { // eslint-disable-line no-constant-condition
         try {
           remoteConfig.jwt = await refreshEngineJwt(remoteConfig.url, remoteConfig.jwt);
           configData.set('remoteConfig', remoteConfig);

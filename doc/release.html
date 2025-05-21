@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
 <!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
 <!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
@@ -207,6 +207,34 @@
                     (2025-01-21)
                   </div>
                   <div class="section-block">
+                    <h5 style="display: inline-block">GAMS MIRO 2.11.2</h5>
+                    <div style="display: inline-block; padding-left: 15px">
+                      (xxxx-xx-xx)
+                    </div>
+                    <ul>
+                      <li>
+                        Fix issue where the view in the pivot compare mode was
+                        not properly reset in certain situations.
+                      </li>
+                      <li>
+                        Fix issue
+                        <a href="./deployment.html#sbs-sign-app"
+                          >signing/validating</a
+                        >
+                        apps on macOS.
+                      </li>
+                      <li>
+                        Support
+                        <a
+                          href="./configuration_general.html#command-line-args"
+                          >extra command line arguments</a
+                        >
+                        for GAMSPy models.
+                      </li>
+                      <li>
+                        Fix about dialog not opening in Configuration Mode.
+                      </li>
+                    </ul>
                     <h5 style="display: inline-block">GAMS MIRO 2.11.1</h5>
                     <div style="display: inline-block; padding-left: 15px">
                       (2025-02-19)
@@ -502,7 +530,8 @@
                       </li>
                       <li>
                         MIRO Server: Fix issue where app logos did not load
-                        when <kbd>server.servlet.context-path</kbd> was set to
+                        when
+                        <kbd>server.servlet.context-path</kbd> was set to
                         anything but <kbd>/</kbd>.
                       </li>
                       <li>

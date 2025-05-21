@@ -152,6 +152,16 @@ test_that(
       )
     }
 
+    testModelPath <- file.path(testDir, "model", "pickstock_gamspy")
+    Sys.setenv(MIRO_MODEL_PATH = file.path(
+      testModelPath,
+      "pickstock.py"
+    ))
+    Sys.setenv(PYTHON_EXEC_PATH = Sys.which("python3")[[1]])
+    createTestDb()
+
+    source(file.path(testDir, "shinytest", "extra_cl_args_test.R"), local = TRUE)
+
     Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))
   })
 )
