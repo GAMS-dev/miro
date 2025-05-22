@@ -26,7 +26,6 @@ expect_true(app$get_js("$('#btReplaceInputData').is(':hidden');"))
 expect_true(app$get_js("$('#btMergeInputData').is(':hidden');"))
 expect_true(app$get_js("$('#btOverwriteScenLocal').is(':visible');"))
 app$set_inputs(btOverwriteScenLocal = "click")
-app$set_inputs(inputTabset = "inputTabset_7")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
 expect_match(app$get_js("$('.shiny-notification-content-text:visible').map(function(){return $(this).text();}).get().join(',')"),
   "10 datasets imported",
@@ -144,6 +143,7 @@ app$set_inputs(cbSelectManuallyLoc = "click")
 app$set_inputs(btImportLocal = "click")
 app$set_inputs(btReplaceInputData = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
+app$wait_for_js("$('.shiny-notification-content-text:visible').is(':visible');", timeout = 5000L)
 expect_match(app$get_js("$('.shiny-notification-content-text:visible').map(function(){return $(this).text();}).get().join(',')"),
   "No dataset was imported.",
   fixed = TRUE
