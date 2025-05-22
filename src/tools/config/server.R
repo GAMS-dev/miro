@@ -212,6 +212,10 @@ server_admin <- function(input, output, session) {
     )
   )
   # ------------------------------------------------------
+  #     CUSTOMIZE COLORS
+  # ------------------------------------------------------
+  source(file.path("tools", "config", "colors.R"), local = TRUE)
+  # ------------------------------------------------------
   #     General settings
   # ------------------------------------------------------
   source(file.path("tools", "config", "cg_general.R"), local = TRUE)
@@ -231,10 +235,6 @@ server_admin <- function(input, output, session) {
   #     DB MANAGEMENT
   # ------------------------------------------------------
   source(file.path("tools", "config", "db_management.R"), local = TRUE)
-  # ------------------------------------------------------
-  #     CUSTOMIZE COLORS
-  # ------------------------------------------------------
-  source(file.path("tools", "config", "colors.R"), local = TRUE)
 
   if (length(invalidWidgetsToRender) || length(invalidGraphsToRender)) {
     showModal(modalDialog(

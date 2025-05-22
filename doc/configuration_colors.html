@@ -1,0 +1,347 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+  <!--<![endif]-->
+  <head>
+    <title>GAMS MIRO Configuration - Colors</title>
+    <!-- Meta -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GAMS MIRO documentation" />
+    <meta name="author" content="GAMS Development Corp." />
+    <!-- FontAwesome JS -->
+    <script
+      defer
+      type="text/javascript"
+      src="assets/js/fontawesome.js"
+    ></script>
+    <!-- Global CSS -->
+    <link
+      rel="stylesheet"
+      href="assets/plugins/bootstrap/css/bootstrap.min.css"
+    />
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css" />
+    <link
+      rel="stylesheet"
+      href="assets/plugins/lightbox/dist/ekko-lightbox.css"
+    />
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css" />
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="assets/plugins/katex/katex.min.css" />
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css" />
+    <!--#include virtual="/wheader.html" -->
+  </head>
+
+  <body class="body-orange">
+    <!--#include virtual="/navbar_full.html" -->
+    <div class="page-wrapper">
+      <!--#include virtual="/mirover.html" -->
+
+      <!-- ******Header****** -->
+      <header id="header" class="sub-header">
+        <div class="container">
+          <div class="branding">
+            <h1 class="logo">
+              <a href="index.html">
+                <img
+                  class="img-fluid"
+                  style="height: 75px"
+                  src="assets/images/logo.svg"
+                  onerror="this.onerror=null; this.src='assets/images/logo.png'"
+                  alt="GAMS MIRO"
+                />
+              </a>
+            </h1>
+          </div>
+          <!--//branding-->
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item">
+              <a href="customize.html">Configuration</a>
+            </li>
+            <li class="breadcrumb-item active">Colors</li>
+          </ol>
+        </div>
+        <!--//container-->
+      </header>
+      <!--//header-->
+      <div class="doc-wrapper">
+        <div class="container">
+          <div class="row justify-content-end search-box-wrapper">
+            <div class="float-right">
+              <input
+                class="form-control search-box"
+                id="miroSearch"
+                type="text"
+                placeholder="Search"
+                aria-label="Search"
+              />
+              <ul id="miroSearchResults" class="list-group"></ul>
+            </div>
+          </div>
+          <div id="doc-header" class="doc-header text-center">
+            <h1 class="doc-title">
+              <span aria-hidden="true" class="icon fas fa-palette"></span>
+              Colors
+            </h1>
+          </div>
+          <!--//doc-header-->
+          <div class="doc-body row">
+            <div class="doc-content col-md-9 col-12 order-1">
+              <div class="content-inner">
+                <section id="custom-theme-colors" class="doc-section">
+                  <h2 class="section-title">Custom theme colors</h2>
+                  <div class="section-block">
+                    <p>
+                      The Custom theme colors panel lets you brand each MIRO
+                      app - or all apps at once - by supplying just a handful
+                      of key colors. MIRO then derives a complete palette,
+                      applies it live to the running interface, and stores your
+                      choices either inside the app, as a global MIRO Desktop
+                      theme, or as a CSS file for MIRO Server. Separate
+                      palettes can be maintained for Light and Dark mode so
+                      your design looks right in either setting.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="padding-bottom: 25pt"
+                        src="assets/images/configuration_mode/colortheme_1.png"
+                        alt="Configure a custom color theme"
+                      />
+                    </div>
+                    <p>
+                      To create a custom palette, enter the colors listed
+                      below; MIRO calculates everything else and refreshes the
+                      UI in real time while you edit.
+                    </p>
+                    <table style="margin-bottom: 25px">
+                      <thead>
+                        <tr>
+                          <th>Slot</th>
+                          <th>Purpose</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><strong>Primary color</strong></td>
+                          <td>
+                            Main brand color; highlights primary actions and
+                            guides user focus.
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><strong>Secondary color</strong></td>
+                          <td>
+                            Accents the interface, differentiates content and
+                            colors standard buttons.
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><strong>Alert color</strong></td>
+                          <td>
+                            Marks destructive operations such as
+                            <em>Delete</em> or <em>Clear</em>.
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><strong>Console text color</strong></td>
+                          <td>
+                            Text for log and listing output in the GAMS
+                            interaction pane.
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong>Widgets background color</strong
+                            ><br />(Dark mode only)
+                          </td>
+                          <td>
+                            Background of tables, dropdowns, sliders, etc. In
+                            Light mode this shade is derived from the primary
+                            color.
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong>Main background color</strong><br />(Dark
+                            mode only)
+                          </td>
+                          <td>
+                            Background of the main window. Light mode is always
+                            white.
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <p>
+                      Three additional surface colors -
+                      <strong>Sidebar</strong>, <strong>Header</strong>,
+                      <strong>Body background</strong> - are auto-generated
+                      from the primary palette unless
+                      <em>Manually set surface colors</em> is checked. Toggle
+                      the checkbox to assume full control or to return to
+                      automatic calculation.
+                    </p>
+                    <p>
+                      To reset a single Color, simply delete its hex value in
+                      the Color-picker and click anywhere outside the control.
+                      The picker immediately reverts to the default defined by
+                      the theme hierarchy:
+                    </p>
+                    <ol>
+                      <li>
+                        <strong>App-specific theme</strong> - If the open app
+                        already has custom colors configured at startup, these
+                        act as defaults in the picker.
+                      </li>
+                      <li>
+                        <strong>Global desktop theme</strong> - If no
+                        app-specific Colors exist, MIRO falls back to the
+                        global theme selected under
+                        <a href="./deployment.html#sbs-customize-app"
+                          >MIRO Desktop <em>Preferences</em></a
+                        >
+                        <em> → Color theme</em>.
+                      </li>
+                    </ol>
+                    <p>
+                      These defaults are fixed for the duration of a
+                      Configuration-mode session; changing the global theme or
+                      adding an app theme only takes effect the next time you
+                      open the editor.
+                    </p>
+                    <h5>Saving Options</h5>
+                    <p>
+                      Adjust the colors until the live preview looks right,
+                      then pick the save option that fits your workflow.
+                    </p>
+                    <table style="margin-bottom: 25px">
+                      <thead>
+                        <tr>
+                          <th>Action</th>
+                          <th>Effect</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><strong>Save for this app</strong></td>
+                          <td>
+                            Embeds the palette in the app. The colors ship with
+                            exported apps and cannot be modified later.
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><strong>Save for all apps</strong></td>
+                          <td>
+                            Stores a global theme used by every MIRO app on the
+                            device. Appears under
+                            <a href="./deployment.html#sbs-customize-app"
+                              >MIRO Desktop <em>Preferences</em></a
+                            >
+                            <em> → Theme → Custom</em>.
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><strong>Download for MIRO Server</strong></td>
+                          <td>
+                            Exports a CSS file for use on MIRO Server. See
+                            <a href="./server_setup.html#server-customize"
+                              ><em>Customize MIRO Server</em></a
+                            >
+                            for deployment steps.
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><strong>Delete for this app</strong></td>
+                          <td>
+                            Removes the app-specific theme and reverts to the
+                            global default.
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              </div>
+              <!--//content-inner-->
+            </div>
+            <!--//doc-content-->
+            <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+              <div id="doc-nav" class="doc-nav">
+                <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                  <a
+                    class="nav-link scrollto"
+                    style="margin-bottom: 0"
+                    href="#user-interface"
+                    >Custom theme colors</a
+                  >
+                </nav>
+                <!--//doc-menu-->
+              </div>
+            </div>
+            <!--//doc-sidebar-->
+          </div>
+          <!--//doc-body-->
+        </div>
+        <!--//container-->
+      </div>
+      <!--//doc-wrapper-->
+    </div>
+    <!--//page-wrapper-->
+    <script type="text/javascript" src="assets/plugins/jquery.min.js"></script>
+    <!--#include virtual="/footer_miro.html" -->
+
+    <!-- Main Javascript -->
+    <script
+      type="text/javascript"
+      src="assets/plugins/prism/min/prism-min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/stickyfill/dist/stickyfill.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/markjs/jquery.mark.min.js"
+    ></script>
+
+    <script type="text/javascript" src="assets/js/main.js"></script>
+
+    <!-- gifplayer plugin -->
+    <script type="text/javascript" src="assets/js/gifplayer.js"></script>
+    <script>
+      $('.gifplayer').gifplayer();
+    </script>
+    <!-- KaTeX -->
+    <script
+      type="text/javascript"
+      defer
+      src="assets/plugins/katex/katex.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      defer
+      src="assets/plugins/katex/auto-render.min.js"
+      onload="renderMathInElement(document.getElementsByClassName('katex')[0],{delimiters:[{left:'$$',right:'$$',display:true},{left: '$',right:'$',display:false}]});"
+    ></script>
+  </body>
+</html>

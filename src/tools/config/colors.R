@@ -81,32 +81,63 @@ resolveColor <- function(val, default) {
   if (length(val) && nzchar(val)) val else default
 }
 
-getThemeColors <- function(cssPath) {
-  if (!file.exists(cssPath)) {
+getThemeColors <- function(cssInput) {
+  if (is.null(cssInput)) {
     return(NULL)
   }
-  cssLines <- readLines(cssPath, warn = FALSE)
+
+  if ((is.list(cssInput) || is.atomic(cssInput)) && !is.null(names(cssInput))) {
+    varNames <- gsub("-", "_", names(cssInput))
+    varValues <- as.character(unlist(cssInput, use.names = FALSE))
+    return(as.list(setNames(varValues, varNames)))
+  }
+
+  cssLines <- if (length(cssInput) == 1 && file.exists(cssInput)) {
+    readLines(cssInput, warn = FALSE)
+  } else if (is.character(cssInput)) {
+    as.character(cssInput)
+  } else {
+    return(NULL)
+  }
+
   regexPattern <- '^\\s*--([[:alnum:]_-]+)\\s*:\\s*"?([#0-9A-Fa-f]{3,8})"?\\s*;?\\s*$'
 
   matchResults <- regexec(regexPattern, cssLines)
   parts <- regmatches(cssLines, matchResults)
   validParts <- parts[vapply(parts, length, integer(1)) == 3]
 
-  if (length(validParts) == 0) {
+  if (!length(validParts)) {
     return(NULL)
   }
-
-  varNames <- vapply(validParts, `[`, FUN.VALUE = "", 2)
+  varNames <- gsub("-", "_", vapply(validParts, `[`, FUN.VALUE = "", 2))
   varValues <- vapply(validParts, `[`, FUN.VALUE = "", 3)
-
-  varNames <- gsub("-", "_", varNames)
-
   as.list(setNames(varValues, varNames))
 }
 
-customColors <- file.path(miroWorkspace, "themecolors.config")
-themeCss <- if (file.exists(customColors)) {
-  customColors
+baseColors <- list(
+  primary_color           = "#3c8dbc",
+  secondary_color         = "#f39619",
+  sidebar_color           = "#1d2121",
+  navbar_color            = "#ffffff",
+  body_bg_color           = "#ECF1F4",
+  alert_color             = "#d11a2a",
+  main_bg                 = "#ffffff",
+  console_text_color      = "#333333",
+  primary_color_dark      = "#00adb5",
+  secondary_color_dark    = "#f39619",
+  sidebar_color_dark      = "#1d1f20",
+  navbar_color_dark       = "#1d2020",
+  body_bg_color_dark      = "#292D32",
+  alert_color_dark        = "#d11a2a",
+  main_bg_dark            = "#393e46",
+  console_text_color_dark = "#3c8dbc",
+  widget_bg_dark          = "#848991",
+  text_color              = "#eeeeee",
+  text_color_dark         = "#eeeeee"
+)
+
+themeCss <- if (!is.null(configJSON$themeColors) && length(configJSON$themeColors)) {
+  configJSON$themeColors
 } else {
   globalTheme <- normalizePath(file.path(getwd(), "www", paste0("colors_", miroColorTheme, ".css")))
   if (file.exists(globalTheme)) globalTheme else NULL
@@ -119,6 +150,30 @@ if (!is.null(themeCss)) {
     baseColors[commonKeys] <- parsedColors[commonKeys]
   }
 }
+
+customBaseColors <- reactive({
+  list(
+    primary_color           = resolveColor(input$primary_color, baseColors$primary_color),
+    secondary_color         = resolveColor(input$secondary_color, baseColors$secondary_color),
+    sidebar_color           = resolveColor(input$sidebar_color, baseColors$sidebar_color),
+    navbar_color            = resolveColor(input$navbar_color, baseColors$navbar_color),
+    body_bg_color           = resolveColor(input$body_bg_color, baseColors$body_bg_color),
+    alert_color             = resolveColor(input$alert_color, baseColors$alert_color),
+    main_bg                 = "#ffffff",
+    console_text_color      = resolveColor(input$console_text_color, baseColors$console_text_color),
+    primary_color_dark      = resolveColor(input$primary_color_dark, baseColors$primary_color_dark),
+    secondary_color_dark    = resolveColor(input$secondary_color_dark, baseColors$secondary_color_dark),
+    sidebar_color_dark      = resolveColor(input$sidebar_color_dark, baseColors$sidebar_color_dark),
+    navbar_color_dark       = resolveColor(input$navbar_color_dark, baseColors$navbar_color_dark),
+    body_bg_color_dark      = resolveColor(input$body_bg_color_dark, baseColors$body_bg_color_dark),
+    alert_color_dark        = resolveColor(input$alert_color_dark, baseColors$alert_color_dark),
+    main_bg_dark            = resolveColor(input$main_bg_dark, baseColors$main_bg_dark),
+    console_text_color_dark = resolveColor(input$console_text_color_dark, baseColors$console_text_color_dark),
+    widget_bg_dark          = resolveColor(input$widget_bg_dark, baseColors$widget_bg_dark),
+    text_color              = "#eeeeee",
+    text_color_dark         = "#eeeeee"
+  )
+})
 
 derive_palette <- function(b = baseColors) {
   v <- list()

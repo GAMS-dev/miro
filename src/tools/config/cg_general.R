@@ -407,52 +407,6 @@ output$themeColorsUI <- renderUI({
   )
 })
 
-baseColors <- list(
-  primary_color           = "#3c8dbc",
-  secondary_color         = "#f39619",
-  sidebar_color           = "#1d2121",
-  navbar_color            = "#ffffff",
-  body_bg_color           = "#ECF1F4",
-  alert_color             = "#d11a2a",
-  main_bg                 = "#ffffff",
-  console_text_color      = "#333333",
-  primary_color_dark      = "#00adb5",
-  secondary_color_dark    = "#f39619",
-  sidebar_color_dark      = "#1d1f20",
-  navbar_color_dark       = "#1d2020",
-  body_bg_color_dark      = "#292D32",
-  alert_color_dark        = "#d11a2a",
-  main_bg_dark            = "#393e46",
-  console_text_color_dark = "#3c8dbc",
-  widget_bg_dark          = "#848991",
-  text_color              = "#eeeeee",
-  text_color_dark         = "#eeeeee"
-)
-
-customBaseColors <- reactive({
-  list(
-    primary_color           = resolveColor(input$primary_color, baseColors$primary_color),
-    secondary_color         = resolveColor(input$secondary_color, baseColors$secondary_color),
-    sidebar_color           = resolveColor(input$sidebar_color, baseColors$sidebar_color),
-    navbar_color            = resolveColor(input$navbar_color, baseColors$navbar_color),
-    body_bg_color           = resolveColor(input$body_bg_color, baseColors$body_bg_color),
-    alert_color             = resolveColor(input$alert_color, baseColors$alert_color),
-    main_bg                 = "#ffffff",
-    console_text_color      = resolveColor(input$console_text_color, baseColors$console_text_color),
-    primary_color_dark      = resolveColor(input$primary_color_dark, baseColors$primary_color_dark),
-    secondary_color_dark    = resolveColor(input$secondary_color_dark, baseColors$secondary_color_dark),
-    sidebar_color_dark      = resolveColor(input$sidebar_color_dark, baseColors$sidebar_color_dark),
-    navbar_color_dark       = resolveColor(input$navbar_color_dark, baseColors$navbar_color_dark),
-    body_bg_color_dark      = resolveColor(input$body_bg_color_dark, baseColors$body_bg_color_dark),
-    alert_color_dark        = resolveColor(input$alert_color_dark, baseColors$alert_color_dark),
-    main_bg_dark            = resolveColor(input$main_bg_dark, baseColors$main_bg_dark),
-    console_text_color_dark = resolveColor(input$console_text_color_dark, baseColors$console_text_color_dark),
-    widget_bg_dark          = resolveColor(input$widget_bg_dark, baseColors$widget_bg_dark),
-    text_color              = "#eeeeee",
-    text_color_dark         = "#eeeeee"
-  )
-})
-
 palette <- reactive(derive_palette(customBaseColors()))
 
 isDefaultPalette <- reactive({
@@ -473,6 +427,21 @@ observeEvent(palette(),
   ignoreInit = TRUE
 )
 
+observeEvent(input$advanced_light, {
+  req(!input$advanced_light)
+
+  sidebarColor <- hsl_hex(hue(input$primary_color), 6, 12)
+  updateColorPickerInput(session, "sidebar_color", value = sidebarColor)
+
+  isNeutral <- boolean(hue(input$primary_color) == 0 & saturation(input$primary_color) == 0)
+  if (isNeutral) {
+    bodyBgColor <- make_hsl(input$primary_color, 80, 0)
+  } else {
+    bodyBgColor <- make_hsl(input$primary_color, 94, 26)
+  }
+  updateColorPickerInput(session, "body_bg_color", value = bodyBgColor)
+})
+
 observeEvent(input$primary_color, {
   if (identical(input$primary_color, "")) {
     updateColorPickerInput(session, "primary_color", value = customBaseColors()$primary_color)
@@ -490,6 +459,29 @@ observeEvent(input$primary_color, {
     bodyBgColor <- make_hsl(input$primary_color, 94, 26)
   }
   updateColorPickerInput(session, "body_bg_color", value = bodyBgColor)
+})
+
+observeEvent(input$advanced_dark, {
+  req(!input$advanced_dark)
+
+  sidebarColorDark <- hsl_hex(hue(input$primary_color_dark), 6, 12)
+  updateColorPickerInput(session, "sidebar_color_dark", value = sidebarColorDark)
+
+  isNeutral <- boolean(hue(input$primary_color_dark) == 0 & saturation(input$primary_color_dark) == 0)
+  if (isNeutral) {
+    navBarColorDark <- hsl_hex(hue(input$primary_color_dark), 0, 10)
+  } else {
+    navBarColorDark <- hsl_hex(hue(input$primary_color_dark), 6, 12)
+  }
+  updateColorPickerInput(session, "navbar_color_dark", value = navBarColorDark)
+
+  isNeutral <- boolean(hue(input$main_bg_dark) == 0 & saturation(input$main_bg_dark) == 0)
+  if (isNeutral) {
+    bodyBgColorDark <- hsl_hex(hue(input$main_bg_dark), 0, 12)
+  } else {
+    bodyBgColorDark <- hsl_hex(hue(input$main_bg_dark), 10, 18)
+  }
+  updateColorPickerInput(session, "body_bg_color_dark", value = bodyBgColorDark)
 })
 
 observeEvent(input$primary_color_dark, {
