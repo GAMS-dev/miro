@@ -109,7 +109,7 @@
     --if-cb57bb52: #cdcdcd;
     --if-cf579cbb: #F9D2DC;
     --if-d2f31bc0: #ffffff;
-    --if-d3bd34c4: #201D1E;
+    --navbar-color-dark: #201D1E;
     --if-d440a364: #E891A6;
     --if-dc5cf808: #ffffff;
     --if-dde4565a: #602030;
@@ -156,7 +156,14 @@
     --sidebar-contrast-dark2: #ffffff;
     --sidebar-contrast-light: #333333;
     --sidebar-contrast-light2: #222222;
+    --navbar-contrast-light: #333333;
     --text-color: #eeeeee;
     --text-color-dark: #eeeeee;
     --widget-bg-dark: #8c8589;
+    --body-bg-color: #F4ECEE;
+    --body-bg-color-dark: #1F1F1F;
+    --notification-bg: #d17c87;
+    --notification-text: #000000;
+    --notification-border: #510015;
+    --notification-bg-dark: #000000;
 }

@@ -8698,6 +8698,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "advanced": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "primary": {
                   "type": "string",
                   "minLength": 1
@@ -8707,6 +8711,14 @@
                   "minLength": 1
                 },
                 "sidebar": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "navbar": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "body_bg": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -8731,6 +8743,14 @@
                   "minLength": 1
                 },
                 "sidebarDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "navbarDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "body_bg_dark": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -8771,7 +8791,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 21
+              "minProperties": 26
             },
             "themeButtons": {
               "type": "object",
@@ -8841,22 +8861,6 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "downloadThemeModalTitle": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "downloadThemeModalText": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "downloadThemeModalCancel": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "downloadThemeModalDownload": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "removeColors": {
                   "type": "string",
                   "minLength": 1
@@ -8886,7 +8890,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 27
+              "minProperties": 23
             }
           },
           "minProperties": 3

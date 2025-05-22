@@ -1801,8 +1801,8 @@ li.drop-index-item[data-col-hidden="true"] {
   padding-top:40px;
 }
 .theme-btn-row .theme-btn {
-  min-width: 215px;
   margin-bottom: 5px;
+  width: 100%;
 }
 
 /* scrollbar */
@@ -1883,11 +1883,15 @@ li.drop-index-item[data-col-hidden="true"] {
 .no-padding-right {
   padding-right:0;
 }
-.shiny-notification {
+.shiny-notification,
+.shiny-notification-message {
   .responsiveDark({
+    background-color: @notification-bg;
+    color: @notification-text;
+    border-color: @notification-border;
   },
   {
-    background-color: @shiny-notification-dark;
+    background-color: @notification-bg-dark;
     color: @text-color-dark;
     border-color: @text-color-dark;
   });

@@ -30,12 +30,54 @@
       border-right: 1px solid #eee;
     }
     .navbar {
-      .responsiveDark({
-         .navbar-variant(@navbar-main; @navbar-icons; @navbar-hover; @navbar-main);
-      },
-      {
-         .navbar-variant(@navbar-main-dark; @navbar-icons-dark; @navbar-hover-dark; @navbar-main-dark);
-      });
+      .responsiveDark(
+        {
+          background-color: @navbar-main;
+          .nav > li > a {
+            color: @navbar-icons;
+          }
+          .nav > li > a:hover,
+          .nav > li > a:active,
+          .nav > li > a:focus,
+          .nav .open > a,
+          .nav .open > a:hover,
+          .nav .open > a:focus,
+          .nav > .active > a {
+            background: @navbar-main;
+            color: @navbar-hover;
+          }
+          .sidebar-toggle {
+            color: @navbar-icons;
+            &:hover {
+              color: @navbar-hover;
+              background: @navbar-main;
+            }
+          }
+        },
+        {
+          background-color: @navbar-main-dark;
+          .nav > li > a {
+            color: @navbar-icons-dark;
+          }
+          .nav > li > a:hover,
+          .nav > li > a:active,
+          .nav > li > a:focus,
+          .nav .open > a,
+          .nav .open > a:hover,
+          .nav .open > a:focus,
+          .nav > .active > a {
+            background: @navbar-main-dark;
+            color: @navbar-hover-dark;
+          }
+          .sidebar-toggle {
+            color: @navbar-icons-dark;
+            &:hover {
+              color: @navbar-hover-dark;
+              background: @navbar-main-dark;
+            }
+          }
+        }
+      );
       > .sidebar-toggle {
         .responsiveDark({
            color: @navbar-icons;

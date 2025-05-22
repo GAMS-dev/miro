@@ -406,3 +406,6 @@ aceEditorFullscreenButton <- function() {
     )
   )
 }
+updateColorPickerInput <- function(session, inputId, value) {
+  session$sendInputMessage(inputId, list(value = value))
+}

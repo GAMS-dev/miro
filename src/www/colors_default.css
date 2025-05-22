@@ -109,7 +109,7 @@
     --if-cb57bb52: #3c8dbc;
     --if-cf579cbb: #F9D2D5;
     --if-d2f31bc0: #00adb5;
-    --if-d3bd34c4: #1D2020;
+    --navbar-color-dark: #1D2020;
     --if-d440a364: #91C8E8;
     --if-dc5cf808: #ffffff;
     --if-dde4565a: #604420;
@@ -151,12 +151,21 @@
     --secondary-color: #f39619;
     --secondary-color-dark: #f39619;
     --sidebar-color: #1d2121;
+    --navbar-color: #ffffff;
+    --navbar-color_dark: #1d2020;
     --sidebar-color-dark: #1d1f20;
     --sidebar-contrast-dark: #ffffff;
     --sidebar-contrast-dark2: #ffffff;
     --sidebar-contrast-light: #ffffff;
     --sidebar-contrast-light2: #ffffff;
+    --navbar-contrast-light: #333333;
     --text-color: #eeeeee;
     --text-color-dark: #eeeeee;
     --widget-bg-dark: #848991;
+    --body-bg-color: #ECF1F4;
+    --body-bg-color-dark: #292D32;
+    --notification-bg: #d9edf7;
+    --notification-text: #31708f;
+    --notification-border: #bce8f1;
+    --notification-bg-dark: #070808;
 }

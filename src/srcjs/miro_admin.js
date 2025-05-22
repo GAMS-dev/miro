@@ -713,6 +713,15 @@ $(document).ready(() => {
       { priority: 'event' },
     );
   }, 300));
+  colorPickerBinding.setValue = function (el, value) {
+    $(el).colorpicker('setValue', value);
+  };
+  colorPickerBinding.receiveMessage = function (el, data) {
+    if (Object.prototype.hasOwnProperty.call(data, 'value')) {
+      $(el).colorpicker('setValue', data.value);
+      $(el).trigger('changeColor.colorpicker');
+    }
+  };
   Shiny.inputBindings.register(colorPickerBinding);
   Shiny.addCustomMessageHandler('update-css', (vars) => {
     const root = document.documentElement;

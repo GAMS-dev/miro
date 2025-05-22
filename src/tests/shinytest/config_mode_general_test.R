@@ -16,6 +16,15 @@ configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_
 ))
 
 # user interface tab
+expect_identical(configNew$themeColors, NULL)
+app$run_js("$('#primary_color').val('#d3377c').trigger('change');")
+Sys.sleep(2)
+configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
+  simplifyDataFrame = FALSE,
+  simplifyMatrix = FALSE
+))
+
+expect_identical(length(configNew$themeColors), 160)
 expect_identical(configRaw$pageTitle, configNew$pageTitle)
 expect_identical(configRaw$UILogo, configNew$UILogo)
 expect_identical(configRaw$theme, configNew$theme)

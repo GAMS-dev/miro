@@ -104,25 +104,6 @@ getThemeColors <- function(cssPath) {
   as.list(setNames(varValues, varNames))
 }
 
-
-baseColors <- list(
-  primary_color           = "#3c8dbc",
-  secondary_color         = "#f39619",
-  sidebar_color           = "#1d2121",
-  alert_color             = "#d11a2a",
-  main_bg                 = "#ffffff",
-  console_text_color      = "#333333",
-  primary_color_dark      = "#00adb5",
-  secondary_color_dark    = "#f39619",
-  sidebar_color_dark      = "#1d1f20",
-  alert_color_dark        = "#d11a2a",
-  main_bg_dark            = "#393e46",
-  console_text_color_dark = "#3c8dbc",
-  widget_bg_dark          = "#848991",
-  text_color              = "#eeeeee",
-  text_color_dark         = "#eeeeee"
-)
-
 customColors <- file.path(miroWorkspace, "themecolors.config")
 themeCss <- if (file.exists(customColors)) {
   customColors
@@ -145,12 +126,16 @@ derive_palette <- function(b = baseColors) {
   primary_color <- b$primary_color
   secondary_color <- b$secondary_color
   sidebar_color <- b$sidebar_color
+  navbar_color <- b$navbar_color
+  body_bg_color <- b$body_bg_color
   alert_color <- b$alert_color
   console_text_color <- b$console_text_color
   main_bg <- b$main_bg
   primary_color_dark <- b$primary_color_dark
   secondary_color_dark <- b$secondary_color_dark
   sidebar_color_dark <- b$sidebar_color_dark
+  navbar_color_dark <- b$navbar_color_dark
+  body_bg_color_dark <- b$body_bg_color_dark
   alert_color_dark <- b$alert_color_dark
   console_text_color_dark <- b$console_text_color_dark
   main_bg_dark <- b$main_bg_dark
@@ -162,12 +147,16 @@ derive_palette <- function(b = baseColors) {
   v[["secondary_color"]] <- secondary_color
   v[["alert_color"]] <- alert_color
   v[["sidebar_color"]] <- sidebar_color
+  v[["navbar_color"]] <- navbar_color
+  v[["body_bg_color"]] <- body_bg_color
   v[["main_bg"]] <- main_bg
   v[["primary_color_dark"]] <- primary_color_dark
   v[["console_text_color_dark"]] <- console_text_color_dark
   v[["secondary_color_dark"]] <- secondary_color_dark
   v[["alert_color_dark"]] <- alert_color_dark
   v[["sidebar_color_dark"]] <- sidebar_color_dark
+  v[["navbar_color_dark"]] <- navbar_color_dark
+  v[["body_bg_color_dark"]] <- body_bg_color_dark
   v[["main_bg_dark"]] <- main_bg_dark
   v[["widget_bg_dark"]] <- widget_bg_dark
   v[["text_color"]] <- text_color
@@ -260,6 +249,12 @@ derive_palette <- function(b = baseColors) {
   v[["darken_ec72c039"]] <- darken_ec72c039
   darken_4b80b5c4 <- darken(darken_28f7e606, 25)
   v[["darken_4b80b5c4"]] <- darken_4b80b5c4
+  notification_bg <- if (abs(luma("#ffffff") - luma(lighten(b$primary_color, 40))) > 5) lighten(b$primary_color, 40) else lighten(b$primary_color, 35)
+  v[["notification_bg"]] <- notification_bg
+  notification_text <- if (good_contrast(darken(b$primary_color, 39), notification_bg)) darken(b$primary_color, 39) else contrast(notification_bg)
+  v[["notification_text"]] <- notification_text
+  notification_border <- darken(b$primary_color, 7)
+  v[["notification_border"]] <- notification_border
 
   fade_041bf36e <- fade(b$primary_color_dark, 69)
   v[["fade_041bf36e"]] <- fade_041bf36e
@@ -287,8 +282,6 @@ derive_palette <- function(b = baseColors) {
   v[["if_7f94f006"]] <- if_7f94f006
   if_8215301a <- if (abs(luma(b$main_bg_dark) - luma(darken(b$primary_color_dark, 10))) < 8) lighten(b$primary_color_dark, 50) else darken(b$primary_color_dark, 10)
   v[["if_8215301a"]] <- if_8215301a
-  if_d3bd34c4 <- if (boolean_19a3fbf5) hsl_hex(hue(b$primary_color_dark), 0, 10) else hsl_hex(hue(b$primary_color_dark), 6, 12)
-  v[["if_d3bd34c4"]] <- if_d3bd34c4
   if_d2f31bc0 <- if (abs(luma(b$main_bg_dark) - luma(b$primary_color_dark)) < 15) contrast(b$main_bg_dark) else b$primary_color_dark
   v[["if_d2f31bc0"]] <- if_d2f31bc0
   if_ea8983c1 <- if (abs(luma(b$primary_color_dark) - luma(b$text_color_dark)) < 8) contrast(b$primary_color_dark) else b$text_color_dark
@@ -319,6 +312,8 @@ derive_palette <- function(b = baseColors) {
   v[["if_e33a6962"]] <- if_e33a6962
   if_9ad4a640 <- if (abs(luma(fade_041bf36e) - luma("#eeeeee")) < 8) contrast(fade_041bf36e) else "#eeeeee"
   v[["if_9ad4a640"]] <- if_9ad4a640
+  notification_bg_dark <- if (good_contrast(b$text_color_dark, darken(b$primary_color_dark, 35))) darken(b$primary_color_dark, 35) else darken(b$primary_color_dark, 55)
+  v[["notification_bg_dark"]] <- notification_bg_dark
 
   # secondary colors
   darken_75d40b33 <- darken(b$secondary_color, 5)
@@ -394,6 +389,9 @@ derive_palette <- function(b = baseColors) {
   v[["sidebar_contrast_light"]] <- sidebar_contrast_light
   sidebar_contrast_light2 <- if (boolean_486b1f24) "#222222" else "#ffffff"
   v[["sidebar_contrast_light2"]] <- sidebar_contrast_light2
+
+  navbar_contrast_light <- if (good_contrast("#333333", b$navbar_color)) "#333333" else "#eeeeee"
+  v[["navbar_contrast_light"]] <- navbar_contrast_light
 
   lighten_a006ac60 <- lighten(b$sidebar_color_dark, 2)
   v[["lighten_a006ac60"]] <- lighten_a006ac60

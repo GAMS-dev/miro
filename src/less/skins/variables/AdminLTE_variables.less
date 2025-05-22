@@ -25,7 +25,7 @@
 //main color
 @light-blue-dark:                @primary-color-dark;                         //before: #3c8dbc;
 @light-blue-darken-dark:         @darken-eccec2f4;    //before: @darken-c2f685b8;
-@body-bg-dark:                   @if-f1a3b180;//#292D33;                         //before: #ecf0f5;
+@body-bg-dark:                   @body-bg-color-dark; //@if-f1a3b180;//#292D33;                         //before: #ecf0f5;
 @box-bg-dark:                    @main-bg-dark; //#393e46;                         //before: #fff;
 @box-bg-light-dark:              @lighten-9ae39279;       //before: #f7f7f7;
 //@text-color-dark:                #eeeeee;                         //before: #f4f4f4;
@@ -45,7 +45,7 @@
 @link-hover-color-dark:          @lighten-360db171;
 
 //navbar colors
-@navbar-main-dark:               @if-d3bd34c4;//#222d32;                         //before: #fff;
+@navbar-main-dark:               @navbar-color-dark; //#222d32;                         //before: #fff;
 @navbar-icons-dark:              @text-color-dark;                //before: #333;
 @navbar-hover-dark:              @lighten-4f1df671;  //before: #999;
 
@@ -67,7 +67,7 @@
 @light-blue:                     @primary-color; //#3c8dbc;
 @light-blue-darken:              @darken-c2f685b8;
 
-@body-bg:                        @if-8e425bfe; //#ecf0f5;
+@body-bg:                        @body-bg-color; //#ecf0f5;
 @box-bg:                         #fff;
 @box-bg-light:                   #f7f7f7;
 
@@ -87,8 +87,8 @@
 @link-hover-color:               @lighten-76740698;
 
 //navbar colors
-@navbar-main:                    #fff;
-@navbar-icons:                   #333;
+@navbar-main:                    @navbar-color; //#fff;
+@navbar-icons:                   @navbar-contrast-light; //#333; //todo
 @navbar-hover:                   #999;
 
 //Dark sidebar

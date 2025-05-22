@@ -132,20 +132,6 @@ output$themeColorsUI <- renderUI({
       tags$div(
         class = "col-sm-6",
         colorPickerInput(
-          "sidebar_color",
-          lang$adminMode$colors$themeColors$sidebar,
-          value = if (length(configJSON$themeColors$sidebar_color)) {
-            configJSON$themeColors$sidebar_color
-          } else {
-            baseColors$sidebar_color
-          },
-          colorPreview = TRUE,
-          disableAlphaChannel = TRUE
-        )
-      ),
-      tags$div(
-        class = "col-sm-6",
-        colorPickerInput(
           "alert_color",
           labelTooltip(
             lang$adminMode$colors$themeColors$alert,
@@ -175,6 +161,55 @@ output$themeColorsUI <- renderUI({
           },
           colorPreview = TRUE,
           disableAlphaChannel = TRUE
+        )
+      ),
+      tags$div(
+        class = "col-sm-12",
+        checkboxInput_MIRO("advanced_light", lang$adminMode$colors$themeColors$advanced)
+      ),
+      conditionalPanel(
+        condition = "input.advanced_light===true",
+        tags$div(
+          class = "col-sm-6",
+          colorPickerInput(
+            "sidebar_color",
+            lang$adminMode$colors$themeColors$sidebar,
+            value = if (length(configJSON$themeColors$sidebar_color)) {
+              configJSON$themeColors$sidebar_color
+            } else {
+              baseColors$sidebar_color
+            },
+            colorPreview = TRUE,
+            disableAlphaChannel = TRUE
+          )
+        ),
+        tags$div(
+          class = "col-sm-6",
+          colorPickerInput(
+            "navbar_color",
+            lang$adminMode$colors$themeColors$navbar,
+            value = if (length(configJSON$themeColors$navbar_color)) {
+              configJSON$themeColors$navbar_color
+            } else {
+              baseColors$navbar_color
+            },
+            colorPreview = TRUE,
+            disableAlphaChannel = TRUE
+          )
+        ),
+        tags$div(
+          class = "col-sm-6",
+          colorPickerInput(
+            "body_bg_color",
+            lang$adminMode$colors$themeColors$body_bg,
+            value = if (length(configJSON$themeColors$body_bg_color)) {
+              configJSON$themeColors$body_bg_color
+            } else {
+              baseColors$body_bg_color
+            },
+            colorPreview = TRUE,
+            disableAlphaChannel = TRUE
+          )
         )
       )
     ),
@@ -217,20 +252,6 @@ output$themeColorsUI <- renderUI({
       tags$div(
         class = "col-sm-6",
         colorPickerInput(
-          "sidebar_color_dark",
-          lang$adminMode$colors$themeColors$sidebarDark,
-          value = if (length(configJSON$themeColors$sidebar_color_dark)) {
-            configJSON$themeColors$sidebar_color_dark
-          } else {
-            baseColors$sidebar_color_dark
-          },
-          colorPreview = TRUE,
-          disableAlphaChannel = TRUE
-        )
-      ),
-      tags$div(
-        class = "col-sm-6",
-        colorPickerInput(
           "alert_color_dark",
           labelTooltip(
             lang$adminMode$colors$themeColors$alertDark,
@@ -240,20 +261,6 @@ output$themeColorsUI <- renderUI({
             configJSON$themeColors$alert_color_dark
           } else {
             baseColors$alert_color_dark
-          },
-          colorPreview = TRUE,
-          disableAlphaChannel = TRUE
-        )
-      ),
-      tags$div(
-        class = "col-sm-6",
-        colorPickerInput(
-          "main_bg_dark",
-          lang$adminMode$colors$themeColors$mainBgDark,
-          value = if (length(configJSON$themeColors$main_bg_dark)) {
-            configJSON$themeColors$main_bg_dark
-          } else {
-            baseColors$main_bg_dark
           },
           colorPreview = TRUE,
           disableAlphaChannel = TRUE
@@ -292,18 +299,90 @@ output$themeColorsUI <- renderUI({
           colorPreview = TRUE,
           disableAlphaChannel = TRUE
         )
+      ),
+      tags$div(
+        class = "col-sm-6",
+        colorPickerInput(
+          "main_bg_dark",
+          lang$adminMode$colors$themeColors$mainBgDark,
+          value = if (length(configJSON$themeColors$main_bg_dark)) {
+            configJSON$themeColors$main_bg_dark
+          } else {
+            baseColors$main_bg_dark
+          },
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      ),
+      tags$div(
+        class = "col-sm-12",
+        checkboxInput_MIRO("advanced_dark", lang$adminMode$colors$themeColors$advanced)
+      ),
+      conditionalPanel(
+        condition = "input.advanced_dark===true",
+        tags$div(
+          class = "col-sm-6",
+          colorPickerInput(
+            "sidebar_color_dark",
+            lang$adminMode$colors$themeColors$sidebarDark,
+            value = if (length(configJSON$themeColors$sidebar_color_dark)) {
+              configJSON$themeColors$sidebar_color_dark
+            } else {
+              baseColors$sidebar_color_dark
+            },
+            colorPreview = TRUE,
+            disableAlphaChannel = TRUE
+          )
+        ),
+        tags$div(
+          class = "col-sm-6",
+          colorPickerInput(
+            "navbar_color_dark",
+            lang$adminMode$colors$themeColors$navbarDark,
+            value = if (length(configJSON$themeColors$navbar_color_dark)) {
+              configJSON$themeColors$navbar_color_dark
+            } else {
+              baseColors$navbar_color_dark
+            },
+            colorPreview = TRUE,
+            disableAlphaChannel = TRUE
+          )
+        ),
+        tags$div(
+          class = "col-sm-6",
+          colorPickerInput(
+            "body_bg_color_dark",
+            lang$adminMode$colors$themeColors$body_bg_dark,
+            value = if (length(configJSON$themeColors$body_bg_color_dark)) {
+              configJSON$themeColors$body_bg_color_dark
+            } else {
+              baseColors$body_bg_color_dark
+            },
+            colorPreview = TRUE,
+            disableAlphaChannel = TRUE
+          )
+        )
       )
     ),
     tags$h4(lang$adminMode$colors$themeButtons$buttonsTitle),
-    tags$div(
+    fluidRow(
       class = "theme-btn-row",
-      actionButton("saveLocal", lang$adminMode$colors$themeButtons$saveLocal, icon("floppy-disk"), class = "bt-highlight-1 theme-btn"),
-      actionButton("saveGlobal", lang$adminMode$colors$themeButtons$saveGlobal, icon("floppy-disk"), class = "bt-highlight-1 theme-btn"),
-      actionButton("removeColors", lang$adminMode$colors$themeButtons$removeColors, icon("trash-can"), class = "bt-remove theme-btn")
-    ),
-    tags$div(
-      class = "theme-btn-row",
-      actionButton("downloadTheme", lang$adminMode$colors$themeButtons$downloadTheme, icon("download"), class = "theme-btn")
+      tags$div(
+        class = "col-md-12 col-lg-6",
+        actionButton("saveLocal", lang$adminMode$colors$themeButtons$saveLocal, icon("floppy-disk"), class = "bt-highlight-1 theme-btn")
+      ),
+      tags$div(
+        class = "col-md-12 col-lg-6",
+        actionButton("saveGlobal", lang$adminMode$colors$themeButtons$saveGlobal, icon("floppy-disk"), class = "bt-highlight-1 theme-btn")
+      ),
+      tags$div(
+        class = "col-md-12 col-lg-6",
+        actionButton("removeColors", lang$adminMode$colors$themeButtons$removeColors, icon("trash-can"), class = "bt-remove theme-btn")
+      ),
+      tags$div(
+        class = "col-md-12 col-lg-6",
+        downloadButton("downloadTheme", lang$adminMode$colors$themeButtons$downloadTheme, icon("download"), class = "theme-btn", style = "min-width: 215px;")
+      )
     ),
     tags$div(class = "space"),
     tags$ul(
@@ -328,17 +407,43 @@ output$themeColorsUI <- renderUI({
   )
 })
 
+baseColors <- list(
+  primary_color           = "#3c8dbc",
+  secondary_color         = "#f39619",
+  sidebar_color           = "#1d2121",
+  navbar_color            = "#ffffff",
+  body_bg_color           = "#ECF1F4",
+  alert_color             = "#d11a2a",
+  main_bg                 = "#ffffff",
+  console_text_color      = "#333333",
+  primary_color_dark      = "#00adb5",
+  secondary_color_dark    = "#f39619",
+  sidebar_color_dark      = "#1d1f20",
+  navbar_color_dark       = "#1d2020",
+  body_bg_color_dark      = "#292D32",
+  alert_color_dark        = "#d11a2a",
+  main_bg_dark            = "#393e46",
+  console_text_color_dark = "#3c8dbc",
+  widget_bg_dark          = "#848991",
+  text_color              = "#eeeeee",
+  text_color_dark         = "#eeeeee"
+)
+
 customBaseColors <- reactive({
   list(
     primary_color           = resolveColor(input$primary_color, baseColors$primary_color),
     secondary_color         = resolveColor(input$secondary_color, baseColors$secondary_color),
     sidebar_color           = resolveColor(input$sidebar_color, baseColors$sidebar_color),
+    navbar_color            = resolveColor(input$navbar_color, baseColors$navbar_color),
+    body_bg_color           = resolveColor(input$body_bg_color, baseColors$body_bg_color),
     alert_color             = resolveColor(input$alert_color, baseColors$alert_color),
     main_bg                 = "#ffffff",
     console_text_color      = resolveColor(input$console_text_color, baseColors$console_text_color),
     primary_color_dark      = resolveColor(input$primary_color_dark, baseColors$primary_color_dark),
     secondary_color_dark    = resolveColor(input$secondary_color_dark, baseColors$secondary_color_dark),
     sidebar_color_dark      = resolveColor(input$sidebar_color_dark, baseColors$sidebar_color_dark),
+    navbar_color_dark       = resolveColor(input$navbar_color_dark, baseColors$navbar_color_dark),
+    body_bg_color_dark      = resolveColor(input$body_bg_color_dark, baseColors$body_bg_color_dark),
     alert_color_dark        = resolveColor(input$alert_color_dark, baseColors$alert_color_dark),
     main_bg_dark            = resolveColor(input$main_bg_dark, baseColors$main_bg_dark),
     console_text_color_dark = resolveColor(input$console_text_color_dark, baseColors$console_text_color_dark),
@@ -368,6 +473,78 @@ observeEvent(palette(),
   ignoreInit = TRUE
 )
 
+observeEvent(input$primary_color, {
+  if (identical(input$primary_color, "")) {
+    updateColorPickerInput(session, "primary_color", value = customBaseColors()$primary_color)
+    return()
+  }
+
+  req(!input$advanced_light)
+  sidebarColor <- hsl_hex(hue(input$primary_color), 6, 12)
+  updateColorPickerInput(session, "sidebar_color", value = sidebarColor)
+
+  isNeutral <- boolean(hue(input$primary_color) == 0 & saturation(input$primary_color) == 0)
+  if (isNeutral) {
+    bodyBgColor <- make_hsl(input$primary_color, 80, 0)
+  } else {
+    bodyBgColor <- make_hsl(input$primary_color, 94, 26)
+  }
+  updateColorPickerInput(session, "body_bg_color", value = bodyBgColor)
+})
+
+observeEvent(input$primary_color_dark, {
+  if (identical(input$primary_color_dark, "")) {
+    updateColorPickerInput(session, "primary_color_dark", value = customBaseColors()$primary_color_dark)
+    return()
+  }
+
+  req(!input$advanced_dark)
+  sidebarColorDark <- hsl_hex(hue(input$primary_color_dark), 6, 12)
+  updateColorPickerInput(session, "sidebar_color_dark", value = sidebarColorDark)
+
+  isNeutral <- boolean(hue(input$primary_color_dark) == 0 & saturation(input$primary_color_dark) == 0)
+  if (isNeutral) {
+    navBarColorDark <- hsl_hex(hue(input$primary_color_dark), 0, 10)
+  } else {
+    navBarColorDark <- hsl_hex(hue(input$primary_color_dark), 6, 12)
+  }
+  updateColorPickerInput(session, "navbar_color_dark", value = navBarColorDark)
+})
+
+observeEvent(input$main_bg_dark, {
+  if (identical(input$main_bg_dark, "")) {
+    updateColorPickerInput(session, "main_bg_dark", value = customBaseColors()$main_bg_dark)
+    return()
+  }
+
+  req(!input$advanced_dark)
+
+  isNeutral <- boolean(hue(input$main_bg_dark) == 0 & saturation(input$main_bg_dark) == 0)
+  if (isNeutral) {
+    bodyBgColorDark <- hsl_hex(hue(input$main_bg_dark), 0, 12)
+  } else {
+    bodyBgColorDark <- hsl_hex(hue(input$main_bg_dark), 10, 18)
+  }
+  updateColorPickerInput(session, "body_bg_color_dark", value = bodyBgColorDark)
+})
+
+lapply(
+  setdiff(
+    names(baseColors),
+    c(
+      "primary_color", "primary_color_dark", "main_bg_dark",
+      "text_color", "text_color_dark"
+    )
+  ), function(id) {
+    observeEvent(input[[id]], {
+      if (identical(input[[id]], "")) {
+        updateColorPickerInput(session, id,
+          value = customBaseColors()[[id]]
+        )
+      }
+    })
+  }
+)
 trigger <- reactiveVal(0)
 observeEvent(input$removeColors, {
   if (length(configJSON$themeColors)) {
@@ -430,23 +607,7 @@ observeEvent(input$saveGlobal, {
   }
 })
 
-observeEvent(input$downloadTheme, {
-  outFile <- "themecolors.css"
-
-  showModal(modalDialog(
-    title = lang$adminMode$colors$themeButtons$downloadThemeModalTitle,
-    sprintf(
-      lang$adminMode$colors$themeButtons$downloadThemeModalText,
-      outFile
-    ),
-    footer = tagList(
-      modalButton(lang$adminMode$colors$themeButtons$downloadThemeModalCancel),
-      downloadButton("downloadThemeConfirm", lang$adminMode$colors$themeButtons$downloadThemeModalDownload, class = "bt-highlight-1")
-    ),
-    fade = TRUE, easyClose = TRUE
-  ))
-})
-output$downloadThemeConfirm <- downloadHandler(
+output$downloadTheme <- downloadHandler(
   filename = function() {
     "themecolors.css"
   },
