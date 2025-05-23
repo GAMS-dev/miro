@@ -131,7 +131,7 @@ spec:
         {{- end }}
         {{- if .Values.proxy.config.customCSS.enabled }}
         - name: customize-volume
-          mountPath: /home/miroproxy/templates/2col/assets/css/themes/{{ .Values.proxy.config.colorTheme }}.css
+          mountPath: /home/miroproxy/templates/2col/assets/css/styles.css
           subPath: custom.css
         {{- end }}
         {{- if .Values.global.securityContext.enabled }}
