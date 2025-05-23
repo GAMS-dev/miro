@@ -2203,7 +2203,7 @@
         "removeColorsNote2": "Kein Farbschema gefunden."
       },
       "miroServerColors": {
-        "checkbox": "Farbschema für MIRO Server anzeigen",
+        "checkbox": "Farbschema für MIRO Server vorbereiten",
         "title": "MIRO Server Farbschema",
         "titleTooltip": "Farben für den MIRO Server Anmeldebildschirm, die App-Übersicht usw.",
         "primary": "Primärfarbe",

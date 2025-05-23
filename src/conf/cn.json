@@ -2202,7 +2202,7 @@
         "removeColorsNote2": "未找到应用特定的主题颜色。"
       },
       "miroServerColors": {
-        "checkbox": "显示 MIRO 服务器主题",
+        "checkbox": "为 MIRO 服务器准备主题",
         "title": "MIRO 服务器颜色",
         "titleTooltip": "MIRO 服务器登录界面、应用概览等的颜色",
         "primary": "主色",

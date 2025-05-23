@@ -2204,7 +2204,7 @@
         "removeColorsNote2": "No theme colors found."
       },
       "miroServerColors":{
-        "checkbox": "Show theme for MIRO Server",
+        "checkbox": "Prepare theme for MIRO Server",
         "title": "MIRO Server colors",
         "titleTooltip": "Colors for the MIRO Server login screen, the app overview page, etc.",
         "primary": "Primary color",
