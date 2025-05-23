@@ -1149,6 +1149,15 @@ if (buildUI) {
           htmltools::tags$style(
             HTML(paste0(":root{", paste(cssLines, collapse = ""), "}"))
           )
+        } else if (identical(miroColorTheme, "custom")) {
+          if (isShinyProxy) {
+            customColorCss <- Sys.getenv("MIRO_CUSTOM_THEME_COLORS", "")
+          } else {
+            customColorCss <- read_file(file.path(miroWorkspace, "colors_custom.css"))
+          }
+          htmltools::tags$style(
+            HTML(customColorCss)
+          )
         } else {
           tags$link(type = "text/css", rel = "stylesheet", href = paste0("colors_", miroColorTheme, ".css"))
         },

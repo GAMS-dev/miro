@@ -103,10 +103,9 @@
                       app - or all apps at once - by supplying just a handful
                       of key colors. MIRO then derives a complete palette,
                       applies it live to the running interface, and stores your
-                      choices either inside the app, as a global MIRO Desktop
-                      theme, or as a CSS file for MIRO Server. Separate
-                      palettes can be maintained for Light and Dark mode so
-                      your design looks right in either setting.
+                      choices either inside the app or as a global MIRO Desktop
+                      theme. Separate palettes can be maintained for Light and
+                      Dark mode so your design looks right in either setting.
                     </p>
                     <div class="section-block">
                       <img
@@ -124,7 +123,7 @@
                     <table style="margin-bottom: 25px">
                       <thead>
                         <tr>
-                          <th>Slot</th>
+                          <th>Color</th>
                           <th>Purpose</th>
                         </tr>
                       </thead>
@@ -249,16 +248,6 @@
                           </td>
                         </tr>
                         <tr>
-                          <td><strong>Download for MIRO Server</strong></td>
-                          <td>
-                            Exports a CSS file for use on MIRO Server. See
-                            <a href="./server_setup.html#server-customize"
-                              ><em>Customize MIRO Server</em></a
-                            >
-                            for deployment steps.
-                          </td>
-                        </tr>
-                        <tr>
                           <td><strong>Delete for this app</strong></td>
                           <td>
                             Removes the app-specific theme and reverts to the
@@ -267,6 +256,84 @@
                         </tr>
                       </tbody>
                     </table>
+                  </div>
+                </section>
+                <section id="miro-server-colors" class="doc-section">
+                  <h2 class="section-title">MIRO Server colors</h2>
+                  <div class="section-block">
+                    <p>
+                      If you are using MIRO Server and would like to use custom
+                      colors for the login screen and the app overview page,
+                      you can prepare the necessary file here.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="padding-bottom: 25pt"
+                        src="assets/images/configuration_mode/colortheme_2.png"
+                        alt="MIRO Server colors"
+                      />
+                    </div>
+                    <p>
+                      To create a custom palette, enter the colors listed
+                      below;
+                    </p>
+                    <table style="margin-bottom: 25px">
+                      <thead>
+                        <tr>
+                          <th>Color</th>
+                          <th>Purpose</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><strong>Primary color</strong></td>
+                          <td>
+                            Main brand color; highlights primary actions and
+                            guides user focus.
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><strong>Body background color</strong></td>
+                          <td>
+                            Color for the canvas behind nearly everything on
+                            the page.
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><strong>Main background color</strong></td>
+                          <td>Background of the main window.</td>
+                        </tr>
+                        <tr>
+                          <td><strong>Login header background</strong></td>
+                          <td>
+                            Color for the strip at the top of the sign-in
+                            screen that houses the logo.
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <p>
+                      In the screenshot below you can see where which color is
+                      used on the login page.
+                    </p>
+                    <div class="section-block">
+                      <img
+                        class="img-fluid"
+                        style="padding-bottom: 25pt"
+                        src="assets/images/configuration_mode/miroservercolors.png"
+                        alt="MIRO Server login screen"
+                      />
+                    </div>
+                    <p>
+                      If you are happy with the colors, you can export a
+                      colors_custom.css file by clicking on the button
+                      <em>Download for MIRO Server</em>. Continue
+                      <a href="./server_setup.html#server-customize"
+                        ><em>here</em></a
+                      >
+                      to see how to integrate the file into MIRO Server.
+                    </p>
                   </div>
                 </section>
               </div>
@@ -279,8 +346,14 @@
                   <a
                     class="nav-link scrollto"
                     style="margin-bottom: 0"
-                    href="#user-interface"
+                    href="#custom-theme-colors"
                     >Custom theme colors</a
+                  >
+                  <a
+                    class="nav-link scrollto"
+                    style="margin-bottom: 0"
+                    href="#miro-server-colors"
+                    >MIRO Server colors</a
                   >
                 </nav>
                 <!--//doc-menu-->

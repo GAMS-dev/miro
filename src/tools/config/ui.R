@@ -136,6 +136,11 @@ body_admin <- dashboardBody({
         htmltools::tags$style(
           HTML(paste0(":root{", paste(cssLines, collapse = ""), "}"))
         )
+      } else if (identical(miroColorTheme, "custom")) {
+        customColorCss <- read_file(file.path(miroWorkspace, "colors_custom.css"))
+        htmltools::tags$style(
+          HTML(customColorCss)
+        )
       } else {
         tags$link(type = "text/css", rel = "stylesheet", href = paste0("colors_", miroColorTheme, ".css"))
       },

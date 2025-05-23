@@ -167,11 +167,7 @@ output$themeColorsUI <- renderUI({
             lang$adminMode$colors$themeColors$primary,
             lang$adminMode$colors$themeColors$primaryTooltip
           ),
-          value = if (length(configJSON$themeColors$miro_primary_color)) {
-            configJSON$themeColors$miro_primary_color
-          } else {
-            baseColors$miro_primary_color
-          },
+          value = baseColors$miro_primary_color,
           colorPreview = TRUE,
           disableAlphaChannel = TRUE
         )
@@ -184,11 +180,7 @@ output$themeColorsUI <- renderUI({
             lang$adminMode$colors$themeColors$secondary,
             lang$adminMode$colors$themeColors$secondaryTooltip
           ),
-          value = if (length(configJSON$themeColors$miro_secondary_color)) {
-            configJSON$themeColors$miro_secondary_color
-          } else {
-            baseColors$miro_secondary_color
-          },
+          value = baseColors$miro_secondary_color,
           colorPreview = TRUE,
           disableAlphaChannel = TRUE
         )
@@ -201,11 +193,7 @@ output$themeColorsUI <- renderUI({
             lang$adminMode$colors$themeColors$alert,
             lang$adminMode$colors$themeColors$alertTooltip
           ),
-          value = if (length(configJSON$themeColors$miro_alert_color)) {
-            configJSON$themeColors$miro_alert_color
-          } else {
-            baseColors$miro_alert_color
-          },
+          value = baseColors$miro_alert_color,
           colorPreview = TRUE,
           disableAlphaChannel = TRUE
         )
@@ -218,11 +206,7 @@ output$themeColorsUI <- renderUI({
             lang$adminMode$colors$themeColors$console,
             lang$adminMode$colors$themeColors$consoleTooltip
           ),
-          value = if (length(configJSON$themeColors$miro_console_text_color)) {
-            configJSON$themeColors$miro_console_text_color
-          } else {
-            baseColors$miro_console_text_color
-          },
+          value = baseColors$miro_console_text_color,
           colorPreview = TRUE,
           disableAlphaChannel = TRUE
         )
@@ -230,7 +214,7 @@ output$themeColorsUI <- renderUI({
       tags$div(
         class = "col-sm-12",
         checkboxInput_MIRO("advanced_light", lang$adminMode$colors$themeColors$advanced,
-          value = isAdvanced(configJSON$themeColors, mode = "light")
+          value = isAdvanced(baseColors, mode = "light")
         )
       ),
       conditionalPanel(
@@ -240,11 +224,7 @@ output$themeColorsUI <- renderUI({
           colorPickerInput(
             "sidebar_color",
             lang$adminMode$colors$themeColors$sidebar,
-            value = if (length(configJSON$themeColors$miro_sidebar_color)) {
-              configJSON$themeColors$miro_sidebar_color
-            } else {
-              baseColors$miro_sidebar_color
-            },
+            value = baseColors$miro_sidebar_color,
             colorPreview = TRUE,
             disableAlphaChannel = TRUE
           )
@@ -254,11 +234,7 @@ output$themeColorsUI <- renderUI({
           colorPickerInput(
             "navbar_color",
             lang$adminMode$colors$themeColors$navbar,
-            value = if (length(configJSON$themeColors$miro_navbar_color)) {
-              configJSON$themeColors$miro_navbar_color
-            } else {
-              baseColors$miro_navbar_color
-            },
+            value = baseColors$miro_navbar_color,
             colorPreview = TRUE,
             disableAlphaChannel = TRUE
           )
@@ -268,11 +244,7 @@ output$themeColorsUI <- renderUI({
           colorPickerInput(
             "body_bg_color",
             lang$adminMode$colors$themeColors$body_bg,
-            value = if (length(configJSON$themeColors$miro_body_bg_color)) {
-              configJSON$themeColors$miro_body_bg_color
-            } else {
-              baseColors$miro_body_bg_color
-            },
+            value = baseColors$miro_body_bg_color,
             colorPreview = TRUE,
             disableAlphaChannel = TRUE
           )
@@ -289,11 +261,7 @@ output$themeColorsUI <- renderUI({
             lang$adminMode$colors$themeColors$primaryDark,
             lang$adminMode$colors$themeColors$primaryTooltip
           ),
-          value = if (length(configJSON$themeColors$miro_primary_color_dark)) {
-            configJSON$themeColors$miro_primary_color_dark
-          } else {
-            baseColors$miro_primary_color_dark
-          },
+          value = baseColors$miro_primary_color_dark,
           colorPreview = TRUE,
           disableAlphaChannel = TRUE
         )
@@ -306,11 +274,7 @@ output$themeColorsUI <- renderUI({
             lang$adminMode$colors$themeColors$secondaryDark,
             lang$adminMode$colors$themeColors$secondaryTooltip
           ),
-          value = if (length(configJSON$themeColors$miro_secondary_color_dark)) {
-            configJSON$themeColors$miro_secondary_color_dark
-          } else {
-            baseColors$miro_secondary_color_dark
-          },
+          value = baseColors$miro_secondary_color_dark,
           colorPreview = TRUE,
           disableAlphaChannel = TRUE
         )
@@ -323,11 +287,7 @@ output$themeColorsUI <- renderUI({
             lang$adminMode$colors$themeColors$alertDark,
             lang$adminMode$colors$themeColors$alertTooltip
           ),
-          value = if (length(configJSON$themeColors$miro_alert_color_dark)) {
-            configJSON$themeColors$miro_alert_color_dark
-          } else {
-            baseColors$miro_alert_color_dark
-          },
+          value = baseColors$miro_alert_color_dark,
           colorPreview = TRUE,
           disableAlphaChannel = TRUE
         )
@@ -340,11 +300,7 @@ output$themeColorsUI <- renderUI({
             lang$adminMode$colors$themeColors$consoleDark,
             lang$adminMode$colors$themeColors$consoleTooltip
           ),
-          value = if (length(configJSON$themeColors$miro_console_text_color_dark)) {
-            configJSON$themeColors$miro_console_text_color_dark
-          } else {
-            baseColors$miro_console_text_color_dark
-          },
+          value = baseColors$miro_console_text_color_dark,
           colorPreview = TRUE,
           disableAlphaChannel = TRUE
         )
@@ -357,11 +313,7 @@ output$themeColorsUI <- renderUI({
             lang$adminMode$colors$themeColors$widgetBgDark,
             lang$adminMode$colors$themeColors$widgetBgDarkTooltip
           ),
-          value = if (length(configJSON$themeColors$miro_widget_bg_dark)) {
-            configJSON$themeColors$miro_widget_bg_dark
-          } else {
-            baseColors$miro_widget_bg_dark
-          },
+          value = baseColors$miro_widget_bg_dark,
           colorPreview = TRUE,
           disableAlphaChannel = TRUE
         )
@@ -371,11 +323,7 @@ output$themeColorsUI <- renderUI({
         colorPickerInput(
           "main_bg_dark",
           lang$adminMode$colors$themeColors$mainBgDark,
-          value = if (length(configJSON$themeColors$miro_main_bg_dark)) {
-            configJSON$themeColors$miro_main_bg_dark
-          } else {
-            baseColors$miro_main_bg_dark
-          },
+          value = baseColors$miro_main_bg_dark,
           colorPreview = TRUE,
           disableAlphaChannel = TRUE
         )
@@ -383,7 +331,7 @@ output$themeColorsUI <- renderUI({
       tags$div(
         class = "col-sm-12",
         checkboxInput_MIRO("advanced_dark", lang$adminMode$colors$themeColors$advanced,
-          value = isAdvanced(configJSON$themeColors, mode = "dark")
+          value = isAdvanced(baseColors, mode = "dark")
         )
       ),
       conditionalPanel(
@@ -393,11 +341,7 @@ output$themeColorsUI <- renderUI({
           colorPickerInput(
             "sidebar_color_dark",
             lang$adminMode$colors$themeColors$sidebarDark,
-            value = if (length(configJSON$themeColors$miro_sidebar_color_dark)) {
-              configJSON$themeColors$miro_sidebar_color_dark
-            } else {
-              baseColors$miro_sidebar_color_dark
-            },
+            value = baseColors$miro_sidebar_color_dark,
             colorPreview = TRUE,
             disableAlphaChannel = TRUE
           )
@@ -407,11 +351,7 @@ output$themeColorsUI <- renderUI({
           colorPickerInput(
             "navbar_color_dark",
             lang$adminMode$colors$themeColors$navbarDark,
-            value = if (length(configJSON$themeColors$miro_navbar_color_dark)) {
-              configJSON$themeColors$miro_navbar_color_dark
-            } else {
-              baseColors$miro_navbar_color_dark
-            },
+            value = baseColors$miro_navbar_color_dark,
             colorPreview = TRUE,
             disableAlphaChannel = TRUE
           )
@@ -421,11 +361,7 @@ output$themeColorsUI <- renderUI({
           colorPickerInput(
             "body_bg_color_dark",
             lang$adminMode$colors$themeColors$body_bg_dark,
-            value = if (length(configJSON$themeColors$miro_body_bg_color_dark)) {
-              configJSON$themeColors$miro_body_bg_color_dark
-            } else {
-              baseColors$miro_body_bg_color_dark
-            },
+            value = baseColors$miro_body_bg_color_dark,
             colorPreview = TRUE,
             disableAlphaChannel = TRUE
           )
@@ -638,7 +574,7 @@ observeEvent(input$saveGlobal, {
   )
   properties <- paste0(names(msg), ':"', msg, '"', collapse = ";\n  ")
   css <- paste0(":root{\n  ", properties, ";\n}")
-  outFile <- file.path(miroWorkspace, "themecolors.css")
+  outFile <- file.path(miroWorkspace, "colors_custom.css")
 
   if (file.exists(outFile)) {
     showModal(modalDialog(
@@ -838,7 +774,7 @@ output$miroServerColorsUI <- renderUI({
 
 output$downloadTheme <- downloadHandler(
   filename = function() {
-    "custom.css"
+    "colors_custom.css"
   },
   content = function(file) {
     pal <- palette()

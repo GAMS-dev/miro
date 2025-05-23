@@ -81,6 +81,15 @@ resolveColor <- function(val, default) {
   if (length(val) && nzchar(val)) val else default
 }
 
+parseThemeFile <- function(filePath) {
+  themeColors <- strsplit(trimws(cssLines[-1], whitespace = "[ \t\r\n\\-;]"), ":", fixed = TRUE)
+  themeColors <- themeColors[lapply(themeColors, length) == 2L]
+  colorNames <- gsub("-", "_", lapply(themeColors, "[[", 1L), fixed = TRUE)
+  colorValues <- as.list(trimws(lapply(themeColors, "[[", 2L), whitespace = "[ \t\r\n\"]"))
+  names(colorValues) <- colorNames
+  return(colorValues)
+}
+
 getThemeColors <- function(cssInput) {
   if (is.null(cssInput)) {
     return(NULL)
@@ -93,25 +102,18 @@ getThemeColors <- function(cssInput) {
   }
 
   cssLines <- if (length(cssInput) == 1 && file.exists(cssInput)) {
-    readLines(cssInput, warn = FALSE)
+    read_lines(cssInput)
   } else if (is.character(cssInput)) {
     as.character(cssInput)
   } else {
     return(NULL)
   }
-
-  regexPattern <- '^\\s*--([[:alnum:]_-]+)\\s*:\\s*"?([#0-9A-Fa-f]{3,8})"?\\s*;?\\s*$'
-
-  matchResults <- regexec(regexPattern, cssLines)
-  parts <- regmatches(cssLines, matchResults)
-  validParts <- parts[vapply(parts, length, integer(1)) == 3]
-
-  if (!length(validParts)) {
-    return(NULL)
-  }
-  varNames <- gsub("-", "_", vapply(validParts, `[`, FUN.VALUE = "", 2))
-  varValues <- vapply(validParts, `[`, FUN.VALUE = "", 3)
-  as.list(setNames(varValues, varNames))
+  themeColors <- strsplit(trimws(cssLines[-1], whitespace = "[ \t\r\n\\-;]"), ":", fixed = TRUE)
+  themeColors <- themeColors[lapply(themeColors, length) == 2L]
+  colorNames <- gsub("-", "_", lapply(themeColors, "[[", 1L), fixed = TRUE)
+  colorValues <- as.list(trimws(lapply(themeColors, "[[", 2L), whitespace = "[ \t\r\n\"]"))
+  names(colorValues) <- colorNames
+  return(colorValues)
 }
 
 baseColors <- list(
@@ -139,7 +141,11 @@ baseColors <- list(
 themeCss <- if (!is.null(configJSON$themeColors) && length(configJSON$themeColors)) {
   configJSON$themeColors
 } else {
-  globalTheme <- normalizePath(file.path(getwd(), "www", paste0("colors_", miroColorTheme, ".css")))
+  if (identical(miroColorTheme, "custom")) {
+    globalTheme <- normalizePath(file.path(miroWorkspace, "colors_custom.css"))
+  } else {
+    globalTheme <- normalizePath(file.path(getwd(), "www", paste0("colors_", miroColorTheme, ".css")))
+  }
   if (file.exists(globalTheme)) globalTheme else NULL
 }
 

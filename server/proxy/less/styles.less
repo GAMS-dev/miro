@@ -579,7 +579,12 @@ select {
   margin-top: 5px;
 }
 .table > thead > tr > th {
-  border-bottom-color: #ff9900;
+  .responsiveDark({
+    border-bottom-color: @primary-color;
+  },
+  {
+    border-bottom-color: @primary-color-dark;
+  });
 }
 .table-striped > tbody > tr:nth-of-type(odd) {
   background-color: #f5f5f5;
