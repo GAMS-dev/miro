@@ -8821,10 +8821,6 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "downloadThemeDesc": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "removeColorsDesc": {
                   "type": "string",
                   "minLength": 1
@@ -8890,10 +8886,49 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 23
+              "minProperties": 22
+            },
+            "miroServerColors": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "checkbox": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "titleTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "primary": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "bodyBg": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "mainBg": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "loginHeaderBg": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "primaryTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 8
             }
           },
-          "minProperties": 3
+          "minProperties": 4
         }
       },
       "minProperties": 8

@@ -2184,7 +2184,6 @@
         "downloadTheme": "下载到 MIRO 服务器",
         "saveLocalDesc": "应用特定的主题嵌入在应用中，并覆盖所有其他主题设置。应用导出后，颜色将无法更改。",
         "saveGlobalDesc": "全局主题集中存储，适用于设备上的所有应用。在 MIRO 桌面偏好设置中选择。",
-        "downloadThemeDesc": "下载主题颜色以供 MIRO 服务器使用。",
         "removeColorsDesc": "删除任何现有的应用特定主题配置（如果存在）。",
         "saveLocalNote": "主题已保存。",
         "saveGlobalModalTitle": "文件已存在",
@@ -2201,6 +2200,16 @@
         "removeColorsConfirm": "删除",
         "removeColorsNote1": "应用特定的主题颜色已被移除。",
         "removeColorsNote2": "未找到应用特定的主题颜色。"
+      },
+      "miroServerColors": {
+        "checkbox": "显示 MIRO 服务器主题",
+        "title": "MIRO 服务器颜色",
+        "titleTooltip": "MIRO 服务器登录界面、应用概览等的颜色",
+        "primary": "主色",
+        "bodyBg": "页面背景色",
+        "mainBg": "主背景色",
+        "loginHeaderBg": "登录页头背景",
+        "primaryTooltip": "主要品牌颜色，用于突出主要操作并引导用户注意力。"
       }
     }
   }

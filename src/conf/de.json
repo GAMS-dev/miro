@@ -2159,7 +2159,7 @@
         "secondary": "Sekundärfarbe",
         "sidebar": "Seitenleistenfarbe",
         "navbar": "Kopfzeilenfarbe",
-        "body_bg": "Körper-Hintergrundfarbe",
+        "body_bg": "Body-Hintergrundfarbe",
         "alert": "Farbe der Entfernen-Schaltfläche",
         "mainBg": "Hintergrundfarbe Hauptbereich",
         "console": "Hintergrundfarbe für Log und Code",
@@ -2167,7 +2167,7 @@
         "secondaryDark": "Sekundärfarbe",
         "sidebarDark": "Seitenleistenfarbe",
         "navbarDark": "Kopfzeilenfarbe",
-        "body_bg_dark": "Körper-Hintergrundfarbe",
+        "body_bg_dark": "Body-Hintergrundfarbe",
         "alertDark": "Farbe der Entfernen-Schaltfläche",
         "mainBgDark": "Hintergrundfarbe Hauptbereich",
         "consoleDark": "Hintergrundfarbe für Log und Code",
@@ -2185,7 +2185,6 @@
         "downloadTheme": "Für MIRO Server herunterladen",
         "saveLocalDesc": "Ein app-spezifisches Farbschema ist in der App eingebettet und überschreibt alle anderen Farbschema-Einstellungen. Sobald die App exportiert ist, können die Farben nicht mehr geändert werden.",
         "saveGlobalDesc": "Ein globales Farbschema wird zentral gespeichert und gilt für alle auf dem Gerät vorhandenen Apps. Es wird in den MIRO-Desktop Einstellungen ausgewählt.",
-        "downloadThemeDesc": "Lädt das Farbschema zur Verwendung in MIRO Server herunter.",
         "removeColorsDesc": "Löscht, falls vorhanden, das bestehende app-spezifische Farbschema.",
         "saveLocalNote": "Farbschema gespeichert.",
         "saveGlobalModalTitle": "Datei existiert",
@@ -2202,6 +2201,16 @@
         "removeColorsConfirm": "Löschen",
         "removeColorsNote1": "Farbschema wurde entfernt.",
         "removeColorsNote2": "Kein Farbschema gefunden."
+      },
+      "miroServerColors": {
+        "checkbox": "Farbschema für MIRO Server anzeigen",
+        "title": "MIRO Server Farbschema",
+        "titleTooltip": "Farben für den MIRO Server Anmeldebildschirm, die App-Übersicht usw.",
+        "primary": "Primärfarbe",
+        "bodyBg": "Body-Hintergrundfarbe",
+        "mainBg": "Haupt-Hintergrundfarbe",
+        "loginHeaderBg": "Hintergrund des Headers auf der Loginseite",
+        "primaryTooltip": "Hauptmarkenfarbe. Sie wird verwendet, um primäre Aktionen hervorzuheben."
       }
     }
   }

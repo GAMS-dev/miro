@@ -2186,7 +2186,6 @@
         "downloadTheme": "Download for MIRO Server",
         "saveLocalDesc": "An app-specific theme is embedded in the app and overrides all other theme settings. Once the app is exported, its colors can't be changed.",
         "saveGlobalDesc": "A global theme is centrally stored and applies to all apps present on the device. It is selected in the MIRO Desktop Preferences.",
-        "downloadThemeDesc": "Downloads the theme colors for use in MIRO Server.",
         "removeColorsDesc": "Deletes any existing app-specific theme configuration, if present.",
         "saveLocalNote": "Theme saved.",
         "saveGlobalModalTitle": "File exists",
@@ -2203,6 +2202,16 @@
         "removeColorsConfirm": "Delete",
         "removeColorsNote1": "Theme colors have been removed.",
         "removeColorsNote2": "No theme colors found."
+      },
+      "miroServerColors":{
+        "checkbox": "Show theme for MIRO Server",
+        "title": "MIRO Server colors",
+        "titleTooltip": "Colors for the MIRO Server login screen, the app overview page, etc.",
+        "primary": "Primary color",
+        "bodyBg": "Body background color",
+        "mainBg": "Main background color",
+        "loginHeaderBg": "Login header background",
+        "primaryTooltip": "Main brand color. It is used to highlight primary actions and guide user focus."
       }
     }
   }

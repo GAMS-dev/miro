@@ -1806,6 +1806,26 @@ font-size: 12px;
                   uiOutput("themeColorsUI")
                 )
               )
+            ),
+            tags$div(
+              class = "col-sm-6", style = "padding-top: 20px;",
+              tags$div(
+                class = "main-tab",
+                checkboxInput_MIRO("generateMiroServerTheme", lang$adminMode$colors$miroServerColors$checkbox, value = FALSE),
+                conditionalPanel(
+                  condition = "input.generateMiroServerTheme===true",
+                  tags$div(
+                    tags$h2(
+                      class = "option-category",
+                      labelTooltip(
+                        lang$adminMode$colors$miroServerColors$title,
+                        lang$adminMode$colors$miroServerColors$titleTooltip
+                      )
+                    ),
+                    uiOutput("miroServerColorsUI")
+                  )
+                )
+              )
             )
           )
         )

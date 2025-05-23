@@ -24,12 +24,7 @@ module.exports = (env, argv) => ({
       default_browser: './less/skins/default/browser.js',
       default_light: './less/skins/default/light.js',
       default_dark: './less/skins/default/dark.js',
-      '../../server/proxy/templates/2col/assets/css/themes/default': '../server/proxy/less/themes/default/styles.js',
-      '../../server/proxy/templates/2col/assets/css/themes/redwine': '../server/proxy/less/themes/redwine/styles.js',
-      '../../server/proxy/templates/2col/assets/css/themes/tawny': '../server/proxy/less/themes/tawny/styles.js',
-      '../../server/proxy/templates/2col/assets/css/themes/blackandwhite': '../server/proxy/less/themes/blackandwhite/styles.js',
-      '../../server/proxy/templates/2col/assets/css/themes/darkblue': '../server/proxy/less/themes/darkblue/styles.js',
-      '../../server/proxy/templates/2col/assets/css/themes/forest': '../server/proxy/less/themes/forest/styles.js',
+      '../../server/proxy/templates/2col/assets/css/styles': '../server/proxy/less/themes/default/styles.js',
       miro: ['./srcjs/miro.js'],
       miro_admin: ['./srcjs/miro_admin.js']
     },

@@ -446,10 +446,6 @@ output$themeColorsUI <- renderUI({
       tags$div(
         class = "col-md-12 col-lg-6",
         actionButton("removeColors", lang$adminMode$colors$themeButtons$removeColors, icon("trash-can"), class = "bt-remove theme-btn")
-      ),
-      tags$div(
-        class = "col-md-12 col-lg-6",
-        downloadButton("downloadTheme", lang$adminMode$colors$themeButtons$downloadTheme, icon("download"), class = "theme-btn", style = "min-width: 215px;")
       )
     ),
     tags$div(class = "space"),
@@ -461,10 +457,6 @@ output$themeColorsUI <- renderUI({
       tags$li(
         tags$b(paste0(lang$adminMode$colors$themeButtons$saveGlobal, ": ")),
         lang$adminMode$colors$themeButtons$saveGlobalDesc
-      ),
-      tags$li(
-        tags$b(paste0(lang$adminMode$colors$themeButtons$downloadTheme, ": ")),
-        lang$adminMode$colors$themeButtons$downloadThemeDesc
       ),
       tags$li(
         tags$b(paste0(lang$adminMode$colors$themeButtons$removeColors, ": ")),
@@ -673,12 +665,199 @@ observeEvent(input$saveGlobal, {
   }
 })
 
+serverBaseColors <- list(
+  default = list(
+    primary_color        = "#ff9900",
+    body_bg              = "#e2e3e8",
+    main_bg              = "#ffffff",
+    login_header_bg      = "#494d55",
+    primary_color_dark   = "#ff9900",
+    body_bg_dark         = "#292d32",
+    main_bg_dark         = "#393e46",
+    login_header_bg_dark = "#494d55"
+  ),
+  forest = list(
+    primary_color        = "#228B22",
+    body_bg              = "#eff2ef",
+    main_bg              = "#ffffff",
+    login_header_bg      = "#1d2121",
+    primary_color_dark   = "#228B22",
+    body_bg_dark         = "#292d32",
+    main_bg_dark         = "#393e46",
+    login_header_bg_dark = "#1d2121"
+  ),
+  tawny = list(
+    primary_color        = "#ce7e16",
+    body_bg              = "#eae7e5",
+    main_bg              = "#ffffff",
+    login_header_bg      = "#1a1309",
+    primary_color_dark   = "#ce7e16",
+    body_bg_dark         = "#1f1f1f",
+    main_bg_dark         = "#2b2b2b",
+    login_header_bg_dark = "#1a1309"
+  ),
+  redwine = list(
+    primary_color        = "#690B22",
+    body_bg              = "#dcd7d8",
+    main_bg              = "#ffffff",
+    login_header_bg      = "#242424",
+    primary_color_dark   = "#690B22",
+    body_bg_dark         = "#1f1f1f",
+    main_bg_dark         = "#3a3a3a",
+    login_header_bg_dark = "#242424"
+  ),
+  blackandwhite = list(
+    primary_color        = "#1f1f1f",
+    body_bg              = "#cccccc",
+    main_bg              = "#ffffff",
+    login_header_bg      = "#1d2121",
+    primary_color_dark   = "#1f1f1f",
+    body_bg_dark         = "#292d32",
+    main_bg_dark         = "#393e46",
+    login_header_bg_dark = "#1d2121"
+  ),
+  darkblue = list(
+    primary_color        = "#56799C",
+    body_bg              = "#ecf0f4",
+    main_bg              = "#ffffff",
+    login_header_bg      = "#2d3033",
+    primary_color_dark   = "#56799C",
+    body_bg_dark         = "#1f1f1f",
+    main_bg_dark         = "#2b2b2b",
+    login_header_bg_dark = "#2d3033"
+  )
+)
+
+globalTheme <- if (!is.null(miroColorTheme)) miroColorTheme else "default"
+
+output$miroServerColorsUI <- renderUI({
+  tagList(
+    tags$h4(lang$adminMode$colors$themeColors$light),
+    fluidRow(
+      tags$div(
+        class = "col-sm-6 themeColors-colorpicker",
+        colorPickerInput(
+          "server_primary_color",
+          labelTooltip(
+            lang$adminMode$colors$miroServerColors$primary,
+            lang$adminMode$colors$miroServerColors$primaryTooltip
+          ),
+          value = serverBaseColors[[globalTheme]]$primary_color,
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      ),
+      tags$div(
+        class = "col-sm-6",
+        colorPickerInput(
+          "server_body_bg",
+          lang$adminMode$colors$miroServerColors$bodyBg,
+          value = serverBaseColors[[globalTheme]]$body_bg,
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      ),
+      tags$div(
+        class = "col-sm-6",
+        colorPickerInput(
+          "server_main_bg",
+          lang$adminMode$colors$miroServerColors$mainBg,
+          value = serverBaseColors[[globalTheme]]$main_bg,
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      ),
+      tags$div(
+        class = "col-sm-6",
+        colorPickerInput(
+          "server_login_header_bg",
+          lang$adminMode$colors$miroServerColors$loginHeaderBg,
+          value = serverBaseColors[[globalTheme]]$login_header_bg,
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      )
+    ),
+    tags$h4(lang$adminMode$colors$themeColors$dark),
+    fluidRow(
+      tags$div(
+        class = "col-sm-6 themeColors-colorpicker",
+        colorPickerInput(
+          "server_primary_color_dark",
+          labelTooltip(
+            lang$adminMode$colors$miroServerColors$primary,
+            lang$adminMode$colors$miroServerColors$primaryTooltip
+          ),
+          value = serverBaseColors[[globalTheme]]$primary_color_dark,
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      ),
+      tags$div(
+        class = "col-sm-6",
+        colorPickerInput(
+          "server_body_bg_dark",
+          lang$adminMode$colors$miroServerColors$bodyBg,
+          value = serverBaseColors[[globalTheme]]$body_bg_dark,
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      ),
+      tags$div(
+        class = "col-sm-6",
+        colorPickerInput(
+          "server_main_bg_dark",
+          lang$adminMode$colors$miroServerColors$mainBg,
+          value = serverBaseColors[[globalTheme]]$main_bg_dark,
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      ),
+      tags$div(
+        class = "col-sm-6",
+        colorPickerInput(
+          "server_login_header_bg_dark",
+          lang$adminMode$colors$miroServerColors$loginHeaderBg,
+          value = serverBaseColors[[globalTheme]]$login_header_bg_dark,
+          colorPreview = TRUE,
+          disableAlphaChannel = TRUE
+        )
+      )
+    ),
+    tags$div(class = "space"),
+    fluidRow(
+      class = "theme-btn-row",
+      tags$div(
+        class = "col-md-12 col-lg-6",
+        downloadButton("downloadTheme", lang$adminMode$colors$themeButtons$downloadTheme, class = "theme-btn", style = "min-width: 215px;")
+      )
+    ),
+    tags$div(class = "space")
+  )
+})
+
 output$downloadTheme <- downloadHandler(
   filename = function() {
-    "themecolors.css"
+    "custom.css"
   },
   content = function(file) {
-    vars <- palette()
+    pal <- palette()
+
+    miroServerColors <- list(
+      miro_server_primary_color        = input$server_primary_color,
+      miro_server_body_bg              = input$server_body_bg,
+      miro_server_main_bg              = input$server_main_bg,
+      miro_server_login_header_bg      = input$server_login_header_bg,
+      miro_server_primary_color_dark   = input$server_primary_color_dark,
+      miro_server_body_bg_dark         = input$server_body_bg_dark,
+      miro_server_main_bg_dark         = input$server_main_bg_dark,
+      miro_server_login_header_bg_dark = input$server_login_header_bg_dark
+    )
+
+    miroServerColors <- miroServerColors[!vapply(miroServerColors, is.null, logical(1))]
+
+    vars <- c(pal, miroServerColors)
+
     msg <- setNames(
       lapply(vars, serialise),
       vapply(names(vars), css_name, "")
