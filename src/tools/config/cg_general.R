@@ -567,13 +567,6 @@ observeEvent(input$saveLocal, {
   showNotification(lang$adminMode$colors$themeButtons$saveLocalNote, type = "message")
 })
 observeEvent(input$saveGlobal, {
-  vars <- palette()
-  msg <- setNames(
-    lapply(vars, serialise),
-    vapply(names(vars), css_name, "")
-  )
-  properties <- paste0(names(msg), ':"', msg, '"', collapse = ";\n  ")
-  css <- paste0(":root{\n  ", properties, ";\n}")
   outFile <- file.path(miroWorkspace, "colors_custom.css")
 
   if (file.exists(outFile)) {
@@ -589,16 +582,32 @@ observeEvent(input$saveGlobal, {
       ),
       fade = TRUE, easyClose = TRUE
     ))
-
-    observeEvent(input$overwriteGlobal, {
-      writeLines(css, con = outFile)
-      removeModal()
-      showNotification(paste0(lang$adminMode$colors$themeButtons$saveGlobalModalNote1, " ", lang$adminMode$colors$themeButtons$saveGlobalModalNoteDesc), duration = 8, type = "message")
-    })
   } else {
+    vars <- palette()
+    msg <- setNames(
+      lapply(vars, serialise),
+      vapply(names(vars), css_name, "")
+    )
+    properties <- paste0(names(msg), ':"', msg, '"', collapse = ";\n  ")
+    css <- paste0(":root{\n  ", properties, ";\n}")
     writeLines(css, con = outFile)
     showNotification(paste0(lang$adminMode$colors$themeButtons$saveGlobalModalNote2, " ", lang$adminMode$colors$themeButtons$saveGlobalModalNoteDesc), duration = 8, type = "message")
   }
+})
+
+observeEvent(input$overwriteGlobal, {
+  outFile <- file.path(miroWorkspace, "colors_custom.css")
+  vars <- palette()
+  msg <- setNames(
+    lapply(vars, serialise),
+    vapply(names(vars), css_name, "")
+  )
+  properties <- paste0(names(msg), ':"', msg, '"', collapse = ";\n  ")
+  css <- paste0(":root{\n  ", properties, ";\n}")
+
+  writeLines(css, con = outFile)
+  removeModal()
+  showNotification(paste0(lang$adminMode$colors$themeButtons$saveGlobalModalNote1, " ", lang$adminMode$colors$themeButtons$saveGlobalModalNoteDesc), duration = 8, type = "message")
 })
 
 serverBaseColors <- list(
