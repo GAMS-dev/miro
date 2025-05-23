@@ -86,16 +86,19 @@ if (!is.na(Sys.getenv("MIRO_TEST_GAMS_LICENSE_KEY", NA_character_))) {
   writeLines(proc$stdout, gamsLicFullPath)
   Sys.setenv(MIRO_TEST_GAMS_LICE = gamsLicFullPath)
 }
+maxTestFailures <- as.integer(Sys.getenv("MIRO_MAX_TEST_FAILURES", "1"))
 
 reporter <- MultiReporter$new(list(
-  ProgressReporter$new(max_failures = as.integer(Sys.getenv("MIRO_MAX_TEST_FAILURES", "1"))),
+  ProgressReporter$new(max_failures = maxTestFailures),
   JunitReporter$new(file = file.path(getwd(), "test-out.xml"))
 ))
 
 stopOnFailure <- identical(commandArgs(trailingOnly = TRUE), "--stop") || !identical(Sys.getenv("FORCE_RELEASE"), "yes")
 testDir <- file.path(getwd(), "tests")
 
-# test_file("tests/testthat/test-hcube-module-ui.R", reporter = reporter, stop_on_failure = stopOnFailure)
-test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure)
+print(sprintf("Maximum test failures: %i, stop on failure: %s", maxTestFailures, stopOnFailure))
+
+# test_file("tests/testthat/test-hcube-module-ui.R", reporter = reporter, stop_on_failure = stopOnFailure, stop_on_warning = stopOnFailure)
+test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure, stop_on_warning = stopOnFailure)
 
 Sys.unsetenv(c("MIRO_LOG_PATH", "MIRO_TEST_TIMEOUT", "MIRO_TEST_LOAD_TIMEOUT"))

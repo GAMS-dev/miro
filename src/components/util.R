@@ -1028,6 +1028,30 @@ CharArray <- R6Class("CharArray", public = list(
   initialItems = list(),
   items = list()
 ))
+LazyFlagRegistry <- R6Class("LazyFlagRegistry", public = list(
+  get = function(id = NULL) {
+    if (is.null(id)) {
+      return(private$currentVal)
+    }
+    stopifnot(is.character(id), length(id) == 1L)
+    if (isFALSE(private$currentVal)) {
+      return(FALSE)
+    }
+    if (id %in% private$idListSwitchedOn) {
+      return(TRUE)
+    }
+    private$idListSwitchedOn <- c(private$idListSwitchedOn, id)
+    return(FALSE)
+  },
+  set = function(newVal) {
+    stopifnot(is.logical(newVal), length(newVal) == 1L)
+    private$currentVal <- newVal
+    if (isFALSE(newVal)) {
+      private$idListSwitchedOn <- character()
+    }
+    return(self)
+  }
+), private = list(currentVal = FALSE, idListSwitchedOn = character()))
 Set <- R6Class("Set", inherit = CharArray, public = list(
   push = function(el) {
     el <- as.character(el)

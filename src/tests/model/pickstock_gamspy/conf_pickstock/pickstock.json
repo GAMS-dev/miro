@@ -1,0 +1,102 @@
+{
+  "activateModules": {
+    "attachments": true,
+    "downloadTempFiles": false,
+    "hcube": false,
+    "loadLocal": true,
+    "logFile": true,
+    "lstFile": false
+  },
+  "aggregateWidgets": true,
+  "autoGenInputGraphs": true,
+  "customCss": false,
+  "defaultRendererOutput": "miroPivot",
+  "defCompMode": "split",
+  "excelIncludeEmptySheets": true,
+  "excelIncludeMeta": true,
+  "extraClArgs": ["--test=123"],
+  "handsontable": {
+    "colWidths": 200,
+    "contextMenu": {
+      "allowColEdit": true,
+      "allowRowEdit": true,
+      "enabled": true
+    },
+    "height": 700,
+    "readonly": false,
+    "stretchH": "none"
+  },
+  "layoutSettings": {
+    "maxTabsExpandedInput": 5,
+    "maxTabsExpandedOutput": 5,
+    "maxTabsExpandedPivotComp": 5,
+    "maxTabsExpandedSplitComp": 5,
+    "maxTabsExpandedTabComp": 5
+  },
+  "overwriteAliases": {
+    "_scalars": {
+      "newAlias": "Scalars"
+    },
+    "_scalars_out": {
+      "newAlias": "Output Scalars"
+    },
+    "abserror": {
+      "newAlias": "absolute error"
+    },
+    "dowvsindex": {
+      "newAlias": "dow jones vs. index fund"
+    },
+    "error_ratio": {
+      "newAlias": "Ratio between error test and error train"
+    },
+    "error_test": {
+      "newAlias": "Absolute error in entire testing phase"
+    },
+    "error_train": {
+      "newAlias": "Absolute error in entire training phase"
+    },
+    "firstdaytraining": {
+      "newAlias": "first date of training period"
+    },
+    "lastdaytraining": {
+      "newAlias": "last date of training period"
+    },
+    "maxstock": {
+      "newAlias": "maxstock"
+    },
+    "price": {
+      "newAlias": "price of stock on date"
+    },
+    "pricemerge": {
+      "newAlias": "Price (stocks & dow jones)"
+    },
+    "solver": {
+      "newAlias": "MIP Solver to use"
+    },
+    "stock_weight": {
+      "newAlias": "Ratio between error test and error train"
+    },
+    "trainingdays": {
+      "newAlias": "trainingdays"
+    }
+  },
+  "overwriteSheetOrder": {
+    "input": ["price", "_scalars", "_widgets"]
+  },
+  "parseLogForMiroLogSyntax": true,
+  "pivotCompSettings": {
+    "emptyUEL": "-",
+    "fixedColumns": true,
+    "hideEmptyCols": false,
+    "hidePivotControls": false,
+    "tableSummarySettings": {
+      "colEnabled": false,
+      "colSummaryFunction": "sum",
+      "rowEnabled": false,
+      "rowSummaryFunction": "sum"
+    }
+  },
+  "roundingDecimals": 2,
+  "storeLogFilesDuration": 7,
+  "theme": "browser"
+}

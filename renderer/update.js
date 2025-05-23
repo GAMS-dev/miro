@@ -59,7 +59,7 @@ ipcRenderer.on('lang-data-received', (e, lang) => {
           }
         }
         updateStatus(lang.upToDate);
-        return;
+
       } catch (err) {
         __electronLog.info(`Problems getting latest MIRO version. Error message: ${err.message}.`);
         updateStatus(lang.error);

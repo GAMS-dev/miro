@@ -1166,7 +1166,7 @@
         "label": "Name of the default scenario"
       },
       "args":{
-        "label": "Specify extra command line arguments that GAMS will be called with"
+        "label": "Specify extra command line arguments that GAMS/Python will be called with"
       },
       "groups":{
         "input": "Add group for input symbols",

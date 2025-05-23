@@ -47,14 +47,14 @@ app$run_js("$('#btBatchCompare+.dropdown-toggle').click()")
 Sys.sleep(0.5)
 app$run_js("$('#btBatchCompare~.dropdown-menu a:eq(2)').click();")
 Sys.sleep(4L)
-expect_true(grepl("<tdalign=\"right\">4.00</td><tdalign=\"right\">0.80</td></tr>\n<tr><tdalign=\"right\">4.00</td><tdalign=\"right\">0.80</td>",
-  gsub(" ", "", app$get_values()$output[["cmpCustom_test1-maxstockVsErrorTrainTable"]], fixed = TRUE),
+expect_match(gsub(" ", "", app$get_values()$output[["cmpCustom_test1-maxstockVsErrorTrainTable"]], fixed = TRUE),
+  "<tdalign=\"right\">4.00</td><tdalign=\"right\">0.80</td></tr>\n<tr><tdalign=\"right\">4.00</td><tdalign=\"right\">0.80</td>",
   fixed = TRUE
-))
-expect_true(grepl("<tdalign=\"right\">4.00</td><tdalign=\"right\">9.51</td></tr>\n<tr><tdalign=\"right\">4.00</td><tdalign=\"right\">9.51</td>",
-  gsub(" ", "", app$get_values()$output[["cmpCustom_test1-maxstockVsErrorTestTable"]], fixed = TRUE),
+)
+expect_match(gsub(" ", "", app$get_values()$output[["cmpCustom_test1-maxstockVsErrorTestTable"]], fixed = TRUE),
+  "<tdalign=\"right\">4.00</td><tdalign=\"right\">9.51</td></tr>\n<tr><tdalign=\"right\">4.00</td><tdalign=\"right\">9.51</td>",
   fixed = TRUE
-))
+)
 expect_error(app$wait_for_js("$('#cmpCustom_test1-title').text()==='default'", timeout = 50L), NA)
 
 app$click(selector = "a[data-value='loadResults']")
@@ -80,14 +80,14 @@ Sys.sleep(1)
 app$click(selector = "a[data-value='scenarios']")
 app$click(selector = "#btRefreshCustomCmp_1")
 Sys.sleep(2)
-expect_true(grepl("<tdalign=\"right\">8.00</td><tdalign=\"right\">0.12</td></tr>\n<tr><tdalign=\"right\">4.00</td><tdalign=\"right\">0.80</td>",
-  gsub(" ", "", app$get_values()$output[["cmpCustom_test1-maxstockVsErrorTrainTable"]], fixed = TRUE),
+expect_match(gsub(" ", "", app$get_values()$output[["cmpCustom_test1-maxstockVsErrorTrainTable"]], fixed = TRUE),
+  "<tdalign=\"right\">8.00</td><tdalign=\"right\">0.12</td></tr>\n<tr><tdalign=\"right\">4.00</td><tdalign=\"right\">0.80</td>",
   fixed = TRUE
-))
-expect_true(grepl("<tdalign=\"right\">8.00</td><tdalign=\"right\">1.68</td></tr>\n<tr><tdalign=\"right\">4.00</td><tdalign=\"right\">9.51</td>",
-  gsub(" ", "", app$get_values()$output[["cmpCustom_test1-maxstockVsErrorTestTable"]], fixed = TRUE),
+)
+expect_match(gsub(" ", "", app$get_values()$output[["cmpCustom_test1-maxstockVsErrorTestTable"]], fixed = TRUE),
+  "<tdalign=\"right\">8.00</td><tdalign=\"right\">1.68</td></tr>\n<tr><tdalign=\"right\">4.00</td><tdalign=\"right\">9.51</td>",
   fixed = TRUE
-))
+)
 app$set_inputs(btEditMeta = "click")
 Sys.sleep(0.5)
 app$click(selector = '#editMetaUI a[data-value="views"]')

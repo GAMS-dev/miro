@@ -83,12 +83,18 @@ header_admin <- dashboardHeader(
         href = "https://forum.gams.com/c/gams-miro/12",
         target = "_blank", lang$nav$header$help$forum
       )),
-      tags$li(HTML(paste0(
-        '<a href="#" class="action-button" onclick="Miro.confirmModalShow(\'',
-        "About MIRO', '",
-        htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\');">',
-        lang$nav$header$help$about, "</a>"
-      )))
+      tags$li(
+        tags$a(
+          hred = "#",
+          class = "action-button",
+          onclick = paste0(
+            "Miro.confirmModalShow('About GAMS MIRO','",
+            aboutDialogText,
+            "', 'Cancel');"
+          ),
+          lang$nav$header$help$about
+        )
+      )
     )
   ),
   title = paste0(lang$adminMode$uiR$configMode, " (", modelName, ")"), disable = FALSE

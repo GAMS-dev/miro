@@ -15,6 +15,12 @@ configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_
   simplifyMatrix = FALSE
 ))
 
+# check that about dialog opens and has correct copyright year
+app$run_js("$('.navbar-custom-menu a.dropdown-toggle').get(0).click()")
+app$run_js("$('.navbar-custom-menu a:contains(\"About\")').click()")
+app$wait_for_js(paste0("$('.modal-body').text().includes('Copyright (c) ", format(Sys.Date(), "%Y"), "')"))
+app$click(selector = 'button[data-dismiss="modal"]')
+
 # user interface tab
 expect_identical(configNew$themeColors, NULL)
 app$run_js("$('#primary_color').val('#d3377c').trigger('change');")

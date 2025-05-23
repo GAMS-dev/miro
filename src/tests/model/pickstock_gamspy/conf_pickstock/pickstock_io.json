@@ -1,0 +1,163 @@
+{
+    "modelTitle": "GAMSPy App",
+    "inputSymbols": {
+        "price": {
+            "alias": "price of stock on date",
+            "symtype": "parameter",
+            "headers": {
+                "date": {
+                    "type": "string",
+                    "alias": "trading date"
+                },
+                "symbol": {
+                    "type": "string",
+                    "alias": "stock symbol"
+                },
+                "value": {
+                    "type": "numeric",
+                    "alias": "value"
+                }
+            }
+        },
+        "_scalars": {
+            "alias": "Input Scalars",
+            "symnames": [
+                "trainingdays",
+                "maxstock",
+                "solver"
+            ],
+            "symtext": [
+                "trainingdays",
+                "maxstock",
+                "MIP Solver to use"
+            ],
+            "symtypes": [
+                "parameter",
+                "parameter",
+                "set"
+            ],
+            "headers": {
+                "scalar": {
+                    "type": "string",
+                    "alias": "Scalar Name"
+                },
+                "description": {
+                    "type": "string",
+                    "alias": "Scalar Description"
+                },
+                "value": {
+                    "type": "string",
+                    "alias": "Scalar Value"
+                }
+            }
+        }
+    },
+    "outputSymbols": {
+        "stock_weight": {
+            "alias": "Ratio between error test and error train",
+            "symtype": "parameter",
+            "headers": {
+                "symbol": {
+                    "type": "string",
+                    "alias": "stock symbol"
+                },
+                "value": {
+                    "type": "numeric",
+                    "alias": "value"
+                }
+            }
+        },
+        "dowvsindex": {
+            "alias": "dow jones vs. index fund",
+            "symtype": "parameter",
+            "headers": {
+                "date": {
+                    "type": "string",
+                    "alias": "trading date"
+                },
+                "dj": {
+                    "type": "numeric",
+                    "alias": "dj"
+                },
+                "index fund": {
+                    "type": "numeric",
+                    "alias": "index fund"
+                }
+            }
+        },
+        "abserror": {
+            "alias": "absolute error",
+            "symtype": "parameter",
+            "headers": {
+                "date": {
+                    "type": "string",
+                    "alias": "trading date"
+                },
+                "absolute error train": {
+                    "type": "numeric",
+                    "alias": "absolute error train"
+                },
+                "absolute error test": {
+                    "type": "numeric",
+                    "alias": "absolute error test"
+                }
+            }
+        },
+        "pricemerge": {
+            "alias": "Price (stocks & dow jones)",
+            "symtype": "parameter",
+            "headers": {
+                "date": {
+                    "type": "string",
+                    "alias": "trading date"
+                },
+                "uni": {
+                    "type": "string",
+                    "alias": "uni"
+                },
+                "value": {
+                    "type": "numeric",
+                    "alias": "value"
+                }
+            }
+        },
+        "_scalars_out": {
+            "alias": "Output Scalars",
+            "symnames": [
+                "error_train",
+                "error_test",
+                "error_ratio",
+                "firstdaytraining",
+                "lastdaytraining"
+            ],
+            "symtext": [
+                "Absolute error in entire training phase",
+                "Absolute error in entire testing phase",
+                "Ratio between error test and error train",
+                "first date of training period",
+                "last date of training period"
+            ],
+            "symtypes": [
+                "parameter",
+                "parameter",
+                "parameter",
+                "set",
+                "set"
+            ],
+            "headers": {
+                "scalar": {
+                    "type": "string",
+                    "alias": "Scalar Name"
+                },
+                "description": {
+                    "type": "string",
+                    "alias": "Scalar Description"
+                },
+                "value": {
+                    "type": "string",
+                    "alias": "Scalar Value"
+                }
+            }
+        }
+    }
+}

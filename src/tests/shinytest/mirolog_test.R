@@ -19,10 +19,11 @@ expect_true(app$get_js("$('#modelStatus').is(':visible')===false;"))
 app$run_js("$('#valErr_price li').dblclick();")
 expect_error(app$wait_for_js(paste0(
   "$('#modelStatus').is(':visible')&&$('#",
-  logContainerId, "').is(':visible')&&$('#", logContainerId,
-  "').text().includes('Symbol IBM  has negative price at the date: 2016-01-04')&&$('#", logContainerId,
-  "').text().includes('Symbol GS   has negative price at the date: 2016-01-12');"
+  logContainerId, "').is(':visible');"
 ), timeout = 5000L), NA)
+logContent <- app$get_js(paste0("$('#", logContainerId, "').text()"))
+expect_match(logContent, "Symbol IBM  has negative price at the date: 2016-01-04", fixed = TRUE)
+expect_match(logContent, "Symbol GS   has negative price at the date: 2016-01-12", fixed = TRUE)
 app$click(selector = 'a[data-value="inputData"]')
 Sys.sleep(0.5)
 app$click(selector = "#btRemove1")

@@ -112,10 +112,10 @@ Sys.sleep(0.5)
 app$set_inputs(btReplaceInputData = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
 expect_equivalent(getHotData(app, "in_1"), tibble(i = c("Seattle", "Boston"), value = c(123L, 456L)))
-expect_true(grepl("2 datasets imported from: JSON import",
-  app$get_js("$('.shiny-notification-content-text:visible').map(function(){return $(this).text();}).get().join(',')"),
+expect_match(app$get_js("$('.shiny-notification-content-text:visible').map(function(){return $(this).text();}).get().join(',')"),
+  "2 datasets imported from: JSON import",
   fixed = TRUE
-))
+)
 
 app$click(selector = "a[data-value='outputData']")
 Sys.sleep(1)
@@ -151,10 +151,10 @@ app$set_inputs(btImportExternal = "click")
 Sys.sleep(0.5)
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
 expect_equivalent(getHotData(app, "in_1"), tibble(i = c("Seattle", "Boston"), value = c(123L, 456L)))
-expect_true(grepl("1 datasets imported from: JSON import",
-  app$get_js("$('.shiny-notification-content-text:visible').map(function(){return $(this).text();}).get().join(',')"),
+expect_match(app$get_js("$('.shiny-notification-content-text:visible').map(function(){return $(this).text();}).get().join(',')"),
+  "1 datasets imported from: JSON import",
   fixed = TRUE
-))
+)
 app$click(selector = "a[data-value='outputData']")
 app$set_inputs(outputTabset = "outputTabset_1")
 Sys.sleep(1)

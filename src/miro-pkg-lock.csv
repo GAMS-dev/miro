@@ -75,7 +75,7 @@ sys, 3.4.3
 askpass, 1.2.1
 openssl
 prettyunits, 1.2.0
-stringi, 1.8.4
+stringi, 1.8.7
 DBI, 1.2.3
 blob, 1.2.4
 hms, 1.1.3
