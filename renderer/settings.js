@@ -47,6 +47,7 @@ const optionAliasMap = {
     colorThemeOptionTawny: 'tawny',
     colorThemeOptionDarkBlue: 'darkblue',
     colorThemeOptionRedWine: 'redwine',
+    colorThemeOptionCustom: 'custom',
   },
 };
 
@@ -448,11 +449,11 @@ $('.btn-reset-nonpath').on('click', function resetClickNonPath() {
   $(this).hide();
 });
 
-ipcRenderer.on('settings-loaded', (e, data, defaults, langData) => {
+ipcRenderer.on('settings-loaded', (e, data, defaults, langData, customColorsFileExists) => {
   if (langData != null && lang.title == null) {
     lang = langData;
     ['colorThemeOptionDefault', 'colorThemeOptionBlackWhite',
-      'colorThemeOptionForest', 'colorThemeOptionTawny', 'colorThemeOptionDarkBlue', 'colorThemeOptionRedWine'].forEach((id) => {
+      'colorThemeOptionForest', 'colorThemeOptionTawny', 'colorThemeOptionDarkBlue', 'colorThemeOptionRedWine', 'colorThemeOptionCustom'].forEach((id) => {
       optionAliasMap.colorTheme[lang[id]] = optionAliasMap.colorTheme[id];
       delete optionAliasMap.colorTheme[id];
     });
@@ -462,7 +463,7 @@ ipcRenderer.on('settings-loaded', (e, data, defaults, langData) => {
       'pathPython', 'pathPythonSelect', 'pathPythonReset', 'pathLog', 'pathLogSelect', 'pathLogReset', 'pathR', 'pathRSelect',
       'pathRReset', 'needHelp', 'btSave', 'btEnvImport', 'btEnvExport', 'btEnvReset', 'miroEnvHdrVar', 'miroEnvHdrVal',
       'generalColorTheme', 'colorThemeReset', 'colorThemeOptionDefault', 'colorThemeOptionBlackWhite',
-      'colorThemeOptionForest', 'colorThemeOptionTawny', 'colorThemeOptionDarkBlue', 'colorThemeOptionRedWine',
+      'colorThemeOptionForest', 'colorThemeOptionTawny', 'colorThemeOptionDarkBlue', 'colorThemeOptionRedWine', 'colorThemeOptionCustom',
       'engineUrlLabel', 'engineNsLabel', 'engineLoginMethodLabel', 'engineUsernameLabel', 'enginePasswordLabel',
       'engineJWTLabel', 'engineNsValidation', 'engineLoginMethodValidation', 'engineLoginMethodValidationSuccess',
       'engineUsernameValidation', 'enginePasswordValidation', 'engineJWTValidation'].forEach((id) => {
@@ -479,6 +480,9 @@ ipcRenderer.on('settings-loaded', (e, data, defaults, langData) => {
         $(el).addClass('browseLang').attr('content-after', lang.browseFiles);
       }
     });
+    if (customColorsFileExists !== true) {
+      $('#colorThemeOptionCustom').remove();
+    }
   }
   oldConfig = data;
   saveButton.attr('disabled', true);
