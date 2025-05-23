@@ -586,8 +586,10 @@ observeEvent(virtualActionButton(rv$btOverwriteInput), {
   newDataCount <- newInputCount + newOutputCount
 
   if (newDataCount) {
+    flog.debug("%d datasets imported (importer: %s)", newDataCount, importerName)
     showNotification(sprintf(lang$nav$notificationNewInput$new, newDataCount, importerName))
   } else {
+    flog.debug("No dataset imported (importer: %s)", importerName)
     showNotification(sprintf(lang$nav$notificationNewInput$noNew, importerName), type = "error")
   }
   if (length(loadErrors)) {
@@ -682,11 +684,13 @@ loadDatasetsIntoSandbox <- function() {
   }
   scenData$loadSandbox(scenInputData, names(scenInputData), activeScen$getMetadataDf())
   if (newInputCount) {
+    flog.debug("%d datasets imported from database into sandbox", newInputCount)
     showNotification(sprintf(
       lang$nav$notificationNewInput$new, newInputCount,
       lang$nav$notificationNewInput$importerNames$database
     ))
   } else {
+    flog.debug("No dataset imported from database into sandbox")
     showNotification(sprintf(
       lang$nav$notificationNewInput$noNew,
       lang$nav$notificationNewInput$importerNames$database

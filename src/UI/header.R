@@ -68,7 +68,7 @@ header <- dashboardHeader(
       )),
       tags$li(
         tags$a(
-          hred = "#",
+          href = "#",
           class = "action-button",
           onclick = paste0(
             "Miro.confirmModalShow('About GAMS MIRO','",

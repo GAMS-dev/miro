@@ -840,6 +840,7 @@ test_job:
     POSTGRES_HOST_AUTH_METHOD: trust
     GAMSPY_INTERPRETER_PATH: /usr/bin/python3
     MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
+    PYTHON_EXEC_PATH: /usr/bin/python3
   before_script:
     - export FORCE_RELEASE=$([ "$[[ inputs.force-release ]]" = true ] && echo "yes" || echo "no")
     - source /etc/profile.d/ci.sh

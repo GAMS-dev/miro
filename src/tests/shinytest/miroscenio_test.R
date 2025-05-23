@@ -26,12 +26,12 @@ expect_true(app$get_js("$('#btReplaceInputData').is(':hidden');"))
 expect_true(app$get_js("$('#btMergeInputData').is(':hidden');"))
 expect_true(app$get_js("$('#btOverwriteScenLocal').is(':visible');"))
 app$set_inputs(btOverwriteScenLocal = "click")
-app$set_inputs(inputTabset = "inputTabset_7")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
-expect_true(grepl("10 datasets imported from: MIROSCEN",
-  app$get_js("$('.shiny-notification-content-text:visible').map(function(){return $(this).text();}).get().join(',')"),
-  fixed = TRUE
-), label = "Success message with automatic dataset selection")
+expect_match(app$get_js("$('.shiny-notification-content-text:visible').map(function(){return $(this).text();}).get().join(',')"),
+  "10 datasets imported from: MIROSCEN",
+  fixed = TRUE,
+  label = "Success message with automatic dataset selection"
+)
 app$expect_values(
   input = paste0("slider_", c("7", "8"))
 )
@@ -84,10 +84,11 @@ app$set_inputs(selInputDataLoc = c("a", "d"))
 app$set_inputs(btImportLocal = "click")
 app$set_inputs(btReplaceInputData = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
-expect_true(grepl("2 datasets imported from: MIROSCEN",
-  app$get_js("$('.shiny-notification-content-text:visible').map(function(){return $(this).text();}).get().join(',')"),
-  fixed = TRUE
-), label = "Success message with manual dataset selection")
+expect_match(app$get_js("$('.shiny-notification-content-text:visible').map(function(){return $(this).text();}).get().join(',')"),
+  "2 datasets imported from: MIROSCEN",
+  fixed = TRUE,
+  label = "Success message with manual dataset selection"
+)
 expect_equivalent(
   getHotData(app, "in_1"),
   tibble::tibble(i = c("Seattle", "San-Diego"), value = c(350L, 600L))
@@ -144,8 +145,10 @@ app$set_inputs(cbSelectManuallyLoc = "click")
 app$set_inputs(btImportLocal = "click")
 app$set_inputs(btReplaceInputData = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
-expect_true(grepl("No dataset was imported from: MIROSCEN",
-  app$get_js("$('.shiny-notification-content-text:visible').map(function(){return $(this).text();}).get().join(',')"),
-  fixed = TRUE
-), label = "Success message with manual dataset selection (none selected)")
+app$wait_for_js("$('.shiny-notification-content-text:visible').is(':visible');", timeout = 5000L)
+expect_match(app$get_js("$('.shiny-notification-content-text:visible').map(function(){return $(this).text();}).get().join(',')"),
+  "No dataset was imported from: MIROSCEN",
+  fixed = TRUE,
+  label = "Success message with manual dataset selection (none selected)"
+)
 app$stop()

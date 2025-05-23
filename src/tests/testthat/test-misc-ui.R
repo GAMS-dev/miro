@@ -157,7 +157,10 @@ test_that(
       testModelPath,
       "pickstock.py"
     ))
-    Sys.setenv(PYTHON_EXEC_PATH = Sys.which("python3")[[1]])
+    skip_if(
+      identical(Sys.getenv("PYTHON_EXEC_PATH", NA_character_), NA_character_),
+      "No GAMSPy installation found"
+    )
     createTestDb()
 
     source(file.path(testDir, "shinytest", "extra_cl_args_test.R"), local = TRUE)
