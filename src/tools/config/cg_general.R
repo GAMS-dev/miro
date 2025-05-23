@@ -91,6 +91,70 @@ observeEvent(input$general_pageTitle, {
   }
 })
 
+isAdvanced <- function(cfg, mode = "light") {
+  if (is.null(cfg) || length(cfg) == 0) {
+    return(FALSE)
+  }
+
+  if (identical(mode, "dark")) {
+    if (is.null(cfg$primary_color_dark) && is.null(cfg$main_bg_dark)) {
+      return(FALSE)
+    }
+    sidebar <- hsl_hex(hue(cfg$primary_color_dark), 6, 12)
+
+    neutral_primary <- (hue(cfg$primary_color_dark) == 0) &&
+      (saturation(cfg$primary_color_dark) == 0)
+
+    navbar <- if (neutral_primary) {
+      hsl_hex(hue(cfg$primary_color_dark), 0, 10)
+    } else {
+      hsl_hex(hue(cfg$primary_color_dark), 6, 12)
+    }
+
+    neutral_bg <- (hue(cfg$main_bg_dark) == 0) &&
+      (saturation(cfg$main_bg_dark) == 0)
+
+    body_bg <- if (neutral_bg) {
+      hsl_hex(hue(cfg$main_bg_dark), 0, 12)
+    } else {
+      hsl_hex(hue(cfg$main_bg_dark), 10, 18)
+    }
+
+    defaults <- list(
+      sidebar_color_dark = sidebar,
+      body_bg_color_dark = body_bg,
+      navbar_color_dark  = navbar
+    )
+  } else {
+    if (is.null(cfg$primary_color)) {
+      return(FALSE)
+    }
+
+    sidebar <- hsl_hex(hue(cfg$primary_color), 6, 12)
+
+    neutral <- (hue(cfg$primary_color) == 0) &&
+      (saturation(cfg$primary_color) == 0)
+
+    body_bg <- if (neutral) {
+      make_hsl(cfg$primary_color, 80, 0)
+    } else {
+      make_hsl(cfg$primary_color, 94, 26)
+    }
+
+    defaults <- list(
+      sidebar_color = sidebar,
+      body_bg_color = body_bg,
+      navbar_color  = "#ffffff"
+    )
+  }
+
+  keys <- intersect(names(cfg), names(defaults))
+
+  any(vapply(keys, function(k) {
+    !identical(tolower(cfg[[k]]), tolower(defaults[[k]]))
+  }, logical(1)))
+}
+
 output$themeColorsUI <- renderUI({
   tagList(
     tags$h4(lang$adminMode$colors$themeColors$light),
@@ -165,7 +229,9 @@ output$themeColorsUI <- renderUI({
       ),
       tags$div(
         class = "col-sm-12",
-        checkboxInput_MIRO("advanced_light", lang$adminMode$colors$themeColors$advanced)
+        checkboxInput_MIRO("advanced_light", lang$adminMode$colors$themeColors$advanced,
+          value = isAdvanced(configJSON$themeColors, mode = "light")
+        )
       ),
       conditionalPanel(
         condition = "input.advanced_light===true",
@@ -316,7 +382,9 @@ output$themeColorsUI <- renderUI({
       ),
       tags$div(
         class = "col-sm-12",
-        checkboxInput_MIRO("advanced_dark", lang$adminMode$colors$themeColors$advanced)
+        checkboxInput_MIRO("advanced_dark", lang$adminMode$colors$themeColors$advanced,
+          value = isAdvanced(configJSON$themeColors, mode = "dark")
+        )
       ),
       conditionalPanel(
         condition = "input.advanced_dark===true",
@@ -427,20 +495,23 @@ observeEvent(palette(),
   ignoreInit = TRUE
 )
 
-observeEvent(input$advanced_light, {
-  req(!input$advanced_light)
+observeEvent(input$advanced_light,
+  {
+    req(!input$advanced_light)
 
-  sidebarColor <- hsl_hex(hue(input$primary_color), 6, 12)
-  updateColorPickerInput(session, "sidebar_color", value = sidebarColor)
+    sidebarColor <- hsl_hex(hue(input$primary_color), 6, 12)
+    updateColorPickerInput(session, "sidebar_color", value = sidebarColor)
 
-  isNeutral <- boolean(hue(input$primary_color) == 0 & saturation(input$primary_color) == 0)
-  if (isNeutral) {
-    bodyBgColor <- make_hsl(input$primary_color, 80, 0)
-  } else {
-    bodyBgColor <- make_hsl(input$primary_color, 94, 26)
-  }
-  updateColorPickerInput(session, "body_bg_color", value = bodyBgColor)
-})
+    isNeutral <- boolean(hue(input$primary_color) == 0 & saturation(input$primary_color) == 0)
+    if (isNeutral) {
+      bodyBgColor <- make_hsl(input$primary_color, 80, 0)
+    } else {
+      bodyBgColor <- make_hsl(input$primary_color, 94, 26)
+    }
+    updateColorPickerInput(session, "body_bg_color", value = bodyBgColor)
+  },
+  ignoreInit = TRUE
+)
 
 observeEvent(input$primary_color, {
   if (identical(input$primary_color, "")) {
@@ -461,28 +532,31 @@ observeEvent(input$primary_color, {
   updateColorPickerInput(session, "body_bg_color", value = bodyBgColor)
 })
 
-observeEvent(input$advanced_dark, {
-  req(!input$advanced_dark)
+observeEvent(input$advanced_dark,
+  {
+    req(!input$advanced_dark)
 
-  sidebarColorDark <- hsl_hex(hue(input$primary_color_dark), 6, 12)
-  updateColorPickerInput(session, "sidebar_color_dark", value = sidebarColorDark)
+    sidebarColorDark <- hsl_hex(hue(input$primary_color_dark), 6, 12)
+    updateColorPickerInput(session, "sidebar_color_dark", value = sidebarColorDark)
 
-  isNeutral <- boolean(hue(input$primary_color_dark) == 0 & saturation(input$primary_color_dark) == 0)
-  if (isNeutral) {
-    navBarColorDark <- hsl_hex(hue(input$primary_color_dark), 0, 10)
-  } else {
-    navBarColorDark <- hsl_hex(hue(input$primary_color_dark), 6, 12)
-  }
-  updateColorPickerInput(session, "navbar_color_dark", value = navBarColorDark)
+    isNeutral <- boolean(hue(input$primary_color_dark) == 0 & saturation(input$primary_color_dark) == 0)
+    if (isNeutral) {
+      navBarColorDark <- hsl_hex(hue(input$primary_color_dark), 0, 10)
+    } else {
+      navBarColorDark <- hsl_hex(hue(input$primary_color_dark), 6, 12)
+    }
+    updateColorPickerInput(session, "navbar_color_dark", value = navBarColorDark)
 
-  isNeutral <- boolean(hue(input$main_bg_dark) == 0 & saturation(input$main_bg_dark) == 0)
-  if (isNeutral) {
-    bodyBgColorDark <- hsl_hex(hue(input$main_bg_dark), 0, 12)
-  } else {
-    bodyBgColorDark <- hsl_hex(hue(input$main_bg_dark), 10, 18)
-  }
-  updateColorPickerInput(session, "body_bg_color_dark", value = bodyBgColorDark)
-})
+    isNeutral <- boolean(hue(input$main_bg_dark) == 0 & saturation(input$main_bg_dark) == 0)
+    if (isNeutral) {
+      bodyBgColorDark <- hsl_hex(hue(input$main_bg_dark), 0, 12)
+    } else {
+      bodyBgColorDark <- hsl_hex(hue(input$main_bg_dark), 10, 18)
+    }
+    updateColorPickerInput(session, "body_bg_color_dark", value = bodyBgColorDark)
+  },
+  ignoreInit = TRUE
+)
 
 observeEvent(input$primary_color_dark, {
   if (identical(input$primary_color_dark, "")) {
