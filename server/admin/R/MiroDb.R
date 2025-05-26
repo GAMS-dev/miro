@@ -10,6 +10,7 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
       bigint = "integer"
     )
     flog.debug("Db: MiroDb initialized.")
+    private$dbName <- dbConnectionInfo$name
     private$setRolePrefix()
     return(invisible(self))
   },
@@ -52,6 +53,13 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
         ),
         mask = appDbCredentials$password
       )
+      private$runQuery(
+        paste0(
+          "GRANT CONNECT ON DATABASE ",
+          dbQuoteIdentifier(private$conn, private$dbName), " TO ",
+          dbQuoteIdentifier(private$conn, dbAppId), ";"
+        )
+      )
     }
     private$runQuery(paste0(
       "CREATE SCHEMA IF NOT EXISTS AUTHORIZATION ",
@@ -79,6 +87,7 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
   }
 ), private = list(
   conn = NULL,
+  dbName = NULL,
   rolePrefix = NULL,
   runQuery = function(query, mask = NULL, get = FALSE) {
     if (is.null(mask)) {
