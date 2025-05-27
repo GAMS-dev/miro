@@ -151,6 +151,111 @@ inputWidgetAliases <- vapply(seq_along(configJSON$inputWidgets)[match(inputWidge
   USE.NAMES = FALSE
 )
 
+#     ---------- THEME COLORS ----------
+baseColors <- list(
+  miro_primary_color           = "#3c8dbc",
+  miro_secondary_color         = "#f39619",
+  miro_sidebar_color           = "#1d2121",
+  miro_navbar_color            = "#ffffff",
+  miro_body_bg_color           = "#ECF1F4",
+  miro_alert_color             = "#d11a2a",
+  miro_main_bg                 = "#ffffff",
+  miro_console_text_color      = "#333333",
+  miro_primary_color_dark      = "#00adb5",
+  miro_secondary_color_dark    = "#f39619",
+  miro_sidebar_color_dark      = "#1d1f20",
+  miro_navbar_color_dark       = "#1d2020",
+  miro_body_bg_color_dark      = "#292D32",
+  miro_alert_color_dark        = "#d11a2a",
+  miro_main_bg_dark            = "#393e46",
+  miro_console_text_color_dark = "#3c8dbc",
+  miro_widget_bg_dark          = "#848991",
+  miro_text_color              = "#eeeeee",
+  miro_text_color_dark         = "#eeeeee"
+)
+
+serverBaseColors <- list(
+  default = list(
+    primary_color        = "#ff9900",
+    body_bg              = "#e2e3e8",
+    main_bg              = "#ffffff",
+    login_header_bg      = "#494d55",
+    primary_color_dark   = "#ff9900",
+    body_bg_dark         = "#292d32",
+    main_bg_dark         = "#393e46",
+    login_header_bg_dark = "#494d55"
+  ),
+  forest = list(
+    primary_color        = "#228B22",
+    body_bg              = "#eff2ef",
+    main_bg              = "#ffffff",
+    login_header_bg      = "#1d2121",
+    primary_color_dark   = "#228B22",
+    body_bg_dark         = "#292d32",
+    main_bg_dark         = "#393e46",
+    login_header_bg_dark = "#1d2121"
+  ),
+  tawny = list(
+    primary_color        = "#ce7e16",
+    body_bg              = "#eae7e5",
+    main_bg              = "#ffffff",
+    login_header_bg      = "#1a1309",
+    primary_color_dark   = "#ce7e16",
+    body_bg_dark         = "#1f1f1f",
+    main_bg_dark         = "#2b2b2b",
+    login_header_bg_dark = "#1a1309"
+  ),
+  redwine = list(
+    primary_color        = "#690B22",
+    body_bg              = "#dcd7d8",
+    main_bg              = "#ffffff",
+    login_header_bg      = "#242424",
+    primary_color_dark   = "#690B22",
+    body_bg_dark         = "#1f1f1f",
+    main_bg_dark         = "#3a3a3a",
+    login_header_bg_dark = "#242424"
+  ),
+  blackandwhite = list(
+    primary_color        = "#1f1f1f",
+    body_bg              = "#cccccc",
+    main_bg              = "#ffffff",
+    login_header_bg      = "#1d2121",
+    primary_color_dark   = "#1f1f1f",
+    body_bg_dark         = "#292d32",
+    main_bg_dark         = "#393e46",
+    login_header_bg_dark = "#1d2121"
+  ),
+  darkblue = list(
+    primary_color        = "#56799C",
+    body_bg              = "#ecf0f4",
+    main_bg              = "#ffffff",
+    login_header_bg      = "#2d3033",
+    primary_color_dark   = "#56799C",
+    body_bg_dark         = "#1f1f1f",
+    main_bg_dark         = "#2b2b2b",
+    login_header_bg_dark = "#2d3033"
+  )
+)[[if (!is.null(miroColorTheme) && !identical(miroColorTheme, "custom")) miroColorTheme else "default"]]
+
+themeCss <- if (!is.null(configJSON$themeColors) && length(configJSON$themeColors)) {
+  configJSON$themeColors
+} else {
+  if (identical(miroColorTheme, "custom")) {
+    globalTheme <- normalizePath(file.path(miroWorkspace, "colors_custom.css"))
+  } else {
+    globalTheme <- normalizePath(file.path(getwd(), "www", paste0("colors_", miroColorTheme, ".css")))
+  }
+  if (file.exists(globalTheme)) globalTheme else NULL
+}
+
+if (!is.null(themeCss)) {
+  parsedColors <- getThemeColors(themeCss)
+  commonKeys <- intersect(names(parsedColors), names(baseColors))
+  if (length(commonKeys) > 0) {
+    baseColors[commonKeys] <- parsedColors[commonKeys]
+  }
+}
+
 server_admin <- function(input, output, session) {
   rv <- reactiveValues(
     plotly_type = 0L, saveGraphConfirm = 0L, resetRE = 0L,
@@ -214,7 +319,7 @@ server_admin <- function(input, output, session) {
   # ------------------------------------------------------
   #     CUSTOMIZE COLORS
   # ------------------------------------------------------
-  source(file.path("tools", "config", "colors.R"), local = TRUE)
+  source(file.path("tools", "config", "cg_colors.R"), local = TRUE)
   # ------------------------------------------------------
   #     General settings
   # ------------------------------------------------------

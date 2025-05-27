@@ -2189,7 +2189,7 @@
         "removeColorsDesc": "Deletes any existing app-specific theme configuration, if present.",
         "saveLocalNote": "Theme saved.",
         "saveGlobalModalTitle": "File exists",
-        "saveGlobalModalText": "A file called '%s' already exists.",
+        "saveGlobalModalText": "A file called '%s' already exists in the GAMS MIRO workspace.",
         "saveGlobalModalCancel": "Cancel",
         "saveGlobalModalOverwrite": "Overwrite",
         "saveGlobalModalNote1": "File overwritten!",

@@ -2187,7 +2187,7 @@
         "removeColorsDesc": "删除任何现有的应用特定主题配置（如果存在）。",
         "saveLocalNote": "主题已保存。",
         "saveGlobalModalTitle": "文件已存在",
-        "saveGlobalModalText": "名为 '%s' 的文件已存在。",
+        "saveGlobalModalText": "GAMS MIRO 工作区中已经存在名为“%s ”的文件。",
         "saveGlobalModalCancel": "取消",
         "saveGlobalModalOverwrite": "覆盖",
         "saveGlobalModalNote1": "文件已覆盖！",

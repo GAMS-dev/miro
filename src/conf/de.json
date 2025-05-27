@@ -2188,7 +2188,7 @@
         "removeColorsDesc": "Löscht, falls vorhanden, das bestehende app-spezifische Farbschema.",
         "saveLocalNote": "Farbschema gespeichert.",
         "saveGlobalModalTitle": "Datei existiert",
-        "saveGlobalModalText": "Eine Datei namens '%s' existiert bereits.",
+        "saveGlobalModalText": "Eine Datei namens '%s' existiert bereits im GAMS MIRO Arbeitsverzeichnis.",
         "saveGlobalModalCancel": "Abbrechen",
         "saveGlobalModalOverwrite": "Überschreiben",
         "saveGlobalModalNote1": "Datei überschrieben!",

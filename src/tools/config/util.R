@@ -409,3 +409,156 @@ aceEditorFullscreenButton <- function() {
 updateColorPickerInput <- function(session, inputId, value) {
   session$sendInputMessage(inputId, list(value = value))
 }
+isAdvanced <- function(cfg, mode = "light") {
+  if (is.null(cfg) || length(cfg) == 0) {
+    return(FALSE)
+  }
+
+  if (identical(mode, "dark")) {
+    if (is.null(cfg$miro_primary_color_dark) && is.null(cfg$miro_main_bg_dark)) {
+      return(FALSE)
+    }
+    sidebar <- hslHex(hue(cfg$miro_primary_color_dark), 6, 12)
+
+    neutral_primary <- (hue(cfg$miro_primary_color_dark) == 0) &&
+      (saturation(cfg$miro_primary_color_dark) == 0)
+
+    navbar <- if (neutral_primary) {
+      hslHex(hue(cfg$miro_primary_color_dark), 0, 10)
+    } else {
+      hslHex(hue(cfg$miro_primary_color_dark), 6, 12)
+    }
+
+    neutral_bg <- (hue(cfg$miro_main_bg_dark) == 0) &&
+      (saturation(cfg$miro_main_bg_dark) == 0)
+
+    body_bg <- if (neutral_bg) {
+      hslHex(hue(cfg$miro_main_bg_dark), 0, 12)
+    } else {
+      hslHex(hue(cfg$miro_main_bg_dark), 10, 18)
+    }
+
+    defaults <- list(
+      miro_sidebar_color_dark = sidebar,
+      miro_body_bg_color_dark = body_bg,
+      miro_navbar_color_dark  = navbar
+    )
+  } else {
+    if (is.null(cfg$miro_primary_color)) {
+      return(FALSE)
+    }
+
+    sidebar <- hslHex(hue(cfg$miro_primary_color), 6, 12)
+
+    neutral <- (hue(cfg$miro_primary_color) == 0) &&
+      (saturation(cfg$miro_primary_color) == 0)
+
+    body_bg <- if (neutral) {
+      makeHsl(cfg$miro_primary_color, 80, 0)
+    } else {
+      makeHsl(cfg$miro_primary_color, 94, 26)
+    }
+
+    defaults <- list(
+      miro_sidebar_color = sidebar,
+      miro_body_bg_color = body_bg,
+      miro_navbar_color  = "#ffffff"
+    )
+  }
+
+  keys <- intersect(names(cfg), names(defaults))
+
+  any(vapply(keys, function(k) {
+    !identical(tolower(cfg[[k]]), tolower(defaults[[k]]))
+  }, logical(1)))
+}
+getThemeColors <- function(cssInput) {
+  if (is.null(cssInput)) {
+    return(NULL)
+  }
+
+  if ((is.list(cssInput) || is.atomic(cssInput)) && !is.null(names(cssInput))) {
+    varNames <- gsub("-", "_", names(cssInput))
+    varValues <- as.character(unlist(cssInput, use.names = FALSE))
+    return(as.list(setNames(varValues, varNames)))
+  }
+
+  cssLines <- if (length(cssInput) == 1 && file.exists(cssInput)) {
+    read_lines(cssInput)
+  } else if (is.character(cssInput)) {
+    as.character(cssInput)
+  } else {
+    return(NULL)
+  }
+  themeColors <- strsplit(trimws(cssLines[-1], whitespace = "[ \t\r\n\\-;]"), ":", fixed = TRUE)
+  themeColors <- themeColors[lapply(themeColors, length) == 2L]
+  colorNames <- gsub("-", "_", lapply(themeColors, "[[", 1L), fixed = TRUE)
+  colorValues <- as.list(trimws(lapply(themeColors, "[[", 2L), whitespace = "[ \t\r\n\"]"))
+  names(colorValues) <- colorNames
+  return(colorValues)
+}
+hslHex <- function(h, s, l) {
+  colorspace::hex(colorspace::HLS(H = h, S = s / 100, L = l / 100))
+}
+hexToHsl <- function(hex) {
+  hls <- as(colorspace::hex2RGB(hex), "HLS")
+  cc <- colorspace::coords(hls)
+  setNames(
+    c(
+      unname(cc[, "H"]),
+      unname(cc[, "S"]) * 100,
+      unname(cc[, "L"]) * 100
+    ),
+    c("h", "s", "l")
+  )
+}
+
+hue <- function(hex) unname(hexToHsl(hex)["h"])
+saturation <- function(hex) unname(hexToHsl(hex)["s"])
+
+lighten <- function(col, p, method = "absolute") {
+  colorspace::lighten(col, amount = p / 100, method, space = "HCL")
+}
+darken <- function(col, p, method = "absolute") {
+  colorspace::darken(col, amount = p / 100, method, space = "HCL")
+}
+
+fade <- function(col, p) scales::alpha(col, p / 100)
+
+contrast <- function(bg, dark = "#000000", light = "#ffffff") {
+  unname(ifelse(luma(bg) > 50, dark, light))
+}
+
+luma <- function(hex) {
+  rgb <- farver::decode_colour(hex, to = "rgb") / 255
+  c <- ifelse(rgb <= .03928, rgb / 12.92,
+    ((rgb + .055) / 1.055)^2.4
+  )
+  (0.2126 * c[, 1] + 0.7152 * c[, 2] + 0.0722 * c[, 3]) * 100
+}
+
+contrastRatio <- function(col1, col2) {
+  L1 <- luma(col1) / 100
+  L2 <- luma(col2) / 100
+  if (L1 < L2) {
+    tmp <- L1
+    L1 <- L2
+    L2 <- tmp
+  }
+  (L1 + 0.05) / (L2 + 0.05)
+}
+
+goodContrast <- function(fg, bg, threshold = 3.5) {
+  contrastRatio(fg, bg) >= threshold
+}
+
+boolean <- function(x) {
+  val <- as.logical(x)[1]
+  if (is.na(val) || length(val) == 0) FALSE else val
+}
+
+makeHsl <- function(color, l, s) hslHex(hue(color), s, l)
+
+resolveColor <- function(val, default) {
+  if (length(val) && nzchar(val)) val else default
+}
