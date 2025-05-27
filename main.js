@@ -906,6 +906,7 @@ function createSettingsWindow() {
       await configData.getAll(),
       await configData.getAll(true),
       lang.settings,
+      fs.existsSync(path.join(miroWorkspaceDir, 'colors_custom.css')),
     );
     log.debug('Settings window settings loaded.');
     settingsWindow.show();

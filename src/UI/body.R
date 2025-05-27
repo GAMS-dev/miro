@@ -58,12 +58,24 @@ getJobsTableSkeleton <- function(id = NULL, content = NULL) {
   )
 }
 buildUI <- TRUE
+if (identical(miroColorTheme, "custom")) {
+  if (isShinyProxy) {
+    customColorCss <- Sys.getenv("MIRO_CUSTOM_THEME_COLORS", "")
+  } else {
+    customColorCss <- read_file(file.path(miroWorkspace, "colors_custom.css"))
+  }
+}
 if (!debugMode) {
+  if (identical(miroColorTheme, "custom")) {
+    miroColorThemeId <- digest::sha1(customColorCss)
+  } else {
+    miroColorThemeId <- miroColorTheme
+  }
   miroCacheFile <- paste0(
     appId, "_",
     MIROVersion, "_0_",
     miroLanguage, "_",
-    miroColorTheme,
+    miroColorThemeId,
     if (config$activateModules$remoteExecution) "_1" else "_0"
   )
   if (isShinyProxy) {
@@ -1146,16 +1158,11 @@ if (buildUI) {
             gsub("_", "-", names(config$themeColors), fixed = TRUE),
             unname(config$themeColors)
           )
-          htmltools::tags$style(
+          tags$style(
             HTML(paste0(":root{", paste(cssLines, collapse = ""), "}"))
           )
         } else if (identical(miroColorTheme, "custom")) {
-          if (isShinyProxy) {
-            customColorCss <- Sys.getenv("MIRO_CUSTOM_THEME_COLORS", "")
-          } else {
-            customColorCss <- read_file(file.path(miroWorkspace, "colors_custom.css"))
-          }
-          htmltools::tags$style(
+          tags$style(
             HTML(customColorCss)
           )
         } else {

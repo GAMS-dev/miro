@@ -847,12 +847,17 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
       if (el.allowExec) {
         checkBoxHTML = `<div class="col-sm-6">
         <div class="form-group shiny-input-container">
-          <div class="checkbox">
+          <div class="checkbox-simple">
             <label>
-              <input type="checkbox" \
-onchange="Shiny.setInputValue('execPermAttachment_${id[i]}',$(this).is(':checked'),\
-{priority:'event'});" checked="checked">
-              <span>${el.labelCb}</span>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" \
+  onchange="Shiny.setInputValue('execPermAttachment_${id[i]}',$(this).is(':checked'),\
+  {priority:'event'});" checked="checked">
+                  <span></span>
+                </label>
+              </div>
+              <span class="label-span">${el.labelCb}</span>
             </label>
           </div>
         </div>
