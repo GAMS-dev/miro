@@ -781,6 +781,28 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           "sum"
         }
       ))
+      setIndexAliases <- vapply(options[["_metadata_"]]$headers, "[[", character(1L),
+        "alias",
+        USE.NAMES = FALSE
+      )[seq_along(setIndices)]
+      if (sum(numericCols) > 1L) {
+        setIndexAliases[length(setIndices)] <- "Header"
+      }
+      referenceStatisticsConfigDefault <- list(
+        enabled = FALSE,
+        dimChoices = setNames(setIndices, setIndexAliases)
+      )
+      if (length(options$referenceStatistics)) {
+        referenceStatisticsConfigDefault$dimSelected <- options$referenceStatistics$dimension
+        referenceStatisticsConfigDefault$elChoices <- as.character(unique(data[[referenceStatisticsConfigDefault$dimSelected]]))
+        if (options$referenceStatistics$element %in% referenceStatisticsConfigDefault$elChoices) {
+          referenceStatisticsConfigDefault$elSelected <- options$referenceStatistics$element
+        }
+      } else {
+        referenceStatisticsConfigDefault$dimSelected <- referenceStatisticsConfigDefault$dimChoices[1]
+        referenceStatisticsConfigDefault$elChoices <- as.character(unique(data[[referenceStatisticsConfigDefault$dimSelected]]))
+      }
+      referenceStatisticsConfig <- reactiveVal(referenceStatisticsConfigDefault)
 
       if (isInput) {
         dataUpdated <- reactiveVal(1L)
@@ -829,14 +851,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
       noUpdateFilterEl <- logical(length(setIndices))
       names(noUpdateFilterEl) <- setIndices
-
-      setIndexAliases <- vapply(options[["_metadata_"]]$headers, "[[", character(1L),
-        "alias",
-        USE.NAMES = FALSE
-      )[seq_along(setIndices)]
-      if (sum(numericCols) > 1L) {
-        setIndexAliases[length(setIndices)] <- "Header"
-      }
 
       indices <- character(0L)
       # we need to update aggregation functions in case the symbol type is not available when rendering the UI
@@ -1899,6 +1913,40 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                       )
                     )
                   )
+                ),
+                tabPanel(
+                  "Reference Statistics",
+                  tags$div(class = "small-space"),
+                  tags$div(
+                    class = "row",
+                    tags$div(
+                      class = "col-sm-12",
+                      checkboxInput_MIRO(ns("enableRefStat"),
+                        label = "Enable reference statistics?",
+                        value = referenceStatisticsConfig()$enabled
+                      )
+                    )
+                  ),
+                  conditionalPanel("input.enableRefStat===true",
+                    ns = ns,
+                    tags$div(
+                      class = "row",
+                      tags$div(
+                        class = "col-sm-12",
+                        selectInput(ns("refStatDim"), "Select reference statistic dimension",
+                          choices = referenceStatisticsConfig()$dimChoices,
+                          selected = referenceStatisticsConfig()$dimSelected
+                        )
+                      ),
+                      tags$div(
+                        class = "col-sm-12",
+                        selectInput(ns("refStatElement"), "Select reference statistic element",
+                          choices = referenceStatisticsConfig()$elChoices,
+                          selected = referenceStatisticsConfig()$elSelected
+                        )
+                      ),
+                    )
+                  )
                 )
               ),
               footer = tags$div(
@@ -2188,6 +2236,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               newChartFontSize <- NULL
             }
             chartFontSize(newChartFontSize)
+            newRefStatConfig <- referenceStatisticsConfig()
+            if (identical(input$enableRefStat, TRUE)) {
+              newRefStatConfig$enabled <- TRUE
+              newRefStatConfig$dimSelected <- input$refStatDim
+              newRefStatConfig$elChoices <- as.character(unique(data[[newRefStatConfig$dimSelected]]))
+              newRefStatConfig$elSelected <- input$refStatElement
+            } else {
+              newRefStatConfig$enabled <- FALSE
+            }
+            referenceStatisticsConfig(newRefStatConfig)
             removeModal(session)
           })
         })
@@ -2448,6 +2506,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           aggregations = input$aggregationIndexList,
           cols = input$colIndexList
         )
+        if (identical(referenceStatisticsConfig()$enabled, TRUE)) {
+          refStatConfig <- list(
+            dim = referenceStatisticsConfig()$dimSelected,
+            element = referenceStatisticsConfig()$elSelected
+          )
+        } else {
+          refStatConfig <- NULL
+        }
         if (sum(vapply(newFilters, length, integer(1L), USE.NAMES = FALSE)) +
           length(input$rowIndexList) != length(setIndices) ||
           any(vapply(newFilters, is.null, logical(1L), USE.NAMES = FALSE))) {
@@ -2470,6 +2536,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           if (identical(newFilters$domainFilter, "_none")) {
             newFilters$domainFilter <- NULL
           }
+        }
+
+        if (length(refStatConfig) && !refStatConfig$dim %in% newFilters$aggregations) {
+          # can't produce reference statistics if dimension is aggregated
+          newFilters$refStatConfig <- refStatConfig
         }
 
         isolate({
@@ -2515,6 +2586,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         })
       })
 
+      rendererEnv[[ns("refStatElObs")]] <- observe({
+        req(input$enableRefStat, input$refStatDim %in% names(data))
+        updateSelectInput(session, "refStatElement", choices = unique(data[[input$refStatDim]]))
+      })
+
       filteredData <- reactive({
         updateFilter()
         if (is.null(currentFilters())) {
@@ -2524,7 +2600,15 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         aggFilterIndexList <- currentFilters()$aggregations
         colFilterIndexList <- currentFilters()$cols
         domainFilter <- currentFilters()$domainFilter
+        refStatConfig <- currentFilters()$refStatConfig
         filterIndexList <- c(filterIndexList, aggFilterIndexList, colFilterIndexList)
+
+        if (length(refStatConfig)) {
+          # TODO: Domain filter??
+          if (!length(filterIndexList)) {
+            refStatConfig$filterIndex <- NULL
+          }
+        }
         if (length(domainFilter)) {
           if (identical("__key__", names(data)[1])) {
             dataTmp <- data[-1] %>% filter(.data[[domainFilter]] != if (length(options$domainFilter$filterVal)) {
@@ -2540,14 +2624,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             })
           }
           if (!length(filterIndexList)) {
-            return(list(data = dataTmp, filterElements = list()))
+            return(list(data = dataTmp, filterElements = list(), refStatConfig = refStatConfig))
           }
         } else {
           if (!length(filterIndexList)) {
             if (identical("__key__", names(data)[1])) {
-              return(list(data = data[-1], filterElements = list()))
+              return(list(data = data[-1], filterElements = list(), refStatConfig = refStatConfig))
             }
-            return(list(data = data, filterElements = list()))
+            return(list(data = data, filterElements = list(), refStatConfig = refStatConfig))
           }
           if (identical("__key__", names(data)[1])) {
             dataTmp <- data[-1]
@@ -2591,26 +2675,20 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
           if (length(filterVal) > 1L) {
             multiFilterIndices <- c(multiFilterIndices, filterIndex)
-            filterExpression <- paste0(
-              ".[[\"", filterIndex, "\"]]%in%c('",
-              paste(gsub("'", "\\'", filterVal, fixed = TRUE), collapse = "','"),
-              "')"
-            )
-          } else {
-            filterExpression <- paste0(
-              ".[[\"", filterIndex, "\"]]=='",
-              gsub("'", "\\'", filterVal, fixed = TRUE),
-              "'"
-            )
           }
-          dataTmp <- dataTmp %>% filter(
-            !!rlang::parse_expr(filterExpression)
-          )
+          if (identical(filterIndex, refStatConfig$dim)) {
+            refStatConfig$filterIndex <- filterIndex
+            refStatConfig$filterVal <- filterVal
+          } else {
+            dataTmp <- dataTmp %>%
+              filter(.data[[filterIndex]] %in% filterVal)
+          }
         }
         return(list(
           data = dataTmp, filterElements = filterElements,
           multiFilterIndices = multiFilterIndices,
-          singleFilterIndices = singleDropdown()
+          singleFilterIndices = singleDropdown(),
+          refStatConfig = refStatConfig
         ))
       })
 
@@ -2630,6 +2708,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         colIndexList <- isolate(currentFilters()$cols)
         aggIndexList <- isolate(currentFilters()$aggregations)
         multiFilterIndices <- filteredData()$multiFilterIndices
+        refStatConfig <- filteredData()$refStatConfig
+        refStatData <- NULL
         aggregationFunction <- NULL
 
         if (is.null(rowIndexList)) {
@@ -2643,6 +2723,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           rowIndexList,
           multiFilterIndices[!multiFilterIndices %in% c(aggIndexList, colIndexList)]
         )
+        additionalIndicesToGroupBy <- NULL
+        if (length(refStatConfig$filterIndex) &&
+          !refStatConfig$filterIndex %in% rowIndexList) {
+          additionalIndicesToGroupBy <- refStatConfig$filterIndex
+        }
         if (length(aggIndexList)) {
           if (isInput) {
             isEditable <<- FALSE
@@ -2667,7 +2752,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             names(dataTmp)[length(dataTmp)] <- "value"
           }
           dataTmp <- dataTmp %>%
-            group_by(!!!rlang::syms(c(rowIndexList, colIndexList))) %>%
+            group_by(!!!rlang::syms(c(rowIndexList, additionalIndicesToGroupBy, colIndexList))) %>%
             summarise(value = !!rlang::parse_expr(
               if (identical(aggregationFunction, "count")) {
                 "sum(!is.na(value))"
@@ -2687,12 +2772,34 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           enableEl(session, paste0("#", ns("btAddRow")))
           enableEl(session, paste0("#", ns("btRemoveRows")))
         }
+        if (length(refStatConfig)) {
+          refStatConfig$data <- dataTmp %>%
+            filter(.data[[refStatConfig$dim]] == refStatConfig$element) %>%
+            select(-all_of(refStatConfig$dim)) %>%
+            rename(.ref = value)
+          if (length(refStatConfig$filterIndex)) {
+            dataTmp <- dataTmp %>%
+              filter(.data[[refStatConfig$filterIndex]] %in% refStatConfig$filterVal)
+          }
+        }
         if (length(rowIndexList)) {
           dataTmp <- dataTmp %>%
             select(!!!c(rowIndexList, colIndexList, valueColName)) %>%
             arrange(!!!rlang::syms(rowIndexList))
         } else {
           dataTmp <- dataTmp %>% select(!!!c(colIndexList, valueColName))
+        }
+        if (length(refStatConfig)) {
+          refStatData <- dataTmp %>%
+            left_join(refStatConfig$data, by = setdiff(names(refStatConfig$data), ".ref")) %>%
+            mutate(.refStat = (value - .ref) / .ref * 100)
+          if (length(colIndexList)) {
+            refStatData <- refStatData %>%
+              group_by(!!!rlang::syms(colIndexList)) %>%
+              arrange(!!!rlang::syms(c(rowIndexList, colIndexList)), .by_group = TRUE) %>%
+              ungroup()
+          }
+          refStatData <- select(refStatData, value, .refStat)
         }
         if (length(colIndexList)) {
           # note that names_sep is not an ASCII full stop, but UNICODE U+2024
@@ -2736,6 +2843,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           )
         }
         attr(dataTmp, "noRowHeaders") <- length(rowIndexList)
+        if (length(refStatData)) {
+          attr(dataTmp, "refStatData") <- refStatData
+        }
         return(dataTmp)
       })
 
@@ -3387,6 +3497,29 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           addClassEl(session, paste0("#", ns("container .hide-fixed-anchor")), "dt-hide-fixed")
         }
 
+        if (length(attr(dataTmp, "refStatData"))) {
+          secondaryDataRenderFn <- list(list(
+            targets = seq(noRowHeaders + 1, length(dataTmp)) - 1L,
+            render = JS(paste0("function(data, type, row, meta) {
+            if (type !== 'display') {
+              return data;
+            }
+        const offset = meta.row+(meta.col-", noRowHeaders, ")*", nrow(dataTmp), ";
+        const secondaryData=", toJSON(attr(dataTmp, "refStatData")[[".refStat"]]), "[offset];
+        const refData=", toJSON(attr(dataTmp, "refStatData")[["value"]]), "[offset];
+        if (Math.abs(refData - data) > 1e-5 && window.alertPushed !== true) {
+          window.alertPushed = true;
+          Miro.modal('Something went wrong. Please dont trust the data! Also, please contact GAMS about this issue (id: 981273) via support@gams.com', 'OK', 'Cancel');
+        }
+    return '<span class=\"miro-pivot-primary-data\">'+DTWidget.formatRound(data,", roundPrecision, ",3,',','.','null')+'</span> ('+DTWidget.formatRound(secondaryData,", roundPrecision, ",3,',','.','0')+'%)';}"))
+          ))
+          if (length(columnDefsTmp)) {
+            columnDefsTmp <- c(columnDefsTmp, secondaryDataRenderFn)
+          } else {
+            columnDefsTmp <- secondaryDataRenderFn
+          }
+        }
+
         fixedColumnsConfig <- list(leftColumns = noRowHeaders)
         colSummarySettings <- NULL
 
@@ -3488,7 +3621,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             columnDefs = columnDefsTmp
           ), rownames = FALSE
         )
-        if (noRowHeaders < length(dataTmp)) {
+        if (noRowHeaders < length(dataTmp) && !length(attr(dataTmp, "refStatData"))) {
           ret <- formatRound(ret, seq(noRowHeaders + 1, length(dataTmp)),
             digits = roundPrecision
           )
