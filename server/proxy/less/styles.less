@@ -218,7 +218,7 @@ body {
     .responsiveDark({
       background: @main-bg;
       border-color: #f0f0f0;
-      border: 1px solid @app-box-border, #f0f0f0;
+      border: 1px solid @app-box-border;
     },
     {
       background: @main-bg-dark;
@@ -376,6 +376,12 @@ a:focus {
 }
 .navbar-inverse {
   background-color: rgb(73, 77, 85) !important;
+  .responsiveDark({
+     border-color: @primary-color;
+  },
+  {
+     border-color: @primary-color-dark;
+  });
 }
 .navbar-inverse a, .navbar-inverse .navbar-text {
   color: rgba(255, 255, 255, 0.85) !important;

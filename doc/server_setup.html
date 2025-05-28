@@ -559,6 +559,7 @@ server:
                           <li>Tawny ("tawny")</li>
                           <li>Dark blue ("darkblue")</li>
                           <li>Red wine ("redwine")</li>
+                          <li>Custom theme ("custom")*</li>
                         </ul>
                         <p>
                           This global color theme setting initially applies to
@@ -572,8 +573,36 @@ server:
                           >.
                         </p>
                         <p>
-                          Note that in addition to the predefined themes, you
-                          can also include a
+                          *If you have created a
+                          <a
+                            href="./configuration_colors.html#miro-server-colors"
+                            >custom theme for MIRO Server</a
+                          >, place the downloaded
+                          <em>colors_custom.css</em> file in a newly created
+                          folder in <em>miro_server/data</em>, e.g.
+                          <em>miro_server/data/css/colors_custom.css</em>. Now
+                          specify this style sheet in the
+                          <i>docker-compose.yml</i> file under 'proxy.volumes':
+                        </p>
+
+                        <pre><code class="diff-highlight language-diff">  proxy:
+    image: gams/miro-proxy:latest
+    ports:
+      - 8080:8080
+    volumes:
++     - ./data/css/colors_custom.css:/home/miroproxy/templates/2col/assets/css/themes/colors_custom.css
+      - ./data:/home/miroproxy/data
+</code></pre>
+                        <p>
+                          The path before the colon
+                          (<kbd>./data/css/colors_custom.css</kbd>) points to
+                          your custom theme CSS file. The second path points to
+                          the file inside the container that will be
+                          overwritten.
+                        </p>
+                        <p>
+                          Note that in addition to the predefined and custom
+                          themes, you can also include a
                           <a href="#custom-css" , calss="Scroll"
                             >customized css</a
                           >
@@ -823,8 +852,9 @@ server:
                         <b id="custom-css">Custom styles:</b><br />
                         <p>
                           The CSS styles of MIRO Server can be customized. For
-                          example, you can use predefined company colors in the
-                          login and overview screen:
+                          example, you can re-design the login page or apply
+                          other custom styles to the login and app overview
+                          screen:
                         </p>
                         <div class="section-block">
                           <img
@@ -837,7 +867,7 @@ server:
                               cursor: pointer;
                             "
                             src="assets/images/server/custom-login-screen.png"
-                            alt="Custom login screen colors"
+                            alt="Custom login screen"
                             onclick="window.open(this.src, '_blank');"
                           />
                         </div>
@@ -856,28 +886,20 @@ server:
     ports:
       - 8080:8080
     volumes:
-+     - ./data/css/styles.css:/home/miroproxy/templates/2col/assets/css/themes/&lt;theme&gt;.css
++     - ./data/css/styles.css:/home/miroproxy/templates/2col/assets/css/styles.css
       - ./data:/home/miroproxy/data
 </code></pre>
                         <p>
                           The path before the colon
                           (<kbd>./data/css/styles.css</kbd>) points to your
                           custom CSS file. The second path points to the file
-                          inside the container that will be overwritten. Note:
-                          <kbd>&lt;theme&gt;</kbd> refers to the selected
-                          <a href="#global-colortheme" class="scrollto"
-                            >color theme</a
-                          >. For the <i>default</i> theme, the path should be:
-                          <span class="code"
-                            >-
-                            ./data/css/styles.css:/home/miroproxy/templates/2col/assets/css/themes/default.css</span
-                          >.
+                          inside the container that will be overwritten.
                         </p>
                         <p>
-                          The default stylesheet used by MIRO Server can be
+                          The original stylesheet used by MIRO Server can be
                           found
                           <a
-                            href="https://github.com/GAMS-dev/miro/blob/master/server/proxy/templates/2col/assets/css/themes/default.css"
+                            href="https://github.com/GAMS-dev/miro/blob/master/server/proxy/templates/2col/assets/css/styles.css"
                             target="_blank"
                             >here</a
                           >.
@@ -889,11 +911,18 @@ server:
                           <!--//icon-holder-->
                           <div class="content">
                             <b class="callout-title">Note:</b>
-                            <p>
-                              Note that the styles only affect MIRO server
-                              components and not the MIRO applications
-                              themselves!
-                            </p>
+                            <ul>
+                              <li>
+                                Custom stylesheets may stop working after
+                                future Miro updates - use them at your own
+                                risk.
+                              </li>
+                              <li>
+                                Note that the styles only affect MIRO server
+                                components and not the MIRO applications
+                                themselves!
+                              </li>
+                            </ul>
                           </div>
                           <!--//content-->
                         </div>
