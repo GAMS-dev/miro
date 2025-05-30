@@ -205,7 +205,7 @@ export function modal(
       <div class="modal-body">
          ${
   value == null
-    ? `<label>${msg}</label>`
+    ? `<div class="text-break"><strong>${msg}</strong></div>`
     : `<div class="form-group shiny-input-container">
             <label class="control-label" for="miroPromptInput">${msg}</label>
             <input id="miroPromptInput" type="text" class="form-control" value="${value}"/>
@@ -213,7 +213,7 @@ export function modal(
 }
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">${cancelButton}</button>
+        ${cancelButton == null ? '' : `<button type="button" class="btn btn-default" data-dismiss="modal">${cancelButton}</button>`}
         <button id="miroModalConfirmButton" type="button"
         class="btn btn-default bt-highlight-1 bt-gms-confirm">${okButton}</button>
       </div>
@@ -225,7 +225,7 @@ export function modal(
   $(document).off('click', '#miroModalConfirmButton');
   if (value == null) {
     $(document).on('click', '#miroModalConfirmButton', () => {
-      if (callback(...callbackArgs) !== false) {
+      if (callback == null || callback(...callbackArgs) !== false) {
         $('#shiny-modal').modal('hide');
       }
     });

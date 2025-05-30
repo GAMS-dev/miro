@@ -545,6 +545,11 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
           style = "position:static;margin-bottom:5px;"
         ),
         tags$div(
+          id = ns("baselineAggErr"), class = "gmsalert gmsalert-error",
+          style = "position:static;margin-bottom:5px;",
+          lang$renderers$miroPivot$settings$baselineComparison$selMetrics
+        ),
+        tags$div(
           id = ns("noData"), class = "out-no-data",
           style = "margin-top:50px;",
           lang$nav$outputScreen$boxResults$noData
@@ -788,21 +793,32 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       if (sum(numericCols) > 1L) {
         setIndexAliases[length(setIndices)] <- "Header"
       }
-      referenceStatisticsConfigDefault <- list(
+      baselineComparisonConfigDefault <- list(
         enabled = FALSE,
-        dimChoices = setNames(setIndices, setIndexAliases)
+        domainChoices = setNames(setIndices, setIndexAliases),
+        metricsChoices = setNames(
+          c("percentage difference", "absolute difference", "normalization", "value"),
+          c(
+            lang$renderers$miroPivot$baselineComparisonMetrics$percDiff,
+            lang$renderers$miroPivot$baselineComparisonMetrics$absDiff,
+            lang$renderers$miroPivot$baselineComparisonMetrics$norm,
+            lang$renderers$miroPivot$baselineComparisonMetrics$value
+          )
+        )
       )
-      if (length(options$referenceStatistics)) {
-        referenceStatisticsConfigDefault$dimSelected <- options$referenceStatistics$dimension
-        referenceStatisticsConfigDefault$elChoices <- as.character(unique(data[[referenceStatisticsConfigDefault$dimSelected]]))
-        if (options$referenceStatistics$element %in% referenceStatisticsConfigDefault$elChoices) {
-          referenceStatisticsConfigDefault$elSelected <- options$referenceStatistics$element
+      if (length(options$baselineComparison)) {
+        baselineComparisonConfigDefault$metricsSelected <- baselineComparisonConfigDefault$metricsChoices[baselineComparisonConfigDefault$metricsChoices %in% options$baselineComparison$metrics]
+        baselineComparisonConfigDefault$domainSelected <- options$baselineComparison$domain
+        baselineComparisonConfigDefault$recordChoices <- as.character(unique(data[[baselineComparisonConfigDefault$domainSelected]]))
+        if (options$baselineComparison$element %in% baselineComparisonConfigDefault$recordChoices) {
+          baselineComparisonConfigDefault$recordSelected <- options$baselineComparison$record
         }
       } else {
-        referenceStatisticsConfigDefault$dimSelected <- referenceStatisticsConfigDefault$dimChoices[1]
-        referenceStatisticsConfigDefault$elChoices <- as.character(unique(data[[referenceStatisticsConfigDefault$dimSelected]]))
+        baselineComparisonConfigDefault$metricsSelected <- baselineComparisonConfigDefault$metricsChoices[1]
+        baselineComparisonConfigDefault$domainSelected <- baselineComparisonConfigDefault$domainChoices[1]
+        baselineComparisonConfigDefault$recordChoices <- as.character(unique(data[[baselineComparisonConfigDefault$domainSelected]]))
       }
-      referenceStatisticsConfig <- reactiveVal(referenceStatisticsConfigDefault)
+      baselineComparisonConfig <- reactiveVal(baselineComparisonConfigDefault)
 
       if (isInput) {
         dataUpdated <- reactiveVal(1L)
@@ -1915,36 +1931,48 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                   )
                 ),
                 tabPanel(
-                  "Reference Statistics",
+                  lang$renderers$miroPivot$settings$tabBaselineComp,
                   tags$div(class = "small-space"),
                   tags$div(
                     class = "row",
                     tags$div(
                       class = "col-sm-12",
-                      checkboxInput_MIRO(ns("enableRefStat"),
-                        label = "Enable reference statistics?",
-                        value = referenceStatisticsConfig()$enabled
+                      checkboxInput_MIRO(ns("enableBaselineComparison"),
+                        label = lang$renderers$miroPivot$settings$baselineComparison$cbEnable,
+                        value = baselineComparisonConfig()$enabled
                       )
                     )
                   ),
-                  conditionalPanel("input.enableRefStat===true",
+                  conditionalPanel("input.enableBaselineComparison===true",
                     ns = ns,
                     tags$div(
                       class = "row",
                       tags$div(
                         class = "col-sm-12",
-                        selectInput(ns("refStatDim"), "Select reference statistic dimension",
-                          choices = referenceStatisticsConfig()$dimChoices,
-                          selected = referenceStatisticsConfig()$dimSelected
+                        selectInput(ns("baselineCompDomain"),
+                          lang$renderers$miroPivot$settings$baselineComparison$selDomain,
+                          choices = baselineComparisonConfig()$domainChoices,
+                          selected = baselineComparisonConfig()$domainSelected
                         )
                       ),
                       tags$div(
                         class = "col-sm-12",
-                        selectInput(ns("refStatElement"), "Select reference statistic element",
-                          choices = referenceStatisticsConfig()$elChoices,
-                          selected = referenceStatisticsConfig()$elSelected
+                        selectInput(ns("baselineCompRecord"),
+                          lang$renderers$miroPivot$settings$baselineComparison$selRecord,
+                          choices = baselineComparisonConfig()$recordChoices,
+                          selected = baselineComparisonConfig()$recordSelected
                         )
                       ),
+                      tags$div(
+                        class = "col-sm-12",
+                        selectizeInput(ns("baselineCompMetrics"),
+                          lang$renderers$miroPivot$settings$baselineComparison$selMetrics,
+                          choices = baselineComparisonConfig()$metricsChoices,
+                          selected = baselineComparisonConfig()$metricsSelected,
+                          multiple = TRUE,
+                          options = list(maxItems = 2)
+                        )
+                      )
                     )
                   )
                 )
@@ -2236,16 +2264,17 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               newChartFontSize <- NULL
             }
             chartFontSize(newChartFontSize)
-            newRefStatConfig <- referenceStatisticsConfig()
-            if (identical(input$enableRefStat, TRUE)) {
-              newRefStatConfig$enabled <- TRUE
-              newRefStatConfig$dimSelected <- input$refStatDim
-              newRefStatConfig$elChoices <- as.character(unique(data[[newRefStatConfig$dimSelected]]))
-              newRefStatConfig$elSelected <- input$refStatElement
+            newBaselineCompConfig <- baselineComparisonConfig()
+            if (identical(input$enableBaselineComparison, TRUE)) {
+              newBaselineCompConfig$enabled <- TRUE
+              newBaselineCompConfig$domainSelected <- input$baselineCompDomain
+              newBaselineCompConfig$recordChoices <- as.character(unique(data[[newBaselineCompConfig$domainSelected]]))
+              newBaselineCompConfig$recordSelected <- input$baselineCompRecord
+              newBaselineCompConfig$metricsSelected <- input$baselineCompMetrics
             } else {
-              newRefStatConfig$enabled <- FALSE
+              newBaselineCompConfig$enabled <- FALSE
             }
-            referenceStatisticsConfig(newRefStatConfig)
+            baselineComparisonConfig(newBaselineCompConfig)
             removeModal(session)
           })
         })
@@ -2506,13 +2535,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           aggregations = input$aggregationIndexList,
           cols = input$colIndexList
         )
-        if (identical(referenceStatisticsConfig()$enabled, TRUE)) {
-          refStatConfig <- list(
-            dim = referenceStatisticsConfig()$dimSelected,
-            element = referenceStatisticsConfig()$elSelected
+        if (identical(baselineComparisonConfig()$enabled, TRUE)) {
+          baselineCompConfig <- list(
+            domain = baselineComparisonConfig()$domainSelected,
+            record = baselineComparisonConfig()$recordSelected,
+            metrics = baselineComparisonConfig()$metricsSelected
           )
         } else {
-          refStatConfig <- NULL
+          baselineCompConfig <- NULL
         }
         if (sum(vapply(newFilters, length, integer(1L), USE.NAMES = FALSE)) +
           length(input$rowIndexList) != length(setIndices) ||
@@ -2538,9 +2568,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
         }
 
-        if (length(refStatConfig) && !refStatConfig$dim %in% newFilters$aggregations) {
-          # can't produce reference statistics if dimension is aggregated
-          newFilters$refStatConfig <- refStatConfig
+        if (length(baselineCompConfig)) {
+          if (baselineCompConfig$domain %in% newFilters$aggregations) {
+            # can't produce baseline comparison statistics if dimension is aggregated
+            showEl(session, paste0("#", ns("baselineAggErr")))
+          } else {
+            hideEl(session, paste0("#", ns("baselineAggErr")))
+            newFilters$baselineCompConfig <- baselineCompConfig
+          }
         }
 
         isolate({
@@ -2586,9 +2621,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         })
       })
 
-      rendererEnv[[ns("refStatElObs")]] <- observe({
-        req(input$enableRefStat, input$refStatDim %in% names(data))
-        updateSelectInput(session, "refStatElement", choices = unique(data[[input$refStatDim]]))
+      rendererEnv[[ns("baselineCompRecordObs")]] <- observe({
+        req(input$enableBaselineComparison, input$baselineCompDomain %in% names(data))
+        updateSelectInput(session, "baselineCompRecord", choices = unique(data[[input$baselineCompDomain]]))
       })
 
       filteredData <- reactive({
@@ -2600,13 +2635,13 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         aggFilterIndexList <- currentFilters()$aggregations
         colFilterIndexList <- currentFilters()$cols
         domainFilter <- currentFilters()$domainFilter
-        refStatConfig <- currentFilters()$refStatConfig
+        baselineCompConfig <- currentFilters()$baselineCompConfig
         filterIndexList <- c(filterIndexList, aggFilterIndexList, colFilterIndexList)
 
-        if (length(refStatConfig)) {
+        if (length(baselineCompConfig)) {
           # TODO: Domain filter??
           if (!length(filterIndexList)) {
-            refStatConfig$filterIndex <- NULL
+            baselineCompConfig$filterIndex <- NULL
           }
         }
         if (length(domainFilter)) {
@@ -2624,14 +2659,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             })
           }
           if (!length(filterIndexList)) {
-            return(list(data = dataTmp, filterElements = list(), refStatConfig = refStatConfig))
+            return(list(data = dataTmp, filterElements = list(), baselineCompConfig = baselineCompConfig))
           }
         } else {
           if (!length(filterIndexList)) {
             if (identical("__key__", names(data)[1])) {
-              return(list(data = data[-1], filterElements = list(), refStatConfig = refStatConfig))
+              return(list(data = data[-1], filterElements = list(), baselineCompConfig = baselineCompConfig))
             }
-            return(list(data = data, filterElements = list(), refStatConfig = refStatConfig))
+            return(list(data = data, filterElements = list(), baselineCompConfig = baselineCompConfig))
           }
           if (identical("__key__", names(data)[1])) {
             dataTmp <- data[-1]
@@ -2676,9 +2711,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           if (length(filterVal) > 1L) {
             multiFilterIndices <- c(multiFilterIndices, filterIndex)
           }
-          if (identical(filterIndex, refStatConfig$dim)) {
-            refStatConfig$filterIndex <- filterIndex
-            refStatConfig$filterVal <- filterVal
+          if (identical(filterIndex, baselineCompConfig$domain)) {
+            baselineCompConfig$filterIndex <- filterIndex
+            baselineCompConfig$filterVal <- filterVal
           } else {
             dataTmp <- dataTmp %>%
               filter(.data[[filterIndex]] %in% filterVal)
@@ -2688,7 +2723,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           data = dataTmp, filterElements = filterElements,
           multiFilterIndices = multiFilterIndices,
           singleFilterIndices = singleDropdown(),
-          refStatConfig = refStatConfig
+          baselineCompConfig = baselineCompConfig
         ))
       })
 
@@ -2708,8 +2743,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         colIndexList <- isolate(currentFilters()$cols)
         aggIndexList <- isolate(currentFilters()$aggregations)
         multiFilterIndices <- filteredData()$multiFilterIndices
-        refStatConfig <- filteredData()$refStatConfig
-        refStatData <- NULL
+        baselineCompConfig <- filteredData()$baselineCompConfig
+        baselineComp <- NULL
         aggregationFunction <- NULL
 
         if (is.null(rowIndexList)) {
@@ -2724,9 +2759,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           multiFilterIndices[!multiFilterIndices %in% c(aggIndexList, colIndexList)]
         )
         additionalIndicesToGroupBy <- NULL
-        if (length(refStatConfig$filterIndex) &&
-          !refStatConfig$filterIndex %in% rowIndexList) {
-          additionalIndicesToGroupBy <- refStatConfig$filterIndex
+        if (length(baselineCompConfig$filterIndex) &&
+          !baselineCompConfig$filterIndex %in% rowIndexList) {
+          additionalIndicesToGroupBy <- baselineCompConfig$filterIndex
         }
         if (length(aggIndexList)) {
           if (isInput) {
@@ -2772,14 +2807,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           enableEl(session, paste0("#", ns("btAddRow")))
           enableEl(session, paste0("#", ns("btRemoveRows")))
         }
-        if (length(refStatConfig)) {
-          refStatConfig$data <- dataTmp %>%
-            filter(.data[[refStatConfig$dim]] == refStatConfig$element) %>%
-            select(-all_of(refStatConfig$dim)) %>%
-            rename(.ref = value)
-          if (length(refStatConfig$filterIndex)) {
+        if (length(baselineCompConfig)) {
+          baselineCompConfig$data <- dataTmp %>%
+            filter(.data[[baselineCompConfig$domain]] == baselineCompConfig$record) %>%
+            select(-all_of(baselineCompConfig$domain)) %>%
+            rename(.baseline = value)
+          if (length(baselineCompConfig$filterIndex)) {
             dataTmp <- dataTmp %>%
-              filter(.data[[refStatConfig$filterIndex]] %in% refStatConfig$filterVal)
+              filter(.data[[baselineCompConfig$filterIndex]] %in% baselineCompConfig$filterVal)
           }
         }
         if (length(rowIndexList)) {
@@ -2789,17 +2824,42 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         } else {
           dataTmp <- dataTmp %>% select(!!!c(colIndexList, valueColName))
         }
-        if (length(refStatConfig)) {
-          refStatData <- dataTmp %>%
-            left_join(refStatConfig$data, by = setdiff(names(refStatConfig$data), ".ref")) %>%
-            mutate(.refStat = (value - .ref) / .ref * 100)
-          if (length(colIndexList)) {
-            refStatData <- refStatData %>%
-              group_by(!!!rlang::syms(colIndexList)) %>%
-              arrange(!!!rlang::syms(c(rowIndexList, colIndexList)), .by_group = TRUE) %>%
-              ungroup()
+        if (length(baselineCompConfig)) {
+          baselineCompDataTmp <- dataTmp %>%
+            left_join(baselineCompConfig$data, by = setdiff(names(baselineCompConfig$data), ".baseline"))
+          metricJS <- vector("character", length(baselineCompConfig$metrics))
+          baselineComp <- list()
+          for (metricsIdx in seq_along(baselineCompConfig$metrics)) {
+            if (identical(metricsIdx, 1L)) {
+              colNameTmp <- ".primary"
+              jsVarName <- "data"
+            } else {
+              colNameTmp <- ".secondary"
+              jsVarName <- "secondaryData"
+            }
+            metricJS[[metricsIdx]] <- paste0("DTWidget.formatRound(", jsVarName, ",", roundPrecision, ",3,',','.','0')")
+            if (identical(baselineCompConfig$metrics[[metricsIdx]], "percentage difference")) {
+              baselineCompDataTmp <- mutate(baselineCompDataTmp, !!colNameTmp := (value - .baseline) / .baseline * 100)
+              metricJS[[metricsIdx]] <- paste0("DTWidget.formatRound(", jsVarName, ",", roundPrecision, ",3,',','.','0') + '%'")
+            } else if (identical(baselineCompConfig$metrics[[metricsIdx]], "absolute difference")) {
+              baselineCompDataTmp <- mutate(baselineCompDataTmp, !!colNameTmp := value - .baseline)
+            } else if (identical(baselineCompConfig$metrics[[metricsIdx]], "normalization")) {
+              baselineCompDataTmp <- mutate(baselineCompDataTmp, !!colNameTmp := value / .baseline)
+            } else {
+              baselineCompDataTmp <- mutate(baselineCompDataTmp, !!colNameTmp := value)
+            }
+            if (identical(metricsIdx, 2L)) {
+              if (length(colIndexList)) {
+                baselineCompDataTmp <- baselineCompDataTmp %>%
+                  group_by(!!!rlang::syms(colIndexList)) %>%
+                  arrange(!!!rlang::syms(c(rowIndexList, colIndexList)), .by_group = TRUE) %>%
+                  ungroup()
+              }
+              baselineComp$secondaryData <- select(baselineCompDataTmp, .secondary, .primary)
+            }
           }
-          refStatData <- select(refStatData, value, .refStat)
+          dataTmp <- select(baselineCompDataTmp, -any_of(c(".secondary", ".baseline", "value"))) %>% rename(value = .primary)
+          baselineComp$metricJS <- metricJS
         }
         if (length(colIndexList)) {
           # note that names_sep is not an ASCII full stop, but UNICODE U+2024
@@ -2843,8 +2903,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           )
         }
         attr(dataTmp, "noRowHeaders") <- length(rowIndexList)
-        if (length(refStatData)) {
-          attr(dataTmp, "refStatData") <- refStatData
+        if (length(baselineComp)) {
+          attr(dataTmp, "baselineComp") <- baselineComp
         }
         return(dataTmp)
       })
@@ -3497,26 +3557,34 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           addClassEl(session, paste0("#", ns("container .hide-fixed-anchor")), "dt-hide-fixed")
         }
 
-        if (length(attr(dataTmp, "refStatData"))) {
-          secondaryDataRenderFn <- list(list(
+        if (length(attr(dataTmp, "baselineComp"))) {
+          tableSessionId <- stringi::stri_rand_strings(1, 10)[[1]]
+          baselineCompRenderFn <- list(list(
             targets = seq(noRowHeaders + 1, length(dataTmp)) - 1L,
             render = JS(paste0("function(data, type, row, meta) {
             if (type !== 'display') {
               return data;
-            }
-        const offset = meta.row+(meta.col-", noRowHeaders, ")*", nrow(dataTmp), ";
-        const secondaryData=", toJSON(attr(dataTmp, "refStatData")[[".refStat"]]), "[offset];
-        const refData=", toJSON(attr(dataTmp, "refStatData")[["value"]]), "[offset];
-        if (Math.abs(refData - data) > 1e-5 && window.alertPushed !== true) {
-          window.alertPushed = true;
-          Miro.modal('Something went wrong. Please dont trust the data! Also, please contact GAMS about this issue (id: 981273) via support@gams.com', 'OK', 'Cancel');
+            }", if (length(attr(dataTmp, "baselineComp")$metricJS) > 1L) {
+              paste0(
+                "
+        const offset=meta.row+(meta.col-", noRowHeaders, ")*", nrow(dataTmp), ";
+        const secondaryData=", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".secondary"]]), "[offset];
+        const refData=", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".primary"]]), "[offset];
+        if (Math.abs(refData - data) > 1e-4 && window.alertPushed !== '", tableSessionId, "') {
+          window.alertPushed = '", tableSessionId, "';
+          Miro.modal('Something went wrong. Please dont trust the data! Also, please contact GAMS about this issue (id: 981273) via support@gams.com', 'OK');
         }
-    return '<span class=\"miro-pivot-primary-data\">'+DTWidget.formatRound(data,", roundPrecision, ",3,',','.','null')+'</span> ('+DTWidget.formatRound(secondaryData,", roundPrecision, ",3,',','.','0')+'%)';}"))
+    return '<span class=\"miro-pivot-primary-data\">'+ ", attr(dataTmp, "baselineComp")$metricJS[[1]], "+'</span> ('+",
+                attr(dataTmp, "baselineComp")$metricJS[[2]], "+')';}"
+              )
+            } else {
+              paste0("return ", attr(dataTmp, "baselineComp")$metricJS[[1]], ";}")
+            }))
           ))
           if (length(columnDefsTmp)) {
-            columnDefsTmp <- c(columnDefsTmp, secondaryDataRenderFn)
+            columnDefsTmp <- c(columnDefsTmp, baselineCompRenderFn)
           } else {
-            columnDefsTmp <- secondaryDataRenderFn
+            columnDefsTmp <- baselineCompRenderFn
           }
         }
 
@@ -3621,7 +3689,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             columnDefs = columnDefsTmp
           ), rownames = FALSE
         )
-        if (noRowHeaders < length(dataTmp) && !length(attr(dataTmp, "refStatData"))) {
+        if (noRowHeaders < length(dataTmp) && !length(attr(dataTmp, "baselineComp"))) {
           ret <- formatRound(ret, seq(noRowHeaders + 1, length(dataTmp)),
             digits = roundPrecision
           )

@@ -730,6 +730,7 @@
         "tabGeneral": "General",
         "tabTable": "Tables",
         "tabChart": "Charts",
+        "tabBaselineComp": "Baseline Comparison",
         "cbHideEmptyCols": "Hide empty columns",
         "singleDropdown": "Dimension(s) to limit to a single-selection dropdown filter",
         "cbShowTableSummaryRow": "Show table summary (rows)",
@@ -737,7 +738,20 @@
         "rowSummaryFunction": "Row summary function",
         "colSummaryFunction": "Column summary function",
         "fixedColumns": "Fix table columns to the left",
-        "chartFontSize": "Font size to use in charts"
+        "chartFontSize": "Font size to use in charts",
+        "baselineComparison": {
+          "cbEnable": "Enable baseline comparison?",
+          "selDomain": "Domain",
+          "selRecord": "Baseline record",
+          "selMetrics": "Comparison metrics (max 2)",
+          "errorAggregated": "The baseline domain can't be aggregated. Baseline comparison has been turned off — showing raw values instead.",
+          "metrics": {
+            "values": "Values",
+            "percDiff": "Relative Δ (%)",
+            "absDiff": "Absolute Δ",
+            "norm": "Normalization"
+          }
+        }
       },
       "dialogAddRow":{
         "title": "Add new row",

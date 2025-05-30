@@ -2853,6 +2853,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "tabBaselineComp": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "cbHideEmptyCols": {
                   "type": "string",
                   "minLength": 1
@@ -2884,9 +2888,38 @@
                 "chartFontSize": {
                   "type": "string",
                   "minLength": 1
+                },
+                "baselineComparison": {
+                  "cbEnable": "Enable baseline comparison?",
+                  "selDomain": "Domain",
+                  "selRecord": "Baseline record",
+                  "selMetrics": "Comparison metrics (max 2)",
+                  "metrics": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "values": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "percDiff": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "absDiff": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "norm": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "minProperties": 4
+                  }
                 }
               },
-              "minProperties": 11
+              "minProperties": 13
             },
             "dialogAddRow": {
               "type": "object",

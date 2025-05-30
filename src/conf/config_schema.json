@@ -224,6 +224,54 @@
             "type": "string"
           }
         },
+        "baselineComparison": {
+          "description": "Baseline comparison options",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "domain": {
+              "description": "Domain",
+              "type": "string",
+              "minLength": 1
+            },
+            "record": {
+              "description": "Baseline record",
+              "type": "string",
+              "minLength": 1
+            },
+            "metrics": {
+              "description": "Metrics to display (up to two metrics, where order of array determines primary and secondary metric)",
+              "type": [
+                "array",
+                "string"
+              ],
+              "enum": [
+                "value",
+                "percentage difference",
+                "absolute difference",
+                "normalization"
+              ],
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "enum": [
+                  "value",
+                  "percentage difference",
+                  "absolute difference",
+                  "normalization"
+                ]
+              },
+              "minItems": 1,
+              "maxItems": 2,
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "domain",
+            "record",
+            "statistics"
+          ]
+        },
         "chartOptions": {
           "description": "Additional chart options",
           "type": "object",
@@ -1029,6 +1077,54 @@
               "height": {
                 "description": "Specifies the height of a single chart. Must be any valid css unit, e.g. '40vh' or '450px'.",
                 "type": "string"
+              },
+              "baselineComparison": {
+                "description": "Baseline comparison options",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "domain": {
+                    "description": "Domain",
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "record": {
+                    "description": "Baseline record",
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "metrics": {
+                    "description": "Metrics to display (up to two metrics, where order of array determines primary and secondary metric)",
+                    "type": [
+                      "array",
+                      "string"
+                    ],
+                    "enum": [
+                      "value",
+                      "percentage difference",
+                      "absolute difference",
+                      "normalization"
+                    ],
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "enum": [
+                        "value",
+                        "percentage difference",
+                        "absolute difference",
+                        "normalization"
+                      ]
+                    },
+                    "minItems": 1,
+                    "maxItems": 2,
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "domain",
+                  "record",
+                  "statistics"
+                ]
               }
             }
           }
